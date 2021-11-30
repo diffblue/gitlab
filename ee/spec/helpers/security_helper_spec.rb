@@ -23,7 +23,8 @@ RSpec.describe SecurityHelper do
         instance_dashboard_settings_path: settings_security_dashboard_path,
         vulnerabilities_export_endpoint: api_v4_security_vulnerability_exports_path,
         scanners: '[]',
-        can_view_false_positive: 'false'
+        can_view_false_positive: 'false',
+        has_projects: 'false'
       })
     end
   end

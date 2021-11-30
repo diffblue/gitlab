@@ -41,6 +41,10 @@ class InstanceSecurityDashboard
     Vulnerabilities::HistoricalStatistic.for_project(projects)
   end
 
+  def has_projects?
+    projects.count > 0
+  end
+
   private
 
   attr_reader :project_ids, :user
