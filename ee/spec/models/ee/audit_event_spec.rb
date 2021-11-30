@@ -101,6 +101,20 @@ RSpec.describe AuditEvent, type: :model do
 
             event.stream_to_external_destinations
           end
+
+          context 'when entity is not a group or project' do
+            let_it_be(:event) { create(:user_audit_event) }
+
+            before do
+              stub_feature_flags(ff_external_audit_events_namespace: true)
+            end
+
+            it 'enqueues no workers' do
+              expect(AuditEvents::AuditEventStreamingWorker).not_to receive(:perform_async)
+
+              event.stream_to_external_destinations
+            end
+          end
         end
 
         context 'when ff_external_audit_events_namespace is disabled' do
