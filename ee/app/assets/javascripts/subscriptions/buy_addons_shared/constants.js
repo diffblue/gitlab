@@ -22,7 +22,7 @@ export const STORAGE_PER_PACK = 10;
 
 export const I18N_CI_MINUTES_PRODUCT_LABEL = s__('Checkout|CI minute pack');
 export const I18N_CI_MINUTES_PRODUCT_UNIT = s__('Checkout|minutes');
-export const I18N_CI_MINUTES_FORMULA_TOTAL = s__('Checkout|%{totalCiMinutes} CI minutes');
+export const I18N_CI_MINUTES_FORMULA_TOTAL = s__('Checkout|%{quantity} CI minutes');
 export const i18nCIMinutesSummaryTitle = (quantity) =>
   n__('Checkout|%d CI minute pack', 'Checkout|%d CI minute packs', quantity);
 export const I18N_CI_MINUTES_SUMMARY_TOTAL = s__('Checkout|Total minutes: %{quantity}');
