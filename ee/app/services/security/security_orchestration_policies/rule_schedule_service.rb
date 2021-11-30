@@ -25,6 +25,7 @@ module Security
         when 'container_scanning' then schedule_container_scanning_scan(action, schedule, branches)
         when 'cluster_image_scanning' then schedule_cluster_image_scanning_scan(action, schedule)
         when 'dast' then schedule_dast_on_demand_scan(action, branches)
+        when 'sast' then schedule_scan(action, branches)
         end
       end
 

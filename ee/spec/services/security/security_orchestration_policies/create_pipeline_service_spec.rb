@@ -125,6 +125,16 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService do
             expect(build.name).to eq('container_scanning')
           end
         end
+
+        context 'for sast scan' do
+          let(:action) { { scan: 'sast' } }
+
+          it 'sets the build name to sast' do
+            build = pipeline.bridges.first
+
+            expect(build.name).to eq('sast')
+          end
+        end
       end
     end
   end

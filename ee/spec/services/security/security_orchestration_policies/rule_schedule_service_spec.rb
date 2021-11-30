@@ -124,6 +124,32 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService do
       end
     end
 
+    context 'when scan type is sast' do
+      before do
+        policy[:actions] = [{ scan: 'sast' }]
+      end
+
+      it 'invokes Security::SecurityOrchestrationPolicies::CreatePipelineService for both branches' do
+        expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to(
+          receive(:new)
+          .with(project: project, current_user: current_user, params: { action: policy[:actions].first, branch: 'master' })
+          .and_call_original)
+
+        expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to(
+          receive(:new)
+          .with(project: project, current_user: current_user, params: { action: policy[:actions].first, branch: 'production' })
+          .and_call_original)
+
+        service.execute(schedule)
+      end
+
+      it 'invokes Security::SecurityOrchestrationPolicies::CreatePipelineService' do
+        expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to receive(:new).twice.and_call_original
+
+        service.execute(schedule)
+      end
+    end
+
     context 'when policy actions exists and there are multiple matching branches' do
       it 'creates multiple scan pipelines and updates next_run_at' do
         expect { service.execute(schedule) }.to change(Ci::Pipeline, :count).by(2)

@@ -11,7 +11,7 @@ module Security
       schedule: 'schedule'
     }.freeze
 
-    SCAN_TYPES = %w[dast secret_detection cluster_image_scanning container_scanning].freeze
+    SCAN_TYPES = %w[dast secret_detection cluster_image_scanning container_scanning sast].freeze
     ON_DEMAND_SCANS = %w[dast].freeze
 
     included do

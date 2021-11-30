@@ -38,11 +38,12 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService do
           { scan: 'secret_detection' },
           { scan: 'dast', scanner_profile: 'Scanner Profile', site_profile: 'Site Profile' },
           { scan: 'cluster_image_scanning' },
-          { scan: 'container_scanning' }
+          { scan: 'container_scanning' },
+          { scan: 'sast' }
         ]
       end
 
-      it_behaves_like 'creates scan jobs', 4, [:'secret-detection-0', :'dast-1', :'cluster-image-scanning-2', :'container-scanning-3']
+      it_behaves_like 'creates scan jobs', 5, [:'secret-detection-0', :'dast-1', :'cluster-image-scanning-2', :'container-scanning-3', :'sast-4']
     end
 
     context 'when there are valid and invalid actions' do

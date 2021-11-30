@@ -119,7 +119,8 @@
                     "dast",
                     "secret_detection",
                     "container_scanning",
-                    "cluster_image_scanning"
+                    "cluster_image_scanning",
+                    "sast"
                   ],
                   "type": "string"
                 },
@@ -178,6 +179,18 @@
                     "properties": {
                       "scan": {
                         "const": "container_scanning"
+                      }
+                    }
+                  },
+                  "then": {
+                    "maxProperties": 1
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "scan": {
+                        "const": "sast"
                       }
                     }
                   },
