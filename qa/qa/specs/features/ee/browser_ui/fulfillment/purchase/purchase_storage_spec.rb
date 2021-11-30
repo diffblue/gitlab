@@ -24,7 +24,6 @@ module QA
       end
 
       before do
-        Runtime::Feature.enable(:new_route_storage_purchase)
         group.add_member(user, Resource::Members::AccessLevel::OWNER)
 
         Resource::Project.fabricate_via_api! do |project|
@@ -39,7 +38,6 @@ module QA
       end
 
       after do |example|
-        Runtime::Feature.disable(:new_route_storage_purchase)
         user.remove_via_api!
         group.remove_via_api! unless example.exception
       end
