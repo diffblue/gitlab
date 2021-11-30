@@ -3,8 +3,12 @@
 - @hide_breadcrumbs = true
 %html{ lang: I18n.locale, class: page_class }
   = render "layouts/head"
+  - content_for :page_specific_javascripts do
+    = render "layouts/google_tag_manager_head"
+    = render "layouts/one_trust"
 
   %body{ data: { page: body_data_page } }
+    = render "layouts/google_tag_manager_body"
     .layout-page.terms{ class: page_class }
       .content-wrapper.gl-pb-5
         .mobile-overlay
