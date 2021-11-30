@@ -32,6 +32,34 @@ RSpec.describe Gitlab::Spamcheck::Client do
     stub_application_setting(spam_check_endpoint_url: endpoint)
   end
 
+  describe 'url scheme' do
+    before do
+      allow_next_instance_of(::Spamcheck::SpamcheckService::Stub) do |instance|
+        allow(instance).to receive(:check_for_spam_issue).and_return(response)
+      end
+    end
+
+    context 'is tls  ' do
+      let(:endpoint) { 'tls://spamcheck.example.com'}
+
+      it 'uses secure connection' do
+        expect(Spamcheck::SpamcheckService::Stub).to receive(:new).with(endpoint.sub(%r{^tls://}, ''),
+                                                                               instance_of(GRPC::Core::ChannelCredentials),
+                                                                               anything)
+        subject
+      end
+    end
+
+    context 'is grpc' do
+      it 'uses insecure connection' do
+        expect(Spamcheck::SpamcheckService::Stub).to receive(:new).with(endpoint.sub(%r{^grpc://}, ''),
+                                                                               :this_channel_is_insecure,
+                                                                               anything)
+        subject
+      end
+    end
+  end
+
   describe '#issue_spam?' do
     before do
       allow_next_instance_of(::Spamcheck::SpamcheckService::Stub) do |instance|
