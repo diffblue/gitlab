@@ -13,8 +13,8 @@ module Gitlab
             :merge_request_label_removed
           end
 
-          def markdown_description
-            s_("CycleAnalyticsEvent|%{label_reference} label was removed from the merge request") % { label_reference: label.to_reference }
+          def html_description(options)
+            s_("CycleAnalyticsEvent|%{label_reference} label was removed from the merge request") % { label_reference: options.fetch(:label_html) }
           end
 
           def object_type
