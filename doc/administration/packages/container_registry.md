@@ -436,7 +436,7 @@ To configure the `s3` storage driver in Omnibus:
    ```
 
    If using with an [AWS S3 VPC endpoint](https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html),
-   then set `regionendpoint` to your VPC endpoint address and set `path_style` to false:
+   then set `regionendpoint` to your VPC endpoint address and set `pathstyle` to false:
 
    ```ruby
    registry['storage'] = {
@@ -446,7 +446,7 @@ To configure the `s3` storage driver in Omnibus:
        'bucket' => 'your-s3-bucket',
        'region' => 'your-s3-region',
        'regionendpoint' => 'your-s3-vpc-endpoint',
-       'path_style' => false
+       'pathstyle' => false
      }
    }
    ```
@@ -454,7 +454,7 @@ To configure the `s3` storage driver in Omnibus:
    - `regionendpoint` is only required when configuring an S3 compatible service such as MinIO, or
      when using an AWS S3 VPC Endpoint.
    - `your-s3-bucket` should be the name of a bucket that exists, and can't include subdirectories.
-   - `path_style` should be set to true to use `host/bucket_name/object` style paths instead of
+   - `pathstyle` should be set to true to use `host/bucket_name/object` style paths instead of
      `bucket_name.host/object`. [Set to false for AWS S3](https://aws.amazon.com/blogs/aws/amazon-s3-path-deprecation-plan-the-rest-of-the-story/).
 
 1. Save the file and [reconfigure GitLab](../restart_gitlab.md#omnibus-gitlab-reconfigure) for the changes to take effect.
