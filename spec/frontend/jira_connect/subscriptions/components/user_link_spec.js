@@ -1,6 +1,6 @@
-import { shallowMount } from '@vue/test-utils';
 import { GlSprintf } from '@gitlab/ui';
 import UserLink from '~/jira_connect/subscriptions/components/user_link.vue';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
 jest.mock('~/jira_connect/subscriptions/utils', () => ({
@@ -11,7 +11,7 @@ describe('SubscriptionsList', () => {
   let wrapper;
 
   const createComponent = (propsData = {}, { provide } = {}) => {
-    wrapper = shallowMount(UserLink, {
+    wrapper = shallowMountExtended(UserLink, {
       propsData,
       provide,
       stubs: {
@@ -20,8 +20,8 @@ describe('SubscriptionsList', () => {
     });
   };
 
-  const findSignInLink = () => wrapper.find('[data-testid="sign-in-link"]');
-  const findGitlabUserLink = () => wrapper.find('[data-testid="gitlab-user-link"]');
+  const findSignInLink = () => wrapper.findByTestId('sign-in-link');
+  const findGitlabUserLink = () => wrapper.findByTestId('gitlab-user-link');
   const findSprintf = () => wrapper.findComponent(GlSprintf);
 
   afterEach(() => {

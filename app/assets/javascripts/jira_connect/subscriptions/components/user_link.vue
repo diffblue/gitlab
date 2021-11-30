@@ -36,13 +36,8 @@ export default {
       return `${gon.gitlab_url}/${gon.current_username}`;
     },
   },
-  created() {
-    this.setSignInURL();
-  },
-  methods: {
-    async setSignInURL() {
-      this.signInURL = await getGitlabSignInURL(this.usersPath);
-    },
+  async created() {
+    this.signInURL = await getGitlabSignInURL(this.usersPath);
   },
   i18n: {
     signInText: __('Sign in to GitLab'),
@@ -54,12 +49,7 @@ export default {
   <div class="jira-connect-user gl-font-base">
     <gl-sprintf v-if="userSignedIn" :message="$options.i18n.signedInAsUserText">
       <template #user_link>
-        <gl-link
-          data-testid="gitlab-user-link"
-          :href="gitlabUserLink"
-          rel="noopener noreferrer"
-          target="_blank"
-        >
+        <gl-link data-testid="gitlab-user-link" :href="gitlabUserLink" target="_blank">
           {{ gitlabUserHandle }}
         </gl-link>
       </template>
@@ -69,7 +59,6 @@ export default {
       v-else-if="hasSubscriptions"
       data-testid="sign-in-link"
       :href="signInURL"
-      rel="noopener noreferrer"
       target="_blank"
     >
       {{ $options.i18n.signInText }}
