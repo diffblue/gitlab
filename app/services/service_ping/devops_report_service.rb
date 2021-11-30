@@ -8,7 +8,7 @@ module ServicePing
 
     def execute
       # `conv_index` was previously named `dev_ops_score` in
-      # gitlab-version-com, so we check both for backwards compatibility.
+      # version-gitlab-com, so we check both for backwards compatibility.
       metrics = @data['conv_index'] || @data['dev_ops_score']
 
       # Do not attempt to save a report for the first Service Ping
