@@ -162,6 +162,14 @@ RSpec.describe License do
               'During the year before this license started'
             )
           end
+
+          it 'validates only if the new record' do
+            expect(license.valid?).to be_falsey
+
+            license.save!(validate: false)
+
+            expect(license.valid?).to be_truthy
+          end
         end
       end
 
