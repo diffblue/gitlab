@@ -14,7 +14,7 @@ module Ci
     # Add a build to the pending builds queue
     #
     def push(build, transition)
-      return unless maintain_pending_builds_queue?(build)
+      return unless maintain_pending_builds_queue?
 
       raise InvalidQueueTransition unless transition.to == 'pending'
 
@@ -33,7 +33,7 @@ module Ci
     # Remove a build from the pending builds queue
     #
     def pop(build, transition)
-      return unless maintain_pending_builds_queue?(build)
+      return unless maintain_pending_builds_queue?
 
       raise InvalidQueueTransition unless transition.from == 'pending'
 
@@ -52,7 +52,7 @@ module Ci
     # Add shared runner build tracking entry (used for queuing).
     #
     def track(build, transition)
-      return unless maintain_pending_builds_queue?(build)
+      return unless maintain_pending_builds_queue?
       return unless build.shared_runner_build?
 
       raise InvalidQueueTransition unless transition.to == 'running'
@@ -73,7 +73,7 @@ module Ci
     # queuing).
     #
     def untrack(build, transition)
-      return unless maintain_pending_builds_queue?(build)
+      return unless maintain_pending_builds_queue?
       return unless build.shared_runner_build?
 
       raise InvalidQueueTransition unless transition.from == 'running'
@@ -113,8 +113,8 @@ module Ci
       end
     end
 
-    def maintain_pending_builds_queue?(build)
-      ::Gitlab::Ci::Features.pending_builds_maintain_denormalized_data?(build.project)
+    def maintain_pending_builds_queue?
+      ::Ci::PendingBuild.maintain_denormalized_data?
     end
   end
 end

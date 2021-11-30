@@ -25,10 +25,6 @@ module Gitlab
       def self.gldropdown_tags_enabled?
         ::Feature.enabled?(:gldropdown_tags, default_enabled: :yaml)
       end
-
-      def self.pending_builds_maintain_denormalized_data?(actor)
-        ::Feature.enabled?(:ci_pending_builds_maintain_denormalized_data, actor, default_enabled: :yaml)
-      end
     end
   end
 end
