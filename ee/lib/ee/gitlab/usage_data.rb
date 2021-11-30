@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+# NOTE:
+# Implementing metrics direct in `usage_data.rb` is deprecated,
+# please add new instrumentation class and use add_metric method.
+# For more information, see https://docs.gitlab.com/ee/development/service_ping/metrics_instrumentation.html
+
 module EE
   module Gitlab
     module UsageData
