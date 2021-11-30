@@ -39319,7 +39319,7 @@ msgstr ""
 msgid "WikiPage|Keep editing"
 msgstr ""
 
-msgid "WikiPage|More Information."
+msgid "WikiPage|Learn more."
 msgstr ""
 
 msgid "WikiPage|Page title"
