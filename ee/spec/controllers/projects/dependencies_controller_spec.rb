@@ -39,7 +39,7 @@ RSpec.describe Projects::DependenciesController do
           it { expect(response).to have_gitlab_http_status(:ok) }
 
           it 'renders the side navigation with the correct submenu set as active' do
-            expect(response.body).to have_active_sub_navigation('Dependency List')
+            expect(response.body).to have_active_sub_navigation('Dependency list')
           end
         end
 

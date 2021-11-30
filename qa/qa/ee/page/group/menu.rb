@@ -72,7 +72,7 @@ module QA
           def click_group_security_link
             hover_security_and_compliance do
               within_submenu do
-                click_element(:sidebar_menu_item_link, menu_item: 'Security Dashboard')
+                click_element(:sidebar_menu_item_link, menu_item: 'Security dashboard')
               end
             end
           end
@@ -80,7 +80,7 @@ module QA
           def click_group_vulnerability_link
             hover_security_and_compliance do
               within_submenu do
-                click_element(:sidebar_menu_item_link, menu_item: 'Vulnerability Report')
+                click_element(:sidebar_menu_item_link, menu_item: 'Vulnerability report')
               end
             end
           end
@@ -88,7 +88,7 @@ module QA
           def go_to_audit_events
             hover_security_and_compliance do
               within_submenu do
-                click_element(:sidebar_menu_item_link, menu_item: 'Audit Events')
+                click_element(:sidebar_menu_item_link, menu_item: 'Audit events')
               end
             end
           end

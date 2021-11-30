@@ -10,14 +10,14 @@ module QA
 
             def click_on_security_dashboard
               within_sidebar do
-                click_element(:sidebar_menu_item_link, menu_item: 'Security Dashboard')
+                click_element(:sidebar_menu_item_link, menu_item: 'Security dashboard')
               end
             end
 
             def click_on_dependency_list
               hover_security_compliance do
                 within_submenu do
-                  click_element(:sidebar_menu_item_link, menu_item: 'Dependency List')
+                  click_element(:sidebar_menu_item_link, menu_item: 'Dependency list')
                 end
               end
             end
@@ -25,7 +25,7 @@ module QA
             def click_on_threat_monitoring
               hover_security_compliance do
                 within_submenu do
-                  click_element(:sidebar_menu_item_link, menu_item: 'Threat Monitoring')
+                  click_element(:sidebar_menu_item_link, menu_item: 'Threat monitoring')
                 end
               end
             end
@@ -41,7 +41,7 @@ module QA
             def click_on_vulnerability_report
               hover_security_compliance do
                 within_submenu do
-                  click_element(:sidebar_menu_item_link, menu_item: 'Vulnerability Report')
+                  click_element(:sidebar_menu_item_link, menu_item: 'Vulnerability report')
                 end
               end
             end
@@ -65,7 +65,7 @@ module QA
             def go_to_audit_events_settings
               hover_security_compliance do
                 within_submenu do
-                  click_element(:sidebar_menu_item_link, menu_item: 'Audit Events')
+                  click_element(:sidebar_menu_item_link, menu_item: 'Audit events')
                 end
               end
             end
