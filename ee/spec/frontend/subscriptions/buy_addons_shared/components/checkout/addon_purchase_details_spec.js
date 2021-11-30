@@ -38,7 +38,7 @@ describe('AddonPurchaseDetails', () => {
       },
       propsData: {
         productLabel: 'CI minute pack',
-        quantityPerPack: 1000,
+        quantity: 10,
         packsFormula: 'x %{packQuantity} minutes per pack = %{strong}',
         quantityText: '%{quantity} CI minutes',
         totalPurchase: 'Total minutes: %{quantity}',
@@ -73,9 +73,12 @@ describe('AddonPurchaseDetails', () => {
   });
 
   it('is invalid when quantity is less than 1', async () => {
-    createComponent({
-      subscription: { namespaceId: 483, quantity: 0 },
-    });
+    createComponent(
+      {
+        subscription: { namespaceId: 483 },
+      },
+      { quantity: 0 },
+    );
 
     expect(isStepValid()).toBe(false);
   });

@@ -2,7 +2,6 @@
 import { GlAlert, GlFormInput } from '@gitlab/ui';
 import { STEPS } from 'ee/subscriptions/constants';
 import updateState from 'ee/subscriptions/graphql/mutations/update_state.mutation.graphql';
-import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import createFlash from '~/flash';
@@ -28,7 +27,7 @@ export default {
       type: String,
       required: true,
     },
-    quantityPerPack: {
+    quantity: {
       type: Number,
       required: true,
     },
@@ -42,14 +41,6 @@ export default {
       default: '',
     },
   },
-  apollo: {
-    quantity: {
-      query: stateQuery,
-      update(data) {
-        return data.subscription.quantity;
-      },
-    },
-  },
   computed: {
     quantityModel: {
       get() {
@@ -61,9 +52,6 @@ export default {
     },
     isValid() {
       return this.quantity > 0;
-    },
-    totalUnits() {
-      return this.quantity * this.quantityPerPack;
     },
   },
   methods: {
@@ -121,12 +109,12 @@ export default {
           class="gl-w-15"
         />
         <div class="gl-ml-3" data-testid="addon-quantity-text">
-          <slot name="formula" :quantity="totalUnits"></slot>
+          <slot name="formula"></slot>
         </div>
       </div>
     </template>
     <template #summary>
-      <slot name="summary-label" :quantity="quantity"></slot>
+      <slot name="summary-label"></slot>
     </template>
   </step>
 </template>
