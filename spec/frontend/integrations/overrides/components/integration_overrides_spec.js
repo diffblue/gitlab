@@ -171,13 +171,13 @@ describe('IntegrationOverrides', () => {
           await findPagination().vm.$emit('input', mockPage);
         });
 
-        it('performs GET request with correct params', async () => {
+        it('performs GET request with correct params', () => {
           expect(axios.get).toHaveBeenCalledWith(defaultProps.overridesPath, {
             params: { page: mockPage, per_page: DEFAULT_PER_PAGE },
           });
         });
 
-        it('updates `page` URL parameter', async () => {
+        it('updates `page` URL parameter', () => {
           expect(window.location.search).toBe(`?page=${mockPage}`);
         });
       });

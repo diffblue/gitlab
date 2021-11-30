@@ -6,7 +6,7 @@ import { DEFAULT_PER_PAGE } from '~/api';
 import { fetchOverrides } from '~/integrations/overrides/api';
 import { parseIntPagination, normalizeHeaders } from '~/lib/utils/common_utils';
 import { truncateNamespace } from '~/lib/utils/text_utility';
-import { queryToObject } from '~/lib/utils/url_utility';
+import { getParameterByName } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
@@ -61,8 +61,7 @@ export default {
   },
   methods: {
     getInitialPage() {
-      const { page } = queryToObject(window.location.search);
-      return page ?? DEFAULT_PAGE;
+      return getParameterByName('page') ?? DEFAULT_PAGE;
     },
     loadOverrides(page) {
       this.isLoading = true;
