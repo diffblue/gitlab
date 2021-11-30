@@ -2602,8 +2602,6 @@ RSpec.describe User do
   end
 
   describe '.find_by_full_path' do
-    using RSpec::Parameterized::TableSyntax
-
     let!(:user) { create(:user, namespace: create(:user_namespace)) }
 
     context 'with a route matching the given path' do

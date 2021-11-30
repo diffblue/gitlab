@@ -1037,8 +1037,6 @@ RSpec.describe User do
 
     context 'when user is active' do
       context 'when user is internal' do
-        using RSpec::Parameterized::TableSyntax
-
         where(:internal_user_type) do
           described_class::INTERNAL_USER_TYPES
         end
