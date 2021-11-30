@@ -27,7 +27,7 @@ module Ci
 
       # rubocop: disable CodeReuse/ActiveRecord
       def update_pending_builds!
-        return unless ::Feature.enabled?(:ci_pending_builds_maintain_ci_minutes_data, @root_namespace, type: :development, default_enabled: :yaml)
+        return unless ::Ci::PendingBuild.maintain_denormalized_data?
 
         minutes_exceeded = @root_namespace.ci_minutes_quota.minutes_used_up?
         all_namespace_ids = @root_namespace.self_and_descendant_ids.ids

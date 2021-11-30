@@ -61,9 +61,9 @@ RSpec.describe Ci::Minutes::RefreshCachedDataService do
         end
       end
 
-      context 'when ci_pending_builds_maintain_ci_minutes_data is disabled' do
+      context 'when ci_pending_builds_maintain_denormalized_data is disabled' do
         before do
-          stub_feature_flags(ci_pending_builds_maintain_ci_minutes_data: false)
+          stub_feature_flags(ci_pending_builds_maintain_denormalized_data: false)
         end
 
         it 'does not update pending builds' do
