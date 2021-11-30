@@ -1,5 +1,6 @@
 query getOncallSchedulesWithRotations($projectPath: ID!) {
   project(fullPath: $projectPath) {
+    id
     incidentManagementOncallSchedules {
       nodes {
         iid

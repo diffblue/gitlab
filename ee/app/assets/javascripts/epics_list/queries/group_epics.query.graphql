@@ -19,6 +19,7 @@ query groupEpics(
   $isSignedIn: Boolean = false
 ) {
   group(fullPath: $groupPath) {
+    id
     epics(
       state: $state
       authorUsername: $authorUsername
@@ -45,6 +46,7 @@ query groupEpics(
         userDiscussionsCount @include(if: $isSignedIn)
         confidential
         group {
+          id
           fullPath
         }
         author {

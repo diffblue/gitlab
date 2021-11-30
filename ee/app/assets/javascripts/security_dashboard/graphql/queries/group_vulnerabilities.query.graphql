@@ -16,6 +16,7 @@ query groupVulnerabilities(
   $vetEnabled: Boolean = false
 ) {
   group(fullPath: $fullPath) {
+    id
     vulnerabilities(
       after: $after
       first: $first

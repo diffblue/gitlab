@@ -18,6 +18,7 @@ query getThroughputTableData(
   $notMilestoneTitle: String
 ) {
   project(fullPath: $fullPath) {
+    id
     mergeRequests(
       first: $firstPageSize
       last: $lastPageSize
@@ -38,16 +39,19 @@ query getThroughputTableData(
         ...PageInfo
       }
       nodes {
+        id
         iid
         title
         createdAt
         mergedAt
         webUrl
         milestone {
+          id
           title
         }
         assignees {
           nodes {
+            id
             avatarUrl
             name
             webUrl
@@ -62,7 +66,9 @@ query getThroughputTableData(
         }
         pipelines {
           nodes {
+            id
             detailedStatus {
+              id
               icon
             }
           }

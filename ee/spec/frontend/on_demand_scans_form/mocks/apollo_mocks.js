@@ -12,6 +12,7 @@ const defaults = {
 export const dastScannerProfiles = (profiles = scannerProfiles) => ({
   data: {
     project: {
+      id: '1',
       scannerProfiles: {
         ...defaults,
         edges: profiles.map((profile) => ({
@@ -26,6 +27,7 @@ export const dastScannerProfiles = (profiles = scannerProfiles) => ({
 export const dastSiteProfiles = (profiles = siteProfiles) => ({
   data: {
     project: {
+      id: '1',
       siteProfiles: {
         ...defaults,
         edges: profiles.map((profile) => ({

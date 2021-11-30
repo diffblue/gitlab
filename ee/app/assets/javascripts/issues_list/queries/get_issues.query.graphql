@@ -30,6 +30,7 @@ query getIssuesEE(
   $lastPageSize: Int
 ) {
   group(fullPath: $fullPath) @skip(if: $isProject) {
+    id
     issues(
       includeSubepics: true
       includeSubgroups: true
@@ -68,6 +69,7 @@ query getIssuesEE(
     }
   }
   project(fullPath: $fullPath) @include(if: $isProject) {
+    id
     issues(
       includeSubepics: true
       search: $search

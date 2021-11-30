@@ -210,6 +210,7 @@ describe('Group Security Dashboard Vulnerabilities Component', () => {
     const mockQuery = jest.fn().mockResolvedValue({
       data: {
         group: {
+          id: 'group-1',
           vulnerabilities: {
             nodes: [],
             pageInfo: { endCursor: '', hasNextPage: '' },

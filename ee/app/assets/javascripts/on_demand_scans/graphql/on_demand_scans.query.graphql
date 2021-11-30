@@ -9,6 +9,7 @@ query onDemandScans(
   $before: String
 ) {
   project(fullPath: $fullPath) {
+    id
     pipelines(
       source: "ondemand_dast_scan"
       scope: $scope
@@ -25,14 +26,17 @@ query onDemandScans(
         path
         createdAt
         detailedStatus {
+          id
           detailsPath
           text
           group
           icon
         }
         dastProfile {
+          id
           name
           dastSiteProfile {
+            id
             targetUrl
           }
         }

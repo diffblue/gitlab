@@ -4,6 +4,7 @@ query readyToMergeEE($projectPath: ID!, $iid: String!) {
   project(fullPath: $projectPath) {
     ...ReadyToMerge
     mergeRequest(iid: $iid) {
+      id
       mergeTrainsCount
     }
   }

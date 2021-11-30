@@ -1,6 +1,7 @@
 export const getEscalationPoliciesQueryResponse = {
   data: {
     project: {
+      id: '1',
       incidentManagementEscalationPolicies: {
         nodes: [
           {

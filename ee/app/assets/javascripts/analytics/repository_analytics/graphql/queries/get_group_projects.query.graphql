@@ -2,6 +2,7 @@
 
 query repoAnalyticsGetGroupProjects($groupFullPath: ID!, $after: String) {
   group(fullPath: $groupFullPath) {
+    id
     projects(hasCodeCoverage: true, after: $after, first: 100) {
       nodes {
         name

@@ -2,6 +2,7 @@
 
 query searchIterations($fullPath: ID!, $search: String, $id: ID, $isProject: Boolean = false) {
   group(fullPath: $fullPath) @skip(if: $isProject) {
+    id
     iterations(title: $search, id: $id, includeAncestors: true) {
       nodes {
         ...Iteration
@@ -9,6 +10,7 @@ query searchIterations($fullPath: ID!, $search: String, $id: ID, $isProject: Boo
     }
   }
   project(fullPath: $fullPath) @include(if: $isProject) {
+    id
     iterations(title: $search, id: $id, includeAncestors: true) {
       nodes {
         ...Iteration

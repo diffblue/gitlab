@@ -1,7 +1,9 @@
 query project($fullPath: ID!, $urls: [String!]) {
   project(fullPath: $fullPath) {
+    id
     validations: dastSiteValidations(normalizedTargetUrls: $urls) {
       nodes {
+        id
         normalizedTargetUrl
         status
       }

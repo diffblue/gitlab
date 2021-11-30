@@ -3,6 +3,7 @@ mutation moveTestCase($moveTestCaseInput: IssueMoveInput!) {
     errors
     clientMutationId
     issue {
+      id
       webUrl
     }
   }

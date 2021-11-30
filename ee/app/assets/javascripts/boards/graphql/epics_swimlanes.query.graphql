@@ -9,7 +9,9 @@ query BoardEE(
   $after: String
 ) {
   group(fullPath: $fullPath) @include(if: $isGroup) {
+    id
     board(id: $boardId) {
+      id
       epics(first: 10, issueFilters: $issueFilters, after: $after) {
         edges {
           node {
@@ -27,7 +29,9 @@ query BoardEE(
     }
   }
   project(fullPath: $fullPath) @include(if: $isProject) {
+    id
     board(id: $boardId) {
+      id
       epics(first: 10, issueFilters: $issueFilters, after: $after) {
         edges {
           node {

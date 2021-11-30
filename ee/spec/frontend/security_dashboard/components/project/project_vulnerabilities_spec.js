@@ -50,6 +50,7 @@ describe('Vulnerabilities app component', () => {
   } = {}) => ({
     data: {
       project: {
+        id: 'project-1',
         securityScanners: { available, enabled, pipelineRun },
       },
     },

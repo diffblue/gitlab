@@ -17,6 +17,7 @@ query projectVulnerabilities(
   $vetEnabled: Boolean = false
 ) {
   project(fullPath: $fullPath) {
+    id
     vulnerabilities(
       after: $after
       first: $first
@@ -33,6 +34,7 @@ query projectVulnerabilities(
         ...VulnerabilityFragment
         externalIssueLinks @include(if: $includeExternalIssueLinks) {
           nodes {
+            id
             issue: externalIssue {
               externalTracker
               webUrl
@@ -43,6 +45,7 @@ query projectVulnerabilities(
         }
         hasSolutions
         mergeRequest {
+          id
           webUrl
           state
           securityAutoFix

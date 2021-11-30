@@ -3,6 +3,7 @@ mutation createRequirement($createRequirementInput: CreateRequirementInput!) {
     clientMutationId
     errors
     requirement {
+      id
       iid
     }
   }

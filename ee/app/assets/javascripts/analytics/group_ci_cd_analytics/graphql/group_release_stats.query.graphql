@@ -1,5 +1,6 @@
 query GroupReleaseStats($fullPath: ID!) {
   group(fullPath: $fullPath) {
+    id
     stats {
       releaseStats {
         releasesCount

@@ -31,6 +31,7 @@ export const errorMsg = 'Something went wrong';
 export const getOncallSchedulesQueryResponse = {
   data: {
     project: {
+      id: 'project-1',
       incidentManagementOncallSchedules: {
         nodes: [
           {
@@ -153,6 +154,7 @@ export const createRotationResponse = {
         participants: {
           nodes: [
             {
+              id: '50',
               user: {
                 id: 'gid://gitlab/User/50',
                 username: 'project_1_bot3',
@@ -192,6 +194,7 @@ export const createRotationResponseWithErrors = {
         participants: {
           nodes: [
             {
+              id: '50',
               user: {
                 id: 'gid://gitlab/User/50',
                 username: 'project_1_bot3',

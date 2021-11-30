@@ -2,6 +2,7 @@ fragment EpicNode on Epic {
   id
   iid
   group {
+    id
     fullPath
   }
   title

@@ -2,6 +2,7 @@
 
 query autoMergeEnabledEE($projectPath: ID!, $iid: String!) {
   project(fullPath: $projectPath) {
+    id
     mergeRequest(iid: $iid) {
       ...autoMergeEnabled
       mergeTrainsCount

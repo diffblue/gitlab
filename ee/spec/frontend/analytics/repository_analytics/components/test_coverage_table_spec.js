@@ -66,7 +66,7 @@ describe('Test coverage table component', () => {
 
   beforeEach(() => {
     getProjectsTestCoverageSpy = jest.fn().mockResolvedValue({
-      data: { group: { projects: { nodes: projects } } },
+      data: { group: { id: '1', projects: { nodes: projects } } },
     });
   });
 
@@ -118,6 +118,7 @@ describe('Test coverage table component', () => {
       getProjectsTestCoverageSpy = jest.fn().mockResolvedValue({
         data: {
           group: {
+            id: '1',
             projects: {
               nodes: [
                 {

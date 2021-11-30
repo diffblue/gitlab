@@ -158,6 +158,7 @@ describe('On-call schedule wrapper', () => {
       getOncallSchedulesQuerySpy = jest.fn().mockResolvedValue({
         data: {
           project: {
+            id: 'project-1',
             incidentManagementOncallSchedules: {
               nodes: [preExistingSchedule, newlyCreatedSchedule],
             },

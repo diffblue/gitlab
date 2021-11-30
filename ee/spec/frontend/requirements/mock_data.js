@@ -8,6 +8,7 @@ export const mockUserPermissions = {
 };
 
 export const mockAuthor = {
+  id: 'user-1',
   name: 'Administrator',
   username: 'root',
   avatarUrl: 'https://www.gravatar.com/avatar/e64c7d89f26bd1972efa854d13d7dd61?s=80&d=identicon',
@@ -36,6 +37,7 @@ export const mockTestReportMissing = {
 };
 
 export const requirement1 = {
+  id: 'req-1',
   iid: '1',
   title: 'Virtutis, magnitudinis animi, patientiae, fortitudinis fomentis dolor mitigari solet.',
   titleHtml:
@@ -56,6 +58,7 @@ export const requirement1 = {
 };
 
 export const requirement2 = {
+  id: 'req-2',
   iid: '2',
   title: 'Est autem officium, quod ita factum est, ut eius facti probabilis ratio reddi possit.',
   titleHtml:
@@ -76,6 +79,7 @@ export const requirement2 = {
 };
 
 export const requirement3 = {
+  id: 'req-3',
   iid: '3',
   title: 'Non modo carum sibi quemque, verum etiam vehementer carum esse',
   titleHtml: 'Non modo carum sibi quemque, verum etiam vehementer carum esse',
@@ -95,6 +99,7 @@ export const requirement3 = {
 };
 
 export const requirementArchived = {
+  id: 'req-arch',
   iid: '23',
   title: 'Cuius quidem, quoniam Stoicus fuit',
   titleHtml: 'Cuius quidem, quoniam Stoicus fuit',
@@ -189,6 +194,7 @@ export const mockInitialRequirementCounts = {
 export const mockProjectRequirementCounts = {
   data: {
     project: {
+      id: '1',
       requirementStatesCount: {
         opened: mockInitialRequirementCounts.OPENED,
         archived: mockInitialRequirementCounts.ARCHIVED,
@@ -222,6 +228,7 @@ export const mockEmptyTestReportConnection = {
 
 const projectRequirementBase = {
   __typename: 'Requirement',
+  id: 'req-2',
   iid: '1',
   title: 'Requirement 1',
   titleHtml: 'Requirement 1',
@@ -300,6 +307,7 @@ const mockRequirementConnection = {
 export const mockProjectRequirements = {
   data: {
     project: {
+      id: '1',
       requirements: {
         ...mockRequirementConnection,
         nodes: [{ ...mockProjectRequirementPassed }],

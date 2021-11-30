@@ -2,6 +2,7 @@
 
 query groupSpecificScanners($fullPath: ID!) {
   group(fullPath: $fullPath) {
+    id
     vulnerabilityScanners {
       nodes {
         ...VulnerabilityScanner

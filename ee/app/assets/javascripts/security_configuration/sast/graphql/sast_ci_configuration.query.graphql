@@ -2,6 +2,7 @@
 
 query sastCiConfiguration($fullPath: ID!) {
   project(fullPath: $fullPath) {
+    id
     sastCiConfiguration {
       global {
         nodes {

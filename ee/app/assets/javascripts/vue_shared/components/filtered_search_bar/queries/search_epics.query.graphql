@@ -2,12 +2,16 @@
 
 query searchEpics($fullPath: ID!, $search: String, $state: EpicState) {
   group(fullPath: $fullPath) {
+    id
     epics(
       search: $search
       state: $state
       includeAncestorGroups: true
       includeDescendantGroups: false
     ) {
+      # We have an id in deeply nested fragment
+      # TODO: Uncomment next line when https://gitlab.com/gitlab-org/gitlab/-/merge_requests/75220 is merged and the rule is enabled
+      # # eslint-disable-next-line @graphql-eslint/require-id-when-available
       nodes {
         ...EpicNode
       }

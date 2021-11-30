@@ -2,6 +2,7 @@
 
 query DastProfiles($fullPath: ID!, $after: String, $before: String, $first: Int, $last: Int) {
   project(fullPath: $fullPath) {
+    id
     dastProfiles(after: $after, before: $before, first: $first, last: $last) {
       pageInfo {
         ...PageInfo

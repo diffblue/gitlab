@@ -14,6 +14,7 @@ query projectRequirementsEE(
   $sortBy: Sort = CREATED_DESC
 ) {
   project(fullPath: $projectPath) {
+    id
     requirements(
       first: $firstPageSize
       last: $lastPageSize

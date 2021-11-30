@@ -66,6 +66,7 @@ describe('IterationDropdown', () => {
     groupIterationsSpy = jest.fn().mockResolvedValue({
       data: {
         group: {
+          id: '1',
           iterations: {
             nodes: TEST_ITERATIONS,
           },

@@ -44,6 +44,7 @@ export const mockEpic2 = {
 export const mockGroupIterationsResponse = {
   data: {
     workspace: {
+      id: '1',
       iterations: {
         nodes: [mockIteration1, mockIteration2],
       },
@@ -56,6 +57,7 @@ export const mockGroupIterationsResponse = {
 export const mockGroupEpicsResponse = {
   data: {
     workspace: {
+      id: '1',
       attributes: {
         nodes: [mockEpic1, mockEpic2],
       },
@@ -68,6 +70,7 @@ export const mockGroupEpicsResponse = {
 export const emptyGroupIterationsResponse = {
   data: {
     workspace: {
+      id: '1',
       iterations: {
         nodes: [],
       },
@@ -80,6 +83,7 @@ export const emptyGroupIterationsResponse = {
 export const emptyGroupEpicsResponse = {
   data: {
     workspace: {
+      id: '1',
       attributes: {
         nodes: [],
       },
@@ -92,6 +96,7 @@ export const emptyGroupEpicsResponse = {
 export const noCurrentIterationResponse = {
   data: {
     workspace: {
+      id: '1',
       issuable: { id: mockIssueId, iteration: null, __typename: 'Issue' },
       __typename: 'Project',
     },
@@ -101,6 +106,7 @@ export const noCurrentIterationResponse = {
 export const noCurrentEpicResponse = {
   data: {
     workspace: {
+      id: '1',
       issuable: { id: mockIssueId, attribute: null, __typename: 'Issue' },
       __typename: 'Project',
     },
@@ -148,6 +154,7 @@ export const mockEpicMutationResponse = {
 export const epicAncestorsResponse = () => ({
   data: {
     workspace: {
+      id: '1',
       __typename: 'Group',
       issuable: {
         __typename: 'Epic',
@@ -170,6 +177,7 @@ export const epicAncestorsResponse = () => ({
 export const issueNoWeightResponse = () => ({
   data: {
     workspace: {
+      id: '1',
       issuable: { id: mockIssueId, weight: null, __typename: 'Issue' },
       __typename: 'Project',
     },
@@ -179,6 +187,7 @@ export const issueNoWeightResponse = () => ({
 export const issueWeightResponse = () => ({
   data: {
     workspace: {
+      id: '1',
       issuable: { id: mockIssueId, weight: 0, __typename: 'Issue' },
       __typename: 'Project',
     },

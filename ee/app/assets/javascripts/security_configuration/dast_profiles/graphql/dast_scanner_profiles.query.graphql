@@ -8,6 +8,7 @@ query DastScannerProfiles(
   $last: Int
 ) {
   project(fullPath: $fullPath) {
+    id
     scannerProfiles: dastScannerProfiles(
       after: $after
       before: $before

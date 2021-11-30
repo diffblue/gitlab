@@ -1,6 +1,7 @@
 mutation createIteration($input: CreateIterationInput!) {
   createIteration(input: $input) {
     iteration {
+      id
       title
       description
       descriptionHtml

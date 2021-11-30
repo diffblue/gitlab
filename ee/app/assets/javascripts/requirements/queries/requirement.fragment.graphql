@@ -1,6 +1,7 @@
 #import "~/graphql_shared/fragments/author.fragment.graphql"
 
 fragment Requirement on Requirement {
+  id
   iid
   title
   titleHtml

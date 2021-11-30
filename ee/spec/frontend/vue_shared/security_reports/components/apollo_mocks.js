@@ -3,6 +3,7 @@ export const vulnerabilityExternalIssueLinkCreateMockFactory = ({ errors = [] } 
     vulnerabilityExternalIssueLinkCreate: {
       errors,
       externalIssueLink: {
+        id: '1',
         externalIssue: {
           webUrl: 'http://foo.bar',
         },

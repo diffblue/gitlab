@@ -2,6 +2,7 @@
 
 query networkPolicies($fullPath: ID!, $environmentId: EnvironmentID) {
   project(fullPath: $fullPath) {
+    id
     networkPolicies(environmentId: $environmentId) {
       nodes {
         name

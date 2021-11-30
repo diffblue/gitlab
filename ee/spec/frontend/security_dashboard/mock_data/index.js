@@ -106,6 +106,7 @@ const vulnerabilityGrades = [
 export const mockGroupVulnerabilityGrades = () => ({
   data: {
     group: {
+      id: 'group-1',
       vulnerabilityGrades,
     },
   },
@@ -132,6 +133,7 @@ export const mockProjectSecurityChartsWithoutData = () => ({
 export const mockProjectSecurityChartsWithData = () => ({
   data: {
     project: {
+      id: 'project-1',
       vulnerabilitiesCountByDay: {
         nodes: [
           {
@@ -213,6 +215,7 @@ export const mockVulnerableProjectsInstance = () => ({
 export const mockVulnerableProjectsGroup = () => ({
   data: {
     group: {
+      id: 'group-1',
       projects: {
         nodes: [
           {
@@ -228,6 +231,7 @@ export const mockVulnerableProjectsGroup = () => ({
 export const mockVulnerabilitySeveritiesGraphQLResponse = ({ dashboardType }) => ({
   data: {
     [dashboardType]: {
+      id: '1',
       vulnerabilitySeveritiesCount: {
         __typename: 'VulnerabilitySeveritiesCount',
         critical: 0,
@@ -247,6 +251,7 @@ export const mockVulnerabilitySeveritiesGraphQLResponse = ({ dashboardType }) =>
 export const mockPipelineFindingsResponse = ({ hasNextPage } = {}) => ({
   data: {
     project: {
+      id: 'project-1',
       pipeline: {
         id: 'gid://gitlab/Ci::Pipeline/59',
         securityReportFindings: {

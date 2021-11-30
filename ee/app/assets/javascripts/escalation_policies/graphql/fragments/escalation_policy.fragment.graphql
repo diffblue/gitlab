@@ -11,6 +11,7 @@ fragment EscalationPolicy on EscalationPolicyType {
       name
     }
     user {
+      id
       username
       name
       avatarUrl

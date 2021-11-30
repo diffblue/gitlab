@@ -13,6 +13,7 @@ query pipelineFindings(
   $vetEnabled: Boolean = false
 ) {
   project(fullPath: $fullPath) {
+    id
     pipeline(iid: $pipelineId) {
       id
       securityReportFindings(
@@ -35,6 +36,7 @@ query pipelineFindings(
           }
           reportType
           scanner {
+            id
             vendor
           }
           state

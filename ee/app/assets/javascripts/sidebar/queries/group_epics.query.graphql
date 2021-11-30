@@ -8,6 +8,7 @@ query issueEpics(
   $iidStartsWith: String
 ) {
   workspace: group(fullPath: $fullPath) {
+    id
     attributes: epics(
       search: $title
       in: $in
