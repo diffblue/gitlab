@@ -28,17 +28,17 @@ RSpec.describe 'Groups > Audit Events', :js do
       expect(reqs.first.status_code).to eq(404)
     end
 
-    it 'does not have Audit Events button in head nav bar' do
+    it 'does not have Audit events button in head nav bar' do
       visit group_security_dashboard_path(group)
 
-      expect(page).not_to have_link('Audit Events')
+      expect(page).not_to have_link('Audit events')
     end
   end
 
-  it 'has Audit Events button in head nav bar' do
+  it 'has Audit events button in head nav bar' do
     visit group_audit_events_path(group)
 
-    expect(page).to have_link('Audit Events')
+    expect(page).to have_link('Audit events')
   end
 
   describe 'changing a user access level' do
@@ -54,7 +54,7 @@ RSpec.describe 'Groups > Audit Events', :js do
 
       page.within('.sidebar-top-level-items') do
         find(:link, text: 'Security & Compliance').click
-        click_link 'Audit Events'
+        click_link 'Audit events'
       end
 
       page.within('.audit-log-table') do

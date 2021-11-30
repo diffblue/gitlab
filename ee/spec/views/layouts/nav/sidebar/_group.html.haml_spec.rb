@@ -198,7 +198,7 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
           render
 
           expect(rendered).not_to have_link 'Security & Compliance'
-          expect(rendered).not_to have_link 'Audit Events'
+          expect(rendered).not_to have_link 'Audit events'
         end
       end
 
@@ -212,7 +212,7 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
           render
 
           expect(rendered).to have_link 'Security & Compliance'
-          expect(rendered).to have_link 'Audit Events'
+          expect(rendered).to have_link 'Audit events'
         end
       end
     end

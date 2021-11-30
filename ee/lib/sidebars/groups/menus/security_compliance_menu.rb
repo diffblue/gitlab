@@ -52,7 +52,7 @@ module Sidebars
           end
 
           ::Sidebars::MenuItem.new(
-            title: _('Security Dashboard'),
+            title: _('Security dashboard'),
             link: group_security_dashboard_path(context.group),
             active_routes: { path: 'dashboard#show' },
             item_id: :security_dashboard
@@ -65,7 +65,7 @@ module Sidebars
           end
 
           ::Sidebars::MenuItem.new(
-            title: _('Vulnerability Report'),
+            title: _('Vulnerability report'),
             link: group_security_vulnerabilities_path(context.group),
             active_routes: { path: 'vulnerabilities#index' },
             item_id: :vulnerability_report
@@ -115,7 +115,7 @@ module Sidebars
           end
 
           ::Sidebars::MenuItem.new(
-            title: _('Audit Events'),
+            title: _('Audit events'),
             link: group_audit_events_path(context.group),
             active_routes: { path: 'audit_events#index' },
             item_id: :audit_events

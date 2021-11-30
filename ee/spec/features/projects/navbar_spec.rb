@@ -40,10 +40,10 @@ RSpec.describe 'Project navbar' do
       {
         nav_item: _('Security & Compliance'),
         nav_sub_items: [
-          _('Security Dashboard'),
-          _('Vulnerability Report'),
-          s_('OnDemandScans|On-demand Scans'),
-          _('Audit Events'),
+          _('Security dashboard'),
+          _('Vulnerability report'),
+          s_('OnDemandScans|On-demand scans'),
+          _('Audit events'),
           _('Configuration')
         ]
       }

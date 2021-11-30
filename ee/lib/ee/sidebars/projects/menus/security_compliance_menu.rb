@@ -66,7 +66,7 @@ module EE
             end
 
             ::Sidebars::MenuItem.new(
-              title: _('Security Dashboard'),
+              title: _('Security dashboard'),
               link: project_security_dashboard_index_path(context.project),
               active_routes: { path: 'projects/security/dashboard#index' },
               item_id: :dashboard
@@ -79,7 +79,7 @@ module EE
             end
 
             ::Sidebars::MenuItem.new(
-              title: _('Vulnerability Report'),
+              title: _('Vulnerability report'),
               link: project_security_vulnerability_report_index_path(context.project),
               active_routes: { path: %w[projects/security/vulnerability_report#index projects/security/vulnerabilities#show] },
               item_id: :vulnerability_report
@@ -98,7 +98,7 @@ module EE
                    end
 
             ::Sidebars::MenuItem.new(
-              title: s_('OnDemandScans|On-demand Scans'),
+              title: s_('OnDemandScans|On-demand scans'),
               link: link,
               item_id: :on_demand_scans,
               active_routes: { path: %w[
@@ -115,7 +115,7 @@ module EE
             end
 
             ::Sidebars::MenuItem.new(
-              title: _('Dependency List'),
+              title: _('Dependency list'),
               link: project_dependencies_path(context.project),
               active_routes: { path: 'projects/dependencies#index' },
               item_id: :dependency_list
@@ -128,7 +128,7 @@ module EE
             end
 
             ::Sidebars::MenuItem.new(
-              title: _('License Compliance'),
+              title: _('License compliance'),
               link: project_licenses_path(context.project),
               active_routes: { path: 'projects/licenses#index' },
               item_id: :license_compliance
@@ -141,7 +141,7 @@ module EE
             end
 
             ::Sidebars::MenuItem.new(
-              title: _('Threat Monitoring'),
+              title: _('Threat monitoring'),
               link: project_threat_monitoring_path(context.project),
               active_routes: { controller: ['projects/threat_monitoring'] },
               item_id: :threat_monitoring
@@ -167,7 +167,7 @@ module EE
             end
 
             ::Sidebars::MenuItem.new(
-              title: _('Audit Events'),
+              title: _('Audit events'),
               link: project_audit_events_path(context.project),
               active_routes: { controller: :audit_events },
               item_id: :audit_events

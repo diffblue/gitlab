@@ -30,7 +30,7 @@ RSpec.describe 'Projects > Audit Events', :js do
     it 'does not have Audit Events button in head nav bar' do
       visit edit_project_path(project)
 
-      expect(page).not_to have_link('Audit Events')
+      expect(page).not_to have_link('Audit events')
     end
   end
 
@@ -57,7 +57,7 @@ RSpec.describe 'Projects > Audit Events', :js do
     it 'has Audit Events button in head nav bar' do
       visit project_audit_events_path(project)
 
-      expect(page).to have_link('Audit Events')
+      expect(page).to have_link('Audit events')
     end
 
     it 'does not have Project audit events in the header' do
@@ -70,7 +70,7 @@ RSpec.describe 'Projects > Audit Events', :js do
   it 'has Audit Events button in head nav bar' do
     visit project_audit_events_path(project)
 
-    expect(page).to have_link('Audit Events')
+    expect(page).to have_link('Audit events')
   end
 
   it 'has Project audit events in the header' do
@@ -122,7 +122,7 @@ RSpec.describe 'Projects > Audit Events', :js do
 
       page.within('.sidebar-top-level-items') do
         find(:link, text: 'Security & Compliance').click
-        click_link 'Audit Events'
+        click_link 'Audit events'
       end
 
       page.within('.audit-log-table') do
@@ -160,7 +160,7 @@ RSpec.describe 'Projects > Audit Events', :js do
 
             wait_for_all_requests
 
-            click_link 'Audit Events'
+            click_link 'Audit events'
           end
 
           wait_for_all_requests
