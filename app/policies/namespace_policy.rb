@@ -8,3 +8,4 @@ class NamespacePolicy < BasePolicy
   # here.
   # See https://gitlab.com/groups/gitlab-org/-/epics/6689 for details
 end
+
