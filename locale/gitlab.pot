@@ -13486,9 +13486,6 @@ msgstr ""
 msgid "Epics|Enter a title for your epic"
 msgstr ""
 
-msgid "Epics|How can I solve this?"
-msgstr ""
-
 msgid "Epics|Leave empty to inherit from milestone dates"
 msgstr ""
 
@@ -13535,9 +13532,6 @@ msgid "Epics|Something went wrong while ordering item."
 msgstr ""
 
 msgid "Epics|Something went wrong while removing issue from epic."
-msgstr ""
-
-msgid "Epics|These dates affect how your epics appear in the roadmap. Dates from milestones come from the milestones assigned to issues in the epic. You can also set fixed dates or remove them entirely."
 msgstr ""
 
 msgid "Epics|This epic and any containing child epics are confidential and should only be visible to team members with at least Reporter access."
@@ -14998,15 +14992,6 @@ msgid "First seen"
 msgstr ""
 
 msgid "Fixed burndown chart"
-msgstr ""
-
-msgid "Fixed date"
-msgstr ""
-
-msgid "Fixed due date"
-msgstr ""
-
-msgid "Fixed start date"
 msgstr ""
 
 msgid "Fixed:"
@@ -33065,9 +33050,6 @@ msgstr ""
 msgid "Start a review"
 msgstr ""
 
-msgid "Start and due date"
-msgstr ""
-
 msgid "Start by choosing a group to start exploring the merge requests in that group. You can then proceed to filter by projects, labels, milestones and authors."
 msgstr ""
 
@@ -35459,12 +35441,6 @@ msgstr ""
 msgid "This credential has expired"
 msgstr ""
 
-msgid "This date is after the due date, so this epic won't appear in the roadmap."
-msgstr ""
-
-msgid "This date is before the start date, so this epic won't appear in the roadmap."
-msgstr ""
-
 msgid "This device has already been registered with us."
 msgstr ""
 
@@ -37254,9 +37230,6 @@ msgid "Unsubscribes from this %{quick_action_target}."
 msgstr ""
 
 msgid "Unsupported todo type passed. Supported todo types are: %{todo_types}"
-msgstr ""
-
-msgid "Until"
 msgstr ""
 
 msgid "Until revoked, expired personal access tokens pose a security risk."
