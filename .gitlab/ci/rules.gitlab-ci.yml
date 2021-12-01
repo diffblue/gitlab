@@ -1370,7 +1370,8 @@
       allow_failure: true
     - <<: *if-merge-request-labels-run-all-rspec
     - <<: *if-merge-request-approved
-    - changes: *backend-patterns
+    - <<: *if-merge-request
+      changes: *backend-patterns
 
 .rails:rules:default-branch-schedule-nightly--code-backstage:
   rules:
