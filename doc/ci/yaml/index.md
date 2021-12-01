@@ -90,7 +90,7 @@ of the listed keywords use the value defined in the `default` section.
 - [`tags`](#tags)
 - [`timeout`](#timeout)
 
-**Example of `default`:**
+**Example of `default`**:
 
 ```yaml
 default:
@@ -324,7 +324,7 @@ The order of the items in `stages` defines the execution order for jobs:
 
 **Keyword type**: Global keyword.
 
-**Example of `stages`:**
+**Example of `stages`**:
 
 ```yaml
 stages:
@@ -381,7 +381,7 @@ When no rules evaluate to true, the pipeline does not run.
 - [`when`](#when), can only be `always` or `never` when used with `workflow`.
 - [`variables`](#workflowrulesvariables).
 
-**Example of `workflow:rules`:**
+**Example of `workflow:rules`**:
 
 ```yaml
 workflow:
@@ -428,7 +428,7 @@ variable takes precedence and overrides the global variable.
 - The name can use only numbers, letters, and underscores (`_`).
 - The value must be a string.
 
-**Example of `workflow:rules:variables`:**
+**Example of `workflow:rules:variables`**:
 
 ```yaml
 variables:
@@ -494,7 +494,7 @@ Use `after_script` to define an array of commands that run after each job, inclu
 - Long commands [split over multiple lines](script.md#split-long-commands).
 - [YAML anchors](yaml_optimization.md#yaml-anchors-for-scripts).
 
-**Example of `after_script`:**
+**Example of `after_script`**:
 
 ```yaml
 job:
@@ -983,7 +983,7 @@ Use `before_script` to define an array of commands that should run before each j
 - Long commands [split over multiple lines](script.md#split-long-commands).
 - [YAML anchors](yaml_optimization.md#yaml-anchors-for-scripts).
 
-**Example of `before_script`:**
+**Example of `before_script`**:
 
 ```yaml
 job:
@@ -1685,12 +1685,12 @@ and is a little more flexible and readable.
 
 **Keyword type**: Job keyword. You can use it only as part of a job.
 
-**Possible inputs:**
+**Possible inputs**:
 
 - The name of another job in the pipeline.
 - A list (array) of names of other jobs in the pipeline.
 
-**Example of `extends`:**
+**Example of `extends`**:
 
 ```yaml
 .tests:
@@ -1728,7 +1728,7 @@ rspec:
       - $RSPEC
 ```
 
-**Additional details:**
+**Additional details**:
 
 - In GitLab 12.0 and later, you can use multiple parents for `extends`.
 - The `extends` keyword supports up to eleven levels of inheritance, but you should
@@ -1736,7 +1736,7 @@ rspec:
 - In the example above, `.tests` is a [hidden job](../jobs/index.md#hide-jobs),
   but you can extend configuration from regular jobs as well.
 
-**Related topics:**
+**Related topics**:
 
 - [Reuse configuration sections by using `extends`](yaml_optimization.md#use-extends-to-reuse-configuration-sections).
 - Use `extends` to reuse configuration from [included configuration files](yaml_optimization.md#use-extends-and-include-together).
@@ -1842,7 +1842,7 @@ Use `inherit:default` to control the inheritance of [default keywords](#default)
 - `true` (default) or `false` to enable or disable the inheritance of all default keywords.
 - A list of specific default keywords to inherit.
 
-**Example of `inherit:default`:**
+**Example of `inherit:default`**:
 
 ```yaml
 default:
@@ -1863,7 +1863,7 @@ job2:
       - image
 ```
 
-**Additional details:**
+**Additional details**:
 
 - You can also list default keywords to inherit on one line: `default: [keyword1, keyword2]`
 
@@ -1878,7 +1878,7 @@ Use `inherit:variables` to control the inheritance of [global variables](#variab
 - `true` (default) or `false` to enable or disable the inheritance of all global variables.
 - A list of specific variables to inherit.
 
-**Example of `inherit:variables`:**
+**Example of `inherit:variables`**:
 
 ```yaml
 variables:
@@ -1899,7 +1899,7 @@ job2:
       - VARIABLE2
 ```
 
-**Additional details:**
+**Additional details**:
 
 - You can also list global variables to inherit on one line: `variables: [VARIABLE1, VARIABLE2]`
 
@@ -2366,7 +2366,7 @@ job2:
     - schedules
 ```
 
-**Additional details:**
+**Additional details**:
 
 - Scheduled pipelines run on specific branches, so jobs configured with `only: branches`
   run on scheduled pipelines too. Add `except: schedules` to prevent jobs with `only: branches`
@@ -3185,7 +3185,7 @@ All jobs except [trigger jobs](#trigger) require a `script` keyword.
 - Long commands [split over multiple lines](script.md#split-long-commands).
 - [YAML anchors](yaml_optimization.md#yaml-anchors-for-scripts).
 
-**Example of `script`:**
+**Example of `script`**:
 
 ```yaml
 job1:
@@ -3639,7 +3639,7 @@ variable defined, the [job-level variable takes precedence](../variables/index.m
   the first character must be a letter.
 - The value must be a string.
 
-**Examples of `variables`:**
+**Examples of `variables`**:
 
 ```yaml
 variables:
