@@ -23,7 +23,7 @@
           = last_reset.strftime('%b %d, %Y')
         - else
           = s_('UsageQuota|Current period usage')
-      %div
+      %div{ data: { qa_selector: "plan_ci_minutes" } }
         = ci_minutes_report(minutes_quota_presenter.monthly_minutes_report)
         minutes
         = link_to sprite_icon('question-o'), help_page_path('user/admin_area/settings/continuous_integration', anchor: 'shared-runners-pipeline-minutes-quota'), target: '_blank', 'aria-label': _('Shared runners help link')

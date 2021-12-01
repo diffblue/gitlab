@@ -49,7 +49,11 @@ export default {
         <span class="gl-font-size-h-display gl-font-weight-bold">/</span>
         <gl-sprintf :message="__('%{size} %{unit}')">
           <template #size>
-            <span class="gl-font-size-h-display gl-font-weight-bold">{{ usageTotal.value }}</span>
+            <span
+              data-qa-selector="purchased_usage_total"
+              class="gl-font-size-h-display gl-font-weight-bold"
+              >{{ usageTotal.value }}</span
+            >
           </template>
           <template #unit>
             <span class="gl-font-lg gl-font-weight-bold">{{ usageTotal.unit }}</span>
