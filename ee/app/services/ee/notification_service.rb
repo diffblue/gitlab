@@ -76,6 +76,14 @@ module EE
       end
     end
 
+    def notify_oncall_users_of_incident(users, issue)
+      track_usage_event(:i_incident_management_oncall_notification_sent, users.map(&:id))
+
+      users.each do |user|
+        mailer.incident_escalation_fired_email(issue.project, user, issue).deliver_later
+      end
+    end
+
     def oncall_user_removed(rotation, user, async_notification = true)
       oncall_user_removed_recipients(rotation, user).each do |recipient|
         email = mailer.user_removed_from_rotation_email(user, rotation, [recipient])

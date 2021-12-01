@@ -12,6 +12,14 @@ module IncidentManagement
       belongs_to :issue, class_name: '::Issue', foreign_key: 'issue_id', inverse_of: :pending_escalations
 
       validates :rule_id, uniqueness: { scope: [:issue_id] }
+
+      def escalatable
+        issue.incident_management_issuable_escalation_status
+      end
+
+      def type
+        :incident
+      end
     end
   end
 end

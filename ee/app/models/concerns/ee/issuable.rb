@@ -27,6 +27,13 @@ module EE
       supports_sla?
     end
 
+    def escalation_policies_available?
+      return false unless ::Feature.enabled?(:incident_escalations, project)
+      return false unless ::Gitlab::IncidentManagement.escalation_policies_available?(project)
+
+      supports_escalation?
+    end
+
     def metric_images_available?
       return false unless IssuableMetricImage.available_for?(project)
 
@@ -38,6 +45,10 @@ module EE
     end
 
     def supports_metric_images?
+      incident?
+    end
+
+    def supports_escalation?
       incident?
     end
 

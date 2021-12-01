@@ -15,7 +15,12 @@ module IncidentManagement
       def perform
         ::IncidentManagement::PendingEscalations::Alert.processable.each_batch do |relation|
           args = relation.pluck(:id).map { |id| [id] } # rubocop:disable  CodeReuse/ActiveRecord
-          ::IncidentManagement::PendingEscalations::AlertCheckWorker.bulk_perform_async(args)  # rubocop:disable Scalability/BulkPerformWithContext
+          ::IncidentManagement::PendingEscalations::AlertCheckWorker.bulk_perform_async(args) # rubocop:disable Scalability/BulkPerformWithContext
+        end
+
+        ::IncidentManagement::PendingEscalations::Issue.processable.each_batch do |relation|
+          args = relation.pluck(:id).map { |id| [id] } # rubocop:disable  CodeReuse/ActiveRecord
+          ::IncidentManagement::PendingEscalations::IssueCheckWorker.bulk_perform_async(args) # rubocop:disable Scalability/BulkPerformWithContext
         end
       end
     end

@@ -8,8 +8,8 @@ module SystemNotes
       @author = User.alert_bot
     end
 
-    def notify_via_escalation(recipients, escalation_policy:)
-      body = "notified #{recipients.map(&:to_reference).to_sentence} of this alert via escalation policy **#{escalation_policy.name}**"
+    def notify_via_escalation(recipients, escalation_policy:, type:)
+      body = "notified #{recipients.map(&:to_reference).to_sentence} of this #{type} via escalation policy **#{escalation_policy.name}**"
 
       create_note(NoteSummary.new(noteable, project, author, body, action: 'new_alert_added'))
     end
