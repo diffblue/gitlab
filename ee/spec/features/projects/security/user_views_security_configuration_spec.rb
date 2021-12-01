@@ -55,9 +55,9 @@ RSpec.describe 'User sees Security Configuration table', :js do
         within_sast_iac_card do
           expect(page).to have_text('Infrastructure as Code (IaC) Scanning')
           expect(page).to have_text('Not enabled')
-          expect(page).to have_button('Configure via Merge Request')
+          expect(page).to have_button('Configure with a merge request')
 
-          click_button 'Configure via Merge Request'
+          click_button 'Configure with a merge request'
           wait_for_requests
 
           expect(current_path).to eq(project_new_merge_request_path(project))

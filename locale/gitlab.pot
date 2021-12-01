@@ -30764,7 +30764,7 @@ msgstr ""
 msgid "SecurityConfiguration|Configure %{feature}"
 msgstr ""
 
-msgid "SecurityConfiguration|Configure via Merge Request"
+msgid "SecurityConfiguration|Configure with a merge request"
 msgstr ""
 
 msgid "SecurityConfiguration|Copy code and open .gitlab-ci.yml file"
