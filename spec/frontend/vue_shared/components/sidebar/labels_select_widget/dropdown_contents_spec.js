@@ -4,7 +4,6 @@ import { DropdownVariant } from '~/vue_shared/components/sidebar/labels_select_w
 import DropdownContents from '~/vue_shared/components/sidebar/labels_select_widget/dropdown_contents.vue';
 import DropdownContentsCreateView from '~/vue_shared/components/sidebar/labels_select_widget/dropdown_contents_create_view.vue';
 import DropdownContentsLabelsView from '~/vue_shared/components/sidebar/labels_select_widget/dropdown_contents_labels_view.vue';
-import DropdownHeader from '~/vue_shared/components/sidebar/labels_select_widget/dropdown_header.vue';
 import DropdownFooter from '~/vue_shared/components/sidebar/labels_select_widget/dropdown_footer.vue';
 
 import { mockLabels } from './mock_data';
