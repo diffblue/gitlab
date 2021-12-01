@@ -121,6 +121,7 @@ export default {
     },
     handleLabelClick(label) {
       this.updateSelectedLabels(label);
+      this.$emit('selectLabel');
       if (!this.allowMultiselect) {
         this.$emit('closeDropdown', this.localSelectedLabels);
       }

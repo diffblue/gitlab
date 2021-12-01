@@ -172,6 +172,10 @@ export default {
     showDropdown() {
       this.$refs.dropdown.show();
     },
+    clearSearch() {
+      this.searchKey = '';
+      this.setFocus();
+    },
   },
 };
 </script>
@@ -210,6 +214,7 @@ export default {
         :attr-workspace-path="attrWorkspacePath"
         :label-create-type="labelCreateType"
         @hideCreateView="toggleDropdownContent"
+        @selectLabel="clearSearch"
       />
     </template>
     <template #footer>
