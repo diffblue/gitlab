@@ -1,5 +1,6 @@
 <script>
 import {
+  GlAlert,
   GlAvatarLabeled,
   GlAvatarLink,
   GlBadge,
@@ -14,6 +15,7 @@ import {
   GlTooltipDirective,
 } from '@gitlab/ui';
 import { mapActions, mapState, mapGetters } from 'vuex';
+import { visitUrl } from '~/lib/utils/url_utility';
 import {
   FIELDS,
   AVATAR_SIZE,
@@ -23,7 +25,7 @@ import {
   CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT,
   SORT_OPTIONS,
 } from 'ee/seat_usage/constants';
-import { s__, __ } from '~/locale';
+import { s__, __, sprintf, n__ } from '~/locale';
 import FilterSortContainerRoot from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import RemoveBillableMemberModal from './remove_billable_member_modal.vue';
 import SubscriptionSeatDetails from './subscription_seat_details.vue';
@@ -34,6 +36,7 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   components: {
+    GlAlert,
     GlAvatarLabeled,
     GlAvatarLink,
     GlBadge,
@@ -57,6 +60,8 @@ export default {
       'namespaceName',
       'namespaceId',
       'seatUsageExportPath',
+      'pendingMembersPagePath',
+      'pendingMembersCount',
       'billableMemberToRemove',
       'search',
       'sort',
@@ -75,6 +80,21 @@ export default {
         return s__('Billing|Enter at least three characters to search.');
       }
       return s__('Billing|No users to display.');
+    },
+    pendingMembersAlertMessage() {
+      return sprintf(
+        n__(
+          'You have %{pendingMembersCount} pending member that needs approval.',
+          'You have %{pendingMembersCount} pending members that need approval.',
+          this.pendingMembersCount,
+        ),
+        {
+          pendingMembersCount: this.pendingMembersCount,
+        },
+      );
+    },
+    shouldShowPendingMembersAlert() {
+      return this.pendingMembersCount > 0 && this.pendingMembersPagePath;
     },
   },
   created() {
@@ -115,12 +135,16 @@ export default {
     shouldShowDetails(item) {
       return !this.isGroupInvite(item) && !this.isProjectInvite(item);
     },
+    navigateToPendingMembersPage() {
+      visitUrl(this.pendingMembersPagePath);
+    },
   },
   i18n: {
     emailNotVisibleTooltipText: s__(
       'Billing|An email address is only visible for users with public emails.',
     ),
     filterUsersPlaceholder: __('Filter users'),
+    pendingMembersAlertButtonText: s__('Billing|View pending approvals'),
   },
   avatarSize: AVATAR_SIZE,
   fields: FIELDS,
@@ -134,6 +158,16 @@ export default {
 
 <template>
   <section>
+    <gl-alert
+      v-if="shouldShowPendingMembersAlert"
+      variant="info"
+      :dismissible="false"
+      :primary-button-text="$options.i18n.pendingMembersAlertButtonText"
+      class="gl-my-3"
+      @primaryAction="navigateToPendingMembersPage"
+    >
+      {{ pendingMembersAlertMessage }}
+    </gl-alert>
     <div
       class="gl-bg-gray-10 gl-p-6 gl-md-display-flex gl-justify-content-space-between gl-align-items-center"
     >
