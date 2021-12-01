@@ -5469,6 +5469,9 @@ msgstr ""
 msgid "Billing|Users occupying seats in"
 msgstr ""
 
+msgid "Billing|View pending approvals"
+msgstr ""
+
 msgid "Billing|You are about to remove user %{username} from your subscription. If you continue, the user will be removed from the %{namespace} group and all its subgroups and projects. This action can't be undone."
 msgstr ""
 
@@ -39876,6 +39879,11 @@ msgstr ""
 
 msgid "You don’t have access to Value Stream Analytics for this group"
 msgstr ""
+
+msgid "You have %{pendingMembersCount} pending member that needs approval."
+msgid_plural "You have %{pendingMembersCount} pending members that need approval."
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "You have been granted %{access_level} access to the %{source_link} %{source_type}."
 msgstr ""

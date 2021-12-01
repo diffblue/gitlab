@@ -1,4 +1,5 @@
 import {
+  GlAlert,
   GlPagination,
   GlDropdown,
   GlTable,
@@ -272,5 +273,27 @@ describe('Subscription Seats', () => {
 
       expect(actionSpies.setSearchQuery).toHaveBeenCalledWith(expect.any(Object), SEARCH_STRING);
     });
+  });
+
+  describe('pending members alert', () => {
+    it.each`
+      pendingMembersPagePath | pendingMembersCount | shouldBeRendered
+      ${undefined}           | ${undefined}        | ${false}
+      ${undefined}           | ${0}                | ${false}
+      ${'fake-path'}         | ${0}                | ${false}
+      ${'fake-path'}         | ${3}                | ${true}
+    `(
+      'rendering alert is $shouldBeRendered when pendingMembersPagePath=$pendingMembersPagePath and pendingMembersCount=$pendingMembersCount',
+      ({ pendingMembersPagePath, pendingMembersCount, shouldBeRendered }) => {
+        wrapper = createComponent({
+          initialState: {
+            pendingMembersCount,
+            pendingMembersPagePath,
+          },
+        });
+
+        expect(wrapper.findComponent(GlAlert).exists()).toBe(shouldBeRendered);
+      },
+    );
   });
 });

@@ -1,9 +1,17 @@
-export default ({ namespaceId = null, namespaceName = null, seatUsageExportPath = null } = {}) => ({
+export default ({
+  namespaceId = null,
+  namespaceName = null,
+  seatUsageExportPath = null,
+  pendingMembersPagePath = null,
+  pendingMembersCount = 0,
+} = {}) => ({
   isLoading: false,
   hasError: false,
   namespaceId,
   namespaceName,
   seatUsageExportPath,
+  pendingMembersPagePath,
+  pendingMembersCount,
   members: [],
   total: null,
   page: null,
