@@ -133,6 +133,7 @@ module Gitlab
         # Requeue pending jobs previously queued with #queue_background_migration_jobs_by_range_at_intervals
         #
         # This method is useful to schedule jobs that had previously failed.
+        # It can only be used if the previous background migration used job tracking like the queue_background_migration_jobs_by_range_at_intervals helper.
         #
         # job_class_name - The background migration job class as a string
         # delay_interval - The duration between each job's scheduled time
@@ -177,6 +178,7 @@ module Gitlab
         # 4. Optionally remove job tracking information.
         #
         # This method does not garauntee that all jobs completed successfully.
+        # It can only be used if the previous background migration used the queue_background_migration_jobs_by_range_at_intervals helper.
         def finalize_background_migration(class_name, delete_tracking_jobs: ['succeeded'])
           # Empty the sidekiq queue.
           Gitlab::BackgroundMigration.steal(class_name)
