@@ -1,6 +1,6 @@
 import { isNumber, isString } from 'lodash';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import { __ } from '~/locale';
+import { __, s__ } from '~/locale';
 import {
   MTWPS_MERGE_STRATEGY,
   MT_MERGE_STRATEGY,
@@ -8,8 +8,8 @@ import {
 } from '~/vue_merge_request_widget/constants';
 import base from '~/vue_merge_request_widget/mixins/ready_to_merge';
 
-export const MERGE_DISABLED_TEXT_UNAPPROVED = __(
-  'You can only merge once this merge request is approved.',
+export const MERGE_DISABLED_TEXT_UNAPPROVED = s__(
+  'mrWidget|Merge blocked: this merge request must be approved.',
 );
 export const PIPELINE_MUST_SUCCEED_CONFLICT_TEXT = __(
   'A CI/CD pipeline must run and be successful before merge.',
