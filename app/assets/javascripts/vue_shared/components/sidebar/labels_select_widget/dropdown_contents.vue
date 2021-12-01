@@ -173,6 +173,9 @@ export default {
       this.$refs.dropdown.show();
     },
     clearSearch() {
+      if (!this.allowMultiselect || this.isStandalone) {
+        return;
+      }
       this.searchKey = '';
       this.setFocus();
     },
@@ -214,7 +217,7 @@ export default {
         :attr-workspace-path="attrWorkspacePath"
         :label-create-type="labelCreateType"
         @hideCreateView="toggleDropdownContent"
-        @selectLabel="clearSearch"
+        @input="clearSearch"
       />
     </template>
     <template #footer>

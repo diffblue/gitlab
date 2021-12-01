@@ -156,7 +156,7 @@ describe('DropdownContent', () => {
   it('clears and focuses search input on selecting a label', () => {
     createComponent();
     findDropdownHeader().vm.$emit('input', '123');
-    findLabelsView().vm.$emit('selectLabel');
+    findLabelsView().vm.$emit('input', []);
 
     expect(findLabelsView().props('searchKey')).toBe('');
     expect(focusInput).toHaveBeenCalled();
