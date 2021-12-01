@@ -127,7 +127,7 @@ module Tooling
 
         %r{\A((spec/)?lib/generators/gitlab/usage_metric_)} => [:product_intelligence],
         %r{\A((ee|jh)/)?lib/gitlab/usage_data_counters/.*\.yml\z} => [:product_intelligence],
-        %r{\A((ee|jh)/)?config/metrics/((.*\.yml)|(schema\.json))\z} => [:product_intelligence],
+        %r{\A((ee|jh)/)?config/(events|metrics)/((.*\.yml)|(schema\.json))\z} => [:product_intelligence],
         %r{\A((ee|jh)/)?lib/gitlab/usage_data(_counters)?(/|\.rb)} => [:backend, :product_intelligence],
         %r{\A(
           lib/gitlab/tracking\.rb |
