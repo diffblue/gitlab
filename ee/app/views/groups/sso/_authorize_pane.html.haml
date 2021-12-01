@@ -1,6 +1,8 @@
+- form_id = 'js-authorize-gma-conversion-form'
+
 #authorize-pane.login-box.tab-pane.rounded{ role: 'tabpanel' }
   .login-body
-    = form_tag(group_authorize_managed_account_path(@unauthenticated_group), html: { class: "user gl-show-field-errors", "aria-live" => "assertive" }) do
+    = form_tag(group_authorize_managed_account_path(@unauthenticated_group), id: form_id, html: { class: "user gl-show-field-errors", "aria-live" => "assertive" }) do
       .d-flex.flex-column.mt-3.mx-3
         %p
           = _("Alternatively, you can convert your account to a managed account by the %{group_name} group.") % { group_name: sanitize(@group_name) }
@@ -14,5 +16,4 @@
           = _("Only proceed if you trust %{idp_url} to control your GitLab account sign in.") % { idp_url: @unauthenticated_group.saml_provider.sso_url }
 
       .submit-container
-        = button_to _("Transfer ownership"), '#', class: 'gl-button btn btn-danger js-legacy-confirm-danger', data: { 'confirm-danger-message' => transfer_ownership_message(@group_name), qa_selector: 'transfer_ownership_button' }
-= render 'shared/confirm_modal', phrase: current_user.username
+        .js-confirm-danger{ data: authorize_gma_conversion_confirm_modal_data(group_name: @group_name, phrase: current_user.username, remove_form_id: form_id) }
