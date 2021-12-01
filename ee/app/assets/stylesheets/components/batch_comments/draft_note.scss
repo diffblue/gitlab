@@ -16,10 +16,6 @@ $draft-actions-left-margin: 40px + $gl-padding;
 
   .draft-note-actions {
     margin: 0;
-
-    @include notes-media('min', map-get($grid-breakpoints, sm)) {
-      margin-left: $draft-actions-left-margin;
-    }
   }
 }
 
