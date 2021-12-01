@@ -9,14 +9,15 @@ module IncidentManagement
         @escalation = escalation
         @project = escalation.project
         @rule = escalation.rule
+        @escalatable = escalation.escalatable
         @target = escalation.target
       end
 
       def execute
         return unless ::Gitlab::IncidentManagement.escalation_policies_available?(project)
         return if too_early_to_process?
-        return if target_already_resolved?
-        return if target_status_exceeded_rule?
+        return if escalatable_already_resolved?
+        return if escalatable_status_exceeded_rule?
 
         notify_recipients
         create_system_notes
@@ -25,16 +26,16 @@ module IncidentManagement
 
       private
 
-      attr_reader :escalation, :project, :target, :rule
+      attr_reader :escalation, :project, :target, :rule, :escalatable
 
-      def target_already_resolved?
-        return false unless target.resolved?
+      def escalatable_already_resolved?
+        return false unless escalatable.resolved?
 
         destroy_escalation!
       end
 
-      def target_status_exceeded_rule?
-        target.status >= rule.status_before_type_cast
+      def escalatable_status_exceeded_rule?
+        escalatable.status >= rule.status_before_type_cast
       end
 
       def too_early_to_process?
@@ -45,11 +46,11 @@ module IncidentManagement
         NotificationService
           .new
           .async
-          .notify_oncall_users_of_alert(oncall_notification_recipients, target)
+          .send("notify_oncall_users_of_#{escalation.type}", oncall_notification_recipients, target) # rubocop: disable GitlabSecurity/PublicSend
       end
 
       def create_system_notes
-        SystemNoteService.notify_via_escalation(target, project, oncall_notification_recipients, rule.policy)
+        SystemNoteService.notify_via_escalation(target, project, oncall_notification_recipients, rule.policy, escalation.type)
       end
 
       def oncall_notification_recipients
