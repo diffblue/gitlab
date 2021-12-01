@@ -16,7 +16,6 @@ Style/OpenStructUse:
   - spec/controllers/projects/clusters_controller_spec.rb
   - spec/factories/go_module_versions.rb
   - spec/factories/wiki_pages.rb
-  - spec/features/projects/clusters_spec.rb
   - spec/graphql/mutations/branches/create_spec.rb
   - spec/graphql/mutations/clusters/agent_tokens/create_spec.rb
   - spec/graphql/mutations/clusters/agents/create_spec.rb
