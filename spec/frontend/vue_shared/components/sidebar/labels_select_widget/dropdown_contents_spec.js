@@ -10,6 +10,7 @@ import DropdownFooter from '~/vue_shared/components/sidebar/labels_select_widget
 import { mockLabels } from './mock_data';
 
 const showDropdown = jest.fn();
+const focusInput = jest.fn();
 
 const GlDropdownStub = {
   template: `
@@ -22,6 +23,15 @@ const GlDropdownStub = {
   methods: {
     show: showDropdown,
     hide: jest.fn(),
+  },
+};
+
+const DropdownHeaderStub = {
+  template: `
+    <div>Hello, I am a header</div>
+  `,
+  methods: {
+    focusInput,
   },
 };
 
@@ -52,6 +62,7 @@ describe('DropdownContent', () => {
       },
       stubs: {
         GlDropdown: GlDropdownStub,
+        DropdownHeader: DropdownHeaderStub,
       },
     });
   };
@@ -62,7 +73,7 @@ describe('DropdownContent', () => {
 
   const findCreateView = () => wrapper.findComponent(DropdownContentsCreateView);
   const findLabelsView = () => wrapper.findComponent(DropdownContentsLabelsView);
-  const findDropdownHeader = () => wrapper.findComponent(DropdownHeader);
+  const findDropdownHeader = () => wrapper.findComponent(DropdownHeaderStub);
   const findDropdownFooter = () => wrapper.findComponent(DropdownFooter);
   const findDropdown = () => wrapper.findComponent(GlDropdownStub);
 
@@ -135,11 +146,20 @@ describe('DropdownContent', () => {
   it('sets searchKey for labels view on input event from header', async () => {
     createComponent();
 
-    expect(wrapper.vm.searchKey).toEqual('');
+    expect(findLabelsView().props('searchKey')).toBe('');
     findDropdownHeader().vm.$emit('input', '123');
     await nextTick();
 
-    expect(findLabelsView().props('searchKey')).toEqual('123');
+    expect(findLabelsView().props('searchKey')).toBe('123');
+  });
+
+  it('clears and focuses search input on selecting a label', () => {
+    createComponent();
+    findDropdownHeader().vm.$emit('input', '123');
+    findLabelsView().vm.$emit('selectLabel');
+
+    expect(findLabelsView().props('searchKey')).toBe('');
+    expect(focusInput).toHaveBeenCalled();
   });
 
   describe('Create view', () => {
