@@ -92,7 +92,7 @@ RSpec.describe Groups::DependencyProxyForContainersController do
     end
 
     before do
-      allow_next_instance_of(DependencyProxy::FindOrCreateManifestService) do |instance|
+      allow_next_instance_of(DependencyProxy::FindCachedManifestService) do |instance|
         allow(instance).to receive(:execute).and_return(pull_response)
       end
       allow_next_instance_of(DependencyProxy::HeadManifestService) do |instance|
