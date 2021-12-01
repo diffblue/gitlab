@@ -11,6 +11,8 @@ import {
   EVENT_LABEL_MODAL,
   EVENT_ACTIONS_OPEN,
   EVENT_ACTIONS_SELECT,
+  MODAL_TYPE_EMPTY,
+  MODAL_TYPE_REGISTER,
 } from '~/clusters_list/constants';
 import getAgentsQuery from '~/clusters_list/graphql/queries/get_agents.query.graphql';
 import getAgentConfigurations from '~/clusters_list/graphql/queries/agent_configurations.query.graphql';
@@ -164,7 +166,7 @@ describe('InstallAgentModal', () => {
         findModal().vm.$emit('show');
         expect(trackingSpy).toHaveBeenCalledWith(undefined, EVENT_ACTIONS_OPEN, {
           label: EVENT_LABEL_MODAL,
-          property: 'agent_registration',
+          property: MODAL_TYPE_REGISTER,
         });
       });
     });
@@ -300,7 +302,7 @@ describe('InstallAgentModal', () => {
       findModal().vm.$emit('show');
       expect(trackingSpy).toHaveBeenCalledWith(undefined, EVENT_ACTIONS_OPEN, {
         label: EVENT_LABEL_MODAL,
-        property: 'empty_state',
+        property: MODAL_TYPE_EMPTY,
       });
     });
   });

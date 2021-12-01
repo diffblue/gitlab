@@ -243,3 +243,6 @@ export const EVENT_ACTIONS_OPEN = 'open_modal';
 export const EVENT_ACTIONS_SELECT = 'select_agent';
 export const EVENT_ACTIONS_CLICK = 'click_button';
 export const EVENT_ACTIONS_CHANGE = 'change_tab';
+
+export const MODAL_TYPE_EMPTY = 'empty_state';
+export const MODAL_TYPE_REGISTER = 'agent_registration';

@@ -21,6 +21,8 @@ import {
   EVENT_ACTIONS_OPEN,
   EVENT_ACTIONS_SELECT,
   EVENT_ACTIONS_CLICK,
+  MODAL_TYPE_EMPTY,
+  MODAL_TYPE_REGISTER,
 } from '../constants';
 import { addAgentToStore, addAgentConfigToStore } from '../graphql/cache_update';
 import createAgent from '../graphql/mutations/create_agent.mutation.graphql';
@@ -133,17 +135,17 @@ export default {
     },
     modalType() {
       return !this.availableAgents?.length && !this.registered
-        ? 'empty_state'
-        : 'agent_registration';
+        ? MODAL_TYPE_EMPTY
+        : MODAL_TYPE_REGISTER;
     },
     modalSize() {
       return this.isEmptyStateModal ? 'sm' : 'md';
     },
     isEmptyStateModal() {
-      return this.modalType === 'empty_state';
+      return this.modalType === MODAL_TYPE_EMPTY;
     },
     isAgentRegistrationModal() {
-      return this.modalType === 'agent_registration';
+      return this.modalType === MODAL_TYPE_REGISTER;
     },
   },
   methods: {
