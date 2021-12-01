@@ -7,6 +7,7 @@ RSpec.describe Gitlab::UsageData do
 
   before do
     stub_usage_data_connections
+    stub_database_flavor_check
     clear_memoized_values(described_class::EE_MEMOIZED_VALUES + described_class::CE_MEMOIZED_VALUES)
   end
 
