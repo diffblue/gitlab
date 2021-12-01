@@ -7,7 +7,7 @@ module EE
     prepended do
       extend ::Gitlab::Utils::Override
 
-      validate :sso_enforcement, if: :group, unless: :project_bot
+      validate :sso_enforcement, if: -> { group && user }
       validate :gma_enforcement, if: :group, unless: :project_bot
       validate :group_domain_limitations, if: -> { group && group_has_domain_limitations? }, on: :create
 

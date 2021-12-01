@@ -8,7 +8,7 @@ module EE
     prepended do
       include UsageStatistics
 
-      validate :sso_enforcement, if: :group
+      validate :sso_enforcement, if: -> { group && user }
       validate :group_domain_limitations, if: :group_has_domain_limitations?
 
       scope :by_group_ids, ->(group_ids) { where(source_id: group_ids) }
