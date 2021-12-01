@@ -22,7 +22,6 @@ Style/OpenStructUse:
   - spec/dependencies/omniauth_saml_spec.rb
   - spec/factories/go_module_versions.rb
   - spec/factories/wiki_pages.rb
-  - spec/features/projects/clusters/gcp_spec.rb
   - spec/features/projects/clusters_spec.rb
   - spec/finders/template_finder_spec.rb
   - spec/graphql/mutations/branches/create_spec.rb
