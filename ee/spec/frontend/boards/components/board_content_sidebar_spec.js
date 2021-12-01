@@ -1,10 +1,13 @@
 import { GlDrawer } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import { stubComponent } from 'helpers/stub_component';
 import BoardContentSidebar from '~/boards/components/board_content_sidebar.vue';
 import { ISSUABLE, issuableTypes } from '~/boards/constants';
 import { mockIssue, mockIssueGroupPath, mockIssueProjectPath } from '../mock_data';
+
+Vue.use(Vuex);
 
 describe('ee/BoardContentSidebar', () => {
   let wrapper;
@@ -25,6 +28,7 @@ describe('ee/BoardContentSidebar', () => {
         projectPathForActiveIssue: () => mockIssueProjectPath,
         groupPathForActiveIssue: () => mockIssueGroupPath,
         isSidebarOpen: () => true,
+        isGroupBoard: () => false,
         ...mockGetters,
       },
       actions: mockActions,
@@ -69,7 +73,7 @@ describe('ee/BoardContentSidebar', () => {
         BoardEditableItem: true,
         BoardSidebarTitle: true,
         BoardSidebarTimeTracker: true,
-        BoardSidebarLabelsSelect: true,
+        SidebarLabelsWidget: true,
         SidebarAssigneesWidget: true,
         SidebarConfidentialityWidget: true,
         SidebarDateWidget: true,

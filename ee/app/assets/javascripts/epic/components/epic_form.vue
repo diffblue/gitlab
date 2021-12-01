@@ -13,10 +13,8 @@ import { formatDate } from '~/lib/utils/datetime_utility';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 import MarkdownField from '~/vue_shared/components/markdown/field.vue';
-import LabelsSelectVue from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
 import LabelsSelectWidget from '~/vue_shared/components/sidebar/labels_select_widget/labels_select_root.vue';
 import { LabelType } from '~/vue_shared/components/sidebar/labels_select_widget/constants';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import createEpic from '../queries/createEpic.mutation.graphql';
 
 export default {
@@ -28,18 +26,9 @@ export default {
     GlFormInput,
     GlFormGroup,
     MarkdownField,
-    LabelsSelectVue,
     LabelsSelectWidget,
   },
-  mixins: [glFeatureFlagMixin()],
-  inject: [
-    'groupPath',
-    'groupEpicsPath',
-    'labelsFetchPath',
-    'labelsManagePath',
-    'markdownPreviewPath',
-    'markdownDocsPath',
-  ],
+  inject: ['groupPath', 'groupEpicsPath', 'markdownPreviewPath', 'markdownDocsPath'],
   data() {
     return {
       title: '',
@@ -113,20 +102,7 @@ export default {
       this.startDateFixed = val;
     },
     handleUpdateSelectedLabels(labels) {
-      if (this.glFeatures.labelsWidget) {
-        this.labels = labels.map((label) => ({ ...label, id: getIdFromGraphQLId(label.id) }));
-        return;
-      }
-
-      const ids = [];
-      const allLabels = [...labels, ...this.labels];
-
-      this.labels = allLabels.filter((label) => {
-        const exists = ids.includes(label.id);
-        ids.push(label.id);
-
-        return !exists && label.set;
-      });
+      this.labels = labels.map((label) => ({ ...label, id: getIdFromGraphQLId(label.id) }));
     },
   },
 };
@@ -190,7 +166,6 @@ export default {
       <hr />
       <gl-form-group :label="__('Labels')">
         <labels-select-widget
-          v-if="glFeatures.labelsWidget"
           class="block labels js-labels-block"
           :full-path="groupPath"
           :allow-label-create="true"
@@ -207,24 +182,6 @@ export default {
         >
           {{ __('None') }}
         </labels-select-widget>
-        <labels-select-vue
-          v-else
-          :allow-label-edit="false"
-          :allow-label-create="true"
-          :allow-multiselect="true"
-          :allow-scoped-labels="false"
-          :selected-labels="labels"
-          :labels-fetch-path="labelsFetchPath"
-          :labels-manage-path="labelsManagePath"
-          :labels-filter-base-path="groupEpicsPath"
-          :labels-list-title="__('Select label')"
-          :dropdown-button-text="__('Choose labels')"
-          variant="embedded"
-          class="block labels js-labels-block"
-          @updateSelectedLabels="handleUpdateSelectedLabels"
-        >
-          {{ __('None') }}
-        </labels-select-vue>
       </gl-form-group>
       <gl-form-group :label="__('Start date')" :description="$options.i18n.epicDatesHint">
         <div class="gl-display-inline-block gl-mr-2">

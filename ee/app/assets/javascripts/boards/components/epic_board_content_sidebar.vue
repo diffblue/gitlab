@@ -3,7 +3,6 @@ import { GlDrawer } from '@gitlab/ui';
 import { MountingPortal } from 'portal-vue';
 import { mapState, mapActions, mapGetters } from 'vuex';
 import SidebarAncestorsWidget from 'ee_component/sidebar/components/ancestors_tree/sidebar_ancestors_widget.vue';
-import BoardSidebarLabelsSelect from '~/boards/components/sidebar/board_sidebar_labels_select.vue';
 import BoardSidebarTitle from '~/boards/components/sidebar/board_sidebar_title.vue';
 import { ISSUABLE } from '~/boards/constants';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
@@ -19,7 +18,6 @@ export default {
   components: {
     GlDrawer,
     SidebarTodoWidget,
-    BoardSidebarLabelsSelect,
     BoardSidebarTitle,
     SidebarLabelsWidget,
     SidebarConfidentialityWidget,
@@ -113,7 +111,6 @@ export default {
           :can-inherit="true"
         />
         <sidebar-labels-widget
-          v-if="glFeatures.labelsWidget"
           class="block labels"
           data-testid="sidebar-labels"
           :iid="activeBoardItem.iid"
@@ -130,7 +127,6 @@ export default {
         >
           {{ __('None') }}
         </sidebar-labels-widget>
-        <board-sidebar-labels-select v-else class="labels" />
         <sidebar-confidentiality-widget
           :iid="activeBoardItem.iid"
           :full-path="fullPath"

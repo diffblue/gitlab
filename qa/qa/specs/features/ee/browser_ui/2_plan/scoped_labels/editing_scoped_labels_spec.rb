@@ -19,8 +19,6 @@ module QA
       end
 
       before do
-        Runtime::Feature.enable(:labels_widget, project: issue.project)
-
         Flow::Login.sign_in
 
         [
@@ -43,9 +41,6 @@ module QA
         testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1181'
       ) do
         Page::Project::Issue::Show.perform do |show|
-          # TODO: Remove this method when the `Runtime::Feature.enable` method call is removed
-          show.wait_for_labels_widget_feature_flag
-
           show.select_labels(
             [
               new_label_same_scope,

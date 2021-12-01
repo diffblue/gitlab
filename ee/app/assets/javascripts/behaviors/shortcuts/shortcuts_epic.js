@@ -1,5 +1,4 @@
 import $ from 'jquery';
-import Cookies from 'js-cookie';
 import Mousetrap from 'mousetrap';
 import {
   keysFor,
@@ -8,7 +7,6 @@ import {
   ISSUABLE_EDIT_DESCRIPTION,
 } from '~/behaviors/shortcuts/keybindings';
 import ShortcutsIssuable from '~/behaviors/shortcuts/shortcuts_issuable';
-import { parseBoolean } from '~/lib/utils/common_utils';
 
 export default class ShortcutsEpic extends ShortcutsIssuable {
   constructor() {
@@ -23,15 +21,7 @@ export default class ShortcutsEpic extends ShortcutsIssuable {
     Mousetrap.bind(keysFor(ISSUABLE_EDIT_DESCRIPTION), ShortcutsIssuable.editIssue);
   }
 
-  static openSidebarDropdown($block) {
-    if (gon.features?.labelsWidget) {
-      document.dispatchEvent(new Event('toggleSidebarRevealLabelsDropdown'));
-      return;
-    }
-    if (parseBoolean(Cookies.get('collapsed_gutter'))) {
-      document.dispatchEvent(new Event('toggleSidebarRevealLabelsDropdown'));
-    } else {
-      $block.find('.js-sidebar-dropdown-toggle').get(0).dispatchEvent(new Event('click'));
-    }
+  static openSidebarDropdown() {
+    document.dispatchEvent(new Event('toggleSidebarRevealLabelsDropdown'));
   }
 }

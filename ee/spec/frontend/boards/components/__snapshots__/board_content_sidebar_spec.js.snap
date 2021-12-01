@@ -69,9 +69,29 @@ exports[`ee/BoardContentSidebar matches the snapshot 1`] = `
     issuabletype="issue"
   />
    
-  <boardsidebarlabelsselect-stub
+  <sidebarlabelswidget-stub
+    allowmultiselect="true"
+    attrworkspacepath="gitlab-org/gitlab-test"
     class="block labels"
-  />
+    data-testid="sidebar-labels"
+    dropdownbuttontext="Label"
+    footercreatelabeltitle="Create project label"
+    footermanagelabeltitle="Manage project labels"
+    fullpath="gitlab-org/gitlab-test"
+    iid="27"
+    issuabletype="issue"
+    labelcreatetype="project"
+    labelscreatetitle="Create project label"
+    labelsfilterbasepath=""
+    labelsfilterparam="label_name"
+    labelslisttitle="Assign labels"
+    variant="sidebar"
+    workspacetype="project"
+  >
+    
+        None
+      
+  </sidebarlabelswidget-stub>
    
   <sidebarweightwidget-stub
     full-path="gitlab-org/gitlab-test"

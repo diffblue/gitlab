@@ -6,7 +6,7 @@ import EpicForm from 'ee/epic/components/epic_form.vue';
 import createEpic from 'ee/epic/queries/createEpic.mutation.graphql';
 import { TEST_HOST } from 'helpers/test_constants';
 import { visitUrl } from '~/lib/utils/url_utility';
-import LabelsSelectVue from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
+import LabelsSelectWidget from '~/vue_shared/components/sidebar/labels_select_widget/labels_select_root.vue';
 
 jest.mock('~/lib/utils/url_utility', () => ({
   visitUrl: jest.fn(),
@@ -48,7 +48,7 @@ describe('ee/epic/components/epic_form.vue', () => {
   });
 
   const findForm = () => wrapper.find(GlForm);
-  const findLabels = () => wrapper.find(LabelsSelectVue);
+  const findLabels = () => wrapper.find(LabelsSelectWidget);
   const findTitle = () => wrapper.find('[data-testid="epic-title"]');
   const findDescription = () => wrapper.find('[data-testid="epic-description"]');
   const findConfidentialityCheck = () => wrapper.find('[data-testid="epic-confidentiality"]');
@@ -113,7 +113,9 @@ describe('ee/epic/components/epic_form.vue', () => {
         findTitle().vm.$emit('input', title);
         findDescription().setValue(description);
         findConfidentialityCheck().vm.$emit('input', confidential);
-        findLabels().vm.$emit('updateSelectedLabels', [{ id: 1, set: 1 }]);
+        findLabels().vm.$emit('updateSelectedLabels', {
+          labels: [{ id: 'gid://gitlab/GroupLabel/1' }],
+        });
 
         // Make sure the submitted values for start and due dates are date strings without timezone info.
         // (Datepicker emits a Date object but the submitted value must be a date string).
