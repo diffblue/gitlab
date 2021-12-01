@@ -17,10 +17,6 @@ module Vulnerabilities
     end
 
     def execute
-      unless Feature.enabled?(:create_vulnerabilities_via_api, @project, default_enabled: :yaml)
-        return ServiceResponse.error(message: "create_vulnerabilities_via_api feature flag is not enabled for this project")
-      end
-
       raise Gitlab::Access::AccessDeniedError unless authorized?
 
       timestamps_dont_match_state_message = match_state_fields_with_state
