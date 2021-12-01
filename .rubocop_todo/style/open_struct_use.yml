@@ -14,7 +14,6 @@ Style/OpenStructUse:
   - lib/gitlab/import_export/after_export_strategies/base_after_export_strategy.rb
   - lib/gitlab/testing/request_inspector_middleware.rb
   - lib/mattermost/session.rb
-  - spec/controllers/admin/clusters_controller_spec.rb
   - spec/controllers/groups/clusters_controller_spec.rb
   - spec/controllers/import/fogbugz_controller_spec.rb
   - spec/controllers/import/gitlab_controller_spec.rb
