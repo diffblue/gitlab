@@ -8,4 +8,4 @@
 
 - if @epic.description
   %div
-  = markdown(@epic.description, pipeline: :email, author: @epic.author)
+  = markdown(@epic.description, pipeline: :email, author: @epic.author, current_user: @recipient, issuable_reference_expansion_enabled: true)
