@@ -21,7 +21,7 @@ export function initJiraConnect() {
   Vue.use(Translate);
   Vue.use(GlFeatureFlagsPlugin);
 
-  const { groupsPath, subscriptions, subscriptionsPath, usersPath } = el.dataset;
+  const { groupsPath, subscriptions, subscriptionsPath, usersPath, gitlabUserPath } = el.dataset;
   sizeToParent();
 
   return new Vue({
@@ -32,6 +32,7 @@ export function initJiraConnect() {
       subscriptions: JSON.parse(subscriptions),
       subscriptionsPath,
       usersPath,
+      gitlabUserPath,
     },
     render(createElement) {
       return createElement(JiraConnectApp);

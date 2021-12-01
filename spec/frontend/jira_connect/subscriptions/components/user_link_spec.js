@@ -68,17 +68,20 @@ describe('SubscriptionsList', () => {
   });
 
   describe('gitlab user link', () => {
-    beforeEach(() => {
-      window.gon = { current_username: 'root', gitlab_url: 'https://gitlab.com' };
+    window.gon = { current_username: 'root' };
 
-      createComponent({
-        userSignedIn: true,
-        hasSubscriptions: true,
-      });
+    beforeEach(() => {
+      createComponent(
+        {
+          userSignedIn: true,
+          hasSubscriptions: true,
+        },
+        { provide: { gitlabUserPath: '/root' } },
+      );
     });
 
     it('renders with correct href', () => {
-      expect(findGitlabUserLink().attributes('href')).toBe('https://gitlab.com/root');
+      expect(findGitlabUserLink().attributes('href')).toBe('/root');
     });
 
     it('contains GitLab user handle', () => {

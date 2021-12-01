@@ -12,6 +12,9 @@ export default {
     usersPath: {
       default: '',
     },
+    gitlabUserPath: {
+      default: '',
+    },
   },
   props: {
     userSignedIn: {
@@ -32,9 +35,6 @@ export default {
     gitlabUserHandle() {
       return `@${gon.current_username}`;
     },
-    gitlabUserLink() {
-      return `${gon.gitlab_url}/${gon.current_username}`;
-    },
   },
   async created() {
     this.signInURL = await getGitlabSignInURL(this.usersPath);
@@ -49,7 +49,7 @@ export default {
   <div class="jira-connect-user gl-font-base">
     <gl-sprintf v-if="userSignedIn" :message="$options.i18n.signedInAsUserText">
       <template #user_link>
-        <gl-link data-testid="gitlab-user-link" :href="gitlabUserLink" target="_blank">
+        <gl-link data-testid="gitlab-user-link" :href="gitlabUserPath" target="_blank">
           {{ gitlabUserHandle }}
         </gl-link>
       </template>
