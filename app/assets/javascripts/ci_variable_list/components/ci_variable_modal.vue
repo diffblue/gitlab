@@ -60,10 +60,7 @@ export default {
   data() {
     return {
       isTipDismissed: Cookies.get(AWS_TIP_DISMISSED_COOKIE_NAME) === 'true',
-      isValidationErrorEventSent: {
-        displaysMaskedError: false,
-        displaysVariableReferenceError: false,
-      },
+      validationErrorEventProperty: '',
     };
   },
   computed: {
@@ -162,7 +159,6 @@ export default {
         this.trackVariableValidationErrors();
       },
       deep: true,
-      immediate: true,
     },
   },
   methods: {
@@ -213,23 +209,24 @@ export default {
       }
     },
     trackVariableValidationErrors() {
-      if (this.displayMaskedError && !this.isValidationErrorEventSent.displaysMaskedError) {
-        this.track(EVENT_ACTION, { property: 'displaysMaskedError' });
-        this.isValidationErrorEventSent.displaysMaskedError = true;
-      }
-      if (
-        this.containsVariableReference &&
-        !this.isValidationErrorEventSent.displaysVariableReferenceError
-      ) {
-        this.track(EVENT_ACTION, { property: 'displaysVariableReferenceError' });
-        this.isValidationErrorEventSent.displaysVariableReferenceError = true;
+      if (this.variable.secret_value?.length && !this.validationErrorEventProperty) {
+        if (this.displayMaskedError && this.maskableRegex?.length) {
+          const supportedChars = this.maskableRegex.replace('^', '').replace(/{(\d,)}\$/, '');
+          const regex = new RegExp(supportedChars, 'g');
+
+          const error = this.variable.secret_value.replace(regex, '');
+
+          this.track(EVENT_ACTION, { property: error });
+          this.validationErrorEventProperty = error;
+        }
+        if (this.containsVariableReference) {
+          this.track(EVENT_ACTION, { property: '$' });
+          this.validationErrorEventProperty = '$';
+        }
       }
     },
     resetValidationErrorEvents() {
-      this.isValidationErrorEventSent = {
-        displaysMaskedError: false,
-        displaysVariableReferenceError: false,
-      };
+      this.validationErrorEventProperty = '';
     },
   },
 };

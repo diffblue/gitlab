@@ -17,8 +17,10 @@ describe('Ci variable modal', () => {
   let store;
   let trackingSpy;
 
+  const maskableRegex = '^[a-zA-Z0-9_+=/@:.~-]{8,}$';
+
   const createComponent = (method, options = {}) => {
-    store = createStore({ isGroup: options.isGroup });
+    store = createStore({ maskableRegex, isGroup: options.isGroup });
     wrapper = method(CiVariableModal, {
       attachTo: document.body,
       stubs: {
@@ -247,7 +249,7 @@ describe('Ci variable modal', () => {
       it('sends the correct tracking event', () => {
         expect(trackingSpy).toHaveBeenCalledWith(undefined, EVENT_ACTION, {
           label: EVENT_LABEL,
-          property: 'displaysMaskedError',
+          property: ';',
         });
       });
     });
@@ -264,7 +266,6 @@ describe('Ci variable modal', () => {
         };
         createComponent(mount);
         store.state.variable = validMaskandKeyVariable;
-        store.state.maskableRegex = /^[a-zA-Z0-9_+=/@:.~-]{8,}$/;
       });
 
       it('does not disable the submit button', () => {
