@@ -36,7 +36,6 @@ import listUpdateLimitMetricsMutation from '../graphql/list_update_limit_metrics
 import listsEpicsQuery from '../graphql/lists_epics.query.graphql';
 import subGroupsQuery from '../graphql/sub_groups.query.graphql';
 import updateBoardEpicUserPreferencesMutation from '../graphql/update_board_epic_user_preferences.mutation.graphql';
-import updateEpicLabelsMutation from '../graphql/update_epic_labels.mutation.graphql';
 
 import * as types from './mutation_types';
 
@@ -631,34 +630,8 @@ export default {
     }
   },
 
-  setActiveEpicLabels: async ({ commit, getters, state }, input) => {
+  setActiveEpicLabels: async ({ commit, getters }, input) => {
     const { activeBoardItem } = getters;
-
-    if (!gon.features?.labelsWidget) {
-      const { data } = await gqlClient.mutate({
-        mutation: updateEpicLabelsMutation,
-        variables: {
-          input: {
-            iid: String(activeBoardItem.iid),
-            addLabelIds: input.addLabelIds ?? [],
-            removeLabelIds: input.removeLabelIds ?? [],
-            groupPath: state.fullPath,
-          },
-        },
-      });
-
-      if (data.updateEpic?.errors?.length > 0) {
-        throw new Error(data.updateEpic.errors);
-      }
-
-      commit(typesCE.UPDATE_BOARD_ITEM_BY_ID, {
-        itemId: activeBoardItem.id,
-        prop: 'labels',
-        value: data.updateEpic.epic.labels.nodes,
-      });
-
-      return;
-    }
 
     let labels = input?.labels || [];
     if (input.removeLabelIds) {

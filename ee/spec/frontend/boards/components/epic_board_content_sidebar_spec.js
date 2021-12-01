@@ -1,11 +1,11 @@
 import { GlDrawer } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { MountingPortal } from 'portal-vue';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import EpicBoardContentSidebar from 'ee_component/boards/components/epic_board_content_sidebar.vue';
 import SidebarAncestorsWidget from 'ee_component/sidebar/components/ancestors_tree/sidebar_ancestors_widget.vue';
 import { stubComponent } from 'helpers/stub_component';
-import BoardSidebarLabelsSelect from '~/boards/components/sidebar/board_sidebar_labels_select.vue';
 import BoardSidebarTitle from '~/boards/components/sidebar/board_sidebar_title.vue';
 import { ISSUABLE } from '~/boards/constants';
 import SidebarConfidentialityWidget from '~/sidebar/components/confidential/sidebar_confidentiality_widget.vue';
@@ -13,7 +13,10 @@ import SidebarDateWidget from '~/sidebar/components/date/sidebar_date_widget.vue
 import SidebarParticipantsWidget from '~/sidebar/components/participants/sidebar_participants_widget.vue';
 import SidebarSubscriptionsWidget from '~/sidebar/components/subscriptions/sidebar_subscriptions_widget.vue';
 import SidebarTodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_widget.vue';
+import LabelsSelectWidget from '~/vue_shared/components/sidebar/labels_select_widget/labels_select_root.vue';
 import { mockFormattedBoardEpic } from '../mock_data';
+
+Vue.use(Vuex);
 
 describe('EpicBoardContentSidebar', () => {
   let wrapper;
@@ -95,8 +98,8 @@ describe('EpicBoardContentSidebar', () => {
     );
   });
 
-  it('renders BoardSidebarLabelsSelect', () => {
-    expect(wrapper.findComponent(BoardSidebarLabelsSelect).exists()).toBe(true);
+  it('renders LabelsSelectWidget', () => {
+    expect(wrapper.findComponent(LabelsSelectWidget).exists()).toBe(true);
   });
 
   it('renders BoardSidebarTitle', () => {

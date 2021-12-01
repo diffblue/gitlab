@@ -22,7 +22,6 @@ import { dateTypes } from '../constants';
 import epicUtils from '../utils/epic_utils';
 import SidebarDatePicker from './sidebar_items/sidebar_date_picker.vue';
 import SidebarHeader from './sidebar_items/sidebar_header.vue';
-import SidebarLabels from './sidebar_items/sidebar_labels.vue';
 
 export default {
   dateTypes,
@@ -30,7 +29,6 @@ export default {
     SidebarHeader,
     SidebarDatePicker,
     SidebarDatePickerCollapsed,
-    SidebarLabels,
     SidebarAncestorsWidget,
     SidebarParticipantsWidget,
     SidebarConfidentialityWidget,
@@ -239,7 +237,6 @@ export default {
         @toggleCollapse="toggleSidebar({ sidebarCollapsed })"
       />
       <labels-select-widget
-        v-if="glFeatures.labelsWidget"
         class="block labels js-labels-block"
         :iid="String(iid)"
         :full-path="fullPath"
@@ -256,12 +253,6 @@ export default {
       >
         {{ __('None') }}
       </labels-select-widget>
-      <sidebar-labels
-        v-else
-        :can-update="canUpdate"
-        :sidebar-collapsed="sidebarCollapsed"
-        data-testid="labels-select"
-      />
       <sidebar-confidentiality-widget
         :iid="String(iid)"
         :full-path="fullPath"

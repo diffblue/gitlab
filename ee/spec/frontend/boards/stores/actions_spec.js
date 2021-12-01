@@ -1340,7 +1340,7 @@ describe('setSelectedGroup', () => {
 
 describe('setActiveEpicLabels', () => {
   const state = { boardItems: { [mockEpic.id]: mockEpic } };
-  const getters = { activeBoardItem: mockEpic };
+  const getters = { activeBoardItem: { ...mockEpic, labels } };
   const testLabelIds = labels.map((label) => label.id);
   const input = {
     addLabelIds: testLabelIds,
@@ -1348,11 +1348,7 @@ describe('setActiveEpicLabels', () => {
     groupPath: 'h/b',
   };
 
-  it('should assign labels on success', (done) => {
-    jest
-      .spyOn(gqlClient, 'mutate')
-      .mockResolvedValue({ data: { updateEpic: { epic: { labels: { nodes: labels } } } } });
-
+  it('should assign labels', () => {
     const payload = {
       itemId: getters.activeBoardItem.id,
       prop: 'labels',
@@ -1365,78 +1361,32 @@ describe('setActiveEpicLabels', () => {
       { ...state, ...getters },
       [
         {
-          type: typesCE.UPDATE_BOARD_ITEM_BY_ID,
+          type: types.UPDATE_BOARD_ITEM_BY_ID,
           payload,
         },
       ],
       [],
-      done,
     );
   });
 
-  it('throws error if fails', async () => {
-    jest
-      .spyOn(gqlClient, 'mutate')
-      .mockResolvedValue({ data: { updateEpic: { errors: ['failed mutation'] } } });
+  it('should remove label', () => {
+    const payload = {
+      itemId: getters.activeBoardItem.id,
+      prop: 'labels',
+      value: [labels[1]],
+    };
 
-    await expect(actions.setActiveEpicLabels({ getters }, input)).rejects.toThrow(Error);
-  });
-
-  describe('labels_widget FF on', () => {
-    beforeEach(() => {
-      window.gon = {
-        features: { labelsWidget: true },
-      };
-
-      getters.activeBoardItem = { ...mockIssue, labels };
-    });
-
-    afterEach(() => {
-      window.gon = {
-        features: {},
-      };
-    });
-
-    it('should assign labels', () => {
-      const payload = {
-        itemId: getters.activeBoardItem.id,
-        prop: 'labels',
-        value: labels,
-      };
-
-      testAction(
-        actions.setActiveEpicLabels,
-        input,
-        { ...state, ...getters },
-        [
-          {
-            type: types.UPDATE_BOARD_ITEM_BY_ID,
-            payload,
-          },
-        ],
-        [],
-      );
-    });
-
-    it('should remove label', () => {
-      const payload = {
-        itemId: getters.activeBoardItem.id,
-        prop: 'labels',
-        value: [labels[1]],
-      };
-
-      testAction(
-        actions.setActiveEpicLabels,
-        { ...input, removeLabelIds: [getIdFromGraphQLId(labels[0].id)] },
-        { ...state, ...getters },
-        [
-          {
-            type: types.UPDATE_BOARD_ITEM_BY_ID,
-            payload,
-          },
-        ],
-        [],
-      );
-    });
+    testAction(
+      actions.setActiveEpicLabels,
+      { ...input, removeLabelIds: [getIdFromGraphQLId(labels[0].id)] },
+      { ...state, ...getters },
+      [
+        {
+          type: types.UPDATE_BOARD_ITEM_BY_ID,
+          payload,
+        },
+      ],
+      [],
+    );
   });
 });
