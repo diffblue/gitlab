@@ -3,11 +3,15 @@ import { GlLink, GlIcon, GlTableLite as GlTable, GlSprintf } from '@gitlab/ui';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import { thWidthClass } from '~/lib/utils/table_utility';
 import { sprintf } from '~/locale';
-import { PROJECT_TABLE_LABELS, HELP_LINK_ARIA_LABEL } from '../constants';
+import {
+  PROJECT_TABLE_LABEL_STORAGE_TYPE,
+  PROJECT_TABLE_LABEL_USAGE,
+  HELP_LINK_ARIA_LABEL,
+} from '../constants';
 import StorageTypeIcon from './storage_type_icon.vue';
 
 export default {
-  name: 'StorageTable',
+  name: 'ProjectStorageDetail',
   components: {
     GlLink,
     GlIcon,
@@ -31,13 +35,13 @@ export default {
   projectTableFields: [
     {
       key: 'storageType',
-      label: PROJECT_TABLE_LABELS.STORAGE_TYPE,
+      label: PROJECT_TABLE_LABEL_STORAGE_TYPE,
       thClass: thWidthClass(90),
       sortable: true,
     },
     {
       key: 'value',
-      label: PROJECT_TABLE_LABELS.VALUE,
+      label: PROJECT_TABLE_LABEL_USAGE,
       thClass: thWidthClass(10),
       sortable: true,
       formatter: (value) => {

@@ -13,5 +13,3 @@ export const STORAGE_USAGE_THRESHOLDS = {
 };
 
 export const PROJECTS_PER_PAGE = 20;
-
-export const SKELETON_LOADER_ROWS = 5;

@@ -4,7 +4,8 @@ import {
   parseProjects,
   calculateUsedAndRemStorage,
 } from 'ee/storage_counter/utils';
-import { projects as mockProjectsData, mockGetStorageCounterGraphQLResponse } from './mock_data';
+import { projects as mockProjectsData } from 'ee_jest/usage_quotas/storage/mock_data';
+import { mockGetStorageCounterGraphQLResponse } from './mock_data';
 
 describe('UsageThreshold', () => {
   it.each`

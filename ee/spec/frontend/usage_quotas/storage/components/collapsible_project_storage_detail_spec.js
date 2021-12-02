@@ -1,13 +1,13 @@
 import { shallowMount } from '@vue/test-utils';
-import Project from 'ee/storage_counter/components/project.vue';
-import StorageRow from 'ee/storage_counter/components/storage_row.vue';
+import CollapsibleProjectStorageDetail from 'ee/usage_quotas/storage/components/collapsible_project_storage_detail.vue';
+import ProjectStorageDetail from 'ee/usage_quotas/storage/components/project_storage_detail.vue';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
-import ProjectAvatar from '~/vue_shared/components/deprecated_project_avatar/default.vue';
+import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 import { projects } from '../mock_data';
 
 let wrapper;
 const createComponent = () => {
-  wrapper = shallowMount(Project, {
+  wrapper = shallowMount(CollapsibleProjectStorageDetail, {
     propsData: {
       project: projects[1],
     },
@@ -15,9 +15,9 @@ const createComponent = () => {
 };
 
 const findTableRow = () => wrapper.find('[data-testid="projectTableRow"]');
-const findStorageRow = () => wrapper.find(StorageRow);
+const findProjectStorageDetail = () => wrapper.find(ProjectStorageDetail);
 
-describe('Storage Counter project component', () => {
+describe('CollapsibleProjectStorageDetail', () => {
   beforeEach(() => {
     createComponent();
   });
@@ -37,16 +37,16 @@ describe('Storage Counter project component', () => {
   describe('toggle row', () => {
     describe('on click', () => {
       it('toggles isOpen', () => {
-        expect(findStorageRow().exists()).toBe(false);
+        expect(findProjectStorageDetail().exists()).toBe(false);
 
         findTableRow().trigger('click');
 
         wrapper.vm.$nextTick(() => {
-          expect(findStorageRow().exists()).toBe(true);
+          expect(findProjectStorageDetail().exists()).toBe(true);
           findTableRow().trigger('click');
 
           wrapper.vm.$nextTick(() => {
-            expect(findStorageRow().exists()).toBe(false);
+            expect(findProjectStorageDetail().exists()).toBe(false);
           });
         });
       });

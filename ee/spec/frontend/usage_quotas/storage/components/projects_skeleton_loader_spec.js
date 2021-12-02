@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import ProjectsSkeletonLoader from 'ee/storage_counter/components/projects_skeleton_loader.vue';
+import ProjectsSkeletonLoader from 'ee/usage_quotas/storage/components/projects_skeleton_loader.vue';
 
 describe('ProjectsSkeletonLoader', () => {
   let wrapper;
