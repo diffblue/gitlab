@@ -484,7 +484,7 @@ describe('EE Value Stream Analytics component', () => {
       wrapper = null;
     });
 
-    describe('with minimal parameters set set', () => {
+    describe('with minimal parameters set', () => {
       beforeEach(async () => {
         wrapper = await createComponent();
 
