@@ -14,7 +14,7 @@ const i18n = {
     title: s__('Billings|User validation required'),
     text: s__(`Billings|To use free pipeline minutes on shared runners, you’ll need to validate your account with a credit or debit card. If you prefer not to provide one, you can run pipelines by bringing your own runners and disabling shared runners for your project.
     This is required to discourage and reduce abuse on GitLab infrastructure.
-    %{strongStart}GitLab will not charge or store your card, it will only be used for validation.%{strongEnd} %{linkStart}Learn more%{linkEnd}.`),
+    %{strongStart}GitLab will not charge your card, it will only be used for validation.%{strongEnd} %{linkStart}Learn more%{linkEnd}.`),
     primaryButtonText: s__('Billings|Validate account'),
   },
   pipelineVerificationLink: 'https://about.gitlab.com/blog/2021/05/17/prevent-crypto-mining-abuse/',
