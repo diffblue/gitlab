@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
-import App from './components/app.vue';
+import NamespaceStorageApp from './components/namespace_storage_app.vue';
 
 Vue.use(VueApollo);
 
@@ -21,8 +21,8 @@ export default () => {
   return new Vue({
     el,
     apolloProvider,
-    render(h) {
-      return h(App, {
+    render(createElement) {
+      return createElement(NamespaceStorageApp, {
         props: {
           namespacePath,
           helpPagePath,

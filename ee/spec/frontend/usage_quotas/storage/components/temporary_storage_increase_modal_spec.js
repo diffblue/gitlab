@@ -1,6 +1,6 @@
 import { GlModal } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
-import TemporaryStorageIncreaseModal from 'ee/storage_counter/components/temporary_storage_increase_modal.vue';
+import TemporaryStorageIncreaseModal from 'ee/usage_quotas/storage/components/temporary_storage_increase_modal.vue';
 
 const TEST_LIMIT = '8 bytes';
 const TEST_MODAL_ID = 'test-modal-id';
