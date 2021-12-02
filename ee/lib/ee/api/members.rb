@@ -56,17 +56,18 @@ module EE
 
           desc 'Approves a pending member'
           params do
-            requires :user_id, type: Integer, desc: 'The user ID of the member requiring approval'
+            requires :member_id, type: Integer, desc: 'The ID of the member requiring approval'
           end
-          put ':id/members/:user_id/approve' do
+          put ':id/members/:member_id/approve' do
             group = find_group!(params[:id])
-            user = ::User.find(params[:user_id])
+            member = ::Member.find_by_id(params[:member_id])
 
+            not_found! unless member
             bad_request! unless group.root?
             bad_request! unless can?(current_user, :admin_group_member, group)
 
             result = ::Members::ActivateService
-              .new(group, user: user, current_user: current_user)
+              .new(group, member: member, current_user: current_user)
               .execute
 
             if result[:status] == :success

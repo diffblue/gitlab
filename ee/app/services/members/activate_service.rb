@@ -14,9 +14,9 @@ module Members
   class ActivateService
     include BaseServiceUtility
 
-    def initialize(group, user: nil, activate_all: false, current_user:)
+    def initialize(group, member: nil, activate_all: false, current_user:)
       @group = group
-      @user = user
+      @member = member
       @current_user = current_user
       @activate_all = activate_all
     end
@@ -24,6 +24,7 @@ module Members
     def execute
       return error(_('No group provided')) unless group
       return error(_('You do not have permission to approve a member'), :forbidden) unless allowed?
+      return error(_('No member provided')) unless activate_all || member
 
       if activate_memberships
         log_event
@@ -36,11 +37,11 @@ module Members
 
     private
 
-    attr_reader :current_user, :group, :user, :activate_all
+    attr_reader :current_user, :group, :member, :activate_all
 
     def activate_memberships
       memberships_found = false
-      memberships = activate_all ? awaiting_memberships : user_memberships
+      memberships = activate_all ? awaiting_memberships : scoped_memberships
 
       memberships.find_each do |member|
         memberships_found = true
@@ -52,8 +53,12 @@ module Members
     end
 
     # rubocop: disable CodeReuse/ActiveRecord
-    def user_memberships
-      awaiting_memberships.where(user_id: user.id)
+    def scoped_memberships
+      if member.invite?
+        awaiting_memberships.where(invite_email: member.invite_email)
+      else
+        awaiting_memberships.where(user_id: member.user_id)
+      end
     end
     # rubocop: enable CodeReuse/ActiveRecord
 
@@ -71,7 +76,7 @@ module Members
         approved_by: current_user.id
       }.tap do |params|
         params[:message] = activate_all ? 'Approved all pending group members' : 'Group member access approved'
-        params[:user] = user.id unless activate_all
+        params[:member] = member.id unless activate_all
       end
 
       Gitlab::AppLogger.info(log_params)
