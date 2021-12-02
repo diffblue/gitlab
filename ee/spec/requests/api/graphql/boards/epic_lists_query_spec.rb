@@ -86,8 +86,9 @@ RSpec.describe 'get list of epic boards' do
         # filtering.
         create(:labeled_epic, group: group)
         create(:labeled_epic, group: group, labels: [label])
+        create(:labeled_epic, group: group, labels: [label], confidential: true)
 
-        params = { epicFilters: { labelName: label.title } }
+        params = { epicFilters: { labelName: label.title, confidential: false } }
         post_graphql(pagination_query(params), current_user: current_user)
 
         assert_field_value('epicsCount', [1, 0, 0])

@@ -27,16 +27,20 @@ describe('ScanNewPolicyModal Component', () => {
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findModal = () => wrapper.findComponent(GlModal);
 
-  const selectProject = async (
+  const selectProject = async ({
     project = {
       id: 'gid://gitlab/Project/1',
       name: 'Test 1',
     },
-  ) => {
+    shouldSubmit = true,
+  } = {}) => {
     findInstanceProjectSelector().vm.$emit('projectClicked', project);
     await wrapper.vm.$nextTick();
-    findModal().vm.$emit('ok');
-    await wrapper.vm.$nextTick();
+
+    if (shouldSubmit) {
+      findModal().vm.$emit('ok');
+      await wrapper.vm.$nextTick();
+    }
   };
 
   const createWrapper = ({
@@ -100,11 +104,17 @@ describe('ScanNewPolicyModal Component', () => {
     });
   });
 
-  it('emits close event when gl-modal emits change event', () => {
+  it('emits close event when gl-modal emits change event', async () => {
     createWrapper();
-    findModal().vm.$emit('change');
+    await selectProject({ shouldSubmit: false });
 
+    findModal().vm.$emit('change');
     expect(wrapper.emitted('close')).toEqual([[]]);
+    expect(findInstanceProjectSelector().props('selectedProjects')[0].name).toBe('Test 1');
+
+    // should restore the previous state when action is not submitted
+    await wrapper.vm.$nextTick();
+    expect(findInstanceProjectSelector().props('selectedProjects')[0].name).toBeUndefined();
   });
 
   describe('unlinking project', () => {
@@ -169,6 +179,10 @@ describe('ScanNewPolicyModal Component', () => {
         text: 'Security policy project was linked successfully',
         variant: 'success',
       });
+
+      expect(findInstanceProjectSelector().props('selectedProjects')).toEqual([
+        { id: 'gid://gitlab/Project/1', name: 'Test 1' },
+      ]);
     });
 
     it('emits an event with an error message', async () => {
