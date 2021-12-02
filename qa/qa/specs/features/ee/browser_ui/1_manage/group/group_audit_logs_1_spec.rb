@@ -47,11 +47,9 @@ module QA
         before do
           @event_count = 0
           sign_in
-          group = Resource::Group.fabricate_via_browser_ui! do |group|
+          Resource::Group.fabricate_via_browser_ui! do |group|
             group.path = "group-to-test-audit-event-log-#{SecureRandom.hex(8)}"
           end
-
-          expect(page).to have_text("Group '#{group.path}' was successfully created")
         end
 
         it_behaves_like 'audit event', ['Added group']
