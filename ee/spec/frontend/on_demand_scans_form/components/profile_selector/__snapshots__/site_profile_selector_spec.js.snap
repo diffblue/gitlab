@@ -107,7 +107,7 @@ exports[`OnDemandScansSiteProfileSelector renders properly with profiles 1`] = `
                     aria-label="Search"
                     class="gl-form-input gl-search-box-by-type-input form-control"
                     placeholder="Search"
-                    type="text"
+                    type="search"
                   />
                    
                   <div
