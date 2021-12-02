@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe JobEntity do
+RSpec.describe Ci::JobEntity do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:group) { create(:group) }
