@@ -171,6 +171,40 @@ import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 const primaryKeyId = getIdFromGraphQLId(data.id);
 ```
 
+**It is required** to query global `id` for every GraphQL type that has an `id` in the schema:
+
+```javascript
+query allReleases(...) {
+  project(...) {
+    id // Project has an ID in GraphQL schema so should fetch it
+    releases(...) {
+      nodes {
+        // Release has no ID property in GraphQL schema
+        name
+        tagName
+        tagPath
+        assets {
+          count
+          links {
+            nodes {
+              id // Link has an ID in GraphQL schema so should fetch it
+              name
+            }
+          }
+        }
+      }
+      pageInfo {
+        // PageInfo no ID property in GraphQL schema
+        startCursor
+        hasPreviousPage
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+```
+
 ## Immutability and cache updates
 
 From Apollo version 3.0.0 all the cache updates need to be immutable. It needs to be replaced entirely
