@@ -1,6 +1,6 @@
 #import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
 
-query getStorageCounter(
+query getNamespaceStorageStatistics(
   $fullPath: ID!
   $withExcessStorageData: Boolean = false
   $searchTerm: String = ""
