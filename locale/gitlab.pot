@@ -873,6 +873,9 @@ msgstr ""
 msgid "%{scope} results for term '%{term}'"
 msgstr ""
 
+msgid "%{search} %{description} %{scope}"
+msgstr ""
+
 msgid "%{seconds}s"
 msgstr ""
 
@@ -16092,6 +16095,51 @@ msgstr ""
 msgid "Global notification settings"
 msgstr ""
 
+msgid "GlobalSearch|%{count} default results provided. Use the up and down arrow keys to navigate search results list."
+msgstr ""
+
+msgid "GlobalSearch|Issues I've created"
+msgstr ""
+
+msgid "GlobalSearch|Issues assigned to me"
+msgstr ""
+
+msgid "GlobalSearch|Merge requests I've created"
+msgstr ""
+
+msgid "GlobalSearch|Merge requests assigned to me"
+msgstr ""
+
+msgid "GlobalSearch|Merge requests that I'm a reviewer"
+msgstr ""
+
+msgid "GlobalSearch|Results updated. %{count} results available. Use the up and down arrow keys to navigate search results list, or ENTER to submit."
+msgstr ""
+
+msgid "GlobalSearch|Search GitLab"
+msgstr ""
+
+msgid "GlobalSearch|Search or jump to..."
+msgstr ""
+
+msgid "GlobalSearch|Search results are loading"
+msgstr ""
+
+msgid "GlobalSearch|Type and press the enter key to submit search."
+msgstr ""
+
+msgid "GlobalSearch|Type for new suggestions to appear below."
+msgstr ""
+
+msgid "GlobalSearch|in all GitLab"
+msgstr ""
+
+msgid "GlobalSearch|in group"
+msgstr ""
+
+msgid "GlobalSearch|in project"
+msgstr ""
+
 msgid "Go Back"
 msgstr ""
 
@@ -19470,9 +19518,6 @@ msgstr ""
 msgid "Issues"
 msgstr ""
 
-msgid "Issues I've created"
-msgstr ""
-
 msgid "Issues Rate Limits"
 msgstr ""
 
@@ -19480,9 +19525,6 @@ msgid "Issues and merge requests"
 msgstr ""
 
 msgid "Issues are being rebalanced at the moment, so manual reordering is disabled."
-msgstr ""
-
-msgid "Issues assigned to me"
 msgstr ""
 
 msgid "Issues can be bugs, tasks or ideas to be discussed. Also, issues are searchable and filterable."
@@ -21871,16 +21913,7 @@ msgstr ""
 msgid "Merge requests"
 msgstr ""
 
-msgid "Merge requests I've created"
-msgstr ""
-
 msgid "Merge requests are a place to propose changes you've made to a project and discuss those changes with others"
-msgstr ""
-
-msgid "Merge requests assigned to me"
-msgstr ""
-
-msgid "Merge requests that I'm a reviewer"
 msgstr ""
 
 msgid "Merge the branch and fix any conflicts that come up"
@@ -41256,16 +41289,7 @@ msgstr ""
 msgid "in"
 msgstr ""
 
-msgid "in all GitLab"
-msgstr ""
-
-msgid "in group"
-msgstr ""
-
 msgid "in group %{link_to_group}"
-msgstr ""
-
-msgid "in project"
 msgstr ""
 
 msgid "in project %{link_to_project}"
