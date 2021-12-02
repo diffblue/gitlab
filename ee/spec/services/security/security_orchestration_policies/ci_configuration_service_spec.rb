@@ -98,8 +98,11 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
             stage: 'test',
             allow_failure: true,
             artifacts: {
-              reports: { container_scanning: 'gl-container-scanning-report.json' },
-              paths: ['gl-container-scanning-report.json']
+              reports: {
+                container_scanning: 'gl-container-scanning-report.json',
+                dependency_scanning: 'gl-dependency-scanning-report.json'
+              },
+              paths: ['gl-container-scanning-report.json', 'gl-dependency-scanning-report.json']
             },
             dependencies: [],
             script: ['gtcs scan'],
