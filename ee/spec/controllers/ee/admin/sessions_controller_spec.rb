@@ -26,6 +26,7 @@ RSpec.describe Admin::SessionsController, :do_not_mock_admin_mode do
 
       context 'when U2F authentication fails' do
         before do
+          stub_feature_flags(webauthn: false)
           allow(U2fRegistration).to receive(:authenticate).and_return(false)
         end
 
