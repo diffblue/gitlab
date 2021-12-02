@@ -3,6 +3,8 @@
 module Registrations
   class ProjectsController < ApplicationController
     include Registrations::CreateProject
+    include OneTrustCSP
+
     layout 'minimal'
 
     before_action :check_if_gl_com_or_dev

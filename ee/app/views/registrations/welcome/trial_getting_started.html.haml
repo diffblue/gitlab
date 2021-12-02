@@ -1,5 +1,7 @@
 - return unless learn_gitlab_project
 - page_title _('Get started with GitLab')
+- content_for :page_specific_javascripts do
+  = render "layouts/one_trust"
 
 .row.gl-flex-grow-1
   .gl-display-flex.gl-flex-direction-column.gl-align-items-center.gl-w-full
