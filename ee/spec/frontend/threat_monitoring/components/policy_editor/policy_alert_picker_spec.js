@@ -38,7 +38,6 @@ describe('PolicyAlertPicker component', () => {
           ...propsData,
         },
         provide: {
-          configureAgentHelpPath: '',
           createAgentHelpPath: '',
           projectPath: '',
         },

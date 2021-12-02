@@ -36,7 +36,8 @@ module UserPermissions
         'Email' => 'user_email',
         'Type' => 'source_kind',
         'Path' => -> (member) { member.source&.full_path },
-        'Access Level' => 'human_access'
+        'Access Level' => 'human_access',
+        'Last Activity' => 'user_last_activity_on'
       }
     end
   end

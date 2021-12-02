@@ -24,9 +24,9 @@ RSpec.describe Admin::UserPermissionExportsController do
       context 'when successful' do
         let(:csv_data) do
           <<~CSV
-          Username,Email,Type,Path,Access
-          alvina,alvina@test.com,Group,gitlab-org,Developer
-          jasper,jasper@test.com,Project,gitlab-org/www,Maintainer
+          Username,Email,Type,Path,Access,Last Activity
+          alvina,alvina@test.com,Group,gitlab-org,Developer,2020-12-18
+          jasper,jasper@test.com,Project,gitlab-org/www,Maintainer,2020-12-16
           CSV
         end
 
@@ -51,19 +51,21 @@ RSpec.describe Admin::UserPermissionExportsController do
           subject
 
           expect(csv_response).to eq([
-            %w(
-              Username
-              Email
-              Type
-              Path
-              Access
-            ),
+            [
+              'Username',
+              'Email',
+              'Type',
+              'Path',
+              'Access',
+              'Last Activity'
+            ],
             %w(
               alvina
               alvina@test.com
               Group
               gitlab-org
               Developer
+              2020-12-18
              ),
             %w(
               jasper
@@ -71,6 +73,7 @@ RSpec.describe Admin::UserPermissionExportsController do
               Project
               gitlab-org/www
               Maintainer
+              2020-12-16
             )
           ])
         end
