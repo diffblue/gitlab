@@ -93,6 +93,11 @@ class ProjectPolicy < BasePolicy
     user.is_a?(DeployToken) && user.has_access_to?(project) && user.write_package_registry
   end
 
+  desc "Deploy token with read access"
+  condition(:download_code_deploy_token) do
+    user.is_a?(DeployToken) && user.has_access_to?(project)
+  end
+
   desc "If user is authenticated via CI job token then the target project should be in scope"
   condition(:project_allowed_for_job_token) do
     !@user&.from_ci_job_token? || @user.ci_job_token_scope.includes?(project)
@@ -504,6 +509,10 @@ class ProjectPolicy < BasePolicy
   rule { wiki_disabled }.policy do
     prevent(*create_read_update_admin_destroy(:wiki))
     prevent(:download_wiki_code)
+  end
+
+  rule { download_code_deploy_token }.policy do
+    enable :download_wiki_code
   end
 
   rule { builds_disabled | repository_disabled }.policy do
