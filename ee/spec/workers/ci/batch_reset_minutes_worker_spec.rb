@@ -66,7 +66,7 @@ RSpec.describe Ci::BatchResetMinutesWorker do
         let(:namespace) { last_namespace }
       end
 
-      context 'when ci_reset_purchased_minutes_lazily is enabled' do
+      context 'when ci_use_new_monthly_minutes is enabled' do
         it 'does not recalculate purchased minutes for the namespace exceeding the monthly minutes' do
           subject
 
@@ -74,9 +74,9 @@ RSpec.describe Ci::BatchResetMinutesWorker do
         end
       end
 
-      context 'when ci_reset_purchased_minutes_lazily is disabled' do
+      context 'when ci_use_new_monthly_minutes is disabled' do
         before do
-          stub_feature_flags(ci_reset_purchased_minutes_lazily: false)
+          stub_feature_flags(ci_use_new_monthly_minutes: false)
         end
 
         it 'recalculates purchased minutes for the namespace exceeding the monthly minutes' do

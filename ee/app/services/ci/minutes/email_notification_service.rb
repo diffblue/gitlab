@@ -31,7 +31,7 @@ module Ci
 
           namespace_usage.update!(notification_level: current_alert_percentage)
 
-          if ci_minutes_use_notification_level?
+          if namespace.new_monthly_ci_minutes_enabled?
             CiMinutesUsageMailer.notify(namespace, recipients).deliver_later
           end
         elsif notification.running_out?
@@ -39,7 +39,7 @@ module Ci
 
           namespace_usage.update!(notification_level: current_alert_percentage)
 
-          if ci_minutes_use_notification_level?
+          if namespace.new_monthly_ci_minutes_enabled?
             CiMinutesUsageMailer.notify_limit(namespace, recipients, current_alert_percentage).deliver_later
           end
         end
@@ -51,7 +51,7 @@ module Ci
 
           namespace.update_columns(last_ci_minutes_notification_at: Time.current)
 
-          unless ci_minutes_use_notification_level?
+          unless namespace.new_monthly_ci_minutes_enabled?
             CiMinutesUsageMailer.notify(namespace, recipients).deliver_later
           end
         elsif legacy_notification.running_out?
@@ -62,7 +62,7 @@ module Ci
 
           namespace.update_columns(last_ci_minutes_usage_notification_level: current_alert_percentage)
 
-          unless ci_minutes_use_notification_level?
+          unless namespace.new_monthly_ci_minutes_enabled?
             CiMinutesUsageMailer.notify_limit(namespace, recipients, current_alert_percentage).deliver_later
           end
         end
@@ -83,12 +83,6 @@ module Ci
 
       def current_alert_percentage
         notification.stage_percentage
-      end
-
-      def ci_minutes_use_notification_level?
-        strong_memoize(:ci_minutes_use_notification_level) do
-          Feature.enabled?(:ci_minutes_use_notification_level, namespace, default_enabled: :yaml)
-        end
       end
     end
   end
