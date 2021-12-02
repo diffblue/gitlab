@@ -1,15 +1,14 @@
 <script>
-import { SEARCH_DEBOUNCE_MS } from '~/ref/constants';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import Project from './project.vue';
+import { PROJECT_TABLE_LABEL_PROJECT, PROJECT_TABLE_LABEL_USAGE } from '../constants';
+import CollapsibleProjectStorageDetail from './collapsible_project_storage_detail.vue';
 import ProjectsSkeletonLoader from './projects_skeleton_loader.vue';
 
 export default {
+  name: 'ProjectList',
   components: {
-    Project,
+    CollapsibleProjectStorageDetail,
     ProjectsSkeletonLoader,
   },
-  mixins: [glFeatureFlagsMixin()],
   props: {
     projects: {
       type: Array,
@@ -25,7 +24,10 @@ export default {
       default: false,
     },
   },
-  searchDebounceValue: SEARCH_DEBOUNCE_MS,
+  i18n: {
+    PROJECT_TABLE_LABEL_PROJECT,
+    PROJECT_TABLE_LABEL_USAGE,
+  },
 };
 </script>
 
@@ -36,20 +38,19 @@ export default {
       role="row"
     >
       <div class="table-section section-70 gl-font-weight-bold" role="columnheader">
-        {{ __('Project') }}
+        {{ $options.i18n.PROJECT_TABLE_LABEL_PROJECT }}
       </div>
       <div class="table-section section-30 gl-font-weight-bold" role="columnheader">
-        {{ __('Usage') }}
+        {{ $options.i18n.PROJECT_TABLE_LABEL_USAGE }}
       </div>
     </div>
     <projects-skeleton-loader v-if="isLoading" />
-    <template v-else>
-      <project
-        v-for="project in projects"
-        :key="project.id"
-        :project="project"
-        :additional-purchased-storage-size="additionalPurchasedStorageSize"
-      />
-    </template>
+    <collapsible-project-storage-detail
+      v-for="project in projects"
+      v-else
+      :key="project.id"
+      :project="project"
+      :additional-purchased-storage-size="additionalPurchasedStorageSize"
+    />
   </div>
 </template>

@@ -4,21 +4,21 @@ import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import StorageCounterApp from '~/projects/storage_counter/components/app.vue';
-import { TOTAL_USAGE_DEFAULT_TEXT } from '~/projects/storage_counter/constants';
-import getProjectStorageCount from '~/projects/storage_counter/queries/project_storage.query.graphql';
+import ProjectStorageApp from 'ee/usage_quotas/storage/components/project_storage_app.vue';
+import { TOTAL_USAGE_DEFAULT_TEXT } from 'ee/usage_quotas/storage/constants';
+import getProjectStorageStatistics from 'ee/usage_quotas/storage/queries/project_storage.query.graphql';
 import UsageGraph from '~/vue_shared/components/storage_counter/usage_graph.vue';
 import {
-  mockGetProjectStorageCountGraphQLResponse,
-  mockEmptyResponse,
   projectData,
-  defaultProvideValues,
+  mockGetProjectStorageStatisticsGraphQLResponse,
+  mockEmptyResponse,
+  defaultProjectProvideValues,
 } from '../mock_data';
 
 const localVue = createLocalVue();
 localVue.use(VueApollo);
 
-describe('Storage counter app', () => {
+describe('ProjectStorageApp', () => {
   let wrapper;
 
   const createMockApolloProvider = ({ reject = false, mockedValue } = {}) => {
@@ -30,18 +30,18 @@ describe('Storage counter app', () => {
       response = jest.fn().mockResolvedValue(mockedValue);
     }
 
-    const requestHandlers = [[getProjectStorageCount, response]];
+    const requestHandlers = [[getProjectStorageStatistics, response]];
 
     return createMockApollo(requestHandlers);
   };
 
   const createComponent = ({ provide = {}, mockApollo } = {}) => {
     wrapper = extendedWrapper(
-      shallowMount(StorageCounterApp, {
+      shallowMount(ProjectStorageApp, {
         localVue,
         apolloProvider: mockApollo,
         provide: {
-          ...defaultProvideValues,
+          ...defaultProjectProvideValues,
           ...provide,
         },
       }),
@@ -63,7 +63,7 @@ describe('Storage counter app', () => {
 
     beforeEach(async () => {
       mockApollo = createMockApolloProvider({
-        mockedValue: mockGetProjectStorageCountGraphQLResponse,
+        mockedValue: mockGetProjectStorageStatisticsGraphQLResponse,
       });
       createComponent({ mockApollo });
       await waitForPromises();
@@ -75,7 +75,7 @@ describe('Storage counter app', () => {
 
     it('renders correct usage quotas help link', () => {
       expect(findUsageQuotasHelpLink().attributes('href')).toBe(
-        defaultProvideValues.helpLinks.usageQuotasHelpPagePath,
+        defaultProjectProvideValues.helpLinks.usageQuotasHelpPagePath,
       );
     });
   });
@@ -129,7 +129,7 @@ describe('Storage counter app', () => {
 
     beforeEach(async () => {
       mockApollo = createMockApolloProvider({
-        mockedValue: mockGetProjectStorageCountGraphQLResponse,
+        mockedValue: mockGetProjectStorageStatisticsGraphQLResponse,
       });
       createComponent({ mockApollo });
       await waitForPromises();
@@ -143,7 +143,7 @@ describe('Storage counter app', () => {
       const {
         __typename,
         ...statistics
-      } = mockGetProjectStorageCountGraphQLResponse.data.project.statistics;
+      } = mockGetProjectStorageStatisticsGraphQLResponse.data.project.statistics;
       expect(findUsageGraph().props('rootStorageStatistics')).toMatchObject(statistics);
     });
   });

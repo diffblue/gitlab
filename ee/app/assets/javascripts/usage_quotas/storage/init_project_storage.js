@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
-import StorageCounterApp from './components/app.vue';
+import ProjectStorageApp from './components/project_storage_app.vue';
 
 Vue.use(VueApollo);
 
@@ -45,7 +45,7 @@ export default (containerId = 'js-project-storage-count-app') => {
       },
     },
     render(createElement) {
-      return createElement(StorageCounterApp);
+      return createElement(ProjectStorageApp);
     },
   });
 };

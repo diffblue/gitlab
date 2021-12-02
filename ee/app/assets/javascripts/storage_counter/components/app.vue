@@ -10,10 +10,10 @@ import {
 import { parseBoolean } from '~/lib/utils/common_utils';
 import UsageGraph from '~/vue_shared/components/storage_counter/usage_graph.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
 import { PROJECTS_PER_PAGE } from '../constants';
 import query from '../queries/storage.query.graphql';
 import { formatUsageSize, parseGetStorageResults } from '../utils';
-import ProjectsTable from './projects_table.vue';
 import StorageInlineAlert from './storage_inline_alert.vue';
 import TemporaryStorageIncreaseModal from './temporary_storage_increase_modal.vue';
 import UsageStatistics from './usage_statistics.vue';
@@ -26,7 +26,7 @@ export default {
     GlButton,
     GlSprintf,
     UsageGraph,
-    ProjectsTable,
+    ProjectList,
     UsageStatistics,
     StorageInlineAlert,
     GlKeysetPagination,
@@ -230,7 +230,7 @@ export default {
         />
       </div>
     </div>
-    <projects-table
+    <project-list
       :projects="namespaceProjects"
       :is-loading="isQueryLoading"
       :additional-purchased-storage-size="namespace.additionalPurchasedStorageSize || 0"

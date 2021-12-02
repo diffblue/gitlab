@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import StorageApp from 'ee/storage_counter/components/app.vue';
-import Project from 'ee/storage_counter/components/project.vue';
-import ProjectsTable from 'ee/storage_counter/components/projects_table.vue';
+import CollapsibleProjectStorageDetail from 'ee/usage_quotas/storage/components/collapsible_project_storage_detail.vue';
+import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
 import StorageInlineAlert from 'ee/storage_counter/components/storage_inline_alert.vue';
 import TemporaryStorageIncreaseModal from 'ee/storage_counter/components/temporary_storage_increase_modal.vue';
 import UsageStatistics from 'ee/storage_counter/components/usage_statistics.vue';
@@ -22,7 +22,7 @@ describe('Storage counter app', () => {
   const findUsageGraph = () => wrapper.find(UsageGraph);
   const findUsageStatistics = () => wrapper.find(UsageStatistics);
   const findStorageInlineAlert = () => wrapper.find(StorageInlineAlert);
-  const findProjectsTable = () => wrapper.find(ProjectsTable);
+  const findProjectList = () => wrapper.find(ProjectList);
   const findPrevButton = () => wrapper.find('[data-testid="prevButton"]');
   const findNextButton = () => wrapper.find('[data-testid="nextButton"]');
 
@@ -74,7 +74,7 @@ describe('Storage counter app', () => {
 
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.findAll(Project)).toHaveLength(3);
+    expect(wrapper.findAll(CollapsibleProjectStorageDetail)).toHaveLength(3);
   });
 
   describe('limit', () => {
@@ -232,21 +232,21 @@ describe('Storage counter app', () => {
     it('triggers search if user enters search input', () => {
       expect(wrapper.vm.searchTerm).toBe('');
 
-      findProjectsTable().vm.$emit('search', sampleSearchTerm);
+      findProjectList().vm.$emit('search', sampleSearchTerm);
 
       expect(wrapper.vm.searchTerm).toBe(sampleSearchTerm);
     });
 
     it('triggers search if user clears the entered search input', () => {
-      const projectsTable = findProjectsTable();
+      const projectList = findProjectList();
 
       expect(wrapper.vm.searchTerm).toBe('');
 
-      projectsTable.vm.$emit('search', sampleSearchTerm);
+      projectList.vm.$emit('search', sampleSearchTerm);
 
       expect(wrapper.vm.searchTerm).toBe(sampleSearchTerm);
 
-      projectsTable.vm.$emit('search', '');
+      projectList.vm.$emit('search', '');
 
       expect(wrapper.vm.searchTerm).toBe('');
     });
@@ -254,7 +254,7 @@ describe('Storage counter app', () => {
     it('does not trigger search if user enters short search input', () => {
       expect(wrapper.vm.searchTerm).toBe('');
 
-      findProjectsTable().vm.$emit('search', sampleShortSearchTerm);
+      findProjectList().vm.$emit('search', sampleShortSearchTerm);
 
       expect(wrapper.vm.searchTerm).toBe('');
     });

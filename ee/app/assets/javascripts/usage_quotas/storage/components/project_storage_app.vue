@@ -11,23 +11,23 @@ import {
   TOTAL_USAGE_DEFAULT_TEXT,
   HELP_LINK_ARIA_LABEL,
 } from '../constants';
-import getProjectStorageCount from '../queries/project_storage.query.graphql';
+import getProjectStorageStatistics from '../queries/project_storage.query.graphql';
 import { parseGetProjectStorageResults } from '../utils';
-import StorageTable from './storage_table.vue';
+import ProjectStorageDetail from './project_storage_detail.vue';
 
 export default {
-  name: 'StorageCounterApp',
+  name: 'ProjectStorageApp',
   components: {
     GlAlert,
     GlLink,
     GlLoadingIcon,
-    StorageTable,
     UsageGraph,
+    ProjectStorageDetail,
   },
   inject: ['projectPath', 'helpLinks'],
   apollo: {
     project: {
-      query: getProjectStorageCount,
+      query: getProjectStorageStatistics,
       variables() {
         return {
           fullPath: this.projectPath,
@@ -101,6 +101,6 @@ export default {
     <div v-if="project.statistics" class="gl-w-full">
       <usage-graph :root-storage-statistics="project.statistics" :limit="0" />
     </div>
-    <storage-table :storage-types="storageTypes" />
+    <project-storage-detail :storage-types="storageTypes" />
   </div>
 </template>
