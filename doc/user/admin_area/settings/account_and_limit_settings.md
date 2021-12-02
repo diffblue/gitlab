@@ -224,8 +224,13 @@ To set a lifetime on how long SSH keys are valid:
 
 Once a lifetime for SSH keys is set, GitLab:
 
-- Applies the lifetime for new SSH keys.
-- Requires users to set an expiration date and a date no later than the allowed lifetime.
+- Requires users to set an expiration date that is no later than the allowed lifetime on new
+  SSH keys.
+- Applies the lifetime restriction to existing SSH keys. Keys with no expiry or a lifetime
+  greater than the maximum immediately become invalid.
+
+NOTE:
+When a user's SSH key becomes invalid they can delete and re-add the same key again.
 
 ## Allow expired SSH keys to be used **(ULTIMATE SELF)**
 
