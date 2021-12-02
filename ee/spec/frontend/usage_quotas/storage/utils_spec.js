@@ -1,26 +1,29 @@
-import { parseGetProjectStorageResults } from '~/projects/storage_counter/utils';
+import { parseGetProjectStorageResults } from 'ee/usage_quotas/storage/utils';
 import {
-  mockGetProjectStorageCountGraphQLResponse,
   projectData,
-  defaultProvideValues,
+  mockGetProjectStorageStatisticsGraphQLResponse,
+  defaultProjectProvideValues,
 } from './mock_data';
 
 describe('parseGetProjectStorageResults', () => {
   it('parses project statistics correctly', () => {
     expect(
       parseGetProjectStorageResults(
-        mockGetProjectStorageCountGraphQLResponse.data,
-        defaultProvideValues.helpLinks,
+        mockGetProjectStorageStatisticsGraphQLResponse.data,
+        defaultProjectProvideValues.helpLinks,
       ),
     ).toMatchObject(projectData);
   });
 
   it('includes storage type with size of 0 in returned value', () => {
-    const mockedResponse = mockGetProjectStorageCountGraphQLResponse.data;
+    const mockedResponse = mockGetProjectStorageStatisticsGraphQLResponse.data;
     // ensuring a specific storage type item has size of 0
     mockedResponse.project.statistics.repositorySize = 0;
 
-    const response = parseGetProjectStorageResults(mockedResponse, defaultProvideValues.helpLinks);
+    const response = parseGetProjectStorageResults(
+      mockedResponse,
+      defaultProjectProvideValues.helpLinks,
+    );
 
     expect(response.storage.storageTypes).toEqual(
       expect.arrayContaining([

@@ -1,12 +1,12 @@
 import { shallowMount } from '@vue/test-utils';
-import Project from 'ee/storage_counter/components/project.vue';
-import ProjectsTable from 'ee/storage_counter/components/projects_table.vue';
+import CollapsibleProjectStorageDetail from 'ee/usage_quotas/storage/components/collapsible_project_storage_detail.vue';
+import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
 import { projects } from '../mock_data';
 
 let wrapper;
 
 const createComponent = ({ additionalRepoStorageByNamespace = false } = {}) => {
-  wrapper = shallowMount(ProjectsTable, {
+  wrapper = shallowMount(ProjectList, {
     propsData: {
       projects,
       additionalPurchasedStorageSize: 0,
@@ -19,9 +19,9 @@ const createComponent = ({ additionalRepoStorageByNamespace = false } = {}) => {
   });
 };
 
-const findTableRows = () => wrapper.findAll(Project);
+const findTableRows = () => wrapper.findAll(CollapsibleProjectStorageDetail);
 
-describe('Usage Quotas project table component', () => {
+describe('ProjectList', () => {
   beforeEach(() => {
     createComponent();
   });

@@ -1,10 +1,10 @@
 import { GlTableLite } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import StorageTable from '~/projects/storage_counter/components/storage_table.vue';
-import { projectData, defaultProvideValues } from '../mock_data';
+import ProjectStorageDetail from 'ee/usage_quotas/storage/components/project_storage_detail.vue';
+import { projectData, projectHelpLinks } from '../mock_data';
 
-describe('StorageTable', () => {
+describe('ProjectStorageDetail', () => {
   let wrapper;
 
   const defaultProps = {
@@ -13,7 +13,7 @@ describe('StorageTable', () => {
 
   const createComponent = (props = {}) => {
     wrapper = extendedWrapper(
-      mount(StorageTable, {
+      mount(ProjectStorageDetail, {
         propsData: {
           ...defaultProps,
           ...props,
@@ -39,7 +39,7 @@ describe('StorageTable', () => {
         expect(wrapper.findByTestId(`${id}-description`).text()).toBe(description);
         expect(wrapper.findByTestId(`${id}-icon`).props('name')).toBe(id);
         expect(wrapper.findByTestId(`${id}-help-link`).attributes('href')).toBe(
-          defaultProvideValues.helpLinks[id.replace(`Size`, `HelpPagePath`)]
+          projectHelpLinks[id.replace(`Size`, `HelpPagePath`)]
             .replace(`Size`, ``)
             .replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`),
         );

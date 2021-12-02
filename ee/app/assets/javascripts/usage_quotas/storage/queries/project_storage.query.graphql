@@ -1,4 +1,4 @@
-query getProjectStorageCount($fullPath: ID!) {
+query getProjectStorageStatistics($fullPath: ID!) {
   project(fullPath: $fullPath) {
     id
     statistics {

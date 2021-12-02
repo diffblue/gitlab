@@ -27,7 +27,7 @@ import {
   FiltersInfo,
 } from '../boards_util';
 
-import { EpicFilterType, GroupByParamType, FilterFields } from '../constants';
+import { EpicFilterType, GroupByParamType, FilterFields, IterationIDs } from '../constants';
 import createEpicBoardListMutation from '../graphql/epic_board_list_create.mutation.graphql';
 import epicCreateMutation from '../graphql/epic_create.mutation.graphql';
 import epicMoveListMutation from '../graphql/epic_move_list.mutation.graphql';
@@ -35,6 +35,7 @@ import epicsSwimlanesQuery from '../graphql/epics_swimlanes.query.graphql';
 import listUpdateLimitMetricsMutation from '../graphql/list_update_limit_metrics.mutation.graphql';
 import listsEpicsQuery from '../graphql/lists_epics.query.graphql';
 import subGroupsQuery from '../graphql/sub_groups.query.graphql';
+import currentIterationQuery from '../graphql/board_current_iteration.query.graphql';
 import updateBoardEpicUserPreferencesMutation from '../graphql/update_board_epic_user_preferences.mutation.graphql';
 
 import * as types from './mutation_types';
@@ -93,6 +94,46 @@ export { gqlClient };
 
 export default {
   ...actionsCE,
+
+  addListNewIssue: async (
+    { state: { boardConfig, boardType, fullPath }, dispatch, commit },
+    issueInputObj,
+  ) => {
+    const { iterationId } = boardConfig;
+    let { iterationCadenceId } = boardConfig;
+
+    if (!iterationCadenceId && iterationId === IterationIDs.CURRENT) {
+      const iteration = await gqlClient
+        .query({
+          query: currentIterationQuery,
+          context: {
+            isSingleRequest: true,
+          },
+          variables: {
+            isGroup: boardType === BoardType.group,
+            fullPath,
+          },
+        })
+        .then(({ data }) => {
+          return data[boardType]?.iterations?.nodes?.[0];
+        });
+
+      iterationCadenceId = iteration.iterationCadence.id;
+    }
+
+    return actionsCE.addListNewIssue(
+      {
+        state: {
+          boardConfig: { ...boardConfig, iterationId, iterationCadenceId },
+          boardType,
+          fullPath,
+        },
+        dispatch,
+        commit,
+      },
+      issueInputObj,
+    );
+  },
 
   setFilters: ({ commit, dispatch, state: { issuableType } }, filters) => {
     if (filters.groupBy === GroupByParamType.epic) {

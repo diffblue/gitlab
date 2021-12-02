@@ -1,4 +1,8 @@
-import { FiltersInfo as FiltersInfoCE } from '~/boards/boards_util';
+import {
+  FiltersInfo as FiltersInfoCE,
+  formatIssueInput as formatIssueInputCe,
+} from '~/boards/boards_util';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { objectToQuery, queryToObject } from '~/lib/utils/url_utility';
 import {
   EPIC_LANE_BASE_HEIGHT,
@@ -11,6 +15,17 @@ import {
   EpicFilterType,
 } from './constants';
 
+export {
+  formatBoardLists,
+  formatListIssues,
+  formatListsPageInfo,
+  formatIssue,
+  updateListPosition,
+  moveItemListHelper,
+  getMoveData,
+  filterVariables,
+} from '~/boards/boards_util';
+
 export function getMilestone({ milestone }) {
   return milestone || null;
 }
@@ -21,6 +36,30 @@ export function fullEpicId(epicId) {
 
 export function fullMilestoneId(milestoneId) {
   return `gid://gitlab/Milestone/${milestoneId}`;
+}
+
+function fullIterationId(id) {
+  if (!id) {
+    return null;
+  }
+
+  if (id === IterationIDs.CURRENT) {
+    return 'CURRENT';
+  }
+
+  if (id === IterationIDs.UPCOMING) {
+    return 'UPCOMING';
+  }
+
+  return `gid://gitlab/Iteration/${id}`;
+}
+
+function fullIterationCadenceId(id) {
+  if (!id) {
+    return null;
+  }
+
+  return `gid://gitlab/Iterations::Cadence/${getIdFromGraphQLId(id)}`;
 }
 
 export function fullUserId(userId) {
@@ -93,6 +132,34 @@ export function formatEpicInput(epicInput, boardConfig) {
   return {
     ...restEpicInput,
     addLabelIds: [...labelIds, ...boardConfig.labelIds],
+  };
+}
+
+function iterationObj(iterationId) {
+  const isWildcard = Object.values(IterationIDs).includes(iterationId);
+  const key = isWildcard ? 'iterationWildcardId' : 'iterationId';
+
+  return {
+    [key]: fullIterationId(iterationId),
+  };
+}
+
+export function formatIssueInput(issueInput, boardConfig) {
+  const { iterationId, iterationCadenceId } = boardConfig;
+
+  const iteration = gon.features?.iterationCadences
+    ? {
+        iterationCadenceId: fullIterationCadenceId(iterationCadenceId),
+        ...iterationObj(iterationId),
+      }
+    : {
+        iterationCadenceId,
+        ...iterationObj(iterationId),
+      };
+
+  return {
+    ...formatIssueInputCe(issueInput, boardConfig),
+    ...iteration,
   };
 }
 

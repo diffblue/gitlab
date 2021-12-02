@@ -1,5 +1,5 @@
 import LinkedTabs from '~/lib/utils/bootstrap_linked_tabs';
-import storageCounter from '~/projects/storage_counter';
+import initProjectStorage from 'ee/usage_quotas/storage/init_project_storage';
 import initSearchSettings from '~/search_settings';
 
 const initLinkedTabs = () => {
@@ -15,7 +15,7 @@ const initLinkedTabs = () => {
 };
 
 const initVueApp = () => {
-  storageCounter('js-project-storage-count-app');
+  initProjectStorage('js-project-storage-count-app');
 };
 
 initVueApp();
