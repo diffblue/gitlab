@@ -1,6 +1,8 @@
 - @html_class = "subscriptions-layout-html"
 - page_title _('Your first project')
 - visibility_level = selected_visibility_level(@project, params.dig(:project, :visibility_level))
+- content_for :page_specific_javascripts do
+  = render "layouts/one_trust"
 
 - if in_trial_during_signup_flow? || in_trial_onboarding_flow?
   = render 'registrations/trial_is_activated_banner'

@@ -4,6 +4,7 @@ module Registrations
   class GroupsProjectsController < ApplicationController
     include Registrations::CreateProject
     include Registrations::CreateGroup
+    include OneTrustCSP
 
     layout 'minimal'
 
