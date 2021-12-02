@@ -14,6 +14,24 @@ module EE
               super
             end
           end
+
+          def activate_user_based_on_user_cap?(user)
+            return false unless user&.activate_based_on_user_cap?
+
+            begin
+              !::User.user_cap_reached?
+            rescue ActiveRecord::QueryAborted => e
+              ::Gitlab::ErrorTracking.track_exception(e, user_email: user.email)
+              false
+            end
+          end
+
+          def log_user_changes(user, protocol, message)
+            ::Gitlab::AppLogger.info(
+              "#{protocol}(#{auth_hash.provider}) account \"#{auth_hash.uid}\" #{message} " \
+              "GitLab user \"#{user.name}\" (#{user.email})"
+            )
+          end
         end
       end
     end
