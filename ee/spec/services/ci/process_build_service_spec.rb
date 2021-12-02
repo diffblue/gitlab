@@ -52,6 +52,28 @@ RSpec.describe Ci::ProcessBuildService, '#execute' do
 
           expect(ci_build.pending?).to be_truthy
         end
+
+        context 'and environment needs approval' do
+          before do
+            protected_environment.update!(required_approval_count: 1)
+          end
+
+          it 'makes the build a manual action' do
+            expect { subject }.to change { ci_build.status }.from('created').to('manual')
+          end
+
+          context 'and the build has a deployment' do
+            let(:deployment) { create(:deployment, deployable: ci_build, environment: environment, user: user, project: project) }
+
+            it 'blocks the deployment' do
+              expect { subject }.to change { deployment.reload.status }.from('created').to('blocked')
+            end
+
+            it 'makes the build a manual action' do
+              expect { subject }.to change { ci_build.status }.from('created').to('manual')
+            end
+          end
+        end
       end
     end
   end
