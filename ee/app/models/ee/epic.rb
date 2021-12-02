@@ -221,7 +221,7 @@ module EE
           }x
           %r{
             (#{group_regexp})?
-            (?:#{combined_prefix})(?<epic>\d+)(?<format>\+)?
+            (?:#{combined_prefix})#{::Gitlab::Regex.epic}
           }x
         end
       end
@@ -236,7 +236,7 @@ module EE
             #{Regexp.escape(::Gitlab.config.gitlab.url)}
             \/groups\/(?<group>#{::Gitlab::PathRegex::FULL_NAMESPACE_FORMAT_REGEX})
             \/-\/epics
-            \/(?<epic>\d+)
+            \/#{::Gitlab::Regex.epic}
             (?<path>
               (\/[a-z0-9_=-]+)*\/*
             )?
