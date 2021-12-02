@@ -53,7 +53,7 @@ export default {
       />
     </gl-form-group>
     <confirm-danger
-      qa-button-class="qa-transfer-button"
+      button-class="qa-transfer-button"
       :disabled="!hasSelectedNamespace"
       :phrase="confirmationPhrase"
       :button-text="confirmButtonText"

@@ -36,11 +36,6 @@ export default {
       required: false,
       default: 'confirm-danger-button',
     },
-    qaButtonClass: {
-      type: String,
-      required: false,
-      default: '',
-    },
   },
   modalId: CONFIRM_DANGER_MODAL_ID,
 };

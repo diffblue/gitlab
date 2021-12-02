@@ -69,29 +69,25 @@ export default {
     <template #header>
       <gl-search-box-by-type v-model.trim="searchTerm" />
     </template>
-    <template v-if="hasGroupNamespaces">
-      <div class="qa-namespaces-list-groups">
-        <gl-dropdown-section-header>{{ $options.i18n.GROUPS }}</gl-dropdown-section-header>
-        <gl-dropdown-item
-          v-for="item in filteredGroupNamespaces"
-          :key="item.id"
-          class="qa-namespaces-list-item"
-          @click="handleSelect(item)"
-          >{{ item.humanName }}</gl-dropdown-item
-        >
-      </div>
-    </template>
-    <template v-if="hasUserNamespaces">
-      <div class="qa-namespaces-list-users">
-        <gl-dropdown-section-header>{{ $options.i18n.USERS }}</gl-dropdown-section-header>
-        <gl-dropdown-item
-          v-for="item in filteredUserNamespaces"
-          :key="item.id"
-          class="qa-namespaces-list-item"
-          @click="handleSelect(item)"
-          >{{ item.humanName }}</gl-dropdown-item
-        >
-      </div>
-    </template>
+    <div v-if="hasGroupNamespaces" class="qa-namespaces-list-groups">
+      <gl-dropdown-section-header>{{ $options.i18n.GROUPS }}</gl-dropdown-section-header>
+      <gl-dropdown-item
+        v-for="item in filteredGroupNamespaces"
+        :key="item.id"
+        class="qa-namespaces-list-item"
+        @click="handleSelect(item)"
+        >{{ item.humanName }}</gl-dropdown-item
+      >
+    </div>
+    <div v-if="hasUserNamespaces" class="qa-namespaces-list-users">
+      <gl-dropdown-section-header>{{ $options.i18n.USERS }}</gl-dropdown-section-header>
+      <gl-dropdown-item
+        v-for="item in filteredUserNamespaces"
+        :key="item.id"
+        class="qa-namespaces-list-item"
+        @click="handleSelect(item)"
+        >{{ item.humanName }}</gl-dropdown-item
+      >
+    </div>
   </gl-dropdown>
 </template>
