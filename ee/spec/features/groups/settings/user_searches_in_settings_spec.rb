@@ -18,12 +18,4 @@ RSpec.describe 'User searches group settings', :js do
 
     it_behaves_like 'can highlight results', 'Group Hooks'
   end
-
-  context 'in Usage Quotas page' do
-    before do
-      visit group_usage_quotas_path(group)
-    end
-
-    it_behaves_like 'can highlight results', 'Usage of group'
-  end
 end
