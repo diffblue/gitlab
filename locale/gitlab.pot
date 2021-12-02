@@ -40578,6 +40578,9 @@ msgstr ""
 msgid "can't be nil"
 msgstr ""
 
+msgid "can't be solely blank"
+msgstr ""
+
 msgid "can't be the same as the source project"
 msgstr ""
 
