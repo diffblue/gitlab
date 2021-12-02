@@ -65,7 +65,7 @@ module EE
         def all_iteration_lists
           # Note that the names are very similar but these are different.
           # One is a license name and the other is a feature flag
-          if parent.feature_available?(:board_iteration_lists) && ::Feature.enabled?(:iteration_board_lists, parent, default_enabled: :yaml)
+          if parent.feature_available?(:board_iteration_lists)
             board.lists.iteration.where.not(iteration_id: nil)
           else
             ::List.none

@@ -71,16 +71,6 @@ RSpec.describe Boards::Lists::ListService do
           expect(execute_service)
             .to match_array([backlog_list, list, iteration_list, board.lists.closed.first])
         end
-
-        context 'when the feature flag is disabled' do
-          before do
-            stub_feature_flags(iteration_board_lists: false)
-          end
-
-          it 'filters out iteration lists that might have been created while subscribed' do
-            expect(execute_service).to match_array [backlog_list, list, board.lists.closed.first]
-          end
-        end
       end
 
       context 'when feature is disabled' do
