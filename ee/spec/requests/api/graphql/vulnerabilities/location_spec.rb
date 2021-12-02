@@ -9,11 +9,33 @@ RSpec.describe 'Query.vulnerabilities.location' do
 
   let_it_be(:project) { create(:project) }
   let_it_be(:user) { create(:user, security_dashboard_projects: [project]) }
+  let_it_be(:agent) { create(:cluster_agent, project: project) }
 
   let_it_be(:fields) do
     <<~QUERY
       location {
         __typename
+        ... on VulnerabilityLocationClusterImageScanning {
+          image
+          operatingSystem
+          dependency {
+            version
+            package {
+              name
+            }
+          }
+          kubernetesResource {
+            namespace
+            kind
+            name
+            containerName
+            clusterId
+            agent {
+              id
+              name
+            }
+          }
+        }
         ... on VulnerabilityLocationContainerScanning {
           image
           operatingSystem
@@ -154,6 +176,14 @@ RSpec.describe 'Query.vulnerabilities.location' do
             package: {
               name: 'vulnerable_container'
             }
+          },
+          kubernetes_resource: {
+            namespace: "production",
+            kind: "Deployment",
+            name: "nginx-deployment",
+            container_name: "nginx",
+            cluster_id: "1",
+            agent_id: agent.id
           }
         }
       }
@@ -167,14 +197,46 @@ RSpec.describe 'Query.vulnerabilities.location' do
       )
     end
 
-    it 'returns a container location' do
+    it 'returns a cluster image scanning location' do
       location = subject.first['location']
 
-      expect(location['__typename']).to eq('VulnerabilityLocationContainerScanning')
+      expect(location['__typename']).to eq('VulnerabilityLocationClusterImageScanning')
       expect(location['image']).to eq('vulnerable_image')
       expect(location['operatingSystem']).to eq('vulnerable_os')
       expect(location['dependency']['version']).to eq('6.6.6')
       expect(location['dependency']['package']['name']).to eq('vulnerable_container')
+      expect(location['kubernetesResource']['namespace']).to eq('production')
+      expect(location['kubernetesResource']['kind']).to eq('Deployment')
+      expect(location['kubernetesResource']['name']).to eq('nginx-deployment')
+      expect(location['kubernetesResource']['containerName']).to eq('nginx')
+      expect(location['kubernetesResource']['clusterId']).to eq('gid://gitlab/Clusters::Cluster/1')
+    end
+
+    context 'when user is not authorized to administrate clusters' do
+      before do
+        project.add_developer(user)
+        post_graphql(query, current_user: user)
+      end
+
+      it 'does not return agent data' do
+        location = subject.first['location']
+
+        expect(location['kubernetesResource']['agent']).to be_nil
+      end
+    end
+
+    context 'when user is authorized to administrate clusters' do
+      before do
+        project.add_maintainer(user)
+        post_graphql(query, current_user: user)
+      end
+
+      it 'returns agent data' do
+        location = subject.first['location']
+
+        expect(location['kubernetesResource']['agent']['id']).to eq("gid://gitlab/Clusters::Agent/#{agent.id}")
+        expect(location['kubernetesResource']['agent']['name']).to eq(agent.name)
+      end
     end
   end
 
