@@ -65,10 +65,10 @@ describe('Job actions cell', () => {
   });
 
   it.each`
-    button                        | action                  | jobType
-    ${findPlayButton}             | ${'play'}               | ${cannotPlayJob}
-    ${findRetryButton}            | ${'retry'}              | ${cannotRetryJob}
-    ${findPlayScheduledJobButton} | ${'download artifacts'} | ${cannotPlayScheduledJob}
+    button                        | action              | jobType
+    ${findPlayButton}             | ${'play'}           | ${cannotPlayJob}
+    ${findRetryButton}            | ${'retry'}          | ${cannotRetryJob}
+    ${findPlayScheduledJobButton} | ${'play scheduled'} | ${cannotPlayScheduledJob}
   `('does not display the $action button if user cannot update build', ({ button, jobType }) => {
     createComponent(jobType);
 
