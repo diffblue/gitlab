@@ -91,6 +91,16 @@ RSpec.describe API::StatusChecks do
         expect { subject }.to change { MergeRequests::StatusCheckResponse.count }.by 1
       end
 
+      context 'when external status check ID does not belong to the requested project' do
+        let_it_be(:rule) { create(:external_status_check) }
+
+        it 'returns a not found status' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:not_found)
+        end
+      end
+
       context 'when sha is not the source branch HEAD' do
         let(:sha) { 'notarealsha' }
 
