@@ -1,0 +1,25 @@
+query BoardCurrentIteration($fullPath: ID!, $isGroup: Boolean = true) {
+  group(fullPath: $fullPath) @include(if: $isGroup) {
+    id
+    iterations(state: current, first: 1, includeAncestors: true) {
+      nodes {
+        id
+        iterationCadence {
+          id
+        }
+      }
+    }
+  }
+
+  project(fullPath: $fullPath) @skip(if: $isGroup) {
+    id
+    iterations(state: current, first: 1, includeAncestors: true) {
+      nodes {
+        id
+        iterationCadence {
+          id
+        }
+      }
+    }
+  }
+}

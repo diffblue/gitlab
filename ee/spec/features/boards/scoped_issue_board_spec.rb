@@ -278,7 +278,7 @@ RSpec.describe 'Scoped issue boards', :js do
       context 'iteration' do
         context 'group with iterations' do
           let_it_be(:cadence) { create(:iterations_cadence, group: group) }
-          let_it_be(:iteration) { create(:iteration, group: group, iterations_cadence: cadence) }
+          let_it_be(:iteration) { create(:current_iteration, :skip_future_date_validation, iterations_cadence: cadence, group: group, start_date: 1.day.ago, due_date: Date.today) }
 
           context 'board not scoped to iteration' do
             it 'sets board to current iteration' do
@@ -293,6 +293,29 @@ RSpec.describe 'Scoped issue boards', :js do
           end
 
           context 'board scoped to current iteration' do
+            before do
+              stub_feature_flags(iteration_cadences: false)
+            end
+
+            it 'adds current iteration to new issues' do
+              update_board_scope('current_iteration', true)
+
+              wait_for_requests
+
+              page.within(first('.board')) do
+                click_button 'New issue'
+              end
+
+              page.within(first('.board-new-issue-form')) do
+                find('.form-control').set('issue in current iteration')
+                click_button 'Create issue'
+              end
+
+              wait_for_requests
+
+              expect(find('[data-testid="issue-boards-sidebar"]')).to have_text(iteration.title)
+            end
+
             it 'removes current iteration from board' do
               create_board_scope('current_iteration', true)
 

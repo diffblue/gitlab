@@ -29,6 +29,14 @@ fragment IssueNode on Issue {
   milestone {
     ...MilestoneFragment
   }
+  iteration {
+    id
+    title
+    iterationCadence {
+      id
+      title
+    }
+  }
   labels {
     nodes {
       id
