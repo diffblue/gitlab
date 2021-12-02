@@ -29,7 +29,7 @@ export const I18N_CI_MINUTES_SUMMARY_TOTAL = s__('Checkout|Total minutes: %{quan
 export const I18N_CI_MINUTES_ALERT_TEXT = s__(
   "Checkout|CI minute packs are only used after you've used your subscription's monthly quota. The additional minutes will roll over month to month and are valid for one year.",
 );
-export const I18N_CI_MINUTES_PRICE_PRE_UNIT = s__(
+export const I18N_CI_MINUTES_PRICE_PER_UNIT = s__(
   'Checkout|$%{selectedPlanPrice} per pack of 1,000 minutes',
 );
 export const I18N_CI_MINUTES_TITLE = s__("Checkout|%{name}'s CI minutes");
@@ -40,7 +40,7 @@ export const I18N_STORAGE_FORMULA_TOTAL = s__('Checkout|%{quantity} GB of storag
 export const i18nStorageSummaryTitle = (quantity) =>
   n__('Checkout|%{quantity} storage pack', 'Checkout|%{quantity} storage packs', quantity);
 export const I18N_STORAGE_SUMMARY_TOTAL = s__('Checkout|Total storage: %{quantity} GB');
-export const I18N_STORAGE_PRICE_PRE_UNIT = s__(
+export const I18N_STORAGE_PRICE_PER_UNIT = s__(
   'Checkout|$%{selectedPlanPrice} per 10 GB storage per pack',
 );
 export const I18N_STORAGE_TITLE = s__("Checkout|%{name}'s storage subscription");
