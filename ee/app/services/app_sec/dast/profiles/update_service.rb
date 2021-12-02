@@ -99,9 +99,9 @@ module AppSec
 
           # params[:dast_profile_schedule] is `Types::Dast::ProfileScheduleInputType` object.
           # Using to_h method to convert object into equivalent hash.
-          dast_profile_schedule_params = params[:dast_profile_schedule]
+          dast_profile_schedule_params = params[:dast_profile_schedule]&.to_h
           dast_profile_schedule_params[:user_id] = current_user.id unless schedule&.owner_valid?
-          dast_profile_schedule_params&.to_h
+          dast_profile_schedule_params
         end
 
         def build_auditors!
