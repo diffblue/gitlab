@@ -91,24 +91,6 @@ RSpec.describe 'User sees Security Configuration table', :js do
           expect(page).to have_link('Configure DAST')
         end
       end
-
-      context 'with configure_iac_scanning_via_mr feature flag off' do
-        before do
-          stub_feature_flags(configure_iac_scanning_via_mr: false)
-        end
-
-        it 'shows DAST card at the second position and no IaC Scanning card' do
-          visit(project_security_configuration_path(project))
-
-          within '[data-testid="security-testing-card"]:nth-of-type(2)' do
-            expect(page).to have_text('DAST')
-            expect(page).to have_text('Enabled')
-            expect(page).to have_link('Configure DAST')
-          end
-
-          expect(page).not_to have_text('Infrastructure as Code (IaC) Scanning')
-        end
-      end
     end
   end
 
