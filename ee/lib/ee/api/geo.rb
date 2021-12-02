@@ -38,7 +38,9 @@ module EE
             #
             # The cached values are invalidated when changed.
             #
-            if ::Feature.enabled?(:geo_secondary_proxy, default_enabled: :yaml) && ::Gitlab::Geo.secondary_with_primary?
+            return super unless ::Gitlab::Geo.secondary_with_primary?
+
+            if ::Gitlab::Geo.secondary_with_unified_url? || ::Feature.enabled?(:geo_secondary_proxy_separate_urls, default_enabled: :yaml)
               { geo_proxy_url: ::Gitlab::Geo.primary_node.internal_url }
             else
               super

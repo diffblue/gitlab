@@ -13,8 +13,12 @@ export default {
       autoCompleteIssues,
       projectsEndpoint,
       userSignedIn,
-      allowSubEpics,
       allowIssuableHealthStatus,
+      allowScopedLabels,
+      allowSubEpics,
+      epicsWebUrl,
+      isShowingLabels,
+      issuesWebUrl,
     },
   ) {
     state.epicsEndpoint = epicsEndpoint;
@@ -23,8 +27,12 @@ export default {
     state.autoCompleteIssues = autoCompleteIssues;
     state.projectsEndpoint = projectsEndpoint;
     state.userSignedIn = userSignedIn;
-    state.allowSubEpics = allowSubEpics;
     state.allowIssuableHealthStatus = allowIssuableHealthStatus;
+    state.allowScopedLabels = allowScopedLabels;
+    state.allowSubEpics = allowSubEpics;
+    state.epicsWebUrl = epicsWebUrl;
+    state.isShowingLabels = isShowingLabels;
+    state.issuesWebUrl = issuesWebUrl;
   },
 
   [types.SET_INITIAL_PARENT_ITEM](state, data) {
@@ -278,5 +286,8 @@ export default {
   },
   [types.RECEIVE_DESCENDANT_GROUPS_FAILURE](state) {
     state.descendantGroupsFetchInProgress = false;
+  },
+  [types.SET_SHOW_LABELS](state, val) {
+    state.isShowingLabels = val;
   },
 };

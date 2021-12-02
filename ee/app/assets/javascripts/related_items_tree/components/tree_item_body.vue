@@ -1,11 +1,12 @@
 <script>
 import {
-  GlTooltipDirective,
-  GlModalDirective,
-  GlLink,
-  GlIcon,
   GlButton,
+  GlIcon,
+  GlLabel,
+  GlLink,
+  GlModalDirective,
   GlTooltip,
+  GlTooltipDirective,
 } from '@gitlab/ui';
 import { isEmpty, isNumber } from 'lodash';
 import { mapState, mapActions } from 'vuex';
@@ -13,6 +14,7 @@ import { mapState, mapActions } from 'vuex';
 import ItemWeight from 'ee/boards/components/issue_card_weight.vue';
 import ItemDueDate from '~/boards/components/issue_due_date.vue';
 import { __ } from '~/locale';
+import { isScopedLabel } from '~/lib/utils/common_utils';
 
 import ItemAssignees from '~/vue_shared/components/issue/issue_assignees.vue';
 import ItemMilestone from '~/vue_shared/components/issue/issue_milestone.vue';
@@ -27,6 +29,7 @@ export default {
   itemRemoveModalId,
   components: {
     GlIcon,
+    GlLabel,
     GlLink,
     GlTooltip,
     GlButton,
@@ -47,13 +50,27 @@ export default {
       type: Object,
       required: true,
     },
+    labelsFilterParam: {
+      type: String,
+      required: false,
+      default: 'label_name',
+    },
     item: {
       type: Object,
       required: true,
     },
   },
   computed: {
-    ...mapState(['childrenFlags', 'userSignedIn', 'allowSubEpics', 'allowIssuableHealthStatus']),
+    ...mapState([
+      'allowIssuableHealthStatus',
+      'allowScopedLabels',
+      'allowSubEpics',
+      'childrenFlags',
+      'epicsWebUrl',
+      'isShowingLabels',
+      'issuesWebUrl',
+      'userSignedIn',
+    ]),
     itemReference() {
       return this.item.reference;
     },
@@ -80,6 +97,9 @@ export default {
     },
     hasWeight() {
       return isNumber(this.item.weight);
+    },
+    showLabels() {
+      return this.isShowingLabels && this.item.labels?.length > 0;
     },
     stateText() {
       return this.isOpen ? __('Opened') : __('Closed');
@@ -159,6 +179,18 @@ export default {
         item,
       });
     },
+    showScopedLabel(label) {
+      return isScopedLabel(label) && this.allowScopedLabels;
+    },
+    labelFilterUrl(label) {
+      let basePath = this.issuesWebUrl;
+
+      if (this.isEpic) {
+        basePath = this.epicsWebUrl;
+      }
+
+      return `${basePath}?${this.labelsFilterParam}[]=${encodeURIComponent(label.title)}`;
+    },
   },
 };
 </script>
@@ -211,7 +243,7 @@ export default {
           </div>
 
           <div
-            class="item-meta gl-display-flex gl-flex-wrap mt-xl-0 flex-xl-nowrap gl-align-items-center gl-py-2 gl-ml-6"
+            class="item-meta gl-display-flex gl-flex-wrap mt-xl-0 gl-align-items-center gl-py-2 gl-ml-6"
           >
             <span class="gl-mr-5">{{ itemHierarchy }}</span>
             <gl-tooltip v-if="isEpic" :target="() => $refs.countBadge">
@@ -288,14 +320,28 @@ export default {
               v-if="showEpicHealthStatus"
               :health-status="item.healthStatus"
               data-testid="epic-health-status"
-              class="issuable-tag-valign"
+              class="issuable-tag-valign gl-mr-5"
             />
             <issue-health-status
               v-if="showIssueHealthStatus"
               :health-status="item.healthStatus"
               data-testid="issue-health-status"
-              class="issuable-tag-valign"
+              class="issuable-tag-valign gl-mr-5"
             />
+
+            <template v-if="showLabels">
+              <gl-label
+                v-for="label in item.labels"
+                :key="label.id"
+                :background-color="label.color"
+                :description="label.description"
+                :scoped="showScopedLabel(label)"
+                :target="labelFilterUrl(label)"
+                :title="label.title"
+                class="gl-mr-5 gl-mt-1 gl-mb-1 gl-label-sm"
+                tooltip-placement="top"
+              />
+            </template>
           </div>
         </div>
 

@@ -1,7 +1,6 @@
 <script>
 import { GlEmptyState } from '@gitlab/ui';
 import { mapActions, mapState, mapGetters } from 'vuex';
-import { toYmd } from '~/analytics/shared/utils';
 import PathNavigation from '~/cycle_analytics/components/path_navigation.vue';
 import StageTable from '~/cycle_analytics/components/stage_table.vue';
 import ValueStreamFilters from '~/cycle_analytics/components/value_stream_filters.vue';
@@ -84,7 +83,7 @@ export default {
       return this.createdAfter && this.createdBefore;
     },
     query() {
-      const selectedProjectIds = this.selectedProjectIds?.length ? this.selectedProjectIds : null;
+      const { project_ids, created_after, created_before } = this.cycleAnalyticsRequestParams;
       const paginationUrlParams = !this.isOverviewStageSelected
         ? {
             sort: this.pagination?.sort || null,
@@ -99,9 +98,9 @@ export default {
 
       return {
         value_stream_id: this.selectedValueStream?.id || null,
-        project_ids: selectedProjectIds,
-        created_after: toYmd(this.createdAfter),
-        created_before: toYmd(this.createdBefore),
+        project_ids,
+        created_after,
+        created_before,
         stage_id: (!this.isOverviewStageSelected && this.selectedStage?.id) || null, // the `overview` stage is always the default, so dont persist the id if its selected
         ...paginationUrlParams,
       };
