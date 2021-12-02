@@ -1563,6 +1563,7 @@ export const mockJobsQueryResponse = {
             userPermissions: {
               readBuild: true,
               readJobArtifacts: true,
+              updateBuild: true,
               __typename: 'JobPermissions',
             },
             __typename: 'CiJob',
