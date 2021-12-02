@@ -18,18 +18,16 @@ class GroupsWithTemplatesFinder
   attr_reader :group_id
 
   def extended_group_search
-    groups = Group.with_project_templates
-    groups_with_plan = Gitlab::ObjectHierarchy
-      .new(groups)
-      .base_and_ancestors
-      .with_feature_available_in_plan(:group_project_templates)
-
     # We're adding an extra query that will be removed once we remove the feature flag in https://gitlab.com/gitlab-org/gitlab/-/issues/339439
-    if ::Feature.enabled?(:linear_groups_template_finder_extended_group_search, current_group, default_enabled: :yaml)
-      groups_with_plan.self_and_descendants
-    else
-      Gitlab::ObjectHierarchy.new(groups_with_plan).base_and_descendants
-    end
+    groups = if Feature.enabled?(:linear_groups_template_finder_extended_group_search_ancestors_scopes, current_group, default_enabled: :yaml)
+               Group.with_project_templates.self_and_ancestors
+             else
+               Gitlab::ObjectHierarchy
+                 .new(Group.with_project_templates)
+                 .base_and_ancestors
+             end
+
+    groups.with_feature_available_in_plan(:group_project_templates).self_and_descendants
   end
 
   def simple_group_search(groups)

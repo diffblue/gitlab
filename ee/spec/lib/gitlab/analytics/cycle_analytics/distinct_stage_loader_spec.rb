@@ -5,9 +5,13 @@ require 'spec_helper'
 RSpec.describe Gitlab::Analytics::CycleAnalytics::DistinctStageLoader do
   let_it_be(:group) { create(:group) }
   let_it_be(:stage_1) { create(:cycle_analytics_group_stage, group: group, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_merged) }
-  let_it_be(:stage_2) { create(:cycle_analytics_group_stage, group: group, start_event_identifier: :issue_created, end_event_identifier: :issue_first_associated_with_milestone) }
-  let_it_be(:stage_duplicate) { create(:cycle_analytics_group_stage, group: group, start_event_identifier: :issue_created, end_event_identifier: :issue_first_associated_with_milestone) }
-  let_it_be(:stage_triplicate) { create(:cycle_analytics_group_stage, group: group, start_event_identifier: :issue_created, end_event_identifier: :issue_first_associated_with_milestone) }
+  let_it_be(:common_stage_params) { { start_event_identifier: :issue_created, end_event_identifier: :issue_first_associated_with_milestone } }
+  let_it_be(:stage_2) { create(:cycle_analytics_group_stage, group: group, **common_stage_params) }
+  let_it_be(:stage_duplicate) { create(:cycle_analytics_group_stage, group: group, **common_stage_params) }
+  let_it_be(:stage_triplicate) { create(:cycle_analytics_group_stage, group: group, **common_stage_params) }
+
+  let_it_be(:project) { create(:project, group: group) }
+  let_it_be(:project_stage) { create(:cycle_analytics_project_stage, project: project, **common_stage_params) }
 
   subject(:distinct_stages) { described_class.new(group: group).stages }
 

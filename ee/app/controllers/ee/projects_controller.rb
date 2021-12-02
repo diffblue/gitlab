@@ -10,10 +10,6 @@ module EE
       before_action :log_archive_audit_event, only: [:archive]
       before_action :log_unarchive_audit_event, only: [:unarchive]
 
-      before_action only: :show do
-        enable_sast_entry_points_experiment
-      end
-
       before_action only: :edit do
         push_frontend_feature_flag(:group_merge_request_approval_settings_feature_flag, project.root_ancestor, default_enabled: :yaml)
       end
@@ -187,19 +183,6 @@ module EE
 
     def log_unarchive_audit_event
       log_audit_event(message: 'Project unarchived')
-    end
-
-    def enable_sast_entry_points_experiment
-      return unless enable_sast_entry_points_experiment?(project)
-
-      experiment(:sast_entry_points, namespace: project.root_ancestor) do |e|
-        e.control {}
-        e.candidate(:banner) {}
-        e.candidate(:popover_light) {}
-        e.candidate(:popover_dark) {}
-
-        e.record!
-      end
     end
   end
 end

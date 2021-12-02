@@ -107,7 +107,6 @@ export default {
     :suggestions="epics"
     :get-active-token-value="getActiveEpic"
     :default-suggestions="availableDefaultEpics"
-    :recent-suggestions-storage-key="config.recentSuggestionsStorageKey"
     search-by="title"
     @fetch-suggestions="fetchEpicsBySearchTerm"
     v-on="$listeners"

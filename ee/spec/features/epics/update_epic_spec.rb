@@ -148,10 +148,10 @@ RSpec.describe 'Update Epic', :js do
 
     context 'epic sidebar' do
       it 'opens datepicker when clicking Edit button' do
-        page.within('.issuable-sidebar .block.start-date') do
+        page.within('.issuable-sidebar [data-testid="start-date"]') do
           click_button('Edit')
-          expect(find('.value-type-fixed')).to have_selector('.gl-datepicker')
-          expect(find('.value-type-fixed')).to have_selector('.gl-datepicker .pika-single.is-bound')
+          expect(find('[data-testid="expanded-content"]')).to have_selector('.gl-datepicker')
+          expect(find('[data-testid="expanded-content"]')).to have_selector('.gl-datepicker .pika-single.is-bound')
         end
       end
     end

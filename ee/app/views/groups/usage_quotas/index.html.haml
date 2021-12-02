@@ -1,5 +1,7 @@
 - page_title s_("UsageQuota|Usage")
 - url_to_purchase_storage = buy_storage_path(@group) if purchase_storage_link_enabled?(@group)
+- pending_members_page_path = pending_members_group_usage_quotas_path(@group) if Feature.enabled?(:saas_user_caps, @group.root_ancestor)
+- pending_members_count = Member.in_hierarchy(@group).with_state("awaiting").count
 
 - if show_product_purchase_success_alert?
   = render 'product_purchase_success_alert', product_name: params[:purchased_product]
@@ -24,7 +26,7 @@
         = s_('UsageQuota|Storage')
 .tab-content
   .tab-pane#seats-quota-tab
-    #js-seat-usage-app{ data: { namespace_id: @group.id, namespace_name: @group.name, seat_usage_export_path: group_seat_usage_path(@group, format: :csv) } }
+    #js-seat-usage-app{ data: { namespace_id: @group.id, namespace_name: @group.name, seat_usage_export_path: group_seat_usage_path(@group, format: :csv), pending_members_page_path: pending_members_page_path, pending_members_count: pending_members_count } }
   .tab-pane#pipelines-quota-tab
     = render "namespaces/pipelines_quota/list",
       locals: { namespace: @group, projects: @projects }

@@ -5469,6 +5469,9 @@ msgstr ""
 msgid "Billing|Users occupying seats in"
 msgstr ""
 
+msgid "Billing|View pending approvals"
+msgstr ""
+
 msgid "Billing|You are about to remove user %{username} from your subscription. If you continue, the user will be removed from the %{namespace} group and all its subgroups and projects. This action can't be undone."
 msgstr ""
 
@@ -13483,9 +13486,6 @@ msgstr ""
 msgid "Epics|Enter a title for your epic"
 msgstr ""
 
-msgid "Epics|How can I solve this?"
-msgstr ""
-
 msgid "Epics|Leave empty to inherit from milestone dates"
 msgstr ""
 
@@ -13532,9 +13532,6 @@ msgid "Epics|Something went wrong while ordering item."
 msgstr ""
 
 msgid "Epics|Something went wrong while removing issue from epic."
-msgstr ""
-
-msgid "Epics|These dates affect how your epics appear in the roadmap. Dates from milestones come from the milestones assigned to issues in the epic. You can also set fixed dates or remove them entirely."
 msgstr ""
 
 msgid "Epics|This epic and any containing child epics are confidential and should only be visible to team members with at least Reporter access."
@@ -14995,15 +14992,6 @@ msgid "First seen"
 msgstr ""
 
 msgid "Fixed burndown chart"
-msgstr ""
-
-msgid "Fixed date"
-msgstr ""
-
-msgid "Fixed due date"
-msgstr ""
-
-msgid "Fixed start date"
 msgstr ""
 
 msgid "Fixed:"
@@ -21412,6 +21400,9 @@ msgstr ""
 msgid "Maximum Conan package file size in bytes"
 msgstr ""
 
+msgid "Maximum Helm chart file size in bytes"
+msgstr ""
+
 msgid "Maximum Maven package file size in bytes"
 msgstr ""
 
@@ -22004,6 +21995,18 @@ msgid "MergeRequests|started a thread on commit %{linkStart}%{commitDisplay}%{li
 msgstr ""
 
 msgid "MergeRequest|Approved by @%{username}"
+msgstr ""
+
+msgid "MergeRequest|Can't show this merge request because of an internal error. Contact your administrator."
+msgstr ""
+
+msgid "MergeRequest|Can't show this merge request because the fork project was deleted."
+msgstr ""
+
+msgid "MergeRequest|Can't show this merge request because the source branch %{badge_start}%{source_branch}%{badge_end} is missing from project %{badge_start}%{project_path}%{badge_end}. Close this merge request or update the source branch."
+msgstr ""
+
+msgid "MergeRequest|Can't show this merge request because the target branch %{badge_start}%{target_branch}%{badge_end} is missing from project %{badge_start}%{project_path}%{badge_end}. Close this merge request or update the target branch."
 msgstr ""
 
 msgid "MergeRequest|Compare %{target} and %{source}"
@@ -30295,21 +30298,6 @@ msgstr ""
 msgid "SVG illustration"
 msgstr ""
 
-msgid "SastEntryPoints|Add Security Testing"
-msgstr ""
-
-msgid "SastEntryPoints|Catch your security vulnerabilities ahead of time!"
-msgstr ""
-
-msgid "SastEntryPoints|GitLab can scan your code for security vulnerabilities. Static Application Security Testing (SAST) helps you worry less and build more."
-msgstr ""
-
-msgid "SastEntryPoints|How do I set up SAST?"
-msgstr ""
-
-msgid "SastEntryPoints|Learn more"
-msgstr ""
-
 msgid "Satisfied"
 msgstr ""
 
@@ -30773,7 +30761,7 @@ msgstr ""
 msgid "SecurityConfiguration|Configure %{feature}"
 msgstr ""
 
-msgid "SecurityConfiguration|Configure via Merge Request"
+msgid "SecurityConfiguration|Configure with a merge request"
 msgstr ""
 
 msgid "SecurityConfiguration|Copy code and open .gitlab-ci.yml file"
@@ -31245,6 +31233,9 @@ msgid "SecurityReports|There was an error reverting this dismissal."
 msgstr ""
 
 msgid "SecurityReports|There was an error while generating the report."
+msgstr ""
+
+msgid "SecurityReports|These vulnerabilities were detected in external sources. They are not necessarily tied to your GitLab project. For example, running containers, URLs, and so on."
 msgstr ""
 
 msgid "SecurityReports|To widen your search, change or remove filters above"
@@ -33057,9 +33048,6 @@ msgid "Start a new merge request with these changes"
 msgstr ""
 
 msgid "Start a review"
-msgstr ""
-
-msgid "Start and due date"
 msgstr ""
 
 msgid "Start by choosing a group to start exploring the merge requests in that group. You can then proceed to filter by projects, labels, milestones and authors."
@@ -35453,12 +35441,6 @@ msgstr ""
 msgid "This credential has expired"
 msgstr ""
 
-msgid "This date is after the due date, so this epic won't appear in the roadmap."
-msgstr ""
-
-msgid "This date is before the start date, so this epic won't appear in the roadmap."
-msgstr ""
-
 msgid "This device has already been registered with us."
 msgstr ""
 
@@ -37250,9 +37232,6 @@ msgstr ""
 msgid "Unsupported todo type passed. Supported todo types are: %{todo_types}"
 msgstr ""
 
-msgid "Until"
-msgstr ""
-
 msgid "Until revoked, expired personal access tokens pose a security risk."
 msgstr ""
 
@@ -37430,9 +37409,6 @@ msgstr ""
 msgid "Upvotes"
 msgstr ""
 
-msgid "Usage"
-msgstr ""
-
 msgid "Usage Trends"
 msgstr ""
 
@@ -37488,9 +37464,6 @@ msgid "UsageQuota|Increase storage temporarily"
 msgstr ""
 
 msgid "UsageQuota|LFS Objects"
-msgstr ""
-
-msgid "UsageQuota|LFS Storage"
 msgstr ""
 
 msgid "UsageQuota|LFS storage"
@@ -39745,9 +39718,6 @@ msgstr ""
 msgid "You can only edit files when you are on a branch"
 msgstr ""
 
-msgid "You can only merge once this merge request is approved."
-msgstr ""
-
 msgid "You can only transfer the project to namespaces you manage."
 msgstr ""
 
@@ -39876,6 +39846,11 @@ msgstr ""
 
 msgid "You don’t have access to Value Stream Analytics for this group"
 msgstr ""
+
+msgid "You have %{pendingMembersCount} pending member that needs approval."
+msgid_plural "You have %{pendingMembersCount} pending members that need approval."
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "You have been granted %{access_level} access to the %{source_link} %{source_type}."
 msgstr ""
@@ -40601,6 +40576,9 @@ msgid "can only have one escalation policy"
 msgstr ""
 
 msgid "can't be nil"
+msgstr ""
+
+msgid "can't be solely blank"
 msgstr ""
 
 msgid "can't be the same as the source project"
@@ -41633,6 +41611,9 @@ msgstr ""
 msgid "mrWidget|Merge blocked: pipeline must succeed. It's waiting for a manual action to continue."
 msgstr ""
 
+msgid "mrWidget|Merge blocked: this merge request must be approved."
+msgstr ""
+
 msgid "mrWidget|Merge failed."
 msgstr ""
 
@@ -41775,9 +41756,6 @@ msgid "mrWidget|Users who can write to the source or target branches can resolve
 msgstr ""
 
 msgid "mrWidget|What is a merge train?"
-msgstr ""
-
-msgid "mrWidget|You can only merge once this merge request is approved."
 msgstr ""
 
 msgid "mrWidget|Your password"

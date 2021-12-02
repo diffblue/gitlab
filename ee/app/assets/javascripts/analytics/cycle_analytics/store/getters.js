@@ -42,7 +42,7 @@ export const cycleAnalyticsRequestParams = (state, getters) => {
   });
 
   return {
-    project_ids: getters.selectedProjectIds,
+    project_ids: getters.selectedProjectIds?.length ? getters.selectedProjectIds : null,
     created_after: createdAfter ? dateFormat(createdAfter, dateFormats.isoDate) : null,
     created_before: createdBefore ? dateFormat(createdBefore, dateFormats.isoDate) : null,
     ...filterBarQuery,

@@ -11,7 +11,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 INFO:
 Want to try out container scanning?
-[Get a free 30-day trial GitLab Ultimate](https://about.gitlab.com/free-trial?glm_source=docs.gitlab.com&glm_content=u-container-scanning-docs). 
+[Get a free 30-day trial of GitLab Ultimate](https://about.gitlab.com/free-trial?glm_source=docs.gitlab.com&glm_content=u-container-scanning-docs).
 
 Your application's Docker image may itself be based on Docker images that contain known
 vulnerabilities. By including an extra job in your pipeline that scans for those vulnerabilities and
@@ -47,19 +47,9 @@ To enable container scanning in your pipeline, you need the following:
 - An image matching the [supported distributions](#supported-distributions).
 - [Build and push](../../packages/container_registry/index.md#build-and-push-by-using-gitlab-cicd)
   the Docker image to your project's container registry.
-- The name of the Docker image to scan, in the `DOCKER_IMAGE` [configuration variable](#available-cicd-variables).
 - If you're using a third-party container registry, you might need to provide authentication
   credentials through the `DOCKER_USER` and `DOCKER_PASSWORD` [configuration variables](#available-cicd-variables).
-  For example, if you are connecting to AWS ECR, you might use the following:
-
-```yaml
-export AWS_ECR_PASSWORD=$(aws ecr get-login-password --region region)
-
-include:
-  - template: Security/Container-Scanning.gitlab-ci.yml
-    DOCKER_USER: AWS
-    DOCKER_PASSWORD: "$AWS_ECR_PASSWORD"
-```
+  For more details on how to use these variables, see [authenticate to a remote registry](#authenticate-to-a-remote-registry).
 
 ## Configuration
 
@@ -87,22 +77,18 @@ The following is a sample `.gitlab-ci.yml` that builds your Docker image, pushes
 registry, and scans the image:
 
 ```yaml
-build:
-  image: docker:latest
-  stage: build
-  services:
-    - docker:dind
-  variables:
-    IMAGE: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG:$CI_COMMIT_SHA
-  script:
-    - docker info
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    - docker build -t $IMAGE .
-    - docker push $IMAGE
-
 include:
+  - template: Jobs/Build.gitlab-ci.yml
   - template: Security/Container-Scanning.gitlab-ci.yml
+
+container_scanning:
+  variables:
+    CS_DEFAULT_BRANCH_IMAGE: $CI_REGISTRY_IMAGE/$CI_DEFAULT_BRANCH:$CI_COMMIT_SHA
 ```
+
+Setting `CS_DEFAULT_BRANCH_IMAGE` avoids duplicate vulnerability findings when an image name differs across branches.
+The value of `CS_DEFAULT_BRANCH_IMAGE` indicates the name of the scanned image as it appears on the default branch.
+For more details on how this deduplication is achieved, see [Setting the default branch image](#setting-the-default-branch-image).
 
 ### Customizing the container scanning settings
 
@@ -124,6 +110,42 @@ variables:
     SECURE_LOG_LEVEL: 'debug'
 ```
 
+#### Scan an image in a remote registry
+
+To scan images located in a registry other than the project's, use the following `.gitlab-ci.yml`:
+
+```yaml
+include:
+  - template: Security/Container-Scanning.gitlab-ci.yml
+
+container_scanning:
+  variables:
+    DOCKER_IMAGE: example.com/user/image:tag
+```
+
+##### Authenticate to a remote registry
+
+Scanning an image in a private registry requires authentication. Provide the username in the `DOCKER_USER`
+variable, and the password in the `DOCKER_PASSWORD` configuration variable.
+
+For example, to scan an image from AWS Elastic Container Registry:
+
+```yaml
+container_scanning:
+  before_script:
+    - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" --output "awscliv2.zip"
+    - unzip awscliv2.zip
+    - ./aws/install
+    - aws --version
+    - export AWS_ECR_PASSWORD=$(aws ecr get-login-password --region region)
+
+include:
+  - template: Security/Container-Scanning.gitlab-ci.yml
+    DOCKER_IMAGE: <aws_account_id>.dkr.ecr.<region>.amazonaws.com/<image>:<tag>
+    DOCKER_USER: AWS
+    DOCKER_PASSWORD: "$AWS_ECR_PASSWORD"
+```
+
 #### Available CI/CD variables
 
 You can [configure](#customizing-the-container-scanning-settings) analyzers by using the following CI/CD variables:
@@ -135,6 +157,7 @@ You can [configure](#customizing-the-container-scanning-settings) analyzers by u
 | `CI_APPLICATION_TAG`           | `$CI_COMMIT_SHA` | Docker repository tag for the image to be scanned. | All |
 | `CS_ANALYZER_IMAGE`            | `registry.gitlab.com/security-products/container-scanning:4` | Docker image of the analyzer. | All |
 | `CS_DEFAULT_BRANCH_IMAGE`      | `""` | The name of the `DOCKER_IMAGE` on the default branch. See [Setting the default branch image](#setting-the-default-branch-image) for more details. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/338877) in GitLab 14.5. | All |
+| `CS_DISABLE_DEPENDENCY_SCAN`   | `"true"`      | Disable Dependency Scanning for packages installed in the scanned image. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/345434) in GitLab 14.6. | All |
 | `CS_DOCKER_INSECURE`           | `"false"`     | Allow access to secure Docker registries using HTTPS without validating the certificates. | All |
 | `CS_REGISTRY_INSECURE`         | `"false"`     | Allow access to insecure registries (HTTP only). Should only be set to `true` when testing the image locally. Works with all scanners, but the registry must listen on port `80/tcp` for Trivy to work. | All |
 | `CS_SEVERITY_THRESHOLD`        | `UNKNOWN`     | Severity level threshold. The scanner outputs vulnerabilities with severity level higher than or equal to this threshold. Supported levels are Unknown, Low, Medium, High, and Critical. | Trivy |

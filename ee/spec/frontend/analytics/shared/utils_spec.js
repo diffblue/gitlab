@@ -86,7 +86,7 @@ describe('buildCycleAnalyticsInitialData', () => {
     ${'group'}            | ${null}
     ${'createdBefore'}    | ${null}
     ${'createdAfter'}     | ${null}
-    ${'selectedProjects'} | ${[]}
+    ${'selectedProjects'} | ${null}
     ${'labelsPath'}       | ${''}
     ${'milestonesPath'}   | ${''}
     ${'stage'}            | ${null}
@@ -152,13 +152,13 @@ describe('buildCycleAnalyticsInitialData', () => {
     });
 
     it.each`
-      field                 | value
-      ${'selectedProjects'} | ${null}
-      ${'selectedProjects'} | ${[]}
-      ${'selectedProjects'} | ${''}
-    `('will be an empty array if given a value of `$value`', ({ value, field }) => {
+      field                 | value   | result
+      ${'selectedProjects'} | ${null} | ${null}
+      ${'selectedProjects'} | ${[]}   | ${[]}
+      ${'selectedProjects'} | ${''}   | ${null}
+    `('will be an empty array if given a value of `$value`', ({ value, field, result }) => {
       expect(buildCycleAnalyticsInitialData({ projects: value })).toMatchObject({
-        [field]: [],
+        [field]: result,
       });
     });
   });

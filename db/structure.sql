@@ -11767,6 +11767,21 @@ CREATE SEQUENCE ci_minutes_additional_packs_id_seq
 
 ALTER SEQUENCE ci_minutes_additional_packs_id_seq OWNED BY ci_minutes_additional_packs.id;
 
+CREATE TABLE ci_namespace_mirrors (
+    id bigint NOT NULL,
+    namespace_id integer NOT NULL,
+    traversal_ids integer[] DEFAULT '{}'::integer[] NOT NULL
+);
+
+CREATE SEQUENCE ci_namespace_mirrors_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE ci_namespace_mirrors_id_seq OWNED BY ci_namespace_mirrors.id;
+
 CREATE TABLE ci_namespace_monthly_usages (
     id bigint NOT NULL,
     namespace_id bigint NOT NULL,
@@ -12014,6 +12029,21 @@ CREATE SEQUENCE ci_platform_metrics_id_seq
     CACHE 1;
 
 ALTER SEQUENCE ci_platform_metrics_id_seq OWNED BY ci_platform_metrics.id;
+
+CREATE TABLE ci_project_mirrors (
+    id bigint NOT NULL,
+    project_id integer NOT NULL,
+    namespace_id integer NOT NULL
+);
+
+CREATE SEQUENCE ci_project_mirrors_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE ci_project_mirrors_id_seq OWNED BY ci_project_mirrors.id;
 
 CREATE TABLE ci_project_monthly_usages (
     id bigint NOT NULL,
@@ -15078,6 +15108,35 @@ CREATE SEQUENCE incident_management_pending_issue_escalations_id_seq
     CACHE 1;
 
 ALTER SEQUENCE incident_management_pending_issue_escalations_id_seq OWNED BY incident_management_pending_issue_escalations.id;
+
+CREATE TABLE incident_management_timeline_events (
+    id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    occurred_at timestamp with time zone NOT NULL,
+    project_id bigint NOT NULL,
+    author_id bigint,
+    issue_id bigint NOT NULL,
+    updated_by_user_id bigint,
+    promoted_from_note_id bigint,
+    cached_markdown_version integer,
+    editable boolean DEFAULT false NOT NULL,
+    note text NOT NULL,
+    note_html text NOT NULL,
+    action text NOT NULL,
+    CONSTRAINT check_18fd072206 CHECK ((char_length(action) <= 128)),
+    CONSTRAINT check_3875ed0aac CHECK ((char_length(note) <= 10000)),
+    CONSTRAINT check_94a235d6a4 CHECK ((char_length(note_html) <= 10000))
+);
+
+CREATE SEQUENCE incident_management_timeline_events_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE incident_management_timeline_events_id_seq OWNED BY incident_management_timeline_events.id;
 
 CREATE TABLE index_statuses (
     id integer NOT NULL,
@@ -21264,6 +21323,8 @@ ALTER TABLE ONLY ci_job_variables ALTER COLUMN id SET DEFAULT nextval('ci_job_va
 
 ALTER TABLE ONLY ci_minutes_additional_packs ALTER COLUMN id SET DEFAULT nextval('ci_minutes_additional_packs_id_seq'::regclass);
 
+ALTER TABLE ONLY ci_namespace_mirrors ALTER COLUMN id SET DEFAULT nextval('ci_namespace_mirrors_id_seq'::regclass);
+
 ALTER TABLE ONLY ci_namespace_monthly_usages ALTER COLUMN id SET DEFAULT nextval('ci_namespace_monthly_usages_id_seq'::regclass);
 
 ALTER TABLE ONLY ci_pending_builds ALTER COLUMN id SET DEFAULT nextval('ci_pending_builds_id_seq'::regclass);
@@ -21285,6 +21346,8 @@ ALTER TABLE ONLY ci_pipelines ALTER COLUMN id SET DEFAULT nextval('ci_pipelines_
 ALTER TABLE ONLY ci_pipelines_config ALTER COLUMN pipeline_id SET DEFAULT nextval('ci_pipelines_config_pipeline_id_seq'::regclass);
 
 ALTER TABLE ONLY ci_platform_metrics ALTER COLUMN id SET DEFAULT nextval('ci_platform_metrics_id_seq'::regclass);
+
+ALTER TABLE ONLY ci_project_mirrors ALTER COLUMN id SET DEFAULT nextval('ci_project_mirrors_id_seq'::regclass);
 
 ALTER TABLE ONLY ci_project_monthly_usages ALTER COLUMN id SET DEFAULT nextval('ci_project_monthly_usages_id_seq'::regclass);
 
@@ -21565,6 +21628,8 @@ ALTER TABLE ONLY incident_management_oncall_shifts ALTER COLUMN id SET DEFAULT n
 ALTER TABLE ONLY incident_management_pending_alert_escalations ALTER COLUMN id SET DEFAULT nextval('incident_management_pending_alert_escalations_id_seq'::regclass);
 
 ALTER TABLE ONLY incident_management_pending_issue_escalations ALTER COLUMN id SET DEFAULT nextval('incident_management_pending_issue_escalations_id_seq'::regclass);
+
+ALTER TABLE ONLY incident_management_timeline_events ALTER COLUMN id SET DEFAULT nextval('incident_management_timeline_events_id_seq'::regclass);
 
 ALTER TABLE ONLY index_statuses ALTER COLUMN id SET DEFAULT nextval('index_statuses_id_seq'::regclass);
 
@@ -22727,6 +22792,9 @@ ALTER TABLE ONLY ci_job_variables
 ALTER TABLE ONLY ci_minutes_additional_packs
     ADD CONSTRAINT ci_minutes_additional_packs_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY ci_namespace_mirrors
+    ADD CONSTRAINT ci_namespace_mirrors_pkey PRIMARY KEY (id);
+
 ALTER TABLE ONLY ci_namespace_monthly_usages
     ADD CONSTRAINT ci_namespace_monthly_usages_pkey PRIMARY KEY (id);
 
@@ -22759,6 +22827,9 @@ ALTER TABLE ONLY ci_pipelines
 
 ALTER TABLE ONLY ci_platform_metrics
     ADD CONSTRAINT ci_platform_metrics_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY ci_project_mirrors
+    ADD CONSTRAINT ci_project_mirrors_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY ci_project_monthly_usages
     ADD CONSTRAINT ci_project_monthly_usages_pkey PRIMARY KEY (id);
@@ -23227,6 +23298,9 @@ ALTER TABLE ONLY incident_management_pending_alert_escalations
 
 ALTER TABLE ONLY incident_management_pending_issue_escalations
     ADD CONSTRAINT incident_management_pending_issue_escalations_pkey PRIMARY KEY (id, process_at);
+
+ALTER TABLE ONLY incident_management_timeline_events
+    ADD CONSTRAINT incident_management_timeline_events_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY index_statuses
     ADD CONSTRAINT index_statuses_pkey PRIMARY KEY (id);
@@ -25337,6 +25411,8 @@ CREATE UNIQUE INDEX index_ci_job_variables_on_key_and_job_id ON ci_job_variables
 
 CREATE INDEX index_ci_minutes_additional_packs_on_namespace_id_purchase_xid ON ci_minutes_additional_packs USING btree (namespace_id, purchase_xid);
 
+CREATE UNIQUE INDEX index_ci_namespace_mirrors_on_namespace_id ON ci_namespace_mirrors USING btree (namespace_id);
+
 CREATE UNIQUE INDEX index_ci_namespace_monthly_usages_on_namespace_id_and_date ON ci_namespace_monthly_usages USING btree (namespace_id, date);
 
 CREATE INDEX index_ci_pending_builds_id_on_protected_partial ON ci_pending_builds USING btree (id) WHERE (protected = true);
@@ -25424,6 +25500,10 @@ CREATE INDEX index_ci_pipelines_on_user_id_and_created_at_and_config_source ON c
 CREATE INDEX index_ci_pipelines_on_user_id_and_created_at_and_source ON ci_pipelines USING btree (user_id, created_at, source);
 
 CREATE INDEX index_ci_pipelines_on_user_id_and_id_and_cancelable_status ON ci_pipelines USING btree (user_id, id) WHERE ((status)::text = ANY (ARRAY[('running'::character varying)::text, ('waiting_for_resource'::character varying)::text, ('preparing'::character varying)::text, ('pending'::character varying)::text, ('created'::character varying)::text, ('scheduled'::character varying)::text]));
+
+CREATE INDEX index_ci_project_mirrors_on_namespace_id ON ci_project_mirrors USING btree (namespace_id);
+
+CREATE UNIQUE INDEX index_ci_project_mirrors_on_project_id ON ci_project_mirrors USING btree (project_id);
 
 CREATE UNIQUE INDEX index_ci_project_monthly_usages_on_project_id_and_date ON ci_project_monthly_usages USING btree (project_id, date);
 
@@ -26001,6 +26081,8 @@ CREATE INDEX index_geo_repository_updated_events_on_source ON geo_repository_upd
 
 CREATE INDEX index_geo_reset_checksum_events_on_project_id ON geo_reset_checksum_events USING btree (project_id);
 
+CREATE INDEX index_gin_ci_namespace_mirrors_on_traversal_ids ON ci_namespace_mirrors USING gin (traversal_ids);
+
 CREATE INDEX index_gin_ci_pending_builds_on_namespace_traversal_ids ON ci_pending_builds USING gin (namespace_traversal_ids);
 
 CREATE INDEX index_gitlab_subscription_histories_on_gitlab_subscription_id ON gitlab_subscription_histories USING btree (gitlab_subscription_id);
@@ -26090,6 +26172,16 @@ CREATE INDEX index_identities_on_user_id ON identities USING btree (user_id);
 CREATE INDEX index_im_issuable_escalation_statuses_on_policy_id ON incident_management_issuable_escalation_statuses USING btree (policy_id);
 
 CREATE UNIQUE INDEX index_im_oncall_schedules_on_project_id_and_iid ON incident_management_oncall_schedules USING btree (project_id, iid);
+
+CREATE INDEX index_im_timeline_events_author_id ON incident_management_timeline_events USING btree (author_id);
+
+CREATE INDEX index_im_timeline_events_issue_id ON incident_management_timeline_events USING btree (issue_id);
+
+CREATE INDEX index_im_timeline_events_project_id ON incident_management_timeline_events USING btree (project_id);
+
+CREATE INDEX index_im_timeline_events_promoted_from_note_id ON incident_management_timeline_events USING btree (promoted_from_note_id);
+
+CREATE INDEX index_im_timeline_events_updated_by_user_id ON incident_management_timeline_events USING btree (updated_by_user_id);
 
 CREATE UNIQUE INDEX index_import_export_uploads_on_group_id ON import_export_uploads USING btree (group_id) WHERE (group_id IS NOT NULL);
 
@@ -26576,8 +26668,6 @@ CREATE INDEX index_notes_on_created_at ON notes USING btree (created_at);
 CREATE INDEX index_notes_on_discussion_id ON notes USING btree (discussion_id);
 
 CREATE INDEX index_notes_on_line_code ON notes USING btree (line_code);
-
-CREATE INDEX index_notes_on_note_trigram ON notes USING gin (note gin_trgm_ops);
 
 CREATE INDEX index_notes_on_noteable_id_and_noteable_type_and_system ON notes USING btree (noteable_id, noteable_type, system);
 
@@ -28731,6 +28821,10 @@ CREATE TRIGGER ci_pipelines_loose_fk_trigger AFTER DELETE ON ci_pipelines REFERE
 
 CREATE TRIGGER ci_runners_loose_fk_trigger AFTER DELETE ON ci_runners REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
 
+CREATE TRIGGER namespaces_loose_fk_trigger AFTER DELETE ON namespaces REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
+
+CREATE TRIGGER projects_loose_fk_trigger AFTER DELETE ON projects REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
+
 CREATE TRIGGER trigger_delete_project_namespace_on_project_delete AFTER DELETE ON projects FOR EACH ROW WHEN ((old.project_namespace_id IS NOT NULL)) EXECUTE FUNCTION delete_associated_project_namespace();
 
 CREATE TRIGGER trigger_has_external_issue_tracker_on_delete AFTER DELETE ON integrations FOR EACH ROW WHEN ((((old.category)::text = 'issue_tracker'::text) AND (old.active = true) AND (old.project_id IS NOT NULL))) EXECUTE FUNCTION set_has_external_issue_tracker();
@@ -28823,6 +28917,12 @@ ALTER TABLE ONLY internal_ids
 
 ALTER TABLE ONLY geo_event_log
     ADD CONSTRAINT fk_176d3fbb5d FOREIGN KEY (job_artifact_deleted_event_id) REFERENCES geo_job_artifact_deleted_events(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY incident_management_timeline_events
+    ADD CONSTRAINT fk_17a5fafbd4 FOREIGN KEY (issue_id) REFERENCES issues(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY incident_management_timeline_events
+    ADD CONSTRAINT fk_1800597ef9 FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY project_features
     ADD CONSTRAINT fk_18513d9b92 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
@@ -28944,6 +29044,9 @@ ALTER TABLE ONLY sprints
 ALTER TABLE ONLY push_event_payloads
     ADD CONSTRAINT fk_36c74129da FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY incident_management_timeline_events
+    ADD CONSTRAINT fk_38a74279df FOREIGN KEY (updated_by_user_id) REFERENCES users(id) ON DELETE SET NULL;
+
 ALTER TABLE ONLY bulk_import_exports
     ADD CONSTRAINT fk_39c726d3b5 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
@@ -28970,6 +29073,9 @@ ALTER TABLE ONLY geo_event_log
 
 ALTER TABLE ONLY remote_mirrors
     ADD CONSTRAINT fk_43a9aa4ca8 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY incident_management_timeline_events
+    ADD CONSTRAINT fk_4432fc4d78 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY ci_runner_projects
     ADD CONSTRAINT fk_4478a6f1e4 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
@@ -29453,6 +29559,9 @@ ALTER TABLE ONLY ci_sources_pipelines
 
 ALTER TABLE ONLY geo_event_log
     ADD CONSTRAINT fk_d5af95fcd9 FOREIGN KEY (lfs_object_deleted_event_id) REFERENCES geo_lfs_object_deleted_events(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY incident_management_timeline_events
+    ADD CONSTRAINT fk_d606a2a890 FOREIGN KEY (promoted_from_note_id) REFERENCES notes(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY lists
     ADD CONSTRAINT fk_d6cf4279f7 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;

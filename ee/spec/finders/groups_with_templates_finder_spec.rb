@@ -99,9 +99,9 @@ RSpec.describe GroupsWithTemplatesFinder, :saas do
 
   it_behaves_like 'group template finder examples'
 
-  context 'when feature flag :linear_groups_template_finder_extended_group_search is disabled' do
+  context 'when feature flag :linear_groups_template_finder_extended_group_search_ancestors_scopes is disabled' do
     before do
-      stub_feature_flags(linear_groups_template_finder_extended_group_search: false)
+      stub_feature_flags(linear_groups_template_finder_extended_group_search_ancestors_scopes: false)
     end
 
     it_behaves_like 'group template finder examples'

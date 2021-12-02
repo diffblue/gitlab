@@ -12,12 +12,26 @@ export default (containerId = 'js-seat-usage-app') => {
     return false;
   }
 
-  const { namespaceId, namespaceName, seatUsageExportPath } = el.dataset;
+  const {
+    namespaceId,
+    namespaceName,
+    seatUsageExportPath,
+    pendingMembersPagePath,
+    pendingMembersCount,
+  } = el.dataset;
 
   return new Vue({
     el,
     apolloProvider: {},
-    store: new Vuex.Store(initialStore({ namespaceId, namespaceName, seatUsageExportPath })),
+    store: new Vuex.Store(
+      initialStore({
+        namespaceId,
+        namespaceName,
+        seatUsageExportPath,
+        pendingMembersPagePath,
+        pendingMembersCount,
+      }),
+    ),
     render(createElement) {
       return createElement(SubscriptionSeats);
     },

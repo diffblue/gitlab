@@ -182,6 +182,24 @@ module QA
             expect(imported_commits).to match_array(source_commits)
             expect(imported_tags).to match_array(source_tags)
             expect(imported_branches).to match_array(source_branches)
+            expect(project_import_failures).to be_empty, "Expected no errors, was: #{project_import_failures}"
+          end
+        end
+      end
+
+      context 'with wiki' do
+        before do
+          source_project.create_wiki_page(title: 'Import test project wiki', content: 'Wiki content')
+          imported_group # trigger import
+        end
+
+        it 'successfully imports project wiki' do
+          expect { imported_group.import_status }.to eventually_eq('finished').within(import_wait_duration)
+          expect(imported_projects.count).to eq(1), 'Expected to have 1 imported project'
+
+          aggregate_failures do
+            expect(imported_projects.first.wikis).to eq(source_project.wikis)
+            expect(project_import_failures).to be_empty, "Expected no errors, was: #{project_import_failures}"
           end
         end
       end

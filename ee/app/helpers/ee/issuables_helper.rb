@@ -19,11 +19,13 @@ module EE
       )
 
       if parent.is_a?(Group)
-        data[:issueLinksEndpoint] = group_epic_issues_path(parent, issuable)
-        data[:epicLinksEndpoint] = group_epic_links_path(parent, issuable)
-        data[:fullPath] = parent.full_path
-        data[:projectsEndpoint] = expose_path(api_v4_groups_projects_path(id: parent.id))
         data[:confidential] = issuable.confidential
+        data[:epicLinksEndpoint] = group_epic_links_path(parent, issuable)
+        data[:epicsWebUrl] = group_epics_path(parent)
+        data[:fullPath] = parent.full_path
+        data[:issueLinksEndpoint] = group_epic_issues_path(parent, issuable)
+        data[:issuesWebUrl] = issues_group_path(parent)
+        data[:projectsEndpoint] = expose_path(api_v4_groups_projects_path(id: parent.id))
       end
 
       data

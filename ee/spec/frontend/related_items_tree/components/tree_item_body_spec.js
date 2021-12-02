@@ -1,6 +1,6 @@
-import { GlButton, GlLink, GlIcon } from '@gitlab/ui';
+import { GlButton, GlLabel, GlLink, GlIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 import ItemWeight from 'ee/boards/components/issue_card_weight.vue';
@@ -39,6 +39,7 @@ const createIssueItem = (mockIssue = mockIssue1) => {
     type: ChildType.Issue,
     pathIdSeparator: PathIdSeparator.Issue,
     assignees: epicUtils.extractIssueAssignees(mockIssue.assignees),
+    labels: epicUtils.extractLabels(mockIssue.labels),
   };
 };
 
@@ -48,6 +49,7 @@ const createEpicItem = (mockEpic = mockOpenEpic, mockEpicMeta = mockEpicMeta1) =
     type: ChildType.Epic,
     pathIdSeparator: PathIdSeparator.Epic,
     ...mockEpicMeta,
+    labels: epicUtils.extractLabels(mockEpic.labels),
   };
 };
 
@@ -80,9 +82,10 @@ describe('RelatedItemsTree', () => {
   describe('TreeItemBody', () => {
     let wrapper;
 
+    const findChildLabels = () => wrapper.findAll(GlLabel);
     const findCountBadge = () => wrapper.find({ ref: 'countBadge' });
-    const findIssueHealthStatus = () => wrapper.find('[data-testid="issue-health-status"]');
     const findEpicHealthStatus = () => wrapper.find('[data-testid="epic-health-status"]');
+    const findIssueHealthStatus = () => wrapper.find('[data-testid="issue-health-status"]');
     const findIssueIcon = () => wrapper.find({ ref: 'stateIconMd' });
     const findLink = () => wrapper.findComponent(GlLink);
     const enableHealthStatus = () => {
@@ -90,6 +93,11 @@ describe('RelatedItemsTree', () => {
         ...mockInitialConfig,
         allowIssuableHealthStatus: true,
       });
+    };
+    const setShowLabels = (isShowingLabels) => {
+      wrapper.vm.$store.dispatch('setShowLabels', isShowingLabels);
+
+      return nextTick();
     };
 
     beforeEach(() => {
@@ -177,6 +185,36 @@ describe('RelatedItemsTree', () => {
       describe('hasAssignees', () => {
         it('returns true when `item.assignees` is defined and has values', () => {
           expect(wrapper.vm.hasAssignees).toBe(true);
+        });
+      });
+
+      describe('when toggling labels on', () => {
+        it('returns true when `item.labels` is defined and has values', async () => {
+          expect(findChildLabels().length).toBe(0);
+
+          await setShowLabels(true);
+
+          const labels = findChildLabels();
+
+          expect(labels.length).toBe(1);
+
+          const firstLabel = labels.at(0);
+
+          expect(firstLabel.props('backgroundColor')).toBe(mockIssue1.labels.nodes[0].color);
+          expect(firstLabel.props('description')).toBe(mockIssue1.labels.nodes[0].description);
+          expect(firstLabel.props('title')).toBe(mockIssue1.labels.nodes[0].title);
+        });
+      });
+
+      describe('when toggling labels off', () => {
+        it('returns true when `item.labels` is defined and has values', async () => {
+          await setShowLabels(true);
+
+          expect(findChildLabels().length).toBe(1);
+
+          await setShowLabels(false);
+
+          expect(findChildLabels().length).toBe(0);
         });
       });
 
@@ -314,6 +352,21 @@ describe('RelatedItemsTree', () => {
             parentItem: mockParentItem,
             item: mockItem,
           });
+        });
+      });
+
+      describe.each`
+        createItem         | expectedFilterUrl                                         | itemType
+        ${createEpicItem}  | ${`${mockInitialConfig.epicsWebUrl}?label_name[]=Label`}  | ${'epic'}
+        ${createIssueItem} | ${`${mockInitialConfig.issuesWebUrl}?label_name[]=Label`} | ${'issue'}
+      `('labelFilterUrl', ({ createItem, expectedFilterUrl, itemType }) => {
+        beforeEach(() => {
+          mockItem = createItem();
+          wrapper = createComponent();
+        });
+
+        it(`filterURL for ${itemType} should be ${expectedFilterUrl}`, () => {
+          expect(wrapper.vm.labelFilterUrl(mockItem.labels[0])).toBe(expectedFilterUrl);
         });
       });
     });

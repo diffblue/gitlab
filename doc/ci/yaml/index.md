@@ -73,7 +73,7 @@ or import additional pipeline configuration.
 ### `default`
 
 You can set global defaults for some keywords. Jobs that do not define one or more
-of the listed keywords use the value defined in the `default:` section.
+of the listed keywords use the value defined in the `default` section.
 
 **Keyword type**: Global keyword.
 
@@ -90,7 +90,7 @@ of the listed keywords use the value defined in the `default:` section.
 - [`tags`](#tags)
 - [`timeout`](#timeout)
 
-**Example of `default`:**
+**Example of `default`**:
 
 ```yaml
 default:
@@ -106,7 +106,7 @@ rspec 2.7:
 
 In this example, `ruby:3.0` is the default `image` value for all jobs in the pipeline.
 The `rspec 2.7` job does not use the default, because it overrides the default with
-a job-specific `image:` section:
+a job-specific `image` section:
 
 **Additional details**:
 
@@ -199,8 +199,10 @@ use `include:file`. You can use `include:file` in combination with `include:proj
 
 **Keyword type**: Global keyword.
 
-**Possible inputs**: A full path, relative to the root directory (`/`).
-The YAML file must have the extension `.yml` or `.yaml`.
+**Possible inputs**:
+
+- A full path, relative to the root directory (`/`). The YAML file must have the
+  extension `.yml` or `.yaml`.
 
 **Example of `include:file`**:
 
@@ -255,10 +257,10 @@ Use `include:remote` with a full URL to include a file from a different location
 
 **Keyword type**: Global keyword.
 
-**Possible inputs**: A public URL accessible by an HTTP/HTTPS `GET` request.
-Authentication with the remote URL is not supported.
+**Possible inputs**:
 
-The YAML file must have the extension `.yml` or `.yaml`.
+- A public URL accessible by an HTTP/HTTPS `GET` request. Authentication with the
+  remote URL is not supported. The YAML file must have the extension `.yml` or `.yaml`.
 
 **Example of `include:remote`**:
 
@@ -281,7 +283,9 @@ Use `include:template` to include [`.gitlab-ci.yml` templates](https://gitlab.co
 
 **Keyword type**: Global keyword.
 
-**Possible inputs**: [`.gitlab-ci.yml` templates](https://gitlab.com/gitlab-org/gitlab/-/tree/master/lib/gitlab/ci/templates).
+**Possible inputs**:
+
+- [`.gitlab-ci.yml` templates](https://gitlab.com/gitlab-org/gitlab/-/tree/master/lib/gitlab/ci/templates).
 
 **Example of `include:template`**:
 
@@ -324,7 +328,7 @@ The order of the items in `stages` defines the execution order for jobs:
 
 **Keyword type**: Global keyword.
 
-**Example of `stages`:**
+**Example of `stages`**:
 
 ```yaml
 stages:
@@ -368,7 +372,7 @@ Use [`workflow`](workflow.md) to control pipeline behavior.
 
 #### `workflow:rules`
 
-The `rules` keyword in `workflow` is similar to [`rules:` defined in jobs](#rules),
+The `rules` keyword in `workflow` is similar to [`rules` defined in jobs](#rules),
 but controls whether or not a whole pipeline is created.
 
 When no rules evaluate to true, the pipeline does not run.
@@ -381,7 +385,7 @@ When no rules evaluate to true, the pipeline does not run.
 - [`when`](#when), can only be `always` or `never` when used with `workflow`.
 - [`variables`](#workflowrulesvariables).
 
-**Example of `workflow:rules`:**
+**Example of `workflow:rules`**:
 
 ```yaml
 workflow:
@@ -414,7 +418,7 @@ and the pipeline is for either:
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/294232) in GitLab 13.11.
 > - [Feature flag removed](https://gitlab.com/gitlab-org/gitlab/-/issues/300997) in GitLab 14.1.
 
-You can use [`variables`](#variables) in `workflow:rules:` to define variables for
+You can use [`variables`](#variables) in `workflow:rules` to define variables for
 specific pipeline conditions.
 
 When the condition matches, the variable is created and can be used by all jobs
@@ -428,7 +432,7 @@ variable takes precedence and overrides the global variable.
 - The name can use only numbers, letters, and underscores (`_`).
 - The value must be a string.
 
-**Example of `workflow:rules:variables`:**
+**Example of `workflow:rules:variables`**:
 
 ```yaml
 variables:
@@ -486,7 +490,7 @@ The following topics explain how to use keywords to configure CI/CD pipelines.
 Use `after_script` to define an array of commands that run after each job, including failed jobs.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#default).
+[`default` section](#default).
 
 **Possible inputs**: An array including:
 
@@ -494,7 +498,7 @@ Use `after_script` to define an array of commands that run after each job, inclu
 - Long commands [split over multiple lines](script.md#split-long-commands).
 - [YAML anchors](yaml_optimization.md#yaml-anchors-for-scripts).
 
-**Example of `after_script`:**
+**Example of `after_script`**:
 
 ```yaml
 job:
@@ -556,7 +560,9 @@ The default value for `allow_failure` is:
 
 **Keyword type**: Job keyword. You can use it only as part of a job.
 
-**Possible inputs**: `true` or `false`.
+**Possible inputs**:
+
+- `true` or `false`.
 
 **Example of `allow_failure`**:
 
@@ -585,7 +591,7 @@ In this example, `job1` and `job2` run in parallel:
 
 **Additional details**:
 
-- You can use `allow_failure` as a subkey of [`rules:`](#rulesallow_failure).
+- You can use `allow_failure` as a subkey of [`rules`](#rulesallow_failure).
 - You can use `allow_failure: false` with a manual job to create a [blocking manual job](../jobs/job_control.md#types-of-manual-jobs).
   A blocked pipeline does not run any jobs in later stages until the manual job
   is started and completes successfully.
@@ -656,7 +662,7 @@ artifacts are restored after [caches](#cache).
 Use `artifacts:exclude` to prevent files from being added to an artifacts archive.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#default).
+[`default` section](#default).
 
 **Possible inputs**:
 
@@ -709,7 +715,7 @@ After their expiry, artifacts are deleted hourly by default (using a cron job), 
 accessible anymore.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#default).
+[`default` section](#default).
 
 **Possible inputs**: The expiry time. If no unit is provided, the time is in seconds.
 Valid values include:
@@ -749,7 +755,7 @@ Use the `artifacts:expose_as` keyword to
 [expose job artifacts in the merge request UI](../pipelines/job_artifacts.md#expose-job-artifacts-in-the-merge-request-ui).
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#default).
+[`default` section](#default).
 
 **Possible inputs**:
 
@@ -793,7 +799,7 @@ archive. You can specify a unique name for every archive.
 If not defined, the default name is `artifacts`, which becomes `artifacts.zip` when downloaded.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#default).
+[`default` section](#default).
 
 **Possible inputs**:
 
@@ -819,63 +825,41 @@ job:
 #### `artifacts:paths`
 
 Paths are relative to the project directory (`$CI_PROJECT_DIR`) and can't directly
-link outside it. You can use Wildcards that use [glob](https://en.wikipedia.org/wiki/Glob_(programming))
-patterns and:
+link outside it.
 
-- In [GitLab Runner 13.0 and later](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/2620),
-  [`doublestar.Glob`](https://pkg.go.dev/github.com/bmatcuk/doublestar@v1.2.2?tab=doc#Match).
-- In GitLab Runner 12.10 and earlier, [`filepath.Match`](https://pkg.go.dev/path/filepath#Match).
+**Keyword type**: Job keyword. You can use it only as part of a job or in the
+[`default` section](#default).
 
-To restrict which jobs a specific job fetches artifacts from, see [dependencies](#dependencies).
+**Possible inputs**:
 
-Send all files in `binaries` and `.config`:
+- An array of file paths, relative to the project directory.
+- You can use Wildcards that use [glob](https://en.wikipedia.org/wiki/Glob_(programming))
+  patterns and:
+  - In [GitLab Runner 13.0 and later](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/2620),
+    [`doublestar.Glob`](https://pkg.go.dev/github.com/bmatcuk/doublestar@v1.2.2?tab=doc#Match).
+  - In GitLab Runner 12.10 and earlier, [`filepath.Match`](https://pkg.go.dev/path/filepath#Match).
 
-```yaml
-artifacts:
-  paths:
-    - binaries/
-    - .config
-```
-
-To disable artifact passing, define the job with empty [dependencies](#dependencies):
-
-```yaml
-job:
-  stage: build
-  script: make build
-  dependencies: []
-```
-
-You may want to create artifacts only for tagged releases to avoid filling the
-build server storage with temporary build artifacts.
-
-Create artifacts only for tags (`default-job` doesn't create artifacts):
-
-```yaml
-default-job:
-  script:
-    - mvn test -U
-  rules:
-    - if: $CI_COMMIT_BRANCH
-
-release-job:
-  script:
-    - mvn package -U
-  artifacts:
-    paths:
-      - target/*.war
-  rules:
-    - if: $CI_COMMIT_TAG
-```
-
-You can use wildcards for directories too. For example, if you want to get all the files inside the directories that end with `xyz`:
+**Example of `artifacts:paths`**:
 
 ```yaml
 job:
   artifacts:
     paths:
-      - path/*xyz/*
+      - binaries/
+      - .config
 ```
+
+This example creates an artifact with `.config` and all the files in the `binaries` directory.
+
+**Additional details**:
+
+- If not used with [`artifacts:name`](#artifactsname) defined, the artifacts file
+  is named `artifacts`, which becomes `artifacts.zip` when downloaded.
+
+**Related topics**:
+
+- To restrict which jobs a specific job fetches artifacts from, see [`dependencies`](#dependencies).
+- [Create job artifacts](../pipelines/job_artifacts.md#create-job-artifacts).
 
 #### `artifacts:public`
 
@@ -887,20 +871,25 @@ job:
 Use `artifacts:public` to determine whether the job artifacts should be
 publicly available.
 
-The default for `artifacts:public` is `true` which means that the artifacts in
-public pipelines are available for download by anonymous and guest users:
-
-```yaml
-artifacts:
-  public: true
-```
+When `artifacts:public` is `true` (default), the artifacts in
+public pipelines are available for download by anonymous and guest users.
 
 To deny read access for anonymous and guest users to artifacts in public
 pipelines, set `artifacts:public` to `false`:
 
+**Keyword type**: Job keyword. You can use it only as part of a job or in the
+[`default` section](#default).
+
+**Possible inputs**:
+
+- `true` (default if not defined) or `false`.
+
+**Example of `artifacts:paths`**:
+
 ```yaml
-artifacts:
-  public: false
+job:
+  artifacts:
+    public: false
 ```
 
 #### `artifacts:reports`
@@ -909,9 +898,11 @@ Use [`artifacts:reports`](artifacts_reports.md) to collect artifacts generated b
 included templates in jobs.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#default).
+[`default` section](#default).
 
-**Possible inputs**: See list of available [artifacts reports types](artifacts_reports.md).
+**Possible inputs**:
+
+- See list of available [artifacts reports types](artifacts_reports.md).
 
 **Example of `artifacts:reports`**:
 
@@ -941,45 +932,44 @@ Use `artifacts:untracked` to add all Git untracked files as artifacts (along
 with the paths defined in `artifacts:paths`). `artifacts:untracked` ignores configuration
 in the repository's `.gitignore` file.
 
-Send all Git untracked files:
+**Keyword type**: Job keyword. You can use it only as part of a job or in the
+[`default` section](#default).
+
+**Possible inputs**:
+
+- `true` or `false` (default if not defined).
+
+**Example of `artifacts:untracked`**:
+
+Save all Git untracked files:
 
 ```yaml
-artifacts:
-  untracked: true
+job:
+  artifacts:
+    untracked: true
 ```
 
-Send all Git untracked files and files in `binaries`:
+**Related topics**:
 
-```yaml
-artifacts:
-  untracked: true
-  paths:
-    - binaries/
-```
-
-Send all untracked files but [exclude](#artifactsexclude) `*.txt`:
-
-```yaml
-artifacts:
-  untracked: true
-  exclude:
-    - "*.txt"
-```
+- [Add untracked files to artifacts](../pipelines/job_artifacts.md#add-untracked-files-to-artifacts).
 
 #### `artifacts:when`
 
 Use `artifacts:when` to upload artifacts on job failure or despite the
 failure.
 
-`artifacts:when` can be set to one of the following values:
+**Keyword type**: Job keyword. You can use it only as part of a job or in the
+[`default` section](#default).
 
-1. `on_success` (default): Upload artifacts only when the job succeeds.
-1. `on_failure`: Upload artifacts only when the job fails.
-1. `always`: Always upload artifacts. For example, when
-   [uploading artifacts](../unit_test_reports.md#viewing-junit-screenshots-on-gitlab) required to
-   troubleshoot failing tests.
+**Possible inputs**:
 
-For example, to upload artifacts only when a job fails:
+- `on_success` (default): Upload artifacts only when the job succeeds.
+- `on_failure`: Upload artifacts only when the job fails.
+- `always`: Always upload artifacts. For example, when
+  [uploading artifacts](../unit_test_reports.md#viewing-junit-screenshots-on-gitlab)
+  required to troubleshoot failing tests.
+
+**Example of `artifacts:when`**:
 
 ```yaml
 job:
@@ -993,7 +983,7 @@ Use `before_script` to define an array of commands that should run before each j
 `script` commands, but after [artifacts](#artifacts) are restored.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#default).
+[`default` section](#default).
 
 **Possible inputs**: An array including:
 
@@ -1001,7 +991,7 @@ Use `before_script` to define an array of commands that should run before each j
 - Long commands [split over multiple lines](script.md#split-long-commands).
 - [YAML anchors](yaml_optimization.md#yaml-anchors-for-scripts).
 
-**Example of `before_script`:**
+**Example of `before_script`**:
 
 ```yaml
 job:
@@ -1040,16 +1030,17 @@ Learn more about caches in [Caching in GitLab CI/CD](../caching/index.md).
 Use the `cache:paths` keyword to choose which files or directories to cache.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#default).
+[`default` section](#default).
 
-**Possible inputs**: An array of paths relative to the project directory (`$CI_PROJECT_DIR`).
-You can use wildcards that use [glob](https://en.wikipedia.org/wiki/Glob_(programming))
-patterns:
+**Possible inputs**:
 
-- In [GitLab Runner 13.0 and later](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/2620),
-[`doublestar.Glob`](https://pkg.go.dev/github.com/bmatcuk/doublestar@v1.2.2?tab=doc#Match).
-- In GitLab Runner 12.10 and earlier,
-[`filepath.Match`](https://pkg.go.dev/path/filepath#Match).
+- An array of paths relative to the project directory (`$CI_PROJECT_DIR`).
+  You can use wildcards that use [glob](https://en.wikipedia.org/wiki/Glob_(programming))
+  patterns:
+  - In [GitLab Runner 13.0 and later](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/2620),
+  [`doublestar.Glob`](https://pkg.go.dev/github.com/bmatcuk/doublestar@v1.2.2?tab=doc#Match).
+  - In GitLab Runner 12.10 and earlier,
+  [`filepath.Match`](https://pkg.go.dev/path/filepath#Match).
 
 **Example of `cache:paths`**:
 
@@ -1076,11 +1067,11 @@ rspec:
 Use the `cache:key` keyword to give each cache a unique identifying key. All jobs
 that use the same cache key use the same cache, including in different pipelines.
 
-If not set, the default key is `default`. All jobs with the `cache:` keyword but
+If not set, the default key is `default`. All jobs with the `cache` keyword but
 no `cache:key` share the `default` cache.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#default).
+[`default` section](#default).
 
 **Possible inputs**:
 
@@ -1130,9 +1121,11 @@ change. `cache:key:files` lets you reuse some caches, and rebuild them less ofte
 which speeds up subsequent pipeline runs.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#default).
+[`default` section](#default).
 
-**Possible inputs**: An array of one or two file paths.
+**Possible inputs**:
+
+- An array of one or two file paths.
 
 **Example of `cache:key:files`**:
 
@@ -1169,7 +1162,7 @@ that changed each listed file.
 Use `cache:key:prefix` to combine a prefix with the SHA computed for [`cache:key:files`](#cachekeyfiles).
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#default).
+[`default` section](#default).
 
 **Possible inputs**:
 
@@ -1206,9 +1199,11 @@ is not found, the prefix is added to `default`, so the key in the example would 
 Use `untracked: true` to cache all files that are untracked in your Git repository:
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#default).
+[`default` section](#default).
 
-**Possible inputs**: `true` or `false` (default).
+**Possible inputs**:
+
+- `true` or `false` (default).
 
 **Example of `cache:untracked`**:
 
@@ -1240,7 +1235,7 @@ rspec:
 Use `cache:when` to define when to save the cache, based on the status of the job.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#default).
+[`default` section](#default).
 
 **Possible inputs**:
 
@@ -1278,7 +1273,7 @@ This policy speeds up job execution and reduces load on the cache server. You ca
 use a job with the `push` policy to build the cache.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#default).
+[`default` section](#default).
 
 **Possible inputs**:
 
@@ -1321,7 +1316,9 @@ line in the job output matches the regular expression.
 To extract the code coverage value in the matching line, GitLab uses this
 regular expression: `\d+(\.\d+)?`.
 
-**Possible inputs**: A regular expression. Must start and end with `/`.
+**Possible inputs**:
+
+- A regular expression. Must start and end with `/`.
 
 **Example of `coverage`**:
 
@@ -1377,7 +1374,7 @@ dast:
     scanner_profile: "Quick Passive Test"
 ```
 
-In this example, the `dast` job extends the `dast` configuration added with the `include:` keyword
+In this example, the `dast` job extends the `dast` configuration added with the `include` keyword
 to select a specific site profile and scanner profile.
 
 **Additional details**:
@@ -1703,12 +1700,12 @@ and is a little more flexible and readable.
 
 **Keyword type**: Job keyword. You can use it only as part of a job.
 
-**Possible inputs:**
+**Possible inputs**:
 
 - The name of another job in the pipeline.
 - A list (array) of names of other jobs in the pipeline.
 
-**Example of `extends`:**
+**Example of `extends`**:
 
 ```yaml
 .tests:
@@ -1746,7 +1743,7 @@ rspec:
       - $RSPEC
 ```
 
-**Additional details:**
+**Additional details**:
 
 - In GitLab 12.0 and later, you can use multiple parents for `extends`.
 - The `extends` keyword supports up to eleven levels of inheritance, but you should
@@ -1754,7 +1751,7 @@ rspec:
 - In the example above, `.tests` is a [hidden job](../jobs/index.md#hide-jobs),
   but you can extend configuration from regular jobs as well.
 
-**Related topics:**
+**Related topics**:
 
 - [Reuse configuration sections by using `extends`](yaml_optimization.md#use-extends-to-reuse-configuration-sections).
 - Use `extends` to reuse configuration from [included configuration files](yaml_optimization.md#use-extends-and-include-together).
@@ -1764,7 +1761,7 @@ rspec:
 Use `image` to specify a Docker image that the job runs in.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#default).
+[`default` section](#default).
 
 **Possible inputs**: The name of the image, including the registry path if needed, in one of these formats:
 
@@ -1788,7 +1785,7 @@ rspec 2.7:
 
 In this example, the `ruby:3.0` image is the default for all jobs in the pipeline.
 The `rspec 2.7` job does not use the default, because it overrides the default with
-a job-specific `image:` section.
+a job-specific `image` section.
 
 **Related topics**:
 
@@ -1796,10 +1793,10 @@ a job-specific `image:` section.
 
 #### `image:name`
 
-The name of the Docker image that the job runs in. Similar to [`image:`](#image) used by itself.
+The name of the Docker image that the job runs in. Similar to [`image`](#image) used by itself.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#default).
+[`default` section](#default).
 
 **Possible inputs**: The name of the image, including the registry path if needed, in one of these formats:
 
@@ -1827,9 +1824,11 @@ The syntax is similar to the [Dockerfile `ENTRYPOINT` directive](https://docs.do
 where each shell token is a separate string in the array.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#default).
+[`default` section](#default).
 
-**Possible inputs**: A string.
+**Possible inputs**:
+
+- A string.
 
 **Example of `image:entrypoint`**:
 
@@ -1847,7 +1846,7 @@ image:
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/207484) in GitLab 12.9.
 
-Use `inherit:` to [control inheritance of globally-defined defaults and variables](../jobs/index.md#control-the-inheritance-of-default-keywords-and-global-variables).
+Use `inherit` to [control inheritance of globally-defined defaults and variables](../jobs/index.md#control-the-inheritance-of-default-keywords-and-global-variables).
 
 #### `inherit:default`
 
@@ -1860,7 +1859,7 @@ Use `inherit:default` to control the inheritance of [default keywords](#default)
 - `true` (default) or `false` to enable or disable the inheritance of all default keywords.
 - A list of specific default keywords to inherit.
 
-**Example of `inherit:default`:**
+**Example of `inherit:default`**:
 
 ```yaml
 default:
@@ -1881,7 +1880,7 @@ job2:
       - image
 ```
 
-**Additional details:**
+**Additional details**:
 
 - You can also list default keywords to inherit on one line: `default: [keyword1, keyword2]`
 
@@ -1896,7 +1895,7 @@ Use `inherit:variables` to control the inheritance of [global variables](#variab
 - `true` (default) or `false` to enable or disable the inheritance of all global variables.
 - A list of specific variables to inherit.
 
-**Example of `inherit:variables`:**
+**Example of `inherit:variables`**:
 
 ```yaml
 variables:
@@ -1917,7 +1916,7 @@ job2:
       - VARIABLE2
 ```
 
-**Additional details:**
+**Additional details**:
 
 - You can also list global variables to inherit on one line: `variables: [VARIABLE1, VARIABLE2]`
 
@@ -1934,9 +1933,11 @@ a new pipeline starts on the same branch.
 You can't cancel subsequent jobs after a job with `interruptible: false` starts.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#default).
+[`default` section](#default).
 
-**Possible inputs**: `true` or `false` (default).
+**Possible inputs**:
+
+- `true` or `false` (default).
 
 **Example of `interruptible`**:
 
@@ -1983,7 +1984,7 @@ In this example, a new pipeline causes a running pipeline to be:
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/30631) in GitLab 12.8, `needs: []` lets jobs start immediately.
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/30632) in GitLab 14.2, you can refer to jobs in the same stage as the job you are configuring.
 
-Use `needs:` to execute jobs out-of-order. Relationships between jobs
+Use `needs` to execute jobs out-of-order. Relationships between jobs
 that use `needs` can be visualized as a [directed acyclic graph](../directed_acyclic_graph/index.md).
 
 You can ignore stage ordering and run some jobs without waiting for others to complete.
@@ -2040,11 +2041,11 @@ This example creates four paths of execution:
 
 **Additional details**:
 
-- The maximum number of jobs that a single job can have in the `needs:` array is limited:
+- The maximum number of jobs that a single job can have in the `needs` array is limited:
   - For GitLab.com, the limit is 50. For more information, see our
     [infrastructure issue](https://gitlab.com/gitlab-com/gl-infra/infrastructure/-/issues/7541).
   - For self-managed instances, the default limit is 50. This limit [can be changed](../../administration/cicd.md#set-the-needs-job-limit).
-- If `needs:` refers to a job that uses the [`parallel`](#parallel) keyword,
+- If `needs` refers to a job that uses the [`parallel`](#parallel) keyword,
   it depends on all jobs created in parallel, not just one job. It also downloads
   artifacts from all the parallel jobs by default. If the artifacts have the same
   name, they overwrite each other and only the last one downloaded is saved.
@@ -2053,9 +2054,9 @@ This example creates four paths of execution:
   enabled on GitLab.com and ready for production use. On self-managed [GitLab 14.2 and later](https://gitlab.com/gitlab-org/gitlab/-/issues/30632)
   this feature is available by default.
 - In GitLab 14.0 and older, you can only refer to jobs in earlier stages. Stages must be
-  explicitly defined for all jobs that use the `needs:` keyword, or are referenced
-  in a job's `needs:` section.
-- In GitLab 13.9 and older, if `needs:` refers to a job that might not be added to
+  explicitly defined for all jobs that use the `needs` keyword, or are referenced
+  in a job's `needs` section.
+- In GitLab 13.9 and older, if `needs` refers to a job that might not be added to
   a pipeline because of `only`, `except`, or `rules`, the pipeline might fail to create.
 
 #### `needs:artifacts`
@@ -2064,7 +2065,7 @@ This example creates four paths of execution:
 
 When a job uses `needs`, it no longer downloads all artifacts from previous stages
 by default, because jobs with `needs` can start before earlier stages complete. With
-`needs` you can only download artifacts from the jobs listed in the `needs:` configuration.
+`needs` you can only download artifacts from the jobs listed in the `needs` configuration.
 
 Use `artifacts: true` (default) or `artifacts: false` to control when artifacts are
 downloaded in jobs that use `needs`.
@@ -2103,7 +2104,7 @@ In this example:
 - The `test-job1` job downloads the `build_job1` artifacts
 - The `test-job2` job does not download the `build_job2` artifacts.
 - The `test-job3` job downloads the artifacts from all three `build_jobs`, because
-  `artifacts:` is `true`, or defaults to `true`, for all three needed jobs.
+  `artifacts` is `true`, or defaults to `true`, for all three needed jobs.
 
 **Additional details**:
 
@@ -2121,14 +2122,14 @@ If there is a pipeline running for the specified ref, a job with `needs:project`
 does not wait for the pipeline to complete. Instead, the job downloads the artifact
 from the latest pipeline that completed successfully.
 
-`needs:project` must be used with `job:`, `ref:`, and `artifacts:`.
+`needs:project` must be used with `job`, `ref`, and `artifacts`.
 
 **Keyword type**: Job keyword. You can use it only as part of a job.
 
 **Possible inputs**:
 
 - `needs:project`: A full project path, including namespace and group. If the
-  project is in the same group or namespace, you can omit them from the `project:`
+  project is in the same group or namespace, you can omit them from the `project`
   keyword. For example: `project: group/project-name` or `project: project-name`.
 - `job`: The job to download artifacts from.
 - `ref`: The ref to download artifacts from.
@@ -2168,7 +2169,7 @@ build_job:
 
 **Additional details**:
 
-- To download artifacts from a different pipeline in the current project, set `project:`
+- To download artifacts from a different pipeline in the current project, set `project`
   to be the same as the current project, but use a different ref than the current pipeline.
   Concurrent pipelines running on the same ref could override the artifacts.
 - The user running the pipeline must have at least the Reporter role for the group or project,
@@ -2178,7 +2179,7 @@ build_job:
   the needed job to complete. [Directed acyclic graph](../directed_acyclic_graph/index.md)
   behavior is limited to jobs in the same pipeline. Make sure that the needed job in the other
   pipeline completes before the job that needs it tries to download the artifacts.
-- You can't download artifacts from jobs that run in [`parallel:`](#parallel).
+- You can't download artifacts from jobs that run in [`parallel`](#parallel).
 - Support for [CI/CD variables](../variables/index.md) in `project`, `job`, and `ref` was
   [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/202093) in GitLab 13.3.
   [Feature flag removed](https://gitlab.com/gitlab-org/gitlab/-/issues/235761) in GitLab 13.4.
@@ -2200,7 +2201,7 @@ its parent pipeline or another child pipeline in the same parent-child pipeline 
 **Possible inputs**:
 
 - `needs:pipeline`: A pipeline ID. Must be a pipeline present in the same parent-child pipeline hierarchy.
-- `job:`: The job to download artifacts from.
+- `job`: The job to download artifacts from.
 
 **Example of `needs:pipeline:job`**:
 
@@ -2262,7 +2263,7 @@ error similar to:
 
 **Possible inputs**:
 
-- `job:`: The job to make optional.
+- `job`: The job to make optional.
 - `true` or `false` (default).
 
 **Example of `needs:optional`**:
@@ -2299,7 +2300,7 @@ replicated to the bridge job.
 **Possible inputs**:
 
 - A full project path, including namespace and group. If the
-  project is in the same group or namespace, you can omit them from the `project:`
+  project is in the same group or namespace, you can omit them from the `project`
   keyword. For example: `project: group/project-name` or `project: project-name`.
 
 **Example of `needs:pipeline`**:
@@ -2384,7 +2385,7 @@ job2:
     - schedules
 ```
 
-**Additional details:**
+**Additional details**:
 
 - Scheduled pipelines run on specific branches, so jobs configured with `only: branches`
   run on scheduled pipelines too. Add `except: schedules` to prevent jobs with `only: branches`
@@ -2429,7 +2430,9 @@ to a pipeline, based on the status of [CI/CD variables](../variables/index.md).
 
 **Keyword type**: Job keyword. You can use it only as part of a job.
 
-**Possible inputs**: An array of [CI/CD variable expressions](../jobs/job_control.md#cicd-variable-expressions).
+**Possible inputs**:
+
+- An array of [CI/CD variable expressions](../jobs/job_control.md#cicd-variable-expressions).
 
 **Example of `only:variables`**:
 
@@ -2508,7 +2511,9 @@ when the Kubernetes service is active in the project.
 
 **Keyword type**: Job-specific. You can use it only as part of a job.
 
-**Possible inputs**: The `kubernetes` strategy accepts only the `active` keyword.
+**Possible inputs**:
+
+- The `kubernetes` strategy accepts only the `active` keyword.
 
 **Example of `only:kubernetes`**:
 
@@ -2564,7 +2569,9 @@ Parallel jobs are named sequentially from `job_name 1/N` to `job_name N/N`.
 
 **Keyword type**: Job keyword. You can use it only as part of a job.
 
-**Possible inputs**: A numeric value from `2` to `50`.
+**Possible inputs**:
+
+- A numeric value from `2` to `50`.
 
 **Example of `parallel`**:
 
@@ -2597,7 +2604,9 @@ Multiple runners must exist, or a single runner must be configured to run multip
 
 **Keyword type**: Job keyword. You can use it only as part of a job.
 
-**Possible inputs**: A numeric value from `2` to `50`.
+**Possible inputs**:
+
+- A numeric value from `2` to `50`.
 
 **Example of `parallel:matrix`**:
 
@@ -2654,7 +2663,7 @@ you can use this image from the GitLab Container Registry: `registry.gitlab.com/
 
 **Keyword type**: Job keyword. You can use it only as part of a job.
 
-**Possible inputs**: The `release:` subkeys:
+**Possible inputs**: The `release` subkeys:
 
 - [`tag_name`](#releasetag_name)
 - [`name`](#releasename) (optional)
@@ -2717,7 +2726,9 @@ New tags use the SHA associated with the pipeline.
 
 **Keyword type**: Job keyword. You can use it only as part of a job.
 
-**Possible inputs**: A tag name. Can use [CI/CD variables](../variables/index.md).
+**Possible inputs**:
+
+- A tag name. Can use [CI/CD variables](../variables/index.md).
 
 **Example of `release:tag_name`**:
 
@@ -2756,7 +2767,9 @@ The release name. If omitted, it is populated with the value of `release: tag_na
 
 **Keyword type**: Job keyword. You can use it only as part of a job.
 
-**Possible inputs**: A text string.
+**Possible inputs**:
+
+- A text string.
 
 **Example of `release:name`**:
 
@@ -2861,8 +2874,10 @@ can be deployed to, but only one deployment can occur per device at any given ti
 
 **Keyword type**: Job keyword. You can use it only as part of a job.
 
-**Possible inputs**: Only letters, digits, `-`, `_`, `/`, `$`, `{`, `}`, `.`, and spaces.
-It can't start or end with `/`.
+**Possible inputs**:
+
+- Only letters, digits, `-`, `_`, `/`, `$`, `{`, `}`, `.`, and spaces.
+  It can't start or end with `/`.
 
 **Example of `resource_group`**:
 
@@ -2891,9 +2906,11 @@ By default, all failure types cause the job to be retried. Use [`retry:when`](#r
 to select which failures to retry on.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#default).
+[`default` section](#default).
 
-**Possible inputs**: `0` (default), `1`, or `2`.
+**Possible inputs**:
+
+- `0` (default), `1`, or `2`.
 
 **Example of `retry`**:
 
@@ -2910,9 +2927,11 @@ Use `retry:when` with `retry:max` to retry jobs for only specific failure cases.
 `0`, `1`, or `2`.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#default).
+[`default` section](#default).
 
-**Possible inputs**: A single failure type, or an array of one or more failure types:
+**Possible inputs**:
+
+- A single failure type, or an array of one or more failure types:
 
 <!--
   If you change any of the values below, make sure to update the `RETRY_WHEN_IN_DOCUMENTATION`
@@ -3014,13 +3033,15 @@ Use `rules:if` clauses to specify when to add a job to a pipeline:
 - If an `if` statement is true, but it's combined with `when: never`, do not add the job to the pipeline.
 - If no `if` statements are true, do not add the job to the pipeline.
 
-`if:` clauses are evaluated based on the values of [predefined CI/CD variables](../variables/predefined_variables.md)
+`if` clauses are evaluated based on the values of [predefined CI/CD variables](../variables/predefined_variables.md)
 or [custom CI/CD variables](../variables/index.md#custom-cicd-variables).
 
 **Keyword type**: Job-specific and pipeline-specific. You can use it as part of a job
 to configure the job behavior, or with [`workflow`](#workflow) to configure the pipeline behavior.
 
-**Possible inputs**: A [CI/CD variable expression](../jobs/job_control.md#cicd-variable-expressions).
+**Possible inputs**:
+
+- A [CI/CD variable expression](../jobs/job_control.md#cicd-variable-expressions).
 
 **Example of `rules:if`**:
 
@@ -3061,13 +3082,14 @@ You should use `rules: changes` only with **branch pipelines** or **merge reques
 You can use `rules: changes` with other pipeline types, but `rules: changes` always
 evaluates to true when there is no Git `push` event. Tag pipelines, scheduled pipelines,
 and so on do **not** have a Git `push` event associated with them. A `rules: changes` job
-is **always** added to those pipelines if there is no `if:` that limits the job to
+is **always** added to those pipelines if there is no `if` that limits the job to
 branch or merge request pipelines.
 
 **Keyword type**: Job keyword. You can use it only as part of a job.
 
-**Possible inputs**: An array of file paths. In GitLab 13.6 and later,
-[file paths can include variables](../jobs/job_control.md#variables-in-ruleschanges).
+**Possible inputs**:
+
+- An array of file paths. In GitLab 13.6 and later, [file paths can include variables](../jobs/job_control.md#variables-in-ruleschanges).
 
 **Example of `rules:changes`**:
 
@@ -3101,8 +3123,10 @@ Use `exists` to run a job when certain files exist in the repository.
 
 **Keyword type**: Job keyword. You can use it only as part of a job.
 
-**Possible inputs**: An array of file paths. Paths are relative to the project directory (`$CI_PROJECT_DIR`)
-and can't directly link outside it. File paths can use glob patterns.
+**Possible inputs**:
+
+- An array of file paths. Paths are relative to the project directory (`$CI_PROJECT_DIR`)
+  and can't directly link outside it. File paths can use glob patterns.
 
 **Example of `rules:exists`**:
 
@@ -3130,7 +3154,7 @@ job:
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/30235) in GitLab 12.8.
 
-Use [`allow_failure: true`](#allow_failure) in `rules:` to allow a job to fail
+Use [`allow_failure: true`](#allow_failure) in `rules` to allow a job to fail
 without stopping the pipeline.
 
 You can also use `allow_failure: true` with a manual job. The pipeline continues
@@ -3140,7 +3164,9 @@ job to run before continuing.
 
 **Keyword type**: Job keyword. You can use it only as part of a job.
 
-**Possible inputs**: `true` or `false`. Defaults to `false` if not defined.
+**Possible inputs**:
+
+- `true` or `false`. Defaults to `false` if not defined.
 
 **Example of `rules:allow_failure`**:
 
@@ -3165,11 +3191,13 @@ If the rule matches, then the job is a manual job with `allow_failure: true`.
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/209864) in GitLab 13.7.
 > - [Feature flag removed](https://gitlab.com/gitlab-org/gitlab/-/issues/289803) in GitLab 13.10.
 
-Use [`variables`](#variables) in `rules:` to define variables for specific conditions.
+Use [`variables`](#variables) in `rules` to define variables for specific conditions.
 
 **Keyword type**: Job-specific. You can use it only as part of a job.
 
-**Possible inputs**: A hash of variables in the format `VARIABLE-NAME: value`.
+**Possible inputs**:
+
+- A hash of variables in the format `VARIABLE-NAME: value`.
 
 **Example of `rules:variables`**:
 
@@ -3203,7 +3231,7 @@ All jobs except [trigger jobs](#trigger) require a `script` keyword.
 - Long commands [split over multiple lines](script.md#split-long-commands).
 - [YAML anchors](yaml_optimization.md#yaml-anchors-for-scripts).
 
-**Example of `script`:**
+**Example of `script`**:
 
 ```yaml
 job1:
@@ -3304,7 +3332,9 @@ the secret value directly in the variable.
 
 **Keyword type**: Job keyword. You can use it only as part of a job.
 
-**Possible inputs**: `true` (default) or `false`.
+**Possible inputs**:
+
+- `true` (default) or `false`.
 
 **Example of `secrets:file`**:
 
@@ -3327,7 +3357,7 @@ Use `services` to specify an additional Docker image to run scripts in. The [`se
 to the image specified in the [`image`](#image) keyword.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#default).
+[`default` section](#default).
 
 **Possible inputs**: The name of the services image, including the registry path if needed, in one of these formats:
 
@@ -3500,7 +3530,7 @@ example `ruby`, `postgres`, or `development`. To pick up and run a job, a runner
 be assigned every tag listed in the job.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#default).
+[`default` section](#default).
 
 **Possible inputs**:
 
@@ -3538,7 +3568,7 @@ The job-level timeout can be longer than the [project-level timeout](../pipeline
 but can't be longer than the [runner's timeout](../runners/configure_runners.md#set-maximum-job-timeout-for-a-runner).
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#default).
+[`default` section](#default).
 
 **Possible inputs**: A period of time written in natural language. For example, these are all equivalent:
 
@@ -3570,7 +3600,7 @@ Use `trigger` to start a downstream pipeline that is either:
 
 **Keyword type**: Job keyword. You can use it only as part of a job.
 
-**Possible inputs**: 
+**Possible inputs**:
 
 - For multi-project pipelines, path to the downstream project.
 - For child pipelines, path to the child pipeline CI/CD configuration file.
@@ -3657,7 +3687,7 @@ variable defined, the [job-level variable takes precedence](../variables/index.m
   the first character must be a letter.
 - The value must be a string.
 
-**Examples of `variables`:**
+**Examples of `variables`**:
 
 ```yaml
 variables:
@@ -3700,7 +3730,9 @@ Must be used with `value`, for the variable value.
 
 **Keyword type**: Global keyword. You cannot set job-level variables to be pre-filled when you run a pipeline manually.
 
-**Possible inputs**: A string.
+**Possible inputs**:
+
+- A string.
 
 **Example of `variables:description`**:
 
@@ -3811,7 +3843,7 @@ Defining `image`, `services`, `cache`, `before_script`, and
 `after_script` globally is deprecated. Support could be removed
 from a future release.
 
-Use [`default:`](#default) instead. For example:
+Use [`default`](#default) instead. For example:
 
 ```yaml
 default:

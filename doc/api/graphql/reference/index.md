@@ -5457,6 +5457,30 @@ The edge type for [`CiStage`](#cistage).
 | <a id="cistageedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="cistageedgenode"></a>`node` | [`CiStage`](#cistage) | The item at the end of the edge. |
 
+#### `ClusterAgentActivityEventConnection`
+
+The connection type for [`ClusterAgentActivityEvent`](#clusteragentactivityevent).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="clusteragentactivityeventconnectioncount"></a>`count` | [`Int!`](#int) | Total count of collection. |
+| <a id="clusteragentactivityeventconnectionedges"></a>`edges` | [`[ClusterAgentActivityEventEdge]`](#clusteragentactivityeventedge) | A list of edges. |
+| <a id="clusteragentactivityeventconnectionnodes"></a>`nodes` | [`[ClusterAgentActivityEvent]`](#clusteragentactivityevent) | A list of nodes. |
+| <a id="clusteragentactivityeventconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `ClusterAgentActivityEventEdge`
+
+The edge type for [`ClusterAgentActivityEvent`](#clusteragentactivityevent).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="clusteragentactivityeventedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="clusteragentactivityeventedgenode"></a>`node` | [`ClusterAgentActivityEvent`](#clusteragentactivityevent) | The item at the end of the edge. |
+
 #### `ClusterAgentConnection`
 
 The connection type for [`ClusterAgent`](#clusteragent).
@@ -8776,6 +8800,7 @@ GitLab CI/CD configuration template.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="clusteragentactivityevents"></a>`activityEvents` | [`ClusterAgentActivityEventConnection`](#clusteragentactivityeventconnection) | Recent activity for the cluster agent. (see [Connections](#connections)) |
 | <a id="clusteragentconnections"></a>`connections` | [`ConnectedAgentConnection`](#connectedagentconnection) | Active connections for the cluster agent. (see [Connections](#connections)) |
 | <a id="clusteragentcreatedat"></a>`createdAt` | [`Time`](#time) | Timestamp the cluster agent was created. |
 | <a id="clusteragentcreatedbyuser"></a>`createdByUser` | [`UserCore`](#usercore) | User object, containing information about the person who created the agent. |
@@ -8785,6 +8810,18 @@ GitLab CI/CD configuration template.
 | <a id="clusteragenttokens"></a>`tokens` | [`ClusterAgentTokenConnection`](#clusteragenttokenconnection) | Tokens associated with the cluster agent. (see [Connections](#connections)) |
 | <a id="clusteragentupdatedat"></a>`updatedAt` | [`Time`](#time) | Timestamp the cluster agent was updated. |
 | <a id="clusteragentwebpath"></a>`webPath` | [`String`](#string) | Web path of the cluster agent. |
+
+### `ClusterAgentActivityEvent`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="clusteragentactivityeventagenttoken"></a>`agentToken` | [`ClusterAgentToken`](#clusteragenttoken) | Agent token associated with the event. |
+| <a id="clusteragentactivityeventkind"></a>`kind` | [`String`](#string) | Type of event. |
+| <a id="clusteragentactivityeventlevel"></a>`level` | [`String`](#string) | Severity of the event. |
+| <a id="clusteragentactivityeventrecordedat"></a>`recordedAt` | [`Time`](#time) | Timestamp the event was recorded. |
+| <a id="clusteragentactivityeventuser"></a>`user` | [`UserCore`](#usercore) | User associated with the event. |
 
 ### `ClusterAgentToken`
 
@@ -18322,6 +18359,7 @@ Field that are available while modifying the custom mapping attributes for an HT
 | <a id="boardissueinputassigneeusername"></a>`assigneeUsername` | [`[String]`](#string) | Filter by assignee username. |
 | <a id="boardissueinputassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee wildcard. Incompatible with assigneeUsername. |
 | <a id="boardissueinputauthorusername"></a>`authorUsername` | [`String`](#string) | Filter by author username. |
+| <a id="boardissueinputconfidential"></a>`confidential` | [`Boolean`](#boolean) | Filter by confidentiality. |
 | <a id="boardissueinputepicid"></a>`epicId` | [`EpicID`](#epicid) | Filter by epic ID. Incompatible with epicWildcardId. |
 | <a id="boardissueinputepicwildcardid"></a>`epicWildcardId` | [`EpicWildcardId`](#epicwildcardid) | Filter by epic ID wildcard. Incompatible with epicId. |
 | <a id="boardissueinputiids"></a>`iids` | [`[String!]`](#string) | List of IIDs of issues. For example `["1", "2"]`. |
@@ -18448,6 +18486,7 @@ Input type for DastSiteProfile authentication.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="epicfiltersauthorusername"></a>`authorUsername` | [`String`](#string) | Filter by author username. |
+| <a id="epicfiltersconfidential"></a>`confidential` | [`Boolean`](#boolean) | Filter by confidentiality. |
 | <a id="epicfilterslabelname"></a>`labelName` | [`[String]`](#string) | Filter by label name. |
 | <a id="epicfiltersmyreactionemoji"></a>`myReactionEmoji` | [`String`](#string) | Filter by reaction emoji applied by the current user. Wildcard values "NONE" and "ANY" are supported. |
 | <a id="epicfiltersnot"></a>`not` | [`NegatedEpicBoardIssueInput`](#negatedepicboardissueinput) | Negated epic arguments. |

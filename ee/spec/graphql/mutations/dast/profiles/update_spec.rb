@@ -120,6 +120,29 @@ RSpec.describe Mutations::Dast::Profiles::Update do
           end
         end
 
+        context 'when associated dast profile schedule is not present' do
+          context 'when dast_profile_schedule param is present' do
+            let(:new_dast_profile_schedule) { create(:dast_profile_schedule_input_type) }
+
+            subject do
+              mutation.resolve(**params.merge(dast_profile_schedule: new_dast_profile_schedule))
+            end
+
+            it 'creates the profile schedule' do
+              subject
+
+              new_schedule = dast_profile.reload.dast_profile_schedule
+
+              aggregate_failures do
+                expect(new_schedule.timezone).to eq(new_dast_profile_schedule[:timezone])
+                expect(new_schedule.starts_at.to_i).to eq(new_dast_profile_schedule[:starts_at].to_i)
+                expect(new_schedule.cadence[:duration]).to eq(new_dast_profile_schedule[:cadence].duration)
+                expect(new_schedule.cadence[:unit]).to eq(new_dast_profile_schedule[:cadence].unit)
+              end
+            end
+          end
+        end
+
         context 'when run_after_update=true' do
           let(:run_after_update) { true }
 

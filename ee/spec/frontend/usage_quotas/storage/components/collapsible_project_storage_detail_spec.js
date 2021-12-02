@@ -1,0 +1,55 @@
+import { shallowMount } from '@vue/test-utils';
+import CollapsibleProjectStorageDetail from 'ee/usage_quotas/storage/components/collapsible_project_storage_detail.vue';
+import ProjectStorageDetail from 'ee/usage_quotas/storage/components/project_storage_detail.vue';
+import { numberToHumanSize } from '~/lib/utils/number_utils';
+import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
+import { projects } from '../mock_data';
+
+let wrapper;
+const createComponent = () => {
+  wrapper = shallowMount(CollapsibleProjectStorageDetail, {
+    propsData: {
+      project: projects[1],
+    },
+  });
+};
+
+const findTableRow = () => wrapper.find('[data-testid="projectTableRow"]');
+const findProjectStorageDetail = () => wrapper.find(ProjectStorageDetail);
+
+describe('CollapsibleProjectStorageDetail', () => {
+  beforeEach(() => {
+    createComponent();
+  });
+
+  it('renders project avatar', () => {
+    expect(wrapper.find(ProjectAvatar).exists()).toBe(true);
+  });
+
+  it('renders project name', () => {
+    expect(wrapper.text()).toContain(projects[1].nameWithNamespace);
+  });
+
+  it('renders formatted storage size', () => {
+    expect(wrapper.text()).toContain(numberToHumanSize(projects[1].statistics.storageSize));
+  });
+
+  describe('toggle row', () => {
+    describe('on click', () => {
+      it('toggles isOpen', () => {
+        expect(findProjectStorageDetail().exists()).toBe(false);
+
+        findTableRow().trigger('click');
+
+        wrapper.vm.$nextTick(() => {
+          expect(findProjectStorageDetail().exists()).toBe(true);
+          findTableRow().trigger('click');
+
+          wrapper.vm.$nextTick(() => {
+            expect(findProjectStorageDetail().exists()).toBe(false);
+          });
+        });
+      });
+    });
+  });
+});

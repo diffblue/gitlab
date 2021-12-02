@@ -2,7 +2,13 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Vue from 'vue';
 import Vuex from 'vuex';
-import { BoardType, GroupByParamType, listsQuery, issuableTypes } from 'ee/boards/constants';
+import {
+  BoardType,
+  GroupByParamType,
+  listsQuery,
+  issuableTypes,
+  IterationIDs,
+} from 'ee/boards/constants';
 import epicCreateMutation from 'ee/boards/graphql/epic_create.mutation.graphql';
 import actions, { gqlClient } from 'ee/boards/stores/actions';
 import * as types from 'ee/boards/stores/mutation_types';
@@ -12,7 +18,9 @@ import { TEST_HOST } from 'helpers/test_constants';
 import testAction from 'helpers/vuex_action_helper';
 import { mockMoveIssueParams, mockMoveData, mockMoveState } from 'jest/boards/mock_data';
 import { formatListIssues } from '~/boards/boards_util';
+import { formatIssueInput } from 'ee_else_ce/boards/boards_util';
 import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
+import issueCreateMutation from '~/boards/graphql/issue_create.mutation.graphql';
 import * as typesCE from '~/boards/stores/mutation_types';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import * as commonUtils from '~/lib/utils/common_utils';
@@ -1340,7 +1348,7 @@ describe('setSelectedGroup', () => {
 
 describe('setActiveEpicLabels', () => {
   const state = { boardItems: { [mockEpic.id]: mockEpic } };
-  const getters = { activeBoardItem: mockEpic };
+  const getters = { activeBoardItem: { ...mockEpic, labels } };
   const testLabelIds = labels.map((label) => label.id);
   const input = {
     addLabelIds: testLabelIds,
@@ -1348,11 +1356,7 @@ describe('setActiveEpicLabels', () => {
     groupPath: 'h/b',
   };
 
-  it('should assign labels on success', (done) => {
-    jest
-      .spyOn(gqlClient, 'mutate')
-      .mockResolvedValue({ data: { updateEpic: { epic: { labels: { nodes: labels } } } } });
-
+  it('should assign labels', () => {
     const payload = {
       itemId: getters.activeBoardItem.id,
       prop: 'labels',
@@ -1365,78 +1369,174 @@ describe('setActiveEpicLabels', () => {
       { ...state, ...getters },
       [
         {
-          type: typesCE.UPDATE_BOARD_ITEM_BY_ID,
+          type: types.UPDATE_BOARD_ITEM_BY_ID,
           payload,
         },
       ],
       [],
-      done,
     );
   });
 
-  it('throws error if fails', async () => {
-    jest
-      .spyOn(gqlClient, 'mutate')
-      .mockResolvedValue({ data: { updateEpic: { errors: ['failed mutation'] } } });
+  it('should remove label', () => {
+    const payload = {
+      itemId: getters.activeBoardItem.id,
+      prop: 'labels',
+      value: [labels[1]],
+    };
 
-    await expect(actions.setActiveEpicLabels({ getters }, input)).rejects.toThrow(Error);
+    testAction(
+      actions.setActiveEpicLabels,
+      { ...input, removeLabelIds: [getIdFromGraphQLId(labels[0].id)] },
+      { ...state, ...getters },
+      [
+        {
+          type: types.UPDATE_BOARD_ITEM_BY_ID,
+          payload,
+        },
+      ],
+      [],
+    );
+  });
+});
+
+describe('addListNewIssue', () => {
+  let state;
+  const iterationCadenceId = 'gid://gitlab/Iterations::Cadence/1';
+  const baseState = {
+    boardType: 'group',
+    fullPath: 'gitlab-org/gitlab',
+    boardConfig: {
+      labelIds: [],
+    },
+  };
+
+  const queryResponse = {
+    data: {
+      group: {
+        id: 'gid://gitlab/Group/1',
+        iterations: {
+          nodes: [
+            {
+              id: 'gid://gitlab/Iteration/1',
+              iterationCadence: {
+                id: iterationCadenceId,
+              },
+            },
+          ],
+        },
+      },
+    },
+  };
+
+  const fakeList = {};
+
+  beforeEach(() => {
+    jest.spyOn(gqlClient, 'query').mockResolvedValue(queryResponse);
   });
 
-  describe('labels_widget FF on', () => {
+  describe('without cadenceId', () => {
+    describe('currentIteration selected in board config', () => {
+      beforeEach(() => {
+        state = {
+          ...baseState,
+          boardConfig: {
+            iterationId: IterationIDs.CURRENT,
+          },
+        };
+      });
+
+      it('adds iterationCadenceId from iteration', async () => {
+        jest.spyOn(gqlClient, 'mutate').mockResolvedValue({
+          data: {
+            createIssue: {
+              errors: [],
+            },
+          },
+        });
+
+        await actions.addListNewIssue(
+          { dispatch: jest.fn(), commit: jest.fn(), state },
+          { issueInput: mockIssue, list: fakeList },
+        );
+
+        expect(gqlClient.mutate).toHaveBeenCalledWith({
+          mutation: issueCreateMutation,
+          variables: {
+            input: formatIssueInput(mockIssue, {
+              ...state.boardConfig,
+              iterationCadenceId,
+            }),
+          },
+        });
+      });
+    });
+
+    describe('currentIteration not in boardConfig', () => {
+      beforeEach(() => {
+        state = {
+          ...baseState,
+          boardConfig: {
+            iterationId: null,
+          },
+        };
+      });
+
+      it('does not add iterationCadenceId', async () => {
+        jest.spyOn(gqlClient, 'mutate').mockResolvedValue({
+          data: {
+            createIssue: {
+              errors: [],
+            },
+          },
+        });
+
+        await actions.addListNewIssue(
+          { dispatch: jest.fn(), commit: jest.fn(), state },
+          { issueInput: mockIssue, list: fakeList },
+        );
+
+        expect(gqlClient.mutate).toHaveBeenCalledWith({
+          mutation: issueCreateMutation,
+          variables: {
+            input: formatIssueInput(mockIssue, state.boardConfig),
+          },
+        });
+      });
+    });
+  });
+
+  describe('with iterationCadenceId', () => {
     beforeEach(() => {
-      window.gon = {
-        features: { labelsWidget: true },
-      };
-
-      getters.activeBoardItem = { ...mockIssue, labels };
-    });
-
-    afterEach(() => {
-      window.gon = {
-        features: {},
+      state = {
+        ...baseState,
+        boardConfig: {
+          iterationId: IterationIDs.CURRENT,
+          iterationCadenceId,
+        },
       };
     });
 
-    it('should assign labels', () => {
-      const payload = {
-        itemId: getters.activeBoardItem.id,
-        prop: 'labels',
-        value: labels,
-      };
-
-      testAction(
-        actions.setActiveEpicLabels,
-        input,
-        { ...state, ...getters },
-        [
-          {
-            type: types.UPDATE_BOARD_ITEM_BY_ID,
-            payload,
+    it('does not make query for cadence of current iteration', async () => {
+      jest.spyOn(gqlClient, 'mutate').mockResolvedValue({
+        data: {
+          createIssue: {
+            errors: [],
           },
-        ],
-        [],
-      );
-    });
+        },
+      });
 
-    it('should remove label', () => {
-      const payload = {
-        itemId: getters.activeBoardItem.id,
-        prop: 'labels',
-        value: [labels[1]],
-      };
-
-      testAction(
-        actions.setActiveEpicLabels,
-        { ...input, removeLabelIds: [getIdFromGraphQLId(labels[0].id)] },
-        { ...state, ...getters },
-        [
-          {
-            type: types.UPDATE_BOARD_ITEM_BY_ID,
-            payload,
-          },
-        ],
-        [],
+      await actions.addListNewIssue(
+        { dispatch: jest.fn(), commit: jest.fn(), state },
+        { issueInput: mockIssue, list: fakeList },
       );
+
+      expect(gqlClient.query).not.toHaveBeenCalled();
+      expect(gqlClient.mutate).toHaveBeenCalledWith({
+        mutation: issueCreateMutation,
+        variables: {
+          input: formatIssueInput(mockIssue, state.boardConfig),
+        },
+      });
     });
   });
 });

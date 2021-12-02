@@ -139,7 +139,7 @@ export default {
     tableFields() {
       return this.fields.map((field) => ({
         ...field,
-        class: ['gl-text-black-normal'],
+        class: ['gl-text-primary'],
         thClass: ['gl-bg-transparent!', 'gl-white-space-nowrap'],
       }));
     },
