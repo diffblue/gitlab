@@ -15,19 +15,8 @@ class BlobPresenter < Gitlab::View::Presenter::Delegated
 
     Gitlab::Highlight.highlight(
       blob.path,
-      limited_blob_data(to: to),
-      language: language,
-      plain: plain
-    )
-  end
-
-  def highlight_transformed(plain: nil)
-    load_all_blob_data
-
-    Gitlab::Highlight.highlight(
-      blob.path,
-      transformed_blob_data,
-      language: transformed_blob_language,
+      CustomDiffHelper.transformed_blob_data(blob) || limited_blob_data(to: to),
+      language: CustomDiffHelper.transformed_blob_language(blob) || language,
       plain: plain
     )
   end
@@ -128,22 +117,5 @@ class BlobPresenter < Gitlab::View::Presenter::Delegated
 
   def language
     blob.language_from_gitattributes
-  end
-
-  def transformed_blob_language
-    @transformed_blob_language ||= blob.path.ends_with?('.ipynb') ? 'md' : language
-  end
-
-  def transformed_blob_data
-    @transformed_blob ||= if blob.path.ends_with?('.ipynb') && blob.transformed_for_diff
-                            IpynbDiff.transform(blob.data,
-                                                raise_errors: true,
-                                                options: { include_metadata: false, cell_decorator: :percent })
-                          end
-
-    @transformed_blob ||= blob.data
-  rescue IpynbDiff::InvalidNotebookError => e
-    Gitlab::ErrorTracking.log_exception(e)
-    blob.data
   end
 end
