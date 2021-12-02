@@ -1,6 +1,6 @@
 import { GlAlert } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import StorageInlineAlert from 'ee/storage_counter/components/storage_inline_alert.vue';
+import StorageInlineAlert from 'ee/usage_quotas/storage/components/storage_inline_alert.vue';
 
 const GB_IN_BYTES = 1_074_000_000;
 const THIRTEEN_GB_IN_BYTES = 13 * GB_IN_BYTES;

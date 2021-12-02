@@ -1,9 +1,9 @@
 import ciMinutesUsage from 'ee/ci_minutes_usage';
-import storageCounter from 'ee/storage_counter';
+import initNamespaceStorage from 'ee/usage_quotas/storage/init_namespace_storage';
 import LinkedTabs from '~/lib/utils/bootstrap_linked_tabs';
 
 if (document.querySelector('#js-storage-counter-app')) {
-  storageCounter();
+  initNamespaceStorage();
 
   // eslint-disable-next-line no-new
   new LinkedTabs({

@@ -1,18 +1,18 @@
 import { mount } from '@vue/test-utils';
-import StorageApp from 'ee/storage_counter/components/app.vue';
+import NamespaceStorageApp from 'ee/usage_quotas/storage/components/namespace_storage_app.vue';
 import CollapsibleProjectStorageDetail from 'ee/usage_quotas/storage/components/collapsible_project_storage_detail.vue';
 import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
-import StorageInlineAlert from 'ee/storage_counter/components/storage_inline_alert.vue';
-import TemporaryStorageIncreaseModal from 'ee/storage_counter/components/temporary_storage_increase_modal.vue';
-import UsageStatistics from 'ee/storage_counter/components/usage_statistics.vue';
-import { formatUsageSize } from 'ee/storage_counter/utils';
+import StorageInlineAlert from 'ee/usage_quotas/storage/components/storage_inline_alert.vue';
+import TemporaryStorageIncreaseModal from 'ee/usage_quotas/storage/components/temporary_storage_increase_modal.vue';
+import UsageStatistics from 'ee/usage_quotas/storage/components/usage_statistics.vue';
+import { formatUsageSize } from 'ee/usage_quotas/storage/utils';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import UsageGraph from '~/vue_shared/components/storage_counter/usage_graph.vue';
 import { namespaceData, withRootStorageStatistics } from '../mock_data';
 
 const TEST_LIMIT = 1000;
 
-describe('Storage counter app', () => {
+describe('NamespaceStorageApp', () => {
   let wrapper;
 
   const findTotalUsage = () => wrapper.find("[data-testid='total-usage']");
@@ -40,7 +40,7 @@ describe('Storage counter app', () => {
       },
     };
 
-    wrapper = mount(StorageApp, {
+    wrapper = mount(NamespaceStorageApp, {
       propsData: { namespacePath: 'h5bp', helpPagePath: 'help', ...props },
       mocks: { $apollo },
       directives: {
@@ -206,13 +206,13 @@ describe('Storage counter app', () => {
 
         // Check for truthiness so we're assured we're not comparing two undefineds
         expect(value).toBeTruthy();
-        expect(value).toEqual(StorageApp.modalId);
+        expect(value).toEqual(NamespaceStorageApp.modalId);
       });
 
       it('renders modal', () => {
         expect(wrapper.find(TemporaryStorageIncreaseModal).props()).toEqual({
           limit: formatUsageSize(TEST_LIMIT),
-          modalId: StorageApp.modalId,
+          modalId: NamespaceStorageApp.modalId,
         });
       });
     });

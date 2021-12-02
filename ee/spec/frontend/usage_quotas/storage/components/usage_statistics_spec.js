@@ -1,10 +1,10 @@
 import { GlButton, GlLink, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import UsageStatistics from 'ee/storage_counter/components/usage_statistics.vue';
-import UsageStatisticsCard from 'ee/storage_counter/components/usage_statistics_card.vue';
+import UsageStatistics from 'ee/usage_quotas/storage/components/usage_statistics.vue';
+import UsageStatisticsCard from 'ee/usage_quotas/storage/components/usage_statistics_card.vue';
 import { withRootStorageStatistics } from '../mock_data';
 
-describe('Usage Statistics component', () => {
+describe('UsageStatistics', () => {
   let wrapper;
 
   const createComponent = ({ props = {}, newRouteStoragePurchase = false } = {}) => {
