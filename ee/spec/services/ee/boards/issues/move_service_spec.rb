@@ -114,17 +114,6 @@ RSpec.describe Boards::Issues::MoveService, services: true do
           .from(nil)
           .to(iteration_list1.iteration)
       end
-
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(iteration_board_lists: false)
-        end
-
-        it 'does not assign the iteration' do
-          expect { described_class.new(parent, user, params).execute(issue) }
-            .not_to change { issue.reload.iteration }
-        end
-      end
     end
 
     context 'from iteration to backlog list' do

@@ -10,7 +10,6 @@ module EE
 
         override :execute
         def execute(board)
-          return ServiceResponse.error(message: 'iteration_board_lists feature flag is disabled') if type == :iteration && ::Feature.disabled?(:iteration_board_lists, board.resource_parent, default_enabled: :yaml)
           return license_validation_error unless valid_license?(board.resource_parent)
 
           super

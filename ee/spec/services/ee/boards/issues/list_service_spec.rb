@@ -109,16 +109,6 @@ RSpec.describe Boards::Issues::ListService, services: true do
               expect(issues).to include(iteration_issue)
             end
           end
-
-          context 'when feature flag is disabled' do
-            before do
-              stub_feature_flags(iteration_board_lists: false)
-            end
-
-            it 'includes issues in the iteration list' do
-              expect(issues).to include(iteration_issue)
-            end
-          end
         end
       end
 

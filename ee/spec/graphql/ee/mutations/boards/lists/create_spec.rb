@@ -114,14 +114,6 @@ RSpec.describe Mutations::Boards::Lists::Create do
           end
         end
 
-        context 'when feature flag is disabled' do
-          it 'returns an error' do
-            stub_feature_flags(iteration_board_lists: false)
-
-            expect(subject[:errors]).to include 'iteration_board_lists feature flag is disabled'
-          end
-        end
-
         it 'creates a new issue board list for the iteration' do
           expect { subject }.to change { board.lists.count }.from(1).to(2)
 

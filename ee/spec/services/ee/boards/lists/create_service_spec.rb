@@ -83,15 +83,6 @@ RSpec.describe Boards::Lists::CreateService do
         end
       end
 
-      it 'returns an error when feature flag is disabled' do
-        stub_feature_flags(iteration_board_lists: false)
-
-        response = service.execute(board)
-
-        expect(response.success?).to eq(false)
-        expect(response.errors).to include('iteration_board_lists feature flag is disabled')
-      end
-
       it 'returns an error when license is unavailable' do
         stub_licensed_features(board_iteration_lists: false)
 
