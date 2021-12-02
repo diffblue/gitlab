@@ -14,9 +14,9 @@ module Gitlab
           # end
 
           ALLOWED_ATTRIBUTES = %w(md5
-                                  id
+                                  license_id
                                   plan
-                                  trial
+                                  trial?
                                   starts_at
                                   expires_at
                                   user_count
