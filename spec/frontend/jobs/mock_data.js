@@ -1636,8 +1636,13 @@ export const retryableJob = {
   cancelable: false,
   active: false,
   stuck: false,
-  userPermissions: { readBuild: true, __typename: 'JobPermissions' },
+  userPermissions: { readBuild: true, updateBuild: true, __typename: 'JobPermissions' },
   __typename: 'CiJob',
+};
+
+export const cannotRetryJob = {
+  ...retryableJob,
+  userPermissions: { readBuild: true, updateBuild: false, __typename: 'JobPermissions' },
 };
 
 export const playableJob = {
@@ -1700,8 +1705,23 @@ export const playableJob = {
   cancelable: false,
   active: false,
   stuck: false,
-  userPermissions: { readBuild: true, readJobArtifacts: true, __typename: 'JobPermissions' },
+  userPermissions: {
+    readBuild: true,
+    readJobArtifacts: true,
+    updateBuild: true,
+    __typename: 'JobPermissions',
+  },
   __typename: 'CiJob',
+};
+
+export const cannotPlayJob = {
+  ...playableJob,
+  userPermissions: {
+    readBuild: true,
+    readJobArtifacts: true,
+    updateBuild: false,
+    __typename: 'JobPermissions',
+  },
 };
 
 export const scheduledJob = {
@@ -1756,6 +1776,16 @@ export const scheduledJob = {
   cancelable: false,
   active: false,
   stuck: false,
-  userPermissions: { readBuild: true, __typename: 'JobPermissions' },
+  userPermissions: { readBuild: true, updateBuild: true, __typename: 'JobPermissions' },
   __typename: 'CiJob',
+};
+
+export const cannotPlayScheduledJob = {
+  ...scheduledJob,
+  userPermissions: {
+    readBuild: true,
+    readJobArtifacts: true,
+    updateBuild: false,
+    __typename: 'JobPermissions',
+  },
 };
