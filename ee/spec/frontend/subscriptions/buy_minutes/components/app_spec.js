@@ -4,7 +4,7 @@ import App from 'ee/subscriptions/buy_minutes/components/app.vue';
 import {
   CI_MINUTES_PER_PACK,
   planTags,
-  I18N_CI_MINUTES_PRICE_PRE_UNIT,
+  I18N_CI_MINUTES_PRICE_PER_UNIT,
   I18N_CI_MINUTES_PRODUCT_LABEL,
   I18N_CI_MINUTES_PRODUCT_UNIT,
   I18N_DETAILS_FORMULA,
@@ -44,7 +44,7 @@ describe('Buy Minutes App', () => {
       formulaWithAlert: I18N_DETAILS_FORMULA_WITH_ALERT,
       formulaTotal: I18N_CI_MINUTES_FORMULA_TOTAL,
       hasExpiration: false,
-      pricePerUnit: I18N_CI_MINUTES_PRICE_PRE_UNIT,
+      pricePerUnit: I18N_CI_MINUTES_PRICE_PER_UNIT,
       productLabel: I18N_CI_MINUTES_PRODUCT_LABEL,
       productUnit: I18N_CI_MINUTES_PRODUCT_UNIT,
       quantityPerPack: CI_MINUTES_PER_PACK,
