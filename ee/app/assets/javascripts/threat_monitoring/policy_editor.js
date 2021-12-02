@@ -19,7 +19,6 @@ export default () => {
     defaultEnvironmentId,
     disableScanExecutionUpdate,
     environmentsEndpoint,
-    configureAgentHelpPath,
     createAgentHelpPath,
     networkPoliciesEndpoint,
     networkDocumentationPath,
@@ -64,7 +63,6 @@ export default () => {
     el,
     apolloProvider,
     provide: {
-      configureAgentHelpPath,
       createAgentHelpPath,
       disableScanExecutionUpdate: parseBoolean(disableScanExecutionUpdate),
       networkDocumentationPath,

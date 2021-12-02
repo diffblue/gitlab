@@ -9,7 +9,7 @@ export default {
       'NetworkPolicies|%{labelStart}And%{labelEnd} %{spanStart}send an Alert to GitLab.%{spanEnd}',
     ),
     AGENT_REQUIRED: s__(
-      'NetworkPolicies|Please %{installLinkStart}install%{installLinkEnd} and %{configureLinkStart}configure a Kubernetes Agent for this project%{configureLinkEnd} to enable alerts.',
+      'NetworkPolicies|To enable alerts, %{installLinkStart}install an agent%{installLinkEnd} first.',
     ),
     BUTTON_LABEL: s__('NetworkPolicies|Add alert'),
     HIGH_VOLUME_WARNING: s__(
@@ -24,7 +24,6 @@ export default {
     GlSprintf,
   },
   inject: {
-    configureAgentHelpPath: { type: String, default: '' },
     createAgentHelpPath: { type: String, default: '' },
     projectPath: { type: String, default: '' },
   },
@@ -75,11 +74,6 @@ export default {
       <gl-sprintf :message="$options.i18n.AGENT_REQUIRED">
         <template #installLink="{ content }">
           <gl-link :href="createAgentHelpPath" target="_blank">
-            {{ content }}
-          </gl-link>
-        </template>
-        <template #configureLink="{ content }">
-          <gl-link :href="configureAgentHelpPath" target="_blank">
             {{ content }}
           </gl-link>
         </template>
