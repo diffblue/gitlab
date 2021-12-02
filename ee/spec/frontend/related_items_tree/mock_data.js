@@ -9,6 +9,9 @@ export const mockInitialConfig = {
   autoCompleteIssues: false,
   userSignedIn: true,
   allowSubEpics: true,
+  isShowingLabels: false,
+  epicsWebUrl: `${TEST_HOST}/groups/gitlab-org/-/epics`,
+  issuesWebUrl: `${TEST_HOST}/groups/gitlab-org/-/issues`,
 };
 
 export const mockParentItem = {
@@ -36,6 +39,16 @@ export const mockParentItem = {
     issuesAtRisk: 0,
     issuesNeedingAttention: 1,
   },
+  labels: {
+    nodes: [
+      {
+        color: '#ff0000',
+        description: 'Mock Label',
+        textColor: '#ffffff',
+        title: 'Label',
+      },
+    ],
+  },
 };
 
 export const mockParentItem2 = {
@@ -59,6 +72,16 @@ export const mockParentItem2 = {
     issuesOnTrack: 1,
     issuesAtRisk: 0,
     issuesNeedingAttention: 1,
+  },
+  labels: {
+    nodes: [
+      {
+        color: '#ff0000',
+        description: 'Mock Label',
+        textColor: '#ffffff',
+        title: 'Label',
+      },
+    ],
   },
 };
 
@@ -86,6 +109,16 @@ export const mockEpic1 = {
     issuesNeedingAttention: 0,
     issuesOnTrack: 0,
   },
+  labels: {
+    nodes: [
+      {
+        color: '#ff0000',
+        description: 'Mock Label',
+        textColor: '#ffffff',
+        title: 'Label',
+      },
+    ],
+  },
 };
 
 export const mockEpic2 = {
@@ -111,6 +144,16 @@ export const mockEpic2 = {
     issuesAtRisk: 0,
     issuesNeedingAttention: 0,
     issuesOnTrack: 0,
+  },
+  labels: {
+    nodes: [
+      {
+        color: '#ff0000',
+        description: 'Mock Label',
+        textColor: '#ffffff',
+        title: 'Label',
+      },
+    ],
   },
 };
 
@@ -191,6 +234,16 @@ export const mockIssue1 = {
     dueDate: '2019-06-30',
   },
   healthStatus: 'onTrack',
+  labels: {
+    nodes: [
+      {
+        color: '#ff0000',
+        description: 'Mock Label',
+        textColor: '#ffffff',
+        title: 'Label',
+      },
+    ],
+  },
 };
 
 export const mockIssue2 = {
@@ -211,6 +264,9 @@ export const mockIssue2 = {
   },
   milestone: null,
   healthStatus: 'needsAttention',
+  labels: {
+    nodes: [],
+  },
 };
 
 export const mockClosedIssue = {
@@ -231,6 +287,9 @@ export const mockClosedIssue = {
   },
   milestone: null,
   healthStatus: 'atRisk',
+  labels: {
+    nodes: [],
+  },
 };
 
 export const mockEpics = [mockEpic1, mockEpic2];

@@ -19,27 +19,29 @@ RSpec.describe IssuablesHelper do
         @group = epic.group
 
         expected_data = {
+          canAdmin: true,
+          canDestroy: true,
+          canUpdate: true,
+          confidential: epic.confidential,
           endpoint: "/groups/#{@group.full_path}/-/epics/#{epic.iid}",
           epicLinksEndpoint: "/groups/#{@group.full_path}/-/epics/#{epic.iid}/links",
-          updateEndpoint: "/groups/#{@group.full_path}/-/epics/#{epic.iid}.json",
-          issueLinksEndpoint: "/groups/#{@group.full_path}/-/epics/#{epic.iid}/issues",
-          canUpdate: true,
-          canDestroy: true,
-          canAdmin: true,
-          issuableRef: "&#{epic.iid}",
-          markdownPreviewPath: "/groups/#{@group.full_path}/preview_markdown",
-          markdownDocsPath: '/help/user/markdown',
-          issuableTemplateNamesPath: '',
-          lockVersion: epic.lock_version,
+          epicsWebUrl: "/groups/#{@group.full_path}/-/epics",
           fullPath: @group.full_path,
           groupPath: @group.path,
-          initialTitleHtml: epic.title,
-          initialTitleText: epic.title,
           initialDescriptionHtml: '<p data-sourcepos="1:1-1:9" dir="auto">epic text</p>',
           initialDescriptionText: 'epic text',
           initialTaskStatus: '0 of 0 tasks completed',
+          initialTitleHtml: epic.title,
+          initialTitleText: epic.title,
+          issuableRef: "&#{epic.iid}",
+          issuableTemplateNamesPath: '',
+          issueLinksEndpoint: "/groups/#{@group.full_path}/-/epics/#{epic.iid}/issues",
+          issuesWebUrl: "/groups/#{@group.full_path}/-/issues",
+          lockVersion: epic.lock_version,
+          markdownDocsPath: '/help/user/markdown',
+          markdownPreviewPath: "/groups/#{@group.full_path}/preview_markdown",
           projectsEndpoint: "/api/v4/groups/#{@group.id}/projects",
-          confidential: epic.confidential
+          updateEndpoint: "/groups/#{@group.full_path}/-/epics/#{epic.iid}.json"
         }
         expect(helper.issuable_initial_data(epic)).to eq(expected_data)
       end

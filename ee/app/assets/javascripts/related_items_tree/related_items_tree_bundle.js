@@ -27,8 +27,9 @@ export default () => {
     autoCompleteEpics,
     autoCompleteIssues,
     userSignedIn,
-    allowSubEpics,
     allowIssuableHealthStatus,
+    allowScopedLabels,
+    allowSubEpics,
   } = el.dataset;
   const initialData = JSON.parse(el.dataset.initial);
 
@@ -63,8 +64,11 @@ export default () => {
         autoCompleteEpics: parseBoolean(autoCompleteEpics),
         autoCompleteIssues: parseBoolean(autoCompleteIssues),
         userSignedIn: parseBoolean(userSignedIn),
-        allowSubEpics: parseBoolean(allowSubEpics),
         allowIssuableHealthStatus: parseBoolean(allowIssuableHealthStatus),
+        allowScopedLabels: parseBoolean(allowScopedLabels),
+        allowSubEpics: parseBoolean(allowSubEpics),
+        epicsWebUrl: initialData.epicsWebUrl,
+        issuesWebUrl: initialData.issuesWebUrl,
       });
     },
     methods: {
