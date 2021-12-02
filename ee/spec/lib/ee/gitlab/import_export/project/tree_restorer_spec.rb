@@ -18,12 +18,14 @@ RSpec.describe Gitlab::ImportExport::Project::TreeRestorer do
 
     context 'with group' do
       let_it_be(:project) do
+        group = create(:group, :private)
+        group.add_maintainer(user)
         create(:project,
                :builds_disabled,
                :issues_disabled,
                name: 'project',
                path: 'project',
-               group: create(:group, :private))
+               group: group)
       end
 
       let(:issue) { project.issues.find_by_title('Issue with Epic') }
