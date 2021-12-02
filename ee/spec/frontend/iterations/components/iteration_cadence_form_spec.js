@@ -83,8 +83,8 @@ describe('Iteration cadence form', () => {
   const findAutomatedSchedulingGroup = () => wrapper.findAllComponents(GlFormGroup).at(1);
   const findStartDateGroup = () => wrapper.findAllComponents(GlFormGroup).at(2);
   const findDurationGroup = () => wrapper.findAllComponents(GlFormGroup).at(3);
-  const findRollOverGroup = () => wrapper.findAllComponents(GlFormGroup).at(4);
-  const findFutureIterationsGroup = () => wrapper.findAllComponents(GlFormGroup).at(5);
+  const findFutureIterationsGroup = () => wrapper.findAllComponents(GlFormGroup).at(4);
+  const findRollOverGroup = () => wrapper.findAllComponents(GlFormGroup).at(5);
 
   const findError = () => wrapper.findComponent(GlAlert);
 
@@ -221,16 +221,17 @@ describe('Iteration cadence form', () => {
         setAutomaticValue(false);
       });
 
-      it('disables future iterations and duration in weeks', () => {
+      it('disables future iterations, duration in weeks, and start date fields', () => {
         expect(findFutureIterations().attributes('disabled')).toBe('disabled');
         expect(findFutureIterations().attributes('required')).toBeUndefined();
         expect(findDuration().attributes('disabled')).toBe('disabled');
         expect(findDuration().attributes('required')).toBeUndefined();
+        expect(findStartDate().attributes('disabled')).toBe('disabled');
+        expect(findStartDate().attributes('required')).toBeUndefined();
       });
 
       it('sets future iterations and cadence duration to 0', async () => {
         const title = 'Iteration 5';
-        const startDate = '2020-05-05';
 
         setFutureIterations(10);
         setDuration(2);
@@ -240,7 +241,6 @@ describe('Iteration cadence form', () => {
         await nextTick();
 
         setTitle(title);
-        setStartDate(startDate);
 
         clickSave();
 
@@ -251,7 +251,7 @@ describe('Iteration cadence form', () => {
             groupPath,
             title,
             automatic: false,
-            startDate,
+            startDate: null,
             rollOver: false,
             durationInWeeks: 0,
             iterationsInAdvance: 0,
