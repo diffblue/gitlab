@@ -15,6 +15,10 @@ module Types
       argument :search, GraphQL::Types::String,
                required: false,
                description: 'Search query for epic title or description.'
+
+      argument :confidential, GraphQL::Types::Boolean,
+               required: false,
+               description: 'Filter by confidentiality.'
     end
   end
 end
