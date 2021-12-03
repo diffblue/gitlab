@@ -18,17 +18,19 @@ export default {
   },
   computed: {
     fileSize() {
-      return decimalBytes(this.corpus.size);
+      return decimalBytes(this.corpus.package.packageFiles.nodes[0].size);
     },
     jobUrl() {
-      /*
-       * TODO: Replace with relative path when we complete backend
-       * https://gitlab.com/gitlab-org/gitlab/-/issues/321618
-       */
-      return `https://www.gitlab.com/${this.corpus.latestJobPath}`;
+      return this.corpus.package.pipelines.nodes[0]?.path;
     },
-    jobPath() {
-      return this.corpus.latestJobPath;
+    ref() {
+      return this.corpus.package.pipelines.nodes[0]?.ref;
+    },
+    latestJob() {
+      return `${this.jobURL} (${this.ref})`;
+    },
+    name() {
+      return this.corpus.package.name;
     },
   },
 };
@@ -36,13 +38,13 @@ export default {
 <template>
   <div>
     <div class="gl-text-gray-900" data-testid="corpus-name">
-      {{ corpus.name }}
+      {{ name }}
       <span class="gl-text-gray-500" data-testid="file-size">({{ fileSize }})</span>
     </div>
     <div data-testid="latest-job">
       {{ this.$options.i18n.latestJob }}
-      <gl-link v-if="jobPath" class="gl-display-inline-block" :href="jobUrl" target="_blank">
-        {{ jobPath }}
+      <gl-link v-if="jobUrl" class="gl-display-inline-block" :href="jobUrl" target="_blank">
+        {{ latestJob }}
       </gl-link>
       <template v-else>-</template>
     </div>

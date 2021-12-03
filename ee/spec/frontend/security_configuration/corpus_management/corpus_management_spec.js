@@ -3,6 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import CorpusManagement from 'ee/security_configuration/corpus_management/components/corpus_management.vue';
 import CorpusTable from 'ee/security_configuration/corpus_management/components/corpus_table.vue';
 import CorpusUpload from 'ee/security_configuration/corpus_management/components/corpus_upload.vue';
+import { corpuses } from './mock_data';
 
 const TEST_PROJECT_FULL_PATH = '/namespace/project';
 const TEST_CORPUS_HELP_PATH = '/docs/corpus-management';
@@ -37,7 +38,7 @@ describe('EE - CorpusManagement', () => {
     describe('when loaded', () => {
       beforeEach(() => {
         const data = () => {
-          return { states: { mockedPackages: { totalSize: 12 } } };
+          return { states: { project: { corpuses } } };
         };
 
         createComponent({ data });

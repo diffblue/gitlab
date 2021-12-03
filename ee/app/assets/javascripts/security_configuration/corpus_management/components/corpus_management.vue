@@ -37,14 +37,11 @@ export default {
     learnMore: __('Learn More'),
   },
   computed: {
-    mockedData() {
-      return this.states?.mockedPackages.data || [];
+    corpuses() {
+      return this.states?.project.corpuses.nodes || [];
     },
     isLoading() {
       return this.$apollo.loading;
-    },
-    totalSize() {
-      return this.states?.mockedPackages.totalSize;
     },
   },
 };
@@ -64,8 +61,8 @@ export default {
 
     <gl-loading-icon v-if="isLoading" size="lg" />
     <template v-else>
-      <corpus-upload :total-size="totalSize" />
-      <corpus-table :corpuses="mockedData" />
+      <corpus-upload />
+      <corpus-table :corpuses="corpuses" />
     </template>
   </div>
 </template>
