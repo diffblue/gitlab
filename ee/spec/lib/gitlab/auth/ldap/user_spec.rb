@@ -145,4 +145,10 @@ RSpec.describe Gitlab::Auth::Ldap::User do
       end
     end
   end
+
+  describe '#find_user' do
+    it_behaves_like 'finding user when user cap is set' do
+      let(:o_auth_user) { ldap_user }
+    end
+  end
 end

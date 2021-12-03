@@ -434,8 +434,6 @@ class Issue < ApplicationRecord
   # Returns `true` if the current issue can be viewed by either a logged in User
   # or an anonymous user.
   def visible_to_user?(user = nil)
-    return false unless project && project.feature_available?(:issues, user)
-
     return publicly_visible? unless user
 
     return false unless readable_by?(user)
@@ -563,10 +561,10 @@ class Issue < ApplicationRecord
       project.team.member?(user, Gitlab::Access::REPORTER)
     elsif hidden?
       false
+    elsif project.public? || (project.internal? && !user.external?)
+      project.feature_available?(:issues, user)
     else
-      project.public? ||
-        project.internal? && !user.external? ||
-        project.team.member?(user)
+      project.team.member?(user)
     end
   end
 
@@ -605,7 +603,7 @@ class Issue < ApplicationRecord
 
   def could_not_move(exception)
     # Symptom of running out of space - schedule rebalancing
-    IssueRebalancingWorker.perform_async(nil, *project.self_or_root_group_ids)
+    Issues::RebalancingWorker.perform_async(nil, *project.self_or_root_group_ids)
   end
 end
 

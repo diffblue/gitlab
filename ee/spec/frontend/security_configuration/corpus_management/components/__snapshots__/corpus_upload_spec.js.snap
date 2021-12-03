@@ -15,7 +15,7 @@ exports[`Corpus Upload component renders header 1`] = `
   <gl-button-stub
     buttontextclasses=""
     category="primary"
-    class="gl-mr-5"
+    class="gl-mr-5 gl-ml-auto"
     icon=""
     role="button"
     size="medium"

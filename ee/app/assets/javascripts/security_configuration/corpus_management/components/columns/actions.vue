@@ -30,11 +30,13 @@ export default {
   },
   computed: {
     downloadPath() {
-      /*
-       * TODO: Replace with relative path when we complete backend
-       * https://gitlab.com/gitlab-org/gitlab/-/issues/321618
-       */
-      return `https://www.gitlab.com/${this.corpus.downloadPath}`;
+      return this.corpus.package.packageFiles.nodes[0].downloadPath;
+    },
+    name() {
+      return this.corpus.package.name;
+    },
+    directiveName() {
+      return `confirmation-modal-${this.name}`;
     },
   },
 };
@@ -43,7 +45,7 @@ export default {
   <span>
     <gl-button class="gl-mr-2" icon="download" :href="downloadPath" />
     <gl-button
-      v-gl-modal-directive="`confirmation-modal-${corpus.name}`"
+      v-gl-modal-directive="directiveName"
       icon="remove"
       category="secondary"
       variant="danger"
@@ -54,7 +56,7 @@ export default {
       body-class="gl-display-none"
       size="sm"
       :title="$options.i18n.deleteCorpusMessage"
-      :modal-id="`confirmation-modal-${corpus.name}`"
+      :modal-id="directiveName"
       :action-primary="$options.modal.actionPrimary"
       :action-cancel="$options.modal.actionCancel"
       @primary="$emit('delete', corpus)"

@@ -193,7 +193,10 @@ module QA
           imported_group # trigger import
         end
 
-        it 'successfully imports project wiki' do
+        it(
+          'successfully imports project wiki',
+          testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2432'
+        ) do
           expect { imported_group.import_status }.to eventually_eq('finished').within(import_wait_duration)
           expect(imported_projects.count).to eq(1), 'Expected to have 1 imported project'
 

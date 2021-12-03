@@ -30,6 +30,7 @@ module EE
 
       private
 
+      override :user
       def user
         super || geo_push_user&.user
       end

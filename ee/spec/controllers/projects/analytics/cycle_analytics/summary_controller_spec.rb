@@ -4,7 +4,8 @@ require 'spec_helper'
 
 RSpec.describe Projects::Analytics::CycleAnalytics::SummaryController do
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, group: group) }
 
   let(:params) { { namespace_id: project.namespace.to_param, project_id: project.to_param, created_after: '2010-01-01', created_before: '2020-01-02' } }
 
@@ -26,7 +27,9 @@ RSpec.describe Projects::Analytics::CycleAnalytics::SummaryController do
 
     context 'when cycle_analytics_for_projects feature is available' do
       before do
-        stub_licensed_features(cycle_analytics_for_projects: true)
+        stub_licensed_features(cycle_analytics_for_projects: true, cycle_analytics_for_groups: true)
+
+        Analytics::CycleAnalytics::GroupDataLoaderWorker.new.perform(group.id, 'Issue')
 
         project.add_reporter(user)
       end
@@ -43,6 +46,20 @@ RSpec.describe Projects::Analytics::CycleAnalytics::SummaryController do
         subject
 
         expect(json_response.last["value"].to_i).to eq(expected_cycle_time)
+      end
+
+      context 'when the use_vsa_aggregated_tables FF is off' do
+        before do
+          stub_feature_flags(use_vsa_aggregated_tables: false)
+        end
+
+        it 'returns correct value' do
+          expected_cycle_time = (closed_at - first_mentioned_in_commit_at).to_i
+
+          subject
+
+          expect(json_response.last["value"].to_i).to eq(expected_cycle_time)
+        end
       end
 
       context 'when analytics_disabled features are disabled' do

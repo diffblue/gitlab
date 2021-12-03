@@ -23,6 +23,35 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary do
     group.add_owner(user)
   end
 
+  context 'when the use_aggregated_data_collector option is given' do
+    context 'when aggregated data is available yet' do
+      it 'shows no value' do
+        lead_time, cycle_time, * = subject
+
+        expect(lead_time[:value]).to eq('-')
+        expect(cycle_time[:value]).to eq('-')
+      end
+    end
+
+    context 'when aggregated data is present' do
+      before do
+        issue = create(:closed_issue, project: project, created_at: 1.day.ago, closed_at: Time.current)
+        issue.metrics.update!(first_mentioned_in_commit_at: 2.days.ago)
+
+        options[:use_aggregated_data_collector] = true
+        stub_licensed_features(cycle_analytics_for_groups: true)
+        Analytics::CycleAnalytics::GroupDataLoaderWorker.new.perform(group.id, 'Issue')
+      end
+
+      it 'loads the lead and cycle time' do
+        lead_time, cycle_time, * = subject
+
+        expect(lead_time[:value]).to eq('1.0')
+        expect(cycle_time[:value]).to eq('2.0')
+      end
+    end
+  end
+
   describe '#lead_time' do
     describe 'issuable filter parameters' do
       let_it_be(:label) { create(:group_label, group: group) }

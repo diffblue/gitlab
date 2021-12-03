@@ -64,19 +64,6 @@ RSpec.describe Boards::ListsController do
       context 'for iteration lists' do
         let_it_be(:iteration) { create(:iteration, group: group) }
 
-        context 'when iteration_board_lists is disabled' do
-          before do
-            stub_feature_flags(iteration_board_lists: false)
-          end
-
-          it 'returns an error' do
-            create_board_list user: user, board: board, iteration_id: iteration.id
-
-            expect(response).to have_gitlab_http_status(:unprocessable_entity)
-            expect(json_response['errors']).to eq(['iteration_board_lists feature flag is disabled'])
-          end
-        end
-
         context 'when license is available' do
           before do
             stub_licensed_features(board_iteration_lists: true)

@@ -1,6 +1,8 @@
 - @html_class = "subscriptions-layout-html"
 - page_title _('Your GitLab group')
 - form_params = { trial_onboarding_flow: params[:trial_onboarding_flow], glm_source: params[:glm_source], glm_content: params[:glm_content] }
+- content_for :page_specific_javascripts do
+  = render "layouts/one_trust"
 
 - if in_trial_onboarding_flow?
   .row

@@ -321,7 +321,7 @@ To share a group after enabling this feature:
 1. Go to your group's page.
 1. On the left sidebar, go to **Group information > Members**, and then select **Invite a group**.
 1. Select a group, and select a **Max role**.
-1. (Optional) Select an **Access expiration date**.
+1. Optional. Select an **Access expiration date**.
 1. Select **Invite**.
 
 ## Manage group memberships via LDAP **(PREMIUM SELF)**
@@ -568,7 +568,7 @@ You should consider these security implications before configuring IP address re
   the IP restrictions. But when the running CI/CD job sends Git requests from a
   restricted IP address, the IP restriction prevents code from being cloned.
 - **User dashboard activity**: Users may still see some events from the IP restricted groups and projects
-  on their dashboard. Activity may include push, merge, issue, or comment events. 
+  on their dashboard. Activity may include push, merge, issue, or comment events.
 
 To restrict group access by IP address:
 

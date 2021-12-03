@@ -199,6 +199,7 @@ The following data is included in the export:
 - Type
 - Path
 - Access level ([Project](../permissions.md#project-members-permissions) and [Group](../permissions.md#group-members-permissions))
+- Date of last activity ([introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/345388) in GitLab 14.6). For a list of activities that populate this column, see the [Users API documentation](../../api/users.md#get-user-activities-admin-only).
 
 ![user permission export button](img/export_permissions_v13_11.png)
 
@@ -257,7 +258,7 @@ To [Create a new group](../group/index.md#create-a-group) click **New group**.
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/340920) in GitLab 14.4.
 
-You can administer all [topics](../project/working_with_projects.md#explore-topics) in the 
+You can administer all [topics](../project/working_with_projects.md#explore-topics) in the
 GitLab instance from the Admin Area's Topics page.
 
 To access the Topics page:

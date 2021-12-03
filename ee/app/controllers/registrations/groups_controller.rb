@@ -4,6 +4,7 @@ module Registrations
   class GroupsController < ApplicationController
     include Registrations::CreateGroup
     include ::Gitlab::Utils::StrongMemoize
+    include OneTrustCSP
 
     layout 'minimal'
 

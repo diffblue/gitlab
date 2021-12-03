@@ -1,9 +1,8 @@
-#import "~/graphql_shared/fragments/pageInfoCursorsOnly.fragment.graphql"
 #import "../fragments/vulnerability.fragment.graphql"
 
 query instanceVulnerabilities(
   $after: String
-  $first: Int
+  $first: Int = 20
   $projectId: [ID!]
   $severity: [VulnerabilitySeverity!]
   $reportType: [VulnerabilityReportType!]
@@ -32,7 +31,8 @@ query instanceVulnerabilities(
       ...VulnerabilityFragment
     }
     pageInfo {
-      ...PageInfo
+      endCursor
+      hasNextPage
     }
   }
 }

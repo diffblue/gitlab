@@ -12,7 +12,8 @@ export default {
   props: {
     target: {
       type: String,
-      required: true,
+      required: false,
+      default: '',
     },
   },
   i18n: {

@@ -59,6 +59,15 @@ export default {
         variables: { name, projectPath: this.projectFullPath },
       });
     },
+    target(corpus) {
+      return corpus.package.pipelines.nodes[0]?.ref;
+    },
+    lastUpdated(corpus) {
+      return corpus.package.updatedAt;
+    },
+    lastUsed(corpus) {
+      return corpus.package.pipelines.nodes[0]?.updatedAt;
+    },
   },
   dateFormat: ISO_SHORT_FORMAT,
 };
@@ -70,15 +79,15 @@ export default {
     </template>
 
     <template #cell(target)="{ item }">
-      <target :target="item.target" />
+      <target :target="target(item)" />
     </template>
 
     <template #cell(lastUpdated)="{ item }">
-      <user-date :date="item.lastUpdated" :date-format="$options.dateFormat" />
+      <user-date :date="lastUpdated(item)" :date-format="$options.dateFormat" />
     </template>
 
     <template #cell(lastUsed)="{ item }">
-      <user-date :date="item.lastUsed" :date-format="$options.dateFormat" />
+      <user-date :date="lastUsed(item)" :date-format="$options.dateFormat" />
     </template>
 
     <template #cell(actions)="{ item }">

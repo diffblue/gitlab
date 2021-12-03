@@ -17,7 +17,7 @@ module Gitlab
           def average_by_day
             @query
               .group(date_expression)
-              .select(date_expression.as('date'), duration.average.as('average_duration_in_seconds'))
+              .select(date_expression.as('date'), duration_in_seconds.average.as('average_duration_in_seconds'))
           end
           # rubocop: enable CodeReuse/ActiveRecord
 

@@ -987,6 +987,7 @@ RSpec.describe Issue do
           issue = build(:issue, project: project)
           user = build(:user)
 
+          allow(::Gitlab::ExternalAuthorization).to receive(:access_allowed?).with(user, 'a-label', project.full_path).and_call_original
           expect(::Gitlab::ExternalAuthorization).to receive(:access_allowed?).with(user, 'a-label') { false }
           expect(issue.visible_to_user?(user)).to be_falsy
         end
@@ -1020,6 +1021,7 @@ RSpec.describe Issue do
               issue = build(:issue, project: project)
               user = build(:admin)
 
+              allow(::Gitlab::ExternalAuthorization).to receive(:access_allowed?).with(user, 'a-label', project.full_path).and_call_original
               expect(::Gitlab::ExternalAuthorization).to receive(:access_allowed?).with(user, 'a-label') { false }
               expect(issue.visible_to_user?(user)).to be_falsy
             end
@@ -1462,7 +1464,7 @@ RSpec.describe Issue do
       it 'schedules rebalancing if there is no space left' do
         lhs = build_stubbed(:issue, relative_position: 99, project: project)
         to_move = build(:issue, project: project)
-        expect(IssueRebalancingWorker).to receive(:perform_async).with(nil, project_id, namespace_id)
+        expect(Issues::RebalancingWorker).to receive(:perform_async).with(nil, project_id, namespace_id)
 
         expect { to_move.move_between(lhs, issue) }.to raise_error(RelativePositioning::NoSpaceLeft)
       end

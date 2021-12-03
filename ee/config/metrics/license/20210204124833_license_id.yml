@@ -12,7 +12,7 @@ data_source: license
 data_category: subscription
 instrumentation_class: LicenseMetric
 options:
-  attribute: id
+  attribute: license_id
 distribution:
 - ee
 tier:

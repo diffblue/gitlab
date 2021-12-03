@@ -1,7 +1,30 @@
 query getCorpuses($projectPath: ID!) {
-  mockedPackages(projectPath: $projectPath) @client {
-    data
-    totalSize
+  project(fullPath: $projectPath) {
+    id
+    corpuses {
+      nodes {
+        id
+        package {
+          id
+          name
+          updatedAt
+          packageFiles(last: 1) {
+            nodes {
+              id
+              size
+              downloadPath
+            }
+          }
+          pipelines(last: 1) {
+            nodes {
+              id
+              createdAt
+              ref
+            }
+          }
+        }
+      }
+    }
   }
   uploadState(projectPath: $projectPath) @client {
     isUploading

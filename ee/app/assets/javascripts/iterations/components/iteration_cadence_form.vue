@@ -208,7 +208,11 @@ export default {
           if (this.automatic) {
             return true;
           }
-          const requiredFieldsForAutomatedScheduling = ['iterationsInAdvance', 'durationInWeeks'];
+          const requiredFieldsForAutomatedScheduling = [
+            'iterationsInAdvance',
+            'durationInWeeks',
+            'startDate',
+          ];
           return !requiredFieldsForAutomatedScheduling.includes(field);
         })
         .forEach((field) => {
@@ -223,6 +227,7 @@ export default {
     updateAutomatic(value) {
       this.clearValidation();
       if (!value) {
+        this.startDate = null;
         this.iterationsInAdvance = 0;
         this.durationInWeeks = 0;
       }
@@ -362,9 +367,9 @@ export default {
             class="datepicker gl-datepicker-input"
             autocomplete="off"
             inputmode="none"
-            required
+            :required="automatic"
+            :disabled="loadingCadence || !automatic"
             :state="validationState.startDate"
-            :disabled="loadingCadence"
             data-qa-selector="iteration_cadence_start_date_field"
             @blur="validate('startDate')"
           />
@@ -392,17 +397,6 @@ export default {
       </gl-form-group>
 
       <gl-form-group
-        :label-cols-md="2"
-        label-class="gl-font-weight-bold text-right-md gl-pt-3!"
-        label-for="cadence-rollover-issues"
-        :description="i18n.rollOver.description"
-      >
-        <gl-form-checkbox id="cadence-rollover-issues" v-model="rollOver" @change="clearValidation">
-          <span class="gl-font-weight-bold">{{ i18n.rollOver.label }}</span>
-        </gl-form-checkbox>
-      </gl-form-group>
-
-      <gl-form-group
         :label="i18n.futureIterations.label"
         :label-cols-md="2"
         :content-cols-md="2"
@@ -421,6 +415,17 @@ export default {
           class="gl-form-input-md"
           @change="validate('iterationsInAdvance')"
         />
+      </gl-form-group>
+
+      <gl-form-group
+        :label-cols-md="2"
+        label-class="gl-font-weight-bold text-right-md gl-pt-3!"
+        label-for="cadence-rollover-issues"
+        :description="i18n.rollOver.description"
+      >
+        <gl-form-checkbox id="cadence-rollover-issues" v-model="rollOver" @change="clearValidation">
+          <span class="gl-font-weight-bold">{{ i18n.rollOver.label }}</span>
+        </gl-form-checkbox>
       </gl-form-group>
 
       <gl-form-group
