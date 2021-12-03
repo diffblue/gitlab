@@ -23,7 +23,7 @@ RSpec.describe Key do
       end
     end
 
-    describe '#expires_at_before_max_expiry_date' do
+    describe '#validate_expires_at_before_max_expiry_date' do
       using RSpec::Parameterized::TableSyntax
 
       context 'for a range of key expiry combinations' do

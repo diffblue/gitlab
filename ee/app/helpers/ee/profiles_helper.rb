@@ -26,10 +26,6 @@ module EE
       License.feature_available?(:ssh_key_expiration_policy) && ::Feature.enabled?(:ff_limit_ssh_key_lifetime)
     end
 
-    def ssh_key_max_expiry_date
-      ::Gitlab::CurrentSettings.max_ssh_key_lifetime_from_now
-    end
-
     override :ssh_key_expiration_policy_enabled?
     def ssh_key_expiration_policy_enabled?
       ::Gitlab::CurrentSettings.max_ssh_key_lifetime && ssh_key_expiration_policy_licensed? && ::Feature.enabled?(:ff_limit_ssh_key_lifetime)

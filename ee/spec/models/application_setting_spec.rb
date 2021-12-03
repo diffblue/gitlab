@@ -819,7 +819,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe "#max_ssh_key_lifetime_from_now" do
+  describe "#max_ssh_key_lifetime_from_now", :freeze_time do
     subject { setting.max_ssh_key_lifetime_from_now }
 
     let(:days_from_now) { nil }

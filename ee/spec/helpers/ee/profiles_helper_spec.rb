@@ -91,6 +91,7 @@ RSpec.describe ProfilesHelper do
       before do
         stub_feature_flags(ff_limit_ssh_key_lifetime: true)
       end
+
       context 'when is licensed and used' do
         before do
           stub_licensed_features(ssh_key_expiration_policy: true)
@@ -130,22 +131,6 @@ RSpec.describe ProfilesHelper do
 
         it { is_expected.to be_falsey }
       end
-    end
-  end
-
-  describe '#ssh_key_max_expiry_date' do
-    subject { helper.ssh_key_max_expiry_date }
-
-    context 'the instance has an expiry setting' do
-      before do
-        stub_application_setting(max_ssh_key_lifetime: 20)
-      end
-
-      it { is_expected.to be_like_time(20.days.from_now) }
-    end
-
-    context 'the instance does not have an expiry setting' do
-      it { is_expected.to be_nil }
     end
   end
 end

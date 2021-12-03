@@ -15,7 +15,7 @@ module EE
       validate :expiration, if: -> { ::Key.expiration_enforced? }
 
       with_options if: :ssh_key_expiration_policy_enabled? do
-        validate :expires_at_before_max_expiry_date
+        validate :validate_expires_at_before_max_expiry_date
       end
 
       def expiration
@@ -32,12 +32,12 @@ module EE
         errors.map(&:type).reject { |t| t.eql?(:expired_and_enforced) }.empty?
       end
 
-      def expires_at_before_max_expiry_date
+      def validate_expires_at_before_max_expiry_date
         return errors.add(:key, message: 'has no expiration date but an expiration date is required for SSH keys on this instance. Contact the instance administrator.') if expires_at.blank?
 
         # when the key is not yet persisted the `created_at` field is nil
-        key_creation_date = created_at.presence || Time.current
-        errors.add(:key, message: 'has an invalid expiration date. Set a shorter lifetime for the key or contact the instance administrator.') if expires_at > key_creation_date + ::Gitlab::CurrentSettings.max_ssh_key_lifetime.days
+        max_expiry_date = (created_at.presence || Time.current) + ::Gitlab::CurrentSettings.max_ssh_key_lifetime.days
+        errors.add(:key, message: 'has an invalid expiration date. Set a shorter lifetime for the key or contact the instance administrator.') if expires_at > max_expiry_date
       end
     end
 
