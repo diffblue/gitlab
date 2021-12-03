@@ -17,6 +17,18 @@ module EE
           insert_menu_after(::Sidebars::Groups::Menus::PackagesRegistriesMenu, ::Sidebars::Groups::Menus::AnalyticsMenu.new(context))
           insert_menu_after(::Sidebars::Groups::Menus::AnalyticsMenu, ::Sidebars::Groups::Menus::WikiMenu.new(context))
           insert_menu_after(::Sidebars::Groups::Menus::SettingsMenu, ::Sidebars::Groups::Menus::AdministrationMenu.new(context))
+          add_billing_sidebar_menu
+        end
+
+        private
+
+        def add_billing_sidebar_menu
+          experiment(:billing_in_side_nav, user: context.current_user) do |e|
+            e.control {}
+            e.candidate do
+              insert_menu_after(::Sidebars::Groups::Menus::AdministrationMenu, ::Sidebars::Groups::Menus::BillingMenu.new(context))
+            end
+          end
         end
       end
     end
