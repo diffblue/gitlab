@@ -16,7 +16,7 @@ is incompatible with yours, then you can deny the use of that license.
 
 INFO:
 Try License Compliance scanning to search project dependencies in GitLab Ultimate.
-[It's free for 30 days](https://about.gitlab.com/free-trial?glm_source=docs.gitlab.com&glm_content=u-compliance-docs). 
+[It's free for 30 days](https://about.gitlab.com/free-trial?glm_source=docs.gitlab.com&glm_content=u-compliance-docs).
 
 You can take advantage of License Compliance by either:
 
@@ -194,8 +194,8 @@ directory of your project.
 
 ### Working with Monorepos
 
-Depending on your language, you may need to specify the path to the individual 
-projects of a monorepo using the `LICENSE_FINDER_CLI_OPTS` variable. Passing in 
+Depending on your language, you may need to specify the path to the individual
+projects of a monorepo using the `LICENSE_FINDER_CLI_OPTS` variable. Passing in
 the project paths can significantly speed up builds over using the `--recursive`
 license_finder option.
 
