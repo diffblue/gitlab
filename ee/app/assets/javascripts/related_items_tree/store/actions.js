@@ -1,5 +1,5 @@
 import Api from 'ee/api';
-import epicChildren from 'shared_queries/epic/epic_children.query.graphql';
+import epicChildren from '../queries/epic_children.query.graphql';
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
