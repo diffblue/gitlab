@@ -39,7 +39,7 @@ RSpec.describe Burndown do
       let_it_be(:non_member) { create(:user) }
 
       subject do
-        project.update(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+        project.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
         described_class.new(milestone.issues_visible_to_user(non_member), milestone.start_date, milestone.due_date).as_json.each { |event| event[:created_at] = event[:created_at].to_date }
       end
 
@@ -57,13 +57,13 @@ RSpec.describe Burndown do
     end
 
     it "returns empty array if milestone start date is nil" do
-      milestone.update(start_date: nil)
+      milestone.update!(start_date: nil)
 
       expect(subject).to eq([])
     end
 
     it "returns empty array if milestone due date is nil" do
-      milestone.update(due_date: nil)
+      milestone.update!(due_date: nil)
 
       expect(subject).to eq([])
     end

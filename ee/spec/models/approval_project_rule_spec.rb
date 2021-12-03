@@ -233,7 +233,7 @@ RSpec.describe ApprovalProjectRule do
 
       expect(rule).not_to be_valid
       expect(rule.errors.messages).to eq(rule_type: ['any-approver for the project already exists'])
-      expect { rule.save(validate: false) }.to raise_error(ActiveRecord::RecordNotUnique)
+      expect { rule.save!(validate: false) }.to raise_error(ActiveRecord::RecordNotUnique)
     end
   end
 
@@ -273,28 +273,28 @@ RSpec.describe ApprovalProjectRule do
     end
 
     describe '#audit_add users after :add' do
-      let(:action!) { rule.update(users: [user, new_user]) }
+      let(:action!) { rule.update!(users: [user, new_user]) }
       let(:message) { 'Added User Spiderman to approval group on Vulnerability rule' }
 
       it_behaves_like 'auditable'
     end
 
     describe '#audit_remove users after :remove' do
-      let(:action!) { rule.update(users: []) }
+      let(:action!) { rule.update!(users: []) }
       let(:message) { 'Removed User Batman from approval group on Vulnerability rule' }
 
       it_behaves_like 'auditable'
     end
 
     describe '#audit_add groups after :add' do
-      let(:action!) { rule.update(groups: [group, new_group]) }
+      let(:action!) { rule.update!(groups: [group, new_group]) }
       let(:message) { 'Added Group Avengers to approval group on Vulnerability rule' }
 
       it_behaves_like 'auditable'
     end
 
     describe '#audit_remove groups after :remove' do
-      let(:action!) { rule.update(groups: []) }
+      let(:action!) { rule.update!(groups: []) }
       let(:message) { 'Removed Group Justice League from approval group on Vulnerability rule' }
 
       it_behaves_like 'auditable'

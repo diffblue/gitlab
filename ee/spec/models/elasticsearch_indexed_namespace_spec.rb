@@ -37,7 +37,7 @@ RSpec.describe ElasticsearchIndexedNamespace, :saas do
   context 'with plans' do
     Plan::PAID_HOSTED_PLANS.each do |plan|
       plan_factory = "#{plan}_plan"
-      let_it_be(plan_factory) { create(plan_factory) }
+      let_it_be(plan_factory) { create(plan_factory) } # rubocop:disable Rails/SaveBang
     end
 
     let_it_be(:namespaces) { create_list(:namespace, 3) }
