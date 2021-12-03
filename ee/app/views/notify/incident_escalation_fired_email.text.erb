@@ -14,8 +14,8 @@
 <% end %>
 
 <% if @incident.metric_images.any? %>
-  <%= _('Metrics:') %>
-  <% @incident.metric_images.each do |image| %>
-    <%= image.file_path %>
-  <% end %>
+<%= _('Metrics:') %>
+<% @incident.metric_images.each do |image| %>
+  <%= image.file_path %>
+<% end %>
 <% end %>
