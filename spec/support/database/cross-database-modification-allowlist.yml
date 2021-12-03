@@ -62,7 +62,6 @@
 - "./spec/models/user_status_spec.rb"
 - "./spec/requests/api/ci/pipeline_schedules_spec.rb"
 - "./spec/requests/api/ci/pipelines_spec.rb"
-- "./spec/requests/api/commit_statuses_spec.rb"
 - "./spec/requests/api/commits_spec.rb"
 - "./spec/requests/api/graphql/mutations/ci/pipeline_destroy_spec.rb"
 - "./spec/requests/api/resource_access_tokens_spec.rb"
