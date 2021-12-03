@@ -1,7 +1,6 @@
 import createFlash, {
-  createAction,
   hideFlash,
-  removeFlashClickListener,
+  addDismissFlashClickListener,
   FLASH_TYPES,
   FLASH_CLOSED_EVENT,
 } from '~/flash';
@@ -63,49 +62,6 @@ describe('Flash', () => {
       el.dispatchEvent(new Event('transitionend'));
 
       expect(el.dispatchEvent).toHaveBeenCalledWith(new Event(FLASH_CLOSED_EVENT));
-    });
-  });
-
-  describe('createAction', () => {
-    let el;
-
-    beforeEach(() => {
-      el = document.createElement('div');
-    });
-
-    it('creates link with href', () => {
-      el.innerHTML = createAction({
-        href: 'testing',
-        title: 'test',
-      });
-
-      expect(el.querySelector('.flash-action').href).toContain('testing');
-    });
-
-    it('uses hash as href when no href is present', () => {
-      el.innerHTML = createAction({
-        title: 'test',
-      });
-
-      expect(el.querySelector('.flash-action').href).toContain('#');
-    });
-
-    it('adds role when no href is present', () => {
-      el.innerHTML = createAction({
-        title: 'test',
-      });
-
-      expect(el.querySelector('.flash-action').getAttribute('role')).toBe('button');
-    });
-
-    it('escapes the title text', () => {
-      el.innerHTML = createAction({
-        title: '<script>alert("a")</script>',
-      });
-
-      expect(el.querySelector('.flash-action').textContent.trim()).toBe(
-        '<script>alert("a")</script>',
-      );
     });
   });
 
@@ -195,6 +151,8 @@ describe('Flash', () => {
       });
 
       describe('with actionConfig', () => {
+        const findFlashAction = () => document.querySelector('.flash-container .flash-action');
+
         it('adds action link', () => {
           createFlash({
             ...defaultParams,
@@ -203,20 +161,69 @@ describe('Flash', () => {
             },
           });
 
-          expect(document.querySelector('.flash-action')).not.toBeNull();
+          expect(findFlashAction()).not.toBeNull();
+        });
+
+        it('creates link with href', () => {
+          createFlash({
+            ...defaultParams,
+            actionConfig: {
+              href: 'testing',
+              title: 'test',
+            },
+          });
+
+          expect(findFlashAction().href).toBe(`${window.location}testing`);
+          expect(findFlashAction().textContent.trim()).toBe('test');
+        });
+
+        it('uses hash as href when no href is present', () => {
+          createFlash({
+            ...defaultParams,
+            actionConfig: {
+              title: 'test',
+            },
+          });
+
+          expect(findFlashAction().href).toBe(`${window.location}#`);
+        });
+
+        it('adds role when no href is present', () => {
+          createFlash({
+            ...defaultParams,
+            actionConfig: {
+              title: 'test',
+            },
+          });
+
+          expect(findFlashAction().getAttribute('role')).toBe('button');
+        });
+
+        it('escapes the title text', () => {
+          createFlash({
+            ...defaultParams,
+            actionConfig: {
+              title: '<script>alert("a")</script>',
+            },
+          });
+
+          expect(findFlashAction().textContent.trim()).toBe('<script>alert("a")</script>');
         });
 
         it('calls actionConfig clickHandler on click', () => {
-          const actionConfig = {
-            title: 'test',
-            clickHandler: jest.fn(),
-          };
+          const clickHandler = jest.fn();
 
-          createFlash({ ...defaultParams, actionConfig });
+          createFlash({
+            ...defaultParams,
+            actionConfig: {
+              title: 'test',
+              clickHandler,
+            },
+          });
 
-          document.querySelector('.flash-action').click();
+          findFlashAction().click();
 
-          expect(actionConfig.clickHandler).toHaveBeenCalled();
+          expect(clickHandler).toHaveBeenCalled();
         });
       });
 
@@ -236,7 +243,7 @@ describe('Flash', () => {
     });
   });
 
-  describe('removeFlashClickListener', () => {
+  describe('addDismissFlashClickListener', () => {
     let el;
 
     describe('with close icon', () => {
@@ -252,7 +259,7 @@ describe('Flash', () => {
       });
 
       it('removes global flash on click', (done) => {
-        removeFlashClickListener(el, false);
+        addDismissFlashClickListener(el, false);
 
         el.querySelector('.js-close-icon').click();
 
@@ -276,7 +283,7 @@ describe('Flash', () => {
       });
 
       it('does not throw', () => {
-        expect(() => removeFlashClickListener(el, false)).not.toThrow();
+        expect(() => addDismissFlashClickListener(el, false)).not.toThrow();
       });
     });
   });
