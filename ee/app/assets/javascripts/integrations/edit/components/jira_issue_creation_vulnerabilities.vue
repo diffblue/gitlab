@@ -120,12 +120,15 @@ export default {
   },
   created() {
     if (this.initialIsEnabled) {
-      this.$emit('request-get-issue-types');
+      this.requestJiraIssueTypes();
     }
   },
   methods: {
+    requestJiraIssueTypes() {
+      this.$emit('request-jira-issue-types');
+    },
     handleLoadJiraIssueTypesClick() {
-      this.$emit('request-get-issue-types');
+      this.requestJiraIssueTypes();
       this.projectKeyForCurrentIssues = this.projectKey;
       this.isLoadingErrorAlertDimissed = false;
     },
