@@ -33755,6 +33755,12 @@ msgstr ""
 msgid "Subscription successfully deleted."
 msgstr ""
 
+msgid "SubscriptionBanner|Export license usage file"
+msgstr ""
+
+msgid "SubscriptionBanner|Upload new license"
+msgstr ""
+
 msgid "SubscriptionTable|Add seats"
 msgstr ""
 
