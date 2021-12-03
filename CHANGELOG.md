@@ -982,6 +982,10 @@ No changes.
 - [Cleanup bigint conversion for ci_builds](gitlab-org/gitlab@176992aa2b2e76b22637a07d5bafbd6541324a7d) ([merge request](gitlab-org/gitlab!70351))
 - [Drop support for data-track-event](gitlab-org/gitlab@ac6027fbef6adf41643412a84945fda6f15c9666) ([merge request](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/70234))
 
+## 14.3.6 (2021-12-03)
+
+No changes.
+
 ## 14.3.5 (2021-11-26)
 
 ### Fixed (6 changes)
