@@ -197,7 +197,7 @@ describe('Instance Security Dashboard Vulnerabilities Component', () => {
       data: {
         vulnerabilities: {
           nodes: [],
-          pageInfo: { startCursor: '', endCursor: '' },
+          pageInfo: { endCursor: '', hasNextPage: false },
         },
       },
     });
