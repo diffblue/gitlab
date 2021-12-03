@@ -6,7 +6,7 @@ exports[`Name component renders name with correct file size 1`] = `
   data-testid="corpus-name"
 >
   
-    Test corpus 1
+    Corpus-sample-1-13830-23932
     
   <span
     class="gl-text-gray-500"
@@ -23,7 +23,7 @@ exports[`Name component renders the latest job 1`] = `
   data-testid="corpus-name"
 >
   
-    Test corpus 1
+    Corpus-sample-1-13830-23932
     
   <span
     class="gl-text-gray-500"
@@ -40,7 +40,7 @@ exports[`Name component without job path renders a - string instead of a link 1`
   data-testid="corpus-name"
 >
   
-    Corpus-sample-2-1431-4425
+    Corpus-sample-3-1431-4425
     
   <span
     class="gl-text-gray-500"
