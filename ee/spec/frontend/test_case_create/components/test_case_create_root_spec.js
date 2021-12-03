@@ -4,8 +4,8 @@ import TestCaseCreateRoot from 'ee/test_case_create/components/test_case_create_
 import createTestCase from 'ee/test_case_create/queries/create_test_case.mutation.graphql';
 
 import createFlash from '~/flash';
-import IssuableCreate from '~/issuable_create/components/issuable_create_root.vue';
-import IssuableForm from '~/issuable_create/components/issuable_form.vue';
+import IssuableCreate from '~/vue_shared/issuable/create/components/issuable_create_root.vue';
+import IssuableForm from '~/vue_shared/issuable/create/components/issuable_form.vue';
 import { redirectTo } from '~/lib/utils/url_utility';
 
 jest.mock('~/flash');

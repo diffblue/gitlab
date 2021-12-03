@@ -10,7 +10,7 @@ import IssuableEditForm from '~/issuable_show/components/issuable_edit_form.vue'
 import IssuableHeader from '~/issuable_show/components/issuable_header.vue';
 import IssuableShow from '~/issuable_show/components/issuable_show_root.vue';
 import IssuableEventHub from '~/issuable_show/event_hub';
-import IssuableSidebar from '~/issuable_sidebar/components/issuable_sidebar_root.vue';
+import IssuableSidebar from '~/vue_shared/issuable/sidebar/components/issuable_sidebar_root.vue';
 
 import { mockProvide, mockTestCase } from '../mock_data';
 
