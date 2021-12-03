@@ -7,10 +7,10 @@
 
 .form-group.row
   = form.label :label_ids, class: "col-form-label col-md-2 #{"col-lg-4" if has_due_date}" do
-    Weight
+    #{_('Weight')}
   .col-md-10{ class: ("col-lg-8" if has_due_date) }
     .issuable-form-select-holder
       - if issuable.weight
         = form.hidden_field :weight
 
-      = form.text_field :weight, class: "datepicker form-control qa-issuable-weight-input", placeholder: "Enter a number", autocomplete: "off", type: "text"
+      = form.text_field :weight, class: "datepicker form-control qa-issuable-weight-input", placeholder: _('Enter a number'), autocomplete: "off", type: "text"
