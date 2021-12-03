@@ -60,4 +60,27 @@ RSpec.describe IssuableMetricImage do
       it { is_expected.to eq(false) }
     end
   end
+
+  describe '#file_path' do
+    let(:issuable_metric_image) { create(:issuable_metric_image) }
+    let(:expected_path) { issuable_metric_image.file.url }
+
+    subject(:file_path) { issuable_metric_image.file_path }
+
+    context 'with asset host configured' do
+      it 'returns a full URL with the asset host and system path' do
+        asset_host = 'https://gitlab-assets.example.com'
+        allow(ActionController::Base).to receive(:asset_host) { asset_host }
+
+        expect(file_path).to eq("#{asset_host}#{expected_path}")
+      end
+    end
+
+    context 'no asset path configured' do
+      it 'returns a full URL with the base url and system path' do
+        base_url = Gitlab.config.gitlab.base_url
+        expect(file_path).to eq("#{base_url}#{expected_path}")
+      end
+    end
+  end
 end

@@ -45,7 +45,6 @@ module EE
       def incident_escalation_fired_email(project, user, issue)
         @project = project
         @incident = issue.present
-
         @escalation_status = issue.incident_management_issuable_escalation_status
 
         add_project_headers

@@ -33,7 +33,7 @@ class IssuableMetricImage < ApplicationRecord
       return file&.url unless file&.upload
 
       # If we're using a CDN, we need to use the full URL
-      asset_host = ActionController::Base.asset_host
+      asset_host = ActionController::Base.asset_host || Gitlab.config.gitlab.base_url
       local_path = Gitlab::Routing.url_helpers.issuable_metric_image_upload_path(
         filename: file.filename,
         id: file.upload.model_id,
