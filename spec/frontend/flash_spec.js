@@ -1,9 +1,12 @@
+import * as Sentry from '@sentry/browser';
 import createFlash, {
   hideFlash,
   addDismissFlashClickListener,
   FLASH_TYPES,
   FLASH_CLOSED_EVENT,
 } from '~/flash';
+
+jest.mock('@sentry/browser');
 
 describe('Flash', () => {
   describe('hideFlash', () => {
@@ -148,6 +151,23 @@ describe('Flash', () => {
         expect(document.querySelector('.flash-alert')).toBeNull();
 
         expect(document.body.className).not.toContain('flash-shown');
+      });
+
+      it('does not capture error using Sentry', () => {
+        createFlash({ ...defaultParams, captureError: false, error: new Error('Error!') });
+
+        expect(Sentry.captureException).not.toHaveBeenCalled();
+      });
+
+      it('captures error using Sentry', () => {
+        createFlash({ ...defaultParams, captureError: true, error: new Error('Error!') });
+
+        expect(Sentry.captureException).toHaveBeenCalledWith(expect.any(Error));
+        expect(Sentry.captureException).toHaveBeenCalledWith(
+          expect.objectContaining({
+            message: 'Error!',
+          }),
+        );
       });
 
       describe('with actionConfig', () => {
