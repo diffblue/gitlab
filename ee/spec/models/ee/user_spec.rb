@@ -2000,6 +2000,28 @@ RSpec.describe User do
     end
   end
 
+  describe '#has_valid_credit_card?' do
+    it 'returns true when a credit card validation is present' do
+      credit_card_validation = build(:credit_card_validation, credit_card_validated_at: Time.current)
+      user = build(:user, credit_card_validation: credit_card_validation)
+
+      expect(user.has_valid_credit_card?).to be_truthy
+    end
+
+    it 'returns false when a credit card validation is present, but the credit_card_validated_at attribute is blank' do
+      credit_card_validation = build(:credit_card_validation, credit_card_validated_at: nil)
+      user = build(:user, credit_card_validation: credit_card_validation)
+
+      expect(user.has_valid_credit_card?).to be_falsey
+    end
+
+    it 'returns false when a credit card validation is missing' do
+      user = build(:user, credit_card_validation: nil)
+
+      expect(user.has_valid_credit_card?).to be_falsey
+    end
+  end
+
   describe '#activate_based_on_user_cap?' do
     using RSpec::Parameterized::TableSyntax
 

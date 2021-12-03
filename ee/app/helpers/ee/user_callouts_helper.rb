@@ -102,6 +102,16 @@ module EE
       ).execute
     end
 
+    def show_verification_reminder?
+      return false unless ::Gitlab.dev_env_or_com?
+      return false unless ::Feature.enabled?(:verification_reminder, default_enabled: :yaml)
+      return false unless current_user
+      return false if current_user.has_valid_credit_card?
+
+      failed_pipeline = current_user.pipelines.user_not_verified.last
+      failed_pipeline.present? && !user_dismissed?('verification_reminder', failed_pipeline.created_at)
+    end
+
     private
 
     def eoa_bronze_plan_end_date
