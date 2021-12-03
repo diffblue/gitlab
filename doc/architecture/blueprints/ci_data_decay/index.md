@@ -15,8 +15,7 @@ the CI/CD subsystem has evolved significantly. It was [integrated into GitLab in
 and has become [one of the most beloved CI/CD solutions](https://about.gitlab.com/blog/2017/09/27/gitlab-leader-continuous-integration-forrester-wave/).
 
 On February 1st, 2021, a billionth CI/CD build was created and the number of
-builds is growing exponentially. We expect to see 20M builds created daily on
-GitLab.com in late 2024.
+builds [is growing exponentially](https://docs.gitlab.com/ee/architecture/blueprints/ci_scale/).
 
 GitLab CI/CD has come a long way since the initial release, but the design of
 the data storage for pipeline builds remains almost the same since 2012. In
