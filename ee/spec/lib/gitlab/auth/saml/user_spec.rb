@@ -50,7 +50,7 @@ RSpec.describe Gitlab::Auth::Saml::User do
         %w(admin auditor).each do |group_type|
           it "marks the user as #{group_type} when the user is in the configured group" do
             stub_saml_group_config(group_type, %w(Developers))
-            saml_user.save
+            saml_user.save # rubocop:disable Rails/SaveBang
 
             expect(gl_user).to be_valid
             expect(gl_user.public_send(group_type)).to be_truthy
@@ -58,7 +58,7 @@ RSpec.describe Gitlab::Auth::Saml::User do
 
           it "does not mark the user as #{group_type} when the user is not in the configured group" do
             stub_saml_group_config(group_type, %w(Admin))
-            saml_user.save
+            saml_user.save # rubocop:disable Rails/SaveBang
 
             expect(gl_user).to be_valid
             expect(gl_user.public_send(group_type)).to be_falsey
@@ -67,7 +67,7 @@ RSpec.describe Gitlab::Auth::Saml::User do
           it "demotes from #{group_type} if not in the configured group" do
             create(:user, email: 'john@mail.com', username: 'john').update_attribute(group_type, true)
             stub_saml_group_config(group_type, %w(Admin))
-            saml_user.save
+            saml_user.save # rubocop:disable Rails/SaveBang
 
             expect(gl_user).to be_valid
             expect(gl_user.public_send(group_type)).to be_falsey
@@ -76,14 +76,14 @@ RSpec.describe Gitlab::Auth::Saml::User do
           it "does not demote from #{group_type} if not configured" do
             create(:user, email: 'john@mail.com', username: 'john').update_attribute(group_type, true)
             stub_saml_group_config(group_type, [])
-            saml_user.save
+            saml_user.save # rubocop:disable Rails/SaveBang
 
             expect(gl_user).to be_valid
             expect(gl_user.public_send(group_type)).to be_truthy
           end
 
           it "skips #{group_type} if not configured" do
-            saml_user.save
+            saml_user.save # rubocop:disable Rails/SaveBang
 
             expect(gl_user).to be_valid
             expect(gl_user.public_send(group_type)).to be_falsey
@@ -96,7 +96,7 @@ RSpec.describe Gitlab::Auth::Saml::User do
       context 'required groups' do
         context 'not defined' do
           it 'lets anyone in' do
-            saml_user.save
+            saml_user.save # rubocop:disable Rails/SaveBang
 
             expect(gl_user).to be_valid
           end
@@ -109,21 +109,21 @@ RSpec.describe Gitlab::Auth::Saml::User do
 
           it 'lets members in' do
             stub_saml_required_group_config(%w(Developers))
-            saml_user.save
+            saml_user.save # rubocop:disable Rails/SaveBang
 
             expect(gl_user).to be_valid
           end
 
           it 'unblocks already blocked members' do
             stub_saml_required_group_config(%w(Developers))
-            saml_user.save.ldap_block
+            saml_user.save.ldap_block # rubocop:disable Rails/SaveBang
 
             expect(saml_user.find_user).to be_active
           end
 
           it 'does not unblock manually blocked members' do
             stub_saml_required_group_config(%w(Developers))
-            saml_user.save.block!
+            saml_user.save.block! # rubocop:disable Rails/SaveBang
 
             expect(saml_user.find_user).not_to be_active
           end
@@ -131,14 +131,14 @@ RSpec.describe Gitlab::Auth::Saml::User do
           it 'does not allow non-members' do
             stub_saml_required_group_config(%w(ArchitectureAstronauts))
 
-            expect { saml_user.save }.to raise_error Gitlab::Auth::OAuth::User::SignupDisabledError
+            expect { saml_user.save }.to raise_error Gitlab::Auth::OAuth::User::SignupDisabledError # rubocop:disable Rails/SaveBang
           end
 
           it 'blocks non-members' do
             orig_groups = auth_hash.extra.raw_info["groups"]
             auth_hash.extra.raw_info.add("groups", "ArchitectureAstronauts")
             stub_saml_required_group_config(%w(ArchitectureAstronauts))
-            saml_user.save
+            saml_user.save # rubocop:disable Rails/SaveBang
             auth_hash.extra.raw_info.set("groups", orig_groups)
 
             expect(saml_user.find_user).to be_ldap_blocked

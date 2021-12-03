@@ -28,7 +28,7 @@ RSpec.describe Gitlab::Mirror do
 
     describe 'without jobs already running' do
       before do
-        Sidekiq::Cron::Job.find("update_all_mirrors_worker")&.destroy
+        Sidekiq::Cron::Job.find("update_all_mirrors_worker")&.destroy # rubocop:disable Rails/SaveBang
       end
 
       it 'creates update_all_mirrors_worker' do

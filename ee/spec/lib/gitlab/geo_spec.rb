@@ -73,7 +73,7 @@ RSpec.describe Gitlab::Geo, :geo, :request_store do
       end
 
       it 'returns false when primary does not exist' do
-        primary_node.destroy
+        primary_node.destroy!
 
         expect(described_class.primary_node_configured?).to be_falsey
       end

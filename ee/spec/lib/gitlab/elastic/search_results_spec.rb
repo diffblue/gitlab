@@ -1126,7 +1126,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic, :clean_gitlab_redis_sha
     let(:limit_project_ids) { [private_project2.id] }
 
     before do
-      private_project2.project_members.create(user: user, access_level: ProjectMember::DEVELOPER)
+      private_project2.project_members.create!(user: user, access_level: ProjectMember::DEVELOPER)
     end
 
     context 'issues' do
@@ -1190,7 +1190,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic, :clean_gitlab_redis_sha
           context 'when user is admin' do
             context 'when admin mode enabled', :enable_admin_mode do
               it 'returns right set of milestones' do
-                user.update(admin: true)
+                user.update!(admin: true)
                 public_project.project_feature.update!(merge_requests_access_level: ProjectFeature::PRIVATE)
                 public_project.project_feature.update!(issues_access_level: ProjectFeature::PRIVATE)
                 internal_project.project_feature.update!(issues_access_level: ProjectFeature::DISABLED)

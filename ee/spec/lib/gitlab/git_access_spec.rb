@@ -480,7 +480,7 @@ RSpec.describe Gitlab::GitAccess do
             project.add_role(user, role)
           end
 
-          protected_branch.save
+          protected_branch.save!
 
           aggregate_failures do
             matrix.each do |action, allowed|
@@ -506,7 +506,7 @@ RSpec.describe Gitlab::GitAccess do
           create(:project_group_link, role, group: group,
                                             project: project)
 
-          protected_branch.save
+          protected_branch.save!
 
           aggregate_failures do
             matrix.each do |action, allowed|
@@ -880,7 +880,7 @@ RSpec.describe Gitlab::GitAccess do
         let(:actor) { deploy_key }
 
         before do
-          deploy_key.deploy_keys_projects.create(project: project, can_push: true)
+          deploy_key.deploy_keys_projects.create!(project: project, can_push: true)
         end
 
         it 'allows push and pull access' do
