@@ -1,7 +1,7 @@
 <script>
 import { GlButton } from '@gitlab/ui';
 import createFlash from '~/flash';
-import IssuableCreate from '~/issuable_create/components/issuable_create_root.vue';
+import IssuableCreate from '~/vue_shared/issuable/create/components/issuable_create_root.vue';
 import { redirectTo } from '~/lib/utils/url_utility';
 
 import { s__ } from '~/locale';
