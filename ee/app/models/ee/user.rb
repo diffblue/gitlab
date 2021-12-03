@@ -430,6 +430,10 @@ module EE
       ::Gitlab.config.omniauth.block_auto_created_users && identities.any?
     end
 
+    def has_valid_credit_card?
+      credit_card_validated_at.present?
+    end
+
     protected
 
     override :password_required?
@@ -444,10 +448,6 @@ module EE
     def created_after_credit_card_release_day?(project)
       created_at >= ::Users::CreditCardValidation::RELEASE_DAY ||
         ::Feature.enabled?(:ci_require_credit_card_for_old_users, project, default_enabled: :yaml)
-    end
-
-    def has_valid_credit_card?
-      credit_card_validated_at.present?
     end
 
     def requires_credit_card_to_run_pipelines?(project)

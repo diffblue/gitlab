@@ -1736,9 +1736,6 @@ msgstr ""
 msgid "Access denied for your LDAP account."
 msgstr ""
 
-msgid "Access denied! Please verify you can add deploy keys to this repository."
-msgstr ""
-
 msgid "Access denied: %{error}"
 msgstr ""
 
@@ -37553,9 +37550,6 @@ msgstr ""
 msgid "UsageQuota|Increase storage temporarily"
 msgstr ""
 
-msgid "UsageQuota|LFS Objects"
-msgstr ""
-
 msgid "UsageQuota|LFS storage"
 msgstr ""
 
@@ -37584,9 +37578,6 @@ msgid "UsageQuota|Purchase more storage"
 msgstr ""
 
 msgid "UsageQuota|Purchased storage available"
-msgstr ""
-
-msgid "UsageQuota|Repositories"
 msgstr ""
 
 msgid "UsageQuota|Repository"
@@ -37665,9 +37656,6 @@ msgid "UsageQuota|Wiki"
 msgstr ""
 
 msgid "UsageQuota|Wiki content."
-msgstr ""
-
-msgid "UsageQuota|Wikis"
 msgstr ""
 
 msgid "UsageQuota|You have consumed all of your additional storage, please purchase more to unlock your projects over the free %{actualRepositorySizeLimit} limit."
@@ -38388,6 +38376,18 @@ msgid "Verification concurrency limit"
 msgstr ""
 
 msgid "Verification status"
+msgstr ""
+
+msgid "VerificationReminder|Pipeline failing? To keep GitLab spam and abuse free we ask that you verify your identity with a valid payment method."
+msgstr ""
+
+msgid "VerificationReminder|Until then, free pipeline minutes on shared runners are unavailable. %{validateLinkStart}Validate your account%{validateLinkEnd} or %{docsLinkStart}use your own runners%{docsLinkEnd}."
+msgstr ""
+
+msgid "VerificationReminder|Your account has been validated."
+msgstr ""
+
+msgid "VerificationReminder|You’ll now be able to take advantage of free pipeline minutes on shared runners."
 msgstr ""
 
 msgid "Verified"

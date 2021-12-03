@@ -5,9 +5,9 @@ import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
 import StorageInlineAlert from 'ee/usage_quotas/storage/components/storage_inline_alert.vue';
 import TemporaryStorageIncreaseModal from 'ee/usage_quotas/storage/components/temporary_storage_increase_modal.vue';
 import UsageStatistics from 'ee/usage_quotas/storage/components/usage_statistics.vue';
+import UsageGraph from 'ee/usage_quotas/storage/components/usage_graph.vue';
 import { formatUsageSize } from 'ee/usage_quotas/storage/utils';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
-import UsageGraph from '~/vue_shared/components/storage_counter/usage_graph.vue';
 import { namespaceData, withRootStorageStatistics } from '../mock_data';
 
 const TEST_LIMIT = 1000;
