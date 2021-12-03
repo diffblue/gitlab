@@ -46,7 +46,7 @@ RSpec.describe Upload do
     with_them do
       subject(:upload_included) { described_class.replicables_for_current_secondary(upload).exists? }
 
-      let(:model) { create(*model_factory) }
+      let(:model) { create(*model_factory) } # rubocop:disable Rails/SaveBang
       let(:node) do
         create(:geo_node_with_selective_sync_for,
                model: model,
@@ -103,7 +103,7 @@ RSpec.describe Upload do
       it 'logs an event to the Geo event log when bulk removal is used', :sidekiq_inline do
         stub_current_geo_node(primary)
 
-        expect { subject.model.destroy }.to change(Geo::Event.where(replicable_name: :upload, event_name: :deleted), :count).by(1)
+        expect { subject.model.destroy! }.to change(Geo::Event.where(replicable_name: :upload, event_name: :deleted), :count).by(1)
 
         payload = Geo::Event.where(replicable_name: :upload, event_name: :deleted).last.payload
 

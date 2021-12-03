@@ -25,7 +25,7 @@ RSpec.describe ScimOauthAccessToken do
 
   describe '#token' do
     it 'generates a token on creation' do
-      scim_token = described_class.create(group: create(:group))
+      scim_token = described_class.create!(group: create(:group))
 
       expect(scim_token.token).to be_a(String)
     end

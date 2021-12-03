@@ -7,7 +7,7 @@ RSpec.describe UserPreference do
 
   shared_examples 'updates roadmap_epics_state' do |state|
     it 'saves roadmap_epics_state in user_preference' do
-      user_preference.update(roadmap_epics_state: state)
+      user_preference.update!(roadmap_epics_state: state)
 
       expect(user_preference.reload.roadmap_epics_state).to eq(state)
     end

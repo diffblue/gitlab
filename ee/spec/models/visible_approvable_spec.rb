@@ -45,13 +45,13 @@ RSpec.describe VisibleApprovable do
       let!(:approver) { resource.author }
 
       it 'excludes author if author cannot approve' do
-        project.update(merge_requests_author_approval: false)
+        project.update!(merge_requests_author_approval: false)
 
         is_expected.not_to include(approver)
       end
 
       it 'includes author if author is able to approve' do
-        project.update(merge_requests_author_approval: true)
+        project.update!(merge_requests_author_approval: true)
 
         is_expected.to include(approver)
       end
@@ -61,13 +61,13 @@ RSpec.describe VisibleApprovable do
       let!(:approver) { create(:user, email: resource.commits.without_merge_commits.first.committer_email) }
 
       it 'excludes the committer if committers cannot approve' do
-        project.update(merge_requests_disable_committers_approval: true)
+        project.update!(merge_requests_disable_committers_approval: true)
 
         is_expected.not_to include(approver)
       end
 
       it 'includes the committer if committers are able to approve' do
-        project.update(merge_requests_disable_committers_approval: false)
+        project.update!(merge_requests_disable_committers_approval: false)
 
         is_expected.to include(approver)
       end
@@ -82,7 +82,7 @@ RSpec.describe VisibleApprovable do
     end
 
     it 'returns true when merge_requests_author_approval flag is turned on' do
-      project.update(merge_requests_author_approval: true)
+      project.update!(merge_requests_author_approval: true)
 
       is_expected.to be_truthy
     end

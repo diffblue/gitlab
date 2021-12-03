@@ -97,7 +97,7 @@ RSpec.describe Vulnerabilities::Feedback do
 
         context 'when pipeline is assigned to feedback' do
           before do
-            feedback.update(pipeline: pipeline)
+            feedback.update!(pipeline: pipeline)
           end
 
           context 'when pipeline was updated less than 5 minutes ago' do

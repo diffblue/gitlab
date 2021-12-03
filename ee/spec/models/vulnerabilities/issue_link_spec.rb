@@ -55,7 +55,7 @@ RSpec.describe Vulnerabilities::IssueLink do
             :vulnerabilities_issue_link,
             issue_id: existing_link.issue_id,
             vulnerability_id: existing_link.vulnerability_id)
-          issue_link.save(validate: false)
+          issue_link.save!(validate: false)
         end.to raise_error(ActiveRecord::RecordNotUnique)
       end
     end
@@ -66,14 +66,14 @@ RSpec.describe Vulnerabilities::IssueLink do
       it 'prevents the creation of a new "created" issue link' do
         expect do
           issue_link = build(:vulnerabilities_issue_link, :created, vulnerability: existing_link.vulnerability)
-          issue_link.save(validate: false)
+          issue_link.save!(validate: false)
         end.to raise_error(ActiveRecord::RecordNotUnique)
       end
 
       it 'allows the creation of a new "related" issue link' do
         expect do
           issue_link = build(:vulnerabilities_issue_link, :related, vulnerability: existing_link.vulnerability)
-          issue_link.save(validate: false)
+          issue_link.save!(validate: false)
         end.not_to raise_error
       end
     end
