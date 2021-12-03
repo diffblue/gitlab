@@ -9,7 +9,7 @@ module EE
 
         @epic = @note.noteable
         @target_url = group_epic_url(*note_target_url_options)
-        mail_answer_note_thread(@epic, @note, note_thread_options(recipient_id, reason))
+        mail_answer_note_thread(@epic, @note, note_thread_options(reason))
       end
     end
   end
