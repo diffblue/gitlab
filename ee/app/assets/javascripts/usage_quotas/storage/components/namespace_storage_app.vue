@@ -8,7 +8,6 @@ import {
   GlKeysetPagination,
 } from '@gitlab/ui';
 import { parseBoolean } from '~/lib/utils/common_utils';
-import UsageGraph from '~/vue_shared/components/storage_counter/usage_graph.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { PROJECTS_PER_PAGE } from '../constants';
 import query from '../queries/namespace_storage.query.graphql';
@@ -16,6 +15,7 @@ import { formatUsageSize, parseGetStorageResults } from '../utils';
 import ProjectList from './project_list.vue';
 import StorageInlineAlert from './storage_inline_alert.vue';
 import TemporaryStorageIncreaseModal from './temporary_storage_increase_modal.vue';
+import UsageGraph from './usage_graph.vue';
 import UsageStatistics from './usage_statistics.vue';
 
 export default {

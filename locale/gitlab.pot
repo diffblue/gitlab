@@ -37553,9 +37553,6 @@ msgstr ""
 msgid "UsageQuota|Increase storage temporarily"
 msgstr ""
 
-msgid "UsageQuota|LFS Objects"
-msgstr ""
-
 msgid "UsageQuota|LFS storage"
 msgstr ""
 
@@ -37584,9 +37581,6 @@ msgid "UsageQuota|Purchase more storage"
 msgstr ""
 
 msgid "UsageQuota|Purchased storage available"
-msgstr ""
-
-msgid "UsageQuota|Repositories"
 msgstr ""
 
 msgid "UsageQuota|Repository"
@@ -37665,9 +37659,6 @@ msgid "UsageQuota|Wiki"
 msgstr ""
 
 msgid "UsageQuota|Wiki content."
-msgstr ""
-
-msgid "UsageQuota|Wikis"
 msgstr ""
 
 msgid "UsageQuota|You have consumed all of your additional storage, please purchase more to unlock your projects over the free %{actualRepositorySizeLimit} limit."

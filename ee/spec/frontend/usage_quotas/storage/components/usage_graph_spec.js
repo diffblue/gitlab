@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
-import UsageGraph from '~/vue_shared/components/storage_counter/usage_graph.vue';
+import UsageGraph from 'ee/usage_quotas/storage/components/usage_graph.vue';
 
 let data;
 let wrapper;
@@ -56,15 +56,15 @@ describe('Storage Counter usage graph component', () => {
       uploadsSize,
     } = data.rootStorageStatistics;
 
-    expect(types.at(0).text()).toMatchInterpolatedText(`Wikis ${numberToHumanSize(wikiSize)}`);
+    expect(types.at(0).text()).toMatchInterpolatedText(`Wiki ${numberToHumanSize(wikiSize)}`);
     expect(types.at(1).text()).toMatchInterpolatedText(
-      `Repositories ${numberToHumanSize(repositorySize)}`,
+      `Repository ${numberToHumanSize(repositorySize)}`,
     );
     expect(types.at(2).text()).toMatchInterpolatedText(
       `Packages ${numberToHumanSize(packagesSize)}`,
     );
     expect(types.at(3).text()).toMatchInterpolatedText(
-      `LFS Objects ${numberToHumanSize(lfsObjectsSize)}`,
+      `LFS storage ${numberToHumanSize(lfsObjectsSize)}`,
     );
     expect(types.at(4).text()).toMatchInterpolatedText(
       `Snippets ${numberToHumanSize(snippetsSize)}`,
