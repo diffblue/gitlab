@@ -2,11 +2,8 @@
 
 module EE
   module MergeRequestPresenter
-    include ::VisibleApprovable
     extend ::Gitlab::Utils::Override
     extend ::Gitlab::Utils::DelegatorOverride
-
-    delegator_override_with ::VisibleApprovable # TODO: Remove `::VisibleApprovable` inclusion as it's duplicate
 
     APPROVALS_WIDGET_FULL_TYPE = 'full'
 
