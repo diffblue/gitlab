@@ -33,8 +33,8 @@ module QA
 
           QA::EE::Page::Group::Iteration::Cadence::New.perform do |new|
             new.fill_title(@title)
-            new.uncheck_automatic_scheduling
-            new.fill_start_date(@start_date)
+            new.uncheck_automatic_scheduling unless @automatic
+            new.fill_start_date(@start_date) if @automatic
             new.click_create_iteration_cadence_button
           end
         end
