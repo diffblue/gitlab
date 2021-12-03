@@ -12938,6 +12938,9 @@ msgstr ""
 msgid "Enable access to the performance bar for non-administrators in a given group."
 msgstr ""
 
+msgid "Enable access tokens to expire after 2 hours. If disabled, tokens do not expire."
+msgstr ""
+
 msgid "Enable admin mode"
 msgstr ""
 
@@ -13008,6 +13011,9 @@ msgid "Enable maintenance mode"
 msgstr ""
 
 msgid "Enable multipart emails"
+msgstr ""
+
+msgid "Enable only for confidential applications exclusively used by a trusted backend server that can securely store the client secret. Do not enable for native-mobile, single-page, or other JavaScript applications because they cannot keep the client secret confidential."
 msgstr ""
 
 msgid "Enable or disable the Pseudonymizer data collection."
@@ -21256,7 +21262,7 @@ msgstr ""
 msgid "Manage applications that can use GitLab as an OAuth provider, and applications that you've authorized to use your account."
 msgstr ""
 
-msgid "Manage applications that can use GitLab as an OAuth provider."
+msgid "Manage applications that use GitLab as an OAuth provider."
 msgstr ""
 
 msgid "Manage applications that you've authorized to use your account."
