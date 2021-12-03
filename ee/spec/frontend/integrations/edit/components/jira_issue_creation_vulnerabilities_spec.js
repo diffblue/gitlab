@@ -205,9 +205,9 @@ describe('JiraIssuesFields', () => {
     });
 
     it('emits "fetch-issues-clicked" when clicked', async () => {
-      expect(wrapper.emitted('request-get-issue-types')).toBe(undefined);
+      expect(wrapper.emitted('request-jira-issue-types')).toBe(undefined);
       await findFetchIssueTypeButton().vm.$emit('click');
-      expect(wrapper.emitted('request-get-issue-types')).toHaveLength(1);
+      expect(wrapper.emitted('request-jira-issue-types')).toHaveLength(1);
     });
   });
 
