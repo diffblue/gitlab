@@ -13,8 +13,8 @@ RSpec.describe 'Fog::Storage::GoogleXML::File' do
   end
 
   let(:file) do
-    directory = storage.directories.create(key: 'data')
-    directory.files.create(
+    directory = storage.directories.create(key: 'data') # rubocop:disable Rails/SaveBang
+    directory.files.create(                             # rubocop:disable Rails/SaveBang
       body: 'Hello World!',
       key: 'hello_world.txt'
     )
