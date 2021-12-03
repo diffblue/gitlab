@@ -32,32 +32,14 @@ module EE
 
           protected
 
-          def activate_user_based_on_user_cap?(user)
-            return false unless user&.activate_based_on_user_cap?
-
-            begin
-              !::User.user_cap_reached?
-            rescue ActiveRecord::QueryAborted => e
-              ::Gitlab::ErrorTracking.track_exception(e, saml_user_email: user.email)
-              false
-            end
-          end
-
           def block_user(user, reason)
             user.ldap_block
-            log_user_changes(user, "#{reason}, blocking")
+            log_user_changes(user, 'SAML', "#{reason}, blocking")
           end
 
           def unblock_user(user, reason)
             user.activate
-            log_user_changes(user, "#{reason}, unblocking")
-          end
-
-          def log_user_changes(user, message)
-            ::Gitlab::AppLogger.info(
-              "SAML(#{auth_hash.provider}) account \"#{auth_hash.uid}\" #{message} " \
-              "GitLab user \"#{user.name}\" (#{user.email})"
-            )
+            log_user_changes(user, 'SAML', "#{reason}, unblocking")
           end
 
           def user_in_required_group?
