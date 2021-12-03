@@ -18,7 +18,6 @@ module EE
         def unavailable_list_types_for(board)
           list_types = super
           list_types += unlicensed_lists_for(board)
-          list_types << ::List.list_types[:iteration] if ::Feature.disabled?(:iteration_board_lists, board.resource_parent, default_enabled: :yaml)
 
           list_types.uniq
         end

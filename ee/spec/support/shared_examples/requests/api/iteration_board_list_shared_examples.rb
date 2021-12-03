@@ -14,15 +14,6 @@ RSpec.shared_examples 'iteration board list' do
       expect(json_response.dig('message', 'error')).to eq('Iteration not found')
     end
 
-    it 'returns 400 if feature flag is disabled' do
-      stub_feature_flags(iteration_board_lists: false)
-
-      post api(url, user), params: { iteration_id: iteration.id }
-
-      expect(response).to have_gitlab_http_status(:bad_request)
-      expect(json_response.dig('message', 'error')).to eq('iteration_board_lists feature flag is disabled')
-    end
-
     it 'returns 400 if not licensed' do
       stub_licensed_features(board_iteration_lists: false)
 
