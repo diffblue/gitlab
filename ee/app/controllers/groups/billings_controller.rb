@@ -21,7 +21,9 @@ class Groups::BillingsController < Groups::ApplicationController
       .new(plan: current_plan, namespace_id: relevant_group.id)
       .execute
 
-    unless @plans_data
+    if @plans_data
+      track_from_side_nav
+    else
       render 'shared/billings/customers_dot_unavailable'
     end
   end
@@ -47,5 +49,11 @@ class Groups::BillingsController < Groups::ApplicationController
 
     gitlab_subscription.refresh_seat_attributes!
     gitlab_subscription.save
+  end
+
+  def track_from_side_nav
+    return unless helpers.accessed_billing_from_side_nav?
+
+    experiment(:billing_in_side_nav, user: current_user).track(:view, label: 'view_billing')
   end
 end
