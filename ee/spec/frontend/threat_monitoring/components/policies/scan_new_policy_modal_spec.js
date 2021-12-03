@@ -99,6 +99,10 @@ describe('ScanNewPolicyModal Component', () => {
       });
     });
 
+    it('displays a placeholder when no project is selected', () => {
+      expect(findDropdown().props('text')).toBe('Choose a project');
+    });
+
     it('does not display a warning', () => {
       expect(findAlert().exists()).toBe(false);
     });

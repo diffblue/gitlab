@@ -30,6 +30,7 @@ export default {
     description: s__(
       'SecurityOrchestration|Select a project to store your security policies in. %{linkStart}More information.%{linkEnd}',
     ),
+    emptyPlaceholder: s__('SecurityOrchestration|Choose a project'),
   },
   components: {
     GlButton,
@@ -216,7 +217,7 @@ export default {
           class="gl-w-full"
           menu-class="gl-w-full! gl-max-w-full!"
           :disabled="disableSecurityPolicyProject"
-          :text="selectedProjectName"
+          :text="selectedProjectName || $options.i18n.emptyPlaceholder"
         >
           <instance-project-selector
             class="gl-w-full"
