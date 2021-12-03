@@ -29,7 +29,7 @@ RSpec.describe LabelNote do
   context 'when a label is removed' do
     it 'returns note correctly' do
       events
-      label.destroy
+      label.destroy!
       events.first.reload
 
       expect(subject.note).to include('deleted label')

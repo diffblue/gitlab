@@ -606,7 +606,7 @@ RSpec.describe MergeTrain do
   end
 
   describe '#destroy' do
-    subject { merge_train.destroy }
+    subject { merge_train.destroy! }
 
     context 'when merge train has a pipeline' do
       let(:merge_train) { create(:merge_train, pipeline: pipeline) }

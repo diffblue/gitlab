@@ -115,12 +115,12 @@ RSpec.describe ProjectCiCdSetting do
 
     context 'when merge pipelines option was enabled' do
       before do
-        project.update(merge_pipelines_enabled: true)
+        project.update!(merge_pipelines_enabled: true)
       end
 
       context 'when merge pipelines option is disabled' do
         before do
-          project.update(merge_pipelines_enabled: false)
+          project.update!(merge_pipelines_enabled: false)
         end
 
         it { is_expected.to be true }
@@ -133,12 +133,12 @@ RSpec.describe ProjectCiCdSetting do
 
     context 'when merge pipelines option was disabled' do
       before do
-        project.update(merge_pipelines_enabled: false)
+        project.update!(merge_pipelines_enabled: false)
       end
 
       context 'when merge pipelines option is disabled' do
         before do
-          project.update(merge_pipelines_enabled: true)
+          project.update!(merge_pipelines_enabled: true)
         end
 
         it { is_expected.to be false }
