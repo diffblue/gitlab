@@ -16,7 +16,7 @@ and has become [one of the most beloved CI/CD solutions](https://about.gitlab.co
 
 On February 1st, 2021, a billionth CI/CD build was created and the number of
 builds is growing exponentially. We expect to see 20M builds created daily on
-GitLab.com in the late of 2024.
+GitLab.com in late 2024.
 
 GitLab CI/CD has come a long way since the initial release, but the design of
 the data storage for pipeline builds remains almost the same since 2012. In
@@ -71,7 +71,7 @@ Currently, storing pipeline processing data is expensive as this kind of CI/CD
 data represents a significant portion of data stored in CI/CD tables. Once we
 restrict access to processing archived pipelines, we can move this metadata to
 a different place - preferably object storage - and make it accessible on
-demand, when it is really needed again (for example for compliance purposes).
+demand, when it is really needed again (for example for compliance or auditing purposes).
 
 Epic: [Link]
 
