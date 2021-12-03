@@ -646,4 +646,42 @@ RSpec.describe AuditEventService, :request_store do
       extended_audit_events: false
     )
   end
+
+  describe 'save_type' do
+    let_it_be(:group) { create(:group, :nested) }
+    let_it_be(:project) { create(:project, group: group) }
+
+    before do
+      stub_licensed_features(external_audit_events: true)
+    end
+
+    subject(:event) { described_class.new(user, project, details, save_type).for_project.security_event }
+
+    context 'with save_type of :database_and_stream' do
+      let(:save_type) { :database_and_stream }
+
+      it 'save to database and stream' do
+        expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).once
+        expect { event }.to change(AuditEvent, :count).by(1)
+      end
+    end
+
+    context 'with save_type of :database' do
+      let(:save_type) { :database }
+
+      it 'saves to database and is not streamed' do
+        expect(AuditEvents::AuditEventStreamingWorker).not_to receive(:perform_async)
+        expect { event }.to change(AuditEvent, :count).by(1)
+      end
+    end
+
+    context 'with save_type of :stream' do
+      let(:save_type) { :stream }
+
+      it 'saves to database and stream' do
+        expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).once
+        expect { event }.to change(AuditEvent, :count).by(0)
+      end
+    end
+  end
 end
