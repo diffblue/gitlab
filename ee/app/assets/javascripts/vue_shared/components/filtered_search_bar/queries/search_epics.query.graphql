@@ -9,8 +9,6 @@ query searchEpics($fullPath: ID!, $search: String, $state: EpicState) {
       includeAncestorGroups: true
       includeDescendantGroups: false
     ) {
-      # We have an id in deeply nested fragment
-      # eslint-disable-next-line @graphql-eslint/require-id-when-available
       nodes {
         ...EpicNode
       }
