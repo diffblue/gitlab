@@ -10,7 +10,7 @@ import IssuableHeader from '~/issuable_show/components/issuable_header.vue';
 import IssuableShow from '~/issuable_show/components/issuable_show_root.vue';
 import IssuableDiscussion from '~/issuable_show/components/issuable_discussion.vue';
 import Note from 'ee/external_issues_show/components/note.vue';
-import IssuableSidebar from '~/issuable_sidebar/components/issuable_sidebar_root.vue';
+import IssuableSidebar from '~/vue_shared/issuable/sidebar/components/issuable_sidebar_root.vue';
 import axios from '~/lib/utils/axios_utils';
 import httpStatusCodes from '~/lib/utils/http_status';
 

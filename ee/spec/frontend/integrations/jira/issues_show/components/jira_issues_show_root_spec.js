@@ -8,7 +8,7 @@ import { IssuableStatus } from '~/issue_show/constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import IssuableHeader from '~/issuable_show/components/issuable_header.vue';
 import IssuableShow from '~/issuable_show/components/issuable_show_root.vue';
-import IssuableSidebar from '~/issuable_sidebar/components/issuable_sidebar_root.vue';
+import IssuableSidebar from '~/vue_shared/issuable/sidebar/components/issuable_sidebar_root.vue';
 import axios from '~/lib/utils/axios_utils';
 import { mockJiraIssue } from '../mock_data';
 
