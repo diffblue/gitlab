@@ -20184,7 +20184,7 @@ msgstr ""
 msgid "Job|Download"
 msgstr ""
 
-msgid "Job|Erase job log"
+msgid "Job|Erase job log and artifacts"
 msgstr ""
 
 msgid "Job|Job artifacts"
