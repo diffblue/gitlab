@@ -27108,6 +27108,8 @@ CREATE INDEX index_projects_api_vis20_path ON projects USING btree (path, id) WH
 
 CREATE INDEX index_projects_api_vis20_updated_at ON projects USING btree (updated_at, id) WHERE (visibility_level = 20);
 
+CREATE INDEX index_projects_not_aimed_for_deletion ON projects USING btree (marked_for_deletion_at) WHERE (marked_for_deletion_at IS NULL);
+
 CREATE INDEX index_projects_on_created_at_and_id ON projects USING btree (created_at, id);
 
 CREATE INDEX index_projects_on_creator_id_and_created_at_and_id ON projects USING btree (creator_id, created_at, id);

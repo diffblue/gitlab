@@ -1,0 +1,17 @@
+# frozen_string_literal: true
+
+class AddIndexToProjectsOnMarkedForDeletionAt < Gitlab::Database::Migration[1.0]
+  disable_ddl_transaction!
+
+  INDEX_NAME = 'index_projects_not_aimed_for_deletion'
+
+  def up
+    marked_for_deletion_is_null = 'marked_for_deletion_at IS NULL'
+
+    add_concurrent_index :projects, :marked_for_deletion_at, where: marked_for_deletion_is_null, name: INDEX_NAME
+  end
+
+  def down
+    remove_concurrent_index :projects, :marked_for_deletion_at, name: INDEX_NAME
+  end
+end
