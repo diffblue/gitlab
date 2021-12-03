@@ -29220,6 +29220,9 @@ msgstr ""
 msgid "Replace"
 msgstr ""
 
+msgid "Replace %{blob_name}"
+msgstr ""
+
 msgid "Replace %{name}"
 msgstr ""
 
