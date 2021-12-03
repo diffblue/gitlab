@@ -68,7 +68,11 @@ export default {
     </p>
 
     <div>
-      <gl-form-group label="Upload CSV file" label-for="import-requirements-file-input">
+      <gl-form-group
+        label="Upload CSV file"
+        class="gl-text-truncate"
+        label-for="import-requirements-file-input"
+      >
         <input
           id="import-requirements-file-input"
           ref="fileInput"
