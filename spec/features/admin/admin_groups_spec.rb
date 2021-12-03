@@ -12,12 +12,32 @@ RSpec.describe 'Admin Groups' do
 
   let_it_be(:user) { create :user }
   let_it_be(:group) { create :group }
-  let_it_be(:current_user) { create(:admin) }
+  let_it_be_with_reload(:current_user) { create(:admin) }
 
   before do
     sign_in(current_user)
     gitlab_enable_admin_mode_sign_in(current_user)
     stub_application_setting(default_group_visibility: internal)
+  end
+
+  it "renders relative time", :js do
+    expire_time = Time.current + 2.days
+    current_user.update!(time_display_relative: true)
+    group.add_users([user], Gitlab::Access::REPORTER, expires_at: expire_time)
+
+    visit admin_group_path(group)
+
+    expect(page).to have_content(/Expires in \d day/)
+  end
+
+  it "renders absolute time", :js do
+    expire_time = Time.current.tomorrow.middle_of_day
+    current_user.update!(time_display_relative: false)
+    group.add_users([user], Gitlab::Access::REPORTER, expires_at: expire_time)
+
+    visit admin_group_path(group)
+
+    expect(page).to have_content("Expires on #{expire_time.strftime('%b %-d')}")
   end
 
   describe 'list' do
