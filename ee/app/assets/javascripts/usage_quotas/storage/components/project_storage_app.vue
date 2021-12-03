@@ -1,7 +1,6 @@
 <script>
 import { GlAlert, GlLink, GlLoadingIcon } from '@gitlab/ui';
 import { sprintf } from '~/locale';
-import UsageGraph from '~/vue_shared/components/storage_counter/usage_graph.vue';
 import {
   ERROR_MESSAGE,
   LEARN_MORE_LABEL,
@@ -13,6 +12,7 @@ import {
 } from '../constants';
 import getProjectStorageStatistics from '../queries/project_storage.query.graphql';
 import { parseGetProjectStorageResults } from '../utils';
+import UsageGraph from './usage_graph.vue';
 import ProjectStorageDetail from './project_storage_detail.vue';
 
 export default {

@@ -1,7 +1,7 @@
 <script>
 import { GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
-import { s__ } from '~/locale';
+import { PROJECT_STORAGE_TYPES } from '../constants';
 
 export default {
   components: {
@@ -41,51 +41,62 @@ export default {
 
       return [
         {
-          name: s__('UsageQuota|Repositories'),
+          id: 'repositorySize',
           style: this.usageStyle(this.barRatio(repositorySize)),
           class: 'gl-bg-data-viz-blue-500',
           size: repositorySize,
         },
         {
-          name: s__('UsageQuota|LFS Objects'),
+          id: 'lfsObjectsSize',
           style: this.usageStyle(this.barRatio(lfsObjectsSize)),
           class: 'gl-bg-data-viz-orange-600',
           size: lfsObjectsSize,
         },
         {
-          name: s__('UsageQuota|Packages'),
+          id: 'packagesSize',
           style: this.usageStyle(this.barRatio(packagesSize)),
           class: 'gl-bg-data-viz-aqua-500',
           size: packagesSize,
         },
         {
-          name: s__('UsageQuota|Artifacts'),
+          id: 'buildArtifactsSize',
           style: this.usageStyle(this.barRatio(artifactsSize)),
           class: 'gl-bg-data-viz-green-600',
           size: artifactsSize,
-          tooltip: s__('UsageQuota|Artifacts is a sum of build and pipeline artifacts.'),
         },
         {
-          name: s__('UsageQuota|Wikis'),
+          id: 'wikiSize',
           style: this.usageStyle(this.barRatio(wikiSize)),
           class: 'gl-bg-data-viz-magenta-500',
           size: wikiSize,
         },
         {
-          name: s__('UsageQuota|Snippets'),
+          id: 'snippetsSize',
           style: this.usageStyle(this.barRatio(snippetsSize)),
           class: 'gl-bg-data-viz-orange-800',
           size: snippetsSize,
         },
         {
-          name: s__('UsageQuota|Uploads'),
+          id: 'uploadsSize',
           style: this.usageStyle(this.barRatio(uploadsSize)),
           class: 'gl-bg-data-viz-aqua-700',
           size: uploadsSize,
         },
       ]
         .filter((data) => data.size !== 0)
-        .sort((a, b) => b.size - a.size);
+        .sort((a, b) => b.size - a.size)
+        .map((storageType) => {
+          const storageTypeExtraData = PROJECT_STORAGE_TYPES.find(
+            (type) => storageType.id === type.id,
+          );
+          const { name, tooltip } = storageTypeExtraData || {};
+
+          return {
+            name,
+            tooltip,
+            ...storageType,
+          };
+        });
     },
   },
   methods: {
