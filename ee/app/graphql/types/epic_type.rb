@@ -24,10 +24,8 @@ module Types
           description: 'Internal ID of the epic.'
     field :title, GraphQL::Types::String, null: true,
           description: 'Title of the epic.'
-    markdown_field :title_html, null: true
     field :description, GraphQL::Types::String, null: true,
           description: 'Description of the epic.'
-    markdown_field :description_html, null: true
     field :state, EpicStateEnum, null: false,
           description: 'State of the epic.'
     field :confidential, GraphQL::Types::Boolean, null: true,
@@ -161,6 +159,9 @@ module Types
           complexity: 5,
           resolver: ::Resolvers::EpicAncestorsResolver,
           description: 'Ancestors (parents) of the epic.'
+
+    markdown_field :title_html, null: true
+    markdown_field :description_html, null: true
 
     def has_children?
       Gitlab::Graphql::Aggregations::Epics::LazyEpicAggregate.new(context, object.id, COUNT) do |node, _aggregate_object|

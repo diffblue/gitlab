@@ -18,11 +18,9 @@ module Types
 
       field :title, GraphQL::Types::String, null: true,
             description: 'Title of the requirement.'
-      markdown_field :title_html, null: true
 
       field :description, GraphQL::Types::String, null: true,
             description: 'Description of the requirement.'
-      markdown_field :description_html, null: true
 
       field :state, RequirementsManagement::RequirementStateEnum, null: false,
             description: 'State of the requirement.'
@@ -51,6 +49,9 @@ module Types
 
       field :updated_at, Types::TimeType, null: false,
             description: 'Timestamp of when the requirement was last updated.'
+
+      markdown_field :title_html, null: true
+      markdown_field :description_html, null: true
 
       def project
         Gitlab::Graphql::Loaders::BatchModelLoader.new(Project, object.project_id).find
