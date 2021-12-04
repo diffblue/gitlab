@@ -101,7 +101,7 @@ RSpec.describe Geo::RepositoryVerificationSecondaryService, :geo do
       end
 
       it 'ensures the next retry time is capped properly' do
-        registry.update("#{type}_retry_count" => 30)
+        registry.update!("#{type}_retry_count" => 30)
 
         service.execute
 
@@ -135,7 +135,7 @@ RSpec.describe Geo::RepositoryVerificationSecondaryService, :geo do
       end
 
       it 'ensures the next retry time is capped properly' do
-        registry.update("#{type}_retry_count" => 30)
+        registry.update!("#{type}_retry_count" => 30)
 
         service.execute
 

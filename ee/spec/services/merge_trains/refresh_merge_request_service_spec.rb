@@ -201,7 +201,7 @@ RSpec.describe MergeTrains::RefreshMergeRequestService do
       before do
         merge_request.merge_train.refresh_pipeline!(pipeline.id)
         merge_request.merge_params[:sha] = merge_request.diff_head_sha
-        merge_request.save
+        merge_request.save!
       end
 
       context 'when the merge request is the first queue' do
@@ -220,7 +220,7 @@ RSpec.describe MergeTrains::RefreshMergeRequestService do
         context 'when it failed to merge the merge request' do
           before do
             allow(merge_request).to receive(:mergeable_state?) { true }
-            merge_request.update(merge_error: 'Branch has been updated since the merge was requested.')
+            merge_request.update!(merge_error: 'Branch has been updated since the merge was requested.')
             allow_next_instance_of(MergeRequests::MergeService) do |instance|
               allow(instance).to receive(:execute) { { result: :error } }
             end

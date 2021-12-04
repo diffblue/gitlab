@@ -79,7 +79,7 @@ RSpec.describe TodoService do
 
           context 'for directly addressed users' do
             before do
-              epic.update(description: description_directly_addressed)
+              epic.update!(description: description_directly_addressed)
             end
 
             let(:todo_params) { { action: Todo::DIRECTLY_ADDRESSED } }
@@ -90,7 +90,7 @@ RSpec.describe TodoService do
 
           context 'combined' do
             before do
-              epic.update(description: combined_mentions)
+              epic.update!(description: combined_mentions)
             end
 
             context 'mentioned users' do
@@ -111,7 +111,7 @@ RSpec.describe TodoService do
 
         context 'when an epic belongs to a private group' do
           before do
-            group.update(visibility: Gitlab::VisibilityLevel::PRIVATE)
+            group.update!(visibility: Gitlab::VisibilityLevel::PRIVATE)
           end
 
           context 'for mentioned users' do
@@ -137,7 +137,7 @@ RSpec.describe TodoService do
 
         context 'creates todos for group members when a group is mentioned' do
           before do
-            epic.update(description: group.to_reference)
+            epic.update!(description: group.to_reference)
           end
 
           let(:todo_params) { { action: Todo::DIRECTLY_ADDRESSED } }
@@ -161,7 +161,7 @@ RSpec.describe TodoService do
 
         context 'for directly addressed users' do
           before do
-            epic.update(description: description_directly_addressed)
+            epic.update!(description: description_directly_addressed)
           end
 
           let(:todo_params) { { action: Todo::DIRECTLY_ADDRESSED } }
@@ -173,7 +173,7 @@ RSpec.describe TodoService do
 
         context 'when toggling task list items' do
           before do
-            epic.update(description: "- [x] Task 1\n- [x] Task 2 FYI: #{mentions}")
+            epic.update!(description: "- [x] Task 1\n- [x] Task 2 FYI: #{mentions}")
           end
 
           it 'does not create todos' do
@@ -218,7 +218,7 @@ RSpec.describe TodoService do
 
           context 'for mentioned users' do
             before do
-              note.update(note: description_mentions)
+              note.update!(note: description_mentions)
             end
 
             let(:todo_params) { { action: Todo::MENTIONED } }
@@ -230,7 +230,7 @@ RSpec.describe TodoService do
 
           context 'for directly addressed users' do
             before do
-              note.update(note: description_directly_addressed)
+              note.update!(note: description_directly_addressed)
             end
 
             let(:todo_params) { { action: Todo::DIRECTLY_ADDRESSED } }
@@ -242,7 +242,7 @@ RSpec.describe TodoService do
 
           context 'combined' do
             before do
-              note.update(note: combined_mentions)
+              note.update!(note: combined_mentions)
             end
 
             context 'mentioned users' do
@@ -327,7 +327,7 @@ RSpec.describe TodoService do
     context 'an approver has lost access to the project', :sidekiq_inline do
       before do
         create(:approver, user: non_member, target: project)
-        project.members.find_by(user_id: non_member.id).destroy
+        project.members.find_by(user_id: non_member.id).destroy!
       end
 
       describe '#new_merge_request' do

@@ -24,7 +24,7 @@ RSpec.describe Lfs::UnlockFileService do
           stub_licensed_features(file_locks: file_locks_license)
 
           project.add_developer(lock_author)
-          project.path_locks.create(path: lock.path, user: lock_author)
+          project.path_locks.create!(path: lock.path, user: lock_author)
         end
 
         context 'when File Locking is available' do
