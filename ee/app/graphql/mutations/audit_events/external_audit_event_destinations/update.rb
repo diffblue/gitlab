@@ -12,7 +12,7 @@ module Mutations
                  required: true,
                  description: 'ID of external audit event destination to destroy.'
 
-        argument :destinationUrl, GraphQL::Types::String,
+        argument :destination_url, GraphQL::Types::String,
                  required: false,
                  description: 'Destination URL to change.'
 
