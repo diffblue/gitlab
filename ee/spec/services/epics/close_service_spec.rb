@@ -73,7 +73,7 @@ RSpec.describe Epics::CloseService do
 
         context 'when trying to close a closed epic' do
           before do
-            epic.update(state: :closed)
+            epic.update!(state: :closed)
           end
 
           it 'does not change the epic state' do

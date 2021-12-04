@@ -80,7 +80,7 @@ RSpec.describe MergeRequests::UpdateService, :mailer do
         let(:project) { create(:project, :repository, approvals_before_merge: project_value) }
 
         it "does not update" do
-          merge_request.update(approvals_before_merge: mr_before_value)
+          merge_request.update!(approvals_before_merge: mr_before_value)
           rule = create(:approval_merge_request_rule, merge_request: merge_request)
 
           update_merge_request(approvals_before_merge: mr_after_value)
@@ -95,7 +95,7 @@ RSpec.describe MergeRequests::UpdateService, :mailer do
 
       context 'when not approved' do
         before do
-          merge_request.update(approvals_before_merge: 1)
+          merge_request.update!(approvals_before_merge: 1)
 
           perform_enqueued_jobs do
             update_merge_request(opts)
@@ -109,8 +109,8 @@ RSpec.describe MergeRequests::UpdateService, :mailer do
 
       context 'when approved' do
         before do
-          merge_request.update(approvals_before_merge: 1)
-          merge_request.approvals.create(user: user)
+          merge_request.update!(approvals_before_merge: 1)
+          merge_request.approvals.create!(user: user)
 
           perform_enqueued_jobs do
             update_merge_request(opts)
@@ -193,8 +193,8 @@ RSpec.describe MergeRequests::UpdateService, :mailer do
           update_merge_request(approver_ids: "#{existing_approver.id},#{new_approver.id}")
         end
 
-        merge_request.target_project.update(reset_approvals_on_push: true)
-        merge_request.approvals.create(user_id: existing_approver.id)
+        merge_request.target_project.update!(reset_approvals_on_push: true)
+        merge_request.approvals.create!(user_id: existing_approver.id)
       end
 
       it 'resets approvals when target_branch is changed' do

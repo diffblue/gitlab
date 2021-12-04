@@ -137,7 +137,7 @@ RSpec.describe Epics::UpdateDatesService do
       context 'single milestone' do
         before do
           epic_issue1 = create(:epic_issue, epic: epic)
-          epic_issue1.issue.update(milestone: milestone1, project: project)
+          epic_issue1.issue.update!(milestone: milestone1, project: project)
         end
 
         context 'complete start and due dates' do
@@ -329,7 +329,7 @@ RSpec.describe Epics::UpdateDatesService do
             let(:parent_epic) { create(:epic, group: group, parent: top_level_parent_epic) }
 
             before do
-              epic.update(parent: parent_epic)
+              epic.update!(parent: parent_epic)
             end
 
             it "propagates date changes to parent epics" do
