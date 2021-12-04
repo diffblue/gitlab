@@ -315,7 +315,13 @@ class License < ApplicationRecord
       EE_ALL_PLANS
     end
 
-    delegate :block_changes?, :feature_available?, to: :current, allow_nil: true
+    def block_changes?
+      !!current&.block_changes?
+    end
+
+    def feature_available?(feature)
+      !!current&.feature_available?(feature)
+    end
 
     def reset_current
       cache.expire(CACHE_KEY)
