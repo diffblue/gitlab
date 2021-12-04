@@ -277,7 +277,7 @@ RSpec.describe MergeRequests::RefreshService do
 
       before do
         project.add_developer(current_user)
-        project.update(merge_pipelines_enabled: true)
+        project.update!(merge_pipelines_enabled: true)
         stub_licensed_features(merge_pipelines: true)
         stub_ci_pipeline_yaml_file(YAML.dump(config))
       end
@@ -332,14 +332,14 @@ RSpec.describe MergeRequests::RefreshService do
       before do
         group.add_owner(user)
 
-        merge_request.approvals.create(user_id: user.id)
-        forked_merge_request.approvals.create(user_id: user.id)
+        merge_request.approvals.create!(user_id: user.id)
+        forked_merge_request.approvals.create!(user_id: user.id)
 
         project.add_developer(approver)
 
         perform_enqueued_jobs do
-          merge_request.update(approver_ids: [approver].map(&:id).join(','))
-          forked_merge_request.update(approver_ids: [approver].map(&:id).join(','))
+          merge_request.update!(approver_ids: [approver].map(&:id).join(','))
+          forked_merge_request.update!(approver_ids: [approver].map(&:id).join(','))
         end
       end
 
@@ -436,7 +436,7 @@ RSpec.describe MergeRequests::RefreshService do
 
       context 'push to origin repo target branch after fork project was removed' do
         before do
-          forked_project.destroy
+          forked_project.destroy!
           service.execute(oldrev, newrev, 'refs/heads/feature')
           reload_mrs
         end
@@ -452,7 +452,7 @@ RSpec.describe MergeRequests::RefreshService do
       context 'resetting approvals if they are enabled', :sidekiq_inline do
         context 'when approvals_before_merge is disabled' do
           before do
-            project.update(approvals_before_merge: 0)
+            project.update!(approvals_before_merge: 0)
             allow(service).to receive(:execute_hooks)
             service.execute(oldrev, newrev, 'refs/heads/master')
             reload_mrs
@@ -466,7 +466,7 @@ RSpec.describe MergeRequests::RefreshService do
 
         context 'when reset_approvals_on_push is disabled' do
           before do
-            project.update(reset_approvals_on_push: false)
+            project.update!(reset_approvals_on_push: false)
             allow(service).to receive(:execute_hooks)
             service.execute(oldrev, newrev, 'refs/heads/master')
             reload_mrs
@@ -480,7 +480,7 @@ RSpec.describe MergeRequests::RefreshService do
 
         context 'when the rebase_commit_sha on the MR matches the pushed SHA' do
           before do
-            merge_request.update(rebase_commit_sha: newrev)
+            merge_request.update!(rebase_commit_sha: newrev)
             allow(service).to receive(:execute_hooks)
             service.execute(oldrev, newrev, 'refs/heads/master')
             reload_mrs

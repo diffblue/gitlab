@@ -40,7 +40,7 @@ RSpec.describe Boards::Issues::CreateService do
 
       context 'when board is scoped by weight' do
         it 'creates issue weight 0 weight' do
-          board.update(weight: 0)
+          board.update!(weight: 0)
 
           issue = service.execute
 
@@ -49,7 +49,7 @@ RSpec.describe Boards::Issues::CreateService do
         end
 
         it 'creates issue with nil weight' do
-          board.update(weight: nil)
+          board.update!(weight: nil)
 
           issue = service.execute
 
@@ -59,7 +59,7 @@ RSpec.describe Boards::Issues::CreateService do
 
         context 'when board weight is invalid' do
           it 'creates issue with nil weight' do
-            board.update(weight: -1)
+            board.update!(weight: -1)
 
             issue = service.execute
 
