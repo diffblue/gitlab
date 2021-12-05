@@ -112,7 +112,7 @@ export default {
 
       <gl-button
         category="primary"
-        variant="success"
+        variant="confirm"
         class="js-new-requirement qa-new-requirement-button"
         :disabled="showCreateForm"
         @click="$emit('click-new-requirement')"
