@@ -16,7 +16,7 @@ RSpec.describe 'Profile > Applications' do
       visit oauth_application_path(application)
 
       expect(page).to have_content("Application: #{application.name}")
-      expect(find('.breadcrumbs-sub-title')).to have_link(application.name)
+      expect(find('[data-testid="breadcrumb_current_link"]')).to have_link(application.name)
     end
 
     it 'deletes an application' do

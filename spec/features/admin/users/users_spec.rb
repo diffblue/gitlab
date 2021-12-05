@@ -548,7 +548,7 @@ RSpec.describe 'Admin::Users' do
     end
 
     def check_breadcrumb(content)
-      expect(find('.breadcrumbs-sub-title')).to have_content(content)
+      expect(find('[data-testid="breadcrumb_current_link"]')).to have_content(content)
     end
   end
 
