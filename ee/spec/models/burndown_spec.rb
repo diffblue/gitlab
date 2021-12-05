@@ -11,12 +11,7 @@ RSpec.describe Burndown do
   shared_examples 'burndown for milestone' do
     before do
       build_sample(milestone, issue_params)
-    end
-
-    around do |example|
-      Timecop.travel(due_date) do
-        example.run
-      end
+      travel_to(due_date)
     end
 
     subject { described_class.new(milestone.issues_visible_to_user(user), milestone.start_date, milestone.due_date).as_json }
@@ -69,9 +64,9 @@ RSpec.describe Burndown do
     end
 
     it "counts until today if milestone due date > Date.today" do
-      Timecop.travel(milestone.due_date - 1.day) do
-        expect(subject.max_by { |event| event[:created_at] }[:created_at].to_date).to eq(Date.today)
-      end
+      travel_to(milestone.due_date - 1.day)
+
+      expect(subject.max_by { |event| event[:created_at] }[:created_at].to_date).to eq(Date.today)
     end
 
     it "ignores follow-up events with the same action" do
@@ -201,7 +196,7 @@ RSpec.describe Burndown do
     confidential_issues = []
 
     milestone.start_date.yesterday.upto(milestone.due_date) do |date|
-      Timecop.travel(date) do
+      travel_to(date) do
         # Make sure issues are created at exactly the beginning of the day to
         # facilitate comparison in specs
         issue_params_for_date = issue_params.merge(created_at: date.beginning_of_day)
