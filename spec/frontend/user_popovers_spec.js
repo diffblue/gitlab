@@ -44,6 +44,7 @@ describe('User Popovers', () => {
     jest
       .spyOn(UsersCache, 'retrieveStatusById')
       .mockImplementation((userId) => userStatusCacheSpy(userId));
+    jest.spyOn(UsersCache, 'updateById');
 
     popovers = initUserPopovers(document.querySelectorAll(selector));
   });
@@ -114,5 +115,20 @@ describe('User Popovers', () => {
     triggerEvent('mouseleave', userLink);
 
     expect(userLink.getAttribute('aria-describedby')).toBe(null);
+  });
+
+  it('updates `user` prop and `UsersCache` when `follow` and `unfollow` events are emitted', () => {
+    const [firstPopover] = popovers;
+    const { userId } = document.querySelector(selector).dataset;
+
+    firstPopover.$emit('follow');
+
+    expect(firstPopover.$props.user.isFollowed).toBe(true);
+    expect(UsersCache.updateById).toHaveBeenCalledWith(userId, { is_followed: true });
+
+    firstPopover.$emit('unfollow');
+
+    expect(firstPopover.$props.user.isFollowed).toBe(false);
+    expect(UsersCache.updateById).toHaveBeenCalledWith(userId, { is_followed: false });
   });
 });

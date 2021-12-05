@@ -1,11 +1,18 @@
 import { GlSkeletonLoader, GlIcon } from '@gitlab/ui';
+import MockAdapter from 'axios-mock-adapter';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { AVAILABILITY_STATUS } from '~/set_status_modal/utils';
 import UserNameWithStatus from '~/sidebar/components/assignees/user_name_with_status.vue';
 import UserPopover from '~/vue_shared/components/user_popover/user_popover.vue';
+import axios from '~/lib/utils/axios_utils';
+import httpStatus from '~/lib/utils/http_status';
+import createFlash from '~/flash';
+
+jest.mock('~/flash');
 
 const DEFAULT_PROPS = {
   user: {
+    id: 1,
     username: 'root',
     name: 'Administrator',
     location: 'Vienna',
@@ -15,6 +22,7 @@ const DEFAULT_PROPS = {
     workInformation: null,
     status: null,
     pronouns: 'they/them',
+    isFollowed: false,
     loaded: true,
   },
 };
@@ -23,12 +31,19 @@ describe('User Popover Component', () => {
   const fixtureTemplate = 'merge_requests/diff_comment.html';
 
   let wrapper;
+  let mock;
+  let apiVersion;
 
   beforeEach(() => {
+    apiVersion = gon.api_version;
+    gon.api_version = 'v4';
+    mock = new MockAdapter(axios);
     loadFixtures(fixtureTemplate);
   });
 
   afterEach(() => {
+    gon.api_version = apiVersion;
+    mock.restore();
     wrapper.destroy();
   });
 
@@ -37,6 +52,7 @@ describe('User Popover Component', () => {
   const findUserName = () => wrapper.find(UserNameWithStatus);
   const findSecurityBotDocsLink = () => wrapper.findByTestId('user-popover-bot-docs-link');
   const findUserLocalTime = () => wrapper.findByTestId('user-popover-local-time');
+  const findToggleFollowButton = () => wrapper.findByTestId('toggle-follow-button');
 
   const createWrapper = (props = {}, options = {}) => {
     wrapper = mountExtended(UserPopover, {
@@ -287,6 +303,128 @@ describe('User Popover Component', () => {
       createWrapper({ user: SECURITY_BOT_USER });
 
       expect(findUserLocalTime().exists()).toBe(false);
+    });
+  });
+
+  describe('follow actions', () => {
+    describe("when current user doesn't follow the user", () => {
+      beforeEach(() => createWrapper());
+
+      it('renders the Follow button with the correct variant', () => {
+        expect(findToggleFollowButton().text()).toBe('Follow');
+        expect(findToggleFollowButton().props('variant')).toBe('confirm');
+      });
+
+      describe('when clicking', () => {
+        it('follows the user', async () => {
+          mock.onPost('/api/v4/users/1/follow').reply(httpStatus.OK);
+
+          await findToggleFollowButton().trigger('click');
+
+          expect(findToggleFollowButton().props('loading')).toBe(true);
+
+          await axios.waitForAll();
+
+          expect(wrapper.emitted().follow.length).toBe(1);
+          expect(wrapper.emitted().unfollow).toBeFalsy();
+        });
+
+        describe('when an error occurs', () => {
+          beforeEach(() => {
+            mock.onPost('/api/v4/users/1/follow').replyOnce(httpStatus.INTERNAL_SERVER_ERROR);
+
+            findToggleFollowButton().trigger('click');
+          });
+
+          it('shows an error message', async () => {
+            await axios.waitForAll();
+
+            expect(createFlash).toHaveBeenCalledWith({
+              message: 'An error occurred while trying to follow this user, please try again.',
+              error: new Error('Request failed with status code 500'),
+              captureError: true,
+            });
+          });
+
+          it('emits no events', async () => {
+            await axios.waitForAll();
+
+            expect(wrapper.emitted().follow).toBe(undefined);
+            expect(wrapper.emitted().unfollow).toBe(undefined);
+          });
+        });
+      });
+    });
+
+    describe('when current user follows the user', () => {
+      beforeEach(() => createWrapper({ user: { ...DEFAULT_PROPS.user, isFollowed: true } }));
+
+      it('renders the Unfollow button with the correct variant', () => {
+        expect(findToggleFollowButton().text()).toBe('Unfollow');
+        expect(findToggleFollowButton().props('variant')).toBe('default');
+      });
+
+      describe('when clicking', () => {
+        it('unfollows the user', async () => {
+          mock.onPost('/api/v4/users/1/unfollow').reply(httpStatus.OK);
+
+          findToggleFollowButton().trigger('click');
+
+          await axios.waitForAll();
+
+          expect(wrapper.emitted().follow).toBe(undefined);
+          expect(wrapper.emitted().unfollow.length).toBe(1);
+        });
+
+        describe('when an error occurs', () => {
+          beforeEach(async () => {
+            mock.onPost('/api/v4/users/1/unfollow').replyOnce(httpStatus.INTERNAL_SERVER_ERROR);
+
+            findToggleFollowButton().trigger('click');
+
+            await axios.waitForAll();
+          });
+
+          it('shows an error message', () => {
+            expect(createFlash).toHaveBeenCalledWith({
+              message: 'An error occurred while trying to unfollow this user, please try again.',
+              error: new Error('Request failed with status code 500'),
+              captureError: true,
+            });
+          });
+
+          it('emits no events', () => {
+            expect(wrapper.emitted().follow).toBe(undefined);
+            expect(wrapper.emitted().unfollow).toBe(undefined);
+          });
+        });
+      });
+    });
+
+    describe('when the current user is the user', () => {
+      beforeEach(() => {
+        gon.current_username = DEFAULT_PROPS.user.username;
+        createWrapper();
+      });
+
+      it("doesn't render the toggle follow button", () => {
+        expect(findToggleFollowButton().exists()).toBe(false);
+      });
+    });
+
+    describe('when API does not support `isFollowed`', () => {
+      beforeEach(() => {
+        const user = {
+          ...DEFAULT_PROPS.user,
+          isFollowed: undefined,
+        };
+
+        createWrapper({ user });
+      });
+
+      it('does not render the toggle follow button', () => {
+        expect(findToggleFollowButton().exists()).toBe(false);
+      });
     });
   });
 });
