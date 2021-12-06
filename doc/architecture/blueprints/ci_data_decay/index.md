@@ -30,7 +30,7 @@ a separate database.
 
 There are more than two billion rows describing CI/CD builds in GitLab.com's
 database. This data represents a sizeable portion of the whole data stored in
-PostgreSQL database running on GitLab.com
+PostgreSQL database running on GitLab.com.
 
 This volume contributes to significant performance problems, development
 challenges and is often related to production incidents.
@@ -46,7 +46,7 @@ CI/CD data is subject to
 because, usually, pipelines that are a few months old are not frequently
 accessed or are even not relevant anymore. Restricting access to processing
 pipelines that are longer than a few months might help us to move this data to
-a different storage, that is more performance and cost effective.
+a different storage, that is more performant and cost effective.
 
 It is already possible to prevent processing builds [that have been
 archived](/ee/user/admin_area/settings/continuous_integration.html#archive-jobs).
