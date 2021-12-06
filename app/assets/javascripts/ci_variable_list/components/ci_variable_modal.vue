@@ -209,21 +209,26 @@ export default {
       }
     },
     trackVariableValidationErrors() {
-      if (this.variable.secret_value?.length && !this.validationErrorEventProperty) {
+      const property = this.getTrackingErrorProperty();
+      if (!this.validationErrorEventProperty && property) {
+        this.track(EVENT_ACTION, { property });
+        this.validationErrorEventProperty = property;
+      }
+    },
+    getTrackingErrorProperty() {
+      let property;
+      if (this.variable.secret_value?.length && !property) {
         if (this.displayMaskedError && this.maskableRegex?.length) {
           const supportedChars = this.maskableRegex.replace('^', '').replace(/{(\d,)}\$/, '');
           const regex = new RegExp(supportedChars, 'g');
-
-          const error = this.variable.secret_value.replace(regex, '');
-
-          this.track(EVENT_ACTION, { property: error });
-          this.validationErrorEventProperty = error;
+          property = this.variable.secret_value.replace(regex, '');
         }
         if (this.containsVariableReference) {
-          this.track(EVENT_ACTION, { property: '$' });
-          this.validationErrorEventProperty = '$';
+          property = '$';
         }
       }
+
+      return property;
     },
     resetValidationErrorEvents() {
       this.validationErrorEventProperty = '';

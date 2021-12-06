@@ -128,10 +128,10 @@ describe('Ci variable modal', () => {
   });
 
   describe.each`
-    value           | secret            | rendered | event_sent
-    ${'value'}      | ${'secret_value'} | ${false} | ${0}
-    ${'dollar$ign'} | ${'dollar$ign'}   | ${true}  | ${1}
-  `('Adding a new variable', ({ value, secret, rendered, event_sent }) => {
+    value           | secret            | rendered
+    ${'value'}      | ${'secret_value'} | ${false}
+    ${'dollar$ign'} | ${'dollar$ign'}   | ${true}
+  `('Adding a new variable', ({ value, secret, rendered }) => {
     beforeEach(() => {
       const [variable] = mockData.mockVariables;
       const invalidKeyVariable = {
@@ -148,10 +148,6 @@ describe('Ci variable modal', () => {
     it(`${rendered ? 'renders' : 'does not render'} the variable reference warning`, () => {
       const warning = wrapper.find(`[data-testid='contains-variable-reference']`);
       expect(warning.exists()).toBe(rendered);
-    });
-
-    it(`${rendered ? 'sends' : 'does not send'} the variable reference tracking event`, () => {
-      expect(trackingSpy).toHaveBeenCalledTimes(event_sent);
     });
   });
 
@@ -251,6 +247,43 @@ describe('Ci variable modal', () => {
           label: EVENT_LABEL,
           property: ';',
         });
+      });
+    });
+
+    describe.each`
+      value                  | secret                | masked   | eventSent | trackingErrorProperty
+      ${'value'}             | ${'secretValue'}      | ${false} | ${0}      | ${null}
+      ${'shortMasked'}       | ${'short'}            | ${true}  | ${0}      | ${null}
+      ${'withDollar$Sign'}   | ${'dollar$ign'}       | ${false} | ${1}      | ${'$'}
+      ${'withDollar$Sign'}   | ${'dollar$ign'}       | ${true}  | ${1}      | ${'$'}
+      ${'unsupported'}       | ${'unsupported|char'} | ${true}  | ${1}      | ${'|'}
+      ${'unsupportedMasked'} | ${'unsupported|char'} | ${false} | ${0}      | ${null}
+    `('Adding a new variable', ({ value, secret, masked, eventSent, trackingErrorProperty }) => {
+      beforeEach(() => {
+        const [variable] = mockData.mockVariables;
+        const invalidKeyVariable = {
+          ...variable,
+          key: 'key',
+          value,
+          secret_value: secret,
+          masked,
+        };
+        createComponent(mount);
+        store.state.variable = invalidKeyVariable;
+        trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+      });
+
+      it(`${
+        eventSent > 0 ? 'sends the correct' : 'does not send the'
+      } variable validation tracking event`, () => {
+        expect(trackingSpy).toHaveBeenCalledTimes(eventSent);
+
+        if (eventSent > 0) {
+          expect(trackingSpy).toHaveBeenCalledWith(undefined, EVENT_ACTION, {
+            label: EVENT_LABEL,
+            property: trackingErrorProperty,
+          });
+        }
       });
     });
 
