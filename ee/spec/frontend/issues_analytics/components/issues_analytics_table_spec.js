@@ -22,7 +22,7 @@ describe('IssuesAnalyticsTable', () => {
     });
   };
 
-  const findTable = () => wrapper.find(GlTableLite);
+  const findTable = () => wrapper.findComponent(GlTableLite);
 
   const findIssueDetailsCol = (rowIndex) =>
     findTable().findAll('[data-testid="detailsCol"]').at(rowIndex);
