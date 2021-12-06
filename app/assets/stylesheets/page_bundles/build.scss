@@ -227,6 +227,12 @@
   }
 }
 
+.retry-trigger-job-btn {
+  ul {
+    left: -110px !important;
+  }
+}
+
 @include media-breakpoint-down(md) {
   .content-list {
     &.builds-content-list {

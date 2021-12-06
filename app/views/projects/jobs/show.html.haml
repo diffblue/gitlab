@@ -10,4 +10,4 @@
 - if @build.is_a? ::Ci::Build
   #js-job-vue-app{ data: jobs_data }
 - else
-  .empty-row
+  #js-bridge-vue-app{ data: bridge_data(@build) }

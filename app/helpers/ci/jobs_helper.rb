@@ -19,6 +19,15 @@ module Ci
       }
     end
 
+    def bridge_data(build)
+      {
+        "build_name" =>  build.name,
+
+        # TODO: replace with official design
+        "empty-state-illustration-path" => image_path('illustrations/empty-state/empty-dag-md.svg')
+      }
+    end
+
     def job_counts
       {
         "all" => limited_counter_with_delimiter(@all_builds),
