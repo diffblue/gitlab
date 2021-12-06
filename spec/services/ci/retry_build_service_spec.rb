@@ -144,7 +144,7 @@ RSpec.describe Ci::RetryBuildService do
           stub_feature_flags(clone_job_variables_at_job_retry: false)
         end
 
-        it 'does not clones internal job variables' do
+        it 'does not clone internal job variables' do
           expect(new_build.job_variables.count).to eq(0)
         end
       end
