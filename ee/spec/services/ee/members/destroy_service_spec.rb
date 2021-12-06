@@ -133,6 +133,46 @@ RSpec.describe Members::DestroyService do
         end
       end
     end
+
+    context 'user escalation rules' do
+      let(:project) { create(:project, group: group) }
+      let(:project_2) { create(:project, group: group) }
+      let(:project_1_policy) { create(:incident_management_escalation_policy, project: project) }
+      let(:project_2_policy) { create(:incident_management_escalation_policy, project: project_2) }
+      let!(:project_1_rule) { create(:incident_management_escalation_rule, :with_user, user: member_user, policy: project_1_policy) }
+      let!(:project_2_rule) { create(:incident_management_escalation_rule, :with_user, user: member_user, policy: project_2_policy) }
+
+      shared_examples_for 'calls the destroy service' do |scope, *rules|
+        let(:rules_to_delete) { rules.map { |rule_name| send(rule_name) } }
+        let(:rules_to_preserve) { IncidentManagement::EscalationRule.all - rules_to_delete }
+
+        it "calls the destroy service #{scope}" do
+          expect(IncidentManagement::EscalationRules::DestroyService)
+            .to receive(:new)
+            .with({ escalation_rules: rules_to_delete, user: member_user })
+            .and_call_original
+
+          subject.execute(member)
+
+          rules_to_delete.each { |rule| expect { rule.reload }.to raise_error(ActiveRecord::RecordNotFound) }
+          rules_to_preserve.each { |rule| expect { rule.reload }.not_to raise_error }
+        end
+      end
+
+      context 'group member is removed' do
+        let(:other_user) { create(:user, developer_projects: [group]) }
+        let!(:other_user_rule) { create(:incident_management_escalation_rule, :with_user, user: other_user, policy: project_1_policy) }
+        let!(:other_namespace_rule) { create(:incident_management_escalation_rule, :with_user, user: member_user) }
+
+        include_examples 'calls the destroy service', 'with rules each project in the group', :project_1_rule, :project_2_rule
+      end
+
+      context 'project member is removed' do
+        let!(:member) { create(:project_member, source: project, user: member_user) }
+
+        include_examples 'calls the destroy service', 'with rules for the project', :project_1_rule
+      end
+    end
   end
 
   context 'when current user is not present' do # ie, when the system initiates the destroy

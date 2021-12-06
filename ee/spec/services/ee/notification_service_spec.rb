@@ -895,7 +895,7 @@ RSpec.describe EE::NotificationService, :mailer do
     end
   end
 
-  context 'IncidentManagement::Oncall' do
+  context 'IncidentManagement' do
     let_it_be(:user) { create(:user) }
 
     describe '#notify_oncall_users_of_alert' do
@@ -937,6 +937,52 @@ RSpec.describe EE::NotificationService, :mailer do
 
       it 'sends the email inline when async = false' do
         expect { subject.oncall_user_removed(rotation, user, false) }.to change(ActionMailer::Base.deliveries, :size).by(2)
+      end
+    end
+
+    describe '#user_escalation_rule_deleted' do
+      let(:project) { create(:project) }
+      let(:user) { create(:user) }
+      let(:rules) { [rule_1, rule_2] }
+      let!(:rule_1) { create(:incident_management_escalation_rule, :with_user, project: project, user: user) }
+      let!(:rule_2) { create(:incident_management_escalation_rule, :with_user, :resolved, project: project, user: user) }
+
+      it 'immediately sends an email to the project owner' do
+        expect(Notify).to receive(:user_escalation_rule_deleted_email).with(user, project, rules, project.owner).once.and_call_original
+        expect(Notify).not_to receive(:user_escalation_rule_deleted_email).with(user, project, rules, user)
+
+        expect { subject.user_escalation_rule_deleted(project, user, rules) }.to change(ActionMailer::Base.deliveries, :size).by(1)
+      end
+
+      context 'when project owner is the removed user' do
+        let(:user) { project.owner }
+
+        it 'does not send an email' do
+          expect(Notify).not_to receive(:user_escalation_rule_deleted_email)
+
+          subject.user_escalation_rule_deleted(project, user, rules)
+        end
+      end
+
+      context 'with a group' do
+        let(:group) { create(:group) }
+        let(:project) { create(:project, group: group) }
+        let(:owner) { create(:user) }
+        let(:blocked_owner) { create(:user, :blocked) }
+
+        before do
+          group.add_owner(owner)
+          group.add_owner(blocked_owner)
+          group.add_owner(user)
+        end
+
+        it 'immediately sends an email to the eligable project owners' do
+          expect(Notify).to receive(:user_escalation_rule_deleted_email).with(user, project, rules, owner).once.and_call_original
+          expect(Notify).not_to receive(:user_escalation_rule_deleted_email).with(user, project, rules, blocked_owner)
+          expect(Notify).not_to receive(:user_escalation_rule_deleted_email).with(user, project, rules, user)
+
+          expect { subject.user_escalation_rule_deleted(project, user, rules) }.to change(ActionMailer::Base.deliveries, :size).by(1)
+        end
       end
     end
   end

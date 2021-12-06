@@ -30,6 +30,17 @@ module EE
         mail(to: user.notification_email_for(@project.group),
              subject: subject('Mirror user changed'))
       end
+
+      def user_escalation_rule_deleted_email(user, project, rules, recipient)
+        @user = user
+        @project = project
+        @rules = rules
+
+        mail(to: recipient.notification_email_for(@project.group), subject: subject('User removed from escalation policy')) do |format|
+          format.html { render layout: 'mailer' }
+          format.text { render layout: 'mailer' }
+        end
+      end
     end
   end
 end

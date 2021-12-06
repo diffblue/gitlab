@@ -838,6 +838,9 @@ msgstr ""
 msgid "%{placeholder} is not a valid theme"
 msgstr ""
 
+msgid "%{policy_link} (notifying after %{elapsed_time} minutes unless %{status})"
+msgstr ""
+
 msgid "%{primary} (%{secondary})"
 msgstr ""
 
@@ -1035,6 +1038,12 @@ msgstr ""
 msgid "%{user_name} (%{user_username}) was removed from %{rotation} in %{schedule} in %{project}. "
 msgstr ""
 
+msgid "%{user_name} (%{user_username}) was removed from the following escalation policies in %{project_link}: "
+msgstr ""
+
+msgid "%{user_name} (%{user_username}) was removed from the following escalation policies in %{project}:"
+msgstr ""
+
 msgid "%{user_name} profile page"
 msgstr ""
 
@@ -1213,6 +1222,9 @@ msgid "+%{tags} more"
 msgstr ""
 
 msgid ", or "
+msgstr ""
+
+msgid "- %{policy_name} (notifying after %{elapsed_time} minutes unless %{status})"
 msgstr ""
 
 msgid "- Available to run jobs."
@@ -26187,6 +26199,12 @@ msgid "Please reach out if you have any questions and we'll be happy to assist."
 msgstr ""
 
 msgid "Please refer to %{docs_url}"
+msgstr ""
+
+msgid "Please review the updated escalation policies for %{project_link}. It is recommended that you reach out to the current on-call responder to ensure continuity of on-call coverage."
+msgstr ""
+
+msgid "Please review the updated escalation policies for %{project}. It is recommended that you reach out to the current on-call responder to ensure continuity of on-call coverage."
 msgstr ""
 
 msgid "Please select"
