@@ -16,4 +16,15 @@ export const pendingChecks = [
   },
 ];
 
-export const mixedChecks = [...approvedChecks, ...pendingChecks];
+export const failedChecks = [
+  {
+    id: 2,
+    name: 'Oh no',
+    external_url: 'http://noway',
+    status: 'failed',
+  },
+];
+
+export const pendingAndFailedChecks = [...pendingChecks, ...failedChecks];
+
+export const approvedAndPendingChecks = [...approvedChecks, ...pendingChecks];

@@ -11,6 +11,7 @@ import MrWidgetPolicyViolation from './components/states/mr_widget_policy_violat
 import MrWidgetGeoSecondaryNode from './components/states/mr_widget_secondary_geo_node.vue';
 import loadPerformanceExtension from './extensions/load_performance';
 import browserPerformanceExtension from './extensions/browser_performance';
+import statusChecksExtension from './extensions/status_checks';
 
 export default {
   components: {
@@ -108,7 +109,7 @@ export default {
       );
     },
     shouldRenderStatusReport() {
-      return this.mr.apiStatusChecksPath && !this.mr.isNothingToMergeState;
+      return this.mr?.apiStatusChecksPath && !this.mr?.isNothingToMergeState;
     },
 
     browserPerformanceText() {
@@ -192,6 +193,11 @@ export default {
         this.fetchLoadPerformance();
       }
     },
+    shouldRenderStatusReport(newVal) {
+      if (newVal) {
+        this.registerStatusCheck();
+      }
+    },
   },
   methods: {
     registerLoadPerformance() {
@@ -202,6 +208,11 @@ export default {
     registerBrowserPerformance() {
       if (this.shouldShowExtension) {
         registerExtension(browserPerformanceExtension);
+      }
+    },
+    registerStatusCheck() {
+      if (this.shouldShowExtension) {
+        registerExtension(statusChecksExtension);
       }
     },
     getServiceEndpoints(store) {
