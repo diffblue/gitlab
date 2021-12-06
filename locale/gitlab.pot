@@ -42224,9 +42224,6 @@ msgstr ""
 msgid "smartcn custom analyzer"
 msgstr ""
 
-msgid "sort:"
-msgstr ""
-
 msgid "source"
 msgstr ""
 
