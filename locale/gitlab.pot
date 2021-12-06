@@ -1212,6 +1212,9 @@ msgstr ""
 msgid "+%{tags} more"
 msgstr ""
 
+msgid ", and "
+msgstr ""
+
 msgid ", or "
 msgstr ""
 
@@ -33278,6 +33281,9 @@ msgstr ""
 msgid "Status: %{title}"
 msgstr ""
 
+msgid "StatusCheck|%{failed} failed"
+msgstr ""
+
 msgid "StatusCheck|%{pending} pending"
 msgstr ""
 
@@ -33308,6 +33314,9 @@ msgstr ""
 msgid "StatusCheck|External API is already in use by another status check."
 msgstr ""
 
+msgid "StatusCheck|Failed to load status checks"
+msgstr ""
+
 msgid "StatusCheck|Failed to load status checks."
 msgstr ""
 
@@ -33329,6 +33338,12 @@ msgstr ""
 msgid "StatusCheck|Status checks"
 msgstr ""
 
+msgid "StatusCheck|Status checks all passed"
+msgstr ""
+
+msgid "StatusCheck|Status checks are being fetched"
+msgstr ""
+
 msgid "StatusCheck|Status to check"
 msgstr ""
 
@@ -33342,6 +33357,9 @@ msgid "StatusCheck|When this merge request is updated, a call is sent to the fol
 msgstr ""
 
 msgid "StatusCheck|You are about to remove the %{name} status check."
+msgstr ""
+
+msgid "StatusCheck|status checks"
 msgstr ""
 
 msgid "StatusPage|AWS %{docsLink}"
