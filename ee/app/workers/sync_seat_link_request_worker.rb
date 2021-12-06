@@ -29,7 +29,7 @@ class SyncSeatLinkRequestWorker
       reset_license!(response['license']) if response['license']
 
       save_future_subscriptions(response)
-      save_reconciliation_dates!(response)
+      update_reconciliation!(response)
     else
       raise RequestError, request_error_message(response)
     end
@@ -64,18 +64,22 @@ class SyncSeatLinkRequestWorker
     "Seat Link request failed! Code:#{response.code} Body:#{response.body}"
   end
 
-  def save_reconciliation_dates!(response)
-    return if response['next_reconciliation_date'].blank? || response['display_alert_from'].blank?
+  def update_reconciliation!(response)
+    reconciliation = GitlabSubscriptions::UpcomingReconciliation.next
 
-    attributes = {
-      next_reconciliation_date: Date.parse(response['next_reconciliation_date']),
-      display_alert_from: Date.parse(response['display_alert_from'])
-    }
-
-    if (reconciliation = GitlabSubscriptions::UpcomingReconciliation.next)
-      reconciliation.update!(attributes)
+    if response['next_reconciliation_date'].blank? || response['display_alert_from'].blank?
+      reconciliation&.destroy!
     else
-      GitlabSubscriptions::UpcomingReconciliation.create!(attributes)
+      attributes = {
+        next_reconciliation_date: Date.parse(response['next_reconciliation_date']),
+        display_alert_from: Date.parse(response['display_alert_from'])
+      }
+
+      if reconciliation
+        reconciliation.update!(attributes)
+      else
+        GitlabSubscriptions::UpcomingReconciliation.create!(attributes)
+      end
     end
   end
 

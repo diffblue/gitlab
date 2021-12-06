@@ -107,7 +107,7 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker do
               current_license = License.current
               expect(Gitlab::ErrorTracking).to receive(:track_and_raise_for_dev_exception).and_call_original
 
-              expect { sync_seat_link }.to raise_error
+              expect { sync_seat_link }.to raise_error ActiveRecord::RecordInvalid
 
               expect(License).to exist(current_license.id)
             end
@@ -146,11 +146,11 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker do
 
       context 'when an upcoming_reconciliation already exists' do
         it 'updates the upcoming_reconciliation' do
-          create(:upcoming_reconciliation, :self_managed, next_reconciliation_date: today + 2.days, display_alert_from: today + 1.day)
+          upcoming_reconciliation = create(:upcoming_reconciliation, :self_managed, next_reconciliation_date: today + 2.days, display_alert_from: today + 1.day)
 
           sync_seat_link
 
-          upcoming_reconciliation = GitlabSubscriptions::UpcomingReconciliation.next
+          upcoming_reconciliation.reload
 
           expect(upcoming_reconciliation.next_reconciliation_date).to eq(today)
           expect(upcoming_reconciliation.display_alert_from).to eq(today - 7.days)
@@ -194,6 +194,36 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker do
           expect(Gitlab::ErrorTracking).to receive(:track_and_raise_for_dev_exception)
           expect { sync_seat_link }.not_to raise_error
         end
+      end
+    end
+
+    context 'when the response does not contain reconciliation dates' do
+      let(:body) do
+        {
+          success: true,
+          next_reconciliation_date: nil,
+          display_alert_from: nil
+        }.to_json
+      end
+
+      before do
+        stub_request(:post, seat_link_url).to_return(
+          status: 200,
+          body: body,
+          headers: { content_type: 'application/json' }
+        )
+      end
+
+      it 'destroys the existing upcoming reconciliation record for the instance' do
+        create(:upcoming_reconciliation, :self_managed)
+
+        expect { sync_seat_link }
+          .to change(GitlabSubscriptions::UpcomingReconciliation, :count)
+          .by(-1)
+      end
+
+      it 'does not change anything when there is no existing record' do
+        expect { sync_seat_link }.not_to change(GitlabSubscriptions::UpcomingReconciliation, :count)
       end
     end
 
