@@ -374,6 +374,17 @@ RSpec.describe ApplicationSetting do
 
       expect(setting.elasticsearch_url_with_credentials).to eq(%w[http://username:password@example.com https://test:test@example2.com:9200])
     end
+
+    it 'encodes the credentials' do
+      setting.elasticsearch_url = 'http://username:password@example.com,https://test:test@example2.com:9200'
+      setting.elasticsearch_username = 'foo/admin'
+      setting.elasticsearch_password = 'b@r'
+
+      expect(setting.elasticsearch_url_with_credentials).to eq(%w[
+        http://foo%2Fadmin:b%40r@example.com
+        https://foo%2Fadmin:b%40r@example2.com:9200
+      ])
+    end
   end
 
   describe '#elasticsearch_password' do
