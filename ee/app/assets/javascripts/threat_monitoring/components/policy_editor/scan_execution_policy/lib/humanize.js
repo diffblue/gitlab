@@ -47,6 +47,12 @@ const humanizePipelineRule = (rule) => {
 };
 
 const humanizeScheduleRule = (rule) => {
+  if (rule.clusters) {
+    return sprintf(s__('SecurityOrchestration|Scan to be performed %{cadence}'), {
+      cadence: humanizeCadence(rule.cadence),
+    });
+  }
+
   return sprintf(s__('SecurityOrchestration|Scan to be performed %{cadence} on the %{branches}'), {
     cadence: humanizeCadence(rule.cadence),
     branches: humanizeBranches(rule.branches),
@@ -74,7 +80,7 @@ export const humanizeActions = (actions) => {
  */
 export const humanizeRules = (rules) => {
   const humanizedRules = rules.reduce((acc, curr) => {
-    return curr.branches ? [...acc, HUMANIZE_RULES_METHODS[curr.type](curr)] : acc;
+    return curr.branches || curr.clusters ? [...acc, HUMANIZE_RULES_METHODS[curr.type](curr)] : acc;
   }, []);
 
   return humanizedRules.length ? humanizedRules : [NO_RULE_MESSAGE];
