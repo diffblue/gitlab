@@ -15,7 +15,7 @@ the CI/CD subsystem has evolved significantly. It was [integrated into GitLab in
 and has become [one of the most beloved CI/CD solutions](https://about.gitlab.com/blog/2017/09/27/gitlab-leader-continuous-integration-forrester-wave/).
 
 On February 1st, 2021, GitLab.com surpassed 1 billion CI/CD builds, and the number of
-builds [continues to grow exponentially](https://docs.gitlab.com/ee/architecture/blueprints/ci_scale/).
+builds [continues to grow exponentially](../ci_scale/index.md).
 
 GitLab CI/CD has come a long way since the initial release, but the design of
 the data storage for pipeline builds remains almost the same since 2012. In
@@ -29,15 +29,14 @@ a separate database.
 ## Challenges
 
 There are more than two billion rows describing CI/CD builds in GitLab.com's
-database. This data represents a sizeable portion of the whole data stored in
+database. This data represents a sizable portion of the whole data stored in
 PostgreSQL database running on GitLab.com.
 
 This volume contributes to significant performance problems, development
 challenges and is often related to production incidents.
 
 We also expect a [significant growth in the number of builds executed on
-GitLab.com](https://docs.gitlab.com/ee/architecture/blueprints/ci_scale/) in
-the upcoming years.
+GitLab.com](../ci_scale/index.md) in the upcoming years.
 
 ## Opportunity
 
@@ -49,14 +48,14 @@ pipelines that are longer than a few months might help us to move this data to
 a different storage, that is more performant and cost effective.
 
 It is already possible to prevent processing builds [that have been
-archived](/ee/user/admin_area/settings/continuous_integration.html#archive-jobs).
+archived](/user/admin_area/settings/continuous_integration.html#archive-jobs).
 When a build gets archived it will not be possible to retry it, but we do not
 move data from the database.
 
 In order to improve performance and make it easier to scale CI/CD data storage
 we might want to follow these three tracks described below.
 
-### Move rarely accessed data
+### Migrate build metadata of archived pipelines
 
 Once a build (or a pipeline) gets archived, it is no longer possible to resume
 pipeline processing in such pipeline. It means that all the metadata, we store
@@ -69,9 +68,9 @@ restrict access to processing archived pipelines, we can move this metadata to
 a different place - preferably object storage - and make it accessible on
 demand, when it is really needed again (for example for compliance or auditing purposes).
 
-Epic: [Link]
+Epic: [Migrate build metadata of archived pipelines](https://gitlab.com/groups/gitlab-org/-/epics/7216).
 
-### Partition rarely accessed data
+### Partition archived CI/CD data
 
 After we move CI/CD metadata to a different store, the problem of having
 billions of rows describing pipelines, build and artifacts, remains. We still
@@ -89,12 +88,12 @@ frequency).
 Partitioning rarely accessed data should also follow the policy defined for
 builds archival, to make it consistent and reliable.
 
-Epic: [Link]
+Epic: [Partition archived CI/CD data](https://gitlab.com/groups/gitlab-org/-/epics/5417).
 
-### Partition frequently used queuing tables
+### Partition builds queuing tables
 
-While working on the [CI/CD Scale](https://docs.gitlab.com/ee/architecture/blueprints/ci_scale/)
-architecture, we have introduced a [new architecture for queuing CI/CD builds](https://gitlab.com/groups/gitlab-org/-/epics/5909#note_680407908)
+While working on the [CI/CD Scale](../ci_scale/index.md) blueprint, we have
+introduced a [new architecture for queuing CI/CD builds](https://gitlab.com/groups/gitlab-org/-/epics/5909#note_680407908)
 for execution.
 
 This allowed us to significant improve performance, but we still do consider
@@ -156,9 +155,9 @@ merge request.
 
 All three tacks can be worked on in parallel:
 
-1. [Move archived CI/CD data to object storage](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/68228)
-2. [Partition CI/CD tables using CI/CD data retention policy](LINK)
-3. [Partition CI/CD queuing tables using list partitioning](https://gitlab.com/gitlab-org/gitlab/-/issues/347027)
+1. [Migrate archived build metadata to object storage](https://gitlab.com/groups/gitlab-org/-/epics/7216).
+1. [Partition CI/CD data that have been archived](https://gitlab.com/groups/gitlab-org/-/epics/5417).
+1. [Partition CI/CD queuing tables using list partitioning](https://gitlab.com/gitlab-org/gitlab/-/issues/347027)
 
 ## Status
 
@@ -189,7 +188,8 @@ Domain experts:
 
 | Area                         | Who
 |------------------------------|------------------------|
-| Continuous Integration       | Marius Bobin           |
+| Verify / Pipeline processing | Fabio Pitino           |
+| Verify / Pipeline processing | Marius Bobin           |
 | PostgreSQL Database          | Andreas Brandl         |
 
 <!-- vale gitlab.Spelling = YES -->
