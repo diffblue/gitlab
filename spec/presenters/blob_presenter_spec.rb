@@ -161,7 +161,7 @@ RSpec.describe BlobPresenter do
       let(:git_blob) { blob.__getobj__ }
 
       before do
-        allow(CustomDiffHelper).to receive(:transformed_for_diff?).and_return(true)
+        allow(Gitlab::Diff::CustomDiff).to receive(:transformed_for_diff?).and_return(true)
       end
 
       it 'uses md as the transformed language' do

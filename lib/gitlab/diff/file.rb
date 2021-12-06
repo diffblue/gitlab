@@ -44,7 +44,7 @@ module Gitlab
         new_blob_lazy
         old_blob_lazy
 
-        diff.diff = CustomDiffHelper.preprocess_before_diff(diff.new_path, old_blob_lazy, new_blob_lazy) || diff.diff if use_custom_diff?
+        diff.diff = Gitlab::Diff::CustomDiff.preprocess_before_diff(diff.new_path, old_blob_lazy, new_blob_lazy) || diff.diff if use_custom_diff?
       end
 
       def use_custom_diff?
