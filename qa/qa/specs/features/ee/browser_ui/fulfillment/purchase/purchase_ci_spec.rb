@@ -38,12 +38,85 @@ module QA
         group.visit!
       end
 
-      after do |example|
+      after do
         user.remove_via_api!
-        group.remove_via_api! unless example.exception
       end
 
-      it 'adds additional minutes to group namespace', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2260' do
+      context 'without active subscription' do
+        after do
+          group.remove_via_api!
+        end
+
+        it 'adds additional minutes to group namespace', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2260' do
+          purchase_ci_minutes
+
+          Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
+            expected_minutes = CI_MINUTES[:ci_minutes] * purchase_quantity
+
+            expect { usage_quota.ci_purchase_successful_alert? }.to eventually_be_truthy.within(max_duration: 60, max_attempts: 30)
+            expect { usage_quota.additional_minutes? }.to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
+            expect(usage_quota.additional_limits).to eq(expected_minutes.to_s)
+          end
+        end
+      end
+
+      context 'with an active subscription' do
+        before do
+          Page::Group::Menu.perform(&:go_to_billing)
+          Gitlab::Page::Group::Settings::Billing.perform(&:upgrade_to_ultimate)
+
+          Gitlab::Page::Subscriptions::New.perform do |new_subscription|
+            new_subscription.continue_to_billing
+
+            fill_in_customer_info
+            fill_in_payment_info
+
+            new_subscription.confirm_purchase
+          end
+        end
+
+        it 'adds additional minutes to group namespace', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2430' do
+          purchase_ci_minutes
+
+          Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
+            expected_minutes = CI_MINUTES[:ci_minutes] * purchase_quantity
+            plan_limits = ULTIMATE[:ci_minutes]
+
+            expect { usage_quota.ci_purchase_successful_alert? }.to eventually_be_truthy.within(max_duration: 60, max_attempts: 30)
+            expect { usage_quota.additional_minutes? }.to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
+            aggregate_failures do
+              expect(usage_quota.additional_limits).to eq(expected_minutes.to_s)
+              expect(usage_quota.plan_minutes_limits).to eq(plan_limits.to_s)
+            end
+          end
+        end
+      end
+
+      context 'with existing CI minutes packs' do
+        before do
+          purchase_ci_minutes
+        end
+
+        after do
+          group.remove_via_api!
+        end
+
+        it 'adds additional minutes to group namespace', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2431' do
+          purchase_ci_minutes
+
+          Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
+            expected_minutes = CI_MINUTES[:ci_minutes] * purchase_quantity * 2
+
+            expect { usage_quota.ci_purchase_successful_alert? }.to eventually_be_truthy.within(max_duration: 60, max_attempts: 30)
+            expect { usage_quota.additional_minutes? }.to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
+            expect(usage_quota.additional_limits).to eq(expected_minutes.to_s)
+          end
+        end
+      end
+
+      private
+
+      def purchase_ci_minutes
         Page::Group::Menu.perform(&:go_to_usage_quotas)
         Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
           usage_quota.pipeline_tab
@@ -54,34 +127,35 @@ module QA
           ci_minutes.quantity = purchase_quantity
           ci_minutes.continue_to_billing
 
-          ci_minutes.country = user_billing_info[:country]
-          ci_minutes.street_address_1 = user_billing_info[:address_1]
-          ci_minutes.street_address_2 = user_billing_info[:address_2]
-          ci_minutes.city = user_billing_info[:city]
-          ci_minutes.state = user_billing_info[:state]
-          ci_minutes.zip_code = user_billing_info[:zip]
-          ci_minutes.continue_to_payment
-
-          ci_minutes.name_on_card = credit_card_info[:name]
-          ci_minutes.card_number = credit_card_info[:number]
-          ci_minutes.expiration_month = credit_card_info[:month]
-          ci_minutes.expiration_year = credit_card_info[:year]
-          ci_minutes.cvv = credit_card_info[:cvv]
-          ci_minutes.review_your_order
+          fill_in_customer_info
+          fill_in_payment_info
 
           ci_minutes.confirm_purchase
         end
+      end
 
-        Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
-          expected_minutes = CI_MINUTES[:ci_minutes] * purchase_quantity
-
-          expect { usage_quota.ci_purchase_successful_alert? }.to eventually_be_truthy.within(max_duration: 60, max_attempts: 30)
-          expect { usage_quota.additional_minutes? }.to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
-          expect(usage_quota.additional_limits).to eq(expected_minutes.to_s)
+      def fill_in_customer_info
+        Gitlab::Page::Subscriptions::New.perform do |subscription|
+          subscription.country = user_billing_info[:country]
+          subscription.street_address_1 = user_billing_info[:address_1]
+          subscription.street_address_2 = user_billing_info[:address_2]
+          subscription.city = user_billing_info[:city]
+          subscription.state = user_billing_info[:state]
+          subscription.zip_code = user_billing_info[:zip]
+          subscription.continue_to_payment
         end
       end
 
-      private
+      def fill_in_payment_info
+        Gitlab::Page::Subscriptions::New.perform do |subscription|
+          subscription.name_on_card = credit_card_info[:name]
+          subscription.card_number = credit_card_info[:number]
+          subscription.expiration_month = credit_card_info[:month]
+          subscription.expiration_year = credit_card_info[:year]
+          subscription.cvv = credit_card_info[:cvv]
+          subscription.review_your_order
+        end
+      end
 
       def credit_card_info
         {
