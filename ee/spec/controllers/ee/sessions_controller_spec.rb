@@ -104,6 +104,7 @@ RSpec.describe SessionsController, :geo do
 
       context 'when U2F authentication fails' do
         before do
+          stub_feature_flags(webauthn: false)
           allow(U2fRegistration).to receive(:authenticate).and_return(false)
         end
 
