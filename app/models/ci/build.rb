@@ -190,8 +190,6 @@ module Ci
     scope :without_coverage, -> { where(coverage: nil) }
     scope :with_coverage_regex, -> { where.not(coverage_regex: nil) }
 
-    scope :for_project, -> (project_id) { where(project_id: project_id) }
-
     acts_as_taggable
 
     add_authentication_token_field :token, encrypted: :required
