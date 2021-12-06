@@ -1,10 +1,12 @@
+import Vue from 'vue';
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { __ } from '~/locale';
 import initTree from '~/repository';
+import CodeOwners from './components/code_owners.vue';
 
 export default () => {
-  const { router, data } = initTree();
+  const { router, data, apolloProvider, projectPath } = initTree();
 
   if (data.pathLocksAvailable) {
     const toggleBtn = document.querySelector('a.js-path-lock');
@@ -40,4 +42,21 @@ export default () => {
         });
     });
   }
+
+  const initCodeOwnersApp = () =>
+    new Vue({
+      el: document.getElementById('js-code-owners'),
+      router,
+      apolloProvider,
+      render(h) {
+        return h(CodeOwners, {
+          props: {
+            filePath: this.$route.params.path,
+            projectPath,
+          },
+        });
+      },
+    });
+
+  initCodeOwnersApp();
 };
