@@ -61,8 +61,8 @@ module API
         requires :name, type: String, desc: 'The name of the license'
         requires :approval_status,
           type: String,
-          values: %w(approved blacklisted),
-          desc: 'The approval status of the license. "blacklisted" or "approved".'
+          values: %w(allowed denied approved blacklisted),
+          desc: 'The approval status of the license. "allowed" or "denied". "blacklisted" and "approved" are deprecated.'
       end
       post ':id/managed_licenses' do
         authorize_can_admin!
@@ -88,8 +88,8 @@ module API
         optional :name, type: String, desc: 'The name of the license'
         optional :approval_status,
           type: String,
-          values: %w(approved blacklisted),
-          desc: 'The approval status of the license. "blacklisted" or "approved".'
+          values: %w(allowed denied approved blacklisted),
+          desc: 'The approval status of the license. "allowed" or "denied". "blacklisted" and "approved" are deprecated.'
       end
       patch ':id/managed_licenses/:managed_license_id', requirements: { managed_license_id: /.*/ } do
         authorize_can_admin!
