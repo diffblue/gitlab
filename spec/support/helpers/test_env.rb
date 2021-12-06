@@ -161,7 +161,8 @@ module TestEnv
     component_timed_setup('Gitaly',
       install_dir: gitaly_dir,
       version: Gitlab::GitalyClient.expected_server_version,
-      task: "gitlab:gitaly:test_install",
+      task: "gitlab:gitaly:install",
+      fresh_install: ENV.key?('FORCE_GITALY_INSTALL'),
       task_args: [gitaly_dir, repos_path, gitaly_url].compact) do
         Gitlab::SetupHelper::Gitaly.create_configuration(
           gitaly_dir,
@@ -525,7 +526,7 @@ module TestEnv
     end
   end
 
-  def component_timed_setup(component, install_dir:, version:, task:, task_args: [])
+  def component_timed_setup(component, install_dir:, version:, task:, fresh_install: true, task_args: [])
     start = Time.now
 
     ensure_component_dir_name_is_correct!(component, install_dir)
@@ -535,7 +536,7 @@ module TestEnv
 
     if component_needs_update?(install_dir, version)
       # Cleanup the component entirely to ensure we start fresh
-      FileUtils.rm_rf(install_dir)
+      FileUtils.rm_rf(install_dir) if fresh_install
 
       if ENV['SKIP_RAILS_ENV_IN_RAKE']
         # When we run `scripts/setup-test-env`, we take care of loading the necessary dependencies
