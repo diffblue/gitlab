@@ -1582,7 +1582,6 @@
       allow_failure: true
     - <<: *if-dot-com-gitlab-org-merge-request
       changes: *qa-patterns
-    - <<: *if-dot-com-gitlab-org-schedule
 
 .review:rules:review-build-cng:
   rules:
