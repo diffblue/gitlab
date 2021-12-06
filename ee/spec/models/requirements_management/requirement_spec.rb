@@ -46,13 +46,7 @@ RSpec.describe RequirementsManagement::Requirement do
   describe 'validations' do
     subject { build(:requirement) }
 
-    context 'with requirement issue' do
-      let(:ri) { create(:requirement_issue) }
-
-      subject { build(:requirement, requirement_issue: ri) }
-
-      it { is_expected.to validate_uniqueness_of(:issue_id).allow_nil }
-    end
+    it { is_expected.to validate_uniqueness_of(:issue_id) }
 
     it 'is limited to a unique requirement_issue' do
       requirement_issue = create(:requirement_issue)

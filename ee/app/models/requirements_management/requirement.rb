@@ -27,7 +27,7 @@ module RequirementsManagement
     # This will be removed in https://gitlab.com/gitlab-org/gitlab/-/issues/329432
     belongs_to :requirement_issue, class_name: 'Issue', foreign_key: :issue_id, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
 
-    validates :issue_id, uniqueness: true, allow_nil: true
+    validates :issue_id, uniqueness: true
 
     has_many :test_reports, inverse_of: :requirement
     has_many :recent_test_reports, -> { order(created_at: :desc) }, class_name: 'TestReport', inverse_of: :requirement
