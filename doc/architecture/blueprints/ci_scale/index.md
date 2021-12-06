@@ -155,7 +155,7 @@ First, we want to focus on things that are urgently needed right now. We need
 to fix primary keys overflow risk and unblock other teams that are working on
 database partitioning and sharding.
 
-We want to improve situation around bottlenecks that are known already, like
+We want to improve known bottlenecks, like
 builds queuing mechanisms that is using the large table, and other things that
 are holding other teams back.
 
