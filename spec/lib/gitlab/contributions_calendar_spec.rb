@@ -50,7 +50,8 @@ RSpec.describe Gitlab::ContributionsCalendar do
     Event.create!(
       project: project,
       action: action,
-      target: @targets[project],
+      target_type: @targets[project].class.name,
+      target_id: @targets[project].id,
       author: contributor,
       created_at: DateTime.new(day.year, day.month, day.day, hour)
     )
@@ -167,6 +168,12 @@ RSpec.describe Gitlab::ContributionsCalendar do
 
       expect(calendar.events_by_date(today)).to contain_exactly(e1, e3)
       expect(calendar(contributor).events_by_date(today)).to contain_exactly(e1, e2, e3)
+    end
+
+    it "includes diff notes on merge request" do
+      e1 = create_event(public_project, today, 0, :commented, :diff_note_on_merge_request)
+
+      expect(calendar.events_by_date(today)).to contain_exactly(e1)
     end
 
     context 'when the user cannot read cross project' do

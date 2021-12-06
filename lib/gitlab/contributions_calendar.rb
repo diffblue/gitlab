@@ -29,13 +29,13 @@ module Gitlab
       # project_features for the (currently) 3 different contribution types
       date_from = @contributor_time_instance.now.years_ago(1)
       repo_events = event_created_at(date_from, :repository)
-        .where(action: :pushed, target_type: nil)
+        .where(action: :pushed)
       issue_events = event_created_at(date_from, :issues)
         .where(action: [:created, :closed], target_type: "Issue")
       mr_events = event_created_at(date_from, :merge_requests)
         .where(action: [:merged, :created, :closed], target_type: "MergeRequest")
       note_events = event_created_at(date_from, :merge_requests)
-        .where(action: :commented, target_type: "Note")
+        .where(action: :commented)
 
       events = Event
         .select("date(created_at + #{date_interval}) AS date", 'COUNT(*) AS num_events')
