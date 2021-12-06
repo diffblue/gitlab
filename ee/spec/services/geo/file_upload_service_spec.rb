@@ -9,6 +9,7 @@ RSpec.describe Geo::FileUploadService do
 
   before do
     stub_current_geo_node(node)
+    stub_feature_flags(geo_upload_verification: false)
   end
 
   describe '#retriever' do

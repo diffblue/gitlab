@@ -12,6 +12,47 @@
 RSpec.shared_examples 'a replicable model with a separate table for verification state' do
   include EE::GeoHelpers
 
+  describe '.with_verification_state' do
+    let(:verification_model_class) { verifiable_model_record.class }
+
+    it 'returns records with given scope' do
+      expect(verification_model_class.with_verification_state(:verification_succeeded).size).to eq(0)
+
+      verifiable_model_record.verification_failed_with_message!('Test')
+
+      expect(verification_model_class.with_verification_state(:verification_failed).first).to eq verifiable_model_record
+    end
+  end
+
+  describe '.checksummed' do
+    let(:verification_model_class) { verifiable_model_record.class }
+
+    it 'returns records with given scope' do
+      expect(verification_model_class.checksummed.size).to eq(0)
+
+      verifiable_model_record.verification_started!
+      verifiable_model_record.verification_succeeded_with_checksum!('checksum', Time.now)
+
+      expect(verification_model_class.checksummed.first).to eq verifiable_model_record
+    end
+  end
+
+  describe '.not_checksummed' do
+    let(:verification_model_class) { verifiable_model_record.class }
+
+    it 'returns records with given scope' do
+      verifiable_model_record.verification_started!
+      verifiable_model_record.verification_failed_with_message!('checksum error')
+
+      expect(verification_model_class.not_checksummed.first).to eq verifiable_model_record
+
+      verifiable_model_record.verification_started!
+      verifiable_model_record.verification_succeeded_with_checksum!('checksum', Time.now)
+
+      expect(verification_model_class.not_checksummed.size).to eq(0)
+    end
+  end
+
   describe '#save_verification_details' do
     let(:verification_state_table_class) { verifiable_model_record.class.verification_state_table_class }
 
