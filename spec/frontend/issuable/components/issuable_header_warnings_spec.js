@@ -4,7 +4,7 @@ import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { createStore as createMrStore } from '~/mr_notes/stores';
 import createIssueStore from '~/notes/stores';
-import IssuableHeaderWarnings from '~/vue_shared/components/issuable/issuable_header_warnings.vue';
+import IssuableHeaderWarnings from '~/issuable/components/issuable_header_warnings.vue';
 
 const ISSUABLE_TYPE_ISSUE = 'issue';
 const ISSUABLE_TYPE_MR = 'merge request';

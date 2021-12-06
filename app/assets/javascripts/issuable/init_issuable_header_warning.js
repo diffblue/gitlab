@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import { parseBoolean } from '~/lib/utils/common_utils';
-import IssuableHeaderWarnings from './issuable_header_warnings.vue';
+import IssuableHeaderWarnings from './components/issuable_header_warnings.vue';
 
 export default function issuableHeaderWarnings(store) {
   const el = document.getElementById('js-issuable-header-warnings');
