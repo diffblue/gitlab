@@ -10,7 +10,7 @@ import initNotesApp from '~/notes';
 import { store } from '~/notes/stores';
 import initRelatedMergeRequestsApp from '~/related_merge_requests';
 import initSentryErrorStackTraceApp from '~/sentry_error_stack_trace';
-import initIssuableHeaderWarning from '~/vue_shared/components/issuable/init_issuable_header_warning';
+import initIssuableHeaderWarning from '~/issuable/init_issuable_header_warning';
 import ZenMode from '~/zen_mode';
 
 export default function initShowIssue() {
