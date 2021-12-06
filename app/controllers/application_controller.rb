@@ -279,9 +279,7 @@ class ApplicationController < ActionController::Base
   end
 
   def default_cache_headers
-    if current_user
-      headers['Pragma'] = 'no-cache' # HTTP 1.0 compatibility
-    end
+    headers['Pragma'] = 'no-cache' # HTTP 1.0 compatibility
   end
 
   def stream_csv_headers(csv_filename)
