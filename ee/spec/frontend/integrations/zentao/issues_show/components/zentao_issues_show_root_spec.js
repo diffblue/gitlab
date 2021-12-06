@@ -1,6 +1,6 @@
 import { GlAlert, GlLoadingIcon, GlBadge } from '@gitlab/ui';
 import MockAdapter from 'axios-mock-adapter';
-import { IssuableStatus } from '~/issue_show/constants';
+import { IssuableStatus } from '~/issues/show/constants';
 import ZentaoIssuesShow from 'ee/integrations/zentao/issues_show/components/zentao_issues_show_root.vue';
 
 import waitForPromises from 'helpers/wait_for_promises';

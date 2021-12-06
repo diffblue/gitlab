@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import IterationSidebarDropdownWidget from 'ee/sidebar/components/iteration_sidebar_dropdown_widget.vue';
 import SidebarDropdownWidget from 'ee/sidebar/components/sidebar_dropdown_widget.vue';
-import { IssuableType } from '~/issue_show/constants';
+import { IssuableType } from '~/issues/show/constants';
 
 describe('IterationSidebarDropdownWidget', () => {
   let wrapper;

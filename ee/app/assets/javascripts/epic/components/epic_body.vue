@@ -1,7 +1,7 @@
 <script>
 import { mapState, mapGetters } from 'vuex';
 
-import IssuableBody from '~/issue_show/components/app.vue';
+import IssuableBody from '~/issues/show/components/app.vue';
 import { PathIdSeparator } from '~/related_issues/constants';
 
 import EpicSidebar from './epic_sidebar.vue';
