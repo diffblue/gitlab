@@ -645,4 +645,54 @@ RSpec.shared_examples Integrations::SlackMattermostNotifier do |service_name|
       end
     end
   end
+
+  describe 'Deployment events' do
+    let_it_be(:user) { create(:user) }
+    let_it_be_with_reload(:project) { create(:project, :repository, creator: user) }
+
+    let(:deployment) do
+      create(:deployment, :success, project: project, sha: project.commit.sha, ref: project.default_branch)
+    end
+
+    let(:data) { Gitlab::DataBuilder::Deployment.build(deployment, Time.now) }
+
+    before do
+      allow(chat_service).to receive_messages(
+        project: project,
+        service_hook: true,
+        webhook: webhook_url
+      )
+
+      stub_full_request(webhook_url, method: :post)
+    end
+
+    it_behaves_like "triggered #{service_name} service", event_type: "deployment"
+
+    context 'on a protected branch' do
+      before do
+        create(:protected_branch, project: project, name: 'a-protected-branch')
+        project.repository.create_branch('a-protected-branch', project.default_branch_or_main)
+      end
+
+      let(:deployment) do
+        create(:deployment, :success, project: project, sha: project.commit.sha, ref: 'a-protected-branch')
+      end
+
+      context 'notification enabled only for default branch' do
+        it_behaves_like "untriggered #{service_name} service", event_type: "pipeline", branches_to_be_notified: "default"
+      end
+
+      context 'notification enabled only for protected branches' do
+        it_behaves_like "triggered #{service_name} service", event_type: "pipeline", branches_to_be_notified: "protected"
+      end
+
+      context 'notification enabled only for default and protected branches' do
+        it_behaves_like "triggered #{service_name} service", event_type: "pipeline", branches_to_be_notified: "default_and_protected"
+      end
+
+      context 'notification enabled for all branches' do
+        it_behaves_like "triggered #{service_name} service", event_type: "pipeline", branches_to_be_notified: "all"
+      end
+    end
+  end
 end
