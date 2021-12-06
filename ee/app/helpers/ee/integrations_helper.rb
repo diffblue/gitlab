@@ -10,7 +10,7 @@ module EE
     end
 
     override :integration_form_data
-    def integration_form_data(integration, group: nil)
+    def integration_form_data(integration, project: nil, group: nil)
       form_data = super
 
       if integration.is_a?(Integrations::Jira)
