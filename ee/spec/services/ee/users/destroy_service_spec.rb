@@ -81,6 +81,32 @@ RSpec.describe Users::DestroyService do
         end
       end
 
+      context 'when user has escalation rules' do
+        let(:project) { create(:project) }
+        let(:user) { project.owner }
+        let(:project_policy) { create(:incident_management_escalation_policy, project: project) }
+        let!(:project_rule) { create(:incident_management_escalation_rule, :with_user, policy: project_policy, user: user) }
+
+        let(:group) { create(:group) }
+        let(:group_project) { create(:project, group: group) }
+        let(:group_policy) { create(:incident_management_escalation_policy, project: group_project) }
+        let!(:group_rule) { create(:incident_management_escalation_rule, :with_user, policy: group_policy, user: user) }
+        let!(:group_owner) { create(:user) }
+
+        before do
+          group.add_developer(user)
+          group.add_owner(group_owner)
+        end
+
+        it 'deletes the escalation rules and notifies owners of group projects' do
+          expect { operation }.to change(ActionMailer::Base.deliveries, :size).by(1)
+
+          expect { project.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          expect { project_rule.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          expect { group_rule.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        end
+      end
+
       describe 'audit events' do
         include_examples 'audit event logging' do
           let(:fail_condition!) do

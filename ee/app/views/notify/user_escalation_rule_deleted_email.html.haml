@@ -1,0 +1,8 @@
+%p
+  = html_escape(_("%{user_name} (%{user_username}) was removed from the following escalation policies in %{project_link}: ")) % { user_name: @user.name, user_username: @user.username, project_link: link_to(@project.name, project_url(@project).html_safe) }
+  %ul
+    - @rules.each do |rule|
+      - policy_link = link_to(rule.policy.name, project_incident_management_escalation_policies_url(@project).html_safe)
+      %li= html_escape(_("%{policy_link} (notifying after %{elapsed_time} minutes unless %{status})")) % { policy_link: policy_link, elapsed_time: rule.elapsed_time_seconds / 60, status: rule.status }
+%p
+  = html_escape(_("Please review the updated escalation policies for %{project_link}. It is recommended that you reach out to the current on-call responder to ensure continuity of on-call coverage.")) % { project_link: link_to(@project.name, project_url(@project).html_safe) }

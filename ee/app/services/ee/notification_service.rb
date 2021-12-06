@@ -77,21 +77,41 @@ module EE
     end
 
     def oncall_user_removed(rotation, user, async_notification = true)
-      project_owners_and_participants(rotation, user).each do |recipient|
+      oncall_user_removed_recipients(rotation, user).each do |recipient|
         email = mailer.user_removed_from_rotation_email(user, rotation, [recipient])
+
         async_notification ? email.deliver_later : email.deliver_now
+      end
+    end
+
+    def user_escalation_rule_deleted(project, user, rules)
+      user_escalation_rule_deleted_recipients(project, user).map do |recipient|
+        # Deliver now as rules (& maybe user) are being deleted
+        mailer.user_escalation_rule_deleted_email(user, project, rules, recipient).deliver_now
       end
     end
 
     private
 
-    def project_owners_and_participants(rotation, user)
-      project = rotation.project
+    def oncall_user_removed_recipients(rotation, removed_user)
+      incident_management_owners(rotation.project)
+       .including(rotation.participating_users)
+       .excluding(removed_user)
+       .uniq
+    end
 
-      owners = project.owner.is_a?(Group) ? project.owner.owners : [project.owner]
-      member_owners = project.members.owners
+    def user_escalation_rule_deleted_recipients(project, removed_user)
+      incident_management_owners(project).excluding(removed_user)
+    end
 
-      (owners + member_owners + rotation.participants.map(&:user) - [user]).compact.uniq
+    def incident_management_owners(project)
+      return [project.owner] unless project.group
+
+      MembersFinder
+        .new(project, nil, params: { active_without_invites_and_requests: true })
+        .execute
+        .owners
+        .map(&:user)
     end
 
     def add_mr_approvers_email(merge_request, approvers, current_user)

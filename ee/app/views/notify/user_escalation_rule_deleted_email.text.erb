@@ -1,0 +1,7 @@
+<%= _("%{user_name} (%{user_username}) was removed from the following escalation policies in %{project}:") % { user_name: @user.name, user_username: @user.username, project: @project.name } %>
+
+<% @rules.each do |rule| %>
+  <%= _("- %{policy_name} (notifying after %{elapsed_time} minutes unless %{status})") % { policy_name: rule.policy.name, elapsed_time: rule.elapsed_time_seconds / 60, status: rule.status } %>
+<% end %>
+
+<%= _("Please review the updated escalation policies for %{project}. It is recommended that you reach out to the current on-call responder to ensure continuity of on-call coverage.") % { project: @project.name } %>
