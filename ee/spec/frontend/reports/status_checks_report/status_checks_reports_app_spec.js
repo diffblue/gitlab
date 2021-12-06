@@ -8,7 +8,7 @@ import axios from '~/lib/utils/axios_utils';
 import httpStatus from '~/lib/utils/http_status';
 import ReportSection from '~/reports/components/report_section.vue';
 import { status as reportStatus } from '~/reports/constants';
-import { approvedChecks, pendingChecks, mixedChecks } from './mock_data';
+import { approvedChecks, pendingChecks, approvedAndPendingChecks } from './mock_data';
 
 jest.mock('~/flash');
 
@@ -73,10 +73,10 @@ describe('Grouped test reports app', () => {
     };
 
     describe.each`
-      state         | response          | text            | resolvedIssues    | neutralIssues
-      ${'approved'} | ${approvedChecks} | ${'All passed'} | ${approvedChecks} | ${[]}
-      ${'pending'}  | ${pendingChecks}  | ${'1 pending'}  | ${[]}             | ${pendingChecks}
-      ${'mixed'}    | ${mixedChecks}    | ${'1 pending'}  | ${approvedChecks} | ${pendingChecks}
+      state         | response                    | text            | resolvedIssues    | neutralIssues
+      ${'approved'} | ${approvedChecks}           | ${'All passed'} | ${approvedChecks} | ${[]}
+      ${'pending'}  | ${pendingChecks}            | ${'1 pending'}  | ${[]}             | ${pendingChecks}
+      ${'mixed'}    | ${approvedAndPendingChecks} | ${'1 pending'}  | ${approvedChecks} | ${pendingChecks}
     `('and the status checks are $state', ({ response, text, resolvedIssues, neutralIssues }) => {
       beforeEach(() => {
         return mountWithResponse(httpStatus.OK, response);
