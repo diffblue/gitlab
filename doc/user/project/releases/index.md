@@ -1,5 +1,4 @@
 ---
-type: reference, howto
 stage: Release
 group: Release
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#assignments
@@ -9,26 +8,33 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/41766) in GitLab 11.7.
 
-To introduce a checkpoint in your source code history, you can assign a
-[Git tag](https://git-scm.com/book/en/v2/Git-Basics-Tagging) at the moment of release.
-However, in most cases, your users need more than just the raw source code.
-They need compiled objects or other assets output by your CI/CD system.
+In GitLab, a release enables you to create a snapshot of your project for your users, including
+installation packages and release notes. You can create a GitLab release on any branch. Creating a
+release also creates a [Git tag](https://git-scm.com/book/en/v2/Git-Basics-Tagging) to mark the
+release point in the source code.
 
-A GitLab Release can be:
+WARNING:
+Deleting a Git tag associated with a release also deletes the release.
+
+A release can include:
 
 - A snapshot of the source code of your repository.
 - [Generic packages](../../packages/generic_packages/index.md) created from job artifacts.
 - Other metadata associated with a released version of your code.
+- Release notes.
 
-You can create a GitLab release on any branch. When you create a release:
+When you [create a release](#create-a-release):
 
 - GitLab automatically archives source code and associates it with the release.
 - GitLab automatically creates a JSON file that lists everything in the release,
   so you can compare and audit releases. This file is called [release evidence](#release-evidence).
-- You can add release notes and a message for the tag associated with the release.
 
-After you create a release, you can [associate milestones with it](#associate-milestones-with-a-release),
-and attach [release assets](#release-assets), like runbooks or packages.
+When you create a release, or after, you can:
+
+- Add release notes.
+- Add a message for the Git tag associated with the release.
+- [Associate milestones with it](#associate-milestones-with-a-release).
+- Attach [release assets](#release-assets), like runbooks or packages.
 
 ## View releases
 
