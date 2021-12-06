@@ -72,6 +72,13 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter do
       expect(link.attr('data-reference-format')).to eq('+')
     end
 
+    it 'includes a data-reference-format attribute for URL references' do
+      link = doc("#{urls.group_epic_url(group, epic)}+").css('a').first
+
+      expect(link).to have_attribute('data-reference-format')
+      expect(link.attr('data-reference-format')).to eq('+')
+    end
+
     it 'ignores invalid epic IIDs' do
       text = "Check &#{non_existing_record_iid}"
 

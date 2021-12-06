@@ -1,7 +1,7 @@
 <script>
 import { __ } from '~/locale';
 import SidebarDropdownWidget from '~/sidebar/components/sidebar_dropdown_widget.vue';
-import { IssuableType } from '~/issue_show/constants';
+import { IssuableType } from '~/issues/show/constants';
 import {
   IssuableAttributeType,
   IssuableAttributeState,

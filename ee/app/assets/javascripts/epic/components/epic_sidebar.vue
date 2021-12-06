@@ -5,7 +5,7 @@ import SidebarAncestorsWidget from 'ee_component/sidebar/components/ancestors_tr
 
 import { TYPE_EPIC } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
-import { IssuableType } from '~/issue_show/constants';
+import { IssuableType } from '~/issues/show/constants';
 import notesEventHub from '~/notes/event_hub';
 import SidebarConfidentialityWidget from '~/sidebar/components/confidential/sidebar_confidentiality_widget.vue';
 import SidebarDateWidget from '~/sidebar/components/date/sidebar_date_widget.vue';

@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import EpicBody from 'ee/epic/components/epic_body.vue';
 import createStore from 'ee/epic/store';
-import IssuableBody from '~/issue_show/components/app.vue';
+import IssuableBody from '~/issues/show/components/app.vue';
 import { mockEpicMeta, mockEpicData } from '../mock_data';
 
 describe('EpicBodyComponent', () => {
