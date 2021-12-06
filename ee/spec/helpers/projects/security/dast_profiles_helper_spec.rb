@@ -9,7 +9,7 @@ RSpec.describe Projects::Security::DastProfilesHelper do
 
     before do
       allow(project).to receive(:path_with_namespace).and_return("foo/bar")
-      allow(helper).to receive(:timezone_data).with(format: :full).and_return(timezones)
+      allow(helper).to receive(:timezone_data).with(format: :abbr).and_return(timezones)
     end
 
     it 'returns proper data' do

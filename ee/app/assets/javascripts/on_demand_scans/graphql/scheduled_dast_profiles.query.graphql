@@ -1,0 +1,44 @@
+#import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
+
+query ScheduledDastProfiles(
+  $fullPath: ID!
+  $after: String
+  $before: String
+  $first: Int
+  $last: Int
+) {
+  project(fullPath: $fullPath) {
+    id
+    pipelines: dastProfiles(
+      after: $after
+      before: $before
+      first: $first
+      last: $last
+      hasDastProfileSchedule: true
+    ) {
+      pageInfo {
+        ...PageInfo
+      }
+      nodes {
+        id
+        name
+        dastSiteProfile {
+          id
+          targetUrl
+        }
+        dastProfileSchedule {
+          id
+          active
+          nextRunAt
+          startsAt
+          timezone
+          cadence {
+            unit
+            duration
+          }
+        }
+        editPath
+      }
+    }
+  }
+}

@@ -23433,6 +23433,9 @@ msgstr ""
 msgid "Next file in diff"
 msgstr ""
 
+msgid "Next scan"
+msgstr ""
+
 msgid "Next unresolved discussion"
 msgstr ""
 
@@ -24331,6 +24334,9 @@ msgstr ""
 msgid "OnDemandScans|On-demand scans run outside the DevOps cycle and find vulnerabilities in your projects. %{learnMoreLinkStart}Learn more%{learnMoreLinkEnd}"
 msgstr ""
 
+msgid "OnDemandScans|Repeats"
+msgstr ""
+
 msgid "OnDemandScans|Save and run scan"
 msgstr ""
 
@@ -24365,6 +24371,9 @@ msgid "OnDemandScans|There are no finished scans."
 msgstr ""
 
 msgid "OnDemandScans|There are no running scans."
+msgstr ""
+
+msgid "OnDemandScans|There are no scheduled scans."
 msgstr ""
 
 msgid "OnDemandScans|Use existing scanner profile"

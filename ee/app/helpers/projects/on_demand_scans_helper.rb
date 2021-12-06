@@ -5,16 +5,19 @@ module Projects::OnDemandScansHelper
   def on_demand_scans_data(project)
     on_demand_scans = project.all_pipelines.where(source: Enums::Ci::Pipeline.sources[:ondemand_dast_scan])
     running_scan_count, finished_scan_count = count_running_and_finished_scans(on_demand_scans)
+    scheduled_scans = ::Dast::ProfilesFinder.new({ project_id: project.id, has_dast_profile_schedule: true }).execute
 
     common_data(project).merge({
       'project-on-demand-scan-counts-etag' => graphql_etag_project_on_demand_scan_counts_path(project),
       'on-demand-scan-counts' => {
         all: on_demand_scans.length,
         running: running_scan_count,
-        finished: finished_scan_count
+        finished: finished_scan_count,
+        scheduled: scheduled_scans.length
       }.to_json,
       'new-dast-scan-path' => new_project_on_demand_scan_path(project),
-      'empty-state-svg-path' => image_path('illustrations/empty-state/ondemand-scan-empty.svg')
+      'empty-state-svg-path' => image_path('illustrations/empty-state/ondemand-scan-empty.svg'),
+      'timezones' => timezone_data(format: :abbr).to_json
     })
   end
   # rubocop: enable CodeReuse/ActiveRecord

@@ -17,6 +17,7 @@ import {
 import AllTab from './tabs/all.vue';
 import RunningTab from './tabs/running.vue';
 import FinishedTab from './tabs/finished.vue';
+import ScheduledTab from './tabs/scheduled.vue';
 import EmptyState from './empty_state.vue';
 
 export default {
@@ -30,6 +31,7 @@ export default {
     AllTab,
     RunningTab,
     FinishedTab,
+    ScheduledTab,
     EmptyState,
   },
   inject: ['newDastScanPath', 'projectPath', 'projectOnDemandScanCountsEtag'],
@@ -73,7 +75,10 @@ export default {
       return this.liveOnDemandScanCounts ?? this.initialOnDemandScanCounts;
     },
     hasData() {
-      return this.onDemandScanCounts.all > 0;
+      // Scheduled scans aren't included in the total count yet because they are dastProfiles and
+      // not pipelines. When https://gitlab.com/gitlab-org/gitlab/-/issues/342950 is addressed, we
+      // will be able to rely on the "all" count only here.
+      return this.onDemandScanCounts.all + this.onDemandScanCounts.scheduled > 0;
     },
     tabs() {
       return {
@@ -88,6 +93,10 @@ export default {
         finished: {
           component: FinishedTab,
           itemsCount: this.onDemandScanCounts.finished,
+        },
+        scheduled: {
+          component: ScheduledTab,
+          itemsCount: this.onDemandScanCounts.scheduled,
         },
       };
     },
