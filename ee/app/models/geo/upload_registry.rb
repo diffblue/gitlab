@@ -2,6 +2,7 @@
 
 class Geo::UploadRegistry < Geo::BaseRegistry
   include ::Geo::ReplicableRegistry
+  include ::Geo::VerifiableRegistry
 
   extend ::Gitlab::Utils::Override
 
@@ -76,5 +77,18 @@ class Geo::UploadRegistry < Geo::BaseRegistry
 
   def project
     return upload.model if upload&.model.is_a?(Project)
+  end
+
+  # Returns a synchronization state based on existing attribute values
+  #
+  # It takes into account things like if a successful replication has been done
+  # if there are pending actions or existing errors
+  #
+  # @return [Symbol] :synced, :never, or :failed
+  def synchronization_state
+    return :synced if success?
+    return :never if retry_count.nil?
+
+    :failed
   end
 end

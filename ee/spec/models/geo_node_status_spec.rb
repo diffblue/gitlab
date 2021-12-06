@@ -1302,35 +1302,25 @@ RSpec.describe GeoNodeStatus, :geo do
     end
 
     context 'on the secondary' do
-      it 'calls JobArtifactRegistryFinder#registry_count' do
-        expect_any_instance_of(Geo::JobArtifactRegistryFinder).to receive(:registry_count).twice
+      it 'returns data from the deprecated field if it is not defined in the status field' do
+        subject.write_attribute(:projects_count, 10)
+        subject.status = {}
 
-        subject
+        expect(subject.projects_count).to eq 10
       end
-    end
 
-    context 'backward compatibility when counters stored in separate columns' do
-      describe '#projects_count' do
-        it 'returns data from the deprecated field if it is not defined in the status field' do
-          subject.write_attribute(:projects_count, 10)
-          subject.status = {}
+      it 'sets data in the new status field' do
+        subject.projects_count = 10
 
-          expect(subject.projects_count).to eq 10
-        end
+        expect(subject.projects_count).to eq 10
+      end
 
-        it 'sets data in the new status field' do
-          subject.projects_count = 10
+      it 'uses column counters when calculates percents using attr_in_percentage' do
+        subject.write_attribute(:design_repositories_count, 10)
+        subject.write_attribute(:design_repositories_synced_count, 5)
+        subject.status = {}
 
-          expect(subject.projects_count).to eq 10
-        end
-
-        it 'uses column counters when calculates percents using attr_in_percentage' do
-          subject.write_attribute(:design_repositories_count, 10)
-          subject.write_attribute(:design_repositories_synced_count, 5)
-          subject.status = {}
-
-          expect(subject.design_repositories_synced_in_percentage).to be_within(0.0001).of(50)
-        end
+        expect(subject.design_repositories_synced_in_percentage).to be_within(0.0001).of(50)
       end
     end
 

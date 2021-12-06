@@ -474,6 +474,8 @@ RSpec.shared_examples 'a verifiable replicator' do
       end
 
       it 'creates checksum_succeeded event' do
+        model_record
+
         expect { replicator.handle_after_checksum_succeeded }.to change { ::Geo::Event.count }.by(1)
         expect(::Geo::Event.last.event_name).to eq 'checksum_succeeded'
       end

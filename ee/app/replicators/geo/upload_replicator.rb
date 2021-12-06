@@ -34,6 +34,11 @@ module Geo
       ::Geo::BatchEventCreateWorker.perform_async(events)
     end
 
+    override :verification_feature_flag_enabled?
+    def self.verification_feature_flag_enabled?
+      Feature.enabled?(:geo_upload_verification, default_enabled: :yaml)
+    end
+
     def carrierwave_uploader
       model_record.retrieve_uploader
     end

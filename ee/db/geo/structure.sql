@@ -72,7 +72,17 @@ CREATE TABLE file_registry (
     missing_on_primary boolean DEFAULT false NOT NULL,
     state smallint DEFAULT 0 NOT NULL,
     last_synced_at timestamp with time zone,
-    last_sync_failure character varying(255)
+    last_sync_failure character varying(255),
+    verified_at timestamp with time zone,
+    verification_started_at timestamp with time zone,
+    verification_retry_at timestamp with time zone,
+    verification_state smallint DEFAULT 0 NOT NULL,
+    verification_retry_count smallint DEFAULT 0 NOT NULL,
+    verification_checksum bytea,
+    verification_checksum_mismatched bytea,
+    checksum_mismatch boolean DEFAULT false NOT NULL,
+    verification_failure text,
+    CONSTRAINT check_1886652634 CHECK ((char_length(verification_failure) <= 256))
 );
 
 CREATE SEQUENCE file_registry_id_seq
@@ -471,6 +481,12 @@ ALTER TABLE ONLY snippet_repository_registry
 
 ALTER TABLE ONLY terraform_state_version_registry
     ADD CONSTRAINT terraform_state_version_registry_pkey PRIMARY KEY (id);
+
+CREATE INDEX file_registry_failed_verification ON file_registry USING btree (verification_retry_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 3));
+
+CREATE INDEX file_registry_needs_verification ON file_registry USING btree (verification_state) WHERE ((state = 2) AND (verification_state = ANY (ARRAY[0, 3])));
+
+CREATE INDEX file_registry_pending_verification ON file_registry USING btree (verified_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 0));
 
 CREATE INDEX idx_project_registry_failed_repositories_partial ON project_registry USING btree (repository_retry_count) WHERE ((repository_retry_count > 0) OR (last_repository_verification_failure IS NOT NULL) OR repository_checksum_mismatch);
 
