@@ -192,6 +192,7 @@ class License < ApplicationRecord
     security_dashboard
     security_on_demand_scans
     security_orchestration_policies
+    ssh_key_expiration_policy
     status_page
     subepics
     threat_monitoring

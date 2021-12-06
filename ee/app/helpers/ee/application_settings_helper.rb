@@ -58,6 +58,7 @@ module EE
         :help_text,
         :lock_memberships_to_ldap,
         :max_personal_access_token_lifetime,
+        :max_ssh_key_lifetime,
         :pseudonymizer_enabled,
         :repository_size_limit,
         :secret_detection_token_revocation_enabled,
