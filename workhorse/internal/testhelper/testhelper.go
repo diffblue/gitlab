@@ -59,7 +59,7 @@ func RequireResponseHeader(t *testing.T, w interface{}, header string, expected 
 // handle Geo API polling request as well.
 func TestServerWithHandler(url *regexp.Regexp, handler http.HandlerFunc) *httptest.Server {
 	return TestServerWithHandlerWithGeoPolling(url, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if geoProxyEndpointPath == r.URL.Path {
+		if r.URL.Path == geoProxyEndpointPath {
 			return
 		}
 
