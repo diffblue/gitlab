@@ -39,7 +39,7 @@ export default () => {
         },
         on: {
           selectNamespace: (id) => {
-            if (targetHiddenInputId && document.getElementById(targetHiddenInputId)?.value) {
+            if (targetHiddenInputId && document.getElementById(targetHiddenInputId)) {
               document.getElementById(targetHiddenInputId).value = id;
             }
           },
