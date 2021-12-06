@@ -14,8 +14,8 @@ Since its [initial release in November 2012](https://about.gitlab.com/blog/2012/
 the CI/CD subsystem has evolved significantly. It was [integrated into GitLab in September 2015](https://about.gitlab.com/releases/2015/09/22/gitlab-8-0-released/)
 and has become [one of the most beloved CI/CD solutions](https://about.gitlab.com/blog/2017/09/27/gitlab-leader-continuous-integration-forrester-wave/).
 
-On February 1st, 2021, a billionth CI/CD build was created and the number of
-builds [is growing exponentially](https://docs.gitlab.com/ee/architecture/blueprints/ci_scale/).
+On February 1st, 2021, GitLab.com surpassed 1 billion CI/CD builds, and the number of
+builds [continues to grow exponentially](https://docs.gitlab.com/ee/architecture/blueprints/ci_scale/).
 
 GitLab CI/CD has come a long way since the initial release, but the design of
 the data storage for pipeline builds remains almost the same since 2012. In
@@ -28,15 +28,12 @@ a separate database.
 
 ## Challenges
 
-There is more than two billion rows describing CI/CD builds in GitLab.com's
+There are more than two billion rows describing CI/CD builds in GitLab.com's
 database. This data represents a sizeable portion of the whole data stored in
 PostgreSQL database running on GitLab.com
 
-This volume contributes to a significant performance problems, development
-challenges and is often related to production incidents. It is very difficult
-to move this data around, what makes data migration challenging and prevents us
-from iterating on architectural initiatives that are supposed to help with
-sustaining the increase of demand on GitLab.com
+This volume contributes to significant performance problems, development
+challenges and is often related to production incidents.
 
 We also expect a [significant growth in the number of builds executed on
 GitLab.com](https://docs.gitlab.com/ee/architecture/blueprints/ci_scale/) in
