@@ -167,7 +167,7 @@ RSpec.describe BillingPlansHelper, :saas do
   end
 
   describe '#use_new_purchase_flow?' do
-    where type: [Group.sti_name, nil],
+    where type: [Group.sti_name, Namespaces::UserNamespace.sti_name],
       plan: Plan.all_plans,
       trial_active: [true, false]
 
@@ -345,7 +345,7 @@ RSpec.describe BillingPlansHelper, :saas do
     end
   end
 
-  describe "#plan_purchase_or_upgrade_url" do
+  describe '#plan_purchase_or_upgrade_url' do
     let(:plan) { double('Plan') }
 
     it 'is upgradable' do
@@ -364,7 +364,7 @@ RSpec.describe BillingPlansHelper, :saas do
     end
   end
 
-  describe "#plan_purchase_url" do
+  describe '#plan_purchase_url' do
     let_it_be(:group) { create(:group) }
     let_it_be(:user) { create(:user) }
 
@@ -390,7 +390,7 @@ RSpec.describe BillingPlansHelper, :saas do
     end
   end
 
-  describe "#hand_raise_props" do
+  describe '#hand_raise_props' do
     let_it_be(:namespace) { create(:namespace) }
     let_it_be(:user) { create(:user, username: 'Joe', first_name: 'Joe', last_name: 'Doe', organization: 'ACME') }
 
