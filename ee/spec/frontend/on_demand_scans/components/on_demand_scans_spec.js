@@ -29,6 +29,7 @@ describe('OnDemandScans', () => {
     all: 12,
     running: 3,
     finished: 9,
+    scheduled: 5,
   };
   const emptyInitialPipelineCounts = Object.fromEntries(PIPELINE_TABS_KEYS.map((key) => [key, 0]));
 

@@ -21,4 +21,10 @@ query onDemandScanCounts(
       count
     }
   }
+  scheduled: project(fullPath: $fullPath) {
+    id
+    pipelines: dastProfiles(hasDastProfileSchedule: true) {
+      count
+    }
+  }
 }
