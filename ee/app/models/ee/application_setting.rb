@@ -316,8 +316,8 @@ module EE
       elasticsearch_url.map do |url|
         uri = URI.parse(url)
 
-        uri.user = elasticsearch_username
-        uri.password = elasticsearch_password.presence || ''
+        uri.user = URI.encode_www_form_component(elasticsearch_username)
+        uri.password = URI.encode_www_form_component(elasticsearch_password)
         uri.to_s
       end
     end
