@@ -51,7 +51,7 @@ RSpec.describe ProfilesHelper do
     using RSpec::Parameterized::TableSyntax
 
     where(:expiration_enforced, :result) do
-      true  | "Key will be deleted on this date."
+      true  | "Key becomes invalid on this date."
       false | "Key can still be used after expiration."
     end
 
@@ -60,6 +60,76 @@ RSpec.describe ProfilesHelper do
         allow(Key).to receive(:expiration_enforced?).and_return(expiration_enforced)
 
         expect(helper.ssh_key_expires_field_description).to eq(result)
+      end
+    end
+  end
+
+  describe '#ssh_key_expiration_policy_licensed?' do
+    subject { helper.ssh_key_expiration_policy_licensed? }
+
+    context 'when is not licensed' do
+      before do
+        stub_licensed_features(ssh_key_expiration_policy: false)
+      end
+
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when is licensed' do
+      before do
+        stub_licensed_features(ssh_key_expiration_policy: true)
+      end
+
+      it { is_expected.to be_truthy }
+    end
+  end
+
+  describe '#ssh_key_expiration_policy_enabled?' do
+    subject { helper.ssh_key_expiration_policy_enabled? }
+
+    context 'when feature flag is enabled' do
+      before do
+        stub_feature_flags(ff_limit_ssh_key_lifetime: true)
+      end
+
+      context 'when is licensed and used' do
+        before do
+          stub_licensed_features(ssh_key_expiration_policy: true)
+          stub_application_setting(max_ssh_key_lifetime: 10)
+        end
+
+        it { is_expected.to be_truthy }
+      end
+
+      context 'when is not licensed' do
+        before do
+          stub_licensed_features(ssh_key_expiration_policy: false)
+        end
+
+        it { is_expected.to be_falsey }
+      end
+
+      context 'when is licensed but not used' do
+        before do
+          stub_licensed_features(ssh_key_expiration_policy: true)
+          stub_application_setting(max_ssh_key_lifetime: nil)
+        end
+
+        it { is_expected.to be_falsey }
+      end
+    end
+
+    context 'when feature flag is disabled' do
+      before do
+        stub_feature_flags(ff_limit_ssh_key_lifetime: false)
+      end
+      context 'when is licensed and used' do
+        before do
+          stub_licensed_features(ssh_key_expiration_policy: true)
+          stub_application_setting(max_ssh_key_lifetime: 10)
+        end
+
+        it { is_expected.to be_falsey }
       end
     end
   end
