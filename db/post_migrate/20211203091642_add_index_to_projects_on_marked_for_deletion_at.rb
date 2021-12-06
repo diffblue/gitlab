@@ -6,9 +6,7 @@ class AddIndexToProjectsOnMarkedForDeletionAt < Gitlab::Database::Migration[1.0]
   INDEX_NAME = 'index_projects_not_aimed_for_deletion'
 
   def up
-    marked_for_deletion_is_null = 'marked_for_deletion_at IS NULL'
-
-    add_concurrent_index :projects, :marked_for_deletion_at, where: marked_for_deletion_is_null, name: INDEX_NAME
+    add_concurrent_index :projects, :marked_for_deletion_at, where: 'marked_for_deletion_at IS NULL', name: INDEX_NAME
   end
 
   def down
