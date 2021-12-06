@@ -11,14 +11,47 @@ module EE
     prepended do
       include ::Gitlab::SQL::Pattern
       include ::Gitlab::Geo::ReplicableModel
+      include ::Gitlab::Geo::VerificationState
 
       with_replicator ::Geo::UploadReplicator
 
       scope :for_model, ->(model) { where(model_id: model.id, model_type: model.class.name) }
       scope :syncable, -> { with_files_stored_locally }
+      scope :with_verification_state, ->(state) { joins(:upload_state).where(upload_states: { verification_state: verification_state_value(state) }) }
+      scope :checksummed, -> { joins(:upload_state).where.not(upload_states: { verification_checksum: nil } ) }
+      scope :not_checksummed, -> { joins(:upload_state).where(upload_states: { verification_checksum: nil } ) }
+
+      scope :available_verifiables, -> { joins(:upload_state) }
+
+      has_one :upload_state,
+              autosave: false,
+              inverse_of: :upload,
+              class_name: '::Geo::UploadState'
+
+      delegate :verification_retry_at, :verification_retry_at=,
+               :verified_at, :verified_at=,
+               :verification_checksum, :verification_checksum=,
+               :verification_failure, :verification_failure=,
+               :verification_retry_count, :verification_retry_count=,
+               :verification_state=, :verification_state,
+               :verification_started_at=, :verification_started_at,
+               to: :upload_state
+
+      after_save :save_verification_details
+
+      def verification_state_object
+        upload_state
+      end
     end
 
     class_methods do
+      extend ::Gitlab::Utils::Override
+
+      override :verification_state_table_class
+      def verification_state_table_class
+        ::Geo::UploadState
+      end
+
       # @param primary_key_in [Range, Upload] arg to pass to primary_key_in scope
       # @return [ActiveRecord::Relation<Upload>] everything that should be synced to this node, restricted by primary key
       def replicables_for_current_secondary(primary_key_in)
@@ -76,6 +109,10 @@ module EE
     def log_geo_deleted_event
       # Keep empty for now. Should be addressed in future
       # by https://gitlab.com/gitlab-org/gitlab/issues/33817
+    end
+
+    def upload_state
+      super || build_upload_state
     end
   end
 end

@@ -6,6 +6,7 @@ RSpec.describe Geo::UploadReplicator do
   let(:model_record) { create(:upload, :with_file) }
 
   include_examples 'a blob replicator'
+  include_examples 'a verifiable replicator'
 
   describe '.bulk_create_delete_events_async' do
     let(:deleted_upload) do

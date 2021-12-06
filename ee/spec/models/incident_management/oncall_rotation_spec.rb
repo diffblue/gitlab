@@ -10,6 +10,7 @@ RSpec.describe IncidentManagement::OncallRotation do
     it { is_expected.to have_many(:participants).order(id: :asc).class_name('OncallParticipant').inverse_of(:rotation) }
     it { is_expected.to have_many(:active_participants).order(id: :asc).class_name('OncallParticipant').inverse_of(:rotation) }
     it { is_expected.to have_many(:users).through(:participants) }
+    it { is_expected.to have_many(:participating_users).through(:active_participants).source(:user) }
     it { is_expected.to have_many(:shifts).class_name('OncallShift').inverse_of(:rotation) }
 
     describe '.active_participants' do

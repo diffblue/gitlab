@@ -15,6 +15,7 @@ module EE
         cleanup_group_identity(member)
         cleanup_group_deletion_schedule(member) if member.source.is_a?(Group)
         cleanup_oncall_rotations(member)
+        cleanup_escalation_rules(member) if member.user
       end
 
       private
@@ -64,6 +65,12 @@ module EE
           user_rotations,
           user
         ).execute
+      end
+
+      def cleanup_escalation_rules(member)
+        rules = ::IncidentManagement::EscalationRulesFinder.new(member: member, include_removed: true).execute
+
+        ::IncidentManagement::EscalationRules::DestroyService.new(escalation_rules: rules, user: member.user).execute
       end
     end
   end

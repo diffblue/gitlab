@@ -7,6 +7,7 @@ module IncidentManagement
     belongs_to :policy, class_name: 'EscalationPolicy', inverse_of: 'rules', foreign_key: 'policy_id'
     belongs_to :oncall_schedule, class_name: 'OncallSchedule', foreign_key: 'oncall_schedule_id', optional: true
     belongs_to :user, optional: true
+    has_one :project, through: :policy, source: :project
 
     enum status: ::IncidentManagement::Escalatable::STATUSES.slice(:acknowledged, :resolved)
 
@@ -27,6 +28,10 @@ module IncidentManagement
 
     scope :not_removed, -> { where(is_removed: false) }
     scope :removed, -> { where(is_removed: true) }
+    scope :for_user, -> (user) { where(user: user) }
+    scope :for_project, -> (project) { where(policy: { project: project }).joins(:policy).references(:policy) }
+    scope :load_project_with_routes, -> { preload(project: [:route, { namespace: :route }]) }
+    scope :load_policy, -> { includes(:policy) }
 
     private
 

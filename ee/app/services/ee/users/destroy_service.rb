@@ -10,6 +10,7 @@ module EE
         result = super(user, options) do |delete_user|
           mirror_cleanup(delete_user)
           oncall_rotations_cleanup(delete_user)
+          escalation_rules_cleanup(delete_user)
         end
 
         log_audit_event(user) if result.try(:destroyed?)
@@ -38,6 +39,12 @@ module EE
           user,
           false
         ).execute
+      end
+
+      def escalation_rules_cleanup(user)
+        rules = ::IncidentManagement::EscalationRulesFinder.new(user: user, include_removed: true).execute
+
+        ::IncidentManagement::EscalationRules::DestroyService.new(escalation_rules: rules, user: user).execute
       end
 
       private
