@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { mapActions } from 'vuex';
-import { parseIssuableData } from '~/issue_show/utils/parse_data';
+import { parseIssuableData } from '~/issues/show/utils/parse_data';
 import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_utils';
 import { defaultClient } from '~/sidebar/graphql';
 import labelsSelectModule from '~/vue_shared/components/sidebar/labels_select_vue/store';

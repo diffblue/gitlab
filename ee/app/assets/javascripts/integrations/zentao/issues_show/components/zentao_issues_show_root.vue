@@ -5,7 +5,7 @@ import Note from 'ee/external_issues_show/components/note.vue';
 import ExternalIssueAlert from 'ee/external_issues_show/components/external_issue_alert.vue';
 import { fetchIssue } from 'ee/integrations/zentao/issues_show/api';
 import ZentaoIssueSidebar from 'ee/integrations/zentao/issues_show/components/sidebar/zentao_issues_sidebar_root.vue';
-import { IssuableStatus, IssuableStatusText } from '~/issue_show/constants';
+import { IssuableStatus, IssuableStatusText } from '~/issues/show/constants';
 
 import IssuableShow from '~/issuable_show/components/issuable_show_root.vue';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
