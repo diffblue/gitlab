@@ -619,6 +619,7 @@ class Namespace < ApplicationRecord
     path_changed? && !project_namespace?
   end
 
+  # SyncEvents are created by PG triggers (with the function `insert_namespaces_sync_event`)
   def schedule_sync_event_worker
     run_after_commit do
       Namespaces::SyncEvent.enqueue_worker

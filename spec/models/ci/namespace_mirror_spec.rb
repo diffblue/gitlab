@@ -9,7 +9,7 @@ RSpec.describe Ci::NamespaceMirror do
   let!(:group4) { create(:group, parent: group3) }
 
   describe '.sync!' do
-    let!(:event) { Namespaces::SyncEvent.create!(namespace: namespace) }
+    let!(:event) { namespace.sync_events.create! }
 
     subject(:sync) { described_class.sync!(event.reload) }
 

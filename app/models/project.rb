@@ -2938,6 +2938,7 @@ class Project < ApplicationRecord
     project_namespace.visibility_level = visibility_level
   end
 
+  # SyncEvents are created by PG triggers (with the function `insert_projects_sync_event`)
   def schedule_sync_event_worker
     run_after_commit do
       Projects::SyncEvent.enqueue_worker

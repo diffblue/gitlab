@@ -29,8 +29,8 @@ module Ci
 
       return if events.empty?
 
-      min = events[0]
-      max = events[-1]
+      min = events.first
+      max = events.last
 
       events.each { |event| @sync_class.sync!(event) }
       @sync_event_class.for_id(min.id..max.id).delete_all
