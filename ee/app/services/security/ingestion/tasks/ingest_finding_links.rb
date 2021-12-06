@@ -9,6 +9,12 @@ module Security
 
         self.model = Vulnerabilities::FindingLink
 
+        def execute
+          return unless Feature.enabled?(:vulnerability_finding_replace_metadata)
+
+          super
+        end
+
         private
 
         def attributes
