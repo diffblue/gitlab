@@ -359,6 +359,24 @@ RSpec.describe Group do
     end
   end
 
+  describe '#vulnerability_reads' do
+    subject { group.vulnerability_reads }
+
+    let(:subgroup) { create(:group, parent: group) }
+    let(:group_project) { create(:project, namespace: group) }
+    let(:subgroup_project) { create(:project, namespace: subgroup) }
+    let(:archived_project) { create(:project, :archived, namespace: group) }
+    let(:deleted_project) { create(:project, pending_delete: true, namespace: group) }
+    let!(:group_vulnerability) { create(:vulnerability, :with_findings, project: group_project) }
+    let!(:subgroup_vulnerability) { create(:vulnerability, :with_findings, project: subgroup_project) }
+    let!(:archived_vulnerability) { create(:vulnerability, :with_findings, project: archived_project) }
+    let!(:deleted_vulnerability) { create(:vulnerability, :with_findings, project: deleted_project) }
+
+    it 'returns vulnerabilities for all non-archived, non-deleted projects in the group and its subgroups' do
+      is_expected.to contain_exactly(group_vulnerability.vulnerability_read, subgroup_vulnerability.vulnerability_read)
+    end
+  end
+
   describe '#vulnerability_scanners' do
     subject { group.vulnerability_scanners }
 

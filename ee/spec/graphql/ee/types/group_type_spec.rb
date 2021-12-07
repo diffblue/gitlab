@@ -28,7 +28,7 @@ RSpec.describe GitlabSchema.types['Group'] do
     let_it_be(:project) { create(:project, namespace: group) }
     let_it_be(:user) { create(:user) }
     let_it_be(:vulnerability) do
-      create(:vulnerability, :detected, :critical, project: project, title: 'A terrible one!')
+      create(:vulnerability, :detected, :critical, :with_finding, project: project, title: 'A terrible one!')
     end
 
     let_it_be(:query) do

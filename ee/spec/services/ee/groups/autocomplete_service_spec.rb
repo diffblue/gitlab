@@ -82,7 +82,7 @@ RSpec.describe Groups::AutocompleteService do
 
   describe '#vulnerability' do
     let_it_be_with_refind(:project) { create(:project, group: group) }
-    let_it_be(:vulnerability) { create(:vulnerability, project: project) }
+    let_it_be(:vulnerability) { create(:vulnerability, :with_finding, project: project) }
     let_it_be(:guest) { create(:user) }
 
     let(:autocomplete_user) { user }

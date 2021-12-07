@@ -32,14 +32,30 @@ RSpec.describe API::Vulnerabilities do
         expect(response.headers['X-Total']).to eq project.vulnerabilities.count.to_s
       end
 
-      context 'with pagination' do
-        let(:project_vulnerabilities_path) { "#{super()}?page=2&per_page=1" }
+      context 'when vulnerability_reads_table is disabled' do
+        before do
+          stub_feature_flags(vulnerability_reads_table: false)
+        end
 
-        it 'paginates the vulnerabilities according to the pagination params' do
+        it 'returns all vulnerabilities of a project' do
           get_vulnerabilities
 
           expect(response).to have_gitlab_http_status(:ok)
-          expect(json_response.map { |v| v['id'] }).to contain_exactly(project.vulnerabilities.order_severity_desc.second.id)
+          expect(response).to match_response_schema('public_api/v4/vulnerabilities', dir: 'ee')
+          expect(response.headers['X-Total']).to eq project.vulnerabilities.count.to_s
+        end
+      end
+
+      context 'with pagination' do
+        let(:project_vulnerabilities_path) { "#{super()}?page=3&per_page=1" }
+
+        it 'paginates the vulnerabilities according to the pagination params' do
+          low_severity_vulnerability = create(:vulnerability, :with_finding, project: project, severity: :low)
+
+          get_vulnerabilities
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response.map { |v| v['id'] }).to contain_exactly(low_severity_vulnerability.id)
         end
       end
 
@@ -62,7 +78,6 @@ RSpec.describe API::Vulnerabilities do
   describe 'GET /vulnerabilities/:id' do
     let_it_be(:project) { create(:project, :with_vulnerabilities) }
     let_it_be(:vulnerability) { project.vulnerabilities.first }
-    let_it_be(:finding) { create(:vulnerabilities_finding, vulnerability: vulnerability) }
 
     let(:vulnerability_id) { vulnerability.id }
 
@@ -86,7 +101,7 @@ RSpec.describe API::Vulnerabilities do
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(response).to match_response_schema('public_api/v4/vulnerability', dir: 'ee')
-        expect(json_response['finding']['id']).to eq finding.id
+        expect(json_response['finding']['id']).to eq vulnerability.finding.id
       end
 
       it_behaves_like 'responds with "not found" for an unknown vulnerability ID'
@@ -241,7 +256,7 @@ RSpec.describe API::Vulnerabilities do
       end
 
       context 'if a vulnerability is already dismissed' do
-        let(:vulnerability) { create(:vulnerability, :dismissed, project: project) }
+        let(:vulnerability) { create(:vulnerability, :with_findings, :dismissed, project: project) }
 
         it 'responds with 304 Not Modified' do
           dismiss_vulnerability
@@ -299,7 +314,7 @@ RSpec.describe API::Vulnerabilities do
       it_behaves_like 'responds with "not found" for an unknown vulnerability ID'
 
       context 'when the vulnerability is already resolved' do
-        let(:vulnerability) { create(:vulnerability, :resolved, project: project) }
+        let(:vulnerability) { create(:vulnerability, :with_findings, :resolved, project: project) }
 
         it 'responds with 304 Not Modified response' do
           resolve_vulnerability
@@ -357,7 +372,7 @@ RSpec.describe API::Vulnerabilities do
       it_behaves_like 'responds with "not found" for an unknown vulnerability ID'
 
       context 'when the vulnerability is already confirmed' do
-        let(:vulnerability) { create(:vulnerability, :confirmed, project: project) }
+        let(:vulnerability) { create(:vulnerability, :with_findings, :confirmed, project: project) }
 
         it 'responds with 304 Not Modified response' do
           confirm_vulnerability
@@ -388,7 +403,7 @@ RSpec.describe API::Vulnerabilities do
     end
 
     let_it_be(:project) { create(:project) }
-    let_it_be(:vulnerability) { create(:vulnerability, :dismissed, project: project) }
+    let_it_be(:vulnerability) { create(:vulnerability, :with_findings, :dismissed, project: project) }
 
     let(:vulnerability_id) { vulnerability.id }
 
@@ -445,7 +460,7 @@ RSpec.describe API::Vulnerabilities do
       end
 
       context 'if a vulnerability is already in detected state' do
-        let(:vulnerability) { create(:vulnerability, :detected, project: project) }
+        let(:vulnerability) { create(:vulnerability, :with_findings, :detected, project: project) }
 
         it 'responds with 304 Not Modified' do
           revert_vulnerability_to_detected
