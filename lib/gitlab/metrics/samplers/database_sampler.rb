@@ -39,18 +39,39 @@ module Gitlab
 
         def host_stats
           Gitlab::Database.database_base_models.each_value.with_object([]) do |base_model, stats|
-            next unless base_model.connected?
-
-            stats << { labels: labels_for_class(base_model), stats: base_model.connection_pool.stat }
+            # Depending on how we setup for multiple databases, if we don't use model load balancing,
+            # or share the primary connection between main and ci, Ci::ApplicationRecord will return false for
+            # connected? but still be configured with read replicas that we want to collect metrics for.
+            add_primary_stats(stats, base_model) if base_model.connected?
+            add_replica_stats(stats, base_model) unless base_model.load_balancer.primary_only?
           end
         end
 
-        def labels_for_class(klass)
+        def add_primary_stats(stats, base_model)
+          stats << { labels: labels_for_primary(base_model), stats: base_model.connection_pool.stat }
+        end
+
+        def add_replica_stats(stats, base_model)
+          base_model.load_balancer.host_list.hosts.each do |host|
+            stats << { labels: labels_for_replica_host(base_model, host), stats: host.connection.pool.stat }
+          end
+        end
+
+        def labels_for_primary(klass)
           {
             host: klass.connection_db_config.host,
             port: klass.connection_db_config.configuration_hash[:port],
             class: klass.to_s,
             db_config_name: klass.connection_db_config.name
+          }
+        end
+
+        def labels_for_replica_host(klass, host)
+          {
+            host: host.host,
+            port: host.port,
+            class: klass.to_s,
+            db_config_name: Gitlab::Database.db_config_name(host.connection)
           }
         end
       end
