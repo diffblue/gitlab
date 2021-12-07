@@ -1,4 +1,4 @@
-import { IssuableStates } from '~/issuable_list/constants';
+import { IssuableStates } from '~/vue_shared/issuable/list/constants';
 import { __, s__ } from '~/locale';
 
 export const externalIssuesListEmptyStateI18n = {

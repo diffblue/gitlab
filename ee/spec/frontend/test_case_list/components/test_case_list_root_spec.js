@@ -3,9 +3,9 @@ import { nextTick } from 'vue';
 
 import TestCaseListRoot from 'ee/test_case_list/components/test_case_list_root.vue';
 import { TEST_HOST } from 'helpers/test_constants';
-import { mockIssuable } from 'jest/issuable_list/mock_data';
+import { mockIssuable } from 'jest/vue_shared/issuable/list/mock_data';
 
-import IssuableList from '~/issuable_list/components/issuable_list_root.vue';
+import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 
 jest.mock('~/flash');
 jest.mock('ee/test_case_list/constants', () => ({

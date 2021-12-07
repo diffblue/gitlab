@@ -3,7 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 
 import TestCaseShowRoot from 'ee/test_case_show/components/test_case_show_root.vue';
 import TestCaseSidebar from 'ee/test_case_show/components/test_case_sidebar.vue';
-import { mockCurrentUserTodo } from 'jest/issuable_list/mock_data';
+import { mockCurrentUserTodo } from 'jest/vue_shared/issuable/list/mock_data';
 
 import IssuableBody from '~/issuable_show/components/issuable_body.vue';
 import IssuableEditForm from '~/issuable_show/components/issuable_edit_form.vue';

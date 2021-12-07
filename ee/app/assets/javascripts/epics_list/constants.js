@@ -1,4 +1,4 @@
-import { AvailableSortOptions } from '~/issuable_list/constants';
+import { AvailableSortOptions } from '~/vue_shared/issuable/list/constants';
 import { __ } from '~/locale';
 
 export const EpicsSortOptions = [
