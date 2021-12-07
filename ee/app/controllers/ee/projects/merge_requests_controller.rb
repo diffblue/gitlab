@@ -31,6 +31,8 @@ module EE
         feature_category :metrics, [:metrics_reports]
         feature_category :license_compliance, [:license_scanning_reports]
         feature_category :code_review, [:delete_description_version, :description_diff]
+
+        urgency :high, [:delete_description_version]
       end
 
       def can_run_sast_experiments_on?(project)
