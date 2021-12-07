@@ -1621,6 +1621,10 @@
 
 .review:rules:review-qa-reliable:
   rules:
+    - <<: *if-dot-com-ee-2-hourly-schedule
+      allow_failure: true
+      variables:
+        KNAPSACK_GENERATE_REPORT: "true"
     - when: on_success
       allow_failure: true
 
@@ -1631,6 +1635,10 @@
       changes: *code-patterns
       when: manual
       allow_failure: true # manual jobs needs to be allowd to fail, otherwise they block the pipeline
+    - <<: *if-dot-com-ee-2-hourly-schedule
+      allow_failure: true
+      variables:
+        KNAPSACK_GENERATE_REPORT: "true"
     - when: on_success
       allow_failure: true
 
@@ -1644,6 +1652,20 @@
     - when: on_success
       allow_failure: true
     - when: on_failure
+      allow_failure: true
+
+# Generate knapsack report on successful runs only
+# Reliable suite will pass most of the time so this should yield best distribution
+.review:rules:knapsack-report-qa-reliable:
+  rules:
+    - <<: *if-dot-com-ee-2-hourly-schedule
+      when: on_success
+      allow_failure: true
+
+.review:rules:knapsack-report-qa-all:
+  rules:
+    - <<: *if-dot-com-ee-2-hourly-schedule
+      when: always
       allow_failure: true
 
 .review:rules:review-cleanup:
