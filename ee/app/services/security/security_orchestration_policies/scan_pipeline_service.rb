@@ -10,6 +10,9 @@ module Security
         },
         container_scanning: {
           'CONTAINER_SCANNING_DISABLED' => nil
+        },
+        sast: {
+          'SAST_DISABLED' => nil
         }
       }.freeze
 
@@ -32,7 +35,11 @@ module Security
       end
 
       def scan_configuration(action)
-        ::Security::SecurityOrchestrationPolicies::CiConfigurationService.new.execute(action, scan_variables(action))
+        action_variables = action[:variables].to_h.stringify_keys
+
+        ::Security::SecurityOrchestrationPolicies::CiConfigurationService
+          .new
+          .execute(action, action_variables.merge(scan_variables(action)))
       end
 
       def scan_variables(action)

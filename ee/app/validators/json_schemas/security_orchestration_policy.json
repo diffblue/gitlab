@@ -132,6 +132,14 @@
                     "string",
                     "null"
                   ]
+                },
+                "variables": {
+                  "type": "object",
+                  "patternProperties": {
+                    "\\A[a-zA-Z_][a-zA-Z0-9_]*\\z": {
+                      "type": "string"
+                    }
+                  }
                 }
               },
               "allOf": [
@@ -147,7 +155,7 @@
                     "required": [
                       "site_profile"
                     ],
-                    "maxProperties": 3
+                    "maxProperties": 4
                   }
                 },
                 {
@@ -159,7 +167,7 @@
                     }
                   },
                   "then": {
-                    "maxProperties": 1
+                    "maxProperties": 2
                   }
                 },
                 {
@@ -171,7 +179,7 @@
                     }
                   },
                   "then": {
-                    "maxProperties": 1
+                    "maxProperties": 2
                   }
                 },
                 {
@@ -183,7 +191,7 @@
                     }
                   },
                   "then": {
-                    "maxProperties": 1
+                    "maxProperties": 2
                   }
                 },
                 {
@@ -195,7 +203,7 @@
                     }
                   },
                   "then": {
-                    "maxProperties": 1
+                    "maxProperties": 2
                   }
                 }
               ],
