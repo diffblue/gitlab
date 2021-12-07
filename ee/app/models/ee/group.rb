@@ -91,6 +91,10 @@ module EE
         joins(:ldap_group_links).where(ldap_group_links: { provider: provider })
       end
 
+      scope :with_external_audit_event_destinations, -> do
+        joins(:external_audit_event_destinations)
+      end
+
       scope :with_managed_accounts_enabled, -> do
         joins(:saml_provider).where(saml_providers:
           {
