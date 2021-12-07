@@ -196,13 +196,21 @@ RSpec.describe GroupPolicy do
   end
 
   context 'when dora4 analytics is available' do
-    let(:current_user) { developer }
-
     before do
       stub_licensed_features(dora4_analytics: true)
     end
 
-    it { is_expected.to be_allowed(:read_dora4_analytics) }
+    context 'when the user is a developer' do
+      let(:current_user) { developer }
+
+      it { is_expected.to be_allowed(:read_dora4_analytics) }
+    end
+
+    context 'when the user is an admin', :enable_admin_mode do
+      let(:current_user) { admin }
+
+      it { is_expected.to be_allowed(:read_dora4_analytics) }
+    end
   end
 
   context 'when dora4 analytics is not available' do
