@@ -1804,6 +1804,22 @@ RSpec.describe ProjectPolicy do
           it { is_expected.not_to be_allowed(:destroy_resource_access_tokens) }
         end
       end
+
+      context 'with auditor access' do
+        let(:current_user) { auditor }
+
+        context 'read resource access tokens' do
+          it { is_expected.to be_allowed(:read_resource_access_tokens) }
+        end
+
+        context 'cannot create resource access tokens' do
+          it { is_expected.not_to be_allowed(:create_resource_access_tokens) }
+        end
+
+        context 'cannot destroy resource access tokens' do
+          it { is_expected.not_to be_allowed(:destroy_resource_access_tokens) }
+        end
+      end
     end
   end
 
