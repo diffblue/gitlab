@@ -11,8 +11,8 @@ import {
 } from '@gitlab/ui';
 
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import IssuableShow from '~/issuable_show/components/issuable_show_root.vue';
-import IssuableEventHub from '~/issuable_show/event_hub';
+import IssuableShow from '~/vue_shared/issuable/show/components/issuable_show_root.vue';
+import IssuableEventHub from '~/vue_shared/issuable/show/event_hub';
 import { s__, __ } from '~/locale';
 
 import TestCaseGraphQL from '../mixins/test_case_graphql';

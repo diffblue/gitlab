@@ -9,7 +9,7 @@ import {
 } from '@gitlab/ui';
 import $ from 'jquery';
 import { isEmpty } from 'lodash';
-import IssuableBody from '~/issuable_show/components/issuable_body.vue';
+import IssuableBody from '~/vue_shared/issuable/show/components/issuable_body.vue';
 import { TAB_KEY_CODE } from '~/lib/utils/keycodes';
 import { __, sprintf } from '~/locale';
 import ZenMode from '~/zen_mode';
