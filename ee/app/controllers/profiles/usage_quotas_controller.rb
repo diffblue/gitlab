@@ -6,6 +6,7 @@ class Profiles::UsageQuotasController < Profiles::ApplicationController
   feature_category :purchase
 
   def index
+    @hide_search_settings = true
     @namespace = current_user.namespace
     @projects = @namespace.projects.with_shared_runners.page(params[:page])
   end
