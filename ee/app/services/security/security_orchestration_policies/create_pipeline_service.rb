@@ -10,6 +10,9 @@ module Security
         },
         'container_scanning' => {
           'CONTAINER_SCANNING_DISABLED' => nil
+        },
+        'sast' => {
+          'SAST_DISABLED' => nil
         }
       }.freeze
 
@@ -29,8 +32,9 @@ module Security
       private
 
       def ci_configuration
+        action_variables = action[:variables].to_h.stringify_keys
         ci_variables, ci_hidden_variables = scan_variables
-        ci_content = ::Security::SecurityOrchestrationPolicies::CiConfigurationService.new.execute(action, ci_variables)
+        ci_content = ::Security::SecurityOrchestrationPolicies::CiConfigurationService.new.execute(action, action_variables.merge(ci_variables))
 
         [{ "#{scan_type}" => ci_content }, ci_hidden_variables]
       end

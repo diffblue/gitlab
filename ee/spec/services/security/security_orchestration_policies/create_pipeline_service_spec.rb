@@ -134,6 +134,18 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService do
 
             expect(build.name).to eq('sast')
           end
+
+          context 'when action contains variables' do
+            let(:action) { { scan: 'sast', variables: { SAST_EXCLUDED_ANALYZERS: 'semgrep' } } }
+
+            it 'parses variables from the action and applies them in configuration service' do
+              expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
+                expect(ci_configuration_service).to receive(:execute).once.with(action, 'SAST_DISABLED' => nil, 'SAST_EXCLUDED_ANALYZERS' => 'semgrep').and_call_original
+              end
+
+              subject
+            end
+          end
         end
       end
     end

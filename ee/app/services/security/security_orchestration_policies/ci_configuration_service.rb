@@ -17,7 +17,7 @@ module Security
         when 'container_scanning', 'cluster_image_scanning'
           scan_configuration(action[:scan], ci_variables)
         when 'sast'
-          child_pipeline_configuration(action[:scan])
+          child_pipeline_configuration(action[:scan], ci_variables)
         else
           error_script('Invalid Scan type')
         end
@@ -47,8 +47,9 @@ module Security
           .except(:rules)
       end
 
-      def child_pipeline_configuration(template)
+      def child_pipeline_configuration(template, ci_variables)
         {
+          variables: ci_variables.compact,
           inherit: {
             variables: false
           },
