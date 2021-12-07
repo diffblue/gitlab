@@ -230,7 +230,7 @@ export default {
     :open="drawerOpen"
     :header-height="getDrawerHeaderHeight()"
     :class="{ 'zen-mode gl-absolute': zenModeEnabled }"
-    class="requirement-form-drawer"
+    class="requirement-form-drawer gl-drawer-responsive"
     @close="handleDrawerClose"
   >
     <template #title>
