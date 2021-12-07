@@ -33,6 +33,7 @@ module QA
         Resource::Sandbox.fabricate_via_api! do |group|
           group.api_client = api_client
           group.path = "source-group-for-import-#{SecureRandom.hex(4)}"
+          group.avatar = File.new('qa/fixtures/designs/tanuki.jpg', 'r')
         end
       end
 
@@ -52,6 +53,10 @@ module QA
           iteration.api_client = api_client
           iteration.group = source_group
         end
+      end
+
+      let(:import_failures) do
+        imported_group.import_details.sum([]) { |details| details[:failures] }
       end
 
       # Find epic by title
@@ -86,6 +91,8 @@ module QA
         child_epic.award_emoji('thumbsdown')
 
         source_iteration
+
+        imported_group # trigger import
       end
 
       after do
@@ -115,6 +122,8 @@ module QA
           expect(imported_iteration.iid).to eq(source_iteration.iid)
           expect(imported_iteration.created_at).to eq(source_iteration.created_at)
           expect(imported_iteration.updated_at).to eq(source_iteration.updated_at)
+
+          expect(import_failures).to be_empty, "Expected no errors, received: #{import_failures}"
         end
       end
     end
