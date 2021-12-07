@@ -12,6 +12,6 @@
       %span.form-text.text-muted#repository_size_limit_help_block
         = is_project ? size_limit_message(@project) : size_limit_message_for_group(@group)
     - else
-      = form.number_field :disabled_repository_size_limit, value: '0', class: 'form-control', disabled: true
+      = form.number_field :disabled_repository_size_limit, value: '', class: 'form-control', disabled: true
       %span.form-text.text-muted
         = render 'shared/registration_features_discovery_message', license: @license
