@@ -30,8 +30,7 @@ const getPendingReason = (pendingStringOrObject) => {
   return null;
 };
 
-// eslint-disable-next-line jest/no-export
-export const loadMarkdownApiExamples = (markdownYamlPath) => {
+const loadMarkdownApiExamples = (markdownYamlPath) => {
   const apiMarkdownYamlText = fs.readFileSync(markdownYamlPath);
   const apiMarkdownExampleObjects = jsYaml.safeLoad(apiMarkdownYamlText);
 
@@ -59,17 +58,39 @@ const testSerializesHtmlToMarkdownForElement = async ({ markdown, html }) => {
   expect(serializedContent).toBe(markdown);
 };
 
+// describeMarkdownProcesssing
+//
+// This is used to dynamically generate examples (for both CE and EE) to ensure
+// we generate same markdown that was provided to Markdown API.
+//
 // eslint-disable-next-line jest/no-export
-export const createSharedExamples = (name, { pendingReason, ...example }) => {
-  const exampleName = 'correctly serializes HTML to markdown';
-  if (pendingReason) {
-    it.todo(`${exampleName}: ${pendingReason}`);
-  } else {
-    it(exampleName, async () => {
-      if (name === 'frontmatter_toml') {
-        setTestTimeoutOnce(2000);
-      }
-      await testSerializesHtmlToMarkdownForElement(example);
+export const describeMarkdownProcessing = (description, markdownYamlPath) => {
+  const examples = loadMarkdownApiExamples(markdownYamlPath);
+
+  // If examples were filtered out, we need to create at least one dummy test
+  // so Jest doesn't blow up.
+  if (!examples.length) {
+    describe(description, () => {
+      // eslint-disable-next-line jest/no-disabled-tests
+      it.skip('skipped because no examples matched filter', () => {});
     });
+    return;
   }
+
+  describe(description, () => {
+    describe.each(examples)('%s', (name, { pendingReason, ...example }) => {
+      const exampleName = 'correctly serializes HTML to markdown';
+      if (pendingReason) {
+        it.todo(`${exampleName}: ${pendingReason}`);
+        return;
+      }
+
+      it(exampleName, async () => {
+        if (name === 'frontmatter_toml') {
+          setTestTimeoutOnce(2000);
+        }
+        await testSerializesHtmlToMarkdownForElement(example);
+      });
+    });
+  });
 };
