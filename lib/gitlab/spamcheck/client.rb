@@ -21,6 +21,8 @@ module Gitlab
         update: ::Spamcheck::Action::UPDATE
       }.freeze
 
+      URL_SCHEME_REGEX = %r{^grpc://|^tls://}
+
       def initialize
         @endpoint_url = Gitlab::CurrentSettings.current_application_settings.spam_check_endpoint_url
 
@@ -28,7 +30,7 @@ module Gitlab
 
         # remove the `grpc://` or 'tls://' as it's only useful to ensure we're expecting to
         # connect with Spamcheck
-        @endpoint_url = @endpoint_url.sub(%r{^grpc://|^tls://}, '')
+        @endpoint_url = @endpoint_url.sub(URL_SCHEME_REGEX, '')
       end
 
       def issue_spam?(spam_issue:, user:, context: {})
