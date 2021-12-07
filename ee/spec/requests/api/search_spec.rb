@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Search, factory_default: :keep do
+RSpec.describe API::Search, factory_default: :keep, quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/347078' do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:namespace) { create_default(:namespace).freeze }

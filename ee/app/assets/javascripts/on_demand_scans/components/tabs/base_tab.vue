@@ -223,28 +223,23 @@ export default {
             <rect width="70" height="20" x="855" y="5" rx="4" />
           </gl-skeleton-loader>
         </template>
-        <template #cell(detailedStatus)="{ item }">
+
+        <template #cell(status)="{ value }">
           <div class="gl-my-3">
-            <ci-badge-link :status="item.detailedStatus" />
+            <ci-badge-link :status="value" />
           </div>
         </template>
 
-        <!-- eslint-disable-next-line vue/valid-v-slot -->
-        <template #cell(dastProfile.name)="{ item }">
-          <gl-truncate v-if="item.dastProfile" :text="item.dastProfile.name" with-tooltip />
+        <template #cell(name)="{ value }">
+          <gl-truncate v-if="value" :text="value" with-tooltip />
         </template>
 
         <template #cell(scanType)>
           {{ $options.DAST_SHORT_NAME }}
         </template>
 
-        <!-- eslint-disable-next-line vue/valid-v-slot -->
-        <template #cell(dastProfile.dastSiteProfile.targetUrl)="{ item }">
-          <gl-truncate
-            v-if="item.dastProfile"
-            :text="item.dastProfile.dastSiteProfile.targetUrl"
-            with-tooltip
-          />
+        <template #cell(targetUrl)="{ value }">
+          <gl-truncate v-if="value" :text="value" with-tooltip />
         </template>
 
         <template #cell(createdAt)="{ item }">
@@ -257,6 +252,10 @@ export default {
 
         <template #cell(id)="{ item }">
           <gl-link :href="item.path">#{{ $options.getIdFromGraphQLId(item.id) }}</gl-link>
+        </template>
+
+        <template v-for="slot in Object.keys($scopedSlots)" #[slot]="scope">
+          <slot :name="slot" v-bind="scope"></slot>
         </template>
       </gl-table>
 

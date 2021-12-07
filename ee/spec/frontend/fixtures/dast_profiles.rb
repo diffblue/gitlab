@@ -160,5 +160,24 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
         end
       end
     end
+
+    describe 'scheduled_dast_profiles' do
+      path = 'on_demand_scans/graphql/scheduled_dast_profiles.query.graphql'
+
+      let_it_be(:dast_profile) { create(:dast_profile, project: project) }
+      let_it_be(:dast_profile_schedule) { create(:dast_profile_schedule, project: project, dast_profile: dast_profile)}
+
+      it "graphql/#{path}.json" do
+        query = get_graphql_query_as_string(path, ee: true)
+
+        post_graphql(query, current_user: current_user, variables: {
+          fullPath: project.full_path,
+          first: 20
+        })
+
+        expect_graphql_errors_to_be_empty
+        expect(graphql_data_at(:project, :pipelines, :nodes)).to have_attributes(size: 1)
+      end
+    end
   end
 end

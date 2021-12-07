@@ -60,7 +60,7 @@ export default {
           :placeholder="$options.i18n.bannerMessagePlaceholder"
         />
       </gl-form-group>
-      <gl-button variant="success" type="submit">{{ $options.i18n.buttonText }}</gl-button>
+      <gl-button variant="confirm" type="submit">{{ $options.i18n.buttonText }}</gl-button>
     </gl-form>
   </section>
 </template>

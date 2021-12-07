@@ -15,6 +15,7 @@ export default () => {
     projectOnDemandScanCountsEtag,
   } = el.dataset;
   const initialOnDemandScanCounts = JSON.parse(el.dataset.onDemandScanCounts);
+  const timezones = JSON.parse(el.dataset.timezones);
 
   return new Vue({
     el,
@@ -25,6 +26,7 @@ export default () => {
       newDastScanPath,
       emptyStateSvgPath,
       projectOnDemandScanCountsEtag,
+      timezones,
     },
     render(h) {
       return h(OnDemandScans, {
