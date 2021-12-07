@@ -33,7 +33,7 @@ module Ci
       max = events.last
 
       events.each { |event| @sync_class.sync!(event) }
-      @sync_event_class.for_id(min.id..max.id).delete_all
+      @sync_event_class.id_in(min.id..max.id).delete_all
     end
 
     def enqueue_worker_if_there_still_event

@@ -9,7 +9,6 @@ class Projects::SyncEvent < ApplicationRecord
 
   scope :preload_synced_relation, -> { preload(:project) }
   scope :order_by_id_asc, -> { order(id: :asc) }
-  scope :for_id, -> (id) { where(id: id) }
 
   def self.enqueue_worker
     ::Projects::ProcessSyncEventsWorker.perform_async # rubocop:disable CodeReuse/Worker

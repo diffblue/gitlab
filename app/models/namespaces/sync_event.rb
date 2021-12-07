@@ -9,7 +9,6 @@ class Namespaces::SyncEvent < ApplicationRecord
 
   scope :preload_synced_relation, -> { preload(:namespace) }
   scope :order_by_id_asc, -> { order(id: :asc) }
-  scope :for_id, -> (id) { where(id: id) }
 
   def self.enqueue_worker
     ::Namespaces::ProcessSyncEventsWorker.perform_async # rubocop:disable CodeReuse/Worker
