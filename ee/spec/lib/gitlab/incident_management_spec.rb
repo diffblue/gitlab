@@ -48,4 +48,22 @@ RSpec.describe Gitlab::IncidentManagement do
       it { is_expected.to be_falsey }
     end
   end
+
+  describe '.timeline_events_available?' do
+    subject { described_class.timeline_events_available?(project) }
+
+    before do
+      stub_licensed_features(incident_timeline_events: true)
+    end
+
+    it { is_expected.to be_truthy }
+
+    context 'when timeline events not available' do
+      before do
+        stub_licensed_features(incident_timeline_events: false)
+      end
+
+      it { is_expected.to be_falsey }
+    end
+  end
 end

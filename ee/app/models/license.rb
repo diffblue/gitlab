@@ -168,6 +168,7 @@ class License < ApplicationRecord
     group_level_compliance_dashboard
     group_level_devops_adoption
     incident_management
+    incident_timeline_events
     inline_codequality
     insights
     instance_level_devops_adoption
