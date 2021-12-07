@@ -27448,6 +27448,8 @@ CREATE INDEX index_snippets_on_id_and_created_at ON snippets USING btree (id, cr
 
 CREATE INDEX index_snippets_on_id_and_type ON snippets USING btree (id, type);
 
+CREATE INDEX index_snippets_on_project_id_and_title ON snippets USING btree (project_id, title);
+
 CREATE INDEX index_snippets_on_project_id_and_visibility_level ON snippets USING btree (project_id, visibility_level);
 
 CREATE INDEX index_snippets_on_title_trigram ON snippets USING gin (title gin_trgm_ops);
