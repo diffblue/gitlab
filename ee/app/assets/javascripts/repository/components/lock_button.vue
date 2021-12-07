@@ -37,11 +37,12 @@ export default {
   data() {
     return {
       lockLoading: false,
+      locked: this.isLocked,
     };
   },
   computed: {
     lockButtonTitle() {
-      return this.isLocked ? this.$options.i18n.unlock : this.$options.i18n.lock;
+      return this.locked ? this.$options.i18n.unlock : this.$options.i18n.lock;
     },
     lockConfirmText() {
       return sprintf(__('Are you sure you want to %{action} %{name}?'), {
@@ -65,13 +66,14 @@ export default {
           variables: {
             filePath: this.path,
             projectPath: this.projectPath,
-            lock: !this.isLocked,
+            lock: !this.locked,
           },
         })
         .catch((error) => {
           createFlash({ message: error, captureError: true, error });
         })
         .finally(() => {
+          this.locked = !this.locked;
           this.lockLoading = false;
         });
     },
@@ -80,7 +82,7 @@ export default {
 </script>
 
 <template>
-  <gl-button v-if="canLock" :loading="lockLoading" @click="onLockToggle">
+  <gl-button :disabled="!canLock" :loading="lockLoading" @click="onLockToggle">
     {{ lockButtonTitle }}
   </gl-button>
 </template>

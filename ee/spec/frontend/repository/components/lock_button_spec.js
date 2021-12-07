@@ -51,10 +51,10 @@ describe('LockButton component', () => {
 
     afterEach(() => confirmSpy.mockRestore());
 
-    it('does not render if canLock is set to false', () => {
+    it('disables the lock button if canLock is set to false', () => {
       createComponent({ canLock: false });
 
-      expect(findLockButton().exists()).toBe(false);
+      expect(findLockButton().props('disabled')).toBe(true);
     });
 
     it.each`
