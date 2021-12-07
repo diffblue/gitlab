@@ -90,6 +90,8 @@ module EE
                 allow_blank: true,
                 length: { maximum: EMAIL_ADDITIONAL_TEXT_CHARACTER_LIMIT }
 
+      validates :future_subscriptions, json_schema: { filename: 'future_subscriptions' }
+
       validates :geo_node_allowed_ips, length: { maximum: 255 }, presence: true
 
       validates :required_instance_ci_template, presence: true, allow_nil: true
@@ -124,6 +126,8 @@ module EE
 
       after_commit :update_personal_access_tokens_lifetime, if: :saved_change_to_max_personal_access_token_lifetime?
       after_commit :resume_elasticsearch_indexing
+
+      serialize :future_subscriptions, Serializers::Json # rubocop:disable Cop/ActiveRecordSerialize
     end
 
     class_methods do
@@ -154,6 +158,7 @@ module EE
           email_additional_text: nil,
           enforce_namespace_storage_limit: false,
           enforce_pat_expiration: true,
+          future_subscriptions: [],
           geo_node_allowed_ips: '0.0.0.0/0, ::/0',
           git_two_factor_session_expiry: 15,
           lock_memberships_to_ldap: false,

@@ -63,6 +63,10 @@ RSpec.describe ApplicationSetting do
     it { is_expected.to allow_value('a' * 255).for(:elasticsearch_username) }
     it { is_expected.not_to allow_value('a' * 256).for(:elasticsearch_username) }
 
+    it { is_expected.to allow_value([{}]).for(:future_subscriptions) }
+    it { is_expected.not_to allow_value({}).for(:future_subscriptions) }
+    it { is_expected.not_to allow_value(nil).for(:future_subscriptions) }
+
     it { is_expected.to allow_value(nil).for(:required_instance_ci_template) }
     it { is_expected.not_to allow_value("").for(:required_instance_ci_template) }
     it { is_expected.not_to allow_value("  ").for(:required_instance_ci_template) }

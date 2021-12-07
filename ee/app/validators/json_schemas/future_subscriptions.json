@@ -1,0 +1,8 @@
+{
+  "description": "A list of future subscriptions",
+  "type": "array",
+  "items": {
+    "type": "object"
+  },
+  "maxItems": 100
+}

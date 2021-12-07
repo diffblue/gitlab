@@ -28,6 +28,7 @@ class SyncSeatLinkRequestWorker
     if response.success?
       reset_license!(response['license']) if response['license']
 
+      save_future_subscriptions(response)
       save_reconciliation_dates!(response)
     else
       raise RequestError, request_error_message(response)
@@ -76,5 +77,13 @@ class SyncSeatLinkRequestWorker
     else
       GitlabSubscriptions::UpcomingReconciliation.create!(attributes)
     end
+  end
+
+  def save_future_subscriptions(response)
+    return if response['future_subscriptions'].blank?
+
+    Gitlab::CurrentSettings.current_application_settings.update!(future_subscriptions: response['future_subscriptions'])
+  rescue StandardError => err
+    Gitlab::ErrorTracking.track_and_raise_for_dev_exception(err)
   end
 end
