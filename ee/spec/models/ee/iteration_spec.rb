@@ -338,6 +338,40 @@ RSpec.describe Iteration do
     end
   end
 
+  describe 'callbacks' do
+    describe 'before_destroy :check_if_can_be_destroyed' do
+      let!(:iteration1) { create(:iteration, group: group, iterations_cadence: iteration_cadence, start_date: 1.week.ago, due_date: 1.week.ago + 4.days) }
+      let!(:iteration2) { create(:iteration, group: group, iterations_cadence: iteration_cadence, start_date: Date.today, due_date: Date.today + 4.days) }
+
+      context 'current iteration is the last iteration in a cadence' do
+        it 'destroys the current iteration' do
+          expect { iteration2.destroy! }.to change { iteration_cadence.iterations.count }.by(-1)
+        end
+      end
+
+      context 'current iteration is not the last iteration in a cadence' do
+        let_it_be(:iteration3) { create(:iteration, group: group, iterations_cadence: iteration_cadence, start_date: 1.week.from_now, due_date: 1.week.from_now + 4.days) }
+
+        it 'throws an error when attempting to destroy the current iteration' do
+          expect { iteration2.destroy! }.to raise_error(ActiveRecord::RecordNotDestroyed)
+        end
+      end
+
+      context 'upcoming iteration' do
+        let_it_be(:iteration3) { create(:iteration, group: group, iterations_cadence: iteration_cadence, start_date: 1.week.from_now, due_date: 1.week.from_now + 4.days) }
+        let_it_be(:iteration4) { create(:iteration, group: group, iterations_cadence: iteration_cadence, start_date: 2.weeks.from_now, due_date: 2.weeks.from_now + 4.days) }
+
+        it 'throws an error when attempting to destroy an upcoming iteration that is not the last iteration in a cadence' do
+          expect { iteration3.destroy! }.to raise_error(ActiveRecord::RecordNotDestroyed)
+        end
+
+        it 'destroys an upcoming iteration when it is the last iteration in a cadence' do
+          expect { iteration4.destroy! }.to change { iteration_cadence.iterations.count }.by(-1)
+        end
+      end
+    end
+  end
+
   context 'time scopes' do
     let_it_be(:project) { create(:project, :empty_repo) }
     let_it_be(:iteration_1) { create(:iteration, :skip_future_date_validation, :skip_project_validation, project: project, start_date: 3.days.ago, due_date: 1.day.from_now) }
