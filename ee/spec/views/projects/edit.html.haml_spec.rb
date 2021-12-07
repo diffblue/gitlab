@@ -49,9 +49,22 @@ RSpec.describe 'projects/edit' do
         render
       end
 
-      it('renders registration features prompt') do
-        expect(rendered).to render_template('shared/_registration_features_discovery_message')
+      it('renders registration features prompt without activation link') do
         expect(rendered).to have_field('project_disabled_repository_size_limit', disabled: true)
+        expect(rendered).to have_link 'Registration Features Program'
+        expect(rendered).not_to have_link 'Enable Service Ping and register for this feature.'
+      end
+
+      context 'user has an active license' do
+        before do
+          assign(:license, create(:license))
+
+          render
+        end
+
+        it('renders registration features prompt with activation link') do
+          expect(rendered).to have_link 'Enable Service Ping and register for this feature.', href: metrics_and_profiling_admin_application_settings_path(anchor: 'js-usage-settings')
+        end
       end
     end
   end
