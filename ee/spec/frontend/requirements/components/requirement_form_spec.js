@@ -9,8 +9,8 @@ import RequirementStatusBadge from 'ee/requirements/components/requirement_statu
 
 import { TestReportStatus } from 'ee/requirements/constants';
 
-import IssuableBody from '~/issuable_show/components/issuable_body.vue';
-import IssuableEditForm from '~/issuable_show/components/issuable_edit_form.vue';
+import IssuableBody from '~/vue_shared/issuable/show/components/issuable_body.vue';
+import IssuableEditForm from '~/vue_shared/issuable/show/components/issuable_edit_form.vue';
 import MarkdownField from '~/vue_shared/components/markdown/field.vue';
 import ZenMode from '~/zen_mode';
 

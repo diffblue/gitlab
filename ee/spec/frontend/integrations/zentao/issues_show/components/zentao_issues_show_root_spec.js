@@ -6,9 +6,9 @@ import ZentaoIssuesShow from 'ee/integrations/zentao/issues_show/components/zent
 import waitForPromises from 'helpers/wait_for_promises';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import IssuableHeader from '~/issuable_show/components/issuable_header.vue';
-import IssuableShow from '~/issuable_show/components/issuable_show_root.vue';
-import IssuableDiscussion from '~/issuable_show/components/issuable_discussion.vue';
+import IssuableHeader from '~/vue_shared/issuable/show/components/issuable_header.vue';
+import IssuableShow from '~/vue_shared/issuable/show/components/issuable_show_root.vue';
+import IssuableDiscussion from '~/vue_shared/issuable/show/components/issuable_discussion.vue';
 import Note from 'ee/external_issues_show/components/note.vue';
 import IssuableSidebar from '~/vue_shared/issuable/sidebar/components/issuable_sidebar_root.vue';
 import axios from '~/lib/utils/axios_utils';

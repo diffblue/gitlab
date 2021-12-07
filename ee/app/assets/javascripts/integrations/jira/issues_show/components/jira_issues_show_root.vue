@@ -7,7 +7,7 @@ import { fetchIssue } from 'ee/integrations/jira/issues_show/api';
 
 import JiraIssueSidebar from 'ee/integrations/jira/issues_show/components/sidebar/jira_issues_sidebar_root.vue';
 import { IssuableStatus, IssuableStatusText } from '~/issues/show/constants';
-import IssuableShow from '~/issuable_show/components/issuable_show_root.vue';
+import IssuableShow from '~/vue_shared/issuable/show/components/issuable_show_root.vue';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { s__ } from '~/locale';
 

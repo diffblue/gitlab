@@ -6,8 +6,8 @@ import JiraIssuesShow from 'ee/integrations/jira/issues_show/components/jira_iss
 import JiraIssueSidebar from 'ee/integrations/jira/issues_show/components/sidebar/jira_issues_sidebar_root.vue';
 import { IssuableStatus } from '~/issues/show/constants';
 import waitForPromises from 'helpers/wait_for_promises';
-import IssuableHeader from '~/issuable_show/components/issuable_header.vue';
-import IssuableShow from '~/issuable_show/components/issuable_show_root.vue';
+import IssuableHeader from '~/vue_shared/issuable/show/components/issuable_header.vue';
+import IssuableShow from '~/vue_shared/issuable/show/components/issuable_show_root.vue';
 import IssuableSidebar from '~/vue_shared/issuable/sidebar/components/issuable_sidebar_root.vue';
 import axios from '~/lib/utils/axios_utils';
 import { mockJiraIssue } from '../mock_data';
