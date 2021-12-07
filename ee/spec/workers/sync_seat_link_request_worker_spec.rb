@@ -158,6 +158,45 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker do
       end
     end
 
+    context 'when response contains future subscription information' do
+      let(:future_subscriptions) { [{ 'foo' => 'bar' }] }
+      let(:body) { { success: true, future_subscriptions: future_subscriptions }.to_json }
+      let(:today) { Date.current }
+
+      before do
+        stub_request(:post, seat_link_url).to_return(
+          status: 200,
+          body: body,
+          headers: { content_type: 'application/json' }
+        )
+      end
+
+      it 'persists future subscription information' do
+        expect { sync_seat_link }.to change { Gitlab::CurrentSettings.current_application_settings.future_subscriptions }.from([]).to(future_subscriptions)
+      end
+
+      context 'when future subscription is empty' do
+        let(:future_subscriptions) { [] }
+
+        before do
+          Gitlab::CurrentSettings.current_application_settings.update!(future_subscriptions: [{}])
+        end
+
+        it 'does nothing' do
+          expect { sync_seat_link }.not_to change { Gitlab::CurrentSettings.current_application_settings.future_subscriptions }.from([{}])
+        end
+      end
+
+      context 'when saving fails' do
+        it 'logs error' do
+          allow(Gitlab::CurrentSettings.current_application_settings).to receive(:save!).and_raise('saving fails')
+
+          expect(Gitlab::ErrorTracking).to receive(:track_and_raise_for_dev_exception)
+          expect { sync_seat_link }.not_to raise_error
+        end
+      end
+    end
+
     shared_examples 'unsuccessful request' do
       context 'when the request is not successful' do
         before do
