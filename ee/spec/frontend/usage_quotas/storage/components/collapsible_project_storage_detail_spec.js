@@ -3,13 +3,16 @@ import CollapsibleProjectStorageDetail from 'ee/usage_quotas/storage/components/
 import ProjectStorageDetail from 'ee/usage_quotas/storage/components/project_storage_detail.vue';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
-import { projects } from '../mock_data';
+import { projects, projectHelpLinks as helpLinks } from '../mock_data';
 
 let wrapper;
 const createComponent = () => {
   wrapper = shallowMount(CollapsibleProjectStorageDetail, {
     propsData: {
       project: projects[1],
+    },
+    provide: {
+      helpLinks,
     },
   });
 };

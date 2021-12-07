@@ -36,26 +36,7 @@ export default {
     GlModalDirective,
   },
   mixins: [glFeatureFlagsMixin()],
-  props: {
-    namespacePath: {
-      type: String,
-      required: true,
-    },
-    helpPagePath: {
-      type: String,
-      required: true,
-    },
-    purchaseStorageUrl: {
-      type: String,
-      required: false,
-      default: null,
-    },
-    isTemporaryStorageIncreaseVisible: {
-      type: String,
-      required: false,
-      default: 'false',
-    },
-  },
+  inject: ['namespacePath', 'purchaseStorageUrl', 'isTemporaryStorageIncreaseVisible', 'helpLinks'],
   apollo: {
     namespace: {
       query,
@@ -171,10 +152,7 @@ export default {
       :actual-repository-size-limit="namespace.actualRepositorySizeLimit"
     />
     <div v-if="isAdditionalStorageFlagEnabled && storageStatistics">
-      <usage-statistics
-        :root-storage-statistics="storageStatistics"
-        :purchase-storage-url="purchaseStorageUrl"
-      />
+      <usage-statistics :root-storage-statistics="storageStatistics" />
     </div>
     <div v-else class="gl-py-4 gl-px-2 gl-m-0">
       <div class="gl-display-flex gl-align-items-center">
@@ -197,7 +175,7 @@ export default {
             </template>
           </gl-sprintf>
           <gl-link
-            :href="helpPagePath"
+            :href="helpLinks.usageQuotas"
             target="_blank"
             :aria-label="s__('UsageQuota|Usage quotas help link')"
           >

@@ -8,7 +8,11 @@ import UsageStatistics from 'ee/usage_quotas/storage/components/usage_statistics
 import UsageGraph from 'ee/usage_quotas/storage/components/usage_graph.vue';
 import { formatUsageSize } from 'ee/usage_quotas/storage/utils';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
-import { namespaceData, withRootStorageStatistics } from '../mock_data';
+import {
+  namespaceData,
+  withRootStorageStatistics,
+  defaultNamespaceProvideValues,
+} from '../mock_data';
 
 const TEST_LIMIT = 1000;
 
@@ -27,7 +31,7 @@ describe('NamespaceStorageApp', () => {
   const findNextButton = () => wrapper.find('[data-testid="nextButton"]');
 
   const createComponent = ({
-    props = {},
+    provide = {},
     loading = false,
     additionalRepoStorageByNamespace = false,
     namespace = {},
@@ -41,7 +45,6 @@ describe('NamespaceStorageApp', () => {
     };
 
     wrapper = mount(NamespaceStorageApp, {
-      propsData: { namespacePath: 'h5bp', helpPagePath: 'help', ...props },
       mocks: { $apollo },
       directives: {
         GlModalDirective: createMockDirective(),
@@ -50,6 +53,8 @@ describe('NamespaceStorageApp', () => {
         glFeatures: {
           additionalRepoStorageByNamespace,
         },
+        ...defaultNamespaceProvideValues,
+        ...provide,
       },
       data() {
         return {
@@ -159,7 +164,7 @@ describe('NamespaceStorageApp', () => {
 
     describe('when purchaseStorageUrl is set', () => {
       beforeEach(() => {
-        createComponent({ props: { purchaseStorageUrl: 'customers.gitlab.com' } });
+        createComponent({ provide: { purchaseStorageUrl: 'customers.gitlab.com' } });
       });
 
       it('does render link', () => {
@@ -173,13 +178,13 @@ describe('NamespaceStorageApp', () => {
 
   describe('temporary storage increase', () => {
     describe.each`
-      props                                             | isVisible
+      provide                                           | isVisible
       ${{}}                                             | ${false}
       ${{ isTemporaryStorageIncreaseVisible: 'false' }} | ${false}
       ${{ isTemporaryStorageIncreaseVisible: 'true' }}  | ${true}
-    `('with $props', ({ props, isVisible }) => {
+    `('with $provide', ({ provide, isVisible }) => {
       beforeEach(() => {
-        createComponent({ props });
+        createComponent({ provide });
       });
 
       it(`renders button = ${isVisible}`, () => {
@@ -189,7 +194,7 @@ describe('NamespaceStorageApp', () => {
 
     describe('when temporary storage increase is visible', () => {
       beforeEach(() => {
-        createComponent({ props: { isTemporaryStorageIncreaseVisible: 'true' } });
+        createComponent({ provide: { isTemporaryStorageIncreaseVisible: 'true' } });
         wrapper.setData({
           namespace: {
             ...namespaceData,

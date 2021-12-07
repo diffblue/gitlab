@@ -39,9 +39,7 @@ describe('ProjectStorageDetail', () => {
         expect(wrapper.findByTestId(`${id}-description`).text()).toBe(description);
         expect(wrapper.findByTestId(`${id}-icon`).props('name')).toBe(id);
         expect(wrapper.findByTestId(`${id}-help-link`).attributes('href')).toBe(
-          projectHelpLinks[id.replace(`Size`, `HelpPagePath`)]
-            .replace(`Size`, ``)
-            .replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`),
+          projectHelpLinks[id.replace(`Size`, ``)],
         );
       },
     );

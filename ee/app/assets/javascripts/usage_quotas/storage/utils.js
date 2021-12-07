@@ -144,7 +144,7 @@ export const parseGetStorageResults = (data) => {
 
 export const getStorageTypesFromProjectStatistics = (projectStatistics, helpLinks = {}) =>
   PROJECT_STORAGE_TYPES.reduce((types, currentType) => {
-    const helpPathKey = currentType.id.replace(`Size`, `HelpPagePath`);
+    const helpPathKey = currentType.id.replace(`Size`, ``);
     const helpPath = helpLinks[helpPathKey];
 
     return types.concat({

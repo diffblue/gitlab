@@ -22,4 +22,4 @@
     = render "namespaces/pipelines_quota/list",
       locals: { namespace: @namespace, projects: @projects }
   .tab-pane#storage-quota-tab
-    #js-storage-counter-app{ data: { namespace_path: @namespace.full_path, help_page_path: help_page_path('user/usage_quotas.md'), purchase_storage_url: url_to_purchase_storage, is_temporary_storage_increase_visible: temporary_storage_increase_visible?(@namespace).to_s } }
+    #js-storage-counter-app{ data: { namespace_path: @namespace.full_path, purchase_storage_url: url_to_purchase_storage, is_temporary_storage_increase_visible: temporary_storage_increase_visible?(@namespace).to_s } }

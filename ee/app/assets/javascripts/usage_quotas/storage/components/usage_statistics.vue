@@ -12,15 +12,11 @@ export default {
     UsageStatisticsCard,
   },
   mixins: [glFeatureFlagsMixin()],
+  inject: ['purchaseStorageUrl'],
   props: {
     rootStorageStatistics: {
       required: true,
       type: Object,
-    },
-    purchaseStorageUrl: {
-      required: false,
-      type: String,
-      default: '',
     },
   },
   computed: {

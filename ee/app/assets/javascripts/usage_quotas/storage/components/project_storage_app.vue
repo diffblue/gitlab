@@ -84,7 +84,7 @@ export default {
           <p class="gl-m-0 gl-text-gray-400">
             {{ $options.TOTAL_USAGE_SUBTITLE }}
             <gl-link
-              :href="helpLinks.usageQuotasHelpPagePath"
+              :href="helpLinks.usageQuotas"
               target="_blank"
               :aria-label="helpLinkAriaLabel($options.USAGE_QUOTAS_LABEL)"
               data-testid="usage-quotas-help-link"
