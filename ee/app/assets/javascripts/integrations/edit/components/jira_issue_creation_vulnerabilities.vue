@@ -81,12 +81,7 @@ export default {
   },
   computed: {
     ...mapGetters(['isInheriting']),
-    ...mapState([
-      'isTesting',
-      'jiraIssueTypes',
-      'isLoadingJiraIssueTypes',
-      'loadingJiraIssueTypesErrorMessage',
-    ]),
+    ...mapState(['jiraIssueTypes', 'isLoadingJiraIssueTypes', 'loadingJiraIssueTypesErrorMessage']),
     checkboxDisabled() {
       return !this.showFullFeature || this.isInheriting;
     },
@@ -180,7 +175,7 @@ export default {
             <gl-dropdown
               class="gl-w-full"
               :disabled="!jiraIssueTypes.length"
-              :loading="isLoadingJiraIssueTypes || isTesting"
+              :loading="isLoadingJiraIssueTypes"
               :text="checkedIssueType.name || $options.i18n.issueTypeSelect.defaultText"
             >
               <gl-dropdown-item
