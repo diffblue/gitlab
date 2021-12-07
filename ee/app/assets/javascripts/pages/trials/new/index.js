@@ -1,1 +1,1 @@
-import 'ee/pages/trials/country_select';
+import 'ee/trials/country_select';

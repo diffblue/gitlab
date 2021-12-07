@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import mountVisibilityLevelDropdown from '~/groups/visibility_level';
-import 'ee/pages/trials/country_select';
+import 'ee/trials/country_select';
 import RegistrationTrialToggle from '../../components/registration_trial_toggle.vue';
 
 function toggleTrialForm(trial) {

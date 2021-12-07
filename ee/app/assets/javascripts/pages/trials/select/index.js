@@ -1,1 +1,1 @@
-import 'ee/pages/trials/namespace_select';
+import 'ee/trials/namespace_select';
