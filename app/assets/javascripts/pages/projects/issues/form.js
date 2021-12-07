@@ -6,7 +6,7 @@ import ShortcutsNavigation from '~/behaviors/shortcuts/shortcuts_navigation';
 import GLForm from '~/gl_form';
 import initSuggestions from '~/issues/suggestions';
 import initIssuableTypeSelector from '~/issues/type_selector';
-import LabelsSelect from '~/labels_select';
+import LabelsSelect from '~/labels/labels_select';
 import MilestoneSelect from '~/milestones/milestone_select';
 import IssuableTemplateSelectors from '~/templates/issuable_template_selectors';
 

@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import Labels from '~/labels';
+import Labels from '~/labels/labels';
 import { isScopedLabel } from '~/lib/utils/common_utils';
 
 class LabelsEE extends Labels {
