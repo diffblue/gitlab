@@ -7,7 +7,7 @@ import getIssuesCountsQuery from 'ee_else_ce/issues_list/queries/get_issues_coun
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { getIssuesCountsQueryResponse, getIssuesQueryResponse } from 'jest/issues_list/mock_data';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
-import IssuableList from '~/issuable_list/components/issuable_list_root.vue';
+import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 import {
   TOKEN_TYPE_ASSIGNEE,
   TOKEN_TYPE_AUTHOR,

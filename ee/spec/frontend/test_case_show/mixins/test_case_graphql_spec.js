@@ -4,7 +4,7 @@ import TestCaseShowRoot from 'ee/test_case_show/components/test_case_show_root.v
 import markTestCaseTodoDone from 'ee/test_case_show/queries/mark_test_case_todo_done.mutation.graphql';
 import moveTestCase from 'ee/test_case_show/queries/move_test_case.mutation.graphql';
 import updateTestCase from 'ee/test_case_show/queries/update_test_case.mutation.graphql';
-import { mockCurrentUserTodo } from 'jest/issuable_list/mock_data';
+import { mockCurrentUserTodo } from 'jest/vue_shared/issuable/list/mock_data';
 
 import Api from '~/api';
 import createFlash from '~/flash';

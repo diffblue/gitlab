@@ -5,9 +5,9 @@ import EpicsFilteredSearchMixin from 'ee/roadmap/mixins/filtered_search_mixin';
 
 import createFlash from '~/flash';
 
-import IssuableList from '~/issuable_list/components/issuable_list_root.vue';
+import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 
-import { IssuableListTabs, DEFAULT_PAGE_SIZE } from '~/issuable_list/constants';
+import { IssuableListTabs, DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/constants';
 import { parsePikadayDate, dateInWords } from '~/lib/utils/datetime_utility';
 import { s__, sprintf } from '~/locale';
 

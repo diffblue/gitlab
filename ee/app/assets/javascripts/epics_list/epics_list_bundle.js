@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 
-import { IssuableStates } from '~/issuable_list/constants';
+import { IssuableStates } from '~/vue_shared/issuable/list/constants';
 import createDefaultClient from '~/lib/graphql';
 import { parseBoolean, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { queryToObject } from '~/lib/utils/url_utility';

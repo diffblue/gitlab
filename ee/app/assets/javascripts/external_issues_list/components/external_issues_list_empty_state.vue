@@ -1,7 +1,7 @@
 <script>
 import { GlEmptyState, GlButton, GlIcon, GlSprintf } from '@gitlab/ui';
 import { externalIssuesListEmptyStateI18n as i18n } from 'ee/external_issues_list/constants';
-import { IssuableStates } from '~/issuable_list/constants';
+import { IssuableStates } from '~/vue_shared/issuable/list/constants';
 
 export default {
   components: {

@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-import { IssuableStates } from '~/issuable_list/constants';
+import { IssuableStates } from '~/vue_shared/issuable/list/constants';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { queryToObject } from '~/lib/utils/url_utility';
 

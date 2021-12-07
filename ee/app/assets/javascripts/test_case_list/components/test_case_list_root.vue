@@ -3,7 +3,7 @@ import { GlButton } from '@gitlab/ui';
 
 import Api from '~/api';
 import createFlash from '~/flash';
-import IssuableList from '~/issuable_list/components/issuable_list_root.vue';
+import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 import axios from '~/lib/utils/axios_utils';
 import { updateHistory, setUrlParams, queryToObject } from '~/lib/utils/url_utility';
 

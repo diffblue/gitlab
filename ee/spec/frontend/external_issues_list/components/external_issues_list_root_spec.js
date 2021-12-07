@@ -10,7 +10,7 @@ import jiraIssuesResolver from 'ee/integrations/jira/issues_list/graphql/resolve
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
-import IssuableList from '~/issuable_list/components/issuable_list_root.vue';
+import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 import { i18n } from '~/issues_list/constants';
 import axios from '~/lib/utils/axios_utils';
 import httpStatus from '~/lib/utils/http_status';
@@ -22,11 +22,12 @@ import {
 } from '../mock_data';
 
 jest.mock('~/flash');
-jest.mock('~/issuable_list/constants', () => ({
+jest.mock('~/vue_shared/issuable/list/constants', () => ({
   DEFAULT_PAGE_SIZE: 2,
-  IssuableStates: jest.requireActual('~/issuable_list/constants').IssuableStates,
-  IssuableListTabs: jest.requireActual('~/issuable_list/constants').IssuableListTabs,
-  AvailableSortOptions: jest.requireActual('~/issuable_list/constants').AvailableSortOptions,
+  IssuableStates: jest.requireActual('~/vue_shared/issuable/list/constants').IssuableStates,
+  IssuableListTabs: jest.requireActual('~/vue_shared/issuable/list/constants').IssuableListTabs,
+  AvailableSortOptions: jest.requireActual('~/vue_shared/issuable/list/constants')
+    .AvailableSortOptions,
 }));
 jest.mock(
   '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue',

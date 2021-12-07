@@ -9,13 +9,13 @@ import {
 } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 
-import IssuableList from '~/issuable_list/components/issuable_list_root.vue';
+import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 import {
   IssuableStates,
   IssuableListTabs,
   AvailableSortOptions,
   DEFAULT_PAGE_SIZE,
-} from '~/issuable_list/constants';
+} from '~/vue_shared/issuable/list/constants';
 import { i18n } from '~/issues_list/constants';
 import {
   FILTERED_SEARCH_LABELS,

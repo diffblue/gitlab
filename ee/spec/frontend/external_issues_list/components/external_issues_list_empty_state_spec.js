@@ -3,7 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 
 import ExternalIssuesListEmptyState from 'ee/external_issues_list/components/external_issues_list_empty_state.vue';
 import { externalIssuesListEmptyStateI18n } from 'ee/external_issues_list/constants';
-import { IssuableStates } from '~/issuable_list/constants';
+import { IssuableStates } from '~/vue_shared/issuable/list/constants';
 
 import { mockProvide } from '../mock_data';
 

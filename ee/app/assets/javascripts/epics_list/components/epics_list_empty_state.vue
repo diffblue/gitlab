@@ -1,6 +1,6 @@
 <script>
 import { GlEmptyState } from '@gitlab/ui';
-import { IssuableStates } from '~/issuable_list/constants';
+import { IssuableStates } from '~/vue_shared/issuable/list/constants';
 import { __ } from '~/locale';
 
 import { FilterStateEmptyMessage } from '../constants';
