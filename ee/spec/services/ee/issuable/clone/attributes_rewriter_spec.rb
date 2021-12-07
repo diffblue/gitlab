@@ -21,7 +21,7 @@ RSpec.describe Issuable::Clone::AttributesRewriter do
         let!(:group_label2) { create(:group_label, title: 'label2', group: group) }
 
         it 'keeps group labels and merges project labels where possible' do
-          original_issue.update(labels: [project_label1, project_label2, group_label1])
+          original_issue.update!(labels: [project_label1, project_label2, group_label1])
 
           subject.execute
 
@@ -32,7 +32,7 @@ RSpec.describe Issuable::Clone::AttributesRewriter do
       context 'setting milestones' do
         it 'ignores milestone attribute' do
           milestone = create(:milestone, title: 'milestone', group: group)
-          original_issue.update(milestone: milestone)
+          original_issue.update!(milestone: milestone)
 
           expect(new_epic).to receive(:update).with(labels: [])
 
@@ -47,7 +47,7 @@ RSpec.describe Issuable::Clone::AttributesRewriter do
 
         it 'ignores issue_id attribute' do
           milestone = create(:milestone, title: 'milestone', group: group)
-          original_issue.update(milestone: milestone)
+          original_issue.update!(milestone: milestone)
 
           subject.execute
 

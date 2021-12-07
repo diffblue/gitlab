@@ -76,7 +76,7 @@ RSpec.describe Issuable::CommonSystemNotesService do
 
       before do
         issuable.assign_attributes(start_date: timestamp, end_date: nil)
-        issuable.save
+        issuable.save!
       end
 
       it 'creates 2 system notes with the correct content' do
@@ -96,7 +96,7 @@ RSpec.describe Issuable::CommonSystemNotesService do
     subject { described_class.new(project: project, current_user: user).execute(issuable, old_labels: [], is_update: false) }
 
     before do
-      issuable.update(weight: 5, health_status: 'at_risk')
+      issuable.update!(weight: 5, health_status: 'at_risk')
     end
 
     it 'creates a resource weight event' do

@@ -161,7 +161,7 @@ RSpec.describe Boards::Issues::ListService, services: true do
 
             context 'as upcoming' do
               before do
-                board.update(milestone_id: Milestone::Upcoming.id)
+                board.update!(milestone_id: Milestone::Upcoming.id)
               end
 
               it 'returns open issue for backlog without board label or assignees' do
@@ -173,7 +173,7 @@ RSpec.describe Boards::Issues::ListService, services: true do
 
             context 'as started' do
               before do
-                board.update(milestone_id: Milestone::Started.id)
+                board.update!(milestone_id: Milestone::Started.id)
               end
 
               it 'returns open issue for backlog without board label or assignees' do
