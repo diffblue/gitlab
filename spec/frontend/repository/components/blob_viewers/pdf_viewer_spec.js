@@ -1,8 +1,7 @@
-import { shallowMount } from '@vue/test-utils';
 import { GlButton } from '@gitlab/ui';
 import Component from '~/repository/components/blob_viewers/pdf_viewer.vue';
 import PdfViewer from '~/blob/pdf/pdf_viewer.vue';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 describe('PDF Viewer', () => {
   let wrapper;
@@ -10,13 +9,11 @@ describe('PDF Viewer', () => {
   const defaultPropsData = { url: 'some/pdf_blob.pdf' };
 
   const createComponent = (fileSize = 999) => {
-    wrapper = extendedWrapper(
-      shallowMount(Component, { propsData: { ...defaultPropsData, fileSize } }),
-    );
+    wrapper = shallowMountExtended(Component, { propsData: { ...defaultPropsData, fileSize } });
   };
 
   const findPDFViewer = () => wrapper.findComponent(PdfViewer);
-  const findHelpText = () => wrapper.findByTestId('download-help-text');
+  const findHelpText = () => wrapper.find('p');
   const findDownLoadButton = () => wrapper.findComponent(GlButton);
 
   it('renders a PDF Viewer component', () => {
@@ -35,12 +32,11 @@ describe('PDF Viewer', () => {
 
     it('renders help text', () => {
       expect(findHelpText().text()).toBe(
-        'This PDF is too large to display, please download to view.',
+        'This PDF is too large to display. Please download to view.',
       );
     });
 
     it('renders a download button', () => {
-      expect(findDownLoadButton().exists()).toBe(true);
       expect(findDownLoadButton().text()).toBe('Download PDF');
       expect(findDownLoadButton().props('icon')).toBe('download');
     });

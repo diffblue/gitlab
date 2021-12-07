@@ -35552,7 +35552,7 @@ msgstr ""
 msgid "This GitLab instance is undergoing maintenance and is operating in read-only mode."
 msgstr ""
 
-msgid "This PDF is too large to display, please download to view."
+msgid "This PDF is too large to display. Please download to view."
 msgstr ""
 
 msgid "This Project is currently archived and read-only. Please unarchive the project first if you want to resume Pull mirroring"

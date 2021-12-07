@@ -7,7 +7,7 @@ import { PDF_MAX_FILE_SIZE, PDF_MAX_PAGE_LIMIT } from '../../constants';
 export default {
   components: { GlButton, PdfViewer },
   i18n: {
-    tooLargeDescription: __('This PDF is too large to display, please download to view.'),
+    tooLargeDescription: __('This PDF is too large to display. Please download to view.'),
     tooLargeButtonText: __('Download PDF'),
   },
   props: {
@@ -40,18 +40,11 @@ export default {
     <pdf-viewer v-if="!tooLargeToDisplay" :pdf="url" @pdflabload="handleOnLoad" />
 
     <div v-else class="gl-display-flex gl-flex-direction-column gl-align-items-center gl-p-5">
-      <p data-testid="download-help-text">{{ $options.i18n.tooLargeDescription }}</p>
+      <p>{{ $options.i18n.tooLargeDescription }}</p>
 
-      <gl-button
-        icon="download"
-        category="secondary"
-        variant="confirm"
-        :href="url"
-        :aria-label="$options.i18n.tooLargeButtonText"
-        :title="$options.i18n.tooLargeButtonText"
-        download
-        >{{ $options.i18n.tooLargeButtonText }}</gl-button
-      >
+      <gl-button icon="download" category="secondary" variant="confirm" :href="url" download>{{
+        $options.i18n.tooLargeButtonText
+      }}</gl-button>
     </div>
   </div>
 </template>
