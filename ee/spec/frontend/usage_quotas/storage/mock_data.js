@@ -138,18 +138,25 @@ export const projectData = {
 };
 
 export const projectHelpLinks = {
-  usageQuotasHelpPagePath: '/usage-quotas',
-  buildArtifactsHelpPagePath: '/build-artifacts',
-  lfsObjectsHelpPagePath: '/lsf-objects',
-  packagesHelpPagePath: '/packages',
-  repositoryHelpPagePath: '/repository',
-  snippetsHelpPagePath: '/snippets',
-  uploadsHelpPagePath: '/uploads',
-  wikiHelpPagePath: '/wiki',
+  usageQuotas: '/usage-quotas',
+  buildArtifacts: '/build-artifacts',
+  lfsObjects: '/lsf-objects',
+  packages: '/packages',
+  repository: '/repository',
+  snippets: '/snippets',
+  uploads: '/uploads',
+  wiki: '/wiki',
 };
 
 export const defaultProjectProvideValues = {
   projectPath: '/project-path',
+  helpLinks: projectHelpLinks,
+};
+
+export const defaultNamespaceProvideValues = {
+  namespacePath: 'h5bp',
+  purchaseStorageUrl: '',
+  isTemporaryStorageIncreaseVisible: false,
   helpLinks: projectHelpLinks,
 };
 

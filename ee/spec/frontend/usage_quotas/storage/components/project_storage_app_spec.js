@@ -75,7 +75,7 @@ describe('ProjectStorageApp', () => {
 
     it('renders correct usage quotas help link', () => {
       expect(findUsageQuotasHelpLink().attributes('href')).toBe(
-        defaultProjectProvideValues.helpLinks.usageQuotasHelpPagePath,
+        defaultProjectProvideValues.helpLinks.usageQuotas,
       );
     });
   });

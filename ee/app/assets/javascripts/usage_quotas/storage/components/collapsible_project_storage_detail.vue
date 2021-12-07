@@ -14,6 +14,7 @@ export default {
     ProjectAvatar,
     ProjectStorageDetail,
   },
+  inject: ['helpLinks'],
   props: {
     project: {
       required: true,
@@ -36,7 +37,7 @@ export default {
       return this.isOpen ? 'angle-down' : 'angle-right';
     },
     projectStorageTypes() {
-      return getStorageTypesFromProjectStatistics(this.project.statistics);
+      return getStorageTypesFromProjectStatistics(this.project.statistics, this.helpLinks);
     },
   },
   methods: {

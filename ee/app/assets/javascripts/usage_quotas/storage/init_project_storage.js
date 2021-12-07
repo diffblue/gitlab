@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
+import { projectHelpLinks as helpLinks } from './constants';
 import ProjectStorageApp from './components/project_storage_app.vue';
 
 Vue.use(VueApollo);
@@ -12,17 +13,7 @@ export default (containerId = 'js-project-storage-count-app') => {
     return false;
   }
 
-  const {
-    projectPath,
-    usageQuotasHelpPagePath,
-    buildArtifactsHelpPagePath,
-    lfsObjectsHelpPagePath,
-    packagesHelpPagePath,
-    repositoryHelpPagePath,
-    snippetsHelpPagePath,
-    uploadsHelpPagePath,
-    wikiHelpPagePath,
-  } = el.dataset;
+  const { projectPath } = el.dataset;
 
   const apolloProvider = new VueApollo({
     defaultClient: createDefaultClient(),
@@ -33,16 +24,7 @@ export default (containerId = 'js-project-storage-count-app') => {
     apolloProvider,
     provide: {
       projectPath,
-      helpLinks: {
-        usageQuotasHelpPagePath,
-        buildArtifactsHelpPagePath,
-        lfsObjectsHelpPagePath,
-        packagesHelpPagePath,
-        repositoryHelpPagePath,
-        snippetsHelpPagePath,
-        uploadsHelpPagePath,
-        wikiHelpPagePath,
-      },
+      helpLinks,
     },
     render(createElement) {
       return createElement(ProjectStorageApp);

@@ -7,7 +7,7 @@ import { withRootStorageStatistics } from '../mock_data';
 describe('UsageStatistics', () => {
   let wrapper;
 
-  const createComponent = ({ props = {}, newRouteStoragePurchase = false } = {}) => {
+  const createComponent = ({ props = {}, provide = {}, newRouteStoragePurchase = false } = {}) => {
     wrapper = shallowMount(UsageStatistics, {
       propsData: {
         rootStorageStatistics: {
@@ -22,6 +22,7 @@ describe('UsageStatistics', () => {
         glFeatures: {
           newRouteStoragePurchase,
         },
+        ...provide,
       },
       stubs: {
         UsageStatisticsCard,
@@ -45,7 +46,7 @@ describe('UsageStatistics', () => {
   describe('with purchaseStorageUrl passed and newRouteStoragePurchase flag enabled', () => {
     beforeEach(() => {
       createComponent({
-        props: {
+        provide: {
           purchaseStorageUrl: 'some-fancy-url',
         },
         newRouteStoragePurchase: true,
@@ -63,7 +64,7 @@ describe('UsageStatistics', () => {
   describe('with purchaseStorageUrl passed', () => {
     beforeEach(() => {
       createComponent({
-        props: {
+        provide: {
           purchaseStorageUrl: 'some-fancy-url',
         },
       });
@@ -96,7 +97,7 @@ describe('UsageStatistics', () => {
   describe('with no purchaseStorageUrl', () => {
     beforeEach(() => {
       createComponent({
-        props: {
+        provide: {
           purchaseStorageUrl: null,
         },
       });

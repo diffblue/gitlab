@@ -1,4 +1,5 @@
 import { s__, __ } from '~/locale';
+import { helpPagePath } from '~/helpers/help_page_helper';
 
 export const ERROR_MESSAGE = s__(
   'UsageQuota|Something went wrong while fetching project storage statistics',
@@ -77,3 +78,20 @@ export const STORAGE_USAGE_THRESHOLDS = {
 };
 
 export const PROJECTS_PER_PAGE = 20;
+
+export const projectHelpLinks = {
+  usageQuotas: helpPagePath('user/usage_quotas'),
+  buildArtifacts: helpPagePath('ci/pipelines/job_artifacts', {
+    anchor: 'when-job-artifacts-are-deleted',
+  }),
+  packages: helpPagePath('user/packages/package_registry/index.md', {
+    anchor: 'delete-a-package',
+  }),
+  repository: helpPagePath('user/project/repository/reducing_the_repo_size_using_git'),
+  snippets: helpPagePath('user/snippets', {
+    anchor: 'reduce-snippets-repository-size',
+  }),
+  wiki: helpPagePath('administration/wikis/index.md', {
+    anchor: 'reduce-wiki-repository-size',
+  }),
+};
