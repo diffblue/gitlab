@@ -1813,7 +1813,7 @@ RSpec.describe User do
 
     with_them do
       before do
-        allow(::Gitlab).to receive(:com?).and_return(saas == :saas)
+        allow(::Gitlab).to receive(:dev_env_or_com?).and_return(saas == :saas)
         user.created_at = ::Users::CreditCardValidation::RELEASE_DAY + days_from_release.days
         allow(user).to receive(:credit_card_validated_at).and_return(Time.current) if cc_present
         allow(project.namespace).to receive(:free_plan?).and_return(plan == :free)
@@ -1861,7 +1861,7 @@ RSpec.describe User do
 
     with_them do
       before do
-        allow(::Gitlab).to receive(:com?).and_return(saas == :saas)
+        allow(::Gitlab).to receive(:dev_env_or_com?).and_return(saas == :saas)
         user.created_at = ::Users::CreditCardValidation::RELEASE_DAY + days_from_release.days
         allow(user).to receive(:credit_card_validated_at).and_return(Time.current) if cc_present
         allow(project.namespace).to receive(:free_plan?).and_return(plan == :free)
