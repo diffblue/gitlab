@@ -52,7 +52,7 @@ module TrialStatusWidgetHelper
           current_user_callout_feature_id(group.trial_days_remaining)
         )
       end
-      e.record!
+      e.publish_to_database
     end
 
     force_popover

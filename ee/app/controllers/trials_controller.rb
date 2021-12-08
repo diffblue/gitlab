@@ -225,9 +225,9 @@ class TrialsController < ApplicationController
 
   def redirect_trial_user_to_feature_experiment_flow
     experiment(:redirect_trial_user_to_feature, namespace: @namespace) do |e|
-      e.record!
       e.use { redirect_to group_url(@namespace, { trial: true }) }
       e.try { redirect_to group_security_dashboard_url(@namespace, { trial: true }) }
+      e.publish_to_database
     end
   end
 
