@@ -1,6 +1,6 @@
 import initRelatedFeatureFlags from 'ee/related_feature_flags';
 import { store } from '~/notes/stores';
-import initShow from '~/pages/projects/issues/show';
+import initShow from '~/issues/show';
 import initRelatedIssues from '~/related_issues';
 import initSidebarBundle from '~/sidebar/sidebar_bundle';
 import UserCallout from '~/user_callout';
