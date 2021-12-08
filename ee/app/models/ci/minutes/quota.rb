@@ -11,9 +11,12 @@ module Ci
 
       attr_reader :namespace, :limit
 
-      def initialize(namespace)
+      def initialize(namespace, tracking_strategy: nil)
         @namespace = namespace
         @limit = ::Ci::Minutes::Limit.new(namespace)
+        # TODO: remove `tracking_strategy` after `ci_use_new_monthly_minutes` feature flag
+        # https://gitlab.com/gitlab-org/gitlab/-/issues/341730
+        @tracking_strategy = tracking_strategy
       end
 
       def enabled?
@@ -36,21 +39,19 @@ module Ci
 
       def total_minutes_used
         strong_memoize(:total_minutes_used) do
-          if namespace.new_monthly_ci_minutes_enabled?
-            current_usage.amount_used.to_i
-          else
-            namespace.namespace_statistics&.shared_runners_seconds.to_i / 60
-          end
+          conditional_value(
+            when_new_strategy:    -> { current_usage.amount_used.to_i },
+            when_legacy_strategy: -> { namespace.namespace_statistics&.shared_runners_seconds.to_i / 60 }
+          )
         end
       end
 
       def reset_date
         strong_memoize(:reset_date) do
-          if namespace.new_monthly_ci_minutes_enabled?
-            current_usage.date
-          else
-            namespace.namespace_statistics&.shared_runners_seconds_last_reset
-          end
+          conditional_value(
+            when_new_strategy:    -> { current_usage.date },
+            when_legacy_strategy: -> { namespace.namespace_statistics&.shared_runners_seconds_last_reset }
+          )
         end
       end
 
@@ -89,6 +90,18 @@ module Ci
 
       def total_minutes_remaining
         [current_balance, 0].max
+      end
+
+      def conditional_value(when_new_strategy:, when_legacy_strategy:)
+        if @tracking_strategy == :new
+          when_new_strategy.call
+        elsif @tracking_strategy == :legacy
+          when_legacy_strategy.call
+        elsif namespace.new_monthly_ci_minutes_enabled?
+          when_new_strategy.call
+        else
+          when_legacy_strategy.call
+        end
       end
     end
   end
