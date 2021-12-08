@@ -124,7 +124,8 @@ module Types
 
     field :participants, Types::UserType.connection_type, null: true,
           description: 'List of participants for the epic.',
-          complexity: 5
+          complexity: 5,
+          resolver: Resolvers::Users::ParticipantsResolver
 
     field :subscribed, GraphQL::Types::Boolean,
           method: :subscribed?,
