@@ -135,7 +135,7 @@ export default {
   <gl-tabs>
     <gl-tab title="Issues">
       <template #title>
-        {{ __('Issues') }}
+        <h3 class="gl-font-base gl-m-0">{{ __('Issues') }}</h3>
         <gl-badge class="gl-ml-2" size="sm" variant="muted">{{ issueCount }}</gl-badge>
       </template>
 

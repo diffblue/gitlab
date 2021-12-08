@@ -34,6 +34,8 @@ describe('Iterations report issues', () => {
   const findGlSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
   const findGlPagination = () => wrapper.findComponent(GlPagination);
   const findGlTable = () => wrapper.findComponent(GlTable);
+  const findHeading = () => wrapper.find('h4');
+  const findSection = () => wrapper.find('section');
 
   const mountComponent = ({
     props = defaultProps,
@@ -272,10 +274,14 @@ describe('Iterations report issues', () => {
       });
     });
 
-    it('has section name which mentions the label', () => {
-      expect(wrapper.find('section').attributes('aria-label')).toBe(
-        `Issues with label ${label.title}`,
-      );
+    it('has heading (that contains the label) that is visually hidden', () => {
+      expect(findHeading().text()).toBe(`Issues with label ${label.title}`);
+      expect(findHeading().classes('gl-sr-only')).toBe(true);
+    });
+
+    it('has section that is labelled by the heading', () => {
+      const headingId = findHeading().attributes('id');
+      expect(findSection().attributes('aria-labelledby')).toBe(headingId);
     });
 
     it('shows button to expand/collapse the table', () => {
@@ -314,8 +320,14 @@ describe('Iterations report issues', () => {
       mountComponent();
     });
 
-    it('has section name which does not mention a label', () => {
-      expect(wrapper.find('section').attributes('aria-label')).toBe('Issues');
+    it('has heading that is visually hidden', () => {
+      expect(findHeading().text()).toBe('All issues');
+      expect(findHeading().classes('gl-sr-only')).toBe(true);
+    });
+
+    it('has section that is labelled by the heading', () => {
+      const headingId = findHeading().attributes('id');
+      expect(findSection().attributes('aria-labelledby')).toBe(headingId);
     });
 
     it('hides button to expand/collapse the table', () => {

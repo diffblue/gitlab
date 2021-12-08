@@ -37,7 +37,7 @@ RSpec.shared_examples 'iteration report group by label' do
   end
 
   it 'shows ungrouped issues when label `x` is clicked to remove it', :aggregate_failures do
-    within "section[aria-label=\"Issues with label #{label1.title}\"]" do
+    within 'section' do
       click_button 'Remove label'
     end
 
