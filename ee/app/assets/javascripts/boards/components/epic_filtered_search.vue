@@ -4,6 +4,7 @@ import issueBoardFilter from '~/boards/issue_board_filters';
 import { TYPE_USER } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { __ } from '~/locale';
+import { OPERATOR_IS_AND_IS_NOT } from '~/vue_shared/components/filtered_search_bar/constants';
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 
@@ -12,8 +13,6 @@ export default {
     search: __('Search'),
     label: __('Label'),
     author: __('Author'),
-    is: __('is'),
-    isNot: __('is not'),
   },
   components: { BoardFilteredSearch },
   props: {
@@ -34,16 +33,13 @@ export default {
         this.boardType,
       );
 
-      const { label, is, isNot, author } = this.$options.i18n;
+      const { label, author } = this.$options.i18n;
       return [
         {
           icon: 'labels',
           title: label,
-          type: 'label_name',
-          operators: [
-            { value: '=', description: is },
-            { value: '!=', description: isNot },
-          ],
+          type: 'label',
+          operators: OPERATOR_IS_AND_IS_NOT,
           token: LabelToken,
           unique: false,
           symbol: '~',
@@ -53,11 +49,8 @@ export default {
         {
           icon: 'pencil',
           title: author,
-          type: 'author_username',
-          operators: [
-            { value: '=', description: is },
-            { value: '!=', description: isNot },
-          ],
+          type: 'author',
+          operators: OPERATOR_IS_AND_IS_NOT,
           symbol: '@',
           token: AuthorToken,
           unique: true,
