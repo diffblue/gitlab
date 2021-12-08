@@ -4,7 +4,6 @@ import * as Sentry from '@sentry/browser';
 import { mapState, mapActions, mapGetters } from 'vuex';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
-  SAVE_INTEGRATION_EVENT,
   VALIDATE_INTEGRATION_FORM_EVENT,
   I18N_FETCH_TEST_SETTINGS_DEFAULT_ERROR_MESSAGE,
   I18N_DEFAULT_ERROR_MESSAGE,
@@ -55,11 +54,12 @@ export default {
     return {
       integrationActive: false,
       testingLoading: false,
+      saveLoading: false,
     };
   },
   computed: {
-    ...mapGetters(['currentKey', 'propsSource', 'isDisabled']),
-    ...mapState(['defaultState', 'customState', 'override', 'isSaving', 'isResetting']),
+    ...mapGetters(['currentKey', 'propsSource']),
+    ...mapState(['defaultState', 'customState', 'override', 'isResetting']),
     isEditable() {
       return this.propsSource.editable;
     },
@@ -84,24 +84,26 @@ export default {
     disableResetButton() {
       return Boolean(this.isSaving || this.testingLoading);
     },
+    disableTestButton() {
+      return Boolean(this.isResetting || this.saveLoading);
+    },
   },
   mounted() {
     // this form element is defined in Haml
     this.form = document.querySelector(this.formSelector);
   },
   methods: {
-    ...mapActions([
-      'setOverride',
-      'setIsSaving',
-      'setIsResetting',
-      'fetchResetIntegration',
-      'requestJiraIssueTypes',
-    ]),
+    ...mapActions(['setOverride', 'fetchResetIntegration', 'requestJiraIssueTypes']),
     onSaveClick() {
-      this.setIsSaving(true);
+      this.saveLoading = true;
 
-      const formValid = this.form.checkValidity() || this.integrationActive === false;
-      eventHub.$emit(SAVE_INTEGRATION_EVENT, formValid);
+      if (this.integrationActive && !this.form.checkValidity()) {
+        this.saveLoading = false;
+        eventHub.$emit(VALIDATE_INTEGRATION_FORM_EVENT);
+        return;
+      }
+
+      this.form.submit();
     },
     onTestClick() {
       this.testingLoading = true;
@@ -210,7 +212,7 @@ export default {
               v-gl-modal.confirmSaveIntegration
               category="primary"
               variant="confirm"
-              :loading="isSaving"
+              :loading="saveLoading"
               :disabled="disableSaveButton"
               data-qa-selector="save_changes_button"
             >
@@ -223,7 +225,7 @@ export default {
             category="primary"
             variant="confirm"
             type="submit"
-            :loading="isSaving"
+            :loading="saveLoading"
             :disabled="disableSaveButton"
             data-testid="save-button"
             data-qa-selector="save_changes_button"
@@ -237,7 +239,7 @@ export default {
             category="secondary"
             variant="confirm"
             :loading="testingLoading"
-            :disabled="isDisabled"
+            :disabled="disableTestButton"
             data-testid="test-button"
             @click.prevent="onTestClick"
           >

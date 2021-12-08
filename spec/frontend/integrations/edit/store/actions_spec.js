@@ -39,12 +39,6 @@ describe('Integration form store actions', () => {
     });
   });
 
-  describe('setIsSaving', () => {
-    it('should commit isSaving mutation', () => {
-      return testAction(setIsSaving, true, state, [{ type: types.SET_IS_SAVING, payload: true }]);
-    });
-  });
-
   describe('setIsResetting', () => {
     it('should commit isResetting mutation', () => {
       return testAction(setIsResetting, true, state, [

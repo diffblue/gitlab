@@ -52,24 +52,6 @@ describe('Integration form store getters', () => {
     });
   });
 
-  describe('isDisabled', () => {
-    it.each`
-      isSaving | isResetting | expected
-      ${false} | ${false}    | ${false}
-      ${true}  | ${false}    | ${true}
-      ${false} | ${true}     | ${true}
-      ${true}  | ${true}     | ${true}
-    `(
-      'when isSaving = $isSaving, isResetting = $isResetting then isDisabled = $expected',
-      ({ isSaving, isResetting, expected }) => {
-        mutations[types.SET_IS_SAVING](state, isSaving);
-        mutations[types.SET_IS_RESETTING](state, isResetting);
-
-        expect(isDisabled(state)).toBe(expected);
-      },
-    );
-  });
-
   describe('propsSource', () => {
     beforeEach(() => {
       state.defaultState = defaultState;
