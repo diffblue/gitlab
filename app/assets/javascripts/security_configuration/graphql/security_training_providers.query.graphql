@@ -1,0 +1,9 @@
+query Query {
+  securityTrainingProviders {
+    name
+    id
+    description
+    isEnabled
+    url
+  }
+}
