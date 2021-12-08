@@ -165,29 +165,15 @@ RSpec.describe Security::VulnerabilitiesFinder do
     let(:filters) { { image: [finding.location['image']] } }
     let(:feature_enabled) { true }
 
-    before do
-      stub_feature_flags(vulnerability_location_image_filter: feature_enabled)
+    it 'only returns vulnerabilities matching the given image' do
+      is_expected.to contain_exactly(cluster_vulnerability)
     end
 
-    context 'when vulnerability_location_image_filter is disabled' do
-      let(:feature_enabled) { false }
+    context 'when different report_type is passed' do
+      let(:filters) { { report_type: %w[dast], image: [finding.location['image']] }}
 
-      it 'does not include cluster vulnerability' do
-        is_expected.not_to contain_exactly(cluster_vulnerability)
-      end
-    end
-
-    context 'when vulnerability_location_image_filter is enabled' do
-      it 'only returns vulnerabilities matching the given image' do
-        is_expected.to contain_exactly(cluster_vulnerability)
-      end
-
-      context 'when different report_type is passed' do
-        let(:filters) { { report_type: %w[dast], image: [finding.location['image']] }}
-
-        it 'returns empty list' do
-          is_expected.to be_empty
-        end
+      it 'returns empty list' do
+        is_expected.to be_empty
       end
     end
 
