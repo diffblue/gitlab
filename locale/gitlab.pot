@@ -4769,6 +4769,9 @@ msgstr ""
 msgid "Assign reviewer(s)"
 msgstr ""
 
+msgid "Assign severity"
+msgstr ""
+
 msgid "Assign some issues to this milestone."
 msgstr ""
 
