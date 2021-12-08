@@ -1,4 +1,4 @@
-import { GlLoadingIcon, GlTable } from '@gitlab/ui';
+import { GlLoadingIcon, GlTableLite } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -22,7 +22,7 @@ describe('IssuesAnalyticsTable', () => {
     });
   };
 
-  const findTable = () => wrapper.find(GlTable);
+  const findTable = () => wrapper.findComponent(GlTableLite);
 
   const findIssueDetailsCol = (rowIndex) =>
     findTable().findAll('[data-testid="detailsCol"]').at(rowIndex);
