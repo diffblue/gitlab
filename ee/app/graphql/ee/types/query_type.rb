@@ -63,6 +63,11 @@ module EE
               resolver: ::Resolvers::Admin::CloudLicenses::LicenseHistoryEntriesResolver,
               description: 'Fields related to entries in the license history.'
 
+        field :subscription_future_entries, ::Types::Admin::CloudLicenses::SubscriptionFutureEntryType.connection_type,
+              null: true,
+              resolver: ::Resolvers::Admin::CloudLicenses::SubscriptionFutureEntriesResolver,
+              description: 'Fields related to entries in future subscriptions.'
+
         field :ci_minutes_usage, ::Types::Ci::Minutes::NamespaceMonthlyUsageType.connection_type,
               null: true,
               description: 'Monthly CI minutes usage data for the current user.'
