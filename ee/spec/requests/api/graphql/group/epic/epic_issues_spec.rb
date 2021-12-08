@@ -120,8 +120,8 @@ RSpec.describe 'Getting issues for an epic' do
 
         expect(response).to have_gitlab_http_status(:success)
         result = issue_ids
-        expect(result[epic.iid]).to eq [issue.to_global_id.to_s, confidential_issue.to_global_id.to_s]
-        expect(result[epic2.iid]).to eq [issue2.to_global_id.to_s]
+        expect(result[epic.iid]).to match_array [issue.to_global_id.to_s, confidential_issue.to_global_id.to_s]
+        expect(result[epic2.iid]).to match_array [issue2.to_global_id.to_s]
       end
 
       it 'avoids N+1 queries' do
