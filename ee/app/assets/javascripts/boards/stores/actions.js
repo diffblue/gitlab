@@ -16,7 +16,7 @@ import { getIdFromGraphQLId, convertToGraphQLId } from '~/graphql_shared/utils';
 import { historyPushState, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { mergeUrlParams, removeParams, queryToObject } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
-import searchIterationQuery from 'ee/issues_list/queries/search_iterations.query.graphql';
+import searchIterationQuery from 'ee/issues/list/queries/search_iterations.query.graphql';
 import {
   fullEpicBoardId,
   formatEpic,

@@ -11,7 +11,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
-import { i18n } from '~/issues_list/constants';
+import { i18n } from '~/issues/list/constants';
 import axios from '~/lib/utils/axios_utils';
 import httpStatus from '~/lib/utils/http_status';
 

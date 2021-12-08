@@ -3,7 +3,7 @@ import createApolloProvider from 'ee/external_issues_list/graphql';
 import getZentaoIssues from 'ee/integrations/zentao/issues_list/graphql/queries/get_zentao_issues.query.graphql';
 import zentaoIssuesResolver from 'ee/integrations/zentao/issues_list/graphql/resolvers/zentao_issues';
 import { DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/constants';
-import { i18n } from '~/issues_list/constants';
+import { i18n } from '~/issues/list/constants';
 import axios from '~/lib/utils/axios_utils';
 import { mockZentaoIssues } from '../mock_data';
 
