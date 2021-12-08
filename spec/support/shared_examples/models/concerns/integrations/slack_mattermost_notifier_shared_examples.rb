@@ -670,8 +670,7 @@ RSpec.shared_examples Integrations::SlackMattermostNotifier do |service_name|
 
     context 'on a protected branch' do
       before do
-        create(:protected_branch, project: project, name: 'a-protected-branch')
-        project.repository.create_branch('a-protected-branch', project.default_branch_or_main)
+        create(:protected_branch, :create_branch_on_repository, project: project, name: 'a-protected-branch')
       end
 
       let(:deployment) do
