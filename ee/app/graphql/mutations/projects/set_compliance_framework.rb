@@ -14,7 +14,7 @@ module Mutations
 
       argument :compliance_framework_id, Types::GlobalIDType[::ComplianceManagement::Framework],
                required: false,
-               description: 'ID of the compliance framework to assign to the project.'
+               description: 'ID of the compliance framework to assign to the project. Set to `null` to unset.'
 
       field :project,
             Types::ProjectType,
