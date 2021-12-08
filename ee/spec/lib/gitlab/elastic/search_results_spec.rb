@@ -1311,7 +1311,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic, :clean_gitlab_redis_sha
 
         ensure_elasticsearch_index!
 
-        results = described_class.new(user, 'noresults')
+        results = described_class.new(user, '"noresults"')
         count = results.formatted_count('projects')
         expect(count).to eq('0')
       end

@@ -79,7 +79,7 @@ RSpec.describe 'Alert details', :js do
 
         wait_for_requests
 
-        expect(alert_assignee).to have_content('Assignee Edit John Doe')
+        expect(alert_assignee).to have_content('Assignee Edit Sidney Jones')
       end
     end
   end

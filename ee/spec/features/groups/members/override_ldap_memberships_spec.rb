@@ -89,7 +89,7 @@ RSpec.describe 'Groups > Members > Maintainer/Owner can override LDAP access lev
       expect(page).to have_button 'Edit permissions'
     end
 
-    within third_row do
+    within second_row do
       expect(page).not_to have_content 'LDAP'
       expect(page).not_to have_button 'Edit permissions'
       expect(page).to have_button 'Guest', disabled: false

@@ -54,7 +54,7 @@ RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state do
         end
 
         expect(described_class.elastic_search('main_pro*', options: { project_ids: :any }).total_count).to eq(1)
-        expect(described_class.elastic_search('test_two', options: { project_ids: :any }).total_count).to eq(0)
+        expect(described_class.elastic_search('"test_two"', options: { project_ids: :any }).total_count).to eq(0)
       end
     end
 
