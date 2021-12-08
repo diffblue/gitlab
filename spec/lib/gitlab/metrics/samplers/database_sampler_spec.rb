@@ -45,6 +45,10 @@ RSpec.describe Gitlab::Metrics::Samplers::DatabaseSampler do
     end
 
     before do
+      described_class::METRIC_DESCRIPTIONS.each_key do |metric|
+        allow(subject.metrics[metric]).to receive(:set)
+      end
+
       allow(Gitlab::Database).to receive(:database_base_models)
         .and_return({ main: ActiveRecord::Base, ci: Ci::ApplicationRecord })
     end
@@ -59,12 +63,18 @@ RSpec.describe Gitlab::Metrics::Samplers::DatabaseSampler do
 
       context 'when replica hosts are configured' do
         let(:main_load_balancer) { ActiveRecord::Base.load_balancer } # rubocop:disable Database/MultipleDatabases
-        let(:ci_load_balancer) { Ci::ApplicationRecord.load_balancer }
-
         let(:main_replica_host) { main_load_balancer.host }
-        let(:ci_replica_host) { ci_load_balancer.host }
+
+        let(:ci_load_balancer) { double(:load_balancer, host_list: ci_host_list, configuration: configuration) }
+        let(:configuration) { double(:configuration, primary_connection_specification_name: 'Ci::ApplicationRecord') }
+        let(:ci_host_list) { double(:host_list, hosts: [ci_replica_host]) }
+        let(:ci_replica_host) { double(:host, connection: ci_connection) }
+        let(:ci_connection) { double(:connection, pool: Ci::ApplicationRecord.connection_pool) }
 
         before do
+          allow(Gitlab::Database::LoadBalancing).to receive(:each_load_balancer)
+            .and_return([main_load_balancer, ci_load_balancer].to_enum)
+
           allow(main_load_balancer).to receive(:primary_only?).and_return(false)
           allow(ci_load_balancer).to receive(:primary_only?).and_return(false)
 
@@ -107,13 +117,31 @@ RSpec.describe Gitlab::Metrics::Samplers::DatabaseSampler do
       end
 
       context 'when the base model has replica connections' do
-        let(:ci_load_balancer) { Ci::ApplicationRecord.load_balancer }
-        let(:ci_replica_host) { ci_load_balancer.host }
+        let(:main_load_balancer) { ActiveRecord::Base.load_balancer } # rubocop:disable Database/MultipleDatabases
+        let(:main_replica_host) { main_load_balancer.host }
+
+        let(:ci_load_balancer) { double(:load_balancer, host_list: ci_host_list, configuration: configuration) }
+        let(:configuration) { double(:configuration, primary_connection_specification_name: 'Ci::ApplicationRecord') }
+        let(:ci_host_list) { double(:host_list, hosts: [ci_replica_host]) }
+        let(:ci_replica_host) { double(:host, connection: ci_connection) }
+        let(:ci_connection) { double(:connection, pool: Ci::ApplicationRecord.connection_pool) }
 
         before do
+          allow(Gitlab::Database::LoadBalancing).to receive(:each_load_balancer)
+            .and_return([main_load_balancer, ci_load_balancer].to_enum)
+
+          allow(main_load_balancer).to receive(:primary_only?).and_return(false)
           allow(ci_load_balancer).to receive(:primary_only?).and_return(false)
+
+          allow(main_replica_host).to receive(:host).and_return('main-replica-host')
           allow(ci_replica_host).to receive(:host).and_return('ci-replica-host')
+
+          allow(main_replica_host).to receive(:port).and_return(2345)
           allow(ci_replica_host).to receive(:port).and_return(3456)
+
+          allow(Gitlab::Database).to receive(:db_config_name)
+            .with(main_replica_host.connection)
+            .and_return('main_replica')
 
           allow(Gitlab::Database).to receive(:db_config_name)
             .with(ci_replica_host.connection)
@@ -122,6 +150,7 @@ RSpec.describe Gitlab::Metrics::Samplers::DatabaseSampler do
 
         it 'still records the replica metrics' do
           expect_metrics_with_labels(main_labels)
+          expect_metrics_with_labels(main_replica_labels)
           expect_no_metrics_with_labels(ci_labels)
           expect_metrics_with_labels(ci_replica_labels)
 

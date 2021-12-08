@@ -38,26 +38,28 @@ module Gitlab
         end
 
         def host_stats
+          connection_class_stats + replica_host_stats
+        end
+
+        def connection_class_stats
           Gitlab::Database.database_base_models.each_value.with_object([]) do |base_model, stats|
-            # Depending on how we setup for multiple databases, if we don't use model load balancing,
-            # or share the primary connection between main and ci, Ci::ApplicationRecord will return false for
-            # connected? but still be configured with read replicas that we want to collect metrics for.
-            add_primary_stats(stats, base_model) if base_model.connected?
-            add_replica_stats(stats, base_model) unless base_model.load_balancer.primary_only?
+            next unless base_model.connected?
+
+            stats << { labels: labels_for_class(base_model), stats: base_model.connection_pool.stat }
           end
         end
 
-        def add_primary_stats(stats, base_model)
-          stats << { labels: labels_for_primary(base_model), stats: base_model.connection_pool.stat }
-        end
+        def replica_host_stats
+          Gitlab::Database::LoadBalancing.each_load_balancer.with_object([]) do |load_balancer, stats|
+            next if load_balancer.primary_only?
 
-        def add_replica_stats(stats, base_model)
-          base_model.load_balancer.host_list.hosts.each do |host|
-            stats << { labels: labels_for_replica_host(base_model, host), stats: host.connection.pool.stat }
+            load_balancer.host_list.hosts.each do |host|
+              stats << { labels: labels_for_replica_host(load_balancer, host), stats: host.connection.pool.stat }
+            end
           end
         end
 
-        def labels_for_primary(klass)
+        def labels_for_class(klass)
           {
             host: klass.connection_db_config.host,
             port: klass.connection_db_config.configuration_hash[:port],
@@ -66,11 +68,11 @@ module Gitlab
           }
         end
 
-        def labels_for_replica_host(klass, host)
+        def labels_for_replica_host(load_balancer, host)
           {
             host: host.host,
             port: host.port,
-            class: klass.to_s,
+            class: load_balancer.configuration.primary_connection_specification_name,
             db_config_name: Gitlab::Database.db_config_name(host.connection)
           }
         end
