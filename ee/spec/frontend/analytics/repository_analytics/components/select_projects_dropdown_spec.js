@@ -5,10 +5,8 @@ import {
   GlLoadingIcon,
   GlIcon,
 } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import SelectProjectsDropdown from 'ee/analytics/repository_analytics/components/select_projects_dropdown.vue';
-
-const localVue = createLocalVue();
 
 describe('Select projects dropdown component', () => {
   let wrapper;
@@ -22,7 +20,6 @@ describe('Select projects dropdown component', () => {
 
   const createComponent = ({ data = {}, apolloGroupProjects = {} } = {}) => {
     wrapper = shallowMount(SelectProjectsDropdown, {
-      localVue,
       data() {
         return {
           groupProjects: [

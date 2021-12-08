@@ -1,4 +1,5 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import FilterDropdowns from 'ee/analytics/productivity_analytics/components/filter_dropdowns.vue';
 import { getStoreConfig } from 'ee/analytics/productivity_analytics/store';
@@ -6,8 +7,7 @@ import GroupsDropdownFilter from 'ee/analytics/shared/components/groups_dropdown
 import ProjectsDropdownFilter from '~/analytics/shared/components/projects_dropdown_filter.vue';
 import resetStore from '../helpers';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('FilterDropdowns component', () => {
   let wrapper;
@@ -43,7 +43,6 @@ describe('FilterDropdowns component', () => {
     });
 
     wrapper = shallowMount(FilterDropdowns, {
-      localVue,
       store: mockStore,
       propsData: {},
     });

@@ -1,10 +1,8 @@
 import { GlDeprecatedSkeletonLoading as GlSkeletonLoading } from '@gitlab/ui';
 import { GlSingleStat } from '@gitlab/ui/dist/charts';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import TestCoverageSummary from 'ee/analytics/repository_analytics/components/test_coverage_summary.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-
-const localVue = createLocalVue();
 
 describe('Test coverage table component', () => {
   let wrapper;
@@ -21,7 +19,6 @@ describe('Test coverage table component', () => {
   const createComponent = ({ data = {} } = {}) => {
     wrapper = extendedWrapper(
       shallowMount(TestCoverageSummary, {
-        localVue,
         data() {
           return {
             projectCount: null,

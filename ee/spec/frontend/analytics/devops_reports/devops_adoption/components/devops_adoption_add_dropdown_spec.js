@@ -1,6 +1,5 @@
 import { GlDropdown, GlLoadingIcon, GlSearchBoxByType } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
-import { createLocalVue } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import DevopsAdoptionAddDropdown from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_add_dropdown.vue';
@@ -23,7 +22,6 @@ import {
   genericDeleteErrorMessage,
 } from '../mock_data';
 
-const localVue = createLocalVue();
 Vue.use(VueApollo);
 
 const mutateAdd = jest.fn().mockResolvedValue({
@@ -59,7 +57,6 @@ describe('DevopsAdoptionAddDropdown', () => {
     ]);
 
     wrapper = shallowMountExtended(DevopsAdoptionAddDropdown, {
-      localVue,
       apolloProvider: mockApollo,
       propsData: {
         groups: [],

@@ -1,7 +1,8 @@
 import { GlDropdownItem, GlSegmentedControl, GlSprintf } from '@gitlab/ui';
-import { shallowMount, mount, createLocalVue } from '@vue/test-utils';
+import { shallowMount, mount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import LabelsSelector from 'ee/analytics/cycle_analytics/components/labels_selector.vue';
 import TasksByTypeFilters from 'ee/analytics/cycle_analytics/components/tasks_by_type/tasks_by_type_filters.vue';
@@ -32,15 +33,13 @@ const selectLabelAtIndex = (ctx, index) => {
 const mockGroupLabelsRequest = () => new MockAdapter(axios).onGet().reply(200, groupLabels);
 
 let store = null;
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 jest.mock('~/flash');
 
 function createComponent({ props = {}, mountFn = shallowMount } = {}) {
   store = createStore();
   return mountFn(TasksByTypeFilters, {
-    localVue,
     store: {
       ...store,
       getters: {

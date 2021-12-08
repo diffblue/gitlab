@@ -1,6 +1,7 @@
 import { GlAlert } from '@gitlab/ui';
 import { GlAreaChart } from '@gitlab/ui/dist/charts';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import ThroughputChart from 'ee/analytics/merge_request_analytics/components/throughput_chart.vue';
 import ThroughputStats from 'ee/analytics/merge_request_analytics/components/throughput_stats.vue';
@@ -15,8 +16,7 @@ import {
   fullPath,
 } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 const defaultQueryVariables = {
   assigneeUsername: null,
@@ -45,7 +45,6 @@ describe('ThroughputChart', () => {
   function createComponent(options = {}) {
     const { mocks = defaultMocks } = options;
     return shallowMount(ThroughputChart, {
-      localVue,
       store,
       mocks,
       provide: {

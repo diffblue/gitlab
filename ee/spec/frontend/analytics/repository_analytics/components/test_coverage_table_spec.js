@@ -1,6 +1,6 @@
 import { GlTable } from '@gitlab/ui';
-import { mount, shallowMount, createLocalVue } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import { mount, shallowMount } from '@vue/test-utils';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import SelectProjectsDropdown from 'ee/analytics/repository_analytics/components/select_projects_dropdown.vue';
 import TestCoverageTable from 'ee/analytics/repository_analytics/components/test_coverage_table.vue';
@@ -14,8 +14,7 @@ import { defaultTestCoverageTable, projects } from '../mock_data';
 
 jest.mock('~/api.js');
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('Test coverage table component', () => {
   let wrapper;
@@ -48,7 +47,6 @@ describe('Test coverage table component', () => {
 
     wrapper = extendedWrapper(
       mountFn(TestCoverageTable, {
-        localVue,
         apolloProvider: mockApollo,
         data() {
           return {

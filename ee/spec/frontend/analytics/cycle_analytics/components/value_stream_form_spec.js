@@ -1,5 +1,6 @@
 import { GlModal, GlFormInput } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import {
   PRESET_OPTIONS_BLANK,
@@ -19,8 +20,7 @@ import { customStageEvents as formEvents, defaultStageConfig, rawCustomStage } f
 const scrollIntoViewMock = jest.fn();
 HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('ValueStreamForm', () => {
   let wrapper = null;
@@ -68,7 +68,6 @@ describe('ValueStreamForm', () => {
   const createComponent = ({ props = {}, data = {}, stubs = {}, state = {} } = {}) =>
     extendedWrapper(
       shallowMount(ValueStreamForm, {
-        localVue,
         store: fakeStore({ state }),
         data() {
           return {
