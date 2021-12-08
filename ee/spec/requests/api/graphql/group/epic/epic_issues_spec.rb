@@ -71,7 +71,7 @@ RSpec.describe 'Getting issues for an epic' do
         post_graphql(epic_query(iid: epic.iid), current_user: user)
 
         expect(response).to have_gitlab_http_status(:success)
-        expect(issue_ids[epic.iid]).to eq [issue.to_global_id.to_s, confidential_issue.to_global_id.to_s]
+        expect(issue_ids[epic.iid]).to match_array [issue.to_global_id.to_s, confidential_issue.to_global_id.to_s]
       end
 
       context 'pagination' do
