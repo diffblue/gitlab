@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.shared_examples_for 'license type fields' do |keys|
+RSpec.shared_examples_for 'license type fields' do
   include GraphqlHelpers
 
   context 'with license type fields' do
