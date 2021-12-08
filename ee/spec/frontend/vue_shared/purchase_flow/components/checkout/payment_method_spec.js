@@ -1,5 +1,5 @@
-import { createLocalVue } from '@vue/test-utils';
 import { merge } from 'lodash';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import {
   mockParsedNamespaces,
@@ -14,8 +14,7 @@ import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_
 import Zuora from 'ee/vue_shared/purchase_flow/components/checkout/zuora.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('Payment Method', () => {
   let wrapper;
@@ -36,7 +35,6 @@ describe('Payment Method', () => {
     });
 
     return mountExtended(PaymentMethod, {
-      localVue,
       apolloProvider,
     });
   };

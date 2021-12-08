@@ -1,7 +1,8 @@
 import { GlLoadingIcon } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import AxiosMockAdapter from 'axios-mock-adapter';
 import { merge } from 'lodash';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { resolvers } from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
 import { STEPS } from 'ee/subscriptions/constants';
@@ -12,8 +13,7 @@ import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_
 import axios from '~/lib/utils/axios_utils';
 import flushPromises from 'helpers/flush_promises';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('Zuora', () => {
   let axiosMock;
@@ -36,7 +36,6 @@ describe('Zuora', () => {
       data() {
         return { ...data };
       },
-      localVue,
     });
   };
 

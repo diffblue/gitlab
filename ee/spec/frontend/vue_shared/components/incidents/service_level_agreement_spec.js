@@ -1,12 +1,10 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import { shallowMount } from '@vue/test-utils';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import getIncidentStateQuery from 'ee/graphql_shared/queries/get_incident_state.query.graphql';
 import ServiceLevelAgreementCell from 'ee/vue_shared/components/incidents/service_level_agreement.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { calculateRemainingMilliseconds, formatTime } from '~/lib/utils/datetime_utility';
-
-const localVue = createLocalVue();
 
 const formatTimeActual = jest.requireActual('~/lib/utils/datetime_utility').formatTime;
 
@@ -39,7 +37,7 @@ describe('Service Level Agreement', () => {
   };
 
   function createMockApolloProvider(issueState) {
-    localVue.use(VueApollo);
+    Vue.use(VueApollo);
 
     const requestHandlers = [
       [getIncidentStateQuery, jest.fn().mockResolvedValue(issueStateResponse(issueState))],
@@ -50,7 +48,6 @@ describe('Service Level Agreement', () => {
 
   function mountComponent({ mockApollo, props } = {}) {
     wrapper = shallowMount(ServiceLevelAgreementCell, {
-      localVue,
       apolloProvider: mockApollo,
       propsData: {
         ...props,
