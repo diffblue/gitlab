@@ -65,6 +65,8 @@ module EE
       has_many :protected_branch_push_access_levels, dependent: :destroy, class_name: "::ProtectedBranch::PushAccessLevel" # rubocop:disable Cop/ActiveRecordDependent
       has_many :protected_branch_unprotect_access_levels, dependent: :destroy, class_name: "::ProtectedBranch::UnprotectAccessLevel" # rubocop:disable Cop/ActiveRecordDependent
 
+      has_many :deployment_approvals, class_name: 'Deployments::Approval'
+
       has_many :smartcard_identities
       has_many :scim_identities
 

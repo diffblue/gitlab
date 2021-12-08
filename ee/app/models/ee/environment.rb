@@ -79,6 +79,18 @@ module EE
       protected_environment_accesses(user).all? { |access, _| access == true }
     end
 
+    def needs_approval?
+      return false unless ::Feature.enabled?(:deployment_approvals, project, default_enabled: :yaml)
+
+      required_approval_count > 0
+    end
+
+    def required_approval_count
+      return 0 unless protected?
+
+      associated_protected_environments.map(&:required_approval_count).max
+    end
+
     private
 
     def protected_environment_accesses(user)

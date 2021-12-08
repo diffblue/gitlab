@@ -7,9 +7,14 @@ module EE
   # and be prepended in the `Deployment` model
   module Deployment
     extend ActiveSupport::Concern
+    extend ::Gitlab::Utils::Override
 
     prepended do
       include UsageStatistics
+
+      delegate :needs_approval?, to: :environment
+
+      has_many :approvals, class_name: 'Deployments::Approval'
 
       state_machine :status do
         after_transition any => :success do |deployment|
@@ -24,6 +29,17 @@ module EE
           end
         end
       end
+    end
+
+    override :sync_status_with
+    def sync_status_with(build)
+      return update_status!('blocked') if build.status == 'manual' && needs_approval?
+
+      super
+    end
+
+    def pending_approval_count
+      environment.required_approval_count - approvals.approved.count
     end
   end
 end
