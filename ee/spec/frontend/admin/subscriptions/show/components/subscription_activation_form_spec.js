@@ -1,5 +1,6 @@
 import { GlForm, GlFormCheckbox, GlFormInput, GlLink, GlSprintf } from '@gitlab/ui';
-import { createLocalVue, mount, shallowMount } from '@vue/test-utils';
+import { mount, shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import SubscriptionActivationForm from 'ee/admin/subscriptions/show/components/subscription_activation_form.vue';
 import {
@@ -22,14 +23,12 @@ import {
   fakeActivationCode,
 } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('SubscriptionActivationForm', () => {
   let wrapper;
 
   const createMockApolloProvider = (resolverMock) => {
-    localVue.use(VueApollo);
     return createMockApollo([[subscriptionQueries.mutation, resolverMock]]);
   };
 
@@ -55,7 +54,6 @@ describe('SubscriptionActivationForm', () => {
   } = {}) => {
     wrapper = extendedWrapper(
       mountMethod(SubscriptionActivationForm, {
-        localVue,
         apolloProvider: createMockApolloProvider(mutationMock),
         propsData: {
           ...props,

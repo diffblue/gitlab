@@ -1,5 +1,6 @@
 import { GlButton } from '@gitlab/ui';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import SubscriptionManagementApp from 'ee/admin/subscriptions/show/components/app.vue';
 import SubscriptionActivationCard from 'ee/admin/subscriptions/show/components/subscription_activation_card.vue';
@@ -19,8 +20,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { license, subscriptionHistory } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('SubscriptionManagementApp', () => {
   // March 16th, 2020
@@ -40,7 +40,7 @@ describe('SubscriptionManagementApp', () => {
   let currentSubscriptionResolver;
   let subscriptionHistoryResolver;
   const createMockApolloProvider = ([subscriptionResolver, historyResolver]) => {
-    localVue.use(VueApollo);
+    Vue.use(VueApollo);
     return createMockApollo([
       [subscriptionQueries.query, subscriptionResolver],
       [subscriptionHistoryQueries.query, historyResolver],
@@ -50,7 +50,6 @@ describe('SubscriptionManagementApp', () => {
   const createComponent = (props = {}, resolverMock) => {
     wrapper = extendedWrapper(
       shallowMount(SubscriptionManagementApp, {
-        localVue,
         apolloProvider: createMockApolloProvider(resolverMock),
         propsData: {
           licenseUsageFilePath: 'about:blank',
