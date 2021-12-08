@@ -27,7 +27,7 @@ describe('Environments', () => {
 
   it('renders an empty state if no deployments are found', () => {
     const emptyState = wrapper.find(GlEmptyState);
-    const emptyStateText = emptyState.text();
+    const emptyStateText = emptyState.text().replace(/\s+/g, ' ');
 
     expect(emptyState.exists()).toBe(true);
     expect(emptyStateText).toContain(
