@@ -19317,9 +19317,6 @@ msgstr ""
 msgid "InviteMember|Add members to this project and start collaborating with your team."
 msgstr ""
 
-msgid "InviteMember|Invite Member"
-msgstr ""
-
 msgid "InviteMember|Invite Members (optional)"
 msgstr ""
 
