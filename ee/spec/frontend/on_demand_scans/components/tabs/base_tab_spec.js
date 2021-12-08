@@ -1,7 +1,7 @@
 import { GlTab, GlTable, GlAlert } from '@gitlab/ui';
 import { createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
-import { merge } from 'lodash';
+import { cloneDeep, merge } from 'lodash';
 import allPipelinesWithPipelinesMock from 'test_fixtures/graphql/on_demand_scans/graphql/on_demand_scans.query.graphql.with_pipelines.json';
 import allPipelinesWithoutPipelinesMock from 'test_fixtures/graphql/on_demand_scans/graphql/on_demand_scans.query.graphql.without_pipelines.json';
 import { stubComponent } from 'helpers/stub_component';
@@ -22,6 +22,8 @@ jest.mock('~/lib/utils/common_utils');
 const localVue = createLocalVue();
 localVue.use(VueApollo);
 
+const [firstPipeline] = allPipelinesWithPipelinesMock.data.project.pipelines.nodes;
+
 describe('BaseTab', () => {
   let wrapper;
   let router;
@@ -36,6 +38,8 @@ describe('BaseTab', () => {
   const findEmptyState = () => wrapper.findComponent(EmptyState);
   const findPagination = () => wrapper.findByTestId('pagination');
   const findErrorAlert = () => wrapper.findComponent(GlAlert);
+  const findFirstRow = () => wrapper.find('tbody > tr');
+  const findCellAt = (index) => findFirstRow().findAll('td').at(index);
 
   // Helpers
   const createMockApolloProvider = () => {
@@ -239,11 +243,6 @@ describe('BaseTab', () => {
   });
 
   describe('rendered cells', () => {
-    const [firstPipeline] = allPipelinesWithPipelinesMock.data.project.pipelines.nodes;
-
-    const findFirstRow = () => wrapper.find('tbody > tr');
-    const findCellAt = (index) => findFirstRow().findAll('td').at(index);
-
     beforeEach(() => {
       createFullComponent({
         propsData: {
@@ -295,6 +294,30 @@ describe('BaseTab', () => {
       const pipelineIdCell = findCellAt(5);
 
       expect(pipelineIdCell.text()).toBe(`#${getIdFromGraphQLId(firstPipeline.id)}`);
+    });
+  });
+
+  describe("when a scan's DAST profile got deleted", () => {
+    beforeEach(() => {
+      const allPipelinesWithPipelinesMockCopy = cloneDeep(allPipelinesWithPipelinesMock);
+      const pipelineWithoutDastProfile = { ...firstPipeline, dastProfile: null };
+      allPipelinesWithPipelinesMockCopy.data.project.pipelines.nodes[0] = pipelineWithoutDastProfile;
+
+      requestHandler = jest.fn().mockResolvedValue(allPipelinesWithPipelinesMockCopy);
+      createFullComponent({
+        stubs: {
+          GlTable: false,
+        },
+      });
+      return waitForPromises();
+    });
+
+    it.each`
+      cellName    | cellIndex
+      ${'name'}   | ${1}
+      ${'target'} | ${3}
+    `('render empty $cellName cell', ({ cellIndex }) => {
+      expect(findCellAt(cellIndex).text()).toBe('');
     });
   });
 

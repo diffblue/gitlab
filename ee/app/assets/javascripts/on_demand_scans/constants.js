@@ -52,12 +52,12 @@ export const BASE_TABS_TABLE_FIELDS = [
   },
   {
     ...NAME_COLUMN,
-    formatter: (_value, _key, item) => item.dastProfile.name,
+    formatter: (_value, _key, item) => item?.dastProfile?.name,
   },
   SCAN_TYPE_COLUMN,
   {
     ...TARGET_COLUMN,
-    formatter: (_value, _key, item) => item.dastProfile.dastSiteProfile.targetUrl,
+    formatter: (_value, _key, item) => item?.dastProfile?.dastSiteProfile?.targetUrl,
   },
   START_DATE_COLUMN,
   PIPELINE_ID_COLUMN,
