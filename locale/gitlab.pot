@@ -38795,10 +38795,19 @@ msgstr ""
 msgid "VulnerabilityManagement|%{statusStart}Resolved%{statusEnd} %{timeago} by %{user}"
 msgstr ""
 
+msgid "VulnerabilityManagement|A removed or remediated vulnerability"
+msgstr ""
+
 msgid "VulnerabilityManagement|A true-positive and will fix"
 msgstr ""
 
+msgid "VulnerabilityManagement|A verified true-positive vulnerability"
+msgstr ""
+
 msgid "VulnerabilityManagement|Add vulnerability finding"
+msgstr ""
+
+msgid "VulnerabilityManagement|An unverified non-confirmed finding"
 msgstr ""
 
 msgid "VulnerabilityManagement|Change status"
@@ -38826,6 +38835,9 @@ msgid "VulnerabilityManagement|Related Jira issues"
 msgstr ""
 
 msgid "VulnerabilityManagement|Requires assessment"
+msgstr ""
+
+msgid "VulnerabilityManagement|Select a method"
 msgstr ""
 
 msgid "VulnerabilityManagement|Something went wrong while trying to delete the comment. Please try again later."
@@ -38897,7 +38909,16 @@ msgstr ""
 msgid "Vulnerability|Additional Info"
 msgstr ""
 
+msgid "Vulnerability|Bug Bounty"
+msgstr ""
+
+msgid "Vulnerability|CVSS v3"
+msgstr ""
+
 msgid "Vulnerability|Class"
+msgstr ""
+
+msgid "Vulnerability|Code Review"
 msgstr ""
 
 msgid "Vulnerability|Comments"
@@ -38915,7 +38936,13 @@ msgstr ""
 msgid "Vulnerability|Description"
 msgstr ""
 
+msgid "Vulnerability|Details"
+msgstr ""
+
 msgid "Vulnerability|Detected"
+msgstr ""
+
+msgid "Vulnerability|Detection method"
 msgstr ""
 
 msgid "Vulnerability|Download"
@@ -38924,10 +38951,16 @@ msgstr ""
 msgid "Vulnerability|Evidence"
 msgstr ""
 
+msgid "Vulnerability|External Security Report"
+msgstr ""
+
 msgid "Vulnerability|False positive detected"
 msgstr ""
 
 msgid "Vulnerability|File"
+msgstr ""
+
+msgid "Vulnerability|GitLab Security Report"
 msgstr ""
 
 msgid "Vulnerability|Identifier"
@@ -38937,6 +38970,9 @@ msgid "Vulnerability|Identifiers"
 msgstr ""
 
 msgid "Vulnerability|Image"
+msgstr ""
+
+msgid "Vulnerability|Information related how the vulnerability was discovered and its impact to the system."
 msgstr ""
 
 msgid "Vulnerability|Links"
@@ -38961,6 +38997,15 @@ msgid "Vulnerability|Request/Response"
 msgstr ""
 
 msgid "Vulnerability|Scanner Provider"
+msgstr ""
+
+msgid "Vulnerability|Security Audit"
+msgstr ""
+
+msgid "Vulnerability|Select a severity"
+msgstr ""
+
+msgid "Vulnerability|Set the status of the vulnerability finding based on the information available to you."
 msgstr ""
 
 msgid "Vulnerability|Severity"

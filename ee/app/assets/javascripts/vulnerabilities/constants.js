@@ -20,6 +20,7 @@ export const VULNERABILITY_STATE_OBJECTS = {
     buttonText: VULNERABILITY_STATES.detected,
     dropdownText: s__('VulnerabilityManagement|Needs triage'),
     dropdownDescription: s__('VulnerabilityManagement|Requires assessment'),
+    description: s__('VulnerabilityManagement|An unverified non-confirmed finding'),
   },
   dismissed: {
     action: 'dismiss',
@@ -37,6 +38,7 @@ export const VULNERABILITY_STATE_OBJECTS = {
     buttonText: VULNERABILITY_STATES.confirmed,
     dropdownText: __('Confirm'),
     dropdownDescription: s__('VulnerabilityManagement|A true-positive and will fix'),
+    description: s__('VulnerabilityManagement|A verified true-positive vulnerability'),
   },
   resolved: {
     action: 'resolve',
@@ -44,6 +46,7 @@ export const VULNERABILITY_STATE_OBJECTS = {
     buttonText: VULNERABILITY_STATES.resolved,
     dropdownText: __('Resolve'),
     dropdownDescription: s__('VulnerabilityManagement|Verified as fixed or mitigated'),
+    description: s__('VulnerabilityManagement|A removed or remediated vulnerability'),
   },
 };
 
