@@ -12,8 +12,8 @@
   .col-lg-12
     %h5
       = _("Subscriptions")
-      %span.badge.badge-pill
-        = @project.upstream_projects_count + @project.downstream_projects_count
+      - subscriptions_count = @project.upstream_projects_count + @project.downstream_projects_count
+      = gl_badge_tag subscriptions_count, variant: :pill
 
     %table.table.gl-mt-3
       %thead
