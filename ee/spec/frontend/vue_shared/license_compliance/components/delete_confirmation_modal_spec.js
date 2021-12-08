@@ -1,11 +1,11 @@
 import { GlModal, GlSprintf } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import Component from 'ee/vue_shared/license_compliance/components/delete_confirmation_modal.vue';
 import { approvedLicense } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('DeleteConfirmationModal', () => {
   let store;
@@ -36,7 +36,6 @@ describe('DeleteConfirmationModal', () => {
     store = createStore(initialState);
 
     wrapper = shallowMount(Component, {
-      localVue,
       store,
       stubs: {
         GlModal,

@@ -1,5 +1,6 @@
 import { GlButton, GlFormGroup } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import StepSummary from 'ee/vue_shared/purchase_flow/components/step_summary.vue';
@@ -10,8 +11,7 @@ import flash from '~/flash';
 import { STEPS } from '../mock_data';
 import { createMockApolloProvider } from '../spec_helper';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 jest.mock('~/flash');
 
@@ -34,7 +34,6 @@ describe('Step', () => {
   function createComponent(options = {}) {
     const { apolloProvider, propsData } = options;
     return shallowMount(Step, {
-      localVue,
       propsData: { ...initialProps, ...propsData },
       apolloProvider,
       stubs: {

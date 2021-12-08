@@ -1,4 +1,5 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import LicenseManagement from 'ee/vue_shared/license_compliance/mr_widget_license_report.vue';
 import { stubComponent } from 'helpers/stub_component';
@@ -13,8 +14,7 @@ import {
   generateReportGroup,
 } from './mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('License Report MR Widget', () => {
   const apiUrl = `${TEST_HOST}/license_management`;
@@ -82,7 +82,6 @@ describe('License Report MR Widget', () => {
       },
     });
     wrapper = shallowMount(LicenseManagement, {
-      localVue,
       propsData: props,
       store,
       stubs,

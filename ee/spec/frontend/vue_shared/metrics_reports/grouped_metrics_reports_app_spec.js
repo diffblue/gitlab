@@ -1,4 +1,5 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import MetricsReportsIssueBody from 'ee/vue_shared/metrics_reports/components/metrics_reports_issue_body.vue';
 import GroupedMetricsReportsApp from 'ee/vue_shared/metrics_reports/grouped_metrics_reports_app.vue';
@@ -7,8 +8,7 @@ import Api from '~/api';
 
 jest.mock('~/api.js');
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('Grouped metrics reports app', () => {
   let wrapper;
@@ -19,7 +19,6 @@ describe('Grouped metrics reports app', () => {
   const mountComponent = (glFeatures = {}) => {
     wrapper = mount(GroupedMetricsReportsApp, {
       store: mockStore,
-      localVue,
       propsData: {
         endpoint: 'metrics.json',
       },
