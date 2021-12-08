@@ -32,6 +32,7 @@ module Integrations
       expose :labels do |jira_issue|
         jira_issue.labels.map do |name|
           {
+            id: name,
             title: name,
             name: name,
             color: '#0052CC',
@@ -76,10 +77,18 @@ module Integrations
 
       def jira_user(user)
         {
+          id: jira_user_id(user),
           name: user['displayName'],
           web_url: jira_web_url(user),
           avatar_url: user['avatarUrls']['48x48']
         }
+      end
+
+      def jira_user_id(user)
+        # There are differences between Jira Cloud and Jira Server URLs and responses.
+        # accountId is only available on Jira Cloud.
+        # https://community.atlassian.com/t5/Jira-Questions/How-to-find-account-id-on-jira-on-premise/qaq-p/1168652
+        user['accountId'].presence || user['name']
       end
 
       def jira_web_url(user)
