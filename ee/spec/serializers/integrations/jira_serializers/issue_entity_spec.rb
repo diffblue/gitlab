@@ -53,6 +53,7 @@ RSpec.describe Integrations::JiraSerializers::IssueEntity do
       status: 'To Do',
       labels: [
         {
+          id: 'backend',
           title: 'backend',
           name: 'backend',
           color: '#0052CC',
@@ -60,11 +61,13 @@ RSpec.describe Integrations::JiraSerializers::IssueEntity do
         }
       ],
       author: hash_including(
+        id: 'reporter@reporter.com',
         name: 'reporter',
         avatar_url: 'http://reporter.avatar'
       ),
       assignees: [
         hash_including(
+          id: 'assignee@assignee.com',
           name: 'assignee',
           avatar_url: 'http://assignee.avatar'
         )
@@ -89,6 +92,11 @@ RSpec.describe Integrations::JiraSerializers::IssueEntity do
       expect(subject[:web_url]).to eq("http://jira.com/browse/GL-5?#{referrer}")
       expect(subject[:author]).to include(web_url: "http://jira.com/secure/ViewProfile.jspa?#{referrer}&name=reporter%40reporter.com")
       expect(subject[:assignees].first).to include(web_url: "http://jira.com/secure/ViewProfile.jspa?#{referrer}&name=assignee%40assignee.com")
+    end
+
+    it 'sets user id field to `name`' do
+      expect(subject[:author][:id]).to eq(reporter['name'])
+      expect(subject[:assignees].first[:id]).to eq(assignee['name'])
     end
 
     context 'with only url' do
@@ -122,6 +130,11 @@ RSpec.describe Integrations::JiraSerializers::IssueEntity do
       expect(subject[:web_url]).to eq("http://jira.com/browse/GL-5?#{referrer}")
       expect(subject[:author]).to include(web_url: "http://jira.com/people/12345?#{referrer}")
       expect(subject[:assignees].first).to include(web_url: "http://jira.com/people/67890?#{referrer}")
+    end
+
+    it 'sets user id field to `accountId`' do
+      expect(subject[:author][:id]).to eq(reporter['accountId'])
+      expect(subject[:assignees].first[:id]).to eq(assignee['accountId'])
     end
   end
 
