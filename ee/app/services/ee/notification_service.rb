@@ -3,6 +3,7 @@
 module EE
   module NotificationService
     include ::Gitlab::Utils::UsageData
+    extend ::Gitlab::Utils::Override
 
     # When we add approvers to a merge request we should send an email to:
     #
@@ -91,6 +92,13 @@ module EE
       end
     end
 
+    override :pipeline_finished
+    def pipeline_finished(pipeline, ref_status: nil, recipients: nil)
+      super
+
+      send_account_validation_email(pipeline)
+    end
+
     private
 
     def oncall_user_removed_recipients(rotation, removed_user)
@@ -174,6 +182,21 @@ module EE
           recipient.user.id, target.id, status, current_user.id, recipient.reason)
           .deliver_later
       end
+    end
+
+    def send_account_validation_email(pipeline)
+      return unless ::Feature.enabled?(:account_validation_email)
+      return unless ::Gitlab.dev_env_or_com?
+      return unless pipeline.failed?
+      return unless pipeline.user_not_verified?
+
+      user = pipeline.user
+      return if user.has_required_credit_card_to_run_pipelines?(pipeline.project)
+      return unless user.can?(:receive_notifications)
+      return unless user.email_opted_in?
+
+      email = user.notification_email_or_default
+      mailer.account_validation_email(pipeline, email).deliver_later
     end
   end
 end

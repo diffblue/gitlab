@@ -986,4 +986,88 @@ RSpec.describe EE::NotificationService, :mailer do
       end
     end
   end
+
+  describe '#pipeline_finished' do
+    let_it_be(:project, reload: true) { create(:project, :repository) }
+
+    let(:user) { create(:user, email_opted_in: true) }
+    let(:has_required_credit_card_to_run_pipelines) { false }
+    let(:failure_reason) { 'user_not_verified' }
+    let(:pipeline) do
+      create(
+        :ci_empty_pipeline,
+        project: project,
+        ref: 'master',
+        status: 'failed',
+        failure_reason: failure_reason,
+        sha: project.commit.id,
+        user: user
+      )
+    end
+
+    subject(:pipeline_finished) { NotificationService.new.pipeline_finished(pipeline) }
+
+    before do
+      allow(::Gitlab).to receive(:dev_env_or_com?).and_return(true)
+      allow(user).to receive(:has_required_credit_card_to_run_pipelines?).and_return(has_required_credit_card_to_run_pipelines)
+
+      project.add_maintainer(user)
+    end
+
+    shared_examples 'does not send account activation email' do
+      it 'does not send account activation email' do
+        expect(Notify).not_to receive(:account_validation_email)
+
+        pipeline_finished
+      end
+    end
+
+    context 'with a failed pipeline' do
+      it 'sends account activation email' do
+        expect(Notify).to receive(:account_validation_email).with(pipeline, user.notification_email_or_default).once.and_call_original
+
+        pipeline_finished
+      end
+
+      context 'when feature flag is disabled' do
+        before do
+          stub_feature_flags(account_validation_email: false)
+        end
+
+        include_examples 'does not send account activation email'
+      end
+
+      context 'when not in dev env or gitlab.com' do
+        before do
+          allow(::Gitlab).to receive(:dev_env_or_com?).and_return(false)
+        end
+
+        include_examples 'does not send account activation email'
+      end
+
+      context 'when user is not opted in to marketing emails' do
+        let(:user) { create(:user, email_opted_in: false) }
+
+        include_examples 'does not send account activation email'
+      end
+
+      context "when failure reason is not user_not_verified" do
+        let(:failure_reason) { 'unknown_failure' }
+
+        include_examples 'does not send account activation email'
+      end
+
+      context 'when user account is validated' do
+        let(:has_required_credit_card_to_run_pipelines) { true }
+
+        include_examples 'does not send account activation email'
+      end
+
+      context 'when user cannot receive notifications' do
+        let(:user) { User.ghost }
+
+        include_examples 'does not send account activation email'
+      end
+    end
+  end
 end
