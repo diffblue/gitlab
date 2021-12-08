@@ -11,6 +11,7 @@ import {
   GlTable,
   GlTooltipDirective,
 } from '@gitlab/ui';
+import { kebabCase } from 'lodash';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { isScopedLabel } from '~/lib/utils/common_utils';
 import { __, n__, sprintf } from '~/locale';
@@ -175,10 +176,13 @@ export default {
     nextPage() {
       return Number(this.issues.pageInfo.hasNextPage);
     },
-    sectionName() {
+    heading() {
       return this.label.title
         ? sprintf(__('Issues with label %{label}'), { label: this.label.title })
-        : __('Issues');
+        : __('All issues');
+    },
+    headingId() {
+      return kebabCase(this.heading);
     },
     badgeAriaLabel() {
       return n__('%d issue', '%d issues', this.issues.count);
@@ -228,7 +232,9 @@ export default {
 </script>
 
 <template>
-  <section :aria-label="sectionName">
+  <section :aria-labelledby="headingId">
+    <h4 :id="headingId" class="gl-sr-only">{{ heading }}</h4>
+
     <gl-alert v-if="error" variant="danger" @dismiss="error = ''">
       {{ error }}
     </gl-alert>
@@ -265,8 +271,8 @@ export default {
       :items="issues.list"
       :fields="$options.fields"
       :empty-text="__('No issues found')"
-      :show-empty="true"
       fixed
+      show-empty
       stacked="sm"
       :tbody-tr-class="tbodyTrClass"
       data-qa-selector="iteration_issues_container"
