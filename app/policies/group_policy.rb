@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class GroupPolicy < NamespacePolicy
+class GroupPolicy < Namespaces::GroupProjectNamespaceSharedPolicy
   include FindGroupProjects
 
   desc "Group is public"
