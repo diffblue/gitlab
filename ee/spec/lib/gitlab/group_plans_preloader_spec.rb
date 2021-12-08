@@ -21,6 +21,9 @@ RSpec.describe Gitlab::GroupPlansPreloader, :saas do
 
     shared_examples 'preloading cases' do
       it 'only executes three SQL queries to preload the data' do
+        # Pre-cache `select VERSION()` query to avoid counting.
+        Gitlab::Database::AsWithMaterialized.materialized_supported?
+
         amount = ActiveRecord::QueryRecorder
           .new { preloaded_groups }
           .count
