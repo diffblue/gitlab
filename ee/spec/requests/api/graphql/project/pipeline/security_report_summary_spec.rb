@@ -34,7 +34,6 @@ RSpec.describe 'Query.project(fullPath).pipeline(iid).securityReportSummary' do
               confidence: finding.confidence,
               project_fingerprint: finding.project_fingerprint,
               deduplicated: true,
-              position: index,
               scan: scan)
       end
     end
