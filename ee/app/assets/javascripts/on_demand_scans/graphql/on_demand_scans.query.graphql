@@ -25,7 +25,6 @@ query onDemandScans(
         id
         path
         createdAt
-        status
         detailedStatus {
           id
           detailsPath
