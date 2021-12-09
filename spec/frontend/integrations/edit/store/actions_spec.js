@@ -4,7 +4,6 @@ import testAction from 'helpers/vuex_action_helper';
 import { I18N_FETCH_TEST_SETTINGS_DEFAULT_ERROR_MESSAGE } from '~/integrations/constants';
 import {
   setOverride,
-  setIsSaving,
   setIsResetting,
   requestResetIntegration,
   receiveResetIntegrationSuccess,

@@ -1,11 +1,4 @@
-import {
-  currentKey,
-  isInheriting,
-  isDisabled,
-  propsSource,
-} from '~/integrations/edit/store/getters';
-import * as types from '~/integrations/edit/store/mutation_types';
-import mutations from '~/integrations/edit/store/mutations';
+import { currentKey, isInheriting, propsSource } from '~/integrations/edit/store/getters';
 import createState from '~/integrations/edit/store/state';
 import { mockIntegrationProps } from '../mock_data';
 
