@@ -19,7 +19,6 @@ export function initEpicForm() {
   const {
     groupPath,
     groupEpicsPath,
-    labelsFetchPath,
     labelsManagePath,
     markdownDocsPath,
     markdownPreviewPath,
@@ -33,7 +32,6 @@ export function initEpicForm() {
       fullPath: groupPath,
       allowLabelCreate: true,
       groupEpicsPath,
-      labelsFetchPath,
       labelsManagePath,
       markdownDocsPath,
       markdownPreviewPath,
