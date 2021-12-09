@@ -3,7 +3,6 @@
 fragment BoardListFragment on BoardList {
   ...BoardListShared
   maxIssueCount
-  totalWeight
   assignee {
     id
     name
