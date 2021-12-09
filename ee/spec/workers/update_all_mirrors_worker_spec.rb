@@ -11,10 +11,7 @@ RSpec.describe UpdateAllMirrorsWorker do
     stub_exclusive_lease
   end
 
-  it_behaves_like 'worker with data consistency',
-                  described_class,
-                  feature_flag: :load_balancing_for_update_all_mirrors_worker,
-                  data_consistency: :sticky
+  it_behaves_like 'worker with data consistency', described_class, data_consistency: :sticky
 
   describe '#perform' do
     it 'does nothing if the database is read-only' do
