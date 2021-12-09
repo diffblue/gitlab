@@ -15,8 +15,8 @@ class BlobPresenter < Gitlab::View::Presenter::Delegated
 
     Gitlab::Highlight.highlight(
       blob.path,
-      Gitlab::Diff::CustomDiff.transformed_blob_data(blob) || limited_blob_data(to: to),
-      language: Gitlab::Diff::CustomDiff.transformed_blob_language(blob) || language,
+      blob_data,
+      language: blob_language,
       plain: plain
     )
   end
@@ -25,6 +25,14 @@ class BlobPresenter < Gitlab::View::Presenter::Delegated
     return if blob.binary?
 
     highlight(plain: false)
+  end
+
+  def blob_data
+    @_blob_data ||= Gitlab::Diff::CustomDiff.transformed_blob_data(blob) || limited_blob_data(to: to)
+  end
+
+  def blob_language
+    @_blob_language ||= Gitlab::Diff::CustomDiff.transformed_blob_language(blob) || language
   end
 
   def raw_plain_data

@@ -6,20 +6,21 @@ module Gitlab
         def preprocess_before_diff(path, old_blob, new_blob)
           return unless path.ends_with? '.ipynb'
 
-          transformed_diff = IpynbDiff.diff(old_blob&.data, new_blob&.data,
-                                            diff_opts: { context: 5, include_diff_info: true },
-                                            transform_options: { cell_decorator: :percent },
-                                            raise_if_invalid_notebook: true)
-          new_diff = strip_diff_frontmatter(transformed_diff)
-
-          transformed_for_diff(new_blob, old_blob) if new_diff
-
-          Gitlab::AppLogger.info({ message: new_diff ? 'IPYNB_DIFF_GENERATED' : 'IPYNB_DIFF_NIL' })
-
-          new_diff
+          transformed_diff(old_blob&.data, new_blob&.data)&.tap do
+            transformed_for_diff(new_blob, old_blob)
+            Gitlab::AppLogger.info({ message: 'IPYNB_DIFF_GENERATED' })
+          end
         rescue IpynbDiff::InvalidNotebookError => e
           Gitlab::ErrorTracking.log_exception(e)
           nil
+        end
+
+        def transformed_diff(before, after)
+          transformed_diff = IpynbDiff.diff(before, after,
+                                            diff_opts: { context: 5, include_diff_info: true },
+                                            transform_options: { cell_decorator: :percent },
+                                            raise_if_invalid_notebook: true)
+          strip_diff_frontmatter(transformed_diff)
         end
 
         def transformed_blob_language(blob)

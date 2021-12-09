@@ -48,7 +48,7 @@ module Gitlab
       end
 
       def use_custom_diff?
-        Feature.enabled?(:jupyter_clean_diffs, repository.project, default_enabled: true)
+        strong_memoize(:_custom_diff_enabled)  { Feature.enabled?(:jupyter_clean_diffs, repository.project, default_enabled: true) }
       end
 
       def position(position_marker, position_type: :text)
