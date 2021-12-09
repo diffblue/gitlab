@@ -1540,8 +1540,10 @@ RSpec.describe User do
         allow(user).to receive(:update_highest_role)
       end
 
-      # Namespace#schedule_sync_event_worker => Sidekiq calls `SecureRandom.hex(12)` to generate `jid`
-      expect(SecureRandom).to receive(:hex).with(12).and_call_original
+      allow_next_instance_of(Namespaces::UserNamespace) do |namespace|
+        allow(namespace).to receive(:schedule_sync_event_worker)
+      end
+
       expect(SecureRandom).to receive(:hex).with(no_args).and_return('3b8ca303')
 
       user = create(:user)

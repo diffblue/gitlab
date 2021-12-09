@@ -12,13 +12,14 @@ module Ci
 
     class << self
       def sync!(event)
-        traversal_ids = event.namespace.self_and_ancestor_ids(hierarchy_order: :desc)
+        namespace = event.namespace
+        traversal_ids = namespace.self_and_ancestor_ids(hierarchy_order: :desc)
 
         upsert({ namespace_id: event.namespace_id, traversal_ids: traversal_ids },
                unique_by: :namespace_id)
 
-        # TODO: after fully implemented `sync_traversal_ids` FF, we will not need this method.
-        # However, we also need to change the PG trigger to reflect `namespaces.traversal_ids` changes
+        # It won't be necessary once we remove `sync_traversal_ids`.
+        # More info: https://gitlab.com/gitlab-org/gitlab/-/issues/347541
         sync_children_namespaces!(event.namespace_id, traversal_ids)
       end
 
