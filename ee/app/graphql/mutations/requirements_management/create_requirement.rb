@@ -19,10 +19,13 @@ module Mutations
           params: args
         ).execute
 
-        {
-          requirement: requirement.valid? ? requirement : nil,
-          errors: errors_on_object(requirement)
-        }
+        if requirement.errors.empty?
+          { requirement: requirement, errors: [] }
+        else
+          requirement.errors.delete(:requirement_issue)
+
+          { requirement: nil, errors: errors_on_object(requirement) }
+        end
       end
     end
   end

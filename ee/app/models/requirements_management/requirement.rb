@@ -27,6 +27,9 @@ module RequirementsManagement
     # This will be removed in https://gitlab.com/gitlab-org/gitlab/-/issues/329432
     belongs_to :requirement_issue, class_name: 'Issue', foreign_key: :issue_id, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
 
+    validates :project, presence: true
+    validates :requirement_issue, presence: true, on: [:create, :update]
+
     validates :issue_id, uniqueness: true
 
     has_many :test_reports, inverse_of: :requirement
@@ -39,8 +42,6 @@ module RequirementsManagement
     after_validation :invalidate_if_sync_error, on: [:update, :create]
 
     delegate :title,
-             :project,
-             :project_id,
              :author,
              :author_id,
              :description,

@@ -21,8 +21,8 @@ RSpec.describe RequirementsManagement::Requirement do
     subject { build(:requirement) }
 
     delegated_attributes = %i[
-      project project_id author author_id title title_html
-      description description_html cached_markdown_version
+      author author_id title title_html description
+      description_html cached_markdown_version
     ]
 
     delegated_attributes.each do |attr_name|
@@ -32,7 +32,7 @@ RSpec.describe RequirementsManagement::Requirement do
     context 'with nil attributes' do
       let_it_be(:requirement) { create(:requirement, project: project, author: user, description: 'Test', state: 'archived') }
 
-      (delegated_attributes - %i[project project_id title]).each do |attr_name|
+      (delegated_attributes - [:title]).each do |attr_name|
         it "returns delegated #{attr_name} value" do
           requirement.update_attribute(attr_name, nil)
 
@@ -47,6 +47,8 @@ RSpec.describe RequirementsManagement::Requirement do
     subject { build(:requirement) }
 
     it { is_expected.to validate_uniqueness_of(:issue_id) }
+    it { is_expected.to validate_presence_of(:project) }
+    it { is_expected.to validate_presence_of(:requirement_issue) }
 
     it 'is limited to a unique requirement_issue' do
       requirement_issue = create(:requirement_issue)
