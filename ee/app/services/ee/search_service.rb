@@ -11,18 +11,6 @@ module EE
       search_service.use_elasticsearch?
     end
 
-    def valid_query_length?
-      return true if use_elasticsearch?
-
-      super
-    end
-
-    def valid_terms_count?
-      return true if use_elasticsearch?
-
-      super
-    end
-
     def show_epics?
       search_service.allowed_scopes.include?('epics')
     end
