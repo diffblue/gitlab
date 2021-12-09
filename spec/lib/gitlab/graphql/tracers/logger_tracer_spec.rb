@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 require "spec_helper"
-require "support/graphql/fake_query_type"
 
 RSpec.describe Gitlab::Graphql::Tracers::LoggerTracer do
   let(:dummy_schema) do
