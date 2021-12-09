@@ -1,0 +1,26 @@
+- body = @escalation_status.resolved? ? _('An incident has been resolved in %{project_path}.') : _('An incident has been triggered in %{project_path}.')
+
+%p
+  = body % { project_path: @incident.project.full_path }
+%p
+  = link_to(_('View incident details.'), @incident.web_url)
+
+%p
+  = _('Title:')
+  = @incident.title
+
+- if @incident.description
+  %p
+    = _('Description:')
+    = markdown(@incident.description, pipeline: :email, author: @incident.author)
+
+- if @escalation_status.policy
+  %p
+    = _('Escalation policy:')
+    = @escalation_status.policy.name
+
+- if @incident.metric_images.any?
+  %p
+    = _('Metrics:')
+    - @incident.metric_images.each do |image|
+      = link_to image.filename, image.file_path

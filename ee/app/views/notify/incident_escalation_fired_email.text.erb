@@ -1,0 +1,21 @@
+<% body = @escalation_status.resolved? ? _('An incident has been resolved in %{project_path}.') : _('An incident has been triggered in %{project_path}.') %>
+
+<%= body % { project_path: @incident.project.full_path } %>
+<%= _('View incident details at') %> <%= @incident.web_url %>
+
+<%= _('Title:') %> <%= @incident.title %>
+
+<% if @incident.description %>
+<%= _('Description:') %> <%= @incident.description %>
+<% end %>
+
+<% if @escalation_status.policy %>
+<%= _('Escalation policy:') %> <%= @escalation_status.policy.name %>
+<% end %>
+
+<% if @incident.metric_images.any? %>
+<%= _('Metrics:') %>
+<% @incident.metric_images.each do |image| %>
+  <%= image.file_path %>
+<% end %>
+<% end %>

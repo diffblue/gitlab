@@ -28,6 +28,14 @@ module IncidentManagement
       scope :processable, -> { where(process_at: ESCALATION_BUFFER.ago..Time.current) }
 
       delegate :project, to: :target
+
+      def escalatable
+        raise NotImplementedError
+      end
+
+      def type
+        raise NotImplementedError
+      end
     end
   end
 end

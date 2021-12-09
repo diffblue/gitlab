@@ -10,12 +10,7 @@ RSpec.describe IncidentManagement::PendingEscalations::ProcessService do
   let(:escalation_rule) { build(:incident_management_escalation_rule, oncall_schedule: schedule_1) }
   let!(:escalation_policy) { create(:incident_management_escalation_policy, project: project, rules: [escalation_rule]) }
 
-  let(:alert) { create(:alert_management_alert, project: project, **alert_params) }
-  let(:alert_params) { { status: ::IncidentManagement::Escalatable::STATUSES[:triggered] } }
-
-  let(:target) { alert }
   let(:process_at) { 5.minutes.ago }
-  let(:escalation) { create(:incident_management_pending_alert_escalation, rule: escalation_rule, alert: target, process_at: process_at) }
 
   let(:service) { described_class.new(escalation) }
 
@@ -42,47 +37,102 @@ RSpec.describe IncidentManagement::PendingEscalations::ProcessService do
       end
     end
 
-    context 'all conditions are met' do
-      let(:users) { schedule_1_users }
-
-      it_behaves_like 'sends on-call notification'
-      it_behaves_like 'deletes the escalation'
-
-      it 'creates a system note' do
+    shared_examples 'creates a system note' do
+      specify do
         expect(SystemNoteService)
-          .to receive(:notify_via_escalation).with(alert, project, [a_kind_of(User)], escalation_policy)
+          .to receive(:notify_via_escalation).with(target, project, [a_kind_of(User)], escalation_policy, escalation.type)
           .and_call_original
 
         expect { execute }.to change(Note, :count).by(1)
       end
+    end
+
+    shared_examples 'sends an on-call notification email' do
+      let(:notification_async) { double(NotificationService::Async) }
+
+      specify do
+        allow(NotificationService).to receive_message_chain(:new, :async).and_return(notification_async)
+        expect(notification_async).to receive(notification_action).with(
+          users,
+          target
+        )
+
+        subject
+      end
+    end
+
+    shared_examples 'escalates correctly when all conditions are met' do
+      let(:users) { schedule_1_users }
+
+      it_behaves_like 'sends an on-call notification email'
+      it_behaves_like 'deletes the escalation'
+      it_behaves_like 'creates a system note'
 
       context 'when escalation rule is for a user' do
         let(:escalation_rule) { build(:incident_management_escalation_rule, :with_user) }
         let(:users) { [escalation_rule.user] }
 
-        it_behaves_like 'sends on-call notification'
+        it_behaves_like 'sends an on-call notification email'
         it_behaves_like 'deletes the escalation'
       end
     end
 
-    context 'target is already resolved' do
-      let(:target) { create(:alert_management_alert, :resolved, project: project) }
+    shared_examples 'does not escalate if escalation is not ready to be processed' do
+      context 'does not escalate if escalation is not ready to be processed' do
+        let(:process_at) { 5.minutes.from_now }
 
-      it_behaves_like 'does not send on-call notification'
-
-      it_behaves_like 'deletes the escalation'
+        it_behaves_like 'it does not escalate'
+      end
     end
 
-    context 'target status is not above threshold' do
-      let(:target) { create(:alert_management_alert, :acknowledged, project: project) }
+    context 'alert escalation' do
+      let(:alert) { create(:alert_management_alert, project: project, **alert_params) }
+      let(:alert_params) { { status: ::IncidentManagement::Escalatable::STATUSES[:triggered] } }
+      let(:target) { alert }
+      let(:escalation) { create(:incident_management_pending_alert_escalation, rule: escalation_rule, alert: target, process_at: process_at) }
+      let(:notification_action) { :notify_oncall_users_of_alert }
 
-      it_behaves_like 'it does not escalate'
+      include_examples 'escalates correctly when all conditions are met'
+      include_examples 'does not escalate if escalation is not ready to be processed'
+
+      context 'target is already resolved' do
+        let(:target) { create(:alert_management_alert, :resolved, project: project) }
+
+        it_behaves_like 'does not send on-call notification'
+        it_behaves_like 'deletes the escalation'
+      end
+
+      context 'target status is not above threshold' do
+        let(:target) { create(:alert_management_alert, :acknowledged, project: project) }
+
+        it_behaves_like 'it does not escalate'
+      end
     end
 
-    context 'escalation is not ready to be processed' do
-      let(:process_at) { 5.minutes.from_now }
+    context 'issue escalation' do
+      let(:issue) { create(:issue, :incident, project: project) }
+      let!(:issue_escalation_status) { create(:incident_management_issuable_escalation_status, issue: target) }
+      let(:target) { issue }
+      let(:escalation) { create(:incident_management_pending_issue_escalation, rule: escalation_rule, issue: target, process_at: process_at) }
+      let(:notification_action) { :notify_oncall_users_of_incident }
 
-      it_behaves_like 'it does not escalate'
+      include_examples 'escalates correctly when all conditions are met'
+      include_examples 'does not escalate if escalation is not ready to be processed'
+
+      context 'target escalation status is resolved' do
+        before do
+          target.incident_management_issuable_escalation_status.resolve!
+        end
+
+        it_behaves_like 'does not send on-call notification'
+        it_behaves_like 'deletes the escalation'
+      end
+
+      context 'target status is not above threshold' do
+        let!(:issue_escalation_status) { create(:incident_management_issuable_escalation_status, :acknowledged, issue: issue) }
+
+        it_behaves_like 'it does not escalate'
+      end
     end
   end
 end

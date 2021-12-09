@@ -41,6 +41,19 @@ module EE
           format.text { render layout: 'mailer' }
         end
       end
+
+      def incident_escalation_fired_email(project, user, issue)
+        @project = project
+        @incident = issue.present
+        @escalation_status = issue.incident_management_issuable_escalation_status
+
+        add_project_headers
+        headers['X-GitLab-NotificationReason'] = "incident_#{@escalation_status.status_name}"
+        add_incident_headers
+
+        subject_text = "Incident: #{@incident.title}"
+        mail(to: user.notification_email_for(@project.group), subject: subject(subject_text))
+      end
     end
   end
 end

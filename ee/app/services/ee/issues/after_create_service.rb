@@ -9,12 +9,12 @@ module EE
       def execute(issue)
         super
 
-        add_issue_sla(issue)
+        create_issue_sla(issue)
       end
 
       private
 
-      def add_issue_sla(issue)
+      def create_issue_sla(issue)
         return unless issue.sla_available?
 
         ::IncidentManagement::Incidents::CreateSlaService.new(issue, current_user).execute

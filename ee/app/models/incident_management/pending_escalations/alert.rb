@@ -12,6 +12,14 @@ module IncidentManagement
       belongs_to :alert, class_name: 'AlertManagement::Alert', foreign_key: 'alert_id', inverse_of: :pending_escalations
 
       validates :rule_id, uniqueness: { scope: [:alert_id] }
+
+      def escalatable
+        alert
+      end
+
+      def type
+        :alert
+      end
     end
   end
 end
