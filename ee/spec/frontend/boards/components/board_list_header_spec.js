@@ -1,17 +1,21 @@
 import { GlButton, GlButtonGroup } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
+import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 
 import BoardListHeader from 'ee/boards/components/board_list_header.vue';
 import defaultGetters from 'ee/boards/stores/getters';
-import { mockList, mockLabelList } from 'jest/boards/mock_data';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
+import { boardListQueryResponse, mockList, mockLabelList } from 'jest/boards/mock_data';
 import { ListType, inactiveId } from '~/boards/constants';
 import boardsEventHub from '~/boards/eventhub';
+import listQuery from 'ee/boards/graphql/board_lists_deferred.query.graphql';
 import sidebarEventHub from '~/sidebar/event_hub';
 
-const localVue = createLocalVue();
-
-localVue.use(Vuex);
+Vue.use(VueApollo);
+Vue.use(Vuex);
 
 const listMocks = {
   [ListType.assignee]: {
@@ -34,6 +38,18 @@ const listMocks = {
 describe('Board List Header Component', () => {
   let store;
   let wrapper;
+  let fakeApollo;
+
+  beforeEach(() => {
+    store = new Vuex.Store({ state: { activeId: inactiveId }, defaultGetters });
+  });
+
+  afterEach(() => {
+    wrapper.destroy();
+    fakeApollo = null;
+
+    localStorage.clear();
+  });
 
   const createComponent = ({
     listType = ListType.backlog,
@@ -41,6 +57,7 @@ describe('Board List Header Component', () => {
     withLocalStorage = true,
     isSwimlanesHeader = false,
     weightFeatureAvailable = false,
+    listQueryHandler = jest.fn().mockResolvedValue(boardListQueryResponse()),
     currentUserId = 1,
     state = { activeId: inactiveId },
     getters = {},
@@ -61,6 +78,7 @@ describe('Board List Header Component', () => {
       );
     }
 
+    fakeApollo = createMockApollo([[listQuery, listQueryHandler]]);
     store = new Vuex.Store({
       state,
       getters: {
@@ -72,8 +90,8 @@ describe('Board List Header Component', () => {
     jest.spyOn(store, 'dispatch').mockImplementation();
 
     wrapper = shallowMount(BoardListHeader, {
+      apolloProvider: fakeApollo,
       store,
-      localVue,
       propsData: {
         disabled: false,
         list: listMock,
@@ -188,10 +206,15 @@ describe('Board List Header Component', () => {
   });
 
   describe('weightFeatureAvailable', () => {
-    it('weightFeatureAvailable is true', () => {
+    it('weightFeatureAvailable is true', async () => {
       createComponent({ weightFeatureAvailable: true });
 
-      expect(wrapper.find({ ref: 'weightTooltip' }).exists()).toBe(true);
+      await waitForPromises();
+
+      const weightTooltip = wrapper.find({ ref: 'weightTooltip' });
+
+      expect(weightTooltip.exists()).toBe(true);
+      expect(weightTooltip.text()).toContain(boardListQueryResponse().data.boardList.totalWeight);
     });
 
     it('weightFeatureAvailable is false', () => {

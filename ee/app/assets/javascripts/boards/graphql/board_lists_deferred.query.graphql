@@ -1,0 +1,7 @@
+query BoardListEE($id: ID!, $filters: BoardIssueInput) {
+  boardList(id: $id, issueFilters: $filters) {
+    id
+    totalWeight
+    issuesCount
+  }
+}

@@ -1467,6 +1467,7 @@ describe('addListNewIssue', () => {
               iterationCadenceId,
             }),
           },
+          update: expect.anything(),
         });
       });
     });
@@ -1500,6 +1501,7 @@ describe('addListNewIssue', () => {
           variables: {
             input: formatIssueInput(mockIssue, state.boardConfig),
           },
+          update: expect.anything(),
         });
       });
     });
@@ -1536,6 +1538,7 @@ describe('addListNewIssue', () => {
         variables: {
           input: formatIssueInput(mockIssue, state.boardConfig),
         },
+        update: expect.anything(),
       });
     });
   });

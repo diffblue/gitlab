@@ -96,7 +96,7 @@ export default {
   ...actionsCE,
 
   addListNewIssue: async (
-    { state: { boardConfig, boardType, fullPath }, dispatch, commit },
+    { state: { boardConfig, boardType, fullPath, filterParams }, dispatch, commit },
     issueInputObj,
   ) => {
     const { iterationId } = boardConfig;
@@ -127,6 +127,7 @@ export default {
           boardConfig: { ...boardConfig, iterationId, iterationCadenceId },
           boardType,
           fullPath,
+          filterParams,
         },
         dispatch,
         commit,
