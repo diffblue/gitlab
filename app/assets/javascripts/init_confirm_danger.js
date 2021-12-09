@@ -14,12 +14,16 @@ export default () => {
     buttonTestid = null,
     confirmDangerMessage,
     disabled = false,
+    additionalInformation,
+    htmlConfirmationMessage,
   } = el.dataset;
 
   return new Vue({
     el,
     provide: {
+      htmlConfirmationMessage,
       confirmDangerMessage,
+      additionalInformation,
     },
     render: (createElement) =>
       createElement(ConfirmDanger, {
