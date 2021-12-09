@@ -111,6 +111,8 @@ RSpec.describe Ci::Minutes::Limit do
 
     with_them do
       before do
+        namespace.clear_memoization(:new_monthly_ci_minutes_enabled)
+
         if previous_amount_used
           create(:ci_namespace_monthly_usage,
             namespace: namespace,
@@ -123,7 +125,7 @@ RSpec.describe Ci::Minutes::Limit do
             amount_used: 5_000)
         end
 
-        stub_feature_flags(ci_reset_purchased_minutes_lazily: ff_enabled)
+        stub_feature_flags(ci_use_new_monthly_minutes: ff_enabled)
       end
 
       it 'has the expected purchased minutes' do

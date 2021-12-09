@@ -104,7 +104,7 @@ RSpec.describe Ci::Minutes::EmailNotificationService do
       end
 
       before do
-        stub_feature_flags(ci_minutes_use_notification_level: ff_enabled)
+        stub_feature_flags(ci_use_new_monthly_minutes: ff_enabled)
 
         if namespace.namespace_statistics
           namespace.namespace_statistics.update!(shared_runners_seconds: legacy_minutes_used.minutes)
@@ -250,9 +250,9 @@ RSpec.describe Ci::Minutes::EmailNotificationService do
 
           it_behaves_like 'matches the expectation'
 
-          context 'when feature flag ci_minutes_use_notification_level is disabled' do
+          context 'when feature flag ci_use_new_monthly_minutes is disabled' do
             before do
-              stub_feature_flags(ci_minutes_use_notification_level: false)
+              stub_feature_flags(ci_use_new_monthly_minutes: false)
             end
 
             it_behaves_like 'matches the expectation'
@@ -270,9 +270,9 @@ RSpec.describe Ci::Minutes::EmailNotificationService do
 
           it_behaves_like 'matches the expectation'
 
-          context 'when feature flag ci_minutes_use_notification_level is disabled' do
+          context 'when feature flag ci_use_new_monthly_minutes is disabled' do
             before do
-              stub_feature_flags(ci_minutes_use_notification_level: false)
+              stub_feature_flags(ci_use_new_monthly_minutes: false)
             end
 
             it_behaves_like 'matches the expectation'

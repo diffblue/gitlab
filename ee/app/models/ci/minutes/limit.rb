@@ -66,7 +66,7 @@ module Ci
       end
 
       def should_recalculate_purchased_minutes?
-        Feature.enabled?(:ci_reset_purchased_minutes_lazily, namespace, default_enabled: :yaml) &&
+        namespace.new_monthly_ci_minutes_enabled? &&
           enabled? &&
           any_purchased?
       end

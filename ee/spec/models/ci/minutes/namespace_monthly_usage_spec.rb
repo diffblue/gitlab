@@ -77,9 +77,9 @@ RSpec.describe Ci::Minutes::NamespaceMonthlyUsage do
             end
           end
 
-          context 'when ci_reset_purchased_minutes_lazily feature flag is disabled' do
+          context 'when ci_use_new_monthly_minutes feature flag is disabled' do
             before do
-              stub_feature_flags(ci_reset_purchased_minutes_lazily: false)
+              stub_feature_flags(ci_use_new_monthly_minutes: false)
             end
 
             it_behaves_like 'does not update the additional minutes'
