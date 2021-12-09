@@ -2,13 +2,13 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::AdditionalPack do
+RSpec.describe Ci::Minutes::AdditionalPack, type: :model do
   describe 'associations' do
     it { is_expected.to belong_to(:namespace) }
   end
 
   describe 'validations' do
-    subject(:additional_pack) { build(:ci_minutes_additional_pack) }
+    subject(:additional_pack) { create(:ci_minutes_additional_pack) }
 
     it { is_expected.to validate_presence_of(:namespace) }
     it { is_expected.to validate_presence_of(:number_of_minutes) }
