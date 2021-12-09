@@ -19065,6 +19065,9 @@ msgstr ""
 msgid "Invalid URL"
 msgstr ""
 
+msgid "Invalid URL: %{url}"
+msgstr ""
+
 msgid "Invalid container_name"
 msgstr ""
 
