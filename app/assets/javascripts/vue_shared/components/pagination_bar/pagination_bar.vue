@@ -23,10 +23,6 @@ export default {
       type: Array,
       default: () => DEFAULT_PAGE_SIZES,
     },
-    itemsCount: {
-      required: true,
-      type: Number,
-    },
   },
 
   computed: {
@@ -35,9 +31,10 @@ export default {
     },
 
     paginationInfo() {
-      const { page, perPage } = this.pageInfo;
+      const { page, perPage, totalPages, total } = this.pageInfo;
+      const itemsCount = page === totalPages ? total - (page - 1) * perPage : perPage;
       const start = (page - 1) * perPage + 1;
-      const end = start + this.itemsCount - 1;
+      const end = start + itemsCount - 1;
 
       return { start, end };
     },
@@ -54,7 +51,7 @@ export default {
 <template>
   <div class="gl-display-flex gl-align-items-center">
     <pagination-links :change="setPage" :page-info="pageInfo" class="gl-m-0" />
-    <gl-dropdown category="tertiary" class="gl-ml-auto">
+    <gl-dropdown category="tertiary" class="gl-ml-auto" :aria-label="__('Page size')">
       <template #button-content>
         <span class="gl-font-weight-bold">
           <gl-sprintf :message="__('%{count} items per page')">

@@ -209,7 +209,12 @@ describe('import table', () => {
       const otherOption = findPaginationDropdown().findAll('li p').at(1);
       expect(otherOption.text()).toMatchInterpolatedText('50 items per page');
 
+      bulkImportSourceGroupsQueryMock.mockResolvedValue({
+        nodes: [FAKE_GROUP],
+        pageInfo: { ...FAKE_PAGE_INFO, perPage: 50 },
+      });
       await otherOption.trigger('click');
+
       await waitForPromises();
 
       expect(findPaginationDropdownText()).toMatchInterpolatedText('50 items per page');
