@@ -39,10 +39,8 @@ describe('Card security discover app', () => {
       );
     });
 
-    it('renders feedback icon link properly', () => {
-      expect(wrapper.find('.discover-feedback-icon').html()).toContain(
-        'Give feedback for this page',
-      );
+    it('renders discover feedback link properly', () => {
+      expect(wrapper.find('.discover-button-feedback').html()).toContain('Send feedback');
     });
 
     it('renders discover upgrade links properly', () => {
@@ -91,7 +89,7 @@ describe('Card security discover app', () => {
       });
 
       it('tracks an event when clicked on feedback', () => {
-        wrapper.find('.discover-feedback-icon').trigger('click');
+        wrapper.find('.discover-button-feedback').trigger('click');
 
         expect(spy).toHaveBeenCalledWith('_category_', 'click_button', {
           label: 'security-discover-feedback-cta',

@@ -86,7 +86,7 @@ export default {
     discoverTitle: s__(
       'Discover|Security capabilities, integrated into your development lifecycle',
     ),
-    discoverFeedbackLabel: s__('Discover|Give feedback for this page'),
+    discoverFeedbackLabel: s__('Discover|Send feedback'),
     discoverUpgradeLabel: s__('Discover|Upgrade now'),
     discoverTrialLabel: s__('Discover|Start a free trial'),
     carouselCaptions: [
@@ -182,12 +182,7 @@ export default {
     </div>
     <div id="tooltipcontainer" class="discover-feedback gl-fixed">
       <gl-button
-        v-gl-tooltip:tooltipcontainer.left
-        :title="$options.i18n.discoverFeedbackLabel"
-        :aria-label="$options.i18n.discoverFeedbackLabel"
-        icon="slight-smile"
-        size="medium"
-        class="discover-feedback-icon"
+        class="discover-button-feedback"
         category="secondary"
         variant="default"
         target="_blank"
@@ -196,7 +191,9 @@ export default {
         data-track-label="security-discover-feedback-cta"
         :data-track-property="slide"
         :href="linkFeedback"
-      />
+      >
+        {{ $options.i18n.discoverFeedbackLabel }}
+      </gl-button>
     </div>
   </div>
 </template>
