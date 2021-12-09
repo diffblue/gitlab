@@ -7,6 +7,10 @@ import { JOB_SIDEBAR } from '../../constants';
 import { SIDEBAR_COLLAPSE_BREAKPOINTS } from './constants';
 
 export default {
+  styles: {
+    top: '75px',
+    width: '290px',
+  },
   name: 'BridgeSidebar',
   i18n: {
     ...JOB_SIDEBAR,
@@ -55,46 +59,40 @@ export default {
 </script>
 <template>
   <aside
-    class="right-sidebar build-sidebar"
+    class="gl-fixed gl-right-0 gl-px-5 gl-bg-gray-10 gl-h-full gl-border-l-solid gl-border-1 gl-border-gray-100 gl-z-index-200 gl-overflow-hidden"
+    :style="this.$options.styles"
     :class="{
-      'right-sidebar-expanded': isSidebarExpanded,
-      'right-sidebar-collapsed': !isSidebarExpanded,
+      'gl-display-none': !isSidebarExpanded,
     }"
-    data-offset-top="101"
-    data-spy="affix"
   >
-    <div class="sidebar-container">
-      <div class="blocks-container">
-        <div class="gl-py-5 gl-display-flex gl-align-items-center">
-          <tooltip-on-truncate :title="buildName" truncate-target="child"
-            ><h4 class="gl-mb-0 gl-mr-2 gl-text-truncate">
-              {{ buildName }}
-            </h4>
-          </tooltip-on-truncate>
-          <!-- TODO: implement retry actions -->
-          <div class="gl-flex-grow-1 gl-flex-shrink-0 gl-text-right">
-            <gl-dropdown
-              :text="$options.i18n.retryButton"
-              category="primary"
-              variant="confirm"
-              right
-              size="medium"
-            >
-              <gl-dropdown-item>{{ $options.i18n.retryTriggerJob }}</gl-dropdown-item>
-              <gl-dropdown-item>{{ $options.i18n.retryDownstreamPipeline }}</gl-dropdown-item>
-            </gl-dropdown>
-          </div>
-          <gl-button
-            :aria-label="$options.i18n.toggleSidebar"
-            data-testid="sidebar-expansion-toggle"
-            category="tertiary"
-            class="gl-md-display-none gl-ml-2"
-            icon="chevron-double-lg-right"
-            @click="toggleSidebar"
-          />
-        </div>
-        <!-- TODO: get job details and show commit block, stage dropdown, jobs list -->
+    <div class="gl-py-5 gl-display-flex gl-align-items-center">
+      <tooltip-on-truncate :title="buildName" truncate-target="child"
+        ><h4 class="gl-mb-0 gl-mr-2 gl-text-truncate">
+          {{ buildName }}
+        </h4>
+      </tooltip-on-truncate>
+      <!-- TODO: implement retry actions -->
+      <div class="gl-flex-grow-1 gl-flex-shrink-0 gl-text-right">
+        <gl-dropdown
+          :text="$options.i18n.retryButton"
+          category="primary"
+          variant="confirm"
+          right
+          size="medium"
+        >
+          <gl-dropdown-item>{{ $options.i18n.retryTriggerJob }}</gl-dropdown-item>
+          <gl-dropdown-item>{{ $options.i18n.retryDownstreamPipeline }}</gl-dropdown-item>
+        </gl-dropdown>
       </div>
+      <gl-button
+        :aria-label="$options.i18n.toggleSidebar"
+        data-testid="sidebar-expansion-toggle"
+        category="tertiary"
+        class="gl-md-display-none gl-ml-2"
+        icon="chevron-double-lg-right"
+        @click="toggleSidebar"
+      />
     </div>
+    <!-- TODO: get job details and show commit block, stage dropdown, jobs list -->
   </aside>
 </template>

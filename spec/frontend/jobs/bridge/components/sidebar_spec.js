@@ -40,14 +40,12 @@ describe('Bridge Sidebar', () => {
     });
 
     it('toggles expansion on button click', async () => {
-      expect(findSidebar().classes()).toContain('right-sidebar-expanded');
-      expect(findSidebar().classes()).not.toContain('right-sidebar-collapsed');
+      expect(findSidebar().classes()).not.toContain('gl-display-none');
 
       findToggle().vm.$emit('click');
       await nextTick();
 
-      expect(findSidebar().classes()).toContain('right-sidebar-collapsed');
-      expect(findSidebar().classes()).not.toContain('right-sidebar-expanded');
+      expect(findSidebar().classes()).toContain('gl-display-none');
     });
 
     describe('on resize', () => {
@@ -62,14 +60,15 @@ describe('Bridge Sidebar', () => {
         'sets isSidebarExpanded to `$isSidebarExpanded` when the breakpoint is "$breakpoint"',
         async ({ breakpoint, isSidebarExpanded }) => {
           jest.spyOn(GlBreakpointInstance, 'getBreakpointSize').mockReturnValue(breakpoint);
-          const sidebarClass = isSidebarExpanded
-            ? 'right-sidebar-expanded'
-            : 'right-sidebar-collapsed';
 
           window.dispatchEvent(new Event('resize'));
           await nextTick();
 
-          expect(findSidebar().classes()).toContain(sidebarClass);
+          if (isSidebarExpanded) {
+            expect(findSidebar().classes()).not.toContain('gl-display-none');
+          } else {
+            expect(findSidebar().classes()).toContain('gl-display-none');
+          }
         },
       );
     });
