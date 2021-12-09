@@ -26,8 +26,8 @@ RSpec.describe 'projects/jobs/show' do
     end
 
     it 'shows job vue app' do
-      expect(rendered).to have_css('#js-job-vue-app')
-      expect(rendered).not_to have_css('#js-bridge-vue-app')
+      expect(rendered).to have_css('#js-job-page')
+      expect(rendered).not_to have_css('#js-bridge-page')
     end
 
     context 'when job is running' do
@@ -52,8 +52,8 @@ RSpec.describe 'projects/jobs/show' do
     end
 
     it 'shows bridge vue app' do
-      expect(rendered).to have_css('#js-bridge-vue-app')
-      expect(rendered).not_to have_css('#js-job-vue-app')
+      expect(rendered).to have_css('#js-bridge-page')
+      expect(rendered).not_to have_css('#js-job-page')
     end
   end
 end

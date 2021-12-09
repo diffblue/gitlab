@@ -1,4 +1,4 @@
-import { GlButton } from '@gitlab/ui';
+import { GlButton, GlDropdown } from '@gitlab/ui';
 import { GlBreakpointInstance } from '@gitlab/ui/dist/utils';
 import { nextTick } from 'vue';
 import { shallowMount } from '@vue/test-utils';
@@ -17,7 +17,7 @@ describe('Bridge Sidebar', () => {
   };
 
   const findSidebar = () => wrapper.find('aside');
-  const findRetryDropdown = () => wrapper.find('[data-testid="retry-dropdown"]');
+  const findRetryDropdown = () => wrapper.find(GlDropdown);
   const findToggle = () => wrapper.find(GlButton);
 
   afterEach(() => {
@@ -47,7 +47,7 @@ describe('Bridge Sidebar', () => {
       await nextTick();
 
       expect(findSidebar().classes()).toContain('right-sidebar-collapsed');
-      expect(findSidebar().classes()).not.toContain();
+      expect(findSidebar().classes()).not.toContain('right-sidebar-expanded');
     });
 
     describe('on resize', () => {
@@ -66,7 +66,7 @@ describe('Bridge Sidebar', () => {
             ? 'right-sidebar-expanded'
             : 'right-sidebar-collapsed';
 
-          wrapper.vm.onResize();
+          window.dispatchEvent(new Event('resize'));
           await nextTick();
 
           expect(findSidebar().classes()).toContain(sidebarClass);

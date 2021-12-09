@@ -4,11 +4,13 @@ import { GlBreakpointInstance as bp } from '@gitlab/ui/dist/utils';
 import { __ } from '~/locale';
 import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';
 import { JOB_SIDEBAR } from '../../constants';
+import { SIDEBAR_COLLAPSE_BREAKPOINTS } from './constants';
 
 export default {
   name: 'BridgeSidebar',
   i18n: {
     ...JOB_SIDEBAR,
+    retryButton: __('Retry'),
     retryTriggerJob: __('Retry the trigger job'),
     retryDownstreamPipeline: __('Retry the downstream pipeline'),
   },
@@ -42,7 +44,7 @@ export default {
     },
     onResize() {
       const breakpoint = bp.getBreakpointSize();
-      if (breakpoint === 'xs' || breakpoint === 'sm') {
+      if (SIDEBAR_COLLAPSE_BREAKPOINTS.includes(breakpoint)) {
         this.isSidebarExpanded = false;
       } else if (!this.isSidebarExpanded) {
         this.isSidebarExpanded = true;
@@ -65,18 +67,17 @@ export default {
       <div class="blocks-container">
         <div class="gl-py-5 gl-display-flex gl-align-items-center">
           <tooltip-on-truncate :title="buildName" truncate-target="child"
-            ><h4 class="my-0 mr-2 gl-text-truncate">
+            ><h4 class="gl-mb-0 gl-mr-2 gl-text-truncate">
               {{ buildName }}
             </h4>
           </tooltip-on-truncate>
           <!-- TODO: implement retry actions -->
           <div class="gl-flex-grow-1 gl-flex-shrink-0 gl-text-right">
             <gl-dropdown
-              class="retry-trigger-job-btn"
-              data-testid="retry-dropdown"
-              text="Retry"
+              :text="$options.i18n.retryButton"
               category="primary"
               variant="confirm"
+              right
               size="medium"
             >
               <gl-dropdown-item>{{ $options.i18n.retryTriggerJob }}</gl-dropdown-item>

@@ -8,19 +8,13 @@ export default {
     BridgeEmptyState,
     BridgeSidebar,
   },
-  inject: {
-    buildName: {
-      type: Object,
-      required: false,
-      default: {},
-    },
-  },
 };
 </script>
 <template>
   <div>
     <!-- TODO: get job details and show CI header -->
-    <bridge-empty-state />
+    <!-- TODO: add downstream pipeline path -->
+    <bridge-empty-state downstream-pipeline-path="#" />
     <bridge-sidebar />
   </div>
 </template>

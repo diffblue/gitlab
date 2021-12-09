@@ -8,6 +8,6 @@
 = render_if_exists "shared/shared_runners_minutes_limit_flash_message"
 
 - if @build.is_a? ::Ci::Build
-  #js-job-vue-app{ data: jobs_data }
+  #js-job-page{ data: jobs_data }
 - else
-  #js-bridge-vue-app{ data: bridge_data(@build) }
+  #js-bridge-page{ data: bridge_data(@build) }

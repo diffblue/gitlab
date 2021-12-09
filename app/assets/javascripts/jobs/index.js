@@ -75,8 +75,8 @@ const initializeBridgePage = (el) => {
 };
 
 export default () => {
-  const jobElement = document.getElementById('js-job-vue-app');
-  const bridgeElement = document.getElementById('js-bridge-vue-app');
+  const jobElement = document.getElementById('js-job-page');
+  const bridgeElement = document.getElementById('js-bridge-page');
 
   if (jobElement) {
     initializeJobPage(jobElement);

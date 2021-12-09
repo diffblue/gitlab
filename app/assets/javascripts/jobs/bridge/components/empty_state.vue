@@ -12,24 +12,27 @@ export default {
     GlButton,
   },
   inject: {
-    downstreamPipelinePath: {
-      type: String,
-      default: '#',
-    },
     emptyStateIllustrationPath: {
       type: String,
       require: true,
+    },
+  },
+  props: {
+    downstreamPipelinePath: {
+      type: String,
+      required: false,
+      default: undefined,
     },
   },
 };
 </script>
 
 <template>
-  <!-- TODO: add downstream pipeline path -->
   <div class="gl-display-flex gl-flex-direction-column gl-align-items-center gl-mt-11">
     <img :src="emptyStateIllustrationPath" />
-    <h1 class="gl-font-size-h1 center">{{ $options.i18n.title }}</h1>
+    <h1 class="gl-font-size-h1">{{ $options.i18n.title }}</h1>
     <gl-button
+      v-if="downstreamPipelinePath"
       class="gl-mt-3"
       category="secondary"
       variant="confirm"

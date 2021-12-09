@@ -6,11 +6,14 @@ import { MOCK_EMPTY_ILLUSTRATION_PATH, MOCK_PATH_TO_DOWNSTREAM } from '../mock_d
 describe('Bridge Empty State', () => {
   let wrapper;
 
-  const createComponent = () => {
+  const createComponent = (props) => {
     wrapper = shallowMount(BridgeEmptyState, {
       provide: {
-        downstreamPipelinePath: MOCK_PATH_TO_DOWNSTREAM,
         emptyStateIllustrationPath: MOCK_EMPTY_ILLUSTRATION_PATH,
+      },
+      propsData: {
+        downstreamPipelinePath: MOCK_PATH_TO_DOWNSTREAM,
+        ...props,
       },
     });
   };
@@ -41,6 +44,16 @@ describe('Bridge Empty State', () => {
       expect(findLinkBtn().exists()).toBe(true);
       expect(findLinkBtn().text()).toBe(wrapper.vm.$options.i18n.linkBtnText);
       expect(findLinkBtn().attributes('href')).toBe(MOCK_PATH_TO_DOWNSTREAM);
+    });
+  });
+
+  describe('without downstream pipeline', () => {
+    beforeEach(() => {
+      createComponent({ downstreamPipelinePath: undefined });
+    });
+
+    it('does not render CTA button', () => {
+      expect(findLinkBtn().exists()).toBe(false);
     });
   });
 });
