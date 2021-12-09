@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Actions doesn't render anything if the scan status is not supported 1`] = `
+<div
+  class="gl-text-right"
+>
+  <!---->
+   
+  <!---->
+</div>
+`;

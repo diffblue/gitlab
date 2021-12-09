@@ -24484,6 +24484,9 @@ msgstr ""
 msgid "OnDemandScans|The scan could not be canceled."
 msgstr ""
 
+msgid "OnDemandScans|The scan could not be retried."
+msgstr ""
+
 msgid "OnDemandScans|There are no finished scans."
 msgstr ""
 

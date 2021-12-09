@@ -289,7 +289,12 @@ export default {
         </template>
 
         <template #cell(actions)="{ item }">
-          <actions :scan="item" @action="resetActionError" @error="handleActionError" />
+          <actions
+            :key="item.id"
+            :scan="item"
+            @action="resetActionError"
+            @error="handleActionError"
+          />
         </template>
 
         <template v-for="slot in Object.keys($scopedSlots)" #[slot]="scope">
