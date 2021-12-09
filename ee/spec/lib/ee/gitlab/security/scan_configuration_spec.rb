@@ -67,7 +67,7 @@ RSpec.describe ::Gitlab::Security::ScanConfiguration do
 
     context 'with always available scanner' do
       let(:type) { :dast_profiles }
-      let(:configuration_path) { "/#{project.namespace.path}/#{project.name}/-/security/configuration/dast_profiles" }
+      let(:configuration_path) { "/#{project.namespace.path}/#{project.name}/-/security/configuration/dast_scans" }
 
       it { is_expected.to eq(configuration_path) }
     end
