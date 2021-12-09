@@ -90,7 +90,7 @@ module NamespacesHelper
 
   def namespaces_as_json(selected = :current_user)
     {
-      group: formatted_namespaces(current_user.manageable_groups_with_routes(include_groups_with_developer_maintainer_access: true)),
+      group: formatted_namespaces(current_user.manageable_groups_with_routes),
       user: formatted_namespaces([current_user.namespace])
     }.to_json
   end
