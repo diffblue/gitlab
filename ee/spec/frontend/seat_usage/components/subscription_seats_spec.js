@@ -1,7 +1,7 @@
 import {
   GlAlert,
   GlPagination,
-  GlDropdown,
+  GlButton,
   GlTable,
   GlAvatarLink,
   GlAvatarLabeled,
@@ -107,7 +107,7 @@ describe('Subscription Seats', () => {
       user: serializeUser(rowWrapper),
       email: emailWrapper.text(),
       tooltip: emailWrapper.find('span').attributes('title'),
-      dropdownExists: rowWrapper.findComponent(GlDropdown).exists(),
+      removeUserButtonExists: rowWrapper.findComponent(GlButton).exists(),
     };
   };
 

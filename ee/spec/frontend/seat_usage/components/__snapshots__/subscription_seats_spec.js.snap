@@ -3,8 +3,8 @@
 exports[`Subscription Seats renders table content renders the correct data 1`] = `
 Array [
   Object {
-    "dropdownExists": true,
     "email": "administrator@email.com",
+    "removeUserButtonExists": true,
     "tooltip": undefined,
     "user": Object {
       "avatarLabeled": Object {
@@ -19,8 +19,8 @@ Array [
     },
   },
   Object {
-    "dropdownExists": true,
     "email": "agustin_walker@email.com",
+    "removeUserButtonExists": true,
     "tooltip": undefined,
     "user": Object {
       "avatarLabeled": Object {
@@ -35,8 +35,8 @@ Array [
     },
   },
   Object {
-    "dropdownExists": true,
     "email": "Private",
+    "removeUserButtonExists": true,
     "tooltip": "An email address is only visible for users with public emails.",
     "user": Object {
       "avatarLabeled": Object {
@@ -53,8 +53,8 @@ Array [
     },
   },
   Object {
-    "dropdownExists": true,
     "email": "jdoe@email.com",
+    "removeUserButtonExists": true,
     "tooltip": undefined,
     "user": Object {
       "avatarLabeled": Object {

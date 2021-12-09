@@ -5,8 +5,6 @@ import {
   GlAvatarLink,
   GlBadge,
   GlButton,
-  GlDropdown,
-  GlDropdownItem,
   GlModal,
   GlModalDirective,
   GlIcon,
@@ -41,8 +39,6 @@ export default {
     GlAvatarLink,
     GlBadge,
     GlButton,
-    GlDropdown,
-    GlDropdownItem,
     GlModal,
     GlIcon,
     GlPagination,
@@ -265,15 +261,15 @@ export default {
       </template>
 
       <template #cell(actions)="data">
-        <gl-dropdown icon="ellipsis_h" right data-testid="user-actions">
-          <gl-dropdown-item
-            v-gl-modal="$options.removeBillableMemberModalId"
-            data-testid="remove-user"
-            @click="displayRemoveMemberModal(data.item.user)"
-          >
-            {{ __('Remove user') }}
-          </gl-dropdown-item>
-        </gl-dropdown>
+        <gl-button
+          v-gl-modal="$options.removeBillableMemberModalId"
+          category="secondary"
+          variant="danger"
+          data-testid="remove-user"
+          @click="displayRemoveMemberModal(data.item.user)"
+        >
+          {{ __('Remove user') }}
+        </gl-button>
       </template>
 
       <template #row-details="{ item }">

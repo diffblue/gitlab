@@ -69,7 +69,6 @@ RSpec.describe 'Groups > Usage Quotas > Seat Usage', :js do
     context 'with a modal to confirm removal' do
       before do
         within user_to_remove_row do
-          find('[data-testid="user-actions"]').click
           click_button 'Remove user'
         end
       end
@@ -106,7 +105,6 @@ RSpec.describe 'Groups > Usage Quotas > Seat Usage', :js do
     context 'removing the user' do
       before do
         within user_to_remove_row do
-          find('[data-testid="user-actions"]').click
           click_button 'Remove user'
         end
       end
@@ -164,7 +162,6 @@ RSpec.describe 'Groups > Usage Quotas > Seat Usage', :js do
 
       it 'displays an error modal' do
         within shared_user_row do
-          find('[data-testid="user-actions"]').click
           click_button 'Remove user'
         end
 
