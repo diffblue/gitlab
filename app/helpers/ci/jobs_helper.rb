@@ -22,9 +22,7 @@ module Ci
     def bridge_data(build)
       {
         "build_name" =>  build.name,
-
-        # TODO: replace with official design
-        "empty-state-illustration-path" => image_path('illustrations/empty-state/empty-dag-md.svg')
+        "empty-state-illustration-path" => image_path('illustrations/job-trigger-md.svg')
       }
     end
 
