@@ -1038,8 +1038,6 @@ RSpec.describe User do
 
     context 'when user is active' do
       context 'when user is internal' do
-        using RSpec::Parameterized::TableSyntax
-
         where(:internal_user_type) do
           described_class::INTERNAL_USER_TYPES
         end
@@ -1409,68 +1407,62 @@ RSpec.describe User do
     let_it_be(:free_group) { create(:group_with_plan, plan: :free_plan) }
     let_it_be(:group_without_plan) { create(:group) }
 
-    # TODO: this `where/when` can be removed in issue https://gitlab.com/gitlab-org/gitlab/-/issues/341070
-    #       At that point we only need to check `user_namespace`
-    where(namespace_type: [:namespace, :user_namespace])
+    let(:user) { create(:user, namespace: create(:user_namespace)) }
 
-    with_them do
-      let(:user) { create(:user, namespace: create(namespace_type)) }
+    describe '#has_paid_namespace?' do
+      context 'when the user has Reporter or higher on at least one paid group' do
+        it 'returns true' do
+          ultimate_group.add_reporter(user)
+          bronze_group.add_guest(user)
 
-      describe '#has_paid_namespace?' do
-        context 'when the user has Reporter or higher on at least one paid group' do
-          it 'returns true' do
-            ultimate_group.add_reporter(user)
-            bronze_group.add_guest(user)
-
-            expect(user.has_paid_namespace?).to eq(true)
-          end
-        end
-
-        context 'when the user is only a Guest on paid groups' do
-          it 'returns false' do
-            ultimate_group.add_guest(user)
-            bronze_group.add_guest(user)
-            free_group.add_owner(user)
-
-            expect(user.has_paid_namespace?).to eq(false)
-          end
-        end
-
-        context 'when the user is not a member of any groups with plans' do
-          it 'returns false' do
-            group_without_plan.add_owner(user)
-
-            expect(user.has_paid_namespace?).to eq(false)
-          end
+          expect(user.has_paid_namespace?).to eq(true)
         end
       end
 
-      describe '#owns_paid_namespace?', :saas do
-        context 'when the user is an owner of at least one paid group' do
-          it 'returns true' do
-            ultimate_group.add_owner(user)
-            bronze_group.add_owner(user)
+      context 'when the user is only a Guest on paid groups' do
+        it 'returns false' do
+          ultimate_group.add_guest(user)
+          bronze_group.add_guest(user)
+          free_group.add_owner(user)
 
-            expect(user.owns_paid_namespace?).to eq(true)
-          end
+          expect(user.has_paid_namespace?).to eq(false)
         end
+      end
 
-        context 'when the user is only a Maintainer on paid groups' do
-          it 'returns false' do
-            ultimate_group.add_maintainer(user)
-            bronze_group.add_maintainer(user)
-            free_group.add_owner(user)
+      context 'when the user is not a member of any groups with plans' do
+        it 'returns false' do
+          group_without_plan.add_owner(user)
 
-            expect(user.owns_paid_namespace?).to eq(false)
-          end
+          expect(user.has_paid_namespace?).to eq(false)
         end
+      end
+    end
 
-        context 'when the user is not a member of any groups with plans' do
-          it 'returns false' do
-            group_without_plan.add_owner(user)
+    describe '#owns_paid_namespace?', :saas do
+      context 'when the user is an owner of at least one paid group' do
+        it 'returns true' do
+          ultimate_group.add_owner(user)
+          bronze_group.add_owner(user)
 
-            expect(user.owns_paid_namespace?).to eq(false)
-          end
+          expect(user.owns_paid_namespace?).to eq(true)
+        end
+      end
+
+      context 'when the user is only a Maintainer on paid groups' do
+        it 'returns false' do
+          ultimate_group.add_maintainer(user)
+          bronze_group.add_maintainer(user)
+          free_group.add_owner(user)
+
+          expect(user.owns_paid_namespace?).to eq(false)
+        end
+      end
+
+      context 'when the user is not a member of any groups with plans' do
+        it 'returns false' do
+          group_without_plan.add_owner(user)
+
+          expect(user.owns_paid_namespace?).to eq(false)
         end
       end
     end
