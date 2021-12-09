@@ -185,7 +185,7 @@ module EE
       rule { has_access & group_activity_analytics_available }
         .enable :read_group_activity_analytics
 
-      rule { reporter & dora4_analytics_available }
+      rule { (admin | reporter) & dora4_analytics_available }
         .enable :read_dora4_analytics
 
       rule { reporter & group_repository_analytics_available }

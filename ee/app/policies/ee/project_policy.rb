@@ -357,7 +357,7 @@ module EE
 
       rule { can?(:read_merge_request) & code_review_analytics_enabled }.enable :read_code_review_analytics
 
-      rule { reporter & dora4_analytics_available }
+      rule { (admin | reporter) & dora4_analytics_available }
         .enable :read_dora4_analytics
 
       rule { reporter & project_merge_request_analytics_available }
