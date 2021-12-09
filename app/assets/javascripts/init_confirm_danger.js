@@ -2,6 +2,15 @@ import Vue from 'vue';
 import { parseBoolean } from './lib/utils/common_utils';
 import ConfirmDanger from './vue_shared/components/confirm_danger/confirm_danger.vue';
 
+const omitEmptyProperties = (fields) => {
+  return Object.entries(fields).reduce((acc, [key, value]) => {
+    if (value) {
+      return { ...acc, [key]: value };
+    }
+    return acc;
+  }, {});
+};
+
 export default () => {
   const el = document.querySelector('.js-confirm-danger');
   if (!el) return null;
@@ -12,7 +21,9 @@ export default () => {
     buttonText,
     buttonClass = '',
     buttonTestid = null,
+    buttonVariant = null,
     confirmDangerMessage,
+    confirmButtonText = null,
     disabled = false,
     additionalInformation,
     htmlConfirmationMessage,
@@ -20,17 +31,19 @@ export default () => {
 
   return new Vue({
     el,
-    provide: {
+    provide: omitEmptyProperties({
       htmlConfirmationMessage,
       confirmDangerMessage,
       additionalInformation,
-    },
+      confirmButtonText,
+    }),
     render: (createElement) =>
       createElement(ConfirmDanger, {
         props: {
           phrase,
           buttonText,
           buttonClass,
+          buttonVariant,
           buttonTestid,
           disabled: parseBoolean(disabled),
         },
