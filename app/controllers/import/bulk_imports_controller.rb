@@ -40,7 +40,7 @@ class Import::BulkImportsController < ApplicationController
   end
 
   def create
-    responses = create_params.map { |entry| ::BulkImports::CreateService.new(current_user, [entry], credentials).execute }
+    responses = create_params.map { |entry| ::BulkImports::CreateService.new(current_user, entry, credentials).execute }
 
     render json: responses.map { |response| { success: response.success?, id: response.payload[:id], message: response.message } }
   end
