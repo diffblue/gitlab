@@ -29,8 +29,8 @@ import {
   REPORT_TYPE_LICENSE_COMPLIANCE,
   REPORT_TYPE_SAST,
 } from '~/vue_shared/security_reports/constants';
-import securityTrainingProvidersQuery from '~/security_configuration/graphql/security_training_providers.query.graphql';
-import { securityTrainingProvidersResponse, securityTrainingProviders } from '../mock_data';
+import waitForPromises from 'helpers/wait_for_promises';
+import { securityTrainingProviders } from '../mock_data';
 
 const upgradePath = '/upgrade';
 const autoDevopsHelpPagePath = '/autoDevopsHelpPagePath';
@@ -45,6 +45,15 @@ describe('App component', () => {
   let wrapper;
   let userCalloutDismissSpy;
   let mockApollo;
+  let mockSecurityTrainingProvidersData;
+
+  const mockResolvers = {
+    Query: {
+      securityTrainingProviders() {
+        return securityTrainingProviders;
+      },
+    },
+  };
 
   const createComponent = ({
     shouldShowCallout = true,
@@ -52,12 +61,7 @@ describe('App component', () => {
     ...propsData
   }) => {
     userCalloutDismissSpy = jest.fn();
-    mockApollo = createMockApollo([
-      [
-        securityTrainingProvidersQuery,
-        jest.fn().mockResolvedValue(securityTrainingProvidersResponse),
-      ],
-    ]);
+    mockApollo = createMockApollo([], mockResolvers);
 
     wrapper = extendedWrapper(
       mount(SecurityConfigurationApp, {
@@ -149,6 +153,9 @@ describe('App component', () => {
 
   describe('basic structure', () => {
     beforeEach(() => {
+      mockSecurityTrainingProvidersData = jest.fn();
+      mockSecurityTrainingProvidersData.mockResolvedValue(securityTrainingProviders);
+
       createComponent({
         augmentedSecurityFeatures: securityFeaturesMock,
         augmentedComplianceFeatures: complianceFeaturesMock,
@@ -197,7 +204,8 @@ describe('App component', () => {
       expect(findSecurityViewHistoryLink().exists()).toBe(false);
     });
 
-    it('renders training provider list with correct props', () => {
+    it('renders training provider list with correct props', async () => {
+      await waitForPromises();
       expect(findTrainingProviderList().props('providers')).toEqual(securityTrainingProviders);
     });
   });

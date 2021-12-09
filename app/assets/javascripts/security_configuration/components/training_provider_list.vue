@@ -25,7 +25,7 @@ export default {
 <template>
   <div
     v-if="loading"
-    class="gl-mb-6 gl-bg-white gl-py-6 gl-rounded-base gl-border-1 gl-border-solid gl-border-gray-100"
+    class="gl-bg-white gl-py-6 gl-rounded-base gl-border-1 gl-border-solid gl-border-gray-100"
   >
     <gl-skeleton-loader :width="350" :height="44">
       <rect width="200" height="8" x="10" y="0" rx="4" />
