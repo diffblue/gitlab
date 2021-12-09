@@ -15,7 +15,7 @@ class BlobPresenter < Gitlab::View::Presenter::Delegated
 
     Gitlab::Highlight.highlight(
       blob.path,
-      blob_data,
+      blob_data(to),
       language: blob_language,
       plain: plain
     )
@@ -27,7 +27,7 @@ class BlobPresenter < Gitlab::View::Presenter::Delegated
     highlight(plain: false)
   end
 
-  def blob_data
+  def blob_data(to)
     @_blob_data ||= Gitlab::Diff::CustomDiff.transformed_blob_data(blob) || limited_blob_data(to: to)
   end
 
