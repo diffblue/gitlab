@@ -1,9 +1,9 @@
 %div{ class: 'search-result-row gl-pb-3! gl-mt-5 gl-mb-0!' }
   %span.gl-display-flex.gl-align-items-center
     - if epic.closed?
-      %span.badge.badge-info.badge-pill.gl-badge.sm= _("Closed")
+      = gl_badge_tag _('Closed'), variant: :info, size: :sm
     - else
-      %span.badge.badge-success.badge-pill.gl-badge.sm= _("Open")
+      = gl_badge_tag _('Open'), variant: :success, size: :sm
     = sprite_icon('eye-slash', css_class: 'gl-text-gray-500 gl-ml-2') if epic.confidential?
     = link_to group_epic_path(epic.group, epic), data: { track_action: 'click_text', track_label: 'epic_title', track_property: 'search_result' }, class: 'gl-w-full' do
       %span.term.str-truncated.gl-font-weight-bold.gl-ml-2= epic.title
