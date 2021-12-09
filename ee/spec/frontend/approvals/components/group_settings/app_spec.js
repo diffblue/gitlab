@@ -1,7 +1,8 @@
 import { GlSprintf, GlLink } from '@gitlab/ui';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import Vue from 'vue';
 import Vuex from 'vuex';
 
 import ApprovalSettings from 'ee/approvals/components/approval_settings.vue';
@@ -13,8 +14,7 @@ import approvalSettingsModule from 'ee/approvals/stores/modules/approval_setting
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import SettingsBlock from '~/vue_shared/components/settings/settings_block.vue';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('EE Approvals Group Settings App', () => {
   let wrapper;
@@ -27,7 +27,6 @@ describe('EE Approvals Group Settings App', () => {
   const createWrapper = () => {
     wrapper = extendedWrapper(
       shallowMount(GroupSettingsApp, {
-        localVue,
         store: new Vuex.Store(store),
         propsData: {
           defaultExpanded,

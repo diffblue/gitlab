@@ -1,12 +1,12 @@
 import { GlSprintf, GlModal } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import LicenseComplianceModal from 'ee/approvals/components/license_compliance/modal.vue';
 import { APPROVALS_MODAL } from 'ee/approvals/stores/modules/license_compliance';
 import GlModalVuex from '~/vue_shared/components/gl_modal_vuex.vue';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('EE Approvals LicenseCompliance Modal', () => {
   let wrapper;
@@ -52,7 +52,6 @@ describe('EE Approvals LicenseCompliance Modal', () => {
 
   const createWrapper = () => {
     wrapper = shallowMount(LicenseComplianceModal, {
-      localVue,
       store,
       stubs: {
         GlModalVuex,

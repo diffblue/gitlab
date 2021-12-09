@@ -1,5 +1,6 @@
 import { GlButton, GlForm, GlLoadingIcon, GlLink } from '@gitlab/ui';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 
 import ApprovalSettings from 'ee/approvals/components/approval_settings.vue';
@@ -16,8 +17,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { sprintf } from '~/locale';
 import { createGroupApprovalsPayload, createGroupApprovalsState } from '../mocks';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('ApprovalSettings', () => {
   let wrapper;
@@ -44,7 +44,6 @@ describe('ApprovalSettings', () => {
   const createWrapper = (props = {}) => {
     wrapper = extendedWrapper(
       shallowMount(ApprovalSettings, {
-        localVue,
         store,
         propsData: {
           approvalSettingsPath,

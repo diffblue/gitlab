@@ -1,4 +1,4 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import $ from 'jquery';
 import 'select2/select2';
 import Api from 'ee/api';
@@ -23,8 +23,6 @@ const TEST_USERS = [
   { id: 1, name: 'Dolar', username: 'dolar', avatar_url: TEST_USER_AVATAR },
   { id: 3, name: 'Sit', username: 'sit', avatar_url: TEST_USER_AVATAR },
 ];
-
-const localVue = createLocalVue();
 
 const waitForEvent = ($input, event) => new Promise((resolve) => $input.one(event, resolve));
 const parseAvatar = (element) =>
@@ -62,7 +60,6 @@ describe('Approvals ApproversSelect', () => {
     wrapper = await shallowMount(ApproversSelect, {
       ...options,
       propsData,
-      localVue,
       attachTo: document.body,
     });
 

@@ -1,6 +1,7 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import MREditApp from 'ee/approvals/components/mr_edit/app.vue';
 import MRRules from 'ee/approvals/components/mr_edit/mr_rules.vue';
@@ -8,8 +9,7 @@ import MRRulesHiddenInputs from 'ee/approvals/components/mr_edit/mr_rules_hidden
 import { createStoreOptions } from 'ee/approvals/stores';
 import MREditModule from 'ee/approvals/stores/modules/mr_edit';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('EE Approvals MREditApp', () => {
   let wrapper;
@@ -18,7 +18,6 @@ describe('EE Approvals MREditApp', () => {
 
   const factory = (mrCollapsedApprovalRules = false) => {
     wrapper = mount(MREditApp, {
-      localVue,
       store: new Vuex.Store(store),
       provide: {
         glFeatures: {
