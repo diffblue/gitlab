@@ -54,8 +54,8 @@ module QA
             expected_minutes = CI_MINUTES[:ci_minutes] * purchase_quantity
 
             expect { usage_quota.ci_purchase_successful_alert? }.to eventually_be_truthy.within(max_duration: 60, max_attempts: 30)
-            expect { usage_quota.additional_minutes? }.to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
-            expect(usage_quota.additional_limits).to eq(expected_minutes.to_s)
+            expect { usage_quota.additional_ci_minutes? }.to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
+            expect(usage_quota.additional_ci_limits).to eq(expected_minutes.to_s)
           end
         end
       end
@@ -83,10 +83,10 @@ module QA
             plan_limits = ULTIMATE[:ci_minutes]
 
             expect { usage_quota.ci_purchase_successful_alert? }.to eventually_be_truthy.within(max_duration: 60, max_attempts: 30)
-            expect { usage_quota.additional_minutes? }.to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
+            expect { usage_quota.additional_ci_minutes? }.to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
             aggregate_failures do
-              expect(usage_quota.additional_limits).to eq(expected_minutes.to_s)
-              expect(usage_quota.plan_minutes_limits).to eq(plan_limits.to_s)
+              expect(usage_quota.additional_ci_limits).to eq(expected_minutes.to_s)
+              expect(usage_quota.plan_ci_limits).to eq(plan_limits.to_s)
             end
           end
         end
@@ -108,8 +108,8 @@ module QA
             expected_minutes = CI_MINUTES[:ci_minutes] * purchase_quantity * 2
 
             expect { usage_quota.ci_purchase_successful_alert? }.to eventually_be_truthy.within(max_duration: 60, max_attempts: 30)
-            expect { usage_quota.additional_minutes? }.to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
-            expect(usage_quota.additional_limits).to eq(expected_minutes.to_s)
+            expect { usage_quota.additional_ci_minutes? }.to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
+            expect { usage_quota.additional_ci_limits }.to eventually_eq(expected_minutes.to_s).within(max_duration: 120, max_attempts: 60, reload_page: page)
           end
         end
       end
