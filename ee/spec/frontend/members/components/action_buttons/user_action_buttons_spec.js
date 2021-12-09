@@ -16,6 +16,7 @@ describe('UserActionButtons', () => {
       propsData: {
         member,
         isCurrentUser: false,
+        isInvitedUser: false,
         ...propsData,
       },
     });
