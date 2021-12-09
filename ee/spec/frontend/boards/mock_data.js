@@ -456,8 +456,8 @@ export const mockTokens = (fetchLabels, fetchAuthors, fetchMilestones, fetchIter
     token: GlFilteredSearchToken,
     operators: [{ value: '=', description: 'is' }],
     options: [
-      { icon: 'eye-slash', value: true, title: 'Yes' },
-      { icon: 'eye', value: false, title: 'No' },
+      { icon: 'eye-slash', value: 'yes', title: 'Yes' },
+      { icon: 'eye', value: 'no', title: 'No' },
     ],
   },
   {

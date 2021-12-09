@@ -143,8 +143,8 @@ export default {
                 token: GlFilteredSearchToken,
                 operators: OPERATOR_IS_ONLY,
                 options: [
-                  { icon: 'eye-slash', value: true, title: __('Yes') },
-                  { icon: 'eye', value: false, title: __('No') },
+                  { icon: 'eye-slash', value: 'yes', title: __('Yes') },
+                  { icon: 'eye', value: 'no', title: __('No') },
                 ],
               },
             ]
