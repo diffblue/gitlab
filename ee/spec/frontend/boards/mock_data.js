@@ -449,6 +449,18 @@ export const mockTokens = (fetchLabels, fetchAuthors, fetchMilestones, fetchIter
     fetchEmojis: expect.any(Function),
   },
   {
+    type: 'confidential',
+    icon: 'eye-slash',
+    title: 'Confidential',
+    unique: true,
+    token: GlFilteredSearchToken,
+    operators: [{ value: '=', description: 'is' }],
+    options: [
+      { icon: 'eye-slash', value: 'yes', title: 'Yes' },
+      { icon: 'eye', value: 'no', title: 'No' },
+    ],
+  },
+  {
     icon: 'clock',
     title: __('Milestone'),
     symbol: '%',
