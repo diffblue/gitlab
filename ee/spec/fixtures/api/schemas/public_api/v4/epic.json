@@ -5,6 +5,7 @@
     "iid": { "type": "integer" },
     "group_id": { "type": "integer" },
     "parent_id": { "type": ["integer", "null"] },
+    "parent_iid": { "type": ["integer", "null"] },
     "title": { "type": "string" },
     "description": { "type": ["string", "null"] },
     "confidential": { "type": "boolean" },
@@ -58,6 +59,7 @@
         "self": { "type": "uri" },
         "epic_issues": { "type": "uri" },
         "group": { "type": "uri" },
+        "parent": { "type": "uri" },
         "additionalProperties": false
       }
     }

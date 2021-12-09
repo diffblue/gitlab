@@ -96,8 +96,8 @@ RSpec.describe API::Epics do
         pat = create(:personal_access_token, user: user)
         subgroup_1 = create(:group, parent: group)
         subgroup_2 = create(:group, parent: subgroup_1)
-        create(:epic, group: subgroup_1)
-        create(:epic, group: subgroup_2)
+        epic1 = create(:epic, group: subgroup_1)
+        epic2 = create(:epic, group: subgroup_2, parent_id: epic.id)
 
         control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
           get api(url, personal_access_token: pat), params: params
@@ -105,6 +105,8 @@ RSpec.describe API::Epics do
 
         label_2 = create(:label)
         create_list(:labeled_epic, 2, group: group, labels: [label_2])
+        create_list(:epic, 2, group: subgroup_1, parent_id: epic1.id)
+        create_list(:epic, 2, group: subgroup_2, parent_id: epic2.id)
 
         expect { get api(url, personal_access_token: pat), params: params }.not_to exceed_all_query_limit(control)
         expect(response).to have_gitlab_http_status(:ok)
@@ -153,6 +155,24 @@ RSpec.describe API::Epics do
           expect(json_response.first['labels'].pluck('name')).to match_array([label.title, label_1.title, label_2.title])
           expect(json_response.last['labels'].first).to match_schema('/public_api/v4/label_basic')
         end
+      end
+    end
+
+    context 'with a parent epic' do
+      let!(:epic) { create(:epic, group: group) }
+      let!(:epic2) { create(:epic, group: group, parent_id: epic.id) }
+
+      before do
+        stub_licensed_features(epics: true)
+      end
+
+      it 'returns parent_id and parent_iid' do
+        get api(url, user)
+
+        epics = json_response
+
+        expect(epics.map { |e| e["parent_id"] }).to match_array([nil, epic.id])
+        expect(epics.map { |e| e["parent_iid"] }).to match_array([nil, epic.iid])
       end
     end
 
@@ -569,6 +589,20 @@ RSpec.describe API::Epics do
         expect(links['self']).to end_with("/api/v4/groups/#{epic.group.id}/epics/#{epic.iid}")
         expect(links['epic_issues']).to end_with("/api/v4/groups/#{epic.group.id}/epics/#{epic.iid}/issues")
         expect(links['group']).to end_with("/api/v4/groups/#{epic.group.id}")
+        expect(links['parent']).to eq(nil)
+      end
+
+      context 'with a parent epic' do
+        let!(:epic2) { create(:epic, group: group, parent_id: epic.id) }
+        let(:url) { "/groups/#{group.path}/epics/#{epic2.iid}" }
+
+        it 'exposes parent link' do
+          get api(url)
+
+          links = json_response['_links']
+
+          expect(links['parent']).to end_with("/api/v4/groups/#{epic.group.id}/epics/#{epic.iid}")
+        end
       end
 
       it_behaves_like 'can admin epics'
@@ -617,6 +651,14 @@ RSpec.describe API::Epics do
 
         it 'matches the response schema' do
           expect(response).to match_response_schema('public_api/v4/epic', dir: 'ee')
+        end
+
+        it 'exposes parent information' do
+          post api(url, user), params: params
+
+          expect(json_response['parent_id']).to eq(parent_epic.id)
+          expect(json_response['parent_iid']).to eq(parent_epic.iid)
+          expect(json_response['_links']['parent']).to end_with("/api/v4/groups/#{parent_epic.group.id}/epics/#{parent_epic.iid}")
         end
 
         it 'creates a new epic' do
