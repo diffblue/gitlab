@@ -19,14 +19,14 @@ const groupData = [
   { id: 483, name: 'My second group', users: 12 },
 ];
 
-const defaultInitialStoreData = {
+const createDefaultInitialStoreData = (initialData) => ({
   availablePlans: JSON.stringify(availablePlans),
   groupData: JSON.stringify(groupData),
   planId: 'secondPlanId',
   namespaceId: null,
-  setupForCompany: 'true',
   fullName: 'Full Name',
-};
+  ...initialData,
+});
 
 describe('Subscription Details', () => {
   const localVue = createLocalVue();
@@ -56,12 +56,42 @@ describe('Subscription Details', () => {
     wrapper.destroy();
   });
 
+  describe('A new user for which we do not have setupForCompany info', () => {
+    beforeEach(() => {
+      const mockApollo = createMockApolloProvider(STEPS);
+      const store = createStore(
+        createDefaultInitialStoreData({ newUser: 'true', setupForCompany: '' }),
+      );
+      wrapper = createComponent({ apolloProvider: mockApollo, store });
+    });
+
+    it('should not display an input field for the company or group name', () => {
+      expect(organizationNameInput().exists()).toBe(false);
+    });
+
+    it('should not display the group select', () => {
+      expect(groupSelect().exists()).toBe(false);
+    });
+
+    it('should disable the number of users input field', () => {
+      expect(numberOfUsersInput().attributes('disabled')).toBeDefined();
+    });
+
+    it('should set the min number of users to 1', () => {
+      expect(numberOfUsersInput().attributes('min')).toBe('1');
+    });
+
+    it('should show a link to change to setting up for a company', () => {
+      expect(companyLink().exists()).toBe(true);
+    });
+  });
+
   describe('A new user setting up for personal use', () => {
     beforeEach(() => {
       const mockApollo = createMockApolloProvider(STEPS);
-      const store = createStore(defaultInitialStoreData);
-      store.state.isNewUser = true;
-      store.state.isSetupForCompany = false;
+      const store = createStore(
+        createDefaultInitialStoreData({ newUser: 'true', setupForCompany: 'false' }),
+      );
       wrapper = createComponent({ apolloProvider: mockApollo, store });
     });
 
@@ -89,9 +119,13 @@ describe('Subscription Details', () => {
   describe('A new user setting up for a company or group', () => {
     beforeEach(() => {
       const mockApollo = createMockApolloProvider(STEPS);
-      const store = createStore(defaultInitialStoreData);
-      store.state.isNewUser = true;
-      store.state.groupData = [];
+      const store = createStore(
+        createDefaultInitialStoreData({
+          newUser: 'true',
+          groupData: '[]',
+          setupForCompany: 'true',
+        }),
+      );
       wrapper = createComponent({ apolloProvider: mockApollo, store });
     });
 
@@ -119,9 +153,13 @@ describe('Subscription Details', () => {
   describe('An existing user without any groups', () => {
     beforeEach(() => {
       const mockApollo = createMockApolloProvider(STEPS);
-      const store = createStore(defaultInitialStoreData);
-      store.state.isNewUser = false;
-      store.state.groupData = [];
+      const store = createStore(
+        createDefaultInitialStoreData({
+          newUser: 'false',
+          groupData: '[]',
+          setupForCompany: 'true',
+        }),
+      );
       wrapper = createComponent({ apolloProvider: mockApollo, store });
     });
 
@@ -151,8 +189,12 @@ describe('Subscription Details', () => {
 
     beforeEach(() => {
       const mockApollo = createMockApolloProvider(STEPS);
-      store = createStore(defaultInitialStoreData);
-      store.state.isNewUser = false;
+      store = createStore(
+        createDefaultInitialStoreData({
+          newUser: 'false',
+          setupForCompany: 'true',
+        }),
+      );
       wrapper = createComponent({ apolloProvider: mockApollo, store });
     });
 
@@ -209,13 +251,18 @@ describe('Subscription Details', () => {
     });
   });
 
-  describe('An existing user coming from group billing page', () => {
+  describe('An existing user for which we do not have setupForCompany info coming from group billing page', () => {
     let store;
 
     beforeEach(() => {
       const mockApollo = createMockApolloProvider(STEPS);
-      store = createStore({ ...defaultInitialStoreData, namespaceId: '132' });
-      store.state.isNewUser = false;
+      store = createStore(
+        createDefaultInitialStoreData({
+          isNewUser: 'false',
+          namespaceId: '132',
+          setupForCompany: '',
+        }),
+      );
       wrapper = createComponent({ apolloProvider: mockApollo, store });
     });
 
@@ -262,13 +309,45 @@ describe('Subscription Details', () => {
     });
   });
 
+  describe('An existing user coming from group billing page', () => {
+    let store;
+
+    beforeEach(() => {
+      const mockApollo = createMockApolloProvider(STEPS);
+      store = createStore(
+        createDefaultInitialStoreData({
+          isNewUser: 'false',
+          namespaceId: '132',
+          setupForCompany: 'false',
+        }),
+      );
+      wrapper = createComponent({ apolloProvider: mockApollo, store });
+    });
+
+    it('should not display an input field for the company or group name', () => {
+      expect(organizationNameInput().exists()).toBe(false);
+    });
+
+    it('should display the group select', () => {
+      expect(groupSelect().exists()).toBe(true);
+    });
+
+    it('should enable the number of users input field', () => {
+      expect(numberOfUsersInput().attributes('disabled')).toBeUndefined();
+    });
+
+    it('should not show a link to change to setting up for a company', () => {
+      expect(companyLink().exists()).toBe(false);
+    });
+  });
+
   describe('validations', () => {
     const isStepValid = () => wrapper.findComponent(Step).props('isValid');
     let store;
 
     beforeEach(() => {
       const mockApollo = createMockApolloProvider(STEPS);
-      store = createStore(defaultInitialStoreData);
+      store = createStore(createDefaultInitialStoreData());
       wrapper = createComponent({ apolloProvider: mockApollo, store });
     });
 
@@ -360,7 +439,7 @@ describe('Subscription Details', () => {
 
     beforeEach(() => {
       const mockApollo = createMockApolloProvider(STEPS, 1);
-      store = createStore(defaultInitialStoreData);
+      store = createStore(createDefaultInitialStoreData());
       store.commit(types.UPDATE_IS_SETUP_FOR_COMPANY, true);
       store.commit(types.UPDATE_SELECTED_PLAN, 'firstPlanId');
       store.commit(types.UPDATE_ORGANIZATION_NAME, 'My Organization');

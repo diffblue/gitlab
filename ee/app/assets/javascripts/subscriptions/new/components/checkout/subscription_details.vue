@@ -107,6 +107,9 @@ export default {
         ? this.$options.i18n.createNewGroupDescription
         : this.$options.i18n.selectedGroupDescription;
     },
+    shouldDisableNumberOfUsers() {
+      return this.isNewUser && !this.isSetupForCompany;
+    },
   },
   methods: {
     ...mapActions([
@@ -182,12 +185,12 @@ export default {
             v-model.number="numberOfUsersModel"
             type="number"
             :min="selectedGroupUsers"
-            :disabled="!isSetupForCompany"
+            :disabled="shouldDisableNumberOfUsers"
             data-qa-selector="number_of_users"
           />
         </gl-form-group>
         <gl-form-group
-          v-if="!isSetupForCompany"
+          v-if="shouldDisableNumberOfUsers"
           ref="company-link"
           class="label ml-3 align-self-end"
         >
