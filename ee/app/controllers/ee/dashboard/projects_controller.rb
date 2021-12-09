@@ -12,7 +12,7 @@ module EE
 
       # rubocop:disable Gitlab/ModuleWithInstanceVariables
       def removed
-        @projects = load_projects(params.merge(aimed_for_deletion: true))
+        @projects = load_projects(params.merge(finder_params_for_removed))
 
         respond_to do |format|
           format.html
@@ -35,13 +35,26 @@ module EE
 
       override :load_projects
       def load_projects(finder_params)
-        @removed_projects_count = ::ProjectsFinder.new(params: { aimed_for_deletion: true }, current_user: current_user).execute # rubocop:disable Gitlab/ModuleWithInstanceVariables
+        @removed_projects_count = ::ProjectsFinder.new(params: finder_params_for_removed, current_user: current_user).execute # rubocop:disable Gitlab/ModuleWithInstanceVariables
 
         super
       end
 
       def check_adjourned_deletion_listing_availability
-        return render_404 unless can?(current_user, :list_removable_projects)
+        return render_404 unless License.feature_available?(:adjourned_deletion_for_projects_and_groups)
+      end
+
+      def finder_params_for_removed
+        finder_params = { aimed_for_deletion: true }
+
+        unless current_user.can_admin_all_resources?
+          # only list projects with at least owner access if the user is not an admin
+          finder_params[:min_access_level] = ::Gitlab::Access::OWNER
+          # only list projects that belongs to a group with premium or above plan
+          finder_params[:plans] = (::Plan.paid_plans - [::Plan::BRONZE])
+        end
+
+        finder_params
       end
     end
   end

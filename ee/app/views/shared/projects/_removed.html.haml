@@ -1,4 +1,4 @@
-- if current_user&.admin? && scheduled_for_deletion?(project)
+- if License.feature_available?(:adjourned_deletion_for_projects_and_groups) && scheduled_for_deletion?(project)
   .gl-display-flex.gl-align-items-center.gl-flex-wrap.project-title
     %span.small
       = _("Marked For Deletion At - %{deletion_time}") % { deletion_time: project.marked_for_deletion_at.strftime(Date::DATE_FORMATS[:medium]) }

@@ -1,4 +1,4 @@
-- if can?(current_user, :list_removable_projects)
+- if License.feature_available?(:adjourned_deletion_for_projects_and_groups)
   = gl_tab_link_to removed_dashboard_projects_path, { data: { placement: 'right' } } do
     = _("Pending deletion")
     = gl_tab_counter_badge(limited_counter_with_delimiter(removed_projects_count))

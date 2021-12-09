@@ -103,7 +103,7 @@ module Nav
           shortcut_href: dashboard_projects_path,
           **projects_menu_item_attrs
         )
-        builder.add_view(PROJECTS_VIEW, container_view_props(namespace: 'projects', current_item: current_item, submenu: projects_submenu))
+        builder.add_view(PROJECTS_VIEW, container_view_props(namespace: 'projects', current_item: current_item, submenu: projects_submenu(::Gitlab::Nav::TopNavMenuBuilder.new)))
       end
 
       if dashboard_nav_link?(:groups)
@@ -252,9 +252,8 @@ module Nav
       }
     end
 
-    def projects_submenu
+    def projects_submenu(builder)
       # These project links come from `app/views/layouts/nav/projects_dropdown/_show.html.haml`
-      builder = ::Gitlab::Nav::TopNavMenuBuilder.new
       builder.add_primary_menu_item(id: 'your', title: _('Your projects'), href: dashboard_projects_path)
       builder.add_primary_menu_item(id: 'starred', title: _('Starred projects'), href: starred_dashboard_projects_path)
       builder.add_primary_menu_item(id: 'explore', title: _('Explore projects'), href: explore_root_path)

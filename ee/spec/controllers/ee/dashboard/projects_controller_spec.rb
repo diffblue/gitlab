@@ -51,8 +51,39 @@ RSpec.describe Dashboard::ProjectsController do
         end
       end
 
-      context 'for non-admin users' do
-        it_behaves_like 'returns not found'
+      context 'for non-admin users', :saas do
+        let_it_be(:non_admin_user) { create(:user) }
+        let_it_be(:ultimate_group) { create(:group_with_plan, plan: :ultimate_plan) }
+        let_it_be(:premium_group) { create(:group_with_plan, plan: :premium_plan) }
+        let_it_be(:no_plan_group) { create(:group_with_plan, plan: nil) }
+        let_it_be(:ultimate_project) { create(:project, :archived, creator: non_admin_user, marked_for_deletion_at: 3.days.ago, namespace: ultimate_group) }
+        let_it_be(:premium_project) { create(:project, :archived, creator: non_admin_user, marked_for_deletion_at: 3.days.ago, namespace: premium_group) }
+        let_it_be(:no_plan_project) { create(:project, :archived, creator: non_admin_user, marked_for_deletion_at: 3.days.ago, namespace: no_plan_group) }
+
+        before do
+          sign_in(non_admin_user)
+          ultimate_group.add_owner(non_admin_user)
+          premium_group.add_owner(non_admin_user)
+          no_plan_group.add_owner(non_admin_user)
+        end
+
+        it 'returns success' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+
+        it 'paginates the records' do
+          subject
+
+          expect(assigns(:projects).count).to eq(1)
+        end
+
+        it 'accounts total removable projects owned by the user on premium or above plan' do
+          subject
+
+          expect(assigns(:removed_projects_count).count).to eq(2)
+        end
       end
     end
 
