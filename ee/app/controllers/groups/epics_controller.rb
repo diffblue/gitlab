@@ -17,8 +17,8 @@ class Groups::EpicsController < Groups::ApplicationController
   before_action :verify_group_bulk_edit_enabled!, only: [:bulk_update]
   after_action :log_epic_show, only: :show
 
-  # Limit the amount of epics created per minute
-  before_action :create_rate_limit, only: [:create]
+  # Limit the amount of epics created per minute. Epics share the issue creation rate limit
+  before_action -> { check_rate_limit!(:issues_create, scope: current_user) }, only: [:create]
 
   before_action do
     push_frontend_feature_flag(:vue_epics_list, @group, type: :development, default_enabled: :yaml)
@@ -132,20 +132,5 @@ class Groups::EpicsController < Groups::ApplicationController
 
   def verify_group_bulk_edit_enabled!
     render_404 unless group.licensed_feature_available?(:group_bulk_edit)
-  end
-
-  def create_rate_limit
-    # Epics share the issue creation rate limit
-    key = :issues_create
-
-    if rate_limiter.throttled?(key, scope: current_user)
-      rate_limiter.log_request(request, "#{key}_request_limit".to_sym, current_user)
-
-      render plain: _('This endpoint has been requested too many times. Try again later.'), status: :too_many_requests
-    end
-  end
-
-  def rate_limiter
-    ::Gitlab::ApplicationRateLimiter
   end
 end

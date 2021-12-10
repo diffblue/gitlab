@@ -4,7 +4,7 @@ class Admin::EmailsController < Admin::ApplicationController
   include Admin::EmailsHelper
 
   before_action :check_license_send_emails_from_admin_area_available!
-  before_action :check_rate_limit!, only: [:create]
+  before_action :check_emails_rate_limit!, only: [:create]
 
   feature_category :not_owned
 
@@ -18,7 +18,7 @@ class Admin::EmailsController < Admin::ApplicationController
 
   private
 
-  def check_rate_limit!
+  def check_emails_rate_limit!
     if admin_emails_are_currently_rate_limited?
       redirect_to admin_email_path, alert: _('Email could not be sent')
     end
