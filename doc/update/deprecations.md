@@ -65,7 +65,7 @@ Distribution support and security updates for openSUSE Leap 15.2 are [ending Dec
 Starting in 14.5 we are providing packages for openSUSE Leap 15.3, and will stop providing packages for openSUSE Leap 15.2 in the 14.8 milestone.
 
 Announced: 2021-11-22
-Planned removal: 
+Planned removal: 2022-02-22
 
 ## 15.0
 
@@ -86,7 +86,7 @@ feature flag. Enabling them can cause too many events to be generated which can
 dramatically slow down GitLab instances. For this reason, they are being removed.
 
 Announced: 2021-09-22
-Planned removal: 
+Planned removal: 2022-05-22
 
 ### CI/CD job name length limit
 
@@ -115,7 +115,7 @@ Planned removal:
 In GitLab 15.0, we will remove the feature that enables you to convert an instance (shared) runner to a project (specific) runner. Users who need to add a runner to only a particular project can register a runner to the project directly.
 
 Announced: 2021-11-22
-Planned removal: 
+Planned removal: 2022-05-22
 
 ### Deprecate `Versions` on base `PackageType`
 
@@ -124,7 +124,7 @@ As part of the work to create a [Package Registry GraphQL API](https://gitlab.co
 In milestone 15.0, we will completely remove `Version` from `PackageType`.
 
 Announced: 2021-11-22
-Planned removal: 
+Planned removal: 2022-05-22
 
 ### Deprecate legacy approval status names from License Compliance API
 
@@ -139,7 +139,7 @@ Announced: 2021-12-22
 Long term service and support (LTSS) for SUSE Linux Enterprise Server (SLES) 12 SP2 [ended on March 31, 2021](https://www.suse.com/lifecycle/). The CA certificates on SP2 include the expired DST root certificate, and it's not getting new CA certificate package updates. We have implemented some [workarounds](https://gitlab.com/gitlab-org/gitlab-omnibus-builder/-/merge_requests/191), but we will not be able to continue to keep the build running properly.
 
 Announced: 2021-11-22
-Planned removal: 
+Planned removal: 2022-05-22
 
 ### Deprecation of Runner status `not_connected` API value
 
@@ -185,7 +185,7 @@ supported using a single PostgreSQL adapter, whereas the new format is changing 
 This deprecation mainly impacts users compiling GitLab from source because Omnibus will handle this configuration automatically.
 
 Announced: 2021-09-22
-Planned removal: 
+Planned removal: 2022-05-22
 
 ### Must explicitly assign `AuthenticationType` for `[runners.cache.s3]`
 
@@ -194,7 +194,7 @@ In GitLab 15.0 and later, to access the AWS S3 cache, you must specify the `Auth
 Prior to 14.5, if you did not define the `AuthenticationType`, GitLab Runner chose a type for you.
 
 Announced: 2021-11-22
-Planned removal: 
+Planned removal: 2022-05-22
 
 ### NFS for Git repository storage deprecated
 
@@ -229,7 +229,7 @@ A request to the API for `/api/v4/projects/:id/packages` returns a paginated res
 In milestone 15.0, we will remove the `pipelines` attribute from the API response.
 
 Announced: 2021-11-22
-Planned removal: 
+Planned removal: 2022-05-22
 
 ### REST API Runner will not contain `paused`
 
@@ -242,14 +242,14 @@ When checking if a runner is `paused`, API users are advised to check the boolea
 `active` to be `false` instead. When checking if a runner is `active`, check if `active` is `true`.
 
 Announced: 2021-11-22
-Planned removal: 
+Planned removal: 2022-05-22
 
 ### Removal of `defaultMergeCommitMessageWithDescription` GraphQL API field
 
 The GraphQL API field `defaultMergeCommitMessageWithDescription` has been deprecated and will be removed in GitLab 15.0. For projects with a commit message template set, it will ignore the template.
 
 Announced: 2021-11-22
-Planned removal: 
+Planned removal: 2022-05-22
 
 ### Removal of `promote-db` command from `gitlab-ctl`
 
@@ -279,7 +279,7 @@ We added a feature flag because [GitLab-#11582](https://gitlab.com/gitlab-org/gi
 In milestone 15.0, we will remove the feature flag entirely. Moving forward, you must authenticate when using the Dependency Proxy.
 
 Announced: 2021-11-22
-Planned removal: 
+Planned removal: 2022-05-22
 
 ### Remove the `pipelines` field from the `version` field
 
@@ -291,7 +291,7 @@ In GraphQL, there are two `pipelines` fields that you can use in a [`PackageDeta
 To mitigate possible performance problems, we will remove the `versions` field's `pipelines` field in milestone 15.0. Although you will no longer be able to get all pipelines for all versions of a package, you can still get the pipelines of a single version through the remaining `pipelines` field for that version.
 
 Announced: 2021-11-22
-Planned removal: 
+Planned removal: 2022-05-22
 
 ### Update to the Container Registry group-level API
 
@@ -300,7 +300,7 @@ In milestone 15.0, support for the `tags` and `tags_count` parameters will be re
 The `GET /groups/:id/registry/repositories` endpoint will remain, but won't return any info about tags. To get the info about tags, you can use the existing `GET /registry/repositories/:id` endpoint, which will continue to support the `tags` and `tag_count` options as it does today. The latter must be called once per image repository.
 
 Announced: 2021-11-22
-Planned removal: 
+Planned removal: 2022-05-22
 
 ### Value Stream Analytics filtering calculation change
 
@@ -309,7 +309,7 @@ We are changing how the date filter works in Value Stream Analytics. Instead of 
 If you monitor Value Stream Analytics metrics and rely on the date filter, to avoid losing data, you must save the data prior to this change.
 
 Announced: 2021-11-22
-Planned removal: 
+Planned removal: 2022-05-22
 
 ### apiFuzzingCiConfigurationCreate GraphQL mutation
 
