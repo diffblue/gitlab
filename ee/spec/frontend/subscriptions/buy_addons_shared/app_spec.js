@@ -148,7 +148,9 @@ describe('Buy Storage App', () => {
 
   describe('labels', () => {
     it('shows labels correctly for 1 pack', async () => {
-      const mockApollo = createMockApolloProvider();
+      const mockApollo = createMockApolloProvider({
+        plansQueryMock: jest.fn().mockResolvedValue({ data: { plans: mockStoragePlans } }),
+      });
       await createComponent(mockApollo);
 
       expect(findQuantityText().text()).toMatchInterpolatedText(
@@ -156,7 +158,7 @@ describe('Buy Storage App', () => {
       );
       expect(findSummaryLabel().text()).toBe('1 storage pack');
       expect(findSummaryTotal().text()).toBe('Total storage: 10 GB');
-      expect(findPriceLabel().text()).toBe('$10 per 10 GB storage per pack');
+      expect(findPriceLabel().text()).toBe('$60 per 10 GB storage pack per year');
     });
 
     it('shows labels correctly for 2 packs', async () => {

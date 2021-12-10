@@ -41,7 +41,7 @@ export const i18nStorageSummaryTitle = (quantity) =>
   n__('Checkout|%{quantity} storage pack', 'Checkout|%{quantity} storage packs', quantity);
 export const I18N_STORAGE_SUMMARY_TOTAL = s__('Checkout|Total storage: %{quantity} GB');
 export const I18N_STORAGE_PRICE_PER_UNIT = s__(
-  'Checkout|$%{selectedPlanPrice} per 10 GB storage per pack',
+  'Checkout|$%{selectedPlanPrice} per 10 GB storage pack per year',
 );
 export const I18N_STORAGE_TITLE = s__("Checkout|%{name}'s storage subscription");
 export const I18N_STORAGE_TOOLTIP_NOTE = s__(
