@@ -147,6 +147,18 @@ CREATE TABLE incident_management_pending_issue_escalations (
 )
 PARTITION BY RANGE (process_at);
 
+CREATE TABLE loose_foreign_keys_deleted_records (
+    id bigint NOT NULL,
+    partition bigint DEFAULT 1 NOT NULL,
+    primary_key_value bigint NOT NULL,
+    status smallint DEFAULT 1 NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    fully_qualified_table_name text NOT NULL,
+    consume_after timestamp with time zone DEFAULT now(),
+    CONSTRAINT check_1a541f3235 CHECK ((char_length(fully_qualified_table_name) <= 150))
+)
+PARTITION BY LIST (partition);
+
 CREATE TABLE verification_codes (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     visitor_id_code text NOT NULL,
@@ -1034,39 +1046,6 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_31 FOR VALUES WITH (modulus 32, remainder 31);
-
-CREATE TABLE loose_foreign_keys_deleted_records (
-    id bigint NOT NULL,
-    partition bigint DEFAULT 1 NOT NULL,
-    primary_key_value bigint NOT NULL,
-    status smallint DEFAULT 1 NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    fully_qualified_table_name text NOT NULL,
-    consume_after timestamp with time zone DEFAULT now(),
-    CONSTRAINT check_1a541f3235 CHECK ((char_length(fully_qualified_table_name) <= 150))
-)
-PARTITION BY LIST (partition);
-
-CREATE SEQUENCE loose_foreign_keys_deleted_records_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER SEQUENCE loose_foreign_keys_deleted_records_id_seq OWNED BY loose_foreign_keys_deleted_records.id;
-
-CREATE TABLE gitlab_partitions_static.loose_foreign_keys_deleted_records_1 (
-    id bigint DEFAULT nextval('loose_foreign_keys_deleted_records_id_seq'::regclass) NOT NULL,
-    partition bigint DEFAULT 1 NOT NULL,
-    primary_key_value bigint NOT NULL,
-    status smallint DEFAULT 1 NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    fully_qualified_table_name text NOT NULL,
-    consume_after timestamp with time zone DEFAULT now(),
-    CONSTRAINT check_1a541f3235 CHECK ((char_length(fully_qualified_table_name) <= 150))
-);
-ALTER TABLE ONLY loose_foreign_keys_deleted_records ATTACH PARTITION gitlab_partitions_static.loose_foreign_keys_deleted_records_1 FOR VALUES IN ('1');
 
 CREATE TABLE product_analytics_events_experimental (
     id bigint NOT NULL,
@@ -15889,6 +15868,15 @@ CREATE SEQUENCE lists_id_seq
 
 ALTER SEQUENCE lists_id_seq OWNED BY lists.id;
 
+CREATE SEQUENCE loose_foreign_keys_deleted_records_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE loose_foreign_keys_deleted_records_id_seq OWNED BY loose_foreign_keys_deleted_records.id;
+
 CREATE TABLE member_tasks (
     id bigint NOT NULL,
     member_id bigint NOT NULL,
@@ -22451,12 +22439,6 @@ ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_reques
 ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_31
     ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_31_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
 
-ALTER TABLE ONLY loose_foreign_keys_deleted_records
-    ADD CONSTRAINT loose_foreign_keys_deleted_records_pkey PRIMARY KEY (partition, id);
-
-ALTER TABLE ONLY gitlab_partitions_static.loose_foreign_keys_deleted_records_1
-    ADD CONSTRAINT loose_foreign_keys_deleted_records_1_pkey PRIMARY KEY (partition, id);
-
 ALTER TABLE ONLY product_analytics_events_experimental
     ADD CONSTRAINT product_analytics_events_experimental_pkey PRIMARY KEY (id, project_id);
 
@@ -23546,6 +23528,9 @@ ALTER TABLE ONLY list_user_preferences
 ALTER TABLE ONLY lists
     ADD CONSTRAINT lists_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY loose_foreign_keys_deleted_records
+    ADD CONSTRAINT loose_foreign_keys_deleted_records_pkey PRIMARY KEY (partition, id);
+
 ALTER TABLE ONLY member_tasks
     ADD CONSTRAINT member_tasks_pkey PRIMARY KEY (id);
 
@@ -24315,10 +24300,6 @@ CREATE INDEX index_000925dbd7 ON gitlab_partitions_static.analytics_cycle_analyt
 CREATE INDEX index_merge_request_stage_events_project_duration ON ONLY analytics_cycle_analytics_merge_request_stage_events USING btree (stage_event_hash_id, project_id, end_event_timestamp, merge_request_id, start_event_timestamp) WHERE (end_event_timestamp IS NOT NULL);
 
 CREATE INDEX index_006f943df6 ON gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_16 USING btree (stage_event_hash_id, project_id, end_event_timestamp, merge_request_id, start_event_timestamp) WHERE (end_event_timestamp IS NOT NULL);
-
-CREATE INDEX index_loose_foreign_keys_deleted_records_for_partitioned_query ON ONLY loose_foreign_keys_deleted_records USING btree (partition, fully_qualified_table_name, consume_after, id) WHERE (status = 1);
-
-CREATE INDEX index_01e3390fac ON gitlab_partitions_static.loose_foreign_keys_deleted_records_1 USING btree (partition, fully_qualified_table_name, consume_after, id) WHERE (status = 1);
 
 CREATE INDEX index_02749b504c ON gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_11 USING btree (stage_event_hash_id, project_id, end_event_timestamp, merge_request_id, start_event_timestamp) WHERE (end_event_timestamp IS NOT NULL);
 
@@ -26574,6 +26555,8 @@ CREATE INDEX index_lists_on_milestone_id ON lists USING btree (milestone_id);
 
 CREATE INDEX index_lists_on_user_id ON lists USING btree (user_id);
 
+CREATE INDEX index_loose_foreign_keys_deleted_records_for_partitioned_query ON ONLY loose_foreign_keys_deleted_records USING btree (partition, fully_qualified_table_name, consume_after, id) WHERE (status = 1);
+
 CREATE INDEX index_member_tasks_on_member_id ON member_tasks USING btree (member_id);
 
 CREATE UNIQUE INDEX index_member_tasks_on_member_id_and_project_id ON member_tasks USING btree (member_id, project_id);
@@ -28228,8 +28211,6 @@ ALTER INDEX index_issue_stage_events_project_duration ATTACH PARTITION gitlab_pa
 
 ALTER INDEX index_merge_request_stage_events_project_duration ATTACH PARTITION gitlab_partitions_static.index_006f943df6;
 
-ALTER INDEX index_loose_foreign_keys_deleted_records_for_partitioned_query ATTACH PARTITION gitlab_partitions_static.index_01e3390fac;
-
 ALTER INDEX index_merge_request_stage_events_project_duration ATTACH PARTITION gitlab_partitions_static.index_02749b504c;
 
 ALTER INDEX index_merge_request_stage_events_group_duration ATTACH PARTITION gitlab_partitions_static.index_0287f5ba09;
@@ -28737,8 +28718,6 @@ ALTER INDEX index_merge_request_stage_events_project_in_progress_duration ATTACH
 ALTER INDEX index_issue_stage_events_project_duration ATTACH PARTITION gitlab_partitions_static.index_ff39be5400;
 
 ALTER INDEX index_issue_stage_events_group_in_progress_duration ATTACH PARTITION gitlab_partitions_static.index_ff8741d8d7;
-
-ALTER INDEX loose_foreign_keys_deleted_records_pkey ATTACH PARTITION gitlab_partitions_static.loose_foreign_keys_deleted_records_1_pkey;
 
 ALTER INDEX index_product_analytics_events_experimental_project_and_time ATTACH PARTITION gitlab_partitions_static.product_analytics_events_expe_project_id_collector_tstamp_idx10;
 
