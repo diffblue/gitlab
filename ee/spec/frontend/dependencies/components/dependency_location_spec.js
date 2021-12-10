@@ -1,4 +1,4 @@
-import { GlLink, GlIntersperse, GlPopover } from '@gitlab/ui';
+import { GlLink, GlIcon, GlIntersperse, GlPopover } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import DependencyLocation from 'ee/dependencies/components/dependency_location.vue';
 import DependencyPathViewer from 'ee/dependencies/components/dependency_path_viewer.vue';
@@ -16,6 +16,9 @@ describe('Dependency Location component', () => {
     });
   };
 
+  const findIcon = () => wrapper.find(GlIcon);
+  const findPath = () => wrapper.find('[data-testid="dependency-path"]');
+  const findPathLink = () => wrapper.find(GlLink);
   const findPopover = () => wrapper.find(GlPopover);
 
   afterEach(() => {
@@ -23,11 +26,12 @@ describe('Dependency Location component', () => {
   });
 
   it.each`
-    name                | location              | path
-    ${'no path'}        | ${Paths.noPath}       | ${'package.json'}
-    ${'top level path'} | ${Paths.topLevelPath} | ${'package.json (top level)'}
-    ${'short path'}     | ${Paths.shortPath}    | ${'package.json / swell 1.2 / emmajsq 10.11'}
-    ${'long path'}      | ${Paths.longPath}     | ${'package.json / swell 1.2 / emmajsq 10.11 / 3 more'}
+    name                      | location                    | path
+    ${'container image path'} | ${Paths.containerImagePath} | ${Paths.containerImagePath.path}
+    ${'no path'}              | ${Paths.noPath}             | ${Paths.noPath.path}
+    ${'top level path'}       | ${Paths.topLevelPath}       | ${'package.json (top level)'}
+    ${'short path'}           | ${Paths.shortPath}          | ${'package.json / swell 1.2 / emmajsq 10.11'}
+    ${'long path'}            | ${Paths.longPath}           | ${'package.json / swell 1.2 / emmajsq 10.11 / 3 more'}
   `('shows dependency path for $name', ({ location, path }) => {
     createComponent({
       propsData: {
@@ -67,8 +71,8 @@ describe('Dependency Location component', () => {
       });
     });
 
-    it('should show the depedency name and link', () => {
-      const locationLink = wrapper.find(GlLink);
+    it('should show the dependency name and link', () => {
+      const locationLink = findPathLink();
       expect(locationLink.attributes().href).toBe('test.link');
       expect(locationLink.text()).toBe('package.json');
     });
@@ -80,6 +84,29 @@ describe('Dependency Location component', () => {
 
     it('should not render the popover', () => {
       expect(findPopover().exists()).toBe(false);
+    });
+
+    it('should render the icon', () => {
+      expect(findIcon().exists()).toBe(true);
+    });
+  });
+
+  describe('dependency with container image dependency path', () => {
+    beforeEach(() => {
+      createComponent({
+        propsData: {
+          location: Paths.containerImagePath,
+        },
+      });
+    });
+
+    it('should render the dependency name not as a link', () => {
+      expect(findPathLink().exists()).toBe(false);
+      expect(findPath().text()).toBe(Paths.containerImagePath.path);
+    });
+
+    it('should not render the icon', () => {
+      expect(findIcon().exists()).toBe(false);
     });
   });
 });

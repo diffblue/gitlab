@@ -1,3 +1,10 @@
+export const containerImagePath = {
+  ancestors: null,
+  top_level: null,
+  blob_path: 'test.link',
+  path: 'container-image:nginx:1.17',
+};
+
 export const longPath = {
   ancestors: [
     {

@@ -25,8 +25,14 @@ export default {
     ancestors() {
       return this.location.ancestors || [];
     },
+    locationComponent() {
+      return this.isContainerImageDependency ? 'span' : GlLink;
+    },
     hasAncestors() {
       return this.ancestors.length > 0;
+    },
+    isContainerImageDependency() {
+      return this.location.path.includes('container-image:');
     },
     isTopLevelDependency() {
       return this.location.top_level;
@@ -51,15 +57,20 @@ export default {
   <gl-intersperse separator=" / " class="gl-text-gray-500">
     <!-- We need to put an extra span to avoid separator between path & top level label -->
     <span>
-      <gl-link class="gl-display-inline-block gl-lg-display-block!" :href="location.blob_path">
-        <gl-icon name="doc-text" />
+      <component
+        :is="locationComponent"
+        data-testid="dependency-path"
+        class="gl-display-inline-block gl-lg-display-block!"
+        :href="location.blob_path"
+      >
+        <gl-icon v-if="!isContainerImageDependency" name="doc-text" />
         <gl-truncate
           class="gl-lg-max-w-80p gl-display-none gl-lg-display-inline-flex"
           :text="location.path"
           with-tooltip
         />
         <span class="gl-lg-display-none">{{ location.path }}</span>
-      </gl-link>
+      </component>
       <span v-if="isTopLevelDependency">{{ s__('Dependencies|(top level)') }}</span>
     </span>
 
