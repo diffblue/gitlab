@@ -64,39 +64,21 @@ RSpec.describe 'Billing plan pages', :feature, :js do
   end
 
   shared_examples 'can contact sales' do
-    context 'with in app hand raise feature flag off' do
-      before do
-        stub_feature_flags(in_app_hand_raise_pql: false)
-        visit page_path
-      end
-
-      it 'displays the contact sales link' do
-        # see ApplicationHelper#contact_sales_url
-        contact_sales_url = "https://#{ApplicationHelper.promo_host}/sales"
-        page.within('.content') do
-          expect(page).to have_link('Contact sales', href: %r{#{contact_sales_url}\?test=inappcontactsales(bronze|premium|gold)})
-        end
-      end
+    before do
+      visit page_path
     end
 
-    context 'with in app hand raise feature flag on' do
-      before do
-        stub_feature_flags(in_app_hand_raise_pql: namespace)
-        visit page_path
-      end
-
-      it 'displays the in-app hand raise lead' do
-        if namespace.group_namespace?
-          page.within('[data-testid="plan-card-premium"]') do
-            click_button 'Contact sales'
-          end
-          expect(page).to have_content('Contact our Sales team')
-          expect(page).to have_field('First Name', with: 'James')
-          expect(page).to have_field('Last Name', with: 'Bond')
-          expect(page).to have_field('Company Name', with: 'ACME')
-        else
-          expect(page).to have_selector(".js-hand-raise-lead-button[data-namespace-id='#{namespace.id}'][data-user-name='#{user.username}']", visible: false)
+    it 'displays the in-app hand raise lead', :aggregate_failures do
+      if namespace.group_namespace?
+        page.within('[data-testid="plan-card-premium"]') do
+          click_button 'Contact sales'
         end
+        expect(page).to have_content('Contact our Sales team')
+        expect(page).to have_field('First Name', with: 'James')
+        expect(page).to have_field('Last Name', with: 'Bond')
+        expect(page).to have_field('Company Name', with: 'ACME')
+      else
+        expect(page).to have_selector(".js-hand-raise-lead-button[data-namespace-id='#{namespace.id}'][data-user-name='#{user.username}']", visible: false)
       end
     end
   end

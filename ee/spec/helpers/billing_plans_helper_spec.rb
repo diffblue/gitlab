@@ -587,29 +587,6 @@ RSpec.describe BillingPlansHelper, :saas do
     end
   end
 
-  describe '#contact_sales_button_data' do
-    let(:plan) { double('Plan', code: '_code_') }
-    let(:data) do
-      {
-        track_action: 'click_button',
-        track_label: 'contact_sales',
-        track_property: plan.code
-      }
-    end
-
-    it 'has experiment attribute' do
-      allow(helper).to receive(:params).and_return({ from: 'side_nav' })
-
-      expect(helper.contact_sales_button_data(plan)).to eq data.merge(track_experiment: :billing_in_side_nav)
-    end
-
-    it 'does not have experiment attribute' do
-      allow(helper).to receive(:params).and_return({})
-
-      expect(helper.contact_sales_button_data(plan)).to eq data
-    end
-  end
-
   describe '#billing_upgrade_button_data' do
     let(:plan) { double('Plan', code: '_code_') }
     let(:data) do
