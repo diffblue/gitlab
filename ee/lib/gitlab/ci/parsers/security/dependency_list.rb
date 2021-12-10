@@ -21,7 +21,7 @@ module Gitlab
             report_data.fetch('dependency_files', []).each do |file|
               dependencies = file['dependencies']
 
-              return unless dependencies.is_a?(Array)
+              next unless dependencies.is_a?(Array)
 
               dependencies.each do |dependency|
                 report.add_dependency(formatter.format(dependency, file['package_manager'], file['path']))
