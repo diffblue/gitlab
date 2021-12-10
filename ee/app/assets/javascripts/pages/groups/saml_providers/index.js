@@ -1,4 +1,7 @@
 import Vue from 'vue';
+
+import { initScimTokenApp } from 'ee/saml_sso';
+
 import MembersApp from './saml_members/index.vue';
 import createStore from './saml_members/store';
 import initSAML from './shared/init_saml';
@@ -21,3 +24,4 @@ function initMembers(el) {
 const el = document.querySelector('.js-saml-members');
 initMembers(el);
 initSAML();
+initScimTokenApp();
