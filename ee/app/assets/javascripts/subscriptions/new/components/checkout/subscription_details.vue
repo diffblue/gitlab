@@ -72,16 +72,31 @@ export default {
     selectedPlanTextLine() {
       return sprintf(this.$options.i18n.selectedPlan, { selectedPlanText: this.selectedPlanText });
     },
-    isValid() {
+    hasAtLeastOneUser() {
+      return this.numberOfUsers > 0;
+    },
+    hasSelectedPlan() {
+      return !isEmpty(this.selectedPlan);
+    },
+    hasOrganizationName() {
+      return !isEmpty(this.organizationName);
+    },
+    hasRequisitesForCompany() {
       if (this.isSetupForCompany) {
-        return (
-          !isEmpty(this.selectedPlan) &&
-          (!isEmpty(this.organizationName) || this.isGroupSelected) &&
-          this.numberOfUsers > 0 &&
-          this.numberOfUsers >= this.selectedGroupUsers
-        );
+        return this.hasOrganizationName || this.isGroupSelected;
       }
-      return !isEmpty(this.selectedPlan) && this.numberOfUsers === 1;
+      return true;
+    },
+    isSelectedUsersEqualOrGreaterThanGroupUsers() {
+      return this.numberOfUsers >= this.selectedGroupUsers;
+    },
+    isValid() {
+      return (
+        this.hasSelectedPlan &&
+        this.hasAtLeastOneUser &&
+        this.isSelectedUsersEqualOrGreaterThanGroupUsers &&
+        this.hasRequisitesForCompany
+      );
     },
     isShowingGroupSelector() {
       return !this.isNewUser && this.groupData.length;
