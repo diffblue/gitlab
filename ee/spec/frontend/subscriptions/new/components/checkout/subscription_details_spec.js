@@ -345,18 +345,19 @@ describe('Subscription Details', () => {
     const isStepValid = () => wrapper.findComponent(Step).props('isValid');
     let store;
 
-    beforeEach(() => {
-      const mockApollo = createMockApolloProvider(STEPS);
-      store = createStore(createDefaultInitialStoreData());
-      wrapper = createComponent({ apolloProvider: mockApollo, store });
-    });
-
     describe('when setting up for a company', () => {
       beforeEach(() => {
-        store.commit(types.UPDATE_IS_SETUP_FOR_COMPANY, true);
+        const mockApollo = createMockApolloProvider(STEPS);
+        store = createStore(
+          createDefaultInitialStoreData({
+            namespaceId: 483,
+            newUser: 'true',
+            setupForCompany: 'true',
+          }),
+        );
+        wrapper = createComponent({ apolloProvider: mockApollo, store });
         store.commit(types.UPDATE_SELECTED_PLAN, 'firstPlanId');
         store.commit(types.UPDATE_ORGANIZATION_NAME, 'Organization name');
-        store.commit(types.UPDATE_SELECTED_GROUP, 483);
         store.commit(types.UPDATE_NUMBER_OF_USERS, 14);
       });
 
@@ -398,10 +399,41 @@ describe('Subscription Details', () => {
       });
     });
 
-    describe('when not setting up for a company', () => {
+    describe('when not setting up for a company and a new user', () => {
       beforeEach(() => {
-        store.commit(types.UPDATE_IS_SETUP_FOR_COMPANY, false);
-        store.commit(types.UPDATE_NUMBER_OF_USERS, 1);
+        const mockApollo = createMockApolloProvider(STEPS);
+        store = createStore(
+          createDefaultInitialStoreData({
+            namespaceId: 111,
+            newUser: 'true',
+            setupForCompany: 'false',
+            groupData: JSON.stringify([{ id: 111, name: 'Just me group', users: 1 }]),
+          }),
+        );
+        wrapper = createComponent({ apolloProvider: mockApollo, store });
+      });
+
+      it('should disable the number of users input field', () => {
+        expect(numberOfUsersInput().attributes('disabled')).toBeDefined();
+      });
+
+      it('should be valid', () => {
+        expect(isStepValid()).toBe(true);
+      });
+    });
+
+    describe('when not setting up for a company and not a new user', () => {
+      beforeEach(() => {
+        const mockApollo = createMockApolloProvider(STEPS);
+        store = createStore(
+          createDefaultInitialStoreData({
+            namespaceId: 132,
+            newUser: 'false',
+            setupForCompany: 'false',
+          }),
+        );
+        wrapper = createComponent({ apolloProvider: mockApollo, store });
+        store.commit(types.UPDATE_NUMBER_OF_USERS, 3);
       });
 
       it('should be valid', () => {
@@ -416,7 +448,7 @@ describe('Subscription Details', () => {
         });
       });
 
-      it('should be invalid when no number of users is 0', () => {
+      it('should be invalid when number users is 0', () => {
         store.commit(types.UPDATE_NUMBER_OF_USERS, 0);
 
         return localVue.nextTick().then(() => {
@@ -424,7 +456,15 @@ describe('Subscription Details', () => {
         });
       });
 
-      it('should be invalid when no number of users is greater than 1', () => {
+      it('should be valid when number of users is greater than group users', () => {
+        store.commit(types.UPDATE_NUMBER_OF_USERS, 4);
+
+        return localVue.nextTick().then(() => {
+          expect(isStepValid()).toBe(true);
+        });
+      });
+
+      it('should not be valid when number of users is less than group users', () => {
         store.commit(types.UPDATE_NUMBER_OF_USERS, 2);
 
         return localVue.nextTick().then(() => {
