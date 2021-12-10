@@ -34,6 +34,28 @@ BEGIN
 END
 $$;
 
+CREATE FUNCTION insert_namespaces_sync_event() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+INSERT INTO namespaces_sync_events (namespace_id)
+VALUES(COALESCE(NEW.id, OLD.id));
+RETURN NULL;
+
+END
+$$;
+
+CREATE FUNCTION insert_projects_sync_event() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+INSERT INTO projects_sync_events (project_id)
+VALUES(COALESCE(NEW.id, OLD.id));
+RETURN NULL;
+
+END
+$$;
+
 CREATE FUNCTION integrations_set_type_new() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -16492,6 +16514,20 @@ CREATE SEQUENCE namespaces_id_seq
 
 ALTER SEQUENCE namespaces_id_seq OWNED BY namespaces.id;
 
+CREATE TABLE namespaces_sync_events (
+    id bigint NOT NULL,
+    namespace_id bigint NOT NULL
+);
+
+CREATE SEQUENCE namespaces_sync_events_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE namespaces_sync_events_id_seq OWNED BY namespaces_sync_events.id;
+
 CREATE TABLE note_diff_files (
     id integer NOT NULL,
     diff_note_id integer NOT NULL,
@@ -18545,6 +18581,20 @@ CREATE SEQUENCE projects_id_seq
     CACHE 1;
 
 ALTER SEQUENCE projects_id_seq OWNED BY projects.id;
+
+CREATE TABLE projects_sync_events (
+    id bigint NOT NULL,
+    project_id bigint NOT NULL
+);
+
+CREATE SEQUENCE projects_sync_events_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE projects_sync_events_id_seq OWNED BY projects_sync_events.id;
 
 CREATE TABLE prometheus_alert_events (
     id bigint NOT NULL,
@@ -21811,6 +21861,8 @@ ALTER TABLE ONLY namespace_statistics ALTER COLUMN id SET DEFAULT nextval('names
 
 ALTER TABLE ONLY namespaces ALTER COLUMN id SET DEFAULT nextval('namespaces_id_seq'::regclass);
 
+ALTER TABLE ONLY namespaces_sync_events ALTER COLUMN id SET DEFAULT nextval('namespaces_sync_events_id_seq'::regclass);
+
 ALTER TABLE ONLY note_diff_files ALTER COLUMN id SET DEFAULT nextval('note_diff_files_id_seq'::regclass);
 
 ALTER TABLE ONLY notes ALTER COLUMN id SET DEFAULT nextval('notes_id_seq'::regclass);
@@ -21960,6 +22012,8 @@ ALTER TABLE ONLY project_topics ALTER COLUMN id SET DEFAULT nextval('project_top
 ALTER TABLE ONLY project_tracing_settings ALTER COLUMN id SET DEFAULT nextval('project_tracing_settings_id_seq'::regclass);
 
 ALTER TABLE ONLY projects ALTER COLUMN id SET DEFAULT nextval('projects_id_seq'::regclass);
+
+ALTER TABLE ONLY projects_sync_events ALTER COLUMN id SET DEFAULT nextval('projects_sync_events_id_seq'::regclass);
 
 ALTER TABLE ONLY prometheus_alert_events ALTER COLUMN id SET DEFAULT nextval('prometheus_alert_events_id_seq'::regclass);
 
@@ -23582,6 +23636,9 @@ ALTER TABLE ONLY namespace_statistics
 ALTER TABLE ONLY namespaces
     ADD CONSTRAINT namespaces_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY namespaces_sync_events
+    ADD CONSTRAINT namespaces_sync_events_pkey PRIMARY KEY (id);
+
 ALTER TABLE ONLY note_diff_files
     ADD CONSTRAINT note_diff_files_pkey PRIMARY KEY (id);
 
@@ -23851,6 +23908,9 @@ ALTER TABLE ONLY project_tracing_settings
 
 ALTER TABLE ONLY projects
     ADD CONSTRAINT projects_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY projects_sync_events
+    ADD CONSTRAINT projects_sync_events_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY prometheus_alert_events
     ADD CONSTRAINT prometheus_alert_events_pkey PRIMARY KEY (id);
@@ -26744,6 +26804,8 @@ CREATE INDEX index_namespaces_on_type_and_id ON namespaces USING btree (type, id
 
 CREATE INDEX index_namespaces_public_groups_name_id ON namespaces USING btree (name, id) WHERE (((type)::text = 'Group'::text) AND (visibility_level = 20));
 
+CREATE INDEX index_namespaces_sync_events_on_namespace_id ON namespaces_sync_events USING btree (namespace_id);
+
 CREATE INDEX index_non_requested_project_members_on_source_id_and_type ON members USING btree (source_id, source_type) WHERE ((requested_at IS NULL) AND ((type)::text = 'ProjectMember'::text));
 
 CREATE UNIQUE INDEX index_note_diff_files_on_diff_note_id ON note_diff_files USING btree (diff_note_id);
@@ -27203,6 +27265,8 @@ CREATE INDEX index_projects_on_runners_token_encrypted ON projects USING btree (
 CREATE INDEX index_projects_on_star_count ON projects USING btree (star_count);
 
 CREATE INDEX index_projects_on_updated_at_and_id ON projects USING btree (updated_at, id);
+
+CREATE INDEX index_projects_sync_events_on_project_id ON projects_sync_events USING btree (project_id);
 
 CREATE UNIQUE INDEX index_prometheus_alert_event_scoped_payload_key ON prometheus_alert_events USING btree (prometheus_alert_id, payload_key);
 
@@ -28959,6 +29023,14 @@ CREATE TRIGGER trigger_has_external_wiki_on_insert AFTER INSERT ON integrations 
 CREATE TRIGGER trigger_has_external_wiki_on_type_new_updated AFTER UPDATE OF type_new ON integrations FOR EACH ROW WHEN (((new.type_new = 'Integrations::ExternalWiki'::text) AND (new.project_id IS NOT NULL))) EXECUTE FUNCTION set_has_external_wiki();
 
 CREATE TRIGGER trigger_has_external_wiki_on_update AFTER UPDATE ON integrations FOR EACH ROW WHEN (((new.type_new = 'Integrations::ExternalWiki'::text) AND (old.active <> new.active) AND (new.project_id IS NOT NULL))) EXECUTE FUNCTION set_has_external_wiki();
+
+CREATE TRIGGER trigger_namespaces_parent_id_on_insert AFTER INSERT ON namespaces FOR EACH ROW EXECUTE FUNCTION insert_namespaces_sync_event();
+
+CREATE TRIGGER trigger_namespaces_parent_id_on_update AFTER UPDATE ON namespaces FOR EACH ROW WHEN ((old.parent_id IS DISTINCT FROM new.parent_id)) EXECUTE FUNCTION insert_namespaces_sync_event();
+
+CREATE TRIGGER trigger_projects_parent_id_on_insert AFTER INSERT ON projects FOR EACH ROW EXECUTE FUNCTION insert_projects_sync_event();
+
+CREATE TRIGGER trigger_projects_parent_id_on_update AFTER UPDATE ON projects FOR EACH ROW WHEN ((old.namespace_id IS DISTINCT FROM new.namespace_id)) EXECUTE FUNCTION insert_projects_sync_event();
 
 CREATE TRIGGER trigger_type_new_on_insert AFTER INSERT ON integrations FOR EACH ROW EXECUTE FUNCTION integrations_set_type_new();
 
@@ -30870,6 +30942,9 @@ ALTER TABLE ONLY gpg_keys
 ALTER TABLE ONLY analytics_language_trend_repository_languages
     ADD CONSTRAINT fk_rails_9d851d566c FOREIGN KEY (programming_language_id) REFERENCES programming_languages(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY namespaces_sync_events
+    ADD CONSTRAINT fk_rails_9da32a0431 FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY badges
     ADD CONSTRAINT fk_rails_9df4a56538 FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
@@ -31043,6 +31118,9 @@ ALTER TABLE ONLY security_findings
 
 ALTER TABLE ONLY packages_debian_project_component_files
     ADD CONSTRAINT fk_rails_bbe9ebfbd9 FOREIGN KEY (component_id) REFERENCES packages_debian_project_components(id) ON DELETE RESTRICT;
+
+ALTER TABLE ONLY projects_sync_events
+    ADD CONSTRAINT fk_rails_bbf0eef59f FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY approval_merge_request_rules_users
     ADD CONSTRAINT fk_rails_bc8972fa55 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
