@@ -767,6 +767,7 @@ RSpec.describe API::Epics do
 
   describe 'PUT /groups/:id/epics/:epic_iid' do
     let(:url) { "/groups/#{group.path}/epics/#{epic.iid}" }
+    let!(:epic2) { create(:epic) }
     let(:params) do
       {
         title: 'new title',
@@ -774,7 +775,8 @@ RSpec.describe API::Epics do
         labels: 'label2',
         start_date_fixed: "2018-07-17",
         start_date_is_fixed: true,
-        confidential: true
+        confidential: true,
+        parent_id: epic2.id
       }
     end
 
@@ -833,6 +835,7 @@ RSpec.describe API::Epics do
             expect(result.due_date_fixed).to eq(nil)
             expect(result.due_date_is_fixed).to be_falsey
             expect(result.confidential).to be_truthy
+            expect(result.parent_id).to eq(epic2.id)
           end
         end
 
