@@ -57,7 +57,6 @@ RSpec.describe Security::FindingsFinder do
                    project_fingerprint: finding.project_fingerprint,
                    uuid: finding.uuid,
                    deduplicated: true,
-                   position: index,
                    scan: scan)
           end
         end
@@ -330,7 +329,6 @@ RSpec.describe Security::FindingsFinder do
                      project_fingerprint: finding.project_fingerprint,
                      uuid: finding.uuid,
                      deduplicated: true,
-                     position: index,
                      scan: scan)
             end
           end
@@ -381,7 +379,6 @@ RSpec.describe Security::FindingsFinder do
                      project_fingerprint: finding.project_fingerprint,
                      uuid: finding.uuid,
                      deduplicated: true,
-                     position: index,
                      scan: scan)
             end
           end
