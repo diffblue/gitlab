@@ -70,6 +70,25 @@ module QA
 
         expect(page).to have_content(@user2.name)
         expect(page).not_to have_content(@user.name)
+
+        # Check the files and code owners when refactor_blob_viewer is enabled
+        Runtime::Feature.enable(:refactor_blob_viewer, project: @project)
+
+        @project.visit!
+        Page::Project::Show.perform do |project_page|
+          project_page.click_file 'file.txt'
+        end
+
+        expect(page).to have_content(@user.name)
+        expect(page).not_to have_content(@user2.name)
+
+        @project.visit!
+        Page::Project::Show.perform do |project_page|
+          project_page.click_file 'README.md'
+        end
+
+        expect(page).to have_content(@user2.name)
+        expect(page).not_to have_content(@user.name)
       end
     end
   end
