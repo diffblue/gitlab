@@ -11567,9 +11567,6 @@ msgstr ""
 msgid "DependencyProxy|Storage settings"
 msgstr ""
 
-msgid "DependencyProxy|The Dependency Proxy is disabled. %{docLinkStart}Learn how to enable it%{docLinkEnd}."
-msgstr ""
-
 msgid "DependencyProxy|There are no images in the cache"
 msgstr ""
 
