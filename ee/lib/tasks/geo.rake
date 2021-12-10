@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-task spec: ['geo:db:test:prepare']
+task spec: ['db:test:prepare:geo']
 
 namespace :geo do
   GEO_LICENSE_ERROR_TEXT = 'GitLab Geo is not supported with this license. Please contact the sales team: https://about.gitlab.com/sales.'
