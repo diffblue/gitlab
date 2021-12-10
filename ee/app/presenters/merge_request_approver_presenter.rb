@@ -7,7 +7,6 @@
 # - skip_user
 class MergeRequestApproverPresenter < Gitlab::View::Presenter::Simple
   include ActionView::Helpers::TagHelper
-  include ActionView::Helpers::UrlHelper
   include ActionView::Helpers::OutputSafetyHelper
   include ActionView::RecordIdentifier
   include Gitlab::Utils::StrongMemoize
@@ -30,7 +29,7 @@ class MergeRequestApproverPresenter < Gitlab::View::Presenter::Simple
   end
 
   def render_user(user)
-    link_to user.name, '#', id: dom_id(user)
+    ApplicationController.helpers.link_to user.name, '#', id: dom_id(user)
   end
 
   def show_code_owner_tips?
