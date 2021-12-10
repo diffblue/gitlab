@@ -13,9 +13,11 @@ import NetworkPolicyEditor from 'ee/threat_monitoring/components/policy_editor/n
 import PolicyRuleBuilder from 'ee/threat_monitoring/components/policy_editor/network_policy/policy_rule_builder.vue';
 import PolicyAlertPicker from 'ee/threat_monitoring/components/policy_editor/policy_alert_picker.vue';
 import PolicyEditorLayout from 'ee/threat_monitoring/components/policy_editor/policy_editor_layout.vue';
-import PolicyPreview from 'ee/threat_monitoring/components/policy_editor/policy_preview.vue';
+import PolicyPreviewHuman from 'ee/threat_monitoring/components/policy_editor/policy_preview_human.vue';
 import createStore from 'ee/threat_monitoring/store';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
+import waitForPromises from 'helpers/wait_for_promises';
+import { stubTransition } from 'helpers/stub_transition';
 import { redirectTo } from '~/lib/utils/url_utility';
 import { mockExistingL3Policy, mockExistingL7Policy } from '../../../mocks/mock_data';
 
@@ -29,7 +31,12 @@ describe('NetworkPolicyEditor component', () => {
     threatMonitoring: { environments: [{ id: 1 }], currentEnvironmentId: 1, hasEnvironment: true },
   };
 
-  const factory = ({ propsData, provide = {}, updatedStore = defaultStore } = {}) => {
+  const factory = ({
+    propsData,
+    provide = {},
+    updatedStore = defaultStore,
+    mountFn = shallowMountExtended,
+  } = {}) => {
     store = createStore();
 
     store.replaceState({
@@ -46,7 +53,7 @@ describe('NetworkPolicyEditor component', () => {
 
     jest.spyOn(store, 'dispatch').mockImplementation(() => Promise.resolve());
 
-    wrapper = shallowMountExtended(NetworkPolicyEditor, {
+    wrapper = mountFn(NetworkPolicyEditor, {
       propsData: {
         ...propsData,
       },
@@ -58,12 +65,13 @@ describe('NetworkPolicyEditor component', () => {
         ...provide,
       },
       store,
-      stubs: { DimDisableContainer, PolicyYamlEditor: true },
+      stubs: { DimDisableContainer, PolicyYamlEditor: true, transition: stubTransition() },
     });
   };
 
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
-  const findPreview = () => wrapper.findComponent(PolicyPreview);
+  const findYamlPreview = () => wrapper.findByTestId('yaml-preview');
+  const findHumanizedPreview = () => wrapper.findComponent(PolicyPreviewHuman);
   const findAddRuleButton = () => wrapper.findByTestId('add-rule');
   const findYAMLParsingAlert = () => wrapper.findByTestId('parsing-alert');
   const findPolicyAlertPicker = () => wrapper.findComponent(PolicyAlertPicker);
@@ -72,6 +80,10 @@ describe('NetworkPolicyEditor component', () => {
   const findPolicyName = () => wrapper.find("[id='policyName']");
   const findPolicyRuleBuilder = () => wrapper.findComponent(PolicyRuleBuilder);
   const findPolicyEditorLayout = () => wrapper.findComponent(PolicyEditorLayout);
+  const findCollapseToggle = () =>
+    wrapper.findByRole('button', {
+      name: NetworkPolicyEditor.i18n.policyPreview,
+    });
 
   const modifyPolicyAlert = async ({ isAlertEnabled }) => {
     const policyAlertPicker = findPolicyAlertPicker();
@@ -80,21 +92,19 @@ describe('NetworkPolicyEditor component', () => {
     await findPolicyEditorLayout().vm.$emit('save-policy');
   };
 
-  beforeEach(() => {
-    factory();
-  });
-
   afterEach(() => {
     wrapper.destroy();
   });
 
   it('renders toggle with label', () => {
+    factory();
     const policyEnableToggle = findPolicyEnableContainer().findComponent(GlToggle);
     expect(policyEnableToggle.exists()).toBe(true);
     expect(policyEnableToggle.props('label')).toBe(NetworkPolicyEditor.i18n.toggleLabel);
   });
 
   it('disables the tooltip and enables the save button', () => {
+    factory();
     expect(findPolicyEditorLayout().props()).toMatchObject({
       disableTooltip: true,
       disableUpdate: false,
@@ -102,6 +112,7 @@ describe('NetworkPolicyEditor component', () => {
   });
 
   it('renders a default rule with label', () => {
+    factory();
     expect(wrapper.findAllComponents(PolicyRuleBuilder)).toHaveLength(1);
     expect(findPolicyRuleBuilder().exists()).toBe(true);
     expect(findPolicyRuleBuilder().attributes()).toMatchObject({
@@ -115,14 +126,16 @@ describe('NetworkPolicyEditor component', () => {
     ${'policy alert picker'}        | ${'does display'}     | ${findPolicyAlertPicker} | ${true}
     ${'policy name input'}          | ${'does display'}     | ${findPolicyName}        | ${true}
     ${'add rule button'}            | ${'does display'}     | ${findAddRuleButton}     | ${true}
-    ${'policy preview'}             | ${'does display'}     | ${findPreview}           | ${true}
+    ${'yaml policy preview'}        | ${'does display'}     | ${findYamlPreview}       | ${true}
     ${'parsing error alert'}        | ${'does not display'} | ${findYAMLParsingAlert}  | ${false}
     ${'no environment empty state'} | ${'does not display'} | ${findEmptyState}        | ${false}
   `('$status the $component', async ({ findComponent, state }) => {
+    factory();
     expect(findComponent().exists()).toBe(state);
   });
 
   it('updates policy on yaml editor value change', async () => {
+    factory();
     findPolicyEditorLayout().vm.$emit('update-yaml', mockExistingL3Policy.manifest);
 
     expect(wrapper.vm.policy).toMatchObject({
@@ -142,18 +155,37 @@ describe('NetworkPolicyEditor component', () => {
   });
 
   it('given there is a name change, updates policy yaml preview', async () => {
-    const initialValue = findPreview().props('policyYaml');
+    factory();
+    const initialValue = findYamlPreview().text();
     await findPolicyName().vm.$emit('input', 'new');
-    expect(findPreview().props('policyYaml')).not.toEqual(initialValue);
+    expect(findYamlPreview().text()).not.toEqual(initialValue);
   });
 
   it('given there is a rule change, updates policy description preview', async () => {
-    const initialValue = findPreview().props('policyDescription');
+    factory();
+    const initialValue = findHumanizedPreview().props('policyDescription');
     await findAddRuleButton().vm.$emit('click');
-    expect(findPreview().props('policyDescription')).not.toEqual(initialValue);
+    expect(findHumanizedPreview().props('policyDescription')).not.toEqual(initialValue);
+  });
+
+  it('toggles the visibility for the humanized policy preview', async () => {
+    factory({ mountFn: mountExtended });
+
+    // Wait for `requestAnimationFrame` in Bootstrap Vue toggle directive
+    // https://github.com/bootstrap-vue/bootstrap-vue/blob/f86c32a7d8a3c0403c9a9421850ce3c97f0ad638/src/directives/toggle/toggle.js#L219
+    await waitForPromises();
+
+    expect(findHumanizedPreview().isVisible()).toBe(true);
+    expect(findCollapseToggle().attributes('aria-expanded')).toBe('true');
+
+    await findCollapseToggle().trigger('click');
+
+    expect(findHumanizedPreview().isVisible()).toBe(false);
+    expect(findCollapseToggle().attributes('aria-expanded')).toBe('false');
   });
 
   it('adds a new rule', async () => {
+    factory();
     expect(wrapper.findAllComponents(PolicyRuleBuilder)).toHaveLength(1);
     const button = findAddRuleButton();
     await button.vm.$emit('click');
@@ -174,6 +206,7 @@ describe('NetworkPolicyEditor component', () => {
   });
 
   it('removes a new rule', async () => {
+    factory();
     await findAddRuleButton().vm.$emit('click');
     expect(wrapper.findAllComponents(PolicyRuleBuilder)).toHaveLength(2);
 
@@ -182,6 +215,7 @@ describe('NetworkPolicyEditor component', () => {
   });
 
   it('updates yaml editor value on switch to yaml editor', async () => {
+    factory();
     const policyEditorLayout = findPolicyEditorLayout();
     findPolicyName().vm.$emit('input', 'test-policy');
     await policyEditorLayout.vm.$emit('update-editor-mode', EDITOR_MODE_YAML);
@@ -207,6 +241,10 @@ describe('NetworkPolicyEditor component', () => {
       expect(findPolicyEnableContainer().attributes().disabled).toBe('true');
     });
 
+    it('does not display the humanized policy preview', () => {
+      expect(findHumanizedPreview().exists()).toBe(false);
+    });
+
     it('renders parsing error alert', () => {
       expect(findYAMLParsingAlert().exists()).toBe(true);
     });
@@ -219,12 +257,10 @@ describe('NetworkPolicyEditor component', () => {
       expect(wrapper.findByTestId('policy-action-container').props().disabled).toBe(true);
     });
 
-    it('disables policy preview and sets initial tab to yaml', () => {
-      expect(wrapper.findByTestId('policy-preview-container').props().disabled).toBe(true);
-      expect(findPreview().props()).toMatchObject({
-        initialTab: 1,
-        policyYaml: mockExistingL7Policy.manifest,
-      });
+    it('displays the manifest text and decreases the opacity to show it is disabled', () => {
+      const preview = findYamlPreview();
+      expect(preview.attributes('class')).toContain('gl-opacity-5');
+      expect(preview.text()).toBe(mockExistingL7Policy.manifest);
     });
 
     it('does not update yaml editor value on switch to yaml editor', async () => {
@@ -257,6 +293,7 @@ describe('NetworkPolicyEditor component', () => {
   });
 
   it('creates policy and redirects to a threat monitoring path', async () => {
+    factory();
     await findPolicyEditorLayout().vm.$emit('save-policy');
     expect(store.dispatch).toHaveBeenCalledWith('networkPolicies/createPolicy', {
       environmentId: 1,
@@ -335,6 +372,10 @@ describe('NetworkPolicyEditor component', () => {
   });
 
   describe('add alert picker', () => {
+    beforeEach(() => {
+      factory();
+    });
+
     it('adds a policy annotation on alert addition', async () => {
       await modifyPolicyAlert({ isAlertEnabled: true });
       expect(store.dispatch).toHaveBeenLastCalledWith('networkPolicies/createPolicy', {

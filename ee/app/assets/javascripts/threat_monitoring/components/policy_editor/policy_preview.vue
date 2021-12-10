@@ -1,18 +1,16 @@
 <script>
-import { GlAlert, GlTabs, GlTab, GlSafeHtmlDirective } from '@gitlab/ui';
+import { GlTabs, GlTab } from '@gitlab/ui';
 import { PARSING_ERROR_MESSAGE } from './constants';
+import PolicyPreviewHuman from './policy_preview_human.vue';
 
 export default {
   i18n: {
     PARSING_ERROR_MESSAGE,
   },
   components: {
-    GlAlert,
     GlTabs,
     GlTab,
-  },
-  directives: {
-    safeHtml: GlSafeHtmlDirective,
+    PolicyPreviewHuman,
   },
   props: {
     policyYaml: {
@@ -33,23 +31,20 @@ export default {
   data() {
     return { selectedTab: this.initialTab };
   },
-  safeHtmlConfig: { ALLOWED_TAGS: ['strong', 'br'] },
 };
 </script>
 
 <template>
   <gl-tabs v-model="selectedTab" content-class="gl-pt-0">
     <gl-tab :title="s__('NetworkPolicies|Rule')">
-      <div
-        v-if="policyDescription"
-        v-safe-html:[$options.safeHtmlConfig]="policyDescription"
-        class="gl-bg-white gl-rounded-top-left-none gl-rounded-top-right-none gl-rounded-bottom-left-base gl-rounded-bottom-right-base gl-py-3 gl-px-4 gl-border-1 gl-border-solid gl-border-gray-100 gl-border-t-none!"
-      ></div>
-      <div v-else>
-        <gl-alert variant="info" :dismissible="false">
-          {{ $options.i18n.PARSING_ERROR_MESSAGE }}
-        </gl-alert>
-      </div>
+      <policy-preview-human
+        :class="{
+          'gl-border-t-none! gl-rounded-top-left-none gl-rounded-top-right-none': Boolean(
+            policyDescription,
+          ),
+        }"
+        :policy-description="policyDescription"
+      />
     </gl-tab>
     <gl-tab :title="s__('NetworkPolicies|.yaml')">
       <pre class="gl-bg-white gl-rounded-top-left-none gl-rounded-top-right-none gl-border-t-none"

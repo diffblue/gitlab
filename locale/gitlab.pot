@@ -31064,6 +31064,9 @@ msgstr ""
 msgid "SecurityOrchestration|%{branches} and %{lastBranch} %{plural}"
 msgstr ""
 
+msgid "SecurityOrchestration|.yaml preview"
+msgstr ""
+
 msgid "SecurityOrchestration|Action"
 msgstr ""
 

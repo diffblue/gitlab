@@ -11,15 +11,10 @@ exports[`PolicyPreview component with policy description renders policy preview 
     title="Rule"
     titlelinkclass=""
   >
-    <div
-      class="gl-bg-white gl-rounded-top-left-none gl-rounded-top-right-none gl-rounded-bottom-left-base gl-rounded-bottom-right-base gl-py-3 gl-px-4 gl-border-1 gl-border-solid gl-border-gray-100 gl-border-t-none!"
-    >
-      <strong>
-        bar
-      </strong>
-      <br />
-      test
-    </div>
+    <policy-preview-human-stub
+      class="gl-border-t-none! gl-rounded-top-left-none gl-rounded-top-right-none"
+      policydescription="<strong>bar</strong><br><div>test</div><script></script>"
+    />
   </gl-tab-stub>
    
   <gl-tab-stub

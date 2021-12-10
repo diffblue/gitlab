@@ -1,12 +1,13 @@
-import { GlAlert, GlTabs } from '@gitlab/ui';
+import { GlTabs } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import PolicyPreviewHuman from 'ee/threat_monitoring/components/policy_editor/policy_preview_human.vue';
 import PolicyPreview from 'ee/threat_monitoring/components/policy_editor/policy_preview.vue';
 
 describe('PolicyPreview component', () => {
   let wrapper;
 
-  const findAlert = () => wrapper.findComponent(GlAlert);
   const findTabs = () => wrapper.findComponent(GlTabs);
+  const findPolicyPreviewHuman = () => wrapper.findComponent(PolicyPreviewHuman);
 
   const factory = ({ propsData } = {}) => {
     wrapper = shallowMount(PolicyPreview, {
@@ -21,11 +22,13 @@ describe('PolicyPreview component', () => {
   });
 
   describe('with policy description', () => {
+    const policyDescription = '<strong>bar</strong><br><div>test</div><script></script>';
+
     beforeEach(() => {
       factory({
         propsData: {
           policyYaml: 'foo',
-          policyDescription: '<strong>bar</strong><br><div>test</div><script></script>',
+          policyDescription,
         },
       });
     });
@@ -34,12 +37,12 @@ describe('PolicyPreview component', () => {
       expect(findTabs().element).toMatchSnapshot();
     });
 
-    it('renders the first tab', () => {
-      expect(findTabs().attributes().value).toEqual('0');
+    it('renders the policy preview human', () => {
+      expect(findPolicyPreviewHuman().props('policyDescription')).toBe(policyDescription);
     });
 
-    it('does not render the unsupported attributes alert', () => {
-      expect(findAlert().exists()).toBe(false);
+    it('renders the first tab', () => {
+      expect(findTabs().attributes().value).toEqual('0');
     });
 
     describe('initial tab', () => {
@@ -63,10 +66,6 @@ describe('PolicyPreview component', () => {
           policyYaml: 'foo',
         },
       });
-    });
-
-    it('does render the unsupported attributes alert', () => {
-      expect(findAlert().exists()).toBe(true);
     });
   });
 });
