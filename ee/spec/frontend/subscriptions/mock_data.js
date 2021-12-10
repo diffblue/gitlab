@@ -25,7 +25,7 @@ export const mockStoragePlans = [
   {
     id: 'storagePackPlanId',
     code: 'storage',
-    pricePerYear: 50,
+    pricePerYear: 60,
     name: 'Storage pack',
     __typename: PLAN_TYPE,
   },
