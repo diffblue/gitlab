@@ -24,6 +24,16 @@ RSpec.describe Search::GlobalService do
     it_behaves_like 'search query applies joins based on migrations shared examples', :add_new_data_to_merge_requests_documents
   end
 
+  context 'when projects search has an empty search term', :elastic do
+    subject { service.execute.objects('projects') }
+
+    let(:service) { described_class.new(nil, search: nil) }
+
+    it 'does not raise exception' do
+      is_expected.to be_empty
+    end
+  end
+
   context 'visibility', :elastic_delete_by_query, :clean_gitlab_redis_shared_state, :sidekiq_inline do
     include_context 'ProjectPolicyTable context'
 

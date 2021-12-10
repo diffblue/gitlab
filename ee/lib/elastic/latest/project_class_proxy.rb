@@ -44,6 +44,7 @@ module Elastic
             }
           end
 
+          query_hash[:query][:bool][:filter] ||= []
           query_hash[:query][:bool][:filter] += filters
         end
 
