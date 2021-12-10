@@ -192,6 +192,17 @@ RSpec.describe Gitlab::Geo, :geo, :request_store do
     end
   end
 
+  describe '.proxied_request?' do
+    it 'returns true when the header is set' do
+      expect(described_class.proxied_request?({ 'HTTP_GITLAB_WORKHORSE_GEO_PROXY' => '1' })).to be_truthy
+    end
+
+    it 'returns false when the header is not present or set o an invalid value' do
+      expect(described_class.proxied_request?({})).to be_falsey
+      expect(described_class.proxied_request?({ 'HTTP_GITLAB_WORKHORSE_GEO_PROXY' => 'invalid' })).to be_falsey
+    end
+  end
+
   describe '.enabled?' do
     it_behaves_like 'a Geo cached value', :enabled?, :node_enabled
 

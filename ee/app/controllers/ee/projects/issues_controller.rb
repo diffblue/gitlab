@@ -8,6 +8,7 @@ module EE
 
       prepended do
         include DescriptionDiffActions
+        include GeoInstrumentation
 
         before_action :disable_query_limiting_ee, only: [:update]
         before_action only: [:new, :create] do

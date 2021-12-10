@@ -2,7 +2,12 @@
 
 module EE
   module UsersController
+    extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
+
+    prepended do
+      include GeoInstrumentation
+    end
 
     def available_project_templates
       load_custom_project_templates

@@ -7,6 +7,7 @@ module EE
 
       prepended do
         include DescriptionDiffActions
+        include GeoInstrumentation
 
         before_action only: [:show] do
           if can_run_sast_experiments_on?(@project)
