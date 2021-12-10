@@ -5,5 +5,6 @@ require 'spec_helper'
 RSpec.describe Geo::LfsObjectReplicator do
   let(:model_record) { build(:lfs_object, :with_file) }
 
-  it_behaves_like 'a blob replicator'
+  include_examples 'a blob replicator'
+  include_examples 'a verifiable replicator'
 end

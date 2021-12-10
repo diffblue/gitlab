@@ -151,7 +151,17 @@ CREATE TABLE lfs_object_registry (
     sha256 bytea,
     state smallint DEFAULT 0 NOT NULL,
     last_synced_at timestamp with time zone,
-    last_sync_failure text
+    last_sync_failure text,
+    verification_started_at timestamp with time zone,
+    verified_at timestamp with time zone,
+    verification_retry_at timestamp with time zone,
+    verification_retry_count integer DEFAULT 0,
+    verification_state smallint DEFAULT 0 NOT NULL,
+    checksum_mismatch boolean DEFAULT false NOT NULL,
+    verification_checksum bytea,
+    verification_checksum_mismatched bytea,
+    verification_failure text,
+    CONSTRAINT check_8bcaa12138 CHECK ((char_length(verification_failure) <= 255))
 );
 
 CREATE SEQUENCE lfs_object_registry_id_seq
@@ -595,6 +605,12 @@ CREATE INDEX index_terraform_state_version_registry_on_state ON terraform_state_
 CREATE UNIQUE INDEX index_terraform_state_version_registry_on_t_state_version_id ON terraform_state_version_registry USING btree (terraform_state_version_id);
 
 CREATE UNIQUE INDEX index_tf_state_versions_registry_tf_state_versions_id_unique ON terraform_state_version_registry USING btree (terraform_state_version_id);
+
+CREATE INDEX lfs_object_registry_failed_verification ON lfs_object_registry USING btree (verification_retry_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 3));
+
+CREATE INDEX lfs_object_registry_needs_verification ON lfs_object_registry USING btree (verification_state) WHERE ((state = 2) AND (verification_state = ANY (ARRAY[0, 3])));
+
+CREATE INDEX lfs_object_registry_pending_verification ON lfs_object_registry USING btree (verified_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 0));
 
 CREATE INDEX merge_request_diff_registry_failed_verification ON merge_request_diff_registry USING btree (verification_retry_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 3));
 
