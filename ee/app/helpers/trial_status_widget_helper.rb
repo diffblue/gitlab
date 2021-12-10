@@ -20,7 +20,7 @@ module TrialStatusWidgetHelper
       start_initially_shown: force_popover_to_be_shown?(group),
       target_id: base_attrs[:container_id],
       trial_end_date: group.trial_ends_on,
-      user_callouts_path: user_callouts_path,
+      user_callouts_path: callouts_path,
       user_callouts_feature_id: current_user_callout_feature_id(group.trial_days_remaining)
     )
   end

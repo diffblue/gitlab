@@ -18,7 +18,7 @@
   - link_class << ' js-follow-link'
 
   %li.js-buy-pipeline-minutes-notification-callout{ data: { feature_id: ::Ci::RunnersHelper::BUY_PIPELINE_MINUTES_NOTIFICATION_DOT,
-    dismiss_endpoint: user_callouts_path } }
+    dismiss_endpoint: callouts_path } }
     = link_to path, class: link_class, data: data_attributes do
       = yield :buy_pipeline_with_subtext
 - elsif show_buy_pipeline_with_subtext?(project, namespace)

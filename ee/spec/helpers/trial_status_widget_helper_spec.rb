@@ -62,7 +62,7 @@ RSpec.describe TrialStatusWidgetHelper, :saas do
               target_id: shared_expected_attrs[:container_id],
               start_initially_shown: start_initially_shown,
               trial_end_date: trial_end_date,
-              user_callouts_path: user_callouts_path,
+              user_callouts_path: callouts_path,
               user_callouts_feature_id: user_callouts_feature_id
             )
           )

@@ -4,7 +4,7 @@
 
 - link = link_to _('Generate new token'), profile_personal_access_tokens_path
 
-.gl-alert.gl-alert-danger.js-token-expiry-callout{ role: 'alert', data: { feature_id: "personal_access_token_expiry", dismiss_endpoint: user_callouts_path, defer_links: "true" } }
+.gl-alert.gl-alert-danger.js-token-expiry-callout{ role: 'alert', data: { feature_id: "personal_access_token_expiry", dismiss_endpoint: callouts_path, defer_links: "true" } }
   %button.js-close.gl-alert-dismiss.gl-cursor-pointer{ type: 'button', 'aria-label' => _('Dismiss') }
     = sprite_icon('close', css_class: 'gl-icon')
   .gl-alert-body
