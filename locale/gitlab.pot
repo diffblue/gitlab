@@ -8813,6 +8813,15 @@ msgstr ""
 msgid "ComplianceFramework|New compliance framework"
 msgstr ""
 
+msgid "ComplianceReport|Approved by author"
+msgstr ""
+
+msgid "ComplianceReport|Approved by committer"
+msgstr ""
+
+msgid "ComplianceReport|Less than 2 approvers"
+msgstr ""
+
 msgid "Component"
 msgstr ""
 

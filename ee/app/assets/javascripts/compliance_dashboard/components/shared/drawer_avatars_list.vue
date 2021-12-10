@@ -1,14 +1,14 @@
 <script>
-import { GlAvatar, GlAvatarsInline, GlAvatarLink } from '@gitlab/ui';
+import { GlAvatarsInline } from '@gitlab/ui';
 import { DRAWER_AVATAR_SIZE, DRAWER_MAXIMUM_AVATARS } from '../../constants';
 import DrawerSectionSubHeader from './drawer_section_sub_header.vue';
+import UserAvatar from './user_avatar.vue';
 
 export default {
   components: {
     DrawerSectionSubHeader,
-    GlAvatar,
     GlAvatarsInline,
-    GlAvatarLink,
+    UserAvatar,
   },
   props: {
     avatars: {
@@ -57,20 +57,7 @@ export default {
       badge-tooltip-prop="name"
     >
       <template #avatar="{ avatar }">
-        <gl-avatar-link
-          target="blank"
-          :href="avatar.web_url"
-          :title="avatar.name"
-          class="js-user-link"
-          :data-user-id="avatar.id"
-          :data-name="avatar.name"
-        >
-          <gl-avatar
-            :src="avatar.avatar_url"
-            :entity-name="avatar.name"
-            :size="$options.DRAWER_AVATAR_SIZE"
-          />
-        </gl-avatar-link>
+        <user-avatar :user="avatar" />
       </template>
     </gl-avatars-inline>
   </div>
