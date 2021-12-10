@@ -1,6 +1,7 @@
 <script>
 import { GlDrawer } from '@gitlab/ui';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
+import { convertArrayOfObjectsToCamelCase } from '~/lib/utils/common_utils';
 import { COMPLIANCE_DRAWER_CONTAINER_CLASS } from '../constants';
 import { getContentWrapperHeight } from '../../threat_monitoring/utils';
 import BranchPath from './drawer_sections/branch_path.vue';
@@ -38,6 +39,15 @@ export default {
     drawerHeaderHeight() {
       return getContentWrapperHeight(COMPLIANCE_DRAWER_CONTAINER_CLASS);
     },
+    committers() {
+      return convertArrayOfObjectsToCamelCase(this.mergeRequest.committers);
+    },
+    approvedByUsers() {
+      return convertArrayOfObjectsToCamelCase(this.mergeRequest.approved_by_users);
+    },
+    commenters() {
+      return convertArrayOfObjectsToCamelCase(this.mergeRequest.participants);
+    },
   },
   DRAWER_Z_INDEX,
 };
@@ -67,11 +77,8 @@ export default {
         :target-branch="mergeRequest.target_branch"
         :target-branch-uri="mergeRequest.target_branch_uri"
       />
-      <committers :committers="mergeRequest.committers" />
-      <reviewers
-        :approvers="mergeRequest.approved_by_users"
-        :commenters="mergeRequest.participants"
-      />
+      <committers :committers="committers" />
+      <reviewers :approvers="approvedByUsers" :commenters="commenters" />
       <merged-by :merged-by="mergeRequest.merged_by" />
     </template>
   </gl-drawer>

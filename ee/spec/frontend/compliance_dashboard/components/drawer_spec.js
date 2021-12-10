@@ -1,4 +1,5 @@
 import { GlDrawer } from '@gitlab/ui';
+import { convertArrayOfObjectsToCamelCase } from '~/lib/utils/common_utils';
 import MergeRequestDrawer from 'ee/compliance_dashboard/components/drawer.vue';
 import BranchPath from 'ee/compliance_dashboard/components/drawer_sections/branch_path.vue';
 import Committers from 'ee/compliance_dashboard/components/drawer_sections/committers.vue';
@@ -112,16 +113,16 @@ describe('MergeRequestDrawer component', () => {
       expect(findBranchPath().exists()).toBe(false);
     });
 
-    it('has the committers section', () => {
+    it('has the committers section with users array converted to camel case', () => {
       expect(findCommitters().props()).toStrictEqual({
-        committers: mergeRequest.committers,
+        committers: convertArrayOfObjectsToCamelCase(mergeRequest.committers),
       });
     });
 
-    it('has the reviewers section', () => {
+    it('has the reviewers section with users array converted to camel case', () => {
       expect(findReviewers().props()).toStrictEqual({
-        approvers: mergeRequest.approved_by_users,
-        commenters: mergeRequest.participants,
+        approvers: convertArrayOfObjectsToCamelCase(mergeRequest.approved_by_users),
+        commenters: convertArrayOfObjectsToCamelCase(mergeRequest.participants),
       });
     });
 

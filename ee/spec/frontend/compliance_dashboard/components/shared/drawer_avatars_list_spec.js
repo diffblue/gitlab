@@ -1,6 +1,7 @@
-import { GlAvatar, GlAvatarLink, GlAvatarsInline } from '@gitlab/ui';
+import { GlAvatarsInline } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import DrawerAvatarsList from 'ee/compliance_dashboard/components/shared/drawer_avatars_list.vue';
+import UserAvatar from 'ee/compliance_dashboard/components/shared//user_avatar.vue';
 import DrawerSectionSubHeader from 'ee/compliance_dashboard/components/shared/drawer_section_sub_header.vue';
 import { createApprovers } from '../../mock_data';
 
@@ -12,8 +13,7 @@ describe('DrawerAvatarsList component', () => {
 
   const findHeader = () => wrapper.findComponent(DrawerSectionSubHeader);
   const findInlineAvatars = () => wrapper.findComponent(GlAvatarsInline);
-  const findAvatarLinks = () => wrapper.findAllComponents(GlAvatarLink);
-  const findAvatars = () => wrapper.findAllComponents(GlAvatar);
+  const findAvatars = () => wrapper.findAllComponents(UserAvatar);
 
   const createComponent = (mountFn = shallowMount, propsData = {}) => {
     return mountFn(DrawerAvatarsList, {
@@ -57,27 +57,16 @@ describe('DrawerAvatarsList component', () => {
     });
 
     it('renders the avatars', () => {
-      expect(findAvatarLinks()).toHaveLength(avatars.length);
+      expect(findAvatars()).toHaveLength(avatars.length);
       expect(findInlineAvatars().props()).toMatchObject({
         avatars,
         badgeTooltipProp: 'name',
       });
     });
 
-    it('sets the correct attributes to the avatar links', () => {
-      expect(findAvatarLinks().at(0).classes()).toContain('js-user-link');
-      expect(findAvatarLinks().at(0).attributes()).toMatchObject({
-        title: avatars[0].name,
-        href: avatars[0].web_url,
-        'data-name': avatars[0].name,
-        'data-user-id': `${avatars[0].id}`,
-      });
-    });
-
     it('sets the correct props to the avatars', () => {
-      expect(findAvatars().at(0).props()).toMatchObject({
-        entityName: avatars[0].name,
-        src: avatars[0].avatar_url,
+      avatars.forEach((avatar, idx) => {
+        expect(findAvatars().at(idx).props('user')).toBe(avatar);
       });
     });
   });
