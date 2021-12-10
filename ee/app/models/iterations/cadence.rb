@@ -65,5 +65,16 @@ module Iterations
     def changed_iterations_automation_fields?
       (previous_changes.keys.map(&:to_sym) & ITERATIONS_AUTOMATION_FIELDS).present?
     end
+
+    def update_iteration_sequences
+      connection.execute <<~SQL
+        UPDATE sprints SET sequence=t.row_number
+        FROM (
+          SELECT id, row_number() OVER (ORDER BY start_date) FROM sprints
+          WHERE iterations_cadence_id = #{id}
+        ) as t
+        WHERE t.id=sprints.id AND (sprints.sequence IS DISTINCT FROM t.row_number)
+      SQL
+    end
   end
 end

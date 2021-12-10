@@ -55,6 +55,10 @@ module EE
       before_save :set_iteration_state
       before_destroy :check_if_can_be_destroyed
 
+      after_save :update_iteration_sequences, if: -> { iterations_cadence && saved_change_to_start_or_due_date? }
+      after_destroy :update_iteration_sequences, if: :iterations_cadence
+      after_commit :reset, on: [:update, :create], if: :saved_change_to_start_or_due_date?
+
       scope :due_date_order_asc, -> { order(:due_date) }
       scope :upcoming, -> { with_state(:upcoming) }
       scope :current, -> { with_state(:current) }
@@ -225,6 +229,10 @@ module EE
       start_date_changed? || due_date_changed?
     end
 
+    def saved_change_to_start_or_due_date?
+      saved_change_to_start_date? || saved_change_to_due_date?
+    end
+
     # ensure dates do not overlap with other Iterations in the same cadence tree
     def dates_do_not_overlap
       return unless iterations_cadence
@@ -252,6 +260,10 @@ module EE
 
     def set_iteration_state
       self.state = self.class.compute_state(start_date, due_date)
+    end
+
+    def update_iteration_sequences
+      iterations_cadence.update_iteration_sequences
     end
 
     # TODO: this method should be removed as part of https://gitlab.com/gitlab-org/gitlab/-/issues/296099

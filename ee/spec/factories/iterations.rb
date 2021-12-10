@@ -43,6 +43,12 @@ FactoryBot.define do
       end
     end
 
+    trait(:with_due_date) do
+      after(:stub, :build) do |iteration, evaluator|
+        iteration.due_date = evaluator.start_date + 4.days if evaluator.start_date.present?
+      end
+    end
+
     after(:build, :stub) do |iteration, evaluator|
       if evaluator.group
         iteration.group = evaluator.group
@@ -61,6 +67,9 @@ FactoryBot.define do
 
       if evaluator.iterations_cadence.present?
         iteration.iterations_cadence = evaluator.iterations_cadence
+        # TODO https://gitlab.com/gitlab-org/gitlab/-/issues/296100
+        # group_id will be removed from sprints and we won't need this feature.
+        iteration.group = evaluator.iterations_cadence.group unless evaluator.group.present?
       else
         iteration.iterations_cadence = iteration.group.iterations_cadences.first || create(:iterations_cadence, group: iteration.group) if iteration.group
         iteration.iterations_cadence = create(:iterations_cadence, group_id: iteration.group_id) if iteration.group_id
