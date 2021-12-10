@@ -17,47 +17,27 @@ export default {
       const changesFound = improved.length + degraded.length + same.length;
       const text = sprintf(
         n__(
-          'ciReport|Load performance test metrics detected %{strongStart}%{changesFound}%{strongEnd} change',
-          'ciReport|Load performance test metrics detected %{strongStart}%{changesFound}%{strongEnd} changes',
+          'ciReport|Load performance test metrics detected %{strong_start}%{changesFound}%{strong_end} change',
+          'ciReport|Load performance test metrics detected %{strong_start}%{changesFound}%{strong_end} changes',
           changesFound,
         ),
-        {
-          changesFound,
-          strongStart: `<strong>`,
-          strongEnd: `</strong>`,
-        },
-        false,
+        { changesFound },
       );
 
-      const reportNumbers = [];
-
-      if (degraded.length > 0) {
-        reportNumbers.push(
-          `<strong class="gl-text-red-500">${sprintf(s__('ciReport|%{degradedNum} degraded'), {
-            degradedNum: degraded.length,
-          })}</strong>`,
-        );
-      }
-
-      if (same.length > 0) {
-        reportNumbers.push(
-          `<strong class="gl-text-gray-700">${sprintf(s__('ciReport|%{sameNum} same'), {
-            sameNum: same.length,
-          })}</strong>`,
-        );
-      }
-
-      if (improved.length > 0) {
-        reportNumbers.push(
-          `<strong class="gl-text-green-500">${sprintf(s__('ciReport|%{improvedNum} improved'), {
-            improvedNum: improved.length,
-          })}</strong>`,
-        );
-      }
+      const reportNumbersText = sprintf(
+        s__(
+          'ciReport|%{danger_start}%{degradedNum} degraded%{danger_end}, %{same_start}%{sameNum} same%{same_end}, and %{success_start}%{improvedNum} improved%{success_end}',
+        ),
+        {
+          degradedNum: degraded.length,
+          sameNum: same.length,
+          improvedNum: improved.length,
+        },
+      );
 
       return `${text}
       <br>
-      ${reportNumbers.join(', ')}
+      ${reportNumbersText}
       `;
     },
     statusIcon() {
@@ -163,7 +143,7 @@ export default {
 
       const prefix = metricData.score ? `${metricData.name}:` : metricData.name;
       const score = metricData.score
-        ? `<strong>${this.formatScore(metricData.score)}</strong>`
+        ? `%{strong_start}${this.formatScore(metricData.score)}%{strong_end}`
         : '';
       const delta = metricData.delta ? `(${this.formatScore(metricData.delta)})` : '';
       let deltaPercent = '';
@@ -173,10 +153,8 @@ export default {
         deltaPercent = `(${formattedChangeInPercent(oldScore, metricData.score)})`;
       }
 
-      const text = `${prefix} ${score} ${delta} ${deltaPercent}`;
-
       preparedMetricData.icon = icon;
-      preparedMetricData.text = text;
+      preparedMetricData.text = `${prefix} ${score} ${delta} ${deltaPercent}`;
 
       return preparedMetricData;
     },
