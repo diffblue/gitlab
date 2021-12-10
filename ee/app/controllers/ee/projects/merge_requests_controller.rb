@@ -33,6 +33,7 @@ module EE
         feature_category :code_review, [:delete_description_version, :description_diff]
 
         urgency :high, [:delete_description_version]
+        urgency :low, [:description_diff]
       end
 
       def can_run_sast_experiments_on?(project)
