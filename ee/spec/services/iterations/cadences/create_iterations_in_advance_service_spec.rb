@@ -44,6 +44,8 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
 
         context 'with automatic and active cadence' do
           let(:cadence) { automated_cadence }
+          let(:ordered_iterations) { automated_cadence.iterations.order(:start_date) }
+          let(:ordered_sequences) { ordered_iterations.map(&:sequence) }
 
           it 'does not return error' do
             expect(subject).not_to be_error
@@ -58,10 +60,22 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
           end
 
           context 'when new iterations need to be created' do
+            shared_examples "creating iterations with sequences" do
+              let(:sequences) { (1..cadence.iterations.size).to_a }
+
+              it 'creates iterations with correct sequences' do
+                subject
+
+                expect(ordered_sequences).to eq(sequences)
+              end
+            end
+
             context 'when no iterations exist' do
-              it 'creates new iterations' do
+              it 'creates new iterations', :aggregate_failures do
                 expect { subject }.to change(Iteration, :count).by(3)
               end
+
+              it_behaves_like "creating iterations with sequences"
             end
 
             context 'when cadence start date is in future' do
@@ -80,12 +94,14 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
 
                 expect(automated_cadence.reload.last_run_date).to eq(automated_cadence.iterations.last(3).first.due_date)
               end
+
+              it_behaves_like "creating iterations with sequences"
             end
 
             context 'when advanced iterations exist but cadence needs to create more' do
-              let_it_be(:current_iteration) { create(:iteration, group: group, iterations_cadence: automated_cadence, start_date: 3.days.ago, due_date: (1.week - 3.days).from_now)}
-              let_it_be(:next_iteration1) { create(:iteration, group: group, iterations_cadence: automated_cadence, start_date: current_iteration.due_date + 1.day, due_date: current_iteration.due_date + 1.week)}
-              let_it_be(:next_iteration2) { create(:iteration, group: group, iterations_cadence: automated_cadence, start_date: next_iteration1.due_date + 1.day, due_date: next_iteration1.due_date + 1.week)}
+              let_it_be(:current_iteration) { create(:iteration, iterations_cadence: automated_cadence, start_date: 3.days.ago, due_date: (1.week - 3.days).from_now)}
+              let_it_be(:next_iteration1) { create(:iteration, iterations_cadence: automated_cadence, start_date: current_iteration.due_date + 1.day, due_date: current_iteration.due_date + 1.week)}
+              let_it_be(:next_iteration2) { create(:iteration, iterations_cadence: automated_cadence, start_date: next_iteration1.due_date + 1.day, due_date: next_iteration1.due_date + 1.week)}
 
               before do
                 automated_cadence.update!(iterations_in_advance: 3, duration_in_weeks: 3)
@@ -102,6 +118,8 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
                 expect(next_iteration2.reload.start_date).to eq(next_iteration1.due_date + 1.day)
                 expect(next_iteration2.reload.due_date).to eq(next_iteration1.due_date + 3.weeks)
               end
+
+              it_behaves_like "creating iterations with sequences"
             end
 
             context 'when advanced iterations exist but cadence changes duration to a smaller one' do
@@ -124,6 +142,8 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
                 expect(next_iteration2.reload.start_date).to eq(next_iteration1.due_date + 1.day)
                 expect(next_iteration2.reload.due_date).to eq(next_iteration1.due_date + 1.week)
               end
+
+              it_behaves_like "creating iterations with sequences"
             end
 
             context 'when cadence start date changes to a future date with existing iteration' do
@@ -136,6 +156,8 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
               it 'creates new iterations' do
                 expect { subject }.to change(Iteration, :count).by(2)
               end
+
+              it_behaves_like "creating iterations with sequences"
             end
 
             context 'when cadence has iterations but all are in the past' do
@@ -176,6 +198,8 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
 
                 expect(group.reload.iterations.order(:start_date).map(&:state)).to eq(%w[closed closed current upcoming upcoming])
               end
+
+              it_behaves_like "creating iterations with sequences"
             end
           end
         end

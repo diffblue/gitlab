@@ -3,15 +3,18 @@
 require 'spec_helper'
 
 RSpec.describe Iteration do
+  using RSpec::Parameterized::TableSyntax
   include ActiveSupport::Testing::TimeHelpers
 
   let(:set_cadence) { nil }
-
-  let_it_be(:group) { create(:group) }
-  let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group) }
-  let_it_be(:project) { create(:project, group: group) }
+  let(:expected_sequence) { (1..iteration_cadence.reload.iterations.size).to_a }
+  let(:ordered_iterations) { iteration_cadence.iterations.order(:start_date) }
 
   describe "#iid" do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group) }
+    let_it_be(:project) { create(:project, group: group) }
+
     it "is properly scoped on project and group" do
       iteration1 = create(:iteration, :skip_project_validation, project: project)
       iteration2 = create(:iteration, :skip_project_validation, project: project)
@@ -38,6 +41,10 @@ RSpec.describe Iteration do
   end
 
   describe '.reference_pattern' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group) }
+    let_it_be(:project) { create(:project, group: group) }
+
     subject { described_class.reference_pattern }
 
     let(:captures) { subject.match(reference).named_captures }
@@ -83,6 +90,8 @@ RSpec.describe Iteration do
   end
 
   describe '.filter_by_state' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group) }
     let_it_be(:closed_iteration) { create(:iteration, :closed, :skip_future_date_validation, group: group, start_date: 8.days.ago, due_date: 2.days.ago) }
     let_it_be(:current_iteration) { create(:iteration, :current, :skip_future_date_validation, group: group, start_date: 1.day.ago, due_date: 6.days.from_now) }
     let_it_be(:upcoming_iteration) { create(:iteration, :upcoming, group: group, start_date: 1.week.from_now, due_date: 2.weeks.from_now) }
@@ -136,6 +145,10 @@ RSpec.describe Iteration do
   end
 
   context 'Validations' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group) }
+    let_it_be(:project) { create(:project, group: group) }
+
     subject { build(:iteration, group: group, iterations_cadence: iteration_cadence, start_date: start_date, due_date: due_date) }
 
     describe 'when iteration belongs to project' do
@@ -338,7 +351,138 @@ RSpec.describe Iteration do
     end
   end
 
-  describe 'callbacks' do
+  describe 'relations' do
+    context 'deferrable uniqueness constraint on iterations_cadence_id and sequence', :delete do
+      let!(:iterations_cadence) { create(:iterations_cadence, group: create(:group)) }
+      let!(:iteration) { create(:iteration, :with_due_date, sequence: 1, iterations_cadence: iterations_cadence, start_date: 1.week.from_now) }
+
+      before do
+        # Avoid `update_iteration_sequences` after_save callback to re-assign unique sequences
+        allow_next_instance_of(described_class) do |instance|
+          allow(instance).to receive(:update_iteration_sequences).and_return(true)
+        end
+      end
+
+      context "create" do
+        it "raises an error on creation with a duplicate sequence number within a cadence" do
+          expect do
+            create(:iteration, :with_due_date, sequence: 1, iterations_cadence: iterations_cadence, start_date: 2.weeks.from_now)
+          end.to raise_error(ActiveRecord::RecordNotUnique)
+        end
+
+        it "does not raise an error on creation with a unique sequence number within a cadence", :aggregate_failures do
+          expect do
+            create(:iteration, :with_due_date, sequence: 2, iterations_cadence: iterations_cadence1, start_date: 2.weeks.from_now)
+          end.not_to raise_error(ActiveRecord::RecordNotUnique)
+        end
+      end
+
+      context "update" do
+        let!(:new_iteration) { create(:iteration, :with_due_date, sequence: 2, iterations_cadence: iterations_cadence, start_date: 2.weeks.from_now) }
+
+        it "raises an error on update with a duplicate sequence number within a cadence" do
+          expect do
+            new_iteration.update!(sequence: 1)
+          end.to raise_error(ActiveRecord::RecordNotUnique)
+        end
+      end
+    end
+  end
+
+  describe 'callbacks', :aggregate_failures do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group) }
+
+    shared_examples 'sequence numbers are correctly updated' do
+      it 'triggers sequence number updates' do
+        expect(ordered_iterations.map(&:id)).to eq(expected_iteration_order)
+        expect(ordered_iterations.map(&:sequence)).to eq(expected_sequence)
+      end
+    end
+
+    describe 'after_save :update_iteration_sequences' do
+      context 'when start_date or due_date is not changed after save' do
+        let!(:iteration) { create(:iteration, iterations_cadence: iteration_cadence, start_date: Date.today, due_date: Date.today + 2.days) }
+
+        it 'the callback is not triggered' do
+          expect(iteration).not_to receive(:update_iteration_sequences)
+
+          iteration.update!(description: "foobar")
+        end
+      end
+
+      it 'updates a new iteration with a correct iteration sequence number' do
+        expect(create(:iteration).sequence).to eq(1)
+      end
+
+      context 'when iterations exist in the cadence' do
+        let_it_be(:iteration1) { create(:iteration, :with_due_date, iterations_cadence: iteration_cadence, start_date: 1.week.from_now) }
+        let_it_be(:iteration2) { create(:iteration, :with_due_date, iterations_cadence: iteration_cadence, start_date: 3.weeks.from_now) }
+
+        context 'creating' do
+          let(:new_iteration) { build(:iteration, :with_due_date, iterations_cadence: iteration_cadence, start_date: new_start_date ) }
+
+          before do
+            new_iteration.save!
+          end
+
+          where(:new_start_date, :expected_iteration_order) do
+            1.week.ago | lazy { [new_iteration.id, iteration1.id, iteration2.id] }
+            Date.today       | lazy { [new_iteration.id, iteration1.id, iteration2.id] }
+            2.weeks.from_now | lazy { [iteration1.id, new_iteration.id, iteration2.id] }
+            4.weeks.from_now | lazy { [iteration1.id, iteration2.id, new_iteration.id] }
+          end
+
+          with_them do
+            it_behaves_like 'sequence numbers are correctly updated'
+          end
+        end
+
+        context 'updating' do
+          let!(:target_iteration) { create(:iteration, :with_due_date, iterations_cadence: iteration_cadence, start_date: start_date ) }
+
+          before do
+            target_iteration.update!(start_date: new_start_date, due_date: new_start_date + 4.days)
+          end
+
+          where(:start_date, :new_start_date, :expected_iteration_order) do
+            4.weeks.from_now | 1.week.ago | lazy { [target_iteration.id, iteration1.id, iteration2.id] }
+            2.weeks.from_now | Date.today | lazy { [target_iteration.id, iteration1.id, iteration2.id] }
+            Date.today       | 2.weeks.from_now | lazy { [iteration1.id, target_iteration.id, iteration2.id] }
+            1.week.ago       | 4.weeks.from_now | lazy { [iteration1.id, iteration2.id, target_iteration.id] }
+          end
+
+          with_them do
+            it_behaves_like 'sequence numbers are correctly updated'
+          end
+        end
+      end
+    end
+
+    describe 'after_destroy :update_iteration_sequences' do
+      let!(:iteration1) { create(:iteration, :with_due_date, iterations_cadence: iteration_cadence, start_date: 1.week.ago) }
+      let!(:iteration2) { create(:iteration, :with_due_date, iterations_cadence: iteration_cadence, start_date: 2.weeks.from_now) }
+      let!(:iteration3) { create(:iteration, :with_due_date, iterations_cadence: iteration_cadence, start_date: 4.weeks.from_now) }
+
+      before do
+        iteration_to_destroy.destroy!
+      end
+
+      context 'destroying a past iteration' do
+        let(:iteration_to_destroy) { iteration1 }
+        let(:expected_iteration_order) { [iteration2.id, iteration3.id] }
+
+        it_behaves_like 'sequence numbers are correctly updated'
+      end
+
+      context 'destroying an upcoming iteration' do
+        let(:iteration_to_destroy) { iteration3 }
+        let(:expected_iteration_order) { [iteration1.id, iteration2.id] }
+
+        it_behaves_like 'sequence numbers are correctly updated'
+      end
+    end
+
     describe 'before_destroy :check_if_can_be_destroyed' do
       let!(:iteration1) { create(:iteration, group: group, iterations_cadence: iteration_cadence, start_date: 1.week.ago, due_date: 1.week.ago + 4.days) }
       let!(:iteration2) { create(:iteration, group: group, iterations_cadence: iteration_cadence, start_date: Date.today, due_date: Date.today + 4.days) }
@@ -373,6 +517,9 @@ RSpec.describe Iteration do
   end
 
   context 'time scopes' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group) }
+    let_it_be(:project) { create(:project, group: group) }
     let_it_be(:project) { create(:project, :empty_repo) }
     let_it_be(:iteration_1) { create(:iteration, :skip_future_date_validation, :skip_project_validation, project: project, start_date: 3.days.ago, due_date: 1.day.from_now) }
     let_it_be(:iteration_2) { create(:iteration, :skip_future_date_validation, :skip_project_validation, project: project, start_date: 10.days.ago, due_date: 4.days.ago) }
@@ -392,7 +539,9 @@ RSpec.describe Iteration do
   end
 
   describe '#validate_group' do
+    let_it_be(:group) { create(:group) }
     let_it_be(:iterations_cadence) { create(:iterations_cadence, group: group) }
+    let_it_be(:project) { create(:project, group: group) }
 
     context 'when the iteration and iteration cadence groups are same' do
       it 'is valid' do
@@ -429,6 +578,8 @@ RSpec.describe Iteration do
   end
 
   describe '.within_timeframe' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group) }
     let_it_be(:now) { Time.current }
     let_it_be(:project) { create(:project, :empty_repo) }
     let_it_be(:iteration_1) { create(:iteration, :skip_project_validation, project: project, start_date: now, due_date: 1.day.from_now) }
@@ -455,6 +606,8 @@ RSpec.describe Iteration do
   end
 
   describe '.by_iteration_cadence_ids' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group) }
     let_it_be(:iterations_cadence1) { create(:iterations_cadence, group: group, start_date: 10.days.ago) }
     let_it_be(:iterations_cadence2) { create(:iterations_cadence, group: group, start_date: 10.days.ago) }
     let_it_be(:closed_iteration) { create(:iteration, :closed, :skip_future_date_validation, iterations_cadence: iterations_cadence1, group: group, start_date: 8.days.ago, due_date: 2.days.ago) }
@@ -479,6 +632,7 @@ RSpec.describe Iteration do
       travel_to(Time.utc(2019, 12, 30)) { example.run }
     end
 
+    let_it_be(:group) { create(:group) }
     let_it_be(:iterations_cadence) { create(:iterations_cadence, group: group, start_date: 10.days.ago.utc.to_date) }
 
     let(:iteration) { build(:iteration, group: iterations_cadence.group, iterations_cadence: iterations_cadence, start_date: start_date, due_date: 2.weeks.after(start_date).to_date) }
@@ -567,6 +721,8 @@ RSpec.describe Iteration do
   end
 
   it_behaves_like 'a timebox', :iteration do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group) }
     let(:cadence) { create(:iterations_cadence, group: group) }
     let(:timebox_args) { [:skip_project_validation] }
     let(:timebox_table_name) { described_class.table_name.to_sym }
@@ -602,6 +758,8 @@ RSpec.describe Iteration do
   end
 
   context 'when closing iteration' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group) }
     let_it_be_with_reload(:iteration) { create(:iteration, group: group, start_date: 4.days.from_now, due_date: 1.week.from_now) }
 
     context 'when cadence roll-over flag enabled' do
