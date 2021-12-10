@@ -45,8 +45,6 @@ class TrialsController < ApplicationController
   end
 
   def create_hand_raise_lead
-    return render_404 unless Feature.enabled?(:in_app_hand_raise_pql, @namespace)
-
     result = GitlabSubscriptions::CreateHandRaiseLeadService.new.execute(hand_raise_lead_params)
 
     if result.success?

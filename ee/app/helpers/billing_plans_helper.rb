@@ -152,16 +152,6 @@ module BillingPlansHelper
     }
   end
 
-  def contact_sales_button_data(plan)
-    data = {
-      track_action: 'click_button',
-      track_label: 'contact_sales',
-      track_property: plan.code
-    }
-
-    add_billing_in_side_nav_attribute(data)
-  end
-
   def billing_upgrade_button_data(plan)
     data = {
       track_action: 'click_button',

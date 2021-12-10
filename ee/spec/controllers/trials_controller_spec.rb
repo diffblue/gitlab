@@ -284,8 +284,6 @@ RSpec.describe TrialsController, :saas do
     end
 
     before do
-      stub_feature_flags(in_app_hand_raise_pql: true)
-
       allow_next_instance_of(GitlabSubscriptions::CreateHandRaiseLeadService) do |service|
         allow(service).to receive(:execute).and_return(create_hand_raise_lead_result ? ServiceResponse.success : ServiceResponse.error(message: 'failed'))
       end
@@ -295,14 +293,6 @@ RSpec.describe TrialsController, :saas do
 
     context 'when not authenticated' do
       let(:logged_in) { false }
-
-      it { is_expected.to have_gitlab_http_status(:not_found) }
-    end
-
-    context 'when in_app_hand_raise_pql feature flag is disabled' do
-      before do
-        stub_feature_flags(in_app_hand_raise_pql: false)
-      end
 
       it { is_expected.to have_gitlab_http_status(:not_found) }
     end
