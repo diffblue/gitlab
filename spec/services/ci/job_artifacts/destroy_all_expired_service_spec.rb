@@ -20,7 +20,7 @@ RSpec.describe Ci::JobArtifacts::DestroyAllExpiredService, :clean_gitlab_redis_s
 
       context 'with preloaded relationships' do
         before do
-          stub_const("#{described_class}::LOOP_LIMIT", 1)
+          stub_const("#{described_class}::LARGE_LOOP_LIMIT", 1)
         end
 
         context 'with ci_destroy_unlocked_job_artifacts feature flag disabled' do
@@ -119,7 +119,7 @@ RSpec.describe Ci::JobArtifacts::DestroyAllExpiredService, :clean_gitlab_redis_s
       let!(:artifact) { create(:ci_job_artifact, :expired, job: job, locked: job.pipeline.locked) }
 
       before do
-        stub_const("#{described_class}::LOOP_LIMIT", 10)
+        stub_const("#{described_class}::LARGE_LOOP_LIMIT", 10)
       end
 
       context 'when the import fails' do
@@ -189,7 +189,8 @@ RSpec.describe Ci::JobArtifacts::DestroyAllExpiredService, :clean_gitlab_redis_s
 
       context 'when loop reached loop limit' do
         before do
-          stub_const("#{described_class}::LOOP_LIMIT", 1)
+          stub_feature_flags(ci_artifact_fast_removal_large_loop_limit: false)
+          stub_const("#{described_class}::SMALL_LOOP_LIMIT", 1)
         end
 
         it 'destroys one artifact' do
