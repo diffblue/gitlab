@@ -11,12 +11,6 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList do
   let_it_be(:pipeline) { create :ee_ci_pipeline, :with_dependency_list_report }
 
   describe '#parse!' do
-    before do
-      artifact.each_blob do |blob|
-        parser.parse!(blob, report)
-      end
-    end
-
     context 'with dependency_list artifact' do
       let(:artifact) { pipeline.job_artifacts.last }
 
@@ -56,6 +50,12 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList do
 
       let(:artifact) { pipeline.job_artifacts.last }
 
+      before do
+        artifact.each_blob do |blob|
+          parser.parse!(blob, report)
+        end
+      end
+
       it 'does not causes N+1 query' do
         control_count = ActiveRecord::QueryRecorder.new do
           artifact.each_blob do |blob|
@@ -94,6 +94,45 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList do
           expect(report.dependencies.size).to eq(22)
           expect(giri[:vulnerabilities].size).to eq(1)
         end
+      end
+    end
+
+    context 'with null dependencies' do
+      let(:json_data) do
+        <<~JSON
+        {
+          "version": "3.0.0",
+          "vulnerabilities": [],
+          "remediations": [],
+          "dependency_files": [
+            {
+              "path": "package-lock.json",
+              "package_manager": "npm",
+              "dependencies": null
+            }
+          ],
+          "scan": {
+            "scanner": {
+              "id": "",
+              "name": "",
+              "vendor": {
+                "name": ""
+              },
+              "version": ""
+            },
+            "type": "",
+            "start_time": "2021-12-10T15:32:33",
+            "end_time": "2021-12-10T15:32:54",
+            "status": "success"
+          }
+        }
+        JSON
+      end
+
+      it 'ignores null dependencies' do
+        parser.parse!(json_data, report)
+
+        expect(report.dependencies.size).to eq(0)
       end
     end
   end
