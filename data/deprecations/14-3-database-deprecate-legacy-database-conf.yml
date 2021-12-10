@@ -2,6 +2,7 @@
   announcement_milestone: "14.3"
   announcement_date: "2021-09-22"
   removal_milestone: "15.0"
+  removal_date: "2022-05-22" # the date of the milestone release when this feature is planned to be removed
   body: |
    The syntax of [GitLabs database](https://docs.gitlab.com/omnibus/settings/database.html)
    configuration located in `database.yml` is changing and the legacy format is deprecated. The legacy format
@@ -11,4 +12,3 @@
   stage: Enablement
   tiers: [Core, Premium, Ultimate]
   issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/338182
-  removal_date: "2022-05-22" # (optional - may be required in the future) YYYY-MM-DD format - the date of the milestone release when this feature is planned to be removed

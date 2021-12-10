@@ -2,7 +2,7 @@
   announcement_milestone: "14.5"
   announcement_date: "2021-11-15"
   removal_milestone: "15.0"
-  removal_date: "2022-05-22" # (optional - may be required in the future) YYYY-MM-DD format - the date of the milestone release when this feature is planned to be removed
+  removal_date: "2022-05-22" # the date of the milestone release when this feature is planned to be removed
   body: |
     [We are deprecating the certificate-based integration with Kubernetes](https://about.gitlab.com/blog/2021/11/15/deprecating-the-cert-based-kubernetes-integration/).
     The timeline of removal of the integration from the product is not yet planned and we will communicate
