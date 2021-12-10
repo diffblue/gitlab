@@ -306,6 +306,7 @@ RSpec.describe VulnerabilitiesHelper do
     it 'returns finding information' do
       expect(subject.to_h).to match(
         description: finding.description,
+        description_html: anything,
         identifiers: kind_of(Array),
         issue_feedback: anything,
         links: finding.links,

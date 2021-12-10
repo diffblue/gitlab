@@ -60,7 +60,10 @@ describe('Vulnerability Report', () => {
   });
 
   it("displays the vulnerability's description", () => {
-    expect(screen.getByText(mockVulnerability.description)).toBeInstanceOf(HTMLElement);
+    const section = screen.getByTestId('description');
+
+    expect(section).toBeInstanceOf(HTMLElement);
+    expect(section.innerHTML).toBe(mockVulnerability.descriptionHtml);
   });
 
   it('displays related issues', async () => {
