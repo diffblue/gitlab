@@ -1,6 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
+import api from '~/api';
 import LicenseManagement from 'ee/vue_shared/license_compliance/mr_widget_license_report.vue';
 import { stubComponent } from 'helpers/stub_component';
 import { TEST_HOST } from 'spec/test_constants';
@@ -113,6 +114,36 @@ describe('License Report MR Widget', () => {
         mountComponent();
 
         expect(wrapper.vm.hasLicenseReportIssues).toBe(true);
+      });
+    });
+
+    describe('snowplow', () => {
+      let trackEventSpy;
+
+      beforeEach(() => {
+        mountComponent();
+
+        trackEventSpy = jest.spyOn(api, 'trackRedisHllUserEvent').mockImplementation(() => {});
+      });
+
+      afterEach(() => {
+        trackEventSpy.mockRestore();
+      });
+
+      it('tracks users_visiting_testing_license_compliance_full_report', () => {
+        wrapper.find('[data-testid="full-report-button"]').vm.$emit('click');
+
+        expect(trackEventSpy).toHaveBeenCalledWith(
+          'users_visiting_testing_license_compliance_full_report',
+        );
+      });
+
+      it('tracks users_visiting_testing_manage_license_compliance', () => {
+        wrapper.find('[data-testid="manage-licenses-button"]').vm.$emit('click');
+
+        expect(trackEventSpy).toHaveBeenCalledWith(
+          'users_visiting_testing_manage_license_compliance',
+        );
       });
     });
 

@@ -1,6 +1,7 @@
 <script>
 import { GlLink, GlIcon, GlButton } from '@gitlab/ui';
 import { mapState, mapGetters, mapActions } from 'vuex';
+import api from '~/api';
 import { componentNames, iconComponentNames } from 'ee/reports/components/issue_body';
 import { LICENSE_MANAGEMENT } from 'ee/vue_shared/license_compliance/store/constants';
 import reportsMixin from 'ee/vue_shared/security_reports/mixins/reports_mixin';
@@ -111,6 +112,9 @@ export default {
     this.fetchLicenseCheckApprovalRule();
   },
   methods: {
+    trackVisitedPath(trackAction) {
+      api.trackRedisHllUserEvent(trackAction);
+    },
     ...mapActions(LICENSE_MANAGEMENT, [
       'setAPISettings',
       'fetchParsedLicenseReport',
@@ -129,6 +133,7 @@ export default {
       :has-issues="hasLicenseReportIssues"
       :component="$options.componentNames.LicenseIssueBody"
       :class="reportSectionClass"
+      track-action="users_expanding_testing_license_compliance_report"
       :always-open="alwaysOpen"
       class="license-report-widget mr-report"
       data-qa-selector="license_report_widget"
@@ -184,10 +189,11 @@ export default {
         <gl-button
           v-if="fullReportPath"
           :href="fullReportPath"
-          target="_blank"
-          data-testid="full-report-button"
           class="gl-mr-3"
           icon="external-link"
+          target="_blank"
+          data-testid="full-report-button"
+          @click="trackVisitedPath('users_visiting_testing_license_compliance_full_report')"
         >
           {{ s__('ciReport|View full report') }}
         </gl-button>
@@ -197,6 +203,7 @@ export default {
           :class="{ 'gl-mr-3': isCollapsible }"
           :href="licenseManagementSettingsPath"
           data-qa-selector="manage_licenses_button"
+          @click="trackVisitedPath('users_visiting_testing_manage_license_compliance')"
         >
           {{ s__('ciReport|Manage licenses') }}
         </gl-button>
