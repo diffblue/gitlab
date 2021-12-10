@@ -19,7 +19,11 @@ module Gitlab
 
           def parse_dependency_names(report_data, report)
             report_data.fetch('dependency_files', []).each do |file|
-              file['dependencies'].each do |dependency|
+              dependencies = file['dependencies']
+
+              return unless dependencies.is_a?(Array)
+
+              dependencies.each do |dependency|
                 report.add_dependency(formatter.format(dependency, file['package_manager'], file['path']))
               end
             end
