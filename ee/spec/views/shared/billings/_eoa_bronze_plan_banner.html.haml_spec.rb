@@ -69,7 +69,7 @@ RSpec.describe 'shared/billings/_eoa_bronze_plan_banner.html.haml' do
   shared_examples 'when user dismissed the banner' do
     before do
       allow(namespace).to receive(:actual_plan_name).and_return(::Plan::BRONZE)
-      allow(view).to receive(:user_dismissed?).with(::EE::UserCalloutsHelper::EOA_BRONZE_PLAN_BANNER).and_return(true)
+      allow(view).to receive(:user_dismissed?).with(::EE::Users::CalloutsHelper::EOA_BRONZE_PLAN_BANNER).and_return(true)
     end
 
     it 'does not display the banner' do
@@ -83,7 +83,7 @@ RSpec.describe 'shared/billings/_eoa_bronze_plan_banner.html.haml' do
 
   before do
     allow(view).to receive(:eoa_bronze_plan_end_date).and_return(eoa_bronze_plan_end_date)
-    allow(view).to receive(:user_dismissed?).with(::EE::UserCalloutsHelper::EOA_BRONZE_PLAN_BANNER).and_return(false)
+    allow(view).to receive(:user_dismissed?).with(::EE::Users::CalloutsHelper::EOA_BRONZE_PLAN_BANNER).and_return(false)
   end
 
   context 'with group namespace' do

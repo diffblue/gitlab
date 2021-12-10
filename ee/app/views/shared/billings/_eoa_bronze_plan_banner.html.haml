@@ -1,6 +1,6 @@
 - if show_eoa_bronze_plan_banner?(namespace)
   .container-fluid.container-limited.pt-3
-    .gl-alert.gl-alert-info.gl-mt-5.js-eoa-bronze-plan-banner{ role: 'alert', data: { feature_id: ::EE::UserCalloutsHelper::EOA_BRONZE_PLAN_BANNER, dismiss_endpoint: user_callouts_path } }
+    .gl-alert.gl-alert-info.gl-mt-5.js-eoa-bronze-plan-banner{ role: 'alert', data: { feature_id: ::EE::Users::CalloutsHelper::EOA_BRONZE_PLAN_BANNER, dismiss_endpoint: callouts_path } }
       = sprite_icon('information-o', css_class: 'gl-icon gl-alert-icon gl-alert-icon-no-title')
       %button.js-close.gl-alert-dismiss{ type: 'button', 'aria-label' => _('Dismiss') }
         = sprite_icon('close', css_class: 'gl-icon')

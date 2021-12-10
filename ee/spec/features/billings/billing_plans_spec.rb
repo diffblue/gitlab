@@ -37,7 +37,7 @@ RSpec.describe 'Billing plan pages', :feature, :js do
 
   shared_examples 'does not display EoA banner' do
     it 'does not display the banner', :js do
-      travel_to(Date.parse(EE::UserCalloutsHelper::EOA_BRONZE_PLAN_END_DATE) - 1.day) do
+      travel_to(Date.parse(EE::Users::CalloutsHelper::EOA_BRONZE_PLAN_END_DATE) - 1.day) do
         visit page_path
 
         expect(page).not_to have_content("End of availability for the Bronze Plan")
@@ -232,7 +232,7 @@ RSpec.describe 'Billing plan pages', :feature, :js do
       let!(:subscription) { create(:gitlab_subscription, namespace: namespace, hosted_plan: plan, seats: 15) }
 
       it 'shows the EoA bronze banner that can be dismissed permanently', :js do
-        travel_to(Date.parse(EE::UserCalloutsHelper::EOA_BRONZE_PLAN_END_DATE) - 1.day) do
+        travel_to(Date.parse(EE::Users::CalloutsHelper::EOA_BRONZE_PLAN_END_DATE) - 1.day) do
           visit page_path
 
           page.within(".js-eoa-bronze-plan-banner") do

@@ -36,7 +36,7 @@ RSpec.describe LicenseMonitoringHelper do
 
       context 'when callout dismissed' do
         before do
-          allow(helper).to receive(:user_dismissed?).with(UserCalloutsHelper::ACTIVE_USER_COUNT_THRESHOLD).and_return(true)
+          allow(helper).to receive(:user_dismissed?).with(Users::CalloutsHelper::ACTIVE_USER_COUNT_THRESHOLD).and_return(true)
         end
 
         it { is_expected.to be_falsey }

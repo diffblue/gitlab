@@ -131,7 +131,7 @@ RSpec.describe EE::Ci::RunnersHelper do
 
       context 'when the notification dot has been acknowledged' do
         before do
-          create(:user_callout, user: user, feature_name: described_class::BUY_PIPELINE_MINUTES_NOTIFICATION_DOT)
+          create(:callout, user: user, feature_name: described_class::BUY_PIPELINE_MINUTES_NOTIFICATION_DOT)
           expect(helper).not_to receive(:show_out_of_pipeline_minutes_notification?)
         end
 
@@ -164,7 +164,7 @@ RSpec.describe EE::Ci::RunnersHelper do
 
       context 'when the notification dot has been acknowledged' do
         before do
-          create(:user_callout, user: user, feature_name: described_class::BUY_PIPELINE_MINUTES_NOTIFICATION_DOT)
+          create(:callout, user: user, feature_name: described_class::BUY_PIPELINE_MINUTES_NOTIFICATION_DOT)
           expect(helper).to receive(:show_out_of_pipeline_minutes_notification?).and_return(true)
         end
 

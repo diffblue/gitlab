@@ -41,7 +41,7 @@ RSpec.describe 'layouts/header/_current_user_dropdown' do
         expect(subject).to have_content('One of your groups is running out')
         expect(subject).to have_selector('.js-follow-link')
         expect(subject).to have_selector("[data-feature-id='#{::Ci::RunnersHelper::BUY_PIPELINE_MINUTES_NOTIFICATION_DOT}']")
-        expect(subject).to have_selector("[data-dismiss-endpoint='#{user_callouts_path}']")
+        expect(subject).to have_selector("[data-dismiss-endpoint='#{callouts_path}']")
       end
     end
 
@@ -53,7 +53,7 @@ RSpec.describe 'layouts/header/_current_user_dropdown' do
         expect(subject).to have_content('One of your groups is running out')
         expect(subject).not_to have_selector('.js-follow-link')
         expect(subject).not_to have_selector("[data-feature-id='#{::Ci::RunnersHelper::BUY_PIPELINE_MINUTES_NOTIFICATION_DOT}']")
-        expect(subject).not_to have_selector("[data-dismiss-endpoint='#{user_callouts_path}']")
+        expect(subject).not_to have_selector("[data-dismiss-endpoint='#{callouts_path}']")
       end
     end
 

@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe EE::UserCalloutsHelper do
+RSpec.describe EE::Users::CalloutsHelper do
   include Devise::Test::ControllerHelpers
   using RSpec::Parameterized::TableSyntax
 
@@ -14,7 +14,7 @@ RSpec.describe EE::UserCalloutsHelper do
         expect(helper).to receive(:render_flash_user_callout)
           .with(:warning,
             /Please enable and migrate to hashed/,
-            EE::UserCalloutsHelper::GEO_ENABLE_HASHED_STORAGE)
+            described_class::GEO_ENABLE_HASHED_STORAGE)
 
         helper.render_enable_hashed_storage_warning
       end
@@ -39,7 +39,7 @@ RSpec.describe EE::UserCalloutsHelper do
         expect(helper).to receive(:render_flash_user_callout)
           .with(:warning,
             /Please migrate all existing projects/,
-            EE::UserCalloutsHelper::GEO_MIGRATE_HASHED_STORAGE)
+            described_class::GEO_MIGRATE_HASHED_STORAGE)
 
         helper.render_migrate_hashed_storage_warning
       end
@@ -73,7 +73,7 @@ RSpec.describe EE::UserCalloutsHelper do
 
       context 'when the enable warning was dismissed' do
         before do
-          create(:user_callout, user: user, feature_name: described_class::GEO_ENABLE_HASHED_STORAGE)
+          create(:callout, user: user, feature_name: described_class::GEO_ENABLE_HASHED_STORAGE)
         end
 
         it { is_expected.to be_falsy }
@@ -124,7 +124,7 @@ RSpec.describe EE::UserCalloutsHelper do
 
       context 'when the enable warning was dismissed' do
         before do
-          create(:user_callout, user: user, feature_name: described_class::GEO_MIGRATE_HASHED_STORAGE)
+          create(:callout, user: user, feature_name: described_class::GEO_MIGRATE_HASHED_STORAGE)
         end
 
         it { is_expected.to be_falsy }
@@ -400,12 +400,12 @@ RSpec.describe EE::UserCalloutsHelper do
     end
 
     it 'dismisses `TWO_FACTOR_AUTH_RECOVERY_SETTINGS_CHECK` callout' do
-      expect(::Users::DismissUserCalloutService)
+      expect(::Users::DismissCalloutService)
         .to receive(:new)
         .with(
           container: nil,
           current_user: user,
-          params: { feature_name: UserCalloutsHelper::TWO_FACTOR_AUTH_RECOVERY_SETTINGS_CHECK }
+          params: { feature_name: described_class::TWO_FACTOR_AUTH_RECOVERY_SETTINGS_CHECK }
         )
         .and_call_original
 
@@ -446,7 +446,7 @@ RSpec.describe EE::UserCalloutsHelper do
       before do
         allow(Gitlab).to receive(:dev_env_or_com?).and_return(true)
         allow(helper).to receive(:current_user).and_return(user)
-        create(:user_callout, user: user, feature_name: :verification_reminder, dismissed_at: Time.current)
+        create(:callout, user: user, feature_name: :verification_reminder, dismissed_at: Time.current)
         create(:ci_pipeline, user: user, failure_reason: :user_not_verified, created_at: pipeline_created_at)
       end
 
