@@ -7,6 +7,9 @@ import {
   GlToggle,
   GlButton,
   GlAlert,
+  GlIcon,
+  GlCollapse,
+  GlCollapseToggleDirective,
 } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
 import { removeUnnecessaryDashes } from 'ee/threat_monitoring/utils';
@@ -17,7 +20,7 @@ import DimDisableContainer from '../dim_disable_container.vue';
 import PolicyActionPicker from '../policy_action_picker.vue';
 import PolicyAlertPicker from '../policy_alert_picker.vue';
 import PolicyEditorLayout from '../policy_editor_layout.vue';
-import PolicyPreview from '../policy_preview.vue';
+import PolicyPreviewHuman from '../policy_preview_human.vue';
 import {
   DEFAULT_NETWORK_POLICY,
   RuleTypeEndpoint,
@@ -45,12 +48,14 @@ export default {
       'NetworkPolicies|Network Policies can be used to limit which network traffic is allowed between containers inside the cluster.',
     ),
     noEnvironmentButton: __('Learn more'),
+    yamlPreview: s__('SecurityOrchestration|.yaml preview'),
     policyPreview: s__('SecurityOrchestration|Policy preview'),
     rules: s__('SecurityOrchestration|Rules'),
     saveButtonTooltip: s__(
       'NetworkPolicies|Network policy can be created after the environment is loaded successfully.',
     ),
   },
+  policyPreviewHumanCollapseId: 'policy-preview-human-collapse',
   components: {
     GlEmptyState,
     GlFormGroup,
@@ -59,12 +64,17 @@ export default {
     GlToggle,
     GlButton,
     GlAlert,
+    GlIcon,
+    GlCollapse,
     PolicyRuleBuilder,
-    PolicyPreview,
     PolicyActionPicker,
     PolicyAlertPicker,
     PolicyEditorLayout,
+    PolicyPreviewHuman,
     DimDisableContainer,
+  },
+  directives: {
+    CollapseToggle: GlCollapseToggleDirective,
   },
   inject: [
     'networkDocumentationPath',
@@ -95,6 +105,7 @@ export default {
       : '';
 
     return {
+      isPolicyPreviewHumanVisible: true,
       yamlEditorValue,
       yamlEditorError: policy.error ? true : null,
       policy,
@@ -106,9 +117,6 @@ export default {
     },
     humanizedPolicy() {
       return this.policy.error ? null : humanizeNetworkPolicy(this.policy);
-    },
-    initialTab() {
-      return this.hasParsingError ? 1 : 0;
     },
     policyAlert() {
       return Boolean(this.policy.annotations);
@@ -219,7 +227,12 @@ export default {
     @update-yaml="updateYaml"
   >
     <template #rule-editor>
-      <gl-alert v-if="hasParsingError" data-testid="parsing-alert" :dismissible="false">
+      <gl-alert
+        v-if="hasParsingError"
+        data-testid="parsing-alert"
+        class="gl-mb-5"
+        :dismissible="false"
+      >
         {{ $options.i18n.PARSING_ERROR_MESSAGE }}
       </gl-alert>
 
@@ -290,17 +303,31 @@ export default {
       </dim-disable-container>
     </template>
     <template #rule-editor-preview>
-      <dim-disable-container data-testid="policy-preview-container" :disabled="hasParsingError">
-        <template #title>
-          <h5>{{ $options.i18n.policyPreview }}</h5>
-        </template>
-
-        <template #disabled>
-          <policy-preview :initial-tab="initialTab" :policy-yaml="yamlEditorValue" />
-        </template>
-
-        <policy-preview :policy-yaml="policyYaml" :policy-description="humanizedPolicy" />
-      </dim-disable-container>
+      <h5>{{ $options.i18n.yamlPreview }}</h5>
+      <pre
+        data-testid="yaml-preview"
+        class="gl-bg-white gl-border-none gl-p-0"
+        :class="{ 'gl-opacity-5': hasParsingError }"
+        >{{ policyYaml || yamlEditorValue }}</pre
+      >
+    </template>
+    <template v-if="!hasParsingError" #bottom>
+      <div class="gl-my-6">
+        <gl-button
+          v-collapse-toggle="$options.policyPreviewHumanCollapseId"
+          category="tertiary"
+          class="gl-font-weight-bold gl-bg-transparent! gl-px-0!"
+        >
+          {{ $options.i18n.policyPreview }}
+          <gl-icon :name="isPolicyPreviewHumanVisible ? 'angle-up' : 'angle-down'" :size="12" />
+        </gl-button>
+        <gl-collapse
+          :id="$options.policyPreviewHumanCollapseId"
+          v-model="isPolicyPreviewHumanVisible"
+        >
+          <policy-preview-human class="gl-md-w-70p" :policy-description="humanizedPolicy" />
+        </gl-collapse>
+      </div>
     </template>
   </policy-editor-layout>
   <gl-empty-state

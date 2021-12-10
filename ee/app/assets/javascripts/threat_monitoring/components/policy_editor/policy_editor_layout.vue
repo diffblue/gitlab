@@ -160,6 +160,7 @@ export default {
         </section>
       </div>
     </div>
+    <slot name="bottom"></slot>
     <span
       v-gl-tooltip.hover.focus="{ disabled: disableTooltip }"
       class="gl-pt-2"
