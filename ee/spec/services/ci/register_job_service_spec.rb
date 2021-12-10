@@ -43,17 +43,17 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
           is_expected.to be_kind_of(Ci::Build)
         end
 
-        context 'with ci_queueing_denormalize_ci_minutes_information enabled' do
+        context 'with ci_queuing_use_denormalized_data_strategy enabled' do
           before do
-            stub_feature_flags(ci_queueing_denormalize_ci_minutes_information: true)
+            stub_feature_flags(ci_queuing_use_denormalized_data_strategy: true)
           end
 
           it { is_expected.to be_kind_of(Ci::Build) }
         end
 
-        context 'with ci_queueing_denormalize_ci_minutes_information disabled' do
+        context 'with ci_queuing_use_denormalized_data_strategy disabled' do
           before do
-            stub_feature_flags(ci_queueing_denormalize_ci_minutes_information: false)
+            stub_feature_flags(ci_queuing_use_denormalized_data_strategy: false)
           end
 
           around do |example|
@@ -96,17 +96,17 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
           is_expected.to be_kind_of(Ci::Build)
         end
 
-        context 'with ci_queueing_denormalize_ci_minutes_information enabled' do
+        context 'with ci_queuing_use_denormalized_data_strategy enabled' do
           before do
-            stub_feature_flags(ci_queueing_denormalize_ci_minutes_information: true)
+            stub_feature_flags(ci_queuing_use_denormalized_data_strategy: true)
           end
 
           it { is_expected.to be_nil }
         end
 
-        context 'with ci_queueing_denormalize_ci_minutes_information disabled' do
+        context 'with ci_queuing_use_denormalized_data_strategy disabled' do
           before do
-            stub_feature_flags(ci_queueing_denormalize_ci_minutes_information: false)
+            stub_feature_flags(ci_queuing_use_denormalized_data_strategy: false)
           end
 
           around do |example|
@@ -332,17 +332,17 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
       stub_feature_flags(ci_pending_builds_queue_source: true)
     end
 
-    context 'with ci_queueing_denormalize_shared_runners_information enabled' do
+    context 'with ci_queuing_use_denormalized_data_strategy enabled' do
       before do
-        stub_feature_flags(ci_queueing_denormalize_shared_runners_information: true)
+        stub_feature_flags(ci_queuing_use_denormalized_data_strategy: true)
       end
 
       include_examples 'namespace minutes quota'
     end
 
-    context 'with ci_queueing_denormalize_shared_runners_information disabled' do
+    context 'with ci_queuing_use_denormalized_data_strategy disabled' do
       before do
-        stub_feature_flags(ci_queueing_denormalize_shared_runners_information: false)
+        stub_feature_flags(ci_queuing_use_denormalized_data_strategy: false)
       end
 
       around do |example|

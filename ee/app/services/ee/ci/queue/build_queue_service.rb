@@ -19,7 +19,7 @@ module EE
 
         # rubocop: disable CodeReuse/ActiveRecord
         def enforce_minutes_based_on_cost_factors(relation)
-          if strategy.use_denormalized_minutes_data?
+          if strategy.use_denormalized_data_strategy?
             strategy.enforce_minutes_quota(relation)
           else
             enforce_minutes_using_legacy_data(relation)
@@ -27,7 +27,7 @@ module EE
         end
 
         def enforce_minutes_using_legacy_data(relation)
-          if strategy.use_denormalized_shared_runners_data?
+          if strategy.use_denormalized_data_strategy?
             # If shared runners information is denormalized then the query does not include the join
             # with `projects` anymore, so we need to add it until we use denormalized ci minutes
 
