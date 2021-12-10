@@ -9,6 +9,8 @@ module Gitlab
         end
 
         def can_add_user?(user)
+          return true if user.project_bot?
+
           check_project_membership(user) && check_source_project_membership(user)
         end
 
