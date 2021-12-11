@@ -46,7 +46,9 @@ RSpec.describe MergeRequestWidgetEntity do
     create_all_artifacts
     RequestStore.clear!
 
-    expect { serializer.represent(merge_request) }.not_to exceed_query_limit(control)
+    # Threshold of 1 query is added because of actor check on the feature flag mr_show_reports_immediately
+    # TODO: remove the threshold when mr_show_reports_immediately feature flag is removed
+    expect { serializer.represent(merge_request) }.not_to exceed_query_limit(control).with_threshold(1)
   end
 
   describe 'test report artifacts', :request_store do
