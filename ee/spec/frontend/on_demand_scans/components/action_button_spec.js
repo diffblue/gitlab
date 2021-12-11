@@ -13,24 +13,22 @@ describe('ActionButton', () => {
   const findButton = () => wrapper.findComponent(GlButton);
   const findTooltip = () => wrapper.findComponent(GlTooltip);
 
-  const createComponent = () => {
+  const createComponent = (props = {}) => {
     wrapper = shallowMountExtended(ActionButton, {
       propsData: {
         actionType,
         label,
+        ...props,
       },
     });
   };
-
-  beforeEach(() => {
-    createComponent();
-  });
 
   afterEach(() => {
     wrapper.destroy();
   });
 
   it('renders a button with a tooltip attached', () => {
+    createComponent();
     const button = findButton();
     const tooltip = findTooltip();
 
@@ -40,11 +38,13 @@ describe('ActionButton', () => {
   });
 
   it('sets the label on the button and in the tooltip', () => {
+    createComponent();
     expect(findButton().attributes('aria-label')).toBe(label);
     expect(findTooltip().text()).toBe(label);
   });
 
   it('emits bv::hide::tooltip and click events on click', () => {
+    createComponent();
     jest.spyOn(wrapper.vm.$root, '$emit');
     findButton().vm.$emit('click');
 
@@ -52,10 +52,14 @@ describe('ActionButton', () => {
     expect(wrapper.emitted('click')).toHaveLength(1);
   });
 
-  it('passes the loading state down to the button', async () => {
-    expect(findButton().props('loading')).toBe(false);
+  it('does not set the loading state by default', () => {
+    createComponent();
 
-    await wrapper.setProps({ isLoading: true });
+    expect(findButton().props('loading')).toBe(false);
+  });
+
+  it('passes the loading state down to the button', async () => {
+    createComponent({ isLoading: true });
 
     expect(findButton().props('loading')).toBe(true);
   });
