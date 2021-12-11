@@ -32,5 +32,5 @@ RSpec.describe GitlabSchema.types['LicenseHistoryEntry'], :enable_admin_mode do
 
   it { expect(described_class.graphql_name).to eq('LicenseHistoryEntry') }
 
-  include_examples 'license type fields', ['data', 'licenseHistoryEntries', 'nodes', -1]
+  include_examples 'license type fields'
 end

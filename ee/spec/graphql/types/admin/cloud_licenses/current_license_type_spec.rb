@@ -28,7 +28,7 @@ RSpec.describe GitlabSchema.types['CurrentLicense'], :enable_admin_mode do
   it { expect(described_class.graphql_name).to eq('CurrentLicense') }
   it { expect(described_class).to include_graphql_fields(*fields) }
 
-  include_examples 'license type fields', %w[data currentLicense]
+  include_examples 'license type fields'
 
   describe "#users_over_license_count" do
     def query(field_name)

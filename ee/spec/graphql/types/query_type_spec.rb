@@ -11,6 +11,7 @@ RSpec.describe GitlabSchema.types['Query'] do
       :instance_security_dashboard,
       :iteration,
       :license_history_entries,
+      :subscription_future_entries,
       :vulnerabilities,
       :vulnerabilities_count_by_day,
       :vulnerability
