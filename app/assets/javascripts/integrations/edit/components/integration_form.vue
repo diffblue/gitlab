@@ -78,7 +78,10 @@ export default {
       return this.propsSource.canTest;
     },
     disableSaveButton() {
-      return Boolean(this.isDisabled || this.testingLoading);
+      return Boolean(this.isResetting || this.testingLoading);
+    },
+    disableResetButton() {
+      return Boolean(this.isSaving || this.testingLoading);
     },
   },
   mounted() {
@@ -244,7 +247,7 @@ export default {
               category="secondary"
               variant="confirm"
               :loading="isResetting"
-              :disabled="isDisabled || testingLoading"
+              :disabled="disableResetButton"
               data-testid="reset-button"
             >
               {{ __('Reset') }}
