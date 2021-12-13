@@ -4,17 +4,17 @@ import {
   getMetricImages,
   uploadMetricImage,
   deleteMetricImage,
-} from 'ee/issue_show/components/incidents/service';
-import createStore from 'ee/issue_show/components/incidents/store';
-import * as actions from 'ee/issue_show/components/incidents/store/actions';
-import * as types from 'ee/issue_show/components/incidents/store/mutation_types';
+} from 'ee/issues/show/components/incidents/service';
+import createStore from 'ee/issues/show/components/incidents/store';
+import * as actions from 'ee/issues/show/components/incidents/store/actions';
+import * as types from 'ee/issues/show/components/incidents/store/mutation_types';
 import testAction from 'helpers/vuex_action_helper';
 import createFlash from '~/flash';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { fileList, initialData } from '../mock_data';
 
 jest.mock('~/flash');
-jest.mock('ee/issue_show/components/incidents/service', () => ({
+jest.mock('ee/issues/show/components/incidents/service', () => ({
   getMetricImages: jest.fn(),
   uploadMetricImage: jest.fn(),
   deleteMetricImage: jest.fn(),

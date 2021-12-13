@@ -1,7 +1,7 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
-import RelatedFeatureFlags from 'ee/related_feature_flags/components/related_feature_flags.vue';
+import RelatedFeatureFlags from 'ee/issues/components/related_feature_flags.vue';
 import { TEST_HOST } from 'helpers/test_constants';
 import { trimText } from 'helpers/text_helper';
 import { mountExtended, extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -38,7 +38,7 @@ const MOCK_DATA = [
   },
 ];
 
-describe('ee/related_feature_flags/components/related_feature_flags.vue', () => {
+describe('ee/issues/components/related_feature_flags.vue', () => {
   let mock;
   let wrapper;
 

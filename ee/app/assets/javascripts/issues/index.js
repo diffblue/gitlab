@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import RelatedFeatureFlags from './components/related_feature_flags.vue';
 
-export default function initRelatedFeatureFlags() {
+export function initRelatedFeatureFlags() {
   const el = document.querySelector('#js-related-feature-flags-root');
 
   if (el) {

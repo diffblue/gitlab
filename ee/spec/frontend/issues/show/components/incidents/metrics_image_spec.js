@@ -2,8 +2,8 @@ import { GlLink, GlModal } from '@gitlab/ui';
 import { createLocalVue, shallowMount, mount } from '@vue/test-utils';
 import merge from 'lodash/merge';
 import Vuex from 'vuex';
-import MetricsImage from 'ee/issue_show/components/incidents/metrics_image.vue';
-import createStore from 'ee/issue_show/components/incidents/store';
+import MetricsImage from 'ee/issues/show/components/incidents/metrics_image.vue';
+import createStore from 'ee/issues/show/components/incidents/store';
 import waitForPromises from 'helpers/wait_for_promises';
 
 const defaultProps = {
