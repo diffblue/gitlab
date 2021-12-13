@@ -1,17 +1,24 @@
 <script>
-import { GlButton, GlTooltip } from '@gitlab/ui';
 import pipelineCancelMutation from '~/pipelines/graphql/mutations/cancel_pipeline.mutation.graphql';
+import pipelineRetryMutation from '~/pipelines/graphql/mutations/retry_pipeline.mutation.graphql';
 import { __, s__ } from '~/locale';
-import { PIPELINES_GROUP_RUNNING, PIPELINES_GROUP_PENDING } from '../constants';
+import {
+  PIPELINES_GROUP_RUNNING,
+  PIPELINES_GROUP_PENDING,
+  PIPELINES_GROUP_SUCCESS_WITH_WARNINGS,
+  PIPELINES_GROUP_FAILED,
+} from '../constants';
+import ActionButton from './action_button.vue';
 
 const CANCELLING_PROPERTY = 'isCancelling';
+const RETRYING_PROPERTY = 'isRetrying';
 
 export const cancelError = s__('OnDemandScans|The scan could not be canceled.');
+export const retryError = s__('OnDemandScans|The scan could not be retried.');
 
 export default {
   components: {
-    GlButton,
-    GlTooltip,
+    ActionButton,
   },
   props: {
     scan: {
@@ -22,6 +29,7 @@ export default {
   data() {
     return {
       [CANCELLING_PROPERTY]: false,
+      [RETRYING_PROPERTY]: false,
     };
   },
   computed: {
@@ -30,28 +38,55 @@ export default {
         this.scan?.detailedStatus?.group,
       );
     },
+    isRetryable() {
+      return [PIPELINES_GROUP_SUCCESS_WITH_WARNINGS, PIPELINES_GROUP_FAILED].includes(
+        this.scan?.detailedStatus?.group,
+      );
+    },
+  },
+  watch: {
+    'scan.detailedStatus.group': function detailedStatusGroupWatcher() {
+      this[CANCELLING_PROPERTY] = false;
+      this[RETRYING_PROPERTY] = false;
+    },
   },
   methods: {
-    cancelPipeline() {
+    action({ loadingProperty, mutation, mutationType, defaultErrorMessage }) {
       this.$emit('action');
-      this[CANCELLING_PROPERTY] = true;
+      this[loadingProperty] = true;
       this.$apollo
         .mutate({
-          mutation: pipelineCancelMutation,
+          mutation,
           variables: {
             id: this.scan.id,
           },
           update: (_store, { data = {} }) => {
-            const [errorMessage] = data.pipelineCancel?.errors ?? [];
+            const [errorMessage] = data[mutationType]?.errors ?? [];
 
             if (errorMessage) {
-              this.triggerError(CANCELLING_PROPERTY, errorMessage);
+              this.triggerError(loadingProperty, errorMessage);
             }
           },
         })
         .catch((exception) => {
-          this.triggerError(CANCELLING_PROPERTY, this.$options.i18n.cancelError, exception);
+          this.triggerError(loadingProperty, defaultErrorMessage, exception);
         });
+    },
+    cancelPipeline() {
+      this.action({
+        loadingProperty: CANCELLING_PROPERTY,
+        mutation: pipelineCancelMutation,
+        mutationType: 'pipelineCancel',
+        defaultErrorMessage: this.$options.i18n.cancelError,
+      });
+    },
+    retryPipeline() {
+      this.action({
+        loadingProperty: RETRYING_PROPERTY,
+        mutation: pipelineRetryMutation,
+        mutationType: 'pipelineRetry',
+        defaultErrorMessage: this.$options.i18n.retryError,
+      });
     },
     triggerError(loadingProperty, message, exception) {
       this[loadingProperty] = false;
@@ -61,29 +96,29 @@ export default {
   i18n: {
     cancel: __('Cancel'),
     cancelError,
+    retry: __('Retry'),
+    retryError,
   },
 };
 </script>
 
 <template>
   <div class="gl-text-right">
-    <template v-if="isCancellable">
-      <gl-button
-        :id="`cancel-button-${scan.id}`"
-        :aria-label="$options.i18n.cancel"
-        :loading="isCancelling"
-        icon="cancel"
-        data-testid="cancel-scan-button"
-        @click="cancelPipeline"
-      />
-      <gl-tooltip
-        :target="`cancel-button-${scan.id}`"
-        placement="top"
-        triggers="hover"
-        noninteractive
-      >
-        {{ $options.i18n.cancel }}
-      </gl-tooltip>
-    </template>
+    <ActionButton
+      v-if="isCancellable"
+      data-testid="cancel-scan-button"
+      action-type="cancel"
+      :label="$options.i18n.cancel"
+      :is-loading="isCancelling"
+      @click="cancelPipeline"
+    />
+    <ActionButton
+      v-if="isRetryable"
+      data-testid="retry-scan-button"
+      action-type="retry"
+      :label="$options.i18n.retry"
+      :is-loading="isRetrying"
+      @click="retryPipeline"
+    />
   </div>
 </template>

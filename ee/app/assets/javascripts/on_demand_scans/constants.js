@@ -21,6 +21,8 @@ export const PIPELINES_SCOPE_FINISHED = 'FINISHED';
 // Pipeline statuses
 export const PIPELINES_GROUP_RUNNING = 'running';
 export const PIPELINES_GROUP_PENDING = 'pending';
+export const PIPELINES_GROUP_SUCCESS_WITH_WARNINGS = 'success-with-warnings';
+export const PIPELINES_GROUP_FAILED = 'success-with-warnings';
 
 const STATUS_COLUMN = {
   label: __('Status'),
