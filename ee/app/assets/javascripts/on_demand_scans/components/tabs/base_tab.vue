@@ -1,4 +1,5 @@
 <script>
+import * as Sentry from '@sentry/browser';
 import {
   GlTab,
   GlBadge,
@@ -15,6 +16,7 @@ import { DAST_SHORT_NAME } from '~/security_configuration/components/constants';
 import { __, s__ } from '~/locale';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { scrollToElement } from '~/lib/utils/common_utils';
+import Actions from '../actions.vue';
 import EmptyState from '../empty_state.vue';
 import { PIPELINES_PER_PAGE, PIPELINES_POLL_INTERVAL } from '../../constants';
 
@@ -40,6 +42,7 @@ export default {
     GlTruncate,
     CiBadgeLink,
     TimeAgoTooltip,
+    Actions,
     EmptyState,
   },
   inject: ['projectPath'],
@@ -124,6 +127,7 @@ export default {
     return {
       cursor,
       hasError: false,
+      actionErrorMessage: '',
     };
   },
   computed: {
@@ -137,7 +141,14 @@ export default {
       return this.pipelines?.pageInfo;
     },
     tableFields() {
-      return this.fields.map((field) => ({
+      return [
+        ...this.fields,
+        {
+          label: '',
+          key: 'actions',
+          columnClass: 'gl-w-13',
+        },
+      ].map((field) => ({
         ...field,
         class: ['gl-text-primary'],
         thClass: ['gl-bg-transparent!', 'gl-white-space-nowrap'],
@@ -148,6 +159,7 @@ export default {
     isActive(isActive) {
       if (isActive) {
         this.resetCursor();
+        this.resetActionError();
       }
     },
     hasPipelines(hasPipelines) {
@@ -177,11 +189,25 @@ export default {
       this.updateRoute({ before });
     },
     updateRoute(query = {}) {
-      scrollToElement(this.$el);
+      this.scrollToTop();
       this.$router.push({
         path: this.$route.path,
         query,
       });
+      this.resetActionError();
+    },
+    handleActionError(message, exception = null) {
+      this.actionErrorMessage = message;
+      this.scrollToTop();
+      if (exception !== null) {
+        Sentry.captureException(exception);
+      }
+    },
+    resetActionError() {
+      this.actionErrorMessage = '';
+    },
+    scrollToTop() {
+      scrollToElement(this.$el);
     },
   },
   i18n: {
@@ -224,6 +250,14 @@ export default {
           </gl-skeleton-loader>
         </template>
 
+        <template v-if="actionErrorMessage" #top-row>
+          <td :colspan="tableFields.length">
+            <gl-alert class="gl-my-4" variant="danger" :dismissible="false">
+              {{ actionErrorMessage }}
+            </gl-alert>
+          </td>
+        </template>
+
         <template #cell(status)="{ value }">
           <div class="gl-my-3">
             <ci-badge-link :status="value" />
@@ -252,6 +286,10 @@ export default {
 
         <template #cell(id)="{ item }">
           <gl-link :href="item.path">#{{ $options.getIdFromGraphQLId(item.id) }}</gl-link>
+        </template>
+
+        <template #cell(actions)="{ item }">
+          <actions :scan="item" @action="resetActionError" @error="handleActionError" />
         </template>
 
         <template v-for="slot in Object.keys($scopedSlots)" #[slot]="scope">
