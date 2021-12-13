@@ -1,5 +1,6 @@
 <script>
 import { GlButton, GlModalDirective, GlSafeHtmlDirective as SafeHtml } from '@gitlab/ui';
+import * as Sentry from '@sentry/browser';
 import { mapState, mapActions, mapGetters } from 'vuex';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
@@ -114,13 +115,15 @@ export default {
         .then(({ data: { error, message = I18N_FETCH_TEST_SETTINGS_DEFAULT_ERROR_MESSAGE } }) => {
           if (error) {
             eventHub.$emit(VALIDATE_INTEGRATION_FORM_EVENT);
-            throw new Error(message);
+            this.$toast.show(message);
+            return;
           }
 
           this.$toast.show(I18N_SUCCESSFUL_CONNECTION_MESSAGE);
         })
-        .catch(({ message = I18N_DEFAULT_ERROR_MESSAGE }) => {
-          this.$toast.show(message);
+        .catch((error) => {
+          this.$toast.show(I18N_DEFAULT_ERROR_MESSAGE);
+          Sentry.captureException(error);
         })
         .finally(() => {
           this.testingLoading = false;

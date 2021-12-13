@@ -1,5 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import * as Sentry from '@sentry/browser';
 import { setHTMLFixture } from 'helpers/fixtures';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { mockIntegrationProps } from 'jest/integrations/edit/mock_data';
@@ -18,12 +19,14 @@ import {
   I18N_SUCCESSFUL_CONNECTION_MESSAGE,
   VALIDATE_INTEGRATION_FORM_EVENT,
   SAVE_INTEGRATION_EVENT,
+  I18N_DEFAULT_ERROR_MESSAGE,
 } from '~/integrations/constants';
 import { createStore } from '~/integrations/edit/store';
 import eventHub from '~/integrations/edit/event_hub';
 import httpStatus from '~/lib/utils/http_status';
 
 jest.mock('~/integrations/edit/event_hub');
+jest.mock('@sentry/browser');
 
 describe('IntegrationForm', () => {
   const mockToastShow = jest.fn();
@@ -469,13 +472,14 @@ describe('IntegrationForm', () => {
       });
 
       describe.each`
-        scenario                         | errorMessage  | expectToast
-        ${'when test settings succeeds'} | ${'an error'} | ${'an error'}
-        ${'when test settings fails'}    | ${undefined}  | ${I18N_SUCCESSFUL_CONNECTION_MESSAGE}
-      `('$scenario', ({ errorMessage, expectToast }) => {
+        scenario                                   | replyStatus                         | errorMessage  | expectToast                           | expectSentry
+        ${'when "test settings" request fails'}    | ${httpStatus.INTERNAL_SERVER_ERROR} | ${undefined}  | ${I18N_DEFAULT_ERROR_MESSAGE}         | ${true}
+        ${'when "test settings" returns an error'} | ${httpStatus.OK}                    | ${'an error'} | ${'an error'}                         | ${false}
+        ${'when "test settings" succeeds'}         | ${httpStatus.OK}                    | ${undefined}  | ${I18N_SUCCESSFUL_CONNECTION_MESSAGE} | ${false}
+      `('$scenario', ({ replyStatus, errorMessage, expectToast, expectSentry }) => {
         beforeEach(async () => {
-          mockAxios.onPut(mockTestPath).replyOnce(httpStatus.OK, {
-            error: Boolean(errorMessage) || undefined,
+          mockAxios.onPut(mockTestPath).replyOnce(replyStatus, {
+            error: Boolean(errorMessage),
             message: errorMessage,
           });
 
@@ -493,6 +497,10 @@ describe('IntegrationForm', () => {
 
         it('sets save button `disabled` prop to `false`', () => {
           expect(findSaveButton().props('disabled')).toBe(false);
+        });
+
+        it(`${expectSentry ? 'does' : 'does not'} capture exception in Sentry`, () => {
+          expect(Sentry.captureException).toHaveBeenCalledTimes(expectSentry ? 1 : 0);
         });
       });
     });
