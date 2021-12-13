@@ -242,7 +242,7 @@ RSpec.describe API::Users do
           it 'returns `nil` for both plan and trial' do
             get api("/users/#{user.id}", admin)
 
-            expect(json_response).to include('plan' => nil, 'trial' => nil)
+            expect(json_response).to include('plan' => nil, 'trial' => false)
           end
         end
       end

@@ -82,7 +82,6 @@ module EE
       delegate :additional_purchased_storage_size, :additional_purchased_storage_size=,
         :additional_purchased_storage_ends_on, :additional_purchased_storage_ends_on=,
         :temporary_storage_increase_ends_on, :temporary_storage_increase_ends_on=,
-        :temporary_storage_increase_enabled?, :eligible_for_temporary_storage_increase?,
         to: :namespace_limit, allow_nil: true
 
       delegate :email, to: :owner, allow_nil: true, prefix: true
@@ -96,9 +95,8 @@ module EE
                 numericality: { only_integer: true, greater_than_or_equal_to: 0, allow_nil: true,
                                 less_than: ::Gitlab::Pages::MAX_SIZE / 1.megabyte }
 
-      delegate :trial?, :trial_ends_on, :trial_starts_on, :trial_days_remaining,
-        :trial_percentage_complete, :upgradable?, :trial_extended_or_reactivated?,
-        to: :gitlab_subscription, allow_nil: true
+      delegate :trial_ends_on, :trial_starts_on, :trial_days_remaining,
+        :trial_percentage_complete, to: :gitlab_subscription, allow_nil: true
 
       before_create :sync_membership_lock_with_parent
 
@@ -106,6 +104,26 @@ module EE
       before_save :clear_feature_available_cache
 
       after_commit :sync_name_with_customers_dot, on: :update, if: -> { name_previously_changed? && !project_namespace? }
+
+      def temporary_storage_increase_enabled?
+        !!namespace_limit&.temporary_storage_increase_enabled?
+      end
+
+      def eligible_for_temporary_storage_increase?
+        !!namespace_limit&.eligible_for_temporary_storage_increase?
+      end
+
+      def trial?
+        !!gitlab_subscription&.trial?
+      end
+
+      def upgradable?
+        !!gitlab_subscription&.upgradable?
+      end
+
+      def trial_extended_or_reactivated?
+        !!gitlab_subscription&.trial_extended_or_reactivated?
+      end
     end
 
     # Only groups can be marked for deletion
