@@ -38,10 +38,10 @@ export default {
         },
       );
 
-      return `${text}
-      <br>
-      ${reportNumbersText}
-      `;
+      return {
+        subject: text,
+        meta: reportNumbersText,
+      };
     },
     statusIcon() {
       if (this.collapsedData.degraded.length || this.collapsedData.same.length) {
