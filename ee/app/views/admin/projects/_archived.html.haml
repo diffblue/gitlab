@@ -1,6 +1,4 @@
 - if project.marked_for_deletion?
-  %span.badge.badge-warning
-    = _('pending deletion')
+  = gl_badge_tag _('pending deletion'), variant: :warning
 - elsif project.archived
-  %span.badge.badge-warning
-    = _('archived')
+  = gl_badge_tag _('archived'), variant: :warning
