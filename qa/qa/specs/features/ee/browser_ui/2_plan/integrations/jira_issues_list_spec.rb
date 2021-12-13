@@ -59,7 +59,11 @@ module QA
         end
       end
 
-      it 'views an issue', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348236' do
+      it(
+        'views an issue',
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348236',
+        quarantine: { type: :investigating }
+      ) do
         EE::Page::Project::Issue::Jira::Index.perform do |jira_index_page|
           jira_index_page.click_issue(@issue_key_two)
         end
