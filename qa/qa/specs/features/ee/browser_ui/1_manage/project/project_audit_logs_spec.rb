@@ -27,7 +27,7 @@ module QA
       let(:user) { Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1) }
 
       context "Add project",
-              testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1404' do
+              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347904' do
         before do
           Resource::Project.fabricate_via_browser_ui! do |project|
             project.name = 'audit-add-project-via-ui'
@@ -38,7 +38,7 @@ module QA
       end
 
       # TODO: Remove :requires_admin meta when the `Runtime::Feature.enable` method call is removed
-      context "Add user access as guest", :requires_admin, testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1402' do
+      context "Add user access as guest", :requires_admin, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347906' do
         before do
           Runtime::Feature.enable(:invite_members_group_modal)
           project.visit!
@@ -52,7 +52,7 @@ module QA
         it_behaves_like 'audit event', ["Added user access as Guest"]
       end
 
-      context "Add deploy key", testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1401' do
+      context "Add deploy key", testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347907' do
         before do
           key = Runtime::Key::RSA.new
           deploy_key_title = 'deploy key title'
@@ -68,7 +68,7 @@ module QA
         it_behaves_like 'audit event', ["Added deploy key"]
       end
 
-      context "Change visibility", testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1403' do
+      context "Change visibility", testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347905' do
         before do
           project.visit!
 
@@ -84,7 +84,7 @@ module QA
         it_behaves_like 'audit event', ["Changed visibility from Public to Private"]
       end
 
-      context "Export file download", :skip_live_env, testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1216' do
+      context "Export file download", :skip_live_env, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347939' do
         before do
           QA::Support::Retrier.retry_until do
             project = Resource::Project.fabricate_via_api! do |project|
@@ -115,7 +115,7 @@ module QA
         it_behaves_like 'audit event', ["Export file download started"]
       end
 
-      context "Project archive and unarchive", testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1405' do
+      context "Project archive and unarchive", testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347903' do
         before do
           project.visit!
 

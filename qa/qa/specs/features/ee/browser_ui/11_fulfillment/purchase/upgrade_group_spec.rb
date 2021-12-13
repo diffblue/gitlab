@@ -34,7 +34,7 @@ module QA
           user.remove_via_api!
         end
 
-        it 'upgrades from free to ultimate', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1882' do
+        it 'upgrades from free to ultimate', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347667' do
           Page::Group::Menu.perform(&:go_to_billing)
           Gitlab::Page::Group::Settings::Billing.perform(&:upgrade_to_ultimate)
 

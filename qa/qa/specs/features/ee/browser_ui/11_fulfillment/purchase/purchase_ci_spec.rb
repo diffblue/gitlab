@@ -47,7 +47,7 @@ module QA
           group.remove_via_api!
         end
 
-        it 'adds additional minutes to group namespace', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2260' do
+        it 'adds additional minutes to group namespace', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347622' do
           purchase_ci_minutes
 
           Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
@@ -75,7 +75,7 @@ module QA
           end
         end
 
-        it 'adds additional minutes to group namespace', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2430' do
+        it 'adds additional minutes to group namespace', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347569' do
           purchase_ci_minutes
 
           Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
@@ -101,7 +101,7 @@ module QA
           group.remove_via_api!
         end
 
-        it 'adds additional minutes to group namespace', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2431' do
+        it 'adds additional minutes to group namespace', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347568' do
           purchase_ci_minutes
 
           Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|

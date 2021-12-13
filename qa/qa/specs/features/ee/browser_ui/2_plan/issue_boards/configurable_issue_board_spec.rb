@@ -13,7 +13,7 @@ module QA
         Page::Project::Menu.perform(&:go_to_boards)
       end
 
-      it 'renames the issue board', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1484' do
+      it 'renames the issue board', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347954' do
         new_board_name = 'UX'
 
         Page::Component::IssueBoard::Show.perform do |show|

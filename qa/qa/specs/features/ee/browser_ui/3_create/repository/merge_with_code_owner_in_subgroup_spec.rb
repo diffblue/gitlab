@@ -32,21 +32,21 @@ module QA
           approver.remove_via_api!
         end
 
-        context 'and the code owner is the root group', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1355' do
+        context 'and the code owner is the root group', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347801' do
           let(:codeowner) { project.group.sandbox.path }
           let(:group_or_project) { project.group.sandbox }
 
           it_behaves_like 'code owner merge request'
         end
 
-        context 'and the code owner is the subgroup', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1354' do
+        context 'and the code owner is the subgroup', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347802' do
           let(:codeowner) { project.group.full_path }
           let(:group_or_project) { project.group }
 
           it_behaves_like 'code owner merge request'
         end
 
-        context 'and the code owner is a user', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1356' do
+        context 'and the code owner is a user', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347800' do
           let(:codeowner) { approver.username }
           let(:group_or_project) { project }
 

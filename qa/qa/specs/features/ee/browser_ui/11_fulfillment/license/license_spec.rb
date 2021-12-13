@@ -16,7 +16,7 @@ module QA
         Gitlab::Page::Admin::Subscription.perform(&:visit)
       end
 
-      it 'shows up in subscription page', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2341' do
+      it 'shows up in subscription page', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347607' do
         Gitlab::Page::Admin::Subscription.perform do |subscription|
           aggregate_failures do
             expect { subscription.name }.to eventually_eq(user).within(max_duration: 30)

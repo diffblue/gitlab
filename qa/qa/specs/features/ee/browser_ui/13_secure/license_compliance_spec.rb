@@ -14,7 +14,7 @@ module QA
         @project&.remove_via_api! if @project
       end
 
-      it 'has empty state', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1839' do
+      it 'has empty state', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347681' do
         Flow::Login.sign_in_unless_signed_in
         @project.visit!
         Page::Project::Menu.perform(&:click_on_license_compliance)
@@ -75,14 +75,14 @@ module QA
           @runner&.remove_via_api!
         end
 
-        it 'can approve a license in the settings page', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1286' do
+        it 'can approve a license in the settings page', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348078' do
           EE::Page::Project::Secure::LicenseCompliance.perform do |license_compliance|
             license_compliance.open_tab
             expect(license_compliance).to have_approved_license(approved_license_name)
           end
         end
 
-        it 'can deny a license in the settings page', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1287' do
+        it 'can deny a license in the settings page', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348077' do
           EE::Page::Project::Secure::LicenseCompliance.perform do |license_compliance|
             license_compliance.open_tab
             expect(license_compliance).to have_denied_license(denied_license_name)
@@ -90,7 +90,7 @@ module QA
         end
 
         describe 'Pipeline Licence tab', { only: [:staging, :production, :pre] } do
-          it 'can approve and deny licenses in the pipeline', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1285' do
+          it 'can approve and deny licenses in the pipeline', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348079' do
             @project.visit!
             Flow::Pipeline.visit_latest_pipeline
 

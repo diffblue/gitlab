@@ -34,7 +34,7 @@ module QA
       end
 
       shared_examples 'group membership actions' do
-        it 'creates a new account automatically and allows to leave group and join again', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1845' do
+        it 'creates a new account automatically and allows to leave group and join again', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347675' do
           # When the user signs in via IDP for the first time
 
           visit_group_sso_url

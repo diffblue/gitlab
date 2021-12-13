@@ -23,7 +23,7 @@ module QA
         Page::Project::Menu.perform(&:go_to_boards)
       end
 
-      it 'shows only issues that match the configured label', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1207' do
+      it 'shows only issues that match the configured label', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347971' do
         Page::Component::IssueBoard::Show.perform do |show|
           show.configure_by_label(testing)
 

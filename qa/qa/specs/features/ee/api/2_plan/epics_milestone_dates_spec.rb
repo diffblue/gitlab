@@ -25,7 +25,7 @@ module QA
         end
       end
 
-      it 'updates epic dates when updating milestones', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1480' do
+      it 'updates epic dates when updating milestones', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347958' do
         epic, milestone = create_epic_issue_milestone
         new_milestone_start_date = (Date.today.to_date + 20).strftime("%Y-%m-%d")
         new_milestone_due_date = (Date.today.to_date + 30).strftime("%Y-%m-%d")
@@ -43,7 +43,7 @@ module QA
         expect(epic.due_date).to eq(new_milestone_due_date)
       end
 
-      it 'updates epic dates when adding another issue', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1483' do
+      it 'updates epic dates when adding another issue', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347955' do
         epic = create_epic_issue_milestone[0]
         new_milestone_start_date = Date.today.to_date.strftime("%Y-%m-%d")
         new_milestone_due_date = (Date.today.to_date + 150).strftime("%Y-%m-%d")
@@ -61,7 +61,7 @@ module QA
         expect(epic.due_date).to eq(new_milestone_due_date)
       end
 
-      it 'updates epic dates when removing issue', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1481' do
+      it 'updates epic dates when removing issue', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347957' do
         epic = create_epic_issue_milestone[0]
 
         # Get epic_issue_id
@@ -83,7 +83,7 @@ module QA
         expect(epic.due_date).to be_nil
       end
 
-      it 'updates epic dates when deleting milestones', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1482' do
+      it 'updates epic dates when deleting milestones', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347956' do
         epic, milestone = create_epic_issue_milestone
 
         milestone.remove_via_api!

@@ -23,7 +23,7 @@ module QA
           project.visit!
         end
 
-        it 'can load Policies page and view the policies list', :smoke, testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2382' do
+        it 'can load Policies page and view the policies list', :smoke, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347589' do
           Page::Project::Menu.perform(&:click_on_policies)
 
           EE::Page::Project::Policies::Index.perform do |policies_page|
@@ -33,7 +33,7 @@ module QA
           end
         end
 
-        it 'can navigate to Policy Editor page', :smoke, testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2294' do
+        it 'can navigate to Policy Editor page', :smoke, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347611' do
           Page::Project::Menu.perform(&:click_on_policies)
 
           EE::Page::Project::Policies::Index.perform(&:click_new_policy_button)
@@ -75,7 +75,7 @@ module QA
           cluster.remove!
         end
 
-        it 'loads a sample network policy under policies page', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1925' do
+        it 'loads a sample network policy under policies page', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347637' do
           Resource::KubernetesCluster::ProjectCluster.fabricate_via_browser_ui! do |k8s_cluster|
             k8s_cluster.project = project
             k8s_cluster.cluster = cluster

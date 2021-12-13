@@ -52,7 +52,7 @@ module QA
       end
 
       describe 'enable dependency scanning from configuration' do
-        it 'runs dependency scanning job when enabled from configuration', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2261' do
+        it 'runs dependency scanning job when enabled from configuration', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347621' do
           Flow::Pipeline.visit_latest_pipeline
 
           # Baseline that we do not initially have a Dependency Scanning job
@@ -101,7 +101,7 @@ module QA
       end
 
       describe 'enable sast from configuration' do
-        it 'runs sast job when enabled from configuration', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1835' do
+        it 'runs sast job when enabled from configuration', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347685' do
           Flow::Pipeline.visit_latest_pipeline
 
           # Baseline that we do not initially have a sast job

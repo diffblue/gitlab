@@ -22,7 +22,7 @@ module QA
         end
       end
 
-      it 'shows the set weight in the issue page, in the milestone page, and in the issues list page', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1188' do
+      it 'shows the set weight in the issue page, in the milestone page, and in the issues list page', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347986' do
         issue.visit!
 
         Page::Project::Issue::Show.perform do |show|

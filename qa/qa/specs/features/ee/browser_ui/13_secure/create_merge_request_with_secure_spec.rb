@@ -56,7 +56,7 @@ module QA
         merge_request.visit!
       end
 
-      it 'displays the Security reports in the merge request', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1533' do
+      it 'displays the Security reports in the merge request', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348031' do
         Page::MergeRequest::Show.perform do |merge_request|
           expect(merge_request).to have_vulnerability_report
           expect(merge_request).to have_vulnerability_count

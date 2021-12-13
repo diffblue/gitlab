@@ -50,7 +50,7 @@ module QA
       end
 
       # Test code is based on qa/specs/features/browser_ui/4_verify/locked_artifacts_spec.rb
-      it 'replicates the job log to the secondary Geo site', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1653' do
+      it 'replicates the job log to the secondary Geo site', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348010' do
         Runtime::Logger.debug('Visiting the secondary Geo site')
 
         Flow::Login.while_signed_in(address: :geo_secondary) do
@@ -79,7 +79,7 @@ module QA
         end
       end
 
-      it 'replicates the job artifact to the secondary Geo site', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1658' do
+      it 'replicates the job artifact to the secondary Geo site', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348006' do
         artifact_page_retry_attempts = 12
 
         Runtime::Logger.debug('Visiting the secondary Geo site')

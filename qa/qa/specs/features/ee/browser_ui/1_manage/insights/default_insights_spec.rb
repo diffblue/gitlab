@@ -16,7 +16,7 @@ module QA
       end
     end
 
-    context 'group insights page', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1499' do
+    context 'group insights page', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347888' do
       before do
         Flow::Login.sign_in
 
@@ -28,7 +28,7 @@ module QA
       it_behaves_like 'default insights page'
     end
 
-    context 'project insights page', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1497' do
+    context 'project insights page', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347889' do
       before do
         Flow::Login.sign_in
 
