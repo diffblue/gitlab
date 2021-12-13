@@ -23978,7 +23978,7 @@ msgstr ""
 msgid "Notes|Collapse replies"
 msgstr ""
 
-msgid "Notes|Confidential comments are only visible to project members"
+msgid "Notes|Confidential comments are only visible to members with the role of Reporter or higher"
 msgstr ""
 
 msgid "Notes|Make this comment confidential"
