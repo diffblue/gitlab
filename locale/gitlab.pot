@@ -28475,6 +28475,9 @@ msgstr ""
 msgid "ProtectedTag|What are protected tags?"
 msgstr ""
 
+msgid "ProtectedTag|default"
+msgstr ""
+
 msgid "Protip: %{linkStart}Auto DevOps%{linkEnd} uses Kubernetes clusters to deploy your code!"
 msgstr ""
 
