@@ -15,16 +15,15 @@ export default function findAndFollowLink(selector) {
 }
 
 export function prefetchDocument(url) {
-  const newPrefetchLink = document.createElement("link");
-  newPrefetchLink.rel = "prefetch";
+  const newPrefetchLink = document.createElement('link');
+  newPrefetchLink.rel = 'prefetch';
   newPrefetchLink.href = url;
-  newPrefetchLink.as = "document";    
+  newPrefetchLink.setAttribute('as', 'document');
   document.head.appendChild(newPrefetchLink);
 }
 
 export function initPrefetchLinks(selector) {
-  document.querySelectorAll(selector)
-  .forEach((el) => {
+  document.querySelectorAll(selector).forEach((el) => {
     let mouseOverTimer;
 
     const mouseOutHandler = () => {
@@ -33,21 +32,21 @@ export function initPrefetchLinks(selector) {
         mouseOverTimer = undefined;
       }
     };
-  
+
     const mouseOverHandler = () => {
       el.addEventListener('mouseout', mouseOutHandler, { passive: true });
-  
+
       mouseOverTimer = setTimeout(() => {
         if (el.href) prefetchDocument(el.href);
-  
+
         // Only execute once
         el.removeEventListener('mouseover', mouseOverHandler, true);
         el.removeEventListener('mouseout', mouseOutHandler);
-  
+
         mouseOverTimer = undefined;
       }, 100);
     };
-  
+
     el.addEventListener('mouseover', mouseOverHandler, {
       capture: true,
       passive: true,
