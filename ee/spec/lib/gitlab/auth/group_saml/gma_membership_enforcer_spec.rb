@@ -16,6 +16,12 @@ RSpec.describe Gitlab::Auth::GroupSaml::GmaMembershipEnforcer do
     stub_licensed_features(group_saml: true)
   end
 
+  it 'allows adding a project bot to project' do
+    project_bot = create(:user, :project_bot)
+
+    expect(subject.can_add_user?(project_bot)).to be_truthy
+  end
+
   context 'when user is group-managed' do
     it 'allows adding user to project' do
       expect(subject.can_add_user?(managed_user)).to be_truthy
