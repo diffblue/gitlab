@@ -12,12 +12,7 @@ module QA
               super
 
               base.class_eval do
-                view 'app/views/shared/issuable/_search_bar.html.haml' do
-                  element :issue_filter_form, /form_tag.+class: 'filter-form / # rubocop:disable QA/ElementWithPattern
-                  element :issue_filter_input, /%input.form-control.filtered-search/ # rubocop:disable QA/ElementWithPattern
-                end
-
-                view 'app/assets/javascripts/issues_list/components/issuable.vue' do
+                view 'ee/app/assets/javascripts/issues_list/components/issue_card_time_info.vue' do
                   element :issuable_weight_content
                 end
               end
@@ -38,8 +33,8 @@ module QA
             end
 
             def filter_by_title(title)
-              page.within('form.filter-form') do
-                fill_in class: 'filtered-search', with: title
+              within_element(:issuable_search_container) do
+                fill_in class: 'gl-filtered-search-term-input', with: title
               end
             end
           end

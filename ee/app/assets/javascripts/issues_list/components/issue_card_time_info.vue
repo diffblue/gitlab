@@ -26,7 +26,11 @@ export default {
 
 <template>
   <issue-card-time-info :issue="issue">
-    <weight-count class="issuable-weight gl-mr-3" :weight="issue.weight" />
+    <weight-count
+      class="issuable-weight gl-mr-3"
+      :weight="issue.weight"
+      data-qa-selector="issuable_weight_content"
+    />
     <issue-health-status v-if="showHealthStatus" :health-status="issue.healthStatus" />
   </issue-card-time-info>
 </template>
