@@ -330,6 +330,20 @@ RSpec.describe WebHook do
       expect { hook.backoff! }.to change(hook, :backoff_count).by(1)
     end
 
+    context 'when the hook is permanently disabled' do
+      before do
+        allow(hook).to receive(:permanently_disabled?).and_return(true)
+      end
+
+      it 'does not set disabled_until' do
+        expect { hook.backoff! }.not_to change(hook, :disabled_until)
+      end
+
+      it 'does not increment the backoff count' do
+        expect { hook.backoff! }.not_to change(hook, :backoff_count)
+      end
+    end
+
     context 'when we have backed off MAX_FAILURES times' do
       before do
         stub_const("#{described_class}::MAX_FAILURES", 5)
