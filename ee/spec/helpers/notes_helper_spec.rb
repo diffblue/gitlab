@@ -16,10 +16,10 @@ RSpec.describe NotesHelper do
   end
 
   describe '#discussions_path' do
-    subject { discussions_path(issueable) }
+    subject { discussions_path(issuable) }
 
     context 'for vulnerability' do
-      let(:issueable) { vulnerability }
+      let(:issuable) { vulnerability }
 
       it { is_expected.to eq("/#{vulnerability.project.full_path}/-/security/vulnerabilities/#{vulnerability.id}/discussions.json") }
     end
