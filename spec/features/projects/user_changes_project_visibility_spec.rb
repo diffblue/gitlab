@@ -22,8 +22,6 @@ RSpec.describe 'User changes public project visibility', :js do
         click_button 'Save changes'
       end
 
-      # binding.pry
-
       fill_in 'confirm_name_input', with: project.path_with_namespace
 
       page.within '.modal' do
