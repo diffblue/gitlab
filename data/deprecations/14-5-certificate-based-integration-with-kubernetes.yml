@@ -17,4 +17,3 @@
   tiers: [Free, Silver, Gold, Core, Premium, Ultimate]
   issue_url: 'https://gitlab.com/groups/gitlab-org/configure/-/epics/8'
   documentation_url: 'https://docs.gitlab.com/ee/user/infrastructure/clusters/#certificate-based-kubernetes-integration-deprecated'
-  removal_date: # (optional - may be required in the future) YYYY-MM-DD format. This should almost always be the 22nd of a month (YYYY-MM-22), the date of the milestone release when this feature is planned to be removed
