@@ -97,6 +97,76 @@ module QA
         expect_no_error_on_push as_user: user_two
       end
 
+      context 'when refactor_blob_viewer is enabled', :requires_admin do
+        before do
+          Runtime::Feature.enable(:refactor_blob_viewer, project: project)
+        end
+
+        it 'locks a directory and tries to push as a second user', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/557' do
+          push branch: project.default_branch, file: 'directory/file', as_user: user_one
+
+          sign_out_and_sign_in_as user: user_one
+          go_to_directory
+          click_lock
+
+          expect_error_on_push for_file: 'directory/file', as_user: user_two
+          expect_no_error_on_push for_file: 'directory/file', as_user: user_one
+        end
+
+        it 'locks a file and tries to push as a second user', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/558' do
+          sign_out_and_sign_in_as user: user_one
+          go_to_file
+          click_lock
+
+          expect_error_on_push as_user: user_two
+          expect_no_error_on_push as_user: user_one
+        end
+
+        it 'checks file locked by other user to be disabled', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/556' do
+          go_to_file
+          click_lock
+          sign_out_and_sign_in_as user: user_one
+          go_to_file
+
+          Page::File::Show.perform do |show|
+            expect(show).to have_lock_button_disabled
+          end
+        end
+
+        it 'creates a merge request and fails to merge', quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/issues/40125', type: :bug }, testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1852' do
+          push branch: 'test', as_user: user_one
+
+          merge_request = Resource::MergeRequest.fabricate_via_api! do |merge_request|
+            merge_request.project = project
+            merge_request.source_branch = 'test'
+            merge_request.target_branch = project.default_branch
+            merge_request.no_preparation = true
+          end
+
+          go_to_file
+          click_lock
+          sign_out_and_sign_in_as user: user_one
+          try_to_merge merge_request: merge_request
+          Page::MergeRequest::Show.perform(&:wait_for_merge_request_error_message)
+          expect(page).to have_text("locked by #{admin_username}")
+        end
+
+        it 'locks a file and unlocks in list', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/555' do
+          sign_out_and_sign_in_as user: user_one
+          go_to_file
+          click_lock
+          project.visit!
+
+          Page::Project::Menu.perform(&:go_to_repository_locked_files)
+          EE::Page::Project::PathLocks::Index.perform do |list|
+            expect(list).to have_file_with_title 'file'
+            list.unlock_file 'file'
+          end
+
+          expect_no_error_on_push as_user: user_two
+        end
+      end
+
       def try_to_merge(merge_request:)
         merge_request.visit!
         Page::MergeRequest::Show.perform do |show|
