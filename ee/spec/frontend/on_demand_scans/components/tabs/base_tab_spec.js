@@ -1,3 +1,4 @@
+import { nextTick } from 'vue';
 import { GlTab, GlTable, GlAlert } from '@gitlab/ui';
 import { createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
@@ -7,6 +8,7 @@ import allPipelinesWithoutPipelinesMock from 'test_fixtures/graphql/on_demand_sc
 import { stubComponent } from 'helpers/stub_component';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import BaseTab from 'ee/on_demand_scans/components/tabs/base_tab.vue';
+import Actions from 'ee/on_demand_scans/components/actions.vue';
 import EmptyState from 'ee/on_demand_scans/components/empty_state.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import onDemandScansQuery from 'ee/on_demand_scans/graphql/on_demand_scans.query.graphql';
@@ -35,6 +37,7 @@ describe('BaseTab', () => {
   // Finders
   const findTitle = () => wrapper.findByTestId('tab-title');
   const findTable = () => wrapper.findComponent(GlTable);
+  const findActions = () => wrapper.findComponent(Actions);
   const findEmptyState = () => wrapper.findComponent(EmptyState);
   const findPagination = () => wrapper.findByTestId('pagination');
   const findErrorAlert = () => wrapper.findComponent(GlAlert);
@@ -48,16 +51,21 @@ describe('BaseTab', () => {
 
   const navigateToPage = (direction, cursor = '') => {
     findPagination().vm.$emit(direction, cursor);
-    return wrapper.vm.$nextTick();
+    return nextTick();
   };
 
   const setActiveState = (isActive) => {
     wrapper.setProps({ isActive });
-    return wrapper.vm.$nextTick();
+    return nextTick();
   };
 
   const advanceToNextFetch = () => {
     jest.advanceTimersByTime(PIPELINES_POLL_INTERVAL);
+  };
+
+  const triggerActionError = (errorMessage) => {
+    findActions().vm.$emit('error', errorMessage);
+    return nextTick();
   };
 
   const createComponentFactory = (mountFn = shallowMountExtended) => (options = {}) => {
@@ -131,7 +139,7 @@ describe('BaseTab', () => {
 
       expect(requestHandler).toHaveBeenCalledTimes(1);
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
       advanceToNextFetch();
 
       expect(requestHandler).toHaveBeenCalledTimes(2);
@@ -359,6 +367,62 @@ describe('BaseTab', () => {
       await waitForPromises();
 
       expect(findErrorAlert().exists()).toBe(false);
+    });
+  });
+
+  describe('actions', () => {
+    const errorMessage = 'An error occurred.';
+
+    beforeEach(() => {
+      createFullComponent({
+        stubs: {
+          GlTable: false,
+        },
+      });
+      return waitForPromises();
+    });
+
+    it('renders action cell', () => {
+      expect(findActions().exists()).toBe(true);
+    });
+
+    it('shows action error message and scrolls back to the top on error', async () => {
+      await triggerActionError(errorMessage);
+
+      expect(wrapper.text()).toContain(errorMessage);
+      expect(scrollToElement).toHaveBeenCalledWith(wrapper.vm.$el);
+    });
+
+    it('resets action error message on action', async () => {
+      await triggerActionError(errorMessage);
+
+      expect(wrapper.text()).toContain(errorMessage);
+
+      findActions().vm.$emit('action');
+      await nextTick();
+
+      expect(wrapper.text()).not.toContain(errorMessage);
+    });
+
+    it('reset action error message when tab becomes active', async () => {
+      await triggerActionError(errorMessage);
+
+      expect(wrapper.text()).toContain(errorMessage);
+
+      await setActiveState(false);
+      await setActiveState(true);
+
+      expect(wrapper.text()).not.toContain(errorMessage);
+    });
+
+    it('reset action error message on navigation', async () => {
+      await triggerActionError(errorMessage);
+
+      expect(wrapper.text()).toContain(errorMessage);
+
+      await navigateToPage('next');
+
+      expect(wrapper.text()).not.toContain(errorMessage);
     });
   });
 });
