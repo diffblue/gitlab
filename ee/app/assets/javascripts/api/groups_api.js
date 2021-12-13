@@ -37,3 +37,22 @@ export const removeBillableMemberFromGroup = (groupId, memberId) => {
 
   return axios.delete(url);
 };
+
+const GROUPS_PENDING_MEMBERS_PATH = '/api/:version/groups/:id/pending_members';
+const GROUPS_PENDING_MEMBERS_STATE = 'awaiting';
+
+export const fetchPendingGroupMembersList = (namespaceId, options = {}) => {
+  const url = buildApiUrl(GROUPS_PENDING_MEMBERS_PATH).replace(':id', namespaceId);
+  const defaults = {
+    state: GROUPS_PENDING_MEMBERS_STATE,
+    per_page: DEFAULT_PER_PAGE,
+    page: 1,
+  };
+
+  return axios.get(url, {
+    params: {
+      ...defaults,
+      ...options,
+    },
+  });
+};

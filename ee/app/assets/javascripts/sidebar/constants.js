@@ -1,4 +1,4 @@
-import { IssuableType } from '~/issues/show/constants';
+import { IssuableType } from '~/issues/constants';
 import { __, s__, sprintf } from '~/locale';
 import {
   IssuableAttributeType as IssuableAttributeTypeFoss,

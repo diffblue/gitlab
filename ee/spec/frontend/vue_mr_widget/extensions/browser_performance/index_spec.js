@@ -60,7 +60,7 @@ describe('Browser performance extension', () => {
       await waitForPromises();
 
       expect(wrapper.text()).toContain('Browser performance test metrics');
-      expect(wrapper.text()).toContain('2 degraded, 1 same, 1 improved');
+      expect(wrapper.text()).toContain('2 degraded, 1 same, and 1 improved');
     });
 
     it('should render info about fixed issues', async () => {

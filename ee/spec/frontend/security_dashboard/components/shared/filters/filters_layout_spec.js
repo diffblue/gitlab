@@ -4,29 +4,22 @@ import Filters from 'ee/security_dashboard/components/shared/filters/filters_lay
 import ProjectFilter from 'ee/security_dashboard/components/shared/filters/project_filter.vue';
 import ScannerFilter from 'ee/security_dashboard/components/shared/filters/scanner_filter.vue';
 import SimpleFilter from 'ee/security_dashboard/components/shared/filters/simple_filter.vue';
-import { getProjectFilter, simpleScannerFilter } from 'ee/security_dashboard/helpers';
+import { simpleScannerFilter } from 'ee/security_dashboard/helpers';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 describe('First class vulnerability filters component', () => {
   let wrapper;
 
-  const projects = [
-    { id: 'gid://gitlab/Project/11', name: 'GitLab Org' },
-    { id: 'gid://gitlab/Project/12', name: 'GitLab Com' },
-  ];
-
   const findSimpleFilters = () => wrapper.findAllComponents(SimpleFilter);
   const findSimpleScannerFilter = () => wrapper.findByTestId(simpleScannerFilter.id);
   const findVendorScannerFilter = () => wrapper.findComponent(ScannerFilter);
   const findActivityFilter = () => wrapper.findComponent(ActivityFilter);
-  const findProjectFilter = () => wrapper.findByTestId(getProjectFilter([]).id);
-  const findNewProjectFilter = () => wrapper.findComponent(ProjectFilter);
+  const findProjectFilter = () => wrapper.findComponent(ProjectFilter);
 
-  const createComponent = ({ props, provide } = {}) => {
+  const createComponent = ({ provide } = {}) => {
     return extendedWrapper(
       shallowMount(Filters, {
-        propsData: props,
         provide: {
           dashboardType: DASHBOARD_TYPES.PROJECT,
           ...provide,
@@ -71,37 +64,6 @@ describe('First class vulnerability filters component', () => {
         wrapper = createComponent({ provide: { dashboardType } });
 
         expect(findProjectFilter().exists()).toBe(isShown);
-      },
-    );
-
-    it('should render the project filter with the expected options', () => {
-      wrapper = createComponent({
-        provide: { dashboardType: DASHBOARD_TYPES.GROUP },
-        props: { projects },
-      });
-
-      expect(findProjectFilter().props('filter').options).toEqual([
-        { id: '11', name: projects[0].name },
-        { id: '12', name: projects[1].name },
-      ]);
-    });
-
-    it.each`
-      featureFlag | isProjectFilterShown | isNewProjectFilterShown
-      ${false}    | ${true}              | ${false}
-      ${true}     | ${false}             | ${true}
-    `(
-      'should show the correct project filter when vulnReportNewProjectFilter feature flag is $featureFlag',
-      ({ featureFlag, isProjectFilterShown, isNewProjectFilterShown }) => {
-        wrapper = createComponent({
-          provide: {
-            dashboardType: DASHBOARD_TYPES.GROUP,
-            glFeatures: { vulnReportNewProjectFilter: featureFlag },
-          },
-        });
-
-        expect(findProjectFilter().exists()).toBe(isProjectFilterShown);
-        expect(findNewProjectFilter().exists()).toBe(isNewProjectFilterShown);
       },
     );
   });

@@ -5,7 +5,7 @@ import { mapGetters } from 'vuex';
 /* eslint-disable @gitlab/no-runtime-template-compiler */
 import BoardListHeaderFoss from '~/boards/components/board_list_header.vue';
 import { n__, __, sprintf } from '~/locale';
-import listQuery from '../graphql/board_lists_deferred.query.graphql';
+import listQuery from 'ee_else_ce/boards/graphql/board_lists_deferred.query.graphql';
 
 export default {
   extends: BoardListHeaderFoss,

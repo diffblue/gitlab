@@ -17,47 +17,30 @@ export default {
       const changesFound = improved.length + degraded.length + same.length;
       const text = sprintf(
         n__(
-          'ciReport|Browser performance test metrics: %{strongStart}%{changesFound}%{strongEnd} change',
-          'ciReport|Browser performance test metrics: %{strongStart}%{changesFound}%{strongEnd} changes',
+          'ciReport|Browser performance test metrics: %{strong_start}%{changesFound}%{strong_end} change',
+          'ciReport|Browser performance test metrics: %{strong_start}%{changesFound}%{strong_end} changes',
           changesFound,
         ),
         {
           changesFound,
-          strongStart: `<strong>`,
-          strongEnd: `</strong>`,
         },
         false,
       );
 
-      const reportNumbers = [];
-
-      if (degraded.length > 0) {
-        reportNumbers.push(
-          `<strong class="gl-text-red-500">${sprintf(s__('ciReport|%{degradedNum} degraded'), {
-            degradedNum: degraded.length,
-          })}</strong>`,
-        );
-      }
-
-      if (same.length > 0) {
-        reportNumbers.push(
-          `<strong class="gl-text-gray-700">${sprintf(s__('ciReport|%{sameNum} same'), {
-            sameNum: same.length,
-          })}</strong>`,
-        );
-      }
-
-      if (improved.length > 0) {
-        reportNumbers.push(
-          `<strong class="gl-text-green-500">${sprintf(s__('ciReport|%{improvedNum} improved'), {
-            improvedNum: improved.length,
-          })}</strong>`,
-        );
-      }
+      const reportNumbersText = sprintf(
+        s__(
+          'ciReport|%{danger_start}%{degradedNum} degraded%{danger_end}, %{same_start}%{sameNum} same%{same_end}, and %{success_start}%{improvedNum} improved%{success_end}',
+        ),
+        {
+          degradedNum: degraded.length,
+          sameNum: same.length,
+          improvedNum: improved.length,
+        },
+      );
 
       return `${text}
       <br>
-      ${reportNumbers.join(', ')}
+      ${reportNumbersText}
       `;
     },
     statusIcon() {
@@ -151,7 +134,7 @@ export default {
 
       const text = sprintf(
         s__(
-          'ciReport|%{prefix} %{strongStart}%{score}%{strongEnd} %{delta} %{deltaPercent} in %{path}',
+          'ciReport|%{prefix} %{strong_start}%{score}%{strong_end} %{delta} %{deltaPercent} in %{path}',
         ),
         {
           prefix,
@@ -159,8 +142,6 @@ export default {
           delta,
           deltaPercent,
           path,
-          strongStart: `<strong>`,
-          strongEnd: `</strong>`,
         },
         false,
       );

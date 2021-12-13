@@ -13,8 +13,14 @@ export const PIPELINE_TABS_KEYS = ['all', 'running', 'finished', 'scheduled'];
 export const PIPELINES_PER_PAGE = 20;
 export const PIPELINES_POLL_INTERVAL = 1000;
 export const PIPELINES_COUNT_POLL_INTERVAL = 1000;
+
+// Pipeline scopes
 export const PIPELINES_SCOPE_RUNNING = 'RUNNING';
 export const PIPELINES_SCOPE_FINISHED = 'FINISHED';
+
+// Pipeline statuses
+export const PIPELINES_GROUP_RUNNING = 'running';
+export const PIPELINES_GROUP_PENDING = 'pending';
 
 const STATUS_COLUMN = {
   label: __('Status'),

@@ -12175,7 +12175,8 @@ CREATE TABLE ci_runners (
     token_encrypted character varying,
     public_projects_minutes_cost_factor double precision DEFAULT 0.0 NOT NULL,
     private_projects_minutes_cost_factor double precision DEFAULT 1.0 NOT NULL,
-    config jsonb DEFAULT '{}'::jsonb NOT NULL
+    config jsonb DEFAULT '{}'::jsonb NOT NULL,
+    executor_type smallint
 );
 
 CREATE SEQUENCE ci_runners_id_seq
@@ -17492,6 +17493,27 @@ CREATE SEQUENCE packages_tags_id_seq
 
 ALTER SEQUENCE packages_tags_id_seq OWNED BY packages_tags.id;
 
+CREATE TABLE pages_deployment_states (
+    pages_deployment_id bigint NOT NULL,
+    verification_state smallint DEFAULT 0 NOT NULL,
+    verification_started_at timestamp with time zone,
+    verification_retry_at timestamp with time zone,
+    verified_at timestamp with time zone,
+    verification_retry_count smallint,
+    verification_checksum bytea,
+    verification_failure text,
+    CONSTRAINT check_15217e8c3a CHECK ((char_length(verification_failure) <= 255))
+);
+
+CREATE SEQUENCE pages_deployment_states_pages_deployment_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE pages_deployment_states_pages_deployment_id_seq OWNED BY pages_deployment_states.pages_deployment_id;
+
 CREATE TABLE pages_deployments (
     id bigint NOT NULL,
     created_at timestamp with time zone NOT NULL,
@@ -21953,6 +21975,8 @@ ALTER TABLE ONLY packages_packages ALTER COLUMN id SET DEFAULT nextval('packages
 
 ALTER TABLE ONLY packages_tags ALTER COLUMN id SET DEFAULT nextval('packages_tags_id_seq'::regclass);
 
+ALTER TABLE ONLY pages_deployment_states ALTER COLUMN pages_deployment_id SET DEFAULT nextval('pages_deployment_states_pages_deployment_id_seq'::regclass);
+
 ALTER TABLE ONLY pages_deployments ALTER COLUMN id SET DEFAULT nextval('pages_deployments_id_seq'::regclass);
 
 ALTER TABLE ONLY pages_domain_acme_orders ALTER COLUMN id SET DEFAULT nextval('pages_domain_acme_orders_id_seq'::regclass);
@@ -23791,6 +23815,9 @@ ALTER TABLE ONLY packages_rubygems_metadata
 
 ALTER TABLE ONLY packages_tags
     ADD CONSTRAINT packages_tags_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY pages_deployment_states
+    ADD CONSTRAINT pages_deployment_states_pkey PRIMARY KEY (pages_deployment_id);
 
 ALTER TABLE ONLY pages_deployments
     ADD CONSTRAINT pages_deployments_pkey PRIMARY KEY (id);
@@ -27021,6 +27048,16 @@ CREATE INDEX index_packages_tags_on_package_id ON packages_tags USING btree (pac
 
 CREATE INDEX index_packages_tags_on_package_id_and_updated_at ON packages_tags USING btree (package_id, updated_at DESC);
 
+CREATE INDEX index_pages_deployment_states_failed_verification ON pages_deployment_states USING btree (verification_retry_at NULLS FIRST) WHERE (verification_state = 3);
+
+CREATE INDEX index_pages_deployment_states_needs_verification ON pages_deployment_states USING btree (verification_state) WHERE ((verification_state = 0) OR (verification_state = 3));
+
+CREATE INDEX index_pages_deployment_states_on_pages_deployment_id ON pages_deployment_states USING btree (pages_deployment_id);
+
+CREATE INDEX index_pages_deployment_states_on_verification_state ON pages_deployment_states USING btree (verification_state);
+
+CREATE INDEX index_pages_deployment_states_pending_verification ON pages_deployment_states USING btree (verified_at NULLS FIRST) WHERE (verification_state = 0);
+
 CREATE INDEX index_pages_deployments_on_ci_build_id ON pages_deployments USING btree (ci_build_id);
 
 CREATE INDEX index_pages_deployments_on_file_store_and_id ON pages_deployments USING btree (file_store, id);
@@ -27940,6 +27977,8 @@ CREATE INDEX index_vulnerability_occurrence_pipelines_on_pipeline_id ON vulnerab
 CREATE INDEX index_vulnerability_occurrences_deduplication ON vulnerability_occurrences USING btree (project_id, report_type, project_fingerprint);
 
 CREATE INDEX index_vulnerability_occurrences_for_issue_links_migration ON vulnerability_occurrences USING btree (project_id, report_type, encode(project_fingerprint, 'hex'::text));
+
+CREATE INDEX index_vulnerability_occurrences_on_location_agent_id ON vulnerability_occurrences USING gin (((location -> 'agent_id'::text))) WHERE (report_type = 7);
 
 CREATE INDEX index_vulnerability_occurrences_on_location_cluster_id ON vulnerability_occurrences USING gin (((location -> 'cluster_id'::text))) WHERE (report_type = 7);
 
@@ -31566,6 +31605,9 @@ ALTER TABLE ONLY project_tracing_settings
 
 ALTER TABLE ONLY resource_label_events
     ADD CONSTRAINT fk_rails_fe91ece594 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL;
+
+ALTER TABLE ONLY pages_deployment_states
+    ADD CONSTRAINT fk_rails_ff6ca551a4 FOREIGN KEY (pages_deployment_id) REFERENCES pages_deployments(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY ci_builds_metadata
     ADD CONSTRAINT fk_rails_ffcf702a02 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
