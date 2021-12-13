@@ -205,14 +205,14 @@ RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck do
           end
 
           it 'allows the commit when they were done with another email that belongs to the current user' do
-            user.emails.create(email: 'secondary_email@user.com', confirmed_at: Time.now)
+            user.emails.create!(email: 'secondary_email@user.com', confirmed_at: Time.now)
             allow_any_instance_of(Commit).to receive(:committer_email).and_return('secondary_email@user.com')
 
             expect { subject.validate! }.not_to raise_error
           end
 
           it 'raises an error when the commit was done with an unverified email' do
-            user.emails.create(email: 'secondary_email@user.com')
+            user.emails.create!(email: 'secondary_email@user.com')
             allow_any_instance_of(Commit).to receive(:committer_email).and_return('secondary_email@user.com')
 
             expect { subject.validate! }

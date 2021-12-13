@@ -18,7 +18,7 @@ RSpec.describe EE::Gitlab::Ci::Pipeline::Quota::Activity, :saas do
       create(:ci_pipeline, project: project, status: 'pending')
       create(:ci_pipeline, project: project, status: 'running')
 
-      plan_limits.update(ci_active_pipelines: 1)
+      plan_limits.update!(ci_active_pipelines: 1)
     end
   end
 
