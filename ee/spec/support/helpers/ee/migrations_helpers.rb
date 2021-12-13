@@ -45,7 +45,7 @@ module EE
 
     def with_db_config(&block)
       if geo_migration?
-        ::Gitlab::Geo::DatabaseTasks.with_geo_db { yield }
+        ::Geo::TrackingBase.connected_to(database: :geo) { yield }
       else
         yield
       end
