@@ -8,11 +8,11 @@ import {
 import { escapeRegExp, has, xorBy } from 'lodash';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
 import createFlash from '~/flash';
-import { convertToGraphQLIds } from '~/graphql_shared/utils';
+import { convertToGraphQLIds, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __, s__ } from '~/locale';
 import groupProjectsQuery from '../../../graphql/queries/group_projects.query.graphql';
 import instanceProjectsQuery from '../../../graphql/queries/instance_projects.query.graphql';
-import { mapProjects, PROJECT_LOADING_ERROR_MESSAGE } from '../../../helpers';
+import { PROJECT_LOADING_ERROR_MESSAGE } from '../../../helpers';
 import FilterBody from './filter_body.vue';
 import FilterItem from './filter_item.vue';
 import SimpleFilter from './simple_filter.vue';
@@ -20,6 +20,9 @@ import SimpleFilter from './simple_filter.vue';
 const SEARCH_TERM_MINIMUM_LENGTH = 3;
 const SELECTED_PROJECTS_MAX_COUNT = 100;
 const PROJECT_ENTITY_NAME = 'Project';
+
+const mapProjects = (projects = []) =>
+  projects.map((p) => ({ id: getIdFromGraphQLId(p.id).toString(), name: p.name }));
 
 export default {
   components: {
