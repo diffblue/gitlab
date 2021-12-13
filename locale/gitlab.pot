@@ -28415,6 +28415,9 @@ msgstr ""
 msgid "ProtectedBranch|What are protected branches?"
 msgstr ""
 
+msgid "ProtectedBranch|default"
+msgstr ""
+
 msgid "ProtectedEnvironment|%{environment_name} will be writable for developers. Are you sure?"
 msgstr ""
 
