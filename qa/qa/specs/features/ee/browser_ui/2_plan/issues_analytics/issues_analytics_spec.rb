@@ -20,13 +20,13 @@ module QA
       end
     end
 
-    describe 'Group level issues analytics', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1204' do
+    describe 'Group level issues analytics', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347974' do
       it_behaves_like 'issues analytics page' do
         let(:analytics_path) { "#{issue.project.group.web_url}/-/issues_analytics" }
       end
     end
 
-    describe 'Project level issues analytics', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1205' do
+    describe 'Project level issues analytics', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347973' do
       it_behaves_like 'issues analytics page' do
         let(:analytics_path) { "#{issue.project.web_url}/-/analytics/issues_analytics" }
       end

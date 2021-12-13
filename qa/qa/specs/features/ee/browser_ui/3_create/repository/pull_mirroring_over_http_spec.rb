@@ -3,7 +3,7 @@
 module QA
   RSpec.describe 'Create' do
     describe 'Pull mirror a repository over HTTP' do
-      it 'configures and syncs a (pull) mirrored repository with password auth', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1540' do
+      it 'configures and syncs a (pull) mirrored repository with password auth', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347764' do
         Flow::Login.sign_in
 
         source = Resource::Repository::ProjectPush.fabricate! do |project_push|

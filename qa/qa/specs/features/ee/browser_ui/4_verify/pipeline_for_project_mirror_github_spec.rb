@@ -60,7 +60,7 @@ module QA
 
       it(
         'user commits to GitHub triggers CI pipeline',
-        testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1841'
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347679'
       ) do
         Page::Project::Menu.perform(&:click_ci_cd_pipelines)
         Page::Project::Pipeline::Index.perform do |index|

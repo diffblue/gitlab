@@ -50,7 +50,7 @@ module QA
           runner.remove_via_api!
         end
 
-        it 'does not drop MR', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1250' do
+        it 'does not drop MR', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348084' do
           start_discussion
 
           Page::MergeRequest::Show.perform do |show|

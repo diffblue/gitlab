@@ -11,7 +11,7 @@ module QA
       @project.visit!
     end
 
-    it 'creates an incident template and opens an incident with template applied', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1262' do
+    it 'creates an incident template and opens an incident with template applied', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348081' do
       create_incident_template
 
       Page::Project::Menu.perform(&:go_to_monitor_settings)

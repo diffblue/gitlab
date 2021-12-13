@@ -72,7 +72,7 @@ module QA
         runner.remove_via_api!
       end
 
-      it "pulls an image using the dependency proxy on a group enforced SSO", testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2291' do
+      it "pulls an image using the dependency proxy on a group enforced SSO", testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347612' do
         project.group.visit!
 
         Resource::Repository::Commit.fabricate_via_api! do |commit|

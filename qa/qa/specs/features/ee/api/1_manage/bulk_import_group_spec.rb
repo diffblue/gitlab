@@ -102,7 +102,7 @@ module QA
 
       it(
         'imports group epics and iterations',
-        testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1921'
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347639'
       ) do
         expect { imported_group.import_status }.to(
           eventually_eq('finished').within(max_duration: 300, sleep_interval: 2)

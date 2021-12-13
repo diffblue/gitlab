@@ -77,7 +77,7 @@ module QA
           Page::Group::Menu.perform(&:click_subgroup_members_item)
         end
 
-        it 'has LDAP users synced', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1454' do
+        it 'has LDAP users synced', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347894' do
           verify_users_synced(sync_users)
         end
       end
@@ -133,7 +133,7 @@ module QA
           Page::Group::Menu.perform(&:click_subgroup_members_item)
         end
 
-        it 'has LDAP users synced', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1455' do
+        it 'has LDAP users synced', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347893' do
           verify_users_synced(sync_users)
         end
       end

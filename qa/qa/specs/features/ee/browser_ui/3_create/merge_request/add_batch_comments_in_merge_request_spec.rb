@@ -17,7 +17,7 @@ module QA
         end
       end
 
-      it 'user submits a non-diff review', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1478' do
+      it 'user submits a non-diff review', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347777' do
         Flow::Login.sign_in
 
         merge_request.visit!
@@ -38,7 +38,7 @@ module QA
         end
       end
 
-      it 'user submits a diff review', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1477' do
+      it 'user submits a diff review', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347778' do
         Flow::Login.sign_in
 
         merge_request.visit!

@@ -49,7 +49,7 @@ module QA
         let(:ip_address) { get_next_ip_address(fetch_current_ip_address) }
 
         context 'via the UI' do
-          it 'denies access', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1342' do
+          it 'denies access', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347923' do
             Flow::Login.sign_in(as: @user)
 
             @group.sandbox.visit!
@@ -63,7 +63,7 @@ module QA
         end
 
         context 'via the API' do
-          it 'denies access', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1343' do
+          it 'denies access', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347922' do
             request = create_request("/groups/#{@sandbox_group.id}")
             response = get request.url
             expect(response.code).to eq(404)
@@ -88,7 +88,7 @@ module QA
             key.remove_via_api!
           end
 
-          it 'denies access', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1344' do
+          it 'denies access', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347921' do
             expect { push_a_project_with_ssh_key(key) }.to raise_error(QA::Support::Run::CommandError, /fatal: Could not read from remote repository/)
           end
         end
@@ -98,7 +98,7 @@ module QA
         let(:ip_address) { fetch_current_ip_address }
 
         context 'via the UI' do
-          it 'allows access', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1339' do
+          it 'allows access', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347926' do
             Flow::Login.sign_in(as: @user)
 
             @group.sandbox.visit!
@@ -110,7 +110,7 @@ module QA
         end
 
         context 'via the API' do
-          it 'allows access', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1340' do
+          it 'allows access', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347925' do
             request = create_request("/groups/#{@sandbox_group.id}")
             response = get request.url
             expect(response.code).to eq(200)
@@ -135,7 +135,7 @@ module QA
             key.remove_via_api!
           end
 
-          it 'allows access', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1341' do
+          it 'allows access', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347924' do
             expect { push_a_project_with_ssh_key(key) }.not_to raise_error
           end
         end

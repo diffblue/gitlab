@@ -37,7 +37,7 @@ module QA
         issue.project.remove_via_api!
       end
 
-      it 'finds note that matches note body', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1929' do
+      it 'finds note that matches note body', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347634' do
         QA::Support::Retrier.retry_on_exception(max_attempts: Runtime::Search::RETRY_MAX_ITERATION, sleep_interval: Runtime::Search::RETRY_SLEEP_INTERVAL) do
           get Runtime::Search.create_search_request(api_client, 'notes', note.body).url
           expect_status(QA::Support::API::HTTP_STATUS_OK)

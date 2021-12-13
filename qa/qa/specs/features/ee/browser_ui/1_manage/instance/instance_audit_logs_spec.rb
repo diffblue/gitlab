@@ -18,7 +18,7 @@ module QA
     end
 
     describe 'Instance', :requires_admin do
-      context 'Failed sign in', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1395' do
+      context 'Failed sign in', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347913' do
         before do
           Runtime::Browser.visit(:gitlab, Page::Main::Login)
           invalid_user = Resource::User.init do |user|
@@ -35,7 +35,7 @@ module QA
         it_behaves_like 'audit event', ["Failed to login with STANDARD authentication"]
       end
 
-      context 'Successful sign in', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1394' do
+      context 'Successful sign in', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347914' do
         before do
           sign_in
         end
@@ -43,7 +43,7 @@ module QA
         it_behaves_like 'audit event', ["Signed in with STANDARD authentication"]
       end
 
-      context 'Add SSH key', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1393' do
+      context 'Add SSH key', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347915' do
         key = nil
 
         before do
@@ -60,7 +60,7 @@ module QA
         it_behaves_like 'audit event', ["Added SSH key"]
       end
 
-      context 'Add and delete email', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1390' do
+      context 'Add and delete email', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347918' do
         before do
           sign_in
           new_email_address = 'new_email@example.com'
@@ -78,7 +78,7 @@ module QA
         it_behaves_like 'audit event', ["Added email", "Removed email"]
       end
 
-      context 'Change password', :skip_signup_disabled, testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1391' do
+      context 'Change password', :skip_signup_disabled, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347917' do
         before do
           user = Resource::User.fabricate_via_api! do |user|
             user.username = "user_#{SecureRandom.hex(4)}"
@@ -101,7 +101,7 @@ module QA
         it_behaves_like 'audit event', ["Changed password"]
       end
 
-      context 'Start and stop user impersonation', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1392' do
+      context 'Start and stop user impersonation', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347916' do
         let!(:user_for_impersonation) { Resource::User.fabricate_via_api! }
 
         before do

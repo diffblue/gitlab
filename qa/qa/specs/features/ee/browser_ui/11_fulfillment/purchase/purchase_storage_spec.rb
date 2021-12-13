@@ -42,7 +42,7 @@ module QA
         group.remove_via_api! unless example.exception
       end
 
-      it 'adds additional storage to group namespace', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2424' do
+      it 'adds additional storage to group namespace', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347571' do
         Page::Group::Menu.perform(&:go_to_usage_quotas)
         Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
           usage_quota.storage_tab

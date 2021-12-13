@@ -26,7 +26,7 @@ module QA
           go_to_project_board(label_board_list.project)
         end
 
-        it 'shows the just created board with a "Testing" (label) list, and an issue on it', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1184' do
+        it 'shows the just created board with a "Testing" (label) list, and an issue on it', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347990' do
           Page::Component::IssueBoard::Show.perform do |show|
             expect(show.boards_dropdown).to have_content(label_board_list.board.name)
             expect(show.boards_list_header_with_index(1)).to have_content(label)
@@ -50,7 +50,7 @@ module QA
           go_to_project_board(milestone_board_list.project)
         end
 
-        it 'shows the just created board with a "1.0" (milestone) list, and an issue on it', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1485' do
+        it 'shows the just created board with a "1.0" (milestone) list, and an issue on it', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347953' do
           Page::Component::IssueBoard::Show.perform do |show|
             expect(show.boards_dropdown).to have_content(milestone_board_list.board.name)
             expect(show.boards_list_header_with_index(1)).to have_content('1.0')
@@ -83,7 +83,7 @@ module QA
           go_to_project_board(project)
         end
 
-        it 'shows the just created board with an assignee list, and an issue on it', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1183' do
+        it 'shows the just created board with an assignee list, and an issue on it', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347991' do
           Page::Component::IssueBoard::Show.perform do |show|
             expect(show.boards_dropdown).to have_content(@assignee_board_list.board.name)
             expect(show.boards_list_header_with_index(1)).to have_content(@user.name)

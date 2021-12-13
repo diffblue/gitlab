@@ -23,7 +23,7 @@ module QA
         Flow::Login.sign_in
       end
 
-      it 'creates a group iteration', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1623' do
+      it 'creates a group iteration', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347943' do
         # TODO: Remove this retry when the `Runtime::Feature.enable` method call is removed
         Support::Retrier.retry_until(max_duration: 60, retry_on_exception: true, sleep_interval: 5) do
           iteration_group.visit!
