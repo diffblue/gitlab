@@ -133,11 +133,6 @@ RSpec.describe Nav::TopNavHelper do
           it 'has expected :linksPrimary' do
             expected_links_primary = [
               ::Gitlab::Nav::TopNavMenuItem.build(
-                href: '/dashboard/projects/removed',
-                id: 'deleted',
-                title: 'Deleted projects'
-              ),
-              ::Gitlab::Nav::TopNavMenuItem.build(
                 href: '/dashboard/projects',
                 id: 'your',
                 title: 'Your projects'
@@ -156,6 +151,11 @@ RSpec.describe Nav::TopNavHelper do
                 href: '/explore/projects/topics',
                 id: 'topics',
                 title: 'Explore topics'
+              ),
+              ::Gitlab::Nav::TopNavMenuItem.build(
+                href: '/dashboard/projects/removed',
+                id: 'deleted',
+                title: 'Deleted projects'
               )
             ]
             expect(projects_view[:linksPrimary]).to eq(expected_links_primary)
