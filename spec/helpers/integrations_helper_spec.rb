@@ -71,15 +71,13 @@ RSpec.describe IntegrationsHelper do
   end
 
   describe '#integration_overrides_data' do
-    let(:integration) { build_stubbed(:jira_integration, project: project) }
+    let(:integration) { build_stubbed(:jira_integration) }
     let(:fields) do
-      {
-        edit_path: edit_project_service_path(project, integration),
-        overrides_path: overrides_admin_application_settings_integration_path(integration)
-      }
+      [
+        edit_path: edit_admin_application_settings_integration_path(integration),
+        overrides_path: overrides_admin_application_settings_integration_path(integration, format: :json)
+      ]
     end
-
-    let_it_be_with_refind(:project) { create(:project) }
 
     subject { helper.integration_overrides_data(integration) }
 
