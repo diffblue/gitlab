@@ -5,17 +5,18 @@ require 'spec_helper'
 RSpec.describe Gitlab::Graphql::Loaders::BulkEpicAggregateLoader do
   include_context 'includes EpicAggregate constants'
 
-  let_it_be(:group) { create(:group, :public) }
+  let_it_be(:ancestor) { create(:group, :public) }
+  let_it_be(:group) { create(:group, :public, parent: ancestor) }
   let_it_be(:subgroup) { create(:group, :private, parent: group)}
 
   let_it_be(:project) { create(:project, namespace: group) }
   let_it_be(:subproject) { create(:project, namespace: subgroup) }
 
-  let_it_be(:parent_epic) { create(:epic, group: group, title: 'parent epic') }
-  let_it_be(:epic_with_issues) { create(:epic, group: subgroup, parent: parent_epic, state: :opened, title: 'epic with issues') }
+  let_it_be(:parent_epic) { create(:epic, group: ancestor, title: 'parent epic') }
+  let_it_be(:epic_with_issues) { create(:epic, group: group, parent: parent_epic, state: :opened, title: 'epic with issues') }
 
   # closed, no issues
-  let_it_be(:epic_without_issues) { create(:epic, group: subgroup, parent: parent_epic, state: :closed, title: 'epic without issues') }
+  let_it_be(:epic_without_issues) { create(:epic, group: group, parent: parent_epic, state: :closed, title: 'epic without issues') }
 
   # open, public
   let_it_be(:issue1) { create(:issue, project: project, weight: 1, state: :opened) }

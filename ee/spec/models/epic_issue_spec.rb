@@ -3,11 +3,17 @@
 require 'spec_helper'
 
 RSpec.describe EpicIssue do
+  let_it_be(:ancestor) { create(:group) }
+  let_it_be(:group) { create(:group, parent: ancestor) }
+  let_it_be(:project) { create(:project, group: group) }
+  let_it_be(:epic) { create(:epic, group: group) }
+  let_it_be(:issue) { create(:issue, project: project) }
+
   describe 'validations' do
-    let(:epic) { build(:epic) }
-    let(:confidential_epic) { build(:epic, :confidential) }
-    let(:issue) { build(:issue) }
-    let(:confidential_issue) { build(:issue, :confidential) }
+    let(:epic) { build(:epic, group: group) }
+    let(:confidential_epic) { build(:epic, :confidential, group: group) }
+    let(:issue) { build(:issue, project: project) }
+    let(:confidential_issue) { build(:issue, :confidential, project: project) }
 
     it 'is valid to add non-confidential issue to non-confidential epic' do
       expect(build(:epic_issue, epic: epic, issue: issue)).to be_valid
@@ -24,11 +30,49 @@ RSpec.describe EpicIssue do
     it 'is not valid to add non-confidential issue to confidential epic' do
       expect(build(:epic_issue, epic: confidential_epic, issue: issue)).not_to be_valid
     end
+
+    context 'group hierarchy' do
+      let(:issue) { build(:issue, project: project) }
+      let(:error_message) do
+        'Issue Cannot assign an issue that does not belong under the same group (or descendant) as the epic.'
+      end
+
+      subject { described_class.new(epic: epic, issue: issue) }
+
+      context 'when epic and issue belong to the same group' do
+        let_it_be(:project) { project }
+
+        it { is_expected.to be_valid }
+      end
+
+      context 'when epic is in an ancestor group' do
+        let_it_be(:project) { create(:project, group: create(:group, parent: group)) }
+
+        it { is_expected.to be_valid }
+      end
+
+      context 'when epic is in a descendant group' do
+        let_it_be(:project) { create(:project, group: ancestor) }
+
+        it 'is invalid' do
+          expect(subject).not_to be_valid
+          expect(subject.errors.full_messages).to include(error_message)
+        end
+      end
+
+      context 'when epic and issue are at different group hierarchies' do
+        let_it_be(:project) { create(:project, group: create(:group)) }
+
+        it 'is invalid' do
+          expect(subject).not_to be_valid
+          expect(subject.errors.full_messages).to include(error_message)
+        end
+      end
+    end
   end
 
   context "relative positioning" do
     it_behaves_like "a class that supports relative positioning" do
-      let_it_be(:epic) { create(:epic) }
       let(:factory) { :epic_tree_node }
       let(:default_params) { { parent: epic, group: epic.group } }
 
@@ -38,9 +82,8 @@ RSpec.describe EpicIssue do
     end
 
     context 'with a mixed tree level' do
-      let_it_be(:epic) { create(:epic) }
-      let_it_be_with_reload(:left) { create(:epic_issue, epic: epic, relative_position: 100) }
-      let_it_be_with_reload(:middle) { create(:epic, group: epic.group, parent: epic, relative_position: 101) }
+      let_it_be_with_reload(:left) { create(:epic_issue, epic: epic, issue: issue, relative_position: 100) }
+      let_it_be_with_reload(:middle) { create(:epic, group: group, parent: epic, relative_position: 101) }
       let_it_be_with_reload(:right) { create(:epic_issue, epic: epic, relative_position: 102) }
 
       it 'can create space to the right' do
@@ -75,33 +118,6 @@ RSpec.describe EpicIssue do
 
         expect(moved.map(&:relative_position)).to all(be > right.relative_position)
       end
-    end
-  end
-
-  describe '#epic_and_issue_at_same_group_hierarchy?' do
-    let_it_be(:group) { create(:group) }
-    let_it_be(:group_a) { create(:group, parent: group) }
-    let_it_be(:group_b) { create(:group, parent: group) }
-    let_it_be(:group_a_project_1) { create(:project, group: group) }
-
-    let(:epic) { build(:epic, group: group_a) }
-
-    subject { described_class.new(epic: epic, issue: issue).epic_and_issue_at_same_group_hierarchy? }
-
-    context 'when epic and issue are at same group hierarchy' do
-      let_it_be(:group_a_project_2) { create(:project, group: group_a) }
-
-      let(:issue) { build(:issue, project: group_a_project_2) }
-
-      it { is_expected.to eq(true) }
-    end
-
-    context 'when epic and issue are at different group hierarchies' do
-      let_it_be(:group_b_project_1) { create(:project, group: group_b) }
-
-      let(:issue) { build(:issue, project: group_b_project_1) }
-
-      it { is_expected.to eq(false) }
     end
   end
 end

@@ -28,7 +28,7 @@ module EE
           epic = issue.epic
 
           next if epic.nil?
-          next unless issue.epic_issue.epic_and_issue_at_same_group_hierarchy? # TODO This check can be removed with https://gitlab.com/gitlab-org/gitlab/-/issues/339514
+          next unless issue.epic_issue.valid? # TODO This check can be removed with https://gitlab.com/gitlab-org/gitlab/-/issues/339514
 
           epic[attribute]
         end

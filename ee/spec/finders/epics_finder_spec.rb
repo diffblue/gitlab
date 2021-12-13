@@ -510,14 +510,11 @@ RSpec.describe EpicsFinder do
           let_it_be(:base_epic2) { create(:epic, group: base_group) }
           let_it_be(:base_group_milestone) { create(:milestone, group: base_group) }
           let_it_be(:base_project_milestone) { create(:milestone, project: base_group_project) }
-          let_it_be(:project2) { base_group_project }
 
-          shared_examples 'filtered by milestone' do |milestone_type|
+          shared_examples 'filtered by milestone' do
             it 'returns expected epics' do
-              project3 = milestone_type == :group ? project2 : project
-
               create(:issue, project: project, milestone: milestone, epic: epic)
-              create(:issue, project: project3, milestone: milestone, epic: epic2)
+              create(:issue, project: project, milestone: milestone, epic: epic2)
 
               params[:milestone_title] = milestone.title
 
@@ -537,11 +534,11 @@ RSpec.describe EpicsFinder do
               }
             end
 
-            it_behaves_like 'filtered by milestone', :group do
+            it_behaves_like 'filtered by milestone' do
               let_it_be(:milestone) { base_group_milestone }
             end
 
-            it_behaves_like 'filtered by milestone', :project do
+            it_behaves_like 'filtered by milestone' do
               let_it_be(:milestone) { base_project_milestone }
             end
 

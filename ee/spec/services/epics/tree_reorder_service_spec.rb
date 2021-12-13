@@ -5,7 +5,8 @@ require 'spec_helper'
 RSpec.describe Epics::TreeReorderService do
   describe '#execute' do
     let(:user) { create(:user) }
-    let(:group) { create(:group) }
+    let(:ancestor) { create(:group) }
+    let(:group) { create(:group, parent: ancestor) }
     let(:project) { create(:project, group: group) }
     let(:epic) { create(:epic, group: group) }
     let(:issue1) { create(:issue, project: project) }
@@ -149,8 +150,7 @@ RSpec.describe Epics::TreeReorderService do
           end
 
           context 'when user does not have permissions to admin the previous parent' do
-            let(:other_group) { create(:group) }
-            let(:other_epic) { create(:epic, group: other_group) }
+            let(:other_epic) { create(:epic, group: ancestor) }
             let(:new_parent_id) { GitlabSchema.id_from_object(epic) }
 
             before do
@@ -161,16 +161,14 @@ RSpec.describe Epics::TreeReorderService do
           end
 
           context 'when user does not have permissions to admin the new parent' do
-            let(:other_group) { create(:group) }
-            let(:other_epic) { create(:epic, group: other_group) }
+            let(:other_epic) { create(:epic, group: ancestor) }
             let(:new_parent_id) { GitlabSchema.id_from_object(other_epic) }
 
             it_behaves_like 'error for the tree update', 'You don\'t have permissions to move the objects.'
           end
 
           context 'when the epics of reordered epic-issue links are not subepics of the base epic' do
-            let(:another_group) { create(:group) }
-            let(:another_epic) { create(:epic, group: another_group) }
+            let(:another_epic) { create(:epic, group: ancestor) }
 
             before do
               epic_issue1.update!(epic: another_epic)
@@ -239,8 +237,7 @@ RSpec.describe Epics::TreeReorderService do
             end
 
             context 'when user does not have permissions to admin the previous parent' do
-              let(:other_group) { create(:group) }
-              let(:other_epic) { create(:epic, group: other_group) }
+              let(:other_epic) { create(:epic, group: ancestor) }
               let(:new_parent_id) { GitlabSchema.id_from_object(epic) }
 
               before do
@@ -274,22 +271,19 @@ RSpec.describe Epics::TreeReorderService do
             end
 
             context 'when user does not have permissions to admin the new parent' do
-              let(:other_group) { create(:group) }
-              let(:other_epic) { create(:epic, group: other_group) }
+              let(:other_epic) { create(:epic, group: ancestor) }
               let(:new_parent_id) { GitlabSchema.id_from_object(other_epic) }
 
               it_behaves_like 'error for the tree update', 'You don\'t have permissions to move the objects.'
             end
-
-            context 'when user '
 
             context 'when the reordered epics are not subepics of the base epic' do
               let(:another_group) { create(:group) }
               let(:another_epic) { create(:epic, group: another_group) }
 
               before do
-                epic1.update!(group: another_group, parent: another_epic)
-                epic2.update!(group: another_group, parent: another_epic)
+                epic1.update!(group: ancestor, parent: another_epic)
+                epic2.update!(group: ancestor, parent: another_epic)
               end
 
               it_behaves_like 'error for the tree update', 'You don\'t have permissions to move the objects.'

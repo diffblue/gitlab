@@ -5,10 +5,11 @@ RSpec.describe Milestones::UpdateService do
   describe '#execute' do
     context 'refresh related epic dates' do
       it 'updates milestone sourced dates' do
-        project = create(:project)
+        group = create(:group)
+        project = create(:project, group: group)
         user = build(:user)
         milestone = create(:milestone, project: project)
-        epic = create(:epic)
+        epic = create(:epic, group: group)
         create(:issue, milestone: milestone, epic: epic, project: project)
         due_date = 3.days.from_now.to_date
 

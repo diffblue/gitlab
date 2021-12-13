@@ -6,8 +6,9 @@ RSpec.describe EpicIssues::UpdateService do
   describe '#execute' do
     let_it_be(:user) { create(:user) }
     let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
     let_it_be(:epic) { create(:epic, group: group) }
-    let_it_be(:issues) { create_list(:issue, 4) }
+    let_it_be(:issues) { create_list(:issue, 4, project: project) }
     let_it_be(:epic_issue1, reload: true) { create(:epic_issue, epic: epic, issue: issues[0], relative_position: 3) }
     let_it_be(:epic_issue2, reload: true) { create(:epic_issue, epic: epic, issue: issues[1], relative_position: 600) }
     let_it_be(:epic_issue3, reload: true) { create(:epic_issue, epic: epic, issue: issues[2], relative_position: 1200) }
