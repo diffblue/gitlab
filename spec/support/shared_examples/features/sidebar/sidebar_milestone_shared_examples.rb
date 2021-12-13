@@ -27,10 +27,9 @@ RSpec.shared_examples 'milestone sidebar widget' do
       within(milestone_widget, '.gl-new-dropdown-contents') do
         expect(page.find('li:last-child')).to have_content milestone_expired.title
 
-        expect(page.all('li.gl-new-dropdown-item')[1]).to have_content milestone3.title
-        expect(page.all('li.gl-new-dropdown-item')[2]).to have_content milestone2.title
-        expect(page.all('li.gl-new-dropdown-item')[3]).to have_content milestone1.title
-        expect(page.all('li.gl-new-dropdown-item')[4]).to have_content milestone_no_duedate.title
+        [milestone3, milestone2, milestone1, milestone_no_duedate].each_with_index do |m, i|
+          expect(page.all('li.gl-new-dropdown-item')[i + 1]).to have_content m.title
+        end
       end
     end
 
