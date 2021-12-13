@@ -94,7 +94,7 @@ RSpec.describe Members::ActivateService do
         end
 
         context 'when member is not an awaiting member' do
-          let(:member) { create(:group_member, :active, group: root_group, user: user) }
+          let(:member) { create(:group_member, group: root_group, user: user) }
 
           it 'returns an error' do
             result = execute

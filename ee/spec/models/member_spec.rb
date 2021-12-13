@@ -176,16 +176,16 @@ RSpec.describe Member, type: :model do
         stub_feature_flags(saas_user_caps: false)
       end
 
-      it 'sets the group member state to created' do
+      it 'sets the group member state to active' do
         group.add_developer(user)
 
-        expect(user.group_members.last).to be_created
+        expect(user.group_members.last).to be_active
       end
 
-      it 'sets the project member state to created' do
+      it 'sets the project member state to active' do
         project.add_developer(user)
 
-        expect(user.project_members.last).to be_created
+        expect(user.project_members.last).to be_active
       end
     end
 
@@ -238,10 +238,10 @@ RSpec.describe Member, type: :model do
     context 'when user is added to a group-less project' do
       let(:project) { create(:project) }
 
-      it 'adds project member and leaves the state to created' do
+      it 'adds project member and leaves the state to active' do
         project.add_developer(user)
 
-        expect(user.project_members.last).to be_created
+        expect(user.project_members.last).to be_active
       end
     end
   end

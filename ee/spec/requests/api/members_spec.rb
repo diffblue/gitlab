@@ -1021,7 +1021,7 @@ RSpec.describe API::Members do
         end
 
         context 'when the activation fails due to no pending members to activate' do
-          let(:member) { create(:group_member, :active, group: group) }
+          let(:member) { create(:group_member, group: group) }
 
           it 'returns a bad request response' do
             put api(url, owner)
@@ -1232,14 +1232,6 @@ RSpec.describe API::Members do
           expect(subject.map { |u| u['id'] }).to match_array [awaiting_member.user_id]
         end
       end
-
-      context 'for created members' do
-        let(:state) { 'created' }
-
-        it 'returns only created members' do
-          expect(subject.map { |u| u['id'] }).to match_array [created_member.user_id]
-        end
-      end
     end
 
     context 'for group sources' do
@@ -1248,8 +1240,7 @@ RSpec.describe API::Members do
 
       it_behaves_like 'filtered results' do
         let_it_be(:awaiting_member) { create(:group_member, :awaiting, group: group) }
-        let_it_be(:active_member)   { create(:group_member, :active, group: group) }
-        let_it_be(:created_member)  { create(:group_member, :created, group: group) }
+        let_it_be(:active_member)   { create(:group_member, group: group) }
       end
     end
 
@@ -1259,8 +1250,7 @@ RSpec.describe API::Members do
 
       it_behaves_like 'filtered results' do
         let_it_be(:awaiting_member) { create(:project_member, :awaiting, project: project) }
-        let_it_be(:active_member)   { create(:project_member, :active, project: project) }
-        let_it_be(:created_member)  { create(:project_member, :created, project: project) }
+        let_it_be(:active_member)   { create(:project_member, project: project) }
       end
     end
   end
