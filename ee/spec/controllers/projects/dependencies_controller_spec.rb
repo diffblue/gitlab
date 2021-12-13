@@ -147,7 +147,7 @@ RSpec.describe Projects::DependenciesController do
                 end
 
                 it 'returns vulnerability params' do
-                  dependency = json_response['dependencies'].select { |dep| dep['name'] == 'nokogiri' }.first
+                  dependency = json_response['dependencies'].find { |dep| dep['name'] == 'nokogiri' }
                   vulnerability = dependency['vulnerabilities'].first
                   path = "/security/vulnerabilities/#{finding.vulnerability_id}"
 
@@ -182,7 +182,7 @@ RSpec.describe Projects::DependenciesController do
           end
 
           it 'include license information to response' do
-            nokogiri = json_response['dependencies'].select { |dep| dep['name'] == 'nokogiri' }.first
+            nokogiri = json_response['dependencies'].find { |dep| dep['name'] == 'nokogiri' }
 
             expect(nokogiri['licenses']).not_to be_empty
           end
