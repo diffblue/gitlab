@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { IssuableType } from '~/issues/show/constants';
+import { IssuableType } from '~/issues/constants';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import { apolloProvider } from '~/sidebar/graphql';
 import * as CEMountSidebar from '~/sidebar/mount_sidebar';
