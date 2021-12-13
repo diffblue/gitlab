@@ -10,6 +10,8 @@ module Projects
         project,
         current_user,
         { archived: true,
+          name: "#{project.name}-deleted-#{project.id}",
+          path: "#{project.path}-deleted-#{project.id}",
           marked_for_deletion_at: Time.current.utc,
           deleting_user: current_user }
       ).execute
