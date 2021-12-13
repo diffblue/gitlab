@@ -60,7 +60,7 @@ describe('Load performance extension', () => {
       await waitForPromises();
 
       expect(wrapper.text()).toContain('Load performance test metrics detected 4 changes');
-      expect(wrapper.text()).toContain('1 degraded, 1 same, 2 improved');
+      expect(wrapper.text()).toContain('1 degraded, 1 same, and 2 improved');
     });
 
     it('should render info about fixed issues', async () => {
