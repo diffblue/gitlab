@@ -14,6 +14,7 @@ module EE
       include ::Emails::UserCap
       include ::Emails::OncallRotation
       include ::Emails::GroupMemberships
+      include ::Emails::InProductMarketing
     end
 
     attr_reader :group
