@@ -1,5 +1,6 @@
 <script>
 import { GlBadge, GlTabs, GlTab } from '@gitlab/ui';
+import { settingsTabTitle, overridesTabTitle } from '~/integrations/constants';
 
 export default {
   components: {
@@ -14,10 +15,14 @@ export default {
   },
   props: {
     projectOverridesCount: {
-      type: Number,
+      type: [Number, String],
       required: false,
       default: null,
     },
+  },
+  i18n: {
+    settingsTabTitle,
+    overridesTabTitle,
   },
 };
 </script>
@@ -26,13 +31,15 @@ export default {
   <gl-tabs>
     <template #tabs-start>
       <li class="nav-item" role="presentation">
-        <a class="nav-link gl-tab-nav-item" :href="editPath">{{ __('Settings') }}</a>
+        <a class="nav-link gl-tab-nav-item" :href="editPath">{{
+          $options.i18n.settingsTabTitle
+        }}</a>
       </li>
     </template>
 
     <gl-tab active>
       <template #title>
-        {{ s__('Integrations|Projects using custom settings') }}
+        {{ $options.i18n.overridesTabTitle }}
         <gl-badge
           v-if="projectOverridesCount !== null"
           variant="muted"
