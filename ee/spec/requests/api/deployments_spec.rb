@@ -180,4 +180,84 @@ RSpec.describe API::Deployments do
       end
     end
   end
+
+  describe 'POST /projects/:id/deployments/:deployment_id/approval' do
+    shared_examples_for 'not created' do |approval_status: 'approved', response_status:, message:|
+      it 'does not create an approval' do
+        expect { post(api(path, user), params: { status: approval_status }) }.not_to change { Deployments::Approval.count }
+
+        expect(response).to have_gitlab_http_status(response_status)
+        expect(response.body).to include(message)
+      end
+    end
+
+    let(:deployment) { create(:deployment, :blocked, project: project, environment: environment, deployable: create(:ci_build, :manual, project: project)) }
+    let(:path) { "/projects/#{project.id}/deployments/#{deployment.id}/approval" }
+
+    before do
+      create(:protected_environment, :maintainers_can_deploy, project: environment.project, name: environment.name, required_approval_count: 1)
+    end
+
+    context 'when user is authorized to read project' do
+      before do
+        project.add_developer(user)
+      end
+
+      context 'and Protected Environments feature is available' do
+        before do
+          stub_licensed_features(protected_environments: true)
+        end
+
+        context 'and user is authorized to update deployment' do
+          before do
+            project.add_maintainer(user)
+          end
+
+          it 'creates an approval' do
+            expect { post(api(path, user), params: { status: 'approved' }) }.to change { Deployments::Approval.count }.by(1)
+
+            expect(response).to have_gitlab_http_status(:success)
+            expect(response).to match_response_schema('public_api/v4/deployment_approval', dir: 'ee')
+            expect(json_response['status']).to eq('approved')
+            expect(json_response.dig('user', 'id')).to eq(user.id)
+          end
+        end
+
+        context 'and user is not authorized to update deployment' do
+          include_examples 'not created', response_status: :bad_request, message: 'You do not have permission to approve or reject this deployment'
+        end
+
+        context 'with an invalid status' do
+          include_examples 'not created', approval_status: 'foo', response_status: :bad_request, message: 'status does not have a valid value'
+        end
+
+        context 'with a deployment that does not belong to the project' do
+          let(:other_project) { create(:project, :repository) }
+
+          let(:user) { other_project.creator }
+          let(:path) { "/projects/#{other_project.id}/deployments/#{deployment.id}/approval" }
+
+          include_examples 'not created', response_status: :not_found, message: '404 Not found'
+        end
+
+        context 'with a deployment that does not exist' do
+          let(:path) { "/projects/#{project.id}/deployments/0/approval" }
+
+          include_examples 'not created', response_status: :not_found, message: '404 Not found'
+        end
+      end
+
+      context 'when Protected Environments feature is not available' do
+        before do
+          stub_licensed_features(protected_environments: false)
+        end
+
+        include_examples 'not created', response_status: :bad_request, message: 'This environment is not protected'
+      end
+    end
+
+    context 'when user is not authorized to read project' do
+      include_examples 'not created', response_status: :not_found, message: '404 Project Not Found'
+    end
+  end
 end
