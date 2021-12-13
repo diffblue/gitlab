@@ -9,6 +9,17 @@ RSpec.describe PagesDeployment do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
 
+  describe '#save_verification_details' do
+    let(:verifiable_model_record) { build(:pages_deployment) }
+    let(:verification_state_table_class) { verifiable_model_record.class.verification_state_table_class }
+
+    context 'when model_record is part of available_verifiables scope' do
+      it 'creates verification details' do
+        expect { verifiable_model_record.save! }.to change { verification_state_table_class.count }.by(1)
+      end
+    end
+  end
+
   describe '.replicables_for_current_secondary' do
     where(:selective_sync_enabled, :object_storage_sync_enabled, :pages_object_storage_enabled, :synced_pages) do
       true  | true  | true  | 5

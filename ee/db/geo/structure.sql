@@ -240,7 +240,17 @@ CREATE TABLE pages_deployment_registry (
     retry_at timestamp with time zone,
     state smallint DEFAULT 0 NOT NULL,
     retry_count smallint DEFAULT 0 NOT NULL,
-    last_sync_failure character varying(255)
+    last_sync_failure character varying(255),
+    verification_started_at timestamp with time zone,
+    verified_at timestamp with time zone,
+    verification_retry_at timestamp with time zone,
+    verification_retry_count smallint DEFAULT 0 NOT NULL,
+    verification_state smallint DEFAULT 0 NOT NULL,
+    checksum_mismatch boolean DEFAULT false NOT NULL,
+    verification_checksum bytea,
+    verification_checksum_mismatched bytea,
+    verification_failure text,
+    CONSTRAINT check_7eb0430eff CHECK ((char_length(verification_failure) <= 255))
 );
 
 CREATE SEQUENCE pages_deployment_registry_id_seq
@@ -623,6 +633,12 @@ CREATE INDEX package_file_registry_failed_verification ON package_file_registry 
 CREATE INDEX package_file_registry_needs_verification ON package_file_registry USING btree (verification_state) WHERE ((state = 2) AND (verification_state = ANY (ARRAY[0, 3])));
 
 CREATE INDEX package_file_registry_pending_verification ON package_file_registry USING btree (verified_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 0));
+
+CREATE INDEX pages_deployment_registry_failed_verification ON pages_deployment_registry USING btree (verification_retry_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 3));
+
+CREATE INDEX pages_deployment_registry_needs_verification ON pages_deployment_registry USING btree (verification_state) WHERE ((state = 2) AND (verification_state = ANY (ARRAY[0, 3])));
+
+CREATE INDEX pages_deployment_registry_pending_verification ON pages_deployment_registry USING btree (verified_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 0));
 
 CREATE INDEX pipeline_artifact_registry_failed_verification ON pipeline_artifact_registry USING btree (verification_retry_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 3));
 
