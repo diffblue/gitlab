@@ -10,6 +10,7 @@ RSpec.describe Nav::TopNavHelper do
     let(:with_environments) { false }
     let(:with_operations) { false }
     let(:with_security) { false }
+    let(:with_projects) { false }
 
     let(:with_geo_secondary) { false }
     let(:with_geo_primary_node_configured) { false }
@@ -27,6 +28,7 @@ RSpec.describe Nav::TopNavHelper do
       allow(helper).to receive(:dashboard_nav_link?).with(:environments) { with_environments }
       allow(helper).to receive(:dashboard_nav_link?).with(:operations) { with_operations }
       allow(helper).to receive(:dashboard_nav_link?).with(:security) { with_security }
+      allow(helper).to receive(:dashboard_nav_link?).with(:projects) { with_projects }
 
       allow(::Gitlab::Geo).to receive(:secondary?) { with_geo_secondary }
       allow(::Gitlab::Geo).to receive(:primary_node_configured?) { with_geo_primary_node_configured }
@@ -100,6 +102,65 @@ RSpec.describe Nav::TopNavHelper do
           title: 'Go to primary site'
         )
         expect(subject[:secondary]).to eq([expected_secondary])
+      end
+    end
+
+    context 'with projects' do
+      let(:with_projects) { true }
+      let(:projects_view) { subject[:views][:projects] }
+
+      it 'has expected :primary' do
+        expected_primary = ::Gitlab::Nav::TopNavMenuItem.build(
+          css_class: 'qa-projects-dropdown',
+          data: {
+            track_action: 'click_dropdown',
+            track_label: 'projects_dropdown'
+          },
+          icon: 'project',
+          id: 'project',
+          title: 'Projects',
+          view: 'projects'
+        )
+        expect(subject[:primary]).to eq([expected_primary])
+      end
+
+      context 'projects' do
+        context 'when licensed feature is available' do
+          before do
+            stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
+          end
+
+          it 'has expected :linksPrimary' do
+            expected_links_primary = [
+              ::Gitlab::Nav::TopNavMenuItem.build(
+                href: '/dashboard/projects/removed',
+                id: 'deleted',
+                title: 'Deleted projects'
+              ),
+              ::Gitlab::Nav::TopNavMenuItem.build(
+                href: '/dashboard/projects',
+                id: 'your',
+                title: 'Your projects'
+              ),
+              ::Gitlab::Nav::TopNavMenuItem.build(
+                href: '/dashboard/projects/starred',
+                id: 'starred',
+                title: 'Starred projects'
+              ),
+              ::Gitlab::Nav::TopNavMenuItem.build(
+                href: '/explore',
+                id: 'explore',
+                title: 'Explore projects'
+              ),
+              ::Gitlab::Nav::TopNavMenuItem.build(
+                href: '/explore/projects/topics',
+                id: 'topics',
+                title: 'Explore topics'
+              )
+            ]
+            expect(projects_view[:linksPrimary]).to eq(expected_links_primary)
+          end
+        end
       end
     end
   end

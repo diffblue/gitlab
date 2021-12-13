@@ -51,7 +51,7 @@ module EE
           # only list projects with at least owner access if the user is not an admin
           finder_params[:min_access_level] = ::Gitlab::Access::OWNER
           # only list projects that belongs to a group with premium or above plan
-          finder_params[:plans] = (::Plan.paid_plans - [::Plan::BRONZE])
+          finder_params[:plans] = (::Plan::PAID_HOSTED_PLANS - [::Plan::BRONZE])
         end
 
         finder_params

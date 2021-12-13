@@ -39,10 +39,6 @@ module EE
         EE_DEFAULT_PLANS
       end
 
-      def paid_plans
-        PAID_HOSTED_PLANS
-      end
-
       # This always returns an object if running on GitLab.com
       def free
         return unless ::Gitlab.com?
