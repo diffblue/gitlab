@@ -165,7 +165,7 @@ Announced: 2021-12-22
 We decided to remove the GitLab Serverless features as they never really resonated with our users. Besides, given the continuous development of Kubernetes and Knative, our current implementations do not even work with recent versions.
 
 Announced: 2021-09-22
-Planned removal: 
+Planned removal: 2022-05-22
 
 ### Known host required for GitLab Runner SSH executor
 
@@ -174,7 +174,7 @@ In [GitLab 14.3](https://gitlab.com/gitlab-org/gitlab-runner/-/merge_requests/30
 In GitLab 15.0 and later, the default value for this configuration option will change from `true` to `false`. This means that strict host key checking will be enforced when using the GitLab Runner SSH executor.
 
 Announced: 2021-11-22
-Planned removal: 
+Planned removal: 2022-05-22
 
 ### Legacy database configuration
 
@@ -220,7 +220,7 @@ This gem has not been maintained and has very little usage. We therefore plan to
 Note that we are not deprecating the Kerberos SPNEGO integration, only the old password-based Kerberos integration.
 
 Announced: 2021-09-22
-Planned removal: 
+Planned removal: 2022-05-22
 
 ### Package pipelines in API payload is paginated
 
