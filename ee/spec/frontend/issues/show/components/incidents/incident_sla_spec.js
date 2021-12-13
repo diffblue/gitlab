@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import { merge } from 'lodash';
-import IncidentSla from 'ee/issue_show/components/incidents/incident_sla.vue';
+import IncidentSla from 'ee/issues/show/components/incidents/incident_sla.vue';
 import ServiceLevelAgreement from 'ee_component/vue_shared/components/incidents/service_level_agreement.vue';
 
 jest.mock('~/lib/utils/datetime_utility');

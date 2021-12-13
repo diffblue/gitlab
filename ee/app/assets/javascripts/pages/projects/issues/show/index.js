@@ -1,4 +1,4 @@
-import initRelatedFeatureFlags from 'ee/related_feature_flags';
+import { initRelatedFeatureFlags } from 'ee/issues';
 import { store } from '~/notes/stores';
 import initShow from '~/issues/show';
 import initRelatedIssues from '~/related_issues';

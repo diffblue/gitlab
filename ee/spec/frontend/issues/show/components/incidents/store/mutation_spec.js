@@ -1,6 +1,6 @@
 import { cloneDeep } from 'lodash';
-import * as types from 'ee/issue_show/components/incidents/store/mutation_types';
-import mutations from 'ee/issue_show/components/incidents/store/mutations';
+import * as types from 'ee/issues/show/components/incidents/store/mutation_types';
+import mutations from 'ee/issues/show/components/incidents/store/mutations';
 import { initialData } from '../mock_data';
 
 const defaultState = {
