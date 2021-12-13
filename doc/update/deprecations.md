@@ -93,7 +93,7 @@ Planned removal: 2022-05-22
 In GitLab 15.0 we are going to limit the number of characters in CI/CD job names to 255. Any pipeline with job names that exceed the 255 character limit will stop working after the 15.0 release.
 
 Announced: 2021-12-22
-Planned removal: 
+Planned removal: 2022-05-22
 
 ### Certificate-based integration with Kubernetes
 
@@ -108,7 +108,7 @@ For a more robust, secure, forthcoming, and reliable integration with Kubernetes
 [Kubernetes Agent](https://docs.gitlab.com/ee/user/clusters/agent/) to connect Kubernetes clusters with GitLab.
 
 Announced: 2021-11-15
-Planned removal: 
+Planned removal: 2022-05-22
 
 ### Converting an instance (shared) runner to a project (specific) runner is deprecated
 
@@ -270,7 +270,7 @@ Planned removal: 2022-05-22
 The `type` and `types` CI/CD keywords will be removed in GitLab 15.0. Pipelines that use these keywords will stop working, so you must switch to `stage` and `stages`, which have the same behavior.
 
 Announced: 2021-12-22
-Planned removal: 
+Planned removal: 2022-05-22
 
 ### Remove the `:dependency_proxy_for_private_groups` feature flag
 
