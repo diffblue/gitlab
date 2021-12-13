@@ -6,13 +6,12 @@ import {
   vendorScannerFilter,
   simpleScannerFilter,
   activityFilter,
-  getProjectFilter,
+  projectFilter,
 } from 'ee/security_dashboard/helpers';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import ActivityFilter from './activity_filter.vue';
 import ProjectFilter from './project_filter.vue';
-import ProjectFilterDeprecated from './project_filter_deprecated.vue';
 import ScannerFilter from './scanner_filter.vue';
 import SimpleFilter from './simple_filter.vue';
 
@@ -22,13 +21,9 @@ export default {
     ScannerFilter,
     ActivityFilter,
     ProjectFilter,
-    ProjectFilterDeprecated,
   },
   mixins: [glFeatureFlagsMixin()],
   inject: ['dashboardType'],
-  props: {
-    projects: { type: Array, required: false, default: undefined },
-  },
   data() {
     return {
       filterQuery: {},
@@ -49,12 +44,6 @@ export default {
     },
     shouldShowProjectFilter() {
       return this.isGroupDashboard || this.isInstanceDashboard;
-    },
-    shouldShowNewProjectFilter() {
-      return this.glFeatures.vulnReportNewProjectFilter && this.shouldShowProjectFilter;
-    },
-    projectFilter() {
-      return getProjectFilter(this.projects);
     },
   },
   methods: {
@@ -77,6 +66,7 @@ export default {
   vendorScannerFilter,
   simpleScannerFilter,
   activityFilter,
+  projectFilter,
 };
 </script>
 
@@ -111,14 +101,8 @@ export default {
     />
 
     <project-filter
-      v-if="shouldShowNewProjectFilter"
-      :filter="projectFilter"
-      @filter-changed="updateFilterQuery"
-    />
-    <project-filter-deprecated
-      v-else-if="shouldShowProjectFilter"
-      :filter="projectFilter"
-      :data-testid="projectFilter.id"
+      v-if="shouldShowProjectFilter"
+      :filter="$options.projectFilter"
       @filter-changed="updateFilterQuery"
     />
   </div>
