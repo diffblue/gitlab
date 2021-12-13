@@ -16,9 +16,15 @@ module QA
                 element :link_file_owner
               end
 
+              # These two lock button elements can be removed when the refactor_blob_viewer feature flag is removed
               view 'ee/app/helpers/ee/lock_helper.rb' do
                 element :lock_button
                 element :disabled_lock_button
+              end
+
+              view 'app/assets/javascripts/repository/components/blob_button_group.vue' do
+                element :lock_button, /data-qa-selector="lockBtnQASelector"/ # rubocop:disable QA/ElementWithPattern
+                element :disabled_lock_button, /data-qa-selector="lockBtnQASelector"/ # rubocop:disable QA/ElementWithPattern
               end
             end
           end
