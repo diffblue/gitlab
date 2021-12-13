@@ -13,28 +13,6 @@ import ActionButton from './action_button.vue';
 const CANCELLING_PROPERTY = 'isCancelling';
 const RETRYING_PROPERTY = 'isRetrying';
 
-function action({ loadingProperty, mutation, mutationType, defaultErrorMessage }) {
-  this.$emit('action');
-  this[loadingProperty] = true;
-  this.$apollo
-    .mutate({
-      mutation,
-      variables: {
-        id: this.scan.id,
-      },
-      update: (_store, { data = {} }) => {
-        const [errorMessage] = data[mutationType]?.errors ?? [];
-
-        if (errorMessage) {
-          this.triggerError(loadingProperty, errorMessage);
-        }
-      },
-    })
-    .catch((exception) => {
-      this.triggerError(loadingProperty, defaultErrorMessage, exception);
-    });
-}
-
 export const cancelError = s__('OnDemandScans|The scan could not be canceled.');
 export const retryError = s__('OnDemandScans|The scan could not be retried.');
 
@@ -73,8 +51,29 @@ export default {
     },
   },
   methods: {
+    action({ loadingProperty, mutation, mutationType, defaultErrorMessage }) {
+      this.$emit('action');
+      this[loadingProperty] = true;
+      this.$apollo
+        .mutate({
+          mutation,
+          variables: {
+            id: this.scan.id,
+          },
+          update: (_store, { data = {} }) => {
+            const [errorMessage] = data[mutationType]?.errors ?? [];
+
+            if (errorMessage) {
+              this.triggerError(loadingProperty, errorMessage);
+            }
+          },
+        })
+        .catch((exception) => {
+          this.triggerError(loadingProperty, defaultErrorMessage, exception);
+        });
+    },
     cancelPipeline() {
-      action.call(this, {
+      this.action({
         loadingProperty: CANCELLING_PROPERTY,
         mutation: pipelineCancelMutation,
         mutationType: 'pipelineCancel',
@@ -82,7 +81,7 @@ export default {
       });
     },
     retryPipeline() {
-      action.call(this, {
+      this.action({
         loadingProperty: RETRYING_PROPERTY,
         mutation: pipelineRetryMutation,
         mutationType: 'pipelineRetry',
