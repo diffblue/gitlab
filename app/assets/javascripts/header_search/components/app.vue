@@ -138,6 +138,7 @@ export default {
     class="header-search gl-relative"
   >
     <gl-search-box-by-type
+      id="search"
       v-model="searchText"
       role="searchbox"
       class="gl-z-index-1"
