@@ -46,14 +46,16 @@ RSpec.describe RspecFlaky::FlakyExample, :aggregate_failures do
       let(:flaky_example) { described_class.new(args) }
 
       it 'returns valid attributes' do
-        expect(flaky_example.to_h[:uid]).to eq(flaky_example_attrs[:uid])
-        expect(flaky_example.to_h[:file]).to eq(flaky_example_attrs[:file])
-        expect(flaky_example.to_h[:line]).to eq(flaky_example_attrs[:line])
-        expect(flaky_example.to_h[:description]).to eq(flaky_example_attrs[:description])
-        expect(flaky_example.to_h[:first_flaky_at]).to eq(expected_first_flaky_at)
-        expect(flaky_example.to_h[:last_flaky_at]).to eq(expected_last_flaky_at)
-        expect(flaky_example.to_h[:last_attempts_count]).to eq(flaky_example_attrs[:last_attempts_count])
-        expect(flaky_example.to_h[:flaky_reports]).to eq(expected_flaky_reports)
+        attrs = flaky_example.to_h
+
+        expect(attrs[:uid]).to eq(flaky_example_attrs[:uid])
+        expect(attrs[:file]).to eq(flaky_example_attrs[:file])
+        expect(attrs[:line]).to eq(flaky_example_attrs[:line])
+        expect(attrs[:description]).to eq(flaky_example_attrs[:description])
+        expect(attrs[:first_flaky_at]).to eq(expected_first_flaky_at)
+        expect(attrs[:last_flaky_at]).to eq(expected_last_flaky_at)
+        expect(attrs[:last_attempts_count]).to eq(flaky_example_attrs[:last_attempts_count])
+        expect(attrs[:flaky_reports]).to eq(expected_flaky_reports)
       end
     end
 

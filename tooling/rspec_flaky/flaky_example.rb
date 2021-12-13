@@ -17,11 +17,7 @@ module RspecFlaky
 
   # This represents a flaky RSpec example and is mainly meant to be saved in a JSON file
   class FlakyExample
-    attr_reader :attributes
-    alias_method :to_h, :attributes
-
     def initialize(example_hash)
-      example_hash[:last_attempts_count] ||= example_hash[:attempts]
       @attributes = {
         first_flaky_at: Time.now,
         last_flaky_at: Time.now,
@@ -45,5 +41,13 @@ module RspecFlaky
         attributes[:last_flaky_job] = "#{ENV['CI_JOB_URL']}"
       end
     end
+
+    def to_h
+      attributes.dup
+    end
+
+    private
+
+    attr_reader :attributes
   end
 end
