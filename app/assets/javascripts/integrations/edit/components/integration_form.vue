@@ -53,8 +53,8 @@ export default {
   data() {
     return {
       integrationActive: false,
-      testingLoading: false,
-      saveLoading: false,
+      isTesting: false,
+      isSaving: false,
     };
   },
   computed: {
@@ -78,14 +78,8 @@ export default {
     showTestButton() {
       return this.propsSource.canTest;
     },
-    disableSaveButton() {
-      return Boolean(this.isResetting || this.testingLoading);
-    },
-    disableResetButton() {
-      return Boolean(this.isSaving || this.testingLoading);
-    },
-    disableTestButton() {
-      return Boolean(this.isResetting || this.saveLoading);
+    disableButtons() {
+      return Boolean(this.isSaving || this.isResetting || this.isTesting);
     },
   },
   mounted() {
@@ -95,10 +89,10 @@ export default {
   methods: {
     ...mapActions(['setOverride', 'fetchResetIntegration', 'requestJiraIssueTypes']),
     onSaveClick() {
-      this.saveLoading = true;
+      this.isSaving = true;
 
       if (this.integrationActive && !this.form.checkValidity()) {
-        this.saveLoading = false;
+        this.isSaving = false;
         eventHub.$emit(VALIDATE_INTEGRATION_FORM_EVENT);
         return;
       }
@@ -106,7 +100,7 @@ export default {
       this.form.submit();
     },
     onTestClick() {
-      this.testingLoading = true;
+      this.isTesting = true;
 
       if (!this.form.checkValidity()) {
         eventHub.$emit(VALIDATE_INTEGRATION_FORM_EVENT);
@@ -128,7 +122,7 @@ export default {
           Sentry.captureException(error);
         })
         .finally(() => {
-          this.testingLoading = false;
+          this.isTesting = false;
         });
     },
     onResetClick() {
@@ -212,8 +206,8 @@ export default {
               v-gl-modal.confirmSaveIntegration
               category="primary"
               variant="confirm"
-              :loading="saveLoading"
-              :disabled="disableSaveButton"
+              :loading="isSaving"
+              :disabled="disableButtons"
               data-qa-selector="save_changes_button"
             >
               {{ __('Save changes') }}
@@ -225,8 +219,8 @@ export default {
             category="primary"
             variant="confirm"
             type="submit"
-            :loading="saveLoading"
-            :disabled="disableSaveButton"
+            :loading="isSaving"
+            :disabled="disableButtons"
             data-testid="save-button"
             data-qa-selector="save_changes_button"
             @click.prevent="onSaveClick"
@@ -238,8 +232,8 @@ export default {
             v-if="showTestButton"
             category="secondary"
             variant="confirm"
-            :loading="testingLoading"
-            :disabled="disableTestButton"
+            :loading="isTesting"
+            :disabled="disableButtons"
             data-testid="test-button"
             @click.prevent="onTestClick"
           >
@@ -252,7 +246,7 @@ export default {
               category="secondary"
               variant="confirm"
               :loading="isResetting"
-              :disabled="disableResetButton"
+              :disabled="disableButtons"
               data-testid="reset-button"
             >
               {{ __('Reset') }}
