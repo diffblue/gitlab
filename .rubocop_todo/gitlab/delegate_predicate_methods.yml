@@ -7,7 +7,6 @@ Gitlab/DelegatePredicateMethods:
   - app/models/concerns/resolvable_discussion.rb
   - app/models/project.rb
   - ee/app/models/concerns/ee/ci/metadatable.rb
-  - ee/app/models/ee/group.rb
   - ee/app/models/ee/namespace.rb
   - ee/app/models/license.rb
   - lib/gitlab/ci/trace/stream.rb
