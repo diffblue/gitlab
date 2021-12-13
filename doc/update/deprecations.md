@@ -76,6 +76,7 @@ A breaking change will occur for the Runner [API](https://docs.gitlab.com/ee/api
 Instead of the GitLab Runner API endpoints returning `offline` and `not_connected` for runners that have not contacted the GitLab instance in the past three months, the API endpoints will return the `stale` value, which was introduced in 14.6.
 
 Announced: 2021-12-22
+Planned removal: 2022-05-22
 
 ### Audit events for repository push events
 
@@ -133,6 +134,7 @@ We deprecated legacy names for approval status of license policy (blacklisted, a
 If you are using our License Compliance API you should stop using the `approved` and `blacklisted` query parameters, they are now `allowed` and `denied`. In 15.0 the responses will also stop using `approved` and `blacklisted` so you need to adjust any of your custom tools to use the old and new values so they do not break with the 15.0 release. 
 
 Announced: 2021-12-22
+Planned removal: 2022-05-22
 
 ### Deprecate support for SLES 12 SP2
 
@@ -149,6 +151,7 @@ will return `never_contacted` instead of `not_connected` as the status values in
 Runners that have never contacted the GitLab instance will also return `stale` if created more than 3 months ago.
 
 Announced: 2021-12-22
+Planned removal: 2022-05-22
 
 ### Deprecation of bundler-audit Dependency Scanning tool
 
@@ -157,6 +160,7 @@ As of 14.6 bundler-audit is being deprecated from Dependency Scanning. It will c
 If you have explicitly excluded bundler-audit using DS_EXCLUDED_ANALYZERS you will need to clean up (remove the reference) in 15.0. If you have customized your pipeline's Dependency Scanning configuration, for example to edit the `bundler-audit-dependency_scanning` job, you will want to switch to gemnasium-dependency_scanning before removal in 15.0, to prevent your pipeline from failing. If you have not used the DS_EXCLUDED_ANALYZERS to reference bundler-audit, or customized your template specifically for bundler-audit, you will not need to take action.
 
 Announced: 2021-12-22
+Planned removal: 2022-05-22
 
 ### GitLab Serverless
 
