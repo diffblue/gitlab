@@ -12,7 +12,7 @@ import { mockIterationToken, mockIterations } from '../mock_data';
 jest.mock('~/flash');
 
 describe('IterationToken', () => {
-  const id = 123;
+  const id = '123';
   let wrapper;
 
   const createComponent = ({
