@@ -11,6 +11,7 @@ describe('GroupsApi', () => {
     api_version: dummyApiVersion,
     relative_url_root: dummyUrlRoot,
   };
+  const namespaceId = 1000;
 
   let originalGon;
   let mock;
@@ -27,8 +28,6 @@ describe('GroupsApi', () => {
   });
 
   describe('Billable members list', () => {
-    const namespaceId = 1000;
-
     describe('fetchBillableGroupMembersList', () => {
       const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${namespaceId}/billable_members`;
 
@@ -72,6 +71,22 @@ describe('GroupsApi', () => {
 
         expect(data).toEqual([]);
         expect(axios.delete).toHaveBeenCalledWith(expectedUrl);
+      });
+    });
+  });
+
+  describe('Pending group members list', () => {
+    const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${namespaceId}/pending_members`;
+
+    it('sends GET request using the right URL', async () => {
+      jest.spyOn(axios, 'get');
+      mock.onGet(expectedUrl).replyOnce(httpStatus.OK, []);
+
+      const { data } = await GroupsApi.fetchPendingGroupMembersList(namespaceId);
+
+      expect(data).toEqual([]);
+      expect(axios.get).toHaveBeenCalledWith(expectedUrl, {
+        params: { page: 1, per_page: DEFAULT_PER_PAGE, state: 'awaiting' },
       });
     });
   });
