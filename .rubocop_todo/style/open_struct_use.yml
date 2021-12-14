@@ -2,7 +2,6 @@
 Style/OpenStructUse:
   Exclude:
   - app/helpers/application_settings_helper.rb
-  - ee/spec/db/production/license_spec.rb
   - ee/spec/features/projects/new_project_spec.rb
   - ee/spec/finders/template_finder_spec.rb
   - ee/spec/graphql/ee/resolvers/board_lists_resolver_spec.rb
