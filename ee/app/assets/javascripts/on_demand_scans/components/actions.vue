@@ -3,6 +3,7 @@ import { GlButton } from '@gitlab/ui';
 import pipelineCancelMutation from '~/pipelines/graphql/mutations/cancel_pipeline.mutation.graphql';
 import pipelineRetryMutation from '~/pipelines/graphql/mutations/retry_pipeline.mutation.graphql';
 import { __, s__ } from '~/locale';
+import { getSecurityTabPath } from 'ee/vue_shared/security_reports/utils';
 import {
   PIPELINES_GROUP_RUNNING,
   PIPELINES_GROUP_PENDING,
@@ -51,6 +52,9 @@ export default {
     },
     hasResults() {
       return this.isRetryable || this.scan?.detailedStatus?.group === PIPELINES_GROUP_SUCCESS;
+    },
+    viewResultsPath() {
+      return this.hasResults ? getSecurityTabPath(this.scan.path) : '';
     },
   },
   watch: {
@@ -119,7 +123,7 @@ export default {
       v-if="hasResults"
       data-testid="view-scan-results-button"
       size="small"
-      :href="scan.path"
+      :href="viewResultsPath"
     >
       {{ $options.i18n.viewResults }}
     </gl-button>

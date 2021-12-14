@@ -167,6 +167,6 @@ describe('Actions', () => {
     const viewScanResultsButton = findViewScanResultsButton();
 
     expect(viewScanResultsButton.exists()).toBe(true);
-    expect(viewScanResultsButton.attributes('href')).toBe(scan.path);
+    expect(viewScanResultsButton.attributes('href')).toBe(`${scan.path}/security`);
   });
 });
