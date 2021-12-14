@@ -19,15 +19,19 @@ module RequirementsManagement
       raise Gitlab::Access::AccessDeniedError unless can?(current_user, :create_requirement, project)
 
       attrs = whitelisted_requirement_params.merge(author: current_user)
-      requirement = project.requirements.new(attrs)
+      create_requirement(project, attrs)
+    end
+
+    private
+
+    def create_requirement(project, attributes)
+      requirement = project.requirements.new(attributes)
 
       requirement.requirement_issue ||= sync_issue_for(requirement)
       requirement.save
 
       requirement
     end
-
-    private
 
     def perform_sync(requirement, attributes)
       attributes[:issue_type] = 'requirement'

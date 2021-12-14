@@ -233,7 +233,7 @@ module EE
         # so the sync happens even if the Requirements feature is no longer available via the license.
         requirement = issue.requirement || RequirementsManagement::Requirement.new
 
-        requirement.assign_attributes(sync_attrs)
+        requirement.assign_attributes(sync_attrs.merge(requirement_issue: issue))
 
         requirement if requirement.changed?
       end

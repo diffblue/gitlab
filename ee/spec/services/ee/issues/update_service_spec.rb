@@ -573,8 +573,8 @@ RSpec.describe Issues::UpdateService do
       context 'if there is an associated requirement' do
         let_it_be_with_reload(:requirement) { create(:requirement, title: title, description: description, requirement_issue: issue, project: project) }
 
-        it 'does not update the unrelated field' do
-          expect { subject }.not_to change { requirement.reload.state }
+        it 'updates the mapped field' do
+          expect { subject }.to change { requirement.reload.state }.from("opened").to("archived")
         end
 
         it 'updates the synced requirement with title and/or description' do

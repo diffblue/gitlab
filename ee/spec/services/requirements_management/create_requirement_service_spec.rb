@@ -54,9 +54,12 @@ RSpec.describe RequirementsManagement::CreateRequirementService do
         end
 
         context 'when creation of requirement fails' do
+          let_it_be(:requirement2) { create(:requirement, project: project, state: :opened, author: user) }
+
           it 'does not create issue' do
             allow_next_instance_of(RequirementsManagement::Requirement) do |instance|
               allow(instance).to receive(:valid?).and_return(false)
+              allow(instance).to receive(:valid?).with(:before_requirement_issue).and_return(false)
             end
 
             expect { subject }. to change { Issue.count }.by(0)
@@ -65,13 +68,21 @@ RSpec.describe RequirementsManagement::CreateRequirementService do
         end
 
         context 'when creation of issue fails' do
-          it 'does not create requirement' do
+          before do
             allow_next_instance_of(Issue) do |instance|
               allow(instance).to receive(:valid?).and_return(false)
             end
+          end
 
+          it 'does not create requirement' do
             expect { subject }. to change { Issue.count }.by(0)
               .and change { RequirementsManagement::Requirement.count }.by(0)
+          end
+
+          it 'logs error' do
+            expect(::Gitlab::AppLogger).to receive(:info).with(a_hash_including(message: /Associated issue/))
+
+            subject
           end
         end
       end

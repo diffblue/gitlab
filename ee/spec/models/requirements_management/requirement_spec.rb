@@ -17,23 +17,38 @@ RSpec.describe RequirementsManagement::Requirement do
     it_behaves_like 'a model with a requirement issue association'
   end
 
+  describe 'delegate' do
+    subject { build(:requirement) }
+
+    delegated_attributes = %i[
+      author author_id title title_html description
+      description_html cached_markdown_version
+    ]
+
+    delegated_attributes.each do |attr_name|
+      it { is_expected.to delegate_method(attr_name).to(:requirement_issue).allow_nil }
+    end
+
+    context 'with nil attributes' do
+      let_it_be(:requirement) { create(:requirement, project: project, author: user, description: 'Test', state: 'archived') }
+
+      (delegated_attributes - [:title]).each do |attr_name|
+        it "returns delegated #{attr_name} value" do
+          requirement.update_attribute(attr_name, nil)
+
+          expect(requirement.send(attr_name)).not_to be_nil
+          expect(requirement.send(attr_name)).to eq(requirement.requirement_issue.send(attr_name))
+        end
+      end
+    end
+  end
+
   describe 'validations' do
     subject { build(:requirement) }
 
+    it { is_expected.to validate_uniqueness_of(:issue_id) }
     it { is_expected.to validate_presence_of(:project) }
-    it { is_expected.to validate_presence_of(:author) }
-    it { is_expected.to validate_presence_of(:title) }
-
-    it { is_expected.to validate_length_of(:title).is_at_most(::Issuable::TITLE_LENGTH_MAX) }
-    it { is_expected.to validate_length_of(:title_html).is_at_most(::Issuable::TITLE_HTML_LENGTH_MAX) }
-
-    context 'with requirement issue' do
-      let(:ri) { create(:requirement_issue) }
-
-      subject { build(:requirement, requirement_issue: ri) }
-
-      it { is_expected.to validate_uniqueness_of(:issue_id).allow_nil }
-    end
+    it { is_expected.to validate_presence_of(:requirement_issue) }
 
     it 'is limited to a unique requirement_issue' do
       requirement_issue = create(:requirement_issue)
@@ -200,6 +215,34 @@ RSpec.describe RequirementsManagement::Requirement do
     context 'when destroying a requirement issue' do
       it 'also destroys the associated requirement' do
         expect { requirement_issue.destroy! }.to change { RequirementsManagement::Requirement.count }.by(-1)
+      end
+    end
+  end
+
+  describe '#state' do
+    let_it_be_with_reload(:requirement) { create(:requirement, state: :archived) }
+
+    context 'when linked requirement issue is not present' do
+      before do
+        requirement.requirement_issue = nil
+      end
+
+      it 'returns nil' do
+        expect(requirement.state).to be_nil
+      end
+    end
+
+    context 'when linked requirement issue is present' do
+      it 'returns requirement issue stored state' do
+        requirement.requirement_issue.state = 'opened'
+
+        expect(requirement.state).to eq('opened')
+      end
+
+      it 'returns mapped value for state' do
+        requirement.requirement_issue.state = 'closed'
+
+        expect(requirement.state).to eq('archived')
       end
     end
   end

@@ -9,29 +9,32 @@ module RequirementsManagement
   module SyncWithRequirementIssue
     def sync_issue_for(requirement)
       # We can't wrap the change in a Transaction (see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/64929#note_647123684)
-      # so we'll check if both are valid before saving
-      if requirement.valid? && (requirement.requirement_issue || requirement.new_record?)
-        synced_issue = save_requirement_issue(requirement)
+      # so we'll check if both are valid before saving, we also pass special context
+      # to avoid validating requirement's issue presence which is not created yet
+      return unless requirement.valid?(:before_requirement_issue)
 
-        return synced_issue if synced_issue.valid?
+      attributes = attrs_to_sync(requirement)
+      return if !requirement.new_record? && attributes.empty?
 
-        requirement.requirement_issue_sync_error!
+      synced_issue = perform_sync(requirement, attributes)
+      return synced_issue if synced_issue.valid?
 
-        ::Gitlab::AppLogger.info(message: "Requirement-Issue Sync: Associated issue could not be saved", project_id: project.id, user_id: current_user.id, params: params)
+      requirement.requirement_issue_sync_error!(invalid_issue: synced_issue)
 
-        nil
-      end
+      ::Gitlab::AppLogger.info(
+        message: "Requirement-Issue Sync: Associated issue could not be saved",
+        project_id: project.id,
+        user_id: current_user.id,
+        params: params
+      )
+
+      nil
     end
 
-    def save_requirement_issue(requirement)
+    def attrs_to_sync(requirement)
       sync_params = RequirementsManagement::Requirement.sync_params
       changed_attrs = requirement.changed.map(&:to_sym) & sync_params
-
-      return unless changed_attrs.any?
-
-      sync_attrs = requirement.attributes.with_indifferent_access.slice(*changed_attrs)
-
-      perform_sync(requirement, sync_attrs)
+      requirement.attributes.with_indifferent_access.slice(*changed_attrs)
     end
 
     # Overriden on subclasses
