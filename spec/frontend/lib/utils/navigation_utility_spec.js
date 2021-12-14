@@ -107,7 +107,6 @@ describe('initPrefetchLinks', () => {
         expect.any(Function),
         true,
       );
-      expect(newLink.removeEventListener).toHaveBeenCalledWith('mouseout', expect.any(Function));
     });
   });
 });
