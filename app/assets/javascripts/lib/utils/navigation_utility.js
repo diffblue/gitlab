@@ -34,14 +34,13 @@ export function initPrefetchLinks(selector) {
     };
 
     const mouseOverHandler = () => {
-      el.addEventListener('mouseout', mouseOutHandler, { passive: true });
+      el.addEventListener('mouseout', mouseOutHandler, { once:true, passive: true });
 
       mouseOverTimer = setTimeout(() => {
         if (el.href) prefetchDocument(el.href);
 
         // Only execute once
         el.removeEventListener('mouseover', mouseOverHandler, true);
-        el.removeEventListener('mouseout', mouseOutHandler);
 
         mouseOverTimer = undefined;
       }, 100);
