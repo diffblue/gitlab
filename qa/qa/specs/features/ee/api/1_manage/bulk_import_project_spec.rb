@@ -45,12 +45,18 @@ module QA
         end
       end
 
-      let(:imported_projects) do
-        imported_group.reload!.projects
-      end
+      let(:imported_projects) { imported_group.reload!.projects }
+      let(:imported_project) { imported_projects.first }
 
       let(:import_failures) do
         imported_group.import_details.sum([]) { |details| details[:failures] }
+      end
+
+      def expect_import_finished
+        imported_group # trigger import
+
+        expect { imported_group.import_status }.to eventually_eq('finished').within(import_wait_duration)
+        expect(imported_projects.count).to eq(1), 'Expected to have 1 imported project'
       end
 
       before do
@@ -72,16 +78,12 @@ module QA
       end
 
       context 'with project' do
-        before do
-          imported_group # trigger import
-        end
-
         it(
           'successfully imports project',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347610'
         ) do
-          expect { imported_group.import_status }.to eventually_eq('finished').within(import_wait_duration)
-          expect(imported_projects.count).to eq(1), 'Expected to have 1 imported project'
+          expect_import_finished
+
           expect(imported_projects.first).to eq(source_project)
         end
       end
@@ -110,26 +112,20 @@ module QA
 
         before do
           source_issue # fabricate source group, project, issue
-          imported_group # trigger import
         end
 
         it(
           'successfully imports issue',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347608'
         ) do
-          expect { imported_group.import_status }.to eventually_eq('finished').within(import_wait_duration)
-          expect(imported_projects.count).to eq(1), 'Expected to have 1 imported project'
+          expect_import_finished
 
-          aggregate_failures do
-            expect(imported_issues.count).to eq(1)
-            expect(imported_issue.reload!).to eq(source_issue)
-          end
+          expect(imported_issues.count).to eq(1)
+          expect(imported_issue).to eq(source_issue)
         end
       end
 
       context 'with repository' do
-        let(:imported_project) { imported_projects.first }
-
         let(:source_commits) { source_project.commits.map { |c| c.except(:web_url) } }
         let(:source_tags) do
           source_project.repository_tags.tap do |tags|
@@ -165,17 +161,15 @@ module QA
         before do
           source_project.create_repository_branch('test-branch')
           source_project.create_repository_tag('v0.0.1')
-          imported_group # trigger import
         end
 
         it(
           'successfully imports repository',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347570'
         ) do
-          expect { imported_group.import_status }.to eventually_eq('finished').within(import_wait_duration)
-          expect(imported_projects.count).to eq(1), 'Expected to have 1 imported project'
-
           aggregate_failures do
+            expect_import_finished
+
             expect(imported_commits).to match_array(source_commits)
             expect(imported_tags).to match_array(source_tags)
             expect(imported_branches).to match_array(source_branches)
@@ -186,16 +180,47 @@ module QA
       context 'with wiki' do
         before do
           source_project.create_wiki_page(title: 'Import test project wiki', content: 'Wiki content')
-          imported_group # trigger import
         end
 
         it(
           'successfully imports project wiki',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347567'
         ) do
-          expect { imported_group.import_status }.to eventually_eq('finished').within(import_wait_duration)
-          expect(imported_projects.count).to eq(1), 'Expected to have 1 imported project'
+          expect_import_finished
+
           expect(imported_projects.first.wikis).to eq(source_project.wikis)
+        end
+      end
+
+      context 'with merge request' do
+        let(:source_mr) do
+          Resource::MergeRequest.fabricate_via_api! do |mr|
+            mr.no_preparation = true
+            mr.project = source_project
+            mr.api_client = api_client
+          end
+        end
+
+        let(:imported_mrs) do
+          imported_project.merge_requests
+        end
+
+        let(:imported_mr) do
+          Resource::MergeRequest.init do |mr|
+            mr.project = imported_project
+            mr.iid = imported_mrs.first[:iid]
+          end
+        end
+
+        before do
+          source_mr # fabricate mr for import
+        end
+
+        it 'successfully imports merge request' do
+          expect_import_finished
+
+          expect(imported_mrs.count).to eq(1)
+          expect(imported_mr).to eq(source_mr)
         end
       end
     end
