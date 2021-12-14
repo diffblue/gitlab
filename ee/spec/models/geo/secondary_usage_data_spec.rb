@@ -54,28 +54,28 @@ RSpec.describe Geo::SecondaryUsageData, :geo, type: :model do
       allow(prometheus_client).to receive(:query).and_return([])
     end
 
-    context 'metric git_fetch_event_count_weekly' do
+    shared_examples 'update specific metric' do |metric, query|
       it 'gets metrics from prometheus' do
         expected_result = 48
-        allow(prometheus_client).to receive(:query).with(Geo::SecondaryUsageData::GIT_FETCH_EVENT_COUNT_WEEKLY_QUERY).and_return([{ "value" => [1614029769.82, expected_result.to_s] }])
+        allow(prometheus_client).to receive(:query).with(query).and_return([{ "value" => [1614029769.82, expected_result.to_s] }])
 
         expect do
           described_class.update_metrics!
         end.to change { described_class.count }.by(1)
 
         expect(described_class.last).to be_valid
-        expect(described_class.last.git_fetch_event_count_weekly).to eq(expected_result)
+        expect(described_class.last.payload[metric]).to eq(expected_result)
       end
 
       it 'returns nil if metric is unavailable' do
-        allow(prometheus_client).to receive(:query).with(Geo::SecondaryUsageData::GIT_FETCH_EVENT_COUNT_WEEKLY_QUERY).and_return([])
+        allow(prometheus_client).to receive(:query).with(query).and_return([])
 
         expect do
           described_class.update_metrics!
         end.to change { described_class.count }.by(1)
 
         expect(described_class.last).to be_valid
-        expect(described_class.last.git_fetch_event_count_weekly).to be_nil
+        expect(described_class.last.payload[metric]).to be_nil
       end
 
       it 'returns nil if it cannot reach prometheus' do
@@ -88,46 +88,24 @@ RSpec.describe Geo::SecondaryUsageData, :geo, type: :model do
         end.to change { described_class.count }.by(1)
 
         expect(described_class.last).to be_valid
-        expect(described_class.last.git_fetch_event_count_weekly).to be_nil
+        expect(described_class.last.payload[metric]).to be_nil
       end
     end
 
+    context 'metric git_fetch_event_count_weekly' do
+      it_behaves_like 'update specific metric', 'git_fetch_event_count_weekly', Geo::SecondaryUsageData::GIT_FETCH_EVENT_COUNT_WEEKLY_QUERY
+    end
+
     context 'metric git_push_event_count_weekly' do
-      it 'gets metrics from prometheus' do
-        expected_result = 48
-        allow(prometheus_client).to receive(:query).with(Geo::SecondaryUsageData::GIT_PUSH_EVENT_COUNT_WEEKLY_QUERY).and_return([{ "value" => [1614029769.82, expected_result.to_s] }])
+      it_behaves_like 'update specific metric', 'git_push_event_count_weekly', Geo::SecondaryUsageData::GIT_PUSH_EVENT_COUNT_WEEKLY_QUERY
+    end
 
-        expect do
-          described_class.update_metrics!
-        end.to change { described_class.count }.by(1)
+    context 'metric proxy_remote_requests_event_count_weekly' do
+      it_behaves_like 'update specific metric', 'proxy_remote_requests_event_count_weekly', Geo::SecondaryUsageData::PROXY_REMOTE_REQUESTS_EVENT_COUNT_WEEKLY_QUERY
+    end
 
-        expect(described_class.last).to be_valid
-        expect(described_class.last.git_push_event_count_weekly).to eq(expected_result)
-      end
-
-      it 'returns nil if metric is unavailable' do
-        allow(prometheus_client).to receive(:query).with(Geo::SecondaryUsageData::GIT_PUSH_EVENT_COUNT_WEEKLY_QUERY).and_return([])
-
-        expect do
-          described_class.update_metrics!
-        end.to change { described_class.count }.by(1)
-
-        expect(described_class.last).to be_valid
-        expect(described_class.last.git_push_event_count_weekly).to be_nil
-      end
-
-      it 'returns nil if it cannot reach prometheus' do
-        expect_next_instance_of(described_class) do |instance|
-          expect(instance).to receive(:with_prometheus_client).and_return(nil)
-        end
-
-        expect do
-          described_class.update_metrics!
-        end.to change { described_class.count }.by(1)
-
-        expect(described_class.last).to be_valid
-        expect(described_class.last.git_push_event_count_weekly).to be_nil
-      end
+    context 'metric proxy_local_requests_event_count_weekly' do
+      it_behaves_like 'update specific metric', 'proxy_local_requests_event_count_weekly', Geo::SecondaryUsageData::PROXY_LOCAL_REQUESTS_EVENT_COUNT_WEEKLY_QUERY
     end
   end
 end
