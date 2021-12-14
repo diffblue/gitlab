@@ -39344,6 +39344,9 @@ msgstr ""
 msgid "Webhooks|Tag push events"
 msgstr ""
 
+msgid "Webhooks|The webhook was triggered more than %{limit} times per minute and is now disabled. To re-enable this webhook, fix the problems shown in %{strong_start}Recent events%{strong_end}, then re-test your settings. %{support_link_start}Contact Support%{support_link_end} if you need help re-enabling your webhook."
+msgstr ""
+
 msgid "Webhooks|Trigger"
 msgstr ""
 
@@ -39399,6 +39402,9 @@ msgid "Webhooks|URL must be percent-encoded if neccessary."
 msgstr ""
 
 msgid "Webhooks|Use this token to validate received payloads. It is sent with the request in the X-Gitlab-Token HTTP header."
+msgstr ""
+
+msgid "Webhooks|Webhook was automatically disabled"
 msgstr ""
 
 msgid "Webhooks|Wiki page events"
