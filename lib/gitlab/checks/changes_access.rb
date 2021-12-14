@@ -35,7 +35,7 @@ module Gitlab
       def commits
         newrevs = @changes.map do |change|
           newrev = change[:newrev]
-          newrev unless newrev.blank? || Gitlab::Git.blank_ref?(newrev)
+          newrev unless blank_rev?(newrev)
         end.compact
 
         return [] if newrevs.empty?
@@ -80,7 +80,7 @@ module Gitlab
         @single_changes_accesses ||=
           changes.map do |change|
             commits =
-              if change[:newrev].blank? || Gitlab::Git.blank_ref?(change[:newrev])
+              if blank_rev?(change[:newrev])
                 []
               else
                 Gitlab::Lazy.new { commits_for(change[:newrev]) }
@@ -108,6 +108,10 @@ module Gitlab
 
       def bulk_access_checks!
         Gitlab::Checks::LfsCheck.new(self).validate!
+      end
+
+      def blank_rev?(rev)
+        rev.blank? || Gitlab::Git.blank_ref?(rev)
       end
     end
   end
