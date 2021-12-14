@@ -38,7 +38,6 @@ Style/OpenStructUse:
   - spec/lib/gitlab/database/migrations/runner_spec.rb
   - spec/lib/gitlab/gitaly_client/blobs_stitcher_spec.rb
   - spec/lib/gitlab/gitaly_client/diff_stitcher_spec.rb
-  - spec/lib/gitlab/graphql/pagination/keyset/connection_spec.rb
   - spec/lib/gitlab/legacy_github_import/project_creator_spec.rb
   - spec/lib/gitlab/quick_actions/command_definition_spec.rb
   - spec/models/design_management/design_action_spec.rb
