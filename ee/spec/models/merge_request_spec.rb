@@ -1114,7 +1114,7 @@ RSpec.describe MergeRequest do
       before do
         allow(merge_request).to receive(:mergeable_state?).and_return(true)
 
-        merge_request.target_project.update(approvals_before_merge: 1)
+        merge_request.target_project.update!(approvals_before_merge: 1)
         project.add_developer(user)
       end
 
@@ -1123,7 +1123,7 @@ RSpec.describe MergeRequest do
       end
 
       it 'return true if approved' do
-        merge_request.approvals.create(user: user)
+        merge_request.approvals.create!(user: user)
 
         is_expected.to be_truthy
       end

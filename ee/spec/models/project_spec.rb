@@ -487,7 +487,7 @@ RSpec.describe Project do
       project2 = create(:project)
 
       expect do
-        project2.update(mirror: true, import_url: generate(:url), mirror_user: project.creator)
+        project2.update!(mirror: true, import_url: generate(:url), mirror_user: project.creator)
       end.to change { ProjectImportState.where(project: project2).count }.from(0).to(1)
     end
   end
@@ -514,7 +514,7 @@ RSpec.describe Project do
 
           freeze_time do
             expect do
-              project.update(mirror: true, mirror_user_id: project.creator.id, import_url: generate(:url))
+              project.update!(mirror: true, mirror_user_id: project.creator.id, import_url: generate(:url))
             end.to change { ProjectImportState.count }.by(1)
 
             expect(project.import_state.next_execution_timestamp).to be_like_time(Time.current)
@@ -528,7 +528,7 @@ RSpec.describe Project do
 
           freeze_time do
             expect do
-              project.update(mirror: true, mirror_user_id: project.creator.id)
+              project.update!(mirror: true, mirror_user_id: project.creator.id)
             end.not_to change { ProjectImportState.count }
 
             expect(project.import_state.next_execution_timestamp).to be_like_time(Time.current)
@@ -566,7 +566,7 @@ RSpec.describe Project do
       end
 
       it 'returns empty if next_execution_timestamp is in the future' do
-        import_state.update(next_execution_timestamp: timestamp + 2.minutes)
+        import_state.update!(next_execution_timestamp: timestamp + 2.minutes)
 
         expect(described_class.mirrors_to_sync(timestamp)).to be_empty
       end
@@ -591,7 +591,7 @@ RSpec.describe Project do
       end
 
       it 'returns empty if next_execution_timestamp is in the future' do
-        project.import_state.update(next_execution_timestamp: timestamp + 2.minutes)
+        project.import_state.update!(next_execution_timestamp: timestamp + 2.minutes)
 
         expect(described_class.mirrors_to_sync(timestamp)).to be_empty
       end
@@ -726,7 +726,7 @@ RSpec.describe Project do
           stub_licensed_features(admin_merge_request_approvers_rules: feature_enabled)
 
           stub_application_setting(application_setting => app_setting)
-          project.update(setting => project_setting)
+          project.update!(setting => project_setting)
         end
 
         it 'shows proper setting' do
@@ -937,7 +937,7 @@ RSpec.describe Project do
           before do
             stub_licensed_features(admin_merge_request_approvers_rules: feature_enabled)
             stub_application_setting(application_setting => app_setting)
-            project.update(setting => project_setting)
+            project.update!(setting => project_setting)
             stub_feature_flags(group_merge_request_approval_settings_feature_flag: false)
           end
 
@@ -1094,7 +1094,7 @@ RSpec.describe Project do
     end
 
     it "returns false" do
-      project.namespace.update(share_with_group_lock: true)
+      project.namespace.update!(share_with_group_lock: true)
       expect(project.allowed_to_share_with_group?).to be_falsey
     end
   end
@@ -1266,7 +1266,7 @@ RSpec.describe Project do
 
       expect(RepositoryRemoveRemoteWorker).not_to receive(:perform_async)
 
-      project.update(import_url: "http://test.com")
+      project.update!(import_url: "http://test.com")
     end
   end
 
@@ -2803,7 +2803,7 @@ RSpec.describe Project do
 
       expect(project).to receive(:create_import_state)
 
-      project.update(mirror: true, mirror_user: project.owner, import_url: 'http://foo.com')
+      project.update!(mirror: true, mirror_user: project.owner, import_url: 'http://foo.com')
     end
   end
 
@@ -2953,7 +2953,7 @@ RSpec.describe Project do
 
     before do
       stub_ee_application_setting(custom_project_templates_group_id: group2.id)
-      group2.update(custom_project_templates_group_id: group2_sub2.id)
+      group2.update!(custom_project_templates_group_id: group2_sub2.id)
       create(:project, group: group1)
 
       create_list(:project, 2, group: group2)
@@ -2997,7 +2997,7 @@ RSpec.describe Project do
 
     context 'group-level custom project templates' do
       before do
-        group.update(custom_project_templates_group_id: subgroup.id)
+        group.update!(custom_project_templates_group_id: subgroup.id)
       end
 
       it 'returns true' do
