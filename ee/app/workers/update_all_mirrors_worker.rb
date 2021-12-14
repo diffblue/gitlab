@@ -117,12 +117,6 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
     relation = relation.where('import_state.next_execution_timestamp > ?', offset_at) if offset_at
 
     if check_mirror_plans_in_query?
-      root_namespaces_sql = Gitlab::ObjectHierarchy
-        .new(Namespace.where('id = projects.namespace_id'))
-        .roots
-        .select(:id)
-        .to_sql
-
       root_namespaces_join = "INNER JOIN namespaces AS root_namespaces ON root_namespaces.id = (#{root_namespaces_sql})"
 
       relation = relation
@@ -147,4 +141,19 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
   def check_mirror_plans_in_query?
     ::Gitlab::CurrentSettings.should_check_namespace_plan?
   end
+
+  # rubocop: disable CodeReuse/ActiveRecord
+  def root_namespaces_sql
+    namespace = Namespace.where('id = projects.namespace_id')
+
+    if Feature.enabled?(:linear_mirrors_worker_roots, default_enabled: :yaml)
+      namespace.roots.as_ids
+    else
+      Gitlab::ObjectHierarchy
+        .new(namespace)
+        .roots
+        .select(:id)
+    end.to_sql
+  end
+  # rubocop: enable CodeReuse/ActiveRecord
 end
