@@ -161,9 +161,13 @@ module TestEnv
     component_timed_setup('Gitaly',
       install_dir: gitaly_dir,
       version: Gitlab::GitalyClient.expected_server_version,
-      task: "gitlab:gitaly:install",
+      task: "gitlab:gitaly:clone",
       fresh_install: ENV.key?('FORCE_GITALY_INSTALL'),
       task_args: [gitaly_dir, repos_path, gitaly_url].compact) do
+        unless ci? # In CI we run scripts/gitaly-test-build
+          GitalySetup.build_gitaly
+        end
+
         Gitlab::SetupHelper::Gitaly.create_configuration(
           gitaly_dir,
           { 'default' => repos_path },

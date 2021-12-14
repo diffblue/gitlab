@@ -12,6 +12,8 @@ require 'logger'
 require 'bundler'
 
 module GitalySetup
+  extend self
+
   LOGGER = begin
     default_name = ENV['CI'] ? 'DEBUG' : 'WARN'
     level_name = ENV['GITLAB_TESTING_LOG_LEVEL']&.upcase
