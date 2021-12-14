@@ -6,6 +6,7 @@ import * as Sentry from '@sentry/browser';
 import ComplianceReport from 'ee/compliance_dashboard/components/report.vue';
 import EmptyState from 'ee/compliance_dashboard/components/empty_state.vue';
 import MergeCommitsExportButton from 'ee/compliance_dashboard/components/merge_requests/merge_commits_export_button.vue';
+import ViolationReason from 'ee/compliance_dashboard/components/violations/reason.vue';
 import resolvers from 'ee/compliance_dashboard/graphql/resolvers';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -25,6 +26,7 @@ describe('ComplianceReport component', () => {
   const findViolationsTable = () => wrapper.findComponent(GlTable);
   const findEmptyState = () => wrapper.findComponent(EmptyState);
   const findMergeCommitsExportButton = () => wrapper.findComponent(MergeCommitsExportButton);
+  const findViolationReason = () => wrapper.findComponent(ViolationReason);
 
   const findTableHeaders = () => findViolationsTable().findAll('th');
   const findTablesFirstRowData = () =>
@@ -110,12 +112,28 @@ describe('ComplianceReport component', () => {
 
     // Note: This should be refactored as each table component is created
     // Severity: https://gitlab.com/gitlab-org/gitlab/-/issues/342900
-    // Violation: https://gitlab.com/gitlab-org/gitlab/-/issues/342901
     // Merge request and date merged: https://gitlab.com/gitlab-org/gitlab/-/issues/342902
     it('has the correct first row data', () => {
       const headerTexts = findTablesFirstRowData().wrappers.map((d) => d.text());
 
-      expect(headerTexts).toEqual(['1', '1', expect.anything(), '2021-11-25T11:56:52.215Z']);
+      expect(headerTexts).toEqual([
+        '1',
+        'Approved by committer',
+        expect.anything(),
+        '2021-11-25T11:56:52.215Z',
+      ]);
+    });
+
+    it('renders the violation reason', () => {
+      const {
+        violatingUser: { __typename, ...user },
+        reason,
+      } = mockResolver().mergeRequestViolations.nodes[0];
+
+      expect(findViolationReason().props()).toMatchObject({
+        reason,
+        user,
+      });
     });
   });
 
