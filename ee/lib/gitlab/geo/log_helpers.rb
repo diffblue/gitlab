@@ -51,7 +51,7 @@ module Gitlab
         index = context_data.index('JID-')
         return unless index
 
-        context_data[index + 4..-1]
+        context_data[index + 4..]
       end
     end
   end
