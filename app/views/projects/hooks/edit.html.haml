@@ -6,7 +6,7 @@
   - placeholders = { strong_start: '<strong>'.html_safe,
     strong_end: '</strong>'.html_safe,
     limit: @hook.rate_limit,
-    support_link_start: '<a href="https://support.gitlab.com/hc/en-us/requests/new" target="_blank" rel="noopener noreferrer">'.html_safe,
+    support_link_start: '<a href="https://support.gitlab.com/hc/en-us/requests/new">'.html_safe,
     support_link_end: '</a>'.html_safe }
   = render 'shared/global_alert',
     title: s_('Webhooks|Webhook was automatically disabled'),
