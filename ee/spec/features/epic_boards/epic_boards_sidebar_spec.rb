@@ -114,7 +114,7 @@ RSpec.describe 'Epic boards sidebar', :js do
 
       wait_for_requests
 
-      page.within('[data-testid="start-date"]') do
+      page.within('[data-testid="sidebar-start-date"]') do
         edit_fixed_date
       end
     end
@@ -124,7 +124,7 @@ RSpec.describe 'Epic boards sidebar', :js do
 
       wait_for_requests
 
-      page.within('[data-testid="start-date"]') do
+      page.within('[data-testid="sidebar-start-date"]') do
         remove_fixed_date
       end
     end
@@ -136,7 +136,7 @@ RSpec.describe 'Epic boards sidebar', :js do
 
       wait_for_requests
 
-      page.within('[data-testid="due-date"]') do
+      page.within('[data-testid="sidebar-due-date"]') do
         edit_fixed_date
       end
     end
@@ -146,7 +146,7 @@ RSpec.describe 'Epic boards sidebar', :js do
 
       wait_for_requests
 
-      page.within('[data-testid="due-date"]') do
+      page.within('[data-testid="sidebar-due-date"]') do
         remove_fixed_date
       end
     end
