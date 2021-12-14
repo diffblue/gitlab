@@ -40,6 +40,7 @@ import {
   MODULE_SECRET_DETECTION,
   trackMrSecurityReportDetails,
 } from './store/constants';
+import { getSecurityTabPath } from './utils';
 
 export default {
   store: createStore(),
@@ -300,7 +301,7 @@ export default {
     ]),
     ...mapGetters(MODULE_API_FUZZING, ['groupedApiFuzzingText', 'apiFuzzingStatusIcon']),
     securityTab() {
-      return `${this.pipelinePath}/security`;
+      return getSecurityTabPath(this.pipelinePath);
     },
     hasContainerScanningReports() {
       return this.enabledReports.containerScanning;
