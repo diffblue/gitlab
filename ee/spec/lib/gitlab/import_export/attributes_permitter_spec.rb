@@ -15,6 +15,7 @@ RSpec.describe Gitlab::ImportExport::AttributesPermitter do
       :deploy_access_levels    | true
       :protected_environments  | true
       :security_setting        | true
+      :project                 | true
     end
 
     with_them do
@@ -27,7 +28,11 @@ RSpec.describe Gitlab::ImportExport::AttributesPermitter do
 
     subject { described_class.new }
 
-    additional_attributes = { user: %w[id] }
+    # these are attributes for which either a special exception is made or are available only via included modules and not attribute introspection
+    additional_attributes = {
+      user: %w[id],
+      project: %w[auto_devops_deploy_strategy auto_devops_enabled issues_enabled jobs_enabled merge_requests_enabled snippets_enabled wiki_enabled build_git_strategy build_enabled security_and_compliance_enabled requirements_enabled]
+    }
 
     Gitlab::ImportExport::Config.new.to_h[:included_attributes].each do |relation_sym, permitted_attributes|
       context "for #{relation_sym}" do
