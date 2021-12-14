@@ -146,7 +146,7 @@ export default {
         {
           label: '',
           key: 'actions',
-          columnClass: 'gl-w-13',
+          columnClass: 'gl-w-15',
         },
       ].map((field) => ({
         ...field,

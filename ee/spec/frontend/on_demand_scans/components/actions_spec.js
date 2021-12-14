@@ -6,6 +6,7 @@ import {
   PIPELINES_GROUP_PENDING,
   PIPELINES_GROUP_SUCCESS_WITH_WARNINGS,
   PIPELINES_GROUP_FAILED,
+  PIPELINES_GROUP_SUCCESS,
 } from 'ee/on_demand_scans/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import pipelineCancelMutation from '~/pipelines/graphql/mutations/cancel_pipeline.mutation.graphql';
@@ -22,11 +23,17 @@ const scanFactory = (group) => ({
   detailedStatus: {
     group,
   },
+  path: '/pipelines/1',
 });
 const runningScan = scanFactory(PIPELINES_GROUP_RUNNING);
 const pendingScan = scanFactory(PIPELINES_GROUP_PENDING);
 const successWithWarningsScan = scanFactory(PIPELINES_GROUP_SUCCESS_WITH_WARNINGS);
 const failedScan = scanFactory(PIPELINES_GROUP_FAILED);
+const succeededScan = scanFactory(PIPELINES_GROUP_SUCCESS);
+const scheduledScan = {
+  id: mockPipelineId,
+  editPath: '/edit/1',
+};
 
 // Error messages
 const errorAsDataMessage = 'Error as data';
@@ -39,6 +46,8 @@ describe('Actions', () => {
   // Finders
   const findCancelScanButton = () => wrapper.findByTestId('cancel-scan-button');
   const findRetryScanButton = () => wrapper.findByTestId('retry-scan-button');
+  const findEditScanButton = () => wrapper.findByTestId('edit-scan-button');
+  const findViewScanResultsButton = () => wrapper.findByTestId('view-scan-results-button');
 
   // Helpers
   const createMockApolloProvider = (mutation, handler) => {
@@ -138,5 +147,26 @@ describe('Actions', () => {
         expect(wrapper.emitted('error')).toEqual([eventPayload]);
       });
     });
+  });
+
+  it('renders an edit link for scheduled scans', () => {
+    createComponent(scheduledScan);
+    const editButton = findEditScanButton();
+
+    expect(editButton.exists()).toBe(true);
+    expect(editButton.attributes('href')).toBe(scheduledScan.editPath);
+  });
+
+  it.each`
+    scanStatus                 | scan
+    ${'success with warnings'} | ${successWithWarningsScan}
+    ${'failed'}                | ${failedScan}
+    ${'succeeded'}             | ${succeededScan}
+  `('renders a "View results" button for $scanStatus scans', ({ scan }) => {
+    createComponent(scan);
+    const viewScanResultsButton = findViewScanResultsButton();
+
+    expect(viewScanResultsButton.exists()).toBe(true);
+    expect(viewScanResultsButton.attributes('href')).toBe(scan.path);
   });
 });

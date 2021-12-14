@@ -39,10 +39,12 @@ export default {
 <template>
   <span>
     <gl-button
+      v-bind="$attrs"
       :id="buttonId"
       :aria-label="label"
       :loading="isLoading"
       :icon="actionType"
+      size="small"
       @click="onClick"
     />
     <gl-tooltip ref="tooltip" :target="buttonId" placement="top" triggers="hover" noninteractive>

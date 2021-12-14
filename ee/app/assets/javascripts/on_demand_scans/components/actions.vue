@@ -1,4 +1,5 @@
 <script>
+import { GlButton } from '@gitlab/ui';
 import pipelineCancelMutation from '~/pipelines/graphql/mutations/cancel_pipeline.mutation.graphql';
 import pipelineRetryMutation from '~/pipelines/graphql/mutations/retry_pipeline.mutation.graphql';
 import { __, s__ } from '~/locale';
@@ -7,6 +8,7 @@ import {
   PIPELINES_GROUP_PENDING,
   PIPELINES_GROUP_SUCCESS_WITH_WARNINGS,
   PIPELINES_GROUP_FAILED,
+  PIPELINES_GROUP_SUCCESS,
 } from '../constants';
 import ActionButton from './action_button.vue';
 
@@ -18,6 +20,7 @@ export const retryError = s__('OnDemandScans|The scan could not be retried.');
 
 export default {
   components: {
+    GlButton,
     ActionButton,
   },
   props: {
@@ -42,6 +45,12 @@ export default {
       return [PIPELINES_GROUP_SUCCESS_WITH_WARNINGS, PIPELINES_GROUP_FAILED].includes(
         this.scan?.detailedStatus?.group,
       );
+    },
+    isEditable() {
+      return Boolean(this.scan.editPath);
+    },
+    hasResults() {
+      return this.isRetryable || this.scan?.detailedStatus?.group === PIPELINES_GROUP_SUCCESS;
     },
   },
   watch: {
@@ -98,12 +107,22 @@ export default {
     cancelError,
     retry: __('Retry'),
     retryError,
+    edit: __('Edit'),
+    viewResults: s__('OnDemandScans|View results'),
   },
 };
 </script>
 
 <template>
-  <div class="gl-text-right">
+  <div class="gl-display-flex gl-justify-content-end">
+    <gl-button
+      v-if="hasResults"
+      data-testid="view-scan-results-button"
+      size="small"
+      :href="scan.path"
+    >
+      {{ $options.i18n.viewResults }}
+    </gl-button>
     <ActionButton
       v-if="isCancellable"
       data-testid="cancel-scan-button"
@@ -114,11 +133,19 @@ export default {
     />
     <ActionButton
       v-if="isRetryable"
+      class="gl-ml-3"
       data-testid="retry-scan-button"
       action-type="retry"
       :label="$options.i18n.retry"
       :is-loading="isRetrying"
       @click="retryPipeline"
+    />
+    <ActionButton
+      v-if="isEditable"
+      data-testid="edit-scan-button"
+      action-type="pencil"
+      :label="$options.i18n.edit"
+      :href="scan.editPath"
     />
   </div>
 </template>
