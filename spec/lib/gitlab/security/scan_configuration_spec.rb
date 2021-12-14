@@ -39,7 +39,7 @@ RSpec.describe ::Gitlab::Security::ScanConfiguration do
 
     let(:configured) { true }
 
-    context 'with a non configurable scaner' do
+    context 'with a non configurable scanner' do
       let(:type) { :secret_detection }
 
       it { is_expected.to be_nil }
