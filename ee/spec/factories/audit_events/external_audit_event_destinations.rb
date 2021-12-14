@@ -3,6 +3,6 @@
 FactoryBot.define do
   factory :external_audit_event_destination, class: 'AuditEvents::ExternalAuditEventDestination' do
     group
-    sequence(:destination_url) { |n| "#{FFaker::Internet.http_url}/#{n}" }
+    sequence(:destination_url) { |n| "http://example.org/#{n}" }
   end
 end
