@@ -285,25 +285,27 @@ module GitalySetup
   end
 
   def spawn_gitaly
-    spawn_script = Rails.root.join('scripts/gitaly-test-spawn').to_s
-    Bundler.with_original_env do
-      unless system(spawn_script)
-        message = 'gitaly spawn failed'
-        message += " (try `rm -rf #{gitaly_dir}` ?)" unless ENV['CI']
-        raise message
-      end
-    end
+    check_gitaly_config!
 
-    gitaly_pid = Integer(File.read(TMP_TEST_PATH.join('gitaly.pid')))
-    gitaly2_pid = Integer(File.read(TMP_TEST_PATH.join('gitaly2.pid')))
-    praefect_pid = Integer(File.read(TMP_TEST_PATH.join('praefect.pid')))
+    gitaly_pid = start_gitaly
+    gitaly2_pid = start_gitaly2
+    praefect_pid = start_praefect
 
     Kernel.at_exit do
+      # In CI this function is called by scripts/gitaly-test-spawn, triggered a
+      # before_script. Gitaly needs to remain running until the container is
+      # stopped.
+      next if ENV['CI']
+
       pids = [gitaly_pid, gitaly2_pid, praefect_pid]
       pids.each { |pid| stop(pid) }
     end
 
     wait('gitaly')
     wait('praefect')
+  rescue StandardError
+    message = 'gitaly spawn failed'
+    message += " (try `rm -rf #{gitaly_dir}` ?)" unless ENV['CI']
+    raise message
   end
 end
