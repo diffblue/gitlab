@@ -14130,9 +14130,6 @@ msgstr ""
 msgid "Every year on %{day} at %{time} %{timezone}"
 msgstr ""
 
-msgid "Everyone"
-msgstr ""
-
 msgid "Everyone With Access"
 msgstr ""
 
@@ -15031,9 +15028,6 @@ msgid "Filter by test cases that are currently archived."
 msgstr ""
 
 msgid "Filter by test cases that are currently open."
-msgstr ""
-
-msgid "Filter by two-factor authentication"
 msgstr ""
 
 msgid "Filter by user"
