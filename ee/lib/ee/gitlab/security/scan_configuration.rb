@@ -4,20 +4,21 @@ module EE
   module Gitlab
     module Security
       module ScanConfiguration
+        extend ::Gitlab::Utils::Override
+
+        override :available?
         def available?
           super || project.licensed_feature_available?(type)
         end
 
-        def configured?
-          configured
-        end
-
+        override :configuration_path
         def configuration_path
           configurable_scans[type] if available? || always_available?
         end
 
         private
 
+        override :configurable_scans
         def configurable_scans
           strong_memoize(:configurable_scans) do
             {

@@ -19,7 +19,9 @@ RSpec.describe ::Gitlab::Security::ScanConfiguration do
         stub_licensed_features(sast: false)
       end
 
-      it { is_expected.to be_truthy }
+      it 'core scanners (SAST, Secret Detection) are always available' do
+        is_expected.to be_truthy
+      end
     end
 
     context 'with licensed scanner that is available' do
