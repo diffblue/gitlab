@@ -94,7 +94,7 @@ export default {
           <gl-button
             :disabled="mergeCommitButtonDisabled"
             type="submit"
-            variant="success"
+            variant="confirm"
             data-test-id="merge-commit-submit-button"
             class="disable-hover"
             >{{ $options.strings.mergeCommitButtonText }}</gl-button
