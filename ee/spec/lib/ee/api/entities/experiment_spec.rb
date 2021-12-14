@@ -18,7 +18,8 @@ RSpec.describe EE::API::Entities::Experiment do
         milestone: '13.7',
         type: 'experiment',
         group: 'group::adoption',
-        default_enabled: false
+        default_enabled: false,
+        log_state_changes: nil
       },
       current_status: {
         state: :off,
