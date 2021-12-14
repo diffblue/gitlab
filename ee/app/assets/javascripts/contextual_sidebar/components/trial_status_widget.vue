@@ -43,13 +43,7 @@ export default {
 </script>
 
 <template>
-  <gl-link
-    :id="containerId"
-    :title="widgetTitle"
-    :href="plansHref"
-    class="gl-text-decoration-none! gl-text-body!"
-    @click="onWidgetClick"
-  >
+  <gl-link :id="containerId" :title="widgetTitle" :href="plansHref" @click="onWidgetClick">
     <div class="gl-display-flex gl-flex-direction-column gl-align-items-stretch gl-w-full">
       <span class="gl-display-flex gl-align-items-center">
         <span class="nav-icon-container svg-container">
