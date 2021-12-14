@@ -14,11 +14,11 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import {
   siteProfiles,
+  scannerProfiles,
   nonValidatedSiteProfile,
   validatedSiteProfile,
 } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
 import * as responses from '../../mocks/apollo_mocks';
-import { scannerProfiles } from '../../mocks/mock_data';
 
 const URL_HOST = 'https://localhost/';
 
@@ -188,7 +188,7 @@ describe('EE - DAST Profiles Selector', () => {
     const [scannerProfile] = scannerProfiles;
 
     it('scanner profile', () => {
-      setWindowLocation(`?scanner_profile_id=1`);
+      setWindowLocation(`?scanner_profile_id=${getIdFromGraphQLId(scannerProfile.id)}`);
       createComponent();
 
       expect(findScannerProfilesSelector().attributes('value')).toBe(scannerProfile.id);
@@ -203,7 +203,9 @@ describe('EE - DAST Profiles Selector', () => {
 
     it('both scanner & site profile', () => {
       setWindowLocation(
-        `?site_profile_id=${getIdFromGraphQLId(siteProfile.id)}&scanner_profile_id=1`,
+        `?site_profile_id=${getIdFromGraphQLId(
+          siteProfile.id,
+        )}&scanner_profile_id=${getIdFromGraphQLId(scannerProfile.id)}`,
       );
       createComponent();
 

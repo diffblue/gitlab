@@ -1,4 +1,5 @@
 import siteProfilesFixture from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql.basic.json';
+import scannerProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql.basic.json';
 
 export const siteProfiles = siteProfilesFixture.data.project.siteProfiles.edges.map(
   ({ node }) => node,
@@ -23,26 +24,9 @@ export const policySiteProfile = [
   },
 ];
 
-export const scannerProfiles = [
-  {
-    id: 'gid://gitlab/DastScannerProfile/1',
-    profileName: 'Scanner profile #1',
-    spiderTimeout: 5,
-    targetTimeout: 10,
-    scanType: 'PASSIVE',
-    useAjaxSpider: false,
-    showDebugMessages: false,
-  },
-  {
-    id: 'gid://gitlab/DastScannerProfile/2',
-    profileName: 'Scanner profile #2',
-    spiderTimeout: 20,
-    targetTimeout: 150,
-    scanType: 'ACTIVE',
-    useAjaxSpider: true,
-    showDebugMessages: true,
-  },
-];
+export const scannerProfiles = scannerProfilesFixtures.data.project.scannerProfiles.edges.map(
+  ({ node }) => node,
+);
 
 export const savedScans = [
   {

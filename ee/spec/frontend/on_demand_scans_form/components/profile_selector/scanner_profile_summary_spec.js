@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import App from 'ee/on_demand_scans_form/components/profile_selector/scanner_profile_summary.vue';
-import { scannerProfiles } from 'ee_jest/on_demand_scans_form/mocks/mock_data';
+import { scannerProfiles } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
 
 const [profile] = scannerProfiles;
 

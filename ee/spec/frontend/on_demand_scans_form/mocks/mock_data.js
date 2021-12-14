@@ -1,28 +1,3 @@
-export const scannerProfiles = [
-  {
-    id: 'gid://gitlab/DastScannerProfile/1',
-    profileName: 'Scanner profile #1',
-    spiderTimeout: 5,
-    targetTimeout: 10,
-    scanType: 'PASSIVE',
-    useAjaxSpider: false,
-    showDebugMessages: false,
-    editPath: '/scanner_profile/edit/1',
-    referencedInSecurityPolicies: [],
-  },
-  {
-    id: 'gid://gitlab/DastScannerProfile/2',
-    profileName: 'Scanner profile #2',
-    spiderTimeout: 20,
-    targetTimeout: 150,
-    scanType: 'ACTIVE',
-    useAjaxSpider: true,
-    showDebugMessages: true,
-    editPath: '/scanner_profile/edit/2',
-    referencedInSecurityPolicies: [],
-  },
-];
-
 export const policyScannerProfile = {
   id: 'gid://gitlab/DastScannerProfile/3',
   profileName: 'Scanner profile #3',

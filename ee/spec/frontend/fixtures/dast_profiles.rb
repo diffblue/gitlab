@@ -161,6 +161,46 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
       end
     end
 
+    describe 'dast_scanner_profiles' do
+      path = 'security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql'
+
+      # DAST scanner profiles
+      let_it_be(:dast_scanner_profiles) do
+        [
+          create(
+            :dast_scanner_profile,
+            name: "Active scanner",
+            spider_timeout: 5,
+            target_timeout: 10,
+            scan_type: 'active',
+            use_ajax_spider: true,
+            show_debug_messages: true,
+            project: project
+          ),
+          create(
+            :dast_scanner_profile,
+            name: "Passive scanner",
+            spider_timeout: 5,
+            target_timeout: 10,
+            scan_type: 'passive',
+            project: project
+          )
+        ]
+      end
+
+      it "graphql/#{path}.basic.json" do
+        query = get_graphql_query_as_string(path, ee: true)
+
+        post_graphql(query, current_user: current_user, variables: {
+          fullPath: project.full_path,
+          first: 20
+        })
+
+        expect_graphql_errors_to_be_empty
+        expect(graphql_data_at(:project, :scannerProfiles, :edges)).to have_attributes(size: 2)
+      end
+    end
+
     describe 'scheduled_dast_profiles' do
       path = 'on_demand_scans/graphql/scheduled_dast_profiles.query.graphql'
 

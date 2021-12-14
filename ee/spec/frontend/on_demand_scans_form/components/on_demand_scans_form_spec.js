@@ -21,11 +21,11 @@ import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import {
   siteProfiles,
+  scannerProfiles,
   nonValidatedSiteProfile,
   validatedSiteProfile,
 } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
 import * as responses from '../mocks/apollo_mocks';
-import { scannerProfiles } from '../mocks/mock_data';
 
 const dastSiteValidationDocsPath = '/application_security/dast/index#dast-site-validation';
 const projectPath = 'group/project';
@@ -95,6 +95,7 @@ describe('OnDemandScansForm', () => {
     findBranchInput().vm.$emit('input', selectedBranch);
     findScannerProfilesSelector().vm.$emit('input', passiveScannerProfile.id);
     findSiteProfilesSelector().vm.$emit('input', nonValidatedSiteProfile.id);
+
     return wrapper.vm.$nextTick();
   };
   const setupSuccess = ({ edit = false } = {}) => {
@@ -305,7 +306,7 @@ describe('OnDemandScansForm', () => {
           LOCAL_STORAGE_KEY,
           JSON.stringify({
             name: 'My daily scan',
-            selectedScannerProfileId: 'gid://gitlab/DastScannerProfile/1',
+            selectedScannerProfileId: passiveScannerProfile.id,
             selectedSiteProfileId: nonValidatedSiteProfile.id,
             selectedBranch,
           }),
@@ -618,7 +619,7 @@ describe('OnDemandScansForm', () => {
     const [scannerProfile] = scannerProfiles;
 
     it('scanner profile', () => {
-      setWindowLocation('?scanner_profile_id=1');
+      setWindowLocation(`?scanner_profile_id=${getIdFromGraphQLId(scannerProfile.id)}`);
       createShallowComponent();
 
       expect(wrapper.find(ScannerProfileSelector).attributes('value')).toBe(scannerProfile.id);
@@ -633,7 +634,9 @@ describe('OnDemandScansForm', () => {
 
     it('both scanner & site profile', () => {
       setWindowLocation(
-        `?site_profile_id=${getIdFromGraphQLId(siteProfile.id)}&scanner_profile_id=1`,
+        `?site_profile_id=${getIdFromGraphQLId(
+          siteProfile.id,
+        )}&scanner_profile_id=${getIdFromGraphQLId(scannerProfile.id)}`,
       );
       createShallowComponent();
 
