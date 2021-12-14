@@ -294,17 +294,19 @@ describe('coverage state memoization', () => {
 
     const noCoverageProps = {
       fileLineCoverage: () => lineWithoutCoverage,
+      coverageLoaded: false,
       ...unchangedProps,
     };
     const coverageProps = {
       fileLineCoverage: () => lineWithCoverage,
+      coverageLoaded: true,
       ...unchangedProps,
     };
 
     // this caches no coverage for the line
     expect(DiffRow.coverageStateLeft(noCoverageProps)).toStrictEqual(lineWithoutCoverage);
 
-    // then this retrieves no coverage for the line from the cache
+    // this retrieves coverage for the line because it has been recached
     expect(DiffRow.coverageStateLeft(coverageProps)).toStrictEqual(lineWithCoverage);
   });
 });
