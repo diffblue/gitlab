@@ -37,7 +37,7 @@ RSpec.describe API::Dependencies do
       end
 
       it 'returns vulnerabilities info' do
-        vulnerability = json_response.select { |dep| dep['name'] == 'nokogiri' }[0]['vulnerabilities'][0]
+        vulnerability = json_response.find { |dep| dep['name'] == 'nokogiri' }['vulnerabilities'][0]
         path = "/security/vulnerabilities/#{finding.vulnerability_id}"
 
         expect(vulnerability['name']).to eq('Vulnerabilities in libxml2 in nokogiri')
