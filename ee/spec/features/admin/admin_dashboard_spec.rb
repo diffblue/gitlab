@@ -98,4 +98,6 @@ RSpec.describe 'Admin Dashboard' do
       end
     end
   end
+
+  include_examples 'manual renewal banner', path_to_visit: :admin_subscription_path
 end

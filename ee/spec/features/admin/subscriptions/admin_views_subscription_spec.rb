@@ -224,6 +224,8 @@ RSpec.describe 'Admin views Subscription', :js do
     end
   end
 
+  include_examples 'manual renewal banner', path_to_visit: :admin_subscription_path
+
   private
 
   def fill_activation_form
