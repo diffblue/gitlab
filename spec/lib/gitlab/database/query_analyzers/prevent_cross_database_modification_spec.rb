@@ -20,7 +20,7 @@ RSpec.describe Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModificatio
     end
 
     context 'within transaction' do
-      it do
+      xit do
         Project.transaction do
           expect { run_queries }.not_to raise_error
         end
@@ -28,7 +28,7 @@ RSpec.describe Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModificatio
     end
 
     context 'within nested transaction' do
-      it do
+      xit do
         Project.transaction(requires_new: true) do
           Project.transaction(requires_new: true) do
             expect { run_queries }.not_to raise_error
@@ -54,6 +54,22 @@ RSpec.describe Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModificatio
     end
 
     include_examples 'successful examples'
+
+    context 'in a Project transaction' do
+      it 'raises error' do
+        Project.transaction do
+          expect { run_queries }.to raise_error /Cross-database data modification/
+        end
+      end
+    end
+
+    context 'in a CI transaction' do
+      it 'does not raise error' do
+        Ci::Pipeline.transaction do
+          expect { run_queries }.not_to raise_error
+        end
+      end
+    end
   end
 
   context 'when other data is modified' do
