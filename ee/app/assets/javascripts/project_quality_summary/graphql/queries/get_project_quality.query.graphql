@@ -1,0 +1,23 @@
+query getProjectQuality($projectPath: ID!, $defaultBranch: String!) {
+  project(fullPath: $projectPath) {
+    id
+    pipelines(ref: $defaultBranch, scope: FINISHED, first: 1) {
+      nodes {
+        id
+        pipelinePath: path
+        coverage
+        testReportSummary {
+          total {
+            count
+            error
+            failed
+            skipped
+            success
+            suiteError
+            time
+          }
+        }
+      }
+    }
+  }
+}
