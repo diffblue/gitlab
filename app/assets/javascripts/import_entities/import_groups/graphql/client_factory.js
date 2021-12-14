@@ -142,7 +142,7 @@ export function createResolvers({ endpoints }) {
           };
         });
 
-        const { data: responses } = await axios.post(endpoints.createBulkImport, {
+        const { data: originalResponse } = await axios.post(endpoints.createBulkImport, {
           bulk_import: importOperations.map((op) => ({
             source_type: 'group_entity',
             source_full_path: op.group.fullPath,
@@ -150,6 +150,10 @@ export function createResolvers({ endpoints }) {
             destination_name: op.newName,
           })),
         });
+
+        const responses = Array.isArray(originalResponse)
+          ? originalResponse
+          : [{ success: true, id: originalResponse.id }];
 
         return importOperations.map((op, idx) => {
           const response = responses[idx];

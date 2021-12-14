@@ -188,6 +188,26 @@ describe('Bulk import resolvers', () => {
         expect(results[0].progress.status).toBe(STATUSES.CREATED);
       });
 
+      it('sets import status to CREATED for successful groups when request completes with legacy response', async () => {
+        axiosMockAdapter.onPost(FAKE_ENDPOINTS.createBulkImport).reply(httpStatus.OK, { id: 1 });
+
+        await client.mutate({
+          mutation: importGroupsMutation,
+          variables: {
+            importRequests: [
+              {
+                sourceGroupId: statusEndpointFixture.importable_data[0].id,
+                newName: 'test',
+                targetNamespace: 'root',
+              },
+            ],
+          },
+        });
+
+        await axios.waitForAll();
+        expect(results[0].progress.status).toBe(STATUSES.CREATED);
+      });
+
       it('sets import status to FAILED and sets progress message for failed groups when request completes', async () => {
         const FAKE_ERROR_MESSAGE = 'foo';
         axiosMockAdapter
