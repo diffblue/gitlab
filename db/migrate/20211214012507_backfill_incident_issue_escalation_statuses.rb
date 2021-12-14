@@ -1,0 +1,28 @@
+# frozen_string_literal: true
+
+class BackfillIncidentIssueEscalationStatuses < Gitlab::Database::Migration[1.0]
+  MIGRATION = 'BackfillIncidentIssueEscalationStatuses'
+  DELAY_INTERVAL = 2.minutes
+  BATCH_SIZE = 10_000
+
+  disable_ddl_transaction!
+
+  class Issue < ActiveRecord::Base
+    include EachBatch
+
+    self.table_name = 'issues'
+
+    scope :incidents, -> { where(issue_type: 1) }
+  end
+
+  def up
+    relation = Issue.incidents
+
+    queue_background_migration_jobs_by_range_at_intervals(
+      relation, MIGRATION, DELAY_INTERVAL, batch_size: BATCH_SIZE)
+  end
+
+  def down
+    # no-op
+  end
+end
