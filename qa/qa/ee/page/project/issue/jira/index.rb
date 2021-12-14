@@ -9,10 +9,7 @@ module QA
             class Index < QA::Page::Base
               view 'app/assets/javascripts/vue_shared/issuable/list/components/issuable_list_root.vue' do
                 element :issuable_search_container
-              end
-
-              view 'app/assets/javascripts/vue_shared/issuable/list/components/issuable_item.vue' do
-                element :issuable_item_container
+                element :issuable_container
               end
 
               def search_issues(issue_search_text)
@@ -30,7 +27,7 @@ module QA
 
               def click_issue(issue_key)
                 id = issue_key.split('-')[-1]
-                within_element(:issuable_item_container, issue_id: id) do
+                within_element(:issuable_container, issue_id: id) do
                   find('a.issue-title-text').click
                 end
               end
