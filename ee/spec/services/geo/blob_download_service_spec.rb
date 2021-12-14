@@ -46,18 +46,58 @@ RSpec.describe Geo::BlobDownloadService do
         end
 
         context "when the downloader returns failure" do
-          let(:result) { double(:result, success: false, primary_missing_file: false, bytes_downloaded: 123, reason: "foo", extra_details: nil) }
+          context "when the file is not missing on the primary" do
+            let(:result) { double(:result, success: false, primary_missing_file: false, bytes_downloaded: 123, reason: "foo", extra_details: nil) }
 
-          it "creates the registry" do
-            expect do
+            it "creates the registry" do
+              expect do
+                subject.execute
+              end.to change { registry_class.count }.by(1)
+            end
+
+            it "sets sync state to failed" do
               subject.execute
-            end.to change { registry_class.count }.by(1)
+
+              expect(registry_class.last).to be_failed
+            end
           end
 
-          it "sets sync state to failed" do
-            subject.execute
+          context "when the file is missing on the primary" do
+            context "when the feature flag geo_treat_missing_files_as_sync_failed is enabled" do
+              let(:result) { double(:result, success: false, primary_missing_file: true, bytes_downloaded: 123, reason: "foo", extra_details: nil) }
 
-            expect(registry_class.last).to be_failed
+              it "creates the registry" do
+                expect do
+                  subject.execute
+                end.to change { registry_class.count }.by(1)
+              end
+
+              it "sets sync state to failed" do
+                subject.execute
+
+                expect(registry_class.last).to be_failed
+              end
+            end
+
+            context "when the feature flag geo_treat_missing_files_as_sync_failed is disabled" do
+              let(:result) { double(:result, success: false, primary_missing_file: true, bytes_downloaded: 123, reason: "foo", extra_details: nil) }
+
+              before do
+                stub_feature_flags(geo_treat_missing_files_as_sync_failed: false)
+              end
+
+              it "creates the registry" do
+                expect do
+                  subject.execute
+                end.to change { registry_class.count }.by(1)
+              end
+
+              it "sets sync state to synced" do
+                subject.execute
+
+                expect(registry_class.last).to be_synced
+              end
+            end
           end
         end
       end
