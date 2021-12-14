@@ -1,5 +1,5 @@
 import { mount, shallowMount } from '@vue/test-utils';
-import { GlTab } from '@gitlab/ui';
+import { GlBadge, GlTab } from '@gitlab/ui';
 
 import IntegrationTabs from '~/integrations/overrides/components/integration_tabs.vue';
 import { settingsTabTitle, overridesTabTitle } from '~/integrations/constants';
@@ -25,6 +25,7 @@ describe('IntegrationTabs', () => {
     wrapper.destroy();
   });
 
+  const findGlBadge = () => wrapper.findComponent(GlBadge);
   const findGlTab = () => wrapper.findComponent(GlTab);
   const findSettingsLink = () => wrapper.find('a');
 
@@ -47,6 +48,17 @@ describe('IntegrationTabs', () => {
       expect(findGlTab().text()).toMatchInterpolatedText(
         `${overridesTabTitle} ${projectOverridesCount}`,
       );
+      expect(findGlBadge().text()).toBe(projectOverridesCount);
+    });
+
+    describe('when count is `null', () => {
+      it('renders "Projects using custom settings" tab without count', () => {
+        createComponent();
+
+        expect(findGlTab().exists()).toBe(true);
+        expect(findGlTab().text()).toMatchInterpolatedText(overridesTabTitle);
+        expect(findGlBadge().exists()).toBe(false);
+      });
     });
   });
 });
