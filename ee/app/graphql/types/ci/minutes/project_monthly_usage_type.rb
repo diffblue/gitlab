@@ -8,11 +8,11 @@ module Types
       class ProjectMonthlyUsageType < BaseObject
         graphql_name 'CiMinutesProjectMonthlyUsage'
 
-        field :minutes, ::GraphQL::INT_TYPE, null: true,
+        field :minutes, ::GraphQL::Types::Int, null: true,
               method: :amount_used,
               description: 'Number of CI minutes used by the project in the month.'
 
-        field :name, ::GraphQL::STRING_TYPE, null: true,
+        field :name, GraphQL::Types::String, null: true,
               description: 'Name of the project.'
 
         def name

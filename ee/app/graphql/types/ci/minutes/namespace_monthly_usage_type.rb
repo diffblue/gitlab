@@ -8,17 +8,17 @@ module Types
       class NamespaceMonthlyUsageType < BaseObject
         graphql_name 'CiMinutesNamespaceMonthlyUsage'
 
-        field :month, ::GraphQL::STRING_TYPE, null: true,
+        field :month, ::GraphQL::Types::String, null: true,
               description: 'Month related to the usage data.'
 
-        field :minutes, ::GraphQL::INT_TYPE, null: true,
+        field :minutes, ::GraphQL::Types::Int, null: true,
               method: :amount_used,
               description: 'Total number of minutes used by all projects in the namespace.'
 
         field :projects, ::Types::Ci::Minutes::ProjectMonthlyUsageType.connection_type, null: true,
               description: 'CI minutes usage data for projects in the namespace.'
 
-        field :shared_runners_duration, ::GraphQL::INT_TYPE, null: true,
+        field :shared_runners_duration, ::GraphQL::Types::Int, null: true,
               description: 'Total numbers of minutes used by the shared runners in the namespace.'
 
         def month

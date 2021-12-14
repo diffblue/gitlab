@@ -97,12 +97,12 @@ module EE
               description: 'DAST Site Validations associated with the project.'
 
         field :repository_size_excess,
-              GraphQL::FLOAT_TYPE,
+              GraphQL::Types::Float,
               null: true,
               description: 'Size of repository that exceeds the limit in bytes.'
 
         field :actual_repository_size_limit,
-              GraphQL::FLOAT_TYPE,
+              GraphQL::Types::Float,
               null: true,
               description: 'Size limit for the repository in bytes.',
               method: :actual_size_limit

@@ -7,17 +7,17 @@ module EE
 
       prepended do
         field :additional_purchased_storage_size,
-              GraphQL::FLOAT_TYPE,
+              GraphQL::Types::Float,
               null: true,
               description: 'Additional storage purchased for the root namespace in bytes.'
 
         field :total_repository_size_excess,
-              GraphQL::FLOAT_TYPE,
+              GraphQL::Types::Float,
               null: true,
               description: 'Total excess repository size of all projects in the root namespace in bytes.'
 
         field :total_repository_size,
-              GraphQL::FLOAT_TYPE,
+              GraphQL::Types::Float,
               null: true,
               description: 'Total repository size of all projects in the root namespace in bytes.'
 
@@ -33,13 +33,13 @@ module EE
               description: 'Number of projects in the root namespace where the repository size exceeds the limit.'
 
         field :actual_repository_size_limit,
-              GraphQL::FLOAT_TYPE,
+              GraphQL::Types::Float,
               null: true,
               description: 'Size limit for repositories in the namespace in bytes.',
               method: :actual_size_limit
 
         field :storage_size_limit,
-              GraphQL::FLOAT_TYPE,
+              GraphQL::Types::Float,
               null: true,
               description: 'Total storage limit of the root namespace in bytes.'
 

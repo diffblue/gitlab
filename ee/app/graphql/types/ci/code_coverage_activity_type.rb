@@ -7,7 +7,7 @@ module Types
       graphql_name 'CodeCoverageActivity'
       description 'Represents the code coverage activity for a group'
 
-      field :average_coverage, GraphQL::FLOAT_TYPE, null: true,
+      field :average_coverage, GraphQL::Types::Float, null: true,
             description: 'Average percentage of the different code coverage results available for the group.'
 
       field :coverage_count, GraphQL::Types::Int, null: true,
