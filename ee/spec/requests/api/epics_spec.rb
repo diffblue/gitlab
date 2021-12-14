@@ -204,6 +204,18 @@ RSpec.describe API::Epics do
         stub_licensed_features(epics: true)
       end
 
+      it 'returns epics not authored by the given author id' do
+        get api(url), params: { not: { author_id: user2.id } }
+
+        expect_paginated_array_response([epic.id])
+      end
+
+      it 'returns epics without the given label' do
+        get api(url), params: { not: { labels: label.title } }
+
+        expect_paginated_array_response([epic.id])
+      end
+
       it 'returns epics authored by the given author id' do
         get api(url), params: { author_id: user2.id }
 

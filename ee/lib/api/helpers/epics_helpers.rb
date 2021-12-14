@@ -43,6 +43,8 @@ module API
       def find_epics(finder_params: {}, preload: nil)
         args = declared_params.merge(finder_params)
         args[:label_name] = args.delete(:labels)
+        args[:not] ||= {}
+        args[:not][:label_name] ||= args[:not].delete(:labels)
 
         epics = EpicsFinder.new(current_user, args).execute.preload(preload)
 

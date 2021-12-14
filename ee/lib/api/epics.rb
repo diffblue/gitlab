@@ -13,6 +13,13 @@ module API
 
     helpers ::API::Helpers::EpicsHelpers
 
+    helpers do
+      params :negatable_epic_filter_params do
+        optional :labels, type: Array[String], coerce_with: ::API::Validations::Types::CommaSeparatedToArray.coerce, desc: 'Comma-separated list of label names'
+        optional :author_id, type: Integer, desc: 'Return epics which are not authored by the user with the given ID'
+      end
+    end
+
     params do
       requires :id, type: String, desc: 'The ID of a group'
     end
@@ -41,6 +48,10 @@ module API
         optional :my_reaction_emoji, type: String, desc: 'Return epics reacted by the authenticated user by the given emoji'
         optional :confidential, type: Boolean, desc: 'Return epics with given confidentiality'
         use :pagination
+
+        optional :not, type: Hash do
+          use :negatable_epic_filter_params
+        end
       end
       [':id/epics', ':id/-/epics'].each do |path|
         get path do
