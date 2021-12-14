@@ -7,6 +7,7 @@ import complianceViolationsQuery from '../graphql/compliance_violations.query.gr
 import { mapResponse } from '../graphql/mappers';
 import EmptyState from './empty_state.vue';
 import MergeCommitsExportButton from './merge_requests/merge_commits_export_button.vue';
+import ViolationReason from './violations/reason.vue';
 
 export default {
   name: 'ComplianceReport',
@@ -16,6 +17,7 @@ export default {
     GlLoadingIcon,
     GlTable,
     MergeCommitsExportButton,
+    ViolationReason,
   },
   props: {
     emptyStateSvgPath: {
@@ -122,7 +124,11 @@ export default {
       head-variant="white"
       stacked="lg"
       thead-class="gl-border-b-solid gl-border-b-1 gl-border-b-gray-100"
-    />
+    >
+      <template #cell(reason)="{ item: { reason, violatingUser } }">
+        <violation-reason :reason="reason" :user="violatingUser" />
+      </template>
+    </gl-table>
     <empty-state v-else :image-path="emptyStateSvgPath" />
   </section>
 </template>
