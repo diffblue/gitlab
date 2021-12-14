@@ -238,7 +238,9 @@ module EE
     def stream_event_to_external_destinations(event)
       return if event.is_a?(AuthenticationEvent)
 
-      event.stream_to_external_destinations if event.entity_is_group_or_project?
+      if event.entity_is_group_or_project?
+        event.run_after_commit_or_now { event.stream_to_external_destinations }
+      end
     end
 
     override :base_payload
