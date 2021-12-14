@@ -25,9 +25,6 @@ Usage: rake "gitlab:gitaly:install[/installation/dir,/storage/path]")
       storage_paths = { 'default' => args.storage_path }
       Gitlab::SetupHelper::Gitaly.create_configuration(args.dir, storage_paths)
 
-      # In CI we run scripts/gitaly-test-build
-      next if ENV['CI'].present?
-
       Dir.chdir(args.dir) do
         Bundler.with_original_env do
           env = { "RUBYOPT" => nil, "BUNDLE_GEMFILE" => nil }
