@@ -257,7 +257,7 @@ module Types
     end
 
     def commits_without_merge_commits
-      object.recent_commits.without_merge_commits
+      object.commits.without_merge_commits
     end
 
     def security_auto_fix
