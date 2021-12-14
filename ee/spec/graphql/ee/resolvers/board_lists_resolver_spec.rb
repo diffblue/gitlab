@@ -50,7 +50,7 @@ RSpec.describe Resolvers::BoardListsResolver do
 
   def resolve_board_lists(args: {}, current_user: user)
     context = GraphQL::Query::Context.new(
-      query: OpenStruct.new(schema: nil),
+      query: double('query', schema: nil),
       values: { current_user: current_user },
       object: nil
     )
