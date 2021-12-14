@@ -19,6 +19,8 @@ module Analytics
         @cursor = cursor
         @updated_at_before = updated_at_before
         @upsert_count = 0
+
+        load_stages # ensure stages are loaded/created
       end
 
       def execute
@@ -54,7 +56,7 @@ module Analytics
 
       private
 
-      attr_reader :group, :model, :cursor, :updated_at_before, :upsert_count
+      attr_reader :group, :model, :cursor, :updated_at_before, :upsert_count, :stages
 
       def error(error_reason)
         ServiceResponse.error(
@@ -172,8 +174,8 @@ module Analytics
         "column_" + event.hash_code[0...10]
       end
 
-      def stages
-        @stages ||= Gitlab::Analytics::CycleAnalytics::DistinctStageLoader
+      def load_stages
+        @stages ||= ::Gitlab::Analytics::CycleAnalytics::DistinctStageLoader
           .new(group: group)
           .stages
           .select { |stage| stage.start_event.object_type == model }

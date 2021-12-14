@@ -48,5 +48,25 @@ RSpec.describe Groups::Analytics::CycleAnalytics::SummaryController do
     subject { get :time_summary, params: params }
 
     it_behaves_like 'summary endpoint'
+
+    it 'passes the group to RequestParams' do
+      expect_next_instance_of(Gitlab::Analytics::CycleAnalytics::RequestParams) do |instance|
+        expect(instance.group).to eq(group)
+      end
+
+      subject
+    end
+
+    it 'uses the aggregated VSA data collector' do
+      # Ensure stage_hash_id is present for Lead Time and CycleTime
+      Analytics::CycleAnalytics::DataLoaderService.new(group: group, model: Issue).execute
+
+      # Calculating Cycle Time and Lead Time
+      expect(Gitlab::Analytics::CycleAnalytics::Aggregated::DataCollector).to receive(:new).twice.and_call_original
+
+      subject
+
+      expect(response).to be_successful
+    end
   end
 end

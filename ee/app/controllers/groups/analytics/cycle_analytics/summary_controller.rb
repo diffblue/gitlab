@@ -4,6 +4,7 @@ module Groups
   module Analytics
     module CycleAnalytics
       class SummaryController < Groups::Analytics::ApplicationController
+        extend ::Gitlab::Utils::Override
         include CycleAnalyticsParams
 
         before_action :load_group
@@ -26,6 +27,11 @@ module Groups
 
         def authorize_access
           return render_403 unless can?(current_user, :read_group_cycle_analytics, @group)
+        end
+
+        override :all_cycle_analytics_params
+        def all_cycle_analytics_params
+          super.merge({ group: @group })
         end
       end
     end
