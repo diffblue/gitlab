@@ -18,7 +18,7 @@ module EE
         end
 
         def auto_fix_user_path
-          '/' # TODO: real link will be updated with https://gitlab.com/gitlab-org/gitlab/-/issues/215669
+          '/' # TODO: real link will be updated with https://gitlab.com/gitlab-org/gitlab/-/issues/348463
         end
       end
     end
