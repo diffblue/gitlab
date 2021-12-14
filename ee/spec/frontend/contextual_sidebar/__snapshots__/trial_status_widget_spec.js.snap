@@ -2,7 +2,6 @@
 
 exports[`TrialStatusWidget component without the optional containerId prop matches the snapshot 1`] = `
 <gl-link-stub
-  class="gl-text-decoration-none! gl-text-body!"
   href="billing/path-for/group"
   title="Ultimate Trial – 20 days left"
 >

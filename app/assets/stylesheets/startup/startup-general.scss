@@ -403,6 +403,19 @@ h1 {
   width: 32px;
   height: 32px;
 }
+.gl-link {
+  font-size: 0.875rem;
+  color: #1f75cb;
+}
+.gl-link:active {
+  color: #0b5cad;
+}
+.gl-link:active {
+  text-decoration: underline;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4),
+    0 0 0 4px rgba(31, 117, 203, 0.48);
+  outline: none;
+}
 .gl-button {
   display: inline-flex;
 }
@@ -1352,6 +1365,12 @@ input {
 .sidebar-top-level-items > li.active .badge.badge-pill {
   font-weight: 400;
   color: #0b5cad;
+}
+.sidebar-top-level-items li > a.gl-link {
+  color: #303030;
+}
+.sidebar-top-level-items li > a.gl-link:active {
+  text-decoration: none;
 }
 .sidebar-sub-level-items {
   padding-top: 0;
