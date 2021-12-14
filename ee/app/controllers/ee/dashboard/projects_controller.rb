@@ -41,7 +41,7 @@ module EE
       end
 
       def check_adjourned_deletion_listing_availability
-        return render_404 unless License.feature_available?(:adjourned_deletion_for_projects_and_groups)
+        return render_404 unless can?(current_user, :list_removable_projects)
       end
 
       def finder_params_for_removed
