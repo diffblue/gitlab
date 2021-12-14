@@ -23,6 +23,7 @@ export const PIPELINES_GROUP_RUNNING = 'running';
 export const PIPELINES_GROUP_PENDING = 'pending';
 export const PIPELINES_GROUP_SUCCESS_WITH_WARNINGS = 'success-with-warnings';
 export const PIPELINES_GROUP_FAILED = 'success-with-warnings';
+export const PIPELINES_GROUP_SUCCESS = 'success';
 
 const STATUS_COLUMN = {
   label: __('Status'),

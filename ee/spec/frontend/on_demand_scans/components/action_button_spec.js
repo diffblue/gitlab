@@ -39,6 +39,7 @@ describe('ActionButton', () => {
 
   it('sets the label on the button and in the tooltip', () => {
     createComponent();
+
     expect(findButton().attributes('aria-label')).toBe(label);
     expect(findTooltip().text()).toBe(label);
   });
@@ -62,5 +63,14 @@ describe('ActionButton', () => {
     createComponent({ isLoading: true });
 
     expect(findButton().props('loading')).toBe(true);
+  });
+
+  it('passes attributes down to the button', () => {
+    const href = '/edit/path';
+    createComponent({
+      href,
+    });
+
+    expect(findButton().attributes('href')).toBe(href);
   });
 });
