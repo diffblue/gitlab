@@ -38,7 +38,7 @@ describe('import table', () => {
     wrapper.findAll('button').wrappers.find((w) => w.text() === 'Import selected');
   const findImportButtons = () =>
     wrapper.findAll('button').wrappers.filter((w) => w.text() === 'Import');
-  const findPaginationDropdown = () => wrapper.find('[aria-label="Page size"]');
+  const findPaginationDropdown = () => wrapper.find('[data-testid="page-size"]');
   const findPaginationDropdownText = () => findPaginationDropdown().find('button').text();
   const findSelectionCount = () => wrapper.find('[data-test-id="selection-count"]');
 

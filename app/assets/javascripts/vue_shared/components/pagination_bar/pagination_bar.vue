@@ -42,7 +42,23 @@ export default {
 
   methods: {
     setPage(page) {
+      // eslint-disable-next-line spaced-comment
+      /**
+       * Emitted when selected page is updated
+       *
+       * @event set-page
+       **/
       this.$emit('set-page', page);
+    },
+
+    setPageSize(pageSize) {
+      // eslint-disable-next-line spaced-comment
+      /**
+       * Emitted when page size is updated
+       *
+       * @event set-page-size
+       **/
+      this.$emit('set-page-size', pageSize);
     },
   },
 };
@@ -51,7 +67,7 @@ export default {
 <template>
   <div class="gl-display-flex gl-align-items-center">
     <pagination-links :change="setPage" :page-info="pageInfo" class="gl-m-0" />
-    <gl-dropdown category="tertiary" class="gl-ml-auto" :aria-label="__('Page size')">
+    <gl-dropdown category="tertiary" class="gl-ml-auto" data-testid="page-size">
       <template #button-content>
         <span class="gl-font-weight-bold">
           <gl-sprintf :message="__('%{count} items per page')">
@@ -62,7 +78,7 @@ export default {
         </span>
         <gl-icon class="gl-button-icon dropdown-chevron" name="chevron-down" />
       </template>
-      <gl-dropdown-item v-for="size in pageSizes" :key="size" @click="$emit('set-page-size', size)">
+      <gl-dropdown-item v-for="size in pageSizes" :key="size" @click="setPageSize(size)">
         <gl-sprintf :message="__('%{count} items per page')">
           <template #count>
             {{ size }}

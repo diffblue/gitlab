@@ -27,17 +27,11 @@ Default.args = {
 Default.argTypes = {
   pageInfo: {
     description: 'Page info object',
-    control: false,
+    control: { type: 'object' },
   },
   pageSizes: {
     description: 'Array of possible page sizes',
-    control: false,
-  },
-  itemsCount: {
-    description: 'Total number of items',
-    control: {
-      type: 'number',
-    },
+    control: { type: 'array' },
   },
 
   // events
