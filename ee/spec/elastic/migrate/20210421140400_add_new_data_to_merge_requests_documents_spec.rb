@@ -56,7 +56,7 @@ RSpec.describe AddNewDataToMergeRequestsDocuments, :elastic, :sidekiq_inline do
 
       it 'only updates merge_request documents missing visibility_level', :aggregate_failures do
         merge_request = merge_requests.first
-        add_visibility_level_for_merge_requests(merge_requests[1..-1])
+        add_visibility_level_for_merge_requests(merge_requests[1..])
 
         expected = [Gitlab::Elastic::DocumentReference.new(MergeRequest, merge_request.id, merge_request.es_id, merge_request.es_parent)]
         expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!).with(*expected).once

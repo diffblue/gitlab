@@ -53,7 +53,7 @@ RSpec.shared_examples 'migration backfills a field' do
 
       it 'only updates documents missing a field', :aggregate_failures do
         object = objects.first
-        add_field_for_objects(objects[1..-1])
+        add_field_for_objects(objects[1..])
 
         expected = [Gitlab::Elastic::DocumentReference.new(klass, object.id, object.es_id, object.es_parent)]
         expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!).with(*expected).once.and_call_original

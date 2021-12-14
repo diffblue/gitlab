@@ -51,7 +51,7 @@ RSpec.describe AddUpvotesToIssues, :elastic, :sidekiq_inline do
 
       it 'only updates issue documents missing upvotes', :aggregate_failures do
         issue = issues.first
-        add_upvotes_for_issues(issues[1..-1])
+        add_upvotes_for_issues(issues[1..])
 
         expected = [Gitlab::Elastic::DocumentReference.new(Issue, issue.id, issue.es_id, issue.es_parent)]
         expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!).with(*expected).once

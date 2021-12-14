@@ -827,11 +827,6 @@ Style/RescueModifier:
 Style/SingleArgumentDig:
   Enabled: false
 
-# Offense count: 45
-# Cop supports --auto-correct.
-Style/SlicingWithRange:
-  Enabled: false
-
 # Offense count: 63
 # Configuration parameters: AllowModifier.
 Style/SoleNestedConditional:
