@@ -12,6 +12,9 @@ module EE
         expose :iid
         expose :group_id
         expose :parent_id
+        expose :parent_iid do |epic|
+          epic.parent.iid if epic.has_parent?
+        end
         expose :title
         expose :description
         expose :confidential
@@ -91,6 +94,10 @@ module EE
 
           expose :group do |epic|
             expose_url(api_v4_groups_path(id: epic.group_id))
+          end
+
+          expose :parent do |epic|
+            expose_url(api_v4_groups_epics_path(id: epic.parent.group_id, epic_iid: epic.parent.iid)) if epic.has_parent?
           end
         end
       end

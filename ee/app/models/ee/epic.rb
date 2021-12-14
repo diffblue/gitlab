@@ -137,7 +137,7 @@ module EE
         where(boards_epic_board_positions: { relative_position: nil })
       end
 
-      scope :with_api_entity_associations, -> { preload(:author, :labels, group: :route) }
+      scope :with_api_entity_associations, -> { preload(:author, :labels, :parent, group: :route) }
       scope :start_date_inherited, -> { where(start_date_is_fixed: [nil, false]) }
       scope :due_date_inherited, -> { where(due_date_is_fixed: [nil, false]) }
 
