@@ -4,6 +4,9 @@ module Gitlab
   module Database
     module QueryAnalyzers
       class Base
+        # `Exception` to ensure that is not easily rescued when running in test env
+        QueryAnalyzerError = Class.new(Exception) # rubocop:disable Lint/InheritException
+
         def self.suppressed?
           Thread.current[self.suppress_key]
         end

@@ -4,7 +4,7 @@ module Gitlab
   module Database
     module QueryAnalyzers
       class PreventCrossDatabaseModification < Database::QueryAnalyzers::Base
-        CrossDatabaseModificationAcrossUnsupportedTablesError = Class.new(StandardError)
+        CrossDatabaseModificationAcrossUnsupportedTablesError = Class.new(QueryAnalyzerError)
 
         # This method will allow cross database modifications within the block
         # Example:
