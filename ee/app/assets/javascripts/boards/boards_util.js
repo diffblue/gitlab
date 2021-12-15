@@ -232,20 +232,24 @@ export const FiltersInfo = {
   },
   iterationId: {
     negatedSupport: true,
-    remap: (k, v) =>
-      // iteration_id should be renamed to iterationWildcardId when CURRENT is the value
-      v === IterationFilterType.any ||
-      v === IterationFilterType.none ||
-      v === IterationFilterType.current
+    remap: (k, v) => {
+      return v.endsWith(IterationFilterType.any) ||
+        v.endsWith(IterationFilterType.none) ||
+        v.endsWith(IterationFilterType.current)
         ? 'iterationWildcardId'
-        : k,
+        : k;
+    },
   },
   iterationTitle: {
     negatedSupport: true,
   },
   iterationWildcardId: {
     negatedSupport: true,
-    transform: (val) => val.toUpperCase(),
+    transform: (val) => {
+      // Gets the wildcard value out of the gid.
+      const valList = val.split('/');
+      return valList[valList.length - 1].toUpperCase();
+    },
   },
   weight: {
     negatedSupport: true,

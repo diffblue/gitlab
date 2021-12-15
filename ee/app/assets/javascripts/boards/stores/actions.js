@@ -12,12 +12,11 @@ import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 import projectBoardMembersQuery from '~/boards/graphql/project_board_members.query.graphql';
 import actionsCE from '~/boards/stores/actions';
 import * as typesCE from '~/boards/stores/mutation_types';
-import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { getIdFromGraphQLId, convertToGraphQLId } from '~/graphql_shared/utils';
 import { historyPushState, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { mergeUrlParams, removeParams, queryToObject } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
-import groupBoardIterationsQuery from 'ee/boards/graphql/group_board_iterations.query.graphql';
-import projectBoardIterationsQuery from 'ee/boards/graphql/project_board_iterations.query.graphql';
+import searchIterationQuery from 'ee/issues_list/queries/search_iterations.query.graphql';
 import {
   fullEpicBoardId,
   formatEpic,
@@ -137,14 +136,21 @@ export default {
   },
 
   setFilters: ({ commit, dispatch, state: { issuableType } }, filters) => {
+    const filtersCopy = { ...filters };
+
     if (filters.groupBy === GroupByParamType.epic) {
       dispatch('setEpicSwimlanes');
+    }
+
+    if (filters?.iterationId) {
+      // eslint-disable-next-line @gitlab/require-i18n-strings
+      filtersCopy.iterationId = convertToGraphQLId('Iteration', filters.iterationId);
     }
 
     commit(
       types.SET_FILTERS,
       filterVariables({
-        filters,
+        filters: filtersCopy,
         issuableType,
         filterInfo: FiltersInfo,
         filterFields: FilterFields,
@@ -157,27 +163,16 @@ export default {
 
     const { fullPath, boardType } = state;
 
-    const variables = {
-      fullPath,
-      title,
-    };
+    const id = Number(title);
+    let variables = { fullPath, search: title, isProject: boardType === BoardType.project };
 
-    let query;
-    if (boardType === BoardType.project) {
-      query = projectBoardIterationsQuery;
-    }
-    if (boardType === BoardType.group) {
-      query = groupBoardIterationsQuery;
-    }
-
-    if (!query) {
-      // eslint-disable-next-line @gitlab/require-i18n-strings
-      throw new Error('Unknown board type');
+    if (!Number.isNaN(id) && title !== '') {
+      variables = { fullPath, id, isProject: boardType === BoardType.project };
     }
 
     return gqlClient
       .query({
-        query,
+        query: searchIterationQuery,
         variables,
       })
       .then(({ data }) => {
