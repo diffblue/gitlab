@@ -149,7 +149,7 @@ ORDER BY page_view_start DESC
 LIMIT 100
 ```
 
-#### Query JSON formatted custom data
+#### Query JSON formatted data
 
 ```sql
 SELECT
