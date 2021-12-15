@@ -172,19 +172,6 @@ RSpec.describe ApplicationSetting do
       end
     end
 
-    context 'when license presented' do
-      let_it_be(:max_active_user_count) { 20 }
-
-      before_all do
-        create_current_license({ restrictions: { active_user_count: max_active_user_count } })
-      end
-
-      it { is_expected.to allow_value(max_active_user_count - 1).for(:new_user_signups_cap) }
-      it { is_expected.to allow_value(max_active_user_count).for(:new_user_signups_cap) }
-      it { is_expected.to allow_value(nil).for(:new_user_signups_cap) }
-      it { is_expected.not_to allow_value(max_active_user_count + 1).for(:new_user_signups_cap) }
-    end
-
     context 'Sentry validations' do
       context 'when Sentry is enabled' do
         before do
