@@ -10282,6 +10282,9 @@ msgstr ""
 msgid "Crm|Contact has been added"
 msgstr ""
 
+msgid "Crm|Contact has been updated"
+msgstr ""
+
 msgid "Crm|Create new contact"
 msgstr ""
 
@@ -10291,6 +10294,9 @@ msgstr ""
 msgid "Crm|Description (optional)"
 msgstr ""
 
+msgid "Crm|Edit contact"
+msgstr ""
+
 msgid "Crm|Email"
 msgstr ""
 
@@ -10298,9 +10304,6 @@ msgid "Crm|First name"
 msgstr ""
 
 msgid "Crm|Last name"
-msgstr ""
-
-msgid "Crm|New Contact"
 msgstr ""
 
 msgid "Crm|New contact"
