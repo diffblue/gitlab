@@ -17,9 +17,9 @@ RSpec.describe 'projects/hooks/index' do
   it 'renders webhooks page with "Project Hooks"' do
     render
 
-    expect(rendered).to have_css('h4', text: 'Webhooks')
+    expect(rendered).to have_css('h4', text: _('Webhooks'))
     expect(rendered).to have_text('Project Hooks')
-    expect(rendered).not_to have_css('.gl-badge', text: 'Disabled')
+    expect(rendered).not_to have_css('.gl-badge', text: _('Disabled'))
   end
 
   context 'webhook is rate limited' do
@@ -30,7 +30,7 @@ RSpec.describe 'projects/hooks/index' do
     it 'renders "Disabled" badge' do
       render
 
-      expect(rendered).to have_css('.gl-badge', text: 'Disabled')
+      expect(rendered).to have_css('.gl-badge', text: _('Disabled'))
     end
   end
 end

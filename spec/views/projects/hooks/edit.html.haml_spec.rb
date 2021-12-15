@@ -15,8 +15,8 @@ RSpec.describe 'projects/hooks/edit' do
   it 'renders webhook page with "Recent events"' do
     render
 
-    expect(rendered).to have_css('h4', text: 'Webhook')
-    expect(rendered).to have_text('Recent events')
+    expect(rendered).to have_css('h4', text: _('Webhook'))
+    expect(rendered).to have_text(_('Recent events'))
   end
 
   context 'webhook is rate limited' do
@@ -27,7 +27,7 @@ RSpec.describe 'projects/hooks/edit' do
     it 'renders alert' do
       render
 
-      expect(rendered).to have_text('Webhook was automatically disabled')
+      expect(rendered).to have_text(s_('Webhooks|Webhook was automatically disabled'))
     end
   end
 end
