@@ -216,7 +216,10 @@ module QA
           source_mr # fabricate mr for import
         end
 
-        it 'successfully imports merge request' do
+        it(
+          'successfully imports merge request',
+          tesecase: "https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348478"
+        ) do
           expect_import_finished
 
           expect(imported_mrs.count).to eq(1)
