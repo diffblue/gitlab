@@ -3,7 +3,7 @@
 class BackfillIncidentIssueEscalationStatuses < Gitlab::Database::Migration[1.0]
   MIGRATION = 'BackfillIncidentIssueEscalationStatuses'
   DELAY_INTERVAL = 2.minutes
-  BATCH_SIZE = 1_000
+  BATCH_SIZE = 50_000
 
   disable_ddl_transaction!
 
@@ -11,12 +11,10 @@ class BackfillIncidentIssueEscalationStatuses < Gitlab::Database::Migration[1.0]
     include EachBatch
 
     self.table_name = 'issues'
-
-    scope :incidents, -> { where(issue_type: 1) }
   end
 
   def up
-    relation = Issue.incidents
+    relation = Issue.all
 
     queue_background_migration_jobs_by_range_at_intervals(
       relation, MIGRATION, DELAY_INTERVAL, batch_size: BATCH_SIZE, track_jobs: true)

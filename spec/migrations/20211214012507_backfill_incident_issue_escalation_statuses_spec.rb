@@ -15,7 +15,7 @@ RSpec.describe BackfillIncidentIssueEscalationStatuses do
   end
 
   it 'schedules jobs for incident issues' do
-    issues.create!(project_id: project.id) # non-incident issue
+    issue_1 = issues.create!(project_id: project.id) # non-incident issue
     incident_1 = issues.create!(project_id: project.id, issue_type: 1)
     incident_2 = issues.create!(project_id: project.id, issue_type: 1)
 
@@ -24,10 +24,12 @@ RSpec.describe BackfillIncidentIssueEscalationStatuses do
         migrate!
 
         expect(described_class::MIGRATION).to be_scheduled_delayed_migration(
-          2.minutes, incident_1.id, incident_1.id)
+          2.minutes, issue_1.id, issue_1.id)
         expect(described_class::MIGRATION).to be_scheduled_delayed_migration(
-          4.minutes, incident_2.id, incident_2.id)
-        expect(BackgroundMigrationWorker.jobs.size).to eq(2)
+          4.minutes, incident_1.id, incident_1.id)
+        expect(described_class::MIGRATION).to be_scheduled_delayed_migration(
+          6.minutes, incident_2.id, incident_2.id)
+        expect(BackgroundMigrationWorker.jobs.size).to eq(3)
       end
     end
   end
