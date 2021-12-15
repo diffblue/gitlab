@@ -1960,6 +1960,48 @@ RSpec.describe Namespace do
     end
   end
 
+  describe '#user_cap_available?' do
+    let_it_be(:namespace) { create(:group) }
+    let_it_be(:subgroup) {  create(:group, parent: namespace) }
+
+    let(:gitlab_com?) { true }
+
+    subject(:user_cap_available?) { namespace.user_cap_available? }
+
+    before do
+      allow(::Gitlab).to receive(:com?).and_return(gitlab_com?)
+    end
+
+    context 'when not on Gitlab.com' do
+      let(:gitlab_com?) { false }
+
+      it { is_expected.to be false }
+    end
+
+    context 'when :saas_user_caps is disabled' do
+      before do
+        stub_feature_flags(saas_user_caps: false)
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context 'when :saas_user_caps is enabled' do
+      before do
+        stub_feature_flags(saas_user_caps: true)
+      end
+
+      it { is_expected.to be true }
+
+      context 'when the namespace is not a group' do
+        let(:user) { create(:user) }
+        let(:namespace) { user.namespace }
+
+        it { is_expected.to be false }
+      end
+    end
+  end
+
   def create_project(repository_size:, lfs_objects_size:, repository_size_limit:)
     create(:project, namespace: namespace, repository_size_limit: repository_size_limit).tap do |project|
       create(:project_statistics, project: project, repository_size: repository_size, lfs_objects_size: lfs_objects_size)

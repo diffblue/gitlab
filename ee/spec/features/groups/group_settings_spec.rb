@@ -409,9 +409,18 @@ RSpec.describe 'Edit group settings' do
   end
 
   describe 'user caps settings' do
-    context 'when :saas_user_caps feature flag is off' do
+    let(:user_cap_available) { true }
+
+    before do
+      allow_next_found_instance_of(Group) do |instance|
+        allow(instance).to receive(:user_cap_available?).and_return user_cap_available
+      end
+    end
+
+    context 'when user cap feature is unavailable' do
+      let(:user_cap_available) { false }
+
       before do
-        stub_feature_flags(saas_user_caps: false)
         visit edit_group_path(group)
       end
 
@@ -420,11 +429,10 @@ RSpec.describe 'Edit group settings' do
       end
     end
 
-    context 'when :saas_user_caps feature flag is on', :js do
+    context 'when user cap feature is available', :js do
       let(:user_caps_selector) { '[name="group[new_user_signups_cap]"]' }
 
       before do
-        stub_feature_flags(saas_user_caps: true)
         visit edit_group_path(group)
       end
 
@@ -479,7 +487,6 @@ RSpec.describe 'Edit group settings' do
       end
 
       before do
-        stub_feature_flags(saas_user_caps: true)
         group.namespace_settings.update!(new_user_signups_cap: group.group_members.count)
       end
 

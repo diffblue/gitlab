@@ -37,4 +37,30 @@ RSpec.describe Groups::UsageQuotasController do
       end
     end
   end
+
+  describe 'GET #pending_members' do
+    let(:feature_available) { true }
+
+    before do
+      allow_next_found_instance_of(Group) do |group|
+        allow(group).to receive(:user_cap_available?).and_return(feature_available)
+      end
+    end
+
+    it 'renders the pending members index' do
+      get :pending_members, params: { group_id: group }
+
+      expect(response).to render_template 'groups/usage_quotas/pending_members'
+    end
+
+    context 'when user cap feature is unavailable' do
+      let(:feature_available) { false }
+
+      it 'returns 404' do
+        get :pending_members, params: { group_id: group }
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+  end
 end

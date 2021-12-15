@@ -19,7 +19,7 @@ class Groups::UsageQuotasController < Groups::ApplicationController
   end
 
   def pending_members
-    render_404 unless ::Feature.enabled?(:saas_user_caps, @group.root_ancestor, default_enabled: :yaml)
+    render_404 unless @group.user_cap_available?
     @hide_search_settings = true
   end
 

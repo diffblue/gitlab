@@ -24,6 +24,8 @@ RSpec.describe 'Namespace user cap reached alert', :feature, :js, :use_clean_rai
 
   context 'with an exceeded user cap' do
     before do
+      allow(Gitlab).to receive(:com?).and_return(true)
+
       stub_cache(group)
     end
 

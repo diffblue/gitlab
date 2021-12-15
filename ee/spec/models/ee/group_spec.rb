@@ -1495,63 +1495,77 @@ RSpec.describe Group do
   describe '#user_cap_reached?' do
     subject(:user_cap_reached_for_group?) { group.user_cap_reached? }
 
-    context 'when the :saas_user_caps feature flag is not enabled' do
+    context 'when user cap feature is not available' do
+      before do
+        allow(group).to receive(:user_cap_available?).and_return(false)
+      end
+
       it { is_expected.to be_falsey }
     end
 
-    context 'when the :saas_user_caps feature flag is enabled' do
+    context 'when user cap feature is available' do
       before do
-        stub_feature_flags(saas_user_caps: true)
+        allow(group).to receive(:user_cap_available?).and_return(true)
       end
 
-      let(:new_user_signups_cap) { nil }
+      context 'when the :saas_user_caps feature flag is not enabled' do
+        it { is_expected.to be_falsey }
+      end
 
-      shared_context 'returning the right value for user_cap_reached?' do
+      context 'when the :saas_user_caps feature flag is enabled' do
         before do
-          root_group.namespace_settings.update!(new_user_signups_cap: new_user_signups_cap)
+          stub_feature_flags(saas_user_caps: true)
         end
 
-        context 'when no user cap has been set to that root ancestor' do
-          it { is_expected.to be_falsey }
-        end
+        let(:new_user_signups_cap) { nil }
 
-        context 'when a user cap has been set to that root ancestor' do
-          let(:new_user_signups_cap) { 100 }
-
+        shared_examples 'returning the right value for user_cap_reached?' do
           before do
-            allow(root_group).to receive(:billable_members_count).and_return(billable_members_count)
-            allow(group).to receive(:root_ancestor).and_return(root_group)
+            root_group.namespace_settings.update!(new_user_signups_cap: new_user_signups_cap)
           end
 
-          context 'when this cap is higher than the number of billable members' do
-            let(:billable_members_count) { new_user_signups_cap - 10 }
-
+          context 'when no user cap has been set to that root ancestor' do
             it { is_expected.to be_falsey }
           end
 
-          context 'when this cap is the same as the number of billable members' do
-            let(:billable_members_count) { new_user_signups_cap }
+          context 'when a user cap has been set to that root ancestor' do
+            let(:new_user_signups_cap) { 100 }
 
-            it { is_expected.to be_truthy }
-          end
+            before do
+              allow(root_group).to receive(:billable_members_count).and_return(billable_members_count)
+              allow(group).to receive(:root_ancestor).and_return(root_group)
+            end
 
-          context 'when this cap is lower than the number of billable members' do
-            let(:billable_members_count) { new_user_signups_cap + 10 }
+            context 'when this cap is higher than the number of billable members' do
+              let(:billable_members_count) { new_user_signups_cap - 10 }
 
-            it { is_expected.to be_truthy }
+              it { is_expected.to be_falsey }
+            end
+
+            context 'when this cap is the same as the number of billable members' do
+              let(:billable_members_count) { new_user_signups_cap }
+
+              it { is_expected.to be_truthy }
+            end
+
+            context 'when this cap is lower than the number of billable members' do
+              let(:billable_members_count) { new_user_signups_cap + 10 }
+
+              it { is_expected.to be_truthy }
+            end
           end
         end
-      end
 
-      context 'when this group has no root ancestor' do
-        it_behaves_like 'returning the right value for user_cap_reached?' do
-          let(:root_group) { group }
+        context 'when this group has no root ancestor' do
+          it_behaves_like 'returning the right value for user_cap_reached?' do
+            let(:root_group) { group }
+          end
         end
-      end
 
-      context 'when this group has a root ancestor' do
-        it_behaves_like 'returning the right value for user_cap_reached?' do
-          let(:root_group) { create(:group, children: [group]) }
+        context 'when this group has a root ancestor' do
+          it_behaves_like 'returning the right value for user_cap_reached?' do
+            let(:root_group) { create(:group, children: [group]) }
+          end
         end
       end
     end

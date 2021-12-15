@@ -512,7 +512,7 @@ module EE
     end
 
     def user_cap_reached?(use_cache: false)
-      return false unless ::Feature.enabled?(:saas_user_caps, root_ancestor, default_enabled: :yaml)
+      return false unless user_cap_available?
 
       user_cap = root_ancestor.namespace_settings&.new_user_signups_cap
       return false unless user_cap
