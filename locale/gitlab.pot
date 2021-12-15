@@ -11410,6 +11410,9 @@ msgstr ""
 msgid "Delete variable"
 msgstr ""
 
+msgid "DeleteProject|Failed to remove events. Please try again or contact administrator."
+msgstr ""
+
 msgid "DeleteProject|Failed to remove project repository. Please try again or contact administrator."
 msgstr ""
 
