@@ -378,6 +378,7 @@ module EE
         prevent :admin_issue_board_list
         prevent :admin_issue
         prevent :admin_pipeline
+        prevent :admin_group_runners
         prevent :add_cluster
         prevent :create_cluster
         prevent :update_cluster
