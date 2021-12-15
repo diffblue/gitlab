@@ -291,26 +291,6 @@ RSpec.describe 'Admin updates EE-only settings' do
       visit general_admin_application_settings_path
     end
 
-    context 'when license has active user count' do
-      let(:license) { create(:license, restrictions: { active_user_count: 1 }) }
-
-      before do
-        allow(License).to receive(:current).and_return(license)
-      end
-
-      it 'disallows entering user cap greater then license allows' do
-        page.within('#js-signup-settings') do
-          fill_in 'application_setting[new_user_signups_cap]', with: 5
-
-          click_button 'Save changes'
-
-          page.within '#error_explanation' do
-            expect(page).to have_text('New user signups cap must be less than or equal to 1')
-          end
-        end
-      end
-    end
-
     it 'changes the user cap from unlimited to 5' do
       expect(current_settings.new_user_signups_cap).to be_nil
 

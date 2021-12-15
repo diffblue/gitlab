@@ -109,8 +109,7 @@ module EE
                 allow_blank: true,
                 numericality: {
                   only_integer: true,
-                  greater_than: 0,
-                  less_than_or_equal_to: proc { License.current&.restricted_user_count }
+                  greater_than: 0
                 },
                 if: proc { License.current&.restricted_user_count? }
 
