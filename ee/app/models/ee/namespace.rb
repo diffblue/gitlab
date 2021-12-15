@@ -447,6 +447,13 @@ module EE
       klass.new(self)
     end
 
+    def user_cap_available?
+      return false unless group_namespace?
+      return false unless ::Gitlab.com?
+
+      ::Feature.enabled?(:saas_user_caps, root_ancestor, default_enabled: :yaml)
+    end
+
     private
 
     def any_project_with_shared_runners_enabled_with_cte?

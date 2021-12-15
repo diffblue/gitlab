@@ -4,10 +4,8 @@ module EE
   module NamespaceUserCapReachedAlertHelper
     def display_namespace_user_cap_reached_alert?(namespace)
       root_namespace = namespace.root_ancestor
-      return false unless ::Feature.enabled?(:saas_user_caps, root_namespace, default_enabled: :yaml)
 
-      return false if root_namespace.user_namespace?
-
+      return false unless root_namespace.user_cap_available?
       return false if alert_has_been_dismissed?(root_namespace)
 
       can?(current_user, :admin_namespace, root_namespace) && root_namespace.user_cap_reached?(use_cache: true)

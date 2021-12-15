@@ -1,4 +1,4 @@
-- return unless Feature.enabled?(:saas_user_caps, group.root_ancestor)
+- return unless group.user_cap_available?
 
 .form-group
   = f.label :new_user_signups_cap, _('User cap'), class: 'gl-font-weight-bold'

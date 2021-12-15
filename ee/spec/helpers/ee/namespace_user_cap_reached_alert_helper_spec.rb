@@ -23,19 +23,23 @@ RSpec.describe EE::NamespaceUserCapReachedAlertHelper, :use_clean_rails_memory_s
     before do
       allow(helper).to receive(:can?).with(owner, :admin_namespace, group).and_return(true)
       allow(helper).to receive(:can?).with(developer, :admin_namespace, group).and_return(false)
+      allow(group).to receive(:user_cap_available?).and_return(true)
+
       stub_cache(group)
     end
+
+    subject(:display_alert?) { helper.display_namespace_user_cap_reached_alert?(group) }
 
     it 'returns true when the user cap is reached for a user who can admin the namespace' do
       sign_in(owner)
 
-      expect(helper.display_namespace_user_cap_reached_alert?(group)).to be true
+      expect(display_alert?).to be true
     end
 
     it 'returns false when the user cap is reached for a user who cannot admin the namespace' do
       sign_in(developer)
 
-      expect(helper.display_namespace_user_cap_reached_alert?(group)).to be false
+      expect(display_alert?).to be false
     end
 
     it 'does not trigger reactive caching if there is no user cap set' do
@@ -44,7 +48,15 @@ RSpec.describe EE::NamespaceUserCapReachedAlertHelper, :use_clean_rails_memory_s
       sign_in(owner)
 
       expect(group).not_to receive(:with_reactive_cache)
-      expect(helper.display_namespace_user_cap_reached_alert?(group)).to be false
+      expect(display_alert?).to be false
+    end
+
+    it 'returns false when the user cap feature is unavailable' do
+      allow(group).to receive(:user_cap_available?).and_return(false)
+
+      sign_in(owner)
+
+      expect(display_alert?).to be false
     end
 
     def sign_in(user)
