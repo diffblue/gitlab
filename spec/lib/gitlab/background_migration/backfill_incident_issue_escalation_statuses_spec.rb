@@ -14,11 +14,11 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillIncidentIssueEscalationStatu
     namespace = namespaces.create!(name: 'foo', path: 'foo')
     project = projects.create!(namespace_id: namespace.id)
 
-    regular_issue    = issues.create!(project_id: project.id, title: 'issue 1', issue_type: 0)
-    incident_issue_1 = issues.create!(project_id: project.id, title: 'incident 1', issue_type: 1)
-    incident_issue_2 = issues.create!(project_id: project.id, title: 'incident 2', issue_type: 1)
+    issues.create!(project_id: project.id, title: 'issue 1', issue_type: 0)  # non-incident issue
+    issues.create!(project_id: project.id, title: 'incident 1', issue_type: 1)
+    issues.create!(project_id: project.id, title: 'incident 2', issue_type: 1)
     incident_issue_existing_status = issues.create!(project_id: project.id, title: 'incident 3', issue_type: 1)
-    existing_status = issuable_escalation_statuses.create!(issue_id: incident_issue_existing_status.id)
+    issuable_escalation_statuses.create!(issue_id: incident_issue_existing_status.id)
 
     migration.perform(1, incident_issue_existing_status.id)
 
