@@ -110,8 +110,8 @@ RSpec.describe User do
     it { is_expected.to have_many(:spam_logs).dependent(:destroy) }
     it { is_expected.to have_many(:todos) }
     it { is_expected.to have_many(:award_emoji).dependent(:destroy) }
-    it { is_expected.to have_many(:builds).dependent(:nullify) }
-    it { is_expected.to have_many(:pipelines).dependent(:nullify) }
+    it { is_expected.to have_many(:builds) }
+    it { is_expected.to have_many(:pipelines) }
     it { is_expected.to have_many(:chat_names).dependent(:destroy) }
     it { is_expected.to have_many(:uploads) }
     it { is_expected.to have_many(:reported_abuse_reports).dependent(:destroy).class_name('AbuseReport') }
@@ -6302,5 +6302,9 @@ RSpec.describe User do
 
       expect(user.user_readme).to be(nil)
     end
+  end
+
+  it_behaves_like 'it has loose foreign keys' do
+    let(:factory_name) { :user }
   end
 end
