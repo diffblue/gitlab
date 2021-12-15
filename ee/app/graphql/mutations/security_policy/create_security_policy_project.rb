@@ -23,7 +23,6 @@ module Mutations
         project = authorized_find!(args[:project_path])
 
         result = create_project(project)
-
         return { project: nil, errors: [result[:message]] } if result[:status] == :error
 
         {
