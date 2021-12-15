@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::BackgroundMigration::BackfillIncidentIssueEscalationStatuses do
+RSpec.describe Gitlab::BackgroundMigration::BackfillIncidentIssueEscalationStatuses, schema: 20211214012507 do
   let(:namespaces)                    { table(:namespaces) }
   let(:projects)                      { table(:projects) }
   let(:issues)                        { table(:issues) }
