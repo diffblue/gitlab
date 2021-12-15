@@ -164,6 +164,7 @@ RSpec.describe Member, type: :model do
              namespace_settings: create(:namespace_settings, new_user_signups_cap: 1))
     end
 
+    let_it_be(:subgroup) { create(:group, parent: group) }
     let_it_be(:project, refind: true) { create(:project, namespace: group)}
     let_it_be(:user) { create(:user) }
 
@@ -220,8 +221,6 @@ RSpec.describe Member, type: :model do
         end
 
         it 'sets the group member to awaiting when added to a subgroup' do
-          subgroup = create(:group, parent: group)
-
           subgroup.add_developer(user)
 
           expect(user.group_members.last).to be_awaiting
@@ -231,6 +230,24 @@ RSpec.describe Member, type: :model do
           project.add_developer(user)
 
           expect(user.project_members.last).to be_awaiting
+        end
+
+        context 'when the user is already an active group member' do
+          it 'sets the group member to active' do
+            create(:group_member, :active, group: group, user: user)
+            subgroup.add_owner(user)
+
+            expect(user.group_members.last).to be_active
+          end
+        end
+
+        context 'when the user is already an active project member' do
+          it 'sets the group member to active' do
+            create(:project_member, :active, project: project, user: user)
+            subgroup.add_owner(user)
+
+            expect(user.group_members.last).to be_active
+          end
         end
       end
     end
