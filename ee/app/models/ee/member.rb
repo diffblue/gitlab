@@ -30,11 +30,13 @@ module EE
         includes(:user, source: [:route, :parent])
       end
 
-      scope :awaiting_or_invited_for_group, -> (group) do
+      scope :distinct_awaiting_or_invited_for_group, -> (group) do
         awaiting
         .or(::Member.invite)
         .in_hierarchy(group)
+        .select('DISTINCT ON (members.user_id, members.invite_email) members.*')
         .includes(:user)
+        .order(:user_id, :invite_email)
       end
     end
 
