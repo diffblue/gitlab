@@ -129,6 +129,19 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
 
           expect(subject).to eq(expected_configuration)
         end
+
+        context 'when variables are empty' do
+          let_it_be(:ci_variables) { {} }
+
+          it 'returns prepared CI configuration for SAST' do
+            expected_configuration = {
+              inherit: { variables: false },
+              trigger: { include: [{ template: 'Security/SAST.gitlab-ci.yml' }] }
+            }
+
+            expect(subject).to eq(expected_configuration)
+          end
+        end
       end
     end
 

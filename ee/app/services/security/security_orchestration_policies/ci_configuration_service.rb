@@ -49,14 +49,14 @@ module Security
 
       def child_pipeline_configuration(template, ci_variables)
         {
-          variables: ci_variables.compact,
+          variables: ci_variables.compact.presence,
           inherit: {
             variables: false
           },
           trigger: {
             include: [{ template: "#{SCAN_TEMPLATES[template.to_s]}.gitlab-ci.yml" }]
           }
-        }
+        }.compact
       end
 
       def error_script(error_message)
