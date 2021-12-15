@@ -25258,9 +25258,6 @@ msgstr ""
 msgid "Page settings"
 msgstr ""
 
-msgid "Page size"
-msgstr ""
-
 msgid "PagerDutySettings|Active"
 msgstr ""
 
