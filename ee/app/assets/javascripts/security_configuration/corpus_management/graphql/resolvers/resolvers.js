@@ -73,7 +73,7 @@ export default {
       cache.writeQuery({ query: getCorpusesQuery, data: targetData, variables: { projectPath } });
 
       publishPackage(
-        { projectPath, name, version: 0, fileName: name, files },
+        { projectPath, name, version: 0, fileName: `${name}.zip`, files },
         { status: 'hidden', select: 'package_file' },
         { onUploadProgress, cancelToken: source.token },
       )
