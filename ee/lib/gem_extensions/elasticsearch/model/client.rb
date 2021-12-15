@@ -15,16 +15,19 @@ module GemExtensions
 
         cattr_accessor :cached_client
         cattr_accessor :cached_config
+        cattr_accessor :cached_adapter
 
         def client(_client = nil)
           store = ::GemExtensions::Elasticsearch::Model::Client
 
           store::CLIENT_MUTEX.synchronize do
-            config = Gitlab::CurrentSettings.elasticsearch_config
+            config = ::Gitlab::CurrentSettings.elasticsearch_config
+            adapter = ::Gitlab::Elastic::Client.adapter
 
-            if store.cached_client.nil? || config != store.cached_config
+            if store.cached_client.nil? || config != store.cached_config || adapter != store.cached_adapter
               store.cached_client = ::Gitlab::Elastic::Client.build(config)
               store.cached_config = config
+              store.cached_adapter = adapter
             end
           end
 
