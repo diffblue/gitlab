@@ -24,10 +24,6 @@ module EE
 
     private
 
-    def current_user
-      options[:current_user]
-    end
-
     def group
       options[:group]
     end
