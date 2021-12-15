@@ -115,7 +115,7 @@ export default {
         .map((url) => url.trim());
     },
     serializedAuthFields() {
-      const authFields = this.authSection.fields;
+      const authFields = { ...this.authSection.fields };
       // not to send password value if unchanged
       if (authFields.password === REDACTED_PASSWORD) {
         delete authFields.password;
