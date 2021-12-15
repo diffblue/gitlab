@@ -51,14 +51,17 @@ module Gitlab
             return
           elsif self.transaction_end?(parsed)
             context[:transaction_depth_by_db][database] -= 1
-            if context[:transaction_depth_by_db][database] <= 0
+            if context[:transaction_depth_by_db][database] == 0
               context[:modified_tables_by_db][database].clear
+            elsif context[:transaction_depth_by_db][database] < 0
+              context[:transaction_depth_by_db][database] = 0
+              raise CrossDatabaseModificationAcrossUnsupportedTablesError, "Something bad happened as we have misaligned transactions."
             end
 
             return
           end
 
-          return if context[:transaction_depth_by_db].values.all?(&:zero?)
+          return unless self.in_transaction?
 
           # PgQuery might fail in some cases due to limited nesting:
           # https://github.com/pganalyze/pg_query/issues/209
@@ -139,6 +142,10 @@ module Gitlab
         # want to raise in development.
         def self.raise_exception?
           Rails.env.test?
+        end
+
+        def self.in_transaction?
+          context[:transaction_depth_by_db].values.any?(&:positive?)
         end
 
         # We ignore execution in the #create method from FactoryBot
