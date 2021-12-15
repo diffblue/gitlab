@@ -8,7 +8,7 @@ RSpec.describe 'User sees Security Configuration table', :js do
   let_it_be(:pipeline) { create(:ci_pipeline, project: project) }
 
   before_all do
-    project.add_developer(user)
+    project.add_maintainer(user)
   end
 
   before do
@@ -17,12 +17,14 @@ RSpec.describe 'User sees Security Configuration table', :js do
 
   context 'with security_dashboard feature available' do
     before do
-      stub_licensed_features(security_dashboard: true, sast: true, sast_iac: true, dast: true)
+      stub_licensed_features(security_dashboard: true, sast: true, sast_iac: true, dast: true,
+                             dependency_scanning: true, container_scanning: true, coverage_fuzzing: true,
+                             cluster_image_scanning: true, api_fuzzing: true)
     end
 
     context 'with no SAST report' do
       it 'shows SAST is not enabled' do
-        visit(project_security_configuration_path(project))
+        visit_configuration_page
 
         within_sast_card do
           expect(page).to have_text('SAST')
@@ -38,7 +40,7 @@ RSpec.describe 'User sees Security Configuration table', :js do
       end
 
       it 'shows SAST is enabled' do
-        visit(project_security_configuration_path(project))
+        visit_configuration_page
 
         within_sast_card do
           expect(page).to have_text('SAST')
@@ -50,7 +52,7 @@ RSpec.describe 'User sees Security Configuration table', :js do
 
     context 'enabling SAST IaC' do
       it 'redirects to new MR page' do
-        visit(project_security_configuration_path(project))
+        visit_configuration_page
 
         within_sast_iac_card do
           expect(page).to have_text('Infrastructure as Code (IaC) Scanning')
@@ -67,12 +69,13 @@ RSpec.describe 'User sees Security Configuration table', :js do
 
     context 'with no DAST report' do
       it 'shows DAST is not enabled' do
-        visit(project_security_configuration_path(project))
+        visit_configuration_page
 
         within_dast_card do
           expect(page).to have_text('DAST')
           expect(page).to have_text('Not enabled')
           expect(page).to have_link('Enable DAST')
+          expect(page).to have_link('Manage scans')
         end
       end
     end
@@ -83,15 +86,108 @@ RSpec.describe 'User sees Security Configuration table', :js do
       end
 
       it 'shows DAST is enabled' do
-        visit(project_security_configuration_path(project))
+        visit_configuration_page
 
         within_dast_card do
           expect(page).to have_text('DAST')
           expect(page).to have_text('Enabled')
           expect(page).to have_link('Configure DAST')
+          expect(page).to have_link('Manage scans')
         end
       end
     end
+
+    context 'with no Dependency Scanning report' do
+      it 'shows Dependency Scanning is disabled' do
+        visit_configuration_page
+
+        within_dependency_scanning_card do
+          expect(page).to have_text('Dependency Scanning')
+          expect(page).to have_text('Not enabled')
+          expect(page).to have_button('Configure with a merge request')
+        end
+      end
+    end
+
+    context 'with Dependency Scanning report' do
+      before do
+        create(:ci_build, :dependency_scanning, pipeline: pipeline, status: 'success')
+      end
+
+      it 'shows Dependency Scanning is enabled' do
+        visit_configuration_page
+
+        within_dependency_scanning_card do
+          expect(page).to have_text('Dependency Scanning')
+          expect(page).to have_text('Enabled')
+          expect(page).to have_link('Configuration guide')
+        end
+      end
+    end
+
+    context 'with no Container Scanning report' do
+      it 'shows Container Scanning is disabled' do
+        visit_configuration_page
+
+        within_container_scanning_card do
+          expect(page).to have_text('Container Scanning')
+          expect(page).to have_text('Not enabled')
+          expect(page).to have_link('Configuration guide')
+        end
+      end
+    end
+
+    context 'with no Cluster Image scanning report' do
+      it 'shows Cluster Image scanning is disabled' do
+        visit_configuration_page
+
+        within_cluster_image_card do
+          expect(page).to have_text('Cluster Image Scanning')
+          expect(page).to have_text('Not enabled')
+          expect(page).to have_link('Configuration guide')
+        end
+      end
+    end
+
+    context 'with no Secret Detection report' do
+      it 'shows Secret Detection is disabled' do
+        visit_configuration_page
+
+        within_secret_detection_card do
+          expect(page).to have_text('Secret Detection')
+          expect(page).to have_text('Not enabled')
+          expect(page).to have_button('Configure with a merge request')
+        end
+      end
+    end
+
+    context 'with no API Fuzzing report' do
+      it 'shows API Fuzzing is disabled' do
+        visit_configuration_page
+
+        within_api_fuzzing_card do
+          expect(page).to have_text('API Fuzzing')
+          expect(page).to have_text('Not enabled')
+          expect(page).to have_link('Enable API Fuzzing')
+        end
+      end
+    end
+
+    context 'with no Coverage Fuzzing' do
+      it 'shows Coverage Fuzzing is disabled' do
+        visit_configuration_page
+
+        within_coverage_fuzzing_card do
+          expect(page).to have_text('Coverage Fuzzing')
+          expect(page).to have_text('Not enabled')
+          expect(page).to have_link('Configuration guide')
+        end
+      end
+    end
+  end
+
+  def visit_configuration_page
+    visit(project_security_configuration_path(project))
   end
 
   def within_sast_card
@@ -108,6 +204,42 @@ RSpec.describe 'User sees Security Configuration table', :js do
 
   def within_dast_card
     within '[data-testid="security-testing-card"]:nth-of-type(3)' do
+      yield
+    end
+  end
+
+  def within_dependency_scanning_card
+    within '[data-testid="security-testing-card"]:nth-of-type(4)' do
+      yield
+    end
+  end
+
+  def within_container_scanning_card
+    within '[data-testid="security-testing-card"]:nth-of-type(5)' do
+      yield
+    end
+  end
+
+  def within_cluster_image_card
+    within '[data-testid="security-testing-card"]:nth-of-type(6)' do
+      yield
+    end
+  end
+
+  def within_secret_detection_card
+    within '[data-testid="security-testing-card"]:nth-of-type(7)' do
+      yield
+    end
+  end
+
+  def within_api_fuzzing_card
+    within '[data-testid="security-testing-card"]:nth-of-type(8)' do
+      yield
+    end
+  end
+
+  def within_coverage_fuzzing_card
+    within '[data-testid="security-testing-card"]:nth-of-type(9)' do
       yield
     end
   end
