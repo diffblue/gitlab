@@ -2538,6 +2538,12 @@ RSpec.describe User do
     end
   end
 
+  describe '.use_minimum_char_limit_toggle' do
+    it 'returns true' do
+      expect(described_class.use_minimum_char_limit_toggle).to be true
+    end
+  end
+
   describe '.find_by_ssh_key_id' do
     let_it_be(:user) { create(:user) }
     let_it_be(:key) { create(:key, user: user) }
