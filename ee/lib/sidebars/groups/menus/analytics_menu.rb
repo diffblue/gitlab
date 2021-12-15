@@ -81,8 +81,7 @@ module Sidebars
         end
 
         def show_contribution_analytics?
-          can?(context.current_user, :read_group_contribution_analytics, context.group) ||
-            LicenseHelper.show_promotions?(context.current_user)
+          can?(context.current_user, :read_group_contribution_analytics, context.group)
         end
 
         def devops_adoption_menu_item

@@ -140,14 +140,8 @@ RSpec.describe Sidebars::Groups::Menus::AnalyticsMenu do
       describe 'when the user does not have access' do
         let(:user) { nil }
 
-        specify { is_expected.to be_nil }
-
-        describe 'when show_promotions? is true' do
-          specify do
-            allow(LicenseHelper).to receive(:show_promotions?).and_return(true)
-
-            is_expected.not_to be_nil
-          end
+        it 'is not available' do
+          is_expected.to be_nil
         end
       end
     end

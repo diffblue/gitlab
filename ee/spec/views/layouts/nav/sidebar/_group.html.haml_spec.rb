@@ -348,11 +348,7 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
           stub_licensed_features(contribution_analytics: false)
         end
 
-        context 'we do not show promotions' do
-          before do
-            allow(LicenseHelper).to receive(:show_promotions?).and_return(false)
-          end
-
+        context 'we do not show Contribution' do
           it 'is not visible' do
             render
 
@@ -369,12 +365,10 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
           allow(view).to receive(:can?) { |*args| Ability.allowed?(*args) }
         end
 
-        it 'is visible when there is no valid license but we show promotions' do
-          stub_licensed_features(contribution_analytics: false)
-
+        it 'is not visible' do
           render
 
-          expect(rendered).to have_text 'Contribution'
+          expect(rendered).not_to have_text 'Contribution'
         end
       end
 

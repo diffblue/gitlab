@@ -4,7 +4,6 @@ class Groups::ContributionAnalyticsController < Groups::ApplicationController
   include RedisTracking
 
   before_action :group
-  before_action :check_contribution_analytics_available!
   before_action :authorize_read_contribution_analytics!
 
   layout 'group'
@@ -33,18 +32,8 @@ class Groups::ContributionAnalyticsController < Groups::ApplicationController
       .new(group: @group, from: params[:start_date] || 1.week.ago.to_date)
   end
 
-  def check_contribution_analytics_available!
-    return if group_has_access_to_feature?
-
-    show_promotions? ? render_promotion : render_404
-  end
-
   def authorize_read_contribution_analytics!
-    render_promotion unless user_has_access_to_feature?
-  end
-
-  def render_promotion
-    render 'shared/promotions/_promote_contribution_analytics'
+    render_404 unless group_has_access_to_feature? && user_has_access_to_feature?
   end
 
   def show_promotions?

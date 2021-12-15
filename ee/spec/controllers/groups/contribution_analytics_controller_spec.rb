@@ -69,11 +69,10 @@ RSpec.describe Groups::ContributionAnalyticsController do
         context 'when user does not have access to the feature' do
           let(:user_has_access_to_feature) { false }
 
-          it 'renders 403' do
+          it 'renders 404' do
             request
 
-            expect(response).to render_template(
-              'shared/promotions/_promote_contribution_analytics')
+            expect(response).to have_gitlab_http_status(:not_found)
           end
         end
       end
@@ -93,30 +92,12 @@ RSpec.describe Groups::ContributionAnalyticsController do
           allow(License).to receive(:feature_available?)
             .with(:contribution_analytics)
             .and_return(false)
-
-          allow(LicenseHelper).to receive(:show_promotions?)
-            .and_return(show_promotions)
         end
 
-        context 'when promotions are on' do
-          let(:show_promotions) { true }
+        it 'renders 404' do
+          request
 
-          it 'renders promotions page' do
-            request
-
-            expect(response).to render_template(
-              'shared/promotions/_promote_contribution_analytics')
-          end
-        end
-
-        context 'when promotions are not on' do
-          let(:show_promotions) { false }
-
-          it 'renders 404' do
-            request
-
-            expect(response).to have_gitlab_http_status(:not_found)
-          end
+          expect(response).to have_gitlab_http_status(:not_found)
         end
       end
     end
