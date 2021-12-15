@@ -39,6 +39,28 @@ module Vulnerabilities
         end
       end
 
+      def letter_grade_sql_for(target_values, excluded_values)
+        <<~SQL
+          SELECT (
+            CASE
+            WHEN TARGET.critical + EXCLUDED.critical > 0 THEN
+              #{Vulnerabilities::Statistic.letter_grades[:f]}
+            WHEN TARGET.high + TARGET.unknown + EXCLUDED.high + EXCLUDED.unknown > 0 THEN
+              #{Vulnerabilities::Statistic.letter_grades[:d]}
+            WHEN TARGET.medium + EXCLUDED.medium > 0 THEN
+              #{Vulnerabilities::Statistic.letter_grades[:c]}
+            WHEN TARGET.low + EXCLUDED.low > 0 THEN
+              #{Vulnerabilities::Statistic.letter_grades[:b]}
+            ELSE
+              #{Vulnerabilities::Statistic.letter_grades[:a]}
+            END
+          ) as letter_grade
+          FROM
+            (values #{target_values}) as TARGET (critical, unknown, high, medium, low),
+            (values #{excluded_values}) as EXCLUDED (critical, unknown, high, medium, low)
+        SQL
+      end
+
       def set_latest_pipeline_with(pipeline)
         upsert_sql = upsert_latest_pipeline_id_sql(pipeline)
 

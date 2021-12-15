@@ -18,6 +18,7 @@ module Security
         IngestFindingSignatures
         IngestVulnerabilityFlags
         IngestIssueLinks
+        IngestVulnerabilityStatistics
         IngestRemediations
       ].freeze
 
