@@ -2,6 +2,7 @@
 import { GlDropdownDivider, GlDropdownSectionHeader, GlFilteredSearchSuggestion } from '@gitlab/ui';
 import { groupByIterationCadences } from 'ee/iterations/utils';
 import createFlash from '~/flash';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __ } from '~/locale';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
@@ -42,7 +43,7 @@ export default {
   },
   methods: {
     getActiveIteration(iterations, data) {
-      return iterations.find((iteration) => iteration.id === data);
+      return iterations.find((iteration) => this.getId(iteration) === data);
     },
     groupIterationsByCadence(iterations) {
       return groupByIterationCadences(iterations);
@@ -60,6 +61,9 @@ export default {
         .finally(() => {
           this.loading = false;
         });
+    },
+    getId(iteration) {
+      return getIdFromGraphQLId(iteration.id).toString();
     },
   },
 };
@@ -93,7 +97,7 @@ export default {
         <gl-filtered-search-suggestion
           v-for="iteration in cadence.iterations"
           :key="iteration.id"
-          :value="iteration.id"
+          :value="getId(iteration)"
         >
           {{ iteration.title }}
           <div v-if="glFeatures.iterationCadences" class="gl-text-gray-400">

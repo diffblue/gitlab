@@ -66,11 +66,11 @@ describe('setFilters', () => {
     [
       'with correct EE filters as payload',
       {
-        filters: { weight: 3, 'not[iterationId]': 1 },
+        filters: { weight: 3, 'not[iterationId]': '1' },
         filterVariables: {
           weight: 3,
           not: {
-            iterationId: 1,
+            iterationId: '1',
           },
         },
       },
