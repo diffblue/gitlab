@@ -36,10 +36,13 @@ module Gitlab
             Feature.enabled?(:detect_cross_database_modification, default_enabled: :yaml)
         end
 
+        def self.requires_tracking?(parsed)
+          # The transaction boundaries always needs to be tracked regardless of suppress behavior
+          self.transaction_begin?(parsed) || self.transaction_end?(parsed)
+        end
+
         # rubocop:disable Metrics/AbcSize
         def self.analyze(parsed)
-          return if in_factory_bot_create?
-
           database = ::Gitlab::Database.db_config_name(parsed.connection)
           sql = parsed.sql
 
@@ -62,6 +65,7 @@ module Gitlab
           end
 
           return unless self.in_transaction?
+          return if in_factory_bot_create?
 
           # PgQuery might fail in some cases due to limited nesting:
           # https://github.com/pganalyze/pg_query/issues/209

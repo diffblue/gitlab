@@ -11,6 +11,10 @@ module Gitlab
           Thread.current[self.suppress_key]
         end
 
+        def self.requires_tracking?(parsed)
+          false
+        end
+
         def self.suppress=(value)
           Thread.current[self.suppress_key] = value
         end

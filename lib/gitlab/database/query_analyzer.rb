@@ -58,7 +58,7 @@ module Gitlab
         return unless parsed
 
         analyzers.each do |analyzer|
-          next if analyzer.suppressed?
+          next if analyzer.suppressed? && !analyzer.requires_tracking?(parsed)
 
           analyzer.analyze(parsed)
         rescue StandardError, QueryAnalyzers::Base::QueryAnalyzerError => e
