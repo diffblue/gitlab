@@ -93,7 +93,7 @@ RSpec.describe RootController do
           it 'renders the default dashboard' do
             get :index
 
-            expect(response).to render_template 'root/index'
+            expect(response).to render_template 'dashboard/projects/index'
           end
         end
       end

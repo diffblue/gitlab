@@ -10406,15 +10406,6 @@ msgstr ""
 msgid "Customize your pipeline configuration."
 msgstr ""
 
-msgid "CustomizeHomepageBanner|Do you want to customize this page?"
-msgstr ""
-
-msgid "CustomizeHomepageBanner|Go to preferences"
-msgstr ""
-
-msgid "CustomizeHomepageBanner|This page shows a list of your projects by default but it can be changed to show projects' activity, groups, your to-do list, assigned issues, assigned merge requests, and more. You can change this under \"Homepage content\" in your preferences"
-msgstr ""
-
 msgid "Cycle Time"
 msgstr ""
 
