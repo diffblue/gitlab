@@ -18,7 +18,7 @@ import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { scrollToElement } from '~/lib/utils/common_utils';
 import Actions from '../actions.vue';
 import EmptyState from '../empty_state.vue';
-import { PIPELINES_PER_PAGE, PIPELINES_POLL_INTERVAL } from '../../constants';
+import { PIPELINES_PER_PAGE, PIPELINES_POLL_INTERVAL, ACTION_COLUMN } from '../../constants';
 
 const defaultCursor = {
   first: PIPELINES_PER_PAGE,
@@ -141,14 +141,7 @@ export default {
       return this.pipelines?.pageInfo;
     },
     tableFields() {
-      return [
-        ...this.fields,
-        {
-          label: '',
-          key: 'actions',
-          columnClass: 'gl-w-15',
-        },
-      ].map((field) => ({
+      return [...this.fields, ACTION_COLUMN].map((field) => ({
         ...field,
         class: ['gl-text-primary'],
         thClass: ['gl-bg-transparent!', 'gl-white-space-nowrap'],
