@@ -32,13 +32,12 @@ module EE
         def show
           return super unless security_dashboard_feature_enabled? && can_read_security_dashboard?
 
-          @configuration = ::Projects::Security::ConfigurationPresenter.new(project,
-                                                                            auto_fix_permission: auto_fix_authorized?,
-                                                                            current_user: current_user)
+          configuration
+
           respond_to do |format|
             format.html
             format.json do
-              render status: :ok, json: @configuration.to_h
+              render status: :ok, json: configuration.to_h
             end
           end
         end
@@ -77,6 +76,11 @@ module EE
           render_404 if ::Feature.disabled?(:security_auto_fix, project)
         end
 
+        override :configuration
+        def configuration
+          @configuration ||= configuration_presenter
+        end
+
         def security_dashboard_feature_enabled?
           vulnerable.feature_available?(:security_dashboard)
         end
@@ -91,6 +95,11 @@ module EE
 
         def authorize_read_security_dashboard!
           render_403 unless can_read_security_dashboard?
+        end
+
+        override :presenter_attributes
+        def presenter_attributes
+          { auto_fix_permission: auto_fix_authorized? }
         end
       end
     end
