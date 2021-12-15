@@ -46,7 +46,7 @@ RSpec.describe Security::CreateOrchestrationPolicyWorker do
               name: 'CS critical policy',
               description: 'This policy with CS for critical policy',
               enabled: true,
-              rules: [{ type: 'scan_finding', branches: %w[production], vulnerabilities_allowed: 0, severity_levels: %w[critical], scanners: %w[container_scanning] }],
+              rules: [{ type: 'scan_finding', branches: %w[production], vulnerabilities_allowed: 0, severity_levels: %w[critical], scanners: %w[container_scanning], vulnerability_states: %w[newly_detected] }],
               actions: [
                 { type: 'require_approval', approvals_required: 1, approvers: %w[admin] }
               ]

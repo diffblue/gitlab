@@ -48,7 +48,8 @@ FactoryBot.define do
           branches: %w[master],
           scanners: %w[container_scanning],
           vulnerabilities_allowed: 0,
-          severity_levels: %w[critical]
+          severity_levels: %w[critical],
+          vulnerability_states: %w[detected]
         }
       ]
     end

@@ -61,6 +61,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       expect(scan_finding_rule.scanners).to eq(first_rule[:scanners])
       expect(scan_finding_rule.severity_levels).to eq(first_rule[:severity_levels])
       expect(scan_finding_rule.vulnerabilities_allowed).to eq(first_rule[:vulnerabilities_allowed])
+      expect(scan_finding_rule.vulnerability_states).to eq(first_rule[:vulnerability_states])
       expect(scan_finding_rule.approvals_required).to eq(first_action[:approvals_required])
     end
   end
