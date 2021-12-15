@@ -669,7 +669,7 @@ module ProjectsHelper
       message = _("You're about to reduce the visibility of the project %{strong_start}%{project_name}%{strong_end} in %{strong_start}%{group_name}%{strong_end}.")
     end
 
-    message.html_safe % { strong_start: strong_start, strong_end: strong_end, project_name: project.name, group_name: project.group ? project.group.name : nil }
+    html_escape(message) % { strong_start: strong_start, strong_end: strong_end, project_name: project.name, group_name: project.group ? project.group.name : nil }
   end
 
   def visibility_confirm_modal_data(project, remove_form_id = nil)
