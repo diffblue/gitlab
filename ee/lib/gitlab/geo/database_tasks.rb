@@ -132,7 +132,7 @@ module Gitlab
             ActiveRecord::Tasks::DatabaseTasks.load_schema(ActiveRecord::Base.configurations.configs_for(env_name: 'test').first, :sql, ENV['SCHEMA'])
           ensure
             if should_reconnect
-              ActiveRecord::Base.establish_connection(Gitlab::Geo::DatabaseTasks.db_config)
+              ActiveRecord::Base.establish_connection(Gitlab::Geo::DatabaseTasks.db_config) # rubocop: disable Database/EstablishConnection
             end
           end
         end
@@ -204,7 +204,7 @@ module Gitlab
         ActiveRecord::Migrator.migrations_paths = ActiveRecord::Tasks::DatabaseTasks.migrations_paths
         Gitlab::Database::SchemaMigrations::Context.default_schema_migrations_path = settings[:schema_migrations_path]
 
-        ActiveRecord::Base.establish_connection(db_config)
+        ActiveRecord::Base.establish_connection(db_config) # rubocop: disable Database/EstablishConnection
       end
 
       class SeedLoader
