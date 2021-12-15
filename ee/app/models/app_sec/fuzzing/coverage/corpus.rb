@@ -6,11 +6,17 @@ module AppSec
       class Corpus < ApplicationRecord
         self.table_name = 'coverage_fuzzing_corpuses'
 
+        ACCEPTED_FORMATS = %w(.zip).freeze
+
         belongs_to :package, class_name: 'Packages::Package'
         belongs_to :user, optional: true
         belongs_to :project
 
         validate :project_same_as_package_project
+        validate :package_with_package_file
+        validate :validate_file_format
+
+        validates :package_id, uniqueness: true
 
         scope :by_project_id, -> (project_id) do
           joins(:package).where(package: { project_id: project_id })
@@ -26,6 +32,25 @@ module AppSec
           if package && package.project_id != project_id
             errors.add(:package_id, 'should belong to the associated project')
           end
+        end
+
+        def package_with_package_file
+          unless first_package_file
+            errors.add(:package_id, 'should have an associated package file')
+          end
+        end
+
+        def validate_file_format
+          return unless first_package_file
+
+          unless ACCEPTED_FORMATS.include? File.extname(first_package_file.file_name)
+            errors.add(:package_id, 'format is not supported')
+          end
+        end
+
+        # Currently we are only supporting one package_file per package for a corpus model.
+        def first_package_file
+          @package_file ||= package.package_files.first
         end
       end
     end
