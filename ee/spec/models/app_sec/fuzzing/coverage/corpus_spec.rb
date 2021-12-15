@@ -15,14 +15,39 @@ RSpec.describe AppSec::Fuzzing::Coverage::Corpus, type: :model do
 
   describe 'validate' do
     describe 'project_same_as_package_project' do
-      let(:package_2) { create(:package) }
+      let(:package) { create(:generic_package, :with_zip_file) }
 
-      subject(:corpus) { build(:corpus, package: package_2) }
+      subject(:corpus) { build(:corpus, package: package) }
 
       it 'raises the error on adding the package of a different project' do
         expect { corpus.save! }.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Package should belong to the associated project')
       end
     end
+
+    describe 'package_with_package_file' do
+      let(:package) { create(:package) }
+
+      subject(:corpus) { build(:corpus, package: package, project: package.project) }
+
+      it 'raises the error on adding the package file with different format' do
+        expect { corpus.save! }.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Package should have an associated package file')
+      end
+    end
+
+    describe 'validate_file_format' do
+      let(:package_file) { create(:package_file) }
+      let(:package) { package_file.package }
+
+      subject(:corpus) { build(:corpus, package: package, project: package.project) }
+
+      it 'raises the error on adding the package file with different format' do
+        expect { corpus.save! }.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Package format is not supported')
+      end
+    end
+  end
+
+  describe 'validates' do
+    it { is_expected.to validate_uniqueness_of(:package_id) }
   end
 
   describe 'scopes' do
