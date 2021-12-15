@@ -1059,11 +1059,11 @@ Source-IP rate limits are enforced using the following:
    gitlab_pages['rate_limit_source_ip_burst'] = 600
    ```
 
-1. To reject requests that exceed the specified limits, enable the `FF_ENABLE_RATE_LIMITER` feature flag in
+1. To reject requests that exceed the specified limits, enable the `FF_ENFORCE_IP_RATE_LIMITS` feature flag in
    `/etc/gitlab/gitlab.rb`:
 
    ```ruby
-   gitlab_pages['env'] = {'FF_ENABLE_RATE_LIMITER' => 'true'}
+   gitlab_pages['env'] = {'FF_ENFORCE_IP_RATE_LIMITS' => 'true'}
    ```
 
 1. [Reconfigure GitLab](../restart_gitlab.md#omnibus-gitlab-reconfigure).
