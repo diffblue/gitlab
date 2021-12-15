@@ -51,7 +51,12 @@ const START_DATE_COLUMN = {
 const PIPELINE_ID_COLUMN = {
   label: __('Pipeline'),
   key: 'id',
-  columnClass: 'gl-w-13',
+  columnClass: 'gl-w-15',
+};
+export const ACTION_COLUMN = {
+  label: '',
+  key: 'actions',
+  columnClass: 'gl-w-20',
 };
 
 export const BASE_TABS_TABLE_FIELDS = [
