@@ -1,0 +1,19 @@
+description: "Click load more epics button"
+category: default
+action: click_button
+label_description: "`toggle_swimlanes`"
+property_description: "`click_load_more_epics`"
+value_description: ""
+extra_properties:
+identifiers:
+product_section: dev
+product_stage: plan
+product_group: group::product_planning
+product_category:
+milestone: "14.1"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/65121
+distributions:
+- ee
+tiers:
+- premium
+- ultimate
