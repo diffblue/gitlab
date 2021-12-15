@@ -1,15 +1,6 @@
 import Vue from 'vue';
-import { parseBoolean } from './lib/utils/common_utils';
+import { parseBoolean, omitEmptyProperties } from './lib/utils/common_utils';
 import ConfirmDanger from './vue_shared/components/confirm_danger/confirm_danger.vue';
-
-const omitEmptyProperties = (fields) => {
-  return Object.entries(fields).reduce((acc, [key, value]) => {
-    if (value) {
-      return { ...acc, [key]: value };
-    }
-    return acc;
-  }, {});
-};
 
 export default () => {
   const el = document.querySelector('.js-confirm-danger');
