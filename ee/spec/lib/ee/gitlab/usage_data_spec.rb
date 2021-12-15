@@ -768,18 +768,6 @@ RSpec.describe Gitlab::UsageData do
         end
       end
     end
-
-    it 'deprecates count for users who have run scans' do
-      expect(described_class.usage_activity_by_stage_secure(described_class.monthly_time_range_db_params)).to include(
-        user_api_fuzzing_scans: described_class::DEPRECATED_VALUE,
-        user_container_scanning_scans: described_class::DEPRECATED_VALUE,
-        user_coverage_fuzzing_scans: described_class::DEPRECATED_VALUE,
-        user_dast_scans: described_class::DEPRECATED_VALUE,
-        user_dependency_scanning_scans: described_class::DEPRECATED_VALUE,
-        user_sast_scans: described_class::DEPRECATED_VALUE,
-        user_secret_detection_scans: described_class::DEPRECATED_VALUE
-      )
-    end
   end
 
   describe 'usage_activity_by_stage_verify' do

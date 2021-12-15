@@ -388,7 +388,6 @@ module EE
               end
           end
 
-          results.merge!(count_secure_user_scans)
           results.merge!(count_secure_pipelines(time_period))
           results.merge!(count_secure_scans(time_period))
 
@@ -404,12 +403,6 @@ module EE
         # rubocop:enable CodeReuse/ActiveRecord
 
         private
-
-        # rubocop:disable UsageData/LargeTable
-        def count_secure_user_scans
-          ::Security::Scan.scan_types.to_h { |name, _| ["user_#{name}_scans".to_sym, ::Gitlab::UsageData::DEPRECATED_VALUE] }
-        end
-        # rubocop:enable UsageData/LargeTable
 
         # rubocop:disable CodeReuse/ActiveRecord
         # rubocop: disable UsageData/LargeTable
