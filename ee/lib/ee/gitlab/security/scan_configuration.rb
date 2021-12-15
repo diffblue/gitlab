@@ -13,7 +13,7 @@ module EE
 
         override :configuration_path
         def configuration_path
-          configurable_scans[type] if available? || always_available?
+          super if available? || always_available?
         end
 
         private
