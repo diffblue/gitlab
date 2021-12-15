@@ -28558,6 +28558,9 @@ msgstr ""
 msgid "ProtectedEnvironment|Your environment has been unprotected"
 msgstr ""
 
+msgid "ProtectedTags|default"
+msgstr ""
+
 msgid "ProtectedTag|By default, protected branches restrict who can modify the tag."
 msgstr ""
 
