@@ -1616,6 +1616,46 @@ RSpec.describe User do
     end
   end
 
+  describe 'enabled_static_object_token' do
+    let_it_be(:static_object_token) { 'ilqx6jm1u945macft4eff0nw' }
+
+    it 'returns incoming email token when supported' do
+      allow(Gitlab::CurrentSettings).to receive(:static_objects_external_storage_enabled?).and_return(true)
+
+      user = create(:user, static_object_token: static_object_token)
+
+      expect(user.enabled_static_object_token).to eq(static_object_token)
+    end
+
+    it 'returns `nil` when not supported' do
+      allow(Gitlab::CurrentSettings).to receive(:static_objects_external_storage_enabled?).and_return(false)
+
+      user = create(:user, static_object_token: static_object_token)
+
+      expect(user.enabled_static_object_token).to be_nil
+    end
+  end
+
+  describe 'enabled_incoming_email_token' do
+    let_it_be(:incoming_email_token) { 'ilqx6jm1u945macft4eff0nw' }
+
+    it 'returns incoming email token when supported' do
+      allow(Gitlab::IncomingEmail).to receive(:supports_issue_creation?).and_return(true)
+
+      user = create(:user, incoming_email_token: incoming_email_token)
+
+      expect(user.enabled_incoming_email_token).to eq(incoming_email_token)
+    end
+
+    it 'returns `nil` when not supported' do
+      allow(Gitlab::IncomingEmail).to receive(:supports_issue_creation?).and_return(false)
+
+      user = create(:user, incoming_email_token: incoming_email_token)
+
+      expect(user.enabled_incoming_email_token).to be_nil
+    end
+  end
+
   describe '#recently_sent_password_reset?' do
     it 'is false when reset_password_sent_at is nil' do
       user = build_stubbed(:user, reset_password_sent_at: nil)

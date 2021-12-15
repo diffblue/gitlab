@@ -1794,7 +1794,7 @@ class User < ApplicationRecord
   # we do this on read since migrating all existing users is not a feasible
   # solution.
   def feed_token
-    Gitlab::CurrentSettings.disable_feed_token ? nil : ensure_feed_token!
+    ensure_feed_token! unless Gitlab::CurrentSettings.disable_feed_token
   end
 
   # Each existing user needs to have a `static_object_token`.
@@ -1802,6 +1802,14 @@ class User < ApplicationRecord
   # solution.
   def static_object_token
     ensure_static_object_token!
+  end
+
+  def enabled_static_object_token
+    static_object_token if Gitlab::CurrentSettings.static_objects_external_storage_enabled?
+  end
+
+  def enabled_incoming_email_token
+    incoming_email_token if Gitlab::IncomingEmail.supports_issue_creation?
   end
 
   def sync_attribute?(attribute)
