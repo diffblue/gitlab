@@ -52,7 +52,7 @@ module QA
         Page::Project::Menu.perform(&:go_to_repository_settings)
         Page::Project::Settings::Repository.perform do |settings|
           settings.expand_mirroring_repositories do |mirror_settings|
-            mirror_settings.update source_project_uri
+            mirror_settings.update source_project_uri # rubocop:disable Rails/SaveBang
           end
         end
 
