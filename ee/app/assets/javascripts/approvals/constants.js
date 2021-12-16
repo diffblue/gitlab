@@ -157,3 +157,18 @@ export const APPROVAL_VULNERABILITY_STATES = {
   dismissed: s__('ApprovalRule|Dismissed'),
   resolved: s__('ApprovalRule|Resolved'),
 };
+
+export const MR_APPROVALS_PROMO_DISMISSED = 'mr_approvals_promo.dismissed';
+export const MR_APPROVALS_PROMO_I18N = {
+  accordionTitle: s__('ApprovalRule|Approval rules'),
+  learnMore: s__('ApprovalRule|Learn more about merge request approval.'),
+  promoTitle: s__('ApprovalRule|Add required approvers to improve your code review process'),
+  summary: __('Approvals are optional.'),
+  tryNow: s__('ApprovalRule|Try it for free'),
+  valueStatements: [
+    s__('ApprovalRule|Assign approvers by area of expertise.'),
+    s__('ApprovalRule|Increase your organization’s code quality.'),
+    s__('ApprovalRule|Reduce the overall time to merge.'),
+    s__('ApprovalRule|Let GitLab designate eligible approvers based on the files changed.'),
+  ],
+};
