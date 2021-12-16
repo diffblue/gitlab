@@ -44,6 +44,10 @@ describe('Instance Security Dashboard component', () => {
       stubs: {
         SecurityDashboardLayout,
       },
+      provide: {
+        // to be consumed by SecurityDashboardLayout
+        sbomSurveySvgPath: '/',
+      },
     });
   };
 
@@ -62,6 +66,7 @@ describe('Instance Security Dashboard component', () => {
     const vulnerabilitySeverities = findVulnerabilitySeverities();
 
     expect(securityChartsLayout.exists()).toBe(true);
+    expect(securityChartsLayout.props().showSbomSurvey).toBe(false);
     expect(reportNotConfigured.exists()).toBe(false);
     expect(loadingIcon.exists()).toBe(true);
     expect(vulnerabilitiesOverTimeChart.exists()).toBe(false);
@@ -78,6 +83,7 @@ describe('Instance Security Dashboard component', () => {
     const vulnerabilitySeverities = findVulnerabilitySeverities();
 
     expect(securityChartsLayout.exists()).toBe(true);
+    expect(securityChartsLayout.props().showSbomSurvey).toBe(false);
     expect(reportNotConfigured.exists()).toBe(true);
     expect(loadingIcon.exists()).toBe(false);
     expect(vulnerabilitiesOverTimeChart.exists()).toBe(false);
@@ -96,6 +102,7 @@ describe('Instance Security Dashboard component', () => {
     const vulnerabilitySeverities = findVulnerabilitySeverities();
 
     expect(securityChartsLayout.exists()).toBe(true);
+    expect(securityChartsLayout.props().showSbomSurvey).toBe(false);
     expect(reportNotConfigured.exists()).toBe(false);
     expect(loadingIcon.exists()).toBe(false);
     expect(vulnerabilitiesOverTimeChart.props()).toEqual({ query: vulnerabilityHistoryQuery });

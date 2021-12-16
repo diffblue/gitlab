@@ -23,6 +23,8 @@ describe('Group Security Dashboard component', () => {
   let wrapper;
 
   const groupFullPath = `${TEST_HOST}/group/5`;
+  // To be consumed by SecurityDashboardLayout
+  const sbomSurveySvgPath = '/';
 
   const findSecurityChartsLayoutComponent = () => wrapper.find(SecurityDashboardLayout);
   const findLoadingIcon = () => wrapper.find(GlLoadingIcon);
@@ -41,7 +43,7 @@ describe('Group Security Dashboard component', () => {
           },
         },
       },
-      provide: { groupFullPath },
+      provide: { groupFullPath, sbomSurveySvgPath },
       stubs: {
         SecurityDashboardLayout,
       },

@@ -11,6 +11,7 @@ import {
 } from '@gitlab/ui';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import LicenseManagement from 'ee/vue_shared/license_compliance/license_management.vue';
+import SbomBanner from 'ee/sbom_banner/components/app.vue';
 import { LICENSE_MANAGEMENT } from 'ee/vue_shared/license_compliance/store/constants';
 import { getLocationHash } from '~/lib/utils/url_utility';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
@@ -31,11 +32,16 @@ export default {
     GlTabs,
     GlBadge,
     GlAlert,
+    SbomBanner,
     LicenseManagement,
   },
   mixins: [glFeatureFlagsMixin()],
   props: {
     emptyStateSvgPath: {
+      type: String,
+      required: true,
+    },
+    sbomSurveySvgPath: {
       type: String,
       required: true,
     },
@@ -119,7 +125,7 @@ export default {
         )
       }}
     </gl-alert>
-
+    <sbom-banner :sbom-survey-svg-path="sbomSurveySvgPath" />
     <header class="my-3">
       <h2 class="h4 mb-1 gl-display-flex gl-align-items-center">
         {{ s__('Licenses|License Compliance') }}

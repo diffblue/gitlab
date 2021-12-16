@@ -19,6 +19,7 @@ import {
 import setWindowLocation from 'helpers/set_window_location_helper';
 import { stubTransition } from 'helpers/stub_transition';
 import { TEST_HOST } from 'helpers/test_constants';
+import SbomBanner from 'ee/sbom_banner/components/app.vue';
 
 Vue.use(Vuex);
 
@@ -29,6 +30,7 @@ const managedLicenses = [approvedLicense, blacklistedLicense];
 const licenses = [{}, {}];
 const emptyStateSvgPath = '/';
 const documentationPath = '/';
+const sbomSurveySvgPath = '/';
 
 const noop = () => {};
 
@@ -74,6 +76,7 @@ const createComponent = ({ state, props, options }) => {
     propsData: {
       emptyStateSvgPath,
       documentationPath,
+      sbomSurveySvgPath,
       readLicensePoliciesEndpoint,
       ...props,
     },
@@ -84,9 +87,19 @@ const createComponent = ({ state, props, options }) => {
 };
 
 const findByTestId = (testId) => wrapper.find(`[data-testid="${testId}"]`);
+const findSbomBanner = () => wrapper.findComponent(SbomBanner);
 
 describe('Project Licenses', () => {
+  beforeEach(() => {
+    window.gon = {
+      features: {
+        sbomSurvey: true,
+      },
+    };
+  });
+
   afterEach(() => {
+    window.gon = {};
     wrapper.destroy();
     wrapper = null;
   });
@@ -172,6 +185,12 @@ describe('Project Licenses', () => {
 
     it('does not render a policy violations alert', () => {
       expect(wrapper.find(GlAlert).exists()).toBe(false);
+    });
+
+    it('renders the SbomBannercomponent with the right props', () => {
+      const sbomBanner = findSbomBanner();
+      expect(sbomBanner.exists()).toBe(true);
+      expect(sbomBanner.props().sbomSurveySvgPath).toEqual(wrapper.props().sbomSurveySvgPath);
     });
 
     it('renders a "Detected in project" tab and a "Policies" tab', () => {

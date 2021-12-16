@@ -18,6 +18,7 @@ export default () => {
     approvalsDocumentationPath,
     lockedApprovalsRuleName,
     softwareLicenses,
+    sbomSurveySvgPath,
   } = el.dataset;
 
   const storeSettings = {
@@ -47,6 +48,7 @@ export default () => {
     render(createElement) {
       return createElement(LicenseComplianceApp, {
         props: {
+          sbomSurveySvgPath,
           emptyStateSvgPath,
           documentationPath,
         },

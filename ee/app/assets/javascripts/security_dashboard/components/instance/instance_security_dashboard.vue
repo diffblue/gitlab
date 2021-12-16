@@ -51,7 +51,7 @@ export default {
 </script>
 
 <template>
-  <security-dashboard-layout>
+  <security-dashboard-layout :show-sbom-survey="false">
     <template v-if="shouldShowEmptyState" #empty-state>
       <report-not-configured />
     </template>

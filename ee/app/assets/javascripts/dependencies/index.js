@@ -4,16 +4,23 @@ import createStore from './store';
 
 export default () => {
   const el = document.querySelector('#js-dependencies-app');
-  const { endpoint, emptyStateSvgPath, documentationPath, supportDocumentationPath } = el.dataset;
+
+  const {
+    endpoint,
+    emptyStateSvgPath,
+    documentationPath,
+    supportDocumentationPath,
+    sbomSurveySvgPath,
+  } = el.dataset;
 
   const store = createStore();
 
   return new Vue({
     el,
-    store,
     components: {
       DependenciesApp,
     },
+    store,
     render(createElement) {
       return createElement(DependenciesApp, {
         props: {
@@ -21,6 +28,7 @@ export default () => {
           emptyStateSvgPath,
           documentationPath,
           supportDocumentationPath,
+          sbomSurveySvgPath,
         },
       });
     },
