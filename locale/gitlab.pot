@@ -11491,13 +11491,7 @@ msgstr ""
 msgid "Deleted"
 msgstr ""
 
-msgid "Deleted Projects"
-msgstr ""
-
 msgid "Deleted chat nickname: %{chat_name}!"
-msgstr ""
-
-msgid "Deleted projects"
 msgstr ""
 
 msgid "Deleted projects cannot be restored!"
@@ -25489,7 +25483,13 @@ msgstr ""
 msgid "Pending"
 msgstr ""
 
+msgid "Pending Deletion"
+msgstr ""
+
 msgid "Pending comments"
+msgstr ""
+
+msgid "Pending deletion"
 msgstr ""
 
 msgid "Pending owner approval"
@@ -29399,10 +29399,10 @@ msgstr ""
 msgid "Removed upload with id %{id}"
 msgstr ""
 
-msgid "RemovedProjects|Projects which are removed and are yet to be permanently removed are visible here."
+msgid "RemovedProjects|No projects pending deletion found"
 msgstr ""
 
-msgid "RemovedProjects|You haven’t removed any projects."
+msgid "RemovedProjects|Projects that are pending deletion that you have access to are listed here."
 msgstr ""
 
 msgid "Removes %{assignee_text} %{assignee_references}."
