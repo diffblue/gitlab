@@ -51,6 +51,8 @@ module EE
 
       has_many :blocked_merge_requests, through: :blocks_as_blocker
 
+      has_many :compliance_violations, class_name: 'MergeRequests::ComplianceViolation'
+
       delegate :sha, to: :head_pipeline, prefix: :head_pipeline, allow_nil: true
       delegate :sha, to: :base_pipeline, prefix: :base_pipeline, allow_nil: true
 
