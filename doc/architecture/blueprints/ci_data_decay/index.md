@@ -48,7 +48,7 @@ pipelines that are longer than a few months might help us to move this data to
 a different storage, that is more performant and cost effective.
 
 It is already possible to prevent processing builds [that have been
-archived](/user/admin_area/settings/continuous_integration.html#archive-jobs).
+archived](../../../user/admin_area/settings/continuous_integration.md#archive-jobs).
 When a build gets archived it will not be possible to retry it, but we do not
 move data from the database.
 
@@ -68,6 +68,11 @@ restrict access to processing archived pipelines, we can move this metadata to
 a different place - preferably object storage - and make it accessible on
 demand, when it is really needed again (for example for compliance or auditing purposes).
 
+We need to evaluate whether moving data is the most optimal solution. We might
+be able to use de-duplication of metadata entries and other normalization
+strategies to consume less storage while retaining ability to query this
+dataset. Technical evaluation will be required to find the best solution here.
+
 Epic: [Migrate build metadata of archived pipelines](https://gitlab.com/groups/gitlab-org/-/epics/7216).
 
 ### Partition archived CI/CD data
@@ -84,6 +89,21 @@ with reducing the data size, but not the quantity of entries describing this
 data. Because of this limitation, we still want to partition CI/CD data to
 reduce the impact on the database (indices size, auto-vacuum time and
 frequency).
+
+Our intent here is not to move this data out of our primary database elsewhere.
+What we want to achieve here is to divide very large database tables, that
+store CI/CD data, into multiple smaller ones, using PostgreSQL partitioning
+capabilities.
+
+There are a few approaches we can take to partition CI/CD data. A promising one
+is using list-based partitioning where a partition number is assigned a
+pipeline, and gets propagated to all resources that are related to this
+pipeline. We assign the partition number based on when the pipeline was created
+or when we observed the last processing activity in it. This is very flexible
+because we can extend this partitioning strategy at will; for example with this
+strategy we can assign an arbitrary partition number based on multiple
+partitioning keys, combining time-decay-based partitioning with tenant-based
+partitioning on the application level.
 
 Partitioning rarely accessed data should also follow the policy defined for
 builds archival, to make it consistent and reliable.
