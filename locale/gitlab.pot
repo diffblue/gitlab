@@ -7676,6 +7676,9 @@ msgstr ""
 msgid "ClusterAgents|View all %{number} clusters"
 msgstr ""
 
+msgid "ClusterAgents|What is GitLab Agent activity?"
+msgstr ""
+
 msgid "ClusterAgents|You cannot see this token again after you close this window."
 msgstr ""
 
