@@ -322,6 +322,23 @@ RSpec.describe OperationsController do
             expect(project2_json['environments'].map { |e| e['id'] }).to eq([environment3.id])
           end
 
+          it 'does not make N+1 queries with multiple environments' do
+            project2 = create(:project)
+            project2.add_developer(user)
+            user.update!(ops_dashboard_projects: [project, project2])
+
+            create(:environment, project: project)
+            create(:environment, project: project)
+            create(:environment, project: project2)
+
+            control = ActiveRecord::QueryRecorder.new { get_environments(:json) }
+
+            create(:environment, project: project)
+            create(:environment, project: project2)
+
+            expect { get_environments(:json) }.not_to exceed_query_limit(control)
+          end
+
           it 'does not return environments that would be grouped into a folder' do
             create(:environment, project: project, name: 'review/test-feature')
             create(:environment, project: project, name: 'review/another-feature')
