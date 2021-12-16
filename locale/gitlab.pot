@@ -6530,6 +6530,9 @@ msgstr ""
 msgid "Cannot be merged automatically"
 msgstr ""
 
+msgid "Cannot create the abuse report. The reported user was invalid. Please try again or contact support."
+msgstr ""
+
 msgid "Cannot create the abuse report. The user has been deleted."
 msgstr ""
 
