@@ -10,13 +10,11 @@ class Gitlab::Seeder::DastProfiles
   end
 
   def seed!
-    3.times { create_profile }
+    profile = create_profile
 
-    2.times do
-      token = create_token(create_profile)
+    token = create_token(profile)
 
-      create_validation(token)
-    end
+    create_validation(token)
   end
 
   private
@@ -47,7 +45,9 @@ class Gitlab::Seeder::DastProfiles
 end
 
 Gitlab::Seeder.quiet do
-  Project.all.each do |project|
+  user = User.first
+
+  user.projects.order(id: :desc).limit(3).each do |project|
     next unless project.repo_exists?
 
     seeder = Gitlab::Seeder::DastProfiles.new(project)
