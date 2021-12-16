@@ -436,6 +436,12 @@ module EE
       credit_card_validated_at.present?
     end
 
+    def privatized_by_abuse_automation?
+      # Prevent abuse automation names are expected to be in the format: ghost-:id-:id. Ex: ghost-123-4567
+      # More context: https://gitlab.com/gitlab-org/customers-gitlab-com/-/issues/3871 for more context on the
+      private_profile? && name.match?(/\Aghost-\d+-\d+\z/)
+    end
+
     protected
 
     override :password_required?
