@@ -54,28 +54,5 @@ RSpec.describe Registrations::ProjectsController do
     let(:combined_registration?) { false }
 
     it_behaves_like "Registrations::ProjectsController POST #create"
-
-    context 'force_company_trial_experiment' do
-      let(:project) { create(:project, namespace: namespace) }
-
-      let(:params) { { namespace_id: namespace.id, name: 'New project', path: 'project-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE } }
-
-      before do
-        namespace.add_owner(user)
-        sign_in(user)
-        allow(::Gitlab).to receive(:dev_env_or_com?).and_return(true)
-        allow_next_instance_of(::Projects::CreateService) do |service|
-          allow(service).to receive(:execute).and_return(project)
-        end
-      end
-
-      it 'tracks an event for the force_company_trial experiment', :experiment do
-        expect(experiment(:force_company_trial)).to track(:create_project, namespace: namespace, project: an_instance_of(Project), user: user)
-          .with_context(user: user)
-          .on_next_instance
-
-        post :create, params: { project: params }
-      end
-    end
   end
 end

@@ -89,7 +89,6 @@ class SubscriptionsController < ApplicationController
     ).execute
 
     if response[:success]
-      experiment(:force_company_trial, user: current_user).track(:create_subscription, namespace: group, user: current_user)
       response[:data] = { location: redirect_location(group) }
     end
 

@@ -287,23 +287,7 @@ RSpec.describe Registrations::WelcomeController do
               end
 
               it { is_expected.to redirect_to new_users_sign_up_groups_project_path }
-
-              it "doesn't call the force_company_trial experiment" do
-                expect(controller).not_to receive(:experiment).with(:force_company_trial, user: user)
-
-                subject
-              end
             end
-          end
-
-          context 'and force_company_trial experiment is candidate' do
-            let(:setup_for_company) { 'true' }
-
-            before do
-              stub_experiments(combined_registration: :control, force_company_trial: :candidate)
-            end
-
-            it { is_expected.to redirect_to new_users_sign_up_group_path(trial: true) }
           end
 
           it { is_expected.to redirect_to new_users_sign_up_group_path }

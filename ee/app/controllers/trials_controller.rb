@@ -244,7 +244,6 @@ class TrialsController < ApplicationController
 
       experiment(:trial_registration_with_reassurance, actor: current_user)
         .track(:apply_trial, label: 'trials:apply', namespace: @namespace, user: current_user)
-      experiment(:force_company_trial, user: current_user).track(:create_trial, namespace: @namespace, user: current_user, label: 'trials_controller') if @namespace.created_at > 24.hours.ago
 
       experiment(:combined_registration, user: current_user).track(:create_trial)
 

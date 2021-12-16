@@ -17,16 +17,16 @@ RSpec.describe CombinedRegistrationExperiment, :experiment do
   end
 
   describe '#redirect_path' do
-    it 'when control passes trial_params to path' do
+    it 'control returns path' do
       stub_experiments(combined_registration: :control)
 
-      expect(subject.redirect_path(trial: true)).to eq(Rails.application.routes.url_helpers.new_users_sign_up_group_path(trial: true))
+      expect(subject.redirect_path).to eq(Rails.application.routes.url_helpers.new_users_sign_up_group_path)
     end
 
-    it 'when candidate returns path' do
+    it 'candidate returns path' do
       stub_experiments(combined_registration: :candidate)
 
-      expect(subject.redirect_path(trial: true)).to eq(Rails.application.routes.url_helpers.new_users_sign_up_groups_project_path)
+      expect(subject.redirect_path).to eq(Rails.application.routes.url_helpers.new_users_sign_up_groups_project_path)
     end
   end
 end

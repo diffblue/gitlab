@@ -382,7 +382,6 @@ RSpec.describe TrialsController, :saas do
       it 'calls the record conversion method for the experiments' do
         expect(controller).to receive(:record_experiment_user).with(:remove_known_trial_form_fields_welcoming, namespace_id: namespace.id)
         expect(controller).to receive(:record_experiment_conversion_event).with(:remove_known_trial_form_fields_welcoming)
-        expect(experiment(:force_company_trial)).to track(:create_trial, namespace: namespace, user: user, label: 'trials_controller').with_context(user: user).on_next_instance
 
         post_apply
       end
@@ -445,18 +444,6 @@ RSpec.describe TrialsController, :saas do
 
         it 'creates the Group' do
           expect { post_apply }.to change { Group.count }.by(1)
-        end
-      end
-
-      context 'with an old namespace' do
-        it 'does not track for the force_company_trial experiment' do
-          allow(controller).to receive(:experiment).and_call_original
-
-          namespace.update!(created_at: 2.days.ago)
-
-          expect(controller).not_to receive(:experiment).with(:force_company_trial, user: user)
-
-          post_apply
         end
       end
     end
