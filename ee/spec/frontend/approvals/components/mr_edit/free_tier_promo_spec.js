@@ -1,7 +1,8 @@
 import { GlAccordionItem, GlButton, GlLink } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { __, s__ } from '~/locale';
+import { BV_COLLAPSE_STATE } from '~/lib/utils/constants';
 
+import { MR_APPROVALS_PROMO_I18N } from 'ee/approvals/constants';
 import FreeTierPromo from 'ee/approvals/components/mr_edit/free_tier_promo.vue';
 
 describe('PaidFeatureCalloutBadge component', () => {
@@ -29,7 +30,7 @@ describe('PaidFeatureCalloutBadge component', () => {
 
   describe('summary text', () => {
     it('is rendered correctly', () => {
-      expect(wrapper.findByText(__('Approvals are optional.')).exists()).toBeTruthy();
+      expect(wrapper.findByText(MR_APPROVALS_PROMO_I18N.summary).exists()).toBeTruthy();
     });
   });
 
@@ -41,7 +42,7 @@ describe('PaidFeatureCalloutBadge component', () => {
     });
 
     it('is given the expected title prop', () => {
-      expect(promoItem.props('title')).toBe(s__('ApprovalRule|Approval rules'));
+      expect(promoItem.props('title')).toBe(MR_APPROVALS_PROMO_I18N.accordionTitle);
     });
 
     it('starts expanded by default', () => {
@@ -52,7 +53,7 @@ describe('PaidFeatureCalloutBadge component', () => {
   describe('promo title', () => {
     it('is rendered correctly', () => {
       const promoTitle = wrapper.findByRole('heading', {
-        name: s__('ApprovalRule|Add required approvers to improve your code review process'),
+        name: MR_APPROVALS_PROMO_I18N.promoTitle,
       });
 
       expect(promoTitle.exists()).toBeTruthy();
@@ -63,12 +64,7 @@ describe('PaidFeatureCalloutBadge component', () => {
     it('contains the expected statements', () => {
       const statementItemTexts = wrapper.findAllByRole('listitem').wrappers.map((li) => li.text());
 
-      expect(statementItemTexts).toEqual([
-        s__('ApprovalRule|Assign approvers by area of expertise.'),
-        s__('ApprovalRule|Increase your organization’s code quality.'),
-        s__('ApprovalRule|Reduce the overall time to merge.'),
-        s__('ApprovalRule|Let GitLab designate eligible approvers based on the files changed.'),
-      ]);
+      expect(statementItemTexts).toEqual(MR_APPROVALS_PROMO_I18N.valueStatements);
     });
   });
 
@@ -84,9 +80,7 @@ describe('PaidFeatureCalloutBadge component', () => {
     });
 
     it('has correct text', () => {
-      expect(learnMoreLink.text()).toBe(
-        s__('ApprovalRule|Learn more about merge request approval.'),
-      );
+      expect(learnMoreLink.text()).toBe(MR_APPROVALS_PROMO_I18N.learnMore);
     });
   });
 
@@ -102,7 +96,7 @@ describe('PaidFeatureCalloutBadge component', () => {
     });
 
     it('has correct text', () => {
-      expect(tryNowBtn.text()).toBe(s__('ApprovalRule|Try it for free'));
+      expect(tryNowBtn.text()).toBe(MR_APPROVALS_PROMO_I18N.tryNow);
     });
   });
 
@@ -111,6 +105,44 @@ describe('PaidFeatureCalloutBadge component', () => {
       const promoImage = wrapper.findByAltText('some promo image');
 
       expect(promoImage.attributes('src')).toBe('/some-image.svg');
+    });
+  });
+
+  describe('user interactions', () => {
+    describe('when user does not interact with the promo', () => {
+      describe('and we render a second time', () => {
+        it('also starts expanded by default', () => {
+          const secondWrapper = createComponent();
+          const promoItem = secondWrapper.findComponent(GlAccordionItem);
+
+          expect(promoItem.props('visible')).toBeTruthy();
+        });
+      });
+    });
+
+    describe('when user collapses the promo', () => {
+      beforeEach(async () => {
+        await wrapper.vm.$root.$emit(BV_COLLAPSE_STATE, 'accordion-item-id', false);
+      });
+
+      afterEach(() => {
+        localStorage.clear();
+      });
+
+      it('reflects that state in the promo collapsible item', () => {
+        const promoItem = wrapper.findComponent(GlAccordionItem);
+
+        expect(promoItem.props('visible')).toBeFalsy();
+      });
+
+      describe('and we render a second time', () => {
+        it('starts collapsed by default', () => {
+          const secondWrapper = createComponent();
+          const promoItem = secondWrapper.findComponent(GlAccordionItem);
+
+          expect(promoItem.props('visible')).toBeFalsy();
+        });
+      });
     });
   });
 });
