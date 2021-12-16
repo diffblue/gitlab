@@ -1,16 +1,16 @@
 import { GlForm } from '@gitlab/ui';
 import { within } from '@testing-library/dom';
 import merge from 'lodash/merge';
+import siteProfileWithSecrets from 'test_fixtures/security_configuration/dast_profiles/dast_site_profile_with_secrets.json';
 import BaseDastProfileForm from 'ee/security_configuration/dast_profiles/components/base_dast_profile_form.vue';
 import DastSiteAuthSection from 'ee/security_configuration/dast_profiles/dast_site_profiles/components/dast_site_auth_section.vue';
 import DastSiteProfileForm from 'ee/security_configuration/dast_profiles/dast_site_profiles/components/dast_site_profile_form.vue';
 import dastSiteProfileCreateMutation from 'ee/security_configuration/dast_profiles/dast_site_profiles/graphql/dast_site_profile_create.mutation.graphql';
 import dastSiteProfileUpdateMutation from 'ee/security_configuration/dast_profiles/dast_site_profiles/graphql/dast_site_profile_update.mutation.graphql';
-import { siteProfiles, policySiteProfile } from 'ee_jest/on_demand_scans_form/mocks/mock_data';
+import { policySiteProfile } from 'ee_jest/on_demand_scans_form/mocks/mock_data';
 import { TEST_HOST } from 'helpers/test_constants';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
-const [siteProfileOne] = siteProfiles;
 const projectFullPath = 'group/project';
 const profilesLibraryPath = `${TEST_HOST}/${projectFullPath}/-/security/configuration/dast_scans`;
 const onDemandScansPath = `${TEST_HOST}/${projectFullPath}/-/on_demand_scans`;
@@ -59,7 +59,7 @@ describe('DastSiteProfileForm', () => {
     await setFieldValue(findTargetUrlInput(), targetUrl);
     await setFieldValue(findExcludedUrlsInput(), excludedUrls);
     await setFieldValue(findRequestHeadersInput(), requestHeaders);
-    await setAuthFieldsValues(siteProfileOne.auth);
+    await setAuthFieldsValues(siteProfileWithSecrets.auth);
   };
 
   const setTargetType = async (type) => {
@@ -158,17 +158,19 @@ describe('DastSiteProfileForm', () => {
       it('when updating an existing profile', () => {
         createComponent({
           propsData: {
-            profile: siteProfileOne,
+            profile: siteProfileWithSecrets,
           },
         });
-        expect(findRequestHeadersInput().element.value).toBe(siteProfileOne.requestHeaders);
-        expect(findByNameAttribute('password').element.value).toBe(siteProfileOne.auth.password);
+        expect(findRequestHeadersInput().element.value).toBe(siteProfileWithSecrets.requestHeaders);
+        expect(findByNameAttribute('password').element.value).toBe(
+          siteProfileWithSecrets.auth.password,
+        );
       });
 
       it('when updating an existing profile with no request-header & password', () => {
         createComponent({
           propsData: {
-            profile: { ...siteProfileOne, requestHeaders: null, auth: { enabled: true } },
+            profile: { ...siteProfileWithSecrets, requestHeaders: null, auth: { enabled: true } },
           },
         });
         expect(findRequestHeadersInput().element.value).toBe('');
@@ -186,9 +188,9 @@ describe('DastSiteProfileForm', () => {
       });
 
       describe.each`
-        title                  | profile           | mutationVars                     | mutation                         | mutationKind
-        ${'New site profile'}  | ${{}}             | ${{ fullPath: projectFullPath }} | ${dastSiteProfileCreateMutation} | ${'dastSiteProfileCreate'}
-        ${'Edit site profile'} | ${siteProfileOne} | ${{ id: siteProfileOne.id }}     | ${dastSiteProfileUpdateMutation} | ${'dastSiteProfileUpdate'}
+        title                  | profile                   | mutationVars                         | mutation                         | mutationKind
+        ${'New site profile'}  | ${{}}                     | ${{ fullPath: projectFullPath }}     | ${dastSiteProfileCreateMutation} | ${'dastSiteProfileCreate'}
+        ${'Edit site profile'} | ${siteProfileWithSecrets} | ${{ id: siteProfileWithSecrets.id }} | ${dastSiteProfileUpdateMutation} | ${'dastSiteProfileUpdate'}
       `('$title', ({ profile, mutationVars, mutation, mutationKind }) => {
         beforeEach(() => {
           createComponent({
@@ -208,7 +210,7 @@ describe('DastSiteProfileForm', () => {
           expect(baseDastProfileForm.props('mutationVariables')).toEqual({
             profileName,
             targetUrl,
-            excludedUrls: siteProfileOne.excludedUrls,
+            excludedUrls: excludedUrls.split(', '),
             requestHeaders,
             targetType: 'API',
             ...mutationVars,
@@ -219,9 +221,9 @@ describe('DastSiteProfileForm', () => {
   });
 
   describe.each`
-    title                  | profile           | mutationVars                 | mutationKind
-    ${'New site profile'}  | ${{}}             | ${{}}                        | ${'dastSiteProfileCreate'}
-    ${'Edit site profile'} | ${siteProfileOne} | ${{ id: siteProfileOne.id }} | ${'dastSiteProfileUpdate'}
+    title                  | profile                   | mutationVars                         | mutationKind
+    ${'New site profile'}  | ${{}}                     | ${{}}                                | ${'dastSiteProfileCreate'}
+    ${'Edit site profile'} | ${siteProfileWithSecrets} | ${{ id: siteProfileWithSecrets.id }} | ${'dastSiteProfileUpdate'}
   `('$title', ({ profile, title, mutationVars, mutationKind }) => {
     beforeEach(() => {
       createComponent({
@@ -252,7 +254,7 @@ describe('DastSiteProfileForm', () => {
     beforeEach(() => {
       createShallowComponent({
         propsData: {
-          profile: siteProfileOne,
+          profile: siteProfileWithSecrets,
         },
       });
     });

@@ -7,6 +7,7 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
     include ApiHelpers
     include GraphqlHelpers
     include JavaScriptFixturesHelpers
+    include API::Helpers::GraphqlHelpers
 
     let_it_be(:current_user) { create(:user) }
     let_it_be(:project) { create(:project, :repository, :public) }
@@ -118,31 +119,36 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
               :dast_site_profile,
               name: "Non-validated",
               auth_username: "non-validated@example.com",
-              project: project, dast_site: dast_site_none
+              project: project,
+              dast_site: dast_site_none
             ),
             create(
               :dast_site_profile,
               name: "Validation failed",
               auth_username: "validation-failed@example.com",
-              project: project, dast_site: dast_site_failed
+              project: project,
+              dast_site: dast_site_failed
             ),
             create(
               :dast_site_profile,
               name: "Validation passed",
               auth_username: "validation-passed@example.com",
-              project: project, dast_site: dast_site_passed
+              project: project,
+              dast_site: dast_site_passed
             ),
             create(
               :dast_site_profile,
               name: "Validation in progress",
               auth_username: "validation-in-progress@example.com",
-              project: project, dast_site: dast_site_inprogress
+              project: project,
+              dast_site: dast_site_inprogress
             ),
             create(
               :dast_site_profile,
               name: "Validation pending",
               auth_username: "validation-pending@example.com",
-              project: project, dast_site: dast_site_pending
+              project: project,
+              dast_site: dast_site_pending
             )
           ]
         end
@@ -157,6 +163,37 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
 
           expect_graphql_errors_to_be_empty
           expect(graphql_data_at(:project, :siteProfiles, :edges)).to have_attributes(size: 5)
+        end
+      end
+
+      context 'dast site profile with secret variables' do
+        let(:response) { @site_profile.to_json }
+        let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }
+        let_it_be(:request_headers_variable) { create(:dast_site_profile_secret_variable, :request_headers, dast_site_profile: dast_site_profile) }
+        let_it_be(:password_variable) { create(:dast_site_profile_secret_variable, :password, dast_site_profile: dast_site_profile) }
+
+        it "security_configuration/dast_profiles/dast_site_profile_with_secrets.json" do
+          query = %(
+            {
+              project(fullPath: "#{project.full_path}") {
+                dastSiteProfile(id: "#{Gitlab::GlobalId.as_global_id(dast_site_profile.id, model_name: 'DastSiteProfile')}") {
+                  id
+                  name: profileName
+                  targetUrl
+                  targetType
+                  excludedUrls
+                  requestHeaders
+                  auth { enabled url username usernameField password passwordField }
+                  referencedInSecurityPolicies
+                }
+              }
+            }
+          )
+          @site_profile = run_graphql!(
+            query: query,
+            context: { current_user: current_user },
+            transform: -> (result) { result.dig('data', 'project', 'dastSiteProfile') }
+          )
         end
       end
     end
@@ -205,7 +242,10 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
       path = 'on_demand_scans/graphql/scheduled_dast_profiles.query.graphql'
 
       let_it_be(:dast_profile) { create(:dast_profile, project: project) }
-      let_it_be(:dast_profile_schedule) { create(:dast_profile_schedule, project: project, dast_profile: dast_profile)}
+      let_it_be(:dast_profile_schedule) do
+        create(:dast_profile_schedule, project: project,
+        dast_profile: dast_profile)
+      end
 
       it "graphql/#{path}.json" do
         query = get_graphql_query_as_string(path, ee: true)
