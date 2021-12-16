@@ -2538,9 +2538,9 @@ RSpec.describe User do
     end
   end
 
-  describe '.use_minimum_char_limit_toggle' do
+  describe '.user_search_minimum_char_limit' do
     it 'returns true' do
-      expect(described_class.use_minimum_char_limit_toggle).to be true
+      expect(described_class.user_search_minimum_char_limit).to be true
     end
   end
 

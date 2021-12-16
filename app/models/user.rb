@@ -717,14 +717,14 @@ class User < ApplicationRecord
         .take(1) # at most 1 record as there is a unique constraint
 
       where(
-        fuzzy_arel_match(:name, query, lower_exact_match: false, use_minimum_char_limit: use_minimum_char_limit_toggle)
-          .or(fuzzy_arel_match(:username, query, lower_exact_match: false, use_minimum_char_limit: use_minimum_char_limit_toggle))
+        fuzzy_arel_match(:name, query, use_minimum_char_limit: user_search_minimum_char_limit)
+          .or(fuzzy_arel_match(:username, query, use_minimum_char_limit: user_search_minimum_char_limit))
           .or(arel_table[:email].eq(query))
           .or(arel_table[:id].eq(matched_by_email_user_id))
       )
     end
 
-    def use_minimum_char_limit_toggle
+    def user_search_minimum_char_limit
       true
     end
 
