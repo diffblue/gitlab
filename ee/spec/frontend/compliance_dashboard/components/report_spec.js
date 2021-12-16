@@ -10,6 +10,7 @@ import ViolationReason from 'ee/compliance_dashboard/components/violations/reaso
 import resolvers from 'ee/compliance_dashboard/graphql/resolvers';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 
 Vue.use(VueApollo);
 
@@ -27,6 +28,7 @@ describe('ComplianceReport component', () => {
   const findEmptyState = () => wrapper.findComponent(EmptyState);
   const findMergeCommitsExportButton = () => wrapper.findComponent(MergeCommitsExportButton);
   const findViolationReason = () => wrapper.findComponent(ViolationReason);
+  const findTimeAgoTooltip = () => wrapper.findComponent(TimeAgoTooltip);
 
   const findTableHeaders = () => findViolationsTable().findAll('th');
   const findTablesFirstRowData = () =>
@@ -112,15 +114,14 @@ describe('ComplianceReport component', () => {
 
     // Note: This should be refactored as each table component is created
     // Severity: https://gitlab.com/gitlab-org/gitlab/-/issues/342900
-    // Merge request and date merged: https://gitlab.com/gitlab-org/gitlab/-/issues/342902
     it('has the correct first row data', () => {
       const headerTexts = findTablesFirstRowData().wrappers.map((d) => d.text());
 
       expect(headerTexts).toEqual([
         '1',
         'Approved by committer',
-        expect.anything(),
-        '2021-11-25T11:56:52.215Z',
+        'Officiis architecto voluptas ut sit qui qui quisquam sequi consectetur porro.',
+        'in 1 year',
       ]);
     });
 
@@ -134,6 +135,14 @@ describe('ComplianceReport component', () => {
         reason,
         user,
       });
+    });
+
+    it('renders the time ago tooltip', () => {
+      const {
+        mergeRequest: { mergedAt },
+      } = mockResolver().mergeRequestViolations.nodes[0];
+
+      expect(findTimeAgoTooltip().props('time')).toBe(mergedAt);
     });
   });
 
