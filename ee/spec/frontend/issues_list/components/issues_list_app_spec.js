@@ -124,22 +124,22 @@ describe('EE IssuesListApp component', () => {
         window.gon = originalGon;
       });
 
-      it('renders all tokens', () => {
+      it('renders all tokens alphabetically', () => {
         const preloadedAuthors = [
           { ...mockCurrentUser, id: convertToGraphQLId('User', mockCurrentUser.id) },
         ];
 
         expect(findIssuableList().props('searchTokens')).toMatchObject([
-          { type: TOKEN_TYPE_AUTHOR, preloadedAuthors },
           { type: TOKEN_TYPE_ASSIGNEE, preloadedAuthors },
-          { type: TOKEN_TYPE_MILESTONE },
-          { type: TOKEN_TYPE_LABEL },
-          { type: TOKEN_TYPE_TYPE },
-          { type: TOKEN_TYPE_RELEASE },
-          { type: TOKEN_TYPE_MY_REACTION },
+          { type: TOKEN_TYPE_AUTHOR, preloadedAuthors },
           { type: TOKEN_TYPE_CONFIDENTIAL },
-          { type: TOKEN_TYPE_ITERATION },
           { type: TOKEN_TYPE_EPIC },
+          { type: TOKEN_TYPE_ITERATION },
+          { type: TOKEN_TYPE_LABEL },
+          { type: TOKEN_TYPE_MILESTONE },
+          { type: TOKEN_TYPE_MY_REACTION },
+          { type: TOKEN_TYPE_RELEASE },
+          { type: TOKEN_TYPE_TYPE },
           { type: TOKEN_TYPE_WEIGHT },
         ]);
       });
