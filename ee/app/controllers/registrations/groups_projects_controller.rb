@@ -35,18 +35,21 @@ module Registrations
         if @project.saved?
           combined_registration_experiment.track(:create_project, namespace: @project.namespace)
 
-          learn_gitlab_project = create_learn_gitlab_project
+          @learn_gitlab_project = create_learn_gitlab_project
 
-          if helpers.in_trial_onboarding_flow?
+          store_location
+
+          if helpers.registration_verification_enabled?
+            redirect_to new_users_sign_up_verification_path(url_params.merge(combined: true))
+          elsif helpers.in_trial_onboarding_flow?
             record_experiment_user(:remove_known_trial_form_fields_welcoming, namespace_id: @group.id)
             record_experiment_conversion_event(:remove_known_trial_form_fields_welcoming)
 
-            redirect_to trial_getting_started_users_sign_up_welcome_path(learn_gitlab_project_id: learn_gitlab_project.id)
+            redirect_to trial_getting_started_users_sign_up_welcome_path(url_params)
           else
-            success_url = continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: @project.id)
+            success_url = continuous_onboarding_getting_started_users_sign_up_welcome_path(url_params)
 
             if current_user.setup_for_company
-              store_location_for(:user, success_url)
               success_url = new_trial_path
             end
 
@@ -92,6 +95,21 @@ module Registrations
       end
 
       modifed_group_params
+    end
+
+    def store_location
+      if current_user.setup_for_company && !helpers.in_trial_onboarding_flow?
+        success_url = continuous_onboarding_getting_started_users_sign_up_welcome_path(url_params)
+        store_location_for(:user, success_url)
+      end
+    end
+
+    def url_params
+      if helpers.in_trial_onboarding_flow?
+        { learn_gitlab_project_id: @learn_gitlab_project.id }
+      else
+        { project_id: @project.id }
+      end
     end
   end
 end

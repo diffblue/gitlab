@@ -26,15 +26,17 @@ module Registrations
       if @project.saved?
         experiment(:combined_registration, user: current_user).track(:create_project, namespace: @project.namespace)
 
-        learn_gitlab_project = create_learn_gitlab_project
+        @learn_gitlab_project = create_learn_gitlab_project
 
         experiment(:force_company_trial, user: current_user)
           .track(:create_project, namespace: @project.namespace, project: @project, user: current_user)
 
-        if helpers.in_trial_onboarding_flow?
-          redirect_to trial_getting_started_users_sign_up_welcome_path(learn_gitlab_project_id: learn_gitlab_project.id)
+        if helpers.registration_verification_enabled?
+          redirect_to new_users_sign_up_verification_path(url_params)
+        elsif helpers.in_trial_onboarding_flow?
+          redirect_to trial_getting_started_users_sign_up_welcome_path(url_params)
         else
-          redirect_to continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: @project.id)
+          redirect_to continuous_onboarding_getting_started_users_sign_up_welcome_path(url_params)
         end
       else
         render :new
@@ -49,6 +51,14 @@ module Registrations
 
     def set_namespace
       @namespace = Namespace.find_by_id(params[:namespace_id])
+    end
+
+    def url_params
+      if helpers.in_trial_onboarding_flow?
+        { learn_gitlab_project_id: @learn_gitlab_project.id }
+      else
+        { project_id: @project.id }
+      end
     end
   end
 end

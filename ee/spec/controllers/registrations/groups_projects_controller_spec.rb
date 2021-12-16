@@ -40,6 +40,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
     let(:project_params) { { name: 'New project', path: 'project-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE } }
     let(:dev_env_or_com) { true }
     let(:setup_for_company) { nil }
+    let(:combined_registration?) { true }
 
     context 'with an unauthenticated user' do
       it { is_expected.to have_gitlab_http_status(:redirect) }
