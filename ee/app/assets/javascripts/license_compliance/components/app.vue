@@ -36,20 +36,7 @@ export default {
     LicenseManagement,
   },
   mixins: [glFeatureFlagsMixin()],
-  props: {
-    emptyStateSvgPath: {
-      type: String,
-      required: true,
-    },
-    sbomSurveySvgPath: {
-      type: String,
-      required: true,
-    },
-    documentationPath: {
-      type: String,
-      required: true,
-    },
-  },
+  inject: ['sbomSurveySvgPath', 'emptyStateSvgPath', 'documentationPath'],
   data() {
     return {
       tabIndex: this.activeTabIndex(),
