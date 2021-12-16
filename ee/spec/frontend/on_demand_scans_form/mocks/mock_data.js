@@ -1,3 +1,8 @@
+import {
+  REDACTED_PASSWORD,
+  REDACTED_REQUEST_HEADERS,
+} from 'ee/security_configuration/dast_profiles/dast_site_profiles/constants';
+
 export const policyScannerProfile = {
   id: 'gid://gitlab/DastScannerProfile/3',
   profileName: 'Scanner profile #3',
@@ -25,10 +30,10 @@ export const siteProfiles = [
       usernameField: 'username',
       passwordField: 'password',
       username: 'admin',
-      password: 'password',
+      password: REDACTED_PASSWORD,
     },
     excludedUrls: ['https://foo.com/logout', 'https://foo.com/send_mail'],
-    requestHeaders: 'log-identifier: dast-active-scan',
+    requestHeaders: REDACTED_REQUEST_HEADERS,
     referencedInSecurityPolicies: [],
   },
   {
@@ -47,7 +52,7 @@ export const siteProfiles = [
       username: 'admin',
     },
     excludedUrls: ['https://bar.com/logout'],
-    requestHeaders: 'auth: gitlab-dast',
+    requestHeaders: REDACTED_REQUEST_HEADERS,
     referencedInSecurityPolicies: [],
   },
 ];
