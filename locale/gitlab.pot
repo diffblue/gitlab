@@ -13779,9 +13779,6 @@ msgstr ""
 msgid "Error creating the snippet"
 msgstr ""
 
-msgid "Error deleting %{issuableType}"
-msgstr ""
-
 msgid "Error deleting project. Check logs for error details."
 msgstr ""
 
