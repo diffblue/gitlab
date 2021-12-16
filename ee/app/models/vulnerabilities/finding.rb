@@ -218,6 +218,10 @@ module Vulnerabilities
       location.dig('file')
     end
 
+    def image
+      location.dig('image')
+    end
+
     def links
       return metadata.fetch('links', []) if Feature.disabled?(:vulnerability_finding_replace_metadata) || finding_links.load.empty?
 
