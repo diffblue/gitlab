@@ -2,6 +2,7 @@
 import { GlEmptyState, GlIcon, GlLoadingIcon, GlSprintf, GlLink } from '@gitlab/ui';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { __ } from '~/locale';
+import SbomBanner from 'ee/sbom_banner/components/app.vue';
 import { DEPENDENCY_LIST_TYPES } from '../store/constants';
 import { REPORT_STATUS } from '../store/modules/list/constants';
 import DependenciesActions from './dependencies_actions.vue';
@@ -18,12 +19,17 @@ export default {
     GlLoadingIcon,
     GlSprintf,
     GlLink,
+    SbomBanner,
     DependencyListIncompleteAlert,
     DependencyListJobFailedAlert,
     PaginatedDependenciesTable,
   },
   props: {
     endpoint: {
+      type: String,
+      required: true,
+    },
+    sbomSurveySvgPath: {
       type: String,
       required: true,
     },
@@ -133,6 +139,7 @@ export default {
   </gl-empty-state>
 
   <section v-else>
+    <sbom-banner :sbom-survey-svg-path="sbomSurveySvgPath" />
     <dependency-list-incomplete-alert
       v-if="isIncomplete && !isIncompleteAlertDismissed"
       @dismiss="dismissIncompleteListAlert"

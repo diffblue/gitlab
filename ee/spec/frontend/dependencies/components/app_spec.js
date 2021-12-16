@@ -10,6 +10,8 @@ import { DEPENDENCY_LIST_TYPES } from 'ee/dependencies/store/constants';
 import { REPORT_STATUS } from 'ee/dependencies/store/modules/list/constants';
 import { TEST_HOST } from 'helpers/test_constants';
 import { getDateInPast } from '~/lib/utils/datetime_utility';
+import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import SbomBanner from 'ee/sbom_banner/components/app.vue';
 
 describe('DependenciesApp component', () => {
   let store;
@@ -19,6 +21,7 @@ describe('DependenciesApp component', () => {
   const basicAppProps = {
     endpoint: '/foo',
     emptyStateSvgPath: '/bar.svg',
+    sbomSurveySvgPath: '/foo.svg',
     documentationPath: TEST_HOST,
     supportDocumentationPath: `${TEST_HOST}/dependency_scanning#supported-languages`,
   };
@@ -29,12 +32,20 @@ describe('DependenciesApp component', () => {
 
     const stubs = Object.keys(DependenciesApp.components).filter((name) => name !== 'GlSprintf');
 
-    wrapper = mount(DependenciesApp, {
-      store,
-      propsData: { ...props },
-      stubs,
-      ...options,
-    });
+    window.gon = {
+      features: {
+        sbomSurvey: true,
+      },
+    };
+
+    wrapper = extendedWrapper(
+      mount(DependenciesApp, {
+        store,
+        propsData: { ...props },
+        stubs,
+        ...options,
+      }),
+    );
   };
 
   const setStateJobNotRun = () => {
@@ -96,6 +107,7 @@ describe('DependenciesApp component', () => {
   const findJobFailedAlert = () => wrapper.find(DependencyListJobFailedAlert);
   const findIncompleteListAlert = () => wrapper.find(DependencyListIncompleteAlert);
   const findDependenciesTables = () => wrapper.findAll(PaginatedDependenciesTable);
+  const findSbomBanner = () => wrapper.findComponent(SbomBanner);
 
   const findHeader = () => wrapper.find('section > header');
   const findHeaderHelpLink = () => findHeader().find(GlLink);
@@ -139,6 +151,7 @@ describe('DependenciesApp component', () => {
   };
 
   afterEach(() => {
+    window.gon = {};
     wrapper.destroy();
   });
 
@@ -203,6 +216,12 @@ describe('DependenciesApp component', () => {
 
       it('passes the correct namespace to dependencies actions component', () => {
         expectComponentWithProps(DependenciesActions, { namespace: allNamespace });
+      });
+
+      it('renders the SbomBannercomponent with the right props', () => {
+        const sbomBanner = findSbomBanner();
+        expect(sbomBanner.exists()).toBe(true);
+        expect(sbomBanner.props().sbomSurveySvgPath).toEqual(wrapper.props().sbomSurveySvgPath);
       });
 
       describe('given the user has public permissions', () => {

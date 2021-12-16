@@ -31549,6 +31549,9 @@ msgstr ""
 msgid "SecurityReports|Take survey"
 msgstr ""
 
+msgid "SecurityReports|The Composition Analysis group is planning significant updates to how we make available the list of software and container dependency information in your projects. Therefore, we ask that you assist us by taking a short -no longer than 5 minute- survey to help align our direction with your needs."
+msgstr ""
+
 msgid "SecurityReports|The Vulnerability Report shows the results of the latest successful pipeline on your project's default branch, as well as vulnerabilities from your latest container scan. %{linkStart}Learn more.%{linkEnd}"
 msgstr ""
 
@@ -31622,6 +31625,9 @@ msgid "SecurityReports|You do not have sufficient permissions to access this rep
 msgstr ""
 
 msgid "SecurityReports|You must sign in as an authorized user to see this report"
+msgstr ""
+
+msgid "SecurityReports|Your feedback is important to us! We will ask again in 7 days."
 msgstr ""
 
 msgid "SecurityReports|Your feedback is important to us! We will ask again in a week."

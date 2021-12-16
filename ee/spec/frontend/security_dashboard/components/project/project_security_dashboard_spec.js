@@ -46,6 +46,10 @@ describe('Project Security Dashboard component', () => {
         helpPath,
         ...propsData,
       },
+      provide: {
+        // To be consumed by SecurityDashboardLayout
+        sbomSurveySvgPath: '/',
+      },
       stubs: {
         SecurityDashboardLayout,
       },
