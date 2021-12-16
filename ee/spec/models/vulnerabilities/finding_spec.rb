@@ -25,7 +25,7 @@ RSpec.describe Vulnerabilities::Finding do
       it { is_expected.to have_many(:finding_remediations).class_name('Vulnerabilities::FindingRemediation').with_foreign_key('vulnerability_occurrence_id') }
       it { is_expected.to have_many(:vulnerability_flags).class_name('Vulnerabilities::Flag').with_foreign_key('vulnerability_occurrence_id') }
       it { is_expected.to have_many(:remediations).through(:finding_remediations) }
-      it { is_expected.to have_one(:evidence).class_name('Vulnerabilities::Finding::Evidence').with_foreign_key('vulnerability_occurrence_id') }
+      it { is_expected.to have_one(:finding_evidence).class_name('Vulnerabilities::Finding::Evidence').with_foreign_key('vulnerability_occurrence_id') }
     end
 
     describe 'validations' do
@@ -775,79 +775,87 @@ RSpec.describe Vulnerabilities::Finding do
     describe '#evidence' do
       subject { finding.evidence }
 
-      context 'has an evidence fields' do
-        let(:finding) { create(:vulnerabilities_finding) }
-        let(:evidence) { finding.metadata['evidence'] }
+      shared_examples 'evidence schema' do
+        it 'matches evidence schema' do
+          example_evidence = evidence.with_indifferent_access
 
-        it do
           is_expected.to match a_hash_including(
-            summary: evidence['summary'],
+            summary: example_evidence['summary']
+          )
+
+          is_expected.to match a_hash_including(
             request: {
               headers: [
                 {
-                  name: evidence['request']['headers'][0]['name'],
-                  value: evidence['request']['headers'][0]['value']
+                  name: example_evidence['request']['headers'][0]['name'],
+                  value: example_evidence['request']['headers'][0]['value']
                 }
               ],
-              url: evidence['request']['url'],
-              method: evidence['request']['method'],
-              body: evidence['request']['body']
-            },
+              url: example_evidence['request']['url'],
+              method: example_evidence['request']['method'],
+              body: example_evidence['request']['body']
+            }
+          )
+
+          is_expected.to match a_hash_including(
             response: {
               headers: [
                 {
-                  name: evidence['response']['headers'][0]['name'],
-                  value: evidence['response']['headers'][0]['value']
+                  name: example_evidence['response']['headers'][0]['name'],
+                  value: example_evidence['response']['headers'][0]['value']
                 }
               ],
-              reason_phrase: evidence['response']['reason_phrase'],
-              status_code: evidence['response']['status_code'],
-              body: evidence['request']['body']
+              reason_phrase: example_evidence['response']['reason_phrase'],
+              status_code: example_evidence['response']['status_code'],
+              body: example_evidence['request']['body']
             },
             source: {
-              id: evidence.dig('source', 'id'),
-              name: evidence.dig('source', 'name'),
-              url: evidence.dig('source', 'url')
-            },
+              id: example_evidence.dig('source', 'id'),
+              name: example_evidence.dig('source', 'name'),
+              url: example_evidence.dig('source', 'url')
+            }
+          )
+
+          is_expected.to match a_hash_including(
             supporting_messages: [
               {
-                name: evidence.dig('supporting_messages')[0].dig('name'),
+                name: example_evidence.dig('supporting_messages')[0].dig('name'),
                 request: {
                   headers: [
                     {
-                      name: evidence.dig('supporting_messages')[0].dig('request', 'headers')[0].dig('name'),
-                      value: evidence.dig('supporting_messages')[0].dig('request', 'headers')[0].dig('value')
+                      name: example_evidence.dig('supporting_messages')[0].dig('request', 'headers')[0].dig('name'),
+                      value: example_evidence.dig('supporting_messages')[0].dig('request', 'headers')[0].dig('value')
                     }
                   ],
-                  url: evidence.dig('supporting_messages')[0].dig('request', 'url'),
-                  method: evidence.dig('supporting_messages')[0].dig('request', 'method'),
-                  body: evidence.dig('supporting_messages')[0].dig('request', 'body')
+                  url: example_evidence.dig('supporting_messages')[0].dig('request', 'url'),
+                  method: example_evidence.dig('supporting_messages')[0].dig('request', 'method'),
+                  body: example_evidence.dig('supporting_messages')[0].dig('request', 'body')
                 },
-                response: evidence.dig('supporting_messages')[0].dig('response')
+                response: example_evidence.dig('supporting_messages')[0].dig('response')
               },
               {
-                name: evidence.dig('supporting_messages')[1].dig('name'),
+                name: example_evidence.dig('supporting_messages')[1].dig('name'),
                 request: {
                   headers: [
                     {
-                      name: evidence.dig('supporting_messages')[1].dig('request', 'headers')[0].dig('name'),
-                      value: evidence.dig('supporting_messages')[1].dig('request', 'headers')[0].dig('value')
+                      name: example_evidence.dig('supporting_messages')[1].dig('request', 'headers')[0].dig('name'),
+                      value: example_evidence.dig('supporting_messages')[1].dig('request', 'headers')[0].dig('value')
                     }
                   ],
-                  url: evidence.dig('supporting_messages')[1].dig('request', 'url'),
-                  method: evidence.dig('supporting_messages')[1].dig('request', 'method'),
-                  body: evidence.dig('supporting_messages')[1].dig('request', 'body')
+                  url: example_evidence.dig('supporting_messages')[1].dig('request', 'url'),
+                  method: example_evidence.dig('supporting_messages')[1].dig('request', 'method'),
+                  body: example_evidence.dig('supporting_messages')[1].dig('request', 'body')
                 },
                 response: {
                   headers: [
                     {
-                      name: evidence.dig('supporting_messages')[1].dig('response', 'headers')[0].dig('name'),
-                      value: evidence.dig('supporting_messages')[1].dig('response', 'headers')[0].dig('value')
+                      name: example_evidence.dig('supporting_messages')[1].dig('response', 'headers')[0].dig('name'),
+                      value: example_evidence.dig('supporting_messages')[1].dig('response', 'headers')[0].dig('value')
                     }
                   ],
-                  reason_phrase: evidence.dig('supporting_messages')[1].dig('response', 'reason_phrase'),
-                  status_code: evidence.dig('supporting_messages')[1].dig('response', 'status_code'),
-                  body: evidence.dig('supporting_messages')[1].dig('response', 'body')
+                  reason_phrase: example_evidence.dig('supporting_messages')[1].dig('response', 'reason_phrase'),
+                  status_code: example_evidence.dig('supporting_messages')[1].dig('response', 'status_code'),
+                  body: example_evidence.dig('supporting_messages')[1].dig('response', 'body')
                 }
               }
             ]
@@ -855,17 +863,34 @@ RSpec.describe Vulnerabilities::Finding do
         end
       end
 
-      context 'has no evidence summary when evidence is present, summary is not' do
-        let(:finding) { create(:vulnerabilities_finding, raw_metadata: { evidence: {} }) }
+      context 'without finding_evidence' do
+        context 'has an evidence fields' do
+          let(:finding) { create(:vulnerabilities_finding) }
+          let(:evidence) { finding.metadata['evidence'] }
 
-        it do
-          is_expected.to match a_hash_including(
-            summary: nil,
-            source: nil,
-            supporting_messages: [],
-            request: nil,
-            response: nil)
+          include_examples 'evidence schema'
         end
+
+        context 'has no evidence summary when evidence is present, summary is not' do
+          let(:finding) { create(:vulnerabilities_finding, raw_metadata: { evidence: {} }) }
+
+          it do
+            is_expected.to match a_hash_including(
+              summary: nil,
+              source: nil,
+              supporting_messages: [],
+              request: nil,
+              response: nil)
+          end
+        end
+      end
+
+      context 'with finding_evidence' do
+        let(:finding_evidence) { build(:vulnerabilties_finding_evidence) }
+        let(:finding) { finding_evidence.finding }
+        let(:evidence) { finding_evidence.data }
+
+        include_examples 'evidence schema'
       end
     end
 
