@@ -44,7 +44,7 @@ module Gitlab
         end
 
         def cta_link
-          url = project_pipeline_url(pipeline.project, pipeline)
+          url = project_pipeline_validate_account_url(pipeline.project, pipeline)
 
           case format
           when :html
