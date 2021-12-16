@@ -1,31 +1,15 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples 'manual renewal banner' do |path_to_visit:|
-  shared_examples 'a visible dismissible manual renewal banner' do
-    context 'when dismissed' do
-      before do
-        page.within(find('[data-testid="close-manual-renewal-banner"]', match: :first)) do
-          click_button 'Dismiss'
-        end
-      end
-
-      it_behaves_like 'a hidden manual renewal banner'
-
-      context 'when visiting again' do
-        before do
-          visit current_path
-        end
-
-        it 'displays a banner' do
-          expect(page).to have_selector('[data-testid="close-manual-renewal-banner"]')
-        end
-      end
+  shared_examples 'a visible manual renewal banner' do
+    it 'displays a banner' do
+      expect(page).to have_selector('[data-testid="manual-renewal-banner"]')
     end
   end
 
   shared_examples 'a hidden manual renewal banner' do
     it 'does not display a banner' do
-      expect(page).not_to have_selector('[data-testid="close-manual-renewal-banner"]')
+      expect(page).not_to have_selector('[data-testid="manual-renewal-banner"]')
     end
   end
 
@@ -54,7 +38,7 @@ RSpec.shared_examples 'manual renewal banner' do |path_to_visit:|
         context 'within notification window' do
           let(:expires_at) { Date.today + reminder_days }
 
-          it_behaves_like 'a visible dismissible manual renewal banner'
+          it_behaves_like 'a visible manual renewal banner'
         end
 
         context 'outside of notification window' do
@@ -67,7 +51,7 @@ RSpec.shared_examples 'manual renewal banner' do |path_to_visit:|
       context 'when subscription is expired' do
         let(:expires_at) { Date.today }
 
-        it_behaves_like 'a visible dismissible manual renewal banner'
+        it_behaves_like 'a visible manual renewal banner'
       end
 
       context 'when subscription is not expiring/expired yet' do

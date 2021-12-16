@@ -1,31 +1,15 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples 'manual quarterly co-term banner' do |path_to_visit:|
-  shared_examples 'a visible dismissible manual quarterly co-term banner' do
-    context 'when dismissed' do
-      before do
-        page.within(find('[data-testid="close-manual-quarterly-co-term-banner"]', match: :first)) do
-          click_button 'Dismiss'
-        end
-      end
-
-      it_behaves_like 'a hidden manual quarterly co-term banner'
-
-      context 'when visiting again' do
-        before do
-          visit current_path
-        end
-
-        it 'displays a banner' do
-          expect(page).to have_selector('[data-testid="close-manual-quarterly-co-term-banner"]')
-        end
-      end
+  shared_examples 'a visible manual quarterly co-term banner' do
+    it 'displays a banner' do
+      expect(page).to have_selector('[data-testid="manual-quarterly-co-term-banner"]')
     end
   end
 
   shared_examples 'a hidden manual quarterly co-term banner' do
     it 'does not display a banner' do
-      expect(page).not_to have_selector('[data-testid="close-manual-quarterly-co-term-banner"]')
+      expect(page).not_to have_selector('[data-testid="manual-quarterly-co-term-banner"]')
     end
   end
 
@@ -56,7 +40,7 @@ RSpec.shared_examples 'manual quarterly co-term banner' do |path_to_visit:|
         context 'within notification window' do
           let(:reconciliation_date) { Date.current + reminder_days }
 
-          it_behaves_like 'a visible dismissible manual quarterly co-term banner'
+          it_behaves_like 'a visible manual quarterly co-term banner'
         end
 
         context 'outside of notification window' do
@@ -69,7 +53,7 @@ RSpec.shared_examples 'manual quarterly co-term banner' do |path_to_visit:|
       context 'when reconciliation date was passed' do
         let(:reconciliation_date) { Date.current }
 
-        it_behaves_like 'a visible dismissible manual quarterly co-term banner'
+        it_behaves_like 'a visible manual quarterly co-term banner'
       end
 
       context 'when reconciliation date is outside of the notification window' do

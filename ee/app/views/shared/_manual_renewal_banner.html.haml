@@ -5,9 +5,9 @@
   = render 'shared/global_alert',
     title: payload.subject,
     variant: payload.display_error_version? ? :danger : :warning,
-    close_button_class: 'js-close',
-    alert_class: 'gl-mt-5 gl-mb-5',
-    alert_data: { testid: 'close-manual-renewal-banner' } do
+    alert_class: 'gl-my-5',
+    alert_data: { testid: 'manual-renewal-banner' },
+    dismissible: false do
     .gl-alert-body
       = payload.body
     .gl-alert-actions
