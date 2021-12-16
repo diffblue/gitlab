@@ -22,7 +22,7 @@ RSpec.describe Emails::InProductMarketing do
 
     it 'has the correct subject and content' do
       message = Gitlab::Email::Message::AccountValidation.new(pipeline)
-      cta_url = project_pipeline_url(pipeline.project, pipeline)
+      cta_url = project_pipeline_validate_account_url(pipeline.project, pipeline)
       cta2_url = 'https://docs.gitlab.com/runner/install/'
 
       aggregate_failures do

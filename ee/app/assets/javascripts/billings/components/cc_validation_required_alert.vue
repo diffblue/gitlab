@@ -1,6 +1,7 @@
 <script>
 import { GlAlert, GlSprintf, GlLink } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import Tracking from '~/tracking';
 import AccountVerificationModal from './account_verification_modal.vue';
 
 const i18n = {
@@ -28,10 +29,16 @@ export default {
     GlLink,
     AccountVerificationModal,
   },
+  mixins: [Tracking.mixin()],
   props: {
     customMessage: {
       type: String,
       default: null,
+      required: false,
+    },
+    isFromAccountValidationEmail: {
+      type: Boolean,
+      default: false,
       required: false,
     },
   },
@@ -48,11 +55,20 @@ export default {
       return gon.subscriptions_url;
     },
   },
+  mounted() {
+    if (this.isFromAccountValidationEmail) {
+      this.showModal();
+    }
+  },
   methods: {
     showModal() {
       this.$refs.modal.show();
     },
     handleSuccessfulVerification() {
+      if (this.isFromAccountValidationEmail) {
+        this.track('successful_validation', { label: 'account_validation_email' });
+      }
+
       this.$refs.modal.hide();
       this.shouldRenderSuccess = true;
       this.$emit('verifiedCreditCard');

@@ -316,6 +316,31 @@ RSpec.describe 'Pipeline', :js do
     end
   end
 
+  describe 'GET /:project/-/pipelines/:id/validate_account' do
+    let(:pipeline) { create(:ci_pipeline, :failed, project: project, user: user, failure_reason: 'user_not_verified') }
+    let(:ultimate_plan) { create(:ultimate_plan) }
+
+    before do
+      allow(Gitlab).to receive(:com?) { true }
+      create(:gitlab_subscription, :active_trial, namespace: namespace, hosted_plan: ultimate_plan)
+    end
+
+    it 'redirects to pipeline page with account validation modal opened' do
+      visit project_pipeline_validate_account_path(project, pipeline)
+
+      expect(page).to have_current_path(pipeline_path(pipeline))
+
+      account_validation_alert_content = 'User validation required'
+      expect(page).to have_content(account_validation_alert_content)
+
+      expect(page).to have_selector("#credit-card-verification-modal")
+
+      # ensure account validation modal is only opened when redirected from /validate_account
+      visit current_path
+      expect(page).not_to have_selector("#credit-card-verification-modal")
+    end
+  end
+
   private
 
   def create_link(source_pipeline, pipeline)

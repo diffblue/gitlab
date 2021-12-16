@@ -40,5 +40,15 @@ RSpec.describe EE::Ci::PipelinesHelper do
 
       it { is_expected.to be_falsy }
     end
+
+    context 'when not in dev env or com' do
+      let(:pipeline) { instance_double(Ci::Pipeline) }
+
+      before do
+        allow(Gitlab).to receive(:dev_env_or_com?) { false }
+      end
+
+      it { is_expected.to be_falsy }
+    end
   end
 end
