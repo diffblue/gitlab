@@ -519,6 +519,57 @@ FactoryBot.define do
       end
     end
 
+    trait :with_container_scanning_metadata do
+      transient do
+        raw_severity { "Critical" }
+        id { "CVE-2021-44228" }
+        image { "package-registry/package:tag" }
+        package { "org.apache.logging.log4j:log4j-api" }
+        version { "2.14.1" }
+      end
+
+      after(:build) do |finding, evaluator|
+        finding.report_type = "container_scanning"
+        finding.name = "CVE-2021-44228 in org.apache.logging.log4j:log4j-api-2.14.1"
+        finding.message = "Apache Log4j2 <=2.14.1 JNDI features used in configuration, log messages, and parameters do not protect against attacker controlled LDAP and other JNDI related endpoints."
+        finding.metadata_version = "2.1"
+        finding.raw_metadata = {
+          "category": "container_scanning",
+          "name": "CVE-2021-44228 in org.apache.logging.log4j:log4j-api-2.14.1",
+          "message": "Apache Log4j2 <=2.14.1 JNDI features used in configuration, log messages, and parameters do not protect against attacker controlled LDAP and other JNDI related endpoints.",
+          "description": "Apache Log4j2 <=2.14.1 JNDI features used in configuration, log messages, and parameters do not protect against attacker controlled LDAP and other JNDI related endpoints.",
+          "severity": evaluator.raw_severity,
+          "scanner": {
+            "id": "trivy",
+            "name": "Trivy"
+          },
+          "location": {
+            "image": evaluator.image,
+            "dependency": {
+              "package": {
+                "name": evaluator.package
+              },
+              "operating_system": "Unknown",
+              "version": evaluator.version
+            }
+          },
+          "identifiers": [
+            {
+              "type": "cve",
+              "name": evaluator.id,
+              "value": "CVE-2021-44228",
+              "url": "http://packetstormsecurity.com/files/165225/Apache-Log4j2-2.14.1-Remote-Code-Execution.html"
+            }
+          ],
+          "links": [
+            {
+              "url": "http://packetstormsecurity.com/files/165225/Apache-Log4j2-2.14.1-Remote-Code-Execution.html"
+            }
+          ]
+        }.to_json
+      end
+    end
+
     trait :with_cluster_image_scanning_scanning_metadata do
       after(:build) do |finding, _|
         finding.report_type = "cluster_image_scanning"

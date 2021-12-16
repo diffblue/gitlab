@@ -11,15 +11,15 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList do
   let_it_be(:pipeline) { create :ee_ci_pipeline, :with_dependency_list_report }
 
   describe '#parse!' do
-    context 'with dependency_list artifact' do
-      let(:artifact) { pipeline.job_artifacts.last }
+    let(:artifact) { pipeline.job_artifacts.last }
 
-      before do
-        artifact.each_blob do |blob|
-          parser.parse!(blob, report)
-        end
+    before do
+      artifact.each_blob do |blob|
+        parser.parse!(blob, report)
       end
+    end
 
+    context 'with dependency_list artifact' do
       it 'parses all files' do
         blob_path = "/#{project.full_path}/-/blob/#{sha}/yarn/yarn.lock"
 
@@ -43,18 +43,10 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList do
       end
     end
 
-    context 'with vulnerabilities in the database' do
+    context 'with dependency_scanning dependencies' do
       let_it_be(:vulnerability) { create(:vulnerability, report_type: :dependency_scanning) }
       let_it_be(:finding) { create(:vulnerabilities_finding, :with_dependency_scanning_metadata, vulnerability: vulnerability) }
       let_it_be(:finding_pipeline) { create(:vulnerabilities_finding_pipeline, finding: finding, pipeline: pipeline) }
-
-      let(:artifact) { pipeline.job_artifacts.last }
-
-      before do
-        artifact.each_blob do |blob|
-          parser.parse!(blob, report)
-        end
-      end
 
       it 'does not causes N+1 query' do
         control_count = ActiveRecord::QueryRecorder.new do
@@ -97,7 +89,23 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList do
       end
     end
 
+    context 'with container_scanning dependencies' do
+      let_it_be(:vulnerability) { create(:vulnerability, report_type: :container_scanning) }
+      let_it_be(:finding) { create(:vulnerabilities_finding, :with_container_scanning_metadata, vulnerability: vulnerability) }
+      let_it_be(:finding_pipeline) { create(:vulnerabilities_finding_pipeline, finding: finding, pipeline: pipeline) }
+
+      it 'adds new dependency and vulnerability to the report with modified path' do
+        cs_dependency = report.dependencies.detect { |dep| dep[:name] == 'org.apache.logging.log4j:log4j-api' }
+
+        expect(report.dependencies.size).to eq(22)
+        expect(cs_dependency[:vulnerabilities].size).to eq(1)
+        expect(cs_dependency.dig(:location, :path)).to eq('container-image:package-registry/package:tag')
+      end
+    end
+
     context 'with null dependencies' do
+      let(:empty_report) { Gitlab::Ci::Reports::DependencyList::Report.new }
+
       let(:json_data) do
         <<~JSON
         {
@@ -130,9 +138,9 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList do
       end
 
       it 'ignores null dependencies' do
-        parser.parse!(json_data, report)
+        parser.parse!(json_data, empty_report)
 
-        expect(report.dependencies.size).to eq(0)
+        expect(empty_report.dependencies.size).to eq(0)
       end
     end
   end

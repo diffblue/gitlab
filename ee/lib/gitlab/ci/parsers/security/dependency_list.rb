@@ -5,6 +5,8 @@ module Gitlab
     module Parsers
       module Security
         class DependencyList
+          CONTAINER_IMAGE_PATH_PREFIX = 'container-image:'
+
           def initialize(project, sha, pipeline)
             @project = project
             @formatter = Formatters::DependencyList.new(project, sha)
@@ -30,17 +32,22 @@ module Gitlab
           end
 
           def parse_vulnerabilities(report_data, report)
-            vuln_findings = pipeline.vulnerability_findings.dependency_scanning
+            vuln_findings = pipeline.vulnerability_findings.by_report_types(%i[container_scanning dependency_scanning])
             vuln_findings.each do |finding|
               dependency = finding.location.dig("dependency")
 
               next unless dependency
 
-              file = finding.file
               vulnerability = finding.metadata.merge(vulnerability_id: finding.vulnerability_id)
 
-              report.add_dependency(formatter.format(dependency, '', file, vulnerability))
+              report.add_dependency(formatter.format(dependency, '', dependency_path(finding), vulnerability))
             end
+          end
+
+          def dependency_path(finding)
+            return finding.file if finding.dependency_scanning?
+
+            "#{CONTAINER_IMAGE_PATH_PREFIX}#{finding.image}"
           end
 
           def parse_licenses!(json_data, report)

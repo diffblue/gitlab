@@ -772,6 +772,15 @@ RSpec.describe Vulnerabilities::Finding do
       end
     end
 
+    describe '#image' do
+      let(:finding) { build(:vulnerabilities_finding, :with_container_scanning_metadata) }
+      let(:expected_location) { finding.metadata['location']['image'] }
+
+      subject { finding.image }
+
+      it { is_expected.to eq(expected_location) }
+    end
+
     describe '#evidence' do
       subject { finding.evidence }
 
