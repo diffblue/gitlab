@@ -3,8 +3,8 @@ import { GlAlert, GlLoadingIcon, GlTable } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { __ } from '~/locale';
 import { thWidthClass } from '~/lib/utils/table_utility';
+import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import complianceViolationsQuery from '../graphql/compliance_violations.query.graphql';
-import { mapResponse } from '../graphql/mappers';
 import EmptyState from './empty_state.vue';
 import MergeCommitsExportButton from './merge_requests/merge_commits_export_button.vue';
 import ViolationReason from './violations/reason.vue';
@@ -18,6 +18,7 @@ export default {
     GlTable,
     MergeCommitsExportButton,
     ViolationReason,
+    TimeAgoTooltip,
   },
   props: {
     emptyStateSvgPath: {
@@ -45,7 +46,7 @@ export default {
         };
       },
       update(data) {
-        return mapResponse(data?.group?.mergeRequestViolations?.nodes || []);
+        return data?.group?.mergeRequestViolations?.nodes;
       },
       error(e) {
         Sentry.captureException(e);
@@ -73,12 +74,12 @@ export default {
     {
       key: 'reason',
       label: __('Violation'),
-      thClass: thWidthClass(25),
+      thClass: thWidthClass(15),
     },
     {
       key: 'mergeRequest',
       label: __('Merge request'),
-      thClass: thWidthClass(30),
+      thClass: thWidthClass(40),
     },
     {
       key: 'mergedAt',
@@ -127,6 +128,12 @@ export default {
     >
       <template #cell(reason)="{ item: { reason, violatingUser } }">
         <violation-reason :reason="reason" :user="violatingUser" />
+      </template>
+      <template #cell(mergeRequest)="{ item: { mergeRequest } }">
+        {{ mergeRequest.title }}
+      </template>
+      <template #cell(mergedAt)="{ item: { mergeRequest } }">
+        <time-ago-tooltip :time="mergeRequest.mergedAt" />
       </template>
     </gl-table>
     <empty-state v-else :image-path="emptyStateSvgPath" />
