@@ -1,17 +1,16 @@
 import { GlLink, GlPopover, GlIcon } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import RuleName from 'ee/approvals/components/rule_name.vue';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('RuleName component', () => {
   let wrapper;
 
   const createWrapper = (props = {}) => {
     wrapper = shallowMount(RuleName, {
-      localVue,
       propsData: {
         ...props,
       },

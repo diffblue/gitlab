@@ -1,5 +1,6 @@
 import { GlSprintf } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import ModalRuleRemove from 'ee/approvals/components/modal_rule_remove.vue';
 import { stubComponent } from 'helpers/stub_component';
@@ -19,8 +20,7 @@ const SINGLE_APPROVER = {
   approvers: [{ id: 1 }],
 };
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('Approvals ModalRuleRemove', () => {
   let wrapper;
@@ -47,7 +47,6 @@ describe('Approvals ModalRuleRemove', () => {
 
     wrapper = shallowMount(ModalRuleRemove, {
       ...options,
-      localVue,
       store,
       propsData,
       stubs: {

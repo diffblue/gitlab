@@ -1,5 +1,6 @@
 import { GlIcon } from '@gitlab/ui';
-import { mount, createLocalVue } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import LicenseComplianceApprovals from 'ee/approvals/components/license_compliance/index.vue';
 import approvalsLicenceComplianceModule, {
@@ -8,8 +9,7 @@ import approvalsLicenceComplianceModule, {
 } from 'ee/approvals/stores/modules/license_compliance';
 import modalModule from '~/vuex_shared/modules/modal';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 const TEST_APPROVALS_DOCUMENTATION_PATH = 'http://foo.bar';
 const TEST_LOCKED_APPROVALS_RULE_NAME = 'License-Check';
@@ -35,7 +35,6 @@ describe('EE Approvals LicenseCompliance', () => {
 
   const createWrapper = () => {
     wrapper = mount(LicenseComplianceApprovals, {
-      localVue,
       store: new Vuex.Store(store),
       stubs: {
         'rule-form': true,

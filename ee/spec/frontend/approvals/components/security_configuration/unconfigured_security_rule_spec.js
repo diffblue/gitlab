@@ -1,5 +1,6 @@
 import { GlSprintf, GlButton } from '@gitlab/ui';
-import { mount, createLocalVue } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import UnconfiguredSecurityRule from 'ee/approvals/components/security_configuration/unconfigured_security_rule.vue';
 import {
@@ -8,8 +9,7 @@ import {
   COVERAGE_CHECK_NAME,
 } from 'ee/approvals/constants';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('UnconfiguredSecurityRule component', () => {
   let wrapper;
@@ -38,7 +38,6 @@ describe('UnconfiguredSecurityRule component', () => {
 
   const createWrapper = (props = {}, options = {}) => {
     wrapper = mount(UnconfiguredSecurityRule, {
-      localVue,
       propsData: {
         ...props,
       },
