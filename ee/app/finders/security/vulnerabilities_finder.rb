@@ -38,6 +38,7 @@ module Security
       filter_by_resolution
       filter_by_issues
       filter_by_cluster_id
+      filter_by_cluster_agent_id
 
       sort(vulnerabilities)
     end
@@ -106,6 +107,12 @@ module Security
     def filter_by_cluster_id
       if params[:cluster_id].present?
         @vulnerabilities = vulnerabilities.with_cluster_ids(params[:cluster_id])
+      end
+    end
+
+    def filter_by_cluster_agent_id
+      if params[:cluster_agent_id].present?
+        @vulnerabilities = vulnerabilities.with_cluster_agent_ids(params[:cluster_agent_id])
       end
     end
 

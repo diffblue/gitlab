@@ -27,7 +27,8 @@
           "name":"sample-app",
           "kind":"ReplicaSet",
           "container_name":"webgoat",
-          "cluster_id":"1"
+          "cluster_id":"1",
+          "agent_id":"46357"
         }
       },
       "identifiers": [
@@ -70,7 +71,8 @@
           "name":"sample-app",
           "kind":"ReplicaSet",
           "container_name":"webgoat",
-          "cluster_id":"1"
+          "cluster_id":"1",
+          "agent_id":"46357"
         }
       },
       "identifiers": [

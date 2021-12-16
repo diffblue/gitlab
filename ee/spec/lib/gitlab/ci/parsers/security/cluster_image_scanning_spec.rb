@@ -29,6 +29,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::ClusterImageScanning do
       expect(location).to have_attributes(
         image: image,
         cluster_id: '1',
+        agent_id: '46357',
         operating_system: 'debian:9',
         package_name: 'glibc',
         package_version: '2.24-11+deb9u3'

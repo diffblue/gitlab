@@ -56,6 +56,12 @@ module Resolvers
              description: "Filter vulnerabilities by `cluster_id`. Vulnerabilities with a `reportType` "\
                           "of `cluster_image_scanning` are only included with this filter."
 
+    argument :cluster_agent_id, [::Types::GlobalIDType[::Clusters::Agent]],
+             prepare: ->(ids, _) { ids.map(&:model_id) },
+             required: false,
+             description: "Filter vulnerabilities by `cluster_agent_id`. Vulnerabilities with a `reportType` "\
+                          "of `cluster_image_scanning` are only included with this filter."
+
     def resolve_with_lookahead(**args)
       return Vulnerability.none unless vulnerable
 
