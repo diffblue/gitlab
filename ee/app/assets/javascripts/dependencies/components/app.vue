@@ -24,28 +24,13 @@ export default {
     DependencyListJobFailedAlert,
     PaginatedDependenciesTable,
   },
-  props: {
-    endpoint: {
-      type: String,
-      required: true,
-    },
-    sbomSurveySvgPath: {
-      type: String,
-      required: true,
-    },
-    emptyStateSvgPath: {
-      type: String,
-      required: true,
-    },
-    documentationPath: {
-      type: String,
-      required: true,
-    },
-    supportDocumentationPath: {
-      type: String,
-      required: true,
-    },
-  },
+  inject: [
+    'sbomSurveySvgPath',
+    'emptyStateSvgPath',
+    'documentationPath',
+    'endpoint',
+    'supportDocumentationPath',
+  ],
   data() {
     return {
       isIncompleteAlertDismissed: false,

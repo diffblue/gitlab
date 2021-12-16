@@ -47,6 +47,7 @@ export default () => {
     },
     render(createElement) {
       return createElement(LicenseComplianceApp, {
+        // none of these can be injected.
         props: {
           sbomSurveySvgPath,
           emptyStateSvgPath,
