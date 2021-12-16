@@ -46,7 +46,7 @@ export default {
               s__('ApprovalRule|Try it for free')
             }}</gl-button>
           </div>
-          <div class="gl-flex-grow-0 gl-max-w-26 gl-display-none gl-md-display-block">
+          <div class="gl-flex-grow-0 gl-w-full gl-max-w-26 gl-display-none gl-md-display-block">
             <img :src="promoImagePath" :alt="promoImageAlt" class="svg gl-w-full" />
           </div>
         </div>
