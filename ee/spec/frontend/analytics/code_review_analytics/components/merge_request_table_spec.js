@@ -1,12 +1,12 @@
 import { GlTable } from '@gitlab/ui';
-import { createLocalVue, mount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import MergeRequestTable from 'ee/analytics/code_review_analytics/components/merge_request_table.vue';
 import createState from 'ee/analytics/code_review_analytics/store/modules/merge_requests/state';
 import { mockMergeRequests } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('MergeRequestTable component', () => {
   let wrapper;
@@ -27,7 +27,6 @@ describe('MergeRequestTable component', () => {
 
   const createComponent = (store) =>
     mount(MergeRequestTable, {
-      localVue,
       store,
     });
 

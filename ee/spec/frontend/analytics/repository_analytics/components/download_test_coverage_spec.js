@@ -1,9 +1,7 @@
 import { GlAlert, GlDropdown, GlDropdownItem, GlModal } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import DownloadTestCoverage from 'ee/analytics/repository_analytics/components/download_test_coverage.vue';
 import SelectProjectsDropdown from 'ee/analytics/repository_analytics/components/select_projects_dropdown.vue';
-
-const localVue = createLocalVue();
 
 describe('Download test coverage component', () => {
   let wrapper;
@@ -27,7 +25,6 @@ describe('Download test coverage component', () => {
 
   const createComponent = () => {
     wrapper = shallowMount(DownloadTestCoverage, {
-      localVue,
       data() {
         return {
           hasError: false,

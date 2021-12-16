@@ -1,4 +1,4 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import DownloadTestCoverage from 'ee/analytics/repository_analytics/components/download_test_coverage.vue';
 import GroupRepositoryAnalytics, {
   VISIT_EVENT_FEATURE_FLAG,
@@ -6,14 +6,13 @@ import GroupRepositoryAnalytics, {
 } from 'ee/analytics/repository_analytics/components/group_repository_analytics.vue';
 import Api from '~/api';
 
-const localVue = createLocalVue();
 jest.mock('~/api.js');
 
 describe('Group repository analytics app', () => {
   let wrapper;
 
   const createComponent = (glFeatures = {}) => {
-    wrapper = shallowMount(GroupRepositoryAnalytics, { localVue, provide: { glFeatures } });
+    wrapper = shallowMount(GroupRepositoryAnalytics, { provide: { glFeatures } });
   };
 
   afterEach(() => {

@@ -1,6 +1,5 @@
 import { GlAlert, GlTabs } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
-import { createLocalVue } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import DevopsAdoptionAddDropdown from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_add_dropdown.vue';
@@ -29,7 +28,6 @@ jest.mock('ee/analytics/devops_reports/devops_adoption/utils/cache_updates', () 
   addEnabledNamespacesToCache: jest.fn(),
 }));
 
-const localVue = createLocalVue();
 Vue.use(VueApollo);
 
 const NETWORK_ERROR = new Error('foo!');
@@ -117,7 +115,6 @@ describe('DevopsAdoptionApp', () => {
     const { mockApollo, data = {}, provide = {} } = options;
 
     return shallowMountExtended(DevopsAdoptionApp, {
-      localVue,
       apolloProvider: mockApollo,
       provide,
       data() {

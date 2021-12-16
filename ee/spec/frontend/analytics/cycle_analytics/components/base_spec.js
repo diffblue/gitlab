@@ -1,7 +1,8 @@
 import { GlEmptyState } from '@gitlab/ui';
-import { createLocalVue, shallowMount, mount } from '@vue/test-utils';
+import { shallowMount, mount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import Component from 'ee/analytics/cycle_analytics/components/base.vue';
 import DurationChart from 'ee/analytics/cycle_analytics/components/duration_chart.vue';
@@ -48,8 +49,7 @@ const noAccessSvgPath = 'path/to/no/access';
 const emptyStateSvgPath = 'path/to/empty/state';
 const stage = null;
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 jest.mock('~/flash');
 
 const defaultStubs = {
@@ -132,7 +132,6 @@ describe('EE Value Stream Analytics component', () => {
 
     const func = shallow ? shallowMount : mount;
     const comp = func(Component, {
-      localVue,
       store,
       propsData: {
         emptyStateSvgPath,

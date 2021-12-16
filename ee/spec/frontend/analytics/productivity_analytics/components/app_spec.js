@@ -7,9 +7,10 @@ import {
   GlAlert,
 } from '@gitlab/ui';
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import ProductivityApp from 'ee/analytics/productivity_analytics/components/app.vue';
 import MetricChart from 'ee/analytics/productivity_analytics/components/metric_chart.vue';
@@ -23,8 +24,7 @@ import * as commonUtils from '~/lib/utils/common_utils';
 import httpStatusCodes from '~/lib/utils/http_status';
 import * as urlUtils from '~/lib/utils/url_utility';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('ProductivityApp component', () => {
   let wrapper;
@@ -75,7 +75,6 @@ describe('ProductivityApp component', () => {
       },
     });
     wrapper = shallowMount(ProductivityApp, {
-      localVue,
       store: mockStore,
       mixins: [UrlSyncMixin],
       propsData: {

@@ -1,4 +1,5 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { GlStackedColumnChart } from '@gitlab/ui/dist/charts';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
@@ -7,8 +8,7 @@ import getSnapshotsQuery from 'ee/analytics/devops_reports/devops_adoption/graph
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { namespaceWithSnapotsData } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 const mockWithData = jest.fn().mockResolvedValue(namespaceWithSnapotsData);
 
@@ -23,7 +23,6 @@ describe('DevopsAdoptionOverviewChart', () => {
     const handlers = [[getSnapshotsQuery, mockSnapshotsQuery]];
 
     wrapper = shallowMount(DevopsAdoptionOverviewChart, {
-      localVue,
       provide: {
         groupGid:
           namespaceWithSnapotsData.data.devopsAdoptionEnabledNamespaces.nodes[0].namespace.id,

@@ -1,5 +1,6 @@
 import { GlDropdownItem } from '@gitlab/ui';
-import { shallowMount, mount, createLocalVue } from '@vue/test-utils';
+import { shallowMount, mount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import DurationChart from 'ee/analytics/cycle_analytics/components/duration_chart.vue';
 import StageDropdownFilter from 'ee/analytics/cycle_analytics/components/stage_dropdown_filter.vue';
@@ -7,8 +8,7 @@ import Scatterplot from 'ee/analytics/shared/components/scatterplot.vue';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
 import { allowedStages as stages, durationChartPlottableData as durationData } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 const actionSpies = {
   fetchDurationData: jest.fn(),
@@ -41,7 +41,6 @@ function createComponent({
   props = {},
 } = {}) {
   return mountFn(DurationChart, {
-    localVue,
     store: fakeStore({ initialState, initialGetters }),
     propsData: {
       stages,

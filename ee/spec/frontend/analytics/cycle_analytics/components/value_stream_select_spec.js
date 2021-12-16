@@ -1,5 +1,6 @@
 import { GlDropdown } from '@gitlab/ui';
-import { mount, shallowMount, createLocalVue } from '@vue/test-utils';
+import { mount, shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import ValueStreamSelect from 'ee/analytics/cycle_analytics/components/value_stream_select.vue';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
@@ -7,8 +8,7 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { findDropdownItemText } from '../helpers';
 import { valueStreams, defaultStageConfig } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('ValueStreamSelect', () => {
   let wrapper = null;
@@ -41,7 +41,6 @@ describe('ValueStreamSelect', () => {
   const createComponent = ({ data = {}, initialState = {}, mountFn = shallowMount } = {}) =>
     extendedWrapper(
       mountFn(ValueStreamSelect, {
-        localVue,
         store: fakeStore({ initialState }),
         data() {
           return {

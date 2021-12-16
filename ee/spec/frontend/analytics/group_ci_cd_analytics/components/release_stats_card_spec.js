@@ -1,5 +1,5 @@
 import { GlSkeletonLoader, GlCard } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import { merge } from 'lodash';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
@@ -8,7 +8,6 @@ import groupReleaseStatsQuery from 'ee/analytics/group_ci_cd_analytics/graphql/g
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { groupReleaseStatsQueryResponse } from './mock_data';
 
-const localVue = createLocalVue();
 Vue.use(VueApollo);
 
 describe('Release stats card', () => {
@@ -16,7 +15,6 @@ describe('Release stats card', () => {
 
   const createComponent = ({ apolloProvider }) => {
     wrapper = shallowMount(ReleaseStatsCard, {
-      localVue,
       apolloProvider,
       stubs: {
         GlCard,

@@ -1,5 +1,6 @@
 import { GlLoadingIcon, GlEmptyState, GlBadge, GlPagination } from '@gitlab/ui';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import CodeReviewAnalyticsApp from 'ee/analytics/code_review_analytics/components/app.vue';
 import FilterBar from 'ee/analytics/code_review_analytics/components/filter_bar.vue';
@@ -9,8 +10,7 @@ import createMergeRequestsState from 'ee/analytics/code_review_analytics/store/m
 import { TEST_HOST } from 'helpers/test_constants';
 import createFiltersState from '~/vue_shared/components/filtered_search_bar/store/modules/filters/state';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('CodeReviewAnalyticsApp component', () => {
   let wrapper;
@@ -57,7 +57,6 @@ describe('CodeReviewAnalyticsApp component', () => {
 
   const createComponent = (store) =>
     shallowMount(CodeReviewAnalyticsApp, {
-      localVue,
       store,
       propsData: {
         projectId: 1,

@@ -1,6 +1,7 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import FilterBar from 'ee/analytics/code_review_analytics/components/filter_bar.vue';
 import storeConfig from 'ee/analytics/code_review_analytics/store';
@@ -19,8 +20,7 @@ import * as utils from '~/vue_shared/components/filtered_search_bar/filtered_sea
 import initialFiltersState from '~/vue_shared/components/filtered_search_bar/store/modules/filters/state';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 const milestoneTokenType = 'milestone';
 const labelsTokenType = 'labels';
@@ -81,7 +81,6 @@ describe('Filter bar', () => {
 
   function createComponent(initialStore) {
     return shallowMount(FilterBar, {
-      localVue,
       store: initialStore,
       propsData: {
         projectPath: 'foo',

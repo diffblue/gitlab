@@ -1,6 +1,6 @@
 import { GlModal, GlSprintf, GlAlert } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import DevopsAdoptionDeleteModal from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_delete_modal.vue';
@@ -13,7 +13,6 @@ import {
   devopsAdoptionNamespaceData,
 } from '../mock_data';
 
-const localVue = createLocalVue();
 Vue.use(VueApollo);
 
 const mockEvent = { preventDefault: jest.fn() };
@@ -45,7 +44,6 @@ describe('DevopsAdoptionDeleteModal', () => {
     ]);
 
     wrapper = shallowMount(DevopsAdoptionDeleteModal, {
-      localVue,
       apolloProvider: mockApollo,
       propsData: {
         modalId,

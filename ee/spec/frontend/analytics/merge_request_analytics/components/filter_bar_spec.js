@@ -1,6 +1,7 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import FilterBar from 'ee/analytics/merge_request_analytics/components/filter_bar.vue';
 import storeConfig from 'ee/analytics/merge_request_analytics/store';
@@ -22,8 +23,7 @@ import * as utils from '~/vue_shared/components/filtered_search_bar/filtered_sea
 import initialFiltersState from '~/vue_shared/components/filtered_search_bar/store/modules/filters/state';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 const sourceBranchTokenType = 'source_branch';
 const targetBranchTokenType = 'target_branch';
@@ -103,7 +103,6 @@ describe('Filter bar', () => {
   function createComponent(initialStore, options = {}) {
     const { type = ITEM_TYPE.PROJECT } = options;
     return shallowMount(FilterBar, {
-      localVue,
       store: initialStore,
       provide: () => ({
         fullPath: 'foo',

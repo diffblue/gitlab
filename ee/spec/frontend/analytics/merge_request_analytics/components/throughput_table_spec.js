@@ -6,7 +6,8 @@ import {
   GlAvatarsInline,
   GlPagination,
 } from '@gitlab/ui';
-import { mount, shallowMount, createLocalVue } from '@vue/test-utils';
+import { mount, shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import ThroughputTable from 'ee/analytics/merge_request_analytics/components/throughput_table.vue';
 import {
@@ -23,8 +24,7 @@ import {
   pageInfo,
 } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 const defaultQueryVariables = {
   assigneeUsername: null,
@@ -47,7 +47,6 @@ describe('ThroughputTable', () => {
   function createComponent(options = {}) {
     const { mocks = defaultMocks, func = shallowMount } = options;
     return func(ThroughputTable, {
-      localVue,
       store,
       mocks,
       provide: {
