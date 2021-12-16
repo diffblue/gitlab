@@ -86,7 +86,7 @@ describe('ee/roadmap/components/epics_list_empty.vue', () => {
       });
 
       expect(findSubTitle().text()).toBe(
-        'To view the roadmap, add a start or due date to one of your epics in this group or its subgroups; from Jul 1, 2016 to Jun 30, 2019.',
+        'To view the roadmap, add a start or due date to one of your epics in this group or its subgroups; from Jul 1, 2016 to Sep 30, 2019.',
       );
     });
 
@@ -99,7 +99,7 @@ describe('ee/roadmap/components/epics_list_empty.vue', () => {
       });
 
       expect(findSubTitle().text()).toBe(
-        'To widen your search, change or remove filters; from Jul 1, 2016 to Jun 30, 2019.',
+        'To widen your search, change or remove filters; from Jul 1, 2016 to Sep 30, 2019.',
       );
     });
   });

@@ -29,6 +29,19 @@ export const getWeeksForDates = (startDate, endDate) => {
   return timeframe;
 };
 
+export const getMonthsForDates = (startDate, endDate) => {
+  const timeframe = [];
+  const start = newDate(startDate);
+  const end = newDate(endDate);
+
+  while (start.getTime() < end.getTime()) {
+    timeframe.push(newDate(start));
+    start.setMonth(start.getMonth() + 1);
+  }
+
+  return timeframe;
+};
+
 export const getTimeframeForRangeType = ({
   timeframeRangeType = DATE_RANGES.CURRENT_QUARTER,
   presetType = PRESET_TYPES.WEEKS,
@@ -89,7 +102,11 @@ export const getTimeframeForRangeType = ({
     startDate.setDate(1);
 
     if (presetType === PRESET_TYPES.QUARTERS) {
-      timeframe = getTimeframeWindowFrom(startDate, 18 * 2);
+      // Shift start and end dates to align with calender quarters
+      startDate.setMonth(startDate.getMonth() - (startDate.getMonth() % 3));
+      endDate.setMonth(endDate.getMonth() + (2 - (endDate.getMonth() % 3)));
+
+      timeframe = getMonthsForDates(startDate, endDate);
       const quartersTimeframe = [];
 
       // Iterate over the timeframe and break it down

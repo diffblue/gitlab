@@ -176,7 +176,7 @@ describe('timeframeEndDate', () => {
    */
   it.each`
     presetType               | endDate                          | timeframe
-    ${PRESET_TYPES.QUARTERS} | ${dateFromString('May 31 2022')} | ${mockQuarterly.timeframe}
+    ${PRESET_TYPES.QUARTERS} | ${dateFromString('Jun 30 2022')} | ${mockQuarterly.timeframe}
     ${PRESET_TYPES.MONTHS}   | ${dateFromString('Dec 31 2020')} | ${mockMonthly.timeframe}
     ${PRESET_TYPES.WEEKS}    | ${dateFromString('Jan 03 2021')} | ${mockWeekly.timeframe}
   `(
