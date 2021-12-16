@@ -1170,16 +1170,16 @@ RSpec.describe Namespace do
         group.add_guest(create(:user))
       end
 
-      context 'with a ultimate plan' do
+      context 'with an ultimate plan' do
         before do
           create(:gitlab_subscription, namespace: group, hosted_plan: ultimate_plan)
         end
 
-        it 'does not count guest users and counts only active users' do
+        it 'counts only active users with an access level higher than guest' do
           expect(group.billable_members_count).to eq(1)
         end
 
-        context 'when group has a project and users invited to it' do
+        context 'when group has a project with invited users' do
           let(:project) { create(:project, namespace: group) }
 
           before do
@@ -1189,17 +1189,19 @@ RSpec.describe Namespace do
             project.add_developer(create(:user, :blocked))
           end
 
-          it 'includes invited active users except guests to the group' do
+          it 'includes invited active users except guests' do
             expect(group.billable_members_count).to eq(2)
           end
 
           context 'with project bot users' do
             include_context 'project bot users'
 
-            it { expect(group.billable_members_count).to eq(2) }
+            it 'does not include project bot users in the count' do
+              expect(group.billable_members_count).to eq(2)
+            end
           end
 
-          context 'when group is invited to the project' do
+          context 'when another group is invited to the project' do
             let(:invited_group) { create(:group) }
 
             before do
@@ -1210,25 +1212,25 @@ RSpec.describe Namespace do
               create(:project_group_link, project: project, group: invited_group)
             end
 
-            it 'counts the only active users except guests of the invited groups' do
+            it 'includes active users in the invited group with an access level higher than guest' do
               expect(group.billable_members_count).to eq(3)
             end
           end
         end
 
         context 'when group has been shared with another group' do
-          let(:shared_group) { create(:group) }
+          let(:other_group) { create(:group) }
 
           before do
-            shared_group.add_developer(create(:user))
-            shared_group.add_guest(create(:user))
-            shared_group.add_developer(create(:user, :blocked))
+            other_group.add_developer(create(:user))
+            other_group.add_guest(create(:user))
+            other_group.add_developer(create(:user, :blocked))
 
-            create(:group_group_link, { shared_with_group: shared_group,
+            create(:group_group_link, { shared_with_group: other_group,
                                         shared_group: group })
           end
 
-          it 'includes active users from the shared group to the billed members count' do
+          it 'includes active users from the other group in the billed members count' do
             expect(group.billable_members_count).to eq(2)
           end
         end
@@ -1259,10 +1261,12 @@ RSpec.describe Namespace do
             context 'with project bot users' do
               include_context 'project bot users'
 
-              it { expect(group.billable_members_count).to eq(4) }
+              it 'does not include project bot users in the count' do
+                expect(group.billable_members_count).to eq(4)
+              end
             end
 
-            context 'when group is invited to the project' do
+            context 'when another group is invited to the project' do
               let(:invited_group) { create(:group) }
 
               before do
@@ -1280,19 +1284,19 @@ RSpec.describe Namespace do
           end
 
           context 'when group has been shared with another group' do
-            let(:shared_group) { create(:group) }
+            let(:other_group) { create(:group) }
 
             before do
               create(:gitlab_subscription, namespace: group, hosted_plan: send(plan))
-              shared_group.add_developer(create(:user))
-              shared_group.add_guest(create(:user))
-              shared_group.add_developer(create(:user, :blocked))
+              other_group.add_developer(create(:user))
+              other_group.add_guest(create(:user))
+              other_group.add_developer(create(:user, :blocked))
 
-              create(:group_group_link, { shared_with_group: shared_group,
+              create(:group_group_link, { shared_with_group: other_group,
                                           shared_group: group })
             end
 
-            it 'includes active users from the shared group including guests to the billed members count' do
+            it 'includes active users from the other group including guests in the billed members count' do
               expect(group.billable_members_count).to eq(4)
             end
           end
