@@ -2015,6 +2015,58 @@ RSpec.describe User do
     end
   end
 
+  describe "#privatized_by_abuse_automation?" do
+    let(:user) { build(:user, private_profile: true, name: 'ghost-123-456') }
+
+    subject(:spam_check) { user.privatized_by_abuse_automation? }
+
+    context 'when the user has a non private profile' do
+      it 'returns false' do
+        user.private_profile = false
+
+        expect(spam_check).to eq false
+      end
+    end
+
+    context 'when the user name is not ghost-:id-:id like' do
+      it 'returns false' do
+        user.name = 'spam-is-not-cool'
+
+        expect(spam_check).to eq false
+      end
+    end
+
+    context 'when the user name matches ghost-:id-:id' do
+      context 'with extra chars at the beginning' do
+        it 'returns false' do
+          user.name = 'ABCghost-123-456'
+
+          expect(spam_check).to eq false
+        end
+      end
+
+      context 'with extra chars at the end' do
+        it 'returns false' do
+          user.name = 'ghost-123-456XYZ'
+
+          expect(spam_check).to eq false
+        end
+      end
+
+      context 'with extra chars at the beginning and the end' do
+        it 'returns false' do
+          user.name = 'ABCghost-123-456XYZ'
+
+          expect(spam_check).to eq false
+        end
+      end
+    end
+
+    context 'when the user has a private profile and the format is ghost-:id-:id' do
+      it { is_expected.to eq true }
+    end
+  end
+
   describe '#activate_based_on_user_cap?' do
     using RSpec::Parameterized::TableSyntax
 

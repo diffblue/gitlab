@@ -359,16 +359,28 @@ RSpec.describe Namespace do
 
   describe 'after_commit :sync_name_with_customers_dot' do
     let(:namespace) { create(:group) }
+    let(:privatized_by_abuse_automation) { false }
 
     subject(:update_namespace) { namespace.update!(attributes) }
 
     before do
       allow(Gitlab).to receive(:com?).and_return(true)
+      allow(namespace.owner).to receive(:privatized_by_abuse_automation?)
+        .and_return(privatized_by_abuse_automation)
     end
 
     shared_examples 'no sync' do
       it 'does not trigger a sync with CustomersDot' do
         expect(::Namespaces::SyncNamespaceNameWorker).not_to receive(:perform_async)
+
+        update_namespace
+      end
+    end
+
+    shared_examples 'sync' do
+      it 'triggers a name sync with CustomersDot' do
+        expect(::Namespaces::SyncNamespaceNameWorker).to receive(:perform_async)
+          .with(namespace.id).once
 
         update_namespace
       end
@@ -394,14 +406,41 @@ RSpec.describe Namespace do
       context 'when project namespace' do
         let(:namespace) { create(:project_namespace) }
 
-        include_examples 'no sync'
+        context 'when the owner is privatized by abuse automation' do
+          let(:privatized_by_abuse_automation) { true }
+
+          include_examples 'no sync'
+        end
+
+        context 'when the owner is not privatized by abuse automation' do
+          include_examples 'no sync'
+        end
       end
 
-      it 'triggers a name sync with CustomersDot' do
-        expect(::Namespaces::SyncNamespaceNameWorker).to receive(:perform_async)
-          .with(namespace.id).once
+      context 'when group namespace' do
+        context 'when the owner is privatized by abuse automation' do
+          let(:privatized_by_abuse_automation) { true }
 
-        update_namespace
+          include_examples 'sync'
+        end
+
+        context 'when the owner is not privatized by abuse automation' do
+          include_examples 'sync'
+        end
+      end
+
+      context 'when user namespace' do
+        let(:namespace) { create(:namespace) }
+
+        context 'when the owner is privatized by abuse automation' do
+          let(:privatized_by_abuse_automation) { true }
+
+          include_examples 'no sync'
+        end
+
+        context 'when the owner is not privatized by abuse automation' do
+          include_examples 'sync'
+        end
       end
     end
   end

@@ -485,6 +485,7 @@ module EE
 
     def sync_name_with_customers_dot
       return unless ::Gitlab.com?
+      return if user_namespace? && owner.privatized_by_abuse_automation?
 
       ::Namespaces::SyncNamespaceNameWorker.perform_async(id)
     end
