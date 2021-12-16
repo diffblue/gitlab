@@ -326,10 +326,13 @@ module EE
 
         override :usage_activity_by_stage_monitor
         def usage_activity_by_stage_monitor(time_period)
-          super.merge({
-            operations_dashboard_users_with_projects_added: distinct_count(UsersOpsDashboardProject.joins(:user).merge(::User.active).where(time_period), :user_id),
-            projects_incident_sla_enabled: time_period.present? ? ::Gitlab::UsageData::DEPRECATED_VALUE : count(::Project.with_enabled_incident_sla)
+          data = super.merge({
+            operations_dashboard_users_with_projects_added: distinct_count(UsersOpsDashboardProject.joins(:user).merge(::User.active).where(time_period), :user_id)
           })
+
+          data[:projects_incident_sla_enabled] = count(::Project.with_enabled_incident_sla) if time_period.blank?
+
+          data
         end
 
         # Omitted because no user, creator or author associated: `boards`, `labels`, `milestones`, `uploads`
