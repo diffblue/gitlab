@@ -349,5 +349,45 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
         expect(graphql_data_at(:project, :dastProfiles, :edges)).to have_attributes(size: dast_profiles.length)
       end
     end
+
+    describe 'dast_site_validations' do
+      context 'failed site validations' do
+        path = 'security_configuration/dast_profiles/graphql/dast_failed_site_validations.query.graphql'
+
+        let_it_be(:dast_site_validation_https) do
+          create(
+            :dast_site_validation,
+            state: :failed,
+            dast_site_token: create(
+              :dast_site_token,
+              url: 'https://example.com',
+              project: project
+            )
+          )
+        end
+        let_it_be(:dast_site_validation_http) do
+          create(
+            :dast_site_validation,
+            state: :failed,
+            dast_site_token: create(
+              :dast_site_token,
+              url: 'http://example.com',
+              project: project
+            )
+          )
+        end
+
+        it "graphql/#{path}.json" do
+          query = get_graphql_query_as_string(path, ee: true)
+
+          post_graphql(query, current_user: current_user, variables: {
+            fullPath: project.full_path
+          })
+
+          expect_graphql_errors_to_be_empty
+          expect(graphql_data_at(:project, :validations, :nodes)).to have_attributes(size: 2)
+        end
+      end
+    end
   end
 end

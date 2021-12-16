@@ -3,6 +3,7 @@ import scannerProfilesFixtures from 'test_fixtures/graphql/security_configuratio
 import profilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_profiles.query.graphql.json';
 import policySiteProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql.from_policies.json';
 import policyScannerProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql.from_policies.json';
+import dastFailedSiteValidationsFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_failed_site_validations.query.graphql.json';
 
 export const siteProfiles = siteProfilesFixture.data.project.siteProfiles.edges.map(
   ({ node }) => node,
@@ -29,13 +30,4 @@ export const scannerProfiles = scannerProfilesFixtures.data.project.scannerProfi
 
 export const savedScans = profilesFixtures.data.project.dastProfiles.edges.map(({ node }) => node);
 
-export const failedSiteValidations = [
-  {
-    id: '1',
-    normalizedTargetUrl: 'http://example.com:80',
-  },
-  {
-    id: '2',
-    normalizedTargetUrl: 'https://example.com:443',
-  },
-];
+export const failedSiteValidations = dastFailedSiteValidationsFixtures.data.project.validations.nodes;
