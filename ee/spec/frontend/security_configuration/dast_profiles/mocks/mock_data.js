@@ -30,4 +30,5 @@ export const scannerProfiles = scannerProfilesFixtures.data.project.scannerProfi
 
 export const savedScans = profilesFixtures.data.project.dastProfiles.edges.map(({ node }) => node);
 
-export const failedSiteValidations = dastFailedSiteValidationsFixtures.data.project.validations.nodes;
+export const failedSiteValidations =
+  dastFailedSiteValidationsFixtures.data.project.validations.nodes;

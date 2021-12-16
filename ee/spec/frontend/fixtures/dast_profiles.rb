@@ -189,6 +189,7 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
 
       context 'dast site profile with secret variables' do
         let(:response) { @site_profile.to_json }
+
         let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }
         let_it_be(:request_headers_variable) { create(:dast_site_profile_secret_variable, :request_headers, dast_site_profile: dast_site_profile) }
         let_it_be(:password_variable) { create(:dast_site_profile_secret_variable, :password, dast_site_profile: dast_site_profile) }
@@ -249,6 +250,7 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
 
     describe 'from policies' do
       let_it_be(:policies_project) { create(:project, :repository) }
+
       let_it_be(:security_orchestration_policy_configuration) do
         create(
           :security_orchestration_policy_configuration,
@@ -256,6 +258,7 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
           security_policy_management_project: policies_project
         )
       end
+
       let_it_be(:dast_site_profiles) do
         [
           create(
@@ -266,6 +269,7 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
           )
       ]
       end
+
       let_it_be(:dast_scanner_profiles) do
         [
           create(
@@ -280,11 +284,13 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
           )
       ]
       end
+
       let(:policy1) do
         build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: %w[master] }], actions: [
           { scan: 'dast', site_profile: dast_site_profiles.first.name, scanner_profile: dast_scanner_profiles.first.name }
         ])
       end
+
       let(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy1]) }
 
       before do
@@ -304,6 +310,7 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
       path = 'on_demand_scans/graphql/scheduled_dast_profiles.query.graphql'
 
       let_it_be(:dast_profile) { create(:dast_profile, project: project) }
+
       let_it_be(:dast_profile_schedule) do
         create(:dast_profile_schedule, project: project,
         dast_profile: dast_profile)
@@ -327,9 +334,9 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
 
       let_it_be(:dast_profiles) do
         [
-        create(:dast_profile, project: project),
-        create(:dast_profile, project: project)
-       ]
+          create(:dast_profile, project: project),
+          create(:dast_profile, project: project)
+        ]
       end
 
       before do
@@ -365,6 +372,7 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
             )
           )
         end
+
         let_it_be(:dast_site_validation_http) do
           create(
             :dast_site_validation,
