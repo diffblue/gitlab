@@ -26,7 +26,7 @@ export default {
 </script>
 
 <template>
-  <agent-show-page v-bind="$props">
+  <agent-show-page>
     <template v-if="showSecurityTab" #ee-security-tab>
       <gl-tab :title="$options.i18n.securityTabTitle">
         <agent-vulnerability-report />
