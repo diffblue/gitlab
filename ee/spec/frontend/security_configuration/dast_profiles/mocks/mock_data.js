@@ -1,5 +1,7 @@
 import siteProfilesFixture from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql.basic.json';
 import scannerProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql.basic.json';
+import policySiteProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql.from_policies.json';
+import policyScannerProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql.from_policies.json';
 
 export const siteProfiles = siteProfilesFixture.data.project.siteProfiles.edges.map(
   ({ node }) => node,
@@ -12,17 +14,9 @@ export const validatedSiteProfile = siteProfiles.find(
   ({ validationStatus }) => validationStatus === 'PASSED_VALIDATION',
 );
 
-export const policySiteProfile = [
-  {
-    id: 'gid://gitlab/DastSiteProfile/6',
-    profileName: 'Profile 6',
-    targetUrl: 'http://example-6.com',
-    normalizedTargetUrl: 'http://example-6.com',
-    editPath: '/6/edit',
-    validationStatus: 'NONE',
-    referencedInSecurityPolicies: ['some_policy'],
-  },
-];
+export const policySiteProfiles = policySiteProfilesFixtures.data.project.siteProfiles.edges.map(({node}) => node)
+
+export const policyScannerProfiles = policyScannerProfilesFixtures.data.project.scannerProfiles.edges.map(({node}) => node)
 
 export const scannerProfiles = scannerProfilesFixtures.data.project.scannerProfiles.edges.map(
   ({ node }) => node,

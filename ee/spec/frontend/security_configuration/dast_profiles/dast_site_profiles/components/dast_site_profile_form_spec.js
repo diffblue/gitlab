@@ -7,7 +7,7 @@ import DastSiteAuthSection from 'ee/security_configuration/dast_profiles/dast_si
 import DastSiteProfileForm from 'ee/security_configuration/dast_profiles/dast_site_profiles/components/dast_site_profile_form.vue';
 import dastSiteProfileCreateMutation from 'ee/security_configuration/dast_profiles/dast_site_profiles/graphql/dast_site_profile_create.mutation.graphql';
 import dastSiteProfileUpdateMutation from 'ee/security_configuration/dast_profiles/dast_site_profiles/graphql/dast_site_profile_update.mutation.graphql';
-import { policySiteProfile } from 'ee_jest/on_demand_scans_form/mocks/mock_data';
+import { policySiteProfiles } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
 import { TEST_HOST } from 'helpers/test_constants';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
@@ -268,7 +268,7 @@ describe('DastSiteProfileForm', () => {
     beforeEach(() => {
       createShallowComponent({
         propsData: {
-          profile: policySiteProfile,
+          profile: policySiteProfiles[0],
         },
       });
     });

@@ -4,7 +4,7 @@ import { mount, shallowMount, createWrapper } from '@vue/test-utils';
 import { merge } from 'lodash';
 import DastProfilesList from 'ee/security_configuration/dast_profiles/components/dast_profiles_list.vue';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
-import { siteProfiles as profiles, policySiteProfile } from '../mocks/mock_data';
+import { siteProfiles as profiles, policySiteProfiles } from '../mocks/mock_data';
 
 const TEST_ERROR_MESSAGE = 'something went wrong';
 
@@ -259,7 +259,7 @@ describe('EE - DastProfilesList', () => {
 
   describe('profile referenced in a security policy', () => {
     it('disables the delete button', () => {
-      createFullComponent({ propsData: { profiles: policySiteProfile } });
+      createFullComponent({ propsData: { profiles: policySiteProfiles } });
       const disabledRow = getAllTableRows()[0];
       const deleteButton = getDeleteButtonWithin(disabledRow);
       expect(deleteButton.attributes('disabled')).toBe('disabled');
@@ -267,7 +267,7 @@ describe('EE - DastProfilesList', () => {
     });
 
     it('shows the correct tooltip text', () => {
-      createFullComponent({ propsData: { profiles: policySiteProfile } });
+      createFullComponent({ propsData: { profiles: policySiteProfiles } });
       expect(getBinding(getDeleteTooltip().element, 'gl-tooltip')).not.toBe(undefined);
       expect(getDeleteTooltip().attributes('title')).toBe(
         'This profile is currently being used in a policy.',
