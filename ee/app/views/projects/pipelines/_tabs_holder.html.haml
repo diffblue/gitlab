@@ -10,7 +10,7 @@
   %li.js-licenses-tab-link
     = link_to licenses_project_pipeline_path(project, pipeline), data: { target: '#js-tab-licenses', action: 'licenses', toggle: 'tab', qa_selector: 'licenses_tab' }, class: 'licenses-tab' do
       = _("Licenses")
-      %span.badge.badge-pill.js-licenses-counter.hidden{ data: { qa_selector: 'licenses_counter' } }
+      = gl_badge_tag '', { size: :sm }, { class: 'js-licenses-counter hidden', data: { qa_selector: 'licenses_counter' } }
 
 - if project.feature_available?(:full_codequality_report) && pipeline.downloadable_path_for_report_type(:codequality)
   %li.js-codequality-tab-link
