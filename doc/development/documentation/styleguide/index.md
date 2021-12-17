@@ -1600,7 +1600,7 @@ users be aware of recent improvements or additions.
 
 The GitLab Technical Writing team determines which versions of
 documentation to display on this site based on the GitLab
-[Statement of Support](https://about.gitlab.com/support/statement-of-support.html#we-support-the-current-major-version-and-the-two-previous-major-versions).
+[Statement of Support](https://about.gitlab.com/support/statement-of-support.html#version-support).
 
 ### View older GitLab documentation versions
 
