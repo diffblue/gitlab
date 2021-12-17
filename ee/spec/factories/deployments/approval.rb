@@ -4,10 +4,10 @@ FactoryBot.define do
   factory :deployment_approval, class: 'Deployments::Approval' do
     user
     deployment
-    status { :approved }
+    status { 'approved' }
 
     trait :rejected do
-      status { :rejected }
+      status { 'rejected' }
     end
   end
 end

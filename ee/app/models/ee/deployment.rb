@@ -31,13 +31,6 @@ module EE
       end
     end
 
-    override :sync_status_with
-    def sync_status_with(build)
-      return update_status!('blocked') if build.status == 'manual' && needs_approval?
-
-      super
-    end
-
     def pending_approval_count
       environment.required_approval_count - approvals.approved.count
     end
