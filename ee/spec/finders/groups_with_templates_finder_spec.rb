@@ -26,37 +26,56 @@ RSpec.describe GroupsWithTemplatesFinder, :saas do
     create(:gitlab_subscription, :premium, namespace: group_2)
   end
 
-  shared_examples 'group template finder examples' do
-    describe 'without group id' do
-      it 'returns all groups' do
-        expect(described_class.new.execute).to contain_exactly(group_1, group_2, group_3)
+  describe 'without group id' do
+    it 'returns all groups' do
+      expect(described_class.new.execute).to contain_exactly(group_1, group_2, group_3)
+    end
+
+    context 'when namespace checked' do
+      before do
+        stub_ee_application_setting(should_check_namespace_plan: true)
       end
 
-      context 'when namespace checked' do
+      it 'returns groups on ultimate/premium plan' do
+        expect(described_class.new.execute).to contain_exactly(group_1, group_2)
+      end
+
+      context 'with subgroup with template' do
         before do
-          allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?) { true }
+          subgroup_4.update!(custom_project_templates_group_id: subgroup_5.id)
+          create(:project, namespace: subgroup_5)
         end
 
         it 'returns groups on ultimate/premium plan' do
-          expect(described_class.new.execute).to contain_exactly(group_1, group_2)
-        end
-
-        context 'with subgroup with template' do
-          before do
-            subgroup_4.update!(custom_project_templates_group_id: subgroup_5.id)
-            create(:project, namespace: subgroup_5)
-          end
-
-          it 'returns groups on ultimate/premium plan' do
-            expect(described_class.new.execute).to contain_exactly(group_1, group_2, subgroup_4)
-          end
+          expect(described_class.new.execute).to contain_exactly(group_1, group_2, subgroup_4)
         end
       end
     end
+  end
 
-    describe 'with group id' do
-      it 'returns given group with it descendants' do
+  describe 'with group id' do
+    it 'returns given group with it descendants' do
+      expect(described_class.new(group_1.id).execute).to contain_exactly(group_1)
+    end
+
+    context 'with subgroup with template' do
+      before do
+        subgroup_4.update!(custom_project_templates_group_id: subgroup_5.id)
+        create(:project, namespace: subgroup_5)
+      end
+
+      it 'returns only chosen group' do
         expect(described_class.new(group_1.id).execute).to contain_exactly(group_1)
+      end
+    end
+
+    context 'when namespace checked' do
+      before do
+        stub_ee_application_setting(should_check_namespace_plan: true)
+      end
+
+      it 'does not return the group' do
+        expect(described_class.new(group_3.id).execute).to be_empty
       end
 
       context 'with subgroup with template' do
@@ -68,42 +87,11 @@ RSpec.describe GroupsWithTemplatesFinder, :saas do
         it 'returns only chosen group' do
           expect(described_class.new(group_1.id).execute).to contain_exactly(group_1)
         end
-      end
 
-      context 'when namespace checked' do
-        before do
-          allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?) { true }
-        end
-
-        it 'does not return the group' do
-          expect(described_class.new(group_3.id).execute).to be_empty
-        end
-
-        context 'with subgroup with template' do
-          before do
-            subgroup_4.update!(custom_project_templates_group_id: subgroup_5.id)
-            create(:project, namespace: subgroup_5)
-          end
-
-          it 'returns only chosen group' do
-            expect(described_class.new(group_1.id).execute).to contain_exactly(group_1)
-          end
-
-          it 'returns only chosen subgroup' do
-            expect(described_class.new(subgroup_4.id).execute).to contain_exactly(group_1, subgroup_4)
-          end
+        it 'returns only chosen subgroup' do
+          expect(described_class.new(subgroup_4.id).execute).to contain_exactly(group_1, subgroup_4)
         end
       end
     end
-  end
-
-  it_behaves_like 'group template finder examples'
-
-  context 'when feature flag :linear_groups_template_finder_extended_group_search_ancestors_scopes is disabled' do
-    before do
-      stub_feature_flags(linear_groups_template_finder_extended_group_search_ancestors_scopes: false)
-    end
-
-    it_behaves_like 'group template finder examples'
   end
 end
