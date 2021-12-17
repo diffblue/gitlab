@@ -46,13 +46,10 @@ export default {
         );
       }
 
-      return `
-        ${s__('StatusCheck|Status checks')}
-        <br>
-        <span class="gl-font-sm">
-          ${reports.join(__(', and '))}
-        </span>
-      `;
+      return {
+        subject: s__('StatusCheck|Status checks'),
+        meta: reports.join(__(', and ')),
+      };
     },
     statusIcon({ pending = [], failed = [] }) {
       if (failed.length > 0) {
