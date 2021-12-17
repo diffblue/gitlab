@@ -59,12 +59,7 @@ module EE
           vulnerability_issue_feedback_params(issue, vulnerability)
         ).execute
 
-        errors = []
-        result[:message].full_messages.each do |error|
-          errors << render_vulnerability_link_alert(error)
-        end
-
-        flash[:alert] = errors.join('<br\>').html_safe unless errors.blank?
+        flash[:raw] = render_vulnerability_link_alert.html_safe unless result[:message].errors.blank?
       end
 
       def vulnerability
@@ -103,12 +98,11 @@ module EE
         )
       end
 
-      def render_vulnerability_link_alert(error_message)
+      def render_vulnerability_link_alert
         render_to_string(
           partial: 'vulnerabilities/unable_to_link_vulnerability',
           locals: {
-            vulnerability_link: vulnerability_path(vulnerability),
-            error_message: error_message
+            vulnerability_link: vulnerability_path(vulnerability)
           }
         )
       end
