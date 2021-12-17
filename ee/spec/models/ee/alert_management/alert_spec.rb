@@ -80,4 +80,20 @@ RSpec.describe AlertManagement::Alert do
       end
     end
   end
+
+  describe '#escalation_policy' do
+    let(:alert) { create(:alert_management_alert, project: project) }
+
+    subject { alert.escalation_policy }
+
+    it { is_expected.to eq(nil) }
+
+    context 'when escalation policy exists on the project' do
+      it 'returns the projects first (only) escalation policy' do
+        policy = create(:incident_management_escalation_policy, project: project)
+
+        expect(subject).to eq(policy)
+      end
+    end
+  end
 end
