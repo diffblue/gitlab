@@ -1051,30 +1051,4 @@ describe('common_utils', () => {
       expect(result).toEqual([{ hello: '' }, { helloWorld: '' }]);
     });
   });
-
-  describe('omitEmptyProperties', () => {
-    let res;
-    const empty = { foo: null, bar: undefined, baz: '', qux: false };
-    const values = { a: 'a', b: 1, c: { d: 'd' }, e: ['f'] };
-
-    beforeEach(() => {
-      res = Object.keys(
-        commonUtils.omitEmptyProperties({
-          ...empty,
-          ...values,
-        }),
-      );
-    });
-
-    it('returns an object with properties that have a value', () => {
-      const valueKeys = Object.keys(values);
-      expect(res).toEqual(valueKeys);
-    });
-
-    it('ignores properties that are empty, nullable or falsy', () => {
-      Object.keys(empty).forEach((key) => {
-        expect(res).not.toContain(key);
-      });
-    });
-  });
 });

@@ -746,25 +746,3 @@ export const isLoggedIn = () => Boolean(window.gon?.current_user_id);
  */
 export const convertArrayOfObjectsToCamelCase = (array) =>
   array.map((o) => convertObjectPropsToCamelCase(o));
-
-/**
- * This method takes an object and omits any properties
- * that are null, undefined, false or empty. The returned
- * object only includes properties that have a `truthy` value.
- *
- * @param {Object} obj - Target object to be checked
- * @returns {Object} Resulting object with only truthy properties
- */
-export const omitEmptyProperties = (obj = {}) => {
-  const entries = Object.entries(obj);
-  if (!entries.length) {
-    return obj;
-  }
-
-  return entries.reduce((acc, [key, value]) => {
-    if (!value) {
-      return acc;
-    }
-    return { ...acc, [key]: value };
-  }, {});
-};

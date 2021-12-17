@@ -1,5 +1,6 @@
 import Vue from 'vue';
-import { parseBoolean, omitEmptyProperties } from './lib/utils/common_utils';
+import { pickBy } from 'lodash';
+import { parseBoolean } from './lib/utils/common_utils';
 import ConfirmDanger from './vue_shared/components/confirm_danger/confirm_danger.vue';
 
 export default () => {
@@ -22,12 +23,15 @@ export default () => {
 
   return new Vue({
     el,
-    provide: omitEmptyProperties({
-      htmlConfirmationMessage,
-      confirmDangerMessage,
-      additionalInformation,
-      confirmButtonText,
-    }),
+    provide: pickBy(
+      {
+        htmlConfirmationMessage,
+        confirmDangerMessage,
+        additionalInformation,
+        confirmButtonText,
+      },
+      (v) => Boolean(v),
+    ),
     render: (createElement) =>
       createElement(ConfirmDanger, {
         props: {
