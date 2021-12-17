@@ -9,7 +9,7 @@ import { preparePageInfo } from 'ee/security_dashboard/helpers';
 import { VULNERABILITIES_PER_PAGE } from 'ee/security_dashboard/store/constants';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
-import { SCANNER_NAMES_MAP } from '~/security_configuration/components/constants';
+import { translateScannerNames } from '~/security_configuration/utils';
 import VulnerabilityList from '../shared/vulnerability_list.vue';
 import SecurityScannerAlert from './security_scanner_alert.vue';
 
@@ -92,12 +92,11 @@ export default {
       },
       update({ project = {} }) {
         const { available = [], enabled = [], pipelineRun = [] } = project?.securityScanners || {};
-        const translateScannerName = (scannerName) => SCANNER_NAMES_MAP[scannerName] || scannerName;
 
         return {
-          available: available.map(translateScannerName),
-          enabled: enabled.map(translateScannerName),
-          pipelineRun: pipelineRun.map(translateScannerName),
+          available: translateScannerNames(available),
+          enabled: translateScannerNames(enabled),
+          pipelineRun: translateScannerNames(pipelineRun),
         };
       },
     },
