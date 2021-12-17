@@ -2,6 +2,7 @@
 import { GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import { PROJECT_STORAGE_TYPES } from '../constants';
+import { descendingStorageUsageSort } from '../utils';
 
 export default {
   components: {
@@ -84,7 +85,7 @@ export default {
         },
       ]
         .filter((data) => data.size !== 0)
-        .sort((a, b) => b.size - a.size)
+        .sort(descendingStorageUsageSort('size'))
         .map((storageType) => {
           const storageTypeExtraData = PROJECT_STORAGE_TYPES.find(
             (type) => storageType.id === type.id,

@@ -4,6 +4,7 @@ import {
   parseProjects,
   calculateUsedAndRemStorage,
   parseGetProjectStorageResults,
+  descendingStorageUsageSort,
 } from 'ee/usage_quotas/storage/utils';
 import {
   projectData,
@@ -118,5 +119,16 @@ describe('parseProjects', () => {
         totalCalculatedStorageLimit: expect.any(Number),
       });
     });
+  });
+});
+
+describe('descendingStorageUsageSort', () => {
+  it('sorts items by a given key in descending order', () => {
+    const items = [{ k: 1 }, { k: 3 }, { k: 2 }];
+
+    const sorted = [...items].sort(descendingStorageUsageSort('k'));
+
+    const expectedSorted = [{ k: 3 }, { k: 2 }, { k: 1 }];
+    expect(sorted).toEqual(expectedSorted);
   });
 });
