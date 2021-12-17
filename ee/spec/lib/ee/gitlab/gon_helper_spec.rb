@@ -34,6 +34,7 @@ RSpec.describe EE::Gitlab::GonHelper do
       it 'includes CustomersDot variables' do
         expect(gon).to receive(:subscriptions_url=).with(Gitlab::SubscriptionPortal::SUBSCRIPTIONS_URL)
         expect(gon).to receive(:payment_form_url=).with(Gitlab::SubscriptionPortal::PAYMENT_FORM_URL)
+        expect(gon).to receive(:registration_validation_form_url=).with(Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_URL)
 
         helper.add_gon_variables
       end

@@ -1,4 +1,4 @@
-import { GlLoadingIcon, GlModal, GlSprintf } from '@gitlab/ui';
+import { GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import AccountVerificationModal from 'ee/billings/components/account_verification_modal.vue';
 
@@ -6,7 +6,7 @@ describe('Account verification modal', () => {
   let wrapper;
 
   const createComponent = () => {
-    return shallowMount(AccountVerificationModal, {
+    wrapper = shallowMount(AccountVerificationModal, {
       propsData: {
         iframeUrl: 'https://gitlab.com',
         allowedOrigin: 'https://gitlab.com',
@@ -17,44 +17,37 @@ describe('Account verification modal', () => {
     });
   };
 
+  const findModal = () => wrapper.find({ ref: 'modal' });
+
+  const zuoraSubmitSpy = jest.fn();
+
   afterEach(() => {
     wrapper.destroy();
   });
 
-  describe('on destroying', () => {
-    it('removes message event listener', () => {
-      const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
-      wrapper = createComponent();
-
-      wrapper.destroy();
-
-      expect(removeEventListenerSpy).toHaveBeenCalledWith(
-        'message',
-        wrapper.vm.handleFrameMessages,
-        true,
-      );
-    });
-  });
-
   describe('on creation', () => {
     beforeEach(() => {
-      wrapper = createComponent();
-    });
-
-    afterEach(() => {
-      wrapper.destroy();
-    });
-
-    it('is in the loading state', () => {
-      expect(wrapper.findComponent(GlLoadingIcon).isVisible()).toBe(true);
+      createComponent();
     });
 
     it('renders the title', () => {
-      expect(wrapper.findComponent(GlModal).attributes('title')).toBe('Validate user account');
+      expect(findModal().attributes('title')).toBe('Validate user account');
     });
 
     it('renders the description', () => {
       expect(wrapper.find('p').text()).toContain('To use free pipeline minutes');
+    });
+  });
+
+  describe('clicking the submit button', () => {
+    beforeEach(() => {
+      createComponent();
+      wrapper.vm.$refs.zuora = { submit: zuoraSubmitSpy };
+      findModal().vm.$emit('primary', { preventDefault: jest.fn() });
+    });
+
+    it('calls the submit method of the Zuora component', () => {
+      expect(zuoraSubmitSpy).toHaveBeenCalled();
     });
   });
 });

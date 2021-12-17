@@ -51,6 +51,8 @@ RSpec.describe Registrations::ProjectsController do
   end
 
   describe 'POST #create' do
+    let(:combined_registration?) { false }
+
     it_behaves_like "Registrations::ProjectsController POST #create"
 
     context 'force_company_trial_experiment' do

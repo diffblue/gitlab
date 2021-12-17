@@ -40,6 +40,22 @@ RSpec.shared_examples "Registrations::ProjectsController POST #create" do
       expect(controller.stored_location_for(:user)).to eq(stored_location_for)
     end
 
+    context 'when the `registration_verification` experiment is enabled' do
+      before do
+        stub_experiments(registration_verification: :candidate)
+
+        allow_next_instance_of(::Projects::CreateService) do |service|
+          allow(service).to receive(:execute).and_return(first_project)
+        end
+      end
+
+      it 'is expected to redirect to the verification page' do
+        params = { project_id: first_project.id }
+        params[:combined] = true if combined_registration?
+        expect(subject).to redirect_to(new_users_sign_up_verification_path(params))
+      end
+    end
+
     context 'learn gitlab project' do
       using RSpec::Parameterized::TableSyntax
 
@@ -85,6 +101,22 @@ RSpec.shared_examples "Registrations::ProjectsController POST #create" do
           expect(service).to receive(:execute).and_return(project)
         end
         expect(subject).to redirect_to(trial_getting_started_users_sign_up_welcome_path(learn_gitlab_project_id: project.id))
+      end
+
+      context 'when the `registration_verification` experiment is enabled' do
+        before do
+          stub_experiments(registration_verification: :candidate)
+
+          allow_next_instance_of(::Projects::GitlabProjectsImportService) do |service|
+            allow(service).to receive(:execute).and_return(project)
+          end
+        end
+
+        it 'is expected to redirect to the verification page' do
+          params = { learn_gitlab_project_id: project.id }
+          params[:combined] = true if combined_registration?
+          expect(subject).to redirect_to(new_users_sign_up_verification_path(params))
+        end
       end
     end
 
