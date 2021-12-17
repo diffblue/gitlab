@@ -67,4 +67,20 @@ RSpec.describe IncidentManagement::IssuableEscalationStatus do
       end
     end
   end
+
+  describe '#escalation_policy' do
+    let_it_be(:escalation_status, reload: true) { create(:incident_management_issuable_escalation_status) }
+
+    subject { escalation_status.escalation_policy }
+
+    it { is_expected.to eq(nil) }
+
+    context 'when escalation policy exists on the project' do
+      it 'returns the projects first (only) escalation policy' do
+        policy = create(:incident_management_escalation_policy, project: escalation_status.issue.project)
+
+        expect(subject).to eq(policy)
+      end
+    end
+  end
 end

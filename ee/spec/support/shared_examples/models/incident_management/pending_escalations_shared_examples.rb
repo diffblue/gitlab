@@ -32,7 +32,7 @@ RSpec.shared_examples 'IncidentManagement::PendingEscalation model' do
       let_it_be(:three_days_ago_escalation) { create_escalation(rule: rule, process_at: 3.days.ago) }
       let_it_be(:future_escalation) { create_escalation(rule: rule, process_at: 5.minutes.from_now) }
 
-      it { is_expected.to eq [three_weeks_ago_escalation, three_days_ago_escalation] }
+      it { is_expected.to match_array [three_weeks_ago_escalation, three_days_ago_escalation] }
     end
   end
 

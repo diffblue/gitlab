@@ -48,10 +48,6 @@ module EE
       incident?
     end
 
-    def supports_escalation?
-      incident?
-    end
-
     def supports_iterations?
       false
     end
