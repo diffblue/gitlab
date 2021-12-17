@@ -26,7 +26,6 @@ import {
   TREE_LIST_WIDTH_STORAGE_KEY,
   INITIAL_TREE_WIDTH,
   MIN_TREE_WIDTH,
-  MAX_TREE_WIDTH,
   TREE_HIDE_STATS_WIDTH,
   MR_TREE_SHOW_KEY,
   CENTERED_LIMITED_CONTAINER_CLASSES,
@@ -632,7 +631,7 @@ export default {
     },
   },
   minTreeWidth: MIN_TREE_WIDTH,
-  maxTreeWidth: MAX_TREE_WIDTH,
+  maxTreeWidth: window.innerWidth / 2,
   howToMergeDocsPath: helpPagePath('user/project/merge_requests/reviews/index.md', {
     anchor: 'checkout-merge-requests-locally-through-the-head-ref',
   }),
