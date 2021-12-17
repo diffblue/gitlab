@@ -1653,6 +1653,13 @@ This feature does something.
 This feature does something else.
 ```
 
+If you're documenting elements of a feature, start with the feature name or a gerund:
+
+```markdown
+> - Notifications for expiring tokens [introduced](<link-to-issue>) in GitLab 11.3.
+> - Creating an issue from an issue board [introduced](<link-to-issue>) in GitLab 13.1.
+```
+
 If a feature is moved to another tier:
 
 ```markdown
