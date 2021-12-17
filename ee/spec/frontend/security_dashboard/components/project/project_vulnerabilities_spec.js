@@ -298,7 +298,7 @@ describe('Vulnerabilities app component', () => {
           });
         });
 
-        it(`passes the translated scanner's name to the alert (${translatedScannerName})`, async () => {
+        it(`passes the translated scanner's name to the alert (${translatedScannerName})`, () => {
           expect(findSecurityScannerAlert().props('notEnabledScanners')[0]).toBe(
             translatedScannerName,
           );
