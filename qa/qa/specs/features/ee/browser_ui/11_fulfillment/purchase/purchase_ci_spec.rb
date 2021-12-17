@@ -48,7 +48,7 @@ module QA
         end
 
         it 'adds additional minutes to group namespace', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347622' do
-          purchase_ci_minutes
+          Flow::Purchase.purchase_ci_minutes(quantity: purchase_quantity)
 
           Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
             expected_minutes = CI_MINUTES[:ci_minutes] * purchase_quantity
@@ -62,21 +62,11 @@ module QA
 
       context 'with an active subscription' do
         before do
-          Page::Group::Menu.perform(&:go_to_billing)
-          Gitlab::Page::Group::Settings::Billing.perform(&:upgrade_to_ultimate)
-
-          Gitlab::Page::Subscriptions::New.perform do |new_subscription|
-            new_subscription.continue_to_billing
-
-            fill_in_customer_info
-            fill_in_payment_info
-
-            new_subscription.confirm_purchase
-          end
+          Flow::Purchase.upgrade_subscription(plan: ULTIMATE)
         end
 
         it 'adds additional minutes to group namespace', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347569' do
-          purchase_ci_minutes
+          Flow::Purchase.purchase_ci_minutes(quantity: purchase_quantity)
 
           Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
             expected_minutes = CI_MINUTES[:ci_minutes] * purchase_quantity
@@ -94,7 +84,7 @@ module QA
 
       context 'with existing CI minutes packs' do
         before do
-          purchase_ci_minutes
+          Flow::Purchase.purchase_ci_minutes(quantity: purchase_quantity)
         end
 
         after do
@@ -102,7 +92,7 @@ module QA
         end
 
         it 'adds additional minutes to group namespace', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347568' do
-          purchase_ci_minutes
+          Flow::Purchase.purchase_ci_minutes(quantity: purchase_quantity)
 
           Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
             expected_minutes = CI_MINUTES[:ci_minutes] * purchase_quantity * 2
@@ -112,70 +102,6 @@ module QA
             expect { usage_quota.additional_ci_limits }.to eventually_eq(expected_minutes.to_s).within(max_duration: 120, max_attempts: 60, reload_page: page)
           end
         end
-      end
-
-      private
-
-      def purchase_ci_minutes
-        Page::Group::Menu.perform(&:go_to_usage_quotas)
-        Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
-          usage_quota.pipeline_tab
-          usage_quota.buy_ci_minutes
-        end
-
-        Gitlab::Page::Subscriptions::New.perform do |ci_minutes|
-          ci_minutes.quantity = purchase_quantity
-          ci_minutes.continue_to_billing
-
-          fill_in_customer_info
-          fill_in_payment_info
-
-          ci_minutes.confirm_purchase
-        end
-      end
-
-      def fill_in_customer_info
-        Gitlab::Page::Subscriptions::New.perform do |subscription|
-          subscription.country = user_billing_info[:country]
-          subscription.street_address_1 = user_billing_info[:address_1]
-          subscription.street_address_2 = user_billing_info[:address_2]
-          subscription.city = user_billing_info[:city]
-          subscription.state = user_billing_info[:state]
-          subscription.zip_code = user_billing_info[:zip]
-          subscription.continue_to_payment
-        end
-      end
-
-      def fill_in_payment_info
-        Gitlab::Page::Subscriptions::New.perform do |subscription|
-          subscription.name_on_card = credit_card_info[:name]
-          subscription.card_number = credit_card_info[:number]
-          subscription.expiration_month = credit_card_info[:month]
-          subscription.expiration_year = credit_card_info[:year]
-          subscription.cvv = credit_card_info[:cvv]
-          subscription.review_your_order
-        end
-      end
-
-      def credit_card_info
-        {
-          name: 'QA Test',
-          number: '4111111111111111',
-          month: '01',
-          year: '2025',
-          cvv: '232'
-        }.freeze
-      end
-
-      def user_billing_info
-        {
-          country: 'United States of America',
-          address_1: 'Address 1',
-          address_2: 'Address 2',
-          city: 'San Francisco',
-          state: 'California',
-          zip: '94102'
-        }.freeze
       end
     end
   end
