@@ -8,8 +8,8 @@ import vulnerabilitiesQuery from 'ee/security_dashboard/graphql/queries/project_
 import { preparePageInfo } from 'ee/security_dashboard/helpers';
 import { VULNERABILITIES_PER_PAGE } from 'ee/security_dashboard/store/constants';
 import { parseBoolean } from '~/lib/utils/common_utils';
-import { __, s__ } from '~/locale';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
+import { translateScannerNames } from '~/security_configuration/utils';
 import VulnerabilityList from '../shared/vulnerability_list.vue';
 import SecurityScannerAlert from './security_scanner_alert.vue';
 
@@ -92,13 +92,11 @@ export default {
       },
       update({ project = {} }) {
         const { available = [], enabled = [], pipelineRun = [] } = project?.securityScanners || {};
-        const translateScannerName = (scannerName) =>
-          this.$options.i18n[scannerName] || scannerName;
 
         return {
-          available: available.map(translateScannerName),
-          enabled: enabled.map(translateScannerName),
-          pipelineRun: pipelineRun.map(translateScannerName),
+          available: translateScannerNames(available),
+          enabled: translateScannerNames(enabled),
+          pipelineRun: translateScannerNames(pipelineRun),
         };
       },
     },
@@ -164,14 +162,6 @@ export default {
     },
   },
   SCANNER_ALERT_DISMISSED_LOCAL_STORAGE_KEY: 'vulnerability_list_scanner_alert_dismissed',
-  i18n: {
-    API_FUZZING: __('API Fuzzing'),
-    CONTAINER_SCANNING: __('Container Scanning'),
-    CLUSTER_IMAGE_SCANNING: s__('ciReport|Cluster Image Scanning'),
-    COVERAGE_FUZZING: __('Coverage Fuzzing'),
-    SECRET_DETECTION: __('Secret Detection'),
-    DEPENDENCY_SCANNING: __('Dependency Scanning'),
-  },
 };
 </script>
 

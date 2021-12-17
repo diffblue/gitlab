@@ -11,6 +11,7 @@ import { useLocalStorageSpy } from 'helpers/local_storage_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
+import { SCANNER_NAMES_MAP } from '~/security_configuration/components/constants';
 import { generateVulnerabilities } from '../mock_data';
 
 const localVue = createLocalVue();
@@ -285,6 +286,25 @@ describe('Vulnerabilities app component', () => {
         expect(findSecurityScannerAlert().exists()).toBe(false);
       });
     });
+
+    describe.each(Object.keys(SCANNER_NAMES_MAP))(
+      'When %s is available but not enabled',
+      (scanner) => {
+        const translatedScannerName = SCANNER_NAMES_MAP[scanner];
+
+        beforeEach(() => {
+          createWrapperForScannerAlerts({
+            securityScanners: { available: [scanner], enabled: [], pipelineRun: [] },
+          });
+        });
+
+        it(`passes the translated scanner's name to the alert (${translatedScannerName})`, () => {
+          expect(findSecurityScannerAlert().props('notEnabledScanners')[0]).toBe(
+            translatedScannerName,
+          );
+        });
+      },
+    );
 
     describe('dismissal', () => {
       beforeEach(() => {
