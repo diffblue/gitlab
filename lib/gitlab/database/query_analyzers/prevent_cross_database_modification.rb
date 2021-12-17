@@ -58,7 +58,7 @@ module Gitlab
               context[:modified_tables_by_db][database].clear
             elsif context[:transaction_depth_by_db][database] < 0
               context[:transaction_depth_by_db][database] = 0
-              raise CrossDatabaseModificationAcrossUnsupportedTablesError, "Something bad happened as we have misaligned transactions."
+              raise CrossDatabaseModificationAcrossUnsupportedTablesError, "Misaligned cross-DB transactions discovered at query #{sql}. This could be a bug in #{self.class} or a valid issue to investigate. Read more at https://docs.gitlab.com/ee/development/database/multiple_databases.html#removing-cross-database-transactions ."
             end
 
             return
