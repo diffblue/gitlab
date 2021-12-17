@@ -9,13 +9,7 @@ export default () => {
     return null;
   }
 
-  const {
-    activityEmptyStateImage,
-    agentName,
-    dashboardDocumentation,
-    emptyStateSvgPath,
-    projectPath,
-  } = el.dataset;
+  const { activityEmptyStateImage, agentName, emptyStateSvgPath, projectPath } = el.dataset;
 
   return new Vue({
     el,
@@ -23,7 +17,6 @@ export default () => {
     provide: {
       activityEmptyStateImage,
       agentName,
-      dashboardDocumentation,
       emptyStateSvgPath,
       projectPath,
     },

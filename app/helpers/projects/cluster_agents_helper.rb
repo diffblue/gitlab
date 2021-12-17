@@ -5,7 +5,6 @@ module Projects::ClusterAgentsHelper
     {
       activity_empty_state_image: image_path('illustrations/empty-state/empty-state-agents.svg'),
       agent_name: agent_name,
-      dashboard_documentation: help_page_path('user/application_security/security_dashboard/index'),
       empty_state_svg_path: image_path('illustrations/operations-dashboard_empty.svg'),
       project_path: project.full_path
     }
