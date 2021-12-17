@@ -1264,6 +1264,9 @@ registry.replicator.send(:sync_repository)
 
 ## Generate Service Ping
 
+The [Service Ping Guide](../../development/service_ping/index.md) in our developer documentation 
+has more information about Service Ping. 
+
 ### Generate or get the cached Service Ping
 
 ```ruby
@@ -1284,6 +1287,12 @@ Generates Service Ping data in JSON format.
 
 ```shell
 rake gitlab:usage_data:generate
+```
+
+Generates Service Ping data in YAML format:
+
+```shell 
+rake gitlab:usage_data:dump_sql_in_yaml
 ```
 
 ### Generate and send Service Ping
