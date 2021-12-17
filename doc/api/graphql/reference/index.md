@@ -8813,6 +8813,7 @@ Represents the total number of issues and their weights for a particular day.
 | <a id="cijobcreatedat"></a>`createdAt` | [`Time!`](#time) | When the job was created. |
 | <a id="cijobcreatedbytag"></a>`createdByTag` | [`Boolean!`](#boolean) | Whether the job was created by a tag. |
 | <a id="cijobdetailedstatus"></a>`detailedStatus` | [`DetailedStatus`](#detailedstatus) | Detailed status of the job. |
+| <a id="cijobdownstreampipeline"></a>`downstreamPipeline` | [`Pipeline`](#pipeline) | Downstream pipeline for a bridge. |
 | <a id="cijobduration"></a>`duration` | [`Int`](#int) | Duration of the job in seconds. |
 | <a id="cijobfinishedat"></a>`finishedAt` | [`Time`](#time) | When a job has finished running. |
 | <a id="cijobid"></a>`id` | [`JobID`](#jobid) | ID of the job. |
