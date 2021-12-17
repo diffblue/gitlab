@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import BlockingMergeRequestBody from 'ee/vue_merge_request_widget/components/blocking_merge_requests/blocking_merge_request_body.vue';
-import RelatedIssuableItem from '~/vue_shared/components/issue/related_issuable_item.vue';
+import RelatedIssuableItem from '~/issuable/components/related_issuable_item.vue';
 
 describe('BlockingMergeRequestBody', () => {
   it('shows hidden merge request text if hidden MRs exist', () => {

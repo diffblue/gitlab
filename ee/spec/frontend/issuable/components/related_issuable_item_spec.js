@@ -4,8 +4,8 @@ import { TEST_HOST } from 'helpers/test_constants';
 import {
   defaultAssignees,
   defaultMilestone,
-} from 'jest/vue_shared/components/issue/related_issuable_mock_data';
-import RelatedIssuableItem from '~/vue_shared/components/issue/related_issuable_item.vue';
+} from 'jest/issuable/components/related_issuable_mock_data';
+import RelatedIssuableItem from '~/issuable/components/related_issuable_item.vue';
 
 describe('RelatedIssuableItem', () => {
   let wrapper;

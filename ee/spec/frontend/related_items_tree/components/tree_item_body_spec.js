@@ -13,8 +13,8 @@ import createDefaultStore from 'ee/related_items_tree/store';
 import * as epicUtils from 'ee/related_items_tree/utils/epic_utils';
 import ItemDueDate from '~/boards/components/issue_due_date.vue';
 import { PathIdSeparator } from '~/related_issues/constants';
-import ItemAssignees from '~/vue_shared/components/issue/issue_assignees.vue';
-import ItemMilestone from '~/vue_shared/components/issue/issue_milestone.vue';
+import ItemAssignees from '~/issuable/components/issue_assignees.vue';
+import ItemMilestone from '~/issuable/components/issue_milestone.vue';
 
 import {
   mockParentItem,

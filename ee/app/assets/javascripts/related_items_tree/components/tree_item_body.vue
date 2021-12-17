@@ -16,8 +16,8 @@ import ItemDueDate from '~/boards/components/issue_due_date.vue';
 import { __ } from '~/locale';
 import { isScopedLabel } from '~/lib/utils/common_utils';
 
-import ItemAssignees from '~/vue_shared/components/issue/issue_assignees.vue';
-import ItemMilestone from '~/vue_shared/components/issue/issue_milestone.vue';
+import ItemAssignees from '~/issuable/components/issue_assignees.vue';
+import ItemMilestone from '~/issuable/components/issue_milestone.vue';
 
 import { ChildType, ChildState, itemRemoveModalId } from '../constants';
 import EpicHealthStatus from './epic_health_status.vue';
