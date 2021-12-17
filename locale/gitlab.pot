@@ -31363,6 +31363,9 @@ msgstr ""
 msgid "SecurityOrchestration|New policy"
 msgstr ""
 
+msgid "SecurityOrchestration|No rules defined - policy will not run."
+msgstr ""
+
 msgid "SecurityOrchestration|Only owners can update Security Policy Project"
 msgstr ""
 
@@ -31445,9 +31448,6 @@ msgid "SecurityOrchestration|Update scan execution policies"
 msgstr ""
 
 msgid "SecurityOrchestration|view results"
-msgstr ""
-
-msgid "SecurityOrhestration|No rules defined - policy will not run."
 msgstr ""
 
 msgid "SecurityPolicies|+%{count} more"

@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import { GlEmptyState } from '@gitlab/ui';
+import waitForPromises from 'helpers/wait_for_promises';
 import PolicyEditorLayout from 'ee/threat_monitoring/components/policy_editor/policy_editor_layout.vue';
 import {
   DEFAULT_SCAN_EXECUTION_POLICY,
@@ -20,7 +21,16 @@ jest.mock('~/lib/utils/url_utility', () => ({
   visitUrl: jest.fn().mockName('visitUrlMock'),
 }));
 
+const newlyCreatedPolicyProject = {
+  branch: 'main',
+  fullPath: 'path/to/new-project',
+};
+
 jest.mock('ee/threat_monitoring/components/policy_editor/scan_execution_policy/lib', () => ({
+  assignSecurityPolicyProject: jest.fn().mockResolvedValue({
+    branch: 'main',
+    fullPath: 'path/to/new-project',
+  }),
   DEFAULT_SCAN_EXECUTION_POLICY: jest.requireActual(
     'ee/threat_monitoring/components/policy_editor/scan_execution_policy/lib',
   ).DEFAULT_SCAN_EXECUTION_POLICY,
@@ -33,10 +43,7 @@ jest.mock('ee/threat_monitoring/components/policy_editor/scan_execution_policy/l
   SECURITY_POLICY_ACTIONS: jest.requireActual(
     'ee/threat_monitoring/components/policy_editor/scan_execution_policy/lib',
   ).SECURITY_POLICY_ACTIONS,
-  modifyPolicy: jest.fn().mockResolvedValue({
-    mergeRequest: { id: '2' },
-    policyProject: { fullPath: 'tests' },
-  }),
+  modifyPolicy: jest.fn().mockResolvedValue({ id: '2' }),
 }));
 
 describe('ScanExecutionPolicyEditor', () => {
@@ -44,6 +51,10 @@ describe('ScanExecutionPolicyEditor', () => {
   const defaultProjectPath = 'path/to/project';
   const policyEditorEmptyStateSvgPath = 'path/to/svg';
   const scanExecutionDocumentationPath = 'path/to/docs';
+  const assignedPolicyProject = {
+    branch: 'main',
+    fullPath: 'path/to/existing-project',
+  };
 
   const factory = ({ propsData = {}, provide = {} } = {}) => {
     wrapper = shallowMount(ScanExecutionPolicyEditor, {
@@ -63,7 +74,13 @@ describe('ScanExecutionPolicyEditor', () => {
   };
 
   const factoryWithExistingPolicy = () => {
-    return factory({ propsData: { existingPolicy: mockDastScanExecutionObject, isEditing: true } });
+    return factory({
+      propsData: {
+        assignedPolicyProject,
+        existingPolicy: mockDastScanExecutionObject,
+        isEditing: true,
+      },
+    });
   };
 
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
@@ -86,21 +103,21 @@ describe('ScanExecutionPolicyEditor', () => {
     });
 
     it.each`
-      status                            | action                             | event              | factoryFn                    | yamlEditorValue
-      ${'to save a new policy'}         | ${SECURITY_POLICY_ACTIONS.APPEND}  | ${'save-policy'}   | ${factory}                   | ${DEFAULT_SCAN_EXECUTION_POLICY}
-      ${'to update an existing policy'} | ${SECURITY_POLICY_ACTIONS.REPLACE} | ${'save-policy'}   | ${factoryWithExistingPolicy} | ${mockDastScanExecutionManifest}
-      ${'to delete an existing policy'} | ${SECURITY_POLICY_ACTIONS.REMOVE}  | ${'remove-policy'} | ${factoryWithExistingPolicy} | ${mockDastScanExecutionManifest}
+      status                            | action                             | event              | factoryFn                    | yamlEditorValue                  | currentlyAssignedPolicyProject
+      ${'to save a new policy'}         | ${SECURITY_POLICY_ACTIONS.APPEND}  | ${'save-policy'}   | ${factory}                   | ${DEFAULT_SCAN_EXECUTION_POLICY} | ${newlyCreatedPolicyProject}
+      ${'to update an existing policy'} | ${SECURITY_POLICY_ACTIONS.REPLACE} | ${'save-policy'}   | ${factoryWithExistingPolicy} | ${mockDastScanExecutionManifest} | ${assignedPolicyProject}
+      ${'to delete an existing policy'} | ${SECURITY_POLICY_ACTIONS.REMOVE}  | ${'remove-policy'} | ${factoryWithExistingPolicy} | ${mockDastScanExecutionManifest} | ${assignedPolicyProject}
     `(
       'navigates to the new merge request when "modifyPolicy" is emitted $status',
-      async ({ action, event, factoryFn, yamlEditorValue }) => {
+      async ({ action, event, factoryFn, yamlEditorValue, currentlyAssignedPolicyProject }) => {
         factoryFn();
         await wrapper.vm.$nextTick();
         findPolicyEditorLayout().vm.$emit(event);
-        await wrapper.vm.$nextTick();
+        await waitForPromises();
         expect(modifyPolicy).toHaveBeenCalledTimes(1);
         expect(modifyPolicy).toHaveBeenCalledWith({
           action,
-          assignedPolicyProject: DEFAULT_ASSIGNED_POLICY_PROJECT,
+          assignedPolicyProject: currentlyAssignedPolicyProject,
           name:
             action === SECURITY_POLICY_ACTIONS.APPEND
               ? fromYaml(yamlEditorValue).name
@@ -110,7 +127,9 @@ describe('ScanExecutionPolicyEditor', () => {
         });
         await wrapper.vm.$nextTick();
         expect(visitUrl).toHaveBeenCalled();
-        expect(visitUrl).toHaveBeenCalledWith('/tests/-/merge_requests/2');
+        expect(visitUrl).toHaveBeenCalledWith(
+          `/${currentlyAssignedPolicyProject.fullPath}/-/merge_requests/2`,
+        );
       },
     );
   });

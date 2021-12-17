@@ -5,6 +5,7 @@ import { __, s__ } from '~/locale';
 import { EDITOR_MODES, EDITOR_MODE_YAML } from '../constants';
 import PolicyEditorLayout from '../policy_editor_layout.vue';
 import {
+  assignSecurityPolicyProject,
   DEFAULT_SCAN_EXECUTION_POLICY,
   fromYaml,
   GRAPHQL_ERROR_MESSAGE,
@@ -60,6 +61,7 @@ export default {
       error: '',
       isCreatingMR: false,
       isRemovingPolicy: false,
+      newlyCreatedPolicyProject: null,
       policy: fromYaml(yamlEditorValue),
       yamlEditorValue,
     };
@@ -77,6 +79,13 @@ export default {
         this.$emit('error', error.message);
       }
     },
+    async getSecurityPolicyProject() {
+      if (!this.newlyCreatedPolicyProject && !this.assignedPolicyProject.fullPath) {
+        this.newlyCreatedPolicyProject = await assignSecurityPolicyProject(this.projectPath);
+      }
+
+      return this.newlyCreatedPolicyProject || this.assignedPolicyProject;
+    },
     async handleModifyPolicy(act) {
       const action =
         act ||
@@ -88,15 +97,17 @@ export default {
       this.setLoadingFlag(action, true);
 
       try {
-        const { mergeRequest, policyProject } = await modifyPolicy({
+        const assignedPolicyProject = await this.getSecurityPolicyProject();
+
+        const mergeRequest = await modifyPolicy({
           action,
-          assignedPolicyProject: this.assignedPolicyProject,
+          assignedPolicyProject,
           name: this.originalName || fromYaml(this.yamlEditorValue)?.name,
           projectPath: this.projectPath,
           yamlEditorValue: this.yamlEditorValue,
         });
 
-        this.redirectToMergeRequest({ mergeRequest, policyProject });
+        this.redirectToMergeRequest({ mergeRequest, assignedPolicyProject });
       } catch (e) {
         this.handleError(e);
         this.setLoadingFlag(action, false);
@@ -109,11 +120,11 @@ export default {
         this.isCreatingMR = val;
       }
     },
-    redirectToMergeRequest({ mergeRequest, policyProject }) {
+    redirectToMergeRequest({ mergeRequest, assignedPolicyProject }) {
       visitUrl(
         joinPaths(
           gon.relative_url_root || '/',
-          policyProject.fullPath,
+          assignedPolicyProject.fullPath,
           '/-/merge_requests',
           mergeRequest.id,
         ),

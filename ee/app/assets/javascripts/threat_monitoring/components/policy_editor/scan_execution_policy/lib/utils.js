@@ -15,26 +15,6 @@ const checkForErrors = ({ errors }) => {
 };
 
 /**
- * Creates a new security policy project and assigns it to the current project
- * @param {String} projectPath
- * @returns {Object} contains the new security policy project and any errors
- */
-const assignSecurityPolicyProject = async (projectPath) => {
-  const {
-    data: {
-      securityPolicyProjectCreate: { project, errors },
-    },
-  } = await gqClient.mutate({
-    mutation: createPolicyProject,
-    variables: {
-      projectPath,
-    },
-  });
-
-  return { ...project, branch: project?.branch?.rootRef, errors };
-};
-
-/**
  * Creates a merge request for the changes to the policy file
  * @param {Object} payload contains the path to the parent project, the branch to merge on the project, and the branch to merge into
  * @returns {Object} contains the id of the merge request and any errors
@@ -102,14 +82,6 @@ export const modifyPolicy = async ({
   projectPath,
   yamlEditorValue,
 }) => {
-  let currentAssignedPolicyProject = assignedPolicyProject;
-
-  if (!currentAssignedPolicyProject.fullPath) {
-    currentAssignedPolicyProject = await assignSecurityPolicyProject(projectPath);
-  }
-
-  checkForErrors(currentAssignedPolicyProject);
-
   const newPolicyCommitBranch = await updatePolicy({
     action,
     name,
@@ -120,12 +92,34 @@ export const modifyPolicy = async ({
   checkForErrors(newPolicyCommitBranch);
 
   const mergeRequest = await createMergeRequest({
-    projectPath: currentAssignedPolicyProject.fullPath,
+    projectPath: assignedPolicyProject.fullPath,
     sourceBranch: newPolicyCommitBranch.branch,
-    targetBranch: currentAssignedPolicyProject.branch,
+    targetBranch: assignedPolicyProject.branch,
   });
 
   checkForErrors(mergeRequest);
 
-  return { mergeRequest, policyProject: currentAssignedPolicyProject };
+  return mergeRequest;
+};
+
+/**
+ * Creates a new security policy project and assigns it to the current project
+ * @param {String} projectPath
+ * @returns {Object} contains the new security policy project and any errors
+ */
+export const assignSecurityPolicyProject = async (projectPath) => {
+  const {
+    data: {
+      securityPolicyProjectCreate: { project, errors },
+    },
+  } = await gqClient.mutate({
+    mutation: createPolicyProject,
+    variables: {
+      projectPath,
+    },
+  });
+
+  checkForErrors({ errors });
+
+  return { ...project, branch: project?.branch?.rootRef, errors };
 };
