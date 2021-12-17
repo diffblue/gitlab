@@ -137,7 +137,9 @@ RSpec.describe Projects::IssuesController do
             it 'shows an error message' do
               send_request
 
-              expect(flash[:alert]).to include('Unable to create link to vulnerability')
+              expect(flash[:raw]).to include('id="js-unable-to-link-vulnerability"')
+              expect(flash[:raw]).to include("data-vulnerability-link=\"/#{namespace.path}/#{project.path}/-/security/vulnerabilities/#{vulnerabilities_issue_link.vulnerability.id}\"")
+
               expect(vulnerability.issue_links.map(&:issue)).to eq([vulnerabilities_issue_link.issue])
             end
           end
