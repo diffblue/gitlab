@@ -189,16 +189,6 @@ RSpec.describe Registrations::GroupsController do
                     it { is_expected.to redirect_to(new_users_sign_up_project_path(namespace_id: group.id, trial: true)) }
                   end
 
-                  it 'tracks for the force_company_trial experiment', :experiment do
-                    wrapped_experiment(experiment(:force_company_trial)) do |e|
-                      expect(e.context.value).to include(user: user)
-                      expect(e).to receive(:track).with(:create_group, namespace: an_instance_of(Group), user: user)
-                      expect(e).to receive(:track).with(:create_trial, namespace: an_instance_of(Group), user: user, label: 'registrations_groups_controller')
-                    end
-
-                    post_create
-                  end
-
                   it 'tracks for the combined_registration experiment', :experiment do
                     expect(experiment(:combined_registration)).to track(:create_group, namespace: an_instance_of(Group)).on_next_instance
                     subject
@@ -233,16 +223,6 @@ RSpec.describe Registrations::GroupsController do
                 it 'does not call trial creation methods' do
                   expect(controller).not_to receive(:create_lead)
                   expect(controller).not_to receive(:apply_trial)
-
-                  post_create
-                end
-
-                it 'selectively tracks for the force_company_trial experiment', :experiment do
-                  wrapped_experiment(experiment(:force_company_trial)) do |e|
-                    expect(e.context.value).to include(user: user)
-                    expect(e).to receive(:track).with(:create_group, namespace: an_instance_of(Group), user: user)
-                    expect(e).not_to receive(:track).with(:create_trial, namespace: an_instance_of(Group), user: user)
-                  end
 
                   post_create
                 end

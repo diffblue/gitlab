@@ -7,10 +7,7 @@ RSpec.describe 'User sees new onboarding flow', :js do
   let_it_be(:user) { create(:user) }
   let_it_be(:trial_fields) { ['Company name', 'Number of employees', 'How many employees will use Gitlab?', 'Telephone number', 'Country'] }
 
-  let(:experiments) { {} }
-
   before do
-    stub_experiments(experiments)
     allow(Gitlab).to receive(:com?).and_return(true)
     sign_in(user)
     visit users_sign_up_welcome_path
@@ -21,14 +18,6 @@ RSpec.describe 'User sees new onboarding flow', :js do
     click_on 'Continue'
 
     expect(page).to have_content('GitLab Ultimate trial (optional)')
-  end
-
-  context 'when force_company_trial experiment is candidate' do
-    let(:experiments) { { force_company_trial: :candidate } }
-
-    it 'shows the trial fields' do
-      trial_fields.each { |field| expect(page).to have_content(field) }
-    end
   end
 
   it 'shows the expected behavior with no trial chosen', :aggregate_failures do

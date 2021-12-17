@@ -28,9 +28,6 @@ module Registrations
 
         @learn_gitlab_project = create_learn_gitlab_project
 
-        experiment(:force_company_trial, user: current_user)
-          .track(:create_project, namespace: @project.namespace, project: @project, user: current_user)
-
         if helpers.registration_verification_enabled?
           redirect_to new_users_sign_up_verification_path(url_params)
         elsif helpers.in_trial_onboarding_flow?
