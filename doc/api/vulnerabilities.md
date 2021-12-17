@@ -345,7 +345,7 @@ mutation {
     vulnerability {
       state
     }
-   errors
+    errors
   }
 }
 ```
