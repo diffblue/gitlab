@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+import { orderBy } from 'lodash';
 import BoardFilteredSearch from 'ee/boards/components/board_filtered_search.vue';
 import IssueBoardFilteredSpec from 'ee/boards/components/issue_board_filtered_search.vue';
 import issueBoardFilters from '~/boards/issue_board_filters';
@@ -55,7 +56,7 @@ describe('IssueBoardFilter', () => {
         wrapper.vm.fetchIterations,
       );
 
-      expect(wrapper.find(BoardFilteredSearch).props('tokens')).toEqual(tokens);
+      expect(wrapper.find(BoardFilteredSearch).props('tokens')).toEqual(orderBy(tokens, ['title']));
     });
   });
 });

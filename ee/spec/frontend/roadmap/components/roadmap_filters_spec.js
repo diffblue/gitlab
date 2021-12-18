@@ -197,10 +197,10 @@ describe('RoadmapFilters', () => {
       it('includes `Author`, `Milestone`, `Confidential`, `Epic` and `Label` tokens when user is not logged in', () => {
         expect(filteredSearchBar.props('tokens')).toEqual([
           mockAuthorTokenConfig,
-          mockLabelTokenConfig,
-          mockMilestoneTokenConfig,
           mockConfidentialTokenConfig,
           mockEpicTokenConfig,
+          mockLabelTokenConfig,
+          mockMilestoneTokenConfig,
         ]);
       });
 
@@ -310,10 +310,10 @@ describe('RoadmapFilters', () => {
                 },
               ],
             },
-            mockLabelTokenConfig,
-            mockMilestoneTokenConfig,
             mockConfidentialTokenConfig,
             mockEpicTokenConfig,
+            mockLabelTokenConfig,
+            mockMilestoneTokenConfig,
             mockReactionEmojiTokenConfig,
           ]);
         });

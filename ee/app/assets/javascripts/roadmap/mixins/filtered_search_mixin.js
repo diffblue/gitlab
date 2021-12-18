@@ -1,5 +1,5 @@
 import { GlFilteredSearchToken } from '@gitlab/ui';
-
+import { orderBy } from 'lodash';
 import Api from '~/api';
 import axios from '~/lib/utils/axios_utils';
 import { __ } from '~/locale';
@@ -183,7 +183,7 @@ export default {
         });
       }
 
-      return tokens;
+      return orderBy(tokens, ['title']);
     },
     getFilteredSearchValue() {
       const {

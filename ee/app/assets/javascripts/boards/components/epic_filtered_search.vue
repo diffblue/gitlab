@@ -1,4 +1,5 @@
 <script>
+import { orderBy } from 'lodash';
 import BoardFilteredSearch from 'ee/boards/components/board_filtered_search.vue';
 import issueBoardFilter from '~/boards/issue_board_filters';
 import { TYPE_USER } from '~/graphql_shared/constants';
@@ -34,7 +35,7 @@ export default {
       );
 
       const { label, author } = this.$options.i18n;
-      return [
+      const tokens = [
         {
           icon: 'labels',
           title: label,
@@ -58,6 +59,8 @@ export default {
           preloadedAuthors: this.preloadedAuthors(),
         },
       ];
+
+      return orderBy(tokens, ['title']);
     },
   },
   methods: {

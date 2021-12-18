@@ -3,6 +3,7 @@
 // extends a valid Vue single file component.
 /* eslint-disable @gitlab/no-runtime-template-compiler */
 import { mapActions } from 'vuex';
+import { orderBy } from 'lodash';
 import IssueBoardFilteredSearchFoss from '~/boards/components/issue_board_filtered_search.vue';
 import { BoardType } from '~/boards/constants';
 import { __ } from '~/locale';
@@ -33,7 +34,7 @@ export default {
     tokens() {
       const { epic, iteration, weight } = this.$options.i18n;
 
-      return [
+      const tokens = [
         ...this.tokensCE,
         {
           type: 'epic',
@@ -67,6 +68,8 @@ export default {
           unique: true,
         },
       ];
+
+      return orderBy(tokens, ['title']);
     },
   },
   methods: {
