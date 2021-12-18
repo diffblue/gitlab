@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+import { orderBy } from 'lodash';
 import EpicFilteredSearch from 'ee/boards/components/epic_filtered_search.vue';
 import BoardFilteredSearch from 'ee/boards/components/board_filtered_search.vue';
 import issueBoardFilters from '~/boards/issue_board_filters';
@@ -72,7 +73,9 @@ describe('EpicFilteredSearch', () => {
           ],
         },
       ];
-      expect(wrapper.find(BoardFilteredSearch).props('tokens').toString()).toBe(tokens.toString());
+      expect(wrapper.find(BoardFilteredSearch).props('tokens').toString()).toBe(
+        orderBy(tokens, ['title']).toString(),
+      );
     });
   });
 });
