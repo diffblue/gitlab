@@ -34,6 +34,12 @@ RSpec.describe Ci::Minutes::Notification do
   end
 
   shared_examples 'has notifications' do
+    shared_examples 'aware of dismission cookie' do
+      it 'does not show when cookie is set' do
+        expect(subject.show?(user, { subject.dismiss_cookie_id => 'true' })).to be_falsey
+      end
+    end
+
     context 'when usage has reached a notification level' do
       before do
         group.shared_runners_minutes_limit = 20
@@ -48,6 +54,7 @@ RSpec.describe Ci::Minutes::Notification do
             expect(subject.text).to match(/.*\shas 30% or less Shared Runner Pipeline minutes remaining/)
             expect(subject.style).to eq :warning
           end
+          it_behaves_like 'aware of dismission cookie'
         end
 
         describe '#running_out?' do
@@ -78,6 +85,7 @@ RSpec.describe Ci::Minutes::Notification do
             expect(subject.text).to match(/.*\shas 5% or less Shared Runner Pipeline minutes remaining/)
             expect(subject.style).to eq :danger
           end
+          it_behaves_like 'aware of dismission cookie'
         end
 
         describe '#running_out?' do
@@ -108,6 +116,7 @@ RSpec.describe Ci::Minutes::Notification do
             expect(subject.text).to match(/.*\shas 30% or less Shared Runner Pipeline minutes remaining/)
             expect(subject.style).to eq :warning
           end
+          it_behaves_like 'aware of dismission cookie'
         end
 
         describe '#running_out?' do
@@ -138,6 +147,7 @@ RSpec.describe Ci::Minutes::Notification do
             expect(subject.text).to match(/.*\shas exceeded its pipeline minutes quota/)
             expect(subject.style).to eq :danger
           end
+          it_behaves_like 'aware of dismission cookie'
         end
 
         describe '#running_out?' do
