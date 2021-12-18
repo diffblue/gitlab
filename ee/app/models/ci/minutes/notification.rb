@@ -15,9 +15,10 @@ module Ci
         @stage = calculate_notification_stage if eligible_for_notifications?
       end
 
-      def show?(current_user)
+      def show?(current_user, cookies = false)
         return false unless @stage
         return false unless @context.level
+        return false if alert_has_been_dismissed?(cookies)
 
         Ability.allowed?(current_user, :read_ci_minutes_quota, @context.level)
       end
@@ -46,9 +47,19 @@ module Ci
         context.shared_runners_minutes_limit_enabled?
       end
 
+      def dismiss_cookie_id
+        "ci_minutes_notification_#{stage_percentage}_stage_percentage"
+      end
+
       private
 
       attr_reader :context, :stage
+
+      def alert_has_been_dismissed?(cookies)
+        return unless cookies
+
+        Gitlab::Utils.to_boolean(cookies[dismiss_cookie_id], default: false)
+      end
 
       def calculate_notification_stage
         percentage = context.percent_total_minutes_remaining.to_i
