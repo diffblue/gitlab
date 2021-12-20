@@ -99,8 +99,8 @@ module EE
 
               yield
             end
-          ensure # rubocop: disable Layout/RescueEnsureAlignment
-            ActiveRecord::Base.clear_active_connections! # rubocop: disable Database/MultipleDatabases
+          ensure
+            ApplicationRecord.clear_active_connections!
           end
         end
       end
