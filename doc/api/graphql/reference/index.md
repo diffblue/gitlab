@@ -7764,6 +7764,29 @@ The edge type for [`TestSuiteSummary`](#testsuitesummary).
 | <a id="testsuitesummaryedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="testsuitesummaryedgenode"></a>`node` | [`TestSuiteSummary`](#testsuitesummary) | The item at the end of the edge. |
 
+#### `TimelineEventTypeConnection`
+
+The connection type for [`TimelineEventType`](#timelineeventtype).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="timelineeventtypeconnectionedges"></a>`edges` | [`[TimelineEventTypeEdge]`](#timelineeventtypeedge) | A list of edges. |
+| <a id="timelineeventtypeconnectionnodes"></a>`nodes` | [`[TimelineEventType]`](#timelineeventtype) | A list of nodes. |
+| <a id="timelineeventtypeconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `TimelineEventTypeEdge`
+
+The edge type for [`TimelineEventType`](#timelineeventtype).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="timelineeventtypeedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="timelineeventtypeedgenode"></a>`node` | [`TimelineEventType`](#timelineeventtype) | The item at the end of the edge. |
+
 #### `TimelogConnection`
 
 The connection type for [`Timelog`](#timelog).
@@ -13319,6 +13342,35 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="projectincidentmanagementoncallschedulesiids"></a>`iids` | [`[ID!]`](#id) | IIDs of on-call schedules. |
 
+##### `Project.incidentManagementTimelineEvent`
+
+Incident Management Timeline event associated with the incident.
+
+Returns [`TimelineEventType`](#timelineeventtype).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectincidentmanagementtimelineeventid"></a>`id` | [`IncidentManagementTimelineEventID!`](#incidentmanagementtimelineeventid) | ID of the timeline event. |
+| <a id="projectincidentmanagementtimelineeventincidentid"></a>`incidentId` | [`IssueID!`](#issueid) | ID of the incident. |
+
+##### `Project.incidentManagementTimelineEvents`
+
+Incident Management Timeline events associated with the incident.
+
+Returns [`TimelineEventTypeConnection`](#timelineeventtypeconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectincidentmanagementtimelineeventsincidentid"></a>`incidentId` | [`IssueID!`](#issueid) | ID of the incident. |
+
 ##### `Project.issue`
 
 A single issue of the project.
@@ -15036,6 +15088,27 @@ Represents a historically accurate report about the timebox.
 | ---- | ---- | ----------- |
 | <a id="timeboxreportburnuptimeseries"></a>`burnupTimeSeries` | [`[BurnupChartDailyTotals!]`](#burnupchartdailytotals) | Daily scope and completed totals for burnup charts. |
 | <a id="timeboxreportstats"></a>`stats` | [`TimeReportStats`](#timereportstats) | Represents the time report stats for the timebox. |
+
+### `TimelineEventType`
+
+Describes an incident management timeline event.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="timelineeventtypeaction"></a>`action` | [`String!`](#string) | Indicates the timeline event icon. |
+| <a id="timelineeventtypeauthor"></a>`author` | [`UserCore`](#usercore) | User that created the timeline event. |
+| <a id="timelineeventtypecreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp when the event created. |
+| <a id="timelineeventtypeeditable"></a>`editable` | [`Boolean!`](#boolean) | Indicates the timeline event is editable. |
+| <a id="timelineeventtypeid"></a>`id` | [`IncidentManagementTimelineEventID!`](#incidentmanagementtimelineeventid) | ID of the timeline event. |
+| <a id="timelineeventtypeincident"></a>`incident` | [`Issue!`](#issue) | Incident of the timeline event. |
+| <a id="timelineeventtypenote"></a>`note` | [`String`](#string) | Text note of the timeline event. |
+| <a id="timelineeventtypenotehtml"></a>`noteHtml` | [`String`](#string) | HTML note of the timeline event. |
+| <a id="timelineeventtypeoccurredat"></a>`occurredAt` | [`Time!`](#time) | Timestamp when the event occurred. |
+| <a id="timelineeventtypepromotedfromnote"></a>`promotedFromNote` | [`Note`](#note) | Note from which the timeline event was created. |
+| <a id="timelineeventtypeupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp when the event updated. |
+| <a id="timelineeventtypeupdatedbyuser"></a>`updatedByUser` | [`UserCore`](#usercore) | User that updated the timeline event. |
 
 ### `Timelog`
 
@@ -17728,6 +17801,12 @@ An example `IncidentManagementOncallParticipantID` is: `"gid://gitlab/IncidentMa
 A `IncidentManagementOncallRotationID` is a global ID. It is encoded as a string.
 
 An example `IncidentManagementOncallRotationID` is: `"gid://gitlab/IncidentManagement::OncallRotation/1"`.
+
+### `IncidentManagementTimelineEventID`
+
+A `IncidentManagementTimelineEventID` is a global ID. It is encoded as a string.
+
+An example `IncidentManagementTimelineEventID` is: `"gid://gitlab/IncidentManagement::TimelineEvent/1"`.
 
 ### `Int`
 

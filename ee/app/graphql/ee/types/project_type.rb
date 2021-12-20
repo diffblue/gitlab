@@ -139,6 +139,19 @@ module EE
               description: 'Incident Management escalation policy of the project.',
               resolver: ::Resolvers::IncidentManagement::EscalationPoliciesResolver.single
 
+        field :incident_management_timeline_events,
+              ::Types::IncidentManagement::TimelineEventType.connection_type,
+              null: true,
+              description: 'Incident Management Timeline events associated with the incident.',
+              extras: [:lookahead],
+              resolver: ::Resolvers::IncidentManagement::TimelineEventsResolver
+
+        field :incident_management_timeline_event,
+              ::Types::IncidentManagement::TimelineEventType,
+              null: true,
+              description: 'Incident Management Timeline event associated with the incident.',
+              resolver: ::Resolvers::IncidentManagement::TimelineEventsResolver.single
+
         field :api_fuzzing_ci_configuration,
               ::Types::AppSec::Fuzzing::API::CiConfigurationType,
               null: true,

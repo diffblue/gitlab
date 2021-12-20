@@ -73,6 +73,7 @@ module EE
       has_many :feature_flags, through: :feature_flag_issues, class_name: '::Operations::FeatureFlag'
 
       has_many :pending_escalations, class_name: 'IncidentManagement::PendingEscalations::Issue', foreign_key: :issue_id, inverse_of: :issue
+      has_many :incident_management_timeline_events, class_name: 'IncidentManagement::TimelineEvent', foreign_key: :issue_id, inverse_of: :incident
 
       validates :weight, allow_nil: true, numericality: { greater_than_or_equal_to: 0 }
       validate :validate_confidential_epic

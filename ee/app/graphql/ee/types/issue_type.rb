@@ -39,7 +39,7 @@ module EE
               description: 'Timestamp of when the issue SLA expires.'
 
         field :metric_images, [::Types::MetricImageType], null: true,
-          description: 'Metric images associated to the issue.'
+              description: 'Metric images associated to the issue.'
 
         def iteration
           ::Gitlab::Graphql::Loaders::BatchModelLoader.new(::Iteration, object.sprint_id).find
