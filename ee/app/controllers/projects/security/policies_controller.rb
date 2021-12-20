@@ -8,6 +8,10 @@ module Projects
       before_action :authorize_security_orchestration_policies!
       before_action :validate_policy_configuration, only: :edit
 
+      before_action do
+        push_frontend_feature_flag(:scan_result_policy, project, default_enabled: :yaml)
+      end
+
       feature_category :security_orchestration
 
       def index

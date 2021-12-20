@@ -164,11 +164,18 @@ module EE
               resolver: ::Resolvers::PathLocksResolver
 
         field :scan_execution_policies,
-              ::Types::ScanExecutionPolicyType.connection_type,
+              ::Types::SecurityOrchestration::ScanExecutionPolicyType.connection_type,
               calls_gitaly: true,
               null: true,
               description: 'Scan Execution Policies of the project',
-              resolver: ::Resolvers::ScanExecutionPolicyResolver
+              resolver: ::Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver
+
+        field :scan_result_policies,
+              ::Types::SecurityOrchestration::ScanResultPolicyType.connection_type,
+              calls_gitaly: true,
+              null: true,
+              description: 'Scan Result Policies of the project',
+              resolver: ::Resolvers::SecurityOrchestration::ScanResultPolicyResolver
 
         field :network_policies,
               ::Types::NetworkPolicyType.connection_type,
