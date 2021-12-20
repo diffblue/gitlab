@@ -4,11 +4,11 @@
 
 .form-group.row
   .col-sm-2.col-form-label
-    = form.label :shared_runners_minutes_limit, "Pipeline Minutes Quota"
+    = form.label :shared_runners_minutes_limit, "Quota of CI/CD minutes"
   .col-sm-10
     = form.number_field :shared_runners_minutes_limit, class: 'form-control', min: 0
     %span.form-text.text-muted#shared_runners_minutes_limit_help_block
-      Set the maximum number of pipeline minutes that a group can use on shared Runners per month.
+      The maximum number of CI/CD minutes on shared runners that a group can use each month.
       Set 0 for unlimited.
       Set empty to inherit the global setting of #{Gitlab::CurrentSettings.shared_runners_minutes}.
-      = link_to sprite_icon('question-o'), help_page_path('user/admin_area/settings/continuous_integration', anchor: 'shared-runners-pipeline-minutes-quota'), target: '_blank'
+      = link_to sprite_icon('question-o'), help_page_path('ci/pipelines/cicd_minutes'), target: '_blank'

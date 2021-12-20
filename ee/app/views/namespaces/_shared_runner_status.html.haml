@@ -4,7 +4,7 @@
 
 - if minutes_quota_presenter.display_shared_runners_data?
   %li
-    %span.light= _('Pipeline minutes quota:')
+    %span.light= _('Quota of CI/CD minutes:')
     %strong
       = ci_minutes_report(minutes_quota_presenter.monthly_minutes_report)
-      = link_to sprite_icon('question-o'), help_page_path('user/admin_area/settings/continuous_integration', anchor: 'shared-runners-pipeline-minutes-quota'), target: '_blank'
+      = link_to sprite_icon('question-o'), help_page_path('ci/pipelines/cicd_minutes'), target: '_blank'

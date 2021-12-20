@@ -11,7 +11,7 @@
     %div{ data: { qa_selector: "additional_ci_minutes" } }
       = ci_minutes_report(minutes_quota_presenter.purchased_minutes_report)
       minutes
-      = link_to sprite_icon('question-o'), help_page_path('subscriptions/gitlab_com/index', anchor: 'purchase-additional-ci-minutes'), target: '_blank', rel: 'noopener noreferrer'
+      = link_to sprite_icon('question-o'), help_page_path('ci/pipelines/cicd_minutes', anchor: 'purchase-additional-cicd-minutes-free-saas'), target: '_blank', rel: 'noopener noreferrer'
   .col-sm-6.right
     #{minutes_quota_presenter.purchased_percent_used}% used
     = ci_minutes_progress_bar(minutes_quota_presenter.purchased_percent_used)
