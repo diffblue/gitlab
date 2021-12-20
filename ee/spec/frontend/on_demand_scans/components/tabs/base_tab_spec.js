@@ -305,6 +305,23 @@ describe('BaseTab', () => {
     });
   });
 
+  it('renders the after-name slot', async () => {
+    createFullComponent({
+      propsData: {
+        itemsCount: 30,
+      },
+      stubs: {
+        GlTable: false,
+      },
+      scopedSlots: {
+        'after-name': '<div data-testid="after-name-content" />',
+      },
+    });
+    await waitForPromises();
+
+    expect(wrapper.findByTestId('after-name-content').exists()).toBe(true);
+  });
+
   describe("when a scan's DAST profile got deleted", () => {
     beforeEach(() => {
       const allPipelinesWithPipelinesMockCopy = cloneDeep(allPipelinesWithPipelinesMock);

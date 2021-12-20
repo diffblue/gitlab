@@ -24585,6 +24585,9 @@ msgstr ""
 msgid "OnDemandScans|Save scan"
 msgstr ""
 
+msgid "OnDemandScans|Scan library"
+msgstr ""
+
 msgid "OnDemandScans|Scan name"
 msgstr ""
 
@@ -24619,6 +24622,9 @@ msgid "OnDemandScans|There are no finished scans."
 msgstr ""
 
 msgid "OnDemandScans|There are no running scans."
+msgstr ""
+
+msgid "OnDemandScans|There are no saved scans."
 msgstr ""
 
 msgid "OnDemandScans|There are no scheduled scans."

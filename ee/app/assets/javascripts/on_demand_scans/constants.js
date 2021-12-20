@@ -9,7 +9,7 @@ export const LEARN_MORE_TEXT = s__(
   'OnDemandScans|%{learnMoreLinkStart}Learn more about on-demand scans%{learnMoreLinkEnd}.',
 );
 
-export const PIPELINE_TABS_KEYS = ['all', 'running', 'finished', 'scheduled'];
+export const PIPELINE_TABS_KEYS = ['all', 'running', 'finished', 'scheduled', 'saved'];
 export const PIPELINES_PER_PAGE = 20;
 export const PIPELINES_POLL_INTERVAL = 1000;
 export const PIPELINES_COUNT_POLL_INTERVAL = 1000;
@@ -42,6 +42,10 @@ const SCAN_TYPE_COLUMN = {
 const TARGET_COLUMN = {
   label: s__('OnDemandScans|Target'),
   key: 'targetUrl',
+};
+const TARGET_COLUMN_DAST_PROFILE = {
+  ...TARGET_COLUMN,
+  formatter: (_value, _key, item) => item.dastSiteProfile.targetUrl,
 };
 const START_DATE_COLUMN = {
   label: __('Start date'),
@@ -89,10 +93,7 @@ export const SCHEDULED_TAB_TABLE_FIELDS = [
   },
   NAME_COLUMN,
   SCAN_TYPE_COLUMN,
-  {
-    ...TARGET_COLUMN,
-    formatter: (_value, _key, item) => item.dastSiteProfile.targetUrl,
-  },
+  TARGET_COLUMN_DAST_PROFILE,
   {
     label: __('Next scan'),
     key: 'nextRun',
@@ -116,5 +117,15 @@ export const SCHEDULED_TAB_TABLE_FIELDS = [
   {
     label: s__('OnDemandScans|Repeats'),
     key: 'dastProfileSchedule',
+  },
+];
+
+export const SAVED_TAB_TABLE_FIELDS = [
+  NAME_COLUMN,
+  TARGET_COLUMN_DAST_PROFILE,
+  {
+    label: s__('DastProfiles|Scan mode'),
+    key: 'scanType',
+    formatter: (_value, _key, item) => item.dastScannerProfile?.scanType,
   },
 ];

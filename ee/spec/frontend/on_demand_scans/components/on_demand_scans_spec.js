@@ -9,6 +9,10 @@ import { PIPELINE_TABS_KEYS } from 'ee/on_demand_scans/constants';
 import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
 import { createRouter } from 'ee/on_demand_scans/router';
 import AllTab from 'ee/on_demand_scans/components/tabs/all.vue';
+import RunningTab from 'ee/on_demand_scans/components/tabs/running.vue';
+import FinishedTab from 'ee/on_demand_scans/components/tabs/finished.vue';
+import ScheduledTab from 'ee/on_demand_scans/components/tabs/scheduled.vue';
+import SavedTab from 'ee/on_demand_scans/components/tabs/saved.vue';
 import EmptyState from 'ee/on_demand_scans/components/empty_state.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import onDemandScansCounts from 'ee/on_demand_scans/graphql/on_demand_scan_counts.query.graphql';
@@ -38,6 +42,10 @@ describe('OnDemandScans', () => {
   const findHelpPageLink = () => wrapper.findByTestId('help-page-link');
   const findTabs = () => wrapper.findComponent(GlTabs);
   const findAllTab = () => wrapper.findComponent(AllTab);
+  const findRunningTab = () => wrapper.findComponent(RunningTab);
+  const findFinishedTab = () => wrapper.findComponent(FinishedTab);
+  const findScheduledTab = () => wrapper.findComponent(ScheduledTab);
+  const findSavedTab = () => wrapper.findComponent(SavedTab);
   const findEmptyState = () => wrapper.findComponent(EmptyState);
 
   // Helpers
@@ -132,6 +140,10 @@ describe('OnDemandScans', () => {
 
     it('renders the tabs', () => {
       expect(findAllTab().exists()).toBe(true);
+      expect(findRunningTab().exists()).toBe(true);
+      expect(findFinishedTab().exists()).toBe(true);
+      expect(findScheduledTab().exists()).toBe(true);
+      expect(findSavedTab().exists()).toBe(true);
     });
 
     it('sets the initial route to /all', () => {
