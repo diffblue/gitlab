@@ -35,7 +35,7 @@ describe('Account verification modal', () => {
     });
 
     it('renders the description', () => {
-      expect(wrapper.find('p').text()).toContain('To use free pipeline minutes');
+      expect(wrapper.find('p').text()).toContain('To use free CI/CD minutes');
     });
   });
 

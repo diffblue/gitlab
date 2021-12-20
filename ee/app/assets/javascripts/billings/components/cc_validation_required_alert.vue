@@ -6,14 +6,14 @@ import AccountVerificationModal from './account_verification_modal.vue';
 
 const i18n = {
   successAlert: {
-    title: s__('Billings|User successfully validated'),
+    title: s__('Billings|Your account has been validated'),
     text: s__(
-      'Billings|Your user account has been successfully validated. You can now use free pipeline minutes.',
+      "Billings|You'll now be able to take advantage of free CI/CD minutes on shared runners.",
     ),
   },
   dangerAlert: {
     title: s__('Billings|User validation required'),
-    text: s__(`Billings|To use free pipeline minutes on shared runners, you’ll need to validate your account with a credit or debit card. If you prefer not to provide one, you can run pipelines by bringing your own runners and disabling shared runners for your project.
+    text: s__(`Billings|To use free CI/CD minutes on shared runners, you’ll need to validate your account with a credit card. If you prefer not to provide one, you can run pipelines by bringing your own runners and disabling shared runners for your project.
     This is required to discourage and reduce abuse on GitLab infrastructure.
     %{strongStart}GitLab will not charge your card, it will only be used for validation.%{strongEnd} %{linkStart}Learn more%{linkEnd}.`),
     primaryButtonText: s__('Billings|Validate account'),

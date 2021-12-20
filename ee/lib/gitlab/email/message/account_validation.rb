@@ -19,16 +19,16 @@ module Gitlab
         end
 
         def title
-          s_("AccountValidation|Looks like you’ll need to validate your account to use free pipeline minutes")
+          s_("AccountValidation|Looks like you’ll need to validate your account to use free CI/CD minutes")
         end
 
         def body_line1
-          s_("AccountValidation|In order to use free pipeline minutes on shared runners, you'll need to validate your account with a credit or debit card. If you prefer not to provide one, you can run pipelines by bringing your own runners and disabling shared runners for your project.")
+          s_("AccountValidation|In order to use free CI/CD minutes on shared runners, you'll need to validate your account using one of our verification options. If you prefer not to, you can run pipelines by bringing your own runners and disabling shared runners for your project.")
         end
 
         def body_line2
           format_options = strong_options.merge({ learn_more_link: learn_more_link })
-          s_("AccountValidation|This is required to discourage and reduce the abuse on GitLab infrastructure. %{strong_start}GitLab will not charge or store your card, it will only be used for validation.%{strong_end} %{learn_more_link}").html_safe % format_options
+          s_("AccountValidation|Verification is required to discourage and reduce the abuse on GitLab infrastructure. If you verify with a credit or debit card, %{strong_start}GitLab will not charge your card, it will only be used for validation.%{strong_end} %{learn_more_link}").html_safe % format_options
         end
 
         def cta_text

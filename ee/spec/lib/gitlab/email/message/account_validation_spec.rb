@@ -11,11 +11,11 @@ RSpec.describe Gitlab::Email::Message::AccountValidation do
 
   it 'contains the correct message', :aggregate_failures do
     expect(message.subject_line).to eq 'Fix your pipelines by validating your account'
-    expect(message.title).to eq "Looks like you’ll need to validate your account to use free pipeline minutes"
-    expect(message.body_line1).to eq "In order to use free pipeline minutes on shared runners, you'll need to validate your account with a credit or debit card. If you prefer not to provide one, you can run pipelines by bringing your own runners and disabling shared runners for your project."
+    expect(message.title).to eq "Looks like you’ll need to validate your account to use free CI/CD minutes"
+    expect(message.body_line1).to eq "In order to use free CI/CD minutes on shared runners, you'll need to validate your account using one of our verification options. If you prefer not to, you can run pipelines by bringing your own runners and disabling shared runners for your project."
     expect(message.body_line2).to include(
-      'This is required to discourage and reduce the abuse on GitLab infrastructure.',
-      '<b>GitLab will not charge or store your card, it will only be used for validation.</b>',
+      'Verification is required to discourage and reduce the abuse on GitLab infrastructure.',
+      'If you verify with a credit or debit card, <b>GitLab will not charge your card, it will only be used for validation.</b>',
       '<a href="https://about.gitlab.com/blog/2021/05/17/prevent-crypto-mining-abuse/">Learn more.</a>'
     )
     expect(message.cta_text).to eq 'Validate your account'
