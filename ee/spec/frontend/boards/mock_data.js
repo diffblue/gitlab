@@ -122,12 +122,20 @@ export const mockIterations = [
   {
     id: 'gid://gitlab/Iteration/1',
     title: 'Iteration 1',
+    iterationCadence: {
+      id: 'gid://gitlab/Iterations::Cadence/1',
+      title: 'GitLab.org Iterations',
+    },
     startDate: '2021-10-05',
     dueDate: '2021-10-10',
   },
   {
     id: 'gid://gitlab/Iteration/2',
     title: 'Iteration 2',
+    iterationCadence: {
+      id: 'gid://gitlab/Iterations::Cadence/2',
+      title: 'GitLab.org Iterations: Volume II',
+    },
     startDate: '2021-10-12',
     dueDate: '2021-10-17',
   },

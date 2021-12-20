@@ -2,6 +2,9 @@
 import {
   GlAvatar,
   GlAvatarLabeled,
+  GlDropdownDivider,
+  GlDropdownSectionHeader,
+  GlDropdownText,
   GlIcon,
   GlFormGroup,
   GlFormRadio,
@@ -14,7 +17,7 @@ import { ListType } from '~/boards/constants';
 import { isScopedLabel } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { getIterationPeriod } from 'ee/iterations/utils';
+import { groupByIterationCadences } from 'ee/iterations/utils';
 import IterationPeriod from 'ee/iterations/components/iteration_period.vue';
 
 export const listTypeInfo = {
@@ -56,6 +59,9 @@ export default {
     BoardAddNewColumnForm,
     GlAvatar,
     GlAvatarLabeled,
+    GlDropdownDivider,
+    GlDropdownSectionHeader,
+    GlDropdownText,
     GlIcon,
     GlFormGroup,
     GlFormRadio,
@@ -96,6 +102,10 @@ export default {
       return listTypeInfo[this.columnType] || {};
     },
 
+    iterationCadences() {
+      return groupByIterationCadences(this.items);
+    },
+
     items() {
       return this[this.info.listPropertyName] || [];
     },
@@ -128,6 +138,10 @@ export default {
     },
     hasAssigneeSelection() {
       return this.assigneeTypeSelected && this.selectedItem;
+    },
+
+    shouldShowIterationCadence() {
+      return this.glFeatures.iterationCadences && this.iterationTypeSelected;
     },
 
     columnForSelected() {
@@ -226,7 +240,6 @@ export default {
         this.selectedItem = { ...item };
       }
     },
-    getIterationPeriod,
   },
 };
 </script>
@@ -294,6 +307,32 @@ export default {
 
     <template v-if="hasItems" #items>
       <gl-form-radio-group
+        v-if="shouldShowIterationCadence"
+        class="gl-overflow-hidden"
+        data-testid="selectItem"
+        @change="setSelectedItem"
+      >
+        <div v-for="(cadence, index) in iterationCadences" :key="cadence.id">
+          <gl-dropdown-divider v-if="index !== 0" :key="index" />
+          <gl-dropdown-section-header :id="cadence.id">
+            <div data-testid="cadence" class="gl-text-truncate">
+              {{ cadence.title }}
+            </div>
+          </gl-dropdown-section-header>
+          <gl-dropdown-text v-for="iteration in cadence.iterations" :key="iteration.id">
+            <gl-form-radio :value="iteration.id" :aria-describedby="cadence.id">
+              {{ iteration.title }}
+              <div class="gl-display-inline-block">
+                <IterationPeriod data-testid="new-column-iteration-period">{{
+                  iteration.period
+                }}</IterationPeriod>
+              </div>
+            </gl-form-radio>
+          </gl-dropdown-text>
+        </div>
+      </gl-form-radio-group>
+      <gl-form-radio-group
+        v-else
         class="gl-overflow-y-auto gl-px-5"
         :checked="selectedId"
         data-testid="selectItem"
@@ -326,11 +365,6 @@ export default {
           />
           <div v-else class="gl-display-inline-block">
             {{ item.title }}
-            <IterationPeriod
-              v-if="iterationTypeSelected && glFeatures.iterationCadences"
-              data-testid="new-column-iteration-period"
-              >{{ getIterationPeriod(item) }}</IterationPeriod
-            >
           </div>
         </label>
       </gl-form-radio-group>
