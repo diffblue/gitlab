@@ -44,18 +44,26 @@ CI/CD data is subject to
 [time-decay](https://about.gitlab.com/company/team/structure/working-groups/database-scalability/time-decay.html)
 because, usually, pipelines that are a few months old are not frequently
 accessed or are even not relevant anymore. Restricting access to processing
-pipelines that are longer than a few months might help us to move this data to
-a different storage, that is more performant and cost effective.
+pipelines that are older than a few months might help us to move this data out
+of the primary database, to a different storage, that is more performant and
+cost effective.
 
 It is already possible to prevent processing builds [that have been
 archived](../../../user/admin_area/settings/continuous_integration.md#archive-jobs).
 When a build gets archived it will not be possible to retry it, but we do not
-move data from the database.
+move data out of the database, it still consumes resources that are scarce in
+the primary database.
 
 In order to improve performance and make it easier to scale CI/CD data storage
 we might want to follow these three tracks described below.
 
-### Migrate build metadata of archived pipelines
+![pipeline data time decay](pipeline_data_time_decay.png)
+
+1. Partition builds queuing tables
+2. Archive CI/CD data into partitioned database schema
+3. Migrate archived builds metadata out of primary database
+
+### Migrate archived builds metadata out of primary database
 
 Once a build (or a pipeline) gets archived, it is no longer possible to resume
 pipeline processing in such pipeline. It means that all the metadata, we store
@@ -75,7 +83,7 @@ dataset. Technical evaluation will be required to find the best solution here.
 
 Epic: [Migrate build metadata of archived pipelines](https://gitlab.com/groups/gitlab-org/-/epics/7216).
 
-### Partition archived CI/CD data
+### Archive CI/CD data into partitioned database schema
 
 After we move CI/CD metadata to a different store, the problem of having
 billions of rows describing pipelines, build and artifacts, remains. We still
