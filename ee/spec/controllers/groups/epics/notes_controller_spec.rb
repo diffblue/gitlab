@@ -100,9 +100,12 @@ RSpec.describe Groups::Epics::NotesController do
       end
     end
 
-    it_behaves_like 'request exceeding rate limit', :clean_gitlab_redis_cache do
-      let(:params) { request_params.except(:format) }
-      let(:request_full_path) { group_epic_notes_path(group, epic) }
+    it_behaves_like 'create notes request exceeding rate limit', :clean_gitlab_redis_cache do
+      let(:current_user) { user }
+
+      def request
+        post :create, params: request_params.except(:format)
+      end
     end
   end
 
