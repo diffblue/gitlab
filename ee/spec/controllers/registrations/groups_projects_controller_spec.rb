@@ -56,17 +56,6 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
       it_behaves_like 'hides email confirmation warning'
 
       context 'when group and project can be created' do
-        context 'when in the in_trial_onboarding_flow' do
-          let(:extra_params) { { trial_onboarding_flow: true } }
-
-          it 'tracks events for the remove_known_trial_form_fields_welcoming experiment' do
-            expect(controller).to receive(:record_experiment_user).with(:remove_known_trial_form_fields_welcoming, namespace_id: anything)
-            expect(controller).to receive(:record_experiment_conversion_event).with(:remove_known_trial_form_fields_welcoming)
-
-            post_create
-          end
-        end
-
         it 'creates a group' do
           expect { post_create }.to change { Group.count }.by(1)
         end

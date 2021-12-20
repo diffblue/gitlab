@@ -4,14 +4,6 @@ require 'spec_helper'
 
 RSpec.describe TrialsController, :saas do
   let_it_be(:user) { create(:user, email_opted_in: true, last_name: 'Doe') }
-  let_it_be(:remove_known_trial_form_fields_context) do
-    {
-      first_name_present: user.first_name.present?,
-      last_name_present: user.last_name.present?,
-      company_name_present: user.organization.present?,
-      variant: :control
-    }
-  end
 
   let(:dev_env_or_com) { true }
   let(:logged_in) { true }
@@ -72,8 +64,6 @@ RSpec.describe TrialsController, :saas do
     end
 
     it 'calls record_experiment_user for the experiments' do
-      expect(controller).to receive(:record_experiment_user).with(:remove_known_trial_form_fields_welcoming, remove_known_trial_form_fields_context)
-
       get_new
     end
 
@@ -379,13 +369,6 @@ RSpec.describe TrialsController, :saas do
 
       it { is_expected.to redirect_to("/#{namespace.path}?trial=true") }
 
-      it 'calls the record conversion method for the experiments' do
-        expect(controller).to receive(:record_experiment_user).with(:remove_known_trial_form_fields_welcoming, namespace_id: namespace.id)
-        expect(controller).to receive(:record_experiment_conversion_event).with(:remove_known_trial_form_fields_welcoming)
-
-        post_apply
-      end
-
       context 'when the trial_registration_with_reassurance experiment is active', :experiment do
         before do
           stub_experiments(trial_registration_with_reassurance: :control)
@@ -453,8 +436,6 @@ RSpec.describe TrialsController, :saas do
 
       it { is_expected.to render_template(:select) }
       it 'does not call the record conversion method for the experiments' do
-        expect(controller).not_to receive(:record_experiment_conversion_event).with(:remove_known_trial_form_fields_welcoming)
-
         post_apply
       end
 
