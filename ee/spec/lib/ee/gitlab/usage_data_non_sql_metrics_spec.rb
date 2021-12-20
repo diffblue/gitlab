@@ -7,6 +7,7 @@ RSpec.describe Gitlab::UsageDataNonSqlMetrics do
 
   before do
     stub_usage_data_connections
+    stub_database_flavor_check
   end
 
   describe '.uncached_data' do
