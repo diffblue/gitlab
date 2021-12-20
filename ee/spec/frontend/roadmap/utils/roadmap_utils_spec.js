@@ -1,10 +1,11 @@
 import { PRESET_TYPES, DATE_RANGES } from 'ee/roadmap/constants';
 import {
   getEpicsTimeframeRange,
-  getWeeksForDates,
-  getTimeframeForRangeType,
-  sortEpics,
+  getMonthsForDates,
   getPresetTypeForTimeframeRangeType,
+  getTimeframeForRangeType,
+  getWeeksForDates,
+  sortEpics,
 } from 'ee/roadmap/utils/roadmap_utils';
 
 import { mockTimeframeInitialDate, mockUnsortedEpics } from '../mock_data';
@@ -24,6 +25,18 @@ describe('getWeeksForDates', () => {
     expect(getDateString(weeks[0])).toBe('2017-12-31');
     expect(getDateString(weeks[7])).toBe('2018-02-18');
     expect(getDateString(weeks[17])).toBe('2018-04-29');
+  });
+});
+
+describe('getMonthsForDates', () => {
+  it('returns months for given start and due dates', () => {
+    const months = getMonthsForDates(mockTimeframeInitialDate, mockTimeframeMonths[4]);
+
+    expect(months).toHaveLength(4);
+    const dates = ['2018-01-01', '2018-02-01', '2018-03-01', '2018-04-01'];
+    dates.forEach((date, index) => {
+      expect(getDateString(months[index])).toBe(date);
+    });
   });
 });
 
@@ -77,7 +90,7 @@ describe('getTimeframeForRangeType', () => {
       presetType: PRESET_TYPES.QUARTERS,
     });
 
-    expect(timeframe).toHaveLength(12);
+    expect(timeframe).toHaveLength(13);
 
     expect(timeframe[0]).toMatchObject({
       quarterSequence: 3,
@@ -139,7 +152,7 @@ describe('getEpicsTimeframeRange', () => {
       expect.objectContaining({
         timeframe: {
           start: '2016-07-01',
-          end: '2019-06-30',
+          end: '2019-09-30',
         },
       }),
     );
