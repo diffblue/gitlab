@@ -57,9 +57,7 @@ exports[`ee/BoardContentSidebar matches the snapshot 1`] = `
     />
   </div>
    
-  <boardsidebartimetracker-stub
-    class="swimlanes-sidebar-time-tracker"
-  />
+  <boardsidebartimetracker-stub />
    
   <sidebardatewidget-stub
     data-testid="sidebar-due-date"
