@@ -7439,6 +7439,29 @@ The edge type for [`ScanExecutionPolicy`](#scanexecutionpolicy).
 | <a id="scanexecutionpolicyedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="scanexecutionpolicyedgenode"></a>`node` | [`ScanExecutionPolicy`](#scanexecutionpolicy) | The item at the end of the edge. |
 
+#### `ScanResultPolicyConnection`
+
+The connection type for [`ScanResultPolicy`](#scanresultpolicy).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="scanresultpolicyconnectionedges"></a>`edges` | [`[ScanResultPolicyEdge]`](#scanresultpolicyedge) | A list of edges. |
+| <a id="scanresultpolicyconnectionnodes"></a>`nodes` | [`[ScanResultPolicy]`](#scanresultpolicy) | A list of nodes. |
+| <a id="scanresultpolicyconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `ScanResultPolicyEdge`
+
+The edge type for [`ScanResultPolicy`](#scanresultpolicy).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="scanresultpolicyedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="scanresultpolicyedgenode"></a>`node` | [`ScanResultPolicy`](#scanresultpolicy) | The item at the end of the edge. |
+
 #### `ScannedResourceConnection`
 
 The connection type for [`ScannedResource`](#scannedresource).
@@ -12989,6 +13012,7 @@ Represents vulnerability finding of a security report on the pipeline.
 | <a id="projectrequestaccessenabled"></a>`requestAccessEnabled` | [`Boolean`](#boolean) | Indicates if users can request member access to the project. |
 | <a id="projectrequirementstatescount"></a>`requirementStatesCount` | [`RequirementStatesCount`](#requirementstatescount) | Number of requirements for the project by their state. |
 | <a id="projectsastciconfiguration"></a>`sastCiConfiguration` | [`SastCiConfiguration`](#sastciconfiguration) | SAST CI configuration for the project. |
+| <a id="projectscanresultpolicies"></a>`scanResultPolicies` | [`ScanResultPolicyConnection`](#scanresultpolicyconnection) | Scan Result Policies of the project. (see [Connections](#connections)) |
 | <a id="projectsecuritydashboardpath"></a>`securityDashboardPath` | [`String`](#string) | Path to project's security dashboard. |
 | <a id="projectsecurityscanners"></a>`securityScanners` | [`SecurityScanners`](#securityscanners) | Information about security analyzers used in the project. |
 | <a id="projectsentryerrors"></a>`sentryErrors` | [`SentryErrorCollection`](#sentryerrorcollection) | Paginated collection of Sentry errors on the project. |
@@ -14428,6 +14452,20 @@ Represents the scan execution policy.
 | <a id="scanexecutionpolicyname"></a>`name` | [`String!`](#string) | Name of the policy. |
 | <a id="scanexecutionpolicyupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp of when the policy YAML was last updated. |
 | <a id="scanexecutionpolicyyaml"></a>`yaml` | [`String!`](#string) | YAML definition of the policy. |
+
+### `ScanResultPolicy`
+
+Represents the scan result policy.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="scanresultpolicydescription"></a>`description` | [`String!`](#string) | Description of the policy. |
+| <a id="scanresultpolicyenabled"></a>`enabled` | [`Boolean!`](#boolean) | Indicates whether this policy is enabled. |
+| <a id="scanresultpolicyname"></a>`name` | [`String!`](#string) | Name of the policy. |
+| <a id="scanresultpolicyupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp of when the policy YAML was last updated. |
+| <a id="scanresultpolicyyaml"></a>`yaml` | [`String!`](#string) | YAML definition of the policy. |
 
 ### `ScannedResource`
 
@@ -18179,6 +18217,23 @@ Implementations:
 | ---- | ---- | ----------- |
 | <a id="noteableinterfacediscussions"></a>`discussions` | [`DiscussionConnection!`](#discussionconnection) | All discussions on this noteable. (see [Connections](#connections)) |
 | <a id="noteableinterfacenotes"></a>`notes` | [`NoteConnection!`](#noteconnection) | All notes on this noteable. (see [Connections](#connections)) |
+
+#### `OrchestrationPolicy`
+
+Implementations:
+
+- [`ScanExecutionPolicy`](#scanexecutionpolicy)
+- [`ScanResultPolicy`](#scanresultpolicy)
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="orchestrationpolicydescription"></a>`description` | [`String!`](#string) | Description of the policy. |
+| <a id="orchestrationpolicyenabled"></a>`enabled` | [`Boolean!`](#boolean) | Indicates whether this policy is enabled. |
+| <a id="orchestrationpolicyname"></a>`name` | [`String!`](#string) | Name of the policy. |
+| <a id="orchestrationpolicyupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp of when the policy YAML was last updated. |
+| <a id="orchestrationpolicyyaml"></a>`yaml` | [`String!`](#string) | YAML definition of the policy. |
 
 #### `PackageFileMetadata`
 

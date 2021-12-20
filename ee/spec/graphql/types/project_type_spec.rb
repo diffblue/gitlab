@@ -134,10 +134,26 @@ RSpec.describe GitlabSchema.types['Project'] do
     it { is_expected.to have_graphql_type(Types::PushRulesType) }
   end
 
-  describe 'scan_execution_policies' do
+  shared_context 'is an orchestration policy' do
     let(:security_policy_management_project) { create(:project) }
     let(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project, security_policy_management_project: security_policy_management_project) }
     let(:policy_yaml) { Gitlab::Config::Loader::Yaml.new(fixture_file('security_orchestration.yml', dir: 'ee')).load! }
+
+    subject { GitlabSchema.execute(query, context: { current_user: user }).as_json }
+
+    before do
+      allow_next_found_instance_of(Security::OrchestrationPolicyConfiguration) do |policy|
+        allow(policy).to receive(:policy_configuration_valid?).and_return(true)
+        allow(policy).to receive(:policy_hash).and_return(policy_yaml)
+        allow(policy).to receive(:policy_last_updated_at).and_return(Time.now)
+      end
+
+      stub_licensed_features(security_orchestration_policies: true)
+      policy_configuration.security_policy_management_project.add_maintainer(user)
+    end
+  end
+
+  describe 'scan_execution_policies' do
     let(:query) do
       %(
         query {
@@ -156,21 +172,38 @@ RSpec.describe GitlabSchema.types['Project'] do
       )
     end
 
-    subject { GitlabSchema.execute(query, context: { current_user: user }).as_json }
-
-    before do
-      allow_next_found_instance_of(Security::OrchestrationPolicyConfiguration) do |policy|
-        allow(policy).to receive(:policy_configuration_valid?).and_return(true)
-        allow(policy).to receive(:policy_hash).and_return(policy_yaml)
-        allow(policy).to receive(:policy_last_updated_at).and_return(Time.now)
-      end
-
-      stub_licensed_features(security_orchestration_policies: true)
-      policy_configuration.security_policy_management_project.add_maintainer(user)
-    end
+    include_context 'is an orchestration policy'
 
     it 'returns associated scan execution policies' do
       policies = subject.dig('data', 'project', 'scanExecutionPolicies', 'nodes')
+
+      expect(policies.count).to be(8)
+    end
+  end
+
+  describe 'scan_result_policies' do
+    let(:query) do
+      %(
+        query {
+          project(fullPath: "#{project.full_path}") {
+            scanResultPolicies {
+              nodes {
+                name
+                description
+                enabled
+                yaml
+                updatedAt
+              }
+            }
+          }
+        }
+      )
+    end
+
+    include_context 'is an orchestration policy'
+
+    it 'returns associated scan result policies' do
+      policies = subject.dig('data', 'project', 'scanResultPolicies', 'nodes')
 
       expect(policies.count).to be(8)
     end
