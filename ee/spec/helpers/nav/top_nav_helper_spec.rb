@@ -155,7 +155,7 @@ RSpec.describe Nav::TopNavHelper do
               ::Gitlab::Nav::TopNavMenuItem.build(
                 href: '/dashboard/projects/removed',
                 id: 'deleted',
-                title: 'Deleted projects'
+                title: 'Pending deletion'
               )
             ]
             expect(projects_view[:linksPrimary]).to eq(expected_links_primary)

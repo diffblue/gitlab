@@ -56,7 +56,7 @@ module EE
         super
 
         if License.feature_available?(:adjourned_deletion_for_projects_and_groups)
-          builder.add_primary_menu_item(id: 'deleted', title: _('Deleted projects'), href: removed_dashboard_projects_path)
+          builder.add_primary_menu_item(id: 'deleted', title: _('Pending deletion'), href: removed_dashboard_projects_path)
         end
       end
     end
