@@ -240,7 +240,6 @@ module Gitlab
 
           # excluding currently started job
           running_jobs_count = running_jobs_relation(job)
-            .where(runner: ::Ci::Runner.instance_type)
             .limit(JOBS_RUNNING_FOR_PROJECT_MAX_BUCKET + 1).count - 1
 
           if running_jobs_count < JOBS_RUNNING_FOR_PROJECT_MAX_BUCKET
@@ -252,9 +251,9 @@ module Gitlab
 
         def running_jobs_relation(job)
           if ::Feature.enabled?(:ci_pending_builds_maintain_denormalized_data, default_enabled: :yaml)
-            ::Ci::RunningBuild.where(project_id: job.project.id)
+            ::Ci::RunningBuild.instance_type.where(project_id: job.project_id)
           else
-            job.project.builds.running
+            job.project.builds.running.where(runner: ::Ci::Runner.instance_type)
           end
         end
         # rubocop: enable CodeReuse/ActiveRecord
