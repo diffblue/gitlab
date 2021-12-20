@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Dashboard::ProjectsController do
+  using RSpec::Parameterized::TableSyntax
+
   let_it_be(:user) { create(:user) }
 
   describe '#removed' do
@@ -79,10 +81,23 @@ RSpec.describe Dashboard::ProjectsController do
           expect(assigns(:projects).count).to eq(1)
         end
 
-        it 'accounts total removable projects owned by the user on premium or above plan' do
-          subject
+        context 'for should_check_namespace_plan' do
+          where(:should_check_namespace_plan, :removed_projects_count) do
+            false | 3
+            true | 2
+          end
 
-          expect(assigns(:removed_projects_count).count).to eq(2)
+          with_them do
+            before do
+              stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan)
+            end
+
+            it 'accounts total removable projects' do
+              subject
+
+              expect(assigns(:removed_projects_count).count).to eq(removed_projects_count)
+            end
+          end
         end
       end
     end

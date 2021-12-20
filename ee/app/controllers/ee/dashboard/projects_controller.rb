@@ -50,8 +50,11 @@ module EE
         unless current_user.can_admin_all_resources?
           # only list projects with at least owner access if the user is not an admin
           finder_params[:min_access_level] = ::Gitlab::Access::OWNER
-          # only list projects that belongs to a group with premium or above plan
-          finder_params[:plans] = (::Plan::PAID_HOSTED_PLANS - [::Plan::BRONZE])
+
+          if ::Gitlab::CurrentSettings.should_check_namespace_plan?
+            # only list projects that belongs to a group with premium or above plan
+            finder_params[:plans_or_public] = (::Plan::PAID_HOSTED_PLANS - [::Plan::BRONZE])
+          end
         end
 
         finder_params

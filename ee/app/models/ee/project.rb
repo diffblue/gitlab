@@ -134,6 +134,14 @@ module EE
       scope :verification_failed_repos, -> { joins(:repository_state).merge(ProjectRepositoryState.verification_failed_repos) }
       scope :verification_failed_wikis, -> { joins(:repository_state).merge(ProjectRepositoryState.verification_failed_wikis) }
       scope :for_plan_name, -> (name) { joins(namespace: { gitlab_subscription: :hosted_plan }).where(plans: { name: name }) }
+      scope :left_joins_namespace_for_plan_name, -> (name) do
+        left_joins(namespace: { gitlab_subscription: :hosted_plan })
+          .where(plans: { name: name })
+      end
+      scope :with_group_namespace_visibility_level, -> (level) { ::Namespace.where(type: 'Group', visibility_level: level) }
+      scope :with_paid_features, -> (plan_name) do
+        left_joins_namespace_for_plan_name(plan_name).or(search_by_visibility('public').and(with_group_namespace_visibility_level(20)))
+      end
       scope :requiring_code_owner_approval,
             -> { joins(:protected_branches).where(protected_branches: { code_owner_approval_required: true }) }
       scope :github_imported, -> { where(import_type: 'github') }
