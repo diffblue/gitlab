@@ -42,63 +42,35 @@ RSpec.describe Gitlab::Ci::Parsers::Security::ContainerScanning do
   end
 
   describe '#parse!' do
-    context 'when improved_container_scan_matching is disabled' do
-      before do
-        stub_feature_flags(improved_container_scan_matching: false)
-        artifact.each_blob { |blob| described_class.parse!(blob, report) }
-      end
+    before do
+      artifact.each_blob { |blob| described_class.parse!(blob, report) }
+    end
 
-      it_behaves_like 'report'
+    it_behaves_like 'report'
 
-      context 'when not on default branch' do
-        let(:current_branch) { 'not-default' }
+    context 'when on default branch' do
+      let(:current_branch) { project.default_branch }
 
-        it 'does not include default_branch_image' do
-          location = report.findings.first.location
+      it 'does not include default_branch_image in location' do
+        location = report.findings.first.location
 
-          expect(location).to be_a(::Gitlab::Ci::Reports::Security::Locations::ContainerScanning)
-          expect(location).to have_attributes(
-            default_branch_image: nil,
-            improved_container_scan_matching_enabled?: false
-          )
-        end
+        expect(location).to be_a(::Gitlab::Ci::Reports::Security::Locations::ContainerScanning)
+        expect(location).to have_attributes(
+          default_branch_image: nil
+        )
       end
     end
 
-    context 'when improved_container_scan_matching is enabled' do
-      before do
-        stub_feature_flags(improved_container_scan_matching: true)
-        artifact.each_blob { |blob| described_class.parse!(blob, report) }
-      end
+    context 'when not on default branch' do
+      let(:current_branch) { 'not-default' }
 
-      it_behaves_like 'report'
+      it 'includes default_branch_image in location' do
+        location = report.findings.first.location
 
-      context 'when on default branch' do
-        let(:current_branch) { project.default_branch }
-
-        it 'does not include default_branch_image in location' do
-          location = report.findings.first.location
-
-          expect(location).to be_a(::Gitlab::Ci::Reports::Security::Locations::ContainerScanning)
-          expect(location).to have_attributes(
-            default_branch_image: nil,
-            improved_container_scan_matching_enabled?: true
-          )
-        end
-      end
-
-      context 'when not on default branch' do
-        let(:current_branch) { 'not-default' }
-
-        it 'includes default_branch_image in location' do
-          location = report.findings.first.location
-
-          expect(location).to be_a(::Gitlab::Ci::Reports::Security::Locations::ContainerScanning)
-          expect(location).to have_attributes(
-            default_branch_image: default_branch_image,
-            improved_container_scan_matching_enabled?: true
-          )
-        end
+        expect(location).to be_a(::Gitlab::Ci::Reports::Security::Locations::ContainerScanning)
+        expect(location).to have_attributes(
+          default_branch_image: default_branch_image
+        )
       end
     end
   end

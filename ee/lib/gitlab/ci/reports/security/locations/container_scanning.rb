@@ -17,38 +17,26 @@ module Gitlab
               operating_system:,
               package_name: nil,
               package_version: nil,
-              default_branch_image: nil,
-              improved_container_scan_matching_enabled: false
+              default_branch_image: nil
             )
               @image = image
               @operating_system = operating_system
               @package_name = package_name
               @package_version = package_version
               @default_branch_image = default_branch_image
-              @improved_container_scan_matching_enabled = improved_container_scan_matching_enabled
             end
 
             def fingerprint_data
               "#{docker_image_name_without_tag}:#{package_name}"
             end
 
-            def improved_container_scan_matching_enabled?
-              @improved_container_scan_matching_enabled
-            end
-
             private
 
             def docker_image_name_without_tag
-              if improved_container_scan_matching_enabled?
-                image_name = default_branch_image.presence || image
-                base_name, _, version = image_name.rpartition(':')
+              image_name = default_branch_image.presence || image
+              base_name, _, version = image_name.rpartition(':')
 
-                return image_name if version_semver_like?(version)
-              else
-                base_name, version = image.split(':')
-
-                return image if version_semver_like?(version)
-              end
+              return image_name if version_semver_like?(version)
 
               base_name
             end
