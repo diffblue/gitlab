@@ -8,6 +8,8 @@ module EE
     include GroupInviteMembers
 
     prepended do
+      include GeoInstrumentation
+
       alias_method :ee_authorize_admin_group!, :authorize_admin_group!
 
       before_action :ee_authorize_admin_group!, only: [:restore]

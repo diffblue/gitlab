@@ -90,6 +90,10 @@ module Gitlab
       self.secondary_with_primary? && self.primary_node.url == self.current_node.url
     end
 
+    def self.proxied_request?(env)
+      env['HTTP_GITLAB_WORKHORSE_GEO_PROXY'] == '1'
+    end
+
     def self.license_allows?
       ::License.feature_available?(:geo)
     end

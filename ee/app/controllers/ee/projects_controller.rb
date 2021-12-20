@@ -6,6 +6,8 @@ module EE
     extend ::Gitlab::Utils::Override
 
     prepended do
+      include GeoInstrumentation
+
       before_action :log_download_export_audit_event, only: [:download_export]
       before_action :log_archive_audit_event, only: [:archive]
       before_action :log_unarchive_audit_event, only: [:unarchive]
