@@ -50,18 +50,22 @@ cost effective.
 
 It is already possible to prevent processing builds [that have been
 archived](../../../user/admin_area/settings/continuous_integration.md#archive-jobs).
-When a build gets archived it will not be possible to retry it, but we do not
-move data out of the database, it still consumes resources that are scarce in
-the primary database.
+When a build gets archived it will not be possible to retry it, but we still do
+keep all the processing metadata in the database, and it consumes resources
+that are scarce in the primary database.
 
 In order to improve performance and make it easier to scale CI/CD data storage
 we might want to follow these three tracks described below.
 
 ![pipeline data time decay](pipeline_data_time_decay.png)
 
+<!-- markdownlint-disable MD029 -->
+
 1. Partition builds queuing tables
 2. Archive CI/CD data into partitioned database schema
 3. Migrate archived builds metadata out of primary database
+
+<!-- markdownlint-enable MD029 -->
 
 ### Migrate archived builds metadata out of primary database
 
@@ -81,12 +85,12 @@ be able to use de-duplication of metadata entries and other normalization
 strategies to consume less storage while retaining ability to query this
 dataset. Technical evaluation will be required to find the best solution here.
 
-Epic: [Migrate build metadata of archived pipelines](https://gitlab.com/groups/gitlab-org/-/epics/7216).
+Epic: [Migrate archived builds metadata out of primary database](https://gitlab.com/groups/gitlab-org/-/epics/7216).
 
 ### Archive CI/CD data into partitioned database schema
 
 After we move CI/CD metadata to a different store, the problem of having
-billions of rows describing pipelines, build and artifacts, remains. We still
+billions of rows describing pipelines, builds and artifacts, remains. We still
 need to keep reference to the metadata we store in object storage and we still
 do need to be able to retrieve this information reliably in bulk (or search
 through it).
@@ -99,9 +103,8 @@ reduce the impact on the database (indices size, auto-vacuum time and
 frequency).
 
 Our intent here is not to move this data out of our primary database elsewhere.
-What we want to achieve here is to divide very large database tables, that
-store CI/CD data, into multiple smaller ones, using PostgreSQL partitioning
-capabilities.
+What want to divide very large database tables, that store CI/CD data, into
+multiple smaller ones, using PostgreSQL partitioning features.
 
 There are a few approaches we can take to partition CI/CD data. A promising one
 is using list-based partitioning where a partition number is assigned a
@@ -116,7 +119,7 @@ partitioning on the application level.
 Partitioning rarely accessed data should also follow the policy defined for
 builds archival, to make it consistent and reliable.
 
-Epic: [Partition archived CI/CD data](https://gitlab.com/groups/gitlab-org/-/epics/5417).
+Epic: [Archive CI/CD data into partitioned database schema](https://gitlab.com/groups/gitlab-org/-/epics/5417).
 
 ### Partition builds queuing tables
 
@@ -124,10 +127,11 @@ While working on the [CI/CD Scale](../ci_scale/index.md) blueprint, we have
 introduced a [new architecture for queuing CI/CD builds](https://gitlab.com/groups/gitlab-org/-/epics/5909#note_680407908)
 for execution.
 
-This allowed us to significant improve performance, but we still do consider
-the new solution as an intermediate mechanism, needed before we start working
-on the next iteration, that should improve the architecture of builds queuing
-even more (it might require moving off the PostgreSQL fully or partially).
+This allowed us to significantly improve performance. We still consider the new
+solution as an intermediate mechanism, needed before we start working on the
+next iteration. The following iteration that should improve the architecture of
+builds queuing even more (it might require moving off the PostgreSQL fully or
+partially).
 
 In the meantime we want to ship another iteration, an intermediate step towards
 more flexible and reliable solution. We want to partition the new queuing
@@ -139,49 +143,64 @@ for builds archival. Instead we should leverage a long-standing policy saying
 that builds created more 24 hours ago need to be removed from the queue. This
 business rule is present in the product since the inception of GitLab CI.
 
-Epic: [Prepare queuing tables for list-style partitioning](https://gitlab.com/gitlab-org/gitlab/-/issues/347027).
+Epic: [Partition builds queuing tables](https://gitlab.com/gitlab-org/gitlab/-/issues/347027).
 
-## Caveats
+## Principles
 
 All the three tracks we will use to implement CI/CD time decay pattern are
-associated with some challenges. Most important ones are documented below.
+associated with some challenges. As we progress with the implementation we will
+need to solve many problems and devise many implementation details to make this
+successful.
 
-### Removing data
+Below, we documented a few foundational principles to make it easier for
+everyone to understand the vision described in this architectural blueprint.
+
+### Removing pipeline data
 
 While it might be tempting to simply remove old or archived data from our
-database, this should be avoided. We should not permanently remove user data
-unless a consent is given to do so. We can, however, move data to a different
+databases this should be avoided. We should not permanently remove user data
+unless consent is given to do so. We can, however, move data to a different
 data store, like object storage.
 
-Archived data can still be needed sometimes (for example for compliance
-reasons). We want to be able to retrieve this data if needed, as long as
-permanent removal has not been requested or approved by a user.
+Archived data can still be needed sometimes (for example for compliance or
+auditing reasons). We want to be able to retrieve this data if needed, as long
+as permanent removal has not been requested or approved by a user.
 
-### Accessing data
+### Accessing pipeline data in the UI
 
 Implementing CI/CD data time-decay through partitioning might be challenging
-when we still want to make it possible for users to access data stored across
-many partitions.
+when we still want to make it possible for users to access data stored in many
+partitions.
 
-In order to do that we will need to make sure that when archived data needs be
-accessed, users provide a time range in which the data has been created. In
-order to make it efficient it might be necessary to restrict access to querying
-data residing in more than two partitions at once. We can do that by supporting
-time ranges spanning the duration that equals to the builds archival policy.
+We want to retain simplicity of accessing pipeline data in the UI. It will
+require some backstage changes in how we reference pipeline data from other
+resources, but we don't want to make it more difficult for users to find their
+pipelines in the UI.
 
-#### Merge request pipelines
+We may need to add "Archived" tab on the pipelines / builds list pages, but we
+should be able to avoid additional steps / clicks when someone wants to view
+pipeline status or builds associated with a merge request or a deployment.
 
-Once we partition CI/CD data, especially CI builds, we need to find an
-efficient mechanism to present pipeline statuses in merge requests.
+We also may need to disable search in the "Archived" tab on pipelines / builds
+list pages.
 
-How to exactly do that is an implementation detail that we will need to figure
-out as the work progresses. We do have many tools to achieve that - data
-denormalization, routing reads to proper partitions based on data stored with a
-merge request.
+### Accessing pipeline data through the API
+
+We accept the possible necessity of building a separate API endpoint /
+endpoints needed to access pipeline data through the API.
+
+In the new API users might need to provide a time range in which the data has
+been created to search through their pipelines / builds. In order to make it
+efficient it might be necessary to restrict access to querying data residing in
+more than two partitions at once. We can do that by supporting time ranges
+spanning the duration that equals to the builds archival policy.
+
+It is possible to still allow users to use the old API to access archived
+pipelines data, although a user provided partition identifier may be required.
 
 ## Iterations
 
-All three tacks can be worked on in parallel:
+All three tracks can be worked on in parallel:
 
 1. [Migrate archived build metadata to object storage](https://gitlab.com/groups/gitlab-org/-/epics/7216).
 1. [Partition CI/CD data that have been archived](https://gitlab.com/groups/gitlab-org/-/epics/5417).
@@ -189,7 +208,7 @@ All three tacks can be worked on in parallel:
 
 ## Status
 
-Request For Comments.
+In approval.
 
 ## Who
 
