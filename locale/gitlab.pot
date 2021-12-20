@@ -25948,6 +25948,9 @@ msgstr ""
 msgid "Pipelines|Clear runner caches"
 msgstr ""
 
+msgid "Pipelines|Configuration validation currently not available."
+msgstr ""
+
 msgid "Pipelines|Copy trigger token"
 msgstr ""
 
@@ -39419,6 +39422,9 @@ msgid "We'll continuously validate your pipeline configuration. The validation r
 msgstr ""
 
 msgid "We'll use this to help surface the right features and information to you."
+msgstr ""
+
+msgid "We're experiencing difficulties and this tab content is currently unavailable."
 msgstr ""
 
 msgid "We've found no vulnerabilities"
