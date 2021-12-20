@@ -466,7 +466,10 @@ export default {
         :pipeline-path="mr.pipeline.path"
       />
 
-      <terraform-plan v-if="mr.terraformReportsPath" :endpoint="mr.terraformReportsPath" />
+      <terraform-plan
+        v-if="mr.terraformReportsPath && !shouldShowExtension"
+        :endpoint="mr.terraformReportsPath"
+      />
 
       <grouped-accessibility-reports-app
         v-if="shouldShowAccessibilityReport"
