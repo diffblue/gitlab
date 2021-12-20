@@ -145,10 +145,11 @@ module Gitlab
         )
       end
 
-      def import_repository(source)
+      def import_repository(source, http_authorization_header: '')
         request = Gitaly::CreateRepositoryFromURLRequest.new(
           repository: @gitaly_repo,
-          url: source
+          url: source,
+          http_authorization_header: http_authorization_header
         )
 
         GitalyClient.call(
