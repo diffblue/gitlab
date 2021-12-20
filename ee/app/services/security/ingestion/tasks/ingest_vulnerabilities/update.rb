@@ -23,6 +23,7 @@ module Security
               title: report_finding.name.truncate(::Issuable::TITLE_LENGTH_MAX),
               severity: report_finding.severity,
               confidence: report_finding.confidence,
+              resolved_on_default_branch: false,
               updated_at: Time.zone.now
             }
           end
