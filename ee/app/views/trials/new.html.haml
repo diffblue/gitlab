@@ -4,37 +4,42 @@
   = render "layouts/one_trust"
 
 .row
-  .col-md-6.offset-md-3
-    %h3.gl-text-center.gl-mt-0
+  .col-md-6.m-sm-6
+    %h2.gl-pb-5.gl-my-0
       = _("Start your Free Ultimate Trial")
 
-    %p.gl-text-center
+    %p.gl-text-gray-700.gl-font-lg
       = s_('Trial|Your GitLab Ultimate trial lasts for 30 days, but you can keep your free GitLab account forever. We just need some additional information to activate your trial.')
 
     = render 'errors'
 
     = form_tag create_lead_trials_path(glm_params), method: :post do |f|
-      .form-group
-        = label_tag :first_name, s_('Trial|First name'), for: :first_name, class: 'col-form-label'
-        = text_field_tag :first_name, params[:first_name] || current_user.first_name, class: 'form-control gl-form-input', required: true, data: { qa_selector: 'first_name' }
-      .form-group
-        = label_tag :last_name, s_('Trial|Last name'), for: :last_name, class: 'col-form-label'
-        = text_field_tag :last_name, params[:last_name] || current_user.last_name, class: 'form-control gl-form-input', required: true, data: { qa_selector: 'last_name' }
+      .form-row
+        .col-12.col-sm-6.form-group
+          = label_tag :first_name, s_('Trial|First name'), for: :first_name, class: 'col-form-label'
+          = text_field_tag :first_name, params[:first_name] || current_user.first_name, class: 'form-control gl-form-input', required: true, data: { qa_selector: 'first_name' }
+        .col-12.col-sm-6.form-group
+          = label_tag :last_name, s_('Trial|Last name'), for: :last_name, class: 'col-form-label'
+          = text_field_tag :last_name, params[:last_name] || current_user.last_name, class: 'form-control gl-form-input', required: true, data: { qa_selector: 'last_name' }
       .form-group
         = label_tag :company_name, s_('Trial|Company name'), for: :company_name, class: 'col-form-label'
         = text_field_tag :company_name, params[:company_name] || current_user.organization, class: 'form-control gl-form-input', required: true, data: { qa_selector: 'company_name' }
+      .form-row
+        .col-12.col-sm-6.form-group.gl-select2-html5-required-fix
+          = label_tag :company_size, s_('Trial|Number of employees'), for: :company_size, class: 'col-form-label'
+          = select_tag :company_size, company_size_options_for_select(params[:company_size]), class: 'select2', required: true, data: { qa_selector: 'number_of_employees' }
+        .col-12.col-sm-6.form-group
+          = label_tag :number_of_users, s_('Trial|Number of trial users'), for: :number_of_users, class: 'col-form-label'
+          = number_field_tag :number_of_users, params[:number_of_users], class: 'form-control gl-border-gray-400', required: true, min: 1, data: { qa_selector: 'number_of_users' }
       .form-group.gl-select2-html5-required-fix
-        = label_tag :company_size, s_('Trial|Number of employees'), for: :company_size, class: 'col-form-label'
-        = select_tag :company_size, company_size_options_for_select(params[:company_size]), class: 'select2', required: true, data: { qa_selector: 'number_of_employees' }
+        = render 'select_country'
       .form-group
         = label_tag :phone_number, s_('Trial|Telephone number'), for: :phone_number, class: 'col-form-label'
         = telephone_field_tag :phone_number, params[:phone_number], pattern: '^(\+)*[0-9-\s]+$', class: 'form-control gl-form-input', required: true, data: { qa_selector: 'telephone_number' }
         %p.gl-text-gray-500= _('Allowed characters: +, 0-9, -, and spaces.')
-      .form-group
-        = label_tag :number_of_users, s_('Trial|How many users will be evaluating the trial?'), for: :number_of_users, class: 'col-form-label'
-        = number_field_tag :number_of_users, params[:number_of_users], class: 'form-control gl-form-input', required: true, min: 1, data: { qa_selector: 'number_of_users' }
-      .form-group.gl-select2-html5-required-fix
-        = render 'select_country'
-      = submit_tag s_('Trial|Continue'), class: 'btn gl-button btn-confirm btn-block', data: { qa_selector: 'continue' }
+      = submit_tag s_('Trial|Continue'), class: 'btn gl-button btn-confirm gl-w-20', data: { qa_selector: 'continue' }
 
     = render 'skip_trial'
+
+  .col-md-4.gl-display-inline-flex.gl-vertical-align-middle
+    = image_tag 'illustrations/gitlab-features-orbiting-browser.svg', class: 'd-none d-md-inline'

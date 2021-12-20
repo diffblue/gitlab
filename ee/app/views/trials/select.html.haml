@@ -4,11 +4,11 @@
 = render "layouts/google_tag_manager_body"
 
 .row
-  .col-md-6.offset-md-3
-    %h3.gl-text-center.gl-mt-0
+  .col-md-6.m-sm-6
+    %h2.gl-pb-5.gl-my-0
       = _('Almost there')
 
-    %p.gl-text-center
+    %p.gl-text-gray-700.gl-font-lg
       = trial_selection_intro_text
 
     = render 'errors'
@@ -23,14 +23,17 @@
         = text_field_tag :new_group_name, nil, class: 'form-control', required: !show_trial_namespace_select?, data: { qa_selector: 'new_group_name' }
       - if should_ask_company_question?
         .form-group
-          = label_tag :trial_entity, _('Is this GitLab trial for your company?')
+          = label_tag :trial_entity, _('Who will be using GitLab?')
           .gl-form-checkbox-group
             .gl-form-checkbox.form-check.form-check-inline
               = radio_button_tag :trial_entity, :company, params[:trial_entity]=='company', required: true, class: 'form-check-input'
-              = label_tag :trial_entity_company, _('Yes'), class: 'form-check-label'
+              = label_tag :trial_entity_company, _('My company or team'), class: 'form-check-label'
             .gl-form-checkbox.form-check.form-check-inline
               = radio_button_tag :trial_entity, :individual, params[:trial_entity]=='individual', required: true, class: 'form-check-input', data: { qa_selector: 'trial_individual' }
-              = label_tag :trial_entity_individual, _('No'), class: 'form-check-label'
-      = submit_tag _('Start your free trial'), class: 'gl-button btn btn-confirm btn-block', data: { qa_selector: 'start_your_free_trial' }
+              = label_tag :trial_entity_individual, _('Just me'), class: 'form-check-label'
+      = submit_tag _('Start your free trial'), class: 'gl-button btn btn-confirm gl-w-20', data: { qa_selector: 'start_your_free_trial' }
 
     = render 'skip_trial'
+
+  .col-md-4.gl-display-inline-flex.gl-vertical-align-middle
+    = image_tag 'illustrations/gitlab-features-orbiting-browser.svg', class: 'd-none d-md-inline'
