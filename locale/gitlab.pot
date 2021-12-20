@@ -37283,9 +37283,6 @@ msgstr ""
 msgid "Trial|GitLab Ultimate trial (optional)"
 msgstr ""
 
-msgid "Trial|Hi%{salutation}, your GitLab Ultimate trial lasts for 30 days, but you can keep your free GitLab account forever. We just need some additional information about %{company} to activate your trial."
-msgstr ""
-
 msgid "Trial|How many employees will use Gitlab?"
 msgstr ""
 
@@ -37314,9 +37311,6 @@ msgid "Trial|We will activate your trial on your group after you complete this s
 msgstr ""
 
 msgid "Trial|Your GitLab Ultimate trial lasts for 30 days, but you can keep your free GitLab account forever. We just need some additional information to activate your trial."
-msgstr ""
-
-msgid "Trial|your company"
 msgstr ""
 
 msgid "Trigger"

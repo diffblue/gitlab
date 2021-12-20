@@ -41,9 +41,6 @@ module Registrations
 
     def apply_trial_for_trial_onboarding_flow
       if apply_trial
-        record_experiment_user(:remove_known_trial_form_fields_welcoming, namespace_id: @group.id)
-        record_experiment_conversion_event(:remove_known_trial_form_fields_welcoming)
-
         experiment(:trial_registration_with_reassurance, actor: current_user).track(
           :apply_trial,
           label: 'registrations:groups:create',

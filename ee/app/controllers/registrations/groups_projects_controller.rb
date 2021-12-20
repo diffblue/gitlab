@@ -42,8 +42,6 @@ module Registrations
           if helpers.registration_verification_enabled?
             redirect_to new_users_sign_up_verification_path(url_params.merge(combined: true))
           elsif helpers.in_trial_onboarding_flow?
-            record_experiment_user(:remove_known_trial_form_fields_welcoming, namespace_id: @group.id)
-            record_experiment_conversion_event(:remove_known_trial_form_fields_welcoming)
 
             redirect_to trial_getting_started_users_sign_up_welcome_path(url_params)
           else

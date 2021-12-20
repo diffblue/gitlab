@@ -74,16 +74,6 @@ module EE
       }
     end
 
-    def remove_known_trial_form_fields_variant
-      if experiment_enabled?(:remove_known_trial_form_fields_welcoming, subject: current_user)
-        :welcoming
-      elsif experiment_enabled?(:remove_known_trial_form_fields_noneditable, subject: current_user)
-        :noneditable
-      else
-        :control
-      end
-    end
-
     def only_trialable_group_namespace
       trialable_group_namespaces.first if trialable_group_namespaces.count == 1
     end

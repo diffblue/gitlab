@@ -20,7 +20,6 @@ class TrialsController < ApplicationController
   def new
     experiment(:trial_registration_with_reassurance, actor: current_user)
       .track(:render, label: 'trials:new', user: current_user)
-    record_experiment_user(:remove_known_trial_form_fields_welcoming, remove_known_trial_form_fields_context)
   end
 
   def select
@@ -212,15 +211,6 @@ class TrialsController < ApplicationController
     group
   end
 
-  def remove_known_trial_form_fields_context
-    {
-      first_name_present: current_user.first_name.present?,
-      last_name_present: current_user.last_name.present?,
-      company_name_present: current_user.organization.present?,
-      variant: helpers.remove_known_trial_form_fields_variant
-    }
-  end
-
   def redirect_trial_user_to_feature_experiment_flow
     experiment(:redirect_trial_user_to_feature, namespace: @namespace) do |e|
       e.use { redirect_to group_url(@namespace, { trial: true }) }
@@ -239,9 +229,6 @@ class TrialsController < ApplicationController
     @result = GitlabSubscriptions::ApplyTrialService.new.execute(apply_trial_params)
 
     if @result&.dig(:success)
-      record_experiment_user(:remove_known_trial_form_fields_welcoming, namespace_id: @namespace.id)
-      record_experiment_conversion_event(:remove_known_trial_form_fields_welcoming)
-
       experiment(:trial_registration_with_reassurance, actor: current_user)
         .track(:apply_trial, label: 'trials:apply', namespace: @namespace, user: current_user)
 
