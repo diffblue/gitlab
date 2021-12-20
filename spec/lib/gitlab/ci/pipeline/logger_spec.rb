@@ -39,6 +39,38 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Logger do
       expect { logger.instrument(:expensive_operation) }
         .to raise_error(ArgumentError, 'block not given')
     end
+
+    context 'with SQL instrumentation', :request_store do
+      it "returns the block's value" do
+        expect(logger.instrument(:expensive_operation, sql: true) { Project.count }).to eq(Project.count)
+      end
+
+      it 'includes SQL metrics' do
+        loggable_data = %w[
+          expensive_operation_duration_s
+          expensive_operation_db_count
+          expensive_operation_db_primary_count
+          expensive_operation_db_primary_duration_s
+          expensive_operation_db_main_count
+          expensive_operation_db_main_duration_s
+        ].each.with_object({}) do |key, accumulator|
+          accumulator[key] = {
+            'count' => 1,
+            'avg' => a_kind_of(Numeric),
+            'max' => a_kind_of(Numeric),
+            'min' => a_kind_of(Numeric)
+          }
+        end
+
+        logger.instrument(:expensive_operation, sql: true) { Project.count }
+        expect(logger.observations_hash).to match(a_hash_including(loggable_data))
+      end
+
+      it 'does not include SQL metrics when there is no SQL operation' do
+        logger.instrument(:expensive_operation, sql: true) { 123 }
+        expect(logger.observations_hash.keys).to match_array(['expensive_operation_duration_s'])
+      end
+    end
   end
 
   describe '#observe' do

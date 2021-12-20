@@ -9,7 +9,7 @@ module Gitlab
           include Gitlab::Utils::StrongMemoize
 
           def perform!
-            logger.instrument(:pipeline_save) do
+            logger.instrument(:pipeline_save, sql: true) do
               BulkInsertableAssociations.with_bulk_insert do
                 tags = extract_tag_list_by_status
 

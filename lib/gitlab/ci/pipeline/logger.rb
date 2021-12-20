@@ -23,16 +23,18 @@ module Gitlab
           log_conditions.push(block)
         end
 
-        def instrument(operation)
+        def instrument(operation, sql: false)
           return yield unless enabled?
 
           raise ArgumentError, 'block not given' unless block_given?
 
+          op_start_db_counters = current_db_counter_payload if sql && sql_logging_enabled?
           op_started_at = current_monotonic_time
 
           result = yield
 
           observe("#{operation}_duration_s", current_monotonic_time - op_started_at)
+          observe_sql(operation, op_start_db_counters) if sql && sql_logging_enabled?
 
           result
         end
@@ -96,6 +98,25 @@ module Gitlab
 
         def observations
           @observations ||= Hash.new { |hash, key| hash[key] = [] }
+        end
+
+        def observe_sql(operation, start_db_counters)
+          current_db_counter_payload.each do |key, value|
+            result = value - start_db_counters.fetch(key, 0)
+            next if result == 0
+
+            observe("#{operation}_#{key}", result)
+          end
+        end
+
+        def current_db_counter_payload
+          ::Gitlab::Metrics::Subscribers::ActiveRecord.db_counter_payload
+        end
+
+        def sql_logging_enabled?
+          strong_memoize(:sql_logging_enabled) do
+            ::Feature.enabled?(:ci_pipeline_logger_sql, project, default_enabled: :yaml)
+          end
         end
       end
     end
