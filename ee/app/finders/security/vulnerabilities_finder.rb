@@ -99,7 +99,7 @@ module Security
       # This filter will not work for InstanceSecurityDashboard, because InstanceSecurityDashboard could have multiple projects.
       return if vulnerable.is_a?(InstanceSecurityDashboard)
 
-      if params[:image].present? && Feature.enabled?(:vulnerability_location_image_filter, vulnerable, default_enabled: :yaml)
+      if params[:image].present?
         @vulnerabilities = vulnerabilities.with_container_image(params[:image])
       end
     end
