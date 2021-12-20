@@ -41,7 +41,7 @@ module EE
         'Groups' => trialable_group_namespaces.map { |n| [n.name, n.id] }
       }
 
-      grouped_options_for_select(grouped_options, selected, prompt: _('Please select'))
+      grouped_options_for_select(grouped_options, selected, prompt: _('Please select a group'))
     end
 
     def show_trial_errors?(namespace, service_result)

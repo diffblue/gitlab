@@ -27,7 +27,7 @@ RSpec.describe 'Trial Select Namespace', :js do
 
     context 'when source is not about.gitlab.com' do
       it 'shows company/individual question' do
-        expect(page).to have_content('Is this GitLab trial for your company?')
+        expect(page).to have_content('Who will be using GitLab?')
       end
     end
 
@@ -35,7 +35,7 @@ RSpec.describe 'Trial Select Namespace', :js do
       let(:url_params) { { glm_source: 'about.gitlab.com' } }
 
       it 'hides company/individual duplicate question' do
-        expect(page).not_to have_content('Is this GitLab trial for your company?')
+        expect(page).not_to have_content('Who will be using GitLab?')
       end
     end
 
@@ -46,7 +46,7 @@ RSpec.describe 'Trial Select Namespace', :js do
 
       it 'shows the new group name input' do
         expect(page).to have_field('New Group Name')
-        expect(page).to have_content('Is this GitLab trial for your company?')
+        expect(page).to have_content('Who will be using GitLab?')
       end
 
       context 'enters a valid new group name' do
@@ -125,7 +125,7 @@ RSpec.describe 'Trial Select Namespace', :js do
       context 'without trial plan' do
         it 'does not show the new group name input' do
           expect(page).not_to have_field('New Group Name')
-          expect(page).to have_content('Is this GitLab trial for your company?')
+          expect(page).to have_content('Who will be using GitLab?')
         end
 
         it 'applies trial and redirects to dashboard' do
