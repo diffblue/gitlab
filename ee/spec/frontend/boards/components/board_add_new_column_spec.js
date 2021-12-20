@@ -249,24 +249,43 @@ describe('BoardAddNewColumn', () => {
         expect(findIterationPeriod(labels.at(1)).exists()).toBe(false);
       });
     });
+  });
 
-    describe('iteration_cadences feature flag is on', () => {
-      it('displays iteration period', async () => {
-        mountComponent({
-          ...iterationMountOptions,
-          glFeatures: {
-            iterationCadences: true,
-          },
-        });
+  describe('iteration_cadences feature flag is on', () => {
+    const iterationMountOptions = {
+      iterations: mockIterations,
+      actions: {
+        fetchIterations: jest.fn(),
+      },
+    };
 
-        await selectIteration();
-
-        const labels = findLabels();
-        expect(labels.at(0).text()).toContain('Oct 5, 2021 - Oct 10, 2021');
-        expect(findIterationPeriod(labels.at(0)).isVisible()).toBe(true);
-        expect(labels.at(1).text()).toContain('Oct 12, 2021 - Oct 17, 2021');
-        expect(findIterationPeriod(labels.at(1)).isVisible()).toBe(true);
+    beforeEach(async () => {
+      mountComponent({
+        ...iterationMountOptions,
+        glFeatures: {
+          iterationCadences: true,
+        },
       });
+
+      await selectIteration();
+    });
+
+    it('finds a cadence in the dropdown', () => {
+      const { iterations } = iterationMountOptions;
+      const getCadenceTitleFromMocks = (idx) => iterations[idx].iterationCadence.title;
+      const cadenceTitles = wrapper
+        .findAll('[data-testid="cadence"]')
+        .wrappers.map((x) => x.text());
+
+      expect(cadenceTitles).toEqual(cadenceTitles.map((_, idx) => getCadenceTitleFromMocks(idx)));
+    });
+
+    it('displays iteration period', async () => {
+      const iterations = wrapper.findAllByTestId('new-column-iteration-period');
+      expect(iterations.at(0).text()).toContain('Oct 5, 2021 - Oct 10, 2021');
+      expect(findIterationPeriod(iterations.at(0)).isVisible()).toBe(true);
+      expect(iterations.at(1).text()).toContain('Oct 12, 2021 - Oct 17, 2021');
+      expect(findIterationPeriod(iterations.at(1)).isVisible()).toBe(true);
     });
   });
 });
