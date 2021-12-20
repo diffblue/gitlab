@@ -1,10 +1,11 @@
 <script>
-import { GlBadge, GlTabs, GlTab } from '@gitlab/ui';
+import { GlBadge, GlNavItem, GlTabs, GlTab } from '@gitlab/ui';
 import { settingsTabTitle, overridesTabTitle } from '~/integrations/constants';
 
 export default {
   components: {
     GlBadge,
+    GlNavItem,
     GlTabs,
     GlTab,
   },
@@ -30,11 +31,9 @@ export default {
 <template>
   <gl-tabs>
     <template #tabs-start>
-      <li class="nav-item" role="presentation">
-        <a class="nav-link gl-tab-nav-item" :href="editPath">{{
-          $options.i18n.settingsTabTitle
-        }}</a>
-      </li>
+      <gl-nav-item role="presentation" link-classes="gl-tab-nav-item" :href="editPath">{{
+        $options.i18n.settingsTabTitle
+      }}</gl-nav-item>
     </template>
 
     <gl-tab active>
