@@ -21,7 +21,7 @@ export default () => {
       DependenciesApp,
     },
     store,
-    provide: () => provide,
+    provide,
     render(createElement) {
       return createElement(DependenciesApp);
     },
