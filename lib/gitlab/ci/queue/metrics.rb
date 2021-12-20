@@ -74,11 +74,25 @@ module Gitlab
           return '+Inf' unless runner.instance_type?
 
           # excluding currently started job
-          running_jobs_count = job.project.builds.running.where(runner: ::Ci::Runner.instance_type)
-                                  .limit(JOBS_RUNNING_FOR_PROJECT_MAX_BUCKET + 1).count - 1
-          running_jobs_count < JOBS_RUNNING_FOR_PROJECT_MAX_BUCKET ? running_jobs_count : "#{JOBS_RUNNING_FOR_PROJECT_MAX_BUCKET}+"
+          running_jobs_count = running_jobs_relation(job)
+            .where(runner: ::Ci::Runner.instance_type)
+            .limit(JOBS_RUNNING_FOR_PROJECT_MAX_BUCKET + 1).count - 1
+
+          if running_jobs_count < JOBS_RUNNING_FOR_PROJECT_MAX_BUCKET
+            running_jobs_count
+          else
+            "#{JOBS_RUNNING_FOR_PROJECT_MAX_BUCKET}+"
+          end
         end
         # rubocop: enable CodeReuse/ActiveRecord
+
+        def running_jobs_relation(job)
+          if ::Feature.enabled?(:ci_pending_builds_maintain_denormalized_data, default_enabled: :yaml)
+            ::Ci::RunningBuild.where(project_id: job.project.id)
+          else
+            job.project.builds.running
+          end
+        end
 
         def increment_queue_operation(operation)
           self.class.increment_queue_operation(operation)
