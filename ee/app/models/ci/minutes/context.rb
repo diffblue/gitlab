@@ -3,15 +3,13 @@
 module Ci
   module Minutes
     class Context
-      delegate :shared_runners_minutes_limit_enabled?, to: :level
+      delegate :shared_runners_minutes_limit_enabled?, to: :namespace
       delegate :name, to: :namespace, prefix: true
 
-      attr_reader :level
+      attr_reader :namespace
 
       def initialize(project, namespace, tracking_strategy: nil)
-        @project = project
         @namespace = project&.shared_runners_limit_namespace || namespace
-        @level = project || namespace
         @tracking_strategy = tracking_strategy
       end
 
@@ -20,8 +18,6 @@ module Ci
       end
 
       private
-
-      attr_reader :project, :namespace
 
       def quota
         @quota ||= ::Ci::Minutes::Quota.new(namespace, tracking_strategy: @tracking_strategy)

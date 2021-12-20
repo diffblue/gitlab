@@ -9,7 +9,7 @@ RSpec.describe Ci::Minutes::Context do
   describe 'delegation' do
     subject { described_class.new(project, group) }
 
-    it { is_expected.to delegate_method(:shared_runners_minutes_limit_enabled?).to(:level) }
+    it { is_expected.to delegate_method(:shared_runners_minutes_limit_enabled?).to(:namespace) }
     it { is_expected.to delegate_method(:name).to(:namespace).with_prefix }
   end
 end
