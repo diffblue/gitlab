@@ -118,7 +118,7 @@ module EE
 
             local_active_routes = { path: 'billings#index' }
 
-            experiment(:billing_in_side_nav, user: context.current_user) do |e|
+            experiment(:billing_in_side_nav, actor: context.current_user, namespace: context.group.root_ancestor, sticky_to: context.current_user) do |e|
               e.control {}
               e.candidate do
                 local_active_routes = {
