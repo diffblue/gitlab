@@ -7,15 +7,14 @@ RSpec.describe SystemCheck::Geo::GeoDatabaseConfiguredCheck, :silence_stdout do
 
   describe '#multi_check', :reestablished_active_record_base do
     it "checks database configuration" do
-      stub_configuration_check(false)
+      stub_database_state(subject, configured: false)
 
       expect(subject).to receive(:try_fixing_it).with(described_class::WRONG_CONFIGURATION_MESSAGE)
       expect(subject.multi_check).to be_falsey
     end
 
     it "checks database configuration" do
-      stub_configuration_check(true)
-      stub_connection_state(false)
+      stub_database_state(subject, active: false)
 
       expect(subject).to receive(:try_fixing_it).with(described_class::UNHEALTHY_CONNECTION_MESSAGE)
 
@@ -23,9 +22,7 @@ RSpec.describe SystemCheck::Geo::GeoDatabaseConfiguredCheck, :silence_stdout do
     end
 
     it "checks table existence" do
-      stub_configuration_check(true)
-      stub_connection_state(true)
-      stub_tables_existence(false)
+      stub_database_state(subject, tables: false)
 
       expect(subject).to receive(:try_fixing_it).with(described_class::NO_TABLES_MESSAGE)
 
@@ -33,10 +30,7 @@ RSpec.describe SystemCheck::Geo::GeoDatabaseConfiguredCheck, :silence_stdout do
     end
 
     it "checks if existing database is being reused" do
-      stub_configuration_check(true)
-      stub_connection_state(true)
-      stub_tables_existence(true)
-      stub_fresh_database(false)
+      stub_database_state(subject, fresh: false)
 
       expect(subject).to receive(:try_fixing_it).with(described_class::REUSING_EXISTING_DATABASE_MESSAGE)
 
@@ -44,10 +38,7 @@ RSpec.describe SystemCheck::Geo::GeoDatabaseConfiguredCheck, :silence_stdout do
     end
 
     it "returns true when all checks passed" do
-      stub_configuration_check(true)
-      stub_connection_state(true)
-      stub_tables_existence(true)
-      stub_fresh_database(true)
+      stub_database_state(subject)
 
       expect(subject).not_to receive(:try_fixing_it)
 
@@ -55,23 +46,14 @@ RSpec.describe SystemCheck::Geo::GeoDatabaseConfiguredCheck, :silence_stdout do
     end
   end
 
-  def stub_configuration_check(state)
-    expect(Gitlab::Geo).to receive(:geo_database_configured?).and_return(state)
-  end
+  def stub_database_state(subject, configured: true, active: true, tables: true, fresh: true)
+    allow(subject).to receive(:needs_migration?).and_return(!tables)
 
-  def stub_connection_state(state)
-    connection = double
-    expect(connection).to receive(:active?).and_return(state)
-    expect(::Geo::TrackingBase).to receive(:connection).and_return(connection)
-  end
+    allow(::Gitlab::Geo).to receive(:geo_database_configured?).and_return(configured)
+    allow(::Geo::TrackingBase).to receive(:connection).and_return(double(active?: active))
 
-  def stub_tables_existence(state)
-    expect_any_instance_of(ActiveRecord::MigrationContext).to receive(:needs_migration?).and_return(!state)
-  end
-
-  def stub_fresh_database(state)
-    expect_next_instance_of(Gitlab::Geo::HealthCheck) do |geo_health_check|
-      expect(geo_health_check).to receive(:reusing_existing_tracking_database?).and_return(!state)
+    allow_next_instance_of(::Gitlab::Geo::HealthCheck) do |health_check|
+      allow(health_check).to receive(:reusing_existing_tracking_database?).and_return(!fresh)
     end
   end
 end

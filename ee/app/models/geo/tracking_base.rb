@@ -10,13 +10,7 @@ module Geo
     SecondaryNotConfigured = Class.new(StandardError)
 
     if ::Gitlab::Geo.geo_database_configured?
-      # Mark current model as a `connection_class`
-      # This is the behavior when executing `connects_to`
-      # which indicates that given class is holding a connection object
-      # and should be treated accordingly.
-      self.connection_class = true
-
-      establish_connection Rails.configuration.geo_database
+      connects_to database: { writing: :geo, reading: :geo }
     end
 
     def self.connected?
@@ -36,6 +30,14 @@ module Geo
       retrieve_connection
     rescue ActiveRecord::NoDatabaseError
       raise SecondaryNotConfigured, NOT_CONFIGURED_MSG
+    end
+
+    class SchemaMigration < TrackingBase
+      class << self
+        def all_versions
+          order(:version).pluck(:version)
+        end
+      end
     end
   end
 end

@@ -75,7 +75,7 @@ module Gitlab
     end
 
     def self.geo_database_configured?
-      Rails.configuration.respond_to?(:geo_database)
+      ::Gitlab::Database.has_config?(:geo)
     end
 
     def self.primary_node_configured?

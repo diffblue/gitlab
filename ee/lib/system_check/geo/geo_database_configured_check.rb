@@ -61,7 +61,27 @@ module SystemCheck
       end
 
       def tables_present?
-        Gitlab::Geo::DatabaseTasks.with_geo_db { !ActiveRecord::Base.connection.migration_context.needs_migration? }
+        !needs_migration?
+      end
+
+      def needs_migration?
+        (migrations.collect(&:version) - get_all_versions).size > 0 # rubocop:disable Style/ZeroLengthPredicate
+      end
+
+      def get_all_versions
+        if schema_migration.table_exists?
+          schema_migration.all_versions.map(&:to_i)
+        else
+          []
+        end
+      end
+
+      def migrations
+        ::Geo::TrackingBase.connection.migration_context.migrations
+      end
+
+      def schema_migration
+        ::Geo::TrackingBase::SchemaMigration
       end
 
       def geo_health_check
