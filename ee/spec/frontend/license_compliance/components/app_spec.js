@@ -192,7 +192,7 @@ describe('Project Licenses', () => {
     it('renders the SbomBannercomponent with the right props', () => {
       const sbomBanner = findSbomBanner();
       expect(sbomBanner.exists()).toBe(true);
-      expect(sbomBanner.props().sbomSurveySvgPath).toEqual(wrapper.vm.sbomSurveySvgPath);
+      expect(sbomBanner.props().sbomSurveySvgPath).toEqual(sbomSurveySvgPath);
     });
 
     it('renders a "Detected in project" tab and a "Policies" tab', () => {

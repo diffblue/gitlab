@@ -227,7 +227,7 @@ describe('DependenciesApp component', () => {
       it('renders the SbomBannercomponent with the right props', () => {
         const sbomBanner = findSbomBanner();
         expect(sbomBanner.exists()).toBe(true);
-        expect(sbomBanner.props().sbomSurveySvgPath).toEqual(wrapper.vm.sbomSurveySvgPath);
+        expect(sbomBanner.props().sbomSurveySvgPath).toEqual(basicAppProps.sbomSurveySvgPath);
       });
 
       describe('given the user has public permissions', () => {
