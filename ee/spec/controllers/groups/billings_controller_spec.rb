@@ -73,7 +73,7 @@ RSpec.describe Groups::BillingsController, :saas do
           it 'assigns the candidate experience and tracks the event' do
             expect(experiment(:billing_in_side_nav)).to track(:view, label: 'view_billing')
                                                                 .for(:candidate)
-                                                                .with_context(user: user)
+                                                                .with_context(actor: user, namespace: group)
                                                                 .on_next_instance
 
             get :index, params: { group_id: group, from: :side_nav }
