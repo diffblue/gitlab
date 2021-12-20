@@ -681,7 +681,7 @@ RSpec.describe UsersController do
     end
 
     context 'when the rate limit has been reached' do
-      it 'returns JSON indicating the user exists', :aggregate_failures do
+      it 'returns status 429 Too Many Requests', :aggregate_failures do
         ip = '1.2.3.4'
         expect(::Gitlab::ApplicationRateLimiter).to receive(:throttled?).with(:username_exists, scope: ip).and_return(true)
 
