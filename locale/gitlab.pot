@@ -28537,6 +28537,9 @@ msgstr ""
 msgid "ProtectedBranch|Branch"
 msgstr ""
 
+msgid "ProtectedBranch|Branch will be writable for developers. Are you sure?"
+msgstr ""
+
 msgid "ProtectedBranch|Branch:"
 msgstr ""
 
@@ -28580,6 +28583,9 @@ msgid "ProtectedBranch|Toggle allowed to force push"
 msgstr ""
 
 msgid "ProtectedBranch|Toggle code owner approval"
+msgstr ""
+
+msgid "ProtectedBranch|Unprotect"
 msgstr ""
 
 msgid "ProtectedBranch|What are protected branches?"
