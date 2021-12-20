@@ -3,7 +3,7 @@
 class BackfillIncidentIssueEscalationStatuses < Gitlab::Database::Migration[1.0]
   MIGRATION = 'BackfillIncidentIssueEscalationStatuses'
   DELAY_INTERVAL = 2.minutes
-  BATCH_SIZE = 50_000
+  BATCH_SIZE = 20_000
 
   disable_ddl_transaction!
 
