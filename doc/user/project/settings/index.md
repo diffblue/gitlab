@@ -324,7 +324,7 @@ Enable [Service Desk](../service_desk.md) for your project to offer customer sup
 
 ### Export project
 
-Learn how to [export a project](import_export.md#import-the-project) in GitLab.
+Learn how to [export a project](import_export.md#import-a-project-and-its-data) in GitLab.
 
 ### Advanced settings
 
