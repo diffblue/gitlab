@@ -97,15 +97,11 @@ module Gitlab
       end
 
       def use_primary_and_secondary_stores?
-        feature_flags_available? &&
-          Feature.enabled?("use_primary_and_secondary_stores_for_#{instance_name.underscore}", default_enabled: :yaml) &&
-          !same_redis_store?
+        Feature.enabled?("use_primary_and_secondary_stores_for_#{instance_name.underscore}", default_enabled: :yaml) && !same_redis_store?
       end
 
       def use_primary_store_as_default?
-        feature_flags_available? &&
-          Feature.enabled?("use_primary_store_as_default_for_#{instance_name.underscore}", default_enabled: :yaml) &&
-          !same_redis_store?
+        Feature.enabled?("use_primary_store_as_default_for_#{instance_name.underscore}", default_enabled: :yaml) && !same_redis_store?
       end
 
       private
