@@ -7,6 +7,7 @@ module Types
       # this type only exposes data related to the current user
       class NamespaceMonthlyUsageType < BaseObject
         graphql_name 'CiMinutesNamespaceMonthlyUsage'
+        authorize :read_usage
 
         field :month, ::GraphQL::Types::String, null: true,
               description: 'Month related to the usage data.'

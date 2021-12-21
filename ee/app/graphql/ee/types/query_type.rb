@@ -4,7 +4,6 @@ module EE
   module Types
     module QueryType
       extend ActiveSupport::Concern
-
       prepended do
         field :iteration, ::Types::IterationType,
               null: true,
@@ -70,7 +69,12 @@ module EE
 
         field :ci_minutes_usage, ::Types::Ci::Minutes::NamespaceMonthlyUsageType.connection_type,
               null: true,
-              description: 'Monthly CI minutes usage data for the current user.'
+              description: 'CI/CD minutes usage data for a namespace.' do
+          argument :namespace_id,
+                   ::Types::GlobalIDType[::Namespace],
+                   required: false,
+                   description: 'Global ID of the Namespace for the monthly CI/CD minutes usage.'
+        end
       end
 
       def vulnerability(id:)
@@ -87,8 +91,20 @@ module EE
         ::GitlabSchema.find_by_gid(id)
       end
 
-      def ci_minutes_usage
-        ::Ci::Minutes::NamespaceMonthlyUsage.for_namespace(current_user.namespace)
+      def ci_minutes_usage(namespace_id: nil)
+        root_namespace = find_root_namespace(namespace_id)
+        ::Ci::Minutes::NamespaceMonthlyUsage.for_namespace(root_namespace)
+      end
+
+      private
+
+      def find_root_namespace(namespace_id)
+        return current_user&.namespace unless namespace_id
+
+        namespace = ::Gitlab::Graphql::Lazy.force(::GitlabSchema.find_by_gid(namespace_id))
+        return unless namespace&.root?
+
+        namespace
       end
     end
   end
