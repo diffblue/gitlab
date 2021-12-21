@@ -827,8 +827,13 @@ module Ci
         end
 
         context 'when project already has running jobs' do
-          let!(:build2) { create(:ci_build, :running, pipeline: pipeline, runner: shared_runner) }
-          let!(:build3) { create(:ci_build, :running, pipeline: pipeline, runner: shared_runner) }
+          let(:build2) { create(:ci_build, :running, pipeline: pipeline, runner: shared_runner) }
+          let(:build3) { create(:ci_build, :running, pipeline: pipeline, runner: shared_runner) }
+
+          before do
+            ::Ci::RunningBuild.upsert_shared_runner_build!(build2)
+            ::Ci::RunningBuild.upsert_shared_runner_build!(build3)
+          end
 
           it 'counts job queuing time histogram with expected labels' do
             allow(attempt_counter).to receive(:increment)
@@ -845,6 +850,14 @@ module Ci
       shared_examples 'metrics collector' do
         it_behaves_like 'attempt counter collector'
         it_behaves_like 'jobs queueing time histogram collector'
+
+        context 'when using denormalized data is disabled' do
+          before do
+            stub_feature_flags(ci_pending_builds_maintain_denormalized_data: false)
+          end
+
+          it_behaves_like 'jobs queueing time histogram collector'
+        end
       end
 
       context 'when shared runner is used' do
