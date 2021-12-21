@@ -1,7 +1,14 @@
 <script>
-import { GlTable, GlLink, GlIcon, GlAvatarLink, GlAvatar, GlTooltipDirective } from '@gitlab/ui';
-import { escape } from 'lodash';
 import { mapState } from 'vuex';
+import { escape } from 'lodash';
+import {
+  GlTableLite,
+  GlLink,
+  GlIcon,
+  GlAvatarLink,
+  GlAvatar,
+  GlTooltipDirective,
+} from '@gitlab/ui';
 import { getTimeago } from '~/lib/utils/datetime_utility';
 import { __, sprintf, n__ } from '~/locale';
 import ApproversColumn from './approvers_column.vue';
@@ -9,7 +16,7 @@ import ApproversColumn from './approvers_column.vue';
 export default {
   name: 'MergeRequestTable',
   components: {
-    GlTable,
+    GlTableLite,
     GlLink,
     GlIcon,
     GlAvatarLink,
@@ -88,7 +95,7 @@ export default {
 </script>
 
 <template>
-  <gl-table
+  <gl-table-lite
     class="my-3"
     :fields="$options.tableHeaderFields"
     :items="mergeRequests"
@@ -140,5 +147,5 @@ export default {
       <span class="font-weight-bold cgreen"> +{{ items.item.diff_stats.additions }} </span>
       <span class="font-weight-bold cred"> -{{ items.item.diff_stats.deletions }} </span>
     </template>
-  </gl-table>
+  </gl-table-lite>
 </template>
