@@ -7500,6 +7500,9 @@ msgstr ""
 msgid "Cluster type must be specificed for Stages::ClusterEndpointInserter"
 msgstr ""
 
+msgid "ClusterAgents|%{name} successfully deleted"
+msgstr ""
+
 msgid "ClusterAgents|%{number} of %{total} agents"
 msgstr ""
 
@@ -7557,6 +7560,9 @@ msgstr ""
 msgid "ClusterAgents|An unknown error occurred. Please try again."
 msgstr ""
 
+msgid "ClusterAgents|Are you sure you want to delete this agent? This action cannot be undone."
+msgstr ""
+
 msgid "ClusterAgents|Certificate"
 msgstr ""
 
@@ -7600,6 +7606,12 @@ msgid "ClusterAgents|Created by %{name} %{time}"
 msgstr ""
 
 msgid "ClusterAgents|Date created"
+msgstr ""
+
+msgid "ClusterAgents|Delete"
+msgstr ""
+
+msgid "ClusterAgents|Delete agent"
 msgstr ""
 
 msgid "ClusterAgents|Deprecated"
@@ -7713,6 +7725,9 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "ClusterAgents|This agent has no tokens"
+msgstr ""
+
+msgid "ClusterAgents|To delete the agent, type %{name} to confirm:"
 msgstr ""
 
 msgid "ClusterAgents|To install a new agent, first add the agent's configuration file to this repository. %{linkStart}What's the agent's configuration file?%{linkEnd}"
