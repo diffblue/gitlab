@@ -1,3 +1,3 @@
 - if group.present? && current_user_is_group_owner && user.using_gitlab_com_seat?(group)
-  = render 'shared/members/badge', type: 'neutral' do
+  = render 'shared/members/badge', variant: :neutral do
     = _("Is using seat")
