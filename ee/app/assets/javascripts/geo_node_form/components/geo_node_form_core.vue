@@ -1,6 +1,7 @@
 <script>
 import { GlFormGroup, GlFormInput, GlSprintf, GlLink } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
+import { s__ } from '~/locale';
 import {
   VALIDATION_FIELD_KEYS,
   NODE_NAME_MORE_INFO,
@@ -24,6 +25,15 @@ export default {
   },
   computed: {
     ...mapState(['formErrors']),
+    internalUrlDescription() {
+      return this.nodeData.primary
+        ? s__(
+            'AdminGeo|The URL of the primary site that is used internally by the secondary sites.',
+          )
+        : s__(
+            'AdminGeo|The URL of the secondary site that is used internally by the primary site.',
+          );
+    },
   },
   methods: {
     ...mapActions(['setError']),
@@ -126,21 +136,14 @@ export default {
         </div>
       </gl-form-group>
       <gl-form-group
-        v-if="nodeData.primary"
         class="col-12 col-sm-6"
         :label="__('Internal URL (optional)')"
         label-for="node-internal-url-field"
-        :description="
-          __('The URL defined on the primary node that secondary nodes should use to contact it.')
-        "
+        :description="internalUrlDescription"
       >
         <template #description>
           <gl-sprintf
-            :message="
-              __(
-                'The URL defined on the primary node that secondary nodes should use to contact it. %{linkStart}Learn more%{linkEnd}',
-              )
-            "
+            :message="`${internalUrlDescription} ${__('%{linkStart}Learn more.%{linkEnd}')}`"
           >
             <template #link="{ content }">
               <gl-link

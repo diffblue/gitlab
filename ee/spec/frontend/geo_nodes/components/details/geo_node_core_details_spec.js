@@ -67,17 +67,17 @@ describe('GeoNodeCoreDetails', () => {
     });
 
     describe.each`
-      node             | showInternalUrl
-      ${MOCK_NODES[0]} | ${true}
-      ${MOCK_NODES[1]} | ${false}
-    `(`conditionally`, ({ node, showInternalUrl }) => {
+      node
+      ${MOCK_NODES[0]}
+      ${MOCK_NODES[1]}
+    `('internal URL', ({ node }) => {
       beforeEach(() => {
         createComponent(null, { node });
       });
 
       describe(`when primary is ${node.primary}`, () => {
-        it(`does ${showInternalUrl ? '' : 'not '}render node internal url`, () => {
-          expect(findNodeInternalUrl().exists()).toBe(showInternalUrl);
+        it(`does render node internal url`, () => {
+          expect(findNodeInternalUrl().exists()).toBe(true);
         });
       });
     });

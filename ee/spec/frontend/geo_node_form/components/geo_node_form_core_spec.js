@@ -74,10 +74,10 @@ describe('GeoNodeFormCore', () => {
     });
 
     describe.each`
-      primaryNode | showInternalUrl
-      ${true}     | ${true}
-      ${false}    | ${false}
-    `(`conditional fields`, ({ primaryNode, showInternalUrl }) => {
+      primaryNode
+      ${true}
+      ${false}
+    `('internal URL', ({ primaryNode }) => {
       describe(`when node is ${primaryNode ? 'primary' : 'secondary'}`, () => {
         beforeEach(() => {
           createComponent({
@@ -85,17 +85,15 @@ describe('GeoNodeFormCore', () => {
           });
         });
 
-        it(`${showInternalUrl ? 'shows' : 'hides'} the Internal URL Field`, () => {
-          expect(findGeoNodeInternalUrlField().exists()).toBe(showInternalUrl);
+        it('shows the Internal URL Field', () => {
+          expect(findGeoNodeInternalUrlField().exists()).toBe(true);
         });
 
-        it(`${showInternalUrl ? 'shows' : 'hides'} the Internal URL More Information Link`, () => {
-          expect(findGeoNodeFormInternalUrlMoreInformation().exists()).toBe(showInternalUrl);
-          if (showInternalUrl) {
-            expect(findGeoNodeFormInternalUrlMoreInformation().attributes('href')).toBe(
-              NODE_INTERNAL_URL_MORE_INFO,
-            );
-          }
+        it('shows the Internal URL More Information Link', () => {
+          expect(findGeoNodeFormInternalUrlMoreInformation().exists()).toBe(true);
+          expect(findGeoNodeFormInternalUrlMoreInformation().attributes('href')).toBe(
+            NODE_INTERNAL_URL_MORE_INFO,
+          );
         });
       });
     });

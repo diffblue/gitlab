@@ -722,6 +722,9 @@ msgstr ""
 msgid "%{level_name} is not allowed since the fork source project has lower visibility."
 msgstr ""
 
+msgid "%{linkStart}Learn more.%{linkEnd}"
+msgstr ""
+
 msgid "%{link_start}Learn more%{link_end} about roles."
 msgstr ""
 
@@ -2496,6 +2499,12 @@ msgid "AdminArea|You’re about to stop all jobs. This will halt all current job
 msgstr ""
 
 msgid "AdminDashboard|Error loading the statistics. Please try again"
+msgstr ""
+
+msgid "AdminGeo|The URL of the primary site that is used internally by the secondary sites."
+msgstr ""
+
+msgid "AdminGeo|The URL of the secondary site that is used internally by the primary site."
 msgstr ""
 
 msgid "AdminLabels|Define your default set of project labels"
@@ -35299,12 +35308,6 @@ msgid "The Prometheus server responded with \"bad request\". Please check your q
 msgstr ""
 
 msgid "The Snowplow cookie domain."
-msgstr ""
-
-msgid "The URL defined on the primary node that secondary nodes should use to contact it."
-msgstr ""
-
-msgid "The URL defined on the primary node that secondary nodes should use to contact it. %{linkStart}Learn more%{linkEnd}"
 msgstr ""
 
 msgid "The URL of the Jenkins server."
