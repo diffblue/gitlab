@@ -4,7 +4,7 @@ module Projects::OnDemandScansHelper
   # rubocop: disable CodeReuse/ActiveRecord
   def on_demand_scans_data(project)
     on_demand_scans = project.all_pipelines.where(source: Enums::Ci::Pipeline.sources[:ondemand_dast_scan])
-    running_scan_count, finished_scan_count = count_running_and_finished_scans(on_demand_scans)
+    running_scans_count, finished_scans_count = count_running_and_finished_scans(on_demand_scans)
     saved_scans = ::Dast::ProfilesFinder.new({ project_id: project.id }).execute
     scheduled_scans_count = saved_scans.count { |scan| scan.dast_profile_schedule }
 
@@ -12,8 +12,8 @@ module Projects::OnDemandScansHelper
       'project-on-demand-scan-counts-etag' => graphql_etag_project_on_demand_scan_counts_path(project),
       'on-demand-scan-counts' => {
         all: on_demand_scans.length,
-        running: running_scan_count,
-        finished: finished_scan_count,
+        running: running_scans_count,
+        finished: finished_scans_count,
         scheduled: scheduled_scans_count,
         saved: saved_scans.count
       }.to_json,
@@ -45,17 +45,17 @@ module Projects::OnDemandScansHelper
   end
 
   def count_running_and_finished_scans(on_demand_scans)
-    running_scan_count = 0
-    finished_scan_count = 0
+    running_scans_count = 0
+    finished_scans_count = 0
 
     on_demand_scans.each do |pipeline|
       if %w[success failed canceled].include?(pipeline.status)
-        finished_scan_count += 1
+        finished_scans_count += 1
       elsif pipeline.status == "running"
-        running_scan_count += 1
+        running_scans_count += 1
       end
     end
 
-    [running_scan_count, finished_scan_count]
+    [running_scans_count, finished_scans_count]
   end
 end
