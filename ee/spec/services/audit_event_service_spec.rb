@@ -157,8 +157,7 @@ RSpec.describe AuditEventService, :request_store do
             allow(user).to receive_messages(current_sign_in_ip: 'invalid IP')
 
             expect(Gitlab::ErrorTracking).to(
-              receive(:track_exception)
-                .with(ActiveRecord::RecordInvalid, audit_event_type: 'AuditEvent').and_call_original
+              receive(:track_and_raise_for_dev_exception)
             )
 
             service.security_event
@@ -365,8 +364,7 @@ RSpec.describe AuditEventService, :request_store do
   end
 
   describe '#for_user' do
-    let(:author_name) { 'Administrator' }
-    let(:current_user) { User.new(name: author_name) }
+    let(:current_user) { create(:user) }
     let(:user) { create(:user) }
     let(:custom_message) { 'Some strange event has occurred' }
     let(:options) { { action: action, custom_message: custom_message } }
@@ -384,7 +382,7 @@ RSpec.describe AuditEventService, :request_store do
       it 'sets the details attribute' do
         expect(service.instance_variable_get(:@details)).to eq(
           remove: 'user',
-          author_name: author_name,
+          author_name: current_user.name,
           target_id: user.id,
           target_type: 'User',
           target_details: user.username
@@ -402,7 +400,7 @@ RSpec.describe AuditEventService, :request_store do
       it 'sets the details attribute' do
         expect(service.instance_variable_get(:@details)).to eq(
           add: 'user',
-          author_name: author_name,
+          author_name: current_user.name,
           target_id: user.id,
           target_type: 'User',
           target_details: user.full_path
@@ -420,7 +418,7 @@ RSpec.describe AuditEventService, :request_store do
       it 'sets the details attribute' do
         expect(service.instance_variable_get(:@details)).to eq(
           custom_message: custom_message,
-          author_name: author_name,
+          author_name: current_user.name,
           target_id: user.id,
           target_type: 'User',
           target_details: user.full_path
@@ -653,6 +651,7 @@ RSpec.describe AuditEventService, :request_store do
 
     before do
       stub_licensed_features(external_audit_events: true)
+      stub_feature_flags(ff_external_audit_events_namespace: group.root_ancestor)
     end
 
     subject(:event) { described_class.new(user, project, details, save_type).for_project.security_event }
@@ -660,9 +659,26 @@ RSpec.describe AuditEventService, :request_store do
     context 'with save_type of :database_and_stream' do
       let(:save_type) { :database_and_stream }
 
-      it 'save to database and stream' do
-        expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).once
+      it 'saves to database' do
         expect { event }.to change(AuditEvent, :count).by(1)
+      end
+
+      it 'streams the event' do
+        expect_next_instance_of(described_class) do |service|
+          expect(service).to receive(:stream_event_to_external_destinations).once
+        end
+
+        event
+      end
+
+      context 'when the event is created within a transaction' do
+        it 'does not raise an error about a job being enqueued from within a transaction' do
+          RSpec::Expectations.configuration.on_potential_false_positives = :nothing
+
+          ApplicationRecord.transaction do
+            expect { event }.not_to raise_error(Sidekiq::Worker::EnqueueFromTransactionError)
+          end
+        end
       end
     end
 
@@ -678,9 +694,16 @@ RSpec.describe AuditEventService, :request_store do
     context 'with save_type of :stream' do
       let(:save_type) { :stream }
 
-      it 'saves to database and stream' do
-        expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).once
-        expect { event }.to change(AuditEvent, :count).by(0)
+      it 'does not save to database' do
+        expect { event }.not_to change(AuditEvent, :count)
+      end
+
+      it 'streams the event' do
+        expect_next_instance_of(described_class) do |service|
+          expect(service).to receive(:stream_event_to_external_destinations).once
+        end
+
+        event
       end
     end
   end
