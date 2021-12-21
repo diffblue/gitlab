@@ -19,7 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.js-general-settings-form, .js-general-permissions-form'),
   );
   mountBadgeSettings(GROUP_BADGE);
-  setupTransferEdit('.js-group-transfer-form', '#new_parent_group_id');
+
+  setupTransferEdit('.js-group-transfer-form', '.dropdown-group-transfer', '#new_parent_group_id');
 
   // Initialize Subgroups selector
   groupsSelect();
