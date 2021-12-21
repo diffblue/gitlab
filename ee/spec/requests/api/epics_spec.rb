@@ -210,6 +210,18 @@ RSpec.describe API::Epics do
         expect_paginated_array_response([epic.id])
       end
 
+      it 'returns epics not authored by the given author username' do
+        get api(url), params: { not: { author_username: user2.username } }
+
+        expect_paginated_array_response([epic.id])
+      end
+
+      it 'does not allow filtering by negating author_id and author_username together' do
+        get api(url), params: { not: { author_id: user2.id, author_username: user2.username } }
+
+        expect(response).to have_gitlab_http_status(:bad_request)
+      end
+
       it 'returns epics without the given label' do
         get api(url), params: { not: { labels: label.title } }
 
@@ -220,6 +232,18 @@ RSpec.describe API::Epics do
         get api(url), params: { author_id: user2.id }
 
         expect_paginated_array_response([epic2.id])
+      end
+
+      it 'returns epics authored by the given author username' do
+        get api(url), params: { author_username: user2.username }
+
+        expect_paginated_array_response([epic2.id])
+      end
+
+      it 'does not allow filtering by author_id and author_username together' do
+        get api(url), params: { author_id: user2.id, author_username: user2.username }
+
+        expect(response).to have_gitlab_http_status(:bad_request)
       end
 
       it 'returns epics reacted to by current user' do

@@ -16,7 +16,10 @@ module API
     helpers do
       params :negatable_epic_filter_params do
         optional :labels, type: Array[String], coerce_with: ::API::Validations::Types::CommaSeparatedToArray.coerce, desc: 'Comma-separated list of label names'
+
         optional :author_id, type: Integer, desc: 'Return epics which are not authored by the user with the given ID'
+        optional :author_username, type: String, desc: 'Return epics which are not authored by the given username'
+        mutually_exclusive :author_id, :author_username
       end
     end
 
@@ -36,7 +39,11 @@ module API
         optional :search, type: String, desc: 'Search epics for text present in the title or description'
         optional :state, type: String, values: %w[opened closed all], default: 'all',
                          desc: 'Return opened, closed, or all epics'
+
         optional :author_id, type: Integer, desc: 'Return epics which are authored by the user with the given ID'
+        optional :author_username, type: String, desc: 'Return epics which are authored by the given username'
+        mutually_exclusive :author_id, :author_username
+
         optional :labels, type: Array[String], coerce_with: Validations::Types::CommaSeparatedToArray.coerce, desc: 'Comma-separated list of label names'
         optional :with_labels_details, type: Boolean, desc: 'Return titles of labels and other details', default: false
         optional :created_after, type: DateTime, desc: 'Return epics created after the specified time'
