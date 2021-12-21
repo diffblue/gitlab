@@ -30,6 +30,21 @@ module API
               render_api_error!({ error: response.errors.first }, 400)
             end
           end
+
+          desc 'Destroy upcoming reconciliation record'
+          params do
+            requires :namespace_id, type: Integer, allow_blank: false
+          end
+
+          delete '/' do
+            upcoming_reconciliation = GitlabSubscriptions::UpcomingReconciliation.next(params[:namespace_id])
+
+            not_found! if upcoming_reconciliation.blank?
+
+            upcoming_reconciliation.destroy!
+
+            no_content!
+          end
         end
       end
     end
