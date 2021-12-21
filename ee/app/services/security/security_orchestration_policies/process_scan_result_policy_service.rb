@@ -45,7 +45,8 @@ module Security
           user_ids: project.users.get_ids_by_username(action_info[:approvers]),
           vulnerabilities_allowed: rule[:vulnerabilities_allowed],
           report_type: :scan_finding,
-          orchestration_policy_idx: policy_index
+          orchestration_policy_idx: policy_index,
+          vulnerability_states: rule[:vulnerability_states]
         }
       end
 

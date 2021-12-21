@@ -245,7 +245,8 @@
                 "branches",
                 "scanners",
                 "vulnerabilities_allowed",
-                "severity_levels"
+                "severity_levels",
+                "vulnerability_states"
               ],
               "properties": {
                 "type": {
@@ -285,6 +286,22 @@
                         "low",
                         "info",
                         "unknown"
+                      ],
+                      "type": "string"
+                    }
+                  }
+                },
+                "vulnerability_states":{
+                  "type": "array",
+                  "additionalItems": false,
+                  "items":{
+                    "type": {
+                      "enum": [
+                        "newly_detected",
+                        "detected",
+                        "confirmed",
+                        "resolved",
+                        "dismissed"
                       ],
                       "type": "string"
                     }
