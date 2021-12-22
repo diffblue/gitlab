@@ -56,7 +56,7 @@ RSpec.describe Issues::BuildService do
     end
 
     context 'as developer' do
-      WorkItem::Type.allowed_types_for_issues do |issue_type|
+      WorkItems::Type.allowed_types_for_issues do |issue_type|
         it "sets the issue type to #{issue_type}" do
           issue = build_issue(issue_type: issue_type)
 

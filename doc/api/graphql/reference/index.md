@@ -8115,6 +8115,29 @@ The edge type for [`VulnerabilityScanner`](#vulnerabilityscanner).
 | <a id="vulnerabilityscanneredgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="vulnerabilityscanneredgenode"></a>`node` | [`VulnerabilityScanner`](#vulnerabilityscanner) | The item at the end of the edge. |
 
+#### `WorkItemTypeConnection`
+
+The connection type for [`WorkItemType`](#workitemtype).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workitemtypeconnectionedges"></a>`edges` | [`[WorkItemTypeEdge]`](#workitemtypeedge) | A list of edges. |
+| <a id="workitemtypeconnectionnodes"></a>`nodes` | [`[WorkItemType]`](#workitemtype) | A list of nodes. |
+| <a id="workitemtypeconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `WorkItemTypeEdge`
+
+The edge type for [`WorkItemType`](#workitemtype).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workitemtypeedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="workitemtypeedgenode"></a>`node` | [`WorkItemType`](#workitemtype) | The item at the end of the edge. |
+
 ## Object types
 
 Object types represent the resources that the GitLab GraphQL API can return.
@@ -10609,6 +10632,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="groupvisibility"></a>`visibility` | [`String`](#string) | Visibility of the namespace. |
 | <a id="groupvulnerabilityscanners"></a>`vulnerabilityScanners` | [`VulnerabilityScannerConnection`](#vulnerabilityscannerconnection) | Vulnerability scanners reported on the project vulnerabilities of the group and its subgroups. (see [Connections](#connections)) |
 | <a id="groupweburl"></a>`webUrl` | [`String!`](#string) | Web URL of the group. |
+| <a id="groupworkitemtypes"></a>`workItemTypes` | [`WorkItemTypeConnection`](#workitemtypeconnection) | Work item types available to the group. Available only when feature flag `work_items` is enabled. This flag is disabled by default, because the feature is experimental and is subject to change without notice. (see [Connections](#connections)) |
 
 #### Fields with arguments
 
@@ -15979,6 +16003,16 @@ Represents vulnerability letter grades with associated projects.
 | <a id="vulnerableprojectsbygradegrade"></a>`grade` | [`VulnerabilityGrade!`](#vulnerabilitygrade) | Grade based on the highest severity vulnerability present. |
 | <a id="vulnerableprojectsbygradeprojects"></a>`projects` | [`ProjectConnection!`](#projectconnection) | Projects within this grade. (see [Connections](#connections)) |
 
+### `WorkItemType`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workitemtypeiconname"></a>`iconName` | [`String`](#string) | Icon name of the work item type. |
+| <a id="workitemtypeid"></a>`id` | [`WorkItemsTypeID!`](#workitemstypeid) | Global ID of the work item type. |
+| <a id="workitemtypename"></a>`name` | [`String!`](#string) | Name of the work item type. |
+
 ## Enumeration types
 
 Also called _Enums_, enumeration types are a special kind of scalar that
@@ -18061,6 +18095,12 @@ An example `VulnerabilitiesScannerID` is: `"gid://gitlab/Vulnerabilities::Scanne
 A `VulnerabilityID` is a global ID. It is encoded as a string.
 
 An example `VulnerabilityID` is: `"gid://gitlab/Vulnerability/1"`.
+
+### `WorkItemsTypeID`
+
+A `WorkItemsTypeID` is a global ID. It is encoded as a string.
+
+An example `WorkItemsTypeID` is: `"gid://gitlab/WorkItems::Type/1"`.
 
 ## Abstract types
 
