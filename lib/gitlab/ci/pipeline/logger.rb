@@ -37,12 +37,12 @@ module Gitlab
           result
         end
 
-        def instrument_with_sql(operation)
-          return instrument(operation) { yield } unless sql_logging_enabled?
+        def instrument_with_sql(operation, &block)
+          return instrument(operation, &block) unless sql_logging_enabled?
 
           op_start_db_counters = current_db_counter_payload
 
-          result = instrument(operation) { yield }
+          result = instrument(operation, &block)
 
           observe_sql_counters(operation, op_start_db_counters, current_db_counter_payload)
 
