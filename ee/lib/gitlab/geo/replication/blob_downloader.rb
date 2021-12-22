@@ -162,7 +162,7 @@ module Gitlab
 
           # Check for failures
           unless response.status.success?
-            return failure_result(primary_missing_file: primary_missing_file?(response), reason: "Non-success HTTP response status code #{response.status.code}", extra_details: { status_code: response.status.code, reason: response.status.reason, url: url })
+            return non_success_response_result(response, url)
           end
 
           # Stream to temporary file on disk
@@ -236,6 +236,25 @@ module Gitlab
 
         def actual_checksum(file_path)
           @actual_checksum = Digest::SHA256.file(file_path).hexdigest
+        end
+
+        def non_success_response_result(response, url)
+          primary_missing_file = primary_missing_file?(response)
+          reason = if primary_missing_file
+                     "The file is missing on the Geo primary site"
+                   else
+                     "Non-success HTTP response status code #{response.status.code}"
+                   end
+
+          failure_result(
+            primary_missing_file: primary_missing_file,
+            reason: reason,
+            extra_details: {
+              status_code: response.status.code,
+              reason: response.status.reason,
+              url: url
+            }
+          )
         end
       end
     end
