@@ -3,10 +3,12 @@ import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import {
+  i18n,
   PRESET_OPTIONS_BLANK,
   PRESET_OPTIONS_DEFAULT,
 } from 'ee/analytics/cycle_analytics/components/create_value_stream_form/constants';
 import CustomStageFields from 'ee/analytics/cycle_analytics/components/create_value_stream_form/custom_stage_fields.vue';
+import CustomStageEventField from 'ee/analytics/cycle_analytics/components/create_value_stream_form/custom_stage_event_field.vue';
 import DefaultStageFields from 'ee/analytics/cycle_analytics/components/create_value_stream_form/default_stage_fields.vue';
 import ValueStreamForm from 'ee/analytics/cycle_analytics/components/value_stream_form.vue';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
@@ -15,7 +17,12 @@ import {
   convertObjectPropsToCamelCase,
   convertObjectPropsToSnakeCase,
 } from '~/lib/utils/common_utils';
-import { customStageEvents as formEvents, defaultStageConfig, rawCustomStage } from '../mock_data';
+import {
+  customStageEvents as formEvents,
+  defaultStageConfig,
+  rawCustomStage,
+  groupLabels as defaultGroupLabels,
+} from '../mock_data';
 
 const scrollIntoViewMock = jest.fn();
 HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
@@ -55,7 +62,7 @@ describe('ValueStreamForm', () => {
       state: {
         isCreatingValueStream: false,
         formEvents,
-        defaultGroupLabels: null,
+        defaultGroupLabels,
         ...state,
       },
       actions: {
@@ -96,12 +103,16 @@ describe('ValueStreamForm', () => {
   const findRestoreStageButton = (index) => wrapper.findByTestId(`stage-action-restore-${index}`);
   const findHiddenStages = () => wrapper.findAllByTestId('vsa-hidden-stage').wrappers;
   const findBtn = (btn) => findModal().props(btn);
+  const findCustomStageEventField = (index = 0) =>
+    wrapper.findAllComponents(CustomStageEventField).at(index);
 
   const clickSubmit = () => findModal().vm.$emit('primary', mockEvent);
   const clickAddStage = () => findModal().vm.$emit('secondary', mockEvent);
   const clickRestoreStageAtIndex = (index) => findRestoreStageButton(index).vm.$emit('click');
   const expectFieldError = (testId, error = '') =>
     expect(wrapper.findByTestId(testId).attributes('invalid-feedback')).toBe(error);
+  const expectCustomFieldError = (index, attr, error = '') =>
+    expect(findCustomStageEventField(index).attributes(attr)).toBe(error);
   const expectStageTransitionKeys = (stages) =>
     stages.forEach((stage) => expect(stage.transitionKey).toContain('stage-'));
 
@@ -112,7 +123,7 @@ describe('ValueStreamForm', () => {
 
   describe('default state', () => {
     beforeEach(() => {
-      wrapper = createComponent();
+      wrapper = createComponent({ state: { defaultGroupLabels: null } });
     });
 
     it('has the extended fields', () => {
@@ -120,7 +131,7 @@ describe('ValueStreamForm', () => {
     });
 
     it('sets the submit action text to "Create Value Stream"', () => {
-      expect(findBtn('actionPrimary').text).toBe('Create Value Stream');
+      expect(findBtn('actionPrimary').text).toBe(i18n.FORM_TITLE);
     });
 
     describe('Preset selector', () => {
@@ -223,8 +234,9 @@ describe('ValueStreamForm', () => {
         });
 
         expectFieldError('custom-stage-name-0', initialFormStageErrors.stages[0].name[0]);
-        expectFieldError(
-          'custom-stage-end-event-0',
+        expectCustomFieldError(
+          1,
+          'identifiererror',
           initialFormStageErrors.stages[0].endEventIdentifier[0],
         );
       });
@@ -247,7 +259,7 @@ describe('ValueStreamForm', () => {
       });
 
       it('sets the submit action text to "Save value stream"', () => {
-        expect(findBtn('actionPrimary').text).toBe('Save value stream');
+        expect(findBtn('actionPrimary').text).toBe(i18n.EDIT_FORM_ACTION);
       });
 
       it('does not display any hidden stages', () => {
@@ -324,7 +336,7 @@ describe('ValueStreamForm', () => {
         });
 
         it('has the add stage button', () => {
-          expect(findBtn('actionSecondary')).toMatchObject({ text: 'Add another stage' });
+          expect(findBtn('actionSecondary')).toMatchObject({ text: i18n.BTN_ADD_ANOTHER_STAGE });
         });
 
         it('adds a blank custom stage when clicked', async () => {

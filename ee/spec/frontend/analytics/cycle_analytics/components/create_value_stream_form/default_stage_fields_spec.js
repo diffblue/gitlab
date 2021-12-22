@@ -28,6 +28,7 @@ describe('DefaultStageFields', () => {
         stage,
         errors,
         stageEvents,
+        stageLabel: 'Stage 1',
       },
       stubs: {
         'labels-selector': false,
