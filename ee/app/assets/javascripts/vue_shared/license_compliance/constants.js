@@ -41,3 +41,6 @@ export const REPORT_GROUPS = [
     status: STATUS_SUCCESS,
   },
 ];
+
+export const LICENSE_LINK_TELEMETRY_EVENT =
+  'users_clicking_license_testing_visiting_external_website';
