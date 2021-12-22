@@ -1,5 +1,7 @@
 import { GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { LICENSE_LINK_TELEMETRY_EVENT } from 'ee/vue_shared/license_compliance/constants';
+import api from '~/api';
 import LicenseIssueBody from 'ee/vue_shared/license_compliance/components/license_issue_body.vue';
 import LicensePackages from 'ee/vue_shared/license_compliance/components/license_packages.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -77,6 +79,24 @@ describe('LicenseIssueBody', () => {
     it('does not render packages list', () => {
       const packages = findLicensePackages();
       expect(packages.exists()).toBe(false);
+    });
+  });
+
+  describe('event tracking', () => {
+    let trackEventSpy;
+
+    beforeEach(() => {
+      trackEventSpy = jest.spyOn(api, 'trackRedisHllUserEvent').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      trackEventSpy.mockRestore();
+    });
+
+    it('tracks users_visiting_testing_license_compliance_full_report', () => {
+      findGlLink().vm.$emit('click');
+
+      expect(trackEventSpy).toHaveBeenCalledWith(LICENSE_LINK_TELEMETRY_EVENT);
     });
   });
 });
