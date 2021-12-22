@@ -1,7 +1,7 @@
 import initEpicCreateApp from 'ee/epic/epic_bundle';
 import initEpicsList from 'ee/epics_list/epics_list_bundle';
 import FilteredSearchTokenKeysEpics from 'ee/filtered_search/filtered_search_token_keys_epics';
-import issuableInitBulkUpdateSidebar from '~/issuable/bulk_update_sidebar/issuable_init_bulk_update_sidebar';
+import { initBulkUpdateSidebar } from '~/issuable/bulk_update_sidebar';
 import initFilteredSearch from '~/pages/search/init_filtered_search';
 
 const EPIC_BULK_UPDATE_PREFIX = 'epic_';
@@ -21,6 +21,5 @@ if (gon.features.vueEpicsList) {
   });
 
   initEpicCreateApp(true);
-
-  issuableInitBulkUpdateSidebar.init(EPIC_BULK_UPDATE_PREFIX);
+  initBulkUpdateSidebar(EPIC_BULK_UPDATE_PREFIX);
 }
