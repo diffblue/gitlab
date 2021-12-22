@@ -2,20 +2,18 @@
 - callout = local_assigns.fetch(:callout, Users::CalloutsHelper::ULTIMATE_TRIAL)
 - button_css_class = is_dismissable ? 'mr-3' : ''
 
-.pt-1.d-none.d-md-block{ class: container_class }
-  .user-callout.promotion-callout.thin-callout.js-gold-trial-callout{ data: { uid: 'trial_callout_dismissed', feature_id: callout, dismiss_endpoint: callouts_path } }
-    .bordered-box.justify-content-left.align-items-center
-      .svg-container
-        = image_tag 'illustrations/golden_tanuki.svg', class: 'svg'
-      .d-flex.flex-grow.align-items-center
-        .user-callout-copy.ml-0
-          %h5.mb-0.mt-0= _('Free Trial of GitLab.com Ultimate')
-          %p.mb-0
+.gl-display-none.gl-md-display-block.container-limited{ class: 'gl-pt-6! gl-pb-2!' }
+  .user-callout.promotion-callout.thin-callout.js-gold-trial-callout{ class: 'gl-mt-0!', data: { uid: 'trial_callout_dismissed', feature_id: callout, dismiss_endpoint: callouts_path } }
+    .gl-card.gl-px-8.gl-py-6
+      .gl-card-body.gl-display-flex{ class: 'gl-p-0!' }
+        .gl-banner-illustration
+          = image_tag 'illustrations/golden_tanuki.svg', class: 'svg gl-w-8!'
+        .gl-banner-content
+          %h1.gl-banner-title= _('Free Trial of GitLab.com Ultimate')
+          %p
             %span= _('Try all GitLab has to offer for 30 days.')
             %span.d-none.d-sm-inline= _('No credit card required.')
-        = link_to _('Start your trial'), new_trial_registration_path(glm_source: 'gitlab.com', glm_content: 'gold-callout'), class: "btn btn-confirm gl-button mt-2 mt-sm-0 #{button_css_class}", target: '_blank'
-
-      - if is_dismissable
-        %button.gl-button.btn.btn-default.close.js-close{ type: 'button',
-          'aria-label' => _('Dismiss trial promotion') }
-          = sprite_icon('close', css_class: 'dismiss-icon')
+          = link_to _('Start your free trial'), new_trial_registration_path(glm_source: 'gitlab.com', glm_content: 'gold-callout'), class: "btn btn-confirm gl-button mt-2 mt-sm-0 #{button_css_class}", target: '_blank'
+        - if is_dismissable
+          %button.btn.gl-banner-close.btn-default.btn-sm.gl-button.btn-default-tertiary.btn-icon.close.js-close{ class: 'gl-opacity-10!', type: 'button', 'aria-label' => _('Dismiss trial promotion') }
+            = sprite_icon('close', css_class: 'dismiss-icon gl-text-gray-700!')
