@@ -124,27 +124,12 @@ module QA
           GQL
         end
 
-        # Object comparison
-        #
-        # @param [QA::EE::Resource::GroupIteration] other
-        # @return [Boolean]
-        def ==(other)
-          other.is_a?(GroupIteration) && comparable_iteration == other.comparable_iteration
-        end
-
-        # Override inspect for a better rspec failure diff output
-        #
-        # @return [String]
-        def inspect
-          JSON.pretty_generate(comparable_iteration)
-        end
-
         protected
 
         # Return subset of fields for comparing iterations
         #
         # @return [Hash]
-        def comparable_iteration
+        def comparable
           reload! unless api_response
 
           api_response.slice(

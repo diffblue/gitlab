@@ -80,27 +80,12 @@ module QA
           parse_body(response)
         end
 
-        # Object comparison
-        #
-        # @param [QA::EE::Resource::Epic] other
-        # @return [Boolean]
-        def ==(other)
-          other.is_a?(Epic) && comparable_epic == other.comparable_epic
-        end
-
-        # Override inspect for a better rspec failure diff output
-        #
-        # @return [String]
-        def inspect
-          JSON.pretty_generate(comparable_epic)
-        end
-
         protected
 
         # Return subset of fields for comparing epics
         #
         # @return [Hash]
-        def comparable_epic
+        def comparable
           reload! if api_response.nil?
 
           api_resource.slice(
