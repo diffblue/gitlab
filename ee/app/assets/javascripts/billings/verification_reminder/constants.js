@@ -11,16 +11,16 @@ export const SUCCESSFUL_VERIFICATION_EVENT = 'successful_verification';
 export const I18N = {
   warningAlert: {
     title: s__(
-      'VerificationReminder|Pipeline failing? To keep GitLab spam and abuse free we ask that you verify your identity with a valid payment method.',
+      'VerificationReminder|Pipeline failing? To keep GitLab spam and abuse free we ask that you verify your identity.',
     ),
     message: s__(
-      'VerificationReminder|Until then, free pipeline minutes on shared runners are unavailable. %{validateLinkStart}Validate your account%{validateLinkEnd} or %{docsLinkStart}use your own runners%{docsLinkEnd}.',
+      'VerificationReminder|Until then, shared runners will be unavailable. %{validateLinkStart}Validate your account%{validateLinkEnd} or %{docsLinkStart}use your own runners%{docsLinkEnd}.',
     ),
   },
   successAlert: {
-    title: s__('VerificationReminder|Your account has been validated.'),
+    title: s__('VerificationReminder|Your account has been validated'),
     message: s__(
-      'VerificationReminder|You’ll now be able to take advantage of free pipeline minutes on shared runners.',
+      'VerificationReminder|You’ll now be able to take advantage of free CI/CD minutes on shared runners.',
     ),
   },
 };

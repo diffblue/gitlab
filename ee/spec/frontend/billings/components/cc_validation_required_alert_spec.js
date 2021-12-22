@@ -54,7 +54,7 @@ describe('CreditCardValidationRequiredAlert', () => {
   });
 
   it('renders description', () => {
-    expect(findGlAlert().text()).toContain('To use free pipeline minutes');
+    expect(findGlAlert().text()).toContain('To use free CI/CD minutes');
   });
 
   it('renders danger alert', () => {
