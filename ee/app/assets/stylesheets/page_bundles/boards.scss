@@ -94,15 +94,3 @@ $epic-icons-spacing: 40px;
     max-width: calc(100vw - #{$contextual-sidebar-width} - #{$gutter-width} - #{$epic-icons-spacing});
   }
 }
-
-.swimlanes-sidebar-time-tracker {
-  .time-tracking-help-state {
-    margin: 16px -24px 0;
-    @include gl-px-6;
-    @include gl-py-2;
-    @include gl-border-gray-100;
-    @include gl-border-t-solid;
-    @include gl-border-t-1;
-    @include gl-border-b-0;
-  }
-}
