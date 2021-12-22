@@ -837,6 +837,7 @@ module Ci
 
           it 'counts job queuing time histogram with expected labels' do
             allow(attempt_counter).to receive(:increment)
+
             expect(job_queue_duration_seconds).to receive(:observe)
               .with({ shared_runner: expected_shared_runner,
                       jobs_running_for_project: expected_jobs_running_for_project_third_job,
@@ -884,6 +885,16 @@ module Ci
         context 'when multiple metrics_shard tag is defined' do
           let(:runner) { create(:ci_runner, :instance, tag_list: %w(tag1 metrics_shard::shard_tag metrics_shard::shard_tag_2 tag2)) }
           let(:expected_shard) { 'shard_tag' }
+
+          it_behaves_like 'metrics collector'
+        end
+
+        context 'when max running jobs bucket size is exceeded' do
+          before do
+            stub_const('Gitlab::Ci::Queue::Metrics::JOBS_RUNNING_FOR_PROJECT_MAX_BUCKET', 1)
+          end
+
+          let(:expected_jobs_running_for_project_third_job) { '1+' }
 
           it_behaves_like 'metrics collector'
         end
