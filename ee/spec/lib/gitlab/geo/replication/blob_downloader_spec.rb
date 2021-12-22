@@ -170,7 +170,7 @@ RSpec.describe Gitlab::Geo::Replication::BlobDownloader do
 
           result = subject.execute
 
-          expect_blob_downloader_result(result, success: false, bytes_downloaded: 0, primary_missing_file: true)
+          expect_blob_downloader_result(result, success: false, bytes_downloaded: 0, primary_missing_file: true, reason: 'The file is missing on the Geo primary site')
         end
       end
 
@@ -183,7 +183,7 @@ RSpec.describe Gitlab::Geo::Replication::BlobDownloader do
 
           result = subject.execute
 
-          expect_blob_downloader_result(result, success: false, bytes_downloaded: 0, primary_missing_file: false)
+          expect_blob_downloader_result(result, success: false, bytes_downloaded: 0, primary_missing_file: false, reason: 'Non-success HTTP response status code 404')
         end
       end
     end
@@ -232,10 +232,14 @@ RSpec.describe Gitlab::Geo::Replication::BlobDownloader do
     end
   end
 
-  def expect_blob_downloader_result(result, success:, bytes_downloaded:, primary_missing_file:, extra_details: nil)
+  def expect_blob_downloader_result(result, success:, bytes_downloaded:, primary_missing_file:, reason: nil)
     expect(result.success).to eq(success)
     expect(result.bytes_downloaded).to eq(bytes_downloaded)
     expect(result.primary_missing_file).to eq(primary_missing_file)
+
+    if reason
+      expect(result.reason).to eq(reason)
+    end
 
     # Sanity check to help ensure a valid test
     expect(success).not_to be_nil
