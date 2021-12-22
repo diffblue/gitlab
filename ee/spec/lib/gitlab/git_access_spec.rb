@@ -14,6 +14,7 @@ RSpec.describe Gitlab::GitAccess do
   let(:repository) { project.repository }
   let(:repository_path) { "#{project.full_path}.git" }
   let(:protocol) { 'web' }
+  let(:auth_result_type) { nil }
   let(:authentication_abilities) { %i[read_project download_code push_code] }
   let(:redirected_path) { nil }
 
@@ -963,29 +964,54 @@ RSpec.describe Gitlab::GitAccess do
       context 'user without a sso session' do
         let(:access_restricted?) { true }
 
-        before do
-          expect(Gitlab::Auth::GroupSaml::SessionEnforcer).to receive(:new).with(user, group).twice.and_return(double(access_restricted?: access_restricted?))
-        end
-
-        it 'does not allow pull or push changes with proper url in the message' do
-          aggregate_failures do
-            address = "http://localhost/groups/#{group.name}/-/saml/sso?token=#{group.saml_discovery_token}"
-
-            expect { pull_changes }.to raise_error(Gitlab::GitAccess::ForbiddenError, /#{Regexp.quote(address)}/)
-            expect { push_changes }.to raise_error(Gitlab::GitAccess::ForbiddenError, /#{Regexp.quote(address)}/)
+        context 'when the request is made directly by the user' do
+          before do
+            expect(Gitlab::Auth::GroupSaml::SessionEnforcer).to receive(:new).with(user, group).twice.and_return(double(access_restricted?: access_restricted?))
           end
-        end
-
-        context 'with a subgroup' do
-          let_it_be(:root_group) { create(:group) }
-          let_it_be(:group) { create(:group, parent: root_group) }
 
           it 'does not allow pull or push changes with proper url in the message' do
             aggregate_failures do
-              address = "http://localhost/groups/#{root_group.name}/-/saml/sso?token=#{root_group.saml_discovery_token}"
+              address = "http://localhost/groups/#{group.name}/-/saml/sso?token=#{group.saml_discovery_token}"
 
               expect { pull_changes }.to raise_error(Gitlab::GitAccess::ForbiddenError, /#{Regexp.quote(address)}/)
               expect { push_changes }.to raise_error(Gitlab::GitAccess::ForbiddenError, /#{Regexp.quote(address)}/)
+            end
+          end
+
+          context 'with a subgroup' do
+            let_it_be(:root_group) { create(:group) }
+            let_it_be(:group) { create(:group, parent: root_group) }
+
+            it 'does not allow pull or push changes with proper url in the message' do
+              aggregate_failures do
+                address = "http://localhost/groups/#{root_group.name}/-/saml/sso?token=#{root_group.saml_discovery_token}"
+
+                expect { pull_changes }.to raise_error(Gitlab::GitAccess::ForbiddenError, /#{Regexp.quote(address)}/)
+                expect { push_changes }.to raise_error(Gitlab::GitAccess::ForbiddenError, /#{Regexp.quote(address)}/)
+              end
+            end
+          end
+        end
+
+        context 'when the request is made from CI builds' do
+          let(:protocol) { 'http' }
+          let(:auth_result_type) { :build }
+
+          it 'allows pull and push changes' do
+            aggregate_failures do
+              expect { pull_changes }.not_to raise_error
+              expect { push_changes }.not_to raise_error
+            end
+          end
+
+          context 'when legacy CI credentials are used' do
+            let(:auth_result_type) { :ci }
+
+            it 'allows pull and push changes' do
+              aggregate_failures do
+                expect { pull_changes }.not_to raise_error
+                expect { push_changes }.not_to raise_error
+              end
             end
           end
         end
@@ -1052,7 +1078,8 @@ RSpec.describe Gitlab::GitAccess do
       protocol,
       authentication_abilities: authentication_abilities,
       repository_path: repository_path,
-      redirected_path: redirected_path
+      redirected_path: redirected_path,
+      auth_result_type: auth_result_type
     )
   end
 

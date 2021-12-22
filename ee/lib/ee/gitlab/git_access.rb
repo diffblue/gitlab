@@ -119,6 +119,7 @@ module EE
 
       def check_sso_session!
         return true unless user && container
+        return if request_from_ci_build?
 
         return unless ::Gitlab::Auth::GroupSaml::SessionEnforcer.new(user, containing_group).access_restricted?
 
