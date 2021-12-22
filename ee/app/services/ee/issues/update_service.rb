@@ -73,6 +73,8 @@ module EE
         super
 
         ::IncidentManagement::Incidents::CreateSlaService.new(issue, current_user).execute
+
+        issue.pending_escalations.delete_all(:delete_all) unless issue.supports_escalation?
       end
 
       def handle_promotion(issue)

@@ -201,13 +201,23 @@ RSpec.describe Issues::UpdateService do
       end
 
       context 'from incident to issue' do
-        let_it_be(:issue) { create(:incident, project: project) }
-        let_it_be(:sla) { create(:issuable_sla, issue: issue) }
+        let!(:issue) { create(:incident, project: project) }
+        let!(:sla) { create(:issuable_sla, issue: issue) }
 
         it 'does not remove the SLA or create a new one' do
           expect { update_issue(issue_type: 'issue') }.not_to change(IssuableSla, :count)
           expect(issue.reload.issue_type).to eq('issue')
           expect(issue.reload.issuable_sla).to be_present
+        end
+
+        it 'destroys any pending escalations' do
+          pending = create(:incident_management_pending_issue_escalation, issue: issue)
+          pending_2 = create(:incident_management_pending_issue_escalation, issue: issue)
+
+          update_issue(issue_type: 'issue')
+
+          expect { pending.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          expect { pending_2.reload }.to raise_error(ActiveRecord::RecordNotFound)
         end
       end
 
