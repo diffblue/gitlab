@@ -43,7 +43,7 @@ module Geo
           message = download_result.reason
           error = download_result.extra_details&.fetch(:error, nil)
 
-          registry.failed!(message, error)
+          registry.failed!(message: message, error: error, missing_on_primary: download_result.primary_missing_file)
         end
 
         log_download(mark_as_synced, download_result, start_time)
