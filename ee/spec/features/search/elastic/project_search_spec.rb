@@ -100,12 +100,7 @@ RSpec.describe 'Project elastic search', :js, :elastic do
 
       it 'displays that advanced search is disabled' do
         expect(page).to have_selector('[data-testid="es-status-marker"][data-enabled="false"]')
-
-        default_branch_link = page.find('a[data-testid="es-search-default-branch"]')
-        params = CGI.parse(URI.parse(default_branch_link[:href]).query)
-
-        expect(default_branch_link).to have_content(project.default_branch)
-        expect(params).not_to include(:repository_ref)
+        expect(page).to have_link('Learn more.', href: help_page_path('user/search/advanced_search', anchor: 'use-the-advanced-search-syntax'))
       end
     end
 
