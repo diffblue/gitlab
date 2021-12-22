@@ -13,6 +13,7 @@ class TrialRegistrationsController < RegistrationsController
   before_action :set_redirect_url, only: [:new]
 
   def new
+    push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
   end
 
   private

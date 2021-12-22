@@ -15,6 +15,7 @@ module Registrations
         .track(:render, label: 'registrations:groups:new', user: current_user)
       @group = Group.new(visibility_level: helpers.default_group_visibility)
       experiment(:combined_registration, user: current_user).track(:view_new_group_action)
+      push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
     end
 
     def create

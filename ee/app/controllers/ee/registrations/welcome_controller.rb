@@ -26,6 +26,7 @@ module EE
       end
 
       def trial_getting_started
+        push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
         render locals: { learn_gitlab_project: learn_gitlab_project }
       end
 

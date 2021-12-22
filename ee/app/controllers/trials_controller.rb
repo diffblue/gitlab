@@ -20,6 +20,7 @@ class TrialsController < ApplicationController
   def new
     experiment(:trial_registration_with_reassurance, actor: current_user)
       .track(:render, label: 'trials:new', user: current_user)
+    push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
   end
 
   def select
