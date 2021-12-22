@@ -227,8 +227,9 @@ RSpec.describe 'epics list', :js do
           wait_for_requests
         end
 
-        it 'renders New Epic Link' do
-          page.within('.issuable-list-container') do
+        it 'renders epics list header actions', :aggregate_failures do
+          page.within('.issuable-list-container .nav-controls') do
+            expect(page).to have_button('Edit epics')
             expect(page).to have_link('New epic')
           end
         end
@@ -236,6 +237,55 @@ RSpec.describe 'epics list', :js do
         it_behaves_like 'epic list'
 
         it_behaves_like 'filtered search bar', available_tokens
+
+        it 'shows bulk editing sidebar with actions and labels select dropdown', :aggregate_failures do
+          click_button 'Edit epics'
+
+          page.within('.issuable-list-container aside.right-sidebar') do
+            expect(page).to have_button('Update all', disabled: true)
+            expect(page).to have_button('Cancel')
+
+            expect(page).to have_selector('form#epics-list-bulk-edit')
+            expect(page).to have_button('Label')
+          end
+        end
+
+        it 'shows checkboxes for selecting epics while bulk editing sidebar is visible', :aggregate_failures do
+          click_button 'Edit epics'
+
+          page.within('.issuable-list-container') do
+            expect(page).to have_selector('.vue-filtered-search-bar-container input[type="checkbox"]')
+            expect(page.first('.issuable-list li.issue')).to have_selector('.gl-form-checkbox input[type="checkbox"]')
+          end
+        end
+
+        it 'applies label to multiple epics from bulk editing sidebar', :aggregate_failures do
+          # Vertify that no labels are applied already
+          expect(find('.issuable-list li.issue .issuable-info', match: :first)).not_to have_selector('.gl-label')
+
+          # Bulk edit all epics to apply label
+          page.within('.issuable-list-container') do
+            click_button 'Edit epics'
+
+            page.within('.vue-filtered-search-bar-container') do
+              page.find('input[type="checkbox"]').click
+            end
+
+            page.within('aside.right-sidebar') do
+              click_button 'Label'
+
+              wait_for_requests
+
+              click_link bug_label.title
+              click_button 'Update all'
+
+              wait_for_requests
+            end
+          end
+
+          # Verify that label is applied
+          expect(find('.issuable-list li.issue .issuable-info', match: :first)).to have_selector('.gl-label', text: bug_label.title)
+        end
       end
 
       context 'when signed out' do

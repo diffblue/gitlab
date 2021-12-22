@@ -12832,6 +12832,9 @@ msgstr ""
 msgid "Edit environment"
 msgstr ""
 
+msgid "Edit epics"
+msgstr ""
+
 msgid "Edit files in the editor and commit changes here"
 msgstr ""
 
@@ -13771,6 +13774,9 @@ msgid "Epics|Something went wrong while ordering item."
 msgstr ""
 
 msgid "Epics|Something went wrong while removing issue from epic."
+msgstr ""
+
+msgid "Epics|Something went wrong while updating epics."
 msgstr ""
 
 msgid "Epics|This epic and any containing child epics are confidential and should only be visible to team members with at least Reporter access."

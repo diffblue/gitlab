@@ -1,5 +1,6 @@
 <script>
 import { GlButton, GlIcon } from '@gitlab/ui';
+import axios from '~/lib/utils/axios_utils';
 
 import EpicsFilteredSearchMixin from 'ee/roadmap/mixins/filtered_search_mixin';
 
@@ -15,6 +16,7 @@ import { EpicsSortOptions } from '../constants';
 import groupEpics from '../queries/group_epics.query.graphql';
 
 import EpicsListEmptyState from './epics_list_empty_state.vue';
+import EpicsListBulkEditSidebar from './epics_list_bulk_edit_sidebar.vue';
 
 export default {
   IssuableListTabs,
@@ -26,6 +28,7 @@ export default {
     GlIcon,
     IssuableList,
     EpicsListEmptyState,
+    EpicsListBulkEditSidebar,
   },
   mixins: [EpicsFilteredSearchMixin],
   inject: [
@@ -39,7 +42,7 @@ export default {
     'epicsCount',
     'epicNewPath',
     'groupFullPath',
-    'groupLabelsPath',
+    'listEpicsPath',
     'groupMilestonesPath',
     'emptyStatePath',
     'isSignedIn',
@@ -108,6 +111,8 @@ export default {
       nextPageCursor: this.next,
       filterParams: this.initialFilterParams,
       sortedBy: this.initialSortBy,
+      showBulkEditSidebar: false,
+      bulkEditInProgress: false,
       epics: {
         list: [],
         pageInfo: {},
@@ -198,6 +203,26 @@ export default {
     handleFilterEpics(filters) {
       this.filterParams = this.getFilterParams(filters);
     },
+    /**
+     * Bulk editing Issuables (or Epics in this case) is not supported
+     * via GraphQL mutations, so we're using legacy API to do it,
+     * hence we're making a POST call within the component.
+     */
+    handleEpicsBulkUpdate(update) {
+      this.bulkEditInProgress = true;
+      axios
+        .post(`${this.listEpicsPath}/bulk_update`, {
+          update,
+        })
+        .then(() => window.location.reload())
+        .catch((error) => {
+          createFlash({
+            message: s__('Epics|Something went wrong while updating epics.'),
+            captureError: true,
+            error,
+          });
+        });
+    },
   },
 };
 </script>
@@ -215,6 +240,7 @@ export default {
     :initial-sort-by="sortedBy"
     :issuables="epics.list"
     :issuables-loading="epicsListLoading"
+    :show-bulk-edit-sidebar="showBulkEditSidebar"
     :show-pagination-controls="showPaginationControls"
     :show-discussions="true"
     :default-page-size="$options.defaultPageSize"
@@ -230,9 +256,36 @@ export default {
     @filter="handleFilterEpics"
   >
     <template v-if="canCreateEpic || canBulkEditEpics" #nav-actions>
-      <gl-button v-if="canCreateEpic" category="primary" variant="success" :href="epicNewPath">{{
+      <gl-button
+        v-if="canBulkEditEpics"
+        :disabled="showBulkEditSidebar"
+        @click="showBulkEditSidebar = true"
+        >{{ __('Edit epics') }}</gl-button
+      >
+      <gl-button v-if="canCreateEpic" category="primary" variant="confirm" :href="epicNewPath">{{
         __('New epic')
       }}</gl-button>
+    </template>
+    <template #bulk-edit-actions="{ checkedIssuables }">
+      <gl-button
+        category="primary"
+        variant="confirm"
+        type="submit"
+        class="js-update-selected-issues"
+        form="epics-list-bulk-edit"
+        :disabled="checkedIssuables.length === 0 || bulkEditInProgress"
+        :loading="bulkEditInProgress"
+        >{{ __('Update all') }}</gl-button
+      >
+      <gl-button class="gl-float-right" @click="showBulkEditSidebar = false">{{
+        __('Cancel')
+      }}</gl-button>
+    </template>
+    <template #sidebar-items="{ checkedIssuables }">
+      <epics-list-bulk-edit-sidebar
+        :checked-epics="checkedIssuables"
+        @bulk-update="handleEpicsBulkUpdate"
+      />
     </template>
     <template #reference="{ issuable }">
       <span class="issuable-reference">{{ epicReference(issuable) }}</span>

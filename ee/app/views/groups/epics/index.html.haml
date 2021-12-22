@@ -17,7 +17,8 @@
     epic_new_path: new_group_epic_url(@group),
     list_epics_path: group_epics_path(@group),
     group_full_path: @group.full_path,
-    group_labels_path: group_labels_path(@group, format: :json),
+    labels_manage_path: group_labels_path(@group),
+    labels_fetch_path: group_labels_path(@group, format: :json),
     group_milestones_path: group_milestones_path(@group, format: :json),
     empty_state_path: image_path('illustrations/epics/list.svg'),
     is_signed_in: is_signed_in } }
