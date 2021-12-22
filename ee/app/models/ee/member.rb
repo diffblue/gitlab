@@ -6,10 +6,6 @@ module EE
     extend ::Gitlab::Utils::Override
 
     prepended do
-      STATE_CREATED = 0
-      STATE_AWAITING = 1
-      STATE_ACTIVE = 2
-
       state_machine :state, initial: :created do
         event :wait do
           transition created: :awaiting
@@ -21,12 +17,12 @@ module EE
           transition awaiting: :active
         end
 
-        state :created, value: STATE_CREATED
-        state :awaiting, value: STATE_AWAITING
-        state :active, value: STATE_ACTIVE
+        state :created, value: ::Member::STATE_CREATED
+        state :awaiting, value: ::Member::STATE_AWAITING
+        state :active, value: ::Member::STATE_ACTIVE
       end
-      scope :awaiting, -> {where(state: STATE_AWAITING)}
-      scope :non_awaiting, -> {where.not(state: STATE_AWAITING)}
+      scope :awaiting, -> {where(state: ::Member::STATE_AWAITING)}
+      scope :non_awaiting, -> {where.not(state: ::Member::STATE_AWAITING)}
 
       before_create :set_membership_activation
 
@@ -154,7 +150,7 @@ module EE
     def set_membership_activation
       return unless group && ::Feature.enabled?(:saas_user_caps, group.root_ancestor, default_enabled: :yaml)
 
-      self.state = group.user_cap_reached? ? STATE_AWAITING : STATE_ACTIVE
+      self.state = group.user_cap_reached? ? ::Member::STATE_AWAITING : ::Member::STATE_ACTIVE
     end
   end
 end
