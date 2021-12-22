@@ -167,7 +167,7 @@ module Geo
 
       registry = replicator.registry
       registry.force_to_redownload = force_to_redownload
-      registry.failed!(message, error)
+      registry.failed!(message: message, error: error)
 
       repository.clean_stale_repository_files
     end

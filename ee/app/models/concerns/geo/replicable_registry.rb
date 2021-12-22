@@ -56,6 +56,8 @@ module Geo::ReplicableRegistry
   included do
     include ::Delay
 
+    attr_accessor :custom_max_retry_wait_time
+
     scope :failed, -> { with_state(:failed) }
     scope :needs_sync_again, -> { failed.retry_due.order(Gitlab::Database.nulls_first_order(:retry_at)) }
     scope :never_attempted_sync, -> { pending.where(last_synced_at: nil) }
@@ -82,7 +84,7 @@ module Geo::ReplicableRegistry
 
       before_transition any => :failed do |registry, _|
         registry.retry_count += 1
-        registry.retry_at = registry.next_retry_time(registry.retry_count)
+        registry.retry_at = registry.next_retry_time(registry.retry_count, registry.custom_max_retry_wait_time)
       end
 
       before_transition any => :synced do |registry, _|
@@ -117,10 +119,12 @@ module Geo::ReplicableRegistry
     #
     # @param [String] message error information
     # @param [StandardError] error exception
-    def failed!(message, error = nil)
+    # @param [Boolean] missing_on_primary if the resource is missing on the primary
+    def failed!(message:, error: nil, missing_on_primary: nil)
       self.last_sync_failure = message
       self.last_sync_failure += ": #{error.message}" if error.respond_to?(:message)
-      self.last_sync_failure.truncate(255)
+      self.last_sync_failure = self.last_sync_failure.truncate(255)
+      self.custom_max_retry_wait_time = missing_on_primary ? 4.hours : nil
 
       super()
     end

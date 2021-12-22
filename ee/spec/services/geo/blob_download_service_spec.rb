@@ -60,6 +60,16 @@ RSpec.describe Geo::BlobDownloadService do
 
               expect(registry_class.last).to be_failed
             end
+
+            it 'caps retry wait time to 1 hour' do
+              registry = replicator.registry
+              registry.retry_count = 9999
+              registry.save!
+
+              subject.execute
+
+              expect(registry.reload.retry_at).to be_within(10.minutes).of(1.hour.from_now)
+            end
           end
 
           context "when the file is missing on the primary" do
@@ -76,6 +86,16 @@ RSpec.describe Geo::BlobDownloadService do
                 subject.execute
 
                 expect(registry_class.last).to be_failed
+              end
+
+              it 'caps retry wait time to 4 hours' do
+                registry = replicator.registry
+                registry.retry_count = 9999
+                registry.save!
+
+                subject.execute
+
+                expect(registry.reload.retry_at).to be_within(10.minutes).of(4.hours.from_now)
               end
             end
 
@@ -96,6 +116,12 @@ RSpec.describe Geo::BlobDownloadService do
                 subject.execute
 
                 expect(registry_class.last).to be_synced
+              end
+
+              it 'does not set retry_at because it is not a failure' do
+                subject.execute
+
+                expect(registry_class.last.retry_at).to be_nil
               end
             end
           end

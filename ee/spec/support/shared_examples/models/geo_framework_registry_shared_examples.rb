@@ -76,4 +76,75 @@ RSpec.shared_examples 'a Geo framework registry' do
       expect(record2.reload.state).to eq described_class::STATE_VALUES[:started]
     end
   end
+
+  describe '#failed!' do
+    let(:registry) { create(registry_class_factory, :started) }
+    let(:message) { 'Foo' }
+
+    it 'sets last_sync_failure with message' do
+      registry.failed!(message: message)
+
+      expect(registry.last_sync_failure).to include(message)
+    end
+
+    it 'truncates a long last_sync_failure' do
+      registry.failed!(message: 'a' * 256)
+
+      expect(registry.last_sync_failure).to eq('a' * 252 + '...')
+    end
+
+    it 'increments retry_count' do
+      registry.failed!(message: message)
+
+      expect(registry.retry_count).to eq(1)
+
+      registry.start
+      registry.failed!(message: message)
+
+      expect(registry.retry_count).to eq(2)
+    end
+
+    it 'sets retry_at to a time in the future' do
+      now = Time.current
+
+      registry.failed!(message: message)
+
+      expect(registry.retry_at >= now).to be_truthy
+    end
+
+    context 'when an error is given' do
+      it 'includes error.message in last_sync_failure' do
+        registry.failed!(message: message, error: StandardError.new('bar'))
+
+        expect(registry.last_sync_failure).to eq('Foo: bar')
+      end
+    end
+
+    context 'when missing_on_primary is not given' do
+      it 'caps retry_at to default 1 hour' do
+        registry.retry_count = 9999
+        registry.failed!(message: message)
+
+        expect(registry.retry_at).to be_within(10.minutes).of(1.hour.from_now)
+      end
+    end
+
+    context 'when missing_on_primary is falsey' do
+      it 'caps retry_at to default 1 hour' do
+        registry.retry_count = 9999
+        registry.failed!(message: message, missing_on_primary: false)
+
+        expect(registry.retry_at).to be_within(10.minutes).of(1.hour.from_now)
+      end
+    end
+
+    context 'when missing_on_primary is truthy' do
+      it 'caps retry_at to 4 hours' do
+        registry.retry_count = 9999
+        registry.failed!(message: message, missing_on_primary: true)
+
+        expect(registry.retry_at).to be_within(10.minutes).of(4.hours.from_now)
+      end
+    end
+  end
 end
