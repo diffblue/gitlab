@@ -1,8 +1,9 @@
 <script>
-import { GlFormGroup, GlFormInput, GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlFormGroup, GlFormInput } from '@gitlab/ui';
 import { isLabelEvent, getLabelEventsIdentifiers, uniqById } from '../../utils';
-import LabelsSelector from '../labels_selector.vue';
 import { i18n } from './constants';
+import CustomStageEventField from './custom_stage_event_field.vue';
+import CustomStageEventLabelField from './custom_stage_event_label_field.vue';
 import StageFieldActions from './stage_field_actions.vue';
 import { startEventOptions, endEventOptions } from './utils';
 
@@ -11,14 +12,17 @@ export default {
   components: {
     GlFormGroup,
     GlFormInput,
-    GlDropdown,
-    GlDropdownItem,
-    LabelsSelector,
+    CustomStageEventField,
+    CustomStageEventLabelField,
     StageFieldActions,
   },
   props: {
     index: {
       type: Number,
+      required: true,
+    },
+    stageLabel: {
+      type: String,
       required: true,
     },
     totalStages: {
@@ -107,6 +111,7 @@ export default {
     <div class="gl-display-flex">
       <gl-form-group
         class="gl-flex-grow-1"
+        :label="stageLabel"
         :state="hasFieldErrors('name')"
         :invalid-feedback="fieldErrorMessage('name')"
         :data-testid="`custom-stage-name-${index}`"
@@ -123,6 +128,7 @@ export default {
       </gl-form-group>
       <stage-field-actions
         v-if="hasMultipleStages"
+        class="gl-mt-6"
         :index="index"
         :stage-count="totalStages"
         :can-remove="true"
@@ -131,91 +137,51 @@ export default {
       />
     </div>
     <div class="gl-display-flex gl-justify-content-between">
-      <gl-form-group
-        :data-testid="`custom-stage-start-event-${index}`"
-        class="gl-w-half gl-mr-2"
-        :label="$options.i18n.FORM_FIELD_START_EVENT"
-        :state="hasFieldErrors('startEventIdentifier')"
-        :invalid-feedback="fieldErrorMessage('startEventIdentifier')"
-      >
-        <gl-dropdown
-          toggle-class="gl-mb-0"
-          :text="selectedStartEventName"
-          :name="`custom-stage-start-id-${index}`"
-          menu-class="gl-overflow-hidden!"
-          block
-        >
-          <gl-dropdown-item
-            v-for="{ text, value } in startEvents"
-            :key="`start-event-${value}`"
-            :value="value"
-            @click="$emit('input', { field: 'startEventIdentifier', value })"
-            >{{ text }}</gl-dropdown-item
-          >
-        </gl-dropdown>
-      </gl-form-group>
-      <div class="gl-w-half gl-ml-2">
-        <transition name="fade">
-          <gl-form-group
-            v-if="startEventRequiresLabel"
-            :data-testid="`custom-stage-start-event-label-${index}`"
-            :label="$options.i18n.FORM_FIELD_START_EVENT_LABEL"
-            :state="hasFieldErrors('startEventLabelId')"
-            :invalid-feedback="fieldErrorMessage('startEventLabelId')"
-          >
-            <labels-selector
-              :initial-data="initialGroupLabels"
-              :selected-label-ids="[stage.startEventLabelId]"
-              :name="`custom-stage-start-label-${index}`"
-              @select-label="$emit('input', { field: 'startEventLabelId', value: $event })"
-            />
-          </gl-form-group>
-        </transition>
-      </div>
+      <custom-stage-event-field
+        event-type="start-event"
+        :index="index"
+        :field-label="$options.i18n.FORM_FIELD_START_EVENT"
+        :selected-event-name="selectedStartEventName"
+        :events-list="startEvents"
+        :identifier-error="fieldErrorMessage('startEventIdentifier')"
+        :has-identifier-error="hasFieldErrors('startEventIdentifier')"
+        @update-identifier="$emit('input', { field: 'startEventIdentifier', value: $event })"
+      />
+      <custom-stage-event-label-field
+        event-type="start-event"
+        :index="index"
+        :field-label="$options.i18n.FORM_FIELD_START_EVENT_LABEL"
+        :initial-group-labels="initialGroupLabels"
+        :requires-label="startEventRequiresLabel"
+        :label-error="fieldErrorMessage('startEventLabelId')"
+        :has-label-error="hasFieldErrors('startEventLabelId')"
+        :selected-label-ids="[stage.startEventLabelId]"
+        @update-label="$emit('input', { field: 'startEventLabelId', value: $event })"
+      />
     </div>
     <div class="gl-display-flex gl-justify-content-between">
-      <gl-form-group
-        :data-testid="`custom-stage-end-event-${index}`"
-        class="gl-w-half gl-mr-2"
-        :label="$options.i18n.FORM_FIELD_END_EVENT"
-        :state="hasFieldErrors('endEventIdentifier')"
-        :invalid-feedback="fieldErrorMessage('endEventIdentifier')"
-      >
-        <gl-dropdown
-          toggle-class="gl-mb-0"
-          :text="selectedEndEventName"
-          :name="`custom-stage-end-id-${index}`"
-          :disabled="!hasStartEvent"
-          menu-class="gl-overflow-hidden!"
-          block
-        >
-          <gl-dropdown-item
-            v-for="{ text, value } in endEvents"
-            :key="`end-event-${value}`"
-            :value="value"
-            @click="$emit('input', { field: 'endEventIdentifier', value })"
-            >{{ text }}</gl-dropdown-item
-          >
-        </gl-dropdown>
-      </gl-form-group>
-      <div class="gl-w-half gl-ml-2">
-        <transition name="fade">
-          <gl-form-group
-            v-if="endEventRequiresLabel"
-            :data-testid="`custom-stage-end-event-label-${index}`"
-            :label="$options.i18n.FORM_FIELD_END_EVENT_LABEL"
-            :state="hasFieldErrors('endEventLabelId')"
-            :invalid-feedback="fieldErrorMessage('endEventLabelId')"
-          >
-            <labels-selector
-              :initial-data="initialGroupLabels"
-              :selected-label-ids="[stage.endEventLabelId]"
-              :name="`custom-stage-end-label-${index}`"
-              @select-label="$emit('input', { field: 'endEventLabelId', value: $event })"
-            />
-          </gl-form-group>
-        </transition>
-      </div>
+      <custom-stage-event-field
+        event-type="end-event"
+        :index="index"
+        :disabled="!hasStartEvent"
+        :field-label="$options.i18n.FORM_FIELD_END_EVENT"
+        :selected-event-name="selectedEndEventName"
+        :events-list="endEvents"
+        :identifier-error="fieldErrorMessage('endEventIdentifier')"
+        :has-identifier-error="hasFieldErrors('endEventIdentifier')"
+        @update-identifier="$emit('input', { field: 'endEventIdentifier', value: $event })"
+      />
+      <custom-stage-event-label-field
+        event-type="end-event"
+        :index="index"
+        :field-label="$options.i18n.FORM_FIELD_END_EVENT_LABEL"
+        :initial-group-labels="initialGroupLabels"
+        :requires-label="endEventRequiresLabel"
+        :label-error="fieldErrorMessage('endEventLabelId')"
+        :has-label-error="hasFieldErrors('endEventLabelId')"
+        :selected-label-ids="[stage.endEventLabelId]"
+        @update-label="$emit('input', { field: 'endEventLabelId', value: $event })"
+      />
     </div>
   </div>
 </template>

@@ -26,6 +26,10 @@ export default {
       type: Number,
       required: true,
     },
+    stageLabel: {
+      type: String,
+      required: true,
+    },
     totalStages: {
       type: Number,
       required: true,
@@ -63,6 +67,7 @@ export default {
     <div class="gl-display-flex">
       <gl-form-group
         class="gl-flex-grow-1 gl-mb-0"
+        :label="stageLabel"
         :state="isValid('name')"
         :invalid-feedback="renderError('name')"
         :data-testid="`default-stage-name-${index}`"
@@ -79,6 +84,7 @@ export default {
         <!-- eslint-enable vue/no-mutating-props -->
       </gl-form-group>
       <stage-field-actions
+        class="gl-mt-6"
         :index="index"
         :stage-count="totalStages"
         @move="$emit('move', $event)"

@@ -388,12 +388,9 @@ export default {
             :key="stage.id || stage.transitionKey"
           >
             <hr class="gl-my-3" />
-            <span
-              class="gl-display-flex gl-m-0 gl-vertical-align-middle gl-mr-2 gl-font-weight-bold gl-display-flex gl-pb-3"
-              >{{ stageGroupLabel(activeStageIndex) }}</span
-            >
             <custom-stage-fields
               v-if="stage.custom"
+              :stage-label="stageGroupLabel(activeStageIndex)"
               :stage="stage"
               :stage-events="formEvents"
               :index="activeStageIndex"
@@ -406,6 +403,7 @@ export default {
             />
             <default-stage-fields
               v-else
+              :stage-label="stageGroupLabel(activeStageIndex)"
               :stage="stage"
               :stage-events="formEvents"
               :index="activeStageIndex"
