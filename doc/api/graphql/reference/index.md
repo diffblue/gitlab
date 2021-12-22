@@ -12857,9 +12857,9 @@ Represents a file or directory in the project repository that has been locked.
 | <a id="pipelineproject"></a>`project` | [`Project`](#project) | Project the pipeline belongs to. |
 | <a id="pipelinequeuedduration"></a>`queuedDuration` | [`Duration`](#duration) | How long the pipeline was queued before starting. |
 | <a id="pipelineref"></a>`ref` | [`String`](#string) | Reference to the branch from which the pipeline was triggered. |
+| <a id="pipelinerefpath"></a>`refPath` | [`String`](#string) | Reference path to the branch from which the pipeline was triggered. |
 | <a id="pipelineretryable"></a>`retryable` | [`Boolean!`](#boolean) | Specifies if a pipeline can be retried. |
 | <a id="pipelinesecurityreportsummary"></a>`securityReportSummary` | [`SecurityReportSummary`](#securityreportsummary) | Vulnerability and scanned resource counts for each security scanner of the pipeline. |
-| <a id="pipelinesha"></a>`sha` | [`String!`](#string) | SHA of the pipeline's commit. |
 | <a id="pipelinesourcejob"></a>`sourceJob` | [`CiJob`](#cijob) | Job where pipeline was triggered from. |
 | <a id="pipelinestages"></a>`stages` | [`CiStageConnection`](#cistageconnection) | Stages of the pipeline. (see [Connections](#connections)) |
 | <a id="pipelinestartedat"></a>`startedAt` | [`Time`](#time) | Timestamp when the pipeline was started. |
@@ -12922,6 +12922,18 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="pipelinesecurityreportfindingsscanner"></a>`scanner` | [`[String!]`](#string) | Filter vulnerability findings by Scanner.externalId. |
 | <a id="pipelinesecurityreportfindingsseverity"></a>`severity` | [`[String!]`](#string) | Filter vulnerability findings by severity. |
 | <a id="pipelinesecurityreportfindingsstate"></a>`state` | [`[VulnerabilityState!]`](#vulnerabilitystate) | Filter vulnerability findings by state. |
+
+##### `Pipeline.sha`
+
+SHA of the pipeline's commit.
+
+Returns [`String`](#string).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="pipelineshaformat"></a>`format` | [`ShaFormat`](#shaformat) | Format of the SHA. |
 
 ##### `Pipeline.testSuite`
 
@@ -17266,6 +17278,15 @@ State of a Sentry error.
 | <a id="servicetypewebex_teams_service"></a>`WEBEX_TEAMS_SERVICE` | WebexTeamsService type. |
 | <a id="servicetypeyoutrack_service"></a>`YOUTRACK_SERVICE` | YoutrackService type. |
 | <a id="servicetypezentao_service"></a>`ZENTAO_SERVICE` | ZentaoService type. |
+
+### `ShaFormat`
+
+How to format SHA strings.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="shaformatlong"></a>`LONG` | Unabbreviated format. |
+| <a id="shaformatshort"></a>`SHORT` | Abbreviated format. Short SHAs are typically eight characters long. |
 
 ### `SharedRunnersSetting`
 
