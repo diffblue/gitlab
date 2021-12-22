@@ -1,8 +1,0 @@
----
-name: geo_merge_request_diff_verification
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/63309/
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/330023
-milestone: '14.0'
-type: development
-group: group::geo
-default_enabled: true
