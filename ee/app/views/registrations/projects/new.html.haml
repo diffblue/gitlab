@@ -2,7 +2,9 @@
 - page_title _('Your first project')
 - visibility_level = selected_visibility_level(@project, params.dig(:project, :visibility_level))
 - content_for :page_specific_javascripts do
+  = render "layouts/google_tag_manager_head"
   = render "layouts/one_trust"
+= render "layouts/google_tag_manager_body"
 
 - if in_trial_during_signup_flow? || in_trial_onboarding_flow?
   = render 'registrations/trial_is_activated_banner'

@@ -1,7 +1,9 @@
 - page_title _('Start your Free Ultimate Trial')
 - glm_params = { glm_source: params[:glm_source], glm_content: params[:glm_content] }
 - content_for :page_specific_javascripts do
+  = render "layouts/google_tag_manager_head"
   = render "layouts/one_trust"
+= render "layouts/google_tag_manager_body"
 
 .row
   .col-md-6.m-sm-6
@@ -13,7 +15,7 @@
 
     = render 'errors'
 
-    = form_tag create_lead_trials_path(glm_params), method: :post do |f|
+    = form_tag create_lead_trials_path(glm_params), method: :post, id: "new_trial" do |f|
       .form-row
         .col-12.col-sm-6.form-group
           = label_tag :first_name, s_('Trial|First name'), for: :first_name, class: 'col-form-label'

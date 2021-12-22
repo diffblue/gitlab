@@ -18,6 +18,7 @@ module Registrations
 
     def new
       @project = Project.new(namespace: @namespace)
+      push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
     end
 
     def create
