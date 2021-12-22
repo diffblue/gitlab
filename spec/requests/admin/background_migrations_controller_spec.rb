@@ -16,7 +16,7 @@ RSpec.describe Admin::BackgroundMigrationsController, :enable_admin_mode do
       create(:batched_background_migration_job, batched_migration: migration, batch_size: 10, min_value: 6, max_value: 15, status: :failed, attempts: 3)
 
       allow_next_instance_of(Gitlab::BackgroundMigration::BatchingStrategies::PrimaryKeyBatchingStrategy) do |batch_class|
-        allow(batch_class).to receive(:next_batch).with(anything, anything, batch_min_value: 6, batch_size: 5).and_return([6, 10])
+        allow(batch_class).to receive(:next_batch).with(batch_min_value: 6, batch_size: 5).and_return([6, 10])
       end
     end
 

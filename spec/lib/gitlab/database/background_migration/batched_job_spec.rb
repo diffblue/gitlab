@@ -135,7 +135,7 @@ RSpec.describe Gitlab::Database::BackgroundMigration::BatchedJob, type: :model d
     context 'when job can be split' do
       before do
         allow_next_instance_of(Gitlab::BackgroundMigration::BatchingStrategies::PrimaryKeyBatchingStrategy) do |batch_class|
-          allow(batch_class).to receive(:next_batch).with(anything, anything, batch_min_value: 6, batch_size: 5).and_return([6, 10])
+          allow(batch_class).to receive(:next_batch).with(batch_min_value: 6, batch_size: 5).and_return([6, 10])
         end
       end
 
@@ -195,7 +195,7 @@ RSpec.describe Gitlab::Database::BackgroundMigration::BatchedJob, type: :model d
     context 'when computed midpoint is larger than the max value of the batch' do
       before do
         allow_next_instance_of(Gitlab::BackgroundMigration::BatchingStrategies::PrimaryKeyBatchingStrategy) do |batch_class|
-          allow(batch_class).to receive(:next_batch).with(anything, anything, batch_min_value: 6, batch_size: 5).and_return([6, 16])
+          allow(batch_class).to receive(:next_batch).with(batch_min_value: 6, batch_size: 5).and_return([6, 16])
         end
       end
 
