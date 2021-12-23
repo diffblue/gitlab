@@ -257,8 +257,11 @@ export default {
           </div>
         </template>
 
-        <template #cell(name)="{ value }">
+        <template #cell(name)="{ value, item }">
           <gl-truncate v-if="value" :text="value" with-tooltip />
+          <div v-if="$scopedSlots['after-name']">
+            <slot name="after-name" v-bind="item"></slot>
+          </div>
         </template>
 
         <template #cell(scanType)>

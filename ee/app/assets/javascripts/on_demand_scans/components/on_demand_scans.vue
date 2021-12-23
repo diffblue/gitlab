@@ -18,6 +18,7 @@ import AllTab from './tabs/all.vue';
 import RunningTab from './tabs/running.vue';
 import FinishedTab from './tabs/finished.vue';
 import ScheduledTab from './tabs/scheduled.vue';
+import SavedTab from './tabs/saved.vue';
 import EmptyState from './empty_state.vue';
 
 export default {
@@ -97,6 +98,10 @@ export default {
         scheduled: {
           component: ScheduledTab,
           itemsCount: this.onDemandScanCounts.scheduled,
+        },
+        saved: {
+          component: SavedTab,
+          itemsCount: this.onDemandScanCounts.saved,
         },
       };
     },

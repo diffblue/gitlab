@@ -14,7 +14,8 @@ RSpec.describe Projects::OnDemandScansHelper do
 
   describe '#on_demand_scans_data' do
     let_it_be(:dast_profile) { create(:dast_profile, project: project) }
-    let_it_be(:dast_profile_schedule) { create(:dast_profile_schedule, project: project, dast_profile: dast_profile)}
+    let_it_be(:dast_profile_with_schedule) { create(:dast_profile, project: project) }
+    let_it_be(:dast_profile_schedule) { create(:dast_profile_schedule, project: project, dast_profile: dast_profile_with_schedule)}
 
     before do
       allow(helper).to receive(:timezone_data).with(format: :abbr).and_return(timezones)
@@ -33,7 +34,8 @@ RSpec.describe Projects::OnDemandScansHelper do
           all: 12,
           running: 4,
           finished: 8,
-          scheduled: 1
+          scheduled: 1,
+          saved: 2
         }.to_json,
         'timezones' => timezones.to_json
       )
