@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'GitLab.com Google Analytics DataLayer', :js do
   let!(:google_tag_manager_id) { 'GTM-WWKMTWS'}
-  let!(:user_attrs) { attributes_for(:user, first_name: 'GitLab', last_name: 'GitLab', company_name: 'GitLab', phone_number: '555-555-5555', number_of_users: 10) }
+  let!(:user_attrs) { attributes_for(:user, first_name: 'GitLab', last_name: 'GitLab', company_name: 'GitLab', phone_number: '555-555-5555') }
 
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
@@ -71,12 +71,11 @@ RSpec.describe 'GitLab.com Google Analytics DataLayer', :js do
 
       evaluate_script('document.getElementById("new_trial").addEventListener("submit", e => e.preventDefault())')
 
-      fill_in 'first_name',        with: user_attrs[:first_name]
-      fill_in 'last_name',         with: user_attrs[:last_name]
-      fill_in 'company_name',      with: user_attrs[:company_name]
+      fill_in 'first_name', with: user_attrs[:first_name]
+      fill_in 'last_name', with: user_attrs[:last_name]
+      fill_in 'company_name', with: user_attrs[:company_name]
       evaluate_script("document.getElementById('company_size').value = '1-99'")
-      fill_in 'phone_number',      with: user_attrs[:phone_number]
-      fill_in 'number_of_users',   with: user_attrs[:number_of_users]
+      fill_in 'phone_number', with: user_attrs[:phone_number]
       evaluate_script("document.getElementById('country_select').value = 'US'")
 
       click_button 'Continue'

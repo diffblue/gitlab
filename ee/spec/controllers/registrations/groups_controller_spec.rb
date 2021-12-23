@@ -129,7 +129,6 @@ RSpec.describe Registrations::GroupsController do
                   company_name: 'ACME',
                   company_size: '1-99',
                   phone_number: '11111111',
-                  number_of_users: '17',
                   country: 'Norway'
                 }
               end
