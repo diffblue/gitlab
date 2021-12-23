@@ -1,9 +1,8 @@
-import { initRelatedFeatureFlags } from 'ee/issues';
+import { initRelatedFeatureFlags, initUnableToLinkVulnerabilityError } from 'ee/issues';
+import { initShow } from '~/issues';
 import { store } from '~/notes/stores';
-import initShow from '~/issues/show';
 import initRelatedIssues from '~/related_issues';
 import initSidebarBundle from '~/sidebar/sidebar_bundle';
-import initUnableToLinkVulnerabilityError from 'ee/issues/init_unable_to_link_vulnerability_error';
 import UserCallout from '~/user_callout';
 
 initShow();
@@ -12,7 +11,5 @@ initRelatedIssues();
 initRelatedFeatureFlags();
 initUnableToLinkVulnerabilityError();
 
-// eslint-disable-next-line no-new
-new UserCallout({ className: 'js-epics-sidebar-callout' });
-// eslint-disable-next-line no-new
-new UserCallout({ className: 'js-weight-sidebar-callout' });
+new UserCallout({ className: 'js-epics-sidebar-callout' }); // eslint-disable-line no-new
+new UserCallout({ className: 'js-weight-sidebar-callout' }); // eslint-disable-line no-new
