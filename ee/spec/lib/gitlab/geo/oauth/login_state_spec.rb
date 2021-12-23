@@ -9,7 +9,11 @@ RSpec.describe Gitlab::Geo::Oauth::LoginState do
   let(:timestamp) { Time.utc(2019, 2, 10, 19, 0, 0) }
 
   around do |example|
-    Timecop.freeze(timestamp) { example.run }
+    if example.metadata[:no_traveling]
+      example.run
+    else
+      travel_to(timestamp) { example.run }
+    end
   end
 
   before do
@@ -68,12 +72,14 @@ RSpec.describe Gitlab::Geo::Oauth::LoginState do
       expect(subject.valid?).to eq(false)
     end
 
-    it "returns false when token's expired" do
-      subject = described_class.new(return_to: return_to, salt: salt, token: token)
+    it "returns false when token's expired", :no_traveling do
+      subject = travel_to(timestamp) do
+        described_class.new(return_to: return_to, salt: salt, token: token)
+      end
 
       # Needs to be at least 120 seconds, because the default expiry is
       # 60 seconds with an additional 60 second leeway.
-      Timecop.freeze(timestamp + 125) do
+      travel_to(timestamp + 125) do
         expect(subject.valid?).to eq(false)
       end
     end
