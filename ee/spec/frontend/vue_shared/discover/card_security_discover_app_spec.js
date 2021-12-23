@@ -1,32 +1,52 @@
-import { shallowMount } from '@vue/test-utils';
+import { shallowMount, mount, createLocalVue } from '@vue/test-utils';
+import VueApollo from 'vue-apollo';
+import { stubExperiments } from 'helpers/experimentation_helper';
+
+import { getExperimentData } from '~/experimentation/utils';
 import CardSecurityDiscoverApp from 'ee/vue_shared/discover/card_security_discover_app.vue';
+import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
 import { mockTracking } from 'helpers/tracking_helper';
+import createMockApollo from 'helpers/mock_apollo_helper';
+
+const localVue = createLocalVue();
+localVue.use(VueApollo);
 
 describe('Card security discover app', () => {
   let wrapper;
 
-  const createComponent = (propsData) => {
-    wrapper = shallowMount(CardSecurityDiscoverApp, {
+  const createComponent = ({ mountFn = shallowMount } = {}) => {
+    const propsData = {
+      project: {
+        id: 1,
+        name: 'Awesome Project',
+      },
+      linkMain: '/link/main',
+      linkSecondary: '/link/secondary',
+      linkFeedback: 'link/feedback',
+    };
+    wrapper = mountFn(CardSecurityDiscoverApp, {
+      localVue,
       propsData,
+      apolloProvider: createMockApollo([], {}),
+      provide: {
+        user: {
+          namespaceId: '1',
+          userName: 'joe',
+          firstName: 'Joe',
+          lastName: 'Doe',
+          companyName: 'ACME',
+        },
+      },
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('Project discover carousel', () => {
     beforeEach(() => {
-      const propsData = {
-        project: {
-          id: 1,
-          name: 'Awesome Project',
-        },
-        linkMain: '/link/main',
-        linkSecondary: '/link/secondary',
-        linkFeedback: 'link/feedback',
-      };
-      createComponent(propsData);
+      createComponent();
+    });
+
+    afterEach(() => {
+      wrapper.destroy();
     });
 
     it('renders component properly', () => {
@@ -96,6 +116,38 @@ describe('Card security discover app', () => {
           property: '0',
         });
       });
+    });
+  });
+  describe('Experiment pql_three_cta_test', () => {
+    const originalObjects = [];
+
+    beforeEach(() => {
+      originalObjects.push(window.gon, window.gl);
+    });
+
+    afterEach(() => {
+      wrapper.destroy();
+      [window.gon, window.gl] = originalObjects;
+    });
+
+    it('for control sets control and not show hand raise lead', () => {
+      stubExperiments({ pql_three_cta_test: 'control' });
+      createComponent({ mountFn: mount });
+      expect(getExperimentData('pql_three_cta_test')).toEqual({
+        experiment: 'pql_three_cta_test',
+        variant: 'control',
+      });
+      expect(wrapper.findComponent(HandRaiseLeadButton).exists()).toBe(false);
+    });
+
+    it('for candidate shows hand raise leads', () => {
+      stubExperiments({ pql_three_cta_test: 'candidate' });
+      createComponent({ mountFn: mount });
+      expect(getExperimentData('pql_three_cta_test')).toEqual({
+        experiment: 'pql_three_cta_test',
+        variant: 'candidate',
+      });
+      expect(wrapper.findComponent(HandRaiseLeadButton).exists()).toBe(true);
     });
   });
 });

@@ -12,6 +12,8 @@ import securityDependencyImageUrl from 'ee_images/promotions/security-dependenci
 import securityScanningImageUrl from 'ee_images/promotions/security-scanning.png';
 import { s__ } from '~/locale';
 import Tracking from '~/tracking';
+import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
+import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
 
 export default {
   directives: {
@@ -23,6 +25,8 @@ export default {
     GlCarouselSlide,
     GlSprintf,
     GlLink,
+    HandRaiseLeadButton,
+    GitlabExperiment,
   },
   mixins: [Tracking.mixin()],
   props: {
@@ -159,8 +163,13 @@ export default {
     <div
       class="discover-buttons gl-display-flex gl-flex-direction-row gl-justify-content-space-between gl-mx-auto"
     >
+      <gitlab-experiment name="pql_three_cta_test">
+        <template #candidate>
+          <hand-raise-lead-button />
+        </template>
+      </gitlab-experiment>
       <gl-button
-        class="discover-button-upgrade"
+        class="discover-button-upgrade gl-ml-3"
         v-bind="discoverButtonProps"
         category="secondary"
         data-track-label="security-discover-upgrade-cta"
@@ -170,7 +179,7 @@ export default {
         {{ $options.i18n.discoverUpgradeLabel }}
       </gl-button>
       <gl-button
-        class="discover-button-trial"
+        class="discover-button-trial gl-ml-3"
         v-bind="discoverButtonProps"
         category="primary"
         data-track-label="security-discover-trial-cta"
