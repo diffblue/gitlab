@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import SecurityDiscoverApp from 'ee/vue_shared/discover/card_security_discover_app.vue';
+import apolloProvider from 'ee/subscriptions/buy_addons_shared/graphql';
 
 export default () => {
   const securityTab = document.getElementById('js-security-discover-app');
@@ -11,6 +12,11 @@ export default () => {
     linkMain,
     linkSecondary,
     linkFeedback,
+    namespaceId,
+    userName,
+    firstName,
+    lastName,
+    companyName,
   } = securityTab.dataset;
 
   const props = {
@@ -29,8 +35,18 @@ export default () => {
 
   return new Vue({
     el: securityTab,
+    apolloProvider,
     components: {
       SecurityDiscoverApp,
+    },
+    provide: {
+      user: {
+        namespaceId,
+        userName,
+        firstName,
+        lastName,
+        companyName,
+      },
     },
     render(createElement) {
       return createElement('security-discover-app', {

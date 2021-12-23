@@ -186,12 +186,7 @@ export default {
 
 <template>
   <div>
-    <gl-button
-      v-gl-modal.hand-raise-lead
-      :loading="isLoading"
-      category="secondary"
-      variant="success"
-    >
+    <gl-button v-gl-modal.hand-raise-lead :loading="isLoading">
       {{ $options.i18n.buttonText }}
     </gl-button>
     <gl-modal
