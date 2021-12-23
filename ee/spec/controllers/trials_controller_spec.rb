@@ -184,7 +184,6 @@ RSpec.describe TrialsController, :saas do
           first_name: user.first_name,
           last_name: user.last_name,
           phone_number: '1111111111',
-          number_of_users: '20',
           country: 'IN',
           glm_content: 'free-billing',
           glm_source: 'about.gitlab.com'
@@ -210,7 +209,6 @@ RSpec.describe TrialsController, :saas do
           first_name: user.first_name,
           last_name: user.last_name,
           phone_number: '1111111111',
-          number_of_users: '20',
           country: 'IN',
           glm_content: 'free-billing',
           glm_source: 'about.gitlab.com',

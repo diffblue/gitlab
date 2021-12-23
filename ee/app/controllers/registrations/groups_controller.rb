@@ -77,7 +77,6 @@ module Registrations
           :company_name,
           :company_size,
           :phone_number,
-          :number_of_users,
           :country
         ).merge(
           work_email: current_user.email,

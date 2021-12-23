@@ -131,7 +131,7 @@ class TrialsController < ApplicationController
 
   def company_params
     params.permit(:company_name, :company_size, :first_name, :last_name, :phone_number,
-                  :number_of_users, :country, :glm_content, :glm_source).merge(extra_params)
+                  :country, :glm_content, :glm_source).merge(extra_params)
   end
 
   def extra_params

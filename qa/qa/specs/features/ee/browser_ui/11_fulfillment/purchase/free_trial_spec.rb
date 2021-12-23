@@ -15,7 +15,6 @@ module QA
       let(:company_name) { 'QA Test Company' }
       let(:number_of_employees) { '500 - 1,999' }
       let(:telephone_number) { '555-555-5555' }
-      let(:number_of_users) { 600 }
       let(:country) { 'United States of America' }
 
       let(:group) { Resource::Group.fabricate_via_api! }
@@ -46,7 +45,6 @@ module QA
               new.company_name = company_name
               new.number_of_employees = number_of_employees
               new.telephone_number = telephone_number
-              new.number_of_users = number_of_users
               new.country = country
 
               new.continue

@@ -18,10 +18,6 @@
       = select_tag :company_size, company_size_options_for_select(params[:company_size]), class: 'js-trial-field select2', required: true
   .row
     .form-group.col-sm-12
-      = label_tag :number_of_users, s_('Trial|How many employees will use Gitlab?'), for: :number_of_users, class: 'col-form-label'
-      = number_field_tag :number_of_users, params[:number_of_users], class: 'form-control js-trial-field', required: true, min: 1
-  .row
-    .form-group.col-sm-12
       = label_tag :phone_number, s_('Trial|Telephone number'), for: :phone_number, class: 'col-form-label'
       = telephone_field_tag :phone_number, params[:phone_number], pattern: '^(\+)*[0-9-\s]+$', class: 'form-control js-trial-field', required: true
       %p.gray-500= _('Allowed characters: +, 0-9, -, and spaces.')

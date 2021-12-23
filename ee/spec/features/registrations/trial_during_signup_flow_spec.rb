@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'User sees new onboarding flow', :js do
   include Select2Helper
   let_it_be(:user) { create(:user) }
-  let_it_be(:trial_fields) { ['Company name', 'Number of employees', 'How many employees will use Gitlab?', 'Telephone number', 'Country'] }
+  let_it_be(:trial_fields) { ['Company name', 'Number of employees', 'Telephone number', 'Country'] }
 
   before do
     allow(Gitlab).to receive(:com?).and_return(true)
@@ -58,7 +58,6 @@ RSpec.describe 'User sees new onboarding flow', :js do
     # submit the trial form
     fill_in 'company_name', with: 'GitLab'
     select2 '1-99', from: '#company_size'
-    fill_in 'number_of_users', with: '1'
     fill_in 'phone_number', with: '+1234567890'
     select2 'US', from: '#country_select'
 

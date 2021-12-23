@@ -15,7 +15,7 @@
 
     = render 'errors'
 
-    = form_tag create_lead_trials_path(glm_params), method: :post, id: "new_trial" do |f|
+    = form_tag create_lead_trials_path(glm_params), method: :post, id: "new_trial" do |_f|
       .form-row
         .col-12.col-sm-6.form-group
           = label_tag :first_name, s_('Trial|First name'), for: :first_name, class: 'col-form-label'
@@ -26,13 +26,9 @@
       .form-group
         = label_tag :company_name, s_('Trial|Company name'), for: :company_name, class: 'col-form-label'
         = text_field_tag :company_name, params[:company_name] || current_user.organization, class: 'form-control gl-form-input', required: true, data: { qa_selector: 'company_name' }
-      .form-row
-        .col-12.col-sm-6.form-group.gl-select2-html5-required-fix
-          = label_tag :company_size, s_('Trial|Number of employees'), for: :company_size, class: 'col-form-label'
-          = select_tag :company_size, company_size_options_for_select(params[:company_size]), class: 'select2', required: true, data: { qa_selector: 'number_of_employees' }
-        .col-12.col-sm-6.form-group
-          = label_tag :number_of_users, s_('Trial|Number of trial users'), for: :number_of_users, class: 'col-form-label'
-          = number_field_tag :number_of_users, params[:number_of_users], class: 'form-control gl-border-gray-400', required: true, min: 1, data: { qa_selector: 'number_of_users' }
+      .form-group.gl-select2-html5-required-fix
+        = label_tag :company_size, s_('Trial|Number of employees'), for: :company_size, class: 'col-form-label'
+        = select_tag :company_size, company_size_options_for_select(params[:company_size]), class: 'select2', required: true, data: { qa_selector: 'number_of_employees' }
       .form-group.gl-select2-html5-required-fix
         = render 'select_country'
       .form-group

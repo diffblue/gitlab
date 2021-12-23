@@ -29,7 +29,6 @@ RSpec.describe 'Trial Capture Lead', :js do
         fill_in 'company_name', with: 'GitLab'
         select2 '1-99', from: '#company_size'
         fill_in 'phone_number', with: '+1 23 456-78-90'
-        fill_in 'number_of_users', with: '1'
         select2 'US', from: '#country_select'
 
         click_button 'Continue'
@@ -43,14 +42,11 @@ RSpec.describe 'Trial Capture Lead', :js do
       before do
         fill_in 'company_name', with: 'GitLab'
         select2 '1-99', from: '#company_size'
-        fill_in 'number_of_users', with: '1'
         select2 'US', from: '#country_select'
       end
 
       context 'without phone number' do
         it 'shows validation error' do
-          fill_in 'number_of_users', with: '1'
-
           click_button 'Continue'
 
           message = page.find('#phone_number').native.attribute('validationMessage')
@@ -62,7 +58,6 @@ RSpec.describe 'Trial Capture Lead', :js do
 
       context 'with invalid phone number format' do
         it 'shows validation error' do
-          fill_in 'number_of_users', with: '1'
           invalid_phone_numbers = [
             '+1 (121) 22-12-23',
             '+12190AX ',
@@ -80,19 +75,6 @@ RSpec.describe 'Trial Capture Lead', :js do
             expect(message).to eq('Please match the requested format.')
             expect(current_path).to eq(new_trial_path)
           end
-        end
-      end
-
-      context 'and enters negative number to the number of users field' do
-        it 'shows validation error' do
-          fill_in 'number_of_users', with: '-1'
-
-          click_button 'Continue'
-
-          message = page.find('#number_of_users').native.attribute('validationMessage')
-
-          expect(message).to eq('Value must be greater than or equal to 1.')
-          expect(current_path).to eq(new_trial_path)
         end
       end
     end
