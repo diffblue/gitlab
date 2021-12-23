@@ -386,4 +386,12 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
       expect { subject }.not_to raise_exception
     end
   end
+
+  describe '#get_meta', :elastic do
+    subject { helper.get_meta }
+
+    it 'returns version in meta field' do
+      is_expected.to include('created_by' => Gitlab::VERSION)
+    end
+  end
 end
