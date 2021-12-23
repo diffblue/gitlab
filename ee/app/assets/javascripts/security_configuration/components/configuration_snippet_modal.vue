@@ -1,6 +1,6 @@
 <script>
 import { GlModal, GlSprintf, GlLink } from '@gitlab/ui';
-import Clipboard from 'clipboard';
+import ClipboardJS from 'clipboard';
 import { getBaseURL, setUrlParams, redirectTo } from '~/lib/utils/url_utility';
 import { sprintf, s__, __ } from '~/locale';
 import { CODE_SNIPPET_SOURCE_URL_PARAM } from '~/pipeline_editor/components/code_snippet_alert/constants';
@@ -74,7 +74,7 @@ export default {
     },
     copySnippet(andRedirect = true) {
       const id = andRedirect ? 'copy-yaml-snippet-and-edit-button' : 'copy-yaml-snippet-button';
-      const clipboard = new Clipboard(`#${id}`, {
+      const clipboard = new ClipboardJS(`#${id}`, {
         text: () => this.yaml,
       });
       clipboard.on('success', () => {

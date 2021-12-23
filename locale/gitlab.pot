@@ -9673,6 +9673,9 @@ msgstr ""
 msgid "Copy evidence SHA"
 msgstr ""
 
+msgid "Copy failed. Please manually copy the value."
+msgstr ""
+
 msgid "Copy file contents"
 msgstr ""
 
@@ -9710,9 +9713,6 @@ msgid "Copy the code below to implement tracking in your application:"
 msgstr ""
 
 msgid "Copy this registration token."
-msgstr ""
-
-msgid "Copy this value"
 msgstr ""
 
 msgid "Copy to clipboard"
@@ -26663,9 +26663,6 @@ msgid "Preferences|Time preferences"
 msgstr ""
 
 msgid "Preferences|Use relative times"
-msgstr ""
-
-msgid "Press %{key}-C to copy"
 msgstr ""
 
 msgid "Prev"
