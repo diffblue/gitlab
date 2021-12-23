@@ -70,9 +70,6 @@ export default {
         isAddon: true,
       };
     },
-    slotProps() {
-      return this.plan;
-    },
     totalUnits() {
       return this.quantity * this.config.quantityPerPack;
     },

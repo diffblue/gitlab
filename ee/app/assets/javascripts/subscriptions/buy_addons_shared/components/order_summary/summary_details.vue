@@ -47,10 +47,10 @@ export default {
       required: false,
       default: null,
     },
-    purchaseHasExpiration: {
-      type: Boolean,
+    subscriptionEndDate: {
+      type: String,
       required: false,
-      default: false,
+      default: '',
     },
   },
   data() {
@@ -60,7 +60,9 @@ export default {
   },
   computed: {
     endDate() {
-      return this.startDate.setFullYear(this.startDate.getFullYear() + 1);
+      return (
+        this.subscriptionEndDate || this.startDate.setFullYear(this.startDate.getFullYear() + 1)
+      );
     },
     hasPositiveQuantity() {
       return this.quantity > 0;
@@ -73,6 +75,9 @@ export default {
     },
     formattedPrice() {
       return formatNumber(this.selectedPlanPrice);
+    },
+    renderedAmount() {
+      return this.totalExVat ? this.formatAmount(this.totalExVat, this.hasPositiveQuantity) : '-';
     },
   },
   i18n: {
@@ -95,14 +100,14 @@ export default {
         }}</span>
       </div>
       <div>
-        {{ formatAmount(totalExVat, hasPositiveQuantity) }}
+        {{ renderedAmount }}
       </div>
     </div>
     <div class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-py-3">
       <div class="gl-text-gray-500" data-testid="price-per-unit">
         <slot name="price-per-unit" :price="formattedPrice"></slot>
       </div>
-      <div v-if="purchaseHasExpiration" class="gl-text-gray-500" data-testid="subscription-period">
+      <div v-if="subscriptionEndDate" class="gl-text-gray-500" data-testid="subscription-period">
         {{
           sprintf($options.i18n.dates, {
             startDate: formatDate(startDate),
@@ -116,7 +121,7 @@ export default {
       <div class="gl-display-flex gl-justify-content-space-between gl-text-gray-500">
         <div>{{ $options.i18n.subtotal }}</div>
         <div data-testid="total-ex-vat">
-          {{ formatAmount(totalExVat, hasPositiveQuantity) }}
+          {{ renderedAmount }}
         </div>
       </div>
       <div class="gl-display-flex gl-justify-content-space-between gl-text-gray-500">
@@ -141,7 +146,7 @@ export default {
     >
       <div>{{ $options.i18n.total }}</div>
       <div data-testid="total-amount">
-        {{ formatAmount(totalAmount, hasPositiveQuantity) }}
+        {{ renderedAmount }}
       </div>
     </div>
   </div>

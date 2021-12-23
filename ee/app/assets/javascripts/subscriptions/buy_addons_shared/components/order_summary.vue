@@ -1,10 +1,15 @@
 <script>
 import { GlIcon, GlCollapse, GlCollapseToggleDirective } from '@gitlab/ui';
 import find from 'lodash/find';
-import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
+import { logError } from '~/lib/logger';
+
 import { TAX_RATE } from 'ee/subscriptions/new/constants';
+import { CUSTOMERSDOT_CLIENT } from 'ee/subscriptions/buy_addons_shared/constants';
 import formattingMixins from 'ee/subscriptions/new/formatting_mixins';
 import { sprintf } from '~/locale';
+
+import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
+import orderPreviewQuery from 'ee/subscriptions/graphql/queries/order_preview.customer.query.graphql';
 import SummaryDetails from './order_summary/summary_details.vue';
 
 export default {
@@ -21,6 +26,9 @@ export default {
     plan: {
       type: Object,
       required: true,
+      validator(value) {
+        return Object.prototype.hasOwnProperty.call(value, 'id');
+      },
     },
     title: {
       type: String,
@@ -39,6 +47,32 @@ export default {
         const id = Number(data.selectedNamespaceId);
         this.selectedNamespace = find(data.eligibleNamespaces, { id });
         this.subscription = data.subscription;
+        this.selectedNamespaceId = data.selectedNamespaceId;
+      },
+    },
+    orderPreview: {
+      client: CUSTOMERSDOT_CLIENT,
+      query: orderPreviewQuery,
+      variables() {
+        return {
+          namespaceId: this.selectedNamespaceId,
+          newProductId: this.plan.id,
+          newProductQuantity: this.subscription.quantity,
+        };
+      },
+      manual: true,
+      result({ data }) {
+        if (data.orderPreview) {
+          this.endDate = data.orderPreview.targetDate;
+          this.proratedAmount = data.orderPreview.amount;
+        }
+      },
+      error(error) {
+        this.hasError = true;
+        logError(error);
+      },
+      skip() {
+        return !this.purchaseHasExpiration;
       },
     },
   },
@@ -47,6 +81,9 @@ export default {
       isBottomSummaryVisible: false,
       selectedNamespace: {},
       subscription: {},
+      endDate: '',
+      proratedAmount: 0,
+      hasError: false,
     };
   },
   computed: {
@@ -54,13 +91,15 @@ export default {
       return this.plan.pricePerYear;
     },
     totalExVat() {
-      return this.subscription.quantity * this.selectedPlanPrice;
+      return this.isLoading
+        ? 0
+        : this.proratedAmount || this.subscription.quantity * this.selectedPlanPrice;
     },
     vat() {
       return TAX_RATE * this.totalExVat;
     },
     totalAmount() {
-      return this.totalExVat + this.vat;
+      return this.isLoading ? 0 : this.proratedAmount || this.totalExVat + this.vat;
     },
     quantityPresent() {
       return this.subscription.quantity > 0;
@@ -74,8 +113,8 @@ export default {
     titleWithName() {
       return sprintf(this.title, { name: this.namespaceName });
     },
-    isVisible() {
-      return !this.$apollo.loading;
+    isLoading() {
+      return this.$apollo.loading;
     },
   },
   taxRate: TAX_RATE,
@@ -83,7 +122,6 @@ export default {
 </script>
 <template>
   <div
-    v-if="isVisible"
     class="order-summary gl-display-flex gl-flex-direction-column gl-flex-grow-1 gl-mt-2 mt-lg-5"
   >
     <div class="gl-lg-display-none">
@@ -95,7 +133,7 @@ export default {
             <h4 data-testid="title">{{ titleWithName }}</h4>
           </div>
           <p class="gl-ml-3" data-testid="amount">
-            {{ formatAmount(totalAmount, quantityPresent) }}
+            {{ totalAmount ? formatAmount(totalAmount, quantityPresent) : '-' }}
           </p>
         </div>
       </div>
@@ -109,7 +147,7 @@ export default {
           :total-amount="totalAmount"
           :quantity="quantity"
           :tax-rate="$options.taxRate"
-          :purchase-has-expiration="purchaseHasExpiration"
+          :subscription-end-date="endDate"
         >
           <template #price-per-unit="{ price }">
             <slot name="price-per-unit" :price="price"></slot>
@@ -133,7 +171,7 @@ export default {
         :total-amount="totalAmount"
         :quantity="quantity"
         :tax-rate="$options.taxRate"
-        :purchase-has-expiration="purchaseHasExpiration"
+        :subscription-end-date="endDate"
       >
         <template #price-per-unit="{ price }">
           <slot name="price-per-unit" :price="price"></slot>

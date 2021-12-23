@@ -83,18 +83,18 @@ describe('SummaryDetails', () => {
 
   describe('when subscription has expiration', () => {
     beforeEach(() => {
-      wrapper = createComponent({ purchaseHasExpiration: true });
+      wrapper = createComponent({ subscriptionEndDate: '2021-02-06' });
     });
 
     it('renders subscription period', () => {
       expect(findSubscriptionPeriod().isVisible()).toBe(true);
-      expect(findSubscriptionPeriod().text()).toBe('Jul 6, 2020 - Jul 6, 2021');
+      expect(findSubscriptionPeriod().text()).toBe('Jul 6, 2020 - Feb 6, 2021');
     });
   });
 
   describe('when subscription does not have expiration', () => {
     beforeEach(() => {
-      wrapper = createComponent({ purchaseHasExpiration: false });
+      wrapper = createComponent({ subscriptionEndDate: '' });
     });
 
     it('does not render subscription period', () => {
