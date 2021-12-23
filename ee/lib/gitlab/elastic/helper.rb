@@ -247,6 +247,12 @@ module Gitlab
         client.indices.put_mapping(index: index_name || target_index_name, body: mappings)
       end
 
+      def get_meta(index_name: nil)
+        index = target_index_name(target: index_name)
+        mappings = client.indices.get_mapping(index: index)
+        mappings.dig(index, 'mappings', '_meta')
+      end
+
       def switch_alias(from: target_index_name, alias_name: target_name, to:)
         actions = [
           {
@@ -297,11 +303,19 @@ module Gitlab
         settings.merge!(options[:settings]) if options[:settings]
         mappings.merge!(options[:mappings]) if options[:mappings]
 
+        meta_info = {
+          doc: {
+            _meta: {
+              created_by: Gitlab::VERSION
+            }
+          }
+        }
+
         create_index_options = {
           index: index_name,
           body: {
             settings: settings,
-            mappings: mappings
+            mappings: mappings.deep_merge(meta_info)
           }
         }.merge(additional_index_options)
 
