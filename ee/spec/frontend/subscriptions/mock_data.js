@@ -5,6 +5,7 @@ import {
   PAYMENT_METHOD_TYPE,
   PLAN_TYPE,
   SUBSCRIPTION_TYPE,
+  ORDER_PREVIEW_TYPE,
 } from 'ee/subscriptions/buy_addons_shared/constants';
 
 export const accountId = '111111111111';
@@ -48,6 +49,15 @@ export const mockDefaultCache = {
   groupData: mockNamespaces,
   namespaceId: 132,
   redirectAfterSuccess: '/',
+};
+
+export const mockOrderPreview = {
+  targetDate: '2022-12-15',
+  amount: 59.67,
+  amountWithoutTax: 60.0,
+  prorationCredit: 0.33,
+  priceBeforeProration: 60.0,
+  __typename: ORDER_PREVIEW_TYPE,
 };
 
 export const stateData = {

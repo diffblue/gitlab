@@ -12,6 +12,7 @@ export const CUSTOMER_TYPE = 'Customer';
 export const SUBSCRIPTION_TYPE = 'Subscription';
 export const NAMESPACE_TYPE = 'Namespace';
 export const PAYMENT_METHOD_TYPE = 'PaymentMethod';
+export const ORDER_PREVIEW_TYPE = 'OrderPreview';
 export const PLAN_TYPE = 'Plan';
 export const STEP_TYPE = 'Step';
 export const COUNTRY_TYPE = 'Country';
