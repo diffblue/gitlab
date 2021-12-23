@@ -1,6 +1,6 @@
 import { GlModal, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Clipboard from 'clipboard';
+import ClipboardJS from 'clipboard';
 import { merge } from 'lodash';
 import ConfigurationSnippetModal from 'ee/security_configuration/components/configuration_snippet_modal.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -87,7 +87,7 @@ describe('EE - SecurityConfigurationSnippetModal', () => {
   it('on primary event, text is copied to the clipbard and user is redirected to CI editor', async () => {
     findModal().vm.$emit('primary');
 
-    expect(Clipboard).toHaveBeenCalledWith('#copy-yaml-snippet-and-edit-button', {
+    expect(ClipboardJS).toHaveBeenCalledWith('#copy-yaml-snippet-and-edit-button', {
       text: expect.any(Function),
     });
     expect(redirectTo).toHaveBeenCalledWith(
@@ -98,7 +98,7 @@ describe('EE - SecurityConfigurationSnippetModal', () => {
   it('on secondary event, text is copied to the clipbard', async () => {
     findModal().vm.$emit('secondary');
 
-    expect(Clipboard).toHaveBeenCalledWith('#copy-yaml-snippet-button', {
+    expect(ClipboardJS).toHaveBeenCalledWith('#copy-yaml-snippet-button', {
       text: expect.any(Function),
     });
   });
