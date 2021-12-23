@@ -13,8 +13,6 @@ If your application offers a web interface, you can use
 [GitLab CI/CD](../../../ci/index.md) to determine the accessibility
 impact of pending code changes.
 
-## Overview
-
 [Pa11y](https://pa11y.org/) is a free and open source tool for
 measuring the accessibility of web sites. GitLab integrates Pa11y into a
 [CI job template](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Verify/Accessibility.gitlab-ci.yml).
@@ -30,19 +28,20 @@ As of [GitLab 14.5](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/73309)
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/39425) in GitLab 13.0 behind the disabled [feature flag](../../../administration/feature_flags.md) `:accessibility_report_view`.
 > - [Feature Flag removed](https://gitlab.com/gitlab-org/gitlab/-/issues/217372) in GitLab 13.1.
 
-GitLab displays an Accessibility Report in the merge request widget area:
+GitLab displays an **Accessibility Report** in the merge request widget area:
 
 ![Accessibility merge request widget](img/accessibility_mr_widget_v13_0.png)
 
-## Configure Accessibility Testing
+## Configure accessibility testing
 
-You can run Pa11y with GitLab CI/CD using the [GitLab Accessibility Docker image](https://gitlab.com/gitlab-org/ci-cd/accessibility).
+You can run Pa11y with GitLab CI/CD using the
+[GitLab Accessibility Docker image](https://gitlab.com/gitlab-org/ci-cd/accessibility).
 
 To define the `a11y` job for GitLab 12.9 and later:
 
 1. [Include](../../../ci/yaml/index.md#includetemplate) the
-[`Accessibility.gitlab-ci.yml` template](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Verify/Accessibility.gitlab-ci.yml)
-from your GitLab installation
+   [`Accessibility.gitlab-ci.yml` template](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Verify/Accessibility.gitlab-ci.yml)
+   from your GitLab installation.
 1. Add the following configuration to your `.gitlab-ci.yml` file.
 
    ```yaml
@@ -58,14 +57,14 @@ from your GitLab installation
 
 1. Customize the `a11y_urls` variable to list the URLs of the web pages to test with Pa11y.
 
-The `a11y` job in your CI/CD pipeline generates one HTML report per URL listed
-in the `a11y_urls` variable, and one `gl-accessibility.json` file containing
-the collected report data.
+The `a11y` job in your CI/CD pipeline generates these files:
+
+- One HTML report per URL listed in the `a11y_urls` variable.
+- One file containing the collected report data. In GitLab versions 12.11 and later, this
+  file is named `gl-accessibility.json`. In GitLab versions 12.10 and earlier, this file
+  is named [`accessibility.json`](https://gitlab.com/gitlab-org/ci-cd/accessibility/-/merge_requests/9).
 
 You can [view job artifacts in your browser](../../../ci/pipelines/job_artifacts.md#download-job-artifacts).
-
-NOTE:
-For GitLab 12.10 and earlier, the `a11y` job [generates an artifact named `accessibility.json`](https://gitlab.com/gitlab-org/ci-cd/accessibility/-/merge_requests/9).
 
 NOTE:
 For GitLab versions earlier than 12.9, use `include:remote` and
