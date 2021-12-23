@@ -10084,6 +10084,9 @@ msgstr ""
 msgid "Create user"
 msgstr ""
 
+msgid "Create via merge request"
+msgstr ""
+
 msgid "Create wildcard: %{searchTerm}"
 msgstr ""
 
