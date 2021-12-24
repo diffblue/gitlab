@@ -724,7 +724,7 @@ class User < ApplicationRecord
       )
     end
 
-    # This method will be overridden in JiHu.
+    # This method is overridden in JiHu.
     # https://gitlab.com/gitlab-org/gitlab/-/issues/348509
     def user_search_minimum_char_limit
       true
