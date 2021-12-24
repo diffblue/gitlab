@@ -105,7 +105,7 @@ module EE
             bad_request! unless group.root?
             bad_request! unless can?(current_user, :admin_group_member, group)
 
-            members = ::Member.awaiting_or_invited_for_group(group)
+            members = ::Member.distinct_awaiting_or_invited_for_group(group)
 
             present paginate(members), with: ::API::Entities::PendingMember
           end

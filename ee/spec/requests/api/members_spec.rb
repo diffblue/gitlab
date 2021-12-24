@@ -1148,6 +1148,20 @@ RSpec.describe API::Members do
           ]
         end
 
+        it 'returns only one membership per user' do
+          create(:group_member, :awaiting, group: subgroup, user: pending_group_member.user)
+          create(:group_member, :awaiting, :invited, group: subgroup, invite_email: pending_invited_member.invite_email)
+
+          get api(url, owner)
+
+          expect(json_response.map { |m| m['id'] }).to match_array [
+            pending_group_member.id,
+            pending_subgroup_member.id,
+            pending_project_member.id,
+            pending_invited_member.id
+          ]
+        end
+
         it 'paginates the response' do
           get api(url, owner)
 

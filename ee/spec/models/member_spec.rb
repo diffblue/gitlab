@@ -246,22 +246,53 @@ RSpec.describe Member, type: :model do
     end
   end
 
-  describe '.awaiting_or_invited_for_group' do
+  describe '.distinct_awaiting_or_invited_for_group' do
+    let_it_be(:other_sub_group) { create(:group, parent: group) }
     let_it_be(:active_group_member) { create(:group_member, group: group) }
     let_it_be(:awaiting_group_member) { create(:group_member, :awaiting, group: group) }
     let_it_be(:awaiting_subgroup_member) { create(:group_member, :awaiting, group: sub_group) }
+    let_it_be(:awaiting_other_subgroup_member) { create(:group_member, :awaiting, user: awaiting_subgroup_member.user, group: other_sub_group) }
     let_it_be(:awaiting_project_member) { create(:project_member, :awaiting, project: project) }
     let_it_be(:awaiting_invited_member) { create(:group_member, :awaiting, :invited, group: group) }
     let_it_be(:active_invited_member) { create(:group_member, :invited, group: group) }
+    let_it_be(:awaiting_previously_invited_member) do
+      member = create(:group_member, :awaiting, :invited, group: group)
+      user = create(:user)
+      member.accept_invite!(user)
+
+      member
+    end
+
+    subject(:results) { described_class.distinct_awaiting_or_invited_for_group(group) }
 
     it 'returns the correct members' do
-      expect(described_class.awaiting_or_invited_for_group(group)).to match_array [
+      expect(results).to contain_exactly(
         awaiting_group_member,
         awaiting_subgroup_member,
         awaiting_project_member,
         awaiting_invited_member,
+        awaiting_previously_invited_member,
         active_invited_member
-      ]
+      )
+    end
+
+    it 'does not return additional results for duplicates' do
+      create(:group_member, :awaiting, group: sub_group, user: awaiting_group_member.user)
+      create(:group_member, :invited, group: sub_group, invite_email: awaiting_invited_member.invite_email)
+      create(:group_member, :awaiting, group: sub_group, invite_email: awaiting_previously_invited_member.invite_email, user: awaiting_previously_invited_member.user)
+
+      expect(results.map(&:user_id).compact).to contain_exactly(
+        awaiting_group_member.user_id,
+        awaiting_subgroup_member.user_id,
+        awaiting_project_member.user_id,
+        awaiting_previously_invited_member.user_id
+      )
+
+      expect(results.map(&:invite_email).compact).to contain_exactly(
+        awaiting_invited_member.invite_email,
+        active_invited_member.invite_email,
+        awaiting_previously_invited_member.invite_email
+      )
     end
   end
 end
