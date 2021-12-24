@@ -14,7 +14,7 @@
   %td{ data: { qa_selector: 'mirror_last_update_at_cell' } }= import_state.last_successful_update_at.present? ? time_ago_with_tooltip(import_state.last_successful_update_at) : _('Never')
   %td
     - if import_state&.last_error.present?
-      .badge.badge-danger{ data: { toggle: 'tooltip', html: 'true' }, title: html_escape(import_state.last_error.try(:strip)) }= _('Error')
+      = gl_badge_tag _('Error'), { variant: :danger }, { data: { toggle: 'tooltip', html: 'true' }, title: html_escape(import_state.last_error.try(:strip)) }
   %td.mirror-action-buttons
     .btn-group.mirror-actions-group.float-right{ role: 'group' }
       - ssh_public_key = @project.import_data.ssh_public_key
