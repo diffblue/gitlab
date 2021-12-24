@@ -247,9 +247,11 @@ RSpec.describe Member, type: :model do
   end
 
   describe '.distinct_awaiting_or_invited_for_group' do
+    let_it_be(:other_sub_group) { create(:group, parent: group) }
     let_it_be(:active_group_member) { create(:group_member, group: group) }
     let_it_be(:awaiting_group_member) { create(:group_member, :awaiting, group: group) }
     let_it_be(:awaiting_subgroup_member) { create(:group_member, :awaiting, group: sub_group) }
+    let_it_be(:awaiting_other_subgroup_member) { create(:group_member, :awaiting, user: awaiting_subgroup_member.user, group: other_sub_group) }
     let_it_be(:awaiting_project_member) { create(:project_member, :awaiting, project: project) }
     let_it_be(:awaiting_invited_member) { create(:group_member, :awaiting, :invited, group: group) }
     let_it_be(:active_invited_member) { create(:group_member, :invited, group: group) }
