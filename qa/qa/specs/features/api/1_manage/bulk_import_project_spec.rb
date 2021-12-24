@@ -5,6 +5,7 @@ module QA
   # on staging environment
   RSpec.describe 'Manage', :requires_admin, except: { subdomain: :staging } do
     describe 'Gitlab migration' do
+      let(:source_project_with_readme) { false }
       let(:import_wait_duration) { { max_duration: 300, sleep_interval: 2 } }
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:user) do
@@ -33,7 +34,7 @@ module QA
         Resource::Project.fabricate_via_api! do |project|
           project.api_client = api_client
           project.group = source_group
-          project.initialize_with_readme = true
+          project.initialize_with_readme = source_project_with_readme
         end
       end
 
@@ -63,8 +64,7 @@ module QA
         Runtime::Feature.enable(:bulk_import_projects)
 
         sandbox.add_member(user, Resource::Members::AccessLevel::MAINTAINER)
-
-        source_project.tap { |project| project.add_push_rules(member_check: true) } # fabricate source group and project
+        source_project # fabricate source group and project
       end
 
       after do |example|
@@ -126,6 +126,7 @@ module QA
       end
 
       context 'with repository' do
+        let(:source_project_with_readme) { true }
         let(:source_commits) { source_project.commits.map { |c| c.except(:web_url) } }
         let(:source_tags) do
           source_project.repository_tags.tap do |tags|
@@ -193,27 +194,42 @@ module QA
       end
 
       context 'with merge request' do
-        let(:source_mr) do
-          Resource::MergeRequest.fabricate_via_api! do |mr|
-            mr.no_preparation = true
-            mr.project = source_project
-            mr.api_client = api_client
+        let(:other_user) do
+          Resource::User.fabricate_via_api! do |usr|
+            usr.api_client = admin_api_client
           end
         end
 
-        let(:imported_mrs) do
-          imported_project.merge_requests
+        let(:source_mr) do
+          Resource::MergeRequest.fabricate_via_api! do |mr|
+            mr.project = source_project
+            mr.api_client = Runtime::API::Client.new(user: other_user)
+          end
         end
+
+        let(:source_comment) { source_mr.add_comment("This is a test comment!") }
+
+        let(:imported_mrs) { imported_project.merge_requests }
+        let(:imported_mr_comments) { imported_mr.comments }
 
         let(:imported_mr) do
           Resource::MergeRequest.init do |mr|
             mr.project = imported_project
             mr.iid = imported_mrs.first[:iid]
+            mr.api_client = api_client
           end
         end
 
         before do
-          source_mr # fabricate mr for import
+          other_user.set_public_email
+          source_project.add_member(other_user, Resource::Members::AccessLevel::MAINTAINER)
+
+          source_comment # fabricate mr and comment
+          source_mr.reload! # update notes count attribute on object
+        end
+
+        after do
+          other_user.remove_via_api!
         end
 
         it(
@@ -222,8 +238,17 @@ module QA
         ) do
           expect_import_finished
 
-          expect(imported_mrs.count).to eq(1)
-          expect(imported_mr).to eq(source_mr)
+          aggregate_failures do
+            expect(imported_mrs.count).to eq(1)
+            # TODO: remove custom comparison after member migration is implemented
+            # https://gitlab.com/gitlab-org/gitlab/-/issues/341886
+            expect(imported_mr.comparable.except(:author)).to eq(source_mr.comparable.except(:author))
+
+            expect(imported_mr_comments.count).to eq(1)
+            expect(imported_mr_comments.first[:body]).to include(source_comment[:body])
+            # Comment will have mention of original user since members are not migrated yet
+            expect(imported_mr_comments.first[:body]).to include(other_user.name)
+          end
         end
       end
     end
