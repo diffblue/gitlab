@@ -50,7 +50,7 @@ module QA
       #
       # @return [void]
       def download_report
-        logger.info("Downloading latest knapsack report '#{report_file}' to '#{report_path}'")
+        logger.debug("Downloading latest knapsack report for '#{report_name}' to '#{report_path}'")
         file = client.get_object(BUCKET, report_file)
         File.write(report_path, file[:body])
       end
