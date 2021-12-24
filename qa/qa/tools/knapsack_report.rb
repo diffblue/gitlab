@@ -33,18 +33,17 @@ module QA
       #
       # @return [void]
       def configure
+        ENV["KNAPSACK_TEST_FILE_PATTERN"] ||= "qa/specs/features/**/*_spec.rb"
+        ENV["KNAPSACK_REPORT_PATH"] = report_path
+
         Knapsack.logger = QA::Runtime::Logger.logger
-        Knapsack.report.config(
-          # temp compatibility before all pipelines migrate to automatically setting report path
-          test_file_pattern: ENV["KNAPSACK_TEST_FILE_PATTERN"] || "qa/specs/features/**/*_spec.rb",
-          report_path: ENV["KNAPSACK_REPORT_PATH"] || report_path
-        )
 
         download_report
       rescue StandardError => e
         logger.warn("Failed to download latest knapsack report: #{e}")
         logger.warn("Falling back to 'knapsack/master_report.json'")
-        Knapsack.report.config(report_path: "knapsack/master_report.json")
+
+        ENV["KNAPSACK_REPORT_PATH"] = "knapsack/master_report.json"
       end
 
       # Download knapsack report from gcs bucket
