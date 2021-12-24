@@ -12,7 +12,9 @@ module QA
 
         @user_api_client = Runtime::API::Client.new(:gitlab, user: @user_with_minimal_access)
 
-        @group = Resource::Group.fabricate_via_api!
+        @group = Resource::Group.fabricate_via_api! do |group|
+          group.path = "group-for-minimal-access-#{SecureRandom.hex(8)}"
+        end
 
         @group.sandbox.add_member(@user_with_minimal_access, Resource::Members::AccessLevel::MINIMAL_ACCESS)
 
@@ -65,10 +67,10 @@ module QA
       end
 
       after(:all) do
-        @user_with_minimal_access.remove_via_api!
-        @project.remove_via_api!
+        @user_with_minimal_access&.remove_via_api!
+        @project&.remove_via_api!
         begin
-          @group.remove_via_api!
+          @group&.remove_via_api!
         rescue Resource::ApiFabricator::ResourceNotDeletedError
           # It is ok if the group is already marked for deletion by another test
         end
