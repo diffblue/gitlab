@@ -9,46 +9,92 @@ module QA
       BUCKET = "knapsack-reports"
 
       class << self
+        def configure!
+          new.configure
+        end
+
+        def move
+          new.move_regenerated_report
+        end
+
         def download
           new.download_report
         end
 
-        def upload(glob)
-          new.upload_report(glob)
+        def upload(base_path)
+          new.upload_report(base_path)
         end
       end
 
-      def initialize
-        ENV["KNAPSACK_REPORT_PATH"] || raise("KNAPSACK_REPORT_PATH env var is required!")
-        ENV["QA_KNAPSACK_REPORT_GCS_CREDENTIALS"] || raise("QA_KNAPSACK_REPORT_GCS_CREDENTIALS env var is required!")
+      # Configure knapsack report
+      #
+      # * Setup variables
+      # * Fetch latest report
+      #
+      # @return [void]
+      def configure
+        Knapsack.logger = QA::Runtime::Logger.logger
+        Knapsack.report.config(
+          # temp compatibility before all pipelines migrate to automatically setting report path
+          test_file_pattern: ENV["KNAPSACK_TEST_FILE_PATTERN"] || "qa/specs/features/**/*_spec.rb",
+          report_path: ENV["KNAPSACK_REPORT_PATH"] || report_path
+        )
+
+        download_report
+      rescue StandardError => e
+        logger.warn("Failed to download latest knapsack report: #{e}")
+        logger.warn("Falling back to 'knapsack/master_report.json'")
+        Knapsack.report.config(report_path: "knapsack/master_report.json")
       end
 
       # Download knapsack report from gcs bucket
       #
       # @return [void]
       def download_report
-        logger.info("Downloading latest knapsack report '#{report_file}'")
+        logger.info("Downloading latest knapsack report '#{report_file}' to '#{report_path}'")
         file = client.get_object(BUCKET, report_file)
-
-        logger.info("Saving latest knapsack report to '#{report_path}'")
         File.write(report_path, file[:body])
+      end
+
+      # Rename and move new regenerated report
+      #
+      # @return [void]
+      def move_regenerated_report
+        return unless ENV["KNAPSACK_GENERATE_REPORT"] == "true"
+
+        path = "tmp/knapsack/#{report_name}"
+        FileUtils.mkdir_p(path)
+
+        # Use path from knapsack config in case of fallback to master_report.json
+        FileUtils.cp(Knapsack.report.report_path, "#{path}/#{ENV['CI_NODE_INDEX']}.json")
       end
 
       # Merge and upload knapsack report to gcs bucket
       #
-      # @param [String] glob
+      # Will iterate over separate folders for regenerated reports created by move_regenerated_report method,
+      # merge them together and upload to GCS bucket
+      #
+      # @param [String] base_path
       # @return [void]
-      def upload_report(glob)
-        reports = Dir[glob]
-        return logger.error("Pattern '#{glob}' did not match any files!") if reports.empty?
+      def upload_report(base_path)
+        report_dirs = Pathname.glob("#{base_path}/*").select(&:directory?)
+        return logger.error("Path '#{base_path}' did not contain any subfolders!") if report_dirs.empty?
 
-        report = reports
-          .map { |path| JSON.parse(File.read(path)) }
-          .reduce({}, :merge)
-        return logger.error("Knapsack generated empty report, skipping upload!") if report.empty?
+        report_dirs.each do |dir|
+          name = dir.basename.to_s
+          file = "#{name}.json"
+          jsons = dir.glob("*.json")
 
-        logger.info("Uploading latest knapsack report '#{report_file}'")
-        client.put_object(BUCKET, report_file, JSON.pretty_generate(report))
+          next logger.warn("Path #{name} did not contain any report json files, skipping upload!") if jsons.empty?
+
+          report = jsons
+            .map { |json| JSON.parse(File.read(json)) }
+            .reduce({}, :merge)
+          next logger.warn("Knapsack generated empty report for '#{name}', skipping upload!") if report.empty?
+
+          logger.info("Uploading latest knapsack report '#{file}'")
+          client.put_object(BUCKET, file, JSON.pretty_generate(report))
+        end
       end
 
       private
@@ -66,22 +112,45 @@ module QA
       def client
         @client ||= Fog::Storage::Google.new(
           google_project: PROJECT,
-          google_json_key_location: ENV["QA_KNAPSACK_REPORT_GCS_CREDENTIALS"]
+          google_json_key_location: gcs_credentials
         )
+      end
+
+      # Base path of knapsack report
+      #
+      # @return [String]
+      def report_base_path
+        @report_base_path ||= "knapsack/gcs"
       end
 
       # Knapsack report path
       #
       # @return [String]
       def report_path
-        @report_path ||= ENV["KNAPSACK_REPORT_PATH"]
+        @report_path ||= "#{report_base_path}/#{report_file}"
       end
 
       # Knapsack report name
       #
       # @return [String]
       def report_file
-        @report_name ||= report_path.split("/").last
+        @report_file ||= "#{report_name}.json"
+      end
+
+      # Report name
+      #
+      # @return [String]
+      def report_name
+        @report_name ||= ENV["CI_JOB_NAME"]&.split(" ")&.first
+      end
+
+      # Path to GCS credentials json
+      #
+      # @return [String]
+      def gcs_credentials
+        @gcs_credentials ||= ENV["QA_KNAPSACK_REPORT_GCS_CREDENTIALS"] || raise(
+          "QA_KNAPSACK_REPORT_GCS_CREDENTIALS env variable is required!"
+        )
       end
     end
   end
