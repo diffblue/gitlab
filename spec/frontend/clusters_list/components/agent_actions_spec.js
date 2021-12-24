@@ -1,7 +1,8 @@
-import { GlDropdownItem, GlModal, GlFormInput } from '@gitlab/ui';
+import { GlDropdown, GlDropdownItem, GlModal, GlFormInput } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { ENTER_KEY } from '~/lib/utils/keys';
 import getAgentsQuery from '~/clusters_list/graphql/queries/get_agents.query.graphql';
 import deleteAgentMutation from '~/clusters_list/graphql/mutations/delete_agent.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -27,6 +28,7 @@ describe('AgentActions', () => {
   let deleteResponse;
 
   const findModal = () => wrapper.findComponent(GlModal);
+  const findDropdown = () => wrapper.findComponent(GlDropdown);
   const findDeleteBtn = () => wrapper.findComponent(GlDropdownItem);
   const findInput = () => wrapper.findComponent(GlFormInput);
   const findPrimaryAction = () => findModal().props('actionPrimary');
@@ -77,6 +79,12 @@ describe('AgentActions', () => {
     return wrapper.vm.$nextTick();
   };
 
+  const submitAgentToDelete = async () => {
+    findDeleteBtn().vm.$emit('click');
+    findInput().vm.$emit('input', agent.name);
+    await findModal().vm.$emit('primary');
+  };
+
   beforeEach(() => {
     return createWrapper({});
   });
@@ -103,27 +111,57 @@ describe('AgentActions', () => {
       });
     });
 
-    describe('when the input with agent name is missing', () => {
+    describe.each`
+      condition                                   | agentName       | isDisabled | mutationCalled
+      ${'the input with agent name is missing'}   | ${''}           | ${true}    | ${false}
+      ${'the input with agent name is incorrect'} | ${'wrong-name'} | ${true}    | ${false}
+      ${'the input with agent name is correct'}   | ${agent.name}   | ${false}   | ${true}
+    `('when $condition', ({ agentName, isDisabled, mutationCalled }) => {
       beforeEach(() => {
         findDeleteBtn().vm.$emit('click');
+        findInput().vm.$emit('input', agentName);
       });
 
-      it('disables the modal primary button', () => {
-        expect(findPrimaryActionAttributes('disabled')).toBe(true);
+      it(`${isDisabled ? 'disables' : 'enables'} the modal primary button`, () => {
+        expect(findPrimaryActionAttributes('disabled')).toBe(isDisabled);
+      });
+
+      describe('when user clicks the modal primary button', () => {
+        beforeEach(async () => {
+          await findModal().vm.$emit('primary');
+        });
+
+        if (mutationCalled) {
+          it('calls the delete mutation', () => {
+            expect(deleteResponse).toHaveBeenCalledWith({ input: { id: agent.id } });
+          });
+        } else {
+          it("doesn't call the delete mutation", () => {
+            expect(deleteResponse).not.toHaveBeenCalled();
+          });
+        }
+      });
+
+      describe('when user presses the enter button', () => {
+        beforeEach(async () => {
+          await findInput().vm.$emit('keydown', new KeyboardEvent({ key: ENTER_KEY }));
+        });
+
+        if (mutationCalled) {
+          it('calls the delete mutation', () => {
+            expect(deleteResponse).toHaveBeenCalledWith({ input: { id: agent.id } });
+          });
+        } else {
+          it("doesn't call the delete mutation", () => {
+            expect(deleteResponse).not.toHaveBeenCalled();
+          });
+        }
       });
     });
 
-    describe('when submitting the delete modal and the input with agent name is correct ', () => {
-      beforeEach(() => {
-        findDeleteBtn().vm.$emit('click');
-        findInput().vm.$emit('input', agent.name);
-        findModal().vm.$emit('primary');
-
-        return wrapper.vm.$nextTick();
-      });
-
-      it('calls the delete mutation', () => {
-        expect(deleteResponse).toHaveBeenCalledWith({ input: { id: agent.id } });
+    describe('when agent was deleted successfully', () => {
+      beforeEach(async () => {
+        await submitAgentToDelete();
       });
 
       it('calls the toast action', () => {
@@ -136,12 +174,38 @@ describe('AgentActions', () => {
     beforeEach(async () => {
       await createWrapper({ mutationResponse: mockErrorDeleteResponse });
 
-      findDeleteBtn().vm.$emit('click');
-      findModal().vm.$emit('primary');
+      submitAgentToDelete();
     });
 
     it('displays the error message', () => {
       expect(toast).toHaveBeenCalledWith('could not delete agent');
+    });
+  });
+
+  describe('when the delete modal was closed', () => {
+    beforeEach(async () => {
+      const loadingResponse = new Promise(() => {});
+      await createWrapper({ mutationResponse: loadingResponse });
+
+      submitAgentToDelete();
+    });
+
+    it('reenables the actions dropdown', async () => {
+      expect(findPrimaryActionAttributes('loading')).toBe(true);
+      expect(findDropdown().attributes('disabled')).toBe('true');
+
+      await findModal().vm.$emit('hide');
+
+      expect(findPrimaryActionAttributes('loading')).toBe(false);
+      expect(findDropdown().attributes('disabled')).toBeUndefined();
+    });
+
+    it('clears the agent name input', async () => {
+      expect(findInput().attributes('value')).toBe(agent.name);
+
+      await findModal().vm.$emit('hide');
+
+      expect(findInput().attributes('value')).toBeUndefined();
     });
   });
 });

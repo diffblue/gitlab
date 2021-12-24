@@ -61,6 +61,7 @@ export default {
       loading: false,
       error: null,
       deleteConfirmText: null,
+      agentName: this.agent.name,
     };
   },
   computed: {
@@ -98,15 +99,17 @@ export default {
   },
   methods: {
     async deleteAgent() {
+      if (this.disableModalSubmit || this.loading) {
+        return;
+      }
+
       this.loading = true;
       this.error = null;
-
-      const successMessage = sprintf(this.$options.i18n.successMessage, { name: this.agent.name });
 
       try {
         const { errors } = await this.deleteAgentMutation();
 
-        if (errors?.length > 0) {
+        if (errors.length) {
           throw new Error(errors[0]);
         }
       } catch (error) {
@@ -117,6 +120,7 @@ export default {
         }
       } finally {
         this.loading = false;
+        const successMessage = sprintf(this.$options.i18n.successMessage, { name: this.agentName });
 
         if (!this.error) {
           this.$toast.show(successMessage);
@@ -196,7 +200,7 @@ export default {
             </template>
           </gl-sprintf>
         </template>
-        <gl-form-input v-model="deleteConfirmText" @keyup.enter="deleteAgent" />
+        <gl-form-input v-model="deleteConfirmText" @keydown.enter="deleteAgent" />
       </gl-form-group>
     </gl-modal>
   </div>
