@@ -69,7 +69,7 @@ RSpec.configure do |config|
     next if suite.reporter.failed_examples.present?
 
     QA::Resource::ReusableProject.remove_all_via_api!
-    QA::Tools::KnapsackReport.move if QA::Runtime::Env.knapsack?
+    QA::Tools::KnapsackReport.move_regenerated_report if QA::Runtime::Env.knapsack?
   end
 
   config.expect_with :rspec do |expectations|

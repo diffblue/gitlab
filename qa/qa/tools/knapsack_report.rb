@@ -5,26 +5,12 @@ require "fog/google"
 module QA
   module Tools
     class KnapsackReport
+      extend SingleForwardable
+
       PROJECT = "gitlab-qa-resources"
       BUCKET = "knapsack-reports"
 
-      class << self
-        def configure!
-          new.configure
-        end
-
-        def move
-          new.move_regenerated_report
-        end
-
-        def download
-          new.download_report
-        end
-
-        def upload(glob)
-          new.upload_report(glob)
-        end
-      end
+      def_delegators :new, :configure!, :move_regenerated_report, :download_report, :upload_report
 
       # Configure knapsack report
       #
@@ -32,7 +18,7 @@ module QA
       # * Fetch latest report
       #
       # @return [void]
-      def configure
+      def configure!
         ENV["KNAPSACK_TEST_FILE_PATTERN"] ||= "qa/specs/features/**/*_spec.rb"
         ENV["KNAPSACK_REPORT_PATH"] = report_path
 
