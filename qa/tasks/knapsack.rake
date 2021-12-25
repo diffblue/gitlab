@@ -10,8 +10,8 @@ namespace :knapsack do
   end
 
   desc "Merge and upload knapsack report"
-  task :upload, [:base_path] do |_task, args|
-    QA::Tools::KnapsackReport.upload(args[:base_path])
+  task :upload, [:glob] do |_task, args|
+    QA::Tools::KnapsackReport.upload(args[:glob])
   end
 end
 # rubocop:enable Rails/RakeEnvironment

@@ -159,4 +159,4 @@ knapsack-report:
   before_script:
     - cd qa
   script:
-    - bundle exec rake 'knapsack:upload[tmp/knapsack]'
+    - bundle exec rake 'knapsack:upload[tmp/knapsack/*/*.json]'

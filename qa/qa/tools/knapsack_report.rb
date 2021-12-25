@@ -21,8 +21,8 @@ module QA
           new.download_report
         end
 
-        def upload(base_path)
-          new.upload_report(base_path)
+        def upload(glob)
+          new.upload_report(glob)
         end
       end
 
@@ -55,7 +55,7 @@ module QA
         File.write(report_path, file[:body])
       end
 
-      # Rename and move new regenerated report
+      # Rename and move new regenerated report to a separate folder used to indicate report name
       #
       # @return [void]
       def move_regenerated_report
@@ -70,21 +70,20 @@ module QA
 
       # Merge and upload knapsack report to gcs bucket
       #
-      # Will iterate over separate folders for regenerated reports created by move_regenerated_report method,
-      # merge them together and upload to GCS bucket
+      # Fetches all files defined in glob and uses parent folder as report name
       #
-      # @param [String] base_path
+      # @param [String] glob
       # @return [void]
-      def upload_report(base_path)
-        report_dirs = Pathname.glob("#{base_path}/*").select(&:directory?)
-        return logger.error("Path '#{base_path}' did not contain any subfolders!") if report_dirs.empty?
+      def upload_report(glob)
+        reports = Pathname.glob(glob).each_with_object(Hash.new { |hsh, key| hsh[key] = [] }) do |report, hash|
+          next unless report.extname == ".json"
 
-        report_dirs.each do |dir|
-          name = dir.basename.to_s
+          hash[report.parent.basename.to_s].push(report)
+        end
+        return logger.error("Glob '#{glob}' did not contain any valid report files!") if reports.empty?
+
+        reports.each do |name, jsons|
           file = "#{name}.json"
-          jsons = dir.glob("*.json")
-
-          next logger.warn("Path #{name} did not contain any report json files, skipping upload!") if jsons.empty?
 
           report = jsons
             .map { |json| JSON.parse(File.read(json)) }
@@ -119,7 +118,7 @@ module QA
       #
       # @return [String]
       def report_base_path
-        @report_base_path ||= "knapsack/gcs"
+        @report_base_path ||= "knapsack"
       end
 
       # Knapsack report path
@@ -138,9 +137,12 @@ module QA
 
       # Report name
       #
+      # Infer report name from ci job name
+      # Remove characters incompatible with gcs bucket naming from job names like ee:instance-parallel
+      #
       # @return [String]
       def report_name
-        @report_name ||= ENV["CI_JOB_NAME"]&.split(" ")&.first
+        @report_name ||= ENV["CI_JOB_NAME"].split(" ").first.tr(":", "-")
       end
 
       # Path to GCS credentials json
