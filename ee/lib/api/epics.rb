@@ -131,7 +131,8 @@ module API
         optional :add_labels, type: Array[String], coerce_with: Validations::Types::CommaSeparatedToArray.coerce, desc: 'Comma-separated list of label names'
         optional :remove_labels, type: Array[String], coerce_with: Validations::Types::CommaSeparatedToArray.coerce, desc: 'Comma-separated list of label names'
         optional :state_event, type: String, values: %w[reopen close], desc: 'State event for an epic'
-        at_least_one_of :title, :description, :start_date_fixed, :start_date_is_fixed, :due_date_fixed, :due_date_is_fixed, :labels, :add_labels, :remove_labels, :state_event, :confidential
+        optional :parent_id, type: Integer, desc: 'The id of a parent epic'
+        at_least_one_of :title, :description, :start_date_fixed, :start_date_is_fixed, :due_date_fixed, :due_date_is_fixed, :labels, :add_labels, :remove_labels, :state_event, :confidential, :parent_id
       end
       put ':id/(-/)epics/:epic_iid' do
         authorize_can_admin_epic!
