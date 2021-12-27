@@ -104,7 +104,7 @@ RSpec.describe AppSec::Dast::Profiles::CreateService do
         it 'audits the creation' do
           schedule = subject.payload[:dast_profile_schedule]
 
-          audit_event = AuditEvent.find_by(target_id: schedule.id)
+          audit_event = AuditEvent.find_by(target_id: schedule.id, target_type: schedule.class)
 
           aggregate_failures do
             expect(audit_event.author).to eq(developer)
