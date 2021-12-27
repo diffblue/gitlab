@@ -44,7 +44,7 @@ RSpec.describe Projects::ServiceHookLogsController do
     it 'executes the hook and redirects to the service form' do
       expect_any_instance_of(ServiceHook).to receive(:execute)
       expect_any_instance_of(described_class).to receive(:set_hook_execution_notice)
-      expect(subject).to redirect_to(edit_project_service_path(project, integration))
+      expect(subject).to redirect_to(edit_project_integration_path(project, integration))
     end
 
     it 'renders a 404 if the hook does not exist' do

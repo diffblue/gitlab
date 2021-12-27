@@ -7,7 +7,7 @@ class Projects::ServiceHookLogsController < Projects::HookLogsController
 
   def retry
     execute_hook
-    redirect_to edit_project_service_path(@project, @integration)
+    redirect_to edit_project_integration_path(@project, @integration)
   end
 
   private
