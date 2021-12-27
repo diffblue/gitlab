@@ -34,6 +34,8 @@ module Gitlab
     # jid - The Sidekiq job ID
     # expire - The expiration time of the Redis key.
     def self.set(jid, expire = DEFAULT_EXPIRATION)
+      return unless expire
+
       Sidekiq.redis do |redis|
         redis.set(key_for(jid), 1, ex: expire)
       end

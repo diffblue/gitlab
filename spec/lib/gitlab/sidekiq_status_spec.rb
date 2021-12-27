@@ -27,6 +27,16 @@ RSpec.describe Gitlab::SidekiqStatus, :clean_gitlab_redis_queues, :clean_gitlab_
         expect(redis.get(key)).to eq('1')
       end
     end
+
+    it 'does not store anything with a nil expiry' do
+      described_class.set('123', nil)
+
+      key = described_class.key_for('123')
+
+      Sidekiq.redis do |redis|
+        expect(redis.exists(key)).to eq(false)
+      end
+    end
   end
 
   describe '.unset' do
