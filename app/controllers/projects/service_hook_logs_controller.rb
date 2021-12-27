@@ -13,7 +13,7 @@ class Projects::ServiceHookLogsController < Projects::HookLogsController
   private
 
   def integration
-    @integration ||= @project.find_or_initialize_integration(params[:service_id])
+    @integration ||= @project.find_or_initialize_integration(params[:integration_id])
   end
 
   override :hook

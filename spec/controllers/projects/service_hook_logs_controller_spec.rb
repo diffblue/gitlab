@@ -11,7 +11,7 @@ RSpec.describe Projects::ServiceHookLogsController do
     {
       namespace_id: project.namespace,
       project_id: project,
-      service_id: integration.to_param,
+      integration_id: integration.to_param,
       id: log.id
     }
   end
