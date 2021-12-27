@@ -78,6 +78,8 @@ module QA
 
           logger.info("Uploading latest knapsack report '#{file}'")
           client.put_object(BUCKET, file, JSON.pretty_generate(report))
+        rescue StandardError => e
+          logger.error("Failed to upload knapsack report for '#{name}'. Error: #{e}")
         end
       end
 
