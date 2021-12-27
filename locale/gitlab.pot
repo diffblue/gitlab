@@ -32850,9 +32850,6 @@ msgstr ""
 msgid "SharedRunnersMinutesSettings|Reset used pipeline minutes"
 msgstr ""
 
-msgid "Sherlock Transactions"
-msgstr ""
-
 msgid "Shimo|Go to Shimo Workspace"
 msgstr ""
 
