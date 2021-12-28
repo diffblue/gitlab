@@ -329,7 +329,6 @@ curl --request POST \
      --header "PRIVATE-TOKEN: <your_access_token>" \
      --header "Content-Type: application/json" \
      --data '{
-      "id": 5,
       "name": "master",
       "allowed_to_push": [{"access_level": 30}],
       "allowed_to_merge": [{
