@@ -26024,6 +26024,8 @@ CREATE INDEX index_events_author_id_project_id_action_target_type_created_at ON 
 
 CREATE INDEX index_events_on_action ON events USING btree (action);
 
+CREATE INDEX index_events_on_author_id_and_action_and_id ON events USING btree (author_id, action, id);
+
 CREATE INDEX index_events_on_author_id_and_created_at ON events USING btree (author_id, created_at);
 
 CREATE INDEX index_events_on_author_id_and_created_at_merge_requests ON events USING btree (author_id, created_at) WHERE ((target_type)::text = 'MergeRequest'::text);
