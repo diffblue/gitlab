@@ -6,8 +6,10 @@ import DastScannerProfileForm from 'ee/security_configuration/dast_profiles/dast
 import { SCAN_TYPE } from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/constants';
 import dastScannerProfileCreateMutation from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/graphql/dast_scanner_profile_create.mutation.graphql';
 import dastScannerProfileUpdateMutation from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/graphql/dast_scanner_profile_update.mutation.graphql';
-import { policyScannerProfile } from 'ee_jest/on_demand_scans_form/mocks/mock_data';
-import { scannerProfiles } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
+import {
+  scannerProfiles,
+  policyScannerProfiles,
+} from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
 import { TEST_HOST } from 'helpers/test_constants';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
@@ -179,7 +181,7 @@ describe('DastScannerProfileForm', () => {
     beforeEach(() => {
       createShallowComponent({
         propsData: {
-          profile: policyScannerProfile,
+          profile: policyScannerProfiles[0],
         },
       });
     });
