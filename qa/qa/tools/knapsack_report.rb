@@ -35,10 +35,9 @@ module QA
         file = client.get_object(BUCKET, report_file)
         File.write(report_path, file[:body])
       rescue StandardError => e
+        ENV["KNAPSACK_REPORT_PATH"] = "knapsack/master_report.json"
         logger.warn("Failed to fetch latest knapsack report: #{e}")
         logger.warn("Falling back to 'knapsack/master_report.json'")
-
-        ENV["KNAPSACK_REPORT_PATH"] = "knapsack/master_report.json"
       end
 
       # Rename and move new regenerated report to a separate folder used to indicate report name
