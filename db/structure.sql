@@ -166,7 +166,7 @@ CREATE TABLE verification_codes (
     phone text NOT NULL,
     CONSTRAINT check_9b84e6aaff CHECK ((char_length(code) <= 8)),
     CONSTRAINT check_ccc542256b CHECK ((char_length(visitor_id_code) <= 64)),
-    CONSTRAINT check_f5684c195b CHECK ((char_length(phone) <= 32))
+    CONSTRAINT check_f5684c195b CHECK ((char_length(phone) <= 50))
 )
 PARTITION BY RANGE (created_at);
 
@@ -20223,7 +20223,7 @@ CREATE TABLE user_details (
     registration_objective smallint,
     phone text,
     CONSTRAINT check_245664af82 CHECK ((char_length(webauthn_xid) <= 100)),
-    CONSTRAINT check_a73b398c60 CHECK ((char_length(phone) <= 32)),
+    CONSTRAINT check_a73b398c60 CHECK ((char_length(phone) <= 50)),
     CONSTRAINT check_b132136b01 CHECK ((char_length(other_role) <= 100)),
     CONSTRAINT check_eeeaf8d4f0 CHECK ((char_length(pronouns) <= 50)),
     CONSTRAINT check_f932ed37db CHECK ((char_length(pronunciation) <= 255))
