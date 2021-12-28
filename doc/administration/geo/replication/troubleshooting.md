@@ -2,7 +2,6 @@
 stage: Enablement
 group: Geo
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#assignments
-type: howto
 ---
 
 # Troubleshooting Geo **(PREMIUM SELF)**
@@ -288,9 +287,8 @@ errors (indicated by `Database replication working? ... no` in the
 ### Message: `ERROR:  replication slots can only be used if max_replication_slots > 0`?
 
 This means that the `max_replication_slots` PostgreSQL variable needs to
-be set on the **primary** database. In GitLab 9.4, we have made this setting
-default to 1. You may need to increase this value if you have more
-**secondary** nodes.
+be set on the **primary** database. This setting defaults to 1. You may need to
+increase this value if you have more **secondary** nodes.
 
 Be sure to restart PostgreSQL for this to take effect. See the
 [PostgreSQL replication setup](../setup/database.md#postgresql-replication) guide for more details.
