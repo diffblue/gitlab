@@ -281,7 +281,7 @@ module QA
       end
 
       def knapsack?
-        running_in_ci? && ENV['CI_NODE_TOTAL'].to_i > 1 && ENV['NO_KNAPSACK'] != "true"
+        ENV['CI_NODE_TOTAL'].to_i > 1 && ENV['NO_KNAPSACK'] != "true"
       end
 
       def ldap_username

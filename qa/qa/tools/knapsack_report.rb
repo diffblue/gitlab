@@ -25,11 +25,6 @@ module QA
         Knapsack.logger = QA::Runtime::Logger.logger
 
         download_report
-      rescue StandardError => e
-        logger.warn("Failed to download latest knapsack report: #{e}")
-        logger.warn("Falling back to 'knapsack/master_report.json'")
-
-        ENV["KNAPSACK_REPORT_PATH"] = "knapsack/master_report.json"
       end
 
       # Download knapsack report from gcs bucket
@@ -39,6 +34,11 @@ module QA
         logger.debug("Downloading latest knapsack report for '#{report_name}' to '#{report_path}'")
         file = client.get_object(BUCKET, report_file)
         File.write(report_path, file[:body])
+      rescue StandardError => e
+        logger.warn("Failed to fetch latest knapsack report: #{e}")
+        logger.warn("Falling back to 'knapsack/master_report.json'")
+
+        ENV["KNAPSACK_REPORT_PATH"] = "knapsack/master_report.json"
       end
 
       # Rename and move new regenerated report to a separate folder used to indicate report name

@@ -170,13 +170,10 @@ RSpec.describe QA::Runtime::Env do
 
   describe '.knapsack?' do
     before do
-      stub_env('CI', 'true')
       stub_env('CI_NODE_TOTAL', '2')
     end
 
     it 'returns true if running in parallel CI run' do
-      stub_env('KNAPSACK_GENERATE_REPORT', 'true')
-
       expect(described_class.knapsack?).to be_truthy
     end
 
@@ -185,15 +182,14 @@ RSpec.describe QA::Runtime::Env do
       expect(described_class.knapsack?).to be_falsey
     end
 
-    it 'returns false if not running in parallel job' do
+    it 'returns false if not running in a parallel job' do
       stub_env('CI_NODE_TOTAL', '1')
 
       expect(described_class.knapsack?).to be_falsey
     end
 
     it 'returns false if not running in ci' do
-      stub_env('CI', nil)
-      stub_env('CI_SERVER', nil)
+      stub_env('CI_NODE_TOTAL', nil)
 
       expect(described_class.knapsack?).to be_falsey
     end
