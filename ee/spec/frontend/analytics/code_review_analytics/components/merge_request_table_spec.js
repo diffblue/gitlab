@@ -1,4 +1,4 @@
-import { GlTable } from '@gitlab/ui';
+import { GlTableLite } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
@@ -39,7 +39,7 @@ describe('MergeRequestTable component', () => {
     wrapper.destroy();
   });
 
-  const findTable = () => wrapper.findComponent(GlTable);
+  const findTable = () => wrapper.findComponent(GlTableLite);
   const findTableRow = (index) => findTable().findAll('tbody tr').at(index);
   const findReviewTimeCol = (rowIndex) => findTableRow(rowIndex).findAll('td').at(1);
 
