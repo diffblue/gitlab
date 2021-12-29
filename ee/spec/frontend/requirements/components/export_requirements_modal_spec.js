@@ -45,6 +45,8 @@ describe('ExportRequirementsModal', () => {
       it("adds field if it's not selected", async () => {
         const [field] = wrapper.vm.$options.fields;
 
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         await wrapper.setData({
           selectedFields: wrapper.vm.$options.fields.slice(1).map((f) => f.key),
         });
@@ -65,6 +67,8 @@ describe('ExportRequirementsModal', () => {
       it('returns false when field is in selectedFields', async () => {
         const [field] = wrapper.vm.$options.fields;
 
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         await wrapper.setData({
           selectedFields: wrapper.vm.$options.fields.slice(1).map((f) => f.key),
         });
@@ -75,6 +79,8 @@ describe('ExportRequirementsModal', () => {
 
     describe('toggleAllFields', () => {
       it('selects all if few are selected', async () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         await wrapper.setData({
           selectedFields: wrapper.vm.$options.fields.slice(1).map((f) => f.key),
         });
@@ -91,6 +97,8 @@ describe('ExportRequirementsModal', () => {
       });
 
       it('selects all if none are selected', async () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         await wrapper.setData({
           selectedFields: [],
         });

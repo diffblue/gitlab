@@ -64,6 +64,8 @@ describe('ThroughputTable', () => {
   };
 
   const additionalData = (data) => {
+    // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+    // eslint-disable-next-line no-restricted-syntax
     wrapper.setData({
       throughputTableData: {
         list: [{ ...throughputTableData[0], ...data }],
@@ -147,6 +149,8 @@ describe('ThroughputTable', () => {
   describe('with data', () => {
     beforeEach(() => {
       wrapper = createComponent({ func: mount });
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         throughputTableData: {
           list: throughputTableData,
@@ -377,6 +381,8 @@ describe('ThroughputTable', () => {
   describe('pagination', () => {
     beforeEach(() => {
       wrapper = createComponent({ func: mount });
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         throughputTableData: {
           list: throughputTableData,
@@ -391,6 +397,8 @@ describe('ThroughputTable', () => {
     });
 
     it('disables the next button on the last page', async () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         pagination: {
           currentPage: 3,
@@ -409,6 +417,8 @@ describe('ThroughputTable', () => {
     });
 
     it('shows the prev and next buttons on middle pages', async () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         pagination: {
           currentPage: 2,
@@ -431,6 +441,8 @@ describe('ThroughputTable', () => {
   describe('with errors', () => {
     beforeEach(() => {
       wrapper = createComponent();
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ hasError: true });
     });
 

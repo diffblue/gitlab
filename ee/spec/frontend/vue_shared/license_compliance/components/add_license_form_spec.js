@@ -34,6 +34,8 @@ describe('AddLicenseForm', () => {
 
       createComponent({}, mount);
       jest.spyOn(vm, '$emit').mockImplementation(() => {});
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ approvalStatus: LICENSE_APPROVAL_STATUS.ALLOWED, licenseName: name });
 
       await Vue.nextTick();
@@ -60,12 +62,16 @@ describe('AddLicenseForm', () => {
   describe('computed', () => {
     describe('submitDisabled', () => {
       it('is true if the approvalStatus is empty', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({ licenseName: 'FOO', approvalStatus: '' });
 
         expect(vm.submitDisabled).toBe(true);
       });
 
       it('is true if the licenseName is empty', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({ licenseName: '', approvalStatus: LICENSE_APPROVAL_STATUS.ALLOWED });
 
         expect(vm.submitDisabled).toBe(true);
@@ -73,6 +79,8 @@ describe('AddLicenseForm', () => {
 
       it('is true if the entered license is duplicated', () => {
         createComponent({ managedLicenses: [{ name: 'FOO' }] });
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({ licenseName: 'FOO', approvalStatus: LICENSE_APPROVAL_STATUS.ALLOWED });
 
         expect(vm.submitDisabled).toBe(true);
@@ -82,6 +90,8 @@ describe('AddLicenseForm', () => {
     describe('isInvalidLicense', () => {
       it('is true if the entered license is duplicated', () => {
         createComponent({ managedLicenses: [{ name: 'FOO' }] });
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({ licenseName: 'FOO' });
 
         expect(vm.isInvalidLicense).toBe(true);
@@ -89,6 +99,8 @@ describe('AddLicenseForm', () => {
 
       it('is false if the entered license is unique', () => {
         createComponent({ managedLicenses: [{ name: 'FOO' }] });
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({ licenseName: 'FOO2' });
 
         expect(vm.isInvalidLicense).toBe(false);
@@ -126,6 +138,8 @@ describe('AddLicenseForm', () => {
 
     it('renders error text, if there is a duplicate license', async () => {
       createComponent({ managedLicenses: [{ name: 'FOO' }] });
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ licenseName: 'FOO' });
       await Vue.nextTick();
 
@@ -156,6 +170,8 @@ describe('AddLicenseForm', () => {
     });
 
     it('disables submit, if the form is invalid', async () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ licenseName: '' });
       await Vue.nextTick();
 

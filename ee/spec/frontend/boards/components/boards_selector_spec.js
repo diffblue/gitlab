@@ -99,6 +99,8 @@ describe('BoardsSelector', () => {
     });
 
     wrapper.vm.$apollo.addSmartQuery = jest.fn((_, options) => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         [options.loadingKey]: true,
       });
@@ -166,6 +168,8 @@ describe('BoardsSelector', () => {
         // Emits gl-dropdown show event to simulate the dropdown is opened at initialization time
         findDropdown().vm.$emit('show');
 
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         await wrapper.setData({
           loadingBoards: false,
           loadingRecentBoards: false,

@@ -90,6 +90,8 @@ describe('Vulnerabilities app component', () => {
       createWrapper();
 
       vulnerabilities = generateVulnerabilities();
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ vulnerabilities });
     });
 
@@ -135,6 +137,8 @@ describe('Vulnerabilities app component', () => {
       createWrapper();
 
       vulnerabilities = generateVulnerabilities();
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         vulnerabilities,
         pageInfo: {
@@ -155,6 +159,8 @@ describe('Vulnerabilities app component', () => {
   describe(`when there's an error loading vulnerabilities`, () => {
     beforeEach(() => {
       createWrapper();
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ errorLoadingVulnerabilities: true });
     });
 

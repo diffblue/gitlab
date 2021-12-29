@@ -128,6 +128,8 @@ describe('ThroughputChart', () => {
   describe('with data', () => {
     beforeEach(() => {
       wrapper = createComponent();
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ throughputChartData });
     });
 
@@ -147,6 +149,8 @@ describe('ThroughputChart', () => {
   describe('with no data in the response', () => {
     beforeEach(() => {
       wrapper = createComponent();
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ throughputChartData: throughputChartNoData });
     });
 
@@ -169,6 +173,8 @@ describe('ThroughputChart', () => {
   describe('with errors', () => {
     beforeEach(() => {
       wrapper = createComponent();
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ hasError: true });
     });
 

@@ -98,6 +98,8 @@ describe('GroupSelect component', () => {
   describe('when mounted', () => {
     it('displays a loading icon while descendant groups are being fetched', async () => {
       createWrapper({ loading: true });
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ initialLoading: true });
       await wrapper.vm.$nextTick();
 

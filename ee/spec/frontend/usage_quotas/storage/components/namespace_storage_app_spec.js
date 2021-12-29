@@ -73,6 +73,8 @@ describe('NamespaceStorageApp', () => {
   });
 
   it('renders the 2 projects', async () => {
+    // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+    // eslint-disable-next-line no-restricted-syntax
     wrapper.setData({
       namespace: namespaceData,
     });
@@ -84,6 +86,8 @@ describe('NamespaceStorageApp', () => {
 
   describe('limit', () => {
     it('when limit is set it renders limit information', async () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         namespace: namespaceData,
       });
@@ -94,6 +98,8 @@ describe('NamespaceStorageApp', () => {
     });
 
     it('when limit is 0 it does not render limit information', async () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         namespace: { ...namespaceData, limit: 0 },
       });
@@ -106,6 +112,8 @@ describe('NamespaceStorageApp', () => {
 
   describe('with rootStorageStatistics information', () => {
     it('renders total usage', async () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         namespace: withRootStorageStatistics,
       });
@@ -118,6 +126,8 @@ describe('NamespaceStorageApp', () => {
 
   describe('with additional_repo_storage_by_namespace feature', () => {
     it('usage_graph component hidden is when feature is false', async () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         namespace: withRootStorageStatistics,
       });
@@ -145,6 +155,8 @@ describe('NamespaceStorageApp', () => {
 
   describe('without rootStorageStatistics information', () => {
     it('renders N/A', async () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         namespace: namespaceData,
       });
@@ -195,6 +207,8 @@ describe('NamespaceStorageApp', () => {
     describe('when temporary storage increase is visible', () => {
       beforeEach(() => {
         createComponent({ provide: { isTemporaryStorageIncreaseVisible: 'true' } });
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           namespace: {
             ...namespaceData,

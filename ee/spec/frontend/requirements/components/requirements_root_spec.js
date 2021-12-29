@@ -165,6 +165,8 @@ describe('RequirementsRoot', () => {
       });
 
       it('returns `true` when `requirements.list` is empty', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           requirements: {
             list: [],
@@ -177,6 +179,8 @@ describe('RequirementsRoot', () => {
       });
 
       it('returns `true` when `requirementsCount` for current filterBy value is 0', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           filterBy: FilterState.opened,
           requirementsCount: {
@@ -192,6 +196,8 @@ describe('RequirementsRoot', () => {
 
     describe('totalRequirementsForCurrentTab', () => {
       it('returns number representing total requirements for current tab', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           filterBy: FilterState.opened,
           requirementsCount: {
@@ -207,6 +213,8 @@ describe('RequirementsRoot', () => {
 
     describe('showEmptyState', () => {
       it('returns `false` when `showRequirementCreateDrawer` is true', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           showRequirementCreateDrawer: true,
         });
@@ -219,6 +227,8 @@ describe('RequirementsRoot', () => {
 
     describe('showPaginationControls', () => {
       it('returns `true` when totalRequirements is more than default page size', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           requirements: {
             list: mockRequirementsOpen,
@@ -233,6 +243,8 @@ describe('RequirementsRoot', () => {
       });
 
       it('returns `false` when totalRequirements is less than default page size', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           requirements: {
             list: [mockRequirementsOpen[0]],
@@ -260,6 +272,8 @@ describe('RequirementsRoot', () => {
       `(
         'returns $isVisible when hasPreviousPage is $hasPreviousPage and hasNextPage is $hasNextPage within `requirements.pageInfo`',
         ({ hasPreviousPage, hasNextPage, isVisible }) => {
+          // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+          // eslint-disable-next-line no-restricted-syntax
           wrapper.setData({
             requirements: {
               pageInfo: {
@@ -278,6 +292,8 @@ describe('RequirementsRoot', () => {
 
     describe('prevPage', () => {
       it('returns number representing previous page based on currentPage value', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           currentPage: 3,
         });
@@ -294,6 +310,8 @@ describe('RequirementsRoot', () => {
       });
 
       it('returns `null` when currentPage is already last page', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           currentPage: 2,
         });
@@ -328,6 +346,8 @@ describe('RequirementsRoot', () => {
 
     describe('getFilteredSearchValue', () => {
       it('returns array containing applied filter search values', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           authorUsernames: ['root', 'john.doe'],
           status: 'satisfied',
@@ -342,6 +362,8 @@ describe('RequirementsRoot', () => {
 
     describe('updateUrl', () => {
       it('updates window URL based on presence of props for filtered search and sort criteria', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           filterBy: FilterState.all,
           currentPage: 2,
@@ -713,6 +735,8 @@ describe('RequirementsRoot', () => {
 
     describe('handleNewRequirementCancel', () => {
       it('sets `showRequirementCreateDrawer` prop to `false`', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           showRequirementCreateDrawer: true,
         });
@@ -861,6 +885,8 @@ describe('RequirementsRoot', () => {
       });
 
       it('updates props `textSearch` and `authorUsernames` with empty values when passed filters param is empty', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           authorUsernames: ['root'],
           status: 'satisfied',
@@ -892,6 +918,8 @@ describe('RequirementsRoot', () => {
 
     describe('handlePageChange', () => {
       it('sets data prop `prevPageCursor` to empty string and `nextPageCursor` to `requirements.pageInfo.endCursor` when provided page param is greater than currentPage', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           requirements: {
             list: mockRequirementsOpen,
@@ -917,6 +945,8 @@ describe('RequirementsRoot', () => {
       });
 
       it('sets data prop `nextPageCursor` to empty string and `prevPageCursor` to `requirements.pageInfo.startCursor` when provided page param is less than currentPage', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           requirements: {
             list: mockRequirementsOpen,
@@ -967,6 +997,8 @@ describe('RequirementsRoot', () => {
     });
 
     it('renders empty state when query results are empty', () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         requirements: {
           list: [],
@@ -998,6 +1030,8 @@ describe('RequirementsRoot', () => {
     });
 
     it('does not render requirement-empty-state component when `showRequirementCreateDrawer` prop is `true`', () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         showRequirementCreateDrawer: true,
       });
@@ -1008,6 +1042,8 @@ describe('RequirementsRoot', () => {
     });
 
     it('renders requirement items for all the requirements', () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         requirements: {
           list: mockRequirementsOpen,
@@ -1025,6 +1061,8 @@ describe('RequirementsRoot', () => {
     });
 
     it('renders pagination controls', () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         requirements: {
           list: mockRequirementsOpen,

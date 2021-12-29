@@ -85,6 +85,8 @@ describe('TestCaseShowRoot', () => {
         testCaseActionTitle,
       }) => {
         beforeEach(async () => {
+          // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+          // eslint-disable-next-line no-restricted-syntax
           wrapper.setData({
             testCase: {
               ...mockTestCase,
@@ -235,6 +237,8 @@ describe('TestCaseShowRoot', () => {
 
     describe('handleCancelClick', () => {
       it('sets `editTestCaseFormVisible` prop to false and emits "close.form" even in IssuableEventHub', async () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           editTestCaseFormVisible: true,
         });
@@ -264,6 +268,8 @@ describe('TestCaseShowRoot', () => {
 
   describe('template', () => {
     it('renders gl-loading-icon when testCaseLoading prop is true', async () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         testCaseLoading: true,
       });
@@ -319,6 +325,8 @@ describe('TestCaseShowRoot', () => {
     });
 
     it('does not render issuable-show when `testCaseLoading` prop is false and `testCaseLoadFailed` prop is true', async () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         testCaseLoading: false,
         testCaseLoadFailed: true,
@@ -361,6 +369,8 @@ describe('TestCaseShowRoot', () => {
     });
 
     it('renders edit-form-actions slot contents', async () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         editTestCaseFormVisible: true,
       });

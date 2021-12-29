@@ -33,6 +33,8 @@ describe('Environment Alert', () => {
 
   describe('has alert', () => {
     beforeEach(() => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         alert: {
           severity: 'CRITICAL',

@@ -71,6 +71,8 @@ describe('Group Security Dashboard Vulnerabilities Component', () => {
         },
       });
 
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         errorLoadingVulnerabilities: true,
       });
@@ -105,6 +107,8 @@ describe('Group Security Dashboard Vulnerabilities Component', () => {
         },
       });
 
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         vulnerabilities,
       });
@@ -151,6 +155,8 @@ describe('Group Security Dashboard Vulnerabilities Component', () => {
         },
       });
 
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         vulnerabilities,
         pageInfo: {
@@ -172,6 +178,8 @@ describe('Group Security Dashboard Vulnerabilities Component', () => {
         },
       });
 
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         vulnerabilities: generateVulnerabilities(),
         pageInfo: {

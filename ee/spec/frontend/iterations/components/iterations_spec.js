@@ -74,6 +74,8 @@ describe('Iterations', () => {
       mountComponent({
         loading: false,
       });
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         namespace: {
           pageInfo: {
@@ -185,6 +187,8 @@ describe('Iterations', () => {
       mountComponent({
         loading: false,
       });
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         error: 'Oh no!',
       });
