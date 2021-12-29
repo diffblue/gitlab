@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlLink, GlSprintf, GlTabs } from '@gitlab/ui';
+import { GlButton, GlLink, GlSprintf, GlScrollableTabs } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
 import {
@@ -27,7 +27,7 @@ export default {
     GlButton,
     GlLink,
     GlSprintf,
-    GlTabs,
+    GlScrollableTabs,
     ConfigurationPageLayout,
     AllTab,
     RunningTab,
@@ -159,7 +159,7 @@ export default {
         </template>
       </gl-sprintf>
     </template>
-    <gl-tabs v-model="activeTab">
+    <gl-scrollable-tabs v-model="activeTab" data-testid="on-demand-scans-tabs">
       <component
         :is="tab.component"
         v-for="(tab, key, index) in tabs"
@@ -167,7 +167,7 @@ export default {
         :items-count="tab.itemsCount"
         :is-active="activeTab === index"
       />
-    </gl-tabs>
+    </gl-scrollable-tabs>
   </configuration-page-layout>
   <empty-state v-else />
 </template>

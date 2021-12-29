@@ -305,21 +305,18 @@ describe('BaseTab', () => {
     });
   });
 
-  it('renders the after-name slot', async () => {
+  it.each(['default', 'after-name', 'error'])('renders the %s slot', async (slot) => {
     createFullComponent({
-      propsData: {
-        itemsCount: 30,
-      },
       stubs: {
         GlTable: false,
       },
       scopedSlots: {
-        'after-name': '<div data-testid="after-name-content" />',
+        [slot]: `<div data-testid="${slot}-slot-content" />`,
       },
     });
     await waitForPromises();
 
-    expect(wrapper.findByTestId('after-name-content').exists()).toBe(true);
+    expect(wrapper.findByTestId(`${slot}-slot-content`).exists()).toBe(true);
   });
 
   describe("when a scan's DAST profile got deleted", () => {
