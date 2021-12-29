@@ -5,7 +5,7 @@ module QA
     describe 'License merge request widget' do
       let(:approved_license_name) { "MIT License" }
       let(:denied_license_name) { "zlib License" }
-      let(:executor) {"qa-runner-#{Time.now.to_i}"}
+      let(:executor) { "qa-runner-#{Time.now.to_i}" }
 
       after do
         @runner.remove_via_api!
@@ -25,12 +25,12 @@ module QA
           runner.tags = ['secure_license']
         end
 
-        Resource::Repository::ProjectPush.fabricate! do |project_push|
-          project_push.project = @project
-          project_push.directory = Pathname
+        Resource::Repository::Commit.fabricate_via_api! do |resource|
+          resource.project = @project
+          resource.commit_message = 'Create license file'
+          resource.add_directory(Pathname
             .new(__dir__)
-            .join('../../../../../ee/fixtures/secure_license_files')
-          project_push.commit_message = 'Create license file'
+            .join('../../../../../ee/fixtures/secure_license_files'))
         end
 
         @project.visit!
@@ -40,7 +40,6 @@ module QA
           mr.project = @project
           mr.source_branch = 'license-management-mr'
           mr.target_branch = @project.default_branch
-          mr.target = @project.default_branch
           mr.file_name = 'gl-license-scanning-report.json'
           mr.file_content =
             <<~FILE_UPDATE
@@ -89,6 +88,7 @@ module QA
             }
             FILE_UPDATE
           mr.target_new_branch = false
+          mr.update_existing_file = true
         end
 
         @project.visit!
@@ -102,8 +102,7 @@ module QA
           # Give time for the runner to complete pipeline
           show.has_pipeline_status?('passed')
 
-          # TODO: Remove the reload_page: once https://gitlab.com/gitlab-org/gitlab/-/issues/335227 is fixed
-          Support::Retrier.retry_until(max_attempts: 5, sleep_interval: 5, reload_page: show) do
+          Support::Retrier.retry_until(max_attempts: 5, sleep_interval: 5) do
             show.wait_for_license_compliance_report
           end
 

@@ -70,6 +70,7 @@ module QA
           merge_request.project = @project
           merge_request.description = Faker::Lorem.sentence
           merge_request.target_new_branch = false
+          merge_request.update_existing_file = true
           merge_request.file_name = @file_name
           merge_request.file_content = Faker::Lorem.sentence
         end
@@ -115,7 +116,7 @@ module QA
           Page::Dashboard::Todos.perform do |todos|
             todos.wait_until(reload: true, sleep_interval: 1) { todos.has_todo_list? }
 
-            expect(todos).to have_latest_todo_item_with_content("Removed from Merge Train:", "#{mr_title}")
+            expect(todos).to have_latest_todo_item_with_content("Removed from Merge Train:", @mr_title)
           end
         end
       end
