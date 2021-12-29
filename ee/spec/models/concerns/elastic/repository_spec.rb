@@ -46,42 +46,59 @@ RSpec.describe Repository, :elastic do
                          'commit:match:search_terms')
   end
 
-  it 'can filter blobs' do
-    project = create :project, :repository
-    index!(project)
+  context 'filtering' do
+    let(:project) { create :project, :repository }
 
-    # Finds custom-highlighting/test.gitlab-custom
-    expect(project.repository.elastic_search('def | popen filename:test')[:blobs][:total_count]).to eq(1)
+    before do
+      index!(project)
+    end
 
-    # Should not find anything, since filename doesn't match on path
-    expect(project.repository.elastic_search('def | popen filename:files')[:blobs][:total_count]).to eq(0)
+    it 'can filter blobs' do
+      # Finds custom-highlighting/test.gitlab-custom
+      expect(project.repository.elastic_search('def | popen filename:test')[:blobs][:total_count]).to eq(1)
 
-    # Finds files/ruby/popen.rb, files/markdown/ruby-style-guide.md, files/ruby/regex.rb, files/ruby/version_info.rb
-    expect(project.repository.elastic_search('def | popen path:ruby')[:blobs][:total_count]).to eq(4)
+      # Should not find anything, since filename doesn't match on path
+      expect(project.repository.elastic_search('def | popen filename:files')[:blobs][:total_count]).to eq(0)
 
-    # Finds files/markdown/ruby-style-guide.md
-    expect(project.repository.elastic_search('def | popen extension:md')[:blobs][:total_count]).to eq(1)
+      # Finds files/ruby/popen.rb, files/markdown/ruby-style-guide.md, files/ruby/regex.rb, files/ruby/version_info.rb
+      expect(project.repository.elastic_search('def | popen path:ruby')[:blobs][:total_count]).to eq(4)
 
-    # Finds files/ruby/popen.rb
-    expect(project.repository.elastic_search('* blob:7e3e39ebb9b2bf433b4ad17313770fbe4051649c')[:blobs][:total_count]).to eq(1)
+      # Finds files/markdown/ruby-style-guide.md
+      expect(project.repository.elastic_search('def | popen extension:md')[:blobs][:total_count]).to eq(1)
 
-    # filename filter without search term
-    count = project.repository.ls_files('master').count { |path| path.split('/')[-1].include?('test') }
-    expect(project.repository.elastic_search('filename:test')[:blobs][:total_count]).to eq(count)
-    expect(project.repository.elastic_search('filename:test')[:blobs][:total_count]).to be > 0
+      # Finds files/ruby/popen.rb
+      expect(project.repository.elastic_search('* blob:7e3e39ebb9b2bf433b4ad17313770fbe4051649c')[:blobs][:total_count]).to eq(1)
 
-    # extension filter without search term
-    count = project.repository.ls_files('master').count { |path| path.split('/')[-1].split('.')[-1].include?('md') }
-    expect(project.repository.elastic_search('extension:md')[:blobs][:total_count]).to eq(count)
-    expect(project.repository.elastic_search('extension:md')[:blobs][:total_count]).to be > 0
+      # filename filter without search term
+      count = project.repository.ls_files('master').count { |path| path.split('/')[-1].include?('test') }
+      expect(project.repository.elastic_search('filename:test')[:blobs][:total_count]).to eq(count)
+      expect(project.repository.elastic_search('filename:test')[:blobs][:total_count]).to be > 0
 
-    # path filter without search term
-    count = project.repository.ls_files('master').count { |path| path.include?('ruby') }
-    expect(project.repository.elastic_search('path:ruby')[:blobs][:total_count]).to eq(count)
-    expect(project.repository.elastic_search('path:ruby')[:blobs][:total_count]).to be > 0
+      # extension filter without search term
+      count = project.repository.ls_files('master').count { |path| path.split('/')[-1].split('.')[-1].include?('md') }
+      expect(project.repository.elastic_search('extension:md')[:blobs][:total_count]).to eq(count)
+      expect(project.repository.elastic_search('extension:md')[:blobs][:total_count]).to be > 0
 
-    # blob filter without search term
-    expect(project.repository.elastic_search('blob:7e3e39ebb9b2bf433b4ad17313770fbe4051649c')[:blobs][:total_count]).to eq(1)
+      # path filter without search term
+      count = project.repository.ls_files('master').count { |path| path.include?('ruby') }
+      expect(project.repository.elastic_search('path:ruby')[:blobs][:total_count]).to eq(count)
+      expect(project.repository.elastic_search('path:ruby')[:blobs][:total_count]).to be > 0
+
+      # blob filter without search term
+      expect(project.repository.elastic_search('blob:7e3e39ebb9b2bf433b4ad17313770fbe4051649c')[:blobs][:total_count]).to eq(1)
+    end
+
+    it 'filters by extension when optimization is disabled' do
+      stub_feature_flags(elastic_file_name_reverse_optimization: false)
+
+      # Finds files/markdown/ruby-style-guide.md
+      expect(project.repository.elastic_search('def | popen extension:md')[:blobs][:total_count]).to eq(1)
+
+      # extension filter without search term
+      count = project.repository.ls_files('master').count { |path| path.split('/')[-1].split('.')[-1].include?('md') }
+      expect(project.repository.elastic_search('extension:md')[:blobs][:total_count]).to eq(count)
+      expect(project.repository.elastic_search('extension:md')[:blobs][:total_count]).to be > 0
+    end
   end
 
   def search_and_check!(on, query, type:, per: 1000)
