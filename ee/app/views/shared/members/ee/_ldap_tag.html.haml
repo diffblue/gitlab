@@ -1,5 +1,4 @@
 - can_override = local_assigns.fetch(:can_override, false)
 
 - if can_override
-  %span.badge.badge-info.members-ldap.d-sm-block.mr-md-4
-    LDAP
+  = gl_badge_tag 'LDAP', { variant: :info }, { class: 'gl-sm-display-block gl-align-self-center gl-md-mr-5' }
