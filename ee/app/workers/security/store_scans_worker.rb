@@ -25,10 +25,12 @@ module Security
     private
 
     def record_onboarding_progress(pipeline)
-      # We only record SAST scans since it's a Free feature and available to all users
-      return unless pipeline.security_scans.sast.any?
+      recordable_scan_actions = Security::Scan.scan_types.keys
+        .inject({}) { |hash, scan_type| hash.merge!(scan_type => "secure_#{scan_type}_run".to_sym) }
+        .merge('sast' => :security_scan_enabled) # sast has an exceptional action name
 
-      OnboardingProgressService.new(pipeline.project.namespace).execute(action: :security_scan_enabled)
+      actions = pipeline.security_scans.distinct_scan_types.map { |scan_type| recordable_scan_actions[scan_type] }
+      OnboardingProgressService.new(pipeline.project.namespace).execute(action: actions)
     end
   end
 end
