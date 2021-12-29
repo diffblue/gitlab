@@ -36,6 +36,7 @@ RSpec.describe GroupPolicy do
     it { expect_disallowed(:read_crm_organization) }
     it { expect_disallowed(:read_crm_contact) }
     it { expect_disallowed(:read_counts) }
+    it { expect_disallowed(:read_group_runners) }
     it { expect_disallowed(*read_group_permissions) }
   end
 
@@ -51,6 +52,7 @@ RSpec.describe GroupPolicy do
     it { expect_disallowed(:read_crm_organization) }
     it { expect_disallowed(:read_crm_contact) }
     it { expect_disallowed(:read_counts) }
+    it { expect_disallowed(:read_group_runners) }
     it { expect_disallowed(*read_group_permissions) }
   end
 

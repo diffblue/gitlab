@@ -180,6 +180,8 @@ class GroupPolicy < Namespaces::GroupProjectNamespaceSharedPolicy
     enable :admin_group_member
     enable :change_visibility_level
 
+    enable :read_group_runners
+
     enable :set_note_created_at
     enable :set_emails_disabled
     enable :change_prevent_sharing_groups_outside_hierarchy

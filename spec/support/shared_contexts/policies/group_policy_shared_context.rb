@@ -53,17 +53,18 @@ RSpec.shared_context 'GroupPolicy context' do
   end
 
   let(:owner_permissions) do
-    [
-      :owner_access,
-      :admin_group,
-      :admin_namespace,
-      :admin_group_member,
-      :change_visibility_level,
-      :set_note_created_at,
-      :create_subgroup,
-      :read_statistics,
-      :update_default_branch_protection
-    ].compact
+    %i[
+      owner_access
+      admin_group
+      admin_namespace
+      admin_group_member
+      change_visibility_level
+      set_note_created_at
+      create_subgroup
+      read_statistics
+      update_default_branch_protection
+      read_group_runners
+    ]
   end
 
   let(:admin_permissions) { %i[read_confidential_issues] }
