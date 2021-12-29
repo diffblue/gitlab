@@ -6,7 +6,7 @@ import { ENTER_KEY } from '~/lib/utils/keys';
 import getAgentsQuery from '~/clusters_list/graphql/queries/get_agents.query.graphql';
 import deleteAgentMutation from '~/clusters_list/graphql/mutations/delete_agent.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import AgentActions from '~/clusters_list/components/agent_actions.vue';
+import AgentOptions from '~/clusters_list/components/agent_options.vue';
 import { MAX_LIST_COUNT } from '~/clusters_list/constants';
 import { getAgentResponse, mockDeleteResponse, mockErrorDeleteResponse } from '../mocks/apollo';
 
@@ -21,7 +21,7 @@ const agent = {
   webPath: 'agent-webPath',
 };
 
-describe('AgentActions', () => {
+describe('AgentOptions', () => {
   let wrapper;
   let toast;
   let apolloProvider;
@@ -66,7 +66,7 @@ describe('AgentActions', () => {
 
     toast = jest.fn();
 
-    wrapper = shallowMountExtended(AgentActions, {
+    wrapper = shallowMountExtended(AgentOptions, {
       apolloProvider,
       provide,
       propsData,
@@ -190,7 +190,7 @@ describe('AgentActions', () => {
       submitAgentToDelete();
     });
 
-    it('reenables the actions dropdown', async () => {
+    it('reenables the options dropdown', async () => {
       expect(findPrimaryActionAttributes('loading')).toBe(true);
       expect(findDropdown().attributes('disabled')).toBe('true');
 

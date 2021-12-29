@@ -7560,7 +7560,7 @@ msgstr ""
 msgid "ClusterAgents|An unknown error occurred. Please try again."
 msgstr ""
 
-msgid "ClusterAgents|Are you sure you want to delete this agent? This action cannot be undone."
+msgid "ClusterAgents|Are you sure you want to delete this agent? You cannot undo this."
 msgstr ""
 
 msgid "ClusterAgents|Certificate"
@@ -23039,6 +23039,9 @@ msgid "More information is available|here"
 msgstr ""
 
 msgid "More information."
+msgstr ""
+
+msgid "More options"
 msgstr ""
 
 msgid "More than %{number_commits_distance} commits different with %{default_branch}"

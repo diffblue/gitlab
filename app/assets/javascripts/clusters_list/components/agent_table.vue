@@ -6,7 +6,7 @@ import timeagoMixin from '~/vue_shared/mixins/timeago';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { AGENT_STATUSES } from '../constants';
 import { getAgentConfigPath } from '../clusters_util';
-import AgentActions from './agent_actions.vue';
+import AgentOptions from './agent_options.vue';
 
 export default {
   i18n: {
@@ -14,7 +14,7 @@ export default {
     statusLabel: s__('ClusterAgents|Connection status'),
     lastContactLabel: s__('ClusterAgents|Last contact'),
     configurationLabel: s__('ClusterAgents|Configuration'),
-    actionsLabel: __('Actions'),
+    optionsLabel: __('Options'),
     troubleshootingText: s__('ClusterAgents|Learn how to troubleshoot'),
     neverConnectedText: s__('ClusterAgents|Never'),
   },
@@ -26,7 +26,7 @@ export default {
     GlTooltip,
     GlPopover,
     TimeAgoTooltip,
-    AgentActions,
+    AgentOptions,
   },
   mixins: [timeagoMixin],
   AGENT_STATUSES,
@@ -74,8 +74,8 @@ export default {
           tdClass,
         },
         {
-          key: 'actions',
-          label: this.$options.i18n.actionsLabel,
+          key: 'options',
+          label: this.$options.i18n.optionsLabel,
           tdClass,
         },
       ];
@@ -154,8 +154,8 @@ export default {
       </span>
     </template>
 
-    <template #cell(actions)="{ item }">
-      <agent-actions
+    <template #cell(options)="{ item }">
+      <agent-options
         :agent="item"
         :default-branch-name="defaultBranchName"
         :max-agents="maxAgents"

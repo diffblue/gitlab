@@ -136,8 +136,17 @@ with the following differences:
 
 ## Remove an agent
 
+You can remove an agent using the [GitLab UI](#remove-an-agent-through-the-gitlab-ui) or through the [GraphQL API](#remove-an-agent-with-the-gitlab-graphql-api).
+
+### Remove an agent through the GitLab UI
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/323055) in GitLab 14.7.
+
+To remove an agent from the UI:
+
+1. Go to your agent's configuration repository.
 1. From your project's sidebar, select **Infrastructure > Kubernetes clusters**.
-1. Select your agent from the table, and then in the **Actions** column, click the vertical ellipsis 
+1. Select your agent from the table, and then in the **Options** column, click the vertical ellipsis 
 (**{ellipsis_v}**) button and select **Delete agent**. 
 
 ### Remove an agent with the GitLab GraphQL API

@@ -1,6 +1,6 @@
 import { GlLink, GlIcon } from '@gitlab/ui';
 import AgentTable from '~/clusters_list/components/agent_table.vue';
-import AgentActions from '~/clusters_list/components/agent_actions.vue';
+import AgentOptions from '~/clusters_list/components/agent_options.vue';
 import { ACTIVE_CONNECTION_TIME } from '~/clusters_list/constants';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { stubComponent } from 'helpers/stub_component';
@@ -16,6 +16,7 @@ const propsData = {
   agents: [
     {
       name: 'agent-1',
+      id: 'agent-1-id',
       configFolder: {
         webPath: '/agent/full/path',
       },
@@ -26,6 +27,7 @@ const propsData = {
     },
     {
       name: 'agent-2',
+      id: 'agent-2-id',
       webPath: '/agent-2',
       status: 'active',
       lastContact: connectedTimeNow.getTime(),
@@ -39,6 +41,7 @@ const propsData = {
     },
     {
       name: 'agent-3',
+      id: 'agent-3-id',
       webPath: '/agent-3',
       status: 'inactive',
       lastContact: connectedTimeInactive.getTime(),
@@ -53,7 +56,7 @@ const propsData = {
   ],
 };
 
-const AgentActionsStub = stubComponent(AgentActions, {
+const AgentOptionsStub = stubComponent(AgentOptions, {
   template: `<div></div>`,
 });
 
@@ -66,14 +69,14 @@ describe('AgentTable', () => {
   const findLastContactText = (at) => wrapper.findAllByTestId('cluster-agent-last-contact').at(at);
   const findConfiguration = (at) =>
     wrapper.findAllByTestId('cluster-agent-configuration-link').at(at);
-  const findAgentActions = () => wrapper.findAllComponents(AgentActions);
+  const findAgentOptions = () => wrapper.findAllComponents(AgentOptions);
 
   beforeEach(() => {
     wrapper = mountExtended(AgentTable, {
       propsData,
       provide: provideData,
       stubs: {
-        AgentActions: AgentActionsStub,
+        AgentOptions: AgentOptionsStub,
       },
     });
   });
@@ -125,7 +128,7 @@ describe('AgentTable', () => {
     });
 
     it('displays actions menu for each agent', () => {
-      expect(findAgentActions()).toHaveLength(3);
+      expect(findAgentOptions()).toHaveLength(3);
     });
   });
 });

@@ -16,11 +16,11 @@ import { removeAgentFromStore } from '../graphql/cache_update';
 
 export default {
   i18n: {
-    dropdownText: __('More actions'),
+    dropdownText: __('More options'),
     deleteButton: s__('ClusterAgents|Delete agent'),
     modalTitle: __('Are you sure?'),
     modalBody: s__(
-      'ClusterAgents|Are you sure you want to delete this agent? This action cannot be undone.',
+      'ClusterAgents|Are you sure you want to delete this agent? You cannot undo this.',
     ),
     modalInputLabel: s__('ClusterAgents|To delete the agent, type %{name} to confirm:'),
     modalAction: s__('ClusterAgents|Delete'),
@@ -44,6 +44,7 @@ export default {
     agent: {
       required: true,
       type: Object,
+      validator: (value) => ['id', 'name'].every((prop) => value[prop]),
     },
     defaultBranchName: {
       default: '.noBranch',
@@ -113,20 +114,12 @@ export default {
           throw new Error(errors[0]);
         }
       } catch (error) {
-        if (error?.message) {
-          this.error = error.message;
-        } else {
-          this.error = this.$options.i18n.defaultError;
-        }
+        this.error = error?.message || this.$options.i18n.defaultError;
       } finally {
         this.loading = false;
         const successMessage = sprintf(this.$options.i18n.successMessage, { name: this.agentName });
 
-        if (!this.error) {
-          this.$toast.show(successMessage);
-        } else {
-          this.$toast.show(this.error);
-        }
+        this.$toast.show(this.error || successMessage);
 
         this.$refs.modal.hide();
       }
