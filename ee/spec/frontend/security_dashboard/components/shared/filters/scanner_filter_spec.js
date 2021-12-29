@@ -112,6 +112,8 @@ describe('Scanner Filter component', () => {
       };
 
       const selectedOptions = sampleSize(filter.options, 3); // Randomly select some options.
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       await wrapper.setData({ selectedOptions });
 
       expectSelectedItems(selectedOptions);

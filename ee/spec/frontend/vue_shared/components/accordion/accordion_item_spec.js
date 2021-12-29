@@ -141,6 +141,8 @@ describe('AccordionItem component', () => {
     });
 
     it('collapses if "closeOtherAccordionItems" is called with the trigger not being the current item', () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ isExpanded: true });
       wrapper.vm.onCloseOtherAccordionItems({});
 
@@ -148,6 +150,8 @@ describe('AccordionItem component', () => {
     });
 
     it('does not collapses if "closeOtherAccordionItems" is called with the trigger being the current item', () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ isExpanded: true });
       wrapper.vm.onCloseOtherAccordionItems(wrapper.vm);
 
@@ -177,6 +181,8 @@ describe('AccordionItem component', () => {
     it('has a trigger element that has an "aria-expanded" attribute set, to show if it is expanded or collapsed', () => {
       expect(expansionTrigger().attributes('aria-expanded')).toBeFalsy();
 
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ isExpanded: true });
 
       return wrapper.vm.$nextTick().then(() => {

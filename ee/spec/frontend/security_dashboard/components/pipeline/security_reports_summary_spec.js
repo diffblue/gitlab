@@ -145,6 +145,8 @@ describe('Security reports summary component', () => {
       });
 
       it('set local storage item to 1 when summary is hidden', async () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({ isVisible: false });
         await wrapper.vm.$nextTick();
 
@@ -163,6 +165,8 @@ describe('Security reports summary component', () => {
       });
 
       it('removes local storage item when summary is shown', async () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({ isVisible: true });
         await wrapper.vm.$nextTick();
 

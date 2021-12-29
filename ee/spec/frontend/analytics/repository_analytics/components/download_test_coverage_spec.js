@@ -59,6 +59,8 @@ describe('Download test coverage component', () => {
 
     describe('when there is an error fetching the projects', () => {
       it('displays an alert for the failed query', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({ hasError: true });
 
         return wrapper.vm.$nextTick().then(() => {
@@ -72,6 +74,8 @@ describe('Download test coverage component', () => {
 
       describe('with all projects selected', () => {
         it('renders primary action as a link with no project_ids param', () => {
+          // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+          // eslint-disable-next-line no-restricted-syntax
           wrapper.setData({ allProjectsSelected: true, selectedProjectIds: [] });
 
           return wrapper.vm.$nextTick().then(() => {
@@ -84,6 +88,8 @@ describe('Download test coverage component', () => {
 
       describe('with two or more projects selected without selecting all projects', () => {
         it('renders primary action as a link with two project IDs as parameters', () => {
+          // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+          // eslint-disable-next-line no-restricted-syntax
           wrapper.setData({ allProjectsSelected: false, selectedProjectIds: [1, 2] });
           const projectIdsQueryParam = `project_ids[]=1&project_ids[]=2`;
           const expectedPath = `${groupAnalyticsCoverageReportsPathWithDates}&${projectIdsQueryParam}`;
@@ -96,6 +102,8 @@ describe('Download test coverage component', () => {
 
       describe('with one project selected', () => {
         it('renders primary action as a link with one project ID as a parameter', () => {
+          // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+          // eslint-disable-next-line no-restricted-syntax
           wrapper.setData({ allProjectsSelected: false, selectedProjectIds: [1] });
           const projectIdsQueryParam = `project_ids[]=1`;
           const expectedPath = `${groupAnalyticsCoverageReportsPathWithDates}&${projectIdsQueryParam}`;
@@ -114,6 +122,8 @@ describe('Download test coverage component', () => {
 
       describe('when clicking the select all button', () => {
         it('selects all projects and removes the disabled attribute from the download button', () => {
+          // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+          // eslint-disable-next-line no-restricted-syntax
           wrapper.setData({ allProjectsSelected: false, selectedProjectIds: [] });
           clickSelectAllProjectsButton();
 

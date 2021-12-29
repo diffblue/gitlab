@@ -167,6 +167,8 @@ describe('MilestonesListSectionComponent', () => {
     });
 
     it('renders bottom shadow element when `showBottomShadow` prop is true', () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         showBottomShadow: true,
       });

@@ -92,6 +92,8 @@ describe('Instance Security Dashboard component', () => {
 
   it('renders the default page', async () => {
     createWrapper();
+    // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+    // eslint-disable-next-line no-restricted-syntax
     wrapper.setData({ projects: [{ name: 'project1' }] });
     await wrapper.vm.$nextTick();
 

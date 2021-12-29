@@ -51,6 +51,8 @@ describe('UrlSyncMixin', () => {
         ${'group_id'}    | ${'test-group'} | ${{ group_id: 'test-group' }}
         ${'project_ids'} | ${[1, 2]}       | ${{ project_ids: [1, 2] }}
       `('is updated when the $param parameter changes', ({ param, payload, updatedParams }) => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({ [param]: payload });
 
         expect(wrapper.vm.query).toEqual({

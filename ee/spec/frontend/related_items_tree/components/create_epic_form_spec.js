@@ -51,6 +51,8 @@ describe('RelatedItemsTree', () => {
         it('returns false when either `inputValue` prop is non-empty or `isSubmitting` prop is false', () => {
           const wrapperWithInput = createComponent(false);
 
+          // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+          // eslint-disable-next-line no-restricted-syntax
           wrapperWithInput.setData({
             inputValue: 'foo',
           });
@@ -86,6 +88,8 @@ describe('RelatedItemsTree', () => {
 
         it('returns group name when a group is selected', () => {
           const group = { name: 'Group 1' };
+          // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+          // eslint-disable-next-line no-restricted-syntax
           wrapper.setData({ selectedGroup: group });
           expect(wrapper.vm.dropdownPlaceholderText).toBe(group.name);
         });
@@ -98,6 +102,8 @@ describe('RelatedItemsTree', () => {
           ${'FooBar'}                 | ${false}
           ${mockParentItem.groupName} | ${true}
         `('returns `$expected` when searchTerm is $searchTerm', ({ searchTerm, expected }) => {
+          // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+          // eslint-disable-next-line no-restricted-syntax
           wrapper.setData({ searchTerm });
           expect(wrapper.vm.canShowParentGroup).toBe(expected);
         });

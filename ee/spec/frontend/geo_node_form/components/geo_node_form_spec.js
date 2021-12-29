@@ -58,6 +58,8 @@ describe('GeoNodeForm', () => {
       ${false}    | ${true}  | ${true}           | ${true}
     `(`conditional fields`, ({ primaryNode, showCore, showSelectiveSync, showCapacities }) => {
       beforeEach(() => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           nodeData: { ...wrapper.vm.nodeData, primary: primaryNode },
         });
@@ -134,6 +136,8 @@ describe('GeoNodeForm', () => {
     describe('removeSyncOption', () => {
       beforeEach(() => {
         createComponent();
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           nodeData: { ...wrapper.vm.nodeData, selectiveSyncShards: [MOCK_SYNC_SHARDS[0].value] },
         });

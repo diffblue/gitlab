@@ -74,6 +74,8 @@ describe('CreateIssueForm', () => {
   describe('computed', () => {
     describe('dropdownToggleText', () => {
       it('returns project name with name_with_namespace when `selectedProject` is not empty', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           selectedProject: mockProjects[0],
         });
@@ -84,6 +86,8 @@ describe('CreateIssueForm', () => {
       });
       it('returns project name with namespace when `selectedProject` is not empty and dont have name_with_namespace', async () => {
         const project = { ...mockProjects[0], name_with_namespace: undefined, namespace: 'foo' };
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           selectedProject: project,
         });
@@ -108,6 +112,8 @@ describe('CreateIssueForm', () => {
 
     describe('createIssue', () => {
       it('emits event `submit` on component when `selectedProject` is not empty', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           selectedProject: {
             ...mockProjects[0],
@@ -227,6 +233,8 @@ describe('CreateIssueForm', () => {
 
       wrapper.findComponent(GlDropdown).trigger('click');
 
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         searchKey,
       });
@@ -248,6 +256,8 @@ describe('CreateIssueForm', () => {
 
       wrapper.findComponent(GlDropdown).trigger('click');
 
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         searchKey,
       });

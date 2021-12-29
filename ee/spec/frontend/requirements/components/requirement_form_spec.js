@@ -234,6 +234,8 @@ describe('RequirementForm', () => {
         it(`returns ${newLastTestReportState} when \`satisfied\` has changed from ${
           requirement.satisfied
         } to ${!requirement.satisfied}`, () => {
+          // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+          // eslint-disable-next-line no-restricted-syntax
           wrapperWithRequirement.setData({
             satisfied: !requirement.satisfied,
           });
