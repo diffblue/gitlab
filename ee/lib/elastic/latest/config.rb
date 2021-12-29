@@ -59,6 +59,10 @@ module Elastic
                 type: 'custom',
                 tokenizer: 'whitespace',
                 filter: %w(lowercase asciifolding)
+              },
+              whitespace_reverse: {
+                tokenizer: 'whitespace',
+                filter: %w(lowercase asciifolding reverse)
               }
             },
             filter: {
@@ -207,7 +211,8 @@ module Elastic
             analyzer: :path_analyzer
           indexes :file_name, type: :text,
             analyzer: :code_analyzer,
-            search_analyzer: :code_search_analyzer
+            search_analyzer: :code_search_analyzer,
+            fields: { reverse: { type: :text, analyzer: :whitespace_reverse } }
           indexes :content, type: :text,
             index_options: 'positions',
             analyzer: :code_analyzer,

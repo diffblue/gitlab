@@ -1,0 +1,8 @@
+---
+name: elastic_file_name_reverse_optimization
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/77226
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/349122
+milestone: '14.7'
+type: development
+group: group::global search
+default_enabled: false
