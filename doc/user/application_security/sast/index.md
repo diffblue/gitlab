@@ -269,7 +269,7 @@ versions are pulled, there are certain cases where it can be beneficial to pin
 an analyzer to a specific release. To do so, override the `SAST_ANALYZER_IMAGE_TAG` CI/CD variable
 in the job template directly.
 
-In the example below, we pin to a specific patch version of the `spotbugs` analyzer and minor version of the `semgrep` analyzer:
+In the example below, we pin to a minor version of the `semgrep` analyzer and a specific patch version of the `brakeman` analyzer:
 
 ```yaml
 include:
@@ -277,11 +277,11 @@ include:
 
 semgrep-sast:
   variables:
-    SAST_ANALYZER_IMAGE_TAG: "2.12"
+    SAST_ANALYZER_IMAGE_TAG: "2.16"
 
-spotbugs-sast:
+brakeman-sast:
   variables:
-    SAST_ANALYZER_IMAGE_TAG: "2.28.1"
+    SAST_ANALYZER_IMAGE_TAG: "2.21.1"
 ```
 
 ### Customize rulesets **(ULTIMATE)**
