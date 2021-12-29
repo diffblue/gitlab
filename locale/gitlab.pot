@@ -2009,6 +2009,9 @@ msgstr ""
 msgid "Add a GPG key"
 msgstr ""
 
+msgid "Add a GPG key for secure access to GitLab. %{help_link_start}Learn more.%{help_link_end}"
+msgstr ""
+
 msgid "Add a Jaeger URL to replace this page with a link to your Jaeger server. You first need to %{link_start_tag}install Jaeger%{link_end_tag}."
 msgstr ""
 
@@ -2073,6 +2076,9 @@ msgid "Add a to do"
 msgstr ""
 
 msgid "Add an SSH key"
+msgstr ""
+
+msgid "Add an SSH key for secure access to GitLab. %{help_link_start}Learn more.%{help_link_end}"
 msgstr ""
 
 msgid "Add an existing issue"
@@ -25690,9 +25696,6 @@ msgstr ""
 msgid "Paste this DSN into your Sentry SDK"
 msgstr ""
 
-msgid "Paste your public SSH key, which is usually contained in the file '~/.ssh/id_ed25519.pub' or '~/.ssh/id_rsa.pub' and begins with 'ssh-ed25519' or 'ssh-rsa'. Do not paste your private SSH key, as that can compromise your identity."
-msgstr ""
-
 msgid "Patch to apply"
 msgstr ""
 
@@ -27097,6 +27100,9 @@ msgstr ""
 msgid "Profiles|Avatar will be removed. Are you sure?"
 msgstr ""
 
+msgid "Profiles|Begins with %{ssh_key_algorithms}."
+msgstr ""
+
 msgid "Profiles|Bio"
 msgstr ""
 
@@ -27344,9 +27350,6 @@ msgid "Profiles|Two-Factor Authentication"
 msgstr ""
 
 msgid "Profiles|Type your %{confirmationValue} to confirm:"
-msgstr ""
-
-msgid "Profiles|Typically starts with \"ssh-ed25519 …\" or \"ssh-rsa …\""
 msgstr ""
 
 msgid "Profiles|Update profile settings"
@@ -37051,9 +37054,6 @@ msgid "To access this domain create a new DNS record"
 msgstr ""
 
 msgid "To add a custom suffix, set up a Service Desk email address. %{linkStart}Learn more.%{linkEnd}"
-msgstr ""
-
-msgid "To add an SSH key you need to %{generate_link_start}generate one%{link_end} or use an %{existing_link_start}existing key%{link_end}."
 msgstr ""
 
 msgid "To add the entry manually, provide the following details to the application on your phone."
