@@ -1043,6 +1043,127 @@ RSpec.describe QuickActions::InterpretService do
       end
     end
 
+    shared_examples 'health_status command' do
+      it 'populates health_status specified by the /health_status command' do
+        _, updates = service.execute(content, issuable)
+
+        expect(updates).to eq(health_status: health_status)
+      end
+    end
+
+    shared_examples 'clear_health_status command' do
+      it 'populates health_status: nil if content contains /clear_health_status' do
+        issuable.update!(health_status: 'on_track')
+
+        _, updates = service.execute(content, issuable)
+
+        expect(updates).to eq(health_status: nil)
+      end
+    end
+
+    context 'issuable health statuses licensed' do
+      let(:issuable) { issue }
+
+      before do
+        stub_licensed_features(issuable_health_status: true)
+      end
+
+      context 'health_status' do
+        let(:content) { "/health_status #{health_status}" }
+
+        it_behaves_like 'health_status command' do
+          let(:health_status) { 'on_track' }
+        end
+
+        it_behaves_like 'health_status command' do
+          let(:health_status) { 'at_risk' }
+        end
+
+        context 'when health_status is invalid' do
+          it 'does not populate health_status' do
+            content = "/health_status unknown"
+            _, updates = service.execute(content, issuable)
+
+            expect(updates).to be_empty
+          end
+        end
+
+        context 'when the user does not have enough permissions' do
+          before do
+            allow(current_user).to receive(:can?).with(:use_quick_actions).and_return(true)
+            allow(current_user).to receive(:can?).with(:admin_issue, issuable).and_return(false)
+          end
+
+          it 'returns an error message' do
+            content = "/health_status on_track"
+            _, updates, message = service.execute(content, issuable)
+
+            expect(updates).to be_empty
+            expect(message).to eq('Could not apply health_status command.')
+          end
+        end
+      end
+
+      context 'clear_health_status' do
+        it_behaves_like 'clear_health_status command' do
+          let(:content) { '/clear_health_status' }
+        end
+
+        context 'when the user does not have enough permissions' do
+          before do
+            allow(current_user).to receive(:can?).with(:use_quick_actions).and_return(true)
+            allow(current_user).to receive(:can?).with(:admin_issue, issuable).and_return(false)
+          end
+
+          it 'returns an error message' do
+            content = "/clear_health_status"
+            _, updates, message = service.execute(content, issuable)
+
+            expect(updates).to be_empty
+            expect(message).to eq('Could not apply clear_health_status command.')
+          end
+        end
+      end
+    end
+
+    context 'issuable health_status unlicensed' do
+      before do
+        stub_licensed_features(issuable_health_status: false)
+      end
+
+      it 'does not recognise /health_status X' do
+        _, updates = service.execute('/health_status needs_attention', issue)
+
+        expect(updates).to be_empty
+      end
+
+      it 'does not recognise /clear_health_status' do
+        _, updates = service.execute('/clear_health_status', issue)
+
+        expect(updates).to be_empty
+      end
+    end
+
+    context 'issuable health_status not supported by type' do
+      let_it_be(:incident) { create(:incident, project: project) }
+
+      before do
+        stub_licensed_features(issuable_health_status: true)
+      end
+
+      it 'does not recognise /health_status X' do
+        _, updates = service.execute('/health_status on_track', incident)
+
+        expect(updates).to be_empty
+      end
+
+      it 'does not recognise /clear_health_status' do
+        _, updates = service.execute('/clear_health_status', incident)
+
+        expect(updates).to be_empty
+      end
+    end
+
     shared_examples 'empty command' do
       it 'populates {} if content contains an unsupported command' do
         _, updates = service.execute(content, issuable)
@@ -1095,6 +1216,21 @@ RSpec.describe QuickActions::InterpretService do
   end
 
   describe '#explain' do
+    describe 'health_status command' do
+      let(:content) { '/health_status on_track' }
+
+      context 'issuable health statuses licensed' do
+        before do
+          stub_licensed_features(issuable_health_status: true)
+        end
+
+        it 'includes the value' do
+          _, explanations = service.explain(content, issue)
+          expect(explanations).to eq(['Sets health status to on_track.'])
+        end
+      end
+    end
+
     describe 'unassign command' do
       let(:content) { '/unassign' }
       let(:issue) { create(:issue, project: project, assignees: [user, user2]) }

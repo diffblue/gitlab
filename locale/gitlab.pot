@@ -7326,6 +7326,9 @@ msgstr ""
 msgid "Clear due date"
 msgstr ""
 
+msgid "Clear health status"
+msgstr ""
+
 msgid "Clear recent searches"
 msgstr ""
 
@@ -7344,7 +7347,13 @@ msgstr ""
 msgid "Clear weight"
 msgstr ""
 
+msgid "Cleared health status."
+msgstr ""
+
 msgid "Cleared weight."
+msgstr ""
+
+msgid "Clears health status."
 msgstr ""
 
 msgid "Clears weight."
@@ -32275,6 +32284,12 @@ msgstr ""
 msgid "Set due date"
 msgstr ""
 
+msgid "Set health status"
+msgstr ""
+
+msgid "Set health status to %{health_status}."
+msgstr ""
+
 msgid "Set iteration"
 msgstr ""
 
@@ -32429,6 +32444,9 @@ msgid "SetStatusModal|Your status resets on %{date}."
 msgstr ""
 
 msgid "Sets %{epic_ref} as parent epic."
+msgstr ""
+
+msgid "Sets health status to %{health_status}."
 msgstr ""
 
 msgid "Sets target branch to %{branch_name}."
