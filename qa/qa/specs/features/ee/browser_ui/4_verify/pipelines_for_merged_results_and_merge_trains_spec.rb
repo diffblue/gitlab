@@ -3,19 +3,19 @@
 module QA
   RSpec.describe 'Verify', :runner, :reliable do
     describe 'Pipelines for merged results and merge trains' do
-      let(:executor) { "qa-runner-#{Faker::Alphanumeric.alphanumeric(8)}" }
+      let!(:project) do
+        Resource::Project.fabricate_via_api! do |project|
+          project.name = 'pipelines-for-merge-trains'
+        end
+      end
+
+      let!(:executor) { "qa-runner-#{Faker::Alphanumeric.alphanumeric(8)}" }
 
       let!(:runner) do
         Resource::Runner.fabricate_via_api! do |runner|
           runner.project = project
           runner.name = executor
           runner.tags = [executor]
-        end
-      end
-
-      let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'pipelines-for-merge-trains'
         end
       end
 
@@ -60,7 +60,10 @@ module QA
         runner.remove_via_api! if runner
       end
 
-      it 'creates a pipeline with merged results', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348034' do
+      it(
+        'creates a pipeline with merged results',
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348034'
+      ) do
         merge_request.visit!
 
         Page::MergeRequest::Show.perform do |show|
