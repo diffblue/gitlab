@@ -86,6 +86,8 @@ describe('TestCaseSidebar', () => {
       `(
         'returns $returnValue when testCaseMoveInProgress is $testCaseMoveInProgress',
         async ({ testCaseMoveInProgress, returnValue }) => {
+          // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+          // eslint-disable-next-line no-restricted-syntax
           wrapper.setData({
             testCaseMoveInProgress,
           });
@@ -197,6 +199,8 @@ describe('TestCaseSidebar', () => {
     describe('handleSidebarDropdownClose', () => {
       it('sets `sidebarExpandedOnClick` to false and calls `toggleSidebar` method when `sidebarExpandedOnClick` is true', async () => {
         jest.spyOn(wrapper.vm, 'toggleSidebar').mockImplementation(jest.fn());
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           sidebarExpandedOnClick: true,
         });

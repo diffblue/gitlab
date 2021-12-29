@@ -55,6 +55,8 @@ describe('CurrentDayIndicator', () => {
   describe('computed', () => {
     describe('hasToday', () => {
       it('returns true when presetType is QUARTERS and currentDate is within current quarter', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           currentDate: mockTimeframeQuarters[0].range[1],
         });
@@ -70,6 +72,8 @@ describe('CurrentDayIndicator', () => {
       });
 
       it('returns true when presetType is MONTHS and currentDate is within current month', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           currentDate: new Date(2020, 0, 15),
         });
@@ -85,6 +89,8 @@ describe('CurrentDayIndicator', () => {
       });
 
       it('returns true when presetType is WEEKS and currentDate is within current week', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           currentDate: mockTimeframeWeeks[0],
         });
@@ -104,6 +110,8 @@ describe('CurrentDayIndicator', () => {
   describe('methods', () => {
     describe('getIndicatorStyles', () => {
       it('returns object containing `left` with value `34%` when presetType is QUARTERS', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           currentDate: mockTimeframeQuarters[0].range[1],
         });
@@ -123,6 +131,8 @@ describe('CurrentDayIndicator', () => {
       });
 
       it('returns object containing `left` with value `48%` when presetType is MONTHS', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           currentDate: new Date(2020, 0, 15),
         });
@@ -142,6 +152,8 @@ describe('CurrentDayIndicator', () => {
       });
 
       it('returns object containing `left` with value `7%` when presetType is WEEKS', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           currentDate: mockTimeframeWeeks[0],
         });
@@ -165,6 +177,8 @@ describe('CurrentDayIndicator', () => {
   describe('template', () => {
     beforeEach(() => {
       wrapper = createComponent();
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         currentDate: mockTimeframeMonths[0],
       });

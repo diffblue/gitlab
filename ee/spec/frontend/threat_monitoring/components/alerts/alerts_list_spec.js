@@ -262,6 +262,8 @@ describe('AlertsList component', () => {
     });
 
     it('does not show the unconfigured alert error state when there is a request error', async () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         errored: true,
       });
@@ -271,6 +273,8 @@ describe('AlertsList component', () => {
     });
 
     it('does not show the unconfigured alert error state when there is a request error that has been dismissed', async () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         isErrorAlertDismissed: true,
       });

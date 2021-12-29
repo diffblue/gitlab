@@ -132,6 +132,8 @@ describe('HandRaiseLeadButton', () => {
     });
 
     it('becomes enabled when required info is there', async () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ countries, states, ...formData });
 
       await wrapper.vm.$nextTick();
@@ -154,6 +156,8 @@ describe('HandRaiseLeadButton', () => {
       ${'CA'} | ${true}
       ${'NL'} | ${false}
     `('displayed $display', async ({ state, display }) => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ countries, states, country: state });
 
       await wrapper.vm.$nextTick();
@@ -167,6 +171,8 @@ describe('HandRaiseLeadButton', () => {
       wrapper = createComponent();
       trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
 
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ countries, states, country: 'US', ...formData, comment: 'comment' });
     });
 

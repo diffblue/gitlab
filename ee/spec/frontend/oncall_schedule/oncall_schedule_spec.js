@@ -191,6 +191,8 @@ describe('On-call schedule', () => {
   describe('Timeframe update', () => {
     describe('WEEKS view', () => {
       beforeEach(() => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({ presetType: PRESET_TYPES.WEEKS });
       });
 
@@ -225,6 +227,8 @@ describe('On-call schedule', () => {
 
     describe('DAYS view', () => {
       beforeEach(() => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({ presetType: PRESET_TYPES.DAYS });
       });
       it('should load next timeframe', () => {

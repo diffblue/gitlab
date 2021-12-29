@@ -69,6 +69,8 @@ describe('LockButton component', () => {
 
     it('passes the correct prop if lockLoading is set to true', async () => {
       createComponent();
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ lockLoading: true });
 
       await nextTick();

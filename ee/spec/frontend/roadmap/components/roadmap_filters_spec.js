@@ -131,6 +131,8 @@ describe('RoadmapFilters', () => {
     });
 
     it('switching layout using roadmap layout switching buttons causes page to reload with selected layout', async () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ selectedDaterange: DATE_RANGES.THREE_YEARS });
 
       await wrapper.vm.$nextTick();
@@ -341,6 +343,8 @@ describe('RoadmapFilters', () => {
       });
 
       it('renders daterange dropdown', async () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapperWithDaterangeFilter.setData({ selectedDaterange: DATE_RANGES.CURRENT_QUARTER });
         await wrapperWithDaterangeFilter.vm.$nextTick();
 
@@ -362,6 +366,8 @@ describe('RoadmapFilters', () => {
       `(
         'renders $availablePresets.length items when selected daterange is "$selectedDaterange"',
         async ({ selectedDaterange, availablePresets }) => {
+          // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+          // eslint-disable-next-line no-restricted-syntax
           wrapperWithDaterangeFilter.setData({ selectedDaterange });
           await wrapperWithDaterangeFilter.vm.$nextTick();
 

@@ -179,6 +179,8 @@ describe('TestCaseCreateRoot', () => {
     });
 
     it('submit button shows loading animation when `createTestCaseRequestActive` is true', async () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         createTestCaseRequestActive: true,
       });
@@ -189,6 +191,8 @@ describe('TestCaseCreateRoot', () => {
     });
 
     it('cancel button is disabled when `createTestCaseRequestActive` is true', async () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         createTestCaseRequestActive: true,
       });

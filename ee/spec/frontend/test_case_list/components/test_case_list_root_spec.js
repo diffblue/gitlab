@@ -166,6 +166,8 @@ describe('TestCaseListRoot', () => {
       });
 
       it('returns number representing next page based on currentPage value', async () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           currentPage: 1,
         });
@@ -176,6 +178,8 @@ describe('TestCaseListRoot', () => {
       });
 
       it('returns `null` when currentPage is already last page', async () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           currentPage: 3,
         });
@@ -229,6 +233,8 @@ describe('TestCaseListRoot', () => {
       });
 
       it('page-change event changes prevPageCursor and nextPageCursor values based on based on currentPage and calls updateUrl', async () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         await wrapper.setData({
           testCases: {
             pageInfo: mockPageInfo,

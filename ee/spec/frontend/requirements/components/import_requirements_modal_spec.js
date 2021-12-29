@@ -28,6 +28,8 @@ describe('ImportRequirementsModal', () => {
       });
 
       it('returns false when file is present', () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({ file: 'Some file' });
 
         expect(wrapper.vm.importDisabled).toBe(false);
@@ -58,6 +60,8 @@ describe('ImportRequirementsModal', () => {
     it('GlModal open click emits file and projectPath', () => {
       const file = 'some file';
 
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         file,
       });

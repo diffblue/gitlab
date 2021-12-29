@@ -152,6 +152,8 @@ describe('EpicsListRoot', () => {
 
     describe('fetchEpicsBy', () => {
       it('updates prevPageCursor and nextPageCursor values when provided propsName param is "currentPage"', async () => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           epics: {
             pageInfo: mockPageInfo,
@@ -173,6 +175,8 @@ describe('EpicsListRoot', () => {
 
     it('renders issuable-list component', async () => {
       jest.spyOn(wrapper.vm, 'getFilteredSearchTokens');
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         filterParams: {
           search: 'foo',
@@ -212,6 +216,8 @@ describe('EpicsListRoot', () => {
     `(
       'sets showPaginationControls prop value as $returnValue when hasPreviousPage is $hasPreviousPage and hasNextPage is $hasNextPage within `epics.pageInfo`',
       async ({ hasPreviousPage, hasNextPage, returnValue }) => {
+        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+        // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           epics: {
             pageInfo: {
@@ -228,6 +234,8 @@ describe('EpicsListRoot', () => {
     );
 
     it('sets previousPage prop value a number representing previous page based on currentPage value', async () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         currentPage: 3,
       });
@@ -238,6 +246,8 @@ describe('EpicsListRoot', () => {
     });
 
     it('sets nextPage prop value a number representing next page based on currentPage value', async () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         currentPage: 1,
         epicsCount: {
@@ -253,6 +263,8 @@ describe('EpicsListRoot', () => {
     });
 
     it('sets nextPage prop value as `null` when currentPage is already last page', async () => {
+      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
+      // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         currentPage: 3,
         epicsCount: {
