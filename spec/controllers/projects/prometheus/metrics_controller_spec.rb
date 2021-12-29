@@ -157,6 +157,22 @@ RSpec.describe Projects::Prometheus::MetricsController do
     end
   end
 
+  describe 'PUT #update' do
+    context 'metric is updated' do
+      let_it_be(:metric) { create(:prometheus_metric, project: project) }
+
+      let(:metric_params) { { prometheus_metric: { title: 'new_title' }, id: metric.id } }
+
+      it 'shows a success flash message' do
+        put :update, params: project_params(metric_params)
+
+        expect(metric.reload.title).to eq('new_title')
+        expect(flash[:notice]).to include('Metric was successfully updated.')
+        expect(response).to redirect_to(edit_project_integration_path(project, ::Integrations::Prometheus))
+      end
+    end
+  end
+
   describe 'DELETE #destroy' do
     context 'format html' do
       let!(:metric) { create(:prometheus_metric, project: project) }
