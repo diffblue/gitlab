@@ -136,6 +136,52 @@ module EE
               @execution_message[:publish] = _('Failed to publish issue on status page.')
             end
           end
+
+          desc _('Set health status')
+          explanation do |health_status|
+            _("Sets health status to %{health_status}.") % { health_status: health_status } if health_status
+          end
+
+          params "<#{::Issue.health_statuses.keys.join('|')}>"
+          types Issue
+          condition do
+            quick_action_target.supports_health_status? &&
+              current_user.can?(:"admin_#{quick_action_target.to_ability_name}", quick_action_target)
+          end
+          parse_params do |health_status|
+            find_health_status(health_status)
+          end
+          command :health_status do |health_status|
+            if health_status
+              @updates[:health_status] = health_status
+              @execution_message[:health_status] = _("Set health status to %{health_status}.") % { health_status: health_status }
+            end
+          end
+
+          desc _('Clear health status')
+          explanation _('Clears health status.')
+          execution_message _('Cleared health status.')
+          types Issue
+          condition do
+            quick_action_target.persisted? &&
+              quick_action_target.supports_health_status? &&
+              quick_action_target.health_status &&
+              current_user.can?(:"admin_#{quick_action_target.to_ability_name}", quick_action_target)
+          end
+          command :clear_health_status do
+            @updates[:health_status] = nil
+          end
+        end
+
+        private
+
+        def find_health_status(health_status_param)
+          return unless health_status_param
+
+          health_status_param = health_status_param.downcase
+          health_statuses = ::Issue.health_statuses.keys.map(&:downcase)
+
+          health_statuses.include?(health_status_param) && health_status_param
         end
       end
     end
