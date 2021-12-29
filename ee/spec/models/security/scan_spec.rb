@@ -86,6 +86,18 @@ RSpec.describe Security::Scan do
     end
   end
 
+  describe '.distinct_scan_types' do
+    let_it_be(:sast_scan) { create(:security_scan, scan_type: :sast) }
+    let_it_be(:sast_scan2) { create(:security_scan, scan_type: :sast) }
+    let_it_be(:dast_scan) { create(:security_scan, scan_type: :dast) }
+
+    let(:expected_scans) { %w(sast dast) }
+
+    subject { described_class.distinct_scan_types }
+
+    it { is_expected.to match_array(expected_scans) }
+  end
+
   describe '.latest_successful' do
     let!(:first_successful_scan) { create(:security_scan, latest: false, status: :succeeded) }
     let!(:second_successful_scan) { create(:security_scan, latest: true, status: :succeeded) }

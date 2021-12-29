@@ -30,7 +30,7 @@ module Security
     enum status: { created: 0, succeeded: 1, failed: 2 }
 
     scope :by_scan_types, -> (scan_types) { where(scan_type: sanitize_scan_types(scan_types)) }
-
+    scope :distinct_scan_types, -> { select(:scan_type).distinct.pluck(:scan_type) }
     scope :scoped_project, -> { where('security_scans.project_id = projects.id') }
 
     scope :has_dismissal_feedback, -> do
