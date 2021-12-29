@@ -40,7 +40,7 @@ describe('OnDemandScans', () => {
   // Finders
   const findNewScanLink = () => wrapper.findByTestId('new-scan-link');
   const findHelpPageLink = () => wrapper.findByTestId('help-page-link');
-  const findTabs = () => wrapper.findComponent(GlTabs);
+  const findTabs = () => wrapper.findByTestId('on-demand-scans-tabs');
   const findAllTab = () => wrapper.findComponent(AllTab);
   const findRunningTab = () => wrapper.findComponent(RunningTab);
   const findFinishedTab = () => wrapper.findComponent(FinishedTab);
@@ -68,7 +68,7 @@ describe('OnDemandScans', () => {
           stubs: {
             ConfigurationPageLayout,
             GlSprintf,
-            GlTabs,
+            GlScrollableTabs: GlTabs,
           },
         },
         {

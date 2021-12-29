@@ -1,5 +1,4 @@
 <script>
-import * as Sentry from '@sentry/browser';
 import {
   GlTab,
   GlBadge,
@@ -15,7 +14,7 @@ import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { DAST_SHORT_NAME } from '~/security_configuration/components/constants';
 import { __, s__ } from '~/locale';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import { scrollToElement } from '~/lib/utils/common_utils';
+import handlesErrors from '../../mixins/handles_errors';
 import Actions from '../actions.vue';
 import EmptyState from '../empty_state.vue';
 import { PIPELINES_PER_PAGE, PIPELINES_POLL_INTERVAL, ACTION_COLUMN } from '../../constants';
@@ -45,6 +44,7 @@ export default {
     Actions,
     EmptyState,
   },
+  mixins: [handlesErrors],
   inject: ['projectPath'],
   props: {
     isActive: {
@@ -127,7 +127,6 @@ export default {
     return {
       cursor,
       hasError: false,
-      actionErrorMessage: '',
     };
   },
   computed: {
@@ -189,19 +188,6 @@ export default {
       });
       this.resetActionError();
     },
-    handleActionError(message, exception = null) {
-      this.actionErrorMessage = message;
-      this.scrollToTop();
-      if (exception !== null) {
-        Sentry.captureException(exception);
-      }
-    },
-    resetActionError() {
-      this.actionErrorMessage = '';
-    },
-    scrollToTop() {
-      scrollToElement(this.$el);
-    },
   },
   i18n: {
     previousPage: __('Prev'),
@@ -216,8 +202,10 @@ export default {
 <template>
   <gl-tab v-bind="$attrs">
     <template #title>
-      {{ title }}
-      <gl-badge size="sm" class="gl-tab-counter-badge">{{ itemsCount }}</gl-badge>
+      <span class="gl-white-space-nowrap">
+        {{ title }}
+        <gl-badge size="sm" class="gl-tab-counter-badge">{{ itemsCount }}</gl-badge>
+      </span>
     </template>
     <template v-if="$apollo.queries.pipelines.loading || hasPipelines">
       <gl-table
@@ -243,10 +231,10 @@ export default {
           </gl-skeleton-loader>
         </template>
 
-        <template v-if="actionErrorMessage" #top-row>
+        <template v-if="hasActionError || $scopedSlots.error" #top-row>
           <td :colspan="tableFields.length">
             <gl-alert class="gl-my-4" variant="danger" :dismissible="false">
-              {{ actionErrorMessage }}
+              <slot name="error">{{ actionErrorMessage }}</slot>
             </gl-alert>
           </td>
         </template>
@@ -308,6 +296,8 @@ export default {
           @next="nextPage"
         />
       </div>
+
+      <slot></slot>
     </template>
     <gl-alert
       v-else-if="hasError"
