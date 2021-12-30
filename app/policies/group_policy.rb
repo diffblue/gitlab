@@ -162,8 +162,6 @@ class GroupPolicy < Namespaces::GroupProjectNamespaceSharedPolicy
     enable :destroy_package
     enable :create_projects
     enable :admin_pipeline
-    enable :admin_group_runners
-    enable :register_group_runners
     enable :admin_build
     enable :read_cluster
     enable :add_cluster
@@ -182,6 +180,8 @@ class GroupPolicy < Namespaces::GroupProjectNamespaceSharedPolicy
     enable :change_visibility_level
 
     enable :read_group_runners
+    enable :admin_group_runners
+    enable :register_group_runners
 
     enable :set_note_created_at
     enable :set_emails_disabled

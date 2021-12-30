@@ -1085,9 +1085,7 @@ RSpec.describe GroupPolicy do
     context 'with maintainer' do
       let(:current_user) { maintainer }
 
-      it { is_expected.to be_allowed(:register_group_runners) }
-
-      it_behaves_like 'expected outcome based on runner registration control'
+      it { is_expected.to be_disallowed(:register_group_runners) }
     end
 
     context 'with reporter' do
