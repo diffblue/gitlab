@@ -394,4 +394,57 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
       is_expected.to include('created_by' => Gitlab::VERSION)
     end
   end
+
+  describe '#server_info' do
+    subject { helper.server_info }
+
+    context 'server is accessible' do
+      before do
+        allow(Gitlab::Elastic::Helper.default.client).to receive(:info).and_return(info)
+      end
+
+      context 'using elasticsearch' do
+        let(:info) do
+          {
+            'version' => {
+              'number' => '7.9.3',
+              'build_type' => 'docker',
+              'lucene_version' => '8.6.2'
+            }
+          }
+        end
+
+        it 'returns server info' do
+          is_expected.to include(distribution: 'elasticsearch', version: '7.9.3', build_type: 'docker', lucene_version: '8.6.2')
+        end
+      end
+
+      context 'using opensearch' do
+        let(:info) do
+          {
+            'version' => {
+              'distribution' => 'opensearch',
+              'number' => '1.0.0',
+              'build_type' => 'tar',
+              'lucene_version' => '8.10.1'
+            }
+          }
+        end
+
+        it 'returns server info' do
+          is_expected.to include(distribution: 'opensearch', version: '1.0.0', build_type: 'tar', lucene_version: '8.10.1')
+        end
+      end
+    end
+
+    context 'server is inaccessible' do
+      before do
+        allow(Gitlab::Elastic::Helper.default.client).to receive(:info).and_raise(StandardError)
+      end
+
+      it 'returns empty hash' do
+        is_expected.to eq({})
+      end
+    end
+  end
 end

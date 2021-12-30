@@ -285,6 +285,19 @@ module Gitlab
         false
       end
 
+      def server_info
+        info = client.info.fetch('version', {})
+
+        {
+          distribution:   info.fetch('distribution', 'elasticsearch'),
+          version:        info['number'],
+          build_type:     info['build_type'],
+          lucene_version: info['lucene_version']
+        }
+      rescue StandardError
+        {}
+      end
+
       private
 
       def create_index(index_name, alias_name, with_alias, settings, mappings, options)
