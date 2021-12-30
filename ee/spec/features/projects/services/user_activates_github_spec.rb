@@ -13,7 +13,7 @@ RSpec.describe 'User activates GitHub Service' do
     end
 
     it 'renders 404 when trying to access service settings directly' do
-      visit edit_project_service_path(project, :github)
+      visit edit_project_integration_path(project, :github)
 
       expect(page).to have_gitlab_http_status(:not_found)
     end
