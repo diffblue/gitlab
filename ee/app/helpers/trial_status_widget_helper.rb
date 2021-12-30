@@ -91,3 +91,5 @@ module TrialStatusWidgetHelper
     end
   end
 end
+
+TrialStatusWidgetHelper.prepend_mod
