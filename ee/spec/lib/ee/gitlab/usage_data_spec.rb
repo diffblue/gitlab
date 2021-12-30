@@ -182,6 +182,16 @@ RSpec.describe Gitlab::UsageData do
     end
   end
 
+  describe '.components_usage_data' do
+    subject { described_class.components_usage_data }
+
+    it 'gathers components usage data' do
+      stub_ee_application_setting(elasticsearch_indexing: true)
+
+      expect(subject[:advanced_search]).to eq(Gitlab::Elastic::Helper.default.server_info)
+    end
+  end
+
   describe '.requirements_counts' do
     subject { described_class.requirements_counts }
 

@@ -115,6 +115,17 @@ module EE
           usage_data
         end
 
+        override :components_usage_data
+        def components_usage_data
+          usage_data = super
+
+          if ::Gitlab::CurrentSettings.elasticsearch_indexing?
+            usage_data[:advanced_search] = add_metric("AdvancedSearchMetric")
+          end
+
+          usage_data
+        end
+
         def requirements_counts
           return {} unless ::License.feature_available?(:requirements)
 
