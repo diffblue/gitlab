@@ -62,7 +62,7 @@ module Analytics
 
       def runner_configured
         ::Gitlab::Database.allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/337541') do
-          Ci::Runner.active.belonging_to_group_or_project(snapshot_groups, snapshot_project_ids).exists?
+          Ci::Runner.active.legacy_belonging_to_group_or_project(snapshot_groups, snapshot_project_ids).exists?
         end
       end
 
