@@ -75,9 +75,11 @@ RSpec.describe Groups::Memberships::ExportService do
       end
 
       context 'data verification' do
+        let(:expiry_date) { Date.today + 1.month }
+
         before do
           create_list(:group_member, 4, group: group)
-          create(:group_member, group: group, created_at: '2021-02-01', expires_at: '2022-01-01', user: create(:user, username: 'mwoolf', name: 'Max Woolf'))
+          create(:group_member, group: group, created_at: '2021-02-01', expires_at: expiry_date, user: create(:user, username: 'mwoolf', name: 'Max Woolf'))
           create(:group_member, :invited, group: group)
           create(:group_member, :ldap, group: group)
           create(:group_member, :blocked, group: group)
@@ -100,7 +102,7 @@ RSpec.describe Groups::Memberships::ExportService do
             expect(direct_user_row[0]).to eq('mwoolf')
             expect(direct_user_row[1]).to eq('Max Woolf')
             expect(direct_user_row[2]).to eq('2021-02-01 00:00:00')
-            expect(direct_user_row[3]).to eq('2022-01-01')
+            expect(direct_user_row[3]).to eq(expiry_date.to_s)
             expect(direct_user_row[4]).to eq('Owner')
             expect(direct_user_row[5]).to eq('Direct member')
           end
