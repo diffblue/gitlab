@@ -24860,6 +24860,9 @@ msgstr ""
 msgid "Operation timed out. Check pod logs for %{pod_name} for more details."
 msgstr ""
 
+msgid "Operations"
+msgstr ""
+
 msgid "Operations Dashboard"
 msgstr ""
 
