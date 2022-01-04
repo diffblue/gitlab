@@ -106,6 +106,8 @@ module Vulnerabilities
         .where("vulnerability_occurrences.location -> 'cluster_id' ?| array[:cluster_ids]", cluster_ids: cluster_ids)
     end
 
+    alias_method :declarative_policy_subject, :project
+
     def self.counted_by_severity
       group(:severity).count.transform_keys do |severity|
         severities[severity]

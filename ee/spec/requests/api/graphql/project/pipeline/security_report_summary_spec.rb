@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Query.project(fullPath).pipeline(iid).securityReportSummary' do
+  include GraphqlHelpers
+
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:pipeline) { create(:ci_pipeline, :success, project: project) }
 
@@ -66,28 +68,54 @@ RSpec.describe 'Query.project(fullPath).pipeline(iid).securityReportSummary' do
     )
   end
 
-  before do
-    stub_licensed_features(sast: true, dependency_scanning: true, container_scanning: true, dast: true)
-    project.add_developer(user)
+  let(:security_report_summary) { subject.dig('project', 'pipeline', 'securityReportSummary') }
+
+  subject do
+    post_graphql(query, current_user: user)
+    graphql_data
   end
 
-  subject { GitlabSchema.execute(query, context: { current_user: user }).as_json }
+  context 'when the required features are enabled' do
+    before do
+      stub_licensed_features(sast: true, dependency_scanning: true, container_scanning: true, dast: true, security_dashboard: true)
+    end
 
-  let(:security_report_summary) { subject.dig('data', 'project', 'pipeline', 'securityReportSummary') }
+    context 'when user is member of the project' do
+      before do
+        project.add_developer(user)
+      end
 
-  it 'shows the vulnerabilitiesCount and scannedResourcesCount' do
-    expect(security_report_summary.dig('dast', 'vulnerabilitiesCount')).to eq(20)
-    expect(security_report_summary.dig('dast', 'scannedResourcesCount')).to eq(26)
-    expect(security_report_summary.dig('sast', 'vulnerabilitiesCount')).to eq(5)
+      it 'shows the vulnerabilitiesCount and scannedResourcesCount' do
+        expect(security_report_summary.dig('dast', 'vulnerabilitiesCount')).to eq(20)
+        expect(security_report_summary.dig('dast', 'scannedResourcesCount')).to eq(26)
+        expect(security_report_summary.dig('sast', 'vulnerabilitiesCount')).to eq(5)
+      end
+
+      it 'shows the first 20 scanned resources' do
+        dast_scanned_resources = security_report_summary.dig('dast', 'scannedResources', 'nodes')
+
+        expect(dast_scanned_resources.length).to eq(20)
+      end
+
+      it 'returns nil for the scannedResourcesCsvPath' do
+        expect(security_report_summary.dig('dast', 'scannedResourcesCsvPath')).to be_nil
+      end
+    end
+
+    context 'when user is not a member of the project' do
+      it 'returns no scanned resources' do
+        expect(security_report_summary).to be_nil
+      end
+    end
   end
 
-  it 'shows the first 20 scanned resources' do
-    dast_scanned_resources = security_report_summary.dig('dast', 'scannedResources', 'nodes')
+  context 'when the required features are disabled' do
+    before do
+      stub_licensed_features(sast: false, dependency_scanning: false, container_scanning: false, dast: false, security_dashboard: false)
+    end
 
-    expect(dast_scanned_resources.length).to eq(20)
-  end
-
-  it 'returns nil for the scannedResourcesCsvPath' do
-    expect(security_report_summary.dig('dast', 'scannedResourcesCsvPath')).to be_nil
+    it 'returns no scanned resources' do
+      expect(security_report_summary).to be_nil
+    end
   end
 end
