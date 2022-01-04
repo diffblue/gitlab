@@ -2,13 +2,17 @@
 
 module Resolvers
   class SecurityReportSummaryResolver < BaseResolver
-    type Types::SecurityReportSummaryType, null: true
+    include Gitlab::Graphql::Authorize::AuthorizeResource
 
+    type Types::SecurityReportSummaryType, null: true
+    authorize :read_security_resource
     extras [:lookahead]
 
     alias_method :pipeline, :object
 
     def resolve(lookahead:)
+      return unless authorized_resource?(pipeline.project)
+
       Security::ReportSummaryService.new(
         pipeline,
         selection_information(lookahead)

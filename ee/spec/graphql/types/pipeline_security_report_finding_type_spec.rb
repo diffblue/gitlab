@@ -33,6 +33,7 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'] do
   subject { GitlabSchema.execute(query, context: { current_user: user }).as_json }
 
   specify { expect(described_class.graphql_name).to eq('PipelineSecurityReportFinding') }
+  specify { expect(described_class).to require_graphql_authorizations(:read_security_resource) }
 
   it { expect(described_class).to have_graphql_fields(fields) }
 
