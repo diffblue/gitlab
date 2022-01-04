@@ -82,7 +82,7 @@ RSpec.describe ::Gitlab::Security::ScanConfiguration do
 
       context 'when feature flag is disabled' do
         before do
-          stub_feature_flags(corpus_management: false)
+          stub_feature_flags(corpus_management_ui: false)
         end
 
         it { is_expected.to be_nil }

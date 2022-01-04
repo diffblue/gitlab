@@ -6,7 +6,7 @@ module Projects
       include SecurityAndCompliancePermissions
 
       before_action do
-        render_404 unless Feature.enabled?(:corpus_management, @project, default_enabled: :yaml)
+        render_404 unless Feature.enabled?(:corpus_management_ui, @project, default_enabled: :yaml)
         authorize_read_coverage_fuzzing!
       end
 
