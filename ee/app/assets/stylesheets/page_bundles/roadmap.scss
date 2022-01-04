@@ -39,7 +39,7 @@ html.group-epics-roadmap-html {
 
 .with-performance-bar {
   .group-epics-roadmap-body {
-    $header-size: $performance-bar-height + $header-height;
+    $header-size: calc(#{$performance-bar-height} + #{$header-height});
     height: calc(100% - #{$header-size});
   }
 }
