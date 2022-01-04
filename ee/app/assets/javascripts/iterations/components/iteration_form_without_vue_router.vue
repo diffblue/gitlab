@@ -46,7 +46,7 @@ export default {
       iterations: [],
       loading: false,
       title: this.iteration.title,
-      description: this.iteration.description,
+      description: this.iteration.description ?? '',
       startDate: this.iteration.startDate,
       dueDate: this.iteration.dueDate,
     };
