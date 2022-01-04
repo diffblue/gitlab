@@ -45,7 +45,7 @@ RSpec.describe Security::StoreReportService, '#execute', :snowplow do
 
       context 'for different security reports' do
         where(:case_name, :trait, :scanners, :identifiers, :findings, :finding_identifiers, :finding_pipelines, :remediations, :signatures, :finding_links, :finding_flags) do
-          'with SAST report'                | :sast                            | 1 | 6  | 5 | 7  | 5  | 0 | 2 | 0 | 0
+          'with SAST report'                | :sast                            | 1 | 6  | 5 | 7  | 5  | 0 | 2 | 2 | 0
           'with exceeding identifiers'      | :with_exceeding_identifiers      | 1 | 20 | 1 | 20 | 1  | 0 | 0 | 0 | 0
           'with Dependency Scanning report' | :dependency_scanning_remediation | 1 | 3  | 2 | 3  | 2  | 1 | 0 | 6 | 0
           'with Container Scanning report'  | :container_scanning              | 1 | 8  | 8 | 8  | 8  | 0 | 0 | 8 | 0
@@ -323,6 +323,9 @@ RSpec.describe Security::StoreReportService, '#execute', :snowplow do
                algorithm_type: existing_finding.signatures.first.algorithm_type,
                signature_sha: existing_finding.signatures.first.signature_sha)
 
+        create(:finding_link,
+               finding: created_finding)
+
         created_finding
       end
 
@@ -395,6 +398,10 @@ RSpec.describe Security::StoreReportService, '#execute', :snowplow do
 
       it 'inserts only new identifiers and reuse existing ones' do
         expect { subject }.to change { Vulnerabilities::Identifier.count }.by(4)
+      end
+
+      it 'inserts only new links and reuse existing ones' do
+        expect { subject }.to change { Vulnerabilities::FindingLink.count }.by(2)
       end
 
       it 'inserts only new findings and reuse existing ones' do
