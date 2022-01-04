@@ -26,7 +26,7 @@ describe('DependenciesApp component', () => {
     supportDocumentationPath: `${TEST_HOST}/dependency_scanning#supported-languages`,
   };
 
-  const factory = ({ props = basicAppProps, ...options } = {}) => {
+  const factory = ({ ...options } = {}) => {
     store = createStore();
     jest.spyOn(store, 'dispatch').mockImplementation();
 
@@ -41,9 +41,15 @@ describe('DependenciesApp component', () => {
     wrapper = extendedWrapper(
       mount(DependenciesApp, {
         store,
-        propsData: { ...props },
         stubs,
         ...options,
+        provide: {
+          endpoint: '/foo',
+          emptyStateSvgPath: '/bar.svg',
+          sbomSurveySvgPath: '/foo.svg',
+          documentationPath: TEST_HOST,
+          supportDocumentationPath: `${TEST_HOST}/dependency_scanning#supported-languages`,
+        },
       }),
     );
   };
@@ -221,7 +227,7 @@ describe('DependenciesApp component', () => {
       it('renders the SbomBannercomponent with the right props', () => {
         const sbomBanner = findSbomBanner();
         expect(sbomBanner.exists()).toBe(true);
-        expect(sbomBanner.props().sbomSurveySvgPath).toEqual(wrapper.props().sbomSurveySvgPath);
+        expect(sbomBanner.props().sbomSurveySvgPath).toEqual(basicAppProps.sbomSurveySvgPath);
       });
 
       describe('given the user has public permissions', () => {

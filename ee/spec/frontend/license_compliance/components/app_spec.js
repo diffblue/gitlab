@@ -74,15 +74,17 @@ const createComponent = ({ state, props, options }) => {
 
   wrapper = mountFunc(LicenseComplianceApp, {
     propsData: {
-      emptyStateSvgPath,
-      documentationPath,
-      sbomSurveySvgPath,
       readLicensePoliciesEndpoint,
       ...props,
     },
     ...options,
     store: fakeStore,
     stubs: { transition: stubTransition() },
+    provide: {
+      sbomSurveySvgPath,
+      emptyStateSvgPath,
+      documentationPath,
+    },
   });
 };
 
@@ -190,7 +192,7 @@ describe('Project Licenses', () => {
     it('renders the SbomBannercomponent with the right props', () => {
       const sbomBanner = findSbomBanner();
       expect(sbomBanner.exists()).toBe(true);
-      expect(sbomBanner.props().sbomSurveySvgPath).toEqual(wrapper.props().sbomSurveySvgPath);
+      expect(sbomBanner.props().sbomSurveySvgPath).toEqual(sbomSurveySvgPath);
     });
 
     it('renders a "Detected in project" tab and a "Policies" tab', () => {

@@ -7,8 +7,6 @@ export default () => {
   const el = document.querySelector('#js-licenses-app');
   const {
     projectLicensesEndpoint,
-    emptyStateSvgPath,
-    documentationPath,
     readLicensePoliciesEndpoint,
     writeLicensePoliciesEndpoint,
     projectId,
@@ -18,7 +16,6 @@ export default () => {
     approvalsDocumentationPath,
     lockedApprovalsRuleName,
     softwareLicenses,
-    sbomSurveySvgPath,
   } = el.dataset;
 
   const storeSettings = {
@@ -30,6 +27,12 @@ export default () => {
     lockedApprovalsRuleName,
   };
   const store = createStore(storeSettings);
+
+  const provide = {
+    sbomSurveySvgPath: el.dataset.sbomSurveySvgPath,
+    emptyStateSvgPath: el.dataset.emptyStateSvgPath,
+    documentationPath: el.dataset.documentationPath,
+  };
 
   store.dispatch('licenseManagement/setIsAdmin', Boolean(writeLicensePoliciesEndpoint));
   store.dispatch('licenseManagement/setAPISettings', {
@@ -45,14 +48,9 @@ export default () => {
     components: {
       LicenseComplianceApp,
     },
+    provide: () => provide,
     render(createElement) {
-      return createElement(LicenseComplianceApp, {
-        props: {
-          sbomSurveySvgPath,
-          emptyStateSvgPath,
-          documentationPath,
-        },
-      });
+      return createElement(LicenseComplianceApp);
     },
   });
 };

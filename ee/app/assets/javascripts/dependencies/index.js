@@ -5,13 +5,13 @@ import createStore from './store';
 export default () => {
   const el = document.querySelector('#js-dependencies-app');
 
-  const {
-    endpoint,
-    emptyStateSvgPath,
-    documentationPath,
-    supportDocumentationPath,
-    sbomSurveySvgPath,
-  } = el.dataset;
+  const provide = {
+    sbomSurveySvgPath: el.dataset.sbomSurveySvgPath,
+    emptyStateSvgPath: el.dataset.emptyStateSvgPath,
+    documentationPath: el.dataset.documentationPath,
+    endpoint: el.dataset.endpoint,
+    supportDocumentationPath: el.dataset.supportDocumentationPath,
+  };
 
   const store = createStore();
 
@@ -21,16 +21,9 @@ export default () => {
       DependenciesApp,
     },
     store,
+    provide,
     render(createElement) {
-      return createElement(DependenciesApp, {
-        props: {
-          endpoint,
-          emptyStateSvgPath,
-          documentationPath,
-          supportDocumentationPath,
-          sbomSurveySvgPath,
-        },
-      });
+      return createElement(DependenciesApp);
     },
   });
 };
