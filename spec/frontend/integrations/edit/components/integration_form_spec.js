@@ -1,8 +1,9 @@
+import { GlForm } from '@gitlab/ui';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import * as Sentry from '@sentry/browser';
 import { setHTMLFixture } from 'helpers/fixtures';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import ActiveCheckbox from '~/integrations/edit/components/active_checkbox.vue';
 import ConfirmationModal from '~/integrations/edit/components/confirmation_modal.vue';
@@ -35,7 +36,6 @@ describe('IntegrationForm', () => {
   let wrapper;
   let dispatch;
   let mockAxios;
-  let mockForm;
 
   const createComponent = ({
     customStateProps = {},
@@ -49,7 +49,7 @@ describe('IntegrationForm', () => {
     });
     dispatch = jest.spyOn(store, 'dispatch').mockImplementation();
 
-    wrapper = shallowMountExtended(IntegrationForm, {
+    wrapper = mountExtended(IntegrationForm, {
       propsData: { ...props, formSelector: '.test' },
       provide: {
         glFeatures: featureFlags,
@@ -70,13 +70,6 @@ describe('IntegrationForm', () => {
     });
   };
 
-  const createForm = ({ isValid = true } = {}) => {
-    mockForm = document.createElement('form');
-    jest.spyOn(document, 'querySelector').mockReturnValue(mockForm);
-    jest.spyOn(mockForm, 'checkValidity').mockReturnValue(isValid);
-    jest.spyOn(mockForm, 'submit');
-  };
-
   const findOverrideDropdown = () => wrapper.findComponent(OverrideDropdown);
   const findActiveCheckbox = () => wrapper.findComponent(ActiveCheckbox);
   const findConfirmationModal = () => wrapper.findComponent(ConfirmationModal);
@@ -88,6 +81,8 @@ describe('IntegrationForm', () => {
   const findJiraTriggerFields = () => wrapper.findComponent(JiraTriggerFields);
   const findJiraIssuesFields = () => wrapper.findComponent(JiraIssuesFields);
   const findTriggerFields = () => wrapper.findComponent(TriggerFields);
+  const findGlForm = () => wrapper.findComponent(GlForm);
+  const findRedirectToField = () => wrapper.findByTestId('redirect-to-field');
 
   beforeEach(() => {
     mockAxios = new MockAdapter(axios);
@@ -341,6 +336,16 @@ describe('IntegrationForm', () => {
         });
       });
     });
+
+    it('renders hidden fields', () => {
+      createComponent({
+        customStateProps: {
+          redirectTo: '/services',
+        },
+      });
+
+      expect(findRedirectToField().attributes('value')).toBe('/services');
+    });
   });
 
   describe('ActiveCheckbox', () => {
@@ -362,13 +367,12 @@ describe('IntegrationForm', () => {
 
     describe.each`
       formActive | novalidate
-      ${true}    | ${null}
-      ${false}   | ${'true'}
+      ${true}    | ${undefined}
+      ${false}   | ${'novalidate'}
     `(
       'when `toggle-integration-active` is emitted with $formActive',
       ({ formActive, novalidate }) => {
         beforeEach(async () => {
-          createForm();
           createComponent({
             customStateProps: {
               showActive: true,
@@ -380,7 +384,7 @@ describe('IntegrationForm', () => {
         });
 
         it(`sets noValidate to ${novalidate}`, () => {
-          expect(mockForm.getAttribute('novalidate')).toBe(novalidate);
+          expect(findGlForm().attributes('novalidate')).toBe(novalidate);
         });
       },
     );
@@ -389,7 +393,6 @@ describe('IntegrationForm', () => {
   describe('when `save` button is clicked', () => {
     describe('buttons', () => {
       beforeEach(async () => {
-        createForm();
         createComponent({
           customStateProps: {
             showActive: true,
@@ -419,7 +422,6 @@ describe('IntegrationForm', () => {
       'when form is valid (checkValidity returns $checkValidityReturn and integrationActive is $integrationActive)',
       ({ integrationActive, checkValidityReturn }) => {
         beforeEach(async () => {
-          createForm({ isValid: checkValidityReturn });
           createComponent({
             customStateProps: {
               showActive: true,
@@ -427,19 +429,20 @@ describe('IntegrationForm', () => {
               initialActivated: integrationActive,
             },
           });
+          jest.spyOn(findGlForm().element, 'submit');
+          jest.spyOn(findGlForm().element, 'checkValidity').mockReturnValue(checkValidityReturn);
 
           await findProjectSaveButton().vm.$emit('click', new Event('click'));
         });
 
         it('submit form', () => {
-          expect(mockForm.submit).toHaveBeenCalledTimes(1);
+          expect(findGlForm().element.submit).toHaveBeenCalledTimes(1);
         });
       },
     );
 
     describe('when form is invalid (checkValidity returns false and integrationActive is true)', () => {
       beforeEach(async () => {
-        createForm({ isValid: false });
         createComponent({
           customStateProps: {
             showActive: true,
@@ -447,12 +450,14 @@ describe('IntegrationForm', () => {
             initialActivated: true,
           },
         });
+        jest.spyOn(findGlForm().element, 'submit');
+        jest.spyOn(findGlForm().element, 'checkValidity').mockReturnValue(false);
 
         await findProjectSaveButton().vm.$emit('click', new Event('click'));
       });
 
       it('does not submit form', () => {
-        expect(mockForm.submit).not.toHaveBeenCalled();
+        expect(findGlForm().element.submit).not.toHaveBeenCalled();
       });
 
       it('sets save button `loading` prop to `false`', () => {
@@ -472,13 +477,13 @@ describe('IntegrationForm', () => {
   describe('when `test` button is clicked', () => {
     describe('when form is invalid', () => {
       it('emits `VALIDATE_INTEGRATION_FORM_EVENT` event to the event hub', () => {
-        createForm({ isValid: false });
         createComponent({
           customStateProps: {
             showActive: true,
             canTest: true,
           },
         });
+        jest.spyOn(findGlForm().element, 'checkValidity').mockReturnValue(false);
 
         findTestButton().vm.$emit('click', new Event('click'));
 
@@ -490,7 +495,6 @@ describe('IntegrationForm', () => {
       const mockTestPath = '/test';
 
       beforeEach(() => {
-        createForm({ isValid: true });
         createComponent({
           customStateProps: {
             showActive: true,
@@ -498,6 +502,7 @@ describe('IntegrationForm', () => {
             testPath: mockTestPath,
           },
         });
+        jest.spyOn(findGlForm().element, 'checkValidity').mockReturnValue(true);
       });
 
       describe('buttons', () => {

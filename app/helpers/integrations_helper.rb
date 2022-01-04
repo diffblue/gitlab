@@ -90,7 +90,9 @@ module IntegrationsHelper
       cancel_path: scoped_integrations_path(project: project, group: group),
       can_test: integration.testable?.to_s,
       test_path: scoped_test_integration_path(integration, project: project, group: group),
-      reset_path: scoped_reset_integration_path(integration, group: group)
+      reset_path: scoped_reset_integration_path(integration, group: group),
+      form_path: scoped_integration_path(integration, project: project, group: group),
+      redirect_to: request.referer
     }
 
     if integration.is_a?(Integrations::Jira)

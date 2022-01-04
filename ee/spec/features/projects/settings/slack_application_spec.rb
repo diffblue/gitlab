@@ -22,7 +22,7 @@ RSpec.describe 'Slack application' do
   it 'I can edit slack integration' do
     visit slack_application_form_path
 
-    within '.js-integration-settings-form' do
+    within '.service-settings' do
       click_link 'Edit'
     end
 
@@ -31,7 +31,7 @@ RSpec.describe 'Slack application' do
 
     expect(page).to have_content('The project alias was updated successfully')
 
-    within '.js-integration-settings-form' do
+    within '.service-settings' do
       expect(page).to have_content('alias-edited')
     end
   end

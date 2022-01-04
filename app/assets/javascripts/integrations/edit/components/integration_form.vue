@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlModalDirective, GlSafeHtmlDirective as SafeHtml } from '@gitlab/ui';
+import { GlButton, GlModalDirective, GlSafeHtmlDirective as SafeHtml, GlForm } from '@gitlab/ui';
 import axios from 'axios';
 import * as Sentry from '@sentry/browser';
 import { mapState, mapActions, mapGetters } from 'vuex';
@@ -12,6 +12,7 @@ import {
   integrationLevels,
 } from '~/integrations/constants';
 import { refreshCurrentPage } from '~/lib/utils/url_utility';
+import csrf from '~/lib/utils/csrf';
 import eventHub from '../event_hub';
 import { testIntegrationSettings } from '../api';
 import ActiveCheckbox from './active_checkbox.vue';
@@ -35,6 +36,7 @@ export default {
     ConfirmationModal,
     ResetConfirmationModal,
     GlButton,
+    GlForm,
   },
   directives: {
     GlModal: GlModalDirective,
@@ -42,10 +44,6 @@ export default {
   },
   mixins: [glFeatureFlagsMixin()],
   props: {
-    formSelector: {
-      type: String,
-      required: true,
-    },
     helpHtml: {
       type: String,
       required: false,
@@ -84,16 +82,14 @@ export default {
     disableButtons() {
       return Boolean(this.isSaving || this.isResetting || this.isTesting);
     },
-  },
-  mounted() {
-    // this form element is defined in Haml
-    this.form = document.querySelector(this.formSelector);
+    form() {
+      return this.$refs.integrationForm.$el;
+    },
   },
   methods: {
     ...mapActions(['setOverride', 'fetchResetIntegration', 'requestJiraIssueTypes']),
     onSaveClick() {
       this.isSaving = true;
-
       if (this.integrationActive && !this.form.checkValidity()) {
         this.isSaving = false;
         eventHub.$emit(VALIDATE_INTEGRATION_FORM_EVENT);
@@ -152,16 +148,6 @@ export default {
     },
     onToggleIntegrationState(integrationActive) {
       this.integrationActive = integrationActive;
-      if (!this.form) {
-        return;
-      }
-
-      // If integration will be active, enable form validation.
-      if (integrationActive) {
-        this.form.removeAttribute('novalidate');
-      } else {
-        this.form.setAttribute('novalidate', true);
-      }
     },
   },
   helpHtmlConfig: {
@@ -169,11 +155,27 @@ export default {
     ADD_TAGS: ['use'], // to support icon SVGs
     FORBID_ATTR: [], // This is trusted input so we can override the default config to allow data-* attributes
   },
+  csrf,
 };
 </script>
 
 <template>
-  <div class="gl-mb-3">
+  <gl-form
+    ref="integrationForm"
+    method="post"
+    class="gl-mb-3 gl-show-field-errors integration-settings-form"
+    :action="propsSource.formPath"
+    :novalidate="!integrationActive"
+  >
+    <input type="hidden" name="_method" value="put" />
+    <input type="hidden" name="authenticity_token" :value="$options.csrf.token" />
+    <input
+      type="hidden"
+      name="redirect_to"
+      :value="propsSource.redirectTo"
+      data-testid="redirect-to-field"
+    />
+
     <override-dropdown
       v-if="defaultState !== null"
       :inherit-from-id="defaultState.id"
@@ -282,5 +284,5 @@ export default {
         </div>
       </div>
     </div>
-  </div>
+  </gl-form>
 </template>

@@ -20,6 +20,12 @@ RSpec.describe IntegrationsHelper do
   end
 
   describe '#integration_form_data' do
+    before do
+      allow(helper).to receive_messages(
+        request: double(referer: '/services')
+      )
+    end
+
     let(:fields) do
       [
         :id,
@@ -39,7 +45,8 @@ RSpec.describe IntegrationsHelper do
         :cancel_path,
         :can_test,
         :test_path,
-        :reset_path
+        :reset_path,
+        :redirect_to
       ]
     end
 
@@ -60,6 +67,10 @@ RSpec.describe IntegrationsHelper do
 
       specify do
         expect(subject[:reset_path]).to eq(helper.scoped_reset_integration_path(integration))
+      end
+
+      specify do
+        expect(subject[:redirect_to]).to eq('/services')
       end
     end
 

@@ -23,10 +23,6 @@ RSpec.describe 'projects/services/_form' do
   context 'commit_events and merge_request_events' do
     it 'display merge_request_events and commit_events descriptions' do
       allow(Integrations::Redmine).to receive(:supported_events).and_return(%w(commit merge_request))
-
-      render
-
-      expect(rendered).to have_css("input[name='redirect_to'][value='/services']", count: 1, visible: false)
     end
   end
 end
