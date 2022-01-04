@@ -23484,6 +23484,9 @@ msgstr ""
 msgid "New %{issueType}"
 msgstr ""
 
+msgid "New %{type} in %{project}"
+msgstr ""
+
 msgid "New Application"
 msgstr ""
 
@@ -31985,6 +31988,9 @@ msgid "Select project and zone to choose machine type"
 msgstr ""
 
 msgid "Select project to choose zone"
+msgstr ""
+
+msgid "Select project to create %{type}"
 msgstr ""
 
 msgid "Select project to create issue"
