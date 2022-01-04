@@ -118,22 +118,30 @@ describe('License Report MR Widget', () => {
     });
 
     describe('snowplow', () => {
-      let trackEventSpy;
+      let trackUserEventSpy;
+      let trackCounterEventSpy;
 
       beforeEach(() => {
         mountComponent();
-
-        trackEventSpy = jest.spyOn(api, 'trackRedisHllUserEvent').mockImplementation(() => {});
+        trackUserEventSpy = jest.spyOn(api, 'trackRedisHllUserEvent').mockImplementation(() => {});
+        trackCounterEventSpy = jest
+          .spyOn(api, 'trackRedisCounterEvent')
+          .mockImplementation(() => {});
       });
 
       afterEach(() => {
-        trackEventSpy.mockRestore();
+        trackUserEventSpy.mockRestore();
+        trackCounterEventSpy.mockRestore();
       });
 
       it('tracks users_visiting_testing_license_compliance_full_report', () => {
         wrapper.find('[data-testid="full-report-button"]').vm.$emit('click');
 
-        expect(trackEventSpy).toHaveBeenCalledWith(
+        expect(trackUserEventSpy).toHaveBeenCalledWith(
+          'users_visiting_testing_license_compliance_full_report',
+        );
+
+        expect(trackCounterEventSpy).toHaveBeenCalledWith(
           'users_visiting_testing_license_compliance_full_report',
         );
       });
@@ -141,7 +149,11 @@ describe('License Report MR Widget', () => {
       it('tracks users_visiting_testing_manage_license_compliance', () => {
         wrapper.find('[data-testid="manage-licenses-button"]').vm.$emit('click');
 
-        expect(trackEventSpy).toHaveBeenCalledWith(
+        expect(trackUserEventSpy).toHaveBeenCalledWith(
+          'users_visiting_testing_manage_license_compliance',
+        );
+
+        expect(trackCounterEventSpy).toHaveBeenCalledWith(
           'users_visiting_testing_manage_license_compliance',
         );
       });

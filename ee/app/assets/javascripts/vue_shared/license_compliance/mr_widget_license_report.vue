@@ -1,6 +1,6 @@
 <script>
-import { GlLink, GlIcon, GlButton } from '@gitlab/ui';
 import { mapState, mapGetters, mapActions } from 'vuex';
+import { GlLink, GlIcon, GlButton } from '@gitlab/ui';
 import api from '~/api';
 import { componentNames, iconComponentNames } from 'ee/reports/components/issue_body';
 import { LICENSE_MANAGEMENT } from 'ee/vue_shared/license_compliance/store/constants';
@@ -114,6 +114,7 @@ export default {
   methods: {
     trackVisitedPath(trackAction) {
       api.trackRedisHllUserEvent(trackAction);
+      api.trackRedisCounterEvent(trackAction);
     },
     ...mapActions(LICENSE_MANAGEMENT, [
       'setAPISettings',
