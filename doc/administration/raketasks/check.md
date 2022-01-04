@@ -119,9 +119,9 @@ and these checks verify them against current files.
 
 Integrity checks are supported for the following types of file:
 
-- CI artifacts (Available from version 10.7.0)
-- LFS objects (Available from version 10.6.0)
-- User uploads (Available from version 10.6.0)
+- CI artifacts (introduced in GitLab 10.7.0)
+- LFS objects (introduced in GitLab 10.6.0)
+- User uploads (introduced in GitLab 10.6.0)
 
 **Omnibus Installation**
 
