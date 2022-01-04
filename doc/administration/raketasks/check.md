@@ -7,6 +7,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 # Integrity check Rake task **(FREE SELF)**
 
 GitLab provides Rake tasks to check the integrity of various components.
+See also the [check GitLab configuration Rake task](maintenance.md#check-gitlab-configuration).
 
 ## Repository integrity
 
