@@ -24949,6 +24949,10 @@ CREATE UNIQUE INDEX epic_user_mentions_on_epic_id_index ON epic_user_mentions US
 
 CREATE UNIQUE INDEX finding_evidences_on_unique_vulnerability_occurrence_id ON vulnerability_finding_evidences USING btree (vulnerability_occurrence_id);
 
+CREATE UNIQUE INDEX finding_link_name_url_idx ON vulnerability_finding_links USING btree (vulnerability_occurrence_id, name, url);
+
+CREATE UNIQUE INDEX finding_link_url_idx ON vulnerability_finding_links USING btree (vulnerability_occurrence_id, url) WHERE (name IS NULL);
+
 CREATE INDEX finding_links_on_vulnerability_occurrence_id ON vulnerability_finding_links USING btree (vulnerability_occurrence_id);
 
 CREATE UNIQUE INDEX i_ci_job_token_project_scope_links_on_source_and_target_project ON ci_job_token_project_scope_links USING btree (source_project_id, target_project_id);
