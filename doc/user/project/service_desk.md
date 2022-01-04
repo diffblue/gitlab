@@ -184,7 +184,7 @@ NOTE:
 On GitLab.com a custom mailbox is already configured with `contact-project+%{key}@incoming.gitlab.com` as the email address, you can still configure the
 [custom suffix](#configuring-a-custom-email-address-suffix) in project settings.
 
-Service Desk will use the [Incoming email](../../administration/incoming_email.md)
+Service Desk uses the [incoming email](../../administration/incoming_email.md)
 configuration by default. However, by using the `service_desk_email` configuration,
 you can customize the mailbox used by Service Desk. This allows you to have
 a separate email address for Service Desk by also configuring a [custom suffix](#configuring-a-custom-email-address-suffix)
