@@ -1,5 +1,5 @@
 .contributors {
   &-loader {
-    padding-top: $header-height * 2;
+    padding-top: calc(#{$header-height} * 2);
   }
 }
