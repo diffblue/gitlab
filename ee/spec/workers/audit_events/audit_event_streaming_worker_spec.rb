@@ -36,7 +36,7 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
       before do
         group.external_audit_event_destinations.create!(destination_url: 'http://example.com')
         group.external_audit_event_destinations.create!(destination_url: 'http://example1.com')
-        group.external_audit_event_destinations.create!(destination_url: 'http://example2.com')
+        group.external_audit_event_destinations.create!(destination_url: 'http://example.org')
       end
 
       it 'makes the correct number of HTTP calls' do

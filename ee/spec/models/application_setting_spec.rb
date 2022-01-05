@@ -335,45 +335,45 @@ RSpec.describe ApplicationSetting do
 
   describe '#elasticsearch_url_with_credentials' do
     it 'embeds credentials in the result' do
-      setting.elasticsearch_url = 'http://example.com,https://example2.com:9200'
+      setting.elasticsearch_url = 'http://example.com,https://example.org:9200'
       setting.elasticsearch_username = 'foo'
       setting.elasticsearch_password = 'bar'
 
-      expect(setting.elasticsearch_url_with_credentials).to eq(%w[http://foo:bar@example.com https://foo:bar@example2.com:9200])
+      expect(setting.elasticsearch_url_with_credentials).to eq(%w[http://foo:bar@example.com https://foo:bar@example.org:9200])
     end
 
     it 'embeds username only' do
-      setting.elasticsearch_url = 'http://example.com,https://example2.com:9200'
+      setting.elasticsearch_url = 'http://example.com,https://example.org:9200'
       setting.elasticsearch_username = 'foo'
       setting.elasticsearch_password = ''
 
-      expect(setting.elasticsearch_url_with_credentials).to eq(%w[http://foo:@example.com https://foo:@example2.com:9200])
+      expect(setting.elasticsearch_url_with_credentials).to eq(%w[http://foo:@example.com https://foo:@example.org:9200])
     end
 
     it 'overrides existing embedded credentials' do
-      setting.elasticsearch_url = 'http://username:password@example.com,https://test:test@example2.com:9200'
+      setting.elasticsearch_url = 'http://username:password@example.com,https://test:test@example.org:9200'
       setting.elasticsearch_username = 'foo'
       setting.elasticsearch_password = 'bar'
 
-      expect(setting.elasticsearch_url_with_credentials).to eq(%w[http://foo:bar@example.com https://foo:bar@example2.com:9200])
+      expect(setting.elasticsearch_url_with_credentials).to eq(%w[http://foo:bar@example.com https://foo:bar@example.org:9200])
     end
 
     it 'returns original url if credentials blank' do
-      setting.elasticsearch_url = 'http://username:password@example.com,https://test:test@example2.com:9200'
+      setting.elasticsearch_url = 'http://username:password@example.com,https://test:test@example.org:9200'
       setting.elasticsearch_username = ''
       setting.elasticsearch_password = ''
 
-      expect(setting.elasticsearch_url_with_credentials).to eq(%w[http://username:password@example.com https://test:test@example2.com:9200])
+      expect(setting.elasticsearch_url_with_credentials).to eq(%w[http://username:password@example.com https://test:test@example.org:9200])
     end
 
     it 'encodes the credentials' do
-      setting.elasticsearch_url = 'http://username:password@example.com,https://test:test@example2.com:9200'
+      setting.elasticsearch_url = 'http://username:password@example.com,https://test:test@example.org:9200'
       setting.elasticsearch_username = 'foo/admin'
       setting.elasticsearch_password = 'b@r'
 
       expect(setting.elasticsearch_url_with_credentials).to eq(%w[
         http://foo%2Fadmin:b%40r@example.com
-        https://foo%2Fadmin:b%40r@example2.com:9200
+        https://foo%2Fadmin:b%40r@example.org:9200
       ])
     end
   end
