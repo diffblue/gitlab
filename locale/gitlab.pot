@@ -16382,9 +16382,6 @@ msgstr ""
 msgid "GlobalSearch|Search GitLab"
 msgstr ""
 
-msgid "GlobalSearch|Search or jump to..."
-msgstr ""
-
 msgid "GlobalSearch|Search results are loading"
 msgstr ""
 
@@ -31048,9 +31045,6 @@ msgid "Search or filter results..."
 msgstr ""
 
 msgid "Search or filter results…"
-msgstr ""
-
-msgid "Search or jump to..."
 msgstr ""
 
 msgid "Search project"
