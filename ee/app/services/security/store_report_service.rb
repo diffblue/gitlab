@@ -94,6 +94,8 @@ module Security
       vulnerability_finding = vulnerability_findings_by_uuid[finding.uuid] ||
         find_or_create_vulnerability_finding(finding, vulnerability_params.merge(entity_params))
 
+      return unless vulnerability_finding
+
       vulnerability_finding_to_finding_map[vulnerability_finding] = finding
 
       update_vulnerability_finding(vulnerability_finding, vulnerability_params.merge(location: entity_params[:location], location_fingerprint: finding.location.fingerprint))
@@ -136,6 +138,10 @@ module Security
         return vulnerability_finding if vulnerability_finding
 
         Gitlab::ErrorTracking.track_and_raise_exception(e, find_params: find_params, uuid: finding.uuid)
+      rescue ActiveRecord::RecordInvalid => e
+        Gitlab::ErrorTracking.track_exception(e, create_params: create_params&.dig(:raw_metadata))
+
+        nil
       rescue ActiveRecord::ActiveRecordError => e
         Gitlab::ErrorTracking.track_and_raise_exception(e, create_params: create_params&.dig(:raw_metadata))
       end
