@@ -3,6 +3,7 @@
 class Vulnerabilities::FindingEntity < Grape::Entity
   include RequestAwareEntity
   include VulnerabilitiesHelper
+  include MarkupHelper
 
   expose :id, :report_type, :name, :severity, :confidence
   expose :scanner, using: Vulnerabilities::ScannerEntity
@@ -32,6 +33,9 @@ class Vulnerabilities::FindingEntity < Grape::Entity
 
   expose :metadata, merge: true, if: ->(occurrence, _) { occurrence.raw_metadata } do
     expose :description
+    expose :description_html do |model|
+      markdown(model.description)
+    end
     expose :links
     expose :location
     expose :remediations
