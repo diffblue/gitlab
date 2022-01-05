@@ -12,8 +12,8 @@ RSpec.describe API::ProtectedEnvironments do
   let(:protected_environment_name) { 'production' }
 
   before do
-    create(:protected_environment, :maintainers_can_deploy, :project_level, project: project, name: protected_environment_name)
-    create(:protected_environment, :maintainers_can_deploy, :group_level, group: group, name: protected_environment_name)
+    create(:protected_environment, :maintainers_can_deploy, :project_level, project: project, name: protected_environment_name, required_approval_count: 1)
+    create(:protected_environment, :maintainers_can_deploy, :group_level, group: group, name: protected_environment_name, required_approval_count: 2)
   end
 
   shared_examples 'requests for non-maintainers' do
@@ -64,6 +64,7 @@ RSpec.describe API::ProtectedEnvironments do
         expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
         expect(json_response['name']).to eq(protected_environment_name)
         expect(json_response['deploy_access_levels'][0]['access_level']).to eq(::Gitlab::Access::MAINTAINER)
+        expect(json_response['required_approval_count']).to eq(1)
       end
 
       context 'when protected environment does not exist' do
@@ -90,12 +91,13 @@ RSpec.describe API::ProtectedEnvironments do
         deployer = create(:user)
         project.add_developer(deployer)
 
-        post api_url, params: { name: 'staging', deploy_access_levels: [{ user_id: deployer.id }] }
+        post api_url, params: { name: 'staging', deploy_access_levels: [{ user_id: deployer.id }], required_approval_count: 3 }
 
         expect(response).to have_gitlab_http_status(:created)
         expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
         expect(json_response['name']).to eq('staging')
         expect(json_response['deploy_access_levels'].first['user_id']).to eq(deployer.id)
+        expect(json_response['required_approval_count']).to eq(3)
       end
 
       it 'protects the environment with group allowed to deploy' do
@@ -207,6 +209,7 @@ RSpec.describe API::ProtectedEnvironments do
         expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
         expect(json_response['name']).to eq(protected_environment_name)
         expect(json_response['deploy_access_levels'][0]['access_level']).to eq(::Gitlab::Access::MAINTAINER)
+        expect(json_response['required_approval_count']).to eq(2)
       end
 
       context 'when protected environment does not exist' do
@@ -233,12 +236,13 @@ RSpec.describe API::ProtectedEnvironments do
         deployer = create(:user)
         group.add_maintainer(deployer)
 
-        post api_url, params: { name: 'staging', deploy_access_levels: [{ user_id: deployer.id }] }
+        post api_url, params: { name: 'staging', deploy_access_levels: [{ user_id: deployer.id }], required_approval_count: 3 }
 
         expect(response).to have_gitlab_http_status(:created)
         expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
         expect(json_response['name']).to eq('staging')
         expect(json_response['deploy_access_levels'].first['user_id']).to eq(deployer.id)
+        expect(json_response['required_approval_count']).to eq(3)
       end
 
       it 'protects the environment with group allowed to deploy' do
