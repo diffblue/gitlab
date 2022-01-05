@@ -152,32 +152,6 @@ RSpec.describe 'Epic boards sidebar', :js do
     end
   end
 
-  context 'labels' do
-    it 'adds a single label' do
-      click_card(card)
-
-      page.within('.labels') do
-        click_button 'Edit'
-
-        wait_for_requests
-
-        click_on bug.title
-
-        click_button 'Close'
-
-        wait_for_requests
-
-        page.within('.value') do
-          expect(page).to have_selector('.gl-label-text', count: 1)
-          expect(page).to have_content(bug.title)
-        end
-      end
-
-      expect(card).to have_selector('.gl-label', count: 1)
-      expect(card).to have_content(bug.title)
-    end
-  end
-
   context 'confidentiality' do
     it 'make epic confidential' do
       click_card(card)
