@@ -2,4 +2,4 @@
 
 <%= _('We recommend that you buy additional Pipeline minutes to avoid any interruption of service.') %>
 
-Buy more Pipeline minutes → <%= EE::SUBSCRIPTIONS_MORE_MINUTES_URL %>
+<%= _('Buy more Pipeline minutes') %> → <%= buy_minutes_subscriptions_url(selected_group: @namespace.id) %>
