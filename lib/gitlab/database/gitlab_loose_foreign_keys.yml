@@ -83,6 +83,10 @@ project_pages_metadata:
   - table: ci_job_artifacts
     column: artifacts_archive_id
     on_delete: async_nullify
+ci_pipeline_schedules:
+  - table: users
+    column: owner_id
+    on_delete: async_nullify
 ci_group_variables:
   - table: namespaces
     column: group_id
