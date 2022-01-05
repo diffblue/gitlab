@@ -1,7 +1,9 @@
+- link = buy_minutes_subscriptions_url(selected_group: @namespace.id)
+
 %p
   - name_link = link_to @namespace.name, group_url(@namespace)
   = html_escape(_('%{name_with_link} namespace has run out of Shared Runner Pipeline minutes. No new jobs or pipelines in its projects will run.')) % { name_with_link: name_link.html_safe }
 %p
   = _('We recommend that you buy additional Pipeline minutes to resume normal service.')
 %p
-  #{link_to('Buy more Pipeline minutes →', EE::SUBSCRIPTIONS_MORE_MINUTES_URL)}
+  = link_to sprintf('%{link_label} →', { link_label: _('Buy more Pipeline minutes') }), link
