@@ -366,7 +366,7 @@ RSpec.describe Vulnerabilities::Finding do
     describe '.by_location_cluster' do
       let_it_be(:vulnerability) { create(:vulnerability, report_type: 'cluster_image_scanning') }
       let_it_be(:finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, vulnerability: vulnerability) }
-      let_it_be(:cluster_ids) { [finding.location['cluster_id']] }
+      let_it_be(:cluster_ids) { [finding.location['kubernetes_resource']['cluster_id']] }
 
       before do
         finding_with_different_cluster_id = create(
@@ -374,7 +374,7 @@ RSpec.describe Vulnerabilities::Finding do
           :with_cluster_image_scanning_scanning_metadata,
           vulnerability: create(:vulnerability, report_type: 'cluster_image_scanning')
         )
-        finding_with_different_cluster_id.location['cluster_id'] = '2'
+        finding_with_different_cluster_id.location['kubernetes_resource']['cluster_id'] = '2'
         finding_with_different_cluster_id.save!
 
         create(:vulnerabilities_finding, report_type: :dast)
@@ -390,7 +390,7 @@ RSpec.describe Vulnerabilities::Finding do
     describe '.by_location_cluster_agent' do
       let_it_be(:vulnerability) { create(:vulnerability, report_type: 'cluster_image_scanning') }
       let_it_be(:finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, vulnerability: vulnerability) }
-      let_it_be(:agent_ids) { [finding.location['agent_id']] }
+      let_it_be(:agent_ids) { [finding.location['kubernetes_resource']['agent_id']] }
 
       before do
         finding_with_different_agent_id = create(
@@ -398,7 +398,7 @@ RSpec.describe Vulnerabilities::Finding do
           :with_cluster_image_scanning_scanning_metadata,
           vulnerability: create(:vulnerability, report_type: 'cluster_image_scanning')
         )
-        finding_with_different_agent_id.location['agent_id'] = '2'
+        finding_with_different_agent_id.location['kubernetes_resource']['agent_id'] = '2'
         finding_with_different_agent_id.save!
 
         create(:vulnerabilities_finding, report_type: :dast)
