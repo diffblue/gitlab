@@ -71,7 +71,6 @@ exports[`ee/BoardContentSidebar matches the snapshot 1`] = `
     allowmultiselect="true"
     attrworkspacepath="gitlab-org/gitlab-test"
     class="block labels"
-    data-testid="sidebar-labels"
     dropdownbuttontext="Label"
     footercreatelabeltitle="Create project label"
     footermanagelabeltitle="Manage project labels"
