@@ -9832,10 +9832,10 @@ prosemirror-keymap@^1.0.0, prosemirror-keymap@^1.1.2, prosemirror-keymap@^1.1.4,
     prosemirror-state "^1.0.0"
     w3c-keyname "^2.2.0"
 
-prosemirror-markdown@^1.6.0:
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/prosemirror-markdown/-/prosemirror-markdown-1.6.2.tgz#3ec16ea28f97c04c86575f397061599b0e6e9642"
-  integrity sha512-UW2Znr/9RsXm9UG11Wb3F7Wa2DxrqoojDzI025SJ/CwSEKl+6fpMVZrlJt6bfXexh+DPLbne1pB4N/OtldCDbw==
+prosemirror-markdown@1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/prosemirror-markdown/-/prosemirror-markdown-1.6.0.tgz#141c88e03c8892f2e93cf58b1382ab0b6088d012"
+  integrity sha512-y/gRpJIIrNArtkyMax7ypYafb+ZMjddbVHI+AwlcUfCLCCXK57cOmfBMKYVq9kdEKJYVdYHdoyWsVNn1nWLHUg==
   dependencies:
     markdown-it "^10.0.0"
     prosemirror-model "^1.0.0"
