@@ -115,11 +115,11 @@ RSpec.describe 'Expiring Subscription Message', :js, :freeze_time do
         end
       end
 
-      context 'with a license expiring in less than 30 days' do
-        let(:end_date) { Date.current + 29.days }
+      context 'with a license expiring in less than 15 days' do
+        let(:end_date) { Date.current + 14.days }
 
         it 'notifies the group owner of a soon expiring subscription' do
-          expect(page).to have_content('Your subscription will expire in 29 days')
+          expect(page).to have_content('Your subscription will expire in 14 days')
         end
       end
 
