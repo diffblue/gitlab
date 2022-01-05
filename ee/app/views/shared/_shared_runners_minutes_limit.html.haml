@@ -1,11 +1,12 @@
 - notification = ::Ci::Minutes::Notification.new(local_assigns.dig(:project), local_assigns.dig(:namespace))
+- namespace ||= project.namespace
 - return unless notification.show?(current_user, cookies)
 
 %div{ class: [(classes if defined? classes)] }
   .shared-runner-quota-message.gl-pt-5.gl-pb-3
     .js-vue-alert{ 'v-cloak': true, data: { variant: notification.style,
       primary_button_text: _('Buy more Pipeline minutes'),
-      primary_button_link: ::EE::SUBSCRIPTIONS_MORE_MINUTES_URL,
+      primary_button_link: buy_additional_minutes_path(namespace),
       dismissible: 'true',
       dismiss_cookie_name: notification.dismiss_cookie_id,
       dismiss_cookie_expire: 30 } }
