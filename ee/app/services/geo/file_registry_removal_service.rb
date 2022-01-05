@@ -1,6 +1,16 @@
 # frozen_string_literal: true
 
 module Geo
+  ##
+  ## Geo::FileRegistryRemovalService handles blob removal from a secondary node,
+  ## the file itself and the database records.
+  ## It handles all the possible combinations of 4 variables:
+  ## * Whether Model record exists
+  ## * Whether Registry Record exists
+  ## * Whether the file on a storage exists
+  ## * Whether the file_path is passed (RegistryConsistencyWorker doesn't pass one)
+  ## In all the cases the best effort should have to be made.
+  ##
   class FileRegistryRemovalService < BaseFileService
     include ::Gitlab::Utils::StrongMemoize
 
@@ -73,16 +83,10 @@ module Geo
       end
     end
 
-    def blob_path_from_replicator
-      replicator.blob_path
-    rescue ActiveRecord::RecordNotFound
-      nil
-    end
-
     def file_path
       strong_memoize(:file_path) do
         next @object_file_path if @object_file_path
-        next blob_path_from_replicator if replicator
+
         # When local storage is used, just rely on the existing methods
         next if file_uploader.nil?
         next file_uploader.file.path if file_uploader.object_store == ObjectStorage::Store::LOCAL
@@ -93,6 +97,8 @@ module Geo
 
     def file_uploader
       strong_memoize(:file_uploader) do
+        next replicator.carrierwave_uploader if replicator
+
         case object_type
         when :job_artifact
           Ci::JobArtifact.find(object_db_id).file
