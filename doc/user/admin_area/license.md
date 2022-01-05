@@ -107,7 +107,7 @@ functionality.
 
 ## What happens when your license expires
 
-One month before the license expires, a message with the upcoming expiration
+Fifteen days before the license expires, a message with the upcoming expiration
 date displays to GitLab administrators.
 
 When your license expires, GitLab locks features, like Git pushes
