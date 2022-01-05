@@ -51,6 +51,7 @@ module API
       end
       params do
         requires :name, type: String, desc: 'The name of the protected environment'
+        optional :required_approval_count, type: Integer, desc: 'The number of approvals required to deploy to this environment', default: 0
 
         requires :deploy_access_levels, type: Array, desc: 'An array of users/groups allowed to deploy environment' do
           optional :access_level, type: Integer, values: ::ProtectedEnvironment::DeployAccessLevel::ALLOWED_ACCESS_LEVELS
@@ -137,6 +138,7 @@ module API
       end
       params do
         requires :name, type: String, desc: 'The tier name of the protected environment'
+        optional :required_approval_count, type: Integer, desc: 'The number of approvals required to deploy to this environment', default: 0
 
         requires :deploy_access_levels, as: :deploy_access_levels_attributes, type: Array, desc: 'An array of users/groups allowed to deploy environment' do
           optional :access_level, type: Integer, values: ::ProtectedEnvironment::DeployAccessLevel::ALLOWED_ACCESS_LEVELS

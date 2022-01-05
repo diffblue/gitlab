@@ -83,20 +83,24 @@ describe('LicenseIssueBody', () => {
   });
 
   describe('event tracking', () => {
-    let trackEventSpy;
+    let trackUserEventSpy;
+    let trackCounterEventSpy;
 
     beforeEach(() => {
-      trackEventSpy = jest.spyOn(api, 'trackRedisHllUserEvent').mockImplementation(() => {});
+      trackUserEventSpy = jest.spyOn(api, 'trackRedisHllUserEvent').mockImplementation(() => {});
+      trackCounterEventSpy = jest.spyOn(api, 'trackRedisCounterEvent').mockImplementation(() => {});
     });
 
     afterEach(() => {
-      trackEventSpy.mockRestore();
+      trackUserEventSpy.mockRestore();
+      trackCounterEventSpy.mockRestore();
     });
 
     it('tracks users_visiting_testing_license_compliance_full_report', () => {
       findGlLink().vm.$emit('click');
 
-      expect(trackEventSpy).toHaveBeenCalledWith(LICENSE_LINK_TELEMETRY_EVENT);
+      expect(trackUserEventSpy).toHaveBeenCalledWith(LICENSE_LINK_TELEMETRY_EVENT);
+      expect(trackCounterEventSpy).toHaveBeenCalledWith(LICENSE_LINK_TELEMETRY_EVENT);
     });
   });
 });
