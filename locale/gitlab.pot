@@ -39209,6 +39209,9 @@ msgstr ""
 msgid "VulnerabilityManagement|%{statusStart}Resolved%{statusEnd} %{timeago} by %{user}"
 msgstr ""
 
+msgid "VulnerabilityManagement|(optional) Include the solution to the vulnerability if available."
+msgstr ""
+
 msgid "VulnerabilityManagement|A removed or remediated vulnerability"
 msgstr ""
 
