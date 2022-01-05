@@ -1,6 +1,6 @@
 <script>
-import { GlLink } from '@gitlab/ui';
 import { mapActions } from 'vuex';
+import { GlLink } from '@gitlab/ui';
 import api from '~/api';
 
 import { LICENSE_MANAGEMENT } from 'ee/vue_shared/license_compliance/store/constants';
@@ -25,6 +25,7 @@ export default {
     ...mapActions(LICENSE_MANAGEMENT, ['setLicenseInModal']),
     trackLinkClick() {
       api.trackRedisHllUserEvent(LICENSE_LINK_TELEMETRY_EVENT);
+      api.trackRedisCounterEvent(LICENSE_LINK_TELEMETRY_EVENT);
     },
   },
 };
