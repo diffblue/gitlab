@@ -150,6 +150,8 @@ module Gitlab
       extend Gitlab::SetupHelper
       class << self
         def configuration_toml(gitaly_dir, _, _)
+          raise 'This configuration is only intended for test' unless Rails.env.test?
+
           nodes = [{ storage: 'default', address: "unix:#{gitaly_dir}/gitaly.socket", primary: true, token: 'secret' }]
           second_storage_nodes = [{ storage: 'test_second_storage', address: "unix:#{gitaly_dir}/gitaly2.socket", primary: true, token: 'secret' }]
 
@@ -160,9 +162,9 @@ module Gitlab
             socket_path: "#{gitaly_dir}/praefect.socket",
             memory_queue_enabled: true,
             virtual_storage: storages,
-            failover: failover
+            failover: failover,
+            token: 'secret'
           }
-          config[:token] = 'secret' if Rails.env.test?
 
           TomlRB.dump(config)
         end
