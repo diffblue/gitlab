@@ -103,11 +103,11 @@ module Vulnerabilities
     end
     scope :by_location_cluster, -> (cluster_ids) do
       where(report_type: 'cluster_image_scanning')
-        .where("vulnerability_occurrences.location -> 'cluster_id' ?| array[:cluster_ids]", cluster_ids: cluster_ids)
+        .where("vulnerability_occurrences.location -> 'kubernetes_resource' -> 'cluster_id' ?| array[:cluster_ids]", cluster_ids: cluster_ids)
     end
     scope :by_location_cluster_agent, -> (agent_ids) do
       where(report_type: 'cluster_image_scanning')
-        .where("vulnerability_occurrences.location -> 'agent_id' ?| array[:agent_ids]", agent_ids: agent_ids)
+        .where("vulnerability_occurrences.location -> 'kubernetes_resource' -> 'agent_id' ?| array[:agent_ids]", agent_ids: agent_ids)
     end
 
     alias_method :declarative_policy_subject, :project

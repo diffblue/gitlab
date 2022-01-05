@@ -584,8 +584,10 @@ FactoryBot.define do
           },
           "operating_system": "alpine 3.7",
           "image": "alpine:3.7",
-          "cluster_id": "1",
-          "agent_id": "46357"
+          "kubernetes_resource": {
+            "cluster_id": "1",
+            "agent_id": "46357"
+          }
         }
         finding.raw_metadata = {
           "category": "cluster_image_scanning",
@@ -605,8 +607,10 @@ FactoryBot.define do
             },
             "operating_system": "alpine 3.7",
             "image": "alpine:3.7",
-            "cluster_id": "1",
-            "agent_id": "46357"
+            "kubernetes_resource": {
+              "cluster_id": "1",
+              "agent_id": "46357"
+            }
           },
           "identifiers": [{
             "type": "cve",
