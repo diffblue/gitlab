@@ -196,7 +196,7 @@ where the issue should be created.
 
 NOTE:
 When configuring a custom mailbox, the `service_desk_email` and `incoming_email`
-configurations shouldalways use separate mailboxes. This is important, because
+configurations must always use separate mailboxes. This is important, because
 emails picked from `service_desk_email` mailbox are processed by a different
 worker and it would not recognize `incoming_email` emails.
 
