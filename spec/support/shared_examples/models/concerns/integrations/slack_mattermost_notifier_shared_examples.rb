@@ -693,6 +693,16 @@ RSpec.shared_examples Integrations::SlackMattermostNotifier do |service_name|
       context 'notification enabled for all branches' do
         it_behaves_like "triggered #{service_name} service", event_type: "pipeline", branches_to_be_notified: "all"
       end
+
+      context 'when chat_notification_deployment_protected_branch_filter is disabled' do
+        before do
+          stub_feature_flags(chat_notification_deployment_protected_branch_filter: false)
+        end
+
+        context 'notification enabled only for default branch' do
+          it_behaves_like "triggered #{service_name} service", event_type: "pipeline", branches_to_be_notified: "default"
+        end
+      end
     end
   end
 end
