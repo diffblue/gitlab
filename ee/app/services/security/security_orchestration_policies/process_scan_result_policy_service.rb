@@ -42,11 +42,12 @@ module Security
           scanners: rule[:scanners],
           rule_type: :report_approver,
           severity_levels: rule[:severity_levels],
-          user_ids: project.users.get_ids_by_username(action_info[:approvers]),
+          user_ids: users_ids(action_info[:user_approvers_ids], action_info[:user_approvers]),
           vulnerabilities_allowed: rule[:vulnerabilities_allowed],
           report_type: :scan_finding,
           orchestration_policy_idx: policy_index,
-          vulnerability_states: rule[:vulnerability_states]
+          vulnerability_states: rule[:vulnerability_states],
+          group_ids: groups_ids(action_info[:group_approvers_ids], action_info[:group_approvers])
         }
       end
 
@@ -55,6 +56,14 @@ module Security
         return truncated if rule_index == 0
 
         "#{truncated} #{rule_index + 1}"
+      end
+
+      def users_ids(user_ids, user_names)
+        project.team.users.get_ids_by_ids_or_usernames(user_ids, user_names)
+      end
+
+      def groups_ids(group_ids, group_paths)
+        Group.unscoped.public_to_user(author).get_ids_by_ids_or_paths(group_ids, group_paths)
       end
     end
   end

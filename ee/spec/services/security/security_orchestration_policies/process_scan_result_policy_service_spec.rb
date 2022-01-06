@@ -6,13 +6,15 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
   describe '#execute' do
     let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration) }
 
-    let(:approver) { create(:user) }
+    let(:group) { create(:group, :public) }
     let(:policy) { build(:scan_result_policy, name: 'Test Policy') }
     let(:policy_yaml) { Gitlab::Config::Loader::Yaml.new(policy.to_yaml).load! }
     let(:project) { policy_configuration.project }
+    let(:approver) { project.owner }
     let(:service) { described_class.new(policy_configuration: policy_configuration, policy: policy, policy_index: 0) }
 
     before do
+      group.add_maintainer(approver)
       allow(policy_configuration).to receive(:policy_last_updated_by).and_return(project.owner)
     end
 
@@ -44,8 +46,35 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       end
     end
 
-    it 'creates a new project approval rule' do
-      expect { subject }.to change { project.approval_rules.count }.by(1)
+    shared_examples 'create approval rule with specific approver' do
+      it 'succeeds creating approval rules with specific approver' do
+        expect { subject }.to change { project.approval_rules.count }.by(1)
+        expect(project.approval_rules.first.approvers).to contain_exactly(approver)
+      end
+    end
+
+    context 'with only user id' do
+      let(:policy) { build(:scan_result_policy, name: 'Test Policy', actions: [{ type: 'require_approval', approvals_required: 1, user_approvers_ids: [approver.id] }]) }
+
+      it_behaves_like 'create approval rule with specific approver'
+    end
+
+    context 'with only username' do
+      let(:policy) { build(:scan_result_policy, name: 'Test Policy', actions: [{ type: 'require_approval', approvals_required: 1, user_approvers: [approver.username] }]) }
+
+      it_behaves_like 'create approval rule with specific approver'
+    end
+
+    context 'with only group id' do
+      let(:policy) { build(:scan_result_policy, name: 'Test Policy', actions: [{ type: 'require_approval', approvals_required: 1, group_approvers_ids: [group.id] }]) }
+
+      it_behaves_like 'create approval rule with specific approver'
+    end
+
+    context 'with only group path' do
+      let(:policy) { build(:scan_result_policy, name: 'Test Policy', actions: [{ type: 'require_approval', approvals_required: 1, group_approvers: [group.path] }]) }
+
+      it_behaves_like 'create approval rule with specific approver'
     end
 
     it 'sets project approval rules names based on policy name', :aggregate_failures do

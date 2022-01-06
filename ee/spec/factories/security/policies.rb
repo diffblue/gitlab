@@ -54,7 +54,7 @@ FactoryBot.define do
       ]
     end
 
-    actions { [{ type: 'require_approval', approvals_required: 1, approvers: %w[admin] }] }
+    actions { [{ type: 'require_approval', approvals_required: 1, user_approvers: %w[admin] }] }
   end
 
   factory :orchestration_policy_yaml, class: Struct.new(:scan_execution_policy, :scan_result_policy) do
