@@ -203,4 +203,37 @@ RSpec.describe "Admin::Users", :js do
       end
     end
   end
+
+  describe 'prompt user about registration features' do
+    let(:message) { s_("RegistrationFeatures|Want to %{feature_title} for free?") % { feature_title: s_('RegistrationFeatures|send emails to users') } }
+
+    context 'with no license and service ping disabled' do
+      before do
+        allow(License).to receive(:current).and_return(nil)
+        stub_application_setting(usage_ping_enabled: false)
+      end
+
+      it 'renders registration features CTA' do
+        visit admin_users_path
+
+        expect(page).to have_content(message)
+        expect(page).to have_link(s_('RegistrationFeatures|Registration Features Program'))
+        expect(page).to have_link(s_('RegistrationFeatures|Enable Service Ping and register for this feature.'))
+      end
+    end
+
+    context 'with a valid license and service ping disabled' do
+      before do
+        license = build(:license)
+        allow(License).to receive(:current).and_return(license)
+        stub_application_setting(usage_ping_enabled: false)
+      end
+
+      it 'does not render registration features CTA' do
+        visit admin_users_path
+
+        expect(page).not_to have_content(message)
+      end
+    end
+  end
 end
