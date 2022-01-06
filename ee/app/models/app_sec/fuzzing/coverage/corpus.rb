@@ -35,22 +35,22 @@ module AppSec
         end
 
         def package_with_package_file
-          unless first_package_file
+          unless latest_package_file
             errors.add(:package_id, 'should have an associated package file')
           end
         end
 
         def validate_file_format
-          return unless first_package_file
+          return unless latest_package_file
 
-          unless ACCEPTED_FORMATS.include? File.extname(first_package_file.file_name)
+          unless ACCEPTED_FORMATS.include? File.extname(latest_package_file.file_name)
             errors.add(:package_id, 'format is not supported')
           end
         end
 
         # Currently we are only supporting one package_file per package for a corpus model.
-        def first_package_file
-          @package_file ||= package.package_files.first
+        def latest_package_file
+          @package_file ||= package.package_files.last
         end
       end
     end
