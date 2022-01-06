@@ -24,7 +24,6 @@ export default {
 <template>
   <div>
     <slot name="loading"></slot>
-    <!-- TODO: this component needs to be refactored to use the shared survey-banner component, tracked here: https://gitlab.com/gitlab-org/gitlab/-/issues/348190 -->
     <survey-request-banner v-if="!$slots.loading" class="gl-mt-5" />
     <sbom-banner
       v-if="!$slots.loading && showSbomSurvey"

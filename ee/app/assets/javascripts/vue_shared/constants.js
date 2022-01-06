@@ -11,8 +11,6 @@ export const placeholderEpic = {
 };
 
 export const SBOM_BANNER_LOCAL_STORAGE_KEY = 'sbom_survey_request';
-// NOTE: This string needs to parse to an invalid date. Do not put any characters in between the
-// word 'survey' and the number, or else it will parse to a valid date.
 export const SBOM_BANNER_CURRENT_ID = 'sbom1';
 export const SBOM_SURVEY_LINK = 'https://gitlab.fra1.qualtrics.com/jfe/form/SV_es038rUv1VFqmXk';
 export const SBOM_SURVEY_DAYS_TO_ASK_LATER = 7;
