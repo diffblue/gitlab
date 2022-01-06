@@ -28,7 +28,7 @@ RSpec.describe 'Edit group settings', :js do
 
       click_on('Save')
 
-      expect(page).to have_selector('.flash-notice', text: 'LDAP settings updated')
+      expect(page).to have_selector('[data-testid="alert-info"]', text: 'LDAP settings updated')
     end
   end
 

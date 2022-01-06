@@ -27,7 +27,7 @@ RSpec.describe "User tests hooks", :js do
 
       it "triggers a hook" do
         expect(current_path).to eq(group_hooks_path(group))
-        expect(page).to have_selector(".flash-notice", text: "Hook executed successfully: HTTP 200")
+        expect(page).to have_selector('[data-testid="alert-info"]', text: "Hook executed successfully: HTTP 200")
       end
     end
 
@@ -39,7 +39,7 @@ RSpec.describe "User tests hooks", :js do
         click_link('Push events')
       end
 
-      it { expect(page).to have_selector(".flash-alert", text: "Hook execution failed: Failed to open") }
+      it { expect(page).to have_selector('[data-testid="alert-danger"]', text: "Hook execution failed: Failed to open") }
     end
   end
 
@@ -50,7 +50,7 @@ RSpec.describe "User tests hooks", :js do
       trigger_hook
     end
 
-    it { expect(page).to have_selector('.flash-alert', text: 'Hook execution failed. Ensure the group has a project with commits.') }
+    it { expect(page).to have_selector('[data-testid="alert-danger"]', text: 'Hook execution failed. Ensure the group has a project with commits.') }
   end
 
   private

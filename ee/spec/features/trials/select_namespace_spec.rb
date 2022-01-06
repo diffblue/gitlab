@@ -151,7 +151,7 @@ RSpec.describe 'Trial Select Namespace', :js do
 
           click_button 'Start your free trial'
 
-          expect(find('.flash-text')).to have_text(error_message)
+          expect(find('[data-testid="alert-danger"]')).to have_text(error_message)
           expect(current_path).to eq(apply_trials_path)
           expect(find('#namespace_id', visible: false).value).to eq(group.id.to_s)
 
