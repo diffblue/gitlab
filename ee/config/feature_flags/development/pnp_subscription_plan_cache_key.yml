@@ -2,6 +2,7 @@
 name: pnp_subscription_plan_cache_key
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/52437
 rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/299068
+milestone: 13.9
 type: development
 group: group::fulfillment
 default_enabled: false
