@@ -11,7 +11,6 @@ module Projects
     feature_category :dynamic_application_security_testing
 
     def index
-      redirect_to new_project_on_demand_scan_path(project) unless Feature.enabled?(:dast_view_scans, @project, default_enabled: :yaml)
     end
 
     def new

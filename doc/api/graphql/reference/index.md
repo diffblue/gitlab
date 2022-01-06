@@ -9140,7 +9140,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="commitpipelinesref"></a>`ref` | [`String`](#string) | Filter pipelines by the ref they are run for. |
 | <a id="commitpipelinesscope"></a>`scope` | [`PipelineScopeEnum`](#pipelinescopeenum) | Filter pipelines by scope. |
 | <a id="commitpipelinessha"></a>`sha` | [`String`](#string) | Filter pipelines by the sha of the commit they are run for. |
-| <a id="commitpipelinessource"></a>`source` | [`String`](#string) | Filter pipelines by their source. Will be ignored if `dast_view_scans` feature flag is disabled. |
+| <a id="commitpipelinessource"></a>`source` | [`String`](#string) | Filter pipelines by their source. |
 | <a id="commitpipelinesstatus"></a>`status` | [`PipelineStatusEnum`](#pipelinestatusenum) | Filter pipelines by their status. |
 
 ### `ComplianceFramework`
@@ -11893,7 +11893,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="mergerequestpipelinesref"></a>`ref` | [`String`](#string) | Filter pipelines by the ref they are run for. |
 | <a id="mergerequestpipelinesscope"></a>`scope` | [`PipelineScopeEnum`](#pipelinescopeenum) | Filter pipelines by scope. |
 | <a id="mergerequestpipelinessha"></a>`sha` | [`String`](#string) | Filter pipelines by the sha of the commit they are run for. |
-| <a id="mergerequestpipelinessource"></a>`source` | [`String`](#string) | Filter pipelines by their source. Will be ignored if `dast_view_scans` feature flag is disabled. |
+| <a id="mergerequestpipelinessource"></a>`source` | [`String`](#string) | Filter pipelines by their source. |
 | <a id="mergerequestpipelinesstatus"></a>`status` | [`PipelineStatusEnum`](#pipelinestatusenum) | Filter pipelines by their status. |
 
 ##### `MergeRequest.reference`
@@ -12927,7 +12927,7 @@ Represents a file or directory in the project repository that has been locked.
 | <a id="pipelineconfigsource"></a>`configSource` | [`PipelineConfigSourceEnum`](#pipelineconfigsourceenum) | Configuration source of the pipeline (UNKNOWN_SOURCE, REPOSITORY_SOURCE, AUTO_DEVOPS_SOURCE, WEBIDE_SOURCE, REMOTE_SOURCE, EXTERNAL_PROJECT_SOURCE, BRIDGE_SOURCE, PARAMETER_SOURCE, COMPLIANCE_SOURCE). |
 | <a id="pipelinecoverage"></a>`coverage` | [`Float`](#float) | Coverage percentage. |
 | <a id="pipelinecreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp of the pipeline's creation. |
-| <a id="pipelinedastprofile"></a>`dastProfile` | [`DastProfile`](#dastprofile) | DAST profile associated with the pipeline. Returns `null`if `dast_view_scans` feature flag is disabled. |
+| <a id="pipelinedastprofile"></a>`dastProfile` | [`DastProfile`](#dastprofile) | DAST profile associated with the pipeline. |
 | <a id="pipelinedetailedstatus"></a>`detailedStatus` | [`DetailedStatus!`](#detailedstatus) | Detailed status of the pipeline. |
 | <a id="pipelinedownstream"></a>`downstream` | [`PipelineConnection`](#pipelineconnection) | Pipelines this pipeline will trigger. (see [Connections](#connections)) |
 | <a id="pipelineduration"></a>`duration` | [`Int`](#int) | Duration of the pipeline in seconds. |
@@ -13359,7 +13359,7 @@ Returns [`DastProfile`](#dastprofile).
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="projectdastprofilehasdastprofileschedule"></a>`hasDastProfileSchedule` | [`Boolean`](#boolean) | Filter DAST Profiles by whether or not they have a schedule. Will be ignored if `dast_view_scans` feature flag is disabled. |
+| <a id="projectdastprofilehasdastprofileschedule"></a>`hasDastProfileSchedule` | [`Boolean`](#boolean) | Filter DAST Profiles by whether or not they have a schedule. |
 | <a id="projectdastprofileid"></a>`id` | [`DastProfileID!`](#dastprofileid) | ID of the DAST Profile. |
 
 ##### `Project.dastProfiles`
@@ -13376,7 +13376,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="projectdastprofileshasdastprofileschedule"></a>`hasDastProfileSchedule` | [`Boolean`](#boolean) | Filter DAST Profiles by whether or not they have a schedule. Will be ignored if `dast_view_scans` feature flag is disabled. |
+| <a id="projectdastprofileshasdastprofileschedule"></a>`hasDastProfileSchedule` | [`Boolean`](#boolean) | Filter DAST Profiles by whether or not they have a schedule. |
 
 ##### `Project.dastSiteProfile`
 
@@ -13836,7 +13836,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="projectpipelinesref"></a>`ref` | [`String`](#string) | Filter pipelines by the ref they are run for. |
 | <a id="projectpipelinesscope"></a>`scope` | [`PipelineScopeEnum`](#pipelinescopeenum) | Filter pipelines by scope. |
 | <a id="projectpipelinessha"></a>`sha` | [`String`](#string) | Filter pipelines by the sha of the commit they are run for. |
-| <a id="projectpipelinessource"></a>`source` | [`String`](#string) | Filter pipelines by their source. Will be ignored if `dast_view_scans` feature flag is disabled. |
+| <a id="projectpipelinessource"></a>`source` | [`String`](#string) | Filter pipelines by their source. |
 | <a id="projectpipelinesstatus"></a>`status` | [`PipelineStatusEnum`](#pipelinestatusenum) | Filter pipelines by their status. |
 
 ##### `Project.projectMembers`

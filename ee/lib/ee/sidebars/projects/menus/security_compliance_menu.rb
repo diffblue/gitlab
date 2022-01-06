@@ -91,11 +91,7 @@ module EE
               return ::Sidebars::NilMenuItem.new(item_id: :on_demand_scans)
             end
 
-            link = if ::Feature.enabled?(:dast_view_scans, context.project, default_enabled: :yaml)
-                     project_on_demand_scans_path(context.project)
-                   else
-                     new_project_on_demand_scan_path(context.project)
-                   end
+            link = project_on_demand_scans_path(context.project)
 
             ::Sidebars::MenuItem.new(
               title: s_('OnDemandScans|On-demand scans'),
