@@ -90,6 +90,11 @@ module GroupsHelper
       { group_name: group.name }
   end
 
+  def transfer_group_message(group)
+    _("You are going to transfer %{group_name} to another namespace. Are you ABSOLUTELY sure?") %
+      { group_name: group.name }
+  end
+
   def share_with_group_lock_help_text(group)
     return default_help unless group.parent&.share_with_group_lock?
 

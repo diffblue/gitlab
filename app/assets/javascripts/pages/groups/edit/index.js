@@ -2,6 +2,7 @@ import { GROUP_BADGE } from '~/badges/constants';
 import dirtySubmitFactory from '~/dirty_submit/dirty_submit_factory';
 import initFilePickers from '~/file_pickers';
 import TransferDropdown from '~/groups/transfer_dropdown';
+import initTransferGroupForm from '~/groups/init_transfer_group_form';
 import setupTransferEdit from '~/groups/transfer_edit';
 import groupsSelect from '~/groups_select';
 import { initCascadingSettingsLockPopovers } from '~/namespaces/cascading_settings';
@@ -15,12 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
   initFilePickers();
   initConfirmDanger();
   initSettingsPanels();
+  initTransferGroupForm();
   dirtySubmitFactory(
     document.querySelectorAll('.js-general-settings-form, .js-general-permissions-form'),
   );
   mountBadgeSettings(GROUP_BADGE);
-
-  setupTransferEdit('.js-group-transfer-form', '.dropdown-group-transfer', '#new_parent_group_id');
+  // setupTransferEdit('.js-group-transfer-form', '#new_parent_group_id');
 
   // Initialize Subgroups selector
   groupsSelect();

@@ -1,9 +1,16 @@
 <script>
-import { GlDropdown, GlDropdownItem, GlDropdownSectionHeader, GlSearchBoxByType } from '@gitlab/ui';
+import {
+  GlDropdown,
+  GlDropdownDivider,
+  GlDropdownItem,
+  GlDropdownSectionHeader,
+  GlSearchBoxByType,
+} from '@gitlab/ui';
 import { __ } from '~/locale';
 
 export const i18n = {
   DEFAULT_TEXT: __('Select a new namespace'),
+  DEFAULT_EMPTY_NAMESPACE_TEXT: __('No namespace'),
   GROUPS: __('Groups'),
   USERS: __('Users'),
 };
@@ -15,6 +22,7 @@ export default {
   name: 'NamespaceSelect',
   components: {
     GlDropdown,
+    GlDropdownDivider,
     GlDropdownItem,
     GlDropdownSectionHeader,
     GlSearchBoxByType,
@@ -29,6 +37,26 @@ export default {
       required: false,
       default: false,
     },
+    defaultText: {
+      type: String,
+      required: false,
+      default: null,
+    },
+    includeHeaders: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    emptyNamespaceTitle: {
+      type: String,
+      required: false,
+      default: null,
+    },
+    includeEmptyNamespace: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -37,6 +65,12 @@ export default {
     };
   },
   computed: {
+    defaultTextDisplay() {
+      return this.defaultText || this.$options.i18n.DEFAULT_TEXT;
+    },
+    emptyNamespace() {
+      return this.emptyNamespaceTitle || this.$options.i18n.DEFAULT_EMPTY_NAMESPACE_TEXT;
+    },
     hasUserNamespaces() {
       return this.data.user?.length;
     },
@@ -52,13 +86,16 @@ export default {
       return filterByName(this.data.user, this.searchTerm);
     },
     selectedNamespaceText() {
-      return this.selectedNamespace?.humanName || this.$options.i18n.DEFAULT_TEXT;
+      return this.selectedNamespace?.humanName || this.defaultTextDisplay;
     },
   },
   methods: {
     handleSelect(item) {
       this.selectedNamespace = item;
       this.$emit('select', item);
+    },
+    handleSelectEmptyNamespace() {
+      this.handleSelect({ id: -1, humanName: this.emptyNamespace });
     },
   },
   i18n,
@@ -69,8 +106,16 @@ export default {
     <template #header>
       <gl-search-box-by-type v-model.trim="searchTerm" />
     </template>
+    <div v-if="includeEmptyNamespace">
+      <gl-dropdown-item class="qa-namespaces-list-item" @click="handleSelectEmptyNamespace()">
+        {{ emptyNamespace }}
+      </gl-dropdown-item>
+      <gl-dropdown-divider />
+    </div>
     <div v-if="hasGroupNamespaces" class="qa-namespaces-list-groups">
-      <gl-dropdown-section-header>{{ $options.i18n.GROUPS }}</gl-dropdown-section-header>
+      <gl-dropdown-section-header v-if="includeHeaders">{{
+        $options.i18n.GROUPS
+      }}</gl-dropdown-section-header>
       <gl-dropdown-item
         v-for="item in filteredGroupNamespaces"
         :key="item.id"
@@ -80,7 +125,9 @@ export default {
       >
     </div>
     <div v-if="hasUserNamespaces" class="qa-namespaces-list-users">
-      <gl-dropdown-section-header>{{ $options.i18n.USERS }}</gl-dropdown-section-header>
+      <gl-dropdown-section-header v-if="includeHeaders">{{
+        $options.i18n.USERS
+      }}</gl-dropdown-section-header>
       <gl-dropdown-item
         v-for="item in filteredUserNamespaces"
         :key="item.id"
