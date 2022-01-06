@@ -5,7 +5,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { runnerData } from 'jest/runner/mock_data';
-import createFlash, { FLASH_TYPES } from '~/flash';
+import { createAlert, VARIANT_SUCCESS } from '~/flash';
 import RunnerUpdateForm from '~/runner/components/runner_update_form.vue';
 import runnerUpdateMutation from '~/runner/graphql/runner_update.mutation.graphql';
 
@@ -53,9 +53,9 @@ describe('RunnerUpdateForm', () => {
       input: expect.objectContaining(submittedRunner),
     });
 
-    expect(createFlash).toHaveBeenLastCalledWith({
+    expect(createAlert).toHaveBeenLastCalledWith({
       message: expect.stringContaining('saved'),
-      type: FLASH_TYPES.SUCCESS,
+      variant: VARIANT_SUCCESS,
     });
 
     expect(findSubmitDisabledAttr()).toBeUndefined();
