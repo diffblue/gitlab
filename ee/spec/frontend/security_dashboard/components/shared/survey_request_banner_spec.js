@@ -1,127 +1,55 @@
-import { GlBanner, GlButton } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
-import SurveyRequestBanner from 'ee/security_dashboard/components/shared/survey_request_banner.vue';
+import { mount } from '@vue/test-utils';
+import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import {
   SURVEY_BANNER_LOCAL_STORAGE_KEY,
   SURVEY_BANNER_CURRENT_ID,
+  SURVEY_LINK,
+  SURVEY_DAYS_TO_ASK_LATER,
+  SURVEY_TITLE,
+  SURVEY_TOAST_MESSAGE,
+  SURVEY_BUTTON_TEXT,
+  SURVEY_DESCRIPTION,
 } from 'ee/security_dashboard/constants';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
-import toast from '~/vue_shared/plugins/global_toast';
 
-jest.mock('~/vue_shared/plugins/global_toast');
+import SurveyRequestBanner from 'ee/security_dashboard/components/shared/survey_request_banner.vue';
+import sharedSurveyBanner from 'ee/vue_shared/survey_banner/survey_banner.vue';
 
-describe('Survey Request Banner component', () => {
+describe('SurveyRequestBanner Component', () => {
   let wrapper;
+  const findSharedSurveyBanner = () => wrapper.findComponent(sharedSurveyBanner);
 
-  const surveyRequestSvgPath = 'icon.svg';
+  const SURVEY_REQUEST_SVG_PATH = 'foo.svg';
 
-  const findGlBanner = () => wrapper.findComponent(GlBanner);
-  const findAskLaterButton = () => wrapper.findByTestId('ask-later-button');
-
-  const getOffsetDateString = (days) => {
-    const date = new Date();
-    date.setDate(date.getDate() + days);
-    return date.toISOString();
-  };
-
-  const createWrapper = () => {
+  const createComponent = (sbomSurvey = { sbomSurvey: true }) => {
     wrapper = extendedWrapper(
-      shallowMount(SurveyRequestBanner, {
-        provide: { surveyRequestSvgPath },
-        stubs: { GlBanner, GlButton, LocalStorageSync },
+      mount(SurveyRequestBanner, {
+        provide: { glFeatures: { ...sbomSurvey }, surveyRequestSvgPath: SURVEY_REQUEST_SVG_PATH },
       }),
     );
   };
 
-  beforeEach(() => {
-    gon.features = {};
-  });
-
   afterEach(() => {
     wrapper.destroy();
-    localStorage.removeItem(SURVEY_BANNER_LOCAL_STORAGE_KEY);
   });
 
-  describe('feature flag disabled', () => {
-    it('should not show banner regardless of localStorage value', () => {
-      [
-        getOffsetDateString(1),
-        getOffsetDateString(-1),
-        SURVEY_BANNER_CURRENT_ID,
-        'SOME OTHER ID',
-      ].forEach((localStorageValue) => {
-        localStorage.setItem(SURVEY_BANNER_LOCAL_STORAGE_KEY, localStorageValue);
-        createWrapper();
-
-        expect(findGlBanner().exists()).toBe(false);
-      });
-    });
+  beforeEach(() => {
+    createComponent();
   });
 
-  describe('feature flag enabled', () => {
-    beforeEach(() => {
-      gon.features.vulnerabilityManagementSurvey = true;
+  it('renders the SurveyRequestBanner component with the right props', () => {
+    const surveyBanner = findSharedSurveyBanner();
+    expect(surveyBanner.exists()).toBe(true);
+
+    expect(surveyBanner.props()).toMatchObject({
+      bannerId: SURVEY_BANNER_CURRENT_ID,
+      storageKey: SURVEY_BANNER_LOCAL_STORAGE_KEY,
+      daysToAskLater: SURVEY_DAYS_TO_ASK_LATER,
+      surveyLink: SURVEY_LINK,
+      svgPath: SURVEY_REQUEST_SVG_PATH,
+      title: SURVEY_TITLE,
+      toastMessage: SURVEY_TOAST_MESSAGE,
     });
-
-    it('shows the banner with the correct components and props', () => {
-      createWrapper();
-      const { title, buttonText, description } = wrapper.vm.$options.i18n;
-
-      expect(findGlBanner().html()).toContain(description);
-      expect(findAskLaterButton().exists()).toBe(true);
-      expect(findGlBanner().props()).toMatchObject({
-        title,
-        buttonText,
-        svgPath: surveyRequestSvgPath,
-      });
-    });
-
-    it.each`
-      showOrHide | phrase                     | localStorageValue           | isShown
-      ${'hides'} | ${'a future date'}         | ${getOffsetDateString(1)}   | ${false}
-      ${'shows'} | ${'a past date'}           | ${getOffsetDateString(-1)}  | ${true}
-      ${'hides'} | ${'the current survey ID'} | ${SURVEY_BANNER_CURRENT_ID} | ${false}
-      ${'shows'} | ${'a different survey ID'} | ${'SOME OTHER ID'}          | ${true}
-    `(
-      '$showOrHide the banner if the localStorage value is $phrase',
-      async ({ localStorageValue, isShown }) => {
-        localStorage.setItem(SURVEY_BANNER_LOCAL_STORAGE_KEY, localStorageValue);
-        createWrapper();
-        await wrapper.vm.$nextTick();
-
-        expect(findGlBanner().exists()).toBe(isShown);
-      },
-    );
-  });
-
-  describe('closing the banner', () => {
-    beforeEach(() => {
-      gon.features.vulnerabilityManagementSurvey = true;
-    });
-
-    it('hides the banner and will set it to reshow later if the "Ask again later" button is clicked', async () => {
-      createWrapper();
-      expect(findGlBanner().exists()).toBe(true);
-
-      findAskLaterButton().vm.$emit('click');
-      await wrapper.vm.$nextTick();
-      const date = new Date(localStorage.getItem(SURVEY_BANNER_LOCAL_STORAGE_KEY));
-
-      expect(findGlBanner().exists()).toBe(false);
-      expect(toast).toHaveBeenCalledTimes(1);
-      expect(date > new Date()).toBe(true);
-    });
-
-    it('hides the banner and sets it to never show again if the close button is clicked', async () => {
-      createWrapper();
-      expect(findGlBanner().exists()).toBe(true);
-
-      findGlBanner().vm.$emit('close');
-      await wrapper.vm.$nextTick();
-
-      expect(findGlBanner().exists()).toBe(false);
-      expect(localStorage.getItem(SURVEY_BANNER_LOCAL_STORAGE_KEY)).toBe(SURVEY_BANNER_CURRENT_ID);
-    });
+    expect(surveyBanner.props('buttonText')).toContain(SURVEY_BUTTON_TEXT);
+    expect(surveyBanner.props('description')).toContain(SURVEY_DESCRIPTION);
   });
 });
