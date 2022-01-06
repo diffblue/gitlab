@@ -29,19 +29,43 @@ RSpec.describe AppSec::Fuzzing::Coverage::Corpus, type: :model do
 
       subject(:corpus) { build(:corpus, package: package, project: package.project) }
 
-      it 'raises the error on adding the package file with different format' do
-        expect { corpus.save! }.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Package should have an associated package file')
+      context 'without a package file associated to the package' do
+        it 'raises the error' do
+          expect { corpus.save! }.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Package should have an associated package file')
+        end
+      end
+
+      context 'with a package file associated to the package' do
+        before do
+          create(:package_file, :generic_zip, package: package)
+        end
+
+        it 'saves the record successfully' do
+          expect(corpus.save).to be true
+        end
       end
     end
 
     describe 'validate_file_format' do
-      let(:package_file) { create(:package_file) }
-      let(:package) { package_file.package }
+      let(:xml_package_file) { create(:package_file, :xml) }
+      let(:package) { xml_package_file.package }
 
       subject(:corpus) { build(:corpus, package: package, project: package.project) }
 
-      it 'raises the error on adding the package file with different format' do
-        expect { corpus.save! }.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Package format is not supported')
+      context 'with an invalid last package file' do
+        it 'raises the error on adding the package file with different format' do
+          expect { corpus.save! }.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Package format is not supported')
+        end
+      end
+
+      context 'with a valid last package file' do
+        before do
+          create(:package_file, :generic_zip, package: package)
+        end
+
+        it 'saves the record successfully' do
+          expect(corpus.save).to be true
+        end
       end
     end
   end
