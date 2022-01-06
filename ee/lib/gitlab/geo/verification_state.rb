@@ -35,7 +35,7 @@ module Gitlab
         scope :verification_failed, -> { available_verifiables.with_verification_state(:verification_failed) }
         scope :checksummed, -> { where.not(verification_checksum: nil) }
         scope :not_checksummed, -> { where(verification_checksum: nil) }
-        scope :verification_timed_out, -> { verification_started.where("verification_started_at < ?", VERIFICATION_TIMEOUT.ago) }
+        scope :verification_timed_out, -> { available_verifiables.where(verification_arel_table[:verification_state].eq(1)).where(verification_arel_table[:verification_started_at].lt(VERIFICATION_TIMEOUT.ago)) }
         scope :verification_retry_due, -> { where(verification_arel_table[:verification_retry_at].eq(nil).or(verification_arel_table[:verification_retry_at].lt(Time.current))) }
         scope :needs_verification, -> { available_verifiables.merge(with_verification_state(:verification_pending).or(with_verification_state(:verification_failed).verification_retry_due)) }
         scope :needs_reverification, -> { verification_succeeded.where("verified_at < ?", ::Gitlab::Geo.current_node.minimum_reverification_interval.days.ago) }
@@ -231,6 +231,14 @@ module Gitlab
           verification_state_table_class.arel_table
         end
 
+        # rubocop:disable CodeReuse/ActiveRecord
+        def verification_timed_out_batch_query
+          return verification_timed_out unless separate_verification_state_table?
+
+          verification_state_table_class.where(self.verification_state_model_key => verification_timed_out)
+        end
+        # rubocop:enable CodeReuse/ActiveRecord
+
         # Fail verification for records which started verification a long time ago
         def fail_verification_timeouts
           attrs = {
@@ -242,7 +250,7 @@ module Gitlab
             verified_at: Time.current
           }
 
-          verification_timed_out.each_batch do |relation|
+          verification_timed_out_batch_query.each_batch do |relation|
             relation.update_all(attrs)
           end
         end

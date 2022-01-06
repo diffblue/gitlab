@@ -48,7 +48,7 @@ module EE
       allow(::Gitlab::Geo).to receive(:geo_database_configured?).and_call_original
     end
 
-    def stub_dummy_replicator_class
+    def stub_dummy_replicator_class(model_class: 'DummyModel')
       stub_const('Geo::DummyReplicator', Class.new(::Gitlab::Geo::Replicator))
 
       ::Geo::DummyReplicator.class_eval do
@@ -56,7 +56,7 @@ module EE
         event :another_test
 
         def self.model
-          ::DummyModel
+          model_class.constantize
         end
 
         def handle_after_create_commit
@@ -119,6 +119,113 @@ module EE
       ActiveRecord::Schema.define do
         drop_table :dummy_models, force: true
       end
+    end
+
+    # Example:
+    #
+    # before(:all) do
+    #   create_dummy_model_with_separate_state_table
+    # end
+
+    # after(:all) do
+    #   drop_dummy_model_with_separate_state_table
+    # end
+
+    # before do
+    #   stub_dummy_model_with_separate_state_class
+    # end
+
+    def create_dummy_model_with_separate_state_table
+      ActiveRecord::Schema.define do
+        create_table :_test_dummy_model_with_separate_states, force: true
+      end
+
+      ActiveRecord::Schema.define do
+        create_table :_test_dummy_model_states, id: false, force: true do |t|
+          t.bigint :_test_dummy_model_with_separate_state_id
+          t.binary :verification_checksum
+          t.integer :verification_state
+          t.datetime_with_timezone :verification_started_at
+          t.datetime_with_timezone :verified_at
+          t.datetime_with_timezone :verification_retry_at
+          t.integer :verification_retry_count
+          t.text :verification_failure
+        end
+      end
+    end
+
+    def drop_dummy_model_with_separate_state_table
+      ActiveRecord::Schema.define do
+        drop_table :_test_dummy_model_with_separate_states, force: true
+      end
+
+      ActiveRecord::Schema.define do
+        drop_table :_test_dummy_model_states, force: true
+      end
+    end
+
+    def stub_dummy_model_with_separate_state_class
+      stub_const('TestDummyModelWithSeparateState', Class.new(ApplicationRecord))
+
+      TestDummyModelWithSeparateState.class_eval do
+        self.table_name = '_test_dummy_model_with_separate_states'
+
+        include ::Gitlab::Geo::ReplicableModel
+        include ::Gitlab::Geo::VerificationState
+
+        with_replicator Geo::DummyReplicator
+
+        has_one :_test_dummy_model_state,
+          autosave: false,
+          inverse_of: :_test_dummy_model_with_separate_state,
+          foreign_key: :_test_dummy_model_with_separate_state_id
+
+        after_save :save_verification_details
+
+        delegate :verification_retry_at, :verification_retry_at=,
+                 :verified_at, :verified_at=,
+                 :verification_checksum, :verification_checksum=,
+                 :verification_failure, :verification_failure=,
+                 :verification_retry_count, :verification_retry_count=,
+                 :verification_state=, :verification_state,
+                 :verification_started_at=, :verification_started_at,
+          to: :_test_dummy_model_state, allow_nil: true
+
+        scope :available_verifiables, -> { joins(:_test_dummy_model_state) }
+
+        def verification_state_object
+          _test_dummy_model_state
+        end
+
+        def self.replicables_for_current_secondary(primary_key_in)
+          self.primary_key_in(primary_key_in)
+        end
+
+        def self.verification_state_table_class
+          TestDummyModelState
+        end
+
+        private
+
+        def _test_dummy_model_state
+          super || build__test_dummy_model_state
+        end
+      end
+
+      TestDummyModelWithSeparateState.reset_column_information
+
+      stub_const('TestDummyModelState', Class.new(ApplicationRecord))
+
+      TestDummyModelState.class_eval do
+        include EachBatch
+
+        self.table_name = '_test_dummy_model_states'
+        self.primary_key = '_test_dummy_model_with_separate_state_id'
+
+        belongs_to :_test_dummy_model_with_separate_state, inverse_of: :_test_dummy_model_state
+      end
+
+      TestDummyModelState.reset_column_information
     end
   end
 end
