@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::BackgroundMigration::MigrateDevopsSegmentsToGroups, schema: 20210128114526 do
+RSpec.describe Gitlab::BackgroundMigration::MigrateDevopsSegmentsToGroups, schema: 20210301200959 do
   let(:segments_table) { table(:analytics_devops_adoption_segments) }
   let(:selections_table) { table(:analytics_devops_adoption_segment_selections) }
   let(:namespaces_table) { table(:namespaces) }
