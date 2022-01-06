@@ -34,4 +34,10 @@ RSpec.describe Ci::Minutes::AdditionalPack, type: :model do
       it { is_expected.not_to validate_uniqueness_of(:purchase_xid) }
     end
   end
+
+  it_behaves_like 'cleanup by a loose foreign key' do
+    let!(:model) { create(:ci_minutes_additional_pack) }
+
+    let!(:parent) { model.namespace }
+  end
 end
