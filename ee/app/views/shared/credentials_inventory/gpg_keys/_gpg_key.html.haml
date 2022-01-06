@@ -1,6 +1,5 @@
 - verified = gpg_key.verified?
-- verified_css_classes = %w(badge gl-badge)
-- verified_css_classes << (verified ? 'badge-success': 'badge-danger')
+- variant = verified ? :success : :danger
 - verified_text = verified ? _('Verified') : _('Unverified')
 
 .gl-responsive-table-row{ role: 'row', data: { qa_selector: 'credentials_gpg_key_row_content' } }
@@ -19,5 +18,4 @@
     .table-mobile-header{ role: 'rowheader' }
       = _('Status')
     .table-mobile-content
-      %div{ class: verified_css_classes }
-        = verified_text
+      = gl_badge_tag verified_text, variant: variant
