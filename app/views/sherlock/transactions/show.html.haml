@@ -8,11 +8,11 @@
   %li
     %a{ href: "#tab-queries", data: { toggle: "tab" } }
       = t('sherlock.queries')
-      = gl_badge_tag @transaction.queries.length.to_s, variant: :pill
+      = gl_badge_tag @transaction.queries.length.to_s
   %li
     %a{ href: "#tab-file-samples", data: { toggle: "tab" } }
       = t('sherlock.file_samples')
-      = gl_badge_tag @transaction.file_samples.length.to_s, variant: :pill
+      = gl_badge_tag @transaction.file_samples.length.to_s
 
 .row-content-block
   .float-right
