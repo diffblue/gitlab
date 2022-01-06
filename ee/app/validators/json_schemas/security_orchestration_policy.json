@@ -315,10 +315,11 @@
             "type": "array",
             "additionalItems": false,
             "items": {
-              "required": [
-                "type",
-                "approvals_required",
-                "approvers"
+              "anyOf":[
+                {"required": ["type","approvals_required","user_approvers"]},
+                {"required": ["type","approvals_required","user_approvers_ids"]},
+                {"required": ["type","approvals_required","group_approvers"]},
+                {"required": ["type","approvals_required","group_approvers_ids"]}
               ],
               "type": "object",
               "properties": {
@@ -331,12 +332,36 @@
                 "approvals_required": {
                   "type": "integer"
                 },
-                "approvers": {
+                "user_approvers": {
                   "type": "array",
                   "additionalItems": false,
                   "items": {
                     "minLength": 1,
                     "type": "string"
+                  }
+                },
+                "user_approvers_ids": {
+                  "type": "array",
+                  "additionalItems": false,
+                  "items": {
+                    "minLength": 1,
+                    "type": "integer"
+                  }
+                },
+                "group_approvers": {
+                  "type": "array",
+                  "additionalItems": false,
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "group_approvers_ids": {
+                  "type": "array",
+                  "additionalItems": false,
+                  "items": {
+                    "minLength": 1,
+                    "type": "integer"
                   }
                 }
               }
