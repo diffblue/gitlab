@@ -73,6 +73,9 @@ module GitalySetup
   end
 
   def bundle_path
+    # Allow the user to override BUNDLE_PATH if they need to
+    return ENV['GITALY_TEST_BUNDLE_PATH'] if ENV['GITALY_TEST_BUNDLE_PATH']
+
     if ENV['CI']
       expand_path('vendor/gitaly-ruby')
     else
