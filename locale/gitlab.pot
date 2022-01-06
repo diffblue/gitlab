@@ -31074,6 +31074,9 @@ msgstr ""
 msgid "Search forks"
 msgstr ""
 
+msgid "Search groups"
+msgstr ""
+
 msgid "Search iterations"
 msgstr ""
 
@@ -37144,6 +37147,36 @@ msgid "To-do item successfully marked as done."
 msgstr ""
 
 msgid "Today"
+msgstr ""
+
+msgid "Todos|Filter by author"
+msgstr ""
+
+msgid "Todos|Filter by group"
+msgstr ""
+
+msgid "Todos|Filter by project"
+msgstr ""
+
+msgid "Todos|It's how you always know what to work on next."
+msgstr ""
+
+msgid "Todos|Mark all as done"
+msgstr ""
+
+msgid "Todos|Nothing is on your to-do list. Nice work!"
+msgstr ""
+
+msgid "Todos|Undo mark all as done"
+msgstr ""
+
+msgid "Todos|When an issue or merge request is assigned to you, or when you receive a %{strongStart}@mention%{strongEnd} in a comment, this automatically triggers a new item in your To-Do List."
+msgstr ""
+
+msgid "Todos|You're all done!"
+msgstr ""
+
+msgid "Todos|Your To-Do List shows what to work on next"
 msgstr ""
 
 msgid "Toggle GitLab Next"
