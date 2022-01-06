@@ -17,6 +17,9 @@ module Types
     field :iid, GraphQL::Types::ID, null: false,
           description: 'Internal ID of the iteration.'
 
+    field :ordinal_number, GraphQL::Types::Int, method: :sequence, null: false,
+          description: "Ordinal number of the iteration. The number represents the iteration's numerical position when the cadence's iterations are sorted by the start and end date. The earliest starting and ending iteration is assigned 1."
+
     field :title, GraphQL::Types::String, null: false,
           description: 'Title of the iteration.'
 

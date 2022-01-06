@@ -11527,6 +11527,7 @@ Represents an iteration object.
 | <a id="iterationid"></a>`id` | [`ID!`](#id) | ID of the iteration. |
 | <a id="iterationiid"></a>`iid` | [`ID!`](#id) | Internal ID of the iteration. |
 | <a id="iterationiterationcadence"></a>`iterationCadence` | [`IterationCadence!`](#iterationcadence) | Cadence of the iteration. |
+| <a id="iterationordinalnumber"></a>`ordinalNumber` | [`Int!`](#int) | Ordinal number of the iteration. The number represents the iteration's numerical position when the cadence's iterations are sorted by the start and end date. The earliest starting and ending iteration is assigned 1. |
 | <a id="iterationreport"></a>`report` | [`TimeboxReport`](#timeboxreport) | Historically accurate report about the timebox. |
 | <a id="iterationscopedpath"></a>`scopedPath` | [`String`](#string) | Web path of the iteration, scoped to the query parent. Only valid for Project parents. Returns null in other contexts. |
 | <a id="iterationscopedurl"></a>`scopedUrl` | [`String`](#string) | Web URL of the iteration, scoped to the query parent. Only valid for Project parents. Returns null in other contexts. |

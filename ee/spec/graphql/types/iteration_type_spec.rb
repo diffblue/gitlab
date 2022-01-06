@@ -9,7 +9,7 @@ RSpec.describe GitlabSchema.types['Iteration'] do
 
   it 'has the expected fields' do
     expected_fields = %w[
-      id id title description state web_path web_url scoped_path scoped_url
+      id iid ordinal_number title description state web_path web_url scoped_path scoped_url
       due_date start_date created_at updated_at report iteration_cadence
     ]
 
