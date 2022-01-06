@@ -11,7 +11,6 @@ module Vulnerabilities
                  foreign_key: 'vulnerability_occurrence_id',
                  optional: false
 
-      validates :summary, length: { maximum: 8_000_000 }
       validates :data, length: { maximum: 16_000_000 }, presence: true
     end
   end
