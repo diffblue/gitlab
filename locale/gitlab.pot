@@ -1160,6 +1160,9 @@ msgstr ""
 msgid "(max size 15 MB)"
 msgstr ""
 
+msgid "(optional)"
+msgstr ""
+
 msgid "(removed)"
 msgstr ""
 
