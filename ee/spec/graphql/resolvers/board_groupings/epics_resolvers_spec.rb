@@ -64,7 +64,7 @@ RSpec.describe Resolvers::BoardGroupings::EpicsResolver do
       it 'finds all epics for issues in the group board' do
         result = resolve_board_epics(group_board)
 
-        expect(result).to match_array([epic1, epic2, epic3])
+        expect(result).to eq([epic1, epic2, epic3])
       end
 
       it 'finds only epics for issues matching issue filters' do

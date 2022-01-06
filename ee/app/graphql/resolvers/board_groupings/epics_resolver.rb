@@ -36,6 +36,7 @@ module Resolvers
         list_service.execute.in_epics(accessible_epics).distinct_epic_ids
       end
 
+      # rubocop: disable CodeReuse/ActiveRecord
       def accessible_epics
         EpicsFinder.new(
           context[:current_user],
@@ -43,8 +44,9 @@ module Resolvers
           state: :opened,
           include_ancestor_groups: true,
           include_descendant_groups: board.group_board?
-        ).execute
+        ).execute.reorder(nil) # Not having order here increases performance, epics will be ordering on parent query anyway.
       end
+      # rubocop: enable CodeReuse/ActiveRecord
 
       def group
         board.project_board? ? board.project.group : board.group
