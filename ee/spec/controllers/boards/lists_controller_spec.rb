@@ -33,7 +33,7 @@ RSpec.describe Boards::ListsController do
 
     context 'with unauthorized user' do
       before do
-        group.group_member(user).destroy!
+        group.member(user).destroy!
       end
 
       it 'returns a forbidden 403 response' do

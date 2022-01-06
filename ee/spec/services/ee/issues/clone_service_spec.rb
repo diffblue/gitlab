@@ -78,7 +78,7 @@ RSpec.describe Issues::CloneService do
 
         context 'user can not update the epic' do
           before do
-            group.group_member(user).destroy!
+            group.member(user).destroy!
             old_project.add_reporter(user)
             new_project.add_reporter(user)
           end
