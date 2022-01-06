@@ -133,5 +133,10 @@ module EE
         prevent_merge_requests_committers_approval
       ]
     end
+
+    override :registration_features_can_be_prompted?
+    def registration_features_can_be_prompted?
+      !::Gitlab::CurrentSettings.usage_ping_enabled? && !License.current.present?
+    end
   end
 end

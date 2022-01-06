@@ -41,30 +41,36 @@ RSpec.describe 'projects/edit' do
     end
   end
 
-  context 'repository size limit' do
-    context 'feature is disabled' do
+  describe 'prompt user about registration features' do
+    let(:message) { s_("RegistrationFeatures|Want to %{feature_title} for free?") % { feature_title: s_('RegistrationFeatures|use this feature') } }
+
+    context 'with no license and service ping disabled' do
       before do
-        stub_licensed_features(repository_size_limit: false)
+        allow(License).to receive(:current).and_return(nil)
+        stub_application_setting(usage_ping_enabled: false)
 
         render
       end
 
-      it('renders registration features prompt without activation link') do
+      it 'renders registration features CTA' do
+        expect(rendered).to have_content(message)
+        expect(rendered).to have_link(s_('RegistrationFeatures|Registration Features Program'))
+        expect(rendered).to have_link(s_('RegistrationFeatures|Enable Service Ping and register for this feature.'))
         expect(rendered).to have_field('project_disabled_repository_size_limit', disabled: true)
-        expect(rendered).to have_link 'Registration Features Program'
-        expect(rendered).not_to have_link 'Enable Service Ping and register for this feature.'
+      end
+    end
+
+    context 'with a valid license and service ping disabled' do
+      before do
+        license = build(:license)
+        allow(License).to receive(:current).and_return(license)
+        stub_application_setting(usage_ping_enabled: false)
+
+        render
       end
 
-      context 'user has an active license' do
-        before do
-          assign(:license, create(:license))
-
-          render
-        end
-
-        it('renders registration features prompt with activation link') do
-          expect(rendered).to have_link 'Enable Service Ping and register for this feature.', href: metrics_and_profiling_admin_application_settings_path(anchor: 'js-usage-settings')
-        end
+      it 'does not render registration features CTA' do
+        expect(rendered).not_to have_content(message)
       end
     end
   end
