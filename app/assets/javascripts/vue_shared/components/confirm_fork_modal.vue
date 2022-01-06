@@ -1,0 +1,67 @@
+<script>
+import { GlModal } from '@gitlab/ui';
+import { __ } from '~/locale';
+
+export default {
+  name: 'ConfirmForkModal',
+  components: {
+    GlModal,
+  },
+  props: {
+    isVisible: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    modalId: {
+      type: String,
+      required: true,
+    },
+    forkPath: {
+      type: String,
+      required: true,
+    },
+  },
+  computed: {
+    btnActions() {
+      return {
+        cancel: { text: __('Cancel') },
+        primary: {
+          text: __('Fork project'),
+          attributes: {
+            type: 'submit',
+            href: this.forkPath,
+            variant: 'confirm',
+            'data-qa-selector': 'fork_project_button',
+            'data-method': 'post',
+          },
+        },
+      };
+    },
+  },
+  methods: {
+    handleHide() {
+      this.$emit('hide');
+    },
+  },
+  i18n: {
+    title: __('Fork project?'),
+    message: __(
+      'You can’t edit files directly in this project. Fork this project and submit a merge request with your changes.',
+    ),
+  },
+};
+</script>
+<template>
+  <!-- v-bind="$attrs" -->
+  <gl-modal
+    :visible="isVisible"
+    :modal-id="modalId"
+    :title="$options.i18n.title"
+    :action-primary="btnActions.primary"
+    :action-cancel="btnActions.cancel"
+    @hide="handleHide"
+  >
+    <p>{{ $options.i18n.message }}</p>
+  </gl-modal>
+</template>
