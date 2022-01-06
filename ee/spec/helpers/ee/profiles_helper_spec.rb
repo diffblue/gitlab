@@ -87,50 +87,30 @@ RSpec.describe ProfilesHelper do
   describe '#ssh_key_expiration_policy_enabled?' do
     subject { helper.ssh_key_expiration_policy_enabled? }
 
-    context 'when feature flag is enabled' do
+    context 'when is licensed and used' do
       before do
-        stub_feature_flags(ff_limit_ssh_key_lifetime: true)
+        stub_licensed_features(ssh_key_expiration_policy: true)
+        stub_application_setting(max_ssh_key_lifetime: 10)
       end
 
-      context 'when is licensed and used' do
-        before do
-          stub_licensed_features(ssh_key_expiration_policy: true)
-          stub_application_setting(max_ssh_key_lifetime: 10)
-        end
-
-        it { is_expected.to be_truthy }
-      end
-
-      context 'when is not licensed' do
-        before do
-          stub_licensed_features(ssh_key_expiration_policy: false)
-        end
-
-        it { is_expected.to be_falsey }
-      end
-
-      context 'when is licensed but not used' do
-        before do
-          stub_licensed_features(ssh_key_expiration_policy: true)
-          stub_application_setting(max_ssh_key_lifetime: nil)
-        end
-
-        it { is_expected.to be_falsey }
-      end
+      it { is_expected.to be_truthy }
     end
 
-    context 'when feature flag is disabled' do
+    context 'when is not licensed' do
       before do
-        stub_feature_flags(ff_limit_ssh_key_lifetime: false)
+        stub_licensed_features(ssh_key_expiration_policy: false)
       end
-      context 'when is licensed and used' do
-        before do
-          stub_licensed_features(ssh_key_expiration_policy: true)
-          stub_application_setting(max_ssh_key_lifetime: 10)
-        end
 
-        it { is_expected.to be_falsey }
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when is licensed but not used' do
+      before do
+        stub_licensed_features(ssh_key_expiration_policy: true)
+        stub_application_setting(max_ssh_key_lifetime: nil)
       end
+
+      it { is_expected.to be_falsey }
     end
   end
 end

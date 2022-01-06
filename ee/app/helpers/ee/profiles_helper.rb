@@ -23,12 +23,12 @@ module EE
     end
 
     def ssh_key_expiration_policy_licensed?
-      License.feature_available?(:ssh_key_expiration_policy) && ::Feature.enabled?(:ff_limit_ssh_key_lifetime, default_enabled: :yaml)
+      License.feature_available?(:ssh_key_expiration_policy)
     end
 
     override :ssh_key_expiration_policy_enabled?
     def ssh_key_expiration_policy_enabled?
-      ::Gitlab::CurrentSettings.max_ssh_key_lifetime && ssh_key_expiration_policy_licensed? && ::Feature.enabled?(:ff_limit_ssh_key_lifetime, default_enabled: :yaml)
+      ::Gitlab::CurrentSettings.max_ssh_key_lifetime && ssh_key_expiration_policy_licensed?
     end
   end
 end
