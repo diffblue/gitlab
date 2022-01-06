@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "required": [
+    "status",
+    "user"
+  ],
+  "properties": {
+    "status": {
+      "type": "string"
+    },
+    "user": {
+      "type": "object",
+      "items": {
+        "$ref": "../../../../../../../spec/fixtures/api/schemas/public_api/v4/user/basic.json"
+      }
+    }
+  },
+  "additionalProperties": false
+}
