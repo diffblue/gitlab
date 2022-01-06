@@ -48,7 +48,7 @@ RSpec.describe Security::CreateOrchestrationPolicyWorker do
               enabled: true,
               rules: [{ type: 'scan_finding', branches: %w[production], vulnerabilities_allowed: 0, severity_levels: %w[critical], scanners: %w[container_scanning], vulnerability_states: %w[newly_detected] }],
               actions: [
-                { type: 'require_approval', approvals_required: 1, approvers: %w[admin] }
+                { type: 'require_approval', approvals_required: 1, user_approvers: %w[admin] }
               ]
             }
           ]
