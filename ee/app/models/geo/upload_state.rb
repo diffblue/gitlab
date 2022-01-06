@@ -2,6 +2,8 @@
 
 module Geo
   class UploadState < ApplicationRecord
+    include EachBatch
+
     self.primary_key = :upload_id
 
     belongs_to :upload, inverse_of: :upload_state
