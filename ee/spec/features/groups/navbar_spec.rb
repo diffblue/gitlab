@@ -191,10 +191,11 @@ RSpec.describe 'Group navbar' do
       it_behaves_like 'verified navigation bar'
     end
 
-    context 'when customer_relations feature flag is enabled' do
+    context 'when customer relations feature and flag is enabled' do
+      let(:group) { create(:group, :crm_enabled) }
+
       before do
         stub_feature_flags(customer_relations: true)
-
         insert_customer_relations_nav(_('Analytics'))
 
         visit group_path(group)

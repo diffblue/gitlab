@@ -27,6 +27,36 @@ namespace :gitlab do
       Rake::Task["gitlab:elastic:index_snippets"].invoke
     end
 
+    desc 'GitLab | Elasticsearch | Enable Elasticsearch search'
+    task enable_search_with_elasticsearch: :environment do
+      if Gitlab::CurrentSettings.elasticsearch_search?
+        puts "Setting `elasticsearch_search` was already enabled."
+      else
+        ApplicationSettings::UpdateService.new(
+          Gitlab::CurrentSettings.current_application_settings,
+          nil,
+          { elasticsearch_search: true }
+        ).execute
+
+        puts "Setting `elasticsearch_search` has been enabled."
+      end
+    end
+
+    desc 'GitLab | Elasticsearch | Disable Elasticsearch search'
+    task disable_search_with_elasticsearch: :environment do
+      if Gitlab::CurrentSettings.elasticsearch_search?
+        ApplicationSettings::UpdateService.new(
+          Gitlab::CurrentSettings.current_application_settings,
+          nil,
+          { elasticsearch_search: false }
+        ).execute
+
+        puts "Setting `elasticsearch_search` has been disabled."
+      else
+        puts "Setting `elasticsearch_search` was already disabled."
+      end
+    end
+
     desc "GitLab | Elasticsearch | Index projects in the background"
     task index_projects: :environment do
       print "Enqueuing projects…"

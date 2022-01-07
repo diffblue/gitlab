@@ -75,7 +75,7 @@ class GroupPolicy < Namespaces::GroupProjectNamespaceSharedPolicy
   with_scope :subject
   condition(:has_project_with_service_desk_enabled) { @subject.has_project_with_service_desk_enabled? }
 
-  condition(:crm_enabled, score: 0, scope: :subject) { Feature.enabled?(:customer_relations, @subject) }
+  condition(:crm_enabled, score: 0, scope: :subject) { Feature.enabled?(:customer_relations, @subject) && @subject.crm_enabled? }
 
   with_scope :subject
   condition(:group_runner_registration_allowed, score: 0, scope: :subject) do

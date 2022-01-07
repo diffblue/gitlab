@@ -7,6 +7,54 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic, :silence_stdout 
     Rake.application.rake_require 'tasks/gitlab/elastic'
   end
 
+  describe 'when enabling and disabling elastic settings' do
+    let(:settings) { ::Gitlab::CurrentSettings }
+
+    before do
+      settings.update!(elasticsearch_search: es_enabled)
+    end
+
+    describe 'when enabling elasticsearch with setting initially off' do
+      subject { run_rake_task('gitlab:elastic:enable_search_with_elasticsearch') }
+
+      let(:es_enabled) { false }
+
+      it 'enables elasticsearch' do
+        expect { subject }.to change { settings.elasticsearch_search }.from(false).to(true)
+      end
+    end
+
+    describe 'when enabling elasticsearch with setting initially on' do
+      subject { run_rake_task('gitlab:elastic:enable_search_with_elasticsearch') }
+
+      let(:es_enabled) { true }
+
+      it 'does nothing when elasticsearch is already enabled' do
+        expect { subject }.not_to change { settings.elasticsearch_search }
+      end
+    end
+
+    describe 'when disabling elasticsearch with setting initially on' do
+      subject { run_rake_task('gitlab:elastic:disable_search_with_elasticsearch') }
+
+      let(:es_enabled) { true }
+
+      it 'disables elasticsearch' do
+        expect { subject }.to change { settings.elasticsearch_search }.from(true).to(false)
+      end
+    end
+
+    describe 'when disabling elasticsearch with setting initially off' do
+      subject { run_rake_task('gitlab:elastic:disable_search_with_elasticsearch') }
+
+      let(:es_enabled) { false }
+
+      it 'does nothing when elasticsearch is already disabled' do
+        expect { subject }.not_to change { settings.elasticsearch_search }
+      end
+    end
+  end
+
   describe 'create_empty_index' do
     subject { run_rake_task('gitlab:elastic:create_empty_index') }
 

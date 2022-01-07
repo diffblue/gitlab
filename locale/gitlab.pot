@@ -9034,7 +9034,7 @@ msgstr ""
 msgid "Configure a %{codeStart}.gitlab-webide.yml%{codeEnd} file in the %{codeStart}.gitlab%{codeEnd} directory to start using the Web Terminal. %{helpStart}Learn more.%{helpEnd}"
 msgstr ""
 
-msgid "Configure advanced permissions, Large File Storage, and two-factor authentication settings."
+msgid "Configure advanced permissions, Large File Storage, two-factor authentication, and customer relations settings."
 msgstr ""
 
 msgid "Configure existing installation"
@@ -17078,6 +17078,9 @@ msgstr ""
 msgid "GroupSettings|Allow project access token creation"
 msgstr ""
 
+msgid "GroupSettings|Allows creating organizations and contacts and associating them with issues."
+msgstr ""
+
 msgid "GroupSettings|Applied to all subgroups unless overridden by a group owner. Groups already added to the project lose access."
 msgstr ""
 
@@ -17121,6 +17124,9 @@ msgid "GroupSettings|Disable email notifications"
 msgstr ""
 
 msgid "GroupSettings|Disable group mentions"
+msgstr ""
+
+msgid "GroupSettings|Enable customer relations"
 msgstr ""
 
 msgid "GroupSettings|Enable delayed project deletion"
@@ -25810,7 +25816,7 @@ msgstr ""
 msgid "Permissions Help"
 msgstr ""
 
-msgid "Permissions, LFS, 2FA"
+msgid "Permissions and group features"
 msgstr ""
 
 msgid "Personal Access Token"
