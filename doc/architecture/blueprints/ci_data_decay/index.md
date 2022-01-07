@@ -20,7 +20,20 @@ builds [continues to grow exponentially](../ci_scale/index.md).
 GitLab CI/CD has come a long way since the initial release, but the design of
 the data storage for pipeline builds remains almost the same since 2012. In
 2021 we started working on database decomposition and extracting CI/CD data to
-a separate database.
+ia separate database. Now we want to improve the architecture of GitLab CI/CD
+product to enable further scaling.
+
+*Disclaimer: The following contain information related to upcoming products,
+features, and functionality.
+
+It is important to note that the information presented is for informational
+purposes only. Please do not rely on this information for purchasing or
+planning purposes.
+
+As with all projects, the items mentioned in this document and linked pages are
+subject to change or delay. The development, release and timing of any
+products, features, or functionality remain at the sole discretion of GitLab
+Inc.*
 
 ## Goals
 
@@ -158,9 +171,9 @@ everyone to understand the vision described in this architectural blueprint.
 ### Removing pipeline data
 
 While it might be tempting to simply remove old or archived data from our
-databases this should be avoided. We should not permanently remove user data
-unless consent is given to do so. We can, however, move data to a different
-data store, like object storage.
+databases this should be avoided. It is usually not desired to permanently
+remove user data unless consent is given to do so. We can, however, move data
+to a different data store, like object storage.
 
 Archived data can still be needed sometimes (for example for compliance or
 auditing reasons). We want to be able to retrieve this data if needed, as long
@@ -208,7 +221,7 @@ All three tracks can be worked on in parallel:
 
 ## Status
 
-In approval.
+In progress.
 
 ## Who
 
@@ -235,8 +248,8 @@ Domain experts:
 
 | Area                         | Who
 |------------------------------|------------------------|
-| Verify / Pipeline processing | Fabio Pitino           |
-| Verify / Pipeline processing | Marius Bobin           |
+| Verify / Pipeline execution  | Fabio Pitino           |
+| Verify / Pipeline execution  | Marius Bobin           |
 | PostgreSQL Database          | Andreas Brandl         |
 
 <!-- vale gitlab.Spelling = YES -->
