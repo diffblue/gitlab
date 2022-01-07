@@ -21429,6 +21429,39 @@ msgstr ""
 msgid "Locks the discussion."
 msgstr ""
 
+msgid "LoggedOutMarketingHeader|About GitLab"
+msgstr ""
+
+msgid "LoggedOutMarketingHeader|Explore GitLab"
+msgstr ""
+
+msgid "LoggedOutMarketingHeader|Get started"
+msgstr ""
+
+msgid "LoggedOutMarketingHeader|GitLab Learn"
+msgstr ""
+
+msgid "LoggedOutMarketingHeader|GitLab docs"
+msgstr ""
+
+msgid "LoggedOutMarketingHeader|GitLab: the DevOps platform"
+msgstr ""
+
+msgid "LoggedOutMarketingHeader|How GitLab compares"
+msgstr ""
+
+msgid "LoggedOutMarketingHeader|Install GitLab"
+msgstr ""
+
+msgid "LoggedOutMarketingHeader|Pricing"
+msgstr ""
+
+msgid "LoggedOutMarketingHeader|Talk to an expert"
+msgstr ""
+
+msgid "Login"
+msgstr ""
+
 msgid "Login with smartcard"
 msgstr ""
 
@@ -32900,6 +32933,9 @@ msgid "Sign out & Register"
 msgstr ""
 
 msgid "Sign up"
+msgstr ""
+
+msgid "Sign up now"
 msgstr ""
 
 msgid "Sign up was successful! Please confirm your email to sign in."
