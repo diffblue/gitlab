@@ -1,57 +1,91 @@
 <script>
-import { GlAccordion, GlAccordionItem, GlButton, GlLink } from '@gitlab/ui';
-import { parseBoolean } from '~/lib/utils/common_utils';
-import AccessorUtilities from '~/lib/utils/accessor';
-import { BV_COLLAPSE_STATE } from '~/lib/utils/constants';
-import { MR_APPROVALS_PROMO_DISMISSED, MR_APPROVALS_PROMO_I18N } from '../../constants';
+import { GlButton, GlLink, GlCollapse } from '@gitlab/ui';
+import Tracking from '~/tracking';
+import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
+import {
+  MR_APPROVALS_PROMO_DISMISSED,
+  MR_APPROVALS_PROMO_I18N,
+  MR_APPROVALS_PROMO_TRACKING_EVENTS,
+} from '../../constants';
 
-const canUseLocalStorage = AccessorUtilities.canUseLocalStorage();
+const EXPERIMENT_KEY = 'promote_mr_approvals_in_free';
+const trackingMixin = Tracking.mixin({ experiment: EXPERIMENT_KEY });
 
 export default {
   components: {
-    GlAccordion,
-    GlAccordionItem,
     GlButton,
     GlLink,
+    LocalStorageSync,
+    GlCollapse,
   },
+  mixins: [trackingMixin],
   inject: ['learnMorePath', 'promoImageAlt', 'promoImagePath', 'tryNowPath'],
   data() {
     return {
-      userManuallyCollapsed:
-        canUseLocalStorage && parseBoolean(localStorage.getItem(MR_APPROVALS_PROMO_DISMISSED)),
+      // isReady - used to render components after local storage has synced
+      isReady: false,
+      // userManuallyCollapsed - set to true if the collapsible is collapsed
+      userManuallyCollapsed: false,
+      // isExpanded - the current collapsible state
+      isExpanded: true,
     };
   },
-  i18n: MR_APPROVALS_PROMO_I18N,
-  mounted() {
-    if (!this.userManuallyCollapsed) {
-      this.$root.$on(BV_COLLAPSE_STATE, this.collapseAccordionItem);
-    }
-  },
-  methods: {
-    collapseAccordionItem(_, state) {
-      if (state === false) {
-        // We only need to track that this happens at least once
-        this.$root.$off(BV_COLLAPSE_STATE, this.collapseAccordionItem);
-
-        this.userManuallyCollapsed = true;
-
-        if (canUseLocalStorage) {
-          localStorage.setItem(MR_APPROVALS_PROMO_DISMISSED, true);
-        }
-      }
+  computed: {
+    icon() {
+      return this.isExpanded ? 'chevron-down' : 'chevron-right';
     },
   },
+  watch: {
+    userManuallyCollapsed(isCollapsed) {
+      this.isExpanded = !isCollapsed;
+    },
+  },
+  mounted() {
+    this.$nextTick(this.ready);
+  },
+  methods: {
+    ready() {
+      this.isReady = true;
+    },
+    toggleCollapse() {
+      // If we're expanded already, then the user tried to collapse...
+      if (this.isExpanded) {
+        this.userManuallyCollapsed = true;
+
+        const { action, ...options } = MR_APPROVALS_PROMO_TRACKING_EVENTS.collapsePromo;
+        this.track(action, options);
+      } else {
+        const { action, ...options } = MR_APPROVALS_PROMO_TRACKING_EVENTS.expandPromo;
+        this.track(action, options);
+      }
+
+      this.isExpanded = !this.isExpanded;
+    },
+  },
+  trackingEvents: MR_APPROVALS_PROMO_TRACKING_EVENTS,
+  i18n: MR_APPROVALS_PROMO_I18N,
+  MR_APPROVALS_PROMO_DISMISSED,
+  EXPERIMENT_KEY,
 };
 </script>
 
 <template>
   <div class="gl-mt-2">
-    <p class="gl-mb-0 gl-text-gray-500">
-      {{ $options.i18n.summary }}
-    </p>
+    <local-storage-sync
+      v-model="userManuallyCollapsed"
+      :storage-key="$options.MR_APPROVALS_PROMO_DISMISSED"
+      as-json
+    />
+    <template v-if="isReady">
+      <p class="gl-mb-0 gl-text-gray-500">
+        {{ $options.i18n.summary }}
+      </p>
 
-    <gl-accordion :header-level="3">
-      <gl-accordion-item :title="$options.i18n.accordionTitle" :visible="!userManuallyCollapsed">
+      <gl-button variant="link" :icon="icon" data-testid="collapse-btn" @click="toggleCollapse">
+        {{ $options.i18n.accordionTitle }}
+      </gl-button>
+
+      <gl-collapse v-model="isExpanded" class="gl-ml-5 gl-pl-2">
         <h4 class="gl-font-base gl-line-height-20 gl-mt-5 gl-mb-3">
           {{ $options.i18n.promoTitle }}
         </h4>
@@ -63,19 +97,32 @@ export default {
               </li>
             </ul>
             <p>
-              <gl-link :href="learnMorePath" target="_blank">
+              <gl-link
+                :href="learnMorePath"
+                target="_blank"
+                :data-track-action="$options.trackingEvents.learnMoreClick.action"
+                :data-track-label="$options.trackingEvents.learnMoreClick.label"
+                :data-track-experiment="$options.EXPERIMENT_KEY"
+              >
                 {{ $options.i18n.learnMore }}
               </gl-link>
             </p>
-            <gl-button category="primary" variant="confirm" :href="tryNowPath" target="_blank">{{
-              $options.i18n.tryNow
-            }}</gl-button>
+            <gl-button
+              category="primary"
+              variant="confirm"
+              :href="tryNowPath"
+              target="_blank"
+              :data-track-action="$options.trackingEvents.tryNowClick.action"
+              :data-track-label="$options.trackingEvents.tryNowClick.label"
+              :data-track-experiment="$options.EXPERIMENT_KEY"
+              >{{ $options.i18n.tryNow }}</gl-button
+            >
           </div>
           <div class="gl-flex-grow-0 gl-w-full gl-max-w-26 gl-display-none gl-md-display-block">
             <img :src="promoImagePath" :alt="promoImageAlt" class="svg gl-w-full" />
           </div>
         </div>
-      </gl-accordion-item>
-    </gl-accordion>
+      </gl-collapse>
+    </template>
   </div>
 </template>
