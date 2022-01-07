@@ -15,7 +15,7 @@ module Geo
 
     override :verification_feature_flag_enabled?
     def self.verification_feature_flag_enabled?
-      Feature.enabled?(:geo_lfs_object_verification, default_enabled: :yaml)
+      true
     end
   end
 end
