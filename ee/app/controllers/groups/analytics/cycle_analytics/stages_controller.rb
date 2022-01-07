@@ -11,6 +11,8 @@ module Groups
         before_action :validate_params, only: %i[median average records average_duration_chart count]
         before_action :authorize_read_group_stage, only: %i[median average records average_duration_chart count]
 
+        urgency :low
+
         override :index
         def index
           return render_403 unless can?(current_user, :read_group_cycle_analytics, @group)
