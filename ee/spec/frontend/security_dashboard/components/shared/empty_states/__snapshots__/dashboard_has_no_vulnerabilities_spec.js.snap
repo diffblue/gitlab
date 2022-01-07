@@ -1,12 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`dashboard has no vulnerabilities empty state matches snapshot 1`] = `
-"<section class=\\"row gl-mt-0 empty-state text-center\\">
-  <div class=\\"col-12\\">
+"<section class=\\"gl-display-flex gl-flex-wrap gl-mt-0 empty-state gl-text-center gl-flex-direction-column\\">
+  <div class=\\"gl-max-w-full\\">
     <div class=\\"svg-250 svg-content\\"><img src=\\"/placeholder.svg\\" alt=\\"\\" role=\\"img\\" class=\\"gl-max-w-full\\"></div>
   </div>
-  <div class=\\"col-12\\">
-    <div class=\\"text-content gl-mx-auto gl-my-0 gl-p-5\\">
+  <div class=\\"gl-max-w-full gl-m-auto\\">
+    <div class=\\"gl-mx-auto gl-my-0 gl-p-5\\">
       <h1 class=\\"gl-font-size-h-display gl-line-height-36 h4\\">
         No vulnerabilities found
       </h1>
