@@ -65,8 +65,8 @@ export default {
     ...mapActions('diffs', ['openDiffFileCommentForm']),
     getImageDimensions() {
       return {
-        width: this.$parent.width,
-        height: this.$parent.height,
+        width: Math.round(this.$parent.width),
+        height: Math.round(this.$parent.height),
       };
     },
     getPositionForObject(meta) {
@@ -94,8 +94,8 @@ export default {
         fileHash: this.fileHash,
         width,
         height,
-        x: width * (xPercent / 100),
-        y: height * (yPercent / 100),
+        x: Math.round(width * (xPercent / 100)),
+        y: Math.round(height * (yPercent / 100)),
         xPercent,
         yPercent,
       });
