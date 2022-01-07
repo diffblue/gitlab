@@ -1,4 +1,4 @@
-- if @label.subject.feature_available?(:scoped_labels)
+- if @label.respond_to?(:subject) && @label.subject.feature_available?(:scoped_labels)
   - docs_url = help_page_path('user/project/labels.md', anchor: 'scoped-labels')
   - docs_link_start = "<a href='#{docs_url}' target='_blank' rel='noreferrer noopener'>".html_safe
   - docs_link_end = '</a>'.html_safe
