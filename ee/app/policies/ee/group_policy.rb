@@ -328,6 +328,7 @@ module EE
 
       rule { ip_enforcement_prevents_access & ~owner & ~auditor }.policy do
         prevent :read_group
+        prevent :read_milestone
       end
 
       rule { owner & group_saml_enabled }.policy do
