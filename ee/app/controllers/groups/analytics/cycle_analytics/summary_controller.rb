@@ -11,6 +11,8 @@ module Groups
         before_action :authorize_access
         before_action :validate_params
 
+        urgency :low
+
         def show
           render json: group_level.summary
         end
