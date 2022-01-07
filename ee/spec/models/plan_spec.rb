@@ -28,4 +28,20 @@ RSpec.describe Plan do
 
     it { is_expected.to eq(%w[default free]) }
   end
+
+  describe '#open_source?' do
+    subject { plan.open_source? }
+
+    context 'when is opensource' do
+      let(:plan) { build(:opensource_plan) }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when is not opensource' do
+      let(:plan) { build(:free_plan) }
+
+      it { is_expected.to be_falsey }
+    end
+  end
 end

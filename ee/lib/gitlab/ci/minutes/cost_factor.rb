@@ -4,7 +4,10 @@ module Gitlab
   module Ci
     module Minutes
       class CostFactor
-        NEW_NAMESPACE_PUBLIC_PROJECT_COST_FACTOR = 0.008
+        DISABLED = 0.0
+        STANDARD = 1.0
+        OPEN_SOURCE = 0.008
+        NEW_NAMESPACE_PUBLIC_PROJECT = 0.008
 
         def initialize(runner_matcher)
           ensure_runner_matcher_instance(runner_matcher)
@@ -21,15 +24,20 @@ module Gitlab
         end
 
         def for_project(project)
-          return 0.0 unless @runner_matcher.instance_type?
-          return 0.0 unless project.ci_minutes_quota.enabled?
+          return DISABLED unless @runner_matcher.instance_type?
+          return DISABLED unless project.ci_minutes_quota.enabled?
 
-          cost_factor = for_visibility(project.visibility_level)
+          runner_cost_factor = for_visibility(project.visibility_level)
 
-          if cost_factor == 0 && project.force_cost_factor?
-            NEW_NAMESPACE_PUBLIC_PROJECT_COST_FACTOR
+          if runner_cost_factor == DISABLED && project.force_cost_factor?
+            # Once visibility level cost factors are consolidated into a single
+            # cost factor, this condition can be removed.
+            # https://gitlab.com/gitlab-org/gitlab/-/issues/243722
+            NEW_NAMESPACE_PUBLIC_PROJECT
+          elsif runner_cost_factor == STANDARD && project.actual_plan.open_source?
+            OPEN_SOURCE
           else
-            cost_factor
+            runner_cost_factor
           end
         end
 
