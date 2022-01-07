@@ -13,7 +13,7 @@ RSpec.describe Security::StoreReportService, '#execute', :snowplow do
   let(:pipeline) { artifact.job.pipeline }
   let(:report) { pipeline.security_reports.get_report(report_type.to_s, artifact) }
 
-  subject { described_class.new(pipeline, report).execute }
+  subject(:store_report) { described_class.new(pipeline, report).execute }
 
   where(:vulnerability_finding_signatures) do
     [true, false]
@@ -265,19 +265,19 @@ RSpec.describe Security::StoreReportService, '#execute', :snowplow do
         let(:report) { Gitlab::Ci::Reports::Security::Report.new('container_scanning', nil, nil) }
 
         before do
-          allow(Gitlab::ErrorTracking).to receive(:track_and_raise_exception).and_call_original
+          allow(Gitlab::ErrorTracking).to receive(:track_exception).and_call_original
           report.add_finding(finding_without_name)
         end
 
-        it 'raises invalid record error' do
-          expect { subject.execute }.to raise_error(ActiveRecord::RecordInvalid)
+        it 'does not raise any exception' do
+          expect { store_report }.not_to raise_error
         end
 
-        it 'reports the error correctly' do
+        it 'reports the error to sentry' do
+          store_report
+
           expected_params = finding_without_name.to_hash.dig(:raw_metadata)
-          expect { subject.execute }.to raise_error { |error|
-            expect(Gitlab::ErrorTracking).to have_received(:track_and_raise_exception).with(error, create_params: expected_params)
-          }
+          expect(Gitlab::ErrorTracking).to have_received(:track_exception).with(an_instance_of(ActiveRecord::RecordInvalid), create_params: expected_params)
         end
       end
     end
