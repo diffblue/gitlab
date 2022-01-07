@@ -1,7 +1,7 @@
 import {
   modelToUpdateMutationVariables as ceModelToUpdateMutationVariables,
   runnerToModel as ceRunnerToModel,
-} from '~/runner/runner_details/runner_update_form_utils';
+} from '~/runner/runner_update_form_utils';
 
 export const runnerToModel = (runner) => {
   return {

@@ -1,13 +1,10 @@
-import {
-  modelToUpdateMutationVariables,
-  runnerToModel,
-} from 'ee/runner/runner_details/runner_update_form_utils';
+import { modelToUpdateMutationVariables, runnerToModel } from 'ee/runner/runner_update_form_utils';
 
 const mockRunnerId = 'gid://gitlab/Ci::Runner/1';
 const mockPrivateFactor = 1;
 const mockPublicFactor = 0.5;
 
-describe('ee/runner/runner_details/runner_update_form_utils', () => {
+describe('ee/runner/runner_update_form_utils', () => {
   describe('runnerToModel', () => {
     it('collects project minutes factor', () => {
       expect(
