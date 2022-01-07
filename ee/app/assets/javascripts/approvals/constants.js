@@ -159,6 +159,12 @@ export const APPROVAL_VULNERABILITY_STATES = {
 };
 
 export const MR_APPROVALS_PROMO_DISMISSED = 'mr_approvals_promo.dismissed';
+export const MR_APPROVALS_PROMO_TRACKING_EVENTS = {
+  learnMoreClick: { action: 'click_link', label: 'learn_more_merge_approval' },
+  tryNowClick: { action: 'click_button', label: 'start_trial' },
+  collapsePromo: { action: 'click_button', label: 'collapse_approval_rules' },
+  expandPromo: { action: 'click_button', label: 'expand_approval_rules' },
+};
 export const MR_APPROVALS_PROMO_I18N = {
   accordionTitle: s__('ApprovalRule|Approval rules'),
   learnMore: s__('ApprovalRule|Learn more about merge request approval.'),
