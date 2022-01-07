@@ -9640,7 +9640,7 @@ msgstr ""
 msgid "Control how the GitLab Package Registry functions."
 msgstr ""
 
-msgid "Control whether to display third-party offers in GitLab."
+msgid "Control whether to display customer experience improvement content and third-party offers in GitLab."
 msgstr ""
 
 msgid "Control which projects can be accessed by API requests authenticated with this project's CI_JOB_TOKEN CI/CD variable. It is a security risk to disable this feature, because unauthorized projects might attempt to retrieve an active token and access the API."
@@ -10538,6 +10538,9 @@ msgid "Customer Relations Contacts"
 msgstr ""
 
 msgid "Customer Relations Organizations"
+msgstr ""
+
+msgid "Customer experience improvement and third-party offers"
 msgstr ""
 
 msgid "Customer relations"
@@ -12625,7 +12628,7 @@ msgstr ""
 msgid "Display time tracking in issues in total hours only."
 msgstr ""
 
-msgid "Do not display offers from third parties"
+msgid "Do not display content for customer experience improvement and offers from third parties"
 msgstr ""
 
 msgid "Do not force push over diverged refs. After the mirror is created, this setting can only be modified using the API. %{mirroring_docs_link_start}Learn more about this option%{link_closing_tag} and %{mirroring_api_docs_link_start}the API.%{link_closing_tag}"
@@ -36021,9 +36024,6 @@ msgid "These will be sent to %{email} in an attachment once finished."
 msgstr ""
 
 msgid "Third Party Advisory Link"
-msgstr ""
-
-msgid "Third-party offers"
 msgstr ""
 
 msgid "This %{issuableDisplayName} is locked. Only project members can comment."
