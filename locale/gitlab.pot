@@ -10039,6 +10039,9 @@ msgstr ""
 msgid "Create iteration"
 msgstr ""
 
+msgid "Create label"
+msgstr ""
+
 msgid "Create list"
 msgstr ""
 
