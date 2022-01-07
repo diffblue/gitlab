@@ -214,7 +214,7 @@ target API to test:
      DAST_API_PROFILE: Quick
    ```
 
-1. Provide the location of the HAR specification. You can provide the specification as a file
+1. Provide the location of the HAR file. You can provide the location as a file path
    or URL. [URL support was introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/285020) in GitLab 13.10 and later. Specify the location by adding the `DAST_API_HAR` variable:
 
    ```yaml
@@ -314,7 +314,7 @@ information about the target API to test:
      DAST_API_PROFILE: Quick
    ```
 
-1. Provide the location of the Postman Collection specification. You can provide the specification as a file or URL. Specify the location by adding the `DAST_API_POSTMAN_COLLECTION` variable:
+1. Provide the location of the Postman Collection file. You can provide the location as a file or URL. Specify the location by adding the `DAST_API_POSTMAN_COLLECTION` variable:
 
    ```yaml
    stages:
