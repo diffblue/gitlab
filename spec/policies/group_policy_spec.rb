@@ -975,11 +975,54 @@ RSpec.describe GroupPolicy do
     it { expect_disallowed(:read_label) }
 
     context 'when group hierarchy has a project with service desk enabled' do
-      let_it_be(:subgroup) { create(:group, :private, parent: group)}
+      let_it_be(:subgroup) { create(:group, :private, parent: group) }
       let_it_be(:project) { create(:project, group: subgroup, service_desk_enabled: true) }
 
       it { expect_allowed(:read_label) }
       it { expect(described_class.new(current_user, subgroup)).to be_allowed(:read_label) }
+    end
+  end
+
+  context "project bots" do
+    let(:project_bot) { create(:user, :project_bot) }
+    let(:user) { create(:user) }
+
+    context "project_bot_access" do
+      context "when regular user and part of the group" do
+        let(:current_user) { user }
+
+        before do
+          group.add_developer(user)
+        end
+
+        it { is_expected.not_to be_allowed(:project_bot_access) }
+      end
+
+      context "when project bot and not part of the project" do
+        let(:current_user) { project_bot }
+
+        it { is_expected.not_to be_allowed(:project_bot_access) }
+      end
+
+      context "when project bot and part of the project" do
+        let(:current_user) { project_bot }
+
+        before do
+          group.add_developer(project_bot)
+        end
+
+        it { is_expected.to be_allowed(:project_bot_access) }
+      end
+    end
+
+    context 'with resource access tokens' do
+      let(:current_user) { project_bot }
+
+      before do
+        group.add_maintainer(project_bot)
+      end
+
+      it { is_expected.not_to be_allowed(:create_resource_access_tokens) }
     end
   end
 
