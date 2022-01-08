@@ -147,14 +147,6 @@ RSpec.describe 'Filter issues by iteration', :js do
     it_behaves_like 'filters by iteration'
 
     it_behaves_like 'shows iterations when using iteration token'
-
-    context 'when vue_issuables_list is disabled' do
-      before do
-        stub_feature_flags(vue_issuables_list: false)
-      end
-
-      it_behaves_like 'filters by iteration'
-    end
   end
 
   context 'group issues list' do
@@ -164,14 +156,6 @@ RSpec.describe 'Filter issues by iteration', :js do
     it_behaves_like 'filters by iteration'
 
     it_behaves_like 'shows iterations when using iteration token'
-
-    context 'when vue_issuables_list is disabled' do
-      before do
-        stub_feature_flags(vue_issuables_list: false)
-      end
-
-      it_behaves_like 'filters by iteration'
-    end
   end
 
   context 'project board' do
