@@ -21,7 +21,7 @@ RSpec.describe Projects::GoogleCloud::DeploymentsController do
     project.add_maintainer(user_maintainer)
   end
 
-  describe "Routes must be restrcited behind Google OAuth2" do
+  describe "Routes must be restricted behind Google OAuth2" do
     context 'when a public request is made' do
       it 'returns not found on GET request' do
         urls_list.each do |url|
