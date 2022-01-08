@@ -9,8 +9,6 @@ RSpec.describe 'Blocking issues count' do
   let_it_be(:issue2) { build(:issue, project: project, created_at: 3.days.ago, title: 'blocks two issues') }
 
   before do
-    stub_feature_flags(vue_issuables_list: false)
-
     visit project_issues_path(project)
   end
 

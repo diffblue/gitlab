@@ -21,7 +21,6 @@ RSpec.describe 'Filter issues by epic', :js do
 
   before do
     stub_licensed_features(epics: true)
-    stub_feature_flags(vue_issuables_list: false)
     group.add_maintainer(user)
 
     sign_in(user)
