@@ -12,7 +12,7 @@ RSpec.describe 'Login' do
   end
 
   it 'creates a security event for an invalid password login' do
-    user = create(:user, password: 'not-the-default')
+    user = create(:user, password: "not" + Gitlab::Password.test_default)
 
     expect { gitlab_sign_in(user) }
       .to change { AuditEvent.where(entity_id: -1).count }.from(0).to(1)
