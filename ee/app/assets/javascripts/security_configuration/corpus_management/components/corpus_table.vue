@@ -52,6 +52,9 @@ export default {
       thClass,
     },
   ],
+  i18n: {
+    emptyTable: s__('CorpusManagement|Currently, there are no uploaded or generated corpuses.'),
+  },
   methods: {
     onDelete({ name }) {
       this.$apollo.mutate({
@@ -73,7 +76,11 @@ export default {
 };
 </script>
 <template>
-  <gl-table :items="corpuses" :fields="$options.fields">
+  <gl-table :items="corpuses" :fields="$options.fields" show-empty>
+    <template #empty>
+      {{ $options.i18n.emptyTable }}
+    </template>
+
     <template #cell(name)="{ item }">
       <name :corpus="item" />
     </template>

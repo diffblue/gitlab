@@ -1,7 +1,21 @@
-query getCorpuses($projectPath: ID!) {
+#import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
+#import "../fragments/uploadState.fragment.graphql"
+
+query getCorpuses(
+  $projectPath: ID!
+  $beforeCursor: String = ""
+  $afterCursor: String = ""
+  $firstPageSize: Int
+  $lastPageSize: Int
+) {
   project(fullPath: $projectPath) {
     id
-    corpuses {
+    corpuses(
+      before: $beforeCursor
+      after: $afterCursor
+      first: $firstPageSize
+      last: $lastPageSize
+    ) {
       nodes {
         id
         package {
@@ -24,12 +38,12 @@ query getCorpuses($projectPath: ID!) {
           }
         }
       }
+      pageInfo {
+        ...PageInfo
+      }
     }
   }
-  uploadState(projectPath: $projectPath) @client {
-    isUploading
-    progress
-    cancelSource
-    uploadedPackageId
+  uploadState @client {
+    ...UploadState
   }
 }
