@@ -21420,6 +21420,9 @@ msgstr ""
 msgid "Lock %{issuableDisplayName}"
 msgstr ""
 
+msgid "Lock File?"
+msgstr ""
+
 msgid "Lock memberships to LDAP synchronization"
 msgstr ""
 

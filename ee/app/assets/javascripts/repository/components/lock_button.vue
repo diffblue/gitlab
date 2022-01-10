@@ -1,5 +1,5 @@
 <script>
-import { GlButton } from '@gitlab/ui';
+import { GlButton, GlModal } from '@gitlab/ui';
 import createFlash from '~/flash';
 import { sprintf, __ } from '~/locale';
 import lockPathMutation from '~/repository/mutations/lock_path.mutation.graphql';
@@ -8,9 +8,13 @@ export default {
   i18n: {
     lock: __('Lock'),
     unlock: __('Unlock'),
+    modalTitle: __('Lock File?'),
+    actionPrimary: __('Okay'),
+    actionCancel: __('Cancel'),
   },
   components: {
     GlButton,
+    GlModal,
   },
   props: {
     name: {
@@ -36,6 +40,7 @@ export default {
   },
   data() {
     return {
+      isModalVisible: false,
       lockLoading: false,
       locked: this.isLocked,
     };
@@ -52,11 +57,14 @@ export default {
     },
   },
   methods: {
-    onLockToggle() {
-      // eslint-disable-next-line no-alert
-      if (window.confirm(this.lockConfirmText)) {
-        this.toggleLock();
-      }
+    hideModal() {
+      this.isModalVisible = false;
+    },
+    handleModalPrimary() {
+      this.toggleLock();
+    },
+    showModal() {
+      this.isModalVisible = true;
     },
     toggleLock() {
       this.lockLoading = true;
@@ -82,7 +90,23 @@ export default {
 </script>
 
 <template>
-  <gl-button :disabled="!canLock" :loading="lockLoading" @click="onLockToggle">
-    {{ lockButtonTitle }}
-  </gl-button>
+  <span>
+    <gl-button :disabled="!canLock" :loading="lockLoading" @click="showModal">
+      {{ lockButtonTitle }}
+    </gl-button>
+
+    <gl-modal
+      modal-id="lock-file-modal"
+      :visible="isModalVisible"
+      :title="$options.i18n.modalTitle"
+      :action-primary="{ text: $options.i18n.actionPrimary }"
+      :action-cancel="{ text: $options.i18n.actionCancel }"
+      @primary="handleModalPrimary"
+      @hide="hideModal"
+    >
+      <p>
+        {{ lockConfirmText }}
+      </p>
+    </gl-modal>
+  </span>
 </template>
