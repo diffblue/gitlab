@@ -7503,7 +7503,7 @@ msgstr ""
 msgid "ClusterAgents|%{name} successfully deleted"
 msgstr ""
 
-msgid "ClusterAgents|%{number} of %{total} agents"
+msgid "ClusterAgents|%{number} of %{total} Agents"
 msgstr ""
 
 msgid "ClusterAgents|%{number} of %{total} clusters connected through cluster certificates"
@@ -7575,10 +7575,10 @@ msgstr ""
 msgid "ClusterAgents|Connect existing cluster"
 msgstr ""
 
-msgid "ClusterAgents|Connect with a certificate"
+msgid "ClusterAgents|Connect with Agent"
 msgstr ""
 
-msgid "ClusterAgents|Connect with the Agent"
+msgid "ClusterAgents|Connect with a certificate"
 msgstr ""
 
 msgid "ClusterAgents|Connect with the GitLab Agent"
@@ -7641,7 +7641,7 @@ msgstr ""
 msgid "ClusterAgents|How to register an agent?"
 msgstr ""
 
-msgid "ClusterAgents|Install a new agent"
+msgid "ClusterAgents|Install new Agent"
 msgstr ""
 
 msgid "ClusterAgents|Last connected %{timeAgo}."
@@ -7668,7 +7668,7 @@ msgstr ""
 msgid "ClusterAgents|Never connected"
 msgstr ""
 
-msgid "ClusterAgents|No agents"
+msgid "ClusterAgents|No Agents"
 msgstr ""
 
 msgid "ClusterAgents|No clusters connected through cluster certificates"
