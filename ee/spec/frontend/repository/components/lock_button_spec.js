@@ -1,4 +1,4 @@
-import { GlButton } from '@gitlab/ui';
+import { GlButton, GlModal } from '@gitlab/ui';
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
@@ -39,17 +39,16 @@ describe('LockButton component', () => {
   });
 
   describe('lock button', () => {
-    let confirmSpy;
     let lockMutationMock;
+    const mockEvent = { preventDefault: jest.fn() };
     const findLockButton = () => wrapper.find(GlButton);
+    const findModal = () => wrapper.findComponent(GlModal);
+    const clickSubmit = () => findModal().vm.$emit('primary', mockEvent);
+    const clickHide = () => findModal().vm.$emit('hide', mockEvent);
 
     beforeEach(() => {
-      confirmSpy = jest.spyOn(window, 'confirm');
-      confirmSpy.mockImplementation(jest.fn());
       lockMutationMock = jest.fn();
     });
-
-    afterEach(() => confirmSpy.mockRestore());
 
     it('disables the lock button if canLock is set to false', () => {
       createComponent({ canLock: false });
@@ -78,18 +77,24 @@ describe('LockButton component', () => {
       expect(findLockButton().props('loading')).toBe(true);
     });
 
-    it('displays a confirm dialog when the lock button is clicked', () => {
+    it('displays a confirm modal when the lock button is clicked', () => {
       createComponent();
       findLockButton().vm.$emit('click');
-
-      expect(confirmSpy).toHaveBeenCalledWith('Are you sure you want to lock some_file.js?');
+      expect(findModal().text()).toBe('Are you sure you want to lock some_file.js?');
     });
 
-    it('executes a lock mutation once lock is confirmed', () => {
-      confirmSpy.mockReturnValue(true);
+    it('should hide the confirm modal when a hide action is triggered', () => {
+      createComponent();
+      findLockButton().vm.$emit('click');
+      expect(wrapper.vm.isModalVisible).toBe(true);
+      clickHide();
+      expect(wrapper.vm.isModalVisible).toBe(false);
+    });
+
+    it('executes a lock mutation once lock is confirmed', async () => {
       createComponent({}, lockMutationMock);
       findLockButton().vm.$emit('click');
-
+      clickSubmit();
       expect(lockMutationMock).toHaveBeenCalledWith({
         filePath: 'some/path',
         lock: true,
@@ -98,7 +103,6 @@ describe('LockButton component', () => {
     });
 
     it('does not execute a lock mutation if lock not confirmed', () => {
-      confirmSpy.mockReturnValue(false);
       createComponent({}, lockMutationMock);
       findLockButton().vm.$emit('click');
 
