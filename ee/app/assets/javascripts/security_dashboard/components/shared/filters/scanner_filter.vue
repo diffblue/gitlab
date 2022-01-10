@@ -3,6 +3,7 @@ import { GlDropdownDivider, GlDropdownItem, GlTruncate } from '@gitlab/ui';
 import { union, without, get, set, keyBy } from 'lodash';
 import { DEFAULT_SCANNER, SCANNER_ID_PREFIX } from 'ee/security_dashboard/constants';
 import { createScannerOption } from 'ee/security_dashboard/helpers';
+import { REPORT_TYPE_CLUSTER_IMAGE_SCANNING } from '~/vue_shared/security_reports/constants';
 import FilterBody from './filter_body.vue';
 import FilterItem from './filter_item.vue';
 import SimpleFilter from './simple_filter.vue';
@@ -53,7 +54,11 @@ export default {
       const options = keyBy(this.filter.options, 'reportType');
       const groups = { GitLab: options };
 
-      this.scanners.forEach((scanner) => {
+      const scanners = this.scanners.filter(
+        (x) => x.report_type.toLowerCase() !== REPORT_TYPE_CLUSTER_IMAGE_SCANNING,
+      );
+
+      scanners.forEach((scanner) => {
         const vendor = scanner.vendor || DEFAULT_SCANNER; // Default to GitLab if there's no vendor.
         const reportType = scanner.report_type;
         const id = `${vendor}.${reportType}`;

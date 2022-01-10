@@ -16787,9 +16787,6 @@ msgstr ""
 msgid "Group project URLs are prefixed with the group namespace"
 msgstr ""
 
-msgid "Group projects"
-msgstr ""
-
 msgid "Group requires separate account"
 msgstr ""
 
