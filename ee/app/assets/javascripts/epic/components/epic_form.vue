@@ -7,7 +7,9 @@ import {
   GlFormGroup,
   GlFormInput,
 } from '@gitlab/ui';
+import $ from 'jquery';
 import createFlash from '~/flash';
+import Autosave from '~/autosave';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { visitUrl } from '~/lib/utils/url_utility';
@@ -53,7 +55,31 @@ export default {
     `),
     epicDatesHint: s__('Epics|Leave empty to inherit from milestone dates'),
   },
+  mounted() {
+    this.initAutosave();
+  },
   methods: {
+    initAutosave() {
+      const { titleInput, descriptionInput } = this.$refs;
+      const { pathname, search } = document.location;
+
+      if (!titleInput || !descriptionInput) return;
+
+      /**
+       * We'd need to update Autosave to work with plain HTML elements instead of
+       * jQuery instance, but until then, we'd have to rely on jQuery.
+       */
+      this.autosaveTitle = new Autosave($(titleInput.$el), [pathname, search, 'title']);
+      this.autosaveDescription = new Autosave($(descriptionInput), [
+        pathname,
+        search,
+        'description',
+      ]);
+    },
+    resetAutosave() {
+      this.autosaveTitle.reset();
+      this.autosaveDescription.reset();
+    },
     save() {
       this.loading = true;
 
@@ -86,6 +112,7 @@ export default {
             return;
           }
 
+          this.resetAutosave();
           visitUrl(epic.webUrl);
         })
         .catch(() => {
@@ -117,6 +144,7 @@ export default {
       <gl-form-group :label="__('Title')" label-for="epic-title">
         <gl-form-input
           id="epic-title"
+          ref="titleInput"
           v-model="title"
           data-testid="epic-title"
           data-qa-selector="epic_title_field"
@@ -141,6 +169,7 @@ export default {
           <template #textarea>
             <textarea
               id="epic-description"
+              ref="descriptionInput"
               v-model="description"
               data-testid="epic-description"
               class="note-textarea js-gfm-input js-autosize markdown-area"
