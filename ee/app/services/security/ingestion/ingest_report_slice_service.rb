@@ -32,8 +32,10 @@ module Security
       end
 
       def execute
-        ApplicationRecord.transaction do
-          TASKS.each { |task| execute_task(task) }
+        ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.allow_cross_database_modification_within_transaction(url: 'URL TODO') do
+          ApplicationRecord.transaction do
+            TASKS.each { |task| execute_task(task) }
+          end
         end
 
         @finding_maps.map(&:vulnerability_id)
