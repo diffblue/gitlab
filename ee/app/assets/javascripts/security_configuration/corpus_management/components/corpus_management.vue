@@ -4,6 +4,7 @@ import CorpusTable from 'ee/security_configuration/corpus_management/components/
 import CorpusUpload from 'ee/security_configuration/corpus_management/components/corpus_upload.vue';
 import { s__, __ } from '~/locale';
 import getCorpusesQuery from '../graphql/queries/get_corpuses.query.graphql';
+import deleteCorpusMutation from '../graphql/mutations/delete_corpus.mutation.graphql';
 
 export default {
   components: {
@@ -79,6 +80,20 @@ export default {
       };
       this.$apollo.queries.states.refetch();
     },
+    onDelete(id) {
+      return this.$apollo
+        .mutate({
+          mutation: deleteCorpusMutation,
+          variables: {
+            input: {
+              id,
+            },
+          },
+        })
+        .then(() => {
+          this.$apollo.queries.states.refetch();
+        });
+    },
     nextPage() {
       this.pagination = {
         firstPageSize: this.$options.pageSize,
@@ -113,7 +128,7 @@ export default {
 
     <gl-loading-icon v-if="isLoading" size="lg" class="gl-py-13" />
     <template v-else>
-      <corpus-table :corpuses="corpuses" />
+      <corpus-table :corpuses="corpuses" @delete="onDelete" />
     </template>
 
     <div v-if="hasPagination" class="gl-display-flex gl-justify-content-center gl-mt-5">

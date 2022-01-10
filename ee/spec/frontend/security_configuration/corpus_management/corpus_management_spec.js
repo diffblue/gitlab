@@ -8,11 +8,12 @@ import CorpusManagement from 'ee/security_configuration/corpus_management/compon
 import CorpusTable from 'ee/security_configuration/corpus_management/components/corpus_table.vue';
 import CorpusUpload from 'ee/security_configuration/corpus_management/components/corpus_upload.vue';
 import getCorpusesQuery from 'ee/security_configuration/corpus_management/graphql/queries/get_corpuses.query.graphql';
+import deleteCorpusMutation from 'ee/security_configuration/corpus_management/graphql/mutations/delete_corpus.mutation.graphql';
 
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
-import { getCorpusesQueryResponse } from './mock_data';
+import { getCorpusesQueryResponse, deleteCorpusMutationResponse } from './mock_data';
 
 const TEST_PROJECT_FULL_PATH = '/namespace/project';
 const TEST_CORPUS_HELP_PATH = '/docs/corpus-management';
@@ -22,10 +23,14 @@ describe('EE - CorpusManagement', () => {
 
   const createMockApolloProvider = ({
     getCorpusesQueryRequestHandler = jest.fn().mockResolvedValue(getCorpusesQueryResponse),
+    deleteCorpusMutationHandler = jest.fn().mockResolvedValue(deleteCorpusMutationResponse),
   } = {}) => {
     Vue.use(VueApollo);
 
-    const requestHandlers = [[getCorpusesQuery, getCorpusesQueryRequestHandler]];
+    const requestHandlers = [
+      [getCorpusesQuery, getCorpusesQueryRequestHandler],
+      [deleteCorpusMutation, deleteCorpusMutationHandler],
+    ];
 
     const mockResolvers = {
       Query: {
@@ -176,6 +181,33 @@ describe('EE - CorpusManagement', () => {
             firstPageSize: 10,
             lastPageSize: null,
           });
+        });
+      });
+
+      describe('corpus deletion', () => {
+        it('deletes the corpus', async () => {
+          const mutationVars = { input: { id: 1 } };
+
+          const getCorpusesQueryRequestHandler = jest
+            .fn()
+            .mockResolvedValue(getCorpusesQueryResponse);
+          const deleteCorpusMutationHandler = jest
+            .fn()
+            .mockResolvedValue(deleteCorpusMutationResponse);
+
+          createComponent({
+            apolloProvider: createMockApolloProvider({
+              getCorpusesQueryRequestHandler,
+              deleteCorpusMutationHandler,
+            }),
+          });
+          await waitForPromises();
+
+          const corpusTable = wrapper.findComponent(CorpusTable);
+          corpusTable.vm.$emit('delete', mutationVars.input.id);
+          await waitForPromises();
+
+          expect(deleteCorpusMutationHandler).toHaveBeenCalledWith(mutationVars);
         });
       });
     });

@@ -113,3 +113,11 @@ export const getCorpusesQueryResponse = {
     },
   },
 };
+
+export const deleteCorpusMutationResponse = {
+  data: {
+    destroyPackage: {
+      errors: {},
+    },
+  },
+};
