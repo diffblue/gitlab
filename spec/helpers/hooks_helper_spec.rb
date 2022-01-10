@@ -4,10 +4,8 @@ require 'spec_helper'
 
 RSpec.describe HooksHelper do
   let(:project) { create(:project) }
-  let(:integration) { create(:drone_ci_integration, project: project) }
-
   let(:project_hook) { create(:project_hook, project: project) }
-  let(:service_hook) { create(:service_hook, integration: integration) }
+  let(:service_hook) { create(:service_hook, integration: create(:drone_ci_integration)) }
   let(:system_hook) { create(:system_hook) }
 
   describe '#link_to_test_hook' do
