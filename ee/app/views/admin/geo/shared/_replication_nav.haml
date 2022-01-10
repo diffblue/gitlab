@@ -5,17 +5,8 @@
     = _('Geo Replication')
   %p
     = s_('Geo|Review replication status, and resynchronize and reverify items with the primary site.')
-%ul.nav-links.nav.nav-tabs.border-top.border-bottom.border-secondary-100
-  = nav_link(path: 'admin/geo/projects#index', html_options: { class: 'gl-pr-2' }) do
-    = link_to admin_geo_projects_path, title: _('Projects') do
-      %span
-        = _('Projects')
-  = nav_link(path: 'admin/geo/designs#index', html_options: { class: 'gl-pr-2' }) do
-    = link_to admin_geo_designs_path, title: _('Designs') do
-      %span
-        = _('Designs')
+= gl_tabs_nav({ class: 'border-top border-bottom border-secondary-100' }) do
+  = gl_tab_link_to _('Projects'), admin_geo_replicables_path(replicable_name_plural: 'projects'), { title: _('Projects'), class: 'gl-mr-2' }
+  = gl_tab_link_to _('Designs'), admin_geo_replicables_path(replicable_name_plural: 'designs'), { title: _('Designs'), class: 'gl-mr-2' }
   - Gitlab::Geo.enabled_replicator_classes.each do |replicator_class|
-    = nav_link(page: [{ controller: 'admin/geo/replicables', action: 'index', replicable_name_plural: replicator_class.replicable_name_plural }], html_options: { class: 'gl-pr-2' }) do
-      = link_to admin_geo_replicables_path(replicable_name_plural: replicator_class.replicable_name_plural), title: replicator_class.replicable_title_plural do
-        %span
-          = replicator_class.replicable_title_plural
+    = gl_tab_link_to replicator_class.replicable_title_plural, admin_geo_replicables_path(replicable_name_plural: replicator_class.replicable_name_plural), { title: replicator_class.replicable_title_plural, class: 'gl-mr-2' }
