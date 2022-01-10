@@ -11,14 +11,20 @@ import {
 } from 'ee/security_dashboard/constants';
 
 import SurveyBanner from 'ee/vue_shared/survey_banner/survey_banner.vue';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 export default {
   name: 'VulnManagementFeatureSurvey',
   components: {
     SurveyBanner,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: ['surveyRequestSvgPath'],
-
+  computed: {
+    shouldShowSurveyBanner() {
+      return this.glFeatures.vulnerabilityManagementSurvey;
+    },
+  },
   storageKey: SURVEY_BANNER_LOCAL_STORAGE_KEY,
   surveyLink: SURVEY_LINK,
   daysToAskLater: SURVEY_DAYS_TO_ASK_LATER,
@@ -32,6 +38,7 @@ export default {
 
 <template>
   <survey-banner
+    v-if="shouldShowSurveyBanner"
     :svg-path="surveyRequestSvgPath"
     :survey-link="$options.surveyLink"
     :days-to-ask-later="$options.daysToAskLater"
