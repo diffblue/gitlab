@@ -13,6 +13,7 @@
 #     non_public: boolean
 #     starred: boolean
 #     sort: string
+#     skip_sorting: boolean
 #     visibility_level: int
 #     tag: string[] - deprecated, use 'topic' instead
 #     topic: string[]
@@ -55,7 +56,9 @@ class ProjectsFinder < UnionFinder
     collection = Project.wrap_with_cte(collection) if use_cte
     collection = filter_projects(collection)
 
-    if params[:sort] == 'similarity' && params[:search]
+    if params[:skip_sorting]
+      collection
+    elsif params[:sort] == 'similarity' && params[:search]
       collection.sorted_by_similarity_desc(params[:search])
     else
       sort(collection)

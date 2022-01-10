@@ -17,7 +17,7 @@ module EE
     def filter_projects(collection)
       collection = super(collection)
       collection = by_plans(collection)
-      collection = by_plans_or_public(collection)
+      collection = by_feature_available(collection)
       by_aimed_for_deletion(collection)
     end
 
@@ -29,9 +29,9 @@ module EE
       end
     end
 
-    def by_plans_or_public(collection)
-      if names = params[:plans_or_public].presence
-        collection.with_paid_features(names)
+    def by_feature_available(collection)
+      if feature = params[:feature_available].presence
+        collection.with_feature(feature)
       else
         collection
       end
