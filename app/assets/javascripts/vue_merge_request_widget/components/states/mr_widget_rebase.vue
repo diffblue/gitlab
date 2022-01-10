@@ -9,9 +9,7 @@ import eventHub from '../../event_hub';
 import mergeRequestQueryVariablesMixin from '../../mixins/merge_request_query_variables';
 import rebaseQuery from '../../queries/states/rebase.query.graphql';
 import statusIcon from '../mr_widget_status_icon.vue';
-
-const KEY_REBASE = 'rebase';
-const KEY_REBASE_WITHOUT_CI = 'rebaseWithoutCi';
+import { REBASE_BUTTON_KEY, REBASE_WITHOUT_CI_BUTTON_KEY } from '../../constants';
 
 export default {
   name: 'MRWidgetRebase',
@@ -48,7 +46,7 @@ export default {
       state: {},
       isMakingRequest: false,
       rebasingError: null,
-      selectedRebaseAction: KEY_REBASE,
+      selectedRebaseAction: REBASE_BUTTON_KEY,
     };
   },
   computed: {
@@ -96,7 +94,7 @@ export default {
     },
     rebaseAction() {
       return {
-        key: KEY_REBASE,
+        key: REBASE_BUTTON_KEY,
         text: __('Rebase'),
         secondaryText: __('Rebases and triggers a pipeline'),
         attrs: {
@@ -107,7 +105,7 @@ export default {
     },
     rebaseWithoutCiAction() {
       return {
-        key: KEY_REBASE_WITHOUT_CI,
+        key: REBASE_WITHOUT_CI_BUTTON_KEY,
         text: __('Rebase without CI'),
         secondaryText: __('Performs a rebase but skips triggering a new pipeline'),
         handle: () => this.rebase({ skipCi: true }),
