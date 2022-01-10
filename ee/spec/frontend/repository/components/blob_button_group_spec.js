@@ -13,6 +13,7 @@ const DEFAULT_PROPS = {
   projectPath: 'some/project/path',
   isLocked: false,
   canLock: true,
+  showForkSuggestion: false,
 };
 
 const DEFAULT_INJECT = {
