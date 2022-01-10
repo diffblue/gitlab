@@ -20,10 +20,15 @@ describe('SurveyRequestBanner Component', () => {
 
   const SURVEY_REQUEST_SVG_PATH = 'foo.svg';
 
-  const createComponent = (sbomSurvey = { sbomSurvey: true }) => {
+  const createComponent = (
+    vulnerabilityManagementSurvey = { vulnerabilityManagementSurvey: true },
+  ) => {
     wrapper = extendedWrapper(
       mount(SurveyRequestBanner, {
-        provide: { glFeatures: { ...sbomSurvey }, surveyRequestSvgPath: SURVEY_REQUEST_SVG_PATH },
+        provide: {
+          glFeatures: { ...vulnerabilityManagementSurvey },
+          surveyRequestSvgPath: SURVEY_REQUEST_SVG_PATH,
+        },
       }),
     );
   };
@@ -36,20 +41,33 @@ describe('SurveyRequestBanner Component', () => {
     createComponent();
   });
 
-  it('renders the SurveyRequestBanner component with the right props', () => {
-    const surveyBanner = findSharedSurveyBanner();
-    expect(surveyBanner.exists()).toBe(true);
+  describe('given a true vulnerability_management_survey flag', () => {
+    it('renders the SurveyRequestBanner component with the right props', () => {
+      const surveyBanner = findSharedSurveyBanner();
+      expect(surveyBanner.exists()).toBe(true);
 
-    expect(surveyBanner.props()).toMatchObject({
-      bannerId: SURVEY_BANNER_CURRENT_ID,
-      storageKey: SURVEY_BANNER_LOCAL_STORAGE_KEY,
-      daysToAskLater: SURVEY_DAYS_TO_ASK_LATER,
-      surveyLink: SURVEY_LINK,
-      svgPath: SURVEY_REQUEST_SVG_PATH,
-      title: SURVEY_TITLE,
-      toastMessage: SURVEY_TOAST_MESSAGE,
+      expect(surveyBanner.props()).toMatchObject({
+        bannerId: SURVEY_BANNER_CURRENT_ID,
+        storageKey: SURVEY_BANNER_LOCAL_STORAGE_KEY,
+        daysToAskLater: SURVEY_DAYS_TO_ASK_LATER,
+        surveyLink: SURVEY_LINK,
+        svgPath: SURVEY_REQUEST_SVG_PATH,
+        title: SURVEY_TITLE,
+        toastMessage: SURVEY_TOAST_MESSAGE,
+      });
+      expect(surveyBanner.props('buttonText')).toContain(SURVEY_BUTTON_TEXT);
+      expect(surveyBanner.props('description')).toContain(SURVEY_DESCRIPTION);
     });
-    expect(surveyBanner.props('buttonText')).toContain(SURVEY_BUTTON_TEXT);
-    expect(surveyBanner.props('description')).toContain(SURVEY_DESCRIPTION);
+  });
+
+  describe('given a false vulnerability_management_survey flag', () => {
+    beforeEach(() => {
+      createComponent({ vulnerabilityManagementSurvey: false });
+    });
+
+    it('does not renders the SurveyRequestBanner', () => {
+      const surveyBanner = findSharedSurveyBanner();
+      expect(surveyBanner.exists()).toBe(false);
+    });
   });
 });
