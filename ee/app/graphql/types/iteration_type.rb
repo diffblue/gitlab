@@ -17,6 +17,9 @@ module Types
     field :iid, GraphQL::Types::ID, null: false,
           description: 'Internal ID of the iteration.'
 
+    field :sequence, GraphQL::Types::Int, null: false,
+          description: "Sequence number for the iteration when you sort the containing cadence's iterations by the start and end date. The earliest starting and ending iteration is assigned 1."
+
     field :title, GraphQL::Types::String, null: false,
           description: 'Title of the iteration.'
 
