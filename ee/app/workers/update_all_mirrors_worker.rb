@@ -144,16 +144,11 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
 
   # rubocop: disable CodeReuse/ActiveRecord
   def root_namespaces_sql
-    namespace = Namespace.where('id = projects.namespace_id')
-
-    if Feature.enabled?(:linear_mirrors_worker_roots, default_enabled: :yaml)
-      namespace.roots.as_ids
-    else
-      Gitlab::ObjectHierarchy
-        .new(namespace)
-        .roots
-        .select(:id)
-    end.to_sql
+    Namespace
+      .where('id = projects.namespace_id')
+      .roots
+      .as_ids
+      .to_sql
   end
   # rubocop: enable CodeReuse/ActiveRecord
 end
