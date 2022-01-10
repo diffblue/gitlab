@@ -25,12 +25,13 @@ RSpec.describe API::Iterations do
     end
 
     context 'when user has access' do
-      it 'returns a list of iterations' do
+      it 'returns a list of iterations', :aggregate_failures do
         get api(api_path, user)
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(json_response.size).to eq(3)
         expect(json_response.map { |i| i['id'] }).to contain_exactly(current_iteration.id, closed_iteration.id, ancestor_iteration.id)
+        expect(json_response.map { |i| i['sequence'] } ).to contain_exactly(current_iteration.sequence, closed_iteration.sequence, ancestor_iteration.sequence)
       end
 
       context 'filter by iteration state' do
