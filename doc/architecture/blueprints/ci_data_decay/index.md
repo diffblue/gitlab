@@ -23,7 +23,7 @@ the data storage for pipeline builds remains almost the same since 2012. In
 ia separate database. Now we want to improve the architecture of GitLab CI/CD
 product to enable further scaling.
 
-_Disclaimer: The following contain information related to upcoming products,
+_Disclaimer: The following contains information related to upcoming products,
 features, and functionality._
 
 _It is important to note that the information presented is for informational
