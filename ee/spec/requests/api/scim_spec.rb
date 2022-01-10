@@ -7,7 +7,7 @@ RSpec.describe API::Scim do
   let(:scim_token) { create(:scim_oauth_access_token, group: group) }
   let(:group) { identity.group }
 
-  let_it_be(:password) { 'secret_pass' }
+  let_it_be(:password) { Gitlab::Password.test_default }
   let_it_be(:access_token) { 'secret_token' }
 
   before do

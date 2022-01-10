@@ -128,7 +128,8 @@ RSpec.describe ::EE::Gitlab::Scim::ProvisioningService do
         email: 'work@example.com',
         name: 'Test Name',
         extern_uid: 'test_uid',
-        username: 'username'
+        username: 'username',
+        password: Gitlab::Password.test_default
       }
     end
 
