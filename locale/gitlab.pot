@@ -30726,10 +30726,13 @@ msgstr ""
 msgid "Runners|Offline"
 msgstr ""
 
+msgid "Runners|Offline runners"
+msgstr ""
+
 msgid "Runners|Online"
 msgstr ""
 
-msgid "Runners|Online Runners"
+msgid "Runners|Online runners"
 msgstr ""
 
 msgid "Runners|Paused"
@@ -30823,6 +30826,9 @@ msgid "Runners|Something went wrong while fetching the tags suggestions"
 msgstr ""
 
 msgid "Runners|Stale"
+msgstr ""
+
+msgid "Runners|Stale runners"
 msgstr ""
 
 msgid "Runners|Status"
