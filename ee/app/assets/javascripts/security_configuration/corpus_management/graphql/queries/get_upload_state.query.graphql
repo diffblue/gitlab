@@ -1,0 +1,7 @@
+#import "../fragments/uploadState.fragment.graphql"
+
+query getUploadState {
+  uploadState @client {
+    ...UploadState
+  }
+}

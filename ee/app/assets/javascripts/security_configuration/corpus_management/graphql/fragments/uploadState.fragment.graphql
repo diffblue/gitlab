@@ -1,0 +1,6 @@
+fragment UploadState on UploadState {
+  isUploading
+  progress
+  cancelSource
+  uploadedPackageId
+}
