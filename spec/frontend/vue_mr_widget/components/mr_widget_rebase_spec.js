@@ -40,7 +40,7 @@ describe('Merge request widget rebase component', () => {
   });
 
   [true, false].forEach((mergeRequestWidgetGraphql) => {
-    describe(`widget graphql is ${mergeRequestWidgetGraphql ? 'enabled' : 'dislabed'}`, () => {
+    describe(`widget graphql is ${mergeRequestWidgetGraphql ? 'enabled' : 'disabled'}`, () => {
       describe('While rebasing', () => {
         it('should show progress message', () => {
           factory(
