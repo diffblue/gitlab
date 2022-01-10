@@ -177,7 +177,7 @@ RSpec.describe Users::UpdateService do
 
       let(:service) { described_class.new(admin_user, ActionController::Parameters.new(params).permit!) }
       let(:params) do
-        { name: 'John Doe', username: 'jduser', email: 'jd@example.com', password: 'mydummypass' }
+        { name: 'John Doe', username: 'jduser', email: 'jd@example.com', password: Gitlab::Password.test_default }
       end
 
       context 'allowed params' do
