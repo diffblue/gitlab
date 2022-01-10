@@ -16,6 +16,7 @@ exports[`MergeRequest component when there are approvers matches snapshot 1`] = 
   <gl-avatars-inline-stub
     avatars="[object Object]"
     avatarsize="24"
+    badgesronlytext="-1 additional approvers"
     badgetooltipprop="name"
     class="gl-display-inline-flex gl-lg-display-none! gl-ml-3"
     collapsed="true"

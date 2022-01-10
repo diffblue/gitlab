@@ -1,5 +1,6 @@
 <script>
 import { GlAvatarLink, GlAvatar, GlAvatarsInline, GlTooltipDirective } from '@gitlab/ui';
+import { n__ } from '~/locale';
 
 export const MAX_VISIBLE_AVATARS_DEFAULT = 3;
 export const MAX_VISIBLE_AVATARS_COLLAPSED = 2;
@@ -36,6 +37,13 @@ export default {
     firstApprover() {
       return this.approvers[0];
     },
+    approversBadgeSrOnlyText() {
+      return n__(
+        '%d additional approver',
+        '%d additional approvers',
+        this.approvers.length - this.maxVisible,
+      );
+    },
   },
   avatarSize: 24,
   badgeTooltipMaxChars: 50,
@@ -52,6 +60,7 @@ export default {
       :avatar-size="$options.avatarSize"
       badge-tooltip-prop="name"
       :badge-tooltip-max-chars="$options.badgeTooltipMaxChars"
+      :badge-sr-only-text="approversBadgeSrOnlyText"
     >
       <template #avatar="{ avatar }">
         <gl-avatar-link v-gl-tooltip target="_blank" :href="avatar.web_url" :title="avatar.name">

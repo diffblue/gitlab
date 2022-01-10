@@ -41767,6 +41767,18 @@ msgstr ""
 msgid "added a Zoom call to this issue"
 msgstr ""
 
+msgid "additional approvers"
+msgstr ""
+
+msgid "additional assignees"
+msgstr ""
+
+msgid "additional commenters"
+msgstr ""
+
+msgid "additional committers"
+msgstr ""
+
 msgid "ago"
 msgstr ""
 
