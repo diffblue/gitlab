@@ -5,6 +5,7 @@ import { ApolloMutation } from 'vue-apollo';
 import EpicForm from 'ee/epic/components/epic_form.vue';
 import createEpic from 'ee/epic/queries/createEpic.mutation.graphql';
 import { TEST_HOST } from 'helpers/test_constants';
+import Autosave from '~/autosave';
 import { visitUrl } from '~/lib/utils/url_utility';
 import LabelsSelectWidget from '~/vue_shared/components/sidebar/labels_select_widget/labels_select_root.vue';
 
@@ -65,6 +66,15 @@ describe('ee/epic/components/epic_form.vue', () => {
 
     it('should render the form', () => {
       expect(findForm().exists()).toBe(true);
+    });
+
+    it('initializes autosave support on title and description fields', () => {
+      // We discourage testing `wrapper.vm` properties but
+      // since `autosave` library instantiates on component
+      // there's no other way to test whether instantiation
+      // happened correctly or not.
+      expect(wrapper.vm.autosaveTitle).toBeInstanceOf(Autosave);
+      expect(wrapper.vm.autosaveDescription).toBeInstanceOf(Autosave);
     });
 
     it('can be canceled', () => {
@@ -160,6 +170,26 @@ describe('ee/epic/components/epic_form.vue', () => {
       return savePromise.then(() => {
         expect(findSaveButton().props('loading')).toBe(loading);
       });
+    });
+
+    it('resets automatically saved title and description when request succeeds', async () => {
+      createWrapper();
+
+      // We discourage testing/spying on `wrapper.vm` properties but
+      // since `autosave` library instantiates on component there's no
+      // other way to test whether autosave class method was called
+      // correctly or not.
+      const autosaveTitleResetSpy = jest.spyOn(wrapper.vm.autosaveTitle, 'reset');
+      const autosaveDescriptionResetSpy = jest.spyOn(wrapper.vm.autosaveDescription, 'reset');
+      findTitle().vm.$emit('input', title);
+      findDescription().setValue(description);
+
+      findForm().vm.$emit('submit', { preventDefault: () => {} });
+
+      await nextTick();
+
+      expect(autosaveTitleResetSpy).toHaveBeenCalled();
+      expect(autosaveDescriptionResetSpy).toHaveBeenCalled();
     });
   });
 });
