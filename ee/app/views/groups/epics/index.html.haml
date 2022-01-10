@@ -3,7 +3,7 @@
 - page_title _("Epics")
 - is_signed_in = current_user.present?.to_s
 
-- if Feature.enabled?(:vue_epics_list, @group)
+- if Feature.enabled?(:vue_epics_list, @group, default_enabled: :yaml)
   #js-epics-list{ data: { can_create_epic: can?(current_user, :create_epic, @group).to_s,
     can_bulk_edit_epics: @can_bulk_update.to_s,
     page: params[:page],
