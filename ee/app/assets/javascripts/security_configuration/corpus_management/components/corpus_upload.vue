@@ -5,7 +5,7 @@ import { s__, __ } from '~/locale';
 import addCorpusMutation from '../graphql/mutations/add_corpus.mutation.graphql';
 import resetCorpus from '../graphql/mutations/reset_corpus.mutation.graphql';
 import uploadCorpus from '../graphql/mutations/upload_corpus.mutation.graphql';
-import getCorpusesQuery from '../graphql/queries/get_corpuses.query.graphql';
+import getUploadState from '../graphql/queries/get_upload_state.query.graphql';
 import CorpusUploadForm from './corpus_upload_form.vue';
 
 export default {
@@ -26,10 +26,7 @@ export default {
   inject: ['projectFullPath'],
   apollo: {
     states: {
-      query: getCorpusesQuery,
-      variables() {
-        return this.queryVariables;
-      },
+      query: getUploadState,
       update(data) {
         return data;
       },
@@ -76,20 +73,18 @@ export default {
   },
   methods: {
     addCorpus() {
-      this.$apollo.mutate({
-        mutation: addCorpusMutation,
-        refetchQueries: [
-          {
-            query: getCorpusesQuery,
-            variables: this.queryVariables,
+      return this.$apollo
+        .mutate({
+          mutation: addCorpusMutation,
+          variables: {
+            name: this.$options.i18n.newCorpus,
+            projectPath: this.projectFullPath,
+            packageId: this.states.uploadState.uploadedPackageId,
           },
-        ],
-        variables: {
-          name: this.$options.i18n.newCorpus,
-          projectPath: this.projectFullPath,
-          packageId: this.states.uploadState.uploadedPackageId,
-        },
-      });
+        })
+        .then(() => {
+          this.$emit('corpus-added');
+        });
     },
     resetCorpus() {
       this.$apollo.mutate({

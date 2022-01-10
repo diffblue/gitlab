@@ -60,5 +60,13 @@ describe('Corpus table', () => {
       actionComponent.vm.$emit('delete', 'corpus-name');
       expect(mutate).toHaveBeenCalledTimes(1);
     });
+
+    describe('with no corpuses', () => {
+      it('renders the empty state', async () => {
+        wrapper.setProps({ corpuses: [] });
+        await wrapper.vm.$nextTick();
+        expect(wrapper.text()).toContain('Currently, there are no uploaded or generated corpuses');
+      });
+    });
   });
 });

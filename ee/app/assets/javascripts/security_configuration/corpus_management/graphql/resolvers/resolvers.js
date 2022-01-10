@@ -3,15 +3,14 @@ import { publishPackage } from '~/api/packages_api';
 import axios from '~/lib/utils/axios_utils';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPE_PACKAGES_PACKAGE } from '~/graphql_shared/constants';
-import getCorpusesQuery from '../queries/get_corpuses.query.graphql';
+import getUploadState from '../queries/get_upload_state.query.graphql';
 import updateProgress from '../mutations/update_progress.mutation.graphql';
 import uploadComplete from '../mutations/upload_complete.mutation.graphql';
 import corpusCreate from '../mutations/corpus_create.mutation.graphql';
 
 export default {
   Query: {
-    /* eslint-disable no-unused-vars */
-    uploadState(_, { projectPath }) {
+    uploadState() {
       return {
         isUploading: false,
         progress: 0,
@@ -24,7 +23,7 @@ export default {
   Mutation: {
     addCorpus: (_, { projectPath, packageId }, { cache, client }) => {
       const sourceData = cache.readQuery({
-        query: getCorpusesQuery,
+        query: getUploadState,
         variables: { projectPath },
       });
 
@@ -33,7 +32,7 @@ export default {
         draftState.uploadState.progress = 0;
       });
 
-      cache.writeQuery({ query: getCorpusesQuery, data, variables: { projectPath } });
+      cache.writeQuery({ query: getUploadState, data, variables: { projectPath } });
 
       client.mutate({
         mutation: corpusCreate,
@@ -60,7 +59,7 @@ export default {
       const source = CancelToken.source();
 
       const sourceData = cache.readQuery({
-        query: getCorpusesQuery,
+        query: getUploadState,
         variables: { projectPath },
       });
 
@@ -70,7 +69,7 @@ export default {
         uploadState.cancelSource = source;
       });
 
-      cache.writeQuery({ query: getCorpusesQuery, data: targetData, variables: { projectPath } });
+      cache.writeQuery({ query: getUploadState, data: targetData, variables: { projectPath } });
 
       publishPackage(
         { projectPath, name, version: 0, fileName: `${name}.zip`, files },
@@ -83,13 +82,13 @@ export default {
             variables: { projectPath, packageId: data.package_id },
           });
         })
-        .catch((e) => {
+        .catch(() => {
           /* TODO: Error handling */
         });
     },
     uploadComplete: (_, { projectPath, packageId }, { cache }) => {
       const sourceData = cache.readQuery({
-        query: getCorpusesQuery,
+        query: getUploadState,
         variables: { projectPath },
       });
 
@@ -100,11 +99,11 @@ export default {
         uploadState.uploadedPackageId = packageId;
       });
 
-      cache.writeQuery({ query: getCorpusesQuery, data, variables: { projectPath } });
+      cache.writeQuery({ query: getUploadState, data, variables: { projectPath } });
     },
     updateProgress: (_, { projectPath, progress }, { cache }) => {
       const sourceData = cache.readQuery({
-        query: getCorpusesQuery,
+        query: getUploadState,
         variables: { projectPath },
       });
 
@@ -114,11 +113,11 @@ export default {
         uploadState.progress = progress;
       });
 
-      cache.writeQuery({ query: getCorpusesQuery, data, variables: { projectPath } });
+      cache.writeQuery({ query: getUploadState, data, variables: { projectPath } });
     },
     resetCorpus: (_, { projectPath }, { cache }) => {
       const sourceData = cache.readQuery({
-        query: getCorpusesQuery,
+        query: getUploadState,
         variables: { projectPath },
       });
 
@@ -131,7 +130,7 @@ export default {
         uploadState.cancelToken = null;
       });
 
-      cache.writeQuery({ query: getCorpusesQuery, data, variables: { projectPath } });
+      cache.writeQuery({ query: getUploadState, data, variables: { projectPath } });
     },
   },
 };
