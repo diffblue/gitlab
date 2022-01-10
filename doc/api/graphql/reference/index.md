@@ -954,6 +954,10 @@ Input type: `ClusterAgentTokenCreateInput`
 
 ### `Mutation.clusterAgentTokenDelete`
 
+WARNING:
+**Deprecated** in 14.7.
+Tokens must be revoked with ClusterAgentTokenRevoke.
+
 Input type: `ClusterAgentTokenDeleteInput`
 
 #### Arguments
