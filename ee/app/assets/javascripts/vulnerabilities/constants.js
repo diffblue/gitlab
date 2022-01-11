@@ -85,3 +85,7 @@ export const SUPPORTING_MESSAGE_TYPES = {
   // eslint-disable-next-line @gitlab/require-i18n-strings
   RECORDED: 'Recorded',
 };
+
+export const SUPPORTED_REFERENCE_SCHEMA = {
+  cwe: 'cwe',
+};
