@@ -210,22 +210,6 @@ RSpec.describe 'layouts/nav/sidebar/_project' do
         expect(rendered).to have_link('Audit events', href: project_audit_events_path(project))
       end
     end
-
-    context 'when dast_view_scans feature flag is disabled' do
-      before do
-        allow(view).to receive(:current_user).and_return(user)
-        stub_feature_flags(dast_view_scans: false)
-        stub_licensed_features(
-          security_on_demand_scans: true
-        )
-
-        render
-      end
-
-      it 'links to on-demand scans form instead of index page' do
-        expect(rendered).to have_link('On-demand scans', href: new_project_on_demand_scan_path(project))
-      end
-    end
   end
 
   describe 'Operations' do

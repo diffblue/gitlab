@@ -78,16 +78,6 @@ RSpec.describe 'Query.project(fullPath).pipelines.dastProfile' do
         expect { subject }.not_to exceed_query_limit(control)
         expect(dast_profile_data.size).to eq(6)
       end
-
-      context 'when feature flag is not enabled' do
-        it 'does not return dast profile data' do
-          stub_feature_flags(dast_view_scans: false)
-
-          subject
-
-          expect(dast_profile_data).to contain_exactly(nil)
-        end
-      end
     end
   end
 end
