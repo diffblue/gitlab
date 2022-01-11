@@ -4,6 +4,7 @@ import DeploymentFrequencyCharts from 'ee/dora/components/deployment_frequency_c
 import LeadTimeCharts from 'ee/dora/components/lead_time_charts.vue';
 import { mergeUrlParams, updateHistory, getParameterValues } from '~/lib/utils/url_utility';
 import ReleaseStatsCard from './release_stats_card.vue';
+import SharedRunnersUsage from './shared_runner_usage.vue';
 
 export default {
   name: 'CiCdAnalyticsApp',
@@ -13,6 +14,7 @@ export default {
     GlTab,
     DeploymentFrequencyCharts,
     LeadTimeCharts,
+    SharedRunnersUsage,
   },
   inject: {
     shouldRenderDoraCharts: {
@@ -32,6 +34,8 @@ export default {
       if (this.shouldRenderDoraCharts) {
         tabsToShow.push('deployment-frequency', 'lead-time');
       }
+
+      tabsToShow.push('shared-runner-usage');
 
       return tabsToShow;
     },
@@ -73,6 +77,9 @@ export default {
           <lead-time-charts />
         </gl-tab>
       </template>
+      <gl-tab :title="s__('CICDAnalytics|Shared runner usage')">
+        <shared-runners-usage />
+      </gl-tab>
     </gl-tabs>
     <release-stats-card v-else :class="releaseStatsCardClasses" />
   </div>
