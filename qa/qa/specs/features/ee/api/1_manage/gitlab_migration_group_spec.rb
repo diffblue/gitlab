@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  # Do not run on staging since another top level group has to be created which doesn't have premium license
-  RSpec.describe 'Manage', :requires_admin, except: { subdomain: :staging } do
+  RSpec.describe 'Manage', :requires_admin do
     describe 'Gitlab migration' do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:api_client) { Runtime::API::Client.new(user: user) }
@@ -29,9 +28,18 @@ module QA
         end
       end
 
-      let(:source_group) do
-        Resource::Sandbox.fabricate_via_api! do |group|
+      let(:destination_group) do
+        Resource::Group.fabricate_via_api! do |group|
           group.api_client = api_client
+          group.sandbox = sandbox
+          group.path = "destination-group-for-import-#{SecureRandom.hex(4)}"
+        end
+      end
+
+      let(:source_group) do
+        Resource::Group.fabricate_via_api! do |group|
+          group.api_client = api_client
+          group.sandbox = sandbox
           group.path = "source-group-for-import-#{SecureRandom.hex(4)}"
           group.avatar = File.new('qa/fixtures/designs/tanuki.jpg', 'r')
         end
@@ -40,8 +48,8 @@ module QA
       let(:imported_group) do
         Resource::BulkImportGroup.fabricate_via_api! do |group|
           group.api_client = api_client
-          group.sandbox = sandbox
-          group.source_group_path = source_group.path
+          group.sandbox = destination_group
+          group.source_group = source_group
         end
       end
 
