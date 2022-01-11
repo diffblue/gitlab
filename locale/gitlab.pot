@@ -31642,10 +31642,16 @@ msgstr ""
 msgid "SecurityOrchestration|Scan Execution"
 msgstr ""
 
+msgid "SecurityOrchestration|Scan Result"
+msgstr ""
+
 msgid "SecurityOrchestration|Scan execution"
 msgstr ""
 
 msgid "SecurityOrchestration|Scan execution policies can only be created by project owners."
+msgstr ""
+
+msgid "SecurityOrchestration|Scan result"
 msgstr ""
 
 msgid "SecurityOrchestration|Scan to be performed %{cadence}"

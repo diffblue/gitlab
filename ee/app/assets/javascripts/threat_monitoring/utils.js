@@ -25,6 +25,9 @@ export const getPolicyType = (typeName = '') => {
   if (typeName === POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.typeName) {
     return POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value;
   }
+  if (typeName === POLICY_TYPE_COMPONENT_OPTIONS.scanResult.typeName) {
+    return POLICY_TYPE_COMPONENT_OPTIONS.scanResult.value;
+  }
   return null;
 };
 

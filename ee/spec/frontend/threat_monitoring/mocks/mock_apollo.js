@@ -57,6 +57,18 @@ export const scanExecutionPolicies = (nodes) =>
     },
   });
 
+export const scanResultPolicies = (nodes) =>
+  jest.fn().mockResolvedValue({
+    data: {
+      project: {
+        id: '3',
+        scanResultPolicies: {
+          nodes,
+        },
+      },
+    },
+  });
+
 export const mockLinkSecurityPolicyProjectResponses = {
   success: jest.fn().mockResolvedValue({ data: { securityPolicyProjectAssign: { errors: [] } } }),
   failure: jest

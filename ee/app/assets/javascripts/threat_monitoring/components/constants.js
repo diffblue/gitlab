@@ -42,6 +42,13 @@ export const POLICY_TYPE_COMPONENT_OPTIONS = {
     urlParameter: 'scan_execution_policy',
     value: 'scanExecution',
   },
+  scanResult: {
+    component: 'scan-result-policy-editor',
+    text: s__('SecurityOrchestration|Scan Result'),
+    typeName: 'ScanResultPolicy',
+    urlParameter: 'scan_result_policy',
+    value: 'scanResult',
+  },
 };
 
 export const POLICY_TYPE_OPTIONS = {
@@ -52,6 +59,10 @@ export const POLICY_TYPE_OPTIONS = {
   POLICY_TYPE_SCAN_EXECUTION: {
     value: 'POLICY_TYPE_SCAN_EXECUTION',
     text: s__('SecurityOrchestration|Scan execution'),
+  },
+  POLICY_TYPE_SCAN_RESULT: {
+    value: 'POLICY_TYPE_SCAN_RESULT',
+    text: s__('SecurityOrchestration|Scan result'),
   },
   ALL: {
     value: '',
