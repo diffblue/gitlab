@@ -44,11 +44,23 @@ module AppSec
         def ci_configuration
           {
             'stages' => [STAGE_NAME],
-            'include' => [{ 'template' => 'Security/DAST-On-Demand-Scan.gitlab-ci.yml' }],
+            'include' => [{ 'template' => dast_template }],
             'dast' => {
               'dast_configuration' => { 'site_profile' => dast_site_profile.name, 'scanner_profile' => dast_scanner_profile&.name }.compact
             }
           }.to_yaml
+        end
+
+        def dast_template
+          if should_use_api_scan?
+            'Security/DAST-On-Demand-API-Scan.gitlab-ci.yml'
+          else
+            'Security/DAST-On-Demand-Scan.gitlab-ci.yml'
+          end
+        end
+
+        def should_use_api_scan?
+          Feature.enabled?(:dast_api_scanner, dast_site_profile.project, default_enabled: :yaml) && dast_site_profile.target_type == 'api'
         end
 
         def dast_profile
