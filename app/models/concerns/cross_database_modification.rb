@@ -9,13 +9,25 @@ module CrossDatabaseModification
 
   class_methods do
     def transaction(**options, &block)
-      super(**options) do
-        if connection.current_transaction.respond_to?(:add_gitlab_schema) && gitlab_schema
-          connection.current_transaction.add_gitlab_schema(gitlab_schema)
-        end
+      if track_gitlab_schema_in_current_transaction?
+        super(**options) do
+          if connection.current_transaction.respond_to?(:add_gitlab_schema) && gitlab_schema
+            connection.current_transaction.add_gitlab_schema(gitlab_schema)
+          end
 
-        yield
+          yield
+        end
+      else
+        super(**options, &block)
       end
+    end
+
+    def track_gitlab_schema_in_current_transaction?
+      return false unless Feature::FlipperFeature.table_exists?
+
+      Feature.enabled?(:track_gitlab_schema_in_current_transaction, default_enabled: :yaml)
+    rescue ActiveRecord::NoDatabaseError, PG::ConnectionBad
+      false
     end
 
     def gitlab_schema
