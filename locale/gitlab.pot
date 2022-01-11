@@ -36578,6 +36578,9 @@ msgstr ""
 msgid "This setting can be overridden in each project."
 msgstr ""
 
+msgid "This setting is allowed for forked projects only"
+msgstr ""
+
 msgid "This subscription is for"
 msgstr ""
 
