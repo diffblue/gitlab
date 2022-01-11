@@ -189,7 +189,7 @@ RSpec.describe Ci::Minutes::Notification do
   context 'when at project level' do
     context 'when eligible to see notifications' do
       before do
-        group.add_developer(user)
+        group.add_owner(user)
       end
 
       describe '#show?' do
@@ -217,12 +217,22 @@ RSpec.describe Ci::Minutes::Notification do
         subject { described_class.new(injected_project, nil) }
       end
     end
+
+    context 'when user is not in the correct role' do
+      before do
+        group.add_developer user
+      end
+
+      it_behaves_like 'not eligible to see notifications' do
+        subject { described_class.new(injected_project, nil) }
+      end
+    end
   end
 
   context 'when at namespace level' do
     context 'when eligible to see notifications' do
       before do
-        group.add_developer(user)
+        group.add_owner(user)
       end
 
       context 'with a project that has runners enabled inside namespace' do
@@ -254,6 +264,16 @@ RSpec.describe Ci::Minutes::Notification do
 
     context 'when user is not authenticated' do
       let(:user) { nil }
+
+      it_behaves_like 'not eligible to see notifications' do
+        subject { described_class.new(injected_project, nil) }
+      end
+    end
+
+    context 'when user is not in the correct role' do
+      before do
+        group.add_developer user
+      end
 
       it_behaves_like 'not eligible to see notifications' do
         subject { described_class.new(injected_project, nil) }
