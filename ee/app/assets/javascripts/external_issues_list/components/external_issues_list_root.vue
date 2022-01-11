@@ -16,7 +16,7 @@ import {
   AvailableSortOptions,
   DEFAULT_PAGE_SIZE,
 } from '~/vue_shared/issuable/list/constants';
-import { i18n } from '~/issues_list/constants';
+import { i18n } from '~/issues/list/constants';
 import {
   FILTERED_SEARCH_LABELS,
   FILTERED_SEARCH_TERM,

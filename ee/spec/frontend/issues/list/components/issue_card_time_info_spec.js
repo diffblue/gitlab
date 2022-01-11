@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import IssueCardTimeInfo from 'ee/issues_list/components/issue_card_time_info.vue';
+import IssueCardTimeInfo from 'ee/issues/list/components/issue_card_time_info.vue';
 import WeightCount from 'ee/issues/components/weight_count.vue';
 import IssueHealthStatus from 'ee/related_items_tree/components/issue_health_status.vue';
 

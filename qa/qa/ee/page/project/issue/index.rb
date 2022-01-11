@@ -12,7 +12,7 @@ module QA
               super
 
               base.class_eval do
-                view 'ee/app/assets/javascripts/issues_list/components/issue_card_time_info.vue' do
+                view 'ee/app/assets/javascripts/issues/list/components/issue_card_time_info.vue' do
                   element :issuable_weight_content
                 end
               end

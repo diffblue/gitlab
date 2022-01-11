@@ -2,10 +2,10 @@ import { mount } from '@vue/test-utils';
 import { cloneDeep } from 'lodash';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import getIssuesQuery from 'ee_else_ce/issues_list/queries/get_issues.query.graphql';
-import getIssuesCountsQuery from 'ee_else_ce/issues_list/queries/get_issues_counts.query.graphql';
+import getIssuesQuery from 'ee_else_ce/issues/list/queries/get_issues.query.graphql';
+import getIssuesCountsQuery from 'ee_else_ce/issues/list/queries/get_issues_counts.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import { getIssuesCountsQueryResponse, getIssuesQueryResponse } from 'jest/issues_list/mock_data';
+import { getIssuesCountsQueryResponse, getIssuesQueryResponse } from 'jest/issues/list/mock_data';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 import {
@@ -20,9 +20,9 @@ import {
   TOKEN_TYPE_RELEASE,
   TOKEN_TYPE_TYPE,
   TOKEN_TYPE_WEIGHT,
-} from '~/issues_list/constants';
+} from '~/issues/list/constants';
 import BlockingIssuesCount from 'ee/issues/components/blocking_issues_count.vue';
-import IssuesListApp from 'ee/issues_list/components/issues_list_app.vue';
+import IssuesListApp from 'ee/issues/list/components/issues_list_app.vue';
 
 describe('EE IssuesListApp component', () => {
   let wrapper;
