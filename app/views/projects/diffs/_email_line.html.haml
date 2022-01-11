@@ -1,3 +1,7 @@
+-# This template is used when rendering diffs in email notifications
+-# Called inside: app/views/notify/repository_push_email.html.haml
+-#                app/views/notify/_note_email.html.haml
+
 %tr.line_holder{ class: line.type }
   - case line.type
   - when 'match'
