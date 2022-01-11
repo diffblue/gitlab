@@ -342,6 +342,10 @@ module EE
 
       rule { ip_enforcement_prevents_access & ~admin & ~auditor }.policy do
         prevent :read_project
+        prevent :read_issue
+        prevent :read_merge_request
+        prevent :read_milestone
+        prevent :read_container_image
       end
 
       rule { locked_approvers_rules }.policy do
