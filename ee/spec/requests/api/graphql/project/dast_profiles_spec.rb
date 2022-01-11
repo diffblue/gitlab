@@ -109,33 +109,13 @@ RSpec.describe 'Query.project(fullPath).dastProfiles' do
       expect { subject }.not_to exceed_query_limit(control)
     end
 
-    context 'when `dast_view_scans` feature flag is disabled' do
-      before do
-        stub_feature_flags(dast_view_scans: false)
-      end
+    context 'when hasDastProfileSchedule is true' do
+      let(:query_args) { { hasDastProfileSchedule: true } }
 
-      context 'when hasDastProfileSchedule is false' do
-        let(:query_args) { { hasDastProfileSchedule: false } }
+      it 'returns all dastProfiles with a schedule' do
+        subject
 
-        include_examples 'returns all dastProfiles'
-      end
-
-      context 'when hasDastProfileSchedule is true' do
-        let(:query_args) { { hasDastProfileSchedule: true } }
-
-        include_examples 'returns all dastProfiles'
-      end
-    end
-
-    context 'when `dast_view_scans` feature flag is enabled' do
-      context 'when hasDastProfileSchedule is true' do
-        let(:query_args) { { hasDastProfileSchedule: true } }
-
-        it 'returns all dastProfiles with a schedule' do
-          subject
-
-          expect(graphql_data_at(:project, :dast_profiles, :nodes, :id)).to contain_exactly(dast_profile5.to_global_id.to_s)
-        end
+        expect(graphql_data_at(:project, :dast_profiles, :nodes, :id)).to contain_exactly(dast_profile5.to_global_id.to_s)
       end
     end
   end

@@ -73,20 +73,6 @@ RSpec.describe Projects::OnDemandScansController, type: :request do
     it_behaves_like 'on-demand scans page' do
       let(:path) { project_on_demand_scans_path(project) }
     end
-
-    context 'when dast_view_scans feature flag is disabled' do
-      before do
-        stub_licensed_features(security_on_demand_scans: true)
-        stub_feature_flags(dast_view_scans: false)
-        project.add_developer(user)
-        login_as(user)
-        get project_on_demand_scans_path(project)
-      end
-
-      it 'redirects to new on-demands scans form' do
-        expect(response).to redirect_to(new_project_on_demand_scan_path(project))
-      end
-    end
   end
 
   describe 'GET #new' do

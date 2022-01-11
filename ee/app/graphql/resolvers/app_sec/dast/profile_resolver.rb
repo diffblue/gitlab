@@ -12,7 +12,7 @@ module Resolvers
 
         argument :has_dast_profile_schedule, ::GraphQL::Types::Boolean,
                  required: false,
-                 description: 'Filter DAST Profiles by whether or not they have a schedule. Will be ignored if `dast_view_scans` feature flag is disabled.'
+                 description: 'Filter DAST Profiles by whether or not they have a schedule.'
 
         when_single do
           argument :id, ::Types::GlobalIDType[::Dast::Profile],
@@ -21,7 +21,6 @@ module Resolvers
         end
 
         def resolve_with_lookahead(**args)
-          args.delete(:has_dast_profile_schedule) unless Feature.enabled?(:dast_view_scans, project, default_enabled: :yaml)
           apply_lookahead(find_dast_profiles(args))
         end
 
