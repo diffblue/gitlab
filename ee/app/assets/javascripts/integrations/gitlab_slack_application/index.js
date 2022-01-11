@@ -1,8 +1,9 @@
 import Vue from 'vue';
-import AddGitlabSlackApplication from './components/add_gitlab_slack_application.vue';
+import { parseBoolean } from '~/lib/utils/common_utils';
+import GitlabSlackApplication from './components/gitlab_slack_application.vue';
 
 export default () => {
-  const el = document.querySelector('.js-add-gitlab-slack-application');
+  const el = document.querySelector('.js-gitlab-slack-application');
 
   if (!el) return null;
 
@@ -20,10 +21,10 @@ export default () => {
   return new Vue({
     el,
     render(createElement) {
-      return createElement(AddGitlabSlackApplication, {
+      return createElement(GitlabSlackApplication, {
         props: {
           projects: JSON.parse(projects),
-          isSignedIn,
+          isSignedIn: parseBoolean(isSignedIn),
           gitlabForSlackGifPath,
           signInPath,
           slackLinkPath,

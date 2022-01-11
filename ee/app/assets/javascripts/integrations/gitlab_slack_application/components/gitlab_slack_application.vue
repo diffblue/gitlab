@@ -5,72 +5,66 @@ import createFlash from '~/flash';
 import { redirectTo } from '~/lib/utils/url_utility';
 import { __ } from '~/locale';
 
-import GitlabSlackService from '../services/gitlab_slack_service';
+import { addProjectToSlack } from '../api';
+import ProjectsDropdown from './projects_dropdown.vue';
 
 export default {
   components: {
     GlButton,
     GlIcon,
+    ProjectsDropdown,
   },
-
   props: {
     projects: {
       type: Array,
       required: false,
       default: () => [],
     },
-
     isSignedIn: {
       type: Boolean,
       required: true,
     },
-
     gitlabForSlackGifPath: {
       type: String,
       required: true,
     },
-
     signInPath: {
       type: String,
       required: true,
     },
-
     slackLinkPath: {
       type: String,
       required: true,
     },
-
     gitlabLogoPath: {
       type: String,
       required: true,
     },
-
     slackLogoPath: {
       type: String,
       required: true,
     },
-
     docsPath: {
       type: String,
       required: true,
     },
   },
-
   data() {
     return {
-      selectedProjectId: this.projects && this.projects.length ? this.projects[0].id : 0,
+      selectedProject: null,
     };
   },
-
   computed: {
     hasProjects() {
       return this.projects.length > 0;
     },
   },
-
   methods: {
+    selectProject(project) {
+      this.selectedProject = project;
+    },
     addToSlack() {
-      GitlabSlackService.addToSlack(this.slackLinkPath, this.selectedProjectId)
+      addProjectToSlack(this.slackLinkPath, this.selectedProject.id)
         .then((response) => redirectTo(response.data.add_to_slack_link))
         .catch(() =>
           createFlash({
@@ -91,31 +85,43 @@ export default {
     </div>
 
     <h1>{{ s__('SlackIntegration|GitLab for Slack') }}</h1>
-    <p>{{ s__('SlackIntegration|Select a GitLab project to link with your Slack workspace.') }}</p>
 
-    <div class="mx-auto prepend-top-20 text-center">
-      <div v-if="isSignedIn && hasProjects">
-        <select v-model="selectedProjectId" class="js-project-select form-control gl-mt-3 gl-mb-3">
-          <option v-for="project in projects" :key="project.id" :value="project.id">
-            {{ project.name }}
-          </option>
-        </select>
+    <div class="gl-mt-6">
+      <template v-if="isSignedIn">
+        <template v-if="hasProjects">
+          <p>
+            {{ s__('SlackIntegration|Select a GitLab project to link with your Slack workspace.') }}
+          </p>
 
-        <div class="gl-display-flex gl-justify-content-end">
-          <gl-button category="primary" variant="confirm" class="float-right" @click="addToSlack">
-            {{ __('Continue') }}
-          </gl-button>
-        </div>
-      </div>
+          <projects-dropdown
+            :projects="projects"
+            :selected-project="selectedProject"
+            @projectSelected="selectProject"
+          />
 
-      <span v-else-if="isSignedIn && !hasProjects" class="js-no-projects">{{
-        __("You don't have any projects available.")
-      }}</span>
+          <div class="gl-display-flex gl-justify-content-end">
+            <gl-button
+              category="primary"
+              variant="confirm"
+              class="float-right"
+              :disabled="!selectedProject"
+              @click="addToSlack"
+            >
+              {{ __('Continue') }}
+            </gl-button>
+          </div>
+        </template>
+        <template v-else>
+          <p class="js-no-projects">{{ __("You don't have any projects available.") }}</p>
+        </template>
+      </template>
 
-      <span v-else>
-        You have to
-        <a v-once :href="signInPath" class="js-gitlab-slack-sign-in-link">{{ __('log in') }}</a>
-      </span>
+      <template v-else>
+        <p>{{ s__('JiraService|Sign in to GitLab.com to get started.') }}</p>
+        <gl-button category="primary" variant="confirm" :href="signInPath">{{
+          __('Sign in to GitLab')
+        }}</gl-button>
+      </template>
     </div>
 
     <div class="center prepend-top-20 gl-mb-3 gl-mr-2 gl-ml-2">
@@ -125,7 +131,7 @@ export default {
     <div v-once class="text-center">
       <h3>{{ __('How it works') }}</h3>
 
-      <div class="well gitlab-slack-well mx-auto">
+      <div class="mx-auto">
         <code class="code mx-auto gl-mb-3"
           >/gitlab &lt;project-alias&gt; issue show &lt;id&gt;</code
         >
