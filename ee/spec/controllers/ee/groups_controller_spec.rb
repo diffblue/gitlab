@@ -629,6 +629,15 @@ RSpec.describe GroupsController do
       end
 
       context 'authenticated as group owner' do
+        before do
+          allow_next_found_instance_of(Group) do |group|
+            allow(group).to receive(:user_cap_available?).and_return(true)
+          end
+
+          group.add_owner(user)
+          sign_in(user)
+        end
+
         where(:new_user_signups_cap, :result, :status) do
           nil | nil   | :found
           10  | 10    | :found
@@ -637,11 +646,6 @@ RSpec.describe GroupsController do
         with_them do
           let(:params) do
             { id: group.to_param, group: { new_user_signups_cap: new_user_signups_cap } }
-          end
-
-          before do
-            group.add_owner(user)
-            sign_in(user)
           end
 
           it_behaves_like 'updates the attribute'

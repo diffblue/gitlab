@@ -523,6 +523,14 @@ module EE
       user_cap <= members_count
     end
 
+    def shared_externally?
+      strong_memoize(:shared_externally) do
+        invited_group_in_groups
+          .where.not(group_group_links: { shared_with_group_id: ::Group.groups_including_descendants_by([self]) })
+          .limit(1).any?
+      end
+    end
+
     private
 
     override :post_create_hook
