@@ -6906,6 +6906,9 @@ msgstr ""
 msgid "Checkout|(x%{quantity})"
 msgstr ""
 
+msgid "Checkout|An unknown error has occurred. Please try again by refreshing this page."
+msgstr ""
+
 msgid "Checkout|Billing address"
 msgstr ""
 

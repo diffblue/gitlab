@@ -1,6 +1,6 @@
 <script>
 import emptySvg from '@gitlab/svgs/dist/illustrations/security-dashboard-empty-state.svg';
-import { GlEmptyState, GlIcon, GlTooltipDirective } from '@gitlab/ui';
+import { GlEmptyState, GlIcon, GlAlert, GlTooltipDirective } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import OrderSummary from 'ee/subscriptions/buy_addons_shared/components/order_summary.vue';
 import { ERROR_FETCHING_DATA_HEADER, ERROR_FETCHING_DATA_DESCRIPTION } from '~/ensure_data';
@@ -18,6 +18,7 @@ export default {
     Checkout,
     GlEmptyState,
     GlIcon,
+    GlAlert,
     OrderSummary,
   },
   directives: {
@@ -36,6 +37,7 @@ export default {
   data() {
     return {
       hasError: false,
+      alertMessage: '',
     };
   },
   computed: {
@@ -88,6 +90,9 @@ export default {
         selectedPlanPrice: price,
       });
     },
+    alertError(errorMessage) {
+      this.alertMessage = errorMessage;
+    },
   },
   apollo: {
     plans: {
@@ -130,8 +135,11 @@ export default {
     class="row gl-flex-grow-1 gl-flex-direction-column gl-flex-nowrap gl-lg-flex-direction-row gl-xl-flex-direction-row gl-lg-flex-wrap gl-xl-flex-wrap"
   >
     <div
-      class="checkout-pane gl-px-3 gl-align-items-center gl-bg-gray-10 col-lg-7 gl-display-flex gl-flex-direction-column gl-flex-grow-1"
+      class="checkout-pane gl-px-3 gl-pt-5 gl-align-items-center gl-bg-gray-10 col-lg-7 gl-display-flex gl-flex-direction-column gl-flex-grow-1"
     >
+      <gl-alert v-if="alertMessage" class="checkout-alert" variant="danger" :dismissible="false">
+        {{ alertMessage }}
+      </gl-alert>
       <checkout :plan="plan">
         <template #purchase-details>
           <addon-purchase-details
@@ -162,6 +170,7 @@ export default {
         :plan="plan"
         :title="config.title"
         :purchase-has-expiration="config.hasExpiration"
+        @alertError="alertError"
       >
         <template #price-per-unit="{ price }">
           {{ pricePerUnitLabel(price) }}
