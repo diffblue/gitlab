@@ -40,7 +40,6 @@ describe('Subscription Breakdown', () => {
   const connectivityHelpURL = 'connectivity/help/url';
   const customersPortalUrl = 'customers.dot';
   const licenseRemovePath = '/license/remove/';
-  const licenseUploadPath = '/license/upload/';
   const subscriptionActivationBannerCalloutName = 'banner_callout_name';
   const subscriptionSyncPath = '/sync/path/';
 
@@ -82,7 +81,6 @@ describe('Subscription Breakdown', () => {
           congratulationSvgPath,
           connectivityHelpURL,
           customersPortalUrl,
-          licenseUploadPath,
           licenseRemovePath,
           subscriptionActivationBannerCalloutName,
           subscriptionSyncPath,
@@ -195,7 +193,6 @@ describe('Subscription Breakdown', () => {
           const provide = {
             connectivityHelpURL: '',
             customersPortalUrl: '',
-            licenseUploadPath: '',
             licenseRemovePath: '',
             subscriptionSyncPath: url,
           };
@@ -207,31 +204,11 @@ describe('Subscription Breakdown', () => {
         },
       );
 
-      it.each`
-        url                  | type                              | shouldShow
-        ${licenseUploadPath} | ${subscriptionTypes.LICENSE_FILE} | ${true}
-        ${licenseUploadPath} | ${subscriptionTypes.CLOUD}        | ${false}
-        ${''}                | ${subscriptionTypes.LICENSE_FILE} | ${false}
-        ${''}                | ${subscriptionTypes.CLOUD}        | ${false}
-        ${undefined}         | ${subscriptionTypes.LICENSE_FILE} | ${false}
-        ${undefined}         | ${subscriptionTypes.CLOUD}        | ${false}
-      `(
-        'with url is $url and type is $type the upload button is shown: $shouldShow',
-        ({ url, type, shouldShow }) => {
-          const provide = {
-            connectivityHelpURL: '',
-            customersPortalUrl: '',
-            licenseRemovePath: '',
-            subscriptionSyncPath: '',
-            licenseUploadPath: url,
-          };
-          const props = { subscription: { ...license.ULTIMATE, type } };
-          const stubs = { GlCard, SubscriptionDetailsCard };
-          createComponent({ props, provide, stubs });
+      it('does not show upload legacy license button', () => {
+        createComponent();
 
-          expect(findLicenseUploadAction().exists()).toBe(shouldShow);
-        },
-      );
+        expect(findLicenseUploadAction().exists()).toBe(false);
+      });
 
       it.each`
         url                   | shouldShow
@@ -241,7 +218,6 @@ describe('Subscription Breakdown', () => {
       `('with url is $url the manage button is shown: $shouldShow', ({ url, shouldShow }) => {
         const provide = {
           connectivityHelpURL: '',
-          licenseUploadPath: '',
           licenseRemovePath: '',
           subscriptionSyncPath: '',
           customersPortalUrl: url,
@@ -266,7 +242,6 @@ describe('Subscription Breakdown', () => {
           const provide = {
             connectivityHelpURL: '',
             customersPortalUrl: '',
-            licenseUploadPath: '',
             subscriptionSyncPath: '',
             licenseRemovePath: url,
           };
