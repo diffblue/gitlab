@@ -4,7 +4,7 @@ import find from 'lodash/find';
 import { logError } from '~/lib/logger';
 
 import { TAX_RATE } from 'ee/subscriptions/new/constants';
-import { CUSTOMERSDOT_CLIENT } from 'ee/subscriptions/buy_addons_shared/constants';
+import { CUSTOMERSDOT_CLIENT, I18N_API_ERROR } from 'ee/subscriptions/buy_addons_shared/constants';
 import formattingMixins from 'ee/subscriptions/new/formatting_mixins';
 import { sprintf } from '~/locale';
 
@@ -62,13 +62,16 @@ export default {
       },
       manual: true,
       result({ data }) {
-        if (data.orderPreview) {
+        if (data.errors) {
+          this.hasError = true;
+        } else if (data.orderPreview) {
           this.endDate = data.orderPreview.targetDate;
           this.proratedAmount = data.orderPreview.amount;
         }
       },
       error(error) {
         this.hasError = true;
+        this.$emit('alertError', I18N_API_ERROR);
         logError(error);
       },
       skip() {
@@ -91,7 +94,7 @@ export default {
       return this.plan.pricePerYear;
     },
     totalExVat() {
-      return this.isLoading
+      return this.hideAmount
         ? 0
         : this.proratedAmount || this.subscription.quantity * this.selectedPlanPrice;
     },
@@ -99,7 +102,7 @@ export default {
       return TAX_RATE * this.totalExVat;
     },
     totalAmount() {
-      return this.isLoading ? 0 : this.proratedAmount || this.totalExVat + this.vat;
+      return this.hideAmount ? 0 : this.proratedAmount || this.totalExVat + this.vat;
     },
     quantityPresent() {
       return this.subscription.quantity > 0;
@@ -115,6 +118,9 @@ export default {
     },
     isLoading() {
       return this.$apollo.loading;
+    },
+    hideAmount() {
+      return this.isLoading || this.hasError;
     },
   },
   taxRate: TAX_RATE,
