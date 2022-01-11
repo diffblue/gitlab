@@ -183,9 +183,12 @@ module EE
         enable :create_vulnerability_feedback
         enable :destroy_vulnerability_feedback
         enable :update_vulnerability_feedback
-        enable :read_ci_minutes_quota
         enable :admin_feature_flags_issue_links
         enable :read_project_audit_events
+      end
+
+      rule { can?(:owner_access) }.policy do
+        enable :read_ci_minutes_quota
       end
 
       rule { can?(:developer_access) & iterations_available }.policy do

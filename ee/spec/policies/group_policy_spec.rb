@@ -1354,8 +1354,8 @@ RSpec.describe GroupPolicy do
     where(:role, :admin_mode, :allowed) do
       :guest      | nil   | false
       :reporter   | nil   | false
-      :developer  | nil   | true
-      :maintainer | nil   | true
+      :developer  | nil   | false
+      :maintainer | nil   | false
       :owner      | nil   | true
       :admin      | true  | true
       :admin      | false | false
