@@ -7,11 +7,13 @@ RSpec.describe API::Members do
 
   context 'group members endpoints for group with minimal access feature' do
     let_it_be(:group) { create(:group) }
+    let_it_be(:subgroup) { create(:group, parent: group) }
     let_it_be(:minimal_access_member) { create(:group_member, :minimal_access, source: group) }
     let_it_be(:owner) { create(:user) }
 
     before do
       group.add_owner(owner)
+      subgroup.add_owner(owner)
     end
 
     describe "GET /groups/:id/members" do
@@ -41,27 +43,39 @@ RSpec.describe API::Members do
              params: { user_id: stranger.id, access_level: Member::MINIMAL_ACCESS }
       end
 
-      context 'when minimal access role is not available' do
+      context 'when minimal access license is not available' do
         it 'does not create a member' do
           expect do
             subject
           end.not_to change { group.all_group_members.count }
 
           expect(response).to have_gitlab_http_status(:bad_request)
-          expect(json_response['message']).to eq({ 'access_level' => ['is not included in the list'] })
+          expect(json_response['message']).to eq({ 'access_level' => ['is not included in the list', 'not supported by license'] })
         end
       end
 
-      context 'when minimal access role is available' do
-        it 'creates a member' do
+      context 'when minimal access license is available' do
+        before do
           stub_licensed_features(minimal_access_role: true)
+        end
 
+        it 'creates a member' do
           expect do
             subject
           end.to change { group.all_group_members.count }.by(1)
 
           expect(response).to have_gitlab_http_status(:created)
           expect(json_response['id']).to eq(stranger.id)
+        end
+
+        it 'cannot be assigned to subgroup' do
+          expect do
+            post api("/groups/#{subgroup.id}/members", owner),
+                 params: { user_id: stranger.id, access_level: Member::MINIMAL_ACCESS }
+          end.not_to change { subgroup.all_group_members.count }
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+          expect(json_response['message']).to eq({ 'access_level' => ['is not included in the list', 'supported on top level groups only'] })
         end
       end
     end
