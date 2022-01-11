@@ -27,9 +27,9 @@ export default {
 
 <template>
   <agent-show-page>
-    <template v-if="showSecurityTab" #ee-security-tab>
+    <template v-if="showSecurityTab" #ee-security-tab="{ clusterAgentId }">
       <gl-tab :title="$options.i18n.securityTabTitle">
-        <agent-vulnerability-report />
+        <agent-vulnerability-report :cluster-agent-id="clusterAgentId" />
       </gl-tab>
     </template>
   </agent-show-page>
