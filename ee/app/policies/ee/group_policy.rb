@@ -298,7 +298,6 @@ module EE
       rule { developer }.policy do
         enable :create_wiki
         enable :admin_merge_request
-        enable :read_ci_minutes_quota
         enable :read_group_audit_events
       end
 
@@ -316,6 +315,7 @@ module EE
         enable :read_group_compliance_dashboard
         enable :read_group_credentials_inventory
         enable :admin_group_credentials_inventory
+        enable :read_ci_minutes_quota
       end
 
       rule { (admin | owner) & group_merge_request_approval_settings_enabled }.policy do

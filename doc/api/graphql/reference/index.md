@@ -954,6 +954,10 @@ Input type: `ClusterAgentTokenCreateInput`
 
 ### `Mutation.clusterAgentTokenDelete`
 
+WARNING:
+**Deprecated** in 14.7.
+Tokens must be revoked with ClusterAgentTokenRevoke.
+
 Input type: `ClusterAgentTokenDeleteInput`
 
 #### Arguments
@@ -4931,6 +4935,27 @@ Input type: `VulnerabilityExternalIssueLinkDestroyInput`
 | <a id="mutationvulnerabilityexternalissuelinkdestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationvulnerabilityexternalissuelinkdestroyerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
+### `Mutation.vulnerabilityFindingDismiss`
+
+Input type: `VulnerabilityFindingDismissInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationvulnerabilityfindingdismissclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationvulnerabilityfindingdismisscomment"></a>`comment` | [`String`](#string) | Comment why finding should be dismissed. |
+| <a id="mutationvulnerabilityfindingdismissdismissalreason"></a>`dismissalReason` | [`VulnerabilityDismissalReason`](#vulnerabilitydismissalreason) | Reason why finding should be dismissed. |
+| <a id="mutationvulnerabilityfindingdismissid"></a>`id` | [`VulnerabilitiesFindingID!`](#vulnerabilitiesfindingid) | ID of the finding to be dismissed. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationvulnerabilityfindingdismissclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationvulnerabilityfindingdismisserrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationvulnerabilityfindingdismissfinding"></a>`finding` | [`PipelineSecurityReportFinding`](#pipelinesecurityreportfinding) | Finding after dismissal. |
+
 ### `Mutation.vulnerabilityResolve`
 
 Input type: `VulnerabilityResolveInput`
@@ -5478,6 +5503,7 @@ The connection type for [`CiRunner`](#cirunner).
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="cirunnerconnectioncount"></a>`count` | [`Int!`](#int) | Total count of collection. |
 | <a id="cirunnerconnectionedges"></a>`edges` | [`[CiRunnerEdge]`](#cirunneredge) | A list of edges. |
 | <a id="cirunnerconnectionnodes"></a>`nodes` | [`[CiRunner]`](#cirunner) | A list of nodes. |
 | <a id="cirunnerconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
@@ -9001,9 +9027,26 @@ GitLab CI/CD configuration template.
 | <a id="clusteragentid"></a>`id` | [`ID!`](#id) | ID of the cluster agent. |
 | <a id="clusteragentname"></a>`name` | [`String`](#string) | Name of the cluster agent. |
 | <a id="clusteragentproject"></a>`project` | [`Project`](#project) | Project this cluster agent is associated with. |
-| <a id="clusteragenttokens"></a>`tokens` | [`ClusterAgentTokenConnection`](#clusteragenttokenconnection) | Tokens associated with the cluster agent. (see [Connections](#connections)) |
 | <a id="clusteragentupdatedat"></a>`updatedAt` | [`Time`](#time) | Timestamp the cluster agent was updated. |
 | <a id="clusteragentwebpath"></a>`webPath` | [`String`](#string) | Web path of the cluster agent. |
+
+#### Fields with arguments
+
+##### `ClusterAgent.tokens`
+
+Tokens associated with the cluster agent.
+
+Returns [`ClusterAgentTokenConnection`](#clusteragenttokenconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="clusteragenttokensstatus"></a>`status` | [`AgentTokenStatus`](#agenttokenstatus) | Status of the token. |
 
 ### `ClusterAgentActivityEvent`
 
@@ -9030,7 +9073,7 @@ GitLab CI/CD configuration template.
 | <a id="clusteragenttokenid"></a>`id` | [`ClustersAgentTokenID!`](#clustersagenttokenid) | Global ID of the token. |
 | <a id="clusteragenttokenlastusedat"></a>`lastUsedAt` | [`Time`](#time) | Timestamp the token was last used. |
 | <a id="clusteragenttokenname"></a>`name` | [`String`](#string) | Name given to the token. |
-| <a id="clusteragenttokenstatus"></a>`status` | [`String`](#string) | Current status of the token. |
+| <a id="clusteragenttokenstatus"></a>`status` | [`AgentTokenStatus`](#agenttokenstatus) | Current status of the token. |
 
 ### `CodeCoverageActivity`
 
@@ -9115,7 +9158,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="commitpipelinesref"></a>`ref` | [`String`](#string) | Filter pipelines by the ref they are run for. |
 | <a id="commitpipelinesscope"></a>`scope` | [`PipelineScopeEnum`](#pipelinescopeenum) | Filter pipelines by scope. |
 | <a id="commitpipelinessha"></a>`sha` | [`String`](#string) | Filter pipelines by the sha of the commit they are run for. |
-| <a id="commitpipelinessource"></a>`source` | [`String`](#string) | Filter pipelines by their source. Will be ignored if `dast_view_scans` feature flag is disabled. |
+| <a id="commitpipelinessource"></a>`source` | [`String`](#string) | Filter pipelines by their source. |
 | <a id="commitpipelinesstatus"></a>`status` | [`PipelineStatusEnum`](#pipelinestatusenum) | Filter pipelines by their status. |
 
 ### `ComplianceFramework`
@@ -11868,7 +11911,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="mergerequestpipelinesref"></a>`ref` | [`String`](#string) | Filter pipelines by the ref they are run for. |
 | <a id="mergerequestpipelinesscope"></a>`scope` | [`PipelineScopeEnum`](#pipelinescopeenum) | Filter pipelines by scope. |
 | <a id="mergerequestpipelinessha"></a>`sha` | [`String`](#string) | Filter pipelines by the sha of the commit they are run for. |
-| <a id="mergerequestpipelinessource"></a>`source` | [`String`](#string) | Filter pipelines by their source. Will be ignored if `dast_view_scans` feature flag is disabled. |
+| <a id="mergerequestpipelinessource"></a>`source` | [`String`](#string) | Filter pipelines by their source. |
 | <a id="mergerequestpipelinesstatus"></a>`status` | [`PipelineStatusEnum`](#pipelinestatusenum) | Filter pipelines by their status. |
 
 ##### `MergeRequest.reference`
@@ -12902,7 +12945,7 @@ Represents a file or directory in the project repository that has been locked.
 | <a id="pipelineconfigsource"></a>`configSource` | [`PipelineConfigSourceEnum`](#pipelineconfigsourceenum) | Configuration source of the pipeline (UNKNOWN_SOURCE, REPOSITORY_SOURCE, AUTO_DEVOPS_SOURCE, WEBIDE_SOURCE, REMOTE_SOURCE, EXTERNAL_PROJECT_SOURCE, BRIDGE_SOURCE, PARAMETER_SOURCE, COMPLIANCE_SOURCE). |
 | <a id="pipelinecoverage"></a>`coverage` | [`Float`](#float) | Coverage percentage. |
 | <a id="pipelinecreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp of the pipeline's creation. |
-| <a id="pipelinedastprofile"></a>`dastProfile` | [`DastProfile`](#dastprofile) | DAST profile associated with the pipeline. Returns `null`if `dast_view_scans` feature flag is disabled. |
+| <a id="pipelinedastprofile"></a>`dastProfile` | [`DastProfile`](#dastprofile) | DAST profile associated with the pipeline. |
 | <a id="pipelinedetailedstatus"></a>`detailedStatus` | [`DetailedStatus!`](#detailedstatus) | Detailed status of the pipeline. |
 | <a id="pipelinedownstream"></a>`downstream` | [`PipelineConnection`](#pipelineconnection) | Pipelines this pipeline will trigger. (see [Connections](#connections)) |
 | <a id="pipelineduration"></a>`duration` | [`Int`](#int) | Duration of the pipeline in seconds. |
@@ -13334,7 +13377,7 @@ Returns [`DastProfile`](#dastprofile).
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="projectdastprofilehasdastprofileschedule"></a>`hasDastProfileSchedule` | [`Boolean`](#boolean) | Filter DAST Profiles by whether or not they have a schedule. Will be ignored if `dast_view_scans` feature flag is disabled. |
+| <a id="projectdastprofilehasdastprofileschedule"></a>`hasDastProfileSchedule` | [`Boolean`](#boolean) | Filter DAST Profiles by whether or not they have a schedule. |
 | <a id="projectdastprofileid"></a>`id` | [`DastProfileID!`](#dastprofileid) | ID of the DAST Profile. |
 
 ##### `Project.dastProfiles`
@@ -13351,7 +13394,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="projectdastprofileshasdastprofileschedule"></a>`hasDastProfileSchedule` | [`Boolean`](#boolean) | Filter DAST Profiles by whether or not they have a schedule. Will be ignored if `dast_view_scans` feature flag is disabled. |
+| <a id="projectdastprofileshasdastprofileschedule"></a>`hasDastProfileSchedule` | [`Boolean`](#boolean) | Filter DAST Profiles by whether or not they have a schedule. |
 
 ##### `Project.dastSiteProfile`
 
@@ -13811,7 +13854,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="projectpipelinesref"></a>`ref` | [`String`](#string) | Filter pipelines by the ref they are run for. |
 | <a id="projectpipelinesscope"></a>`scope` | [`PipelineScopeEnum`](#pipelinescopeenum) | Filter pipelines by scope. |
 | <a id="projectpipelinessha"></a>`sha` | [`String`](#string) | Filter pipelines by the sha of the commit they are run for. |
-| <a id="projectpipelinessource"></a>`source` | [`String`](#string) | Filter pipelines by their source. Will be ignored if `dast_view_scans` feature flag is disabled. |
+| <a id="projectpipelinessource"></a>`source` | [`String`](#string) | Filter pipelines by their source. |
 | <a id="projectpipelinesstatus"></a>`status` | [`PipelineStatusEnum`](#pipelinestatusenum) | Filter pipelines by their status. |
 
 ##### `Project.projectMembers`
@@ -16124,6 +16167,15 @@ Access level to a resource.
 | <a id="accesslevelenumowner"></a>`OWNER` | Owner access. |
 | <a id="accesslevelenumreporter"></a>`REPORTER` | Reporter access. |
 
+### `AgentTokenStatus`
+
+Agent token statuses.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="agenttokenstatusactive"></a>`ACTIVE` | Active agent token. |
+| <a id="agenttokenstatusrevoked"></a>`REVOKED` | Revoked agent token. |
+
 ### `AlertManagementAlertSort`
 
 Values for sorting alerts.
@@ -18181,6 +18233,12 @@ An example `UserID` is: `"gid://gitlab/User/1"`.
 A `VulnerabilitiesExternalIssueLinkID` is a global ID. It is encoded as a string.
 
 An example `VulnerabilitiesExternalIssueLinkID` is: `"gid://gitlab/Vulnerabilities::ExternalIssueLink/1"`.
+
+### `VulnerabilitiesFindingID`
+
+A `VulnerabilitiesFindingID` is a global ID. It is encoded as a string.
+
+An example `VulnerabilitiesFindingID` is: `"gid://gitlab/Vulnerabilities::Finding/1"`.
 
 ### `VulnerabilitiesScannerID`
 

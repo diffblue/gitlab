@@ -17,10 +17,10 @@ module Ci
 
       def show?(current_user, cookies = false)
         return false unless @stage
-        return false unless @context.level
+        return false unless @context.namespace
         return false if alert_has_been_dismissed?(cookies)
 
-        Ability.allowed?(current_user, :read_ci_minutes_quota, @context.level)
+        Ability.allowed?(current_user, :read_ci_minutes_quota, @context.namespace)
       end
 
       def text

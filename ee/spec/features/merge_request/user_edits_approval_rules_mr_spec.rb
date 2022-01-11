@@ -74,30 +74,6 @@ RSpec.describe 'Merge request > User edits MR with approval rules', :js do
     expect(page_rule_names.last).to have_text(rule_name)
   end
 
-  context 'with show_relevant_approval_rule_approvers feature flag disabled' do
-    before do
-      stub_feature_flags(show_relevant_approval_rule_approvers: false)
-    end
-
-    context "with public group" do
-      let(:group) { create(:group, :public) }
-
-      before do
-        group.add_developer create(:user)
-
-        click_button 'Approval rules'
-        click_button "Add approval rule"
-      end
-
-      it "with empty search, does not show public group" do
-        open_select2 members_selector
-        wait_for_requests
-
-        expect(page).not_to have_selector('.select2-result-label .group-result', text: group.name)
-      end
-    end
-  end
-
   context 'with public group' do
     let(:group) { create(:group, :public) }
 

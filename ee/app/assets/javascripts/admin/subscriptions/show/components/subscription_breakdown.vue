@@ -12,7 +12,6 @@ import {
   subscriptionDetailsHeaderText,
   subscriptionTypes,
   syncSubscriptionButtonText,
-  uploadLicense,
 } from '../constants';
 import SubscriptionActivationBanner from './subscription_activation_banner.vue';
 import SubscriptionActivationModal from './subscription_activation_modal.vue';
@@ -33,7 +32,6 @@ export default {
     removeLicenseConfirm,
     subscriptionDetailsHeaderText,
     syncSubscriptionButtonText,
-    uploadLicense,
   },
   modal: {
     id: modalId,
@@ -55,7 +53,6 @@ export default {
   inject: [
     'customersPortalUrl',
     'licenseRemovePath',
-    'licenseUploadPath',
     'subscriptionSyncPath',
     'subscriptionActivationBannerCalloutName',
   ],
@@ -89,9 +86,6 @@ export default {
     canSyncSubscription() {
       return this.subscriptionSyncPath && this.isCloudType;
     },
-    canUploadLicense() {
-      return this.licenseUploadPath && this.isLicenseFileType;
-    },
     canRemoveLicense() {
       return this.licenseRemovePath;
     },
@@ -112,8 +106,7 @@ export default {
         this.canActivateSubscription ||
         this.canRemoveLicense ||
         this.canManageSubscription ||
-        this.canSyncSubscription ||
-        this.canUploadLicense
+        this.canSyncSubscription
       );
     },
     subscriptionHistory() {
@@ -206,16 +199,6 @@ export default {
               data-testid="subscription-activate-subscription-action"
             >
               {{ $options.i18n.activateCloudLicense }}
-            </gl-button>
-            <gl-button
-              v-if="canUploadLicense"
-              :href="licenseUploadPath"
-              category="secondary"
-              variant="confirm"
-              data-testid="license-upload-action"
-              data-qa-selector="license_upload_link"
-            >
-              {{ $options.i18n.uploadLicense }}
             </gl-button>
             <gl-button
               v-if="canManageSubscription"

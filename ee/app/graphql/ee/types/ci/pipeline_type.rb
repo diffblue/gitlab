@@ -28,15 +28,14 @@ module EE
           field :dast_profile,
             ::Types::Dast::ProfileType,
             null: true,
-            description: 'DAST profile associated with the pipeline. Returns `null`' \
-                         'if `dast_view_scans` feature flag is disabled.'
+            description: 'DAST profile associated with the pipeline.'
 
           def code_quality_reports
             pipeline.codequality_reports.sort_degradations!.values.presence
           end
 
           def dast_profile
-            pipeline.dast_profile if ::Feature.enabled?(:dast_view_scans, pipeline.project, default_enabled: :yaml)
+            pipeline.dast_profile
           end
         end
       end

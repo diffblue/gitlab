@@ -8,15 +8,21 @@ import PolicyDrawer from 'ee/threat_monitoring/components/policy_drawer/policy_d
 import { PREDEFINED_NETWORK_POLICIES } from 'ee/threat_monitoring/constants';
 import networkPoliciesQuery from 'ee/threat_monitoring/graphql/queries/network_policies.query.graphql';
 import scanExecutionPoliciesQuery from 'ee/threat_monitoring/graphql/queries/scan_execution_policies.query.graphql';
+import scanResultPoliciesQuery from 'ee/threat_monitoring/graphql/queries/scan_result_policies.query.graphql';
 import createStore from 'ee/threat_monitoring/store';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { stubComponent } from 'helpers/stub_component';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { networkPolicies, scanExecutionPolicies } from '../../mocks/mock_apollo';
+import {
+  networkPolicies,
+  scanExecutionPolicies,
+  scanResultPolicies,
+} from '../../mocks/mock_apollo';
 import {
   mockNetworkPoliciesResponse,
   mockScanExecutionPoliciesResponse,
+  mockScanResultPoliciesResponse,
 } from '../../mocks/mock_data';
 
 const localVue = createLocalVue();
@@ -35,9 +41,11 @@ const environments = [
 ];
 const networkPoliciesSpy = networkPolicies(mockNetworkPoliciesResponse);
 const scanExecutionPoliciesSpy = scanExecutionPolicies(mockScanExecutionPoliciesResponse);
+const scanResultPoliciesSpy = scanResultPolicies(mockScanResultPoliciesResponse);
 const defaultRequestHandlers = {
   networkPolicies: networkPoliciesSpy,
   scanExecutionPolicies: scanExecutionPoliciesSpy,
+  scanResultPolicies: scanResultPoliciesSpy,
 };
 const pendingHandler = jest.fn(() => new Promise(() => {}));
 
@@ -81,10 +89,12 @@ describe('PoliciesList component', () => {
             documentationPath: 'path/to/docs',
             newPolicyPath: 'path/to/policy',
             projectPath: fullPath,
+            glFeatures: { scanResultPolicy: true },
           },
           apolloProvider: createMockApollo([
             [networkPoliciesQuery, requestHandlers.networkPolicies],
             [scanExecutionPoliciesQuery, requestHandlers.scanExecutionPolicies],
+            [scanResultPoliciesQuery, requestHandlers.scanResultPolicies],
           ]),
           stubs: {
             PolicyDrawer: stubComponent(PolicyDrawer, {
@@ -163,7 +173,7 @@ describe('PoliciesList component', () => {
     });
 
     it('does render default network policies', () => {
-      expect(findPolicyStatusCells()).toHaveLength(5);
+      expect(findPolicyStatusCells()).toHaveLength(6);
     });
 
     it('fetches network policies on environment change', async () => {
@@ -190,9 +200,10 @@ describe('PoliciesList component', () => {
     describe.each`
       rowIndex | expectedPolicyName                           | expectedPolicyType
       ${1}     | ${mockScanExecutionPoliciesResponse[0].name} | ${'Scan execution'}
-      ${3}     | ${mockNetworkPoliciesResponse[0].name}       | ${'Network'}
-      ${4}     | ${PREDEFINED_NETWORK_POLICIES[0].name}       | ${'Network'}
-      ${5}     | ${PREDEFINED_NETWORK_POLICIES[1].name}       | ${'Network'}
+      ${2}     | ${mockScanResultPoliciesResponse[0].name}    | ${'Scan result'}
+      ${3}     | ${mockNetworkPoliciesResponse[1].name}       | ${'Network'}
+      ${4}     | ${mockNetworkPoliciesResponse[0].name}       | ${'Network'}
+      ${5}     | ${PREDEFINED_NETWORK_POLICIES[0].name}       | ${'Network'}
     `('policy in row #$rowIndex', ({ rowIndex, expectedPolicyName, expectedPolicyType }) => {
       let row;
 
@@ -211,8 +222,9 @@ describe('PoliciesList component', () => {
 
     it.each`
       description         | filterBy                                          | hiddenTypes
-      ${'network'}        | ${POLICY_TYPE_OPTIONS.POLICY_TYPE_NETWORK}        | ${[POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_EXECUTION]}
-      ${'scan execution'} | ${POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_EXECUTION} | ${[POLICY_TYPE_OPTIONS.POLICY_TYPE_NETWORK]}
+      ${'network'}        | ${POLICY_TYPE_OPTIONS.POLICY_TYPE_NETWORK}        | ${[POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_EXECUTION, POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_RESULT]}
+      ${'scan execution'} | ${POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_EXECUTION} | ${[POLICY_TYPE_OPTIONS.POLICY_TYPE_NETWORK, POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_RESULT]}
+      ${'scan result'}    | ${POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_RESULT}    | ${[POLICY_TYPE_OPTIONS.POLICY_TYPE_NETWORK, POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_EXECUTION]}
     `('policies filtered by $description type', async ({ filterBy, hiddenTypes }) => {
       findPolicyTypeFilter().vm.$emit('input', filterBy.value);
       await wrapper.vm.$nextTick();
@@ -258,7 +270,7 @@ describe('PoliciesList component', () => {
     });
 
     it('renders a "Disabled" label for screen readers for disabled policies', () => {
-      const span = findPolicyStatusCells().at(3).find('span');
+      const span = findPolicyStatusCells().at(4).find('span');
 
       expect(span.exists()).toBe(true);
       expect(span.attributes('class')).toBe('gl-sr-only');
@@ -284,6 +296,7 @@ describe('PoliciesList component', () => {
     ${PREDEFINED_NETWORK_POLICIES[0].name} | ${PREDEFINED_NETWORK_POLICIES[0]}       | ${'container'}     | ${'path/to/policy?environment_id=2&type=container_policy&kind=CiliumNetworkPolicy'}
     ${PREDEFINED_NETWORK_POLICIES[1].name} | ${PREDEFINED_NETWORK_POLICIES[1]}       | ${'container'}     | ${'path/to/policy?environment_id=2&type=container_policy&kind=CiliumNetworkPolicy'}
     ${'scan execution'}                    | ${mockScanExecutionPoliciesResponse[0]} | ${'scanExecution'} | ${'path/to/policy?environment_id=2&type=scan_execution_policy'}
+    ${'scan result'}                       | ${mockScanResultPoliciesResponse[0]}    | ${'scanResult'}    | ${'path/to/policy?environment_id=2&type=scan_result_policy'}
   `('given there is a $description policy selected', ({ policy, policyType, editPolicyPath }) => {
     beforeEach(() => {
       mountShallowWrapper();
@@ -331,7 +344,7 @@ describe('PoliciesList component', () => {
     });
 
     it('does not render default network policies', () => {
-      expect(findPolicyStatusCells()).toHaveLength(1);
+      expect(findPolicyStatusCells()).toHaveLength(2);
     });
   });
 });

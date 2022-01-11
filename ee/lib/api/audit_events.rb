@@ -4,6 +4,8 @@ module API
   class AuditEvents < ::API::Base
     include ::API::PaginationParams
 
+    urgency :low
+
     feature_category :audit_events
 
     before do

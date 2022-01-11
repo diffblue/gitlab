@@ -123,8 +123,6 @@ class GroupPolicy < Namespaces::GroupProjectNamespaceSharedPolicy
     enable :read_group_member
     enable :read_custom_emoji
     enable :read_counts
-    enable :read_crm_organization
-    enable :read_crm_contact
   end
 
   rule { ~public_group & ~has_access }.prevent :read_counts
@@ -159,13 +157,14 @@ class GroupPolicy < Namespaces::GroupProjectNamespaceSharedPolicy
     enable :read_prometheus
     enable :read_package
     enable :read_package_settings
+    enable :read_crm_organization
+    enable :read_crm_contact
   end
 
   rule { maintainer }.policy do
     enable :destroy_package
     enable :create_projects
     enable :admin_pipeline
-    enable :admin_group_runners
     enable :admin_build
     enable :read_cluster
     enable :add_cluster
@@ -182,6 +181,10 @@ class GroupPolicy < Namespaces::GroupProjectNamespaceSharedPolicy
     enable :admin_namespace
     enable :admin_group_member
     enable :change_visibility_level
+
+    enable :read_group_runners
+    enable :admin_group_runners
+    enable :register_group_runners
 
     enable :set_note_created_at
     enable :set_emails_disabled
@@ -206,10 +209,6 @@ class GroupPolicy < Namespaces::GroupProjectNamespaceSharedPolicy
 
   rule { can?(:read_cross_project) & can?(:read_group) }.policy do
     enable :read_nested_project_resources
-  end
-
-  rule { can?(:admin_group_runners) }.policy do
-    enable :register_group_runners
   end
 
   rule { owner }.enable :create_subgroup

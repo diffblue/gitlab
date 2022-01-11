@@ -5,7 +5,7 @@ module QA
     module Page
       module Admin
         class License < QA::Page::Base
-          view 'ee/app/assets/javascripts/admin/subscriptions/show/components/subscription_activation_card.vue' do
+          view 'ee/app/views/admin/application_settings/_license_file.html.haml' do
             element :license_upload_link
           end
 

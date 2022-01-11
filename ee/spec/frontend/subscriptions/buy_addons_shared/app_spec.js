@@ -1,4 +1,4 @@
-import { GlEmptyState } from '@gitlab/ui';
+import { GlEmptyState, GlAlert } from '@gitlab/ui';
 import { createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import { pick } from 'lodash';
@@ -13,6 +13,7 @@ import {
   I18N_STORAGE_TITLE,
   I18N_STORAGE_PRICE_PER_UNIT,
   I18N_STORAGE_TOOLTIP_NOTE,
+  I18N_API_ERROR,
   planTags,
   STORAGE_PER_PACK,
 } from 'ee/subscriptions/buy_addons_shared/constants';
@@ -68,6 +69,7 @@ describe('Buy Addons Shared App', () => {
   const getStoragePlan = () => pick(mockStoragePlans[0], ['id', 'code', 'pricePerYear', 'name']);
   const findCheckout = () => wrapper.findComponent(Checkout);
   const findOrderSummary = () => wrapper.findComponent(OrderSummary);
+  const findAlert = () => wrapper.findComponent(GlAlert);
   const findPriceLabel = () => wrapper.findByTestId('price-per-unit');
   const findQuantityText = () => wrapper.findByTestId('addon-quantity-text');
   const findRootElement = () => wrapper.findByTestId('buy-addons-shared');
@@ -102,6 +104,20 @@ describe('Buy Addons Shared App', () => {
         expect(findOrderSummary().props()).toMatchObject({
           plan: { ...getStoragePlan, isAddon: true },
           title: I18N_STORAGE_TITLE,
+        });
+      });
+
+      describe('and an error occurred', () => {
+        beforeEach(() => {
+          findOrderSummary().vm.$emit('alertError', I18N_API_ERROR);
+        });
+
+        it('shows the alert', () => {
+          expect(findAlert().props()).toMatchObject({
+            dismissible: false,
+            variant: 'danger',
+          });
+          expect(findAlert().text()).toBe(I18N_API_ERROR);
         });
       });
     });

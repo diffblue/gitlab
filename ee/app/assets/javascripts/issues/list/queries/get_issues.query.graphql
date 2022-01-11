@@ -1,0 +1,110 @@
+#import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
+#import "~/issues/list/queries/issue.fragment.graphql"
+
+query getIssuesEE(
+  $isProject: Boolean = false
+  $isSignedIn: Boolean = false
+  $fullPath: ID!
+  $search: String
+  $sort: IssueSort
+  $state: IssuableState
+  $assigneeId: String
+  $assigneeUsernames: [String!]
+  $authorUsername: String
+  $confidential: Boolean
+  $labelName: [String]
+  $milestoneTitle: [String]
+  $milestoneWildcardId: MilestoneWildcardId
+  $myReactionEmoji: String
+  $releaseTag: [String!]
+  $releaseTagWildcardId: ReleaseTagWildcardId
+  $types: [IssueType!]
+  $epicId: String
+  $iterationId: [ID]
+  $iterationWildcardId: IterationWildcardId
+  $weight: String
+  $not: NegatedIssueFilterInput
+  $beforeCursor: String
+  $afterCursor: String
+  $firstPageSize: Int
+  $lastPageSize: Int
+) {
+  group(fullPath: $fullPath) @skip(if: $isProject) {
+    id
+    issues(
+      includeSubepics: true
+      includeSubgroups: true
+      search: $search
+      sort: $sort
+      state: $state
+      assigneeId: $assigneeId
+      assigneeUsernames: $assigneeUsernames
+      authorUsername: $authorUsername
+      confidential: $confidential
+      labelName: $labelName
+      milestoneTitle: $milestoneTitle
+      milestoneWildcardId: $milestoneWildcardId
+      myReactionEmoji: $myReactionEmoji
+      types: $types
+      epicId: $epicId
+      iterationId: $iterationId
+      iterationWildcardId: $iterationWildcardId
+      weight: $weight
+      not: $not
+      before: $beforeCursor
+      after: $afterCursor
+      first: $firstPageSize
+      last: $lastPageSize
+    ) {
+      pageInfo {
+        ...PageInfo
+      }
+      nodes {
+        ...IssueFragment
+        reference(full: true)
+        blockingCount
+        healthStatus
+        weight
+      }
+    }
+  }
+  project(fullPath: $fullPath) @include(if: $isProject) {
+    id
+    issues(
+      includeSubepics: true
+      search: $search
+      sort: $sort
+      state: $state
+      assigneeId: $assigneeId
+      assigneeUsernames: $assigneeUsernames
+      authorUsername: $authorUsername
+      confidential: $confidential
+      labelName: $labelName
+      milestoneTitle: $milestoneTitle
+      milestoneWildcardId: $milestoneWildcardId
+      myReactionEmoji: $myReactionEmoji
+      releaseTag: $releaseTag
+      releaseTagWildcardId: $releaseTagWildcardId
+      types: $types
+      epicId: $epicId
+      iterationId: $iterationId
+      iterationWildcardId: $iterationWildcardId
+      weight: $weight
+      not: $not
+      before: $beforeCursor
+      after: $afterCursor
+      first: $firstPageSize
+      last: $lastPageSize
+    ) {
+      pageInfo {
+        ...PageInfo
+      }
+      nodes {
+        ...IssueFragment
+        blockingCount
+        healthStatus
+        weight
+      }
+    }
+  }
+}

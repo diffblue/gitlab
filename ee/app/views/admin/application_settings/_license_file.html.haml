@@ -1,0 +1,9 @@
+%section.settings.expanded
+  .settings-header
+    %h4
+      = _('License file')
+
+  .settings-content
+    - link_start = '<a href="%{url}" data-qa-selector="license_upload_link">'.html_safe % { url: new_admin_license_path }
+    %p
+      = s_('%{link_start}Upload a license%{link_end} file or enter the license key you have received from GitLab Inc.').html_safe % { link_start: link_start, link_end: '</a>'.html_safe }

@@ -6,8 +6,8 @@ RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js do
   include FeatureApprovalHelper
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project) }
   let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, namespace: group) }
   let_it_be(:group_member) { create(:user) }
   let_it_be(:non_member) { create(:user) }
   let_it_be(:config_selector) { '.js-approval-rules' }

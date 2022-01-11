@@ -20,15 +20,22 @@ $subscriptions-full-width-lg: 541px;
     }
   }
 
+  .checkout-alert {
+    width: 100%;
+    max-width: $subscriptions-full-width-md;
+
+    @media(min-width: map-get($grid-breakpoints, lg)) {
+      max-width: $subscriptions-full-width-lg;
+    }
+  }
+
   .checkout {
     align-items: center;
     flex-grow: 1;
-    margin-top: $gl-padding;
     max-width: $subscriptions-full-width-md;
 
     @media(min-width: map-get($grid-breakpoints, lg)) {
       justify-content: inherit !important;
-      margin-top: $gl-padding-32;
       max-width: none;
     }
 

@@ -15,7 +15,7 @@ import {
 import createMockApollo, { createMockClient } from 'helpers/mock_apollo_helper';
 
 import orderPreviewQuery from 'ee/subscriptions/graphql/queries/order_preview.customer.query.graphql';
-import { CUSTOMERSDOT_CLIENT } from 'ee/subscriptions/buy_addons_shared/constants';
+import { CUSTOMERSDOT_CLIENT, I18N_API_ERROR } from 'ee/subscriptions/buy_addons_shared/constants';
 
 const localVue = createLocalVue();
 localVue.use(VueApollo);
@@ -123,7 +123,7 @@ describe('Order Summary', () => {
         createComponent(apolloProvider, { purchaseHasExpiration: true });
       });
 
-      it('renders amount from the state', () => {
+      it('renders default amount without proration from the state', () => {
         expect(findAmount().text()).toBe('$60');
       });
     });
@@ -139,8 +139,32 @@ describe('Order Summary', () => {
         createComponent(apolloProvider, { purchaseHasExpiration: true });
       });
 
-      it('renders amount from the state', () => {
-        expect(findAmount().text()).toBe('$60');
+      it('does not render amount', () => {
+        expect(findAmount().text()).toBe('-');
+      });
+    });
+
+    describe('calls api that returns an error', () => {
+      beforeEach(() => {
+        jest.spyOn(console, 'error').mockImplementation(() => {});
+        const orderPreviewQueryMock = jest.fn().mockRejectedValue(new Error('An error happened!'));
+        const apolloProvider = createMockApolloProvider(
+          { subscription: { quantity: 1 } },
+          orderPreviewQueryMock,
+        );
+        createComponent(apolloProvider, { purchaseHasExpiration: true });
+      });
+
+      it('does not render amount', () => {
+        expect(findAmount().text()).toBe('-');
+      });
+
+      it('should emit `alertError` event', async () => {
+        jest.spyOn(wrapper.vm, '$emit');
+
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$emit).toHaveBeenCalledWith('alertError', I18N_API_ERROR);
       });
     });
 

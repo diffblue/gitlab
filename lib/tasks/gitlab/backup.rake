@@ -9,15 +9,9 @@ namespace :gitlab do
     task create: :gitlab_environment do
       warn_user_is_not_gitlab
 
-      Rake::Task['gitlab:backup:db:create'].invoke
-      Rake::Task['gitlab:backup:repo:create'].invoke
-      Rake::Task['gitlab:backup:uploads:create'].invoke
-      Rake::Task['gitlab:backup:builds:create'].invoke
-      Rake::Task['gitlab:backup:artifacts:create'].invoke
-      Rake::Task['gitlab:backup:pages:create'].invoke
-      Rake::Task['gitlab:backup:lfs:create'].invoke
-      Rake::Task['gitlab:backup:terraform_state:create'].invoke
-      Rake::Task['gitlab:backup:registry:create'].invoke
+      %w(db repo uploads builds artifacts pages lfs terraform_state registry packages).each do |type|
+        Rake::Task["gitlab:backup:#{type}:create"].invoke
+      end
 
       backup = Backup::Manager.new(progress)
       backup.write_info
@@ -86,6 +80,7 @@ namespace :gitlab do
       Rake::Task['gitlab:backup:lfs:restore'].invoke unless backup.skipped?('lfs')
       Rake::Task['gitlab:backup:terraform_state:restore'].invoke unless backup.skipped?('terraform_state')
       Rake::Task['gitlab:backup:registry:restore'].invoke unless backup.skipped?('registry')
+      Rake::Task['gitlab:backup:packages:restore'].invoke unless backup.skipped?('packages')
       Rake::Task['gitlab:shell:setup'].invoke
       Rake::Task['cache:clear'].invoke
 
@@ -331,6 +326,25 @@ namespace :gitlab do
       end
     end
 
+    namespace :packages do
+      task create: :gitlab_environment do
+        puts_time "Dumping packages ... ".color(:blue)
+
+        if ENV['SKIP'] && ENV['SKIP'].include?('packages')
+          puts_time "[SKIPPED]".color(:cyan)
+        else
+          Backup::Packages.new(progress).dump
+          puts_time "done".color(:green)
+        end
+      end
+
+      task restore: :gitlab_environment do
+        puts_time "Restoring packages ...".color(:blue)
+        Backup::Packages.new(progress).restore
+        puts_time "done".color(:green)
+      end
+    end
+
     def puts_time(msg)
       progress.puts "#{Time.now} -- #{msg}"
       Gitlab::BackupLogger.info(message: "#{Rainbow.uncolor(msg)}")
@@ -351,7 +365,7 @@ namespace :gitlab do
       if Feature.enabled?(:gitaly_backup, default_enabled: :yaml)
         max_concurrency = ENV['GITLAB_BACKUP_MAX_CONCURRENCY'].presence
         max_storage_concurrency = ENV['GITLAB_BACKUP_MAX_STORAGE_CONCURRENCY'].presence
-        Backup::GitalyBackup.new(progress, parallel: max_concurrency, parallel_storage: max_storage_concurrency)
+        Backup::GitalyBackup.new(progress, max_parallelism: max_concurrency, storage_parallelism: max_storage_concurrency)
       else
         Backup::GitalyRpcBackup.new(progress)
       end

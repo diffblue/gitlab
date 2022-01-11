@@ -15,10 +15,7 @@ module Types
           method: :state
 
     field :normalized_target_url, GraphQL::Types::String, null: true,
-          description: 'Normalized URL of the target to be validated.'
-
-    def normalized_target_url
-      object.url_base
-    end
+          description: 'Normalized URL of the target to be validated.',
+          method: :url_base
   end
 end

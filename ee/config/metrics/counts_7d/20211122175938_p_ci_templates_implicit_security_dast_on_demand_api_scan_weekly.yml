@@ -1,0 +1,25 @@
+---
+key_path: redis_hll_counters.ci_templates.p_ci_templates_implicit_security_dast_on_demand_api_scan_weekly
+name: "implicit_security_dast_on_demand_api_scan"
+description: Count of pipelines with implicit runs using the latest DAST API template
+product_section: sec
+product_stage: secure
+product_group: "group::dynamic analysis"
+product_category: DAST
+value_type: number
+status: active
+milestone: "14.7"
+introduced_by_url:
+time_frame: 7d
+data_source: redis_hll
+data_category: optional
+instrumentation_class: RedisHLLMetric
+options:
+  events:
+    - p_ci_templates_implicit_security_dast_on_demand_api_scan
+performance_indicator_type: []
+distribution:
+- ee
+tier:
+#- premium
+- ultimate

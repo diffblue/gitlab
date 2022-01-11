@@ -1,5 +1,5 @@
 import { DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/constants';
-import { i18n } from '~/issues_list/constants';
+import { i18n } from '~/issues/list/constants';
 import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 

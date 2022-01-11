@@ -21,7 +21,7 @@ RSpec.describe Backup::Repositories do
         expect(strategy).to have_received(:start).with(:create)
         expect(strategy).to have_received(:enqueue).with(project, Gitlab::GlRepository::PROJECT)
         expect(strategy).to have_received(:enqueue).with(group, Gitlab::GlRepository::WIKI)
-        expect(strategy).to have_received(:wait)
+        expect(strategy).to have_received(:finish!)
       end
     end
 
@@ -35,7 +35,7 @@ RSpec.describe Backup::Repositories do
         groups.each do |group|
           expect(strategy).to receive(:enqueue).with(group, Gitlab::GlRepository::WIKI)
         end
-        expect(strategy).to receive(:wait)
+        expect(strategy).to receive(:finish!)
 
         subject.dump(max_concurrency: 1, max_storage_concurrency: 1)
       end
@@ -78,7 +78,7 @@ RSpec.describe Backup::Repositories do
       expect(strategy).to have_received(:start).with(:restore)
       expect(strategy).to have_received(:enqueue).with(project, Gitlab::GlRepository::PROJECT)
       expect(strategy).to have_received(:enqueue).with(group, Gitlab::GlRepository::WIKI)
-      expect(strategy).to have_received(:wait)
+      expect(strategy).to have_received(:finish!)
     end
   end
 end

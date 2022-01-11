@@ -141,6 +141,8 @@ RSpec.describe Vulnerabilities::ManuallyCreateService do
         expect(finding.message).to eq(params.dig(:vulnerability, :message))
         expect(finding.description).to eq(params.dig(:vulnerability, :description))
         expect(finding.solution).to eq(params.dig(:vulnerability, :solution))
+        expect(finding.location).to be_empty
+        expect(finding.raw_metadata).to eq("{}")
 
         scanner = finding.scanner
         expect(scanner.name).to eq(params.dig(:vulnerability, :scanner, :name))

@@ -63,3 +63,7 @@ export const I18N_SUMMARY_TAX_NOTE = s__(
   'Checkout|(may be %{linkStart}charged upon purchase%{linkEnd})',
 );
 export const I18N_SUMMARY_TOTAL = s__('Checkout|Total');
+
+export const I18N_API_ERROR = s__(
+  'Checkout|An unknown error has occurred. Please try again by refreshing this page.',
+);

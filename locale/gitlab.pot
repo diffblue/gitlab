@@ -731,6 +731,9 @@ msgstr ""
 msgid "%{link_start}Start the title with %{draft_snippet}%{link_end} to prevent a merge request draft from merging before it's ready."
 msgstr ""
 
+msgid "%{link_start}Upload a license%{link_end} file or enter the license key you have received from GitLab Inc."
+msgstr ""
+
 msgid "%{link_start}What information does GitLab Inc. collect?%{link_end}"
 msgstr ""
 
@@ -4793,7 +4796,7 @@ msgstr ""
 msgid "Ask someone with write access to resolve it."
 msgstr ""
 
-msgid "Ask your group maintainer to set up a group runner."
+msgid "Ask your group owner to set up a group runner."
 msgstr ""
 
 msgid "Assertion consumer service URL"
@@ -6906,6 +6909,9 @@ msgstr ""
 msgid "Checkout|(x%{quantity})"
 msgstr ""
 
+msgid "Checkout|An unknown error has occurred. Please try again by refreshing this page."
+msgstr ""
+
 msgid "Checkout|Billing address"
 msgstr ""
 
@@ -7730,7 +7736,7 @@ msgstr ""
 msgid "ClusterAgents|To delete the agent, type %{name} to confirm:"
 msgstr ""
 
-msgid "ClusterAgents|To install a new agent, first add the agent's configuration file to this repository. %{linkStart}What's the agent's configuration file?%{linkEnd}"
+msgid "ClusterAgents|To install a new agent, first add the agent's configuration file to this repository. %{linkStart}Learn more about installing GitLab Agent.%{linkEnd}"
 msgstr ""
 
 msgid "ClusterAgents|Token created by %{userName}"
@@ -16754,9 +16760,6 @@ msgstr ""
 msgid "Group jobs by"
 msgstr ""
 
-msgid "Group maintainers can register group runners in the %{link}"
-msgstr ""
-
 msgid "Group members"
 msgstr ""
 
@@ -16779,6 +16782,9 @@ msgid "Group navigation"
 msgstr ""
 
 msgid "Group overview content"
+msgstr ""
+
+msgid "Group owners can register group runners in the %{link}"
 msgstr ""
 
 msgid "Group path is already taken. We've suggested one that is available."
@@ -31636,10 +31642,16 @@ msgstr ""
 msgid "SecurityOrchestration|Scan Execution"
 msgstr ""
 
+msgid "SecurityOrchestration|Scan Result"
+msgstr ""
+
 msgid "SecurityOrchestration|Scan execution"
 msgstr ""
 
 msgid "SecurityOrchestration|Scan execution policies can only be created by project owners."
+msgstr ""
+
+msgid "SecurityOrchestration|Scan result"
 msgstr ""
 
 msgid "SecurityOrchestration|Scan to be performed %{cadence}"
@@ -36572,6 +36584,9 @@ msgstr ""
 msgid "This setting can be overridden in each project."
 msgstr ""
 
+msgid "This setting is allowed for forked projects only"
+msgstr ""
+
 msgid "This subscription is for"
 msgstr ""
 
@@ -39578,6 +39593,9 @@ msgstr ""
 msgid "Vulnerability|Information related how the vulnerability was discovered and its impact to the system."
 msgstr ""
 
+msgid "Vulnerability|Learn more about this vulnerability and the best way to resolve it."
+msgstr ""
+
 msgid "Vulnerability|Links"
 msgstr ""
 
@@ -39624,6 +39642,12 @@ msgid "Vulnerability|The unmodified response is the original response that had n
 msgstr ""
 
 msgid "Vulnerability|Tool"
+msgstr ""
+
+msgid "Vulnerability|Training"
+msgstr ""
+
+msgid "Vulnerability|Training not available for this vulnerability."
 msgstr ""
 
 msgid "Vulnerability|Unmodified Response"
@@ -40343,9 +40367,6 @@ msgid "Work in progress (open and unassigned)"
 msgstr ""
 
 msgid "Work in progress Limit"
-msgstr ""
-
-msgid "Work in progress- click here to find out more"
 msgstr ""
 
 msgid "WorkItem|Work Items"
@@ -41526,6 +41547,9 @@ msgstr ""
 msgid "cannot be changed if shared runners are enabled"
 msgstr ""
 
+msgid "cannot be enabled"
+msgstr ""
+
 msgid "cannot be enabled because parent group does not allow it"
 msgstr ""
 
@@ -41898,6 +41922,9 @@ msgstr ""
 msgid "compliance violation has already been recorded"
 msgstr ""
 
+msgid "contact with same email already exists in group hierarchy"
+msgstr ""
+
 msgid "container_name can contain only lowercase letters, digits, '-', and '.' and must start and end with an alphanumeric character"
 msgstr ""
 
@@ -42050,6 +42077,9 @@ msgid "failed"
 msgstr ""
 
 msgid "failed to dismiss associated finding(id=%{finding_id}): %{message}"
+msgstr ""
+
+msgid "failed to dismiss finding: %{message}"
 msgstr ""
 
 msgid "failed to revert associated finding(id=%{finding_id}) to detected"
@@ -42526,6 +42556,9 @@ msgstr ""
 msgid "mrWidget|Merge blocked: this merge request must be approved."
 msgstr ""
 
+msgid "mrWidget|Merge blocked: you can only merge once above items are resolved."
+msgstr ""
+
 msgid "mrWidget|Merge failed."
 msgstr ""
 
@@ -42632,9 +42665,6 @@ msgid "mrWidget|The changes were not merged into"
 msgstr ""
 
 msgid "mrWidget|The pipeline for this merge request did not complete. Push a new commit to fix the failure, or check the %{linkStart}troubleshooting documentation%{linkEnd} to see other possible actions."
-msgstr ""
-
-msgid "mrWidget|The pipeline for this merge request did not complete. Push a new commit to fix the failure."
 msgstr ""
 
 msgid "mrWidget|The source branch has been deleted"
