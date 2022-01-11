@@ -7,7 +7,7 @@ module Gitlab
       #
       # rubocop: disable Metrics/ClassLength
       class BackfillProjectNamespaces
-        SUB_BATCH_SIZE = 100
+        SUB_BATCH_SIZE = 25
         PROJECT_NAMESPACE_STI_NAME = 'Project'
 
         IsolatedModels = ::Gitlab::BackgroundMigration::ProjectNamespaces::Models
@@ -34,6 +34,9 @@ module Gitlab
 
         def backfill_project_namespaces(namespace_id)
           project_ids.each_slice(sub_batch_size) do |project_ids|
+            ActiveRecord::Base.connection.execute("select gin_clean_pending_list('index_namespaces_on_name_trigram')")
+            ActiveRecord::Base.connection.execute("select gin_clean_pending_list('index_namespaces_on_path_trigram')")
+
             # We need to lock these project records for the period when we create project namespaces
             # and link them to projects so that if a project is modified in the time between creating
             # project namespaces `batch_insert_namespaces` and linking them to projects `batch_update_projects`
@@ -41,13 +44,12 @@ module Gitlab
             #
             # see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/72527#note_730679469
             Project.transaction do
-              Project.where(id: project_ids).select(:id).lock!('FOR UPDATE')
+              Project.where(id: project_ids).select(:id).lock!('FOR UPDATE').load
 
               batch_insert_namespaces(project_ids)
               batch_update_projects(project_ids)
+              batch_update_project_namespaces_traversal_ids(project_ids)
             end
-
-            batch_update_project_namespaces_traversal_ids(project_ids)
           end
         end
 

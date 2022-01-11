@@ -51,7 +51,10 @@ module Gitlab
 
             raise 'Job cannot be split further' if new_batch_size < 1
 
-            next_batch_bounds = batched_migration.batching_strategy.next_batch(
+            batching_strategy = batched_migration.batch_class.new
+            next_batch_bounds = batching_strategy.next_batch(
+              batched_migration.table_name,
+              batched_migration.column_name,
               batch_min_value: min_value,
               batch_size: new_batch_size
             )

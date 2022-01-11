@@ -272,7 +272,7 @@ RSpec.describe Gitlab::Database::BackgroundMigration::BatchedMigration, type: :m
 
       before do
         allow_next_instance_of(Gitlab::BackgroundMigration::BatchingStrategies::PrimaryKeyBatchingStrategy) do |batch_class|
-          allow(batch_class).to receive(:next_batch).with(batch_min_value: 6, batch_size: 5).and_return([6, 10])
+          allow(batch_class).to receive(:next_batch).with(anything, anything, batch_min_value: 6, batch_size: 5).and_return([6, 10])
         end
       end
 

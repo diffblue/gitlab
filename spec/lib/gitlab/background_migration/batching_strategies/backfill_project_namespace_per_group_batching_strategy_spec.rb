@@ -15,30 +15,13 @@ RSpec.describe Gitlab::BackgroundMigration::BatchingStrategies::BackfillProjectN
   let!(:project2) { projects.create!(name: 'project2', path: 'project2', namespace_id: namespace2.id, visibility_level: 20) }
   let!(:project3) { projects.create!(name: 'project3', path: 'project3', namespace_id: namespace3.id, visibility_level: 20) }
   let!(:project4) { projects.create!(name: 'project4', path: 'project4', namespace_id: namespace3.id, visibility_level: 20) }
+  let!(:batching_strategy) { described_class.new }
 
-  let!(:batched_migration) do
-    background_migrations.create!(
-      created_at: Time.current,
-      updated_at: Time.current,
-      min_value: 1,
-      max_value: Project.maximum(:id),
-      batch_size: 1_000,
-      sub_batch_size: 100,
-      interval: 120,
-      status: 0,
-      job_class_name: 'ProjectNamespaces::BackfillProjectNamespaces',
-      table_name: :projects,
-      column_name: :id,
-      total_tuple_count: nil,
-      job_arguments: [namespace1.id, 'up']
-    )
-  end
-
-  let!(:batching_strategy) { described_class.new(batched_migration) }
+  let(:job_arguments) { [namespace1.id, 'up'] }
 
   context 'when starting on the first batch' do
     it 'returns the bounds of the next batch' do
-      batch_bounds = batching_strategy.next_batch(batch_min_value: project1.id, batch_size: 3)
+      batch_bounds = batching_strategy.next_batch(:projects, :id, batch_min_value: project1.id, batch_size: 3, job_arguments: job_arguments)
 
       expect(batch_bounds).to match_array([project1.id, project3.id])
     end
@@ -46,7 +29,7 @@ RSpec.describe Gitlab::BackgroundMigration::BatchingStrategies::BackfillProjectN
 
   context 'when additional batches remain' do
     it 'returns the bounds of the next batch' do
-      batch_bounds = batching_strategy.next_batch(batch_min_value: project2.id, batch_size: 3)
+      batch_bounds = batching_strategy.next_batch(:projects, :id, batch_min_value: project2.id, batch_size: 3, job_arguments: job_arguments)
 
       expect(batch_bounds).to match_array([project2.id, project4.id])
     end
@@ -54,7 +37,7 @@ RSpec.describe Gitlab::BackgroundMigration::BatchingStrategies::BackfillProjectN
 
   context 'when on the final batch' do
     it 'returns the bounds of the next batch' do
-      batch_bounds = batching_strategy.next_batch(batch_min_value: project4.id, batch_size: 3)
+      batch_bounds = batching_strategy.next_batch(:projects, :id, batch_min_value: project4.id, batch_size: 3, job_arguments: job_arguments)
 
       expect(batch_bounds).to match_array([project4.id, project4.id])
     end
@@ -62,7 +45,7 @@ RSpec.describe Gitlab::BackgroundMigration::BatchingStrategies::BackfillProjectN
 
   context 'when no additional batches remain' do
     it 'returns nil' do
-      batch_bounds = batching_strategy.next_batch(batch_min_value: project4.id + 1, batch_size: 1)
+      batch_bounds = batching_strategy.next_batch(:projects, :id, batch_min_value: project4.id + 1, batch_size: 1, job_arguments: job_arguments)
 
       expect(batch_bounds).to be_nil
     end

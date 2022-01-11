@@ -8,7 +8,7 @@ class BackfillProjectNamespacesForGroup < Gitlab::Database::Migration[1.0]
   disable_ddl_transaction!
 
   def up
-    return unless Gitlab.com?
+    return unless Gitlab.com? || Gitlab.staging?
 
     projects_table = ::Gitlab::BackgroundMigration::ProjectNamespaces::Models::Project.arel_table
     hierarchy_cte_sql = Arel.sql(::Gitlab::BackgroundMigration::ProjectNamespaces::BackfillProjectNamespaces.hierarchy_cte(GROUP_ID))
@@ -34,7 +34,7 @@ class BackfillProjectNamespacesForGroup < Gitlab::Database::Migration[1.0]
   end
 
   def down
-    return unless Gitlab.com?
+    return unless Gitlab.com? || Gitlab.staging?
 
     Gitlab::Database::BackgroundMigration::BatchedMigration
       .for_configuration(MIGRATION, :projects, :id, [GROUP_ID, 'up']).delete_all

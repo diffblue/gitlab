@@ -88,12 +88,15 @@ module Gitlab
         end
 
         def find_next_batch_range(active_migration)
+          batching_strategy = active_migration.batch_class.new
           batch_min_value = active_migration.next_min_value
 
-          next_batch_bounds = active_migration.batching_strategy.next_batch(
+          next_batch_bounds = batching_strategy.next_batch(
+            active_migration.table_name,
+            active_migration.column_name,
             batch_min_value: batch_min_value,
-            batch_size: active_migration.batch_size
-          )
+            batch_size: active_migration.batch_size,
+            job_arguments: active_migration.job_arguments)
 
           return if next_batch_bounds.nil?
 

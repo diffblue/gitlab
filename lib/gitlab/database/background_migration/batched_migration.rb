@@ -93,10 +93,6 @@ module Gitlab
           "#{BATCH_CLASS_MODULE}::#{batch_class_name}".constantize
         end
 
-        def batching_strategy
-          @batching_strategy ||= batch_class.new(self)
-        end
-
         def job_class_name=(class_name)
           write_attribute(:job_class_name, class_name.delete_prefix("::"))
         end
@@ -137,7 +133,7 @@ module Gitlab
         end
 
         def optimize!
-          ::Gitlab::Database::BackgroundMigration::BatchOptimizer.new(self).optimize!
+          BatchOptimizer.new(self).optimize!
         end
 
         private
