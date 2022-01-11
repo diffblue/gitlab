@@ -5,6 +5,7 @@ exports[`Security Dashboard default states sets up group-level 1`] = `
   <div>
     <div
       class="gl-spinner-container gl-mt-6"
+      role="status"
     >
       <span
         aria-label="Loading"
@@ -20,6 +21,7 @@ exports[`Security Dashboard default states sets up instance-level 1`] = `
   <div>
     <div
       class="gl-spinner-container gl-mt-6"
+      role="status"
     >
       <span
         aria-label="Loading"
