@@ -5,9 +5,14 @@ require 'spec_helper'
 RSpec.describe Resolvers::SecurityReportSummaryResolver do
   include GraphqlHelpers
 
-  let_it_be(:pipeline) { 'pipeline' }
+  let_it_be(:pipeline) { create(:ci_pipeline) }
+  let_it_be(:user) { pipeline.project.owner }
 
   describe '#resolve' do
+    before do
+      stub_licensed_features(sast: true, dependency_scanning: true, container_scanning: true, dast: true, security_dashboard: true)
+    end
+
     context 'All fields are requested' do
       let(:lookahead) do
         build_mock_lookahead(expected_selection_info)
@@ -32,7 +37,18 @@ RSpec.describe Resolvers::SecurityReportSummaryResolver do
         ) do |summary_service|
           expect(summary_service).to receive(:execute).and_return({})
         end
-        resolve(described_class, obj: pipeline, lookahead: lookahead)
+
+        resolve_security_report_summary
+      end
+
+      context 'when the user is not authorized' do
+        let_it_be(:user) { create(:user) }
+
+        it 'does not call Security::ReportSummaryService and returns nothing' do
+          stub_const('Security::ReportSummaryService', double)
+
+          expect(resolve_security_report_summary).to be_nil
+        end
       end
     end
 
@@ -61,9 +77,14 @@ RSpec.describe Resolvers::SecurityReportSummaryResolver do
         ) do |summary_service|
           expect(summary_service).to receive(:execute).and_return({})
         end
-        resolve(described_class, obj: pipeline, lookahead: lookahead)
+
+        resolve_security_report_summary
       end
     end
+  end
+
+  def resolve_security_report_summary
+    resolve(described_class, obj: pipeline, lookahead: lookahead, ctx: { current_user: user })
   end
 end
 
