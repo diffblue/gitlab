@@ -30368,9 +30368,6 @@ ALTER TABLE ONLY vulnerability_feedback
 ALTER TABLE ONLY user_custom_attributes
     ADD CONSTRAINT fk_rails_47b91868a8 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY ci_pending_builds
-    ADD CONSTRAINT fk_rails_480669c3b3 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
-
 ALTER TABLE ONLY upcoming_reconciliations
     ADD CONSTRAINT fk_rails_497b4938ac FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
