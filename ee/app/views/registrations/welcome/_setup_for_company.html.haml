@@ -8,7 +8,7 @@
       = f.label :setup_for_company, setup_for_company_label_text, class: 'label-bold'
       .gl-display-flex.gl-flex-direction-column.gl-lg-flex-direction-row
         .gl-flex-grow-1
-          = f.radio_button :setup_for_company, true, class: 'js-setup-for-company', required: true
+          = f.radio_button :setup_for_company, true, class: 'js-setup-for-company', required: true, data: { qa_selector: 'setup_for_company_radio' }
           = f.label :setup_for_company, _('My company or team'), class: 'normal', value: 'true'
         .gl-flex-grow-1
           = f.radio_button :setup_for_company, false, class: 'js-setup-for-me', required: true
