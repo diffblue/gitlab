@@ -7730,7 +7730,7 @@ msgstr ""
 msgid "ClusterAgents|To delete the agent, type %{name} to confirm:"
 msgstr ""
 
-msgid "ClusterAgents|To install a new agent, first add the agent's configuration file to this repository. %{linkStart}What's the agent's configuration file?%{linkEnd}"
+msgid "ClusterAgents|To install a new agent, first add the agent's configuration file to this repository. %{linkStart}Learn more about installing GitLab Agent.%{linkEnd}"
 msgstr ""
 
 msgid "ClusterAgents|Token created by %{userName}"
