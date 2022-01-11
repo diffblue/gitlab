@@ -1521,6 +1521,7 @@ RSpec.describe Group do
 
         shared_examples 'returning the right value for user_cap_reached?' do
           before do
+            allow(root_group).to receive(:user_cap_available?).and_return(true)
             root_group.namespace_settings.update!(new_user_signups_cap: new_user_signups_cap)
           end
 
@@ -1568,6 +1569,43 @@ RSpec.describe Group do
           end
         end
       end
+    end
+  end
+
+  describe '#shared_externally?' do
+    let_it_be(:group, refind: true) { create(:group) }
+    let_it_be(:subgroup_1) { create(:group, parent: group) }
+    let_it_be(:subgroup_2) { create(:group, parent: group) }
+    let_it_be(:external_group) { create(:group) }
+
+    subject(:shared_externally?) { group.shared_externally? }
+
+    it 'returns false when the group is not shared outside of the namespace hierarchy' do
+      expect(shared_externally?).to be false
+    end
+
+    it 'returns true when the group is shared outside of the namespace hierarchy' do
+      create(:group_group_link, shared_group: group, shared_with_group: external_group)
+
+      expect(shared_externally?).to be true
+    end
+
+    it 'returns false when the group is shared internally within the namespace hierarchy' do
+      create(:group_group_link, shared_group: subgroup_1, shared_with_group: subgroup_2)
+
+      expect(shared_externally?).to be false
+    end
+
+    it 'returns true when a subgroup is shared outside of the namespace hierarchy' do
+      create(:group_group_link, shared_group: subgroup_1, shared_with_group: external_group)
+
+      expect(shared_externally?).to be true
+    end
+
+    it 'returns false when the only shared groups are outside of the namespace hierarchy' do
+      create(:group_group_link)
+
+      expect(shared_externally?).to be false
     end
   end
 
