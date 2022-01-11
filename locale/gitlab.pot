@@ -40360,9 +40360,6 @@ msgstr ""
 msgid "Work in progress Limit"
 msgstr ""
 
-msgid "Work in progress- click here to find out more"
-msgstr ""
-
 msgid "WorkItem|Work Items"
 msgstr ""
 
