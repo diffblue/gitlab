@@ -26,7 +26,7 @@ module Types
             description: 'Associated scanner profile.'
 
       field :dast_profile_schedule, ::Types::Dast::ProfileScheduleType, null: true,
-            description: 'Associated profile schedule.'
+            description: 'Associated profile schedule.', method: :dast_profile_schedule
 
       field :branch, Dast::ProfileBranchType, null: true,
             description: 'Associated branch.',
@@ -37,10 +37,6 @@ module Types
 
       def edit_path
         Gitlab::Routing.url_helpers.edit_project_on_demand_scan_path(object.project, object)
-      end
-
-      def dast_profile_schedule
-        object.dast_profile_schedule
       end
     end
   end
