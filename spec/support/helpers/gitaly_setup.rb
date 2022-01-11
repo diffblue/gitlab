@@ -53,7 +53,6 @@ module GitalySetup
 
   def env
     {
-      'HOME' => expand_path('tmp/tests'),
       'GEM_PATH' => Gem.path.join(':'),
       'BUNDLE_INSTALL_FLAGS' => nil,
       'BUNDLE_IGNORE_CONFIG' => '1',
@@ -125,6 +124,11 @@ module GitalySetup
     args = ["#{tmp_tests_gitaly_bin_dir}/#{service_binary(service)}"]
     args.push("-config") if service == :praefect
     args.push(config_path(service))
+
+    # Ensure user configuration does not affect Git
+    # Context: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/58776#note_547613780
+    env = self.env.merge('HOME' => nil, 'XDG_CONFIG_HOME' => nil)
+
     pid = spawn(env, *args, [:out, :err] => "log/#{service}-test.log")
 
     begin
