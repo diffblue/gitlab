@@ -4,20 +4,18 @@ module Gitlab
   module Auth
     module Otp
       class SessionEnforcer
-        include ::Gitlab::Redis::SessionsStoreHelper
-
         def initialize(key)
           @key = key
         end
 
         def update_session
-          redis_store_class.with do |redis|
+          Gitlab::Redis::Sessions.with do |redis|
             redis.setex(key_name, session_expiry_in_seconds, true)
           end
         end
 
         def access_restricted?
-          redis_store_class.with do |redis|
+          Gitlab::Redis::Sessions.with do |redis|
             !redis.get(key_name)
           end
         end
