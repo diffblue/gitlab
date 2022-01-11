@@ -41526,6 +41526,9 @@ msgstr ""
 msgid "cannot be changed if shared runners are enabled"
 msgstr ""
 
+msgid "cannot be enabled"
+msgstr ""
+
 msgid "cannot be enabled because parent group does not allow it"
 msgstr ""
 
