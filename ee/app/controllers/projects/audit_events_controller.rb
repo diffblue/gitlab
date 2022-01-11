@@ -13,6 +13,8 @@ class Projects::AuditEventsController < Projects::ApplicationController
 
   feature_category :audit_events
 
+  urgency :low
+
   def index
     @is_last_page = events.last_page?
     @events = AuditEventSerializer.new.represent(events)
