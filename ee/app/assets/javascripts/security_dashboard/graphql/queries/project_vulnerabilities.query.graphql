@@ -14,6 +14,7 @@ query projectVulnerabilities(
   $hasResolution: Boolean
   $includeExternalIssueLinks: Boolean = false
   $vetEnabled: Boolean = false
+  $clusterAgentId: [ClustersAgentID!]
 ) {
   project(fullPath: $fullPath) {
     id
@@ -28,6 +29,7 @@ query projectVulnerabilities(
       sort: $sort
       hasIssues: $hasIssues
       hasResolution: $hasResolution
+      clusterAgentId: $clusterAgentId
     ) {
       nodes {
         ...VulnerabilityFragment
