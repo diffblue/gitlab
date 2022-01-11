@@ -42052,6 +42052,9 @@ msgstr ""
 msgid "failed to dismiss associated finding(id=%{finding_id}): %{message}"
 msgstr ""
 
+msgid "failed to dismiss finding: %{message}"
+msgstr ""
+
 msgid "failed to revert associated finding(id=%{finding_id}) to detected"
 msgstr ""
 

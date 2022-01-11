@@ -31,6 +31,7 @@ module EE
         mount_mutation ::Mutations::RequirementsManagement::UpdateRequirement
         mount_mutation ::Mutations::Vulnerabilities::Create
         mount_mutation ::Mutations::Vulnerabilities::Dismiss
+        mount_mutation ::Mutations::Vulnerabilities::FindingDismiss
         mount_mutation ::Mutations::Vulnerabilities::Resolve
         mount_mutation ::Mutations::Vulnerabilities::Confirm
         mount_mutation ::Mutations::Vulnerabilities::RevertToDetected
