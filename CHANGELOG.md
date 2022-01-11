@@ -391,6 +391,10 @@ No changes.
 - [Fix OpenStruct use](gitlab-org/gitlab@f8466f5943a1afeabaf9cf781f7804a8df515a0e) by @mehulsharma ([merge request](gitlab-org/gitlab!74702))
 - [Update Sidekiq to 6.3.1](gitlab-org/gitlab@22e8bc0af656717e56428a7227c467fe08021c66) ([merge request](gitlab-org/gitlab!73973))
 
+## 14.5.3 (2022-01-11)
+
+No changes.
+
 ## 14.5.2 (2021-12-03)
 
 No changes.
