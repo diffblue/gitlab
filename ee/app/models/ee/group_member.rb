@@ -45,6 +45,11 @@ module EE
       return if access_level.in?(levels)
 
       errors.add(:access_level, "is not included in the list")
+
+      if access_level == ::Gitlab::Access::MINIMAL_ACCESS
+        errors.add(:access_level, "supported on top level groups only") if group.has_parent?
+        errors.add(:access_level, "not supported by license") unless group.feature_available?(:minimal_access_role)
+      end
     end
 
     override :post_create_hook
