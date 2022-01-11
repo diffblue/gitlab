@@ -9027,9 +9027,26 @@ GitLab CI/CD configuration template.
 | <a id="clusteragentid"></a>`id` | [`ID!`](#id) | ID of the cluster agent. |
 | <a id="clusteragentname"></a>`name` | [`String`](#string) | Name of the cluster agent. |
 | <a id="clusteragentproject"></a>`project` | [`Project`](#project) | Project this cluster agent is associated with. |
-| <a id="clusteragenttokens"></a>`tokens` | [`ClusterAgentTokenConnection`](#clusteragenttokenconnection) | Tokens associated with the cluster agent. (see [Connections](#connections)) |
 | <a id="clusteragentupdatedat"></a>`updatedAt` | [`Time`](#time) | Timestamp the cluster agent was updated. |
 | <a id="clusteragentwebpath"></a>`webPath` | [`String`](#string) | Web path of the cluster agent. |
+
+#### Fields with arguments
+
+##### `ClusterAgent.tokens`
+
+Tokens associated with the cluster agent.
+
+Returns [`ClusterAgentTokenConnection`](#clusteragenttokenconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="clusteragenttokensstatus"></a>`status` | [`AgentTokenStatus`](#agenttokenstatus) | Status of the token. |
 
 ### `ClusterAgentActivityEvent`
 
@@ -9056,7 +9073,7 @@ GitLab CI/CD configuration template.
 | <a id="clusteragenttokenid"></a>`id` | [`ClustersAgentTokenID!`](#clustersagenttokenid) | Global ID of the token. |
 | <a id="clusteragenttokenlastusedat"></a>`lastUsedAt` | [`Time`](#time) | Timestamp the token was last used. |
 | <a id="clusteragenttokenname"></a>`name` | [`String`](#string) | Name given to the token. |
-| <a id="clusteragenttokenstatus"></a>`status` | [`String`](#string) | Current status of the token. |
+| <a id="clusteragenttokenstatus"></a>`status` | [`AgentTokenStatus`](#agenttokenstatus) | Current status of the token. |
 
 ### `CodeCoverageActivity`
 
@@ -16149,6 +16166,15 @@ Access level to a resource.
 | <a id="accesslevelenumno_access"></a>`NO_ACCESS` | No access. |
 | <a id="accesslevelenumowner"></a>`OWNER` | Owner access. |
 | <a id="accesslevelenumreporter"></a>`REPORTER` | Reporter access. |
+
+### `AgentTokenStatus`
+
+Agent token statuses.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="agenttokenstatusactive"></a>`ACTIVE` | Active agent token. |
+| <a id="agenttokenstatusrevoked"></a>`REVOKED` | Revoked agent token. |
 
 ### `AlertManagementAlertSort`
 
