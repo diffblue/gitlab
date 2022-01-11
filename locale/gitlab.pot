@@ -1982,9 +1982,6 @@ msgstr ""
 msgid "Add CONTRIBUTING"
 msgstr ""
 
-msgid "Add GitLab to Slack"
-msgstr ""
-
 msgid "Add Jaeger URL"
 msgstr ""
 
@@ -2190,9 +2187,6 @@ msgid "Add system hook"
 msgstr ""
 
 msgid "Add text to the sign-in page. Markdown enabled."
-msgstr ""
-
-msgid "Add to Slack"
 msgstr ""
 
 msgid "Add to board"
@@ -16170,9 +16164,6 @@ msgid "GitLab events trigger webhooks. Use the request details of a webhook to h
 msgstr ""
 
 msgid "GitLab export"
-msgstr ""
-
-msgid "GitLab for Slack"
 msgstr ""
 
 msgid "GitLab group: %{source_link}"
@@ -32044,9 +32035,6 @@ msgstr ""
 msgid "Select Git revision"
 msgstr ""
 
-msgid "Select GitLab project to link with your Slack team"
-msgstr ""
-
 msgid "Select Page"
 msgstr ""
 
@@ -33095,6 +33083,12 @@ msgid "Slack application"
 msgstr ""
 
 msgid "Slack integration allows you to interact with GitLab via slash commands in a chat window."
+msgstr ""
+
+msgid "SlackIntegration|GitLab for Slack"
+msgstr ""
+
+msgid "SlackIntegration|Select a GitLab project to link with your Slack workspace."
 msgstr ""
 
 msgid "SlackIntegration|Sends notifications about project events to Slack channels."
@@ -37444,9 +37438,6 @@ msgid "Track important events in your project."
 msgstr ""
 
 msgid "Track time with quick actions"
-msgstr ""
-
-msgid "Track your GitLab projects with GitLab for Slack."
 msgstr ""
 
 msgid "Training mode"
@@ -42353,9 +42344,6 @@ msgid "loading"
 msgstr ""
 
 msgid "locked by %{path_lock_user_name} %{created_at}"
-msgstr ""
-
-msgid "log in"
 msgstr ""
 
 msgid "manual"

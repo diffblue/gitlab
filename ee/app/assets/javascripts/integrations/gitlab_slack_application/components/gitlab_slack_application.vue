@@ -86,7 +86,7 @@ export default {
 
     <h1>{{ s__('SlackIntegration|GitLab for Slack') }}</h1>
 
-    <div class="gl-mt-6">
+    <div class="gl-mt-6" data-testid="gitlab-slack-content">
       <template v-if="isSignedIn">
         <template v-if="hasProjects">
           <p>
@@ -96,7 +96,7 @@ export default {
           <projects-dropdown
             :projects="projects"
             :selected-project="selectedProject"
-            @projectSelected="selectProject"
+            @project-selected="selectProject"
           />
 
           <div class="gl-display-flex gl-justify-content-end">
@@ -112,7 +112,7 @@ export default {
           </div>
         </template>
         <template v-else>
-          <p class="js-no-projects">{{ __("You don't have any projects available.") }}</p>
+          <p>{{ __("You don't have any projects available.") }}</p>
         </template>
       </template>
 
