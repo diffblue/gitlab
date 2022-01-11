@@ -1,7 +1,7 @@
 <script>
 import { ITEM_TYPE } from '~/groups/constants';
-import IssuesListApp from '~/issues_list/components/issues_list_app.vue';
-import { TOKEN_TYPE_EPIC, TOKEN_TYPE_ITERATION, TOKEN_TYPE_WEIGHT } from '~/issues_list/constants';
+import IssuesListApp from '~/issues/list/components/issues_list_app.vue';
+import { TOKEN_TYPE_EPIC, TOKEN_TYPE_ITERATION, TOKEN_TYPE_WEIGHT } from '~/issues/list/constants';
 import {
   TOKEN_TITLE_EPIC,
   TOKEN_TITLE_ITERATION,
