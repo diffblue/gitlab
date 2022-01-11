@@ -112,6 +112,9 @@ module Vulnerabilities
         project_id: @project.id
       )
 
+      raw_metadata = {}
+      raw_metadata['location'] = location if location
+
       Vulnerabilities::Finding.new(
         project: @project,
         identifiers: identifiers,
@@ -122,11 +125,14 @@ module Vulnerabilities
         confidence: vulnerability.confidence,
         report_type: vulnerability.report_type,
         project_fingerprint: Digest::SHA1.hexdigest(identifiers.first.name),
+        location: location,
         location_fingerprint: loc_fingerprint,
         metadata_version: metadata_version,
-        raw_metadata: {
-          location: location
-        },
+
+        # raw_metadata is a text field rather than jsonb,
+        # so it is important to convert data to JSON.
+        # It will be removed in https://gitlab.com/groups/gitlab-org/-/epics/4239.
+        raw_metadata: raw_metadata.to_json,
         scanner: scanner,
         uuid: uuid,
         message: message,
