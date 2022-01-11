@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 module Types
-  # rubocop: disable Graphql/AuthorizeTypes
   class PipelineSecurityReportFindingType < BaseObject
     graphql_name 'PipelineSecurityReportFinding'
 
     description 'Represents vulnerability finding of a security report on the pipeline.'
+
+    authorize :read_security_resource
 
     field :report_type,
           type: VulnerabilityReportTypeEnum,
@@ -97,5 +98,4 @@ module Types
       object.project.licensed_feature_available?(:sast_fp_reduction)
     end
   end
-  # rubocop: enable Graphql/AuthorizeTypes
 end

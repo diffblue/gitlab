@@ -110,6 +110,8 @@ module Vulnerabilities
         .where("vulnerability_occurrences.location -> 'kubernetes_resource' -> 'agent_id' ?| array[:agent_ids]", agent_ids: agent_ids)
     end
 
+    alias_method :declarative_policy_subject, :project
+
     def self.counted_by_severity
       group(:severity).count.transform_keys do |severity|
         severities[severity]

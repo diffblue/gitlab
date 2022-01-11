@@ -3,7 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe 'Query.project(fullPath).pipeline(iid).securityReportFindings' do
-  let_it_be(:project) { create(:project, :repository) }
+  include GraphqlHelpers
+
+  let_it_be(:project) { create(:project, :repository, :public) }
   let_it_be(:pipeline) { create(:ci_pipeline, :success, project: project) }
   let_it_be(:user) { create(:user) }
 
@@ -49,13 +51,16 @@ RSpec.describe 'Query.project(fullPath).pipeline(iid).securityReportFindings' do
     )
   end
 
-  subject { GitlabSchema.execute(query, context: { current_user: user }).as_json }
+  let(:security_report_findings) { subject.dig('project', 'pipeline', 'securityReportFindings', 'nodes') }
 
-  let(:security_report_findings) { subject.dig('data', 'project', 'pipeline', 'securityReportFindings', 'nodes') }
+  subject do
+    post_graphql(query, current_user: user)
+    graphql_data
+  end
 
-  context 'when `sast` and `dast` features are enabled' do
+  context 'when the required features are enabled' do
     before do
-      stub_licensed_features(sast: true, dast: true)
+      stub_licensed_features(sast: true, dast: true, security_dashboard: true)
     end
 
     context 'when user is member of the project' do
@@ -86,18 +91,18 @@ RSpec.describe 'Query.project(fullPath).pipeline(iid).securityReportFindings' do
 
     context 'when user is not a member of the project' do
       it 'returns no vulnerability findings' do
-        expect(security_report_findings).to be_nil
+        expect(security_report_findings).to be_blank
       end
     end
   end
 
-  context 'when `sast` and `dast` both features are disabled' do
+  context 'when the required features are disabled' do
     before do
-      stub_licensed_features(sast: false, dast: false)
+      stub_licensed_features(sast: false, dast: false, security_dashboard: false)
     end
 
     it 'returns no vulnerability findings' do
-      expect(security_report_findings).to be_nil
+      expect(security_report_findings).to be_blank
     end
   end
 end

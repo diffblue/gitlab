@@ -455,6 +455,10 @@ RSpec.describe ProjectPolicy do
 
       context 'group without restriction' do
         it { is_expected.to be_allowed(:read_project) }
+        it { is_expected.to be_allowed(:read_issue) }
+        it { is_expected.to be_allowed(:read_merge_request) }
+        it { is_expected.to be_allowed(:read_milestone) }
+        it { is_expected.to be_allowed(:read_container_image) }
       end
 
       context 'group with restriction' do
@@ -466,25 +470,45 @@ RSpec.describe ProjectPolicy do
           let(:range) { '192.168.0.0/24' }
 
           it { is_expected.to be_allowed(:read_project) }
+          it { is_expected.to be_allowed(:read_issue) }
+          it { is_expected.to be_allowed(:read_merge_request) }
+          it { is_expected.to be_allowed(:read_milestone) }
+          it { is_expected.to be_allowed(:read_container_image) }
         end
 
         context 'address is outside the range' do
           let(:range) { '10.0.0.0/8' }
 
           it { is_expected.to be_disallowed(:read_project) }
+          it { is_expected.to be_disallowed(:read_issue) }
+          it { is_expected.to be_disallowed(:read_merge_request) }
+          it { is_expected.to be_disallowed(:read_milestone) }
+          it { is_expected.to be_disallowed(:read_container_image) }
 
           context 'with admin enabled', :enable_admin_mode do
             it { is_expected.to be_allowed(:read_project) }
+            it { is_expected.to be_allowed(:read_issue) }
+            it { is_expected.to be_allowed(:read_merge_request) }
+            it { is_expected.to be_allowed(:read_milestone) }
+            it { is_expected.to be_allowed(:read_container_image) }
           end
 
           context 'with admin disabled' do
             it { is_expected.to be_disallowed(:read_project) }
+            it { is_expected.to be_disallowed(:read_issue) }
+            it { is_expected.to be_disallowed(:read_merge_request) }
+            it { is_expected.to be_disallowed(:read_milestone) }
+            it { is_expected.to be_disallowed(:read_container_image) }
           end
 
           context 'with auditor' do
             let(:current_user) { create(:user, :auditor) }
 
             it { is_expected.to be_allowed(:read_project) }
+            it { is_expected.to be_allowed(:read_issue) }
+            it { is_expected.to be_allowed(:read_merge_request) }
+            it { is_expected.to be_allowed(:read_milestone) }
+            it { is_expected.to be_allowed(:read_container_image) }
           end
         end
       end
