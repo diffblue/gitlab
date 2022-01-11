@@ -20,6 +20,7 @@ module QA
         before do
           # Enable sign-ups
           Runtime::ApplicationSettings.set_application_settings(signup_enabled: true)
+          Runtime::ApplicationSettings.set_application_settings(require_admin_approval_after_user_signup: true)
 
           # Register the new user through the registration page
           Gitlab::Page::Main::SignUp.perform do |sign_up|
@@ -27,10 +28,7 @@ module QA
             sign_up.register_user(user)
           end
 
-          # Click the Get Started button on the welcome page if it presents itself
-          Gitlab::Page::Main::Welcome.perform do |welcome|
-            welcome.get_started_button if welcome.get_started_button?
-          end
+          Flow::UserOnboarding.onboard_user
         end
 
         after do

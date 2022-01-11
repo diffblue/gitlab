@@ -118,11 +118,12 @@ module QA
 
           Flow::Login.sign_in(as: @user, skip_page_validation: true)
 
-          Page::Registration::Welcome.perform(&:click_get_started_button_if_available)
+          Flow::UserOnboarding.onboard_user
 
-          Page::Main::Menu.perform do |menu|
-            expect(menu).to have_personal_area
-          end
+          # In development env and .com the user is asked to create a group and a project which can be skipped for
+          # the purpose of this test
+          Runtime::Browser.visit(:gitlab, Page::Dashboard::Welcome)
+          Page::Main::Menu.perform(&:has_personal_area?)
         end
 
         after do
