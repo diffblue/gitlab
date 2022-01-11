@@ -108,7 +108,7 @@ RSpec.describe EE::IntegrationsHelper do
     end
   end
 
-  describe '#add_to_slack_data' do
+  describe '#gitlab_slack_application_data' do
     let_it_be(:projects) { create_list(:project, 3) }
 
     def relation
@@ -132,7 +132,7 @@ RSpec.describe EE::IntegrationsHelper do
     end
 
     it 'includes the required keys' do
-      additions = Gitlab::Json.parse(subject.add_to_slack_data(relation))
+      additions = subject.gitlab_slack_application_data(relation)
       expect(additions.keys).to match_array %w[
         projects
         sign_in_path
@@ -146,15 +146,15 @@ RSpec.describe EE::IntegrationsHelper do
     end
 
     it 'does not suffer from N+1 performance issues' do
-      baseline = ActiveRecord::QueryRecorder.new { subject.add_to_slack_data(relation.limit(1)) }
+      baseline = ActiveRecord::QueryRecorder.new { subject.gitlab_slack_application_data(relation.limit(1)) }
 
       expect do
-        subject.add_to_slack_data(relation)
+        subject.gitlab_slack_application_data(relation)
       end.not_to exceed_query_limit(baseline)
     end
 
     it 'serializes nil projects without error' do
-      expect(subject.add_to_slack_data(nil)).to include('"projects":null')
+      expect(subject.gitlab_slack_application_data(nil)).to include('"projects":null')
     end
   end
 end

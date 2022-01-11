@@ -34,7 +34,7 @@ module EE
       "https://slack.com/oauth/authorize?scope=commands&client_id=#{slack_app_id}&redirect_uri=#{slack_auth_project_settings_slack_url(project)}&state=#{escaped_form_authenticity_token}"
     end
 
-    def add_to_slack_data(projects)
+    def gitlab_slack_application_data(projects)
       {
         projects: (projects || []).map { |p| serialize_project(p) }.to_json,
         sign_in_path: new_session_path(:user, redirect_to_referer: 'yes'),
