@@ -30,6 +30,15 @@ RSpec.describe GroupHook do
     end
   end
 
+  describe '#parent' do
+    it 'returns the associated group' do
+      group = build(:group)
+      hook = build(:group_hook, group: group)
+
+      expect(hook.parent).to eq(group)
+    end
+  end
+
   describe '#application_context' do
     let_it_be(:hook) { build(:group_hook) }
 

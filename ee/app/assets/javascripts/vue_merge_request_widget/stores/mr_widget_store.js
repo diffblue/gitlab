@@ -83,6 +83,8 @@ export default class MergeRequestStore extends CEMergeRequestStore {
     this.approvals = mapApprovalsResponse(data);
     this.approvalsLeft = Boolean(data.approvals_left);
     this.preventMerge = !this.isApproved;
+
+    this.setState();
   }
 
   setApprovalRules(data) {
@@ -93,6 +95,8 @@ export default class MergeRequestStore extends CEMergeRequestStore {
     if (!window.gon?.features?.restructuredMrWidget) return false;
 
     if (this.hasApprovalsAvailable && this.approvals && this.approvalsLeft) return !this.isApproved;
+
+    if (this.blockingMergeRequests.total_count > 0) return true;
 
     return super.hasMergeChecksFailed;
   }
