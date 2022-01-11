@@ -203,11 +203,22 @@ describe('EE - CorpusManagement', () => {
           });
           await waitForPromises();
 
+          expect(getCorpusesQueryRequestHandler).toHaveBeenCalledTimes(1);
+
           const corpusTable = wrapper.findComponent(CorpusTable);
           corpusTable.vm.$emit('delete', mutationVars.input.id);
           await waitForPromises();
 
           expect(deleteCorpusMutationHandler).toHaveBeenCalledWith(mutationVars);
+
+          expect(getCorpusesQueryRequestHandler).toHaveBeenCalledTimes(2);
+          expect(getCorpusesQueryRequestHandler).toHaveBeenNthCalledWith(2, {
+            afterCursor: '',
+            beforeCursor: '',
+            firstPageSize: 10,
+            lastPageSize: null,
+            projectPath: '/namespace/project',
+          });
         });
       });
     });
