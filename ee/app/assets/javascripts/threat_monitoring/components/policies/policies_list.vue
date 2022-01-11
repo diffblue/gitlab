@@ -14,8 +14,10 @@ import createFlash from '~/flash';
 import { getTimeago } from '~/lib/utils/datetime_utility';
 import { setUrlFragment, mergeUrlParams } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import networkPoliciesQuery from '../../graphql/queries/network_policies.query.graphql';
 import scanExecutionPoliciesQuery from '../../graphql/queries/scan_execution_policies.query.graphql';
+import scanResultPoliciesQuery from '../../graphql/queries/scan_result_policies.query.graphql';
 import { getPolicyType } from '../../utils';
 import { POLICY_TYPE_COMPONENT_OPTIONS, POLICY_TYPE_OPTIONS } from '../constants';
 import EnvironmentPicker from '../environment_picker.vue';
@@ -57,6 +59,7 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
+  mixins: [glFeatureFlagMixin()],
   inject: ['documentationPath', 'projectPath', 'newPolicyPath'],
   props: {
     shouldUpdatePolicyList: {
@@ -100,12 +103,25 @@ export default {
       },
       error: createPolicyFetchError,
     },
+    scanResultPolicies: {
+      query: scanResultPoliciesQuery,
+      variables() {
+        return {
+          fullPath: this.projectPath,
+        };
+      },
+      update(data) {
+        return data?.project?.scanResultPolicies?.nodes ?? [];
+      },
+      error: createPolicyFetchError,
+    },
   },
   data() {
     return {
       selectedPolicy: null,
       networkPolicies: [],
       scanExecutionPolicies: [],
+      scanResultPolicies: [],
       selectedPolicyType: POLICY_TYPE_OPTIONS.ALL.value,
     };
   },
@@ -113,10 +129,14 @@ export default {
     ...mapState('threatMonitoring', ['allEnvironments', 'currentEnvironmentId', 'hasEnvironment']),
     ...mapGetters('threatMonitoring', ['currentEnvironmentGid']),
     allPolicyTypes() {
-      return {
+      const allTypes = {
         [POLICY_TYPE_OPTIONS.POLICY_TYPE_NETWORK.value]: this.networkPolicies,
         [POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_EXECUTION.value]: this.scanExecutionPolicies,
       };
+      if (this.isFeatureEnabled) {
+        allTypes[POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_RESULT.value] = this.scanResultPolicies;
+      }
+      return allTypes;
     },
     documentationFullPath() {
       return setUrlFragment(this.documentationPath, 'container-network-policy');
@@ -141,7 +161,8 @@ export default {
     isLoadingPolicies() {
       return (
         this.$apollo.queries.networkPolicies.loading ||
-        this.$apollo.queries.scanExecutionPolicies.loading
+        this.$apollo.queries.scanExecutionPolicies.loading ||
+        this.$apollo.queries.scanResultPolicies.loading
       );
     },
     hasSelectedPolicy() {
@@ -207,11 +228,15 @@ export default {
 
       return fields;
     },
+    isFeatureEnabled() {
+      return this.glFeatures.scanResultPolicy;
+    },
   },
   watch: {
     shouldUpdatePolicyList(newShouldUpdatePolicyList) {
       if (newShouldUpdatePolicyList) {
         this.$apollo.queries.scanExecutionPolicies.refetch();
+        this.$apollo.queries.scanResultPolicies.refetch();
         this.$emit('update-policy-list', false);
       }
     },
