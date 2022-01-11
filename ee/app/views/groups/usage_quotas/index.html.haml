@@ -1,3 +1,8 @@
+- content_for :page_specific_javascripts do
+  = render "layouts/google_tag_manager_head"
+  = render "layouts/one_trust"
+= render "layouts/google_tag_manager_body"
+
 - page_title s_("UsageQuota|Usage")
 - url_to_purchase_storage = buy_storage_path(@group) if purchase_storage_link_enabled?(@group)
 - pending_members_page_path = pending_members_group_usage_quotas_path(@group) if @group.user_cap_available?
