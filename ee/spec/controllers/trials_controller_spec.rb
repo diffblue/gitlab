@@ -102,6 +102,22 @@ RSpec.describe TrialsController, :saas do
         end
       end
 
+      context 'coming from docs.gitlab.com' do
+        let(:post_params) { { glm_source: 'docs.gitlab.com' } }
+
+        it 'redirects to trial onboarding' do
+          is_expected.to redirect_to(new_users_sign_up_group_path(glm_source: 'docs.gitlab.com', trial_onboarding_flow: true))
+        end
+      end
+
+      context 'coming from learn.gitlab.com' do
+        let(:post_params) { { glm_source: 'learn.gitlab.com' } }
+
+        it 'redirects to trial onboarding' do
+          is_expected.to redirect_to(new_users_sign_up_group_path(glm_source: 'learn.gitlab.com', trial_onboarding_flow: true))
+        end
+      end
+
       context 'when user has 1 trial eligible namespace', :experiment do
         let_it_be(:namespace) { create(:group, path: 'namespace-test') }
 

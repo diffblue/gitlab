@@ -2,6 +2,8 @@
 
 module EE
   module TrialHelper
+    TRIAL_ONBOARDING_SOURCE_URLS = %w(about.gitlab.com docs.gitlab.com learn.gitlab.com).freeze
+
     def company_size_options_for_select(selected = '')
       options_for_select([
         [_('Please select'), ''],
@@ -14,7 +16,7 @@ module EE
     end
 
     def should_ask_company_question?
-      glm_params[:glm_source] != 'about.gitlab.com'
+      TRIAL_ONBOARDING_SOURCE_URLS.exclude?(glm_params[:glm_source])
     end
 
     def glm_params

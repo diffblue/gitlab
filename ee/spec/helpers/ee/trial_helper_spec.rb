@@ -14,6 +14,8 @@ RSpec.describe EE::TrialHelper do
 
     where(:glm_source, :result) do
       'about.gitlab.com'  | false
+      'learn.gitlab.com'  | false
+      'docs.gitlab.com'   | false
       'abouts.gitlab.com' | true
       'about.gitlab.org'  | true
       'about.gitlob.com'  | true
