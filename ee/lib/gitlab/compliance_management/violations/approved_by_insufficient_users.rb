@@ -17,7 +17,7 @@ module Gitlab
         def execute
           if violation?
             @merge_request.compliance_violations.create(
-              violating_user: @merge_request.merge_user,
+              violating_user: @merge_request.metrics&.merged_by || @merge_request.merge_user,
               reason: REASON
             )
           end

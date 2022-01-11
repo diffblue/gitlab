@@ -21,11 +21,9 @@ module Gitlab
 
         private
 
-        # rubocop: disable CodeReuse/ActiveRecord
         def violation?
-          @merge_request.approver_users.exists?(id: @merge_request.author_id)
+          @merge_request.approved_by_users.include?(@merge_request.author)
         end
-        # rubocop: enable CodeReuse/ActiveRecord
       end
     end
   end

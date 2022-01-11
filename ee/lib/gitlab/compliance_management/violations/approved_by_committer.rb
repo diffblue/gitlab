@@ -35,7 +35,7 @@ module Gitlab
 
         # rubocop: disable CodeReuse/ActiveRecord
         def approving_committer_ids
-          @merge_request.approver_users.pluck(:id) & @merge_request.committers.pluck(:id)
+          @merge_request.approved_by_users.pluck(:id) & @merge_request.committers.pluck(:id)
         end
         # rubocop: enable CodeReuse/ActiveRecord
 
