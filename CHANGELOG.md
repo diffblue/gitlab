@@ -937,6 +937,10 @@ No changes.
 - [Add pipeline artifacts and uploads sizes to project REST API](gitlab-org/gitlab@58d66f28faf42ae98ca11ff1ba0bdd9180e988ad) by @guillaume.chauvel ([merge request](gitlab-org/gitlab!72075))
 - [Remove not used parameter from epics finder](gitlab-org/gitlab@49fce172b57b2f376a114726b1dd1900fe36a238) ([merge request](gitlab-org/gitlab!72285)) **GitLab Enterprise Edition**
 
+## 14.4.5 (2022-01-11)
+
+No changes.
+
 ## 14.4.4 (2021-12-03)
 
 No changes.
