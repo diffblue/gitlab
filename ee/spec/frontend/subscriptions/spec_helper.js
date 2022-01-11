@@ -4,10 +4,7 @@ import plansQuery from 'ee/subscriptions/graphql/queries/plans.customer.query.gr
 import orderPreviewQuery from 'ee/subscriptions/graphql/queries/order_preview.customer.query.graphql';
 import { createMockClient } from 'helpers/mock_apollo_helper';
 import { CUSTOMERSDOT_CLIENT } from 'ee/subscriptions/buy_addons_shared/constants';
-import {
-  mockDefaultCache,
-  mockOrderPreview,
-} from 'ee_jest/subscriptions/mock_data';
+import { mockDefaultCache, mockOrderPreview } from 'ee_jest/subscriptions/mock_data';
 
 export function createMockApolloProvider(mockResponses = {}, dataset = {}) {
   const {
