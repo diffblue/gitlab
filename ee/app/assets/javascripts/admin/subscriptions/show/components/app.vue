@@ -128,7 +128,7 @@ export default {
       v-on="$options.activationListeners"
     />
     <div v-else class="row">
-      <div class="col-12 col-lg-8 offset-lg-2">
+      <div class="col-12">
         <h3 class="gl-mb-7 gl-mt-6 gl-text-center" data-testid="subscription-activation-title">
           {{ $options.i18n.noActiveSubscription }}
         </h3>

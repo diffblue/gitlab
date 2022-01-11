@@ -181,47 +181,53 @@ export default {
           data-testid="subscription-details"
         >
           <template v-if="shouldShowFooter" #footer>
-            <gl-button
-              v-if="canSyncSubscription"
-              category="primary"
-              :loading="hasAsyncActivity"
-              variant="confirm"
-              data-testid="subscription-sync-action"
-              @click="syncSubscription"
-            >
-              {{ $options.i18n.syncSubscriptionButtonText }}
-            </gl-button>
-            <gl-button
-              v-if="canActivateSubscription"
-              v-gl-modal="$options.modal.id"
-              category="primary"
-              variant="confirm"
-              data-testid="subscription-activate-subscription-action"
-            >
-              {{ $options.i18n.activateCloudLicense }}
-            </gl-button>
-            <gl-button
-              v-if="canManageSubscription"
-              :href="customersPortalUrl"
-              target="_blank"
-              category="secondary"
-              variant="confirm"
-              data-testid="subscription-manage-action"
-            >
-              {{ $options.i18n.manageSubscriptionButtonText }}
-            </gl-button>
-            <gl-button
-              v-if="canRemoveLicense"
-              category="secondary"
-              variant="danger"
-              :href="licenseRemovePath"
-              :data-confirm="$options.i18n.removeLicenseConfirm"
-              data-method="delete"
-              data-testid="license-remove-action"
-              data-qa-selector="remove_license_link"
-            >
-              {{ $options.i18n.removeLicense }}
-            </gl-button>
+            <div class="gl-display-flex gl-flex-wrap gl-align-items-flex-start">
+              <gl-button
+                v-if="canSyncSubscription"
+                category="primary"
+                :loading="hasAsyncActivity"
+                variant="confirm"
+                data-testid="subscription-sync-action"
+                class="gl-mr-3 gl-mb-3 gl-lg-mb-0"
+                @click="syncSubscription"
+              >
+                {{ $options.i18n.syncSubscriptionButtonText }}
+              </gl-button>
+              <gl-button
+                v-if="canActivateSubscription"
+                v-gl-modal="$options.modal.id"
+                category="primary"
+                variant="confirm"
+                class="gl-mr-3 gl-mb-3 gl-lg-mb-0"
+                data-testid="subscription-activate-subscription-action"
+              >
+                {{ $options.i18n.activateCloudLicense }}
+              </gl-button>
+              <gl-button
+                v-if="canManageSubscription"
+                :href="customersPortalUrl"
+                target="_blank"
+                category="secondary"
+                variant="confirm"
+                class="gl-mr-3 gl-mb-3 gl-lg-mb-0"
+                data-testid="subscription-manage-action"
+              >
+                {{ $options.i18n.manageSubscriptionButtonText }}
+              </gl-button>
+              <gl-button
+                v-if="canRemoveLicense"
+                category="secondary"
+                variant="danger"
+                class="gl-mr-3"
+                :href="licenseRemovePath"
+                :data-confirm="$options.i18n.removeLicenseConfirm"
+                data-method="delete"
+                data-testid="license-remove-action"
+                data-qa-selector="remove_license_link"
+              >
+                {{ $options.i18n.removeLicense }}
+              </gl-button>
+            </div>
           </template>
         </subscription-details-card>
       </div>
