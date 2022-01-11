@@ -136,16 +136,8 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
         it_behaves_like 'with different scan type' do
           let(:expected_configuration) do
             {
-              'secret-detection-0': {
+              'secret-detection-0': hash_including(
                 rules: [{ if: '$SECRET_DETECTION_DISABLED', when: 'never' }, { if: '$CI_COMMIT_BRANCH' }],
-                script:
-                  ['if [ -n "$CI_COMMIT_TAG" ]; then echo "Skipping Secret Detection for tags. No code changes have occurred."; exit 0; fi',
-                   'if [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ]; then echo "Running Secret Detection on default branch."; /analyzer run; exit 0; fi',
-                   'git fetch origin $CI_DEFAULT_BRANCH $CI_COMMIT_REF_NAME',
-                   'git log --left-right --cherry-pick --pretty=format:"%H" refs/remotes/origin/$CI_DEFAULT_BRANCH...refs/remotes/origin/$CI_COMMIT_REF_NAME > "$CI_COMMIT_SHA"_commit_list.txt',
-                   'export SECRET_DETECTION_COMMITS_FILE="$CI_COMMIT_SHA"_commit_list.txt',
-                   '/analyzer run',
-                   'rm "$CI_COMMIT_SHA"_commit_list.txt'],
                 stage: 'test',
                 image: '$SECURE_ANALYZERS_PREFIX/secrets:$SECRETS_ANALYZER_VERSION',
                 services: [],
@@ -160,8 +152,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
                   SECRETS_ANALYZER_VERSION: '3',
                   SECRET_DETECTION_EXCLUDED_PATHS: '',
                   SECRET_DETECTION_HISTORIC_SCAN: 'false'
-                }
-              }
+                })
             }
           end
         end
