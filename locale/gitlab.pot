@@ -731,6 +731,9 @@ msgstr ""
 msgid "%{link_start}Start the title with %{draft_snippet}%{link_end} to prevent a merge request draft from merging before it's ready."
 msgstr ""
 
+msgid "%{link_start}Upload a license%{link_end} file or enter the license key you have received from GitLab Inc."
+msgstr ""
+
 msgid "%{link_start}What information does GitLab Inc. collect?%{link_end}"
 msgstr ""
 
