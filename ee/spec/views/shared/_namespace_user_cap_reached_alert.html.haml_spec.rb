@@ -30,7 +30,7 @@ RSpec.describe 'shared/namespace_user_cap_reached_alert', :use_clean_rails_memor
 
     render partial
 
-    expect(rendered).to have_link('View pending user approvals', href: pending_members_group_usage_quotas_path(group))
+    expect(rendered).to have_link('View pending approvals', href: pending_members_group_usage_quotas_path(group))
   end
 
   it 'renders a link to the root namespace pending user approvals' do
@@ -38,7 +38,7 @@ RSpec.describe 'shared/namespace_user_cap_reached_alert', :use_clean_rails_memor
 
     render partial
 
-    expect(rendered).to have_link('View pending user approvals', href: pending_members_group_usage_quotas_path(group))
+    expect(rendered).to have_link('View pending approvals', href: pending_members_group_usage_quotas_path(group))
   end
 
   it 'renders a link to the project namespace pending user approvals' do
@@ -47,7 +47,7 @@ RSpec.describe 'shared/namespace_user_cap_reached_alert', :use_clean_rails_memor
 
     render partial
 
-    expect(rendered).to have_link('View pending user approvals', href: pending_members_group_usage_quotas_path(project.namespace))
+    expect(rendered).to have_link('View pending approvals', href: pending_members_group_usage_quotas_path(project.namespace))
   end
 
   def stub_cache(group)
