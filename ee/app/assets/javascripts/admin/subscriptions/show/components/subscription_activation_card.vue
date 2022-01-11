@@ -4,7 +4,6 @@ import { helpPagePath } from '~/helpers/help_page_helper';
 import {
   activateSubscription,
   howToActivateSubscription,
-  uploadLicenseFile,
   SUBSCRIPTION_ACTIVATION_FAILURE_EVENT,
   SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
 } from '../constants';
@@ -20,7 +19,6 @@ export default {
   i18n: {
     activateSubscription,
     howToActivateSubscription,
-    uploadLicenseFile,
   },
   components: {
     GlCard,
@@ -29,7 +27,6 @@ export default {
     SubscriptionActivationErrors,
     SubscriptionActivationForm,
   },
-  inject: ['licenseUploadPath'],
   links: {
     activateSubscriptionUrl,
   },
@@ -79,14 +76,5 @@ export default {
       </gl-sprintf>
     </p>
     <subscription-activation-form class="gl-p-5" v-on="$options.activationListeners" />
-    <template #footer>
-      <gl-link
-        v-if="licenseUploadPath"
-        data-testid="upload-license-link"
-        data-qa-selector="license_upload_link"
-        :href="licenseUploadPath"
-        >{{ $options.i18n.uploadLicenseFile }}
-      </gl-link>
-    </template>
   </gl-card>
 </template>

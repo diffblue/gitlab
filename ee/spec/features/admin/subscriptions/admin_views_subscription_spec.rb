@@ -216,9 +216,9 @@ RSpec.describe 'Admin views Subscription', :js do
     end
 
     context 'when uploading a license file' do
-      it 'shows a link to upload a license file' do
+      it 'does not show a link to upload a license file' do
         page.within(find('#content-body', match: :first)) do
-          expect(page).to have_link('Upload a license file', href: new_admin_license_path)
+          expect(page).not_to have_link('Upload a license file', href: new_admin_license_path)
         end
       end
     end
