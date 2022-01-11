@@ -1,5 +1,6 @@
--# haml-lint:disable InlineJavaScript
-%script#js-add-gitlab-slack-application-entry-data{ type: "application/json" }
-  = add_to_slack_data(@projects)
+- @hide_breadcrumbs = true
+- @hide_top_links = true
+- @content_class = 'limit-container-width'
+- page_title s_('SlackIntegration|GitLab for Slack')
 
-#js-add-gitlab-slack-application-entry-point
+.js-add-gitlab-slack-application{ data: add_to_slack_data(@projects)  }

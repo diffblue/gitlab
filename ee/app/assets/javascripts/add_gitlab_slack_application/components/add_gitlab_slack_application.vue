@@ -58,7 +58,6 @@ export default {
 
   data() {
     return {
-      popupOpen: false,
       selectedProjectId: this.projects && this.projects.length ? this.projects[0].id : 0,
     };
   },
@@ -70,10 +69,6 @@ export default {
   },
 
   methods: {
-    togglePopup() {
-      this.popupOpen = !this.popupOpen;
-    },
-
     addToSlack() {
       GitlabSlackService.addToSlack(this.slackLinkPath, this.selectedProjectId)
         .then((response) => redirectTo(response.data.add_to_slack_link))
@@ -88,46 +83,29 @@ export default {
 </script>
 
 <template>
-  <div class="text-center">
-    <h1>{{ __('GitLab for Slack') }}</h1>
-    <p>{{ __('Track your GitLab projects with GitLab for Slack.') }}</p>
-
+  <div class="gitlab-slack-body gl-mx-auto gl-mt-11 gl-text-center">
     <div v-once class="gl-my-5 gl-display-flex gl-justify-content-center gl-align-items-center">
-      <img :src="gitlabLogoPath" class="gitlab-slack-logo" />
-      <gl-icon name="double-headed-arrow" :size="72" class="gl-mx-5 gl-text-gray-200" />
-      <img :src="slackLogoPath" class="gitlab-slack-logo" />
+      <img :src="gitlabLogoPath" class="gl-h-11 gl-w-11" />
+      <gl-icon name="arrow-right" :size="32" class="gl-mx-5 gl-text-gray-200" />
+      <img :src="slackLogoPath" class="gitlab-slack-slack-logo gl-h-11 gl-w-11" />
     </div>
 
-    <gl-button
-      category="primary"
-      variant="success"
-      class="js-popup-button gl-mt-3"
-      @click="togglePopup"
-    >
-      {{ __('Add GitLab to Slack') }}
-    </gl-button>
+    <h1>{{ s__('SlackIntegration|GitLab for Slack') }}</h1>
+    <p>{{ s__('SlackIntegration|Select a GitLab project to link with your Slack workspace.') }}</p>
 
-    <div
-      v-if="popupOpen"
-      class="popup gitlab-slack-popup mx-auto prepend-top-20 text-center js-popup"
-    >
-      <div v-if="isSignedIn && hasProjects" class="inline">
-        <strong>{{ __('Select GitLab project to link with your Slack team') }}</strong>
-
+    <div class="mx-auto prepend-top-20 text-center">
+      <div v-if="isSignedIn && hasProjects">
         <select v-model="selectedProjectId" class="js-project-select form-control gl-mt-3 gl-mb-3">
           <option v-for="project in projects" :key="project.id" :value="project.id">
             {{ project.name }}
           </option>
         </select>
 
-        <gl-button
-          category="primary"
-          variant="success"
-          class="float-right js-add-button"
-          @click="addToSlack"
-        >
-          {{ __('Add to Slack') }}
-        </gl-button>
+        <div class="gl-display-flex gl-justify-content-end">
+          <gl-button category="primary" variant="confirm" class="float-right" @click="addToSlack">
+            {{ __('Continue') }}
+          </gl-button>
+        </div>
       </div>
 
       <span v-else-if="isSignedIn && !hasProjects" class="js-no-projects">{{
@@ -141,7 +119,7 @@ export default {
     </div>
 
     <div class="center prepend-top-20 gl-mb-3 gl-mr-2 gl-ml-2">
-      <img v-once :src="gitlabForSlackGifPath" class="gitlab-slack-gif" />
+      <img v-once :src="gitlabForSlackGifPath" class="gl-w-full" />
     </div>
 
     <div v-once class="text-center">
