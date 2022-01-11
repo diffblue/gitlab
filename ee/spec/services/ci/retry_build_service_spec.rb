@@ -38,8 +38,10 @@ RSpec.describe Ci::RetryBuildService do
         end
 
         it 'clones the profile associations', :aggregate_failures do
-          expect(new_build.dast_site_profile).to eq(dast_site_profile)
-          expect(new_build.dast_scanner_profile).to eq(dast_scanner_profile)
+          ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.allow_cross_database_modification_within_transaction(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/350051') do
+            expect(new_build.dast_site_profile).to eq(dast_site_profile)
+            expect(new_build.dast_scanner_profile).to eq(dast_scanner_profile)
+          end
         end
       end
 

@@ -1,5 +1,4 @@
 - "./ee/spec/replicators/geo/terraform_state_version_replicator_spec.rb"
-- "./ee/spec/services/ci/retry_build_service_spec.rb"
 - "./spec/features/issues/issue_detail_spec.rb"
 - "./spec/features/projects/pipelines/pipeline_spec.rb"
 - "./spec/features/signed_commits_spec.rb"
