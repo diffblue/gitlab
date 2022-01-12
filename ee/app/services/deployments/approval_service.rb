@@ -32,6 +32,7 @@ module Deployments
       if approval.rejected?
         deployment.deployable.drop!(:deployment_rejected)
       elsif deployment.pending_approval_count <= 0
+        deployment.unblock!
         deployment.deployable.enqueue!
       end
     end
