@@ -32,12 +32,12 @@ module EE
         def show
           return super unless security_dashboard_feature_enabled? && can_read_security_dashboard?
 
-          configuration
+          @configuration ||= configuration_presenter
 
           respond_to do |format|
             format.html
             format.json do
-              render status: :ok, json: configuration.to_h
+              render status: :ok, json: @configuration.to_h
             end
           end
         end
@@ -74,11 +74,6 @@ module EE
 
         def check_feature_flag!
           render_404 if ::Feature.disabled?(:security_auto_fix, project)
-        end
-
-        override :configuration
-        def configuration
-          @configuration ||= configuration_presenter
         end
 
         def security_dashboard_feature_enabled?

@@ -21,11 +21,11 @@ module Projects
       private
 
       def configuration
-        @configuration ||= if unify_configuration_enabled?
-                             configuration_presenter
-                           else
-                             {}
-                           end
+        if unify_configuration_enabled?
+          configuration_presenter
+        else
+          {}
+        end
       end
 
       def configuration_presenter
