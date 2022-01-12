@@ -32,7 +32,7 @@ module Security
       end
 
       def execute
-        ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.allow_cross_database_modification_within_transaction(url: 'URL TODO') do
+        ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.allow_cross_database_modification_within_transaction(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/350092') do
           ApplicationRecord.transaction do
             TASKS.each { |task| execute_task(task) }
           end
