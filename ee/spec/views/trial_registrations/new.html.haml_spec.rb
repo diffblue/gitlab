@@ -21,18 +21,18 @@ RSpec.describe 'trial_registrations/new.html.haml' do
       end
 
       context 'when in the control' do
-        it { is_expected.to have_content('Start a Free Ultimate Trial') }
-        it { is_expected.not_to have_content('Free 30-day trial') }
-        it { is_expected.not_to have_content('No credit card required.') }
+        it { is_expected.to have_content(_('Start a Free Ultimate Trial')) }
+        it { is_expected.not_to have_content(s_('InProductMarketing|Free 30-day trial')) }
+        it { is_expected.not_to have_content(s_('InProductMarketing|No credit card required.')) }
         it { is_expected.not_to have_selector('img[alt$=" logo"]') }
       end
 
       context 'when in the candidate' do
         let(:variant) { :candidate }
 
-        it { is_expected.not_to have_content('Start a Free Ultimate Trial') }
-        it { is_expected.to have_content('Free 30-day trial') }
-        it { is_expected.to have_content('No credit card required.') }
+        it { is_expected.not_to have_content(_('Start a Free Ultimate Trial')) }
+        it { is_expected.to have_content(s_('InProductMarketing|Free 30-day trial')) }
+        it { is_expected.to have_content(s_('InProductMarketing|No credit card required.')) }
         it { is_expected.to have_selector('img[alt$=" logo"]') }
       end
     end
@@ -55,4 +55,7 @@ RSpec.describe 'trial_registrations/new.html.haml' do
       end
     end
   end
+
+  it { is_expected.to have_content(s_('InProductMarketing|Want to host GitLab on your servers?')) }
+  it { is_expected.to have_link(s_('InProductMarketing|Start a Self-Managed trial'), href: 'https://about.gitlab.com/free-trial/#selfmanaged/') }
 end
