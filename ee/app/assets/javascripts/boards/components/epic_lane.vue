@@ -102,9 +102,7 @@ export default {
     },
   },
   mounted() {
-    if (this.issuesCount === 0) {
-      this.fetchIssuesForEpic(this.epic.id);
-    }
+    this.fetchIssuesForEpic(this.epic.id);
   },
   methods: {
     ...mapActions(['updateBoardEpicUserPreferences', 'setError', 'fetchIssuesForEpic']),

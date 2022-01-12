@@ -13,6 +13,7 @@ describe('EpicLane', () => {
   let wrapper;
 
   const updateBoardEpicUserPreferencesSpy = jest.fn();
+  const fetchIssuesForEpicSpy = jest.fn();
 
   const findChevronButton = () => wrapper.findComponent(GlButton);
 
@@ -20,7 +21,7 @@ describe('EpicLane', () => {
     return new Vuex.Store({
       actions: {
         updateBoardEpicUserPreferences: updateBoardEpicUserPreferencesSpy,
-        fetchIssuesForEpic: jest.fn(),
+        fetchIssuesForEpic: fetchIssuesForEpicSpy,
       },
       state: {
         boardItemsByListId,
@@ -59,6 +60,16 @@ describe('EpicLane', () => {
 
   afterEach(() => {
     wrapper.destroy();
+  });
+
+  describe('mounted', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
+    it('calls fetchIssuesForEpic action on mount', () => {
+      expect(fetchIssuesForEpicSpy).toHaveBeenCalledWith(expect.any(Object), mockEpic.id);
+    });
   });
 
   describe('template', () => {
