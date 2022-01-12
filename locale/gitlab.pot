@@ -2645,6 +2645,9 @@ msgstr ""
 msgid "AdminUsers|(Internal)"
 msgstr ""
 
+msgid "AdminUsers|(Locked)"
+msgstr ""
+
 msgid "AdminUsers|(Pending approval)"
 msgstr ""
 
