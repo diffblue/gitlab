@@ -213,6 +213,7 @@ export default {
           :empty-state-message="selectedStageError"
           :no-data-svg-path="noDataSvgPath"
           :pagination="pagination"
+          include-project-name
           @handleUpdatePagination="onHandleUpdatePagination"
         />
         <url-sync v-if="selectedStageReady" :query="query" />
