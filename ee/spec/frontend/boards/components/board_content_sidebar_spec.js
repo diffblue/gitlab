@@ -86,17 +86,31 @@ describe('ee/BoardContentSidebar', () => {
     });
   };
 
-  beforeEach(() => {
-    createStore();
-    createComponent();
-  });
-
   afterEach(() => {
     wrapper.destroy();
-    wrapper = null;
   });
 
-  it('matches the snapshot', () => {
-    expect(wrapper.find(GlDrawer).element).toMatchSnapshot();
+  describe('issue sidebar', () => {
+    beforeEach(() => {
+      createStore();
+      createComponent();
+    });
+
+    it('matches the snapshot', () => {
+      expect(wrapper.find(GlDrawer).element).toMatchSnapshot();
+    });
+  });
+
+  describe('incident sidebar', () => {
+    beforeEach(() => {
+      createStore({
+        mockGetters: { activeBoardItem: () => ({ ...mockIssue, epic: null, type: 'INCIDENT' }) },
+      });
+      createComponent();
+    });
+
+    it('matches the snapshot', () => {
+      expect(wrapper.find(GlDrawer).element).toMatchSnapshot();
+    });
   });
 });

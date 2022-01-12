@@ -16,6 +16,8 @@ fragment IssueNode on Issue {
   hidden
   webUrl
   relativePosition
+  type
+  severity
   milestone {
     ...MilestoneFragment
   }

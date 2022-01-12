@@ -9,6 +9,7 @@ import BoardContentSidebar from '~/boards/components/board_content_sidebar.vue';
 import BoardSidebarTitle from '~/boards/components/sidebar/board_sidebar_title.vue';
 import { ISSUABLE } from '~/boards/constants';
 import SidebarDateWidget from '~/sidebar/components/date/sidebar_date_widget.vue';
+import SidebarSeverity from '~/sidebar/components/severity/sidebar_severity.vue';
 import SidebarSubscriptionsWidget from '~/sidebar/components/subscriptions/sidebar_subscriptions_widget.vue';
 import SidebarTodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_widget.vue';
 import SidebarLabelsWidget from '~/vue_shared/components/sidebar/labels_select_widget/labels_select_root.vue';
@@ -141,6 +142,10 @@ describe('BoardContentSidebar', () => {
     );
   });
 
+  it('does not render SidebarSeverity', () => {
+    expect(wrapper.find(SidebarSeverity).exists()).toBe(false);
+  });
+
   describe('when we emit close', () => {
     let toggleBoardItem;
 
@@ -158,6 +163,19 @@ describe('BoardContentSidebar', () => {
         boardItem: { ...mockActiveIssue, epic: null },
         sidebarType: ISSUABLE,
       });
+    });
+  });
+
+  describe('incident sidebar', () => {
+    beforeEach(() => {
+      createStore({
+        mockGetters: { activeBoardItem: () => ({ ...mockIssue, epic: null, type: 'INCIDENT' }) },
+      });
+      createComponent();
+    });
+
+    it('renders SidebarSeverity', () => {
+      expect(wrapper.find(SidebarSeverity).exists()).toBe(true);
     });
   });
 });

@@ -18,6 +18,8 @@ fragment IssueNode on Issue {
   blocked
   blockedByCount
   relativePosition
+  type
+  severity
   epic {
     id
   }
