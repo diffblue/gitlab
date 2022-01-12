@@ -28,7 +28,7 @@ RSpec.describe ::EE::Gitlab::Scim::ReprovisionService do
     it 'creates the member with the access level as specified in saml_provider' do
       service.execute
 
-      access_level = group.group_member(user).access_level
+      access_level = group.member(user).access_level
 
       expect(access_level).to eq(Gitlab::Access::DEVELOPER)
     end

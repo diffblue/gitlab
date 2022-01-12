@@ -36,7 +36,7 @@ module GroupSaml
       end
 
       def group_membership
-        @group_membership ||= group.group_member(user)
+        @group_membership ||= group.member(user)
       end
     end
   end

@@ -64,6 +64,6 @@ RSpec.describe IncidentManagement::OncallParticipant do
   private
 
   def remove_user_from_project(user, project)
-    Members::DestroyService.new(user).execute(project.project_member(user))
+    Members::DestroyService.new(user).execute(project.member(user))
   end
 end
