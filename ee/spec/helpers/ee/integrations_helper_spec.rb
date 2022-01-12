@@ -138,10 +138,8 @@ RSpec.describe EE::IntegrationsHelper do
         :sign_in_path,
         :is_signed_in,
         :slack_link_path,
-        :gitlab_for_slack_gif_path,
         :gitlab_logo_path,
-        :slack_logo_path,
-        :docs_path
+        :slack_logo_path
       )
     end
 

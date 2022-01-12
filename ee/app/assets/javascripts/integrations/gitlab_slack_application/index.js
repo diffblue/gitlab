@@ -10,12 +10,10 @@ export default () => {
   const {
     projects,
     isSignedIn,
-    gitlabForSlackGifPath,
     signInPath,
     slackLinkPath,
     gitlabLogoPath,
     slackLogoPath,
-    docsPath,
   } = el.dataset;
 
   return new Vue({
@@ -25,12 +23,10 @@ export default () => {
         props: {
           projects: JSON.parse(projects),
           isSignedIn: parseBoolean(isSignedIn),
-          gitlabForSlackGifPath,
           signInPath,
           slackLinkPath,
           gitlabLogoPath,
           slackLogoPath,
-          docsPath,
         },
       });
     },

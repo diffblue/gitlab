@@ -17721,9 +17721,6 @@ msgstr ""
 msgid "How do I use file templates?"
 msgstr ""
 
-msgid "How it works"
-msgstr ""
-
 msgid "How many days need to pass between marking entity for deletion and actual removing it."
 msgstr ""
 
@@ -23120,9 +23117,6 @@ msgid "Months"
 msgstr ""
 
 msgid "More Information"
-msgstr ""
-
-msgid "More Slack commands"
 msgstr ""
 
 msgid "More actions"

@@ -40,10 +40,8 @@ module EE
         sign_in_path: new_session_path(:user, redirect_to_referer: 'yes'),
         is_signed_in: current_user.present?.to_s,
         slack_link_path: slack_link_profile_slack_path,
-        gitlab_for_slack_gif_path: image_path('gitlab_for_slack.gif'),
         gitlab_logo_path: image_path('illustrations/gitlab_logo.svg'),
-        slack_logo_path: image_path('illustrations/slack_logo.svg'),
-        docs_path: help_page_path('user/project/integrations/gitlab_slack_application.md')
+        slack_logo_path: image_path('illustrations/slack_logo.svg')
       }
     end
 

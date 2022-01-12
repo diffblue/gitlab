@@ -1,5 +1,4 @@
 <script>
-/* eslint-disable @gitlab/vue-require-i18n-strings */
 import { GlButton, GlIcon } from '@gitlab/ui';
 import createFlash from '~/flash';
 import { redirectTo } from '~/lib/utils/url_utility';
@@ -24,10 +23,6 @@ export default {
       type: Boolean,
       required: true,
     },
-    gitlabForSlackGifPath: {
-      type: String,
-      required: true,
-    },
     signInPath: {
       type: String,
       required: true,
@@ -41,10 +36,6 @@ export default {
       required: true,
     },
     slackLogoPath: {
-      type: String,
-      required: true,
-    },
-    docsPath: {
       type: String,
       required: true,
     },
@@ -122,28 +113,6 @@ export default {
           __('Sign in to GitLab')
         }}</gl-button>
       </template>
-    </div>
-
-    <div class="center prepend-top-20 gl-mb-3 gl-mr-2 gl-ml-2">
-      <img v-once :src="gitlabForSlackGifPath" class="gl-w-full" />
-    </div>
-
-    <div v-once class="text-center">
-      <h3>{{ __('How it works') }}</h3>
-
-      <div class="mx-auto">
-        <code class="code mx-auto gl-mb-3"
-          >/gitlab &lt;project-alias&gt; issue show &lt;id&gt;</code
-        >
-        <span>
-          <gl-icon name="arrow-right" class="gl-mr-2 gl-text-gray-200" />
-          Shows the issue with id <strong>&lt;id&gt;</strong>
-        </span>
-
-        <div class="gl-mt-3">
-          <a v-once :href="docsPath">{{ __('More Slack commands') }}</a>
-        </div>
-      </div>
     </div>
   </div>
 </template>
