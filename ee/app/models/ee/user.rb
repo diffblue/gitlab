@@ -473,6 +473,10 @@ module EE
       return false unless created_after_credit_card_release_day?(project)
 
       root_namespace = project.root_namespace
+      ci_quota = root_namespace.ci_minutes_quota
+
+      return false if ci_quota.enabled? && ci_quota.limit.any_purchased? && ::Feature.enabled?(:ci_skip_require_credit_card_for_addon_ci_minutes, project, default_enabled: :yaml)
+
       if root_namespace.free_plan?
         ::Feature.enabled?(:ci_require_credit_card_on_free_plan, project, default_enabled: :yaml)
       elsif root_namespace.trial?

@@ -267,7 +267,9 @@ module EE
     end
 
     def ci_minutes_quota
-      @ci_minutes_quota ||= ::Ci::Minutes::Quota.new(self)
+      strong_memoize(:ci_minutes_quota) do
+        ::Ci::Minutes::Quota.new(self)
+      end
     end
 
     def new_monthly_ci_minutes_enabled?

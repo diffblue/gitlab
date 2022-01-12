@@ -1776,29 +1776,34 @@ RSpec.describe User do
 
     using RSpec::Parameterized::TableSyntax
 
-    where(:saas, :cc_present, :shared_runners, :plan, :feature_flags, :days_from_release, :result, :description) do
+    where(:saas, :cc_present, :shared_runners, :addon_mins, :plan, :feature_flags, :days_from_release, :result, :description) do
       # self-hosted
-      nil   | false | :enabled | :paid  | %i[free trial]           | 0  | true  | 'self-hosted paid plan'
-      nil   | false | :enabled | :trial | %i[free trial]           | 0  | true  | 'self-hosted missing CC on trial plan'
+      nil   | false | :enabled | 0 | :paid  | %i[free trial]           | 0  | true  | 'self-hosted paid plan'
+      nil   | false | :enabled | 0 | :trial | %i[free trial]           | 0  | true  | 'self-hosted missing CC on trial plan'
 
       # saas
-      :saas | false | :enabled | :paid  | %i[free trial old_users] | 0  | true  | 'missing CC on paid plan'
+      :saas | false | :enabled | 0 | :paid  | %i[free trial old_users] | 0  | true  | 'missing CC on paid plan'
 
-      :saas | false | :enabled | :free  | %i[free trial]           | 0  | false | 'missing CC on free plan'
-      :saas | false | nil      | :free  | %i[free trial]           | 0  | true  | 'missing CC on free plan and shared runners disabled'
-      :saas | false | :enabled | :free  | %i[free trial]           | -1 | true  | 'missing CC on free plan but old user'
-      :saas | false | :enabled | :free  | %i[free trial old_users] | -1 | false | 'missing CC on free plan but old user and FF enabled'
-      :saas | false | nil      | :free  | %i[free trial old_users] | -1 | true  | 'missing CC on free plan but old user and FF enabled and shared runners disabled'
-      :saas | true  | :enabled | :free  | %i[free trial]           | 0  | true  | 'present CC on free plan'
-      :saas | false | :enabled | :free  | %i[]                     | 0  | true  | 'missing CC on free plan - FF off'
+      :saas | false | :enabled | 0 | :free  | %i[free trial]           | 0  | false | 'missing CC on free plan'
+      :saas | false | nil      | 0 | :free  | %i[free trial]           | 0  | true  | 'missing CC on free plan and shared runners disabled'
+      :saas | false | :enabled | 0 | :free  | %i[free trial]           | -1 | true  | 'missing CC on free plan but old user'
+      :saas | false | :enabled | 0 | :free  | %i[free trial old_users] | -1 | false | 'missing CC on free plan but old user and FF enabled'
+      :saas | false | nil      | 0 | :free  | %i[free trial old_users] | -1 | true  | 'missing CC on free plan but old user and FF enabled and shared runners disabled'
+      :saas | true  | :enabled | 0 | :free  | %i[free trial]           | 0  | true  | 'present CC on free plan'
+      :saas | false | :enabled | 0 | :free  | %i[]                     | 0  | true  | 'missing CC on free plan - FF off'
 
-      :saas | false | :enabled | :trial | %i[free trial]           | 0  | false | 'missing CC on trial plan'
-      :saas | false | nil      | :trial | %i[free trial]           | 0  | true  | 'missing CC on trial plan and shared runners disabled'
-      :saas | false | :enabled | :trial | %i[free trial]           | -1 | true  | 'missing CC on trial plan but old user'
-      :saas | false | :enabled | :trial | %i[free trial old_users] | -1 | false | 'missing CC on trial plan but old user and FF enabled'
-      :saas | false | nil      | :trial | %i[free trial old_users] | -1 | true  | 'missing CC on trial plan but old user and FF enabled and shared runners disabled'
-      :saas | false | :enabled | :trial | %i[]                     | 0  | true  | 'missing CC on trial plan - FF off'
-      :saas | true  | :enabled | :trial | %i[free trial]           | 0  | true  | 'present CC on trial plan'
+      :saas | false | :enabled | 0 | :trial | %i[free trial]           | 0  | false | 'missing CC on trial plan'
+      :saas | false | nil      | 0 | :trial | %i[free trial]           | 0  | true  | 'missing CC on trial plan and shared runners disabled'
+      :saas | false | :enabled | 0 | :trial | %i[free trial]           | -1 | true  | 'missing CC on trial plan but old user'
+      :saas | false | :enabled | 0 | :trial | %i[free trial old_users] | -1 | false | 'missing CC on trial plan but old user and FF enabled'
+      :saas | false | nil      | 0 | :trial | %i[free trial old_users] | -1 | true  | 'missing CC on trial plan but old user and FF enabled and shared runners disabled'
+      :saas | false | :enabled | 0 | :trial | %i[]                     | 0  | true  | 'missing CC on trial plan - FF off'
+      :saas | true  | :enabled | 0 | :trial | %i[free trial]           | 0  | true  | 'present CC on trial plan'
+
+      :saas | false | :enabled | 100 | :free  | %i[free]               | 0  | false | 'missing CC on free plan with purchased minutes - FF off'
+      :saas | false | :enabled | 100 | :free  | %i[free skip_addon]    | 0  | true  | 'missing CC on free plan with purchased minutes'
+      :saas | false | :enabled | 100 | :trial | %i[free trial]         | 0  | false | 'missing CC on trial plan with purchased minutes - FF off'
+      :saas | false | :enabled | 100 | :trial | %i[trial skip_addon]   | 0  | true  | 'missing CC on trial plan with purchased minutes'
     end
 
     let(:shared_runners_enabled) { shared_runners == :enabled }
@@ -1810,11 +1815,15 @@ RSpec.describe User do
         allow(user).to receive(:credit_card_validated_at).and_return(Time.current) if cc_present
         allow(project.namespace).to receive(:free_plan?).and_return(plan == :free)
         allow(project.namespace).to receive(:trial?).and_return(plan == :trial)
+        project.namespace.update!(extra_shared_runners_minutes_limit: addon_mins)
+        project.namespace.clear_memoization(:ci_minutes_quota)
         project.update!(shared_runners_enabled: shared_runners_enabled)
+
         stub_feature_flags(
           ci_require_credit_card_on_free_plan: feature_flags.include?(:free),
           ci_require_credit_card_on_trial_plan: feature_flags.include?(:trial),
-          ci_require_credit_card_for_old_users: feature_flags.include?(:old_users))
+          ci_require_credit_card_for_old_users: feature_flags.include?(:old_users),
+          ci_skip_require_credit_card_for_addon_ci_minutes: feature_flags.include?(:skip_addon))
       end
 
       it description do
@@ -1830,25 +1839,30 @@ RSpec.describe User do
 
     using RSpec::Parameterized::TableSyntax
 
-    where(:saas, :cc_present, :plan, :feature_flags, :days_from_release, :result, :description) do
+    where(:saas, :cc_present, :addon_mins, :plan, :feature_flags, :days_from_release, :result, :description) do
       # self-hosted
-      nil   | false | :paid  | %i[free trial]           | 0  | true  | 'self-hosted paid plan'
-      nil   | false | :trial | %i[free trial]           | 0  | true  | 'self-hosted missing CC on trial plan'
+      nil   | false | 0 | :paid  | %i[free trial]           | 0  | true  | 'self-hosted paid plan'
+      nil   | false | 0 | :trial | %i[free trial]           | 0  | true  | 'self-hosted missing CC on trial plan'
 
       # saas
-      :saas | false | :paid  | %i[free trial old_users] | 0  | true  | 'missing CC on paid plan'
+      :saas | false | 0 | :paid  | %i[free trial old_users] | 0  | true  | 'missing CC on paid plan'
 
-      :saas | false | :free  | %i[free trial]           | 0  | false | 'missing CC on free plan'
-      :saas | false | :free  | %i[free trial]           | -1 | true  | 'missing CC on free plan but old user'
-      :saas | false | :free  | %i[free trial old_users] | -1 | false | 'missing CC on free plan but old user and FF enabled'
-      :saas | true  | :free  | %i[free trial]           | 0  | true  | 'present CC on free plan'
-      :saas | false | :free  | %i[]                     | 0  | true  | 'missing CC on free plan - FF off'
+      :saas | false | 0 | :free  | %i[free trial]           | 0  | false | 'missing CC on free plan'
+      :saas | false | 0 | :free  | %i[free trial]           | -1 | true  | 'missing CC on free plan but old user'
+      :saas | false | 0 | :free  | %i[free trial old_users] | -1 | false | 'missing CC on free plan but old user and FF enabled'
+      :saas | true  | 0 | :free  | %i[free trial]           | 0  | true  | 'present CC on free plan'
+      :saas | false | 0 | :free  | %i[]                     | 0  | true  | 'missing CC on free plan - FF off'
 
-      :saas | false | :trial | %i[free trial]           | 0  | false | 'missing CC on trial plan'
-      :saas | false | :trial | %i[free trial]           | -1 | true  | 'missing CC on trial plan but old user'
-      :saas | false | :trial | %i[free trial old_users] | -1 | false | 'missing CC on trial plan but old user and FF enabled'
-      :saas | false | :trial | %i[]                     | 0  | true  | 'missing CC on trial plan - FF off'
-      :saas | true  | :trial | %i[free trial]           | 0  | true  | 'present CC on trial plan'
+      :saas | false | 0 | :trial | %i[free trial]           | 0  | false | 'missing CC on trial plan'
+      :saas | false | 0 | :trial | %i[free trial]           | -1 | true  | 'missing CC on trial plan but old user'
+      :saas | false | 0 | :trial | %i[free trial old_users] | -1 | false | 'missing CC on trial plan but old user and FF enabled'
+      :saas | false | 0 | :trial | %i[]                     | 0  | true  | 'missing CC on trial plan - FF off'
+      :saas | true  | 0 | :trial | %i[free trial]           | 0  | true  | 'present CC on trial plan'
+
+      :saas | false | 100 | :free  | %i[free]               | 0  | false | 'missing CC on free plan with purchased minutes - FF off'
+      :saas | false | 100 | :free  | %i[free skip_addon]    | 0  | true  | 'missing CC on free plan with purchased minutes'
+      :saas | false | 100 | :trial | %i[free trial]         | 0  | false | 'missing CC on trial plan with purchased minutes - FF off'
+      :saas | false | 100 | :trial | %i[trial skip_addon]   | 0  | true  | 'missing CC on trial plan with purchased minutes'
     end
 
     with_them do
@@ -1858,10 +1872,13 @@ RSpec.describe User do
         allow(user).to receive(:credit_card_validated_at).and_return(Time.current) if cc_present
         allow(project.namespace).to receive(:free_plan?).and_return(plan == :free)
         allow(project.namespace).to receive(:trial?).and_return(plan == :trial)
+        project.namespace.update!(extra_shared_runners_minutes_limit: addon_mins)
+        project.namespace.clear_memoization(:ci_minutes_quota)
         stub_feature_flags(
           ci_require_credit_card_on_free_plan: feature_flags.include?(:free),
           ci_require_credit_card_on_trial_plan: feature_flags.include?(:trial),
-          ci_require_credit_card_for_old_users: feature_flags.include?(:old_users))
+          ci_require_credit_card_for_old_users: feature_flags.include?(:old_users),
+          ci_skip_require_credit_card_for_addon_ci_minutes: feature_flags.include?(:skip_addon))
       end
 
       it description do
