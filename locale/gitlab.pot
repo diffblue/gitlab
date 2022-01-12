@@ -4620,6 +4620,9 @@ msgstr ""
 msgid "Are you sure you want to %{action} %{name}?"
 msgstr ""
 
+msgid "Are you sure you want to approve %{user}?"
+msgstr ""
+
 msgid "Are you sure you want to attempt to merge?"
 msgstr ""
 
@@ -5535,7 +5538,13 @@ msgstr ""
 msgid "Billings|Your account has been validated"
 msgstr ""
 
+msgid "Billing|%{user} was successfully approved"
+msgstr ""
+
 msgid "Billing|An email address is only visible for users with public emails."
+msgstr ""
+
+msgid "Billing|An error occurred while approving %{user}"
 msgstr ""
 
 msgid "Billing|An error occurred while getting a billable member details"
@@ -9068,6 +9077,9 @@ msgid "Configure which lists are shown for anyone who visits this board"
 msgstr ""
 
 msgid "Confirm"
+msgstr ""
+
+msgid "Confirm approval"
 msgstr ""
 
 msgid "Confirm new password"

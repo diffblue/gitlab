@@ -1,6 +1,8 @@
 export default ({ namespaceId = null, namespaceName = null } = {}) => ({
   isLoading: false,
   hasError: false,
+  alertMessage: '',
+  alertVariant: '',
   namespaceId,
   namespaceName,
   members: [],

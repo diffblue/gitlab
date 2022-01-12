@@ -12,6 +12,7 @@ describe('GroupsApi', () => {
     relative_url_root: dummyUrlRoot,
   };
   const namespaceId = 1000;
+  const memberId = 2;
 
   let originalGon;
   let mock;
@@ -45,7 +46,6 @@ describe('GroupsApi', () => {
     });
 
     describe('fetchBillableGroupMemberMemberships', () => {
-      const memberId = 2;
       const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${namespaceId}/billable_members/${memberId}/memberships`;
 
       it('fetches memberships for the member', async () => {
@@ -60,7 +60,6 @@ describe('GroupsApi', () => {
     });
 
     describe('removeBillableMemberFromGroup', () => {
-      const memberId = 2;
       const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${namespaceId}/billable_members/${memberId}`;
 
       it('removes a billable member from a group', async () => {
@@ -88,6 +87,20 @@ describe('GroupsApi', () => {
       expect(axios.get).toHaveBeenCalledWith(expectedUrl, {
         params: { page: 1, per_page: DEFAULT_PER_PAGE, state: 'awaiting' },
       });
+    });
+  });
+
+  describe('approvePendingGroupMember', () => {
+    const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${namespaceId}/members/${memberId}/approve`;
+
+    it('approves a pending member from a group', async () => {
+      jest.spyOn(axios, 'put');
+      mock.onPut(expectedUrl).replyOnce(httpStatus.OK, []);
+
+      const { data } = await GroupsApi.approvePendingGroupMember(namespaceId, memberId);
+
+      expect(data).toEqual([]);
+      expect(axios.put).toHaveBeenCalledWith(expectedUrl);
     });
   });
 });
