@@ -4,6 +4,8 @@ import mutations from 'ee/pending_members/store/mutations';
 import createState from 'ee/pending_members/store/state';
 
 describe('Pending members mutations', () => {
+  const alertMessage = 'This is an alert';
+  const alertVariant = 'info';
   let state;
 
   beforeEach(() => {
@@ -61,6 +63,76 @@ describe('Pending members mutations', () => {
       mutations[types.SET_CURRENT_PAGE](state, 1);
 
       expect(state.page).toBe(1);
+    });
+  });
+
+  describe(types.DISMISS_ALERT, () => {
+    beforeEach(() => {
+      state.alertMessage = alertMessage;
+    });
+
+    it('cleans alertMessage state', () => {
+      mutations[types.DISMISS_ALERT](state);
+
+      expect(state.alertMessage).toBe('');
+    });
+  });
+
+  describe(types.SHOW_ALERT, () => {
+    beforeEach(() => {
+      state.alertMessage = '';
+      state.alertVariant = '';
+    });
+
+    it('sets alertMessage and alertVariant', () => {
+      mutations[types.SHOW_ALERT](state, { alertMessage, alertVariant });
+
+      expect(state.alertMessage).toBe(alertMessage);
+      expect(state.alertVariant).toBe(alertVariant);
+    });
+  });
+
+  describe('member specific mutations', () => {
+    const memberId = mockDataMembers.data[0].id;
+
+    beforeEach(() => {
+      state.members = mockDataMembers.data;
+    });
+
+    describe(types.SET_MEMBER_AS_LOADING, () => {
+      it('sets member loading state to true', () => {
+        mutations[types.SET_MEMBER_AS_LOADING](state, memberId);
+        const member = state.members.find((m) => m.id === memberId);
+        expect(member.loading).toBeTruthy();
+      });
+    });
+
+    describe(types.SET_MEMBER_AS_APPROVED, () => {
+      it('sets member loading state to false and approved state to true', () => {
+        mutations[types.SET_MEMBER_AS_APPROVED](state, memberId);
+        const member = state.members.find((m) => m.id === memberId);
+        expect(member.loading).toBeFalsy();
+        expect(member.approved).toBeTruthy();
+      });
+    });
+
+    describe(types.SHOW_ALERT, () => {
+      beforeEach(() => {
+        state.alertMessage = '';
+        state.alertVariant = '';
+      });
+
+      it('sets alertMessage and alertVariant', () => {
+        mutations[types.SHOW_ALERT](state, {
+          memberId,
+          alertMessage: `${alertMessage}%{user}`,
+          alertVariant,
+        });
+        const member = state.members.find((m) => m.id === memberId);
+
+        expect(state.alertMessage).toBe(`${alertMessage}${member.name}`);
+        expect(state.alertVariant).toBe(alertVariant);
+      });
     });
   });
 });
