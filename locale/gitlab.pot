@@ -5928,16 +5928,10 @@ msgstr ""
 msgid "Branches|Delete protected branch"
 msgstr ""
 
-msgid "Branches|Delete protected branch '%{branch_name}'?"
-msgstr ""
-
 msgid "Branches|Delete protected branch. Are you ABSOLUTELY SURE?"
 msgstr ""
 
 msgid "Branches|Deleting the %{strongStart}%{branchName}%{strongEnd} branch cannot be undone. Are you sure?"
-msgstr ""
-
-msgid "Branches|Deleting the '%{branch_name}' branch cannot be undone. Are you sure?"
 msgstr ""
 
 msgid "Branches|Deleting the merged branches cannot be undone. Are you sure?"
@@ -5953,9 +5947,6 @@ msgid "Branches|New branch"
 msgstr ""
 
 msgid "Branches|No branches to show"
-msgstr ""
-
-msgid "Branches|Once you confirm and press %{delete_protected_branch}, it cannot be undone or recovered."
 msgstr ""
 
 msgid "Branches|Once you confirm and press %{strongStart}%{buttonText},%{strongEnd} it cannot be undone or recovered."
@@ -6006,15 +5997,6 @@ msgstr ""
 msgid "Branches|This branch hasn’t been merged into %{defaultBranchName}. To avoid data loss, consider merging this branch before deleting it."
 msgstr ""
 
-msgid "Branches|This branch hasn’t been merged into %{default_branch}."
-msgstr ""
-
-msgid "Branches|To avoid data loss, consider merging this branch before deleting it."
-msgstr ""
-
-msgid "Branches|To confirm, type %{branch_name_confirmation}:"
-msgstr ""
-
 msgid "Branches|To discard the local changes and overwrite the branch with the upstream version, delete it here and choose 'Update Now' above."
 msgstr ""
 
@@ -6031,9 +6013,6 @@ msgid "Branches|You're about to permanently delete the branch %{strongStart}%{br
 msgstr ""
 
 msgid "Branches|You're about to permanently delete the protected branch %{strongStart}%{branchName}.%{strongEnd}"
-msgstr ""
-
-msgid "Branches|You’re about to permanently delete the protected branch %{branch_name}."
 msgstr ""
 
 msgid "Branches|diverged from upstream"
