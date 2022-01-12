@@ -52,12 +52,14 @@ RSpec.describe 'groups/edit.html.haml' do
           let(:ranges) { ['192.168.0.0/24'] }
 
           it_behaves_like 'renders ip_restriction setting'
+          it_behaves_like 'does not render registration features prompt'
         end
 
         context 'with multiple subnets' do
           let(:ranges) { ['192.168.0.0/24', '192.168.1.0/8'] }
 
           it_behaves_like 'renders ip_restriction setting'
+          it_behaves_like 'does not render registration features prompt'
         end
       end
     end
@@ -74,6 +76,39 @@ RSpec.describe 'groups/edit.html.haml' do
       end
 
       it_behaves_like 'does not render ip_restriction setting'
+    end
+
+    context 'prompt user about registration features' do
+      context 'with service ping disabled' do
+        before do
+          stub_application_setting(usage_ping_enabled: false)
+        end
+
+        context 'with no license' do
+          before do
+            allow(License).to receive(:current).and_return(nil)
+          end
+
+          it_behaves_like 'renders registration features prompt', :group_disabled_ip_restriction_ranges
+        end
+
+        context 'with a valid license' do
+          before do
+            license = build(:license)
+            allow(License).to receive(:current).and_return(license)
+          end
+
+          it_behaves_like 'does not render registration features prompt', :group_disabled_ip_restriction_ranges
+        end
+      end
+
+      context 'with service ping enabled' do
+        before do
+          stub_application_setting(usage_ping_enabled: true)
+        end
+
+        it_behaves_like 'does not render registration features prompt', :group_disabled_ip_restriction_ranges
+      end
     end
   end
 
