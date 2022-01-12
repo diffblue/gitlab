@@ -103,9 +103,11 @@ RSpec.describe Deployments::ApprovalService do
         let(:required_approval_count) { 1 }
 
         it 'enqueues the build' do
-          subject
+          expect { subject }.to change { deployment.deployable.status }.from('manual').to('pending')
+        end
 
-          expect(deployment.deployable.status).to eq('pending')
+        it 'unblocks the deployment' do
+          expect { subject }.to change { deployment.status }.from('blocked').to('created')
         end
       end
 
