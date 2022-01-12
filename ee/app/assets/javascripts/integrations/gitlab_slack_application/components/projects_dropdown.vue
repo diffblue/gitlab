@@ -35,7 +35,7 @@ export default {
   },
   methods: {
     onClick(project) {
-      this.$emit('projectSelected', project);
+      this.$emit('project-selected', project);
       this.$refs.dropdown.hide(true);
     },
   },

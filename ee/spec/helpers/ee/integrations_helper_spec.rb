@@ -112,7 +112,7 @@ RSpec.describe EE::IntegrationsHelper do
     let_it_be(:projects) { create_list(:project, 3) }
 
     def relation
-      Project.id_in(projects.pluck(:id))
+      Project.id_in(projects.pluck(:id)).inc_routes
     end
 
     let(:request) do
