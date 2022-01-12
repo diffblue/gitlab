@@ -34,15 +34,15 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ClusterImageScanningCiVa
     subject(:generated_variables) { service.execute(action) }
 
     shared_examples 'with cluster image scanning resource filters' do
-      it 'generates CI variable values with first value for each resource filter' do
+      it 'generates comma-separated CI variable values for each resource filter' do
         ci_variables, _ = generated_variables
 
         expect(ci_variables).to eq(
           'CLUSTER_IMAGE_SCANNING_DISABLED' => nil,
-          'CIS_CONTAINER_NAME' => 'nginx',
-          'CIS_RESOURCE_NAME' => 'nginx-www',
-          'CIS_RESOURCE_NAMESPACE' => 'gitlab-production',
-          'CIS_RESOURCE_KIND' => 'deployment'
+          'CIS_CONTAINER_NAMES' => 'nginx,falco',
+          'CIS_RESOURCE_NAMES' => 'nginx-www,nginx-admin',
+          'CIS_RESOURCE_NAMESPACES' => 'gitlab-production,cluster-apps',
+          'CIS_RESOURCE_KINDS' => 'deployment,daemonset'
         )
       end
     end
