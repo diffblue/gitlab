@@ -1,4 +1,3 @@
-- "./spec/features/issues/issue_detail_spec.rb"
 - "./spec/features/projects/pipelines/pipeline_spec.rb"
 - "./spec/features/signed_commits_spec.rb"
 - "./spec/lib/gitlab/ci/pipeline/chain/create_spec.rb"
