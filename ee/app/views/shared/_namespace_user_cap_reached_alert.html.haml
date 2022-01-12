@@ -20,7 +20,7 @@
       = sprite_icon('close', css_class: 'gl-icon')
 
     .gl-alert-body
-      = s_('NamespaceUserCap|Pending users must be reviewed and approved by a group owner. Learn more about %{user_caps_link_start}User Caps%{link_end} and %{users_pending_approval_link_start}Users Pending Approval%{link_end}.').html_safe % { user_caps_link_start: user_caps_link_start, users_pending_approval_link_start: users_pending_approval_link_start, link_end: link_end }
+      = s_('NamespaceUserCap|Pending users must be reviewed and approved by a group owner. Learn more about %{user_caps_link_start}user caps%{link_end} and %{users_pending_approval_link_start}users pending approval%{link_end}.').html_safe % { user_caps_link_start: user_caps_link_start, users_pending_approval_link_start: users_pending_approval_link_start, link_end: link_end }
 
     .gl-alert-actions
-      = link_to(s_('NamespaceUserCap|View pending user approvals'), pending_users_link, class: "btn gl-alert-action btn-md gl-button btn-confirm")
+      = link_to(s_('NamespaceUserCap|View pending approvals'), pending_users_link, class: "btn gl-alert-action btn-md gl-button btn-confirm")
