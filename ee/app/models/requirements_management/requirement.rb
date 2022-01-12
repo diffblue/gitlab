@@ -32,9 +32,8 @@ module RequirementsManagement
 
     validates :issue_id, uniqueness: true
 
-    has_many :test_reports, inverse_of: :requirement
-    has_many :recent_test_reports, -> { order(created_at: :desc) }, class_name: 'TestReport', inverse_of: :requirement
-
+    has_many :test_reports, through: :requirement_issue
+    has_many :recent_test_reports, -> { order('requirements_management_test_reports.created_at DESC') }, through: :requirement_issue, source: :test_reports
     has_internal_id :iid, scope: :project
 
     validate :only_requirement_type_issue
@@ -62,10 +61,10 @@ module RequirementsManagement
     scope :include_last_test_report_with_state, -> do
       joins(
         "INNER JOIN LATERAL (
-           SELECT DISTINCT ON (requirement_id) requirement_id, state
+           SELECT DISTINCT ON (issue_id) issue_id, state
            FROM requirements_management_test_reports
-           WHERE requirement_id = requirements.id
-           ORDER BY requirement_id, created_at DESC LIMIT 1
+           WHERE issue_id = requirements.issue_id
+           ORDER BY issue_id, created_at DESC LIMIT 1
         ) AS test_reports ON true"
       )
     end
@@ -75,7 +74,7 @@ module RequirementsManagement
     end
 
     scope :without_test_reports, -> do
-      left_joins(:test_reports).where(requirements_management_test_reports: { requirement_id: nil })
+      left_joins(:test_reports).where(requirements_management_test_reports: { issue_id: nil })
     end
 
     class << self

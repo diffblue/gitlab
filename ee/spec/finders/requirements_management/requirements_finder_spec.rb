@@ -56,9 +56,9 @@ RSpec.describe RequirementsManagement::RequirementsFinder do
 
         it 'returns matched requirements' do
           create(:test_report, state: :passed)
-          create(:test_report, requirement: requirement1, state: :failed)
-          create(:test_report, requirement: requirement1, state: :passed)
-          create(:test_report, requirement: requirement3, state: :passed)
+          create(:test_report, requirement_issue: requirement1.requirement_issue, state: :failed)
+          create(:test_report, requirement_issue: requirement1.requirement_issue, state: :passed)
+          create(:test_report, requirement_issue: requirement3.requirement_issue, state: :passed)
 
           is_expected.to match_array([requirement1, requirement3])
         end

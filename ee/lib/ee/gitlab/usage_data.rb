@@ -123,7 +123,7 @@ module EE
             requirements_created: count(RequirementsManagement::Requirement),
             requirement_test_reports_manual: count(RequirementsManagement::TestReport.without_build),
             requirement_test_reports_ci: count(RequirementsManagement::TestReport.with_build),
-            requirements_with_test_report: distinct_count(RequirementsManagement::TestReport, :requirement_id)
+            requirements_with_test_report: distinct_count(RequirementsManagement::TestReport, :issue_id)
           }
         end
 
