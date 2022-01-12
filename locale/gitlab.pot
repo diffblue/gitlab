@@ -39509,6 +39509,9 @@ msgstr ""
 msgid "Vulnerability|Actual received response is the one received when this fault was detected"
 msgstr ""
 
+msgid "Vulnerability|Add another identifier"
+msgstr ""
+
 msgid "Vulnerability|Additional Info"
 msgstr ""
 
@@ -39551,6 +39554,9 @@ msgstr ""
 msgid "Vulnerability|Download"
 msgstr ""
 
+msgid "Vulnerability|Enter the associated CVE or CWE entries for this vulnerability."
+msgstr ""
+
 msgid "Vulnerability|Evidence"
 msgstr ""
 
@@ -39567,6 +39573,12 @@ msgid "Vulnerability|GitLab Security Report"
 msgstr ""
 
 msgid "Vulnerability|Identifier"
+msgstr ""
+
+msgid "Vulnerability|Identifier URL"
+msgstr ""
+
+msgid "Vulnerability|Identifier code"
 msgstr ""
 
 msgid "Vulnerability|Identifiers"
@@ -39588,6 +39600,9 @@ msgid "Vulnerability|Namespace"
 msgstr ""
 
 msgid "Vulnerability|Project"
+msgstr ""
+
+msgid "Vulnerability|Remove identifier row"
 msgstr ""
 
 msgid "Vulnerability|Reproduction Assets"
