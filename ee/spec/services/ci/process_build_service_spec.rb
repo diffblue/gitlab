@@ -40,6 +40,14 @@ RSpec.describe Ci::ProcessBuildService, '#execute' do
           expect(ci_build.failed?).to be_truthy
           expect(ci_build.failure_reason).to eq('protected_environment_failure')
         end
+
+        context 'and the build is manual' do
+          let(:ci_build) { create(:ci_build, :created, :actionable, environment: environment.name, user: user, project: project) }
+
+          it 'actionizes the build' do
+            expect { subject }.to change { ci_build.status }.from('created').to('manual')
+          end
+        end
       end
 
       context 'when user has access to the environment' do
@@ -63,14 +71,30 @@ RSpec.describe Ci::ProcessBuildService, '#execute' do
           end
 
           context 'and the build has a deployment' do
-            let(:deployment) { create(:deployment, deployable: ci_build, environment: environment, user: user, project: project) }
+            shared_examples_for 'blocked deployment' do
+              it 'blocks the deployment' do
+                expect { subject }.to change { deployment.reload.status }.from('created').to('blocked')
+              end
 
-            it 'blocks the deployment' do
-              expect { subject }.to change { deployment.reload.status }.from('created').to('blocked')
+              it 'makes the build a manual action' do
+                expect { subject }.to change { ci_build.status }.from('created').to('manual')
+              end
             end
 
-            it 'makes the build a manual action' do
-              expect { subject }.to change { ci_build.status }.from('created').to('manual')
+            let!(:deployment) { create(:deployment, deployable: ci_build, environment: environment, user: user, project: project) }
+
+            include_examples 'blocked deployment'
+
+            context 'and the build is schedulable' do
+              let(:ci_build) { create(:ci_build, :created, :schedulable, environment: environment.name, user: user, project: project) }
+
+              include_examples 'blocked deployment'
+            end
+
+            context 'and the build is actionable' do
+              let(:ci_build) { create(:ci_build, :created, :actionable, environment: environment.name, user: user, project: project) }
+
+              include_examples 'blocked deployment'
             end
           end
         end
