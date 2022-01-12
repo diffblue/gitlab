@@ -73,7 +73,7 @@ RSpec.describe Epics::ReopenService do
 
         context 'when trying to reopen an opened epic' do
           before do
-            epic.update(state: :opened)
+            epic.update!(state: :opened)
           end
 
           it 'does not change the epic state' do

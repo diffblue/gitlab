@@ -112,7 +112,7 @@ RSpec.describe EpicLinks::CreateService do
                 let(:expected_code) { 409 }
 
                 before do
-                  epic.update(parent: epic_to_add)
+                  epic.update!(parent: epic_to_add)
                 end
 
                 include_examples 'returns an error'
@@ -126,7 +126,7 @@ RSpec.describe EpicLinks::CreateService do
                   # epic_to_add -> epic1 -> epic2 -> epic
                   epic1 = create(:epic, group: group, parent: epic_to_add)
                   epic2 = create(:epic, group: group, parent: epic1)
-                  epic.update(parent: epic2)
+                  epic.update!(parent: epic2)
                 end
 
                 include_examples 'returns an error'
@@ -135,7 +135,7 @@ RSpec.describe EpicLinks::CreateService do
 
             context 'when adding an epic that is already a child of the parent epic' do
               before do
-                epic_to_add.update(parent: epic)
+                epic_to_add.update!(parent: epic)
               end
 
               let(:expected_error) { "This epic cannot be added. It is already assigned to the parent epic." }
@@ -195,8 +195,8 @@ RSpec.describe EpicLinks::CreateService do
               let(:expected_code) { 409 }
 
               before do
-                epic_to_add.update(parent: epic)
-                another_epic.update(parent: epic)
+                epic_to_add.update!(parent: epic)
+                another_epic.update!(parent: epic)
               end
 
               include_examples 'returns an error'
@@ -235,7 +235,7 @@ RSpec.describe EpicLinks::CreateService do
 
               context 'when given child epic is parent of the given parent' do
                 before do
-                  epic.update(parent: epic_to_add)
+                  epic.update!(parent: epic_to_add)
                 end
 
                 include_examples 'returns an error'
@@ -348,7 +348,7 @@ RSpec.describe EpicLinks::CreateService do
           let(:another_epic) { create(:epic, group: group) }
 
           before do
-            epic_to_add.update(parent: epic)
+            epic_to_add.update!(parent: epic)
           end
 
           subject do
@@ -389,7 +389,7 @@ RSpec.describe EpicLinks::CreateService do
           let(:another_epic) { create(:epic, group: group) }
 
           before do
-            epic_to_add.update(parent: another_epic)
+            epic_to_add.update!(parent: another_epic)
           end
 
           subject { add_epic([valid_reference]) }

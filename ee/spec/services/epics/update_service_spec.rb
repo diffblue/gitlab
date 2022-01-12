@@ -277,7 +277,7 @@ RSpec.describe Epics::UpdateService do
 
     context 'todos' do
       before do
-        group.update(visibility: Gitlab::VisibilityLevel::PUBLIC)
+        group.update!(visibility: Gitlab::VisibilityLevel::PUBLIC)
       end
 
       context 'creating todos' do
@@ -285,7 +285,7 @@ RSpec.describe Epics::UpdateService do
         let(:mentioned2) { create(:user) }
 
         before do
-          epic.update(description: "FYI: #{mentioned1.to_reference}")
+          epic.update!(description: "FYI: #{mentioned1.to_reference}")
         end
 
         it 'creates todos for only newly mentioned users' do
@@ -348,12 +348,12 @@ RSpec.describe Epics::UpdateService do
 
         before do
           group.add_developer(mentioned1)
-          epic.update(description: "FYI: #{group.to_reference}")
+          epic.update!(description: "FYI: #{group.to_reference}")
         end
 
         context 'when the group is public' do
           before do
-            group.update(visibility: Gitlab::VisibilityLevel::PUBLIC)
+            group.update!(visibility: Gitlab::VisibilityLevel::PUBLIC)
           end
 
           it 'creates todos for only newly mentioned users' do
@@ -365,7 +365,7 @@ RSpec.describe Epics::UpdateService do
 
         context 'when the group is private' do
           before do
-            group.update(visibility: Gitlab::VisibilityLevel::PRIVATE)
+            group.update!(visibility: Gitlab::VisibilityLevel::PRIVATE)
           end
 
           it 'creates todos for only newly mentioned users that are group members' do

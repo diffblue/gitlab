@@ -96,7 +96,7 @@ RSpec.describe Epics::TreeReorderService do
             let(:new_parent_id) { GitlabSchema.id_from_object(epic) }
 
             before do
-              tree_object_2.update(epic: epic1)
+              tree_object_2.update!(epic: epic1)
             end
 
             it 'updates the parent' do
@@ -111,7 +111,7 @@ RSpec.describe Epics::TreeReorderService do
           context 'when object being moved is from another epic' do
             before do
               other_epic = create(:epic, group: group)
-              epic_issue2.update(epic: other_epic)
+              epic_issue2.update!(epic: other_epic)
             end
 
             context 'when the new_parent_id has not been provided' do
@@ -154,7 +154,7 @@ RSpec.describe Epics::TreeReorderService do
             let(:new_parent_id) { GitlabSchema.id_from_object(epic) }
 
             before do
-              epic_issue2.update(parent: other_epic)
+              epic_issue2.update!(parent: other_epic)
             end
 
             it_behaves_like 'error for the tree update', 'You don\'t have permissions to move the objects.'
@@ -173,8 +173,8 @@ RSpec.describe Epics::TreeReorderService do
             let(:another_epic) { create(:epic, group: another_group) }
 
             before do
-              epic_issue1.update(epic: another_epic)
-              epic_issue2.update(epic: another_epic)
+              epic_issue1.update!(epic: another_epic)
+              epic_issue2.update!(epic: another_epic)
             end
 
             context 'when new_parent_id is not provided' do
@@ -199,7 +199,7 @@ RSpec.describe Epics::TreeReorderService do
               let(:new_parent_id) { GitlabSchema.id_from_object(epic) }
 
               before do
-                epic_issue2.update(epic: epic1)
+                epic_issue2.update!(epic: epic1)
               end
 
               it 'updates the parent' do
@@ -244,7 +244,7 @@ RSpec.describe Epics::TreeReorderService do
               let(:new_parent_id) { GitlabSchema.id_from_object(epic) }
 
               before do
-                epic2.update(parent: other_epic)
+                epic2.update!(parent: other_epic)
               end
 
               it_behaves_like 'error for the tree update', 'You don\'t have permissions to move the objects.'
@@ -266,8 +266,8 @@ RSpec.describe Epics::TreeReorderService do
 
               before do
                 other_group.add_developer(user)
-                epic.update(group: other_group)
-                epic2.update(parent: epic1)
+                epic.update!(group: other_group)
+                epic2.update!(parent: epic1)
               end
 
               it_behaves_like 'error for the tree update', "This epic cannot be added. An epic must belong to the same group or subgroup as its parent epic."
@@ -288,8 +288,8 @@ RSpec.describe Epics::TreeReorderService do
               let(:another_epic) { create(:epic, group: another_group) }
 
               before do
-                epic1.update(group: another_group, parent: another_epic)
-                epic2.update(group: another_group, parent: another_epic)
+                epic1.update!(group: another_group, parent: another_epic)
+                epic2.update!(group: another_group, parent: another_epic)
               end
 
               it_behaves_like 'error for the tree update', 'You don\'t have permissions to move the objects.'

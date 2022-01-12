@@ -233,7 +233,7 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures do
         context 'when issue was already promoted' do
           it 'raises error' do
             epic = create(:epic, group: group)
-            issue.update(promoted_to_epic_id: epic.id)
+            issue.update!(promoted_to_epic_id: epic.id)
 
             expect { subject.execute(issue) }
               .to raise_error(Epics::IssuePromoteService::PromoteError, /already promoted/)
@@ -270,7 +270,7 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures do
         context 'on other issue types' do
           shared_examples_for 'raising error' do
             before do
-              issue.update(issue_type: issue_type)
+              issue.update!(issue_type: issue_type)
             end
 
             it 'raises error' do
