@@ -18,7 +18,7 @@ RSpec.describe MergeRequestSidebarBasicEntity do
 
         expect(entity[:current_user].keys).to contain_exactly(
           :id, :name, :username, :state, :avatar_url, :web_url, :todo,
-          :can_edit, :can_move, :can_admin_label, :can_merge
+          :can_edit, :can_move, :can_admin_label, :can_merge, :can_update_merge_request
         )
       end
     end
@@ -30,7 +30,7 @@ RSpec.describe MergeRequestSidebarBasicEntity do
 
         expect(entity[:current_user].keys).to contain_exactly(
           :id, :name, :username, :state, :avatar_url, :web_url, :todo,
-          :can_edit, :can_move, :can_admin_label, :can_merge
+          :can_edit, :can_move, :can_admin_label, :can_merge, :can_update_merge_request
         )
       end
     end
@@ -42,7 +42,7 @@ RSpec.describe MergeRequestSidebarBasicEntity do
 
         expect(entity[:current_user].keys).to contain_exactly(
           :id, :name, :username, :state, :avatar_url, :web_url, :todo,
-          :can_edit, :can_move, :can_admin_label, :can_merge, :is_gitlab_employee
+          :can_edit, :can_move, :can_admin_label, :can_merge, :is_gitlab_employee, :can_update_merge_request
         )
       end
     end
