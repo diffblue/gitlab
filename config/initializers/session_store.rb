@@ -20,8 +20,8 @@ cookie_key = if Rails.env.development?
              end
 
 store = Gitlab::Redis::Sessions.store(
-            namespace: Gitlab::Redis::Sessions::SESSION_NAMESPACE
-          )
+          namespace: Gitlab::Redis::Sessions::SESSION_NAMESPACE
+        )
 
 Gitlab::Application.config.session_store(
   :redis_store, # Using the cookie_store would enable session replay attacks.
