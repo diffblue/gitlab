@@ -13,7 +13,7 @@
         #progress-bar
       %h2.center= _('Create your group')
       %p= _('A group represents your organization in GitLab. Groups allow you to manage users and collaborate across multiple projects.')
-      = form_for @group, url: users_sign_up_groups_path(form_params), html: { class: 'gl-show-field-errors card gl-w-full gl-p-4' } do |f|
+      = form_for @group, url: users_sign_up_groups_path(form_params), html: { class: 'gl-show-field-errors card gl-w-full gl-p-4 js-saas-trial-group' } do |f|
         = form_errors(@group)
         = render 'layouts/flash'
         .row

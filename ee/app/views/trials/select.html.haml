@@ -13,7 +13,7 @@
 
     = render 'errors'
 
-    = form_tag apply_trials_path(glm_params), method: :post do
+    = form_tag apply_trials_path(glm_params), method: :post, class: 'js-saas-trial-group' do
       - if show_trial_namespace_select?
         .form-group.gl-select2-html5-required-fix
           = label_tag :namespace_id, _('This subscription is for'), for: :namespace_id, class: 'col-form-label'

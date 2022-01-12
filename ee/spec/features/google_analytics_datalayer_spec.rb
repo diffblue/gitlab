@@ -87,6 +87,24 @@ RSpec.describe 'GitLab.com Google Analytics DataLayer', :js do
     end
   end
 
+  context 'on trial group select page' do
+    it 'tracks create group events' do
+      sign_in user
+      visit select_trials_path
+
+      evaluate_script('document.querySelector(".js-saas-trial-group").addEventListener("submit", e => e.preventDefault())')
+
+      fill_in 'new_group_name', with: group.name
+      find('#trial_entity_company').click
+      click_button 'Start your free trial'
+
+      data_layer = execute_script('return window.dataLayer')
+      last_event_in_data_layer = data_layer[-1]
+
+      expect(last_event_in_data_layer["event"]).to eq("saasTrialGroup")
+    end
+  end
+
   context 'on new registration groups page' do
     it 'tracks saasTrialGroup events in the dataLayer' do
       sign_in user
