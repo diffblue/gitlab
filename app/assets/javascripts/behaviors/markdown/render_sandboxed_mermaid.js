@@ -117,9 +117,9 @@ function renderMermaidEl(el, source) {
       if (event.origin !== 'null' || event.source !== iframeEl.contentWindow) {
         return;
       }
-      const { h, w } = event.data;
-      iframeEl.width = w;
-      iframeEl.height = h;
+      const { h } = event.data;
+      iframeEl.width = '100%';
+      iframeEl.height = `${h + 10}px`;
     },
     false,
   );
