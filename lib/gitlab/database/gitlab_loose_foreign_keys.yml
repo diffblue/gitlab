@@ -1,3 +1,4 @@
+---
 dast_site_profiles_pipelines:
   - table: ci_pipelines
     column: ci_pipeline_id
@@ -66,6 +67,10 @@ ci_project_mirrors:
     on_delete: async_delete
   - table: namespaces
     column: namespace_id
+    on_delete: async_delete
+ci_unit_tests:
+  - table: projects
+    column: project_id
     on_delete: async_delete
 merge_requests:
   - table: ci_pipelines
