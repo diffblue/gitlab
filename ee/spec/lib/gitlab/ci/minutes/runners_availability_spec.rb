@@ -33,9 +33,11 @@ RSpec.describe Gitlab::Ci::Minutes::RunnersAvailability do
     end
   end
 
-  context 'N+1 queries' do
+  context 'database queries' do
     let_it_be(:project) { create(:project) }
-    let_it_be(:private_runner) { create(:ci_runner, :project, :online, projects: [project]) }
+    let_it_be(:private_runner) do
+      create(:ci_runner, :project, :online, projects: [project])
+    end
 
     it 'caches records loaded from database' do
       ActiveRecord::QueryRecorder.new(skip_cached: false) do
@@ -43,6 +45,12 @@ RSpec.describe Gitlab::Ci::Minutes::RunnersAvailability do
       end
 
       expect { minutes.available?(build.build_matcher) }.not_to exceed_all_query_limit(0)
+    end
+
+    it 'does not join across databases' do
+      with_cross_joins_prevented do
+        minutes.available?(build.build_matcher)
+      end
     end
   end
 end
