@@ -22,7 +22,7 @@ export const receiveSyncNamespacesSuccess = ({ commit }, data) =>
   commit(types.RECEIVE_SYNC_NAMESPACES_SUCCESS, data);
 export const receiveSyncNamespacesError = ({ commit }) => {
   createFlash({
-    message: __("There was an error fetching the Node's Groups"),
+    message: __("There was an error fetching the Sites's Groups"),
   });
   commit(types.RECEIVE_SYNC_NAMESPACES_ERROR);
 };
@@ -45,7 +45,7 @@ export const receiveSaveGeoNodeSuccess = ({ commit, state }) => {
   visitUrl(state.nodesPath);
 };
 export const receiveSaveGeoNodeError = ({ commit }, data) => {
-  let errorMessage = __('There was an error saving this Geo Node.');
+  let errorMessage = __('There was an error saving this Geo Site');
 
   if (data?.message) {
     errorMessage += ` ${getSaveErrorMessage(data.message)}`;

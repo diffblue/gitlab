@@ -4,9 +4,9 @@ import { STRING_OVER_255 } from './mock_data';
 describe('GeoNodeForm Validations', () => {
   describe.each`
     data               | errorMessage
-    ${null}            | ${"Node name can't be blank"}
-    ${''}              | ${"Node name can't be blank"}
-    ${STRING_OVER_255} | ${'Node name should be between 1 and 255 characters'}
+    ${null}            | ${"Site name can't be blank"}
+    ${''}              | ${"Site name can't be blank"}
+    ${STRING_OVER_255} | ${'Site name should be between 1 and 255 characters'}
     ${'Test'}          | ${''}
   `(`validateName`, ({ data, errorMessage }) => {
     let validateNameRes = '';

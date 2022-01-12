@@ -21,7 +21,7 @@ export const fetchNodes = ({ commit }) => {
       commit(types.RECEIVE_NODES_SUCCESS, inflatedNodes);
     })
     .catch(() => {
-      createFlash({ message: s__('Geo|There was an error fetching the Geo Nodes') });
+      createFlash({ message: s__('Geo|There was an error fetching the Geo Sites') });
       commit(types.RECEIVE_NODES_ERROR);
     });
 };
@@ -42,7 +42,7 @@ export const removeNode = ({ commit, state }) => {
       commit(types.RECEIVE_NODE_REMOVAL_SUCCESS);
     })
     .catch(() => {
-      createFlash({ message: s__('Geo|There was an error deleting the Geo Node') });
+      createFlash({ message: s__('Geo|There was an error deleting the Geo Site') });
       commit(types.RECEIVE_NODE_REMOVAL_ERROR);
     });
 };

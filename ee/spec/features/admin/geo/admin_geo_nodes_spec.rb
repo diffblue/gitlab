@@ -175,7 +175,7 @@ RSpec.describe 'admin Geo Nodes', :js, :geo do
       page.click_button('Remove')
 
       page.within('.gl-modal') do
-        page.click_button('Remove node')
+        page.click_button('Remove site')
       end
 
       expect(current_path).to eq admin_geo_nodes_path
