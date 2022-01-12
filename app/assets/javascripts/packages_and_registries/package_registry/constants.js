@@ -9,7 +9,7 @@ export {
   DELETE_PACKAGE_FILE_TRACKING_ACTION,
   REQUEST_DELETE_PACKAGE_FILE_TRACKING_ACTION,
   CANCEL_DELETE_PACKAGE_FILE_TRACKING_ACTION,
-} from '~/packages_and_registries/shared/constants';
+} from '~/packages_and_registries/shared/constants/index';
 
 export const PACKAGE_TYPE_CONAN = 'CONAN';
 export const PACKAGE_TYPE_MAVEN = 'MAVEN';

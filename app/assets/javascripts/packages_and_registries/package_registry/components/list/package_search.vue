@@ -8,7 +8,7 @@ import { getQueryParams, extractFilterAndSorting } from '~/packages_and_registri
 import {
   FILTERED_SEARCH_TERM,
   FILTERED_SEARCH_TYPE,
-} from '~/packages_and_registries/shared/constants';
+} from '~/packages_and_registries/shared/constants/index';
 import PackageTypeToken from './tokens/package_type_token.vue';
 
 export default {

@@ -21,7 +21,7 @@ import PackagesListLoader from '~/packages_and_registries/shared/components/pack
 import {
   TRACKING_ACTIONS,
   SHOW_DELETE_SUCCESS_ALERT,
-} from '~/packages_and_registries/shared/constants';
+} from '~/packages_and_registries/shared/constants/index';
 import { TRACK_CATEGORY } from '~/packages_and_registries/infrastructure_registry/shared/constants';
 import PackageFiles from './package_files.vue';
 import PackageHistory from './package_history.vue';

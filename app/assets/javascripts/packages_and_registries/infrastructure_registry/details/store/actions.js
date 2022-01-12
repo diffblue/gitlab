@@ -4,7 +4,7 @@ import {
   DELETE_PACKAGE_ERROR_MESSAGE,
   DELETE_PACKAGE_FILE_ERROR_MESSAGE,
   DELETE_PACKAGE_FILE_SUCCESS_MESSAGE,
-} from '~/packages_and_registries/shared/constants';
+} from '~/packages_and_registries/shared/constants/index';
 import { FETCH_PACKAGE_VERSIONS_ERROR } from '../constants';
 import * as types from './mutation_types';
 

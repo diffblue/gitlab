@@ -5,7 +5,7 @@ import { s__ } from '~/locale';
 import Tracking from '~/tracking';
 import PackagesListRow from '~/packages_and_registries/infrastructure_registry/shared/package_list_row.vue';
 import PackagesListLoader from '~/packages_and_registries/shared/components/packages_list_loader.vue';
-import { TRACKING_ACTIONS } from '~/packages_and_registries/shared/constants';
+import { TRACKING_ACTIONS } from '~/packages_and_registries/shared/constants/index';
 import { TRACK_CATEGORY } from '~/packages_and_registries/infrastructure_registry/shared/constants';
 
 export default {
