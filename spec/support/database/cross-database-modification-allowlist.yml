@@ -1,2 +1,1 @@
-- "./spec/models/ci/job_artifact_spec.rb"
 - "./spec/services/ci/retry_build_service_spec.rb"
