@@ -306,6 +306,12 @@ Planned removal milestone: 15.0 (2022-05-22)
 
 ## 14.7
 
+### Logging in GitLab
+
+The logging features in GitLab allow users to install the ELK stack (Elasticsearch, Logstash, and Kibana) to aggregate and manage application logs. Users can search for relevant logs in GitLab. However, since deprecating certificate-based integration with Kubernetes clusters and GitLab Managed Apps, we don't have a recommended solution for logging within GitLab. For more information, you can follow the issue for [integrating Opstrace with GitLab](https://gitlab.com/groups/gitlab-org/-/epics/6976).
+
+Planned removal milestone: 15.0 (2022-05-22)
+
 ### Pseudonymizer
 
 The Pseudonymizer feature is generally unused,
