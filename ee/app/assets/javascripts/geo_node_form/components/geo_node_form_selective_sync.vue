@@ -1,6 +1,10 @@
 <script>
-import { GlFormGroup, GlFormSelect, GlFormCheckbox, GlSprintf, GlLink } from '@gitlab/ui';
-import { SELECTIVE_SYNC_MORE_INFO, OBJECT_STORAGE_MORE_INFO } from '../constants';
+import { GlFormGroup, GlFormSelect, GlFormCheckbox, GlSprintf, GlLink, GlBadge } from '@gitlab/ui';
+import {
+  SELECTIVE_SYNC_MORE_INFO,
+  OBJECT_STORAGE_MORE_INFO,
+  OBJECT_STORAGE_BETA,
+} from '../constants';
 import GeoNodeFormNamespaces from './geo_node_form_namespaces.vue';
 import GeoNodeFormShards from './geo_node_form_shards.vue';
 
@@ -14,6 +18,7 @@ export default {
     GlFormCheckbox,
     GlSprintf,
     GlLink,
+    GlBadge,
   },
   props: {
     nodeData: {
@@ -47,6 +52,7 @@ export default {
   },
   SELECTIVE_SYNC_MORE_INFO,
   OBJECT_STORAGE_MORE_INFO,
+  OBJECT_STORAGE_BETA,
 };
 </script>
 
@@ -103,7 +109,15 @@ export default {
         @removeSyncOption="removeSyncOption"
       />
     </gl-form-group>
-    <gl-form-group :label="__('Object Storage replication')" label-for="node-object-storage-field">
+    <gl-form-group>
+      <template #label>
+        <label for="node-object-storage-field" class="gl-mb-0">{{
+          __('Object Storage replication')
+        }}</label>
+        <gl-badge variant="info" size="sm" :href="$options.OBJECT_STORAGE_BETA" target="_blank">{{
+          __('Beta')
+        }}</gl-badge>
+      </template>
       <template #description>
         <gl-sprintf
           :message="

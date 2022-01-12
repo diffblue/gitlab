@@ -29,6 +29,11 @@ export const OBJECT_STORAGE_MORE_INFO = helpPagePath(
   'administration/geo/replication/object_storage.html',
 );
 
+export const OBJECT_STORAGE_BETA = helpPagePath(
+  'administration/geo/replication/object_storage.html',
+  { anchor: 'enabling-gitlab-managed-object-storage-replication' },
+);
+
 export const REVERIFICATION_MORE_INFO = helpPagePath(
   'administration/geo/disaster_recovery/background_verification.html',
   { anchor: 'repository-re-verification' },
