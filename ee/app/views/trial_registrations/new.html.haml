@@ -15,6 +15,10 @@
 
     = render 'devise/shared/sign_in_link'
 
+    %p.gl-text-center
+      = s_('InProductMarketing|Want to host GitLab on your servers?')
+      = link_to s_('InProductMarketing|Start a Self-Managed trial'), 'https://about.gitlab.com/free-trial/#selfmanaged/', data: { track_action: 'click_link', track_label: 'start_self-managed_trial' }
+
 .row
   - experiment(:trial_registration_with_reassurance, actor: current_user) do |e|
     - if e.should_track?
@@ -27,7 +31,7 @@
         = registration_form_content
 
     - e.try do
-      .col-lg-6.gl-display-none.gl-lg-display-flex.gl-flex-direction-column.gl-align-items-center.gl-justify-content-center
+      .col-lg-6.gl-display-none.gl-lg-display-flex.gl-flex-direction-column.gl-align-items-center.gl-justify-content-start
         .gl-w-grid-size-28
           = render 'reassurances'
       .col-md-6.offset-md-3.offset-lg-0
