@@ -29934,6 +29934,11 @@ msgid_plural "Reports|Accessibility scanning detected %d issues for the source b
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Reports|Accessibility scanning detected %{strong_start}%{number}%{strong_end} issue for the source branch only"
+msgid_plural "Reports|Accessibility scanning detected %{strong_start}%{number}%{strong_end} issues for the source branch only"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "Reports|Accessibility scanning detected no issues for the source branch only"
 msgstr ""
 
