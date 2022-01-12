@@ -22,22 +22,14 @@ localVue.use(Vuex);
 describe('cli_commands', () => {
   let wrapper;
 
-  const config = {
-    repositoryUrl: 'foo',
-    registryHostUrlWithPort: 'bar',
-  };
-
   const findDropdownButton = () => wrapper.find(GlDropdown);
   const findCodeInstruction = () => wrapper.findAll(CodeInstruction);
 
   const mountComponent = () => {
     wrapper = mount(QuickstartDropdown, {
       localVue,
-      provide() {
-        return {
-          config,
-          ...dockerCommands,
-        };
+      propsData: {
+        ...dockerCommands,
       },
     });
   };
