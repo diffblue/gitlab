@@ -26,6 +26,7 @@ class TrialsController < ApplicationController
   def select
     experiment(:trial_registration_with_reassurance, actor: current_user)
       .track(:render, label: 'trials:select', user: current_user)
+    push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
   end
 
   def create_lead
