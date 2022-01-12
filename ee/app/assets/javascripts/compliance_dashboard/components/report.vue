@@ -4,9 +4,12 @@ import * as Sentry from '@sentry/browser';
 import { __ } from '~/locale';
 import { thWidthClass } from '~/lib/utils/table_utility';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
+import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import complianceViolationsQuery from '../graphql/compliance_violations.query.graphql';
+import { mapViolations } from '../graphql/mappers';
 import EmptyState from './empty_state.vue';
 import MergeCommitsExportButton from './merge_requests/merge_commits_export_button.vue';
+import MergeRequestDrawer from './drawer.vue';
 import ViolationReason from './violations/reason.vue';
 
 export default {
@@ -17,6 +20,7 @@ export default {
     GlLoadingIcon,
     GlTable,
     MergeCommitsExportButton,
+    MergeRequestDrawer,
     ViolationReason,
     TimeAgoTooltip,
   },
@@ -35,6 +39,9 @@ export default {
     return {
       queryError: false,
       violations: [],
+      showDrawer: false,
+      drawerMergeRequest: {},
+      drawerProject: {},
     };
   },
   apollo: {
@@ -46,7 +53,7 @@ export default {
         };
       },
       update(data) {
-        return data?.group?.mergeRequestViolations?.nodes;
+        return mapViolations(data?.group?.mergeRequestViolations?.nodes);
       },
       error(e) {
         Sentry.captureException(e);
@@ -63,6 +70,30 @@ export default {
     },
     hasMergeCommitsCsvExportPath() {
       return this.mergeCommitsCsvExportPath !== '';
+    },
+  },
+  methods: {
+    toggleDrawer(rows) {
+      const { id, mergeRequest, project } = rows[0] || {};
+
+      if (!mergeRequest || (this.showDrawer && id === this.drawerMergeRequest.id)) {
+        this.closeDrawer();
+      } else {
+        this.openDrawer(id, mergeRequest, project);
+      }
+    },
+    openDrawer(id, mergeRequest, project) {
+      this.showDrawer = true;
+      this.drawerMergeRequest = mergeRequest;
+      this.drawerProject = project;
+    },
+    closeDrawer() {
+      this.showDrawer = false;
+      // Refs are required by BTable to manipulate the selection
+      // issue: https://gitlab.com/gitlab-org/gitlab-ui/-/issues/1531
+      this.$refs.table.$children[0].clearSelected();
+      this.drawerMergeRequest = {};
+      this.drawerProject = {};
     },
   },
   fields: [
@@ -96,6 +127,7 @@ export default {
       'Retrieving the compliance report failed. Please refresh the page and try again.',
     ),
   },
+  DRAWER_Z_INDEX,
 };
 </script>
 
@@ -120,11 +152,17 @@ export default {
     />
     <gl-table
       v-else-if="hasViolations"
+      ref="table"
       :fields="$options.fields"
       :items="violations"
       head-variant="white"
       stacked="lg"
+      select-mode="single"
+      selectable
+      hover
+      selected-variant="primary"
       thead-class="gl-border-b-solid gl-border-b-1 gl-border-b-gray-100"
+      @row-selected="toggleDrawer"
     >
       <template #cell(reason)="{ item: { reason, violatingUser } }">
         <violation-reason :reason="reason" :user="violatingUser" />
@@ -137,5 +175,12 @@ export default {
       </template>
     </gl-table>
     <empty-state v-else :image-path="emptyStateSvgPath" />
+    <merge-request-drawer
+      :show-drawer="showDrawer"
+      :merge-request="drawerMergeRequest"
+      :project="drawerProject"
+      :z-index="$options.DRAWER_Z_INDEX"
+      @close="closeDrawer"
+    />
   </section>
 </template>

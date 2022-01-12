@@ -32,7 +32,7 @@ export default {
                 title:
                   'Officiis architecto voluptas ut sit qui qui quisquam sequi consectetur porro.',
                 mergedAt: '2021-11-25T11:56:52.215Z',
-                webUrl: 'https://gdk.localhost:3443/gitlab-org/gitlab-shell/-/merge_requests/2',
+                webUrl: 'https://gdk.localhost:3443/gitlab-org/gitlab-shell/-/merge_requests/1',
                 author: {
                   __typename: 'Author',
                   id: 50,
@@ -92,8 +92,8 @@ export default {
                     },
                   ],
                 },
-                ref: 'gitlab-shell!2',
-                fullRef: '!2',
+                fullRef: 'gitlab-shell!1',
+                reference: '!1',
                 sourceBranch: 'ut-171ad4e263',
                 sourceBranchExists: false,
                 targetBranch: 'master',
@@ -111,6 +111,104 @@ export default {
                     {
                       __typename: 'ComplianceFrameworks',
                       id: 1,
+                      name: 'GDPR',
+                      description: 'General Data Protection Regulation',
+                      color: '#009966',
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              __typename: 'MergeRequestViolation',
+              id: 2,
+              severity: 2,
+              reason: 2,
+              violatingUser: {
+                __typename: 'Violator',
+                id: 50,
+                name: 'John Doe6',
+                username: 'user6',
+                avatarUrl:
+                  'https://secure.gravatar.com/avatar/7ff9b8111da2e2109e7b66f37aa632cc?s=80&d=identicon',
+                webUrl: 'https://gdk.localhost:3443/user6',
+              },
+              mergeRequest: {
+                __typename: 'MergeRequest',
+                id: 25,
+                title:
+                  'Officiis architecto voluptas ut sit qui qui quisquam sequi consectetur porro.',
+                mergedAt: '2021-11-25T11:56:52.215Z',
+                webUrl: 'https://gdk.localhost:3443/gitlab-org/gitlab-test/-/merge_requests/2',
+                author: {
+                  __typename: 'Author',
+                  id: 50,
+                  name: 'John Doe6',
+                  username: 'user6',
+                  avatarUrl:
+                    'https://secure.gravatar.com/avatar/7ff9b8111da2e2109e7b66f37aa632cc?s=80&d=identicon',
+                  webUrl: 'https://gdk.localhost:3443/user6',
+                },
+                mergedBy: {
+                  __typename: 'MergedBy',
+                  id: 50,
+                  name: 'John Doe6',
+                  username: 'user6',
+                  avatarUrl:
+                    'https://secure.gravatar.com/avatar/7ff9b8111da2e2109e7b66f37aa632cc?s=80&d=identicon',
+                  webUrl: 'https://gdk.localhost:3443/user6',
+                },
+                committers: {
+                  __typename: 'Committers',
+                  nodes: [],
+                },
+                participants: {
+                  __typename: 'Participants',
+                  nodes: [
+                    {
+                      __typename: 'User',
+                      id: 50,
+                      name: 'John Doe6',
+                      username: 'user6',
+                      avatarUrl:
+                        'https://secure.gravatar.com/avatar/7ff9b8111da2e2109e7b66f37aa632cc?s=80&d=identicon',
+                      webUrl: 'https://gdk.localhost:3443/user6',
+                    },
+                  ],
+                },
+                approvedBy: {
+                  __typename: 'ApprovedBy',
+                  nodes: [
+                    {
+                      __typename: 'User',
+                      id: 49,
+                      name: 'John Doe5',
+                      username: 'user5',
+                      avatarUrl:
+                        'https://secure.gravatar.com/avatar/eaafc9b0f704edaf23cd5cf7727df560?s=80&d=identicon',
+                      webUrl: 'https://gdk.localhost:3443/user5',
+                    },
+                  ],
+                },
+                fullRef: 'gitlab-test!2',
+                reference: '!2',
+                sourceBranch: 'ut-171ad4e264',
+                sourceBranchExists: false,
+                targetBranch: 'master',
+                targetBranchExists: true,
+              },
+              project: {
+                __typename: 'Project',
+                id: 2,
+                avatarUrl: null,
+                name: 'Gitlab Test',
+                webUrl: 'https://gdk.localhost:3443/gitlab-org/gitlab-test',
+                complianceFrameworks: {
+                  __typename: 'ComplianceFrameworks',
+                  nodes: [
+                    {
+                      __typename: 'ComplianceFrameworks',
+                      id: 2,
                       name: 'SOX',
                       description: 'A framework',
                       color: '#00FF00',

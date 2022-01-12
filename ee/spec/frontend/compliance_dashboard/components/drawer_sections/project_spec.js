@@ -21,6 +21,7 @@ describe('Project component', () => {
       propsData: {
         name: projectName,
         url,
+        complianceFramework: {},
         ...props,
       },
     });

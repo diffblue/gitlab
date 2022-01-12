@@ -2,7 +2,9 @@
 import { GlTabs, GlTab } from '@gitlab/ui';
 import Cookies from 'js-cookie';
 import { __ } from '~/locale';
+import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { COMPLIANCE_TAB_COOKIE_KEY } from '../constants';
+import { mapDashboardToDrawerData } from '../utils';
 import MergeRequestDrawer from './drawer.vue';
 import EmptyState from './empty_state.vue';
 import MergeRequestsGrid from './merge_requests/grid.vue';
@@ -41,7 +43,8 @@ export default {
   data() {
     return {
       showDrawer: false,
-      drawerData: {},
+      drawerMergeRequest: {},
+      drawerProject: {},
     };
   },
   computed: {
@@ -51,27 +54,33 @@ export default {
     hasMergeCommitsCsvExportPath() {
       return this.mergeCommitsCsvExportPath !== '';
     },
+    drawerMergeRequests() {
+      return this.mergeRequests.map(mapDashboardToDrawerData);
+    },
   },
   methods: {
     showTabs() {
       return Cookies.get(COMPLIANCE_TAB_COOKIE_KEY) === 'true';
     },
     toggleDrawer(mergeRequest) {
-      if (this.showDrawer && mergeRequest.id === this.drawerData.id) {
+      if (this.showDrawer && mergeRequest.id === this.drawerMergeRequest.id) {
         this.closeDrawer();
       } else {
-        this.openDrawer(mergeRequest);
+        this.openDrawer(this.drawerMergeRequests.find((mr) => mr.id === mergeRequest.id));
       }
     },
-    openDrawer(mergeRequest) {
+    openDrawer(data) {
       this.showDrawer = true;
-      this.drawerData = mergeRequest;
+      this.drawerMergeRequest = data.mergeRequest;
+      this.drawerProject = data.project;
     },
     closeDrawer() {
       this.showDrawer = false;
-      this.drawerData = {};
+      this.drawerMergeRequest = {};
+      this.drawerProject = {};
     },
   },
+  DRAWER_Z_INDEX,
   strings: {
     heading: __('Compliance report'),
     subheading: __('Here you will find recent merge request activity'),
@@ -113,8 +122,9 @@ export default {
     />
     <merge-request-drawer
       :show-drawer="showDrawer"
-      :merge-request="drawerData"
-      z-index="252"
+      :merge-request="drawerMergeRequest"
+      :project="drawerProject"
+      :z-index="$options.DRAWER_Z_INDEX"
       @close="closeDrawer"
     />
   </div>

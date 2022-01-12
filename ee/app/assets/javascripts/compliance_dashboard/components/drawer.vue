@@ -1,7 +1,6 @@
 <script>
 import { GlDrawer } from '@gitlab/ui';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
-import { convertArrayOfObjectsToCamelCase } from '~/lib/utils/common_utils';
 import { COMPLIANCE_DRAWER_CONTAINER_CLASS } from '../constants';
 import { getContentWrapperHeight } from '../../threat_monitoring/utils';
 import BranchPath from './drawer_sections/branch_path.vue';
@@ -26,6 +25,10 @@ export default {
       type: Object,
       required: true,
     },
+    project: {
+      type: Object,
+      required: true,
+    },
     showDrawer: {
       type: Boolean,
       required: false,
@@ -34,19 +37,10 @@ export default {
   },
   computed: {
     hasBranchDetails() {
-      return this.mergeRequest.source_branch && this.mergeRequest.target_branch;
+      return this.mergeRequest.sourceBranch && this.mergeRequest.targetBranch;
     },
     drawerHeaderHeight() {
       return getContentWrapperHeight(COMPLIANCE_DRAWER_CONTAINER_CLASS);
-    },
-    committers() {
-      return convertArrayOfObjectsToCamelCase(this.mergeRequest.committers);
-    },
-    approvedByUsers() {
-      return convertArrayOfObjectsToCamelCase(this.mergeRequest.approved_by_users);
-    },
-    commenters() {
-      return convertArrayOfObjectsToCamelCase(this.mergeRequest.participants);
     },
   },
   DRAWER_Z_INDEX,
@@ -64,22 +58,25 @@ export default {
     </template>
     <template v-if="showDrawer" #default>
       <project
-        :avatar-url="mergeRequest.project.avatar_url"
-        :compliance-framework="mergeRequest.compliance_management_framework"
-        :name="mergeRequest.project.name"
-        :url="mergeRequest.project.web_url"
+        :avatar-url="project.avatarUrl"
+        :compliance-framework="project.complianceFramework"
+        :name="project.name"
+        :url="project.webUrl"
       />
-      <reference :path="mergeRequest.path" :reference="mergeRequest.reference" />
+      <reference :path="mergeRequest.webUrl" :reference="mergeRequest.reference" />
       <branch-path
         v-if="hasBranchDetails"
-        :source-branch="mergeRequest.source_branch"
-        :source-branch-uri="mergeRequest.source_branch_uri"
-        :target-branch="mergeRequest.target_branch"
-        :target-branch-uri="mergeRequest.target_branch_uri"
+        :source-branch="mergeRequest.sourceBranch"
+        :source-branch-uri="mergeRequest.sourceBranchUri"
+        :target-branch="mergeRequest.targetBranch"
+        :target-branch-uri="mergeRequest.targetBranchUri"
       />
-      <committers :committers="committers" />
-      <reviewers :approvers="approvedByUsers" :commenters="commenters" />
-      <merged-by :merged-by="mergeRequest.merged_by" />
+      <committers :committers="mergeRequest.committers" />
+      <reviewers
+        :approvers="mergeRequest.approvedByUsers"
+        :commenters="mergeRequest.participants"
+      />
+      <merged-by :merged-by="mergeRequest.mergedBy" />
     </template>
   </gl-drawer>
 </template>

@@ -46,6 +46,7 @@ exports[`ComplianceDashboard component when there are merge requests and the sho
    
   <merge-request-drawer-stub
     mergerequest="[object Object]"
+    project="[object Object]"
     z-index="252"
   />
 </div>
@@ -81,6 +82,7 @@ exports[`ComplianceDashboard component when there are merge requests matches the
    
   <merge-request-drawer-stub
     mergerequest="[object Object]"
+    project="[object Object]"
     z-index="252"
   />
 </div>

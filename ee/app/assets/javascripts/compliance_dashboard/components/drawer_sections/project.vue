@@ -1,5 +1,6 @@
 <script>
 import { GlAvatarLabeled, GlAvatarLink } from '@gitlab/ui';
+import { isEmpty } from 'lodash';
 import ComplianceFrameworkLabel from 'ee/vue_shared/components/compliance_framework_label/compliance_framework_label.vue';
 import { __ } from '~/locale';
 import { DRAWER_AVATAR_SIZE } from '../../constants';
@@ -32,6 +33,11 @@ export default {
       required: true,
     },
   },
+  computed: {
+    hasComplianceFramework() {
+      return !isEmpty(this.complianceFramework);
+    },
+  },
   i18n: {
     header: __('Project'),
   },
@@ -52,7 +58,7 @@ export default {
         />
       </gl-avatar-link>
       <compliance-framework-label
-        v-if="complianceFramework"
+        v-if="hasComplianceFramework"
         class="gl-ml-3"
         :name="complianceFramework.name"
         :color="complianceFramework.color"
