@@ -83,9 +83,8 @@ describe('Buy Addons Shared App', () => {
   describe('Storage', () => {
     describe('when data is received', () => {
       beforeEach(() => {
-        const mockApollo = createMockApolloProvider({
-          plansQueryMock: jest.fn().mockResolvedValue({ data: { plans: mockStoragePlans } }),
-        });
+        const plansQueryMock = jest.fn().mockResolvedValue({ data: { plans: mockStoragePlans } });
+        const mockApollo = createMockApolloProvider({ plansQueryMock });
         return createComponent(mockApollo, STORAGE_ADDON_PROPS);
       });
 
@@ -167,10 +166,9 @@ describe('Buy Addons Shared App', () => {
     });
 
     describe('labels', () => {
+      const plansQueryMock = jest.fn().mockResolvedValue({ data: { plans: mockStoragePlans } });
       it('shows labels correctly for 1 pack', async () => {
-        const mockApollo = createMockApolloProvider({
-          plansQueryMock: jest.fn().mockResolvedValue({ data: { plans: mockStoragePlans } }),
-        });
+        const mockApollo = createMockApolloProvider({ plansQueryMock });
         await createComponent(mockApollo, STORAGE_ADDON_PROPS);
 
         expect(findQuantityText().text()).toMatchInterpolatedText(
@@ -182,12 +180,7 @@ describe('Buy Addons Shared App', () => {
       });
 
       it('shows labels correctly for 2 packs', async () => {
-        const mockApollo = createMockApolloProvider(
-          {
-            plansQueryMock: jest.fn().mockResolvedValue({ data: { plans: mockStoragePlans } }),
-          },
-          { quantity: 2 },
-        );
+        const mockApollo = createMockApolloProvider({ plansQueryMock }, { quantity: 2 });
         await createComponent(mockApollo, STORAGE_ADDON_PROPS);
 
         expect(findQuantityText().text()).toMatchInterpolatedText(
@@ -198,12 +191,7 @@ describe('Buy Addons Shared App', () => {
       });
 
       it('does not show labels if input is invalid', async () => {
-        const mockApollo = createMockApolloProvider(
-          {
-            plansQueryMock: jest.fn().mockResolvedValue({ data: { plans: mockStoragePlans } }),
-          },
-          { quantity: -1 },
-        );
+        const mockApollo = createMockApolloProvider({ plansQueryMock }, { quantity: -1 });
         await createComponent(mockApollo, STORAGE_ADDON_PROPS);
 
         expect(findQuantityText().text()).toMatchInterpolatedText('x 10 GB per pack');
