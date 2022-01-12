@@ -5,6 +5,12 @@ import { corpuses } from './mock_data';
 
 const TEST_PROJECT_FULL_PATH = '/namespace/project';
 
+const CORPUS = {
+  package: {
+    id: 1,
+  },
+};
+
 describe('Corpus table', () => {
   let wrapper;
 
@@ -13,18 +19,11 @@ describe('Corpus table', () => {
       corpuses,
     };
 
-    const defaultMocks = {
-      $apollo: {
-        mutate: jest.fn().mockResolvedValue(),
-      },
-    };
-
     wrapper = mount(CorpusTable, {
       propsData: defaultProps,
       provide: {
         projectFullPath: TEST_PROJECT_FULL_PATH,
       },
-      mocks: defaultMocks,
       ...options,
     });
   };
@@ -49,16 +48,11 @@ describe('Corpus table', () => {
       expect(columnHeaders.element).toMatchSnapshot();
     });
 
-    it('triggers the corpus deletion mutation', () => {
-      const {
-        $apollo: { mutate },
-      } = wrapper.vm;
-
+    it('emits the delete event', () => {
       const actionComponent = wrapper.findComponent(Actions);
-
-      expect(mutate).not.toHaveBeenCalled();
-      actionComponent.vm.$emit('delete', 'corpus-name');
-      expect(mutate).toHaveBeenCalledTimes(1);
+      actionComponent.vm.$emit('delete', CORPUS);
+      expect(wrapper.emitted('delete')).toBeTruthy();
+      expect(wrapper.emitted('delete')[0][0]).toEqual(CORPUS.package.id);
     });
 
     describe('with no corpuses', () => {

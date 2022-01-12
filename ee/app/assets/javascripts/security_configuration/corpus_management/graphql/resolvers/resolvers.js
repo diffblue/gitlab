@@ -44,9 +44,6 @@ export default {
         },
       });
     },
-    deleteCorpus: () => {
-      // NO-OP
-    },
     uploadCorpus: (_, { projectPath, name, files }, { cache, client }) => {
       const onUploadProgress = (e) => {
         client.mutate({

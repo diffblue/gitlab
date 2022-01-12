@@ -6,7 +6,6 @@ import Target from 'ee/security_configuration/corpus_management/components/colum
 import { s__ } from '~/locale';
 import UserDate from '~/vue_shared/components/user_date.vue';
 import { ISO_SHORT_FORMAT } from '~/vue_shared/constants';
-import deleteCorpusMutation from '../graphql/mutations/delete_corpus.mutation.graphql';
 
 const thClass = 'gl-bg-transparent! gl-border-gray-100! gl-border-b-solid! gl-border-b-1!';
 
@@ -56,11 +55,8 @@ export default {
     emptyTable: s__('CorpusManagement|Currently, there are no uploaded or generated corpuses.'),
   },
   methods: {
-    onDelete({ name }) {
-      this.$apollo.mutate({
-        mutation: deleteCorpusMutation,
-        variables: { name, projectPath: this.projectFullPath },
-      });
+    onDelete({ package: { id } }) {
+      this.$emit('delete', id);
     },
     target(corpus) {
       return corpus.package.pipelines.nodes[0]?.ref;
