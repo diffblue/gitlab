@@ -2,7 +2,7 @@
 require 'erb'
 
 module QA
-  RSpec.describe 'Configure', only: { subdomain: :staging } do
+  RSpec.describe 'Configure', only: { subdomain: :staging }, quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/349708', type: :investigating } do
     include Service::Shellout
 
     describe 'Kubernetes Agent' do
