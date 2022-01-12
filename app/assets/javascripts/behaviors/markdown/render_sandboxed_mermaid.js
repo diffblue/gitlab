@@ -31,6 +31,7 @@ const MAX_CHAR_LIMIT = 2000;
 const MAX_MERMAID_BLOCK_LIMIT = 50;
 // Max # of `&` allowed in Chaining of links syntax
 const MAX_CHAINING_OF_LINKS_LIMIT = 30;
+const BUFFER_IFRAME_HEIGHT = 10;
 // Keep a map of mermaid blocks we've already rendered.
 const elsProcessingMap = new WeakMap();
 let renderedMermaidBlocks = 0;
@@ -119,7 +120,7 @@ function renderMermaidEl(el, source) {
       }
       const { h } = event.data;
       iframeEl.width = '100%';
-      iframeEl.height = `${h + 10}px`;
+      iframeEl.height = `${h + BUFFER_IFRAME_HEIGHT}px`;
     },
     false,
   );
