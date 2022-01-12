@@ -100,12 +100,16 @@ module GitalySetup
     end
   end
 
+  def run_command(cmd, env: {})
+    system(env, *cmd, exception: true, chdir: tmp_tests_gitaly_dir)
+  end
+
   def install_gitaly_gems
-    system(env, "make #{tmp_tests_gitaly_dir}/.ruby-bundle", chdir: tmp_tests_gitaly_dir) # rubocop:disable GitlabSecurity/SystemCommandInjection
+    run_command(%W[make #{tmp_tests_gitaly_dir}/.ruby-bundle], env: env)
   end
 
   def build_gitaly
-    system(env.merge({ 'GIT_VERSION' => nil }), 'make all git', chdir: tmp_tests_gitaly_dir) # rubocop:disable GitlabSecurity/SystemCommandInjection
+    run_command(%w[make all git], env: env.merge('GIT_VERSION' => nil))
   end
 
   def start_gitaly
