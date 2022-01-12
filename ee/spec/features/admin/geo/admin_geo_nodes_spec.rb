@@ -21,7 +21,7 @@ RSpec.describe 'admin Geo Nodes', :js, :geo do
     breadcrumbs = page.all(:css, '.breadcrumbs-list>li')
     expect(breadcrumbs.length).to eq(3)
     expect(breadcrumbs[0].text).to eq('Admin Area')
-    expect(breadcrumbs[1].text).to eq('Geo Nodes')
+    expect(breadcrumbs[1].text).to eq('Geo Sites')
     expect(breadcrumbs[2].text).to eq(text)
   end
 
@@ -136,7 +136,7 @@ RSpec.describe 'admin Geo Nodes', :js, :geo do
     end
 
     it 'includes Geo Nodes in breadcrumbs' do
-      expect_breadcrumb('Add New Node')
+      expect_breadcrumb('Add New Site')
     end
   end
 
@@ -161,7 +161,7 @@ RSpec.describe 'admin Geo Nodes', :js, :geo do
     end
 
     it 'includes Geo Nodes in breadcrumbs' do
-      expect_breadcrumb('Edit Geo Node')
+      expect_breadcrumb('Edit Geo Site')
     end
   end
 

@@ -18,12 +18,12 @@ class Admin::Geo::NodesController < Admin::Geo::ApplicationController
   end
 
   def new
-    @form_title = _('Add New Node')
+    @form_title = _('Add New Site')
     render :form
   end
 
   def edit
-    @form_title = _('Edit Geo Node')
+    @form_title = _('Edit Geo Site')
     render :form
   end
 

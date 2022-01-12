@@ -44,23 +44,39 @@ RSpec.describe 'EE-specific admin routing' do
     let(:geo_node) { create(:geo_node) }
 
     it 'routes / to #index' do
-      expect(get('/admin/geo/nodes')).to route_to('admin/geo/nodes#index')
+      expect(get('/admin/geo')).to route_to('admin/geo/nodes#index')
+    end
+
+    it 'routes /sites to #index' do
+      expect(get('/admin/geo/sites')).to route_to('admin/geo/nodes#index')
     end
 
     it 'routes /new to #new' do
-      expect(get('/admin/geo/nodes/new')).to route_to('admin/geo/nodes#new')
+      expect(get('/admin/geo/sites/new')).to route_to('admin/geo/nodes#new')
     end
 
     it 'routes /edit to #edit' do
-      expect(get("/admin/geo/nodes/#{geo_node.id}/edit")).to route_to('admin/geo/nodes#edit', id: geo_node.to_param)
+      expect(get("/admin/geo/sites/#{geo_node.id}/edit")).to route_to('admin/geo/nodes#edit', id: geo_node.to_param)
     end
 
     it 'routes post / to #create' do
-      expect(post('/admin/geo/nodes/')).to route_to('admin/geo/nodes#create')
+      expect(post('/admin/geo/sites/')).to route_to('admin/geo/nodes#create')
     end
 
     it 'routes patch /:id to #update' do
-      expect(patch("/admin/geo/nodes/#{geo_node.id}")).to route_to('admin/geo/nodes#update', id: geo_node.to_param)
+      expect(patch("/admin/geo/sites/#{geo_node.id}")).to route_to('admin/geo/nodes#update', id: geo_node.to_param)
+    end
+
+    it 'redirects /nodes to /sites', type: :request do
+      expect(get('/admin/geo/nodes')).to redirect_to('/admin/geo/sites')
+    end
+
+    it 'redirects /nodes/new to /sites/new', type: :request do
+      expect(get('/admin/geo/nodes/new')).to redirect_to('/admin/geo/sites/new')
+    end
+
+    it 'redirects /nodes/:id/edit to /sites/:id/new', type: :request do
+      expect(get("/admin/geo/nodes/#{geo_node.id}/edit")).to redirect_to("/admin/geo/sites/#{geo_node.id}/edit")
     end
   end
 
