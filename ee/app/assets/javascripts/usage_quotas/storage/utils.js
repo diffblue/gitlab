@@ -178,3 +178,13 @@ export const parseGetProjectStorageResults = (data, helpLinks) => {
     statistics: projectStatistics,
   };
 };
+
+/**
+ * Creates a sorting function to sort storage types by usage in the graph and in the table
+ *
+ * @param {string} storageUsageKey key storing value of storage usage
+ * @returns {Function} sorting function
+ */
+export function descendingStorageUsageSort(storageUsageKey) {
+  return (a, b) => b[storageUsageKey] - a[storageUsageKey];
+}

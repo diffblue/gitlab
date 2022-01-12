@@ -2,14 +2,14 @@ import { GlTableLite } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import ProjectStorageDetail from 'ee/usage_quotas/storage/components/project_storage_detail.vue';
+import { numberToHumanSize } from '~/lib/utils/number_utils';
 import { projectData, projectHelpLinks } from '../mock_data';
 
 describe('ProjectStorageDetail', () => {
   let wrapper;
 
-  const defaultProps = {
-    storageTypes: projectData.storage.storageTypes,
-  };
+  const { storageTypes } = projectData.storage;
+  const defaultProps = { storageTypes };
 
   const createComponent = (props = {}) => {
     wrapper = extendedWrapper(
@@ -32,7 +32,7 @@ describe('ProjectStorageDetail', () => {
   });
 
   describe('with storage types', () => {
-    it.each(projectData.storage.storageTypes)(
+    it.each(storageTypes)(
       'renders table row correctly %o',
       ({ storageType: { id, name, description } }) => {
         expect(wrapper.findByTestId(`${id}-name`).text()).toBe(name);
@@ -43,6 +43,18 @@ describe('ProjectStorageDetail', () => {
         );
       },
     );
+
+    it('should render items in order from the biggest usage size to the smallest', () => {
+      const rows = findTable().find('tbody').findAll('tr');
+      // Cloning array not to mutate the source
+      const sortedStorageTypes = [...storageTypes].sort((a, b) => b.value - a.value);
+
+      sortedStorageTypes.forEach((storageType, i) => {
+        const rowUsageAmount = rows.wrappers[i].find('td:last-child').text();
+        const expectedUsageAmount = numberToHumanSize(storageType.value, 1);
+        expect(rowUsageAmount).toBe(expectedUsageAmount);
+      });
+    });
   });
 
   describe('without storage types', () => {
