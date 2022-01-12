@@ -10,7 +10,9 @@ module EE
 
         override :destroy_related_records
         def destroy_related_records(artifacts)
-          destroy_security_findings(artifacts)
+          ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.allow_cross_database_modification_within_transaction(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/346236') do
+            destroy_security_findings(artifacts)
+          end
         end
 
         override :after_batch_destroy_hook
