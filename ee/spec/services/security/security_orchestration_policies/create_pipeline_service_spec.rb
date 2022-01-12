@@ -103,7 +103,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService do
                 masked: false
               ),
               {
-                key: 'CIS_RESOURCE_NAMESPACE',
+                key: 'CIS_RESOURCE_NAMESPACES',
                 masked: false,
                 public: true,
                 value: 'gitlab-namespace'

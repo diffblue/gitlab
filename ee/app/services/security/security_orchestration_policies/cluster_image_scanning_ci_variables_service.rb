@@ -20,10 +20,10 @@ module Security
         return SCAN_VARIABLES if resource_filters.blank?
 
         SCAN_VARIABLES.merge({
-          'CIS_CONTAINER_NAME' => resource_filter_value(resource_filters[:containers]),
-          'CIS_RESOURCE_NAME' => resource_filter_value(resource_filters[:resources]),
-          'CIS_RESOURCE_NAMESPACE' => resource_filter_value(resource_filters[:namespaces]),
-          'CIS_RESOURCE_KIND' => resource_filter_value(resource_filters[:kinds])
+          'CIS_CONTAINER_NAMES' => resource_filter_value(resource_filters[:containers]),
+          'CIS_RESOURCE_NAMES' => resource_filter_value(resource_filters[:resources]),
+          'CIS_RESOURCE_NAMESPACES' => resource_filter_value(resource_filters[:namespaces]),
+          'CIS_RESOURCE_KINDS' => resource_filter_value(resource_filters[:kinds])
         }.compact)
       end
 
@@ -40,12 +40,9 @@ module Security
       end
 
       def resource_filter_value(filter_values)
-        # TODO: Add support for multiple values in filter (modify analyzer to support that).
         return if filter_values.blank?
 
-        filter_values
-          .compact
-          .first
+        filter_values.compact.join(",")
       end
     end
   end
