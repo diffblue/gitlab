@@ -319,6 +319,10 @@ describe('EE Value Stream Analytics component', () => {
         displaysStageTable(true);
       });
 
+      it('sets the `includeProjectName` prop on stage table', () => {
+        expect(findStageTable().props('includeProjectName')).toBe(true);
+      });
+
       it('displays the path navigation', () => {
         displaysPathNavigation(true);
       });
