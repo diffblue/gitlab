@@ -320,13 +320,13 @@ export default {
               v-if="showEpicHealthStatus"
               :health-status="item.healthStatus"
               data-testid="epic-health-status"
-              class="issuable-tag-valign gl-mr-5 gl-mb-3"
+              class="gl-mr-5 gl-mb-3"
             />
             <issue-health-status
               v-if="showIssueHealthStatus"
               :health-status="item.healthStatus"
               data-testid="issue-health-status"
-              class="issuable-tag-valign gl-mr-5 gl-mb-3"
+              class="gl-mr-5 gl-mb-3"
             />
 
             <template v-if="showLabels">
