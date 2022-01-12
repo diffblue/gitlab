@@ -59,46 +59,24 @@ RSpec.describe 'cross-database foreign keys' do
     ).freeze
   end
 
-  def fks_query(table)
-    <<~SQL
-      SELECT
-        tc.constraint_name,
-        tc.table_name,
-        kcu.column_name,
-        ccu.table_name AS foreign_table_name
-      FROM information_schema.table_constraints AS tc
-        JOIN information_schema.key_column_usage AS kcu
-          ON tc.constraint_name = kcu.constraint_name
-          AND tc.table_schema = kcu.table_schema
-        JOIN information_schema.constraint_column_usage AS ccu
-          ON ccu.constraint_name = tc.constraint_name
-          AND ccu.table_schema = tc.table_schema
-        JOIN information_schema.referential_constraints as rc
-          ON tc.constraint_name = rc.constraint_name
-      WHERE tc.constraint_type = 'FOREIGN KEY' AND tc.table_name='#{table}';
-    SQL
+  def foreign_keys_for(table_name)
+    ApplicationRecord.connection.foreign_keys(table_name)
   end
 
   def is_cross_db?(fk_record)
-    Gitlab::Database::GitlabSchema.table_schemas([fk_record['table_name'], fk_record['foreign_table_name']]).many?
+    Gitlab::Database::GitlabSchema.table_schemas([fk_record.from_table, fk_record.to_table]).many?
   end
 
   it 'onlies have allowed list of cross-database foreign keys', :aggregate_failures do
     all_tables = ApplicationRecord.connection.data_sources
 
-    cross_db_fks = []
     all_tables.each do |table|
-      ::ApplicationRecord.connection.execute(fks_query(table)).each do |row|
-        if is_cross_db?(row)
-          column = "#{row['table_name']}.#{row['column_name']}"
-          cross_db_fks << column
-          expect(allowed_cross_database_foreign_keys).to include(column), "Found extra cross-database foreign key #{column} referencing #{row['foreign_table_name']} with constraint name #{row['constraint_name']}. When a foreign key references another database you must use a Loose Foreign Key instead https://docs.gitlab.com/ee/development/database/loose_foreign_keys.html ."
+      foreign_keys_for(table).each do |fk|
+        if is_cross_db?(fk)
+          column = "#{fk.from_table}.#{fk.column}"
+          expect(allowed_cross_database_foreign_keys).to include(column), "Found extra cross-database foreign key #{column} referencing #{fk.to_table} with constraint name #{fk.name}. When a foreign key references another database you must use a Loose Foreign Key instead https://docs.gitlab.com/ee/development/database/loose_foreign_keys.html ."
         end
       end
     end
-
-    # Ensure that ALLOWED_CROSS_DATABASE_FOREIGN_KEYS does not contain extra
-    # foreign keys that have since been removed
-    expect(cross_db_fks).to match_array(allowed_cross_database_foreign_keys)
   end
 end
