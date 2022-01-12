@@ -52,7 +52,7 @@ RSpec.describe 'Issue board filters', :js do
       set_filter('iteration')
     end
 
-    it 'loads all the iterations when opened and submit one as filter', :aggregate_failures do
+    it 'loads all the iterations when opened and submit one as filter', :aggregate_failures, quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/348301' do
       expect(find('.board:nth-child(1)')).to have_selector('.board-card', count: 2)
 
       expect_filtered_search_dropdown_results(filter_dropdown, 3)
