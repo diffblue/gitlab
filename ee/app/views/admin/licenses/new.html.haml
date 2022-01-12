@@ -25,38 +25,35 @@
 
 
 
-  .form-group.row
-    .col-sm-2
-    .col-sm-10
-      .form-check
-        = radio_button_tag :license_type, :file, @license.data.blank?, class: 'form-check-input'
-        = label_tag :license_type_file, class: 'form-check-label' do
-          .option-title
-            Upload <code>.gitlab-license</code> file
-      .form-check
-        = radio_button_tag :license_type, :key, @license.data.present?, class: 'form-check-input', data: { qa_selector: 'license_type_key_radio' }
-        = label_tag :license_type_key, class: 'form-check-label' do
-          .option-title
-            Enter license key
-
-  .form-group.row.license-file
-    .col-sm-2.col-form-label
-      = f.label :data_file, "License file"
-    .col-sm-10
+  .form-group
+    .form-check
+      = radio_button_tag :license_type, :file, @license.data.blank?, class: 'form-check-input'
+      = label_tag :license_type_file, class: 'form-check-label' do
+        .option-title
+          = _('Upload %{file_name} file').html_safe % { file_name: '<code>.gitlab-license</code>'.html_safe }
+    .form-group.license-file.gl-mt-4
+      = f.label :data_file, _('License file'), class: 'gl-sr-only'
       = f.file_field :data_file, accept: ".gitlab-license,.gitlab_license,.txt", class: "form-control"
-
-  .form-group.row.license-key.hidden
-    .col-sm-2.col-form-label
-      = f.label :data, "License key"
-    .col-sm-10
+    .form-check.gl-my-4
+      = radio_button_tag :license_type, :key, @license.data.present?, class: 'form-check-input', data: { qa_selector: 'license_type_key_radio' }
+      = label_tag :license_type_key, class: 'form-check-label' do
+        .option-title
+          = _('Enter license key')
+    .form-group.license-key.hidden
+      = f.label :data, _('License key'), class: 'gl-sr-only'
       = f.text_area :data, class: "form-control license-key-field", data: { qa_selector: 'license_key_field' }, rows: 20
 
-  .form-group.row
-    .col-sm-2
-    .col-sm-10
-      = label_tag :accept_eula, nil, class: 'form-check-label' do
-        = check_box_tag :accept_eula, nil, false, data: { qa_selector: 'accept_eula_checkbox' }
-        = _('Unless otherwise agreed to in writing with GitLab, by clicking "Upload License" you agree that your use of GitLab Software is subject to the %{eula_link_start}Terms of Service%{eula_link_end}.').html_safe % { eula_link_start: eula_link_start, eula_url: eula_url, eula_link_end: '</a>'.html_safe }
+
+
+
+  %hr
+
+  %h4.gl-font-base= _("Terms of service")
+
+  .form-group
+    = label_tag :accept_eula, nil, class: 'form-check-label' do
+      = check_box_tag :accept_eula, nil, false, data: { qa_selector: 'accept_eula_checkbox' }
+      = _('Unless otherwise agreed to in writing with GitLab, by clicking "Upload License" you agree that your use of GitLab Software is subject to the %{eula_link_start}Terms of Service%{eula_link_end}.').html_safe % { eula_link_start: eula_link_start, eula_url: eula_url, eula_link_end: '</a>'.html_safe }
 
   .form-actions
     = f.submit 'Upload License', class: 'gl-button btn btn-confirm', data: { qa_selector: 'license_upload_button' }, disabled: true, id: 'js-upload-license'

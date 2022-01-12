@@ -11,6 +11,7 @@ class Admin::LicensesController < Admin::ApplicationController
   feature_category :license
 
   def new
+    @content_class = 'limit-container-width' unless fluid_layout
     @license ||= License.new(data: params[:trial_key])
   end
 
