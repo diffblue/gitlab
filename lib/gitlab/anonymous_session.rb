@@ -2,7 +2,6 @@
 
 module Gitlab
   class AnonymousSession
-
     def initialize(remote_ip)
       @remote_ip = remote_ip
     end
