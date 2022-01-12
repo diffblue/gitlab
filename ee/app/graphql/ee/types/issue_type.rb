@@ -41,6 +41,9 @@ module EE
         field :metric_images, [::Types::MetricImageType], null: true,
               description: 'Metric images associated to the issue.'
 
+        field :escalation_policy, ::Types::IncidentManagement::EscalationPolicyType, null: true,
+          description: 'Escalation policy associated with the issue. Available for issues which support escalation.'
+
         def iteration
           ::Gitlab::Graphql::Loaders::BatchModelLoader.new(::Iteration, object.sprint_id).find
         end
@@ -67,6 +70,10 @@ module EE
 
         def health_status
           object.supports_health_status? ? object.health_status : nil
+        end
+
+        def escalation_policy
+          object.escalation_policies_available? ? object.escalation_status&.policy : nil
         end
       end
     end

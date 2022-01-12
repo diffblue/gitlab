@@ -13,6 +13,7 @@ RSpec.describe GitlabSchema.types['Issue'] do
   it { expect(described_class).to have_graphql_field(:blocked_by_issues) }
   it { expect(described_class).to have_graphql_field(:sla_due_at) }
   it { expect(described_class).to have_graphql_field(:metric_images) }
+  it { expect(described_class).to have_graphql_field(:escalation_policy) }
 
   context 'N+1 queries' do
     let_it_be(:user) { create(:user) }
