@@ -2,6 +2,7 @@ query getCiMinutesUsage {
   ciMinutesUsage {
     nodes {
       month
+      monthIso8601
       minutes
       projects {
         nodes {

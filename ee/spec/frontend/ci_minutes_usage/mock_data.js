@@ -4,6 +4,7 @@ export const ciMinutesUsageMockData = {
       nodes: [
         {
           month: 'June',
+          monthIso8601: '2021-06-01',
           minutes: 5,
           projects: {
             nodes: [

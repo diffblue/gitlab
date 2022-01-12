@@ -12,6 +12,9 @@ module Types
         field :month, ::GraphQL::Types::String, null: true,
               description: 'Month related to the usage data.'
 
+        field :month_iso8601, ::GraphQL::Types::ISO8601Date, method: :date, null: true,
+              description: 'Month related to the usage data in ISO 8601 date format.'
+
         field :minutes, ::GraphQL::Types::Int, null: true,
               method: :amount_used,
               description: 'Total number of minutes used by all projects in the namespace.'

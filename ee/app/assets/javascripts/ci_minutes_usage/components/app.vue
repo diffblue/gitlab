@@ -1,5 +1,5 @@
 <script>
-import { MONTHS } from '../constants';
+import { formatDate } from '~/lib/utils/datetime_utility';
 import getCiMinutesUsage from '../graphql/queries/ci_minutes.graphql';
 import MinutesUsageMonthChart from './minutes_usage_month_chart.vue';
 import MinutesUsageProjectChart from './minutes_usage_project_chart.vue';
@@ -24,21 +24,12 @@ export default {
   },
   computed: {
     minutesUsageDataByMonth() {
-      function monthIndex([name]) {
-        return Object.keys(MONTHS).indexOf(name.toLowerCase());
-      }
-
       return this.ciMinutesUsage
-        .map((cur) => [cur.month, cur.minutes])
+        .slice()
         .sort((a, b) => {
-          if (monthIndex(a) > monthIndex(b)) {
-            return 1;
-          }
-          if (monthIndex(a) < monthIndex(b)) {
-            return -1;
-          }
-          return 0;
-        });
+          return new Date(a.monthIso8601) - new Date(b.monthIso8601);
+        })
+        .map((cur) => [formatDate(cur.monthIso8601, 'mmm yyyy'), cur.minutes]);
     },
   },
 };
