@@ -32,9 +32,8 @@ module EE
         def show
           return super unless security_dashboard_feature_enabled? && can_read_security_dashboard?
 
-          @configuration = ::Projects::Security::ConfigurationPresenter.new(project,
-                                                                            auto_fix_permission: auto_fix_authorized?,
-                                                                            current_user: current_user)
+          @configuration ||= configuration_presenter
+
           respond_to do |format|
             format.html
             format.json do
@@ -91,6 +90,11 @@ module EE
 
         def authorize_read_security_dashboard!
           render_403 unless can_read_security_dashboard?
+        end
+
+        override :presenter_attributes
+        def presenter_attributes
+          super.merge({ auto_fix_permission: auto_fix_authorized? })
         end
       end
     end
