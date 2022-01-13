@@ -404,9 +404,9 @@ export default {
     commit(types.RESET_EPICS);
   },
 
-  setActiveItemWeight: async ({ commit, getters }, weight) => {
+  setActiveItemWeight: async ({ commit }, { weight, id }) => {
     commit(typesCE.UPDATE_BOARD_ITEM_BY_ID, {
-      itemId: getters.activeBoardItem.id,
+      itemId: id,
       prop: 'weight',
       value: weight,
     });
