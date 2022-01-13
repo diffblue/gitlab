@@ -79,8 +79,8 @@ module EE
       stub_const('DummyModel', Class.new(ApplicationRecord))
 
       DummyModel.class_eval do
-        include ::Gitlab::Geo::ReplicableModel
-        include ::Gitlab::Geo::VerificationState
+        include ::Geo::ReplicableModel
+        include ::Geo::VerifiableModel
 
         with_replicator Geo::DummyReplicator
 
@@ -170,8 +170,8 @@ module EE
       TestDummyModelWithSeparateState.class_eval do
         self.table_name = '_test_dummy_model_with_separate_states'
 
-        include ::Gitlab::Geo::ReplicableModel
-        include ::Gitlab::Geo::VerificationState
+        include ::Geo::ReplicableModel
+        include ::Geo::VerifiableModel
 
         with_replicator Geo::DummyReplicator
 

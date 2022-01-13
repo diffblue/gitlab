@@ -4,13 +4,13 @@ module Geo
   module VerifiableRegistry
     extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
-    include ::Gitlab::Geo::VerificationState
+    include ::Geo::VerificationState
 
     class_methods do
       extend ::Gitlab::Utils::Override
 
-      # Overrides a method in `Gitlab::Geo::VerificationState`. This method is
-      # used by `Gitlab::Geo::VerificationState.start_verification_batch` to
+      # Overrides a method in `::Geo::VerificationState`. This method is
+      # used by `::Geo::VerificationState.start_verification_batch` to
       # produce a query which must return values of the primary key of the
       # *model*, not of the *registry*. We need this so we can instantiate
       # Replicators.

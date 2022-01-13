@@ -8,7 +8,7 @@ require 'spec_helper'
 #   against a DummyModel.
 # - Place tests in replicable_model_shared_examples.rb if you want them to be
 #   run against every real Model.
-RSpec.describe Gitlab::Geo::ReplicableModel do
+RSpec.describe Geo::ReplicableModel do
   include ::EE::GeoHelpers
 
   let_it_be(:primary_node) { create(:geo_node, :primary) }
@@ -41,6 +41,17 @@ RSpec.describe Gitlab::Geo::ReplicableModel do
 
     it 'instantiates a replicator into the model' do
       expect(subject.replicator).to be_a(Geo::DummyReplicator)
+    end
+
+    context 'when replicator is not defined in inheriting class' do
+      before do
+        stub_const('DummyModel', Class.new(ApplicationRecord))
+        DummyModel.class_eval { include ::Geo::ReplicableModel }
+      end
+
+      it 'raises NotImplementedError' do
+        expect { DummyModel.new.replicator }.to raise_error(NotImplementedError)
+      end
     end
   end
 

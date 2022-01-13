@@ -5,9 +5,9 @@ module EE
     extend ActiveSupport::Concern
 
     prepended do
-      include ::Gitlab::Geo::ReplicableModel
+      include ::Geo::ReplicableModel
       include ObjectStorable
-      include ::Gitlab::Geo::VerificationState
+      include ::Geo::VerifiableModel
 
       STORE_COLUMN = :external_diff_store
 
