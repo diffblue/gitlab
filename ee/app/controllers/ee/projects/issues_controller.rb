@@ -102,6 +102,7 @@ module EE
       def render_vulnerability_link_alert
         render_to_string(
           partial: 'vulnerabilities/unable_to_link_vulnerability',
+          formats: :html,
           locals: {
             vulnerability_link: vulnerability_path(vulnerability)
           }
