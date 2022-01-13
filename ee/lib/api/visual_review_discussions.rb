@@ -6,7 +6,7 @@ module API
     helpers ::API::Helpers::NotesHelpers
     helpers ::RendersNotes
 
-    feature_category :usability_testing
+    feature_category :review_apps
 
     params do
       requires :id, type: String, desc: "The ID of a Project"
