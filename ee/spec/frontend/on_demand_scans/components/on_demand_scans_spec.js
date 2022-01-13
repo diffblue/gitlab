@@ -34,6 +34,7 @@ describe('OnDemandScans', () => {
     running: 3,
     finished: 9,
     scheduled: 5,
+    saved: 3,
   };
   const emptyInitialPipelineCounts = Object.fromEntries(PIPELINE_TABS_KEYS.map((key) => [key, 0]));
 
@@ -51,6 +52,15 @@ describe('OnDemandScans', () => {
   // Helpers
   const createMockApolloProvider = () => {
     return createMockApollo([[onDemandScansCounts, requestHandler]]);
+  };
+
+  // Assertions
+  const expectTabsToBeRendered = () => {
+    expect(findAllTab().exists()).toBe(true);
+    expect(findRunningTab().exists()).toBe(true);
+    expect(findFinishedTab().exists()).toBe(true);
+    expect(findScheduledTab().exists()).toBe(true);
+    expect(findSavedTab().exists()).toBe(true);
   };
 
   const createComponent = (options = {}) => {
@@ -117,6 +127,28 @@ describe('OnDemandScans', () => {
     expect(findEmptyState().exists()).toBe(false);
   });
 
+  describe('non-empty states', () => {
+    it.each`
+      description    | counts
+      ${'scheduled'} | ${{ scheduled: 0 }}
+      ${'saved'}     | ${{ saved: 0 }}
+    `(
+      'shows the tabs when there are no pipelines but there are $description scans',
+      ({ counts }) => {
+        createComponent({
+          propsData: {
+            initialOnDemandScanCounts: {
+              all: 0,
+              ...counts,
+            },
+          },
+        });
+
+        expectTabsToBeRendered();
+      },
+    );
+  });
+
   describe('when there is data', () => {
     beforeEach(() => {
       createComponent();
@@ -139,11 +171,7 @@ describe('OnDemandScans', () => {
     });
 
     it('renders the tabs', () => {
-      expect(findAllTab().exists()).toBe(true);
-      expect(findRunningTab().exists()).toBe(true);
-      expect(findFinishedTab().exists()).toBe(true);
-      expect(findScheduledTab().exists()).toBe(true);
-      expect(findSavedTab().exists()).toBe(true);
+      expectTabsToBeRendered();
     });
 
     it('sets the initial route to /all', () => {

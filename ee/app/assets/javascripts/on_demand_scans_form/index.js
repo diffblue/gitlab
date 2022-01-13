@@ -11,7 +11,7 @@ export default () => {
   const {
     projectPath,
     defaultBranch,
-    profilesLibraryPath,
+    onDemandScansPath,
     scannerProfilesLibraryPath,
     siteProfilesLibraryPath,
     newSiteProfilePath,
@@ -25,7 +25,7 @@ export default () => {
     apolloProvider,
     provide: {
       projectPath,
-      profilesLibraryPath,
+      onDemandScansPath,
       scannerProfilesLibraryPath,
       siteProfilesLibraryPath,
       newScannerProfilePath,

@@ -7,7 +7,6 @@ import DastProfiles from 'ee/security_configuration/dast_profiles/components/das
 import setWindowLocation from 'helpers/set_window_location_helper';
 import { TEST_HOST } from 'helpers/test_constants';
 
-const TEST_NEW_DAST_SAVED_SCAN_PATH = '/-/on_demand_scans/new';
 const TEST_NEW_DAST_SCANNER_PROFILE_PATH = '/-/on_demand_scans/scanner_profiles/new';
 const TEST_NEW_DAST_SITE_PROFILE_PATH = '/-/on_demand_scans/site_profiles/new';
 const TEST_PROJECT_FULL_PATH = '/namespace/project';
@@ -22,7 +21,6 @@ describe('EE - DastProfiles', () => {
   const createComponentFactory = (mountFn = shallowMount) => (options = {}) => {
     const defaultProps = {
       createNewProfilePaths: {
-        savedScan: TEST_NEW_DAST_SAVED_SCAN_PATH,
         scannerProfile: TEST_NEW_DAST_SCANNER_PROFILE_PATH,
         siteProfile: TEST_NEW_DAST_SITE_PROFILE_PATH,
       },
@@ -104,7 +102,6 @@ describe('EE - DastProfiles', () => {
 
     it.each`
       itemName             | href
-      ${'DAST Scan'}       | ${TEST_NEW_DAST_SAVED_SCAN_PATH}
       ${'Site Profile'}    | ${TEST_NEW_DAST_SITE_PROFILE_PATH}
       ${'Scanner Profile'} | ${TEST_NEW_DAST_SCANNER_PROFILE_PATH}
     `('shows a "$itemName" dropdown item that links to $href', ({ itemName, href }) => {
@@ -128,8 +125,7 @@ describe('EE - DastProfiles', () => {
 
       it.each`
         tabName               | shouldBeSelectedByDefault
-        ${'Saved Scans'}      | ${true}
-        ${'Site Profiles'}    | ${false}
+        ${'Site Profiles'}    | ${true}
         ${'Scanner Profiles'} | ${false}
       `(
         'shows a "$tabName" tab which has "selected" set to "$shouldBeSelectedByDefault"',
@@ -146,9 +142,8 @@ describe('EE - DastProfiles', () => {
 
     describe.each`
       tabName               | index | givenLocationHash
-      ${'Saved Scans'}      | ${0}  | ${'#saved-scans'}
-      ${'Site Profiles'}    | ${1}  | ${'#site-profiles'}
-      ${'Scanner Profiles'} | ${2}  | ${'#scanner-profiles'}
+      ${'Site Profiles'}    | ${0}  | ${'#site-profiles'}
+      ${'Scanner Profiles'} | ${1}  | ${'#scanner-profiles'}
     `('with location hash set to "$givenLocationHash"', ({ tabName, index, givenLocationHash }) => {
       beforeEach(() => {
         setWindowLocation(givenLocationHash);
@@ -177,9 +172,6 @@ describe('EE - DastProfiles', () => {
 
   it.each`
     profileType          | key                            | givenData                              | expectedValue | exposedAsProp
-    ${'dastProfiles'}    | ${'errorMessage'}              | ${{ errorMessage: 'foo' }}             | ${'foo'}      | ${true}
-    ${'dastProfiles'}    | ${'errorDetails'}              | ${{ errorDetails: ['foo'] }}           | ${['foo']}    | ${true}
-    ${'dastProfiles'}    | ${'has-more-profiles-to-load'} | ${{ pageInfo: { hasNextPage: true } }} | ${'true'}     | ${false}
     ${'siteProfiles'}    | ${'error-message'}             | ${{ errorMessage: 'foo' }}             | ${'foo'}      | ${false}
     ${'siteProfiles'}    | ${'error-details'}             | ${{ errorDetails: ['foo'] }}           | ${'foo'}      | ${false}
     ${'siteProfiles'}    | ${'has-more-profiles-to-load'} | ${{ pageInfo: { hasNextPage: true } }} | ${'true'}     | ${false}
@@ -204,7 +196,6 @@ describe('EE - DastProfiles', () => {
 
   describe.each`
     description                | profileType
-    ${'Saved Scans List'}      | ${'dastProfiles'}
     ${'Site Profiles List'}    | ${'siteProfiles'}
     ${'Scanner Profiles List'} | ${'scannerProfiles'}
   `('$description', ({ profileType }) => {

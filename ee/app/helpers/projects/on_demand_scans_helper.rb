@@ -27,7 +27,7 @@ module Projects::OnDemandScansHelper
   def on_demand_scans_form_data(project)
     common_data(project).merge({
       'default-branch' => project.default_branch,
-      'profiles-library-path' => project_security_configuration_dast_scans_path(project),
+      'on-demand-scans-path' => project_on_demand_scans_path(project, anchor: 'saved'),
       'scanner-profiles-library-path' => project_security_configuration_dast_scans_path(project, anchor: 'scanner-profiles'),
       'site-profiles-library-path' => project_security_configuration_dast_scans_path(project, anchor: 'site-profiles'),
       'new-scanner-profile-path' => new_project_security_configuration_dast_scans_dast_scanner_profile_path(project),

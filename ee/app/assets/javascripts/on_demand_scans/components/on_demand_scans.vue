@@ -76,10 +76,17 @@ export default {
       return this.liveOnDemandScanCounts ?? this.initialOnDemandScanCounts;
     },
     hasData() {
-      // Scheduled scans aren't included in the total count yet because they are dastProfiles and
-      // not pipelines. When https://gitlab.com/gitlab-org/gitlab/-/issues/342950 is addressed, we
-      // will be able to rely on the "all" count only here.
-      return this.onDemandScanCounts.all + this.onDemandScanCounts.scheduled > 0;
+      // Scheduled and saved scans aren't included in the total count because they are
+      // dastProfiles, not pipelines.
+      // When https://gitlab.com/gitlab-org/gitlab/-/issues/342950 is addressed, we won't need to
+      // include scheduled scans in the calculation. We'll still need to include saved scans as
+      // those will likely neverr be considered pipelines.
+      return (
+        this.onDemandScanCounts.all +
+          this.onDemandScanCounts.scheduled +
+          this.onDemandScanCounts.saved >
+        0
+      );
     },
     tabs() {
       return {

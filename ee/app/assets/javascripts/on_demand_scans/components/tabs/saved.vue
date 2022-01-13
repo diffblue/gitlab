@@ -10,8 +10,8 @@ import {
 import { __, s__ } from '~/locale';
 import { redirectTo } from '~/lib/utils/url_utility';
 import ScanTypeBadge from 'ee/security_configuration/dast_profiles/components/dast_scan_type_badge.vue';
-import dastProfileRunMutation from 'ee/security_configuration/dast_profiles/graphql/dast_profile_run.mutation.graphql';
-import dastProfileDelete from 'ee/security_configuration/dast_profiles/graphql/dast_profile_delete.mutation.graphql';
+import dastProfileRunMutation from '../../graphql/dast_profile_run.mutation.graphql';
+import dastProfileDelete from '../../graphql/dast_profile_delete.mutation.graphql';
 import handlesErrors from '../../mixins/handles_errors';
 import { removeProfile } from '../../graphql/cache_utils';
 import dastProfilesQuery from '../../graphql/dast_profiles.query.graphql';
