@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class GroupWikiRepository < ApplicationRecord
-  include ::Gitlab::Geo::ReplicableModel
+  include ::Geo::ReplicableModel
   include EachBatch
   include Shardable
 

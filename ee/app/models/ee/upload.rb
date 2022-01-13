@@ -10,8 +10,8 @@ module EE
 
     prepended do
       include ::Gitlab::SQL::Pattern
-      include ::Gitlab::Geo::ReplicableModel
-      include ::Gitlab::Geo::VerificationState
+      include ::Geo::ReplicableModel
+      include ::Geo::VerifiableModel
 
       with_replicator ::Geo::UploadReplicator
 

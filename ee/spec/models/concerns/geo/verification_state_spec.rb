@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::VerificationState do
+RSpec.describe Geo::VerificationState do
   include ::EE::GeoHelpers
 
   let_it_be(:primary_node) { create(:geo_node, :primary) }
@@ -434,7 +434,7 @@ RSpec.describe Gitlab::Geo::VerificationState do
     end
 
     before do
-      stub_dummy_replicator_class(model_class: 'DummyModelWithSeparateState')
+      stub_dummy_replicator_class(model_class: 'TestDummyModelWithSeparateState')
       stub_dummy_model_with_separate_state_class
     end
 

@@ -6,8 +6,8 @@ module EE
       extend ActiveSupport::Concern
 
       prepended do
-        include ::Gitlab::Geo::ReplicableModel
-        include ::Gitlab::Geo::VerificationState
+        include ::Geo::ReplicableModel
+        include ::Geo::VerifiableModel
 
         with_replicator ::Geo::TerraformStateVersionReplicator
 
