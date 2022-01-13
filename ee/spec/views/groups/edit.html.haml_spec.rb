@@ -89,7 +89,14 @@ RSpec.describe 'groups/edit.html.haml' do
             allow(License).to receive(:current).and_return(nil)
           end
 
-          it_behaves_like 'renders registration features prompt', :group_disabled_ip_restriction_ranges
+          it 'renders a placeholder input with registration features message' do
+            render
+
+            expect(rendered).to have_field(:group_disabled_ip_restriction_ranges, disabled: true)
+            expect(rendered).to have_content(s_("RegistrationFeatures|Want to %{feature_title} for free?") % { feature_title: s_('RegistrationFeatures|use this feature') })
+            expect(rendered).to have_link(s_('RegistrationFeatures|Enable Service Ping and register for this feature.'))
+            expect(rendered).to have_link(s_('RegistrationFeatures|Registration Features Program'))
+          end
         end
 
         context 'with a valid license' do
