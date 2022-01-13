@@ -274,21 +274,6 @@ module GitalySetup
     "unix:" + socket_path(:praefect)
   end
 
-  def wait(service)
-    sleep_time = 10
-    sleep_interval = 0.1
-    socket = socket_path(service)
-
-    Integer(sleep_time / sleep_interval).times do
-      Socket.unix(socket)
-      return
-    rescue StandardError
-      sleep sleep_interval
-    end
-
-    raise "could not connect to #{service} at #{socket.inspect} after #{sleep_time} seconds"
-  end
-
   def stop(pid)
     Process.kill('KILL', pid)
   rescue Errno::ESRCH
@@ -311,9 +296,6 @@ module GitalySetup
       pids = [gitaly_pid, gitaly2_pid, praefect_pid]
       pids.each { |pid| stop(pid) }
     end
-
-    wait('gitaly')
-    wait('praefect')
   rescue StandardError
     raise gitaly_failure_message
   end
