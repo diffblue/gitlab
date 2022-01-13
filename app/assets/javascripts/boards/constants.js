@@ -119,6 +119,7 @@ export const FilterFields = {
 /* eslint-disable @gitlab/require-i18n-strings */
 export const AssigneeFilterType = {
   any: 'Any',
+  none: 'None',
 };
 
 export const MilestoneFilterType = {
