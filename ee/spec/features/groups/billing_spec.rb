@@ -57,7 +57,6 @@ RSpec.describe 'Groups > Billing', :js, :saas do
         expect(page).to have_content("#{group.name} is currently using the Free Plan")
         within subscription_table do
           expect(page).to have_content("start date #{formatted_date(subscription.start_date)}")
-          expect(page).to have_link("Upgrade", href: EE::SUBSCRIPTIONS_MANAGE_URL)
           expect(page).not_to have_link("Manage")
         end
       end
@@ -75,15 +74,12 @@ RSpec.describe 'Groups > Billing', :js, :saas do
       it 'shows the proper title and subscription data' do
         extra_seats_url = "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/extra_seats"
         renew_url = "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/renew"
-        upgrade_url =
-          "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/upgrade/bronze-external-id"
 
         visit group_billings_path(group)
 
         expect(page).to have_content("#{group.name} is currently using the Bronze Plan")
         within subscription_table do
           expect(page).to have_content("start date #{formatted_date(subscription.start_date)}")
-          expect(page).to have_link("Upgrade", href: upgrade_url)
           expect(page).to have_link("Manage", href: EE::SUBSCRIPTIONS_MANAGE_URL)
           expect(page).to have_link("Add seats", href: extra_seats_url)
           expect(page).to have_link("Renew", href: renew_url)
@@ -120,7 +116,6 @@ RSpec.describe 'Groups > Billing', :js, :saas do
 
         expect(page).to have_content("#{group.name} is currently using the Bronze Plan")
         within subscription_table do
-          expect(page).not_to have_link("Upgrade")
           expect(page).to have_link("Manage", href: EE::SUBSCRIPTIONS_MANAGE_URL)
         end
       end

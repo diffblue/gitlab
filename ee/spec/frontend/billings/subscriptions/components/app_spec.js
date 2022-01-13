@@ -13,7 +13,6 @@ describe('SubscriptionApp component', () => {
   const providedFields = {
     namespaceId: '42',
     namespaceName: 'bronze',
-    planUpgradeHref: '/url',
     planRenewHref: '/url/for/renew',
     customerPortalUrl: 'https://customers.gitlab.com/subscriptions',
   };

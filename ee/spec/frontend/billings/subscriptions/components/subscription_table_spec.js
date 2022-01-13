@@ -19,7 +19,6 @@ const defaultInjectedProps = {
   namespaceName: 'GitLab.com',
   customerPortalUrl: 'https://customers.gitlab.com/subscriptions',
   planName: 'Gold',
-  freePersonalNamespace: false,
 };
 
 const localVue = createLocalVue();
@@ -32,7 +31,6 @@ describe('SubscriptionTable component', () => {
   const findAddSeatsButton = () => wrapper.findByTestId('add-seats-button');
   const findManageButton = () => wrapper.findByTestId('manage-button');
   const findRenewButton = () => wrapper.findByTestId('renew-button');
-  const findUpgradeButton = () => wrapper.findByTestId('upgrade-button');
   const findRefreshSeatsButton = () => wrapper.findByTestId('refresh-seats-button');
 
   const createComponentWithStore = ({ props = {}, provide = {}, state = {} } = {}) => {
@@ -64,7 +62,6 @@ describe('SubscriptionTable component', () => {
     beforeEach(() => {
       createComponentWithStore({
         provide: {
-          planUpgradeHref: '/url/',
           planRenewHref: '/url/for/renew',
         },
         state: { isLoadingSubscription: true },
@@ -238,50 +235,6 @@ describe('SubscriptionTable component', () => {
 
         it(testDescription, () => {
           expect(findAddSeatsButton().exists()).toBe(expected);
-        });
-      },
-    );
-  });
-
-  describe('Upgrade button', () => {
-    describe.each`
-      planCode    | upgradable | freePersonalNamespace | expected
-      ${null}     | ${false}   | ${false}              | ${true}
-      ${null}     | ${true}    | ${false}              | ${true}
-      ${null}     | ${false}   | ${true}               | ${false}
-      ${null}     | ${true}    | ${true}               | ${false}
-      ${'free'}   | ${false}   | ${false}              | ${true}
-      ${'free'}   | ${true}    | ${false}              | ${true}
-      ${'free'}   | ${false}   | ${true}               | ${false}
-      ${'free'}   | ${true}    | ${true}               | ${false}
-      ${'bronze'} | ${false}   | ${false}              | ${false}
-      ${'bronze'} | ${true}    | ${false}              | ${true}
-      ${'bronze'} | ${false}   | ${true}               | ${false}
-      ${'bronze'} | ${true}    | ${true}               | ${false}
-    `(
-      'given a plan with state: planCode = $planCode, upgradable = $upgradable, freePersonalNamespace = $freePersonalNamespace',
-      ({ planCode, upgradable, freePersonalNamespace, expected }) => {
-        beforeEach(() => {
-          createComponentWithStore({
-            provide: {
-              planUpgradeHref: '',
-              freePersonalNamespace,
-            },
-            state: {
-              isLoadingSubscription: false,
-              plan: {
-                code: planCode,
-                upgradable,
-              },
-            },
-          });
-        });
-
-        const testDescription =
-          expected === true ? 'renders the button' : 'does not render the button';
-
-        it(testDescription, () => {
-          expect(findUpgradeButton().exists()).toBe(expected);
         });
       },
     );

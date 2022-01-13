@@ -23,12 +23,10 @@ RSpec.describe BillingPlansHelper, :saas do
           namespace_id: group.id,
           namespace_name: group.name,
           add_seats_href: add_seats_href,
-          plan_upgrade_href: "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/upgrade/#{plan.id}",
           plan_renew_href: plan_renew_href,
           customer_portal_url: customer_portal_url,
           billable_seats_href: billable_seats_href,
-          plan_name: plan.name,
-          free_personal_namespace: 'false'
+          plan_name: plan.name
         }
       end
 
@@ -68,9 +66,7 @@ RSpec.describe BillingPlansHelper, :saas do
           namespace_id: nil,
           namespace_name: group.name,
           plan_renew_href: plan_renew_href,
-          plan_upgrade_href: nil,
-          plan_name: nil,
-          free_personal_namespace: 'false'
+          plan_name: nil
         }
       end
 
@@ -102,9 +98,7 @@ RSpec.describe BillingPlansHelper, :saas do
           billable_seats_href: billable_seats_href,
           add_seats_href: add_seats_href,
           plan_renew_href: plan_renew_href,
-          plan_upgrade_href: nil,
-          plan_name: plan.name,
-          free_personal_namespace: 'false'
+          plan_name: plan.name
         }
       end
 
@@ -141,26 +135,6 @@ RSpec.describe BillingPlansHelper, :saas do
 
         it 'returns billable_seats_href for group' do
           expect(subject).to include(billable_seats_href: helper.group_usage_quotas_path(namespace, anchor: 'seats-quota-tab'))
-        end
-      end
-    end
-
-    context 'when the namespace belongs to a user' do
-      let(:namespace) { build(:namespace) }
-
-      context 'when the namespace is free plan' do
-        it 'returns attributes with free_personal_namespace true' do
-          expect(helper.subscription_plan_data_attributes(namespace, plan))
-            .to include(free_personal_namespace: 'true')
-        end
-      end
-
-      context 'when the namespace is paid plan' do
-        let!(:gitlab_subscription) { build(:gitlab_subscription, :ultimate, namespace: namespace) }
-
-        it 'returns attributes with free_personal_namespace false' do
-          expect(helper.subscription_plan_data_attributes(namespace, plan))
-            .to include(free_personal_namespace: 'false')
         end
       end
     end
