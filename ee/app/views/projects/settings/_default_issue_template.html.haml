@@ -8,6 +8,8 @@
       %p#issue-settings-default-template-label= _('Set a default description template to be used for new issues. %{link_start}What are description templates?%{link_end}').html_safe % { link_start: link_start, link_end: '</a>'.html_safe }
 
     .settings-content
+      %p.text-secondary
+        = s_('ProjectSettings|If a %{code_start}default.md%{code_end} file exists in %{code_start}.gitlab/issue_templates%{code_end} in the repository, it overrides this setting.').html_safe % { code_start: '<code>'.html_safe, code_end: '</code>'.html_safe }
       = form_for @project, html: { multipart: true, class: "issue-settings-form" }, authenticity_token: true do |f|
         %input{ type: 'hidden', name: 'update_section', value: 'js-issue-settings' }
         .row
