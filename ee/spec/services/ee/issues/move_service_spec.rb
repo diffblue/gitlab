@@ -152,4 +152,16 @@ RSpec.describe Issues::MoveService do
       end
     end
   end
+
+  describe '#delete_pending_escalations' do
+    let!(:pending_escalation) { create(:incident_management_pending_issue_escalation, issue: old_issue) }
+
+    it 'deletes the pending escalations for the incident' do
+      new_issue = move_service.execute(old_issue, new_project)
+
+      expect(new_issue.pending_escalations.count).to eq(0)
+      expect(old_issue.pending_escalations.count).to eq(0)
+      expect { pending_escalation.reload }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
 end
