@@ -12,10 +12,17 @@ module Ci
       scope :current_month, -> { where(date: beginning_of_month) }
 
       scope :for_namespace_monthly_usage, -> (namespace_monthly_usage) do
-        where(
-          date: namespace_monthly_usage.date,
-          project: namespace_monthly_usage.namespace.projects
-        ).allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/343301')
+        if Feature.enabled?(:ci_decompose_for_namespace_monthly_usage_query, namespace_monthly_usage.namespace, default_enabled: :yaml)
+          where(
+            date: namespace_monthly_usage.date,
+            project: Ci::ProjectMirror.by_namespace_id(namespace_monthly_usage.namespace_id).select(:project_id)
+          )
+        else
+          where(
+            date: namespace_monthly_usage.date,
+            project: namespace_monthly_usage.namespace.projects
+          ).allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/343301')
+        end
       end
 
       def self.beginning_of_month(time = Time.current)
