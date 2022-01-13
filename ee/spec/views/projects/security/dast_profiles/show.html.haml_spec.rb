@@ -12,10 +12,6 @@ RSpec.describe "projects/security/dast_profiles/show", type: :view do
     expect(rendered).to have_selector('.js-dast-profiles')
   end
 
-  it 'passes new dast saved scan path' do
-    expect(rendered).to include '/on_demand_scans/new'
-  end
-
   it 'passes new dast site profile path' do
     expect(rendered).to include '/security/configuration/dast_scans/dast_site_profiles/new'
   end

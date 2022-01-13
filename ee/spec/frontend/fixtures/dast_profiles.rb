@@ -329,34 +329,6 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
       end
     end
 
-    describe 'dast_profiles' do
-      path = 'security_configuration/dast_profiles/graphql/dast_profiles.query.graphql'
-
-      let_it_be(:dast_profiles) do
-        [
-          create(:dast_profile, project: project),
-          create(:dast_profile, project: project)
-        ]
-      end
-
-      before do
-        dast_profiles.first.branch_name = SecureRandom.hex
-        dast_profiles.first.save!(validate: false)
-      end
-
-      it "graphql/#{path}.json" do
-        query = get_graphql_query_as_string(path, ee: true)
-
-        post_graphql(query, current_user: current_user, variables: {
-          fullPath: project.full_path,
-          first: 20
-        })
-
-        expect_graphql_errors_to_be_empty
-        expect(graphql_data_at(:project, :dastProfiles, :edges)).to have_attributes(size: dast_profiles.length)
-      end
-    end
-
     describe 'dast_site_validations' do
       context 'failed site validations' do
         path = 'security_configuration/dast_profiles/graphql/dast_failed_site_validations.query.graphql'
@@ -403,6 +375,11 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
 
       let_it_be(:dast_profiles) do
         create_list(:dast_profile, 3, project: project)
+      end
+
+      before do
+        dast_profiles.last.branch_name = SecureRandom.hex
+        dast_profiles.last.save!(validate: false)
       end
 
       it "graphql/#{path}.json" do

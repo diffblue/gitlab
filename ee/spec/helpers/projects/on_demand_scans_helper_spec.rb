@@ -52,7 +52,7 @@ RSpec.describe Projects::OnDemandScansHelper do
       expect(helper.on_demand_scans_form_data(project)).to match(
         'default-branch' => "default-branch",
         'project-path' => "foo/bar",
-        'profiles-library-path' => "/#{project.full_path}/-/security/configuration/dast_scans",
+        'on-demand-scans-path' => "/#{project.full_path}/-/on_demand_scans#saved",
         'scanner-profiles-library-path' => "/#{project.full_path}/-/security/configuration/dast_scans#scanner-profiles",
         'site-profiles-library-path' => "/#{project.full_path}/-/security/configuration/dast_scans#site-profiles",
         'new-scanner-profile-path' => "/#{project.full_path}/-/security/configuration/dast_scans/dast_scanner_profiles/new",

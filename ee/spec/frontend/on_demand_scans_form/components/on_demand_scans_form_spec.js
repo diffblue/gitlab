@@ -31,7 +31,7 @@ const dastSiteValidationDocsPath = '/application_security/dast/index#dast-site-v
 const projectPath = 'group/project';
 const defaultBranch = 'main';
 const selectedBranch = 'some-other-branch';
-const profilesLibraryPath = '/security/configuration/dast_scans';
+const onDemandScansPath = '/on_demand_scans#saved';
 const scannerProfilesLibraryPath = '/security/configuration/dast_scans#scanner-profiles';
 const siteProfilesLibraryPath = '/security/configuration/dast_scans#site-profiles';
 const newScannerProfilePath = '/security/configuration/dast_scans/dast_scanner_profile/new';
@@ -162,7 +162,7 @@ describe('OnDemandScansForm', () => {
           mocks: defaultMocks,
           provide: {
             projectPath,
-            profilesLibraryPath,
+            onDemandScansPath,
             scannerProfilesLibraryPath,
             siteProfilesLibraryPath,
             newScannerProfilePath,
@@ -357,7 +357,7 @@ describe('OnDemandScansForm', () => {
     describe.each`
       action      | actionFunction | submitButtonLoading | saveButtonLoading | runAfter | redirectPath
       ${'submit'} | ${submitForm}  | ${true}             | ${false}          | ${true}  | ${pipelineUrl}
-      ${'save'}   | ${saveScan}    | ${false}            | ${true}           | ${false} | ${profilesLibraryPath}
+      ${'save'}   | ${saveScan}    | ${false}            | ${true}           | ${false} | ${onDemandScansPath}
     `(
       'on $action',
       ({ actionFunction, submitButtonLoading, saveButtonLoading, runAfter, redirectPath }) => {
@@ -517,7 +517,7 @@ describe('OnDemandScansForm', () => {
     itClearsLocalStorage();
 
     it('redirects to profiles library', () => {
-      expect(redirectTo).toHaveBeenCalledWith(profilesLibraryPath);
+      expect(redirectTo).toHaveBeenCalledWith(onDemandScansPath);
     });
   });
 

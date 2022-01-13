@@ -1,9 +1,12 @@
 import { GlIcon, GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import profilesFixtures from 'test_fixtures/graphql/on_demand_scans/graphql/dast_profiles.query.graphql.json';
 import DastScanBranch from 'ee/security_configuration/dast_profiles/components/dast_scan_branch.vue';
-import { savedScans } from '../mocks/mock_data';
 
-const [scanWithExistingBranch, scanWithInexistingBranch] = savedScans;
+const [
+  scanWithInexistingBranch,
+  scanWithExistingBranch,
+] = profilesFixtures.data.project.pipelines.nodes;
 
 describe('EE - DastSavedScansList', () => {
   let wrapper;
@@ -31,6 +34,7 @@ describe('EE - DastSavedScansList', () => {
       const { branch, editPath } = scanWithInexistingBranch;
       createWrapper({ branch, editPath });
     });
+
     it('renders a warning message', () => {
       expect(wrapper.text()).toContain('Branch missing');
       expect(wrapper.find(GlIcon).props('name')).toBe('warning');

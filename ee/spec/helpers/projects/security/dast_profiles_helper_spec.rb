@@ -15,7 +15,6 @@ RSpec.describe Projects::Security::DastProfilesHelper do
     it 'returns proper data' do
       expect(helper.dast_profiles_list_data(project)).to eq(
         {
-          'new_dast_saved_scan_path' => "/#{project.full_path}/-/on_demand_scans/new",
           'new_dast_site_profile_path' => "/#{project.full_path}/-/security/configuration/dast_scans/dast_site_profiles/new",
           'new_dast_scanner_profile_path' => "/#{project.full_path}/-/security/configuration/dast_scans/dast_scanner_profiles/new",
           'project_full_path' => "foo/bar",
