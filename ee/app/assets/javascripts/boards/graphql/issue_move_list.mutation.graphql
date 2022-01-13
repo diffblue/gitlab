@@ -23,7 +23,7 @@ mutation issueMoveListEE(
     }
   ) {
     issue {
-      ...IssueNode
+      ...Issue
     }
     errors
   }

@@ -1,33 +1,13 @@
-#import "~/graphql_shared/fragments/milestone.fragment.graphql"
-#import "~/graphql_shared/fragments/user.fragment.graphql"
+#import "~/graphql_shared/fragments/issue.fragment.graphql"
 
-fragment IssueNode on Issue {
+fragment Issue on Issue {
+  ...IssueNode
   id
-  iid
-  title
-  referencePath: reference(full: true)
-  dueDate
-  timeEstimate
-  totalTimeSpent
-  humanTimeEstimate
-  humanTotalTimeSpent
   weight
-  confidential
-  hidden
-  webUrl
   blocked
   blockedByCount
-  relativePosition
   epic {
     id
-  }
-  assignees {
-    nodes {
-      ...User
-    }
-  }
-  milestone {
-    ...MilestoneFragment
   }
   iteration {
     id
@@ -35,14 +15,6 @@ fragment IssueNode on Issue {
     iterationCadence {
       id
       title
-    }
-  }
-  labels {
-    nodes {
-      id
-      title
-      color
-      description
     }
   }
 }

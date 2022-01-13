@@ -1,6 +1,533 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ee/BoardContentSidebar matches the snapshot 1`] = `
+exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
+<div
+  class="boards-sidebar gl-absolute"
+>
+  <h2
+    class="gl-my-0 gl-font-size-h2 gl-line-height-24"
+  >
+    Incident details
+  </h2>
+   
+  <sidebartodowidget-stub
+    class="gl-mt-3"
+    fullpath="gitlab-org/gitlab-test"
+    issuableid="gid://gitlab/Issue/436"
+    issuableiid="27"
+    issuabletype="issue"
+  />
+   
+  <boardsidebartitle-stub />
+   
+  <sidebarassigneeswidget-stub
+    fullpath="gitlab-org/gitlab-test"
+    iid="27"
+    initialassignees="[object Object],[object Object]"
+    issuabletype="issue"
+  />
+   
+  <!---->
+   
+  <div>
+    <sidebardropdownwidget-stub
+      attrworkspacepath="gitlab-org/gitlab-test"
+      data-testid="sidebar-milestones"
+      iid="27"
+      issuableattribute="milestone"
+      issuabletype="issue"
+      workspacepath="gitlab-org/gitlab-test"
+    />
+     
+    <!---->
+  </div>
+   
+  <boardsidebartimetracker-stub />
+   
+  <sidebardatewidget-stub
+    data-testid="sidebar-due-date"
+    datetype="dueDate"
+    fullpath="gitlab-org/gitlab-test"
+    iid="27"
+    issuabletype="issue"
+  />
+   
+  <sidebarlabelswidget-stub
+    allowmultiselect="true"
+    attrworkspacepath="gitlab-org/gitlab-test"
+    class="block labels"
+    dropdownbuttontext="Label"
+    footercreatelabeltitle="Create project label"
+    footermanagelabeltitle="Manage project labels"
+    fullpath="gitlab-org/gitlab-test"
+    iid="27"
+    issuabletype="issue"
+    labelcreatetype="project"
+    labelscreatetitle="Create project label"
+    labelsfilterbasepath=""
+    labelsfilterparam="label_name"
+    labelslisttitle="Assign labels"
+    variant="sidebar"
+    workspacetype="project"
+  >
+    
+        None
+      
+  </sidebarlabelswidget-stub>
+   
+  <div
+    class="block"
+  >
+    <div
+      class="sidebar-collapsed-icon"
+    >
+      <div
+        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between"
+      >
+        <svg
+          aria-hidden="true"
+          class="gl-icon s14 icon-unknown"
+          data-testid="severity-unknown-icon"
+          role="img"
+        >
+          <use
+            href="#severity-unknown"
+          />
+        </svg>
+         
+        <!---->
+      </div>
+       
+      <div
+        class="gl-tooltip"
+      >
+        Severity: 
+          Unknown
+        
+      </div>
+    </div>
+     
+    <div
+      class="hide-collapsed"
+    >
+      <p
+        class="gl-line-height-20 gl-mb-2 gl-text-gray-900 gl-display-flex gl-justify-content-space-between"
+      >
+        
+      Severity
+      
+        <button
+          class="btn btn-default btn-sm gl-button btn-default-tertiary"
+          data-testid="editButton"
+          type="button"
+        >
+          <!---->
+           
+          <!---->
+            
+          <span
+            class="gl-button-text"
+          >
+            
+        Edit
+      
+          </span>
+        </button>
+      </p>
+       
+      <div
+        class="dropdown b-dropdown gl-new-dropdown gl-display-none"
+        id="__BVID__39"
+      >
+        <!---->
+        <button
+          aria-expanded="false"
+          aria-haspopup="true"
+          class="btn dropdown-toggle btn-default btn-md btn-block dropdown-menu-toggle gl-mb-2 gl-button gl-dropdown-toggle"
+          id="__BVID__39__BV_toggle_"
+          type="button"
+        >
+          <!---->
+           
+          <!---->
+           
+          <span
+            class="gl-new-dropdown-button-text"
+          >
+            Unknown
+          </span>
+           
+          <svg
+            aria-hidden="true"
+            class="gl-button-icon dropdown-chevron gl-icon s16"
+            data-testid="chevron-down-icon"
+            role="img"
+          >
+            <use
+              href="#chevron-down"
+            />
+          </svg>
+        </button>
+        <ul
+          aria-labelledby="__BVID__39__BV_toggle_"
+          class="dropdown-menu"
+          role="menu"
+          tabindex="-1"
+        >
+          <div
+            class="gl-new-dropdown-inner"
+          >
+            <div
+              class="gl-new-dropdown-header gl-border-b-0!"
+            >
+              <p
+                class="gl-new-dropdown-header-top"
+              >
+                
+        Assign severity
+      
+              </p>
+               
+            </div>
+             
+            <!---->
+             
+            <div
+              class="gl-new-dropdown-contents"
+            >
+              <!---->
+               
+              <li
+                class="gl-new-dropdown-item"
+                role="presentation"
+              >
+                <button
+                  class="dropdown-item"
+                  data-testid="severityDropdownItem"
+                  role="menuitem"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                    data-testid="dropdown-item-checkbox"
+                    role="img"
+                  >
+                    <use
+                      href="#mobile-issue-close"
+                    />
+                  </svg>
+                   
+                  <!---->
+                   
+                  <!---->
+                   
+                  <div
+                    class="gl-new-dropdown-item-text-wrapper"
+                  >
+                    <p
+                      class="gl-new-dropdown-item-text-primary"
+                    >
+                      <div
+                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="gl-icon s12 icon-critical gl-mr-3"
+                          data-testid="severity-critical-icon"
+                          role="img"
+                        >
+                          <use
+                            href="#severity-critical"
+                          />
+                        </svg>
+                         
+                        <span>
+                          Critical - S1
+                        </span>
+                      </div>
+                    </p>
+                     
+                    <!---->
+                  </div>
+                   
+                  <!---->
+                </button>
+              </li>
+              <li
+                class="gl-new-dropdown-item"
+                role="presentation"
+              >
+                <button
+                  class="dropdown-item"
+                  data-testid="severityDropdownItem"
+                  role="menuitem"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                    data-testid="dropdown-item-checkbox"
+                    role="img"
+                  >
+                    <use
+                      href="#mobile-issue-close"
+                    />
+                  </svg>
+                   
+                  <!---->
+                   
+                  <!---->
+                   
+                  <div
+                    class="gl-new-dropdown-item-text-wrapper"
+                  >
+                    <p
+                      class="gl-new-dropdown-item-text-primary"
+                    >
+                      <div
+                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="gl-icon s12 icon-high gl-mr-3"
+                          data-testid="severity-high-icon"
+                          role="img"
+                        >
+                          <use
+                            href="#severity-high"
+                          />
+                        </svg>
+                         
+                        <span>
+                          High - S2
+                        </span>
+                      </div>
+                    </p>
+                     
+                    <!---->
+                  </div>
+                   
+                  <!---->
+                </button>
+              </li>
+              <li
+                class="gl-new-dropdown-item"
+                role="presentation"
+              >
+                <button
+                  class="dropdown-item"
+                  data-testid="severityDropdownItem"
+                  role="menuitem"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                    data-testid="dropdown-item-checkbox"
+                    role="img"
+                  >
+                    <use
+                      href="#mobile-issue-close"
+                    />
+                  </svg>
+                   
+                  <!---->
+                   
+                  <!---->
+                   
+                  <div
+                    class="gl-new-dropdown-item-text-wrapper"
+                  >
+                    <p
+                      class="gl-new-dropdown-item-text-primary"
+                    >
+                      <div
+                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="gl-icon s12 icon-medium gl-mr-3"
+                          data-testid="severity-medium-icon"
+                          role="img"
+                        >
+                          <use
+                            href="#severity-medium"
+                          />
+                        </svg>
+                         
+                        <span>
+                          Medium - S3
+                        </span>
+                      </div>
+                    </p>
+                     
+                    <!---->
+                  </div>
+                   
+                  <!---->
+                </button>
+              </li>
+              <li
+                class="gl-new-dropdown-item"
+                role="presentation"
+              >
+                <button
+                  class="dropdown-item"
+                  data-testid="severityDropdownItem"
+                  role="menuitem"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                    data-testid="dropdown-item-checkbox"
+                    role="img"
+                  >
+                    <use
+                      href="#mobile-issue-close"
+                    />
+                  </svg>
+                   
+                  <!---->
+                   
+                  <!---->
+                   
+                  <div
+                    class="gl-new-dropdown-item-text-wrapper"
+                  >
+                    <p
+                      class="gl-new-dropdown-item-text-primary"
+                    >
+                      <div
+                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="gl-icon s12 icon-low gl-mr-3"
+                          data-testid="severity-low-icon"
+                          role="img"
+                        >
+                          <use
+                            href="#severity-low"
+                          />
+                        </svg>
+                         
+                        <span>
+                          Low - S4
+                        </span>
+                      </div>
+                    </p>
+                     
+                    <!---->
+                  </div>
+                   
+                  <!---->
+                </button>
+              </li>
+              <li
+                class="gl-new-dropdown-item"
+                role="presentation"
+              >
+                <button
+                  class="dropdown-item"
+                  data-testid="severityDropdownItem"
+                  role="menuitem"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="gl-icon s16 gl-new-dropdown-item-check-icon gl-mt-3 gl-align-self-start"
+                    data-testid="dropdown-item-checkbox"
+                    role="img"
+                  >
+                    <use
+                      href="#mobile-issue-close"
+                    />
+                  </svg>
+                   
+                  <!---->
+                   
+                  <!---->
+                   
+                  <div
+                    class="gl-new-dropdown-item-text-wrapper"
+                  >
+                    <p
+                      class="gl-new-dropdown-item-text-primary"
+                    >
+                      <div
+                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="gl-icon s12 icon-unknown gl-mr-3"
+                          data-testid="severity-unknown-icon"
+                          role="img"
+                        >
+                          <use
+                            href="#severity-unknown"
+                          />
+                        </svg>
+                         
+                        <span>
+                          Unknown
+                        </span>
+                      </div>
+                    </p>
+                     
+                    <!---->
+                  </div>
+                   
+                  <!---->
+                </button>
+              </li>
+            </div>
+             
+            <!---->
+          </div>
+        </ul>
+      </div>
+       
+      <div
+        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between"
+      >
+        <svg
+          aria-hidden="true"
+          class="gl-icon s12 icon-unknown gl-mr-3"
+          data-testid="severity-unknown-icon"
+          role="img"
+        >
+          <use
+            href="#severity-unknown"
+          />
+        </svg>
+         
+        <span>
+          Unknown
+        </span>
+      </div>
+    </div>
+  </div>
+   
+  <!---->
+   
+  <sidebarconfidentialitywidget-stub
+    fullpath="gitlab-org/gitlab-test"
+    iid="27"
+    issuabletype="issue"
+  />
+   
+  <sidebarsubscriptionswidget-stub
+    data-testid="sidebar-notifications"
+    fullpath="gitlab-org/gitlab-test"
+    iid="27"
+    issuabletype="issue"
+  />
+</div>
+`;
+
+exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
 <div
   class="boards-sidebar gl-absolute"
 >
@@ -89,6 +616,8 @@ exports[`ee/BoardContentSidebar matches the snapshot 1`] = `
         None
       
   </sidebarlabelswidget-stub>
+   
+  <!---->
    
   <sidebarweightwidget-stub
     full-path="gitlab-org/gitlab-test"
