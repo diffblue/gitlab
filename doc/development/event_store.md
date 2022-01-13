@@ -185,7 +185,7 @@ Changes to the schema require multiple rollouts. While the new version is being 
 - Events get persisted in the Sidekiq queue as job arguments, so we could have 2 versions of the schema during deployments.
 
 As changing the schema ultimately impacts the Sidekiq arguments, please refer to our
-[Sidekiq style guide](sidekiq_style_guide.md#changing-the-arguments-for-a-worker) with regards to multiple rollouts.
+[Sidekiq style guide](sidekiq/compatibility_across_updates.md#changing-the-arguments-for-a-worker) with regards to multiple rollouts.
 
 #### Add properties
 
@@ -274,7 +274,7 @@ A subscription can specify a condition when to accept an event:
 
 ```ruby
 store.subscribe ::MergeRequests::UpdateHeadPipelineWorker,
-  to: ::Ci::PipelineCreatedEvent, 
+  to: ::Ci::PipelineCreatedEvent,
   if: -> (event) { event.data[:merge_request_id].present? }
 ```
 
@@ -285,7 +285,7 @@ This technique can avoid scheduling Sidekiq jobs if the subscriber is interested
 small subset of events.
 
 WARNING:
-When using conditional dispatch it must contain only cheap conditions because they are 
+When using conditional dispatch it must contain only cheap conditions because they are
 executed synchronously every time the given event is published.
 
 For complex conditions it's best to subscribe to all the events and then handle the logic
