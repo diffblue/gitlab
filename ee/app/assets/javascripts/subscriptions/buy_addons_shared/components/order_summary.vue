@@ -154,6 +154,7 @@ export default {
           :quantity="quantity"
           :tax-rate="$options.taxRate"
           :subscription-end-date="endDate"
+          :has-expiration="purchaseHasExpiration"
         >
           <template #price-per-unit="{ price }">
             <slot name="price-per-unit" :price="price"></slot>
@@ -178,6 +179,7 @@ export default {
         :quantity="quantity"
         :tax-rate="$options.taxRate"
         :subscription-end-date="endDate"
+        :has-expiration="purchaseHasExpiration"
       >
         <template #price-per-unit="{ price }">
           <slot name="price-per-unit" :price="price"></slot>
