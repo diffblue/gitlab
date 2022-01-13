@@ -29171,9 +29171,6 @@ ALTER TABLE ONLY agent_group_authorizations
 ALTER TABLE ONLY deployment_approvals
     ADD CONSTRAINT fk_2d060dfc73 FOREIGN KEY (deployment_id) REFERENCES deployments(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY ci_freeze_periods
-    ADD CONSTRAINT fk_2e02bbd1a6 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
-
 ALTER TABLE ONLY notes
     ADD CONSTRAINT fk_2e82291620 FOREIGN KEY (review_id) REFERENCES reviews(id) ON DELETE SET NULL;
 
