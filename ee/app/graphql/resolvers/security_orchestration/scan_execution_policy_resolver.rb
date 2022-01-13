@@ -9,7 +9,7 @@ module Resolvers
 
       argument :action_scan_types, [::Types::Security::ReportTypeEnum],
              description: "Filters policies by the action scan type. "\
-                          "Only these scan types are supported: #{Security::ScanExecutionPolicy::SCAN_TYPES.map { |type| "`#{type}`" }.join(', ')}.",
+                          "Only these scan types are supported: #{::Security::ScanExecutionPolicy::SCAN_TYPES.map { |type| "`#{type}`" }.join(', ')}.",
              required: false
 
       def resolve(**args)
