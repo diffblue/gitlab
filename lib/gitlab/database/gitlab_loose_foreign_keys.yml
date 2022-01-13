@@ -1,3 +1,4 @@
+---
 dast_site_profiles_pipelines:
   - table: ci_pipelines
     column: ci_pipeline_id
