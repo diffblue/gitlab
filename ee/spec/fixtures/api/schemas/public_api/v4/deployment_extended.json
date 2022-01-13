@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../../../../../../spec/fixtures/api/schemas/public_api/v4/deployment.json"
+    },
+    {
+      "required": [
+        "pending_approval_count",
+        "approvals"
+      ],
+      "properties": {
+        "pending_approval_count": {
+          "type": "integer"
+        },
+        "approvals": {
+          "type": "array",
+          "items": {
+            "$ref": "deployment_approval.json"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  ]
+}
