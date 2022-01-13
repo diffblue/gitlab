@@ -70,3 +70,26 @@ export const createMergeRequests = ({ count = 1, props = {} } = {}) => {
       }),
     );
 };
+
+export const createDefaultProjects = (count) => {
+  return Array(count)
+    .fill(null)
+    .map((_, id) => ({
+      id,
+      name: `project-${id}`,
+      fullPath: `group/project-${id}`,
+    }));
+};
+
+export const createDefaultProjectsResponse = (projects) => ({
+  data: {
+    group: {
+      id: '1',
+      projects: {
+        nodes: projects,
+        __typename: 'Project',
+      },
+      __typename: 'Group',
+    },
+  },
+});

@@ -2,14 +2,22 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
 import { parseBoolean } from '~/lib/utils/common_utils';
+import { queryToObject } from '~/lib/utils/url_utility';
 import resolvers from './graphql/resolvers';
 import ComplianceDashboard from './components/dashboard.vue';
 import ComplianceReport from './components/report.vue';
+import { parseViolationsQuery } from './utils';
 
 export default () => {
   const el = document.getElementById('js-compliance-report');
 
-  const { mergeRequests, emptyStateSvgPath, isLastPage, mergeCommitsCsvExportPath } = el.dataset;
+  const {
+    mergeRequests,
+    emptyStateSvgPath,
+    isLastPage,
+    mergeCommitsCsvExportPath,
+    groupPath,
+  } = el.dataset;
 
   if (gon.features.complianceViolationsReport) {
     Vue.use(VueApollo);
@@ -17,6 +25,10 @@ export default () => {
     const apolloProvider = new VueApollo({
       defaultClient: createDefaultClient(resolvers),
     });
+
+    const defaultQuery = parseViolationsQuery(
+      queryToObject(window.location.search, { gatherArrays: true }),
+    );
 
     return new Vue({
       el,
@@ -26,6 +38,8 @@ export default () => {
           props: {
             emptyStateSvgPath,
             mergeCommitsCsvExportPath,
+            groupPath,
+            defaultQuery,
           },
         }),
     });

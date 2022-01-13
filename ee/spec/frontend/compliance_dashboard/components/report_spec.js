@@ -8,12 +8,15 @@ import EmptyState from 'ee/compliance_dashboard/components/empty_state.vue';
 import MergeRequestDrawer from 'ee/compliance_dashboard/components/drawer.vue';
 import MergeCommitsExportButton from 'ee/compliance_dashboard/components/merge_requests/merge_commits_export_button.vue';
 import ViolationReason from 'ee/compliance_dashboard/components/violations/reason.vue';
+import ViolationFilter from 'ee/compliance_dashboard/components/violations/filter.vue';
 import resolvers from 'ee/compliance_dashboard/graphql/resolvers';
 import { mapViolations } from 'ee/compliance_dashboard/graphql/mappers';
 import { stripTypenames } from 'helpers/graphql_helpers';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
+import UrlSync from '~/vue_shared/components/url_sync.vue';
+import { stubComponent } from 'helpers/stub_component';
 
 Vue.use(VueApollo);
 
@@ -23,6 +26,12 @@ describe('ComplianceReport component', () => {
 
   const mergeCommitsCsvExportPath = '/csv';
   const emptyStateSvgPath = 'empty.svg';
+  const groupPath = 'group-path';
+  const defaultQuery = {
+    projectIds: ['gid://gitlab/Project/20'],
+    createdAfter: '2021-11-16',
+    createdBefore: '2021-12-15',
+  };
   const mockGraphQlError = new Error('GraphQL networkError');
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
@@ -33,6 +42,8 @@ describe('ComplianceReport component', () => {
   const findMergeCommitsExportButton = () => wrapper.findComponent(MergeCommitsExportButton);
   const findViolationReason = () => wrapper.findComponent(ViolationReason);
   const findTimeAgoTooltip = () => wrapper.findComponent(TimeAgoTooltip);
+  const findViolationFilter = () => wrapper.findComponent(ViolationFilter);
+  const findUrlSync = () => wrapper.findComponent(UrlSync);
 
   const findTableHeaders = () => findViolationsTable().findAll('th');
   const findTablesFirstRowData = () =>
@@ -54,10 +65,13 @@ describe('ComplianceReport component', () => {
       propsData: {
         mergeCommitsCsvExportPath,
         emptyStateSvgPath,
+        groupPath,
+        defaultQuery,
         ...props,
       },
       stubs: {
         GlTable: false,
+        ViolationFilter: stubComponent(ViolationFilter),
       },
     });
   };
@@ -76,6 +90,7 @@ describe('ComplianceReport component', () => {
       expect(findLoadingIcon().exists()).toBe(true);
       expect(findErrorMessage().exists()).toBe(false);
       expect(findViolationsTable().exists()).toBe(false);
+      expect(findViolationFilter().exists()).toBe(false);
     });
   });
 
@@ -207,6 +222,31 @@ describe('ComplianceReport component', () => {
         expect(findMergeRequestDrawer().props('project')).toStrictEqual(
           stripTypenames(drawerData.project),
         );
+      });
+    });
+
+    describe('violation filter', () => {
+      it('configures the filter', () => {
+        expect(findViolationFilter().props()).toMatchObject({
+          groupPath,
+          defaultQuery,
+        });
+      });
+
+      it('updates the URL query when the filters changed', async () => {
+        const query = { foo: 'bar', projectIds: [1, 2, 3] };
+
+        await findViolationFilter().vm.$emit('filters-changed', query);
+
+        expect(findUrlSync().props('query')).toMatchObject(query);
+      });
+
+      it('clears the project URL query param when the filters changed and the project array is empty', async () => {
+        const query = { foo: 'bar', projectIds: [] };
+
+        await findViolationFilter().vm.$emit('filters-changed', query);
+
+        expect(findUrlSync().props('query')).toMatchObject({ ...query, projectIds: null });
       });
     });
   });

@@ -5,12 +5,14 @@ import { __ } from '~/locale';
 import { thWidthClass } from '~/lib/utils/table_utility';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
+import UrlSync from '~/vue_shared/components/url_sync.vue';
 import complianceViolationsQuery from '../graphql/compliance_violations.query.graphql';
 import { mapViolations } from '../graphql/mappers';
 import EmptyState from './empty_state.vue';
 import MergeCommitsExportButton from './merge_requests/merge_commits_export_button.vue';
 import MergeRequestDrawer from './drawer.vue';
 import ViolationReason from './violations/reason.vue';
+import ViolationFilter from './violations/filter.vue';
 
 export default {
   name: 'ComplianceReport',
@@ -23,6 +25,8 @@ export default {
     MergeRequestDrawer,
     ViolationReason,
     TimeAgoTooltip,
+    ViolationFilter,
+    UrlSync,
   },
   props: {
     emptyStateSvgPath: {
@@ -34,9 +38,18 @@ export default {
       required: false,
       default: '',
     },
+    groupPath: {
+      type: String,
+      required: true,
+    },
+    defaultQuery: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     return {
+      urlQuery: {},
       queryError: false,
       violations: [],
       showDrawer: false,
@@ -95,6 +108,13 @@ export default {
       this.drawerMergeRequest = {};
       this.drawerProject = {};
     },
+    updateUrlQuery({ projectIds = [], ...rest }) {
+      this.urlQuery = {
+        // Clear the URL param when the id array is empty
+        projectIds: projectIds.length > 0 ? projectIds : null,
+        ...rest,
+      };
+    },
   },
   fields: [
     {
@@ -150,30 +170,36 @@ export default {
       :dismissible="false"
       :title="$options.i18n.queryError"
     />
-    <gl-table
-      v-else-if="hasViolations"
-      ref="table"
-      :fields="$options.fields"
-      :items="violations"
-      head-variant="white"
-      stacked="lg"
-      select-mode="single"
-      selectable
-      hover
-      selected-variant="primary"
-      thead-class="gl-border-b-solid gl-border-b-1 gl-border-b-gray-100"
-      @row-selected="toggleDrawer"
-    >
-      <template #cell(reason)="{ item: { reason, violatingUser } }">
-        <violation-reason :reason="reason" :user="violatingUser" />
-      </template>
-      <template #cell(mergeRequest)="{ item: { mergeRequest } }">
-        {{ mergeRequest.title }}
-      </template>
-      <template #cell(mergedAt)="{ item: { mergeRequest } }">
-        <time-ago-tooltip :time="mergeRequest.mergedAt" />
-      </template>
-    </gl-table>
+    <template v-else-if="hasViolations">
+      <violation-filter
+        :group-path="groupPath"
+        :default-query="defaultQuery"
+        @filters-changed="updateUrlQuery"
+      />
+      <gl-table
+        ref="table"
+        :fields="$options.fields"
+        :items="violations"
+        head-variant="white"
+        stacked="lg"
+        select-mode="single"
+        selectable
+        hover
+        selected-variant="primary"
+        thead-class="gl-border-b-solid gl-border-b-1 gl-border-b-gray-100"
+        @row-selected="toggleDrawer"
+      >
+        <template #cell(reason)="{ item: { reason, violatingUser } }">
+          <violation-reason :reason="reason" :user="violatingUser" />
+        </template>
+        <template #cell(mergeRequest)="{ item: { mergeRequest } }">
+          {{ mergeRequest.title }}
+        </template>
+        <template #cell(mergedAt)="{ item: { mergeRequest } }">
+          <time-ago-tooltip :time="mergeRequest.mergedAt" />
+        </template>
+      </gl-table>
+    </template>
     <empty-state v-else :image-path="emptyStateSvgPath" />
     <merge-request-drawer
       :show-drawer="showDrawer"
@@ -182,5 +208,6 @@ export default {
       :z-index="$options.DRAWER_Z_INDEX"
       @close="closeDrawer"
     />
+    <url-sync :query="urlQuery" />
   </section>
 </template>
