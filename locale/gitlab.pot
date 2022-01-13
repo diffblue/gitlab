@@ -13066,6 +13066,9 @@ msgstr ""
 msgid "EmailError|We couldn't find the project. Please check if there's any typo."
 msgstr ""
 
+msgid "EmailError|We couldn't process your email because it is too large. Please create your issue or comment through the web interface."
+msgstr ""
+
 msgid "EmailError|You are not allowed to perform this action. If you believe this is in error, contact a staff member."
 msgstr ""
 
