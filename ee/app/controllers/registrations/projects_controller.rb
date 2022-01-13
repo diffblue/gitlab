@@ -12,13 +12,13 @@ module Registrations
     before_action only: [:new] do
       set_namespace
       authorize_create_project!
+      push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
     end
 
     feature_category :onboarding
 
     def new
       @project = Project.new(namespace: @namespace)
-      push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
     end
 
     def create

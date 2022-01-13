@@ -23,10 +23,13 @@ module EE
           experiment(:trial_registration_with_reassurance, actor: current_user)
             .track(:render, label: 'registrations:welcome:show', user: current_user)
         end
+
+        before_action only: [:trial_getting_started] do
+          push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
+        end
       end
 
       def trial_getting_started
-        push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
         render locals: { learn_gitlab_project: learn_gitlab_project }
       end
 
