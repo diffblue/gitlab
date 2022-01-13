@@ -16190,6 +16190,9 @@ msgstr ""
 msgid "GitLab is undergoing maintenance and is operating in read-only mode."
 msgstr ""
 
+msgid "GitLab logo"
+msgstr ""
+
 msgid "GitLab member or Email address"
 msgstr ""
 
@@ -33077,6 +33080,9 @@ msgid "Slack application"
 msgstr ""
 
 msgid "Slack integration allows you to interact with GitLab via slash commands in a chat window."
+msgstr ""
+
+msgid "Slack logo"
 msgstr ""
 
 msgid "SlackIntegration|GitLab for Slack"

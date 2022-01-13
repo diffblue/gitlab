@@ -70,12 +70,16 @@ export default {
 <template>
   <div class="gitlab-slack-body gl-mx-auto gl-mt-11 gl-text-center">
     <div v-once class="gl-my-5 gl-display-flex gl-justify-content-center gl-align-items-center">
-      <img :src="gitlabLogoPath" class="gl-h-11 gl-w-11" />
+      <img :src="gitlabLogoPath" :alt="__('GitLab logo')" class="gl-h-11 gl-w-11" />
       <gl-icon name="arrow-right" :size="32" class="gl-mx-5 gl-text-gray-200" />
-      <img :src="slackLogoPath" class="gitlab-slack-slack-logo gl-h-11 gl-w-11" />
+      <img
+        :src="slackLogoPath"
+        :alt="__('Slack logo')"
+        class="gitlab-slack-slack-logo gl-h-11 gl-w-11"
+      />
     </div>
 
-    <h1>{{ s__('SlackIntegration|GitLab for Slack') }}</h1>
+    <h2>{{ s__('SlackIntegration|GitLab for Slack') }}</h2>
 
     <div class="gl-mt-6" data-testid="gitlab-slack-content">
       <template v-if="isSignedIn">
@@ -94,7 +98,6 @@ export default {
             <gl-button
               category="primary"
               variant="confirm"
-              class="float-right"
               :disabled="!selectedProject"
               @click="addToSlack"
             >
@@ -102,9 +105,7 @@ export default {
             </gl-button>
           </div>
         </template>
-        <template v-else>
-          <p>{{ __("You don't have any projects available.") }}</p>
-        </template>
+        <p v-else>{{ __("You don't have any projects available.") }}</p>
       </template>
 
       <template v-else>

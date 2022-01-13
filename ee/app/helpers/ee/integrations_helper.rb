@@ -36,7 +36,7 @@ module EE
 
     def gitlab_slack_application_data(projects)
       {
-        projects: (projects || []).map { |p| serialize_project(p) }.to_json,
+        projects: (projects || []).to_json(only: [:id, :name], methods: [:avatar_url, :name_with_namespace]),
         sign_in_path: new_session_path(:user, redirect_to_referer: 'yes'),
         is_signed_in: current_user.present?.to_s,
         slack_link_path: slack_link_profile_slack_path,
@@ -61,17 +61,6 @@ module EE
       return s_("ProjectService|Trigger event when a new, unique vulnerability is recorded. (Note: This feature requires an Ultimate plan.)") if event == 'vulnerability'
 
       super
-    end
-
-    private
-
-    def serialize_project(project)
-      {
-        id: project.id,
-        name: project.name,
-        avatar_url: project.avatar.url,
-        name_with_namespace: project.name_with_namespace
-      }
     end
   end
 end
