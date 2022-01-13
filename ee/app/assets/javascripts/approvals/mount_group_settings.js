@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import { GlToast } from '@gitlab/ui';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import GroupSettingsApp from './components/group_settings/app.vue';
 import { mergeRequestApprovalSettingsMappers } from './mappers';
@@ -14,6 +15,8 @@ const mountGroupApprovalSettings = (el) => {
   const store = createStore({
     approvalSettings: approvalSettingsModule(mergeRequestApprovalSettingsMappers),
   });
+
+  Vue.use(GlToast);
 
   return new Vue({
     el,

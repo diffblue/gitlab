@@ -52,7 +52,6 @@ describe('Group settings store mutations', () => {
       mutations.REQUEST_UPDATE_SETTINGS(state);
 
       expect(state.isLoading).toBe(true);
-      expect(state.isUpdated).toBe(false);
       expect(state.errorMessage).toBe('');
     });
   });
@@ -64,7 +63,6 @@ describe('Group settings store mutations', () => {
       expect(mapperFn).toHaveBeenCalledWith(settings);
       expect(state.settings).toStrictEqual(settings);
       expect(state.isLoading).toBe(false);
-      expect(state.isUpdated).toBe(true);
     });
   });
 
@@ -74,14 +72,6 @@ describe('Group settings store mutations', () => {
 
       expect(state.isLoading).toBe(false);
       expect(state.errorMessage).toBe(APPROVAL_SETTINGS_I18N.savingErrorMessage);
-    });
-  });
-
-  describe('DISMISS_SUCCESS_MESSAGE', () => {
-    it('resets isUpdated', () => {
-      mutations.DISMISS_SUCCESS_MESSAGE(state);
-
-      expect(state.isUpdated).toBe(false);
     });
   });
 

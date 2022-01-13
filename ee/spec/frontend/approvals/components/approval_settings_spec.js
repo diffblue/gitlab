@@ -36,9 +36,15 @@ describe('ApprovalSettings', () => {
     jest.spyOn(actions, 'fetchSettings').mockImplementation();
     jest.spyOn(actions, 'updateSettings').mockImplementation();
     jest.spyOn(actions, 'dismissErrorMessage').mockImplementation();
-    jest.spyOn(actions, 'dismissSuccessMessage').mockImplementation();
 
     store = createStore({ approvalSettings: module, approvals: projectSettingsModule() });
+  };
+
+  const showToast = jest.fn();
+  const mocks = {
+    $toast: {
+      show: showToast,
+    },
   };
 
   const createWrapper = (props = {}) => {
@@ -51,6 +57,7 @@ describe('ApprovalSettings', () => {
           ...props,
         },
         stubs: { GlButton },
+        mocks,
       }),
     );
   };
@@ -254,6 +261,10 @@ describe('ApprovalSettings', () => {
 
           expect(actions.dismissErrorMessage).toHaveBeenCalled();
         });
+
+        it('does not show a toast message', () => {
+          expect(showToast).not.toHaveBeenCalled();
+        });
       });
 
       describe('if the form updates', () => {
@@ -272,15 +283,8 @@ describe('ApprovalSettings', () => {
           );
         });
 
-        it('renders the alert', () => {
-          expect(findErrorAlert().exists()).toBe(false);
-          expect(findSuccessAlert().text()).toBe(APPROVAL_SETTINGS_I18N.savingSuccessMessage);
-        });
-
-        it('dismisses the alert', async () => {
-          await findSuccessAlert().vm.$emit('dismiss');
-
-          expect(actions.dismissSuccessMessage).toHaveBeenCalled();
+        it('shows the success toast', () => {
+          expect(showToast).toHaveBeenCalledWith(APPROVAL_SETTINGS_I18N.savingSuccessMessage);
         });
       });
     });

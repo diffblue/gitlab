@@ -18,21 +18,16 @@ export default (mapDataToState) => ({
   },
   [types.REQUEST_UPDATE_SETTINGS](state) {
     state.isLoading = true;
-    state.isUpdated = false;
     state.errorMessage = '';
   },
   [types.UPDATE_SETTINGS_SUCCESS](state, data) {
     state.settings = mapDataToState(data);
     state.initialSettings = cloneDeep(state.settings);
     state.isLoading = false;
-    state.isUpdated = true;
   },
   [types.UPDATE_SETTINGS_ERROR](state) {
     state.isLoading = false;
     state.errorMessage = APPROVAL_SETTINGS_I18N.savingErrorMessage;
-  },
-  [types.DISMISS_SUCCESS_MESSAGE](state) {
-    state.isUpdated = false;
   },
   [types.DISMISS_ERROR_MESSAGE](state) {
     state.errorMessage = '';

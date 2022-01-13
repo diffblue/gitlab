@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import { GlToast } from '@gitlab/ui';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import ProjectSettingsApp from './components/project_settings/app.vue';
 import { projectApprovalsMappers, mergeRequestApprovalSettingsMappers } from './mappers';
@@ -38,6 +39,8 @@ export default function mountProjectSettingsApprovals(el) {
     canModifyAuthorSettings: parseBoolean(el.dataset.canModifyAuthorSettings),
     canModifyCommiterSettings: parseBoolean(el.dataset.canModifyCommiterSettings),
   });
+
+  Vue.use(GlToast);
 
   return new Vue({
     el,

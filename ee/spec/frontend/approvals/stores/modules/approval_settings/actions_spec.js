@@ -117,18 +117,6 @@ describe('EE approvals group settings module actions', () => {
     });
   });
 
-  describe('dismissSuccessMessage', () => {
-    it('commits DISMISS_SUCCESS_MESSAGE', () => {
-      return testAction(
-        actions.dismissSuccessMessage,
-        {},
-        state,
-        [{ type: types.DISMISS_SUCCESS_MESSAGE }],
-        [],
-      );
-    });
-  });
-
   describe('dismissErrorMessage', () => {
     it('commits DISMISS_ERROR_MESSAGE', () => {
       return testAction(

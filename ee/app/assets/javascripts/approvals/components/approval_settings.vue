@@ -45,7 +45,6 @@ export default {
   computed: {
     ...mapState({
       isLoading: (state) => state.approvalSettings.isLoading,
-      isUpdated: (state) => state.approvalSettings.isUpdated,
       settings: (state) => state.approvalSettings.settings,
       errorMessage: (state) => state.approvalSettings.errorMessage,
       preventAuthorApproval: (state) => state.approvalSettings.settings.preventAuthorApproval,
@@ -73,7 +72,6 @@ export default {
       'fetchSettings',
       'updateSettings',
       'dismissErrorMessage',
-      'dismissSuccessMessage',
       'setPreventAuthorApproval',
       'setPreventCommittersApproval',
       'setPreventMrApprovalRuleEdit',
@@ -82,6 +80,7 @@ export default {
     ]),
     async onSubmit() {
       await this.updateSettings(this.approvalSettingsPath);
+      this.$toast.show(APPROVAL_SETTINGS_I18N.savingSuccessMessage);
     },
     lockedText({ locked, inheritedFrom }) {
       if (!locked) {
@@ -114,17 +113,6 @@ export default {
       @dismiss="dismissErrorMessage"
     >
       {{ errorMessage }}
-    </gl-alert>
-    <gl-alert
-      v-if="isUpdated"
-      variant="success"
-      :dismissible="true"
-      :contained="true"
-      class="gl-mb-6"
-      data-testid="success-alert"
-      @dismiss="dismissSuccessMessage"
-    >
-      {{ $options.i18n.savingSuccessMessage }}
     </gl-alert>
     <gl-form v-if="hasSettings" @submit.prevent="onSubmit">
       <label class="label-bold"> {{ $options.i18n.approvalSettingsHeader }} </label>
