@@ -53,6 +53,7 @@ export default {
     return {
       weight: null,
       loading: false,
+      oldIid: null,
     };
   },
   apollo: {
@@ -70,7 +71,7 @@ export default {
         return data.workspace?.issuable?.weight;
       },
       result({ data }) {
-        this.$emit('weightUpdated', data.workspace?.issuable?.weight);
+        return data.workspace?.issuable?.weight;
       },
       error() {
         createFlash({
@@ -106,10 +107,16 @@ export default {
         : this.$options.i18n.noWeightLabel;
     },
   },
+  watch: {
+    iid(_, oldVal) {
+      this.oldIid = oldVal;
+    },
+  },
   methods: {
     setWeight(remove) {
       const shouldRemoveWeight = remove || this.weight === '';
       const weight = shouldRemoveWeight ? null : this.weight;
+      const currentIid = shouldRemoveWeight ? this.iid : this.oldIid || this.iid;
       this.loading = true;
       this.$apollo
         .mutate({
@@ -117,24 +124,23 @@ export default {
           variables: {
             input: {
               projectPath: this.fullPath,
-              iid: this.iid,
+              iid: currentIid,
               weight,
             },
           },
         })
-        .then(
-          ({
-            data: {
-              issuableSetWeight: { errors },
-            },
-          }) => {
-            if (errors.length) {
-              createFlash({
-                message: errors[0],
-              });
-            }
-          },
-        )
+        .then(({ data: { issuableSetWeight } }) => {
+          if (issuableSetWeight.errors?.length) {
+            createFlash({
+              message: issuableSetWeight.errors[0],
+            });
+          } else {
+            this.$emit('weightUpdated', {
+              weight: issuableSetWeight?.issuable?.weight,
+              id: issuableSetWeight?.issuable?.id,
+            });
+          }
+        })
         .catch(() => {
           createFlash({
             message: sprintf(__('Something went wrong while setting %{issuableType} weight.'), {
@@ -173,6 +179,7 @@ export default {
     :loading="isLoading"
     class="block weight"
     data-testid="sidebar-weight"
+    @open="oldIid = null"
     @close="setWeight()"
   >
     <template #collapsed>

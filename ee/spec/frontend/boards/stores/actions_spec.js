@@ -685,7 +685,7 @@ describe('setActiveItemWeight', () => {
   const state = { boardItems: { [mockIssue.id]: mockIssue } };
   const getters = { activeBoardItem: mockIssue };
   const testWeight = mockIssue.weight + 1;
-  const input = testWeight;
+  const input = { weight: testWeight, id: mockIssue.id };
 
   it('should commit weight', (done) => {
     const payload = {

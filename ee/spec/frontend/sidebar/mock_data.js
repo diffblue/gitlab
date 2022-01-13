@@ -193,3 +193,23 @@ export const issueWeightResponse = () => ({
     },
   },
 });
+
+export const setWeightResponse = () => ({
+  data: {
+    issuableSetWeight: {
+      issuable: { id: mockIssueId, weight: 2, __typename: 'Issue' },
+      errors: [],
+      __typename: 'Project',
+    },
+  },
+});
+
+export const removeWeightResponse = () => ({
+  data: {
+    issuableSetWeight: {
+      issuable: { id: mockIssueId, weight: null, __typename: 'Issue' },
+      errors: [],
+      __typename: 'Project',
+    },
+  },
+});

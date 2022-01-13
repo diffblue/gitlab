@@ -265,6 +265,20 @@ RSpec.describe 'Issue Boards', :js do
       expect(weight_value).to have_content 'None'
     end
 
+    it 'updates the original card when another card is clicked' do
+      click_card(card1)
+
+      within weight_widget do
+        click_button 'Edit'
+        find('.weight input').send_keys 1
+      end
+
+      click_card(card2)
+      click_card(card1)
+
+      expect(weight_value).to have_content '1'
+    end
+
     context 'unlicensed' do
       before do
         stub_licensed_features(issue_weights: false)

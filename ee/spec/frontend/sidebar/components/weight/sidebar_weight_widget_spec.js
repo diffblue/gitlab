@@ -1,14 +1,23 @@
+import { GlButton, GlForm, GlFormInput } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import SidebarWeightWidget from 'ee_component/sidebar/components/weight/sidebar_weight_widget.vue';
 import issueWeightQuery from 'ee_component/sidebar/queries/issue_weight.query.graphql';
+import updateIssueWeightMutation from 'ee_component/sidebar/queries/update_issue_weight.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { preventDefault, stopPropagation } from 'ee_jest/admin/test_helpers';
 import createFlash from '~/flash';
 import SidebarEditableItem from '~/sidebar/components/sidebar_editable_item.vue';
-import { issueNoWeightResponse, issueWeightResponse } from '../../mock_data';
+import {
+  issueNoWeightResponse,
+  issueWeightResponse,
+  setWeightResponse,
+  removeWeightResponse,
+  mockIssueId,
+} from '../../mock_data';
 
 jest.mock('~/flash');
 
@@ -19,12 +28,20 @@ describe('Sidebar Weight Widget', () => {
   let fakeApollo;
 
   const findEditableItem = () => wrapper.findComponent(SidebarEditableItem);
+  const findRemoveButton = () => wrapper.findComponent(GlButton);
   const findWeightValue = () => wrapper.findByTestId('sidebar-weight-value');
+  const findFormInput = () => wrapper.findComponent(GlFormInput);
+  const findForm = () => wrapper.findComponent(GlForm);
 
+  const createFakeEvent = () => ({ preventDefault, stopPropagation });
   const createComponent = ({
     weightQueryHandler = jest.fn().mockResolvedValue(issueNoWeightResponse()),
+    weightMutationHandler = jest.fn().mockResolvedValue(setWeightResponse()),
   } = {}) => {
-    fakeApollo = createMockApollo([[issueWeightQuery, weightQueryHandler]]);
+    fakeApollo = createMockApollo([
+      [issueWeightQuery, weightQueryHandler],
+      [updateIssueWeightMutation, weightMutationHandler],
+    ]);
 
     wrapper = extendedWrapper(
       shallowMount(SidebarWeightWidget, {
@@ -36,9 +53,6 @@ describe('Sidebar Weight Widget', () => {
           fullPath: 'group/project',
           iid: '1',
           issuableType: 'issue',
-        },
-        stubs: {
-          SidebarEditableItem,
         },
       }),
     );
@@ -58,6 +72,7 @@ describe('Sidebar Weight Widget', () => {
   describe('when issue has no weight', () => {
     beforeEach(() => {
       createComponent();
+      wrapper.vm.$refs.editable.collapse = jest.fn();
       return waitForPromises();
     });
 
@@ -69,8 +84,18 @@ describe('Sidebar Weight Widget', () => {
       expect(findWeightValue().text()).toBe('None');
     });
 
-    it('emits `weightUpdated` event with a `null` payload', () => {
-      expect(wrapper.emitted('weightUpdated')).toEqual([[null]]);
+    it('does not display remove option', () => {
+      expect(findRemoveButton().exists()).toBe(false);
+    });
+
+    it('sets weight', async () => {
+      findEditableItem().vm.$emit('open');
+      findFormInput().vm.$emit('input', '2');
+      findForm().vm.$emit('submit', createFakeEvent());
+      await waitForPromises();
+
+      expect(findWeightValue().text()).toBe('2');
+      expect(wrapper.emitted('weightUpdated')).toEqual([[{ id: mockIssueId, weight: 2 }]]);
     });
   });
 
@@ -78,6 +103,7 @@ describe('Sidebar Weight Widget', () => {
     beforeEach(() => {
       createComponent({
         weightQueryHandler: jest.fn().mockResolvedValue(issueWeightResponse(true)),
+        weightMutationHandler: jest.fn().mockResolvedValue(removeWeightResponse()),
       });
       return waitForPromises();
     });
@@ -90,8 +116,13 @@ describe('Sidebar Weight Widget', () => {
       expect(findWeightValue().text()).toBe('0');
     });
 
-    it('emits `weightUpdated` event with a `true` payload', () => {
-      expect(wrapper.emitted('weightUpdated')).toEqual([[0]]);
+    it('displays remove option - removes weight', async () => {
+      expect(findRemoveButton().exists()).toBe(true);
+      findRemoveButton().vm.$emit('click');
+      await waitForPromises();
+
+      expect(findWeightValue().text()).toBe('None');
+      expect(wrapper.emitted('weightUpdated')).toEqual([[{ id: mockIssueId, weight: null }]]);
     });
   });
 
