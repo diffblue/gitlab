@@ -182,7 +182,7 @@ export default {
         @setDateRange="onSetDateRange"
       />
     </div>
-    <div v-if="!shouldRenderEmptyState" class="cycle-analytics gl-mt-2">
+    <div v-if="!shouldRenderEmptyState" class="gl-mt-2">
       <gl-empty-state
         v-if="hasNoAccessError"
         class="js-empty-state"
