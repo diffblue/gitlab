@@ -35,7 +35,7 @@ class TrialsController < ApplicationController
 
     render(:new) && return unless @result[:success]
 
-    if params[:glm_source] == 'about.gitlab.com'
+    if EE::TrialHelper::TRIAL_ONBOARDING_SOURCE_URLS.include?(params[:glm_source])
       redirect_to(new_users_sign_up_group_path(url_params.merge(trial_onboarding_flow: true)))
     elsif @namespace = helpers.only_trialable_group_namespace
       params[:namespace_id] = @namespace.id
