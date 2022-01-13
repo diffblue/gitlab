@@ -10,6 +10,7 @@ module EE
         rewrite_epic_issue
         rewrite_related_vulnerability_issues
         track_epic_issue_moved_from_project
+        delete_pending_escalations
         super
       end
 
@@ -42,6 +43,10 @@ module EE
       def rewrite_related_vulnerability_issues
         issue_links = Vulnerabilities::IssueLink.for_issue(original_entity)
         issue_links.update_all(issue_id: new_entity.id)
+      end
+
+      def delete_pending_escalations
+        original_entity.pending_escalations.delete_all(:delete_all)
       end
     end
   end
