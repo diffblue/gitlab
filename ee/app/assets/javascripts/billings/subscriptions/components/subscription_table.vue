@@ -29,9 +29,6 @@ export default {
   },
   mixins: [glFeatureFlagsMixin()],
   inject: {
-    planUpgradeHref: {
-      default: '',
-    },
     planRenewHref: {
       default: '',
     },
@@ -49,9 +46,6 @@ export default {
     },
     planName: {
       default: '',
-    },
-    freePersonalNamespace: {
-      default: false,
     },
     refreshSeatsHref: {
       default: '',
@@ -96,12 +90,6 @@ export default {
         DAYS_FOR_RENEWAL >= getDayDifference(todayDate, subscriptionEndDate)
       );
     },
-    canUpgrade() {
-      return !this.freePersonalNamespace && (this.isFreePlan || this.plan.upgradable);
-    },
-    canUpgradeEEPlan() {
-      return this.isSubscription && this.planUpgradeHref;
-    },
     addSeatsButton() {
       return this.isSubscription
         ? createButtonProps(
@@ -110,18 +98,6 @@ export default {
             'add-seats-button',
           )
         : null;
-    },
-    upgradeButton() {
-      return this.canUpgrade
-        ? createButtonProps(
-            s__('SubscriptionTable|Upgrade'),
-            this.upgradeButtonHref,
-            'upgrade-button',
-          )
-        : null;
-    },
-    upgradeButtonHref() {
-      return this.canUpgradeEEPlan ? this.planUpgradeHref : this.customerPortalUrl;
     },
     renewButton() {
       return this.canRenew
@@ -138,9 +114,7 @@ export default {
         : null;
     },
     buttons() {
-      return [this.upgradeButton, this.addSeatsButton, this.renewButton, this.manageButton].filter(
-        Boolean,
-      );
+      return [this.addSeatsButton, this.renewButton, this.manageButton].filter(Boolean);
     },
     visibleRows() {
       let tableKey = TABLE_TYPE_DEFAULT;

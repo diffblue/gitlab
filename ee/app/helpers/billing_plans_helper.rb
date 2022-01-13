@@ -41,12 +41,10 @@ module BillingPlansHelper
       namespace_id: namespace.id,
       namespace_name: namespace.name,
       add_seats_href: add_seats_url(namespace),
-      plan_upgrade_href: plan_upgrade_url(namespace, plan),
       plan_renew_href: plan_renew_url(namespace),
       customer_portal_url: EE::SUBSCRIPTIONS_MANAGE_URL,
       billable_seats_href: billable_seats_href(namespace),
-      plan_name: plan&.name,
-      free_personal_namespace: namespace.free_personal?.to_s
+      plan_name: plan&.name
     }.tap do |attrs|
       if Feature.enabled?(:refresh_billings_seats, type: :ops, default_enabled: :yaml)
         attrs[:refresh_seats_href] = refresh_seats_group_billings_url(namespace)
