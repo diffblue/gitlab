@@ -94,7 +94,7 @@ module EE
 
         override :presenter_attributes
         def presenter_attributes
-          { auto_fix_permission: auto_fix_authorized? }
+          super.merge({ auto_fix_permission: auto_fix_authorized? })
         end
       end
     end
