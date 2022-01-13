@@ -123,8 +123,8 @@ module GitalySetup
     run_command(%w[make all git], env: env.merge('GIT_VERSION' => nil))
   end
 
-  def start_gitaly
-    start(:gitaly)
+  def start_gitaly(toml = nil)
+    start(:gitaly, toml)
   end
 
   def start_gitaly2
@@ -135,10 +135,11 @@ module GitalySetup
     start(:praefect)
   end
 
-  def start(service)
+  def start(service, toml = nil)
+    toml ||= config_path(service)
     args = ["#{tmp_tests_gitaly_bin_dir}/#{service_binary(service)}"]
     args.push("-config") if service == :praefect
-    args.push(config_path(service))
+    args.push(toml)
 
     # Ensure user configuration does not affect Git
     # Context: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/58776#note_547613780
@@ -147,7 +148,7 @@ module GitalySetup
     pid = spawn(env, *args, [:out, :err] => "log/#{service}-test.log")
 
     begin
-      try_connect!(service)
+      try_connect!(service, toml)
     rescue StandardError
       Process.kill('TERM', pid)
       raise
@@ -184,29 +185,37 @@ module GitalySetup
     abort 'bundle check failed' unless system(env, 'bundle', 'check', out: out, chdir: gemfile_dir)
   end
 
-  def read_socket_path(service)
+  def connect_proc(toml)
     # This code needs to work in an environment where we cannot use bundler,
     # so we cannot easily use the toml-rb gem. This ad-hoc parser should be
     # good enough.
-    config_text = IO.read(config_path(service))
+    config_text = IO.read(toml)
 
     config_text.lines.each do |line|
-      match_data = line.match(/^\s*socket_path\s*=\s*"([^"]*)"$/)
+      match_data = line.match(/^\s*(socket_path|listen_addr)\s*=\s*"([^"]*)"$/)
 
-      return match_data[1] if match_data
+      next unless match_data
+
+      case match_data[1]
+      when 'socket_path'
+        return -> { UNIXSocket.new(match_data[2]) }
+      when 'listen_addr'
+        addr, port = match_data[2].split(':')
+        return -> { TCPSocket.new(addr, port.to_i) }
+      end
     end
 
-    raise "failed to find socket_path in #{config_path(service)}"
+    raise "failed to find socket_path or listen_addr in #{toml}"
   end
 
-  def try_connect!(service)
+  def try_connect!(service, toml)
     LOGGER.debug "Trying to connect to #{service}: "
     timeout = 20
     delay = 0.1
-    socket = read_socket_path(service)
+    connect = connect_proc(toml)
 
     Integer(timeout / delay).times do
-      UNIXSocket.new(socket)
+      connect.call
       LOGGER.debug " OK\n"
 
       return
@@ -217,7 +226,7 @@ module GitalySetup
 
     LOGGER.warn " FAILED to connect to #{service}\n"
 
-    raise "could not connect to #{socket}"
+    raise "could not connect to #{service}"
   end
 
   def gitaly_socket_path
@@ -280,20 +289,29 @@ module GitalySetup
     # The process can already be gone if the test run was INTerrupted.
   end
 
-  def spawn_gitaly
+  def spawn_gitaly(toml = nil)
     check_gitaly_config!
 
-    gitaly_pid = start_gitaly
-    gitaly2_pid = start_gitaly2
-    praefect_pid = start_praefect
+    pids = []
+
+    if toml
+      pids << start_gitaly(toml)
+    else
+      pids << start_gitaly
+      pids << start_gitaly2
+      pids << start_praefect
+    end
 
     Kernel.at_exit do
-      # In CI this function is called by scripts/gitaly-test-spawn, triggered a
-      # before_script. Gitaly needs to remain running until the container is
-      # stopped.
+      # In CI, this function is called by scripts/gitaly-test-spawn, triggered
+      # in a before_script. Gitaly needs to remain running until the container
+      # is stopped.
       next if ENV['CI']
+      # In Workhorse tests (locally or in CI), this function is called by
+      # scripts/gitaly-test-spawn during `make test`. Gitaly needs to remain
+      # running until `make test` cleans it up.
+      next if ENV['GITALY_PID_FILE']
 
-      pids = [gitaly_pid, gitaly2_pid, praefect_pid]
       pids.each { |pid| stop(pid) }
     end
   rescue StandardError
@@ -311,22 +329,22 @@ module GitalySetup
 
     unless ci?
       message += "\nIf binaries are missing, try running `make -C tmp/tests/gitaly build git.`\n"
-      message += "\nOtherwise, try running `rm -rf #{gitaly_dir}`."
+      message += "\nOtherwise, try running `rm -rf #{tmp_tests_gitaly_dir}`."
     end
 
     message
   end
 
   def git_binary
-    File.join(gitaly_dir, "_build", "deps", "git", "install", "bin", "git")
+    File.join(tmp_tests_gitaly_dir, "_build", "deps", "git", "install", "bin", "git")
   end
 
   def gitaly_binary
-    File.join(gitaly_dir, "_build", "bin", "gitaly")
+    File.join(tmp_tests_gitaly_dir, "_build", "bin", "gitaly")
   end
 
   def praefect_binary
-    File.join(gitaly_dir, "_build", "bin", "praefect")
+    File.join(tmp_tests_gitaly_dir, "_build", "bin", "praefect")
   end
 
   def git_binary_exists?
