@@ -72,6 +72,7 @@ RSpec.describe 'Every GitLab uploader' do
     # Please see https://gitlab.com/gitlab-org/gitlab/-/issues/328491 for more details.
     def known_unimplemented_uploader?(uploader)
       [
+        Ci::SecureFileUploader, # TODO: Add Geo support for Secure Files https://gitlab.com/gitlab-org/gitlab/-/issues/349893
         DeletedObjectUploader,
         DependencyProxy::FileUploader,
         Packages::Composer::CacheUploader,
