@@ -1,5 +1,4 @@
 - page_title _('Start your Free Ultimate Trial')
-- glm_params = { glm_source: params[:glm_source], glm_content: params[:glm_content] }
 - content_for :page_specific_javascripts do
   = render "layouts/google_tag_manager_head"
   = render "layouts/one_trust"
@@ -15,27 +14,7 @@
 
     = render 'errors'
 
-    = form_tag create_lead_trials_path(glm_params), method: :post, id: "new_trial" do |_f|
-      .form-row
-        .col-12.col-sm-6.form-group
-          = label_tag :first_name, s_('Trial|First name'), for: :first_name, class: 'col-form-label'
-          = text_field_tag :first_name, params[:first_name] || current_user.first_name, class: 'form-control gl-form-input', required: true, data: { qa_selector: 'first_name' }
-        .col-12.col-sm-6.form-group
-          = label_tag :last_name, s_('Trial|Last name'), for: :last_name, class: 'col-form-label'
-          = text_field_tag :last_name, params[:last_name] || current_user.last_name, class: 'form-control gl-form-input', required: true, data: { qa_selector: 'last_name' }
-      .form-group
-        = label_tag :company_name, s_('Trial|Company name'), for: :company_name, class: 'col-form-label'
-        = text_field_tag :company_name, params[:company_name] || current_user.organization, class: 'form-control gl-form-input', required: true, data: { qa_selector: 'company_name' }
-      .form-group.gl-select2-html5-required-fix
-        = label_tag :company_size, s_('Trial|Number of employees'), for: :company_size, class: 'col-form-label'
-        = select_tag :company_size, company_size_options_for_select(params[:company_size]), class: 'select2', required: true, data: { qa_selector: 'number_of_employees' }
-      .form-group.gl-select2-html5-required-fix
-        = render 'select_country'
-      .form-group
-        = label_tag :phone_number, s_('Trial|Telephone number'), for: :phone_number, class: 'col-form-label'
-        = telephone_field_tag :phone_number, params[:phone_number], pattern: '^(\+)*[0-9-\s]+$', class: 'form-control gl-form-input', required: true, data: { qa_selector: 'telephone_number' }
-        %p.gl-text-gray-500= _('Allowed characters: +, 0-9, -, and spaces.')
-      = submit_tag s_('Trial|Continue'), class: 'btn gl-button btn-confirm gl-w-20', data: { qa_selector: 'continue' }
+    #js-trial-create-lead-form{ data: create_lead_form_data }
 
     = render 'skip_trial'
 
