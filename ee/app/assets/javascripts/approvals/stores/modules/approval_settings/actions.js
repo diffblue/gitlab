@@ -38,10 +38,6 @@ export default (mapStateToPayload, updateMethod = 'put') => ({
       });
   },
 
-  dismissSuccessMessage({ commit }) {
-    commit(types.DISMISS_SUCCESS_MESSAGE);
-  },
-
   dismissErrorMessage({ commit }) {
     commit(types.DISMISS_ERROR_MESSAGE);
   },
