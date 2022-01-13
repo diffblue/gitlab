@@ -418,10 +418,21 @@ On the **Praefect** node:
 
    ```ruby
    praefect['listen_addr'] = '0.0.0.0:2305'
+   ```
 
+1. Configure Prometheus metrics by editing
+   `/etc/gitlab/gitlab.rb`:
+
+   ```ruby
    # Enable Prometheus metrics access to Praefect. You must use firewalls
    # to restrict access to this address/port.
+   # The default metrics endpoint is /metrics
    praefect['prometheus_listen_addr'] = '0.0.0.0:9652'
+
+   # Some metrics run queries against the database. Enabling separate database metrics allows
+   # these metrics to be collected when the metrics are
+   # scraped on a separate /db_metrics endpoint. 
+   praefect['separate_database_metrics'] = true
    ```
 
 1. Configure a strong `auth_token` for **Praefect** by editing
