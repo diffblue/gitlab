@@ -6,7 +6,13 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mockTracking } from 'helpers/tracking_helper';
 import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
-import { i18n } from 'ee/hand_raise_leads/hand_raise_lead/constants';
+import {
+  PQL_BUTTON_TEXT,
+  PQL_MODAL_PRIMARY,
+  PQL_MODAL_CANCEL,
+  PQL_MODAL_HEADER_TEXT,
+  PQL_MODAL_FOOTER_TEXT,
+} from 'ee/hand_raise_leads/hand_raise_lead/constants';
 import * as SubscriptionsApi from 'ee/api/subscriptions_api';
 import { formData, states, countries } from './mock_data';
 
@@ -67,7 +73,7 @@ describe('HandRaiseLeadButton', () => {
     });
 
     it('has the "Contact sales" text on the button', () => {
-      expect(findButton().text()).toBe(i18n.buttonText);
+      expect(findButton().text()).toBe(PQL_BUTTON_TEXT);
     });
 
     it('has the default injected values', async () => {
@@ -103,17 +109,17 @@ describe('HandRaiseLeadButton', () => {
     });
 
     it('has the correct text in the modal content', () => {
-      expect(findModal().text()).toContain(sprintf(i18n.modalHeaderText, { userName: 'joe' }));
-      expect(findModal().text()).toContain(i18n.modalFooterText);
+      expect(findModal().text()).toContain(sprintf(PQL_MODAL_HEADER_TEXT, { userName: 'joe' }));
+      expect(findModal().text()).toContain(PQL_MODAL_FOOTER_TEXT);
     });
 
     it('has the correct modal props', () => {
       expect(findModal().props('actionPrimary')).toStrictEqual({
-        text: i18n.modalPrimary,
+        text: PQL_MODAL_PRIMARY,
         attributes: [{ variant: 'success' }, { disabled: true }],
       });
       expect(findModal().props('actionCancel')).toStrictEqual({
-        text: i18n.modalCancel,
+        text: PQL_MODAL_CANCEL,
       });
     });
 
@@ -139,7 +145,7 @@ describe('HandRaiseLeadButton', () => {
       await wrapper.vm.$nextTick();
 
       expect(findModal().props('actionPrimary')).toStrictEqual({
-        text: i18n.modalPrimary,
+        text: PQL_MODAL_PRIMARY,
         attributes: [{ variant: 'success' }, { disabled: false }],
       });
     });

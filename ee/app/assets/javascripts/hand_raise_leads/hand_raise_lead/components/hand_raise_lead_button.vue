@@ -15,7 +15,32 @@ import Tracking from '~/tracking';
 import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.graphql';
 import statesQuery from 'ee/subscriptions/graphql/queries/states.query.graphql';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
-import { i18n, companySizes, COUNTRIES_WITH_STATES_ALLOWED } from '../constants';
+import {
+  LEADS_COMPANY_NAME_LABEL,
+  LEADS_COMPANY_SIZE_LABEL,
+  LEADS_COUNTRY_LABEL,
+  LEADS_COUNTRY_PROMPT,
+  LEADS_FIRST_NAME_LABEL,
+  LEADS_LAST_NAME_LABEL,
+  LEADS_PHONE_NUMBER_LABEL,
+  companySizes,
+} from 'ee/vue_shared/leads/constants';
+import {
+  COUNTRIES_WITH_STATES_ALLOWED,
+  PQL_COMPANY_SIZE_PROMPT,
+  PQL_PHONE_DESCRIPTION,
+  PQL_STATE_LABEL,
+  PQL_STATE_PROMPT,
+  PQL_COMMENT_LABEL,
+  PQL_BUTTON_TEXT,
+  PQL_MODAL_TITLE,
+  PQL_MODAL_PRIMARY,
+  PQL_MODAL_CANCEL,
+  PQL_MODAL_HEADER_TEXT,
+  PQL_MODAL_FOOTER_TEXT,
+  PQL_HAND_RAISE_ACTION_ERROR,
+  PQL_HAND_RAISE_ACTION_SUCCESS,
+} from '../constants';
 
 export default {
   name: 'HandRaiseLeadButton',
@@ -180,7 +205,28 @@ export default {
         });
     },
   },
-  i18n,
+  i18n: {
+    firstNameLabel: LEADS_FIRST_NAME_LABEL,
+    lastNameLabel: LEADS_LAST_NAME_LABEL,
+    companyNameLabel: LEADS_COMPANY_NAME_LABEL,
+    companySizeLabel: LEADS_COMPANY_SIZE_LABEL,
+    phoneNumberLabel: LEADS_PHONE_NUMBER_LABEL,
+    countryLabel: LEADS_COUNTRY_LABEL,
+    countrySelectPrompt: LEADS_COUNTRY_PROMPT,
+    companySizeSelectPrompt: PQL_COMPANY_SIZE_PROMPT,
+    phoneNumberDescription: PQL_PHONE_DESCRIPTION,
+    stateLabel: PQL_STATE_LABEL,
+    stateSelectPrompt: PQL_STATE_PROMPT,
+    commentLabel: PQL_COMMENT_LABEL,
+    buttonText: PQL_BUTTON_TEXT,
+    modalTitle: PQL_MODAL_TITLE,
+    modalPrimary: PQL_MODAL_PRIMARY,
+    modalCancel: PQL_MODAL_CANCEL,
+    modalHeaderText: PQL_MODAL_HEADER_TEXT,
+    modalFooterText: PQL_MODAL_FOOTER_TEXT,
+    handRaiseActionError: PQL_HAND_RAISE_ACTION_ERROR,
+    handRaiseActionSuccess: PQL_HAND_RAISE_ACTION_SUCCESS,
+  },
 };
 </script>
 

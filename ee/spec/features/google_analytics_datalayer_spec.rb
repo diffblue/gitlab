@@ -64,29 +64,6 @@ RSpec.describe 'GitLab.com Google Analytics DataLayer', :js do
     end
   end
 
-  context 'on new trial page' do
-    it 'tracks form submissions in the dataLayer' do
-      sign_in user
-      visit new_trial_path
-
-      evaluate_script('document.getElementById("new_trial").addEventListener("submit", e => e.preventDefault())')
-
-      fill_in 'first_name', with: user_attrs[:first_name]
-      fill_in 'last_name', with: user_attrs[:last_name]
-      fill_in 'company_name', with: user_attrs[:company_name]
-      evaluate_script("document.getElementById('company_size').value = '1-99'")
-      fill_in 'phone_number', with: user_attrs[:phone_number]
-      evaluate_script("document.getElementById('country_select').value = 'US'")
-
-      click_button 'Continue'
-
-      data_layer = execute_script('return window.dataLayer')
-      last_event_in_data_layer = data_layer[-1]
-
-      expect(last_event_in_data_layer["event"]).to eq("saasTrialSubmit")
-    end
-  end
-
   context 'on trial group select page' do
     it 'tracks create group events' do
       sign_in user

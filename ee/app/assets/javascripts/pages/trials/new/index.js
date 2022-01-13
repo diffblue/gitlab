@@ -1,5 +1,5 @@
-import 'ee/trials/country_select';
-import { trackSaasTrialSubmit, trackSaasTrialSkip } from '~/google_tag_manager';
+import { trackSaasTrialSkip } from '~/google_tag_manager';
+import { initTrialCreateLeadForm } from 'ee/trials/init_create_lead_form';
 
-trackSaasTrialSubmit();
+initTrialCreateLeadForm();
 trackSaasTrialSkip();

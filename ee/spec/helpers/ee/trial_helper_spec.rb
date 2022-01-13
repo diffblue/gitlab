@@ -5,6 +5,56 @@ require 'spec_helper'
 RSpec.describe EE::TrialHelper do
   using RSpec::Parameterized::TableSyntax
 
+  describe '#create_lead_form_data' do
+    let(:user) do
+      double('User', first_name: '_first_name_', last_name: '_last_name_', organization: '_company_name_')
+    end
+
+    let(:extra_params) do
+      {
+        first_name: '_params_first_name_',
+        last_name: '_params_last_name_',
+        company_name: '_params_company_name_',
+        company_size: '_company_size_',
+        phone_number: '1234',
+        country: '_country_'
+      }
+    end
+
+    let(:params) do
+      ActionController::Parameters.new(extra_params.merge(glm_source: '_glm_source_', glm_content: '_glm_content_'))
+    end
+
+    before do
+      allow(helper).to receive(:params).and_return(params)
+      allow(helper).to receive(:current_user).and_return(user)
+    end
+
+    it 'provides expected form data' do
+      keys = extra_params.keys + [:submit_path]
+
+      expect(helper.create_lead_form_data.keys.map(&:to_sym)).to match_array(keys)
+    end
+
+    it 'allows overriding data with params' do
+      expect(helper.create_lead_form_data).to match(a_hash_including(extra_params))
+    end
+
+    context 'when params are empty' do
+      let(:extra_params) { {} }
+
+      it 'uses the values from current user' do
+        current_user_attributes = {
+          first_name: user.first_name,
+          last_name: user.last_name,
+          company_name: user.organization
+        }
+
+        expect(helper.create_lead_form_data).to match(a_hash_including(current_user_attributes))
+      end
+    end
+  end
+
   describe '#should_ask_company_question?' do
     before do
       allow(helper).to receive(:glm_params).and_return(glm_source ? { glm_source: glm_source } : {})
