@@ -1,0 +1,5 @@
+.compliance-filter-dropdown-input {
+  @include media-breakpoint-up(md) {
+    max-width: 11rem;
+  }
+}

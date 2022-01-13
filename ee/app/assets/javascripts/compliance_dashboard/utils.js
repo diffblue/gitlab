@@ -1,4 +1,6 @@
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
+import { convertToGraphQLIds } from '~/graphql_shared/utils';
+import { TYPE_PROJECT } from '~/graphql_shared/constants';
 
 export const mapDashboardToDrawerData = (mergeRequest) => ({
   id: mergeRequest.id,
@@ -12,4 +14,12 @@ export const mapDashboardToDrawerData = (mergeRequest) => ({
       mergeRequest.compliance_management_framework,
     ),
   },
+});
+
+export const parseViolationsQuery = ({ projectIds = [], ...rest }) => ({
+  projectIds: convertToGraphQLIds(
+    TYPE_PROJECT,
+    projectIds.filter((id) => Boolean(id)),
+  ),
+  ...rest,
 });
