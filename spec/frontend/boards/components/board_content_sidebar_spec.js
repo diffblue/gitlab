@@ -97,7 +97,7 @@ describe('BoardContentSidebar', () => {
   });
 
   it('confirms we render MountingPortal', () => {
-    expect(wrapper.find(MountingPortal).props()).toMatchObject({
+    expect(wrapper.findComponent(MountingPortal).props()).toMatchObject({
       mountTo: '#js-right-sidebar-portal',
       append: true,
       name: 'board-content-sidebar',
@@ -143,7 +143,7 @@ describe('BoardContentSidebar', () => {
   });
 
   it('does not render SidebarSeverity', () => {
-    expect(wrapper.find(SidebarSeverity).exists()).toBe(false);
+    expect(wrapper.findComponent(SidebarSeverity).exists()).toBe(false);
   });
 
   describe('when we emit close', () => {
@@ -175,7 +175,7 @@ describe('BoardContentSidebar', () => {
     });
 
     it('renders SidebarSeverity', () => {
-      expect(wrapper.find(SidebarSeverity).exists()).toBe(true);
+      expect(wrapper.findComponent(SidebarSeverity).exists()).toBe(true);
     });
   });
 });

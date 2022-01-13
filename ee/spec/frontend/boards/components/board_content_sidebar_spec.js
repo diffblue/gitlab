@@ -97,7 +97,7 @@ describe('ee/BoardContentSidebar', () => {
     });
 
     it('matches the snapshot', () => {
-      expect(wrapper.find(GlDrawer).element).toMatchSnapshot();
+      expect(wrapper.findComponent(GlDrawer).element).toMatchSnapshot();
     });
   });
 
@@ -110,7 +110,7 @@ describe('ee/BoardContentSidebar', () => {
     });
 
     it('matches the snapshot', () => {
-      expect(wrapper.find(GlDrawer).element).toMatchSnapshot();
+      expect(wrapper.findComponent(GlDrawer).element).toMatchSnapshot();
     });
   });
 });
