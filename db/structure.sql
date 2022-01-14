@@ -21335,7 +21335,11 @@ CREATE TABLE user_preferences (
     experience_level smallint,
     view_diffs_file_by_file boolean DEFAULT false NOT NULL,
     gitpod_enabled boolean DEFAULT false NOT NULL,
-    markdown_surround_selection boolean DEFAULT true NOT NULL
+    markdown_surround_selection boolean DEFAULT true NOT NULL,
+    diffs_deletion_color text,
+    diffs_addition_color text,
+    CONSTRAINT check_89bf269f41 CHECK ((char_length(diffs_deletion_color) <= 7)),
+    CONSTRAINT check_d07ccd35f7 CHECK ((char_length(diffs_addition_color) <= 7))
 );
 
 CREATE SEQUENCE user_preferences_id_seq
