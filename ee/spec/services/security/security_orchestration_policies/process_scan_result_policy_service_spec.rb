@@ -77,6 +77,41 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       it_behaves_like 'create approval rule with specific approver'
     end
 
+    context 'with a specific number of rules' do
+      using RSpec::Parameterized::TableSyntax
+
+      let(:rule) do
+        {
+          type: 'scan_finding',
+          branches: %w[master],
+          scanners: %w[container_scanning],
+          vulnerabilities_allowed: 0,
+          severity_levels: %w[critical],
+          vulnerability_states: %w[detected]
+        }
+      end
+
+      let(:rules) { [rule] * rules_count }
+
+      let(:policy) { build(:scan_result_policy, name: 'Test Policy', rules: rules) }
+
+      where(:rules_count, :expected_rules_count) do
+        [
+         [Security::ScanResultPolicy::LIMIT - 1, Security::ScanResultPolicy::LIMIT - 1],
+         [Security::ScanResultPolicy::LIMIT, Security::ScanResultPolicy::LIMIT],
+         [Security::ScanResultPolicy::LIMIT + 1, Security::ScanResultPolicy::LIMIT]
+        ]
+      end
+
+      with_them do
+        it 'creates approval rules up to limit' do
+          subject
+
+          expect(project.approval_rules.count).to be expected_rules_count
+        end
+      end
+    end
+
     it 'sets project approval rules names based on policy name', :aggregate_failures do
       subject
 

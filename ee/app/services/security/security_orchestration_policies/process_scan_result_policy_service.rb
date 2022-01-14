@@ -27,7 +27,7 @@ module Security
         action_info = policy[:actions].find { |action| action[:type] == Security::ScanResultPolicy::REQUIRE_APPROVAL }
         return unless action_info
 
-        policy[:rules].each_with_index do |rule, rule_index|
+        policy[:rules].first(Security::ScanResultPolicy::LIMIT).each_with_index do |rule, rule_index|
           next if rule[:type] != Security::ScanResultPolicy::SCAN_FINDING
 
           ::ApprovalRules::CreateService.new(project, author, rule_params(rule, rule_index, action_info)).execute
