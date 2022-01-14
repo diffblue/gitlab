@@ -2,9 +2,9 @@
 import { GlButton, GlIcon } from '@gitlab/ui';
 import createFlash from '~/flash';
 import { redirectTo } from '~/lib/utils/url_utility';
-import { __ } from '~/locale';
 
 import { addProjectToSlack } from '../api';
+import { i18n } from '../constants';
 import ProjectsDropdown from './projects_dropdown.vue';
 
 export default {
@@ -40,6 +40,7 @@ export default {
       required: true,
     },
   },
+  i18n,
   data() {
     return {
       selectedProject: null,
@@ -59,7 +60,7 @@ export default {
         .then((response) => redirectTo(response.data.add_to_slack_link))
         .catch(() =>
           createFlash({
-            message: __('Unable to build Slack link.'),
+            message: i18n.slackErrorMessage,
           }),
         );
     },
@@ -70,22 +71,22 @@ export default {
 <template>
   <div class="gitlab-slack-body gl-mx-auto gl-mt-11 gl-text-center">
     <div v-once class="gl-my-5 gl-display-flex gl-justify-content-center gl-align-items-center">
-      <img :src="gitlabLogoPath" :alt="__('GitLab logo')" class="gl-h-11 gl-w-11" />
+      <img :src="gitlabLogoPath" :alt="$options.i18n.gitlabLogoAlt" class="gl-h-11 gl-w-11" />
       <gl-icon name="arrow-right" :size="32" class="gl-mx-5 gl-text-gray-200" />
       <img
         :src="slackLogoPath"
-        :alt="__('Slack logo')"
+        :alt="$options.i18n.slackLogoAlt"
         class="gitlab-slack-slack-logo gl-h-11 gl-w-11"
       />
     </div>
 
-    <h2>{{ s__('SlackIntegration|GitLab for Slack') }}</h2>
+    <h2>{{ $options.i18n.title }}</h2>
 
     <div class="gl-mt-6" data-testid="gitlab-slack-content">
       <template v-if="isSignedIn">
         <template v-if="hasProjects">
           <p>
-            {{ s__('SlackIntegration|Select a GitLab project to link with your Slack workspace.') }}
+            {{ $options.i18n.dropdownLabel }}
           </p>
 
           <projects-dropdown
@@ -101,18 +102,18 @@ export default {
               :disabled="!selectedProject"
               @click="addToSlack"
             >
-              {{ __('Continue') }}
+              {{ $options.i18n.dropdownButtonText }}
             </gl-button>
           </div>
         </template>
-        <p v-else>{{ __("You don't have any projects available.") }}</p>
+        <p v-else>{{ $options.i18n.noProjects }}</p>
       </template>
 
       <template v-else>
-        <p>{{ s__('JiraService|Sign in to GitLab.com to get started.') }}</p>
-        <gl-button category="primary" variant="confirm" :href="signInPath">{{
-          __('Sign in to GitLab')
-        }}</gl-button>
+        <p>{{ $options.i18n.signInLabel }}</p>
+        <gl-button category="primary" variant="confirm" :href="signInPath">
+          {{ $options.i18n.signInButtonText }}
+        </gl-button>
       </template>
     </div>
   </div>

@@ -2,6 +2,7 @@ import { GlButton } from '@gitlab/ui';
 
 import GitlabSlackApplication from 'ee/integrations/gitlab_slack_application/components/gitlab_slack_application.vue';
 import { addProjectToSlack } from 'ee/integrations/gitlab_slack_application/api';
+import { i18n } from 'ee/integrations/gitlab_slack_application/constants';
 import ProjectsDropdown from 'ee/integrations/gitlab_slack_application/components/projects_dropdown.vue';
 
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -57,7 +58,7 @@ describe('GitlabSlackApplication', () => {
         it('renders empty text', () => {
           createComponent();
 
-          expect(findAppContent().text()).toBe("You don't have any projects available.");
+          expect(findAppContent().text()).toBe(i18n.noProjects);
         });
       });
 
