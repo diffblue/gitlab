@@ -29,7 +29,6 @@ export default {
         primary: {
           text: __('Fork project'),
           attributes: {
-            type: 'submit',
             href: this.forkPath,
             variant: 'confirm',
             'data-qa-selector': 'fork_project_button',
@@ -54,6 +53,7 @@ export default {
 </script>
 <template>
   <gl-modal
+    data-qa-selector="confirm_fork_modal"
     :visible="isVisible"
     :modal-id="modalId"
     :title="$options.i18n.title"

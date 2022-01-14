@@ -119,7 +119,7 @@ export default {
     return {
       selection: KEY_WEB_IDE,
       showEnableGitpodModal: false,
-      isForkModalOpen: false,
+      showForkModal: false,
     };
   },
   computed: {
@@ -140,7 +140,7 @@ export default {
                 return;
               }
 
-              this.showForkModal(true);
+              this.showModal('showForkModal');
             },
           }
         : { href: this.editUrl };
@@ -183,7 +183,7 @@ export default {
                 return;
               }
 
-              this.showForkModal(true);
+              this.showModal('showForkModal');
             },
           }
         : { href: this.webIdeUrl };
@@ -259,16 +259,12 @@ export default {
     select(key) {
       this.selection = key;
     },
-    showForkModal(isOpen) {
-      this.isForkModalOpen = isOpen;
-    },
     showModal(dataKey) {
       this[dataKey] = true;
     },
   },
 };
 </script>
-
 <template>
   <div class="gl-sm-ml-3">
     <actions-button
@@ -283,7 +279,6 @@ export default {
       :value="selection"
       @input="select"
     />
-
     <gl-modal
       v-if="computedShowGitpodButton && !gitpodEnabled"
       v-model="showEnableGitpodModal"
@@ -297,10 +292,10 @@ export default {
     </gl-modal>
     <confirm-fork-modal
       v-if="showWebIdeButton || showEditButton"
-      :is-visible="isForkModalOpen"
+      :is-visible="showForkModal"
       :modal-id="forkModalId"
       :fork-path="forkPath"
-      @hide="showForkModal(false)"
+      @hide="showForkModal = false"
     />
   </div>
 </template>

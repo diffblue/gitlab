@@ -177,14 +177,19 @@ module TreeHelper
 
   def fork_modal_options(project, ref, path, blob)
     if show_edit_button?({ blob: blob })
-      return { fork_path: fork_and_edit_path(project, ref, path), fork_modal_id: "modal-confirm-fork-edit" }
+      fork_path = fork_and_edit_path(project, ref, path)
+      fork_modal_id = "modal-confirm-fork-edit"
     end
 
     if show_web_ide_button?
-      return { fork_path: ide_fork_and_edit_path(project, ref, path), fork_modal_id: "modal-confirm-fork-webide" }
+      fork_path = ide_fork_and_edit_path(project, ref, path)
+      fork_modal_id = "modal-confirm-fork-webide"
     end
 
-    {}
+    {
+      fork_path: fork_path,
+      fork_modal_id: fork_modal_id
+    }
   end
 
   def web_ide_button_data(options = {})
