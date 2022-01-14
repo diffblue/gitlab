@@ -6,7 +6,7 @@
   - if integration.operating?
     = sprite_icon('check', css_class: 'gl-text-green-500')
 
-= render 'shared/service_settings', integration: integration
+= render 'shared/integration_settings', integration: integration
 - if lookup_context.template_exists?('show', "projects/services/#{integration.to_param}", true)
   %hr
   = render "projects/services/#{integration.to_param}/show", integration: integration

@@ -3,7 +3,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import * as Sentry from '@sentry/browser';
 import { setHTMLFixture } from 'helpers/fixtures';
-import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import ActiveCheckbox from '~/integrations/edit/components/active_checkbox.vue';
 import ConfirmationModal from '~/integrations/edit/components/confirmation_modal.vue';
@@ -42,6 +42,7 @@ describe('IntegrationForm', () => {
     featureFlags = {},
     initialState = {},
     props = {},
+    mountFn = shallowMountExtended,
   } = {}) => {
     const store = createStore({
       customState: { ...mockIntegrationProps, ...customStateProps },
@@ -49,7 +50,7 @@ describe('IntegrationForm', () => {
     });
     dispatch = jest.spyOn(store, 'dispatch').mockImplementation();
 
-    wrapper = mountExtended(IntegrationForm, {
+    wrapper = mountFn(IntegrationForm, {
       propsData: { ...props, formSelector: '.test' },
       provide: {
         glFeatures: featureFlags,
@@ -218,6 +219,7 @@ describe('IntegrationForm', () => {
 
         createComponent({
           customStateProps: { type: 'jira', testPath: '/test' },
+          mountFn: mountExtended,
         });
       });
 
@@ -378,6 +380,7 @@ describe('IntegrationForm', () => {
               showActive: true,
               initialActivated: false,
             },
+            mountFn: mountExtended,
           });
 
           await findActiveCheckbox().vm.$emit('toggle-integration-active', formActive);
@@ -399,6 +402,7 @@ describe('IntegrationForm', () => {
             canTest: true,
             initialActivated: true,
           },
+          mountFn: mountExtended,
         });
 
         await findProjectSaveButton().vm.$emit('click', new Event('click'));
@@ -428,6 +432,7 @@ describe('IntegrationForm', () => {
               canTest: true,
               initialActivated: integrationActive,
             },
+            mountFn: mountExtended,
           });
           jest.spyOn(findGlForm().element, 'submit');
           jest.spyOn(findGlForm().element, 'checkValidity').mockReturnValue(checkValidityReturn);
@@ -449,6 +454,7 @@ describe('IntegrationForm', () => {
             canTest: true,
             initialActivated: true,
           },
+          mountFn: mountExtended,
         });
         jest.spyOn(findGlForm().element, 'submit');
         jest.spyOn(findGlForm().element, 'checkValidity').mockReturnValue(false);
@@ -482,6 +488,7 @@ describe('IntegrationForm', () => {
             showActive: true,
             canTest: true,
           },
+          mountFn: mountExtended,
         });
         jest.spyOn(findGlForm().element, 'checkValidity').mockReturnValue(false);
 
@@ -501,6 +508,7 @@ describe('IntegrationForm', () => {
             canTest: true,
             testPath: mockTestPath,
           },
+          mountFn: mountExtended,
         });
         jest.spyOn(findGlForm().element, 'checkValidity').mockReturnValue(true);
       });

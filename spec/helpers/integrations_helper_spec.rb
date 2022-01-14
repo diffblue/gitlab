@@ -46,6 +46,7 @@ RSpec.describe IntegrationsHelper do
         :can_test,
         :test_path,
         :reset_path,
+        :form_path,
         :redirect_to
       ]
     end
