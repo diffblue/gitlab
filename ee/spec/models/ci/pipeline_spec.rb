@@ -267,6 +267,17 @@ RSpec.describe Ci::Pipeline do
           expect(subject.dependencies).to be_empty
         end
       end
+
+      context 'with failed builds' do
+        it 'does not runs queries on failed builds' do
+          control_count = ActiveRecord::QueryRecorder.new { subject }.count
+
+          create(:ee_ci_build, :failed, :dependency_scanning, pipeline: pipeline, project: project)
+          create(:ee_ci_build, :failed, :license_scanning, pipeline: pipeline, project: project)
+
+          expect { subject }.not_to exceed_query_limit(control_count)
+        end
+      end
     end
 
     context 'when pipeline does not have any builds with dependency_list reports' do
