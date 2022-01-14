@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Manage' do
-    describe 'Project templates', :requires_admin do
+    describe 'Project templates', :requires_admin, quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/350279', type: :investigating } do
       include Support::API
 
       before(:all) do
