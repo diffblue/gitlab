@@ -22,7 +22,8 @@ module EE
       'vulnerability_confirmed' => 'shield',
       'vulnerability_dismissed' => 'cancel',
       'vulnerability_resolved' => 'status_closed',
-      'published' => 'bullhorn'
+      'published' => 'bullhorn',
+      'paging_started' => 'mobile'
     }.freeze
 
     override :system_note_icon_name

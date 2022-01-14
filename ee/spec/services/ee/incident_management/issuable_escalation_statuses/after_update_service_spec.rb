@@ -95,6 +95,7 @@ RSpec.describe IncidentManagement::IssuableEscalationStatuses::AfterUpdateServic
 
         if should_create
           expect(::IncidentManagement::PendingEscalations::IssueCreateWorker).to receive(:perform_async).with(issue.id)
+          expect(::SystemNoteService).to receive(:start_escalation).with(issue, escalation_policy, current_user)
         else
           expect(::IncidentManagement::PendingEscalations::IssueCreateWorker).not_to receive(:perform_async)
         end

@@ -116,6 +116,10 @@ module EE
       escalations_service(noteable, project).notify_via_escalation(recipients, escalation_policy: escalation_policy, type: type)
     end
 
+    def start_escalation(noteable, escalation_policy, author)
+      escalations_service(noteable, noteable.project).start_escalation(escalation_policy, author)
+    end
+
     private
 
     def issuables_service(noteable, project, author)
