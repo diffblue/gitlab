@@ -296,7 +296,7 @@ export default {
       </gl-sprintf>
     </gl-modal>
     <confirm-fork-modal
-      v-if="showWebIdeButton"
+      v-if="showWebIdeButton || showEditButton"
       :is-visible="isForkModalOpen"
       :modal-id="forkModalId"
       :fork-path="forkPath"

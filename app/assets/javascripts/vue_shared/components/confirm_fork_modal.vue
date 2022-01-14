@@ -53,7 +53,6 @@ export default {
 };
 </script>
 <template>
-  <!-- v-bind="$attrs" -->
   <gl-modal
     :visible="isVisible"
     :modal-id="modalId"
