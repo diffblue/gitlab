@@ -4,31 +4,19 @@ require 'spec_helper'
 
 RSpec.describe CrossDatabaseModification do
   describe '.transaction' do
-    def assert_no_gitlab_schema_comment(log)
-      include_arg = [/gitlab_schema/] * log.size
-
-      expect(log).not_to include(*include_arg)
-    end
-
     context 'feature flag disabled' do
       before do
         stub_feature_flags(track_gitlab_schema_in_current_transaction: false)
       end
 
-      it 'does not add gitlab_schema comment' do
-        recorder = ActiveRecord::QueryRecorder.new do
-          ApplicationRecord.transaction do
-            Project.first
-          end
+      it 'does not add to gitlab_transactions_stack' do
+        ApplicationRecord.transaction do
+          expect(ApplicationRecord.gitlab_transactions_stack).to be_empty
+
+          Project.first
         end
 
-        expect(recorder.log).to include(
-          /SAVEPOINT/,
-          /SELECT.*FROM "projects"/,
-          /RELEASE SAVEPOINT/
-        )
-
-        assert_no_gitlab_schema_comment(recorder.log)
+        expect(ApplicationRecord.gitlab_transactions_stack).to be_empty
       end
     end
 
@@ -37,71 +25,63 @@ RSpec.describe CrossDatabaseModification do
         allow(Feature::FlipperFeature).to receive(:table_exists?).and_raise(ActiveRecord::NoDatabaseError)
       end
 
-      it 'does not add gitlab_schema comment' do
-        recorder = ActiveRecord::QueryRecorder.new do
-          ApplicationRecord.transaction do
-            Project.first
-          end
+      it 'does not add to gitlab_transactions_stack' do
+        ApplicationRecord.transaction do
+          expect(ApplicationRecord.gitlab_transactions_stack).to be_empty
+
+          Project.first
         end
 
-        expect(recorder.log).to include(
-          /SAVEPOINT/,
-          /SELECT.*FROM "projects"/,
-          /RELEASE SAVEPOINT/
-        )
-
-        assert_no_gitlab_schema_comment(recorder.log)
+        expect(ApplicationRecord.gitlab_transactions_stack).to be_empty
       end
     end
 
-    it 'adds gitlab_schema to the current transaction', :aggregate_failures do
-      recorder = ActiveRecord::QueryRecorder.new do
-        ApplicationRecord.transaction do
-          Project.first
-        end
+    it 'adds the current gitlab schema to gitlab_transactions_stack', :aggregate_failures do
+      ApplicationRecord.transaction do
+        expect(ApplicationRecord.gitlab_transactions_stack).to contain_exactly(:gitlab_main)
+
+        Project.first
       end
 
-      expect(recorder.log).to include(
-        /SAVEPOINT.*gitlab_schema:gitlab_main/,
-        /SELECT.*FROM "projects"/,
-        /RELEASE SAVEPOINT.*gitlab_schema:gitlab_main/
-      )
+      expect(ApplicationRecord.gitlab_transactions_stack).to be_empty
 
       recorder = ActiveRecord::QueryRecorder.new do
         Ci::ApplicationRecord.transaction do
+          expect(ApplicationRecord.gitlab_transactions_stack).to contain_exactly(:gitlab_ci)
+
           Project.first
         end
       end
 
-      expect(recorder.log).to include(
-        /SAVEPOINT.*gitlab_schema:gitlab_ci/,
-        /SELECT.*FROM "projects"/,
-        /RELEASE SAVEPOINT.*gitlab_schema:gitlab_ci/
-      )
+      expect(ApplicationRecord.gitlab_transactions_stack).to be_empty
 
-      recorder = ActiveRecord::QueryRecorder.new do
-        Project.transaction do
-          Project.first
-        end
+      Project.transaction do
+        expect(ApplicationRecord.gitlab_transactions_stack).to contain_exactly(:gitlab_main)
+
+        Project.first
       end
 
-      expect(recorder.log).to include(
-        /SAVEPOINT.*gitlab_schema:gitlab_main/,
-        /SELECT.*FROM "projects"/,
-        /RELEASE SAVEPOINT.*gitlab_schema:gitlab_main/
-      )
+      expect(ApplicationRecord.gitlab_transactions_stack).to be_empty
 
-      recorder = ActiveRecord::QueryRecorder.new do
+      Ci::Pipeline.transaction do
+        expect(ApplicationRecord.gitlab_transactions_stack).to contain_exactly(:gitlab_ci)
+
+        Project.first
+      end
+
+      expect(ApplicationRecord.gitlab_transactions_stack).to be_empty
+
+      ApplicationRecord.transaction do
+        expect(ApplicationRecord.gitlab_transactions_stack).to contain_exactly(:gitlab_main)
+
         Ci::Pipeline.transaction do
+          expect(ApplicationRecord.gitlab_transactions_stack).to contain_exactly(:gitlab_main, :gitlab_ci)
+
           Project.first
         end
       end
 
-      expect(recorder.log).to include(
-        /SAVEPOINT.*gitlab_schema:gitlab_ci/,
-        /SELECT.*FROM "projects"/,
-        /RELEASE SAVEPOINT.*gitlab_schema:gitlab_ci/
-      )
+      expect(ApplicationRecord.gitlab_transactions_stack).to be_empty
     end
 
     it 'yields' do

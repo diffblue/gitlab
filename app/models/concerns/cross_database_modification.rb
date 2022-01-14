@@ -8,14 +8,18 @@ module CrossDatabaseModification
   end
 
   class_methods do
+    def gitlab_transactions_stack
+      Thread.current[:gitlab_transactions_stack] ||= []
+    end
+
     def transaction(**options, &block)
       if track_gitlab_schema_in_current_transaction?
-        super(**options) do
-          if connection.current_transaction.respond_to?(:add_gitlab_schema) && gitlab_schema
-            connection.current_transaction.add_gitlab_schema(gitlab_schema)
-          end
+        gitlab_transactions_stack.push(gitlab_schema)
 
-          yield
+        begin
+          super(**options, &block)
+        ensure
+          gitlab_transactions_stack.pop
         end
       else
         super(**options, &block)

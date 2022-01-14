@@ -27,7 +27,6 @@ module Gitlab
 
           context.merge!({
             transaction_depth_by_db: Hash.new { |h, k| h[k] = 0 },
-            transaction_schema_by_db: Hash.new { |h, k| h[k] = [] },
             modified_tables_by_db: Hash.new { |h, k| h[k] = Set.new }
           })
         end
@@ -42,14 +41,6 @@ module Gitlab
           self.transaction_begin?(parsed) || self.transaction_end?(parsed)
         end
 
-        def self.txn_schema(sql)
-          if sql.include?('gitlab_schema:gitlab_main*/')
-            :gitlab_main
-          elsif sql.include?('gitlab_schema:gitlab_ci*/')
-            :gitlab_ci
-          end
-        end
-
         # rubocop:disable Metrics/AbcSize
         def self.analyze(parsed)
           database = ::Gitlab::Database.db_config_name(parsed.connection)
@@ -60,23 +51,14 @@ module Gitlab
           if self.transaction_begin?(parsed)
             context[:transaction_depth_by_db][database] += 1
 
-            gitlab_txn_schema = txn_schema(sql)
-            context[:transaction_schema_by_db][database] << gitlab_txn_schema if gitlab_txn_schema
-
             return
           elsif self.transaction_end?(parsed)
             context[:transaction_depth_by_db][database] -= 1
             if context[:transaction_depth_by_db][database] == 0
               context[:modified_tables_by_db][database].clear
-              context[:transaction_schema_by_db][database].clear
             elsif context[:transaction_depth_by_db][database] < 0
               context[:transaction_depth_by_db][database] = 0
               raise CrossDatabaseModificationAcrossUnsupportedTablesError, "Misaligned cross-DB transactions discovered at query #{sql}. This could be a bug in #{self.class} or a valid issue to investigate. Read more at https://docs.gitlab.com/ee/development/database/multiple_databases.html#removing-cross-database-transactions ."
-            end
-
-            gitlab_txn_schema = txn_schema(sql)
-            if gitlab_txn_schema
-              context[:transaction_schema_by_db][database].delete(gitlab_txn_schema)
             end
 
             return
@@ -105,7 +87,7 @@ module Gitlab
           all_tables = context[:modified_tables_by_db].values.map(&:to_a).flatten
           schemas = ::Gitlab::Database::GitlabSchema.table_schemas(all_tables)
 
-          schemas += context[:transaction_schema_by_db][database].uniq
+          schemas += ApplicationRecord.gitlab_transactions_stack
 
           if schemas.many?
             message = "Cross-database data modification of '#{schemas.to_a.join(", ")}' were detected within " \

@@ -6,9 +6,6 @@ if Gitlab.dev_or_test_env? || Gitlab::Utils.to_boolean(ENV['GITLAB_ENABLE_QUERY_
   Gitlab::Database::QueryAnalyzer.instance.all_analyzers.append(::Gitlab::Database::QueryAnalyzers::GitlabSchemasMetrics)
 
   if Rails.env.test? || Gitlab::Utils.to_boolean(ENV['ENABLE_CROSS_DATABASE_MODIFICATION_DETECTION'], default: false)
-    ActiveRecord::ConnectionAdapters::RealTransaction.prepend(::Gitlab::Patch::CrossDatabaseModification::TransactionPatch)
-    ActiveRecord::ConnectionAdapters::SavepointTransaction.prepend(::Gitlab::Patch::CrossDatabaseModification::TransactionPatch)
-
     Gitlab::Database::QueryAnalyzer.instance.all_analyzers.append(::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification)
   end
 

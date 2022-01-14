@@ -4,14 +4,6 @@
 module Gitlab
   module Marginalia
     module Comment
-      def self.with_gitlab_schema(gitlab_schema)
-        Thread.current[:marginalia_gitlab_schema] = gitlab_schema
-
-        yield
-      ensure
-        Thread.current[:marginalia_gitlab_schema] = nil
-      end
-
       private
 
       def jid
@@ -52,10 +44,6 @@ module Gitlab
 
       def db_config_name
         ::Gitlab::Database.db_config_name(marginalia_adapter)
-      end
-
-      def gitlab_schema
-        Thread.current[:marginalia_gitlab_schema]
       end
     end
   end
