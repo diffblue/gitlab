@@ -52,11 +52,11 @@ module QA
           it 'denies access', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347923' do
             Flow::Login.sign_in(as: @user)
 
-            @group.sandbox.visit!
+            @group.sandbox.visit!(skip_resp_code_check: true)
             expect(page).to have_text('Page Not Found')
             page.go_back
 
-            @group.visit!
+            @group.visit!(skip_resp_code_check: true)
             expect(page).to have_text('Page Not Found')
             page.go_back
           end
