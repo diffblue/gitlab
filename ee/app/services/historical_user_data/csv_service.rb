@@ -33,7 +33,7 @@ module HistoricalUserData
 
     def header_csv
       CSV.generate do |csv|
-        csv << ['License Key', license.data]
+        csv << ['License Key', license.normalized_data]
         csv << ['Email', license.licensee_email]
         csv << ['License Start Date', license.starts_at&.to_s(:csv)]
         csv << ['License End Date', license.expires_at&.to_s(:csv)]
