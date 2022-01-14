@@ -52,10 +52,8 @@ RSpec.describe 'Epic show', :js do
 
     describe 'Epic metadata' do
       it 'shows epic tabs `Epics and Issues` and `Roadmap`' do
-        page.within('.js-epic-tabs-container') do
-          expect(find('.epic-tabs #tree-tab')).to have_content('Epics and Issues')
-          expect(find('.epic-tabs #roadmap-tab')).to have_content('Roadmap')
-        end
+        expect(find('.js-epic-tree-tab')).to have_content('Epics and Issues')
+        expect(find('.js-epic-roadmap-tab')).to have_content('Roadmap')
       end
     end
 
@@ -93,7 +91,7 @@ RSpec.describe 'Epic show', :js do
 
     describe 'Roadmap tab' do
       before do
-        find('.js-epic-tabs-container #roadmap-tab').click
+        find('.js-epic-roadmap-tab').click
         wait_for_requests
       end
 
@@ -119,7 +117,7 @@ RSpec.describe 'Epic show', :js do
     end
 
     it 'switches between Epics and Issues tab and Roadmap tab when clicking on tab links', :aggregate_failures, quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/342232' do
-      find('.js-epic-tabs-container #roadmap-tab').click
+      find('.js-epic-roadmap-tab').click
       wait_for_all_requests # Wait for Roadmap bundle load and then Epics fetch load
 
       page.within('.js-epic-tabs-content') do
@@ -127,7 +125,7 @@ RSpec.describe 'Epic show', :js do
         expect(page).to have_selector('#tree.tab-pane', visible: false)
       end
 
-      find('.js-epic-tabs-container #tree-tab').click
+      find('.js-epic-tree-tab').click
 
       page.within('.js-epic-tabs-content') do
         expect(page).to have_selector('#tree.tab-pane', visible: true)
@@ -143,9 +141,7 @@ RSpec.describe 'Epic show', :js do
 
     describe 'Epic metadata' do
       it 'shows epic tab `Issues`' do
-        page.within('.js-epic-tabs-container') do
-          expect(find('.epic-tabs #tree-tab')).to have_content('Issues')
-        end
+        expect(find('.js-epic-tree-tab')).to have_content('Issues')
       end
     end
 

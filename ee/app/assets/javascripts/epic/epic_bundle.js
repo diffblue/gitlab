@@ -30,6 +30,8 @@ export default () => {
   const epicMeta = convertObjectPropsToCamelCase(JSON.parse(el.dataset.meta), { deep: true });
   const epicData = parseIssuableData(el);
 
+  const { treeElementSelector, roadmapElementSelector, containerElementSelector } = el.dataset;
+
   // Collapse the sidebar on mobile screens by default
   const bpBreakpoint = bp.getBreakpointSize();
   if (bpBreakpoint === 'xs' || bpBreakpoint === 'sm' || bpBreakpoint === 'md') {
@@ -50,6 +52,10 @@ export default () => {
       isClassicSidebar: true,
       allowScopedLabels: epicMeta.scopedLabels,
       labelsManagePath: epicMeta.labelsWebUrl,
+      allowSubEpics: parseBoolean(el.dataset.allowSubEpics),
+      treeElementSelector,
+      roadmapElementSelector,
+      containerElementSelector,
     },
     created() {
       this.setEpicMeta({
