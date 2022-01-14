@@ -21,6 +21,7 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter do
 
   context 'internal reference' do
     let(:reference) { "&#{epic.iid}" }
+    let(:epic_url) { urls.group_epic_url(group, epic) }
 
     it 'links to a valid reference' do
       expect(doc.css('a').first.attr('href')).to eq(urls.group_epic_url(group, epic))
@@ -66,17 +67,19 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter do
     end
 
     it 'includes a data-reference-format attribute' do
-      link = doc("&#{epic.iid}+").css('a').first
+      link = doc("#{reference}+").css('a').first
 
       expect(link).to have_attribute('data-reference-format')
       expect(link.attr('data-reference-format')).to eq('+')
+      expect(link.attr('href')).to eq(epic_url)
     end
 
     it 'includes a data-reference-format attribute for URL references' do
-      link = doc("#{urls.group_epic_url(group, epic)}+").css('a').first
+      link = doc("#{epic_url}+").css('a').first
 
       expect(link).to have_attribute('data-reference-format')
       expect(link.attr('data-reference-format')).to eq('+')
+      expect(link.attr('href')).to eq(epic_url)
     end
 
     it 'ignores invalid epic IIDs' do
