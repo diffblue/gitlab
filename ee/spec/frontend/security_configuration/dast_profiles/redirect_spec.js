@@ -4,12 +4,13 @@ import * as urlUtility from '~/lib/utils/url_utility';
 
 const fullPath = '/group/project';
 const profilesLibraryPath = `${fullPath}/-/security/configuration/dast_scans`;
-const onDemandScansPath = `${fullPath}/-/on_demand_scans`;
+const newOnDemandScanPath = `${fullPath}/-/on_demand_scans`;
+const editOnDemandScanPath = `${fullPath}/-/on_demand_scans/3/edit`;
 const dastConfigPath = `${fullPath}/-/security/configuration/dast`;
 const urlParamKey = 'site_profile_id';
 const originalReferrer = document.referrer;
 
-const allowedPaths = [onDemandScansPath, dastConfigPath];
+const allowedPaths = [newOnDemandScanPath, editOnDemandScanPath, dastConfigPath];
 const disallowedPaths = [profilesLibraryPath, fullPath];
 const defaultRedirectionPath = profilesLibraryPath;
 

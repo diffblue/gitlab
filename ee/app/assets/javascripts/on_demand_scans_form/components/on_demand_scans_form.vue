@@ -145,8 +145,11 @@ export default {
     };
   },
   computed: {
+    dastScanId() {
+      return this.dastScan?.id ?? null;
+    },
     isEdit() {
-      return Boolean(this.dastScan?.id);
+      return Boolean(this.dastScanId);
     },
     title() {
       return this.isEdit
@@ -443,6 +446,7 @@ export default {
         :profiles="scannerProfiles"
         :selected-profile="selectedScannerProfile"
         :has-conflict="hasProfilesConflict"
+        :dast-scan-id="dastScanId"
       />
       <site-profile-selector
         v-model="selectedSiteProfileId"
@@ -450,6 +454,7 @@ export default {
         :profiles="siteProfiles"
         :selected-profile="selectedSiteProfile"
         :has-conflict="hasProfilesConflict"
+        :dast-scan-id="dastScanId"
       />
 
       <scan-schedule v-model="profileSchedule" class="gl-mb-5" />

@@ -1,8 +1,12 @@
 import { GlDropdownItem } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import { merge } from 'lodash';
+import dastProfilesMock from 'test_fixtures/graphql/on_demand_scans/graphql/dast_profiles.query.graphql.json';
 import OnDemandScansProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/profile_selector.vue';
+import { FROM_ONDEMAND_SCAN_ID_QUERY_PARAM } from 'ee/on_demand_scans_form/settings';
 import { scannerProfiles } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
+import { TEST_HOST } from 'helpers/test_constants';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 
 describe('OnDemandScansProfileSelector', () => {
   let wrapper;
@@ -24,12 +28,16 @@ describe('OnDemandScansProfileSelector', () => {
     },
   ];
 
+  // Finders
   const findByTestId = (testId) => wrapper.find(`[data-testid="${testId}"]`);
   const findCreateProfileOption = () => findByTestId('create-profile-option');
   const findManageProfilesOption = () => findByTestId('manage-profiles-option');
   const findProfilesDropdown = () => findByTestId('profiles-dropdown');
   const findCreateNewProfileLink = () => findByTestId('create-profile-link');
   const findSelectedProfileSummary = () => findByTestId('selected-profile-summary');
+  const findSelectedProfileEditLink = () => findByTestId('selected-profile-edit-link');
+
+  // Helpers
   const parseDropdownItems = () =>
     findProfilesDropdown()
       .findAll(GlDropdownItem)
@@ -45,6 +53,7 @@ describe('OnDemandScansProfileSelector', () => {
     wrapper = mount(
       OnDemandScansProfileSelector,
       merge(
+        {},
         {
           propsData: defaultProps,
           slots: {
@@ -162,6 +171,83 @@ describe('OnDemandScansProfileSelector', () => {
         })),
         ...defaultDropdownItems,
       ]);
+    });
+
+    it('shows an edit link', () => {
+      const editLink = findSelectedProfileEditLink();
+
+      expect(editLink.exists()).toBe(true);
+      expect(editLink.attributes('href')).toBe(selectedProfile.editPath);
+    });
+  });
+
+  describe('when editing an on-demand scan', () => {
+    const dastScanId = dastProfilesMock.data.project.pipelines.nodes[0].id;
+
+    describe('without profiles', () => {
+      beforeEach(() => {
+        createFullComponent({
+          propsData: {
+            dastScanId,
+          },
+        });
+      });
+
+      it('shows a link to create a new profile including the scan ID', () => {
+        const link = findCreateNewProfileLink();
+
+        expect(link.exists()).toBe(true);
+        expect(link.attributes('href')).toBe(
+          `${TEST_HOST}/path/to/new/profile/form?${FROM_ONDEMAND_SCAN_ID_QUERY_PARAM}=${getIdFromGraphQLId(
+            dastScanId,
+          )}`,
+        );
+      });
+    });
+
+    describe('with profiles', () => {
+      beforeEach(() => {
+        createFullComponent({
+          propsData: {
+            profiles: scannerProfiles,
+            dastScanId,
+          },
+        });
+      });
+
+      it('shows an option to create a new profile including the scan ID', () => {
+        expect(findCreateProfileOption().exists()).toBe(true);
+        expect(findCreateProfileOption().attributes('href')).toBe(
+          `${TEST_HOST}/path/to/new/profile/form?${FROM_ONDEMAND_SCAN_ID_QUERY_PARAM}=${getIdFromGraphQLId(
+            dastScanId,
+          )}`,
+        );
+      });
+    });
+
+    describe('when a profile is selected', () => {
+      const [selectedProfile] = scannerProfiles;
+
+      beforeEach(() => {
+        createFullComponent({
+          propsData: {
+            profiles: scannerProfiles,
+            value: selectedProfile.id,
+            dastScanId,
+          },
+        });
+      });
+
+      it('shows an edit link', () => {
+        const editLink = findSelectedProfileEditLink();
+
+        expect(editLink.exists()).toBe(true);
+        expect(editLink.attributes('href')).toBe(
+          `${TEST_HOST}${
+            selectedProfile.editPath
+          }?${FROM_ONDEMAND_SCAN_ID_QUERY_PARAM}=${getIdFromGraphQLId(dastScanId)}`,
+        );
+      });
     });
   });
 });

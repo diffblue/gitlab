@@ -13,7 +13,7 @@ export default () => {
   const {
     projectFullPath,
     profilesLibraryPath,
-    onDemandScansPath,
+    onDemandScanFormPath,
     dastConfigurationPath,
   } = el.dataset;
 
@@ -24,7 +24,7 @@ export default () => {
   }
 
   const factoryParams = {
-    allowedPaths: [onDemandScansPath, dastConfigurationPath],
+    allowedPaths: [onDemandScanFormPath, dastConfigurationPath],
     profilesLibraryPath,
     urlParamKey: 'scanner_profile_id',
   };

@@ -10,6 +10,9 @@ import {
 } from '@gitlab/ui';
 import fuzzaldrinPlus from 'fuzzaldrin-plus';
 import { s__ } from '~/locale';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { setUrlParams, relativePathToAbsolute, getBaseURL } from '~/lib/utils/url_utility';
+import { FROM_ONDEMAND_SCAN_ID_QUERY_PARAM } from '../../settings';
 
 export default {
   i18n: {
@@ -46,6 +49,11 @@ export default {
       required: false,
       default: null,
     },
+    dastScanId: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   data() {
     return { searchTerm: '' };
@@ -64,6 +72,30 @@ export default {
     },
     filteredProfilesEmpty() {
       return this.filteredProfiles.length === 0;
+    },
+    editProfilePath() {
+      if (!this.selectedProfile) {
+        return '';
+      }
+      const {
+        selectedProfile: { editPath },
+        dastScanId,
+      } = this;
+      return this.pathWithDastScanId(editPath, dastScanId);
+    },
+    actualNewProfilePath() {
+      const { newProfilePath, dastScanId } = this;
+      return this.pathWithDastScanId(newProfilePath, dastScanId);
+    },
+  },
+  methods: {
+    pathWithDastScanId(path, dastScanId = null) {
+      return dastScanId
+        ? setUrlParams(
+            { [FROM_ONDEMAND_SCAN_ID_QUERY_PARAM]: getIdFromGraphQLId(dastScanId) },
+            relativePathToAbsolute(path, getBaseURL()),
+          )
+        : path;
     },
   },
 };
@@ -110,7 +142,7 @@ export default {
           {{ __('No matching results...') }}
         </div>
         <template #footer>
-          <gl-dropdown-item :href="newProfilePath" data-testid="create-profile-option">
+          <gl-dropdown-item :href="actualNewProfilePath" data-testid="create-profile-option">
             <slot name="new-profile"></slot>
           </gl-dropdown-item>
           <gl-dropdown-item :href="libraryPath" data-testid="manage-profiles-option">
@@ -127,11 +159,12 @@ export default {
         <gl-button
           v-if="selectedProfile"
           v-gl-tooltip
+          data-testid="selected-profile-edit-link"
           category="primary"
           icon="pencil"
           :title="$options.i18n.editProfileLabel"
           :aria-label="$options.i18n.editProfileLabel"
-          :href="selectedProfile.editPath"
+          :href="editProfilePath"
           class="gl-absolute gl-right-7 gl-z-index-1"
         />
         <slot name="summary"></slot>
@@ -142,7 +175,7 @@ export default {
         <slot name="no-profiles"></slot>
       </p>
       <gl-button
-        :href="newProfilePath"
+        :href="actualNewProfilePath"
         variant="confirm"
         category="secondary"
         data-testid="create-profile-link"
