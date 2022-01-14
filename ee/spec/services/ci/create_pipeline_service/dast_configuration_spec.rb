@@ -7,6 +7,8 @@ RSpec.describe Ci::CreatePipelineService do
   let_it_be(:user) { create(:user, developer_projects: [project]) }
   let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }
   let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project) }
+  let_it_be(:another_dast_site_profile) { create(:dast_site_profile, project: project) }
+  let_it_be(:another_dast_scanner_profile) { create(:dast_scanner_profile, project: project) }
 
   let(:dast_variables) do
     dast_site_profile.ci_variables
@@ -97,7 +99,7 @@ RSpec.describe Ci::CreatePipelineService do
 
       shared_examples 'a missing profile' do
         it 'communicates failure' do
-          expect(subject.yaml_errors).to eq("DAST profile not found: #{profile.name}")
+          expect(subject.yaml_errors).to include("DAST profile not found: #{profile.name}")
         end
       end
 
@@ -122,7 +124,7 @@ RSpec.describe Ci::CreatePipelineService do
         before do
           allow(error_tracking).to receive(:track_and_raise_for_dev_exception)
 
-          allow_next_instance_of(AppSec::Dast::Profiles::BuildConfigService) do |instance|
+          allow_next_instance_of(AppSec::Dast::Profiles::CreateAssociationsService) do |instance|
             allow(instance).to receive(:execute).and_raise(exception)
           end
         end
@@ -176,6 +178,56 @@ RSpec.describe Ci::CreatePipelineService do
         1 + # INSERT INTO "ci_builds_metadata"
         1 + # SELECT "taggings".* FROM "taggings"
         1   # SELECT "ci_pipelines"."id" FROM
+      end
+
+      def execute_service
+        service.execute(:push)
+      end
+    end
+
+    it_behaves_like 'pipelines are created without N+1 SQL queries' do
+      let_it_be(:config1) do
+        <<~YAML
+        include:
+          - template: Security/DAST.gitlab-ci.yml
+        stages:
+          - dast
+        dast:
+          dast_configuration:
+            site_profile: #{dast_site_profile.name}
+            scanner_profile: #{dast_scanner_profile.name}
+        YAML
+      end
+
+      let_it_be(:config2) do
+        <<~YAML
+        stages:
+          - dast
+        dast:
+          stage: dast
+          dast_configuration:
+            site_profile: #{dast_site_profile.name}
+            scanner_profile: #{dast_scanner_profile.name}
+          script:
+            - exit 0
+        dast2:
+          stage: dast
+          dast_configuration:
+            site_profile: #{another_dast_site_profile.name}
+            scanner_profile: #{another_dast_scanner_profile.name}
+          script:
+            - exit 0
+        YAML
+      end
+
+      let(:accepted_n_plus_ones) do
+        1 + # SELECT "ci_instance_variables"
+          1 + # SELECT "ci_builds".* FROM "ci_builds"
+          1 + # INSERT INTO "ci_builds"
+          1 + # INSERT INTO "ci_builds_metadata"
+          1 + # SELECT "taggings".* FROM "taggings"
+          1 + # SELECT "ci_pipelines"."id" FROM
+          1 # SELECT "projects".id
       end
 
       def execute_service
