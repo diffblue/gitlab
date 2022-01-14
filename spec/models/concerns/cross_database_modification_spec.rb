@@ -45,12 +45,10 @@ RSpec.describe CrossDatabaseModification do
 
       expect(ApplicationRecord.gitlab_transactions_stack).to be_empty
 
-      recorder = ActiveRecord::QueryRecorder.new do
-        Ci::ApplicationRecord.transaction do
-          expect(ApplicationRecord.gitlab_transactions_stack).to contain_exactly(:gitlab_ci)
+      Ci::ApplicationRecord.transaction do
+        expect(ApplicationRecord.gitlab_transactions_stack).to contain_exactly(:gitlab_ci)
 
-          Project.first
-        end
+        Project.first
       end
 
       expect(ApplicationRecord.gitlab_transactions_stack).to be_empty
