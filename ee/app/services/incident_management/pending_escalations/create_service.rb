@@ -2,26 +2,25 @@
 
 module IncidentManagement
   module PendingEscalations
-    class CreateService < BaseService
-      def initialize(target)
-        @target = target
-        @project = target.project
+    class CreateService < ::BaseProjectService
+      def initialize(escalatable)
+        @escalatable = escalatable
+        @target = escalatable.pending_escalation_target
         @process_time = Time.current
+
+        super(project: target.project)
       end
 
       def execute
-        return unless ::Gitlab::IncidentManagement.escalation_policies_available?(project) && !target.resolved?
-
-        policy = project.incident_management_escalation_policies.first
-
-        return unless policy
+        return unless ::Gitlab::IncidentManagement.escalation_policies_available?(project) && !escalatable.resolved?
+        return unless policy = escalatable.escalation_policy
 
         create_escalations(policy.active_rules)
       end
 
       private
 
-      attr_reader :target, :project, :process_time
+      attr_reader :escalatable, :target, :process_time
 
       def create_escalations(rules)
         escalation_ids = rules.map do |rule|
@@ -33,8 +32,7 @@ module IncidentManagement
       end
 
       def create_escalation(rule)
-        IncidentManagement::PendingEscalations::Alert.create!(
-          target: target,
+        target.pending_escalations.create!(
           rule: rule,
           process_at: rule.elapsed_time_seconds.seconds.after(process_time)
         )
@@ -43,7 +41,11 @@ module IncidentManagement
       def process_escalations(escalation_ids)
         args = escalation_ids.map { |id| [id] }
 
-        ::IncidentManagement::PendingEscalations::AlertCheckWorker.bulk_perform_async(args) # rubocop:disable Scalability/BulkPerformWithContext
+        class_for_check_worker.bulk_perform_async(args) # rubocop:disable Scalability/BulkPerformWithContext
+      end
+
+      def class_for_check_worker
+        @class_for_check_worker ||= target.pending_escalations.klass.class_for_check_worker
       end
     end
   end

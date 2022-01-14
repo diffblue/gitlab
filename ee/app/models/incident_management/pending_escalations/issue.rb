@@ -13,6 +13,10 @@ module IncidentManagement
 
       validates :rule_id, uniqueness: { scope: [:issue_id] }
 
+      def self.class_for_check_worker
+        IssueCheckWorker
+      end
+
       def escalatable
         issue.incident_management_issuable_escalation_status
       end

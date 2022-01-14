@@ -4,6 +4,7 @@ module EE
   module IncidentManagement
     module IssuableEscalationStatus
       extend ActiveSupport::Concern
+      extend ::Gitlab::Utils::Override
 
       prepended do
         belongs_to :policy, optional: true, class_name: '::IncidentManagement::EscalationPolicy'
@@ -23,6 +24,11 @@ module EE
             errors.add(:policy, 'must be set with escalations_started_at')
           end
         end
+      end
+
+      override :pending_escalation_target
+      def pending_escalation_target
+        issue
       end
     end
   end

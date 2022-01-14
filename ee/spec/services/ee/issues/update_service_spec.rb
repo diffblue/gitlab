@@ -451,6 +451,7 @@ RSpec.describe Issues::UpdateService do
 
     context 'updating escalation status' do
       let(:opts) { { escalation_status: { policy: policy } } }
+      let(:escalation_update_class) { ::IncidentManagement::IssuableEscalationStatuses::AfterUpdateService }
 
       let!(:escalation_status) { create(:incident_management_issuable_escalation_status, issue: issue) }
       let!(:policy) { create(:incident_management_escalation_policy, project: project) }
@@ -461,12 +462,21 @@ RSpec.describe Issues::UpdateService do
       end
 
       # Requires `expoected_policy` and `expected_status` to be defined
-      shared_examples 'escalation status record has correct values' do
-        specify do
+      shared_examples 'updates the escalation status record' do
+        let(:service_double) { instance_double(escalation_update_class) }
+
+        it 'has correct values' do
           update_issue(opts)
 
           expect(issue.escalation_status.policy).to eq(expected_policy)
           expect(issue.escalation_status.status_name).to eq(expected_status)
+        end
+
+        it 'triggers side-effects' do
+          expect(escalation_update_class).to receive(:new).with(issue, user).and_return(service_double)
+          expect(service_double).to receive(:execute)
+
+          update_issue(opts)
         end
       end
 
@@ -476,7 +486,7 @@ RSpec.describe Issues::UpdateService do
         end
 
         it 'does not trigger side-effects' do
-          expect(::AlertManagement::Alerts::UpdateService).not_to receive(:new)
+          expect(escalation_update_class).not_to receive(:new)
 
           update_issue(opts)
         end
@@ -486,7 +496,7 @@ RSpec.describe Issues::UpdateService do
         let(:issue) { create(:incident, project: project) }
 
         context 'setting the escalation policy' do
-          include_examples 'escalation status record has correct values' do
+          include_examples 'updates the escalation status record' do
             let(:expected_policy) { policy }
             let(:expected_status) { :triggered }
           end
@@ -503,8 +513,9 @@ RSpec.describe Issues::UpdateService do
 
           context 'when the policy is already set' do
             let!(:escalation_status) { create(:incident_management_issuable_escalation_status, :paging, issue: issue) }
+            let(:expected_policy) { nil }
 
-            include_examples 'escalation status record has correct values' do
+            include_examples 'updates the escalation status record' do
               let(:expected_policy) { nil }
               let(:expected_status) { :triggered }
             end
@@ -512,7 +523,7 @@ RSpec.describe Issues::UpdateService do
             context 'in addition to other attributes' do
               let(:opts) { { escalation_status: { policy: policy, status: 'acknowledged' } } }
 
-              include_examples 'escalation status record has correct values' do
+              include_examples 'updates the escalation status record' do
                 let(:expected_policy) { nil }
                 let(:expected_status) { :acknowledged }
               end

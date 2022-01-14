@@ -8,7 +8,7 @@ FactoryBot.define do
     end
 
     rule { association :incident_management_escalation_rule, policy: policy }
-    issue { association :issue, project: rule.policy.project }
+    issue { association :incident, project: rule.policy.project }
     process_at { 5.minutes.from_now }
   end
 end
