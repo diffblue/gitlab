@@ -29,9 +29,6 @@
       - create_a_merge_request_templates_help_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: create_a_merge_request_template_help_link_url }
       = s_('ProjectSettings|%{link_start}What are description templates?%{link_end}').html_safe % { link_start: create_a_merge_request_templates_help_link_start, link_end: '</a>'.html_safe }
 
-    %p.text-secondary
-      = s_('ProjectSettings|If a %{code_start}default.md%{code_end} file exists in %{code_start}.gitlab/merge_request_templates%{code_end} in the repository, it overrides this setting.').html_safe % { code_start: '<code>'.html_safe, code_end: '</code>'.html_safe }
-
     = form.text_area :merge_requests_template, class: "form-control", rows: 3, data: { qa_selector: 'default_merge_request_template_field' }
 
     .text-secondary
