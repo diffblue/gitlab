@@ -53,12 +53,6 @@ module Geo
           .primary_key_in(range)
           .pluck_primary_key
       end
-
-      # @return whether primary checksum data is stored in a table separate
-      #         from the model table
-      def separate_verification_state_table?
-        verification_state_table_name != table_name
-      end
     end
   end
 end
