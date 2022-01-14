@@ -161,4 +161,16 @@ RSpec.describe SystemNoteService do
       described_class.publish_issue_to_status_page(noteable, project, author)
     end
   end
+
+  describe '.start_escalation' do
+    let(:policy) { double(project: project) }
+
+    it 'calls EscalationsService' do
+      expect_next_instance_of(::SystemNotes::EscalationsService) do |service|
+        expect(service).to receive(:start_escalation).with(policy, author)
+      end
+
+      described_class.start_escalation(noteable, policy, author)
+    end
+  end
 end

@@ -13,5 +13,12 @@ module SystemNotes
 
       create_note(NoteSummary.new(noteable, project, author, body, action: 'new_alert_added'))
     end
+
+    def start_escalation(escalation_policy, author)
+      path = url_helpers.project_incident_management_escalation_policies_path(project)
+      body = "paged escalation policy [#{escalation_policy.name}](#{path})"
+
+      create_note(NoteSummary.new(noteable, project, author, body, action: 'paging_started'))
+    end
   end
 end

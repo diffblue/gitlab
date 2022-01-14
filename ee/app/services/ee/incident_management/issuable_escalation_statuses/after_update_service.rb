@@ -56,6 +56,7 @@ module EE
 
         def create_escalations
           ::IncidentManagement::PendingEscalations::IssueCreateWorker.perform_async(issuable.id)
+          ::SystemNoteService.start_escalation(issuable, escalation_status.policy, current_user)
         end
       end
     end
