@@ -162,7 +162,7 @@ export default {
       "
       :svg-path="emptyStateSvgPath"
     />
-    <div v-if="!shouldRenderEmptyState" class="gl-max-w-full">
+    <div v-else class="gl-max-w-full">
       <path-navigation
         v-if="selectedStageReady"
         data-testid="vsa-path-navigation"
@@ -181,11 +181,9 @@ export default {
         @selectProject="onProjectsSelect"
         @setDateRange="onSetDateRange"
       />
-    </div>
-    <div v-if="!shouldRenderEmptyState" class="gl-mt-2">
       <gl-empty-state
         v-if="hasNoAccessError"
-        class="js-empty-state"
+        class="js-empty-state gl-mt-2"
         :title="__('You don’t have access to Value Stream Analytics for this group')"
         :svg-path="noAccessSvgPath"
         :description="
@@ -195,27 +193,29 @@ export default {
         "
       />
       <template v-else>
-        <template v-if="isOverviewStageSelected">
-          <value-stream-metrics
-            :request-path="currentGroupPath"
-            :request-params="cycleAnalyticsRequestParams"
-            :requests="$options.METRICS_REQUESTS"
+        <div class="gl-mt-2">
+          <template v-if="isOverviewStageSelected">
+            <value-stream-metrics
+              :request-path="currentGroupPath"
+              :request-params="cycleAnalyticsRequestParams"
+              :requests="$options.METRICS_REQUESTS"
+            />
+            <duration-chart class="gl-mt-3" :stages="activeStages" />
+            <type-of-work-charts />
+          </template>
+          <stage-table
+            v-else
+            :is-loading="isLoading || isLoadingStage"
+            :stage-events="selectedStageEvents"
+            :selected-stage="selectedStage"
+            :stage-count="selectedStageCount"
+            :empty-state-message="selectedStageError"
+            :no-data-svg-path="noDataSvgPath"
+            :pagination="pagination"
+            include-project-name
+            @handleUpdatePagination="onHandleUpdatePagination"
           />
-          <duration-chart class="gl-mt-3" :stages="activeStages" />
-          <type-of-work-charts />
-        </template>
-        <stage-table
-          v-else
-          :is-loading="isLoading || isLoadingStage"
-          :stage-events="selectedStageEvents"
-          :selected-stage="selectedStage"
-          :stage-count="selectedStageCount"
-          :empty-state-message="selectedStageError"
-          :no-data-svg-path="noDataSvgPath"
-          :pagination="pagination"
-          include-project-name
-          @handleUpdatePagination="onHandleUpdatePagination"
-        />
+        </div>
         <url-sync v-if="selectedStageReady" :query="query" />
       </template>
     </div>
