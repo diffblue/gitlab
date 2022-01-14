@@ -238,6 +238,7 @@
           },
           "rules": {
             "type": "array",
+            "maxItems": 5,
             "additionalItems": false,
             "items": {
               "type": "object",
