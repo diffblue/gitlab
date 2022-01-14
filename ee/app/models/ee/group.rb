@@ -525,9 +525,17 @@ module EE
 
     def shared_externally?
       strong_memoize(:shared_externally) do
-        invited_group_in_groups
-          .where.not(group_group_links: { shared_with_group_id: ::Group.groups_including_descendants_by([self]) })
-          .limit(1).any?
+        internal_groups = ::Group.groups_including_descendants_by([self])
+
+        group_links = invited_group_in_groups
+          .where.not(group_group_links: { shared_with_group_id: internal_groups })
+          .limit(1)
+
+        project_links = invited_groups_in_projects
+          .where.not(project_group_links: { group_id: internal_groups })
+          .limit(1)
+
+        group_links.any? || project_links.any?
       end
     end
 
