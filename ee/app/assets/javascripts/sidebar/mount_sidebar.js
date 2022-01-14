@@ -128,10 +128,6 @@ function mountIterationSelect() {
 
   const { groupPath, canEdit, projectPath, issueIid } = el.dataset;
 
-  const IterationDropdown = gon.features.iterationCadences
-    ? IterationSidebarDropdownWidget
-    : SidebarDropdownWidget;
-
   return new Vue({
     el,
     apolloProvider,
@@ -140,7 +136,7 @@ function mountIterationSelect() {
       isClassicSidebar: true,
     },
     render: (createElement) =>
-      createElement(IterationDropdown, {
+      createElement(IterationSidebarDropdownWidget, {
         props: {
           attrWorkspacePath: groupPath,
           workspacePath: projectPath,

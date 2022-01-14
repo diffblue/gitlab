@@ -16,10 +16,10 @@ import projectIssueEpicMutation from 'ee/sidebar/queries/project_issue_epic.muta
 import projectIssueEpicQuery from 'ee/sidebar/queries/project_issue_epic.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import waitForPromises from 'helpers/wait_for_promises';
 import createFlash from '~/flash';
 import { IssuableType } from '~/issues/constants';
 import SidebarEditableItem from '~/sidebar/components/sidebar_editable_item.vue';
+import { waitForDropdown, waitForApollo, clickEdit, search } from '../helpers';
 
 import {
   mockIssue,
@@ -42,38 +42,10 @@ describe('SidebarDropdownWidget', () => {
 
   const findDropdown = () => wrapper.findComponent(GlDropdown);
   const findDropdownText = () => wrapper.findComponent(GlDropdownText);
-  const findSearchBox = () => wrapper.findComponent(GlSearchBoxByType);
-  const findAllDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
+  const findAllDropdownItems = () => wrapper.findAll(GlDropdownItem);
   const findDropdownItemWithText = (text) =>
     findAllDropdownItems().wrappers.find((x) => x.text() === text);
-
-  const findSidebarEditableItem = () => wrapper.findComponent(SidebarEditableItem);
-  const findEditButton = () => findSidebarEditableItem().find('[data-testid="edit-button"]');
   const findSelectedAttribute = () => wrapper.findByTestId('select-epic');
-
-  const waitForDropdown = async () => {
-    // BDropdown first changes its `visible` property
-    // in a requestAnimationFrame callback.
-    // It then emits `shown` event in a watcher for `visible`
-    // Hence we need both of these:
-    await waitForPromises();
-    await nextTick();
-  };
-
-  const waitForApollo = async () => {
-    jest.runOnlyPendingTimers();
-    await waitForPromises();
-  };
-
-  // Used with createComponentWithApollo which uses 'mount'
-  const clickEdit = async () => {
-    await findEditButton().trigger('click');
-
-    await waitForDropdown();
-
-    // We should wait for attributes list to be fetched.
-    await waitForApollo();
-  };
 
   // Used with createComponent which shallow mounts components
   const toggleDropdown = async () => {
@@ -165,9 +137,7 @@ describe('SidebarDropdownWidget', () => {
 
         await toggleDropdown();
 
-        findSearchBox().vm.$emit('input', 'non existing epics');
-
-        await nextTick();
+        await search(wrapper, 'non existing epics');
 
         expect(findDropdownText().text()).toBe('No open iteration found');
       });
@@ -192,7 +162,7 @@ describe('SidebarDropdownWidget', () => {
             requestHandlers: [[projectIssueEpicMutation, epicMutationSpy]],
           });
 
-          await clickEdit();
+          await clickEdit(wrapper);
         });
 
         it('renders the dropdown on clicking edit', async () => {
@@ -231,7 +201,7 @@ describe('SidebarDropdownWidget', () => {
               groupEpicsSpy: jest.fn().mockRejectedValue(error),
             });
 
-            await clickEdit();
+            await clickEdit(wrapper);
 
             expect(createFlash).toHaveBeenCalledWith({
               message: 'Failed to fetch the epic for this issue. Please try again.',
@@ -246,7 +216,7 @@ describe('SidebarDropdownWidget', () => {
 
             expect(groupEpicsSpy).not.toHaveBeenCalled();
 
-            await clickEdit();
+            await clickEdit(wrapper);
 
             expect(groupEpicsSpy).toHaveBeenNthCalledWith(1, {
               fullPath: mockIssue.groupPath,
@@ -262,15 +232,11 @@ describe('SidebarDropdownWidget', () => {
               groupEpicsSpy = jest.fn().mockResolvedValueOnce(emptyGroupEpicsResponse);
               await createComponentWithApollo({ groupEpicsSpy });
 
-              await clickEdit();
+              await clickEdit(wrapper);
             });
 
             it('sends a groupEpics query with the entered search term "foo" and in TITLE param', async () => {
-              findSearchBox().vm.$emit('input', mockSearchTerm);
-              await nextTick();
-
-              // Account for debouncing
-              jest.runAllTimers();
+              await search(wrapper, mockSearchTerm);
 
               expect(groupEpicsSpy).toHaveBeenNthCalledWith(2, {
                 fullPath: mockIssue.groupPath,
@@ -287,7 +253,7 @@ describe('SidebarDropdownWidget', () => {
               groupEpicsSpy = jest.fn().mockResolvedValueOnce(emptyGroupEpicsResponse);
               await createComponentWithApollo({ groupEpicsSpy });
 
-              await clickEdit();
+              await clickEdit(wrapper);
             });
 
             it('sends a groupEpics query with empty title and undefined in param', async () => {
@@ -304,11 +270,7 @@ describe('SidebarDropdownWidget', () => {
             });
 
             it('sends a groupEpics query for an IID with the entered search term "&1"', async () => {
-              findSearchBox().vm.$emit('input', '&1');
-              await nextTick();
-
-              // Account for debouncing
-              jest.runAllTimers();
+              await search(wrapper, '&1');
 
               expect(groupEpicsSpy).toHaveBeenNthCalledWith(2, {
                 fullPath: mockIssue.groupPath,

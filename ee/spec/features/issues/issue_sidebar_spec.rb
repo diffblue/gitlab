@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Issue Sidebar' do
   include MobileHelpers
+  include IterationHelpers
 
   let_it_be(:group) { create(:group, :nested) }
   let_it_be(:project) { create(:project, :public, namespace: group) }
@@ -169,6 +170,7 @@ RSpec.describe 'Issue Sidebar' do
           within '[data-testid="iteration-edit"]' do
             expect(page).not_to have_text(iteration_cadence.title)
             expect(page).to have_text(iteration.title)
+            expect(page).to have_text(iteration_period(iteration))
           end
 
           select_iteration(iteration.title)
@@ -176,6 +178,7 @@ RSpec.describe 'Issue Sidebar' do
           within '[data-testid="select-iteration"]' do
             expect(page).not_to have_text(iteration_cadence.title)
             expect(page).to have_text(iteration.title)
+            expect(page).to have_text(iteration_period(iteration))
           end
 
           find_and_click_edit_iteration
@@ -296,9 +299,5 @@ RSpec.describe 'Issue Sidebar' do
       click_button('Edit')
       wait_for_requests
     end
-  end
-
-  def iteration_period(iteration)
-    "#{iteration.start_date.to_s(:medium)} - #{iteration.due_date.to_s(:medium)}"
   end
 end

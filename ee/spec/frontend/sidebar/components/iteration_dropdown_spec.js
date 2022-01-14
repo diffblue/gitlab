@@ -12,6 +12,7 @@ import VueApollo from 'vue-apollo';
 import IterationDropdown from 'ee/sidebar/components/iteration_dropdown.vue';
 import groupIterationsQuery from 'ee/sidebar/queries/iterations.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import { getIterationPeriod } from 'ee/iterations/utils';
 
 Vue.use(VueApollo);
 
@@ -32,7 +33,7 @@ const TEST_ITERATIONS = [
   },
   {
     id: '22',
-    title: 'Another Test Title',
+    title: null,
     startDate: '2021-10-06',
     dueDate: '2021-10-10',
     webUrl: '',
@@ -44,7 +45,7 @@ const TEST_ITERATIONS = [
   },
   {
     id: '33',
-    title: 'Yet Another Test Title',
+    title: null,
     startDate: '2021-10-11',
     dueDate: '2021-10-15',
     webUrl: '',
@@ -84,14 +85,9 @@ describe('IterationDropdown', () => {
     jest.runOnlyPendingTimers();
   };
   const findDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
+  const findDropdownItemsAt = (i) => findDropdownItems().at(i);
   const findDropdownItemWithText = (text) =>
-    findDropdownItems().wrappers.find((x) => x.text() === text);
-  const findDropdownItemsData = () =>
-    findDropdownItems().wrappers.map((x) => ({
-      isCheckItem: x.props('isCheckItem'),
-      isChecked: x.props('isChecked'),
-      text: x.text(),
-    }));
+    findDropdownItems().wrappers.find((x) => x.text().includes(text));
   const selectDropdownItemAndWait = async (text) => {
     const item = findDropdownItemWithText(text);
 
@@ -173,16 +169,31 @@ describe('IterationDropdown', () => {
       expect(isLoading()).toBe(false);
     });
 
-    it('shows dropdown items', () => {
-      const result = [IterationDropdown.noIteration].concat(TEST_ITERATIONS);
+    it('shows checkable dropdown items in unchecked state', () => {
+      expect(findDropdownItems().wrappers.map((x) => x.props('isCheckItem'))).toEqual([
+        true,
+        true,
+        true,
+        true,
+      ]);
+      expect(findDropdownItems().wrappers.map((x) => x.props('isChecked'))).toEqual([
+        false,
+        false,
+        false,
+        false,
+      ]);
+    });
 
-      expect(findDropdownItemsData()).toEqual(
-        result.map((x) => ({
-          isCheckItem: true,
-          isChecked: false,
-          text: x.title,
-        })),
-      );
+    it('populates dropdown items with correct names', () => {
+      // "No iteration" dropdown item
+      expect(findDropdownItemsAt(0).text()).toContain(IterationDropdown.noIteration.text);
+
+      // Iteration with title
+      expect(findDropdownItemsAt(1).text()).toContain(getIterationPeriod(TEST_ITERATIONS[0]));
+      expect(findDropdownItemsAt(1).text()).toContain(TEST_ITERATIONS[0].title);
+
+      // Iteration without title
+      expect(findDropdownItemsAt(2).text()).toContain(getIterationPeriod(TEST_ITERATIONS[1]));
     });
 
     it('does not re-query if opened again', async () => {
@@ -192,41 +203,41 @@ describe('IterationDropdown', () => {
       expect(groupIterationsSpy).not.toHaveBeenCalled();
     });
 
-    describe.each([0, 1, 2])('when item %s is selected', (index) => {
-      const allIterations = [IterationDropdown.noIteration].concat(TEST_ITERATIONS);
-      const selected = allIterations[index];
-      const asNotChecked = ({ title }) => ({ isCheckItem: true, isChecked: false, text: title });
-
+    describe.each([
+      {
+        text: IterationDropdown.noIteration.text,
+        iteration: IterationDropdown.noIteration,
+      },
+      {
+        text: getIterationPeriod(TEST_ITERATIONS[0]),
+        iteration: TEST_ITERATIONS[0],
+      },
+      {
+        text: getIterationPeriod(TEST_ITERATIONS[1]),
+        iteration: TEST_ITERATIONS[1],
+      },
+    ])("when iteration '%s' is selected", ({ text, iteration }) => {
       beforeEach(async () => {
-        await selectDropdownItemAndWait(selected.title);
+        await selectDropdownItemAndWait(text);
       });
 
-      it('shows item as checked', () => {
-        const prevSelected = allIterations.slice(0, index);
-        const afterSelected = allIterations.slice(index + 1);
-
-        expect(findDropdownItemsData()).toEqual([
-          ...prevSelected.map(asNotChecked),
-          {
-            isCheckItem: true,
-            isChecked: true,
-            text: selected.title,
-          },
-          ...afterSelected.map(asNotChecked),
-        ]);
-      });
-
-      it('emits event', () => {
-        expect(wrapper.emitted('onIterationSelect')).toEqual([[selected]]);
+      it('shows item as checked and emits event', () => {
+        expect(findDropdownItemWithText(text).props('isChecked')).toBe(true);
+        expect(wrapper.emitted('onIterationSelect')).toEqual([[iteration]]);
       });
 
       describe('when item is clicked again', () => {
         beforeEach(async () => {
-          await selectDropdownItemAndWait(selected.title);
+          await selectDropdownItemAndWait(text);
         });
 
         it('shows item as unchecked', () => {
-          expect(findDropdownItemsData()).toEqual(allIterations.map(asNotChecked));
+          expect(findDropdownItems().wrappers.map((x) => x.props('isChecked'))).toEqual([
+            false,
+            false,
+            false,
+            false,
+          ]);
         });
 
         it('emits event', () => {
@@ -271,17 +282,17 @@ describe('IterationDropdown', () => {
 
       expect(dropdownItems.at(0).text()).toBe('Assign Iteration');
       expect(dropdownItems.at(1).text()).toContain('No iteration');
+
       expect(dropdownItems.at(2).findComponent(GlDropdownDivider).exists()).toBe(true);
       expect(dropdownItems.at(3).findComponent(GlDropdownSectionHeader).text()).toBe('My Cadence');
-      expect(dropdownItems.at(4).text()).toContain('Test Title');
       expect(dropdownItems.at(4).text()).toContain('Oct 1, 2021 - Oct 5, 2021');
-      expect(dropdownItems.at(5).text()).toContain('Yet Another Test Title');
+      expect(dropdownItems.at(4).text()).toContain('Test Title');
       expect(dropdownItems.at(5).text()).toContain('Oct 11, 2021 - Oct 15, 2021');
+
       expect(dropdownItems.at(6).findComponent(GlDropdownDivider).exists()).toBe(true);
       expect(dropdownItems.at(7).findComponent(GlDropdownSectionHeader).text()).toBe(
         'My Second Cadence',
       );
-      expect(dropdownItems.at(8).text()).toContain('Another Test Title');
       expect(dropdownItems.at(8).text()).toContain('Oct 6, 2021 - Oct 10, 2021');
     });
   });

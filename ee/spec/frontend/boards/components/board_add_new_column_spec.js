@@ -7,6 +7,7 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import BoardAddNewColumnForm from '~/boards/components/board_add_new_column_form.vue';
 import { ListType } from '~/boards/constants';
 import defaultState from '~/boards/stores/state';
+import { getIterationPeriod } from 'ee/iterations/utils';
 import { mockAssignees, mockLists, mockIterations } from '../mock_data';
 
 const mockLabelList = mockLists[1];
@@ -94,8 +95,7 @@ describe('BoardAddNewColumn', () => {
   const findForm = () => wrapper.findComponent(BoardAddNewColumnForm);
   const cancelButton = () => wrapper.findByTestId('cancelAddNewColumn');
   const submitButton = () => wrapper.findByTestId('addNewColumnButton');
-  const findLabels = () => wrapper.findComponent(GlDropdown).findAll('label');
-  const findIterationPeriod = (item) => item.find('[data-testid="new-column-iteration-period"]');
+  const findIterationItemAt = (i) => wrapper.findAllByTestId('new-column-iteration-item').at(i);
   const listTypeSelect = (type) => {
     const radio = wrapper
       .findAllComponents(GlFormRadio)
@@ -108,6 +108,18 @@ describe('BoardAddNewColumn', () => {
     listTypeSelect(ListType.iteration);
 
     await nextTick();
+  };
+
+  const testIterationWithTitle = () => {
+    expect(findIterationItemAt(1).text()).toContain(getIterationPeriod(mockIterations[1]));
+    expect(findIterationItemAt(1).text()).toContain(mockIterations[1].title);
+  };
+
+  const testIterationWithoutTitle = () => {
+    expect(findIterationItemAt(0).text()).toContain(getIterationPeriod(mockIterations[0]));
+    expect(findIterationItemAt(0).find("[data-testid='new-column-iteration-title']").exists()).toBe(
+      false,
+    );
   };
 
   it('clicking cancel hides the form', () => {
@@ -238,16 +250,8 @@ describe('BoardAddNewColumn', () => {
       const itemList = wrapper.findComponent(GlDropdown).findAllComponents(GlFormRadio);
 
       expect(itemList).toHaveLength(mockIterations.length);
-      expect(itemList.at(0).attributes('value')).toBe(mockIterations[0].id);
-      expect(itemList.at(1).attributes('value')).toBe(mockIterations[1].id);
-    });
-
-    describe('iteration_cadences feature flag is off', () => {
-      it('does not display iteration period', async () => {
-        const labels = findLabels();
-        expect(findIterationPeriod(labels.at(0)).exists()).toBe(false);
-        expect(findIterationPeriod(labels.at(1)).exists()).toBe(false);
-      });
+      testIterationWithoutTitle();
+      testIterationWithTitle();
     });
   });
 
@@ -280,12 +284,9 @@ describe('BoardAddNewColumn', () => {
       expect(cadenceTitles).toEqual(cadenceTitles.map((_, idx) => getCadenceTitleFromMocks(idx)));
     });
 
-    it('displays iteration period', async () => {
-      const iterations = wrapper.findAllByTestId('new-column-iteration-period');
-      expect(iterations.at(0).text()).toContain('Oct 5, 2021 - Oct 10, 2021');
-      expect(findIterationPeriod(iterations.at(0)).isVisible()).toBe(true);
-      expect(iterations.at(1).text()).toContain('Oct 12, 2021 - Oct 17, 2021');
-      expect(findIterationPeriod(iterations.at(1)).isVisible()).toBe(true);
+    it('displays iteration period optionally with title', async () => {
+      testIterationWithoutTitle();
+      testIterationWithTitle();
     });
   });
 });

@@ -2,7 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User adds milestone lists', :js do
+RSpec.describe 'User adds milestone/iterations lists', :js do
+  include IterationHelpers
+
   let_it_be(:group) { create(:group, :nested) }
   let_it_be(:project) { create(:project, :public, namespace: group) }
   let_it_be(:group_board) { create(:board, group: group) }
@@ -62,7 +64,7 @@ RSpec.describe 'User adds milestone lists', :js do
     end
 
     it 'creates iteration column' do
-      add_list('Iteration', iteration.title)
+      add_list('Iteration', iteration_period(iteration))
 
       expect(page).to have_selector('.board', text: iteration.title)
       expect(find('.board:nth-child(2) .board-card')).to have_content(issue_with_iteration.title)
