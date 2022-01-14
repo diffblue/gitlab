@@ -11,6 +11,9 @@ class License < ApplicationRecord
   LICENSE_FILE_TYPE = 'license_file'
   ALLOWED_PERCENTAGE_OF_USERS_OVERAGE = (10 / 100.0)
 
+  NOTIFICATION_DAYS_BEFORE_TRIAL_EXPIRY = 1.week
+  ADMIN_NOTIFICATION_DAYS_BEFORE_EXPIRY = 15.days
+
   EE_ALL_PLANS = [STARTER_PLAN, PREMIUM_PLAN, ULTIMATE_PLAN].freeze
 
   EES_FEATURES_WITH_USAGE_PING = %i[
@@ -621,6 +624,25 @@ class License < ApplicationRecord
 
   def activated_at
     super || created_at
+  end
+
+  # Overrides method from Gitlab::License which will be removed in a future version
+  def notify_admins?
+    return false if expires_at.blank?
+    return true if expired?
+
+    notification_days = trial? ? NOTIFICATION_DAYS_BEFORE_TRIAL_EXPIRY : ADMIN_NOTIFICATION_DAYS_BEFORE_EXPIRY
+
+    Date.current >= (expires_at - notification_days)
+  end
+
+  # Overrides method from Gitlab::License which will be removed in a future version
+  def notify_users?
+    return false if expires_at.blank?
+
+    notification_start_date = trial? ? expires_at - NOTIFICATION_DAYS_BEFORE_TRIAL_EXPIRY : block_changes_at
+
+    Date.current >= notification_start_date
   end
 
   private
