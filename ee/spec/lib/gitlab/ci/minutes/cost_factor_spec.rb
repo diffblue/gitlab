@@ -8,6 +8,7 @@ RSpec.describe Gitlab::Ci::Minutes::CostFactor do
   let(:runner_type) {}
   let(:public_cost_factor) {}
   let(:private_cost_factor) {}
+  let(:cost_factor) { described_class.new(runner.runner_matcher) }
 
   let(:runner) do
     build_stubbed(:ci_runner,
@@ -27,9 +28,8 @@ RSpec.describe Gitlab::Ci::Minutes::CostFactor do
 
   describe '#enabled?' do
     let(:project) { build_stubbed(:project) }
-    let(:cost_factor) { described_class.new(runner.runner_matcher) }
 
-    subject { cost_factor.enabled?(project) }
+    subject(:is_enabled) { cost_factor.enabled?(project) }
 
     context 'when the cost factor is zero' do
       before do
@@ -50,9 +50,8 @@ RSpec.describe Gitlab::Ci::Minutes::CostFactor do
 
   describe '#disabled?' do
     let(:project) { build_stubbed(:project) }
-    let(:cost_factor) { described_class.new(runner.runner_matcher) }
 
-    subject { cost_factor.disabled?(project) }
+    subject(:is_disabled) { cost_factor.disabled?(project) }
 
     context 'when the cost factor is zero' do
       before do
@@ -72,6 +71,8 @@ RSpec.describe Gitlab::Ci::Minutes::CostFactor do
   end
 
   describe '#for_project' do
+    subject(:for_project) { cost_factor.for_project(project) }
+
     context 'before the public project cost factor release date' do
       where(:runner_type, :visibility_level, :public_cost_factor, :private_cost_factor, :namespace_limit, :instance_limit, :result) do
         :project  | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | nil | 400 | 0
@@ -123,13 +124,11 @@ RSpec.describe Gitlab::Ci::Minutes::CostFactor do
           allow(Gitlab::CurrentSettings).to receive(:shared_runners_minutes) { instance_limit }
         end
 
-        subject { described_class.new(runner.runner_matcher).for_project(project) }
-
         it { is_expected.to eq(result) }
       end
     end
 
-    context 'after the public project cost factor release date' do
+    context 'after the public project cost factor release date', :saas do
       where(:runner_type, :visibility_level, :public_cost_factor, :private_cost_factor, :namespace_limit, :instance_limit, :result) do
         :project  | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | nil | 400 | 0
         :project  | Gitlab::VisibilityLevel::INTERNAL | 1 | 1 | nil | 400 | 0
@@ -178,30 +177,68 @@ RSpec.describe Gitlab::Ci::Minutes::CostFactor do
 
         before do
           allow(Gitlab::CurrentSettings).to receive(:shared_runners_minutes) { instance_limit }
-          allow(Gitlab).to receive(:com?).and_return(true)
         end
-
-        subject { described_class.new(runner.runner_matcher).for_project(project) }
 
         it { is_expected.to eq(result) }
       end
     end
 
-    context 'when the project has an invalid visibility level' do
-      let(:namespace) { nil }
-      let(:private_cost_factor) { 1 }
-      let(:public_cost_factor) { 1 }
+    context 'plan based cost factor', :saas do
       let(:runner_type) { :instance }
-      let(:visibility_level) { 123 }
+      let(:project) { create(:project, visibility_level: Gitlab::VisibilityLevel::PRIVATE) }
 
-      it 'raises an error' do
-        expect { subject }.to raise_error(ArgumentError)
+      before do
+        create(:gitlab_subscription, namespace: project.namespace, hosted_plan: plan)
+        allow(Gitlab::CurrentSettings).to receive(:shared_runners_minutes) { 100 }
+      end
+
+      context 'when project has an Open Source plan' do
+        let(:plan) { create(:opensource_plan) }
+
+        context 'when runner cost factor is standard' do
+          let(:private_cost_factor) { described_class::STANDARD }
+
+          it 'returns a lower cost factor' do
+            expect(subject).to eq(described_class::OPEN_SOURCE)
+
+            expect(subject).to be < private_cost_factor
+            expect(subject).to be > described_class::DISABLED
+          end
+        end
+
+        context 'when runner cost factor is custom' do
+          let(:private_cost_factor) { 2.0 }
+
+          it 'returns the runner cost factor' do
+            expect(subject).to eq(private_cost_factor)
+          end
+        end
+      end
+
+      context 'when project does not have an Open Source plan' do
+        let(:plan) { create(:free_plan) }
+
+        context 'when runner cost factor is standard' do
+          let(:private_cost_factor) { described_class::STANDARD }
+
+          it 'returns the runner cost factor' do
+            expect(subject).to eq(private_cost_factor)
+          end
+        end
+
+        context 'when runner cost factor is custom' do
+          let(:private_cost_factor) { 2.0 }
+
+          it 'returns the runner cost factor' do
+            expect(subject).to eq(private_cost_factor)
+          end
+        end
       end
     end
   end
 
   describe '#for_visibility' do
-    subject { described_class.new(runner.runner_matcher).for_visibility(visibility_level) }
+    subject(:for_visibility) { described_class.new(runner.runner_matcher).for_visibility(visibility_level) }
 
     where(:runner_type, :visibility_level, :public_cost_factor, :private_cost_factor, :result) do
       :project  | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | 0

@@ -75,5 +75,9 @@ FactoryBot.define do
     trait :ultimate_trial do
       association :hosted_plan, factory: :ultimate_trial_plan
     end
+
+    trait :opensource do
+      association :hosted_plan, factory: :opensource_plan
+    end
   end
 end
