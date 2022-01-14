@@ -1,7 +1,7 @@
-import { GlBadge } from '@gitlab/ui';
+import { GlBadge, GlIcon, GlTooltip } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import SubscriptionDetailsHistory from 'ee/admin/subscriptions/show/components/subscription_details_history.vue';
-import { cloudLicenseText } from 'ee/admin/subscriptions/show/constants';
+import { detailsLabels, cloudLicenseText } from 'ee/admin/subscriptions/show/constants';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { license, subscriptionHistory } from '../mock_data';
 
@@ -12,6 +12,8 @@ describe('Subscription Details History', () => {
   const findTableRows = () => wrapper.findAllByTestId('subscription-history-row');
   const cellFinder = (row) => (testId) => extendedWrapper(row).findByTestId(testId);
   const containsABadge = (row) => row.findComponent(GlBadge).exists();
+  const containsATooltip = (row) => row.findComponent(GlTooltip).exists();
+  const findIcon = (row) => row.findComponent(GlIcon);
 
   const createComponent = (props) => {
     wrapper = extendedWrapper(
@@ -51,6 +53,18 @@ describe('Subscription Details History', () => {
       expect(findTableRows().wrappers.every(containsABadge)).toBe(true);
     });
 
+    it('has a tooltip to display company and email fields', () => {
+      expect(findTableRows().wrappers.every(containsATooltip)).toBe(true);
+    });
+
+    it('has an information icon with tabindex', () => {
+      findTableRows().wrappers.forEach((row) => {
+        const icon = findIcon(row);
+        expect(icon.props('name')).toBe('information-o');
+        expect(icon.attributes('tabindex')).toBe('0');
+      });
+    });
+
     it('highlights the current subscription row', () => {
       expect(findCurrentRow().classes('gl-text-blue-500')).toBe(true);
     });
@@ -69,9 +83,6 @@ describe('Subscription Details History', () => {
 
       it.each`
         testId                      | key
-        ${'name'}                   | ${'name'}
-        ${'email'}                  | ${'email'}
-        ${'company'}                | ${'company'}
         ${'starts-at'}              | ${'startsAt'}
         ${'starts-at'}              | ${'startsAt'}
         ${'expires-at'}             | ${'expiresAt'}
@@ -79,6 +90,22 @@ describe('Subscription Details History', () => {
       `('displays the correct value for the $testId cell', ({ testId, key }) => {
         const cellTestId = `subscription-cell-${testId}`;
         expect(findCellByTestid(cellTestId).text()).toBe(subscriptionHistory[0][key]);
+      });
+
+      it('displays the name field with tooltip', () => {
+        const cellTestId = 'subscription-cell-name';
+        const text = findCellByTestid(cellTestId).text();
+        expect(text).toContain(subscriptionHistory[0].name);
+        expect(text).toContain(`(${subscriptionHistory[0].company})`);
+        expect(text).toContain(subscriptionHistory[0].email);
+      });
+
+      it('displays sr-only element for screen readers', () => {
+        const testId = 'subscription-history-sr-only';
+        const text = findCellByTestid(testId).text();
+        expect(text).not.toContain(subscriptionHistory[0].name);
+        expect(text).toContain(`(${detailsLabels.company}: ${subscriptionHistory[0].company})`);
+        expect(text).toContain(`${detailsLabels.email}: ${subscriptionHistory[0].email}`);
       });
 
       it('displays the correct value for the type cell', () => {
