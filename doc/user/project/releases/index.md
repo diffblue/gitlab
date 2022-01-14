@@ -827,3 +827,7 @@ Make sure that the user or a service/bot account is allowed to
 [create the protected tag](../protected_tags.md#configuring-protected-tags) too.
 
 See [the release permissions](#release-permissions) for more information.
+
+### Note about storage
+
+Note that the feature is built on top of Git tags, so virtually no extra data is needed besides to create the release itself. Additional assets and the release evidence that is automatically generated consume storage.
