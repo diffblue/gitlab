@@ -3,11 +3,4 @@
 - breadcrumb_title s_('DastProfiles|Edit scanner profile')
 - page_title s_('DastProfiles|Edit scanner profile')
 
-.js-dast-scanner-profile-form{ data: { project_full_path: @project.path_with_namespace,
-profiles_library_path: project_security_configuration_dast_scans_path(@project, anchor: 'scanner-profiles'),
-scanner_profile: { id: @scanner_profile.to_global_id.to_s, profile_name: @scanner_profile.name,
-spider_timeout: @scanner_profile.spider_timeout, target_timeout: @scanner_profile.target_timeout,
-scan_type: @scanner_profile.scan_type.upcase, use_ajax_spider: @scanner_profile.use_ajax_spider,
-show_debug_messages: @scanner_profile.show_debug_messages, referenced_in_security_policies: @scanner_profile.referenced_in_security_policies }.to_json,
-on_demand_scans_path: new_project_on_demand_scan_path(@project),
-dast_configuration_path: project_security_configuration_dast_path(@project) } }
+.js-dast-scanner-profile-form{ data: edit_dast_scanner_profile_form_data(@project, @scanner_profile) }

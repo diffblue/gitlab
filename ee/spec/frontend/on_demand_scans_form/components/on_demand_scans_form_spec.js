@@ -76,8 +76,8 @@ describe('OnDemandScansForm', () => {
   const findNameInput = () => findByTestId('dast-scan-name-input');
   const findBranchInput = () => findByTestId('dast-scan-branch-input');
   const findDescriptionInput = () => findByTestId('dast-scan-description-input');
-  const findScannerProfilesSelector = () => wrapper.find(ScannerProfileSelector);
-  const findSiteProfilesSelector = () => wrapper.find(SiteProfileSelector);
+  const findScannerProfilesSelector = () => wrapper.findComponent(ScannerProfileSelector);
+  const findSiteProfilesSelector = () => wrapper.findComponent(SiteProfileSelector);
   const findAlert = () => findByTestId('on-demand-scan-error');
   const findProfilesConflictAlert = () => findByTestId('on-demand-scans-profiles-conflict-alert');
   const findSubmitButton = () => findByTestId('on-demand-scan-submit-button');
@@ -420,6 +420,13 @@ describe('OnDemandScansForm', () => {
             actionFunction();
           });
 
+          it('passes the scan ID to the profile selectors', () => {
+            const dastScanId = String(dastScan.id);
+
+            expect(findScannerProfilesSelector().attributes('dast-scan-id')).toBe(dastScanId);
+            expect(findSiteProfilesSelector().attributes('dast-scan-id')).toBe(dastScanId);
+          });
+
           it(`triggers dastProfileUpdateMutation mutation with runAfterUpdate set to ${runAfter}`, async () => {
             expect(wrapper.vm.$apollo.mutate).toHaveBeenCalledWith({
               mutation: dastProfileUpdateMutation,
@@ -531,8 +538,8 @@ describe('OnDemandScansForm', () => {
     'profiles conflict prevention',
     ({ description, selectedScannerProfile, selectedSiteProfile, hasConflict }) => {
       const setFormData = () => {
-        wrapper.find(ScannerProfileSelector).vm.$emit('input', selectedScannerProfile.id);
-        wrapper.find(SiteProfileSelector).vm.$emit('input', selectedSiteProfile.id);
+        findScannerProfilesSelector().vm.$emit('input', selectedScannerProfile.id);
+        findSiteProfilesSelector().vm.$emit('input', selectedSiteProfile.id);
         return wrapper.vm.$nextTick();
       };
 
@@ -622,14 +629,14 @@ describe('OnDemandScansForm', () => {
       setWindowLocation(`?scanner_profile_id=${getIdFromGraphQLId(scannerProfile.id)}`);
       createShallowComponent();
 
-      expect(wrapper.find(ScannerProfileSelector).attributes('value')).toBe(scannerProfile.id);
+      expect(findScannerProfilesSelector().attributes('value')).toBe(scannerProfile.id);
     });
 
     it('site profile', () => {
       setWindowLocation(`?site_profile_id=${getIdFromGraphQLId(siteProfile.id)}`);
       createShallowComponent();
 
-      expect(wrapper.find(SiteProfileSelector).attributes('value')).toBe(siteProfile.id);
+      expect(findSiteProfilesSelector().attributes('value')).toBe(siteProfile.id);
     });
 
     it('both scanner & site profile', () => {
@@ -640,8 +647,8 @@ describe('OnDemandScansForm', () => {
       );
       createShallowComponent();
 
-      expect(wrapper.find(SiteProfileSelector).attributes('value')).toBe(siteProfile.id);
-      expect(wrapper.find(ScannerProfileSelector).attributes('value')).toBe(scannerProfile.id);
+      expect(findSiteProfilesSelector().attributes('value')).toBe(siteProfile.id);
+      expect(findScannerProfilesSelector().attributes('value')).toBe(scannerProfile.id);
     });
 
     it('when local storage data is available', async () => {

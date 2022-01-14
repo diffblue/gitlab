@@ -87,3 +87,5 @@ export const SCAN_CADENCE_OPTIONS = [
     },
   },
 ];
+
+export const FROM_ONDEMAND_SCAN_ID_QUERY_PARAM = 'from_on_demand_scan_id';

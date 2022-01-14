@@ -97,6 +97,7 @@ describe('OnDemandScansScannerProfileSelector', () => {
       });
       const sel = findProfileSelector();
       expect(sel.props()).toEqual({
+        dastScanId: null,
         libraryPath: TEST_LIBRARY_PATH,
         newProfilePath: TEST_NEW_PATH,
         profiles,
