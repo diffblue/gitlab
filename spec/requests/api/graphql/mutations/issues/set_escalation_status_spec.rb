@@ -2,39 +2,34 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Setting the escalation policy of an issue' do
+RSpec.describe 'Setting the escalation status of an incident' do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project) }
   let_it_be(:issue) { create(:incident, project: project) }
   let_it_be(:escalation_status) { create(:incident_management_issuable_escalation_status, issue: issue) }
-  let_it_be(:escalation_policy) { create(:incident_management_escalation_policy, project: project) }
   let_it_be(:user) { create(:user) }
 
-  let(:policy_input) { global_id_of(escalation_policy) }
-  let(:input) { { project_path: project.full_path, iid: issue.iid.to_s, escalation_policy_id: policy_input } }
+  let(:status) { 'ACKNOWLEDGED' }
+  let(:input) { { project_path: project.full_path, iid: issue.iid.to_s, status: status } }
 
   let(:current_user) { user }
   let(:mutation) do
-    graphql_mutation(:issue_set_escalation_policy, input) do
+    graphql_mutation(:issue_set_escalation_status, input) do
       <<~QL
         clientMutationId
         errors
         issue {
           iid
-          escalationPolicy {
-            id
-            name
-          }
+          escalationStatus
         }
       QL
     end
   end
 
-  let(:mutation_response) { graphql_mutation_response(:issue_set_escalation_policy) }
+  let(:mutation_response) { graphql_mutation_response(:issue_set_escalation_status) }
 
-  before do
-    stub_licensed_features(oncall_schedules: true, escalation_policies: true)
+  before_all do
     project.add_developer(user)
   end
 
@@ -67,24 +62,21 @@ RSpec.describe 'Setting the escalation policy of an issue' do
 
     expect(response).to have_gitlab_http_status(:success)
     expect(mutation_response['errors']).to be_empty
-    expect(mutation_response['issue']['escalationPolicy']['id']).to eq(global_id_of(escalation_policy))
-    expect(mutation_response['issue']['escalationPolicy']['name']).to eq(escalation_policy.name)
-    expect(escalation_status.reload.policy).to eq(escalation_policy)
+    expect(mutation_response['issue']['escalationStatus']).to eq(status)
+    expect(escalation_status.reload.status_name).to eq(:acknowledged)
   end
 
-  context 'when escalation_policy_id is nil' do
-    let(:policy_input) { nil }
+  context 'when status argument is not given' do
+    let(:input) { {} }
 
-    before do
-      escalation_status.update!(policy_id: escalation_policy.id, escalations_started_at: Time.current)
+    it_behaves_like 'a mutation that returns top-level errors' do
+      let(:match_errors) { contain_exactly(include('status (Expected value to not be null)')) }
     end
+  end
 
-    it 'removes existing escalation policy' do
-      post_graphql_mutation(mutation, current_user: current_user)
+  context 'when status argument is invalid' do
+    let(:status) { 'INVALID' }
 
-      expect(response).to have_gitlab_http_status(:success)
-      expect(mutation_response['errors']).to be_empty
-      expect(escalation_status.reload.policy).to be_nil
-    end
+    it_behaves_like 'an invalid argument to the mutation', argument_name: :status
   end
 end
