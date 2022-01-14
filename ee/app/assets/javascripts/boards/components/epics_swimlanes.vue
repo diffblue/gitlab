@@ -9,7 +9,6 @@ import { isListDraggable } from '~/boards/boards_util';
 import eventHub from '~/boards/eventhub';
 import { s__, n__, __ } from '~/locale';
 import defaultSortableConfig from '~/sortable/sortable_config';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { calculateSwimlanesBufferSize } from '../boards_util';
 import { DRAGGABLE_TAG, EPIC_LANE_BASE_HEIGHT, DraggableItemTypes } from '../constants';
 import EpicLane from './epic_lane.vue';
@@ -33,7 +32,6 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
-  mixins: [glFeatureFlagsMixin()],
   props: {
     lists: {
       type: Array,
@@ -227,28 +225,16 @@ export default {
         </div>
       </component>
       <div class="board-epics-swimlanes gl-display-table">
-        <template v-if="glFeatures.swimlanesBufferedRendering">
-          <virtual-list
-            v-if="epics.length"
-            :size="$options.epicLaneBaseHeight"
-            :remain="bufferSize"
-            :bench="bufferSize"
-            :scrollelement="$refs.scrollableContainer"
-            :item="$options.EpicLane"
-            :itemcount="epics.length"
-            :itemprops="getEpicLaneProps"
-          />
-        </template>
-        <template v-else>
-          <epic-lane
-            v-for="epic in epics"
-            :key="epic.id"
-            :epic="epic"
-            :lists="lists"
-            :disabled="disabled"
-            :can-admin-list="canAdminList"
-          />
-        </template>
+        <virtual-list
+          v-if="epics.length"
+          :size="$options.epicLaneBaseHeight"
+          :remain="bufferSize"
+          :bench="bufferSize"
+          :scrollelement="$refs.scrollableContainer"
+          :item="$options.EpicLane"
+          :itemcount="epics.length"
+          :itemprops="getEpicLaneProps"
+        />
         <div v-if="hasMoreEpics" class="swimlanes-button gl-pb-3 gl-pl-3 gl-sticky gl-left-0">
           <gl-button
             category="tertiary"
