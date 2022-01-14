@@ -4,7 +4,7 @@ module IncidentManagement
   # Functionality needed for models which represent escalations.
   #
   # Implemeting classes should alias `target` to the attribute
-  # of the relevant escalatable.
+  # of the relevant association for the escalation.
   #
   # EX) `alias_attribute :target, :alert`
   module BasePendingEscalation
@@ -28,6 +28,10 @@ module IncidentManagement
       scope :processable, -> { where(process_at: ESCALATION_BUFFER.ago..Time.current) }
 
       delegate :project, to: :target
+
+      def self.class_for_check_worker
+        raise NotImplementedError
+      end
 
       def escalatable
         raise NotImplementedError

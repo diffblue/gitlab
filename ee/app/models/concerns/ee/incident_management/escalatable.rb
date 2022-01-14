@@ -8,6 +8,10 @@ module EE
       def escalation_policy
         project.incident_management_escalation_policies.first
       end
+
+      def pending_escalation_target
+        self
+      end
     end
   end
 end

@@ -83,4 +83,10 @@ RSpec.describe IncidentManagement::IssuableEscalationStatus do
       end
     end
   end
+
+  describe '#pending_escalation_target' do
+    subject { escalation_status.pending_escalation_target }
+
+    it { is_expected.to eq(escalation_status.issue) }
+  end
 end
