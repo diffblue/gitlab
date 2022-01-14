@@ -1,6 +1,7 @@
 import MockAdapter from 'axios-mock-adapter';
 import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
 import groupMilestones from 'ee/roadmap/queries/groupMilestones.query.graphql';
+import epicChildEpics from 'ee/roadmap/queries/epicChildEpics.query.graphql';
 import * as actions from 'ee/roadmap/store/actions';
 import * as types from 'ee/roadmap/store/mutation_types';
 import defaultState from 'ee/roadmap/store/state';
@@ -29,6 +30,7 @@ import {
   mockMilestone,
   mockFormattedMilestone,
   mockPageInfo,
+  mockEpic,
 } from '../mock_data';
 
 jest.mock('~/flash');
@@ -72,6 +74,38 @@ describe('Roadmap Vuex Actions', () => {
         [{ type: types.SET_INITIAL_DATA, payload: mockRoadmap }],
         [],
       );
+    });
+  });
+
+  describe('fetchChildrenEpics', () => {
+    it('should fetch children epics for provided epic iid along with other parameters', () => {
+      jest.spyOn(epicUtils.gqClient, 'query').mockReturnValue(
+        Promise.resolve({
+          data: mockEpicChildEpicsQueryResponse.data,
+        }),
+      );
+
+      const mockState = {
+        fullPath: 'gitlab-org',
+        sortedBy: mockSortedBy,
+        epicsState: 'opened',
+      };
+
+      return actions
+        .fetchChildrenEpics(mockState, {
+          parentItem: mockEpic,
+        })
+        .then(() => {
+          expect(epicUtils.gqClient.query).toHaveBeenCalledWith({
+            query: epicChildEpics,
+            variables: {
+              iid: mockEpic.iid,
+              fullPath: '/groups/gitlab-org/',
+              sort: mockState.sortedBy,
+              state: mockState.epicsState,
+            },
+          });
+        });
     });
   });
 
