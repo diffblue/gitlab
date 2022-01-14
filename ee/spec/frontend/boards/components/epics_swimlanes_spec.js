@@ -4,7 +4,7 @@ import Vue from 'vue';
 import VirtualList from 'vue-virtual-scroll-list';
 import Draggable from 'vuedraggable';
 import Vuex from 'vuex';
-import { calculateSwimlanesBufferSize } from 'ee/boards/boards_util';
+import * as BoardUtils from 'ee/boards/boards_util';
 import EpicLane from 'ee/boards/components/epic_lane.vue';
 import EpicsSwimlanes from 'ee/boards/components/epics_swimlanes.vue';
 import IssueLaneList from 'ee/boards/components/issues_lane_list.vue';
@@ -20,6 +20,7 @@ jest.mock('ee/boards/boards_util');
 
 describe('EpicsSwimlanes', () => {
   let wrapper;
+  const bufferSize = 100;
 
   const findDraggable = () => wrapper.findComponent(Draggable);
   const findLoadMoreEpicsButton = () => wrapper.findByTestId('load-more-epics');
@@ -69,7 +70,6 @@ describe('EpicsSwimlanes', () => {
 
   const createComponent = ({
     canAdminList = false,
-    swimlanesBufferedRendering = false,
     epicLanesFetchInProgress = false,
     listItemsFetchInProgress = false,
     hasMoreEpics = false,
@@ -84,12 +84,13 @@ describe('EpicsSwimlanes', () => {
       shallowMount(EpicsSwimlanes, {
         propsData: { ...defaultProps, canAdminList },
         store,
-        provide: {
-          glFeatures: { swimlanesBufferedRendering },
-        },
       }),
     );
   };
+
+  beforeEach(() => {
+    jest.spyOn(BoardUtils, 'calculateSwimlanesBufferSize').mockReturnValue(bufferSize);
+  });
 
   afterEach(() => {
     wrapper.destroy();
@@ -133,12 +134,27 @@ describe('EpicsSwimlanes', () => {
       expect(wrapper.findAllComponents(BoardListHeader)).toHaveLength(4);
     });
 
-    it('displays EpicLane components for epic', () => {
-      expect(wrapper.findAllComponents(EpicLane)).toHaveLength(5);
-    });
-
     it('does not display IssueLaneList component by default', () => {
       expect(wrapper.findComponent(IssueLaneList).exists()).toBe(false);
+    });
+
+    it('renders virtual-list', () => {
+      const virtualList = wrapper.findComponent(VirtualList);
+      const scrollableContainer = wrapper.find({ ref: 'scrollableContainer' }).element;
+
+      expect(BoardUtils.calculateSwimlanesBufferSize).toHaveBeenCalledWith(
+        wrapper.element.offsetTop,
+      );
+      expect(virtualList.props()).toMatchObject({
+        remain: bufferSize,
+        bench: bufferSize,
+        item: EpicLane,
+        size: EPIC_LANE_BASE_HEIGHT,
+        itemcount: mockEpics.length,
+        itemprops: expect.any(Function),
+      });
+
+      expect(virtualList.props().scrollelement).toBe(scrollableContainer);
     });
 
     it('does not display load more epics button if there are no more epics', () => {
@@ -203,31 +219,5 @@ describe('EpicsSwimlanes', () => {
         expect(wrapper.findComponent(SwimlanesLoadingSkeleton).exists()).toBe(expected);
       },
     );
-  });
-
-  describe('when swimlanesBufferedRendering is true', () => {
-    const bufferSize = 100;
-
-    beforeEach(() => {
-      calculateSwimlanesBufferSize.mockReturnValueOnce(bufferSize);
-      createComponent({ swimlanesBufferedRendering: true });
-    });
-
-    it('renders virtual-list', () => {
-      const virtualList = wrapper.find(VirtualList);
-      const scrollableContainer = wrapper.find({ ref: 'scrollableContainer' }).element;
-
-      expect(calculateSwimlanesBufferSize).toHaveBeenCalledWith(wrapper.element.offsetTop);
-      expect(virtualList.props()).toMatchObject({
-        remain: bufferSize,
-        bench: bufferSize,
-        item: EpicLane,
-        size: EPIC_LANE_BASE_HEIGHT,
-        itemcount: mockEpics.length,
-        itemprops: expect.any(Function),
-      });
-
-      expect(virtualList.props().scrollelement).toBe(scrollableContainer);
-    });
   });
 });
