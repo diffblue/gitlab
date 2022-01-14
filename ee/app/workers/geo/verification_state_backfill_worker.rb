@@ -12,7 +12,7 @@ module Geo
     include GeoQueue
     prepend Reenqueuer
 
-    LEASE_TIMEOUT = 1.minute
+    LEASE_TIMEOUT = 30.minutes
 
     def perform(replicable_name)
       replicator_class = ::Gitlab::Geo::Replicator.for_replicable_name(replicable_name)
