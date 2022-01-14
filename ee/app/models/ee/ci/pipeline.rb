@@ -117,10 +117,10 @@ module EE
 
       def dependency_list_report
         ::Gitlab::Ci::Reports::DependencyList::Report.new.tap do |dependency_list_report|
-          latest_report_builds(::Ci::JobArtifact.dependency_list_reports).each do |build|
+          latest_report_builds(::Ci::JobArtifact.dependency_list_reports).success.each do |build|
             build.collect_dependency_list_reports!(dependency_list_report)
           end
-          latest_report_builds(::Ci::JobArtifact.license_scanning_reports).each do |build|
+          latest_report_builds(::Ci::JobArtifact.license_scanning_reports).success.each do |build|
             build.collect_licenses_for_dependency_list!(dependency_list_report)
           end
         end
