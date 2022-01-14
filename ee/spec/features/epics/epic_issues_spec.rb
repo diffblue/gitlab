@@ -38,7 +38,7 @@ RSpec.describe 'Epic Issues', :js do
 
     wait_for_requests
 
-    find('.js-epic-tabs-container #tree-tab').click
+    find('.js-epic-tree-tab').click
 
     wait_for_requests
   end
@@ -199,7 +199,7 @@ RSpec.describe 'Epic Issues', :js do
 
             wait_for_requests
 
-            find('.js-epic-tabs-container #tree-tab').click
+            find('.js-epic-tree-tab').click
 
             wait_for_requests
           end

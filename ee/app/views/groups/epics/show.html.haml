@@ -25,26 +25,19 @@
 - add_page_startup_graphql_call('epic/epic_details', { fullPath: @group.full_path, iid: @epic.iid })
 - add_page_startup_graphql_call('epic/epic_children', { fullPath: @group.full_path, iid: @epic.iid, pageSize: 100, epicEndCursor: '', issueEndCursor: '' })
 
-%div{ class: ['js-epic-container', container_class, @content_class] }
-  #epic-app-root{ data: epic_show_app_data(@epic),
-    'data-allow-sub-epics' => allow_sub_epics }
+- containerClass = 'js-epic-container'
+- treeElementID = 'tree'
+- roadmapElementID = 'roadmap'
 
-  .epic-tabs-holder
-    .epic-tabs-container.js-epic-tabs-container{ data: { allow_sub_epics: allow_sub_epics } }
-      %ul.epic-tabs.nav-tabs.nav.nav-links.scrolling-tabs
-        %li.tree-tab
-          %a#tree-tab.active{ href: '#tree', data: { toggle: 'tab' } }
-            - if sub_epics_feature_available
-              = _('Epics and Issues')
-            - else
-              = _('Issues')
-        - if sub_epics_feature_available
-          %li.roadmap-tab
-            %a#roadmap-tab{ href: '#roadmap', data: { toggle: 'tab' } }
-              = _('Roadmap')
+%div{ class: [containerClass, container_class, @content_class] }
+  #epic-app-root{ data: epic_show_app_data(@epic),
+    'data-allow-sub-epics' => allow_sub_epics,
+    'data-tree-element-selector' => "##{treeElementID}",
+    'data-roadmap-element-selector' => "##{roadmapElementID}",
+    'data-container-element-selector' => ".#{containerClass}" }
 
   .epic-tabs-content.js-epic-tabs-content
-    #tree.tab-pane.show.active
+    %div{ id: treeElementID, class: ['tab-pane', 'show', 'active'] }
       .row
         %section.col-md-12
           #js-tree{ data: { id: @epic.to_global_id,
@@ -61,7 +54,7 @@
             allow_sub_epics: allow_sub_epics,
             initial: issuable_initial_data(@epic).to_json } }
     - if sub_epics_feature_available
-      #roadmap.tab-pane.gl-display-none
+      %div{ id: roadmapElementID, class: ['tab-pane', 'gl-display-none'] }
         .row
           %section.col-md-12
             #js-roadmap{ data: { epics_path: group_epics_path(@group, parent_id: @epic.id, format: :json),
