@@ -1,5 +1,5 @@
 <script>
-import { GlBadge, GlTableLite } from '@gitlab/ui';
+import { GlTooltip, GlTooltipDirective, GlIcon, GlBadge, GlTableLite } from '@gitlab/ui';
 import { kebabCase } from 'lodash';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import {
@@ -21,11 +21,17 @@ const thClass = [DEFAULT_BORDER_CLASSES, DEFAULT_TH_CLASSES];
 export default {
   i18n: {
     subscriptionHistoryTitle: subscriptionTable.title,
+    detailsLabels,
   },
   name: 'SubscriptionDetailsHistory',
   components: {
     GlBadge,
+    GlIcon,
+    GlTooltip,
     GlTableLite,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   props: {
     currentSubscriptionId: {
@@ -44,20 +50,6 @@ export default {
         {
           key: 'name',
           label: detailsLabels.name,
-          tdAttr,
-          tdClass: this.cellClass,
-          thClass,
-        },
-        {
-          key: 'email',
-          label: detailsLabels.email,
-          tdAttr,
-          tdClass: this.cellClass,
-          thClass,
-        },
-        {
-          key: 'company',
-          label: detailsLabels.company,
           tdAttr,
           tdClass: this.cellClass,
           thClass,
@@ -146,6 +138,20 @@ export default {
       stacked="sm"
       data-qa-selector="subscription_history"
     >
+      <template #cell(name)="{ item }">
+        <span>
+          <gl-icon :id="`tooltip-name-${item.id}`" v-gl-tooltip name="information-o" tabindex="0" />
+          <gl-tooltip :target="`tooltip-name-${item.id}`">
+            {{ item.email }}<br />({{ item.company }})
+          </gl-tooltip>
+          {{ item.name }}
+          <span class="sr-only" data-testid="subscription-history-sr-only">
+            {{ $options.i18n.detailsLabels.email }}: {{ item.email }}<br />({{
+              $options.i18n.detailsLabels.company
+            }}: {{ item.company }})
+          </span>
+        </span>
+      </template>
       <template #cell(type)="{ value }">
         <gl-badge size="md" variant="info">{{ value }}</gl-badge>
       </template>
