@@ -56,7 +56,7 @@ module API
         desc 'Upload a Secure File'
         params do
           requires :name, type: String, desc: 'The name of the file'
-          requires :file, types: [Rack::Multipart::UploadedFile, ::API::Validations::Types::WorkhorseFile], desc: 'The secure file file to be uploaded'
+          requires :file, types: [Rack::Multipart::UploadedFile, ::API::Validations::Types::WorkhorseFile], desc: 'The secure file to be uploaded'
           optional :permissions, type: String, desc: 'The file permissions'
         end
 

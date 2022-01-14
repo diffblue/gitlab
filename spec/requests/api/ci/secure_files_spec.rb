@@ -7,12 +7,12 @@ RSpec.describe API::Ci::SecureFiles do
     stub_ci_secure_file_object_storage
   end
 
-  let(:user) { create(:user) }
-  let(:user2) { create(:user) }
-  let!(:project) { create(:project, creator_id: user.id) }
-  let!(:maintainer) { create(:project_member, :maintainer, user: user, project: project) }
-  let!(:developer) { create(:project_member, :developer, user: user2, project: project) }
-  let!(:secure_file) { create(:ci_secure_file, project: project) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:user2) { create(:user) }
+  let_it_be(:project) { create(:project, creator_id: user.id) }
+  let_it_be(:maintainer) { create(:project_member, :maintainer, user: user, project: project) }
+  let_it_be(:developer) { create(:project_member, :developer, user: user2, project: project) }
+  let_it_be(:secure_file) { create(:ci_secure_file, project: project) }
 
   describe 'GET /projects/:id/secure_files' do
     context 'authorized user with proper permissions' do
@@ -157,6 +157,23 @@ RSpec.describe API::Ci::SecureFiles do
 
         expect(response).to have_gitlab_http_status(:bad_request)
         expect(json_response['error']).to eq('name is missing')
+      end
+
+      it 'retuns an error when an unexpected validation failure happens' do
+        allow_next_instance_of(Ci::SecureFile) do |instance|
+          allow(instance).to receive(:valid?).and_return(false)
+          allow(instance).to receive_message_chain(:errors, :any?).and_return(true)
+          allow(instance).to receive_message_chain(:errors, :messages).and_return(['Error 1', 'Error 2'])
+        end
+
+        post_params = {
+          file: fixture_file_upload('spec/fixtures/ci_secure_files/upload-keystore.jks'),
+          name: 'upload-keystore.jks'
+        }
+
+        post api("/projects/#{project.id}/secure_files", user), params: post_params
+
+        expect(response).to have_gitlab_http_status(:bad_request)
       end
     end
 
