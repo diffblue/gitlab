@@ -8,7 +8,6 @@ RSpec.describe 'Every metric definition' do
   let(:usage_ping) { Gitlab::UsageData.uncached_data }
   let(:ignored_usage_ping_key_patterns) do
     %w(
-      counts.license_scanning_jobs
       license_add_ons
       testing_total_unique_counts
       user_auth_by_provider
