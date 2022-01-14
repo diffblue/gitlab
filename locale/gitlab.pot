@@ -42286,6 +42286,9 @@ msgstr ""
 msgid "is not allowed since the group is not top-level group."
 msgstr ""
 
+msgid "is not allowed."
+msgstr ""
+
 msgid "is not allowed. We do not currently support project-level iterations"
 msgstr ""
 
