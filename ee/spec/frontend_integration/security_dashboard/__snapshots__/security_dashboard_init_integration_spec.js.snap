@@ -35,7 +35,7 @@ exports[`Security Dashboard default states sets up instance-level 1`] = `
 exports[`Security Dashboard error states has unavailable pages 1`] = `
 <div>
   <section
-    class="gl-display-flex gl-flex-wrap empty-state gl-text-center gl-flex-direction-column"
+    class="gl-display-flex empty-state gl-text-center gl-flex-direction-column"
   >
     <div
       class="gl-max-w-full"
