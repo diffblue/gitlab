@@ -142,8 +142,10 @@ describe('Zuora', () => {
         });
       });
 
-      it('emits no event', () => {
-        expect(wrapper.emitted()).toEqual({});
+      it('emits only loading event with value `false`', () => {
+        expect(Object.keys(wrapper.emitted())).toHaveLength(1);
+        expect(wrapper.emitted('loading')).toHaveLength(1);
+        expect(wrapper.emitted('loading')[0]).toEqual([false]);
       });
 
       it('increases the iframe height', () => {
@@ -162,6 +164,11 @@ describe('Zuora', () => {
 
       it('emits the failure event with the error message', () => {
         expect(wrapper.emitted('failure')[0]).toEqual([{ msg: 'error' }]);
+      });
+
+      it('emits loading event with value `false`', () => {
+        expect(wrapper.emitted('loading')).toHaveLength(1);
+        expect(wrapper.emitted('loading')[0]).toEqual([false]);
       });
 
       it('removes the message event listener', () => {

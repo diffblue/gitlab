@@ -222,4 +222,32 @@ RSpec.describe GroupsHelper do
       it { expect(helper.show_product_purchase_success_alert?).to be false }
     end
   end
+
+  describe '#require_verification_for_group_creation_enabled?' do
+    let(:variant) { :control }
+
+    subject { helper.require_verification_for_group_creation_enabled? }
+
+    before do
+      stub_experiments(require_verification_for_group_creation: variant)
+    end
+
+    context 'when in candidate path' do
+      let(:variant) { :candidate }
+
+      it { is_expected.to eq(true) }
+
+      context 'when creating a sub-group' do
+        before do
+          allow(controller).to receive(:params) { { parent_id: 1 } }
+        end
+
+        it { is_expected.to eq(false) }
+      end
+    end
+
+    context 'when in control path' do
+      it { is_expected.to eq(false) }
+    end
+  end
 end

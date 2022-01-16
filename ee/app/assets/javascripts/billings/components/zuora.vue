@@ -45,6 +45,11 @@ export default {
       return `${this.iframeUrl}?${objectToQuery(query)}`;
     },
   },
+  watch: {
+    isLoading(value) {
+      this.$emit('loading', value);
+    },
+  },
   destroyed() {
     window.removeEventListener('message', this.handleFrameMessages, true);
   },
