@@ -10,4 +10,4 @@ export const MOCK_BASIC_SETTINGS_DATA = {
 
 export const STRING_OVER_255 = new Array(257).join('a');
 
-export const MOCK_NODES_PATH = 'gitlab/admin/geo/nodes';
+export const MOCK_NODES_PATH = 'gitlab/admin/geo/sites';

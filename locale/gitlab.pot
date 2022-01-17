@@ -1982,7 +1982,7 @@ msgstr ""
 msgid "Add LICENSE"
 msgstr ""
 
-msgid "Add New Node"
+msgid "Add New Site"
 msgstr ""
 
 msgid "Add README"
@@ -12799,7 +12799,7 @@ msgstr ""
 msgid "Edit Deploy Key"
 msgstr ""
 
-msgid "Edit Geo Node"
+msgid "Edit Geo Site"
 msgstr ""
 
 msgid "Edit Group Hook"
@@ -15614,13 +15614,13 @@ msgstr ""
 msgid "Geo"
 msgstr ""
 
-msgid "Geo Nodes"
-msgstr ""
-
 msgid "Geo Replication"
 msgstr ""
 
 msgid "Geo Settings"
+msgstr ""
+
+msgid "Geo Sites"
 msgstr ""
 
 msgid "Geo sites"

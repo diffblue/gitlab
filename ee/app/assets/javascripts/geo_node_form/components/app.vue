@@ -29,7 +29,7 @@ export default {
       return this.node && this.node.primary;
     },
     pageTitle() {
-      return this.node ? __('Edit Geo Node') : __('Add New Node');
+      return this.node ? __('Edit Geo Site') : __('Add New Site');
     },
     pillDetails() {
       return {

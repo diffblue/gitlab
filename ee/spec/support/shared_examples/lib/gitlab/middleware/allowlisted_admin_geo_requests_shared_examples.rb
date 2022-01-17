@@ -11,7 +11,7 @@ RSpec.shared_examples 'allowlisted /admin/geo requests' do
   end
 
   context 'allowlisted requests' do
-    it_behaves_like 'allowlisted request', :patch, '/admin/geo/nodes/1'
+    it_behaves_like 'allowlisted request', :patch, '/admin/geo/sites/1'
 
     it_behaves_like 'allowlisted request', :delete, '/admin/geo/replication/projects/1'
 
