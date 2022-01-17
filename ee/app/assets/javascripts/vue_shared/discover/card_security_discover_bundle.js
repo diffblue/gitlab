@@ -11,7 +11,6 @@ export default () => {
     projectName,
     linkMain,
     linkSecondary,
-    linkFeedback,
     namespaceId,
     userName,
     firstName,
@@ -30,7 +29,6 @@ export default () => {
     },
     linkMain,
     linkSecondary,
-    linkFeedback,
   };
 
   return new Vue({

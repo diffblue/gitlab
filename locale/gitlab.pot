@@ -12536,9 +12536,6 @@ msgstr ""
 msgid "Discover|See the other features of the %{linkStart}ultimate plan%{linkEnd}"
 msgstr ""
 
-msgid "Discover|Send feedback"
-msgstr ""
-
 msgid "Discover|Start a free trial"
 msgstr ""
 
