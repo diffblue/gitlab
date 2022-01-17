@@ -10,6 +10,7 @@ class ProjectsController < Projects::ApplicationController
   include ImportUrlParams
   include FiltersEvents
   include WorkItemsHierarchy
+  include SourcegraphDecorator
 
   prepend_before_action(only: [:show]) { authenticate_sessionless_user!(:rss) }
 
