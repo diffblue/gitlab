@@ -6,7 +6,6 @@ RSpec.describe 'New project', :js do
   let(:user) { create(:admin) }
 
   before do
-    stub_feature_flags(paginatable_namespace_drop_down_for_project_creation: false)
     sign_in(user)
   end
 
@@ -235,20 +234,23 @@ RSpec.describe 'New project', :js do
             page.find(".template-option input[value='#{subgroup1_project1.id}']").first(:xpath, './/..').click
             wait_for_all_requests
           end
+
+          # Open Project URL dropdown
+          click_button group1.name
         end
 
         context 'when template is selected' do
           context 'namespace selector' do
             it "only shows the template's group hierarchy options" do
               page.within('#create-from-template-pane') do
-                elements = page.find_all("#project_namespace_id option:not(.hidden)", visible: false).map { |e| e['data-name'] }
-                expect(elements).to contain_exactly(group1.name, subgroup1.name, subsubgroup1.name)
+                elements = find_all('.gl-new-dropdown-item-text-wrapper').map { |e| e['innerText'] }
+                expect(elements).to contain_exactly(group1.full_path, subgroup1.full_path, subsubgroup1.full_path)
               end
             end
 
             it 'does not show the user namespace options' do
               page.within('#create-from-template-pane') do
-                expect(page.find_all("#project_namespace_id optgroup.hidden[label='Users']", visible: false)).not_to be_empty
+                expect(page).not_to have_text 'Users'
               end
             end
           end
@@ -262,16 +264,17 @@ RSpec.describe 'New project', :js do
               click_button 'Change template'
 
               page.find(:xpath, "//input[@type='radio' and @value='#{subgroup1_project1.id}']/..").click
-
               wait_for_all_requests
             end
+
+            # Open Project URL dropdown
+            click_button group1.name
           end
 
           it 'list the appropriate groups' do
             page.within('#create-from-template-pane') do
-              elements = page.find_all("#project_namespace_id option:not(.hidden)", visible: false).map { |e| e['data-name'] }
-
-              expect(elements).to contain_exactly(group1.name, subgroup1.name, subsubgroup1.name)
+              elements = find_all('.gl-new-dropdown-item-text-wrapper').map { |e| e['innerText'] }
+              expect(elements).to contain_exactly(group1.full_path, subgroup1.full_path, subsubgroup1.full_path)
             end
           end
         end

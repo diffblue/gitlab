@@ -11,7 +11,7 @@ module QA
       end
     end
 
-    describe 'Project', :requires_admin do
+    describe 'Project' do
       let(:project) do
         Resource::Project.fabricate_via_api! do |project|
           project.name = 'awesome-project'
@@ -20,7 +20,6 @@ module QA
       end
 
       before do
-        Runtime::Feature.enable(:paginatable_namespace_drop_down_for_project_creation)
         sign_in
       end
 
