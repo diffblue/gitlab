@@ -26,12 +26,12 @@ export default {
     selectedValueText() {
       return Object.values(POLICY_TYPE_OPTIONS).find(({ value }) => value === this.value).text;
     },
-    isFeatureEnabled() {
+    isScanResultPolicyEnabled() {
       return this.glFeatures.scanResultPolicy;
     },
     policyTypeOptions() {
       const policyType = POLICY_TYPE_OPTIONS;
-      if (!this.isFeatureEnabled) {
+      if (!this.isScanResultPolicyEnabled) {
         delete policyType.POLICY_TYPE_SCAN_RESULT;
       }
       return policyType;

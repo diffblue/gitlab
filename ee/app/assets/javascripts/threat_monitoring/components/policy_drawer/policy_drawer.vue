@@ -5,10 +5,12 @@ import { getContentWrapperHeight, removeUnnecessaryDashes } from '../../utils';
 import { POLICIES_LIST_CONTAINER_CLASS, POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import CiliumNetworkPolicy from './cilium_network_policy.vue';
 import ScanExecutionPolicy from './scan_execution_policy.vue';
+import ScanResultPolicy from './scan_result_policy.vue';
 
 const policyComponent = {
   [POLICY_TYPE_COMPONENT_OPTIONS.container.value]: CiliumNetworkPolicy,
   [POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value]: ScanExecutionPolicy,
+  [POLICY_TYPE_COMPONENT_OPTIONS.scanResult.value]: ScanResultPolicy,
 };
 
 export default {
@@ -19,6 +21,7 @@ export default {
       import(/* webpackChunkName: 'policy_yaml_editor' */ '../policy_yaml_editor.vue'),
     CiliumNetworkPolicy,
     ScanExecutionPolicy,
+    ScanResultPolicy,
   },
   props: {
     containerClass: {

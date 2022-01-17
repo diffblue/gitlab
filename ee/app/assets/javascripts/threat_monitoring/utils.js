@@ -19,16 +19,9 @@ export const getContentWrapperHeight = (contentWrapperClass) => {
  * @returns {String|null} policy type if available
  */
 export const getPolicyType = (typeName = '') => {
-  if (typeName === POLICY_TYPE_COMPONENT_OPTIONS.container.typeName) {
-    return POLICY_TYPE_COMPONENT_OPTIONS.container.value;
-  }
-  if (typeName === POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.typeName) {
-    return POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value;
-  }
-  if (typeName === POLICY_TYPE_COMPONENT_OPTIONS.scanResult.typeName) {
-    return POLICY_TYPE_COMPONENT_OPTIONS.scanResult.value;
-  }
-  return null;
+  return Object.values(POLICY_TYPE_COMPONENT_OPTIONS).find(
+    (component) => component.typeName === typeName,
+  )?.value;
 };
 
 /**

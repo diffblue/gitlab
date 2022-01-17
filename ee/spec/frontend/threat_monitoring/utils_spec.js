@@ -35,8 +35,8 @@ describe('Threat Monitoring Utils', () => {
   describe('getPolicyType', () => {
     it.each`
       input                                        | output
-      ${''}                                        | ${null}
-      ${'UnknownPolicyType'}                       | ${null}
+      ${''}                                        | ${undefined}
+      ${'UnknownPolicyType'}                       | ${undefined}
       ${mockNetworkPoliciesResponse[0].__typename} | ${POLICY_TYPE_COMPONENT_OPTIONS.container.value}
       ${mockNetworkPoliciesResponse[1].__typename} | ${POLICY_TYPE_COMPONENT_OPTIONS.container.value}
       ${mockScanExecutionPolicy.__typename}        | ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value}
