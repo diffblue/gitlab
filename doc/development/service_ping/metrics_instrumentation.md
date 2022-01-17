@@ -33,6 +33,12 @@ We have built a domain-specific language (DSL) to define the metrics instrumenta
 
 ## Database metrics
 
+- `operation`: operations for the given `relation`, one of `count`, `distinct_count`.
+- `relation`: `ActiveRecord::Relation` for the objects we want to perform the `operation`.
+- `start`: specifies the start value of the batch counting, by default is `relation.minimum(:id)`.
+- `finish`: specifies the end value of the batch counting, by default is `relation.maximum(:id)`.
+- `cache_start_and_finish_as`: specifies the cache key for `start` and `finish` values, this is needed only if `start` and `finish` are used.
+
 [Example of a merge request that adds a database metric](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/60022).
 
 ```ruby
