@@ -34,17 +34,15 @@ module EE
       "https://slack.com/oauth/authorize?scope=commands&client_id=#{slack_app_id}&redirect_uri=#{slack_auth_project_settings_slack_url(project)}&state=#{escaped_form_authenticity_token}"
     end
 
-    def add_to_slack_data(projects)
+    def gitlab_slack_application_data(projects)
       {
-        projects: projects.as_json(only: [:id, :name]),
+        projects: (projects || []).to_json(only: [:id, :name], methods: [:avatar_url, :name_with_namespace]),
         sign_in_path: new_session_path(:user, redirect_to_referer: 'yes'),
-        is_signed_in: current_user.present?,
-        slack_link_profile_slack_path: slack_link_profile_slack_path,
-        gitlab_for_slack_gif_path: image_path('gitlab_for_slack.gif'),
+        is_signed_in: current_user.present?.to_s,
+        slack_link_path: slack_link_profile_slack_path,
         gitlab_logo_path: image_path('illustrations/gitlab_logo.svg'),
-        slack_logo_path: image_path('illustrations/slack_logo.svg'),
-        docs_path: help_page_path('user/project/integrations/gitlab_slack_application.md')
-      }.to_json.html_safe
+        slack_logo_path: image_path('illustrations/slack_logo.svg')
+      }
     end
 
     def escaped_form_authenticity_token

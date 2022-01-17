@@ -1,3 +1,3 @@
-import mountAddGitlabSlackApplication from 'ee/add_gitlab_slack_application';
+import initGitlabSlackApplication from 'ee/integrations/gitlab_slack_application';
 
-mountAddGitlabSlackApplication();
+initGitlabSlackApplication();
