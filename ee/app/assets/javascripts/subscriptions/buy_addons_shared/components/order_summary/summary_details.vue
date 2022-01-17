@@ -52,6 +52,11 @@ export default {
       required: false,
       default: '',
     },
+    hasExpiration: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -61,7 +66,8 @@ export default {
   computed: {
     endDate() {
       return (
-        this.subscriptionEndDate || this.startDate.setFullYear(this.startDate.getFullYear() + 1)
+        this.subscriptionEndDate ||
+        new Date(this.startDate).setFullYear(this.startDate.getFullYear() + 1)
       );
     },
     hasPositiveQuantity() {
@@ -107,7 +113,7 @@ export default {
       <div class="gl-text-gray-500" data-testid="price-per-unit">
         <slot name="price-per-unit" :price="formattedPrice"></slot>
       </div>
-      <div v-if="subscriptionEndDate" class="gl-text-gray-500" data-testid="subscription-period">
+      <div v-if="hasExpiration" class="gl-text-gray-500" data-testid="subscription-period">
         {{
           sprintf($options.i18n.dates, {
             startDate: formatDate(startDate),
