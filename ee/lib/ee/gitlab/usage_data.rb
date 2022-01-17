@@ -161,7 +161,7 @@ module EE
 
         def security_products_usage
           results = SECURE_PRODUCT_TYPES.each_with_object({}) do |(secure_type, attribs), response|
-            next if secure_type == :license_management
+            next if secure_type.in?([:license_management, :license_scanning])
 
             response[attribs[:name]] = count(::Ci::Build.where(name: secure_type)) # rubocop:disable CodeReuse/ActiveRecord
           end
