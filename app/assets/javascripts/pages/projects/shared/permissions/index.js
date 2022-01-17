@@ -7,12 +7,12 @@ export default function initProjectPermissionsSettings() {
   const componentProps = JSON.parse(componentPropsEl.innerHTML);
 
   const {
+    targetFormId,
     additionalInformation,
     confirmDangerMessage,
     confirmButtonText,
     phrase: confirmationPhrase,
   } = mountPoint.dataset;
-  console.log('mountPoint', mountPoint.dataset);
 
   return new Vue({
     el: mountPoint,
@@ -27,6 +27,11 @@ export default function initProjectPermissionsSettings() {
         props: {
           ...componentProps,
           confirmationPhrase,
+        },
+        on: {
+          confirm: () => {
+            if (targetFormId) document.getElementById(targetFormId)?.submit();
+          },
         },
       }),
   });

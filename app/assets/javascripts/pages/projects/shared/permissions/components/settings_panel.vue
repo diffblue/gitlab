@@ -790,12 +790,9 @@ export default {
       button-variant="confirm"
       :disabled="false"
       :phrase="confirmationPhrase"
-      :confirm-danger-message="confirmDangerMessage"
-      :additional-information="additionalInformation"
       :button-text="$options.i18n.confirmButtonText"
       @confirm="$emit('confirm')"
     />
-    <!-- confirmDangerMessage -->
     <gl-button
       v-else
       type="submit"
