@@ -13,6 +13,7 @@ import { SCHEDULED_TAB_TABLE_FIELDS, LEARN_MORE_TEXT } from 'ee/on_demand_scans/
 import { __, s__ } from '~/locale';
 import { stripTimezoneFromISODate } from '~/lib/utils/datetime/date_format_utility';
 import DastScanSchedule from 'ee/security_configuration/dast_profiles/components/dast_scan_schedule.vue';
+import { PROJECT_ON_DEMAND_SCAN_COUNTS_ETAG_MOCK } from '../../mocks';
 
 jest.mock('~/lib/utils/common_utils');
 
@@ -51,6 +52,7 @@ describe('Scheduled tab', () => {
           },
           provide: {
             projectPath,
+            projectOnDemandScanCountsEtag: PROJECT_ON_DEMAND_SCAN_COUNTS_ETAG_MOCK,
             timezones: mockTimezones,
           },
           stubs: {
