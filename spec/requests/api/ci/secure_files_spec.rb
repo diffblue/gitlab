@@ -117,7 +117,8 @@ RSpec.describe API::Ci::SecureFiles do
       it 'uploads and downloads a secure file' do
         post_params = {
           file: fixture_file_upload('spec/fixtures/ci_secure_files/upload-keystore.jks'),
-          name: 'upload-keystore.jks'
+          name: 'upload-keystore.jks',
+          permissions: 'read_write'
         }
 
         post api("/projects/#{project.id}/secure_files", user), params: post_params
@@ -159,7 +160,20 @@ RSpec.describe API::Ci::SecureFiles do
         expect(json_response['error']).to eq('name is missing')
       end
 
-      it 'retuns an error when an unexpected validation failure happens' do
+      it 'returns an error when an unexpected permission is supplied' do
+        post_params = {
+          file: fixture_file_upload('spec/fixtures/ci_secure_files/upload-keystore.jks'),
+          name: 'upload-keystore.jks',
+          permissions: 'foo'
+        }
+
+        post api("/projects/#{project.id}/secure_files", user), params: post_params
+
+        expect(response).to have_gitlab_http_status(:bad_request)
+        expect(json_response['error']).to eq('permissions does not have a valid value')
+      end
+
+      it 'returns an error when an unexpected validation failure happens' do
         allow_next_instance_of(Ci::SecureFile) do |instance|
           allow(instance).to receive(:valid?).and_return(false)
           allow(instance).to receive_message_chain(:errors, :any?).and_return(true)
