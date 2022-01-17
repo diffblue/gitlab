@@ -1,0 +1,26 @@
+- is_upstream_mode = mode == "upstream"
+- title = is_upstream_mode ? _("Subscriptions") : _("Subscribed to this project")
+- count = is_upstream_mode ? @project.upstream_projects_count : @project.downstream_projects_count
+- subscriptions = is_upstream_mode ? @project.upstream_project_subscriptions : @project.downstream_project_subscriptions
+- empty_text = is_upstream_mode ? _("This project is not subscribed to any project pipelines.") : _("No project subscribes to the pipelines in this project.")
+
+.row.gl-mt-3.gl-mb-3{ data: { testid: "#{mode}-project-subscriptions" } }
+  .col-lg-12
+    %h5
+      = title
+      = gl_badge_tag count
+
+    %table.table.gl-mt-3
+      %thead
+        %tr
+          %th.gl-w-15.gl-md-w-50p= _("Project")
+          %th= _("Namespace")
+          %th
+      %tbody
+        - if count > 0
+          - subscriptions.each do |subscription|
+            - subscription_project = is_upstream_mode ? subscription.upstream_project : subscription.downstream_project
+            = render 'projects/settings/subscriptions/project', project: subscription_project, subscription: subscription, mode: mode
+        - else
+          %tr
+            %td.gl-text-center{ colspan: 3 }= empty_text

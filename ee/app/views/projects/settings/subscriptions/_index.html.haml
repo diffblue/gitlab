@@ -5,24 +5,10 @@
         .form-group
           = f.label :upstream_project_path do
             = _("Project path")
+            = link_to sprite_icon('question-o'), help_page_path('ci/pipelines/multi_project_pipelines', anchor: 'trigger-a-pipeline-when-an-upstream-project-is-rebuilt'), target: '_blank', rel: 'noopener noreferrer'
           = f.text_field :upstream_project_path, class: "form-control", data: { qa_selector: "upstream_project_path_field" }
         = f.submit _('Subscribe'), class: "gl-button btn btn-confirm", data: { qa_selector: "subscribe_button" }
 
-.row.gl-mt-3.gl-mb-3
-  .col-lg-12
-    %h5
-      = _("Subscriptions")
-      - subscriptions_count = @project.upstream_projects_count + @project.downstream_projects_count
-      = gl_badge_tag subscriptions_count, variant: :pill
+= render 'projects/settings/subscriptions/table', mode: 'upstream'
 
-    %table.table.gl-mt-3
-      %thead
-        %tr
-          %th= _("Project")
-          %th= _("Owner")
-          %th
-      %tbody
-        - @project.upstream_project_subscriptions.each do |subscription|
-          = render 'projects/settings/subscriptions/project', project: subscription.upstream_project, subscription: subscription
-        - @project.downstream_project_subscriptions.each do |subscription|
-          = render 'projects/settings/subscriptions/project', project: subscription.downstream_project, subscription: subscription
+= render 'projects/settings/subscriptions/table', mode: 'downstream'
