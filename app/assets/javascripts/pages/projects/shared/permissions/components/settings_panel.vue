@@ -791,12 +791,14 @@ export default {
       :disabled="false"
       :phrase="confirmationPhrase"
       :button-text="$options.i18n.confirmButtonText"
+      data-testid="project-features-save-button"
       @confirm="$emit('confirm')"
     />
     <gl-button
       v-else
       type="submit"
       variant="confirm"
+      data-testid="project-features-save-button"
       button-class="qa-visibility-features-permissions-save-button"
     >
       {{ $options.i18n.confirmButtonText }}
