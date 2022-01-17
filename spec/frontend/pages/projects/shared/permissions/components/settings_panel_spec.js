@@ -7,6 +7,7 @@ import {
   visibilityLevelDescriptions,
   visibilityOptions,
 } from '~/pages/projects/shared/permissions/constants';
+import ConfirmDanger from '~/vue_shared/components/confirm_danger/confirm_danger.vue';
 
 const defaultProps = {
   currentSettings: {
@@ -47,6 +48,7 @@ const defaultProps = {
   packagesAvailable: false,
   packagesHelpPath: '/help/user/packages/index',
   requestCveAvailable: true,
+  confirmationPhrase: 'my-fake-project',
 };
 
 describe('Settings Panel', () => {
@@ -104,6 +106,7 @@ describe('Settings Panel', () => {
     );
   const findMetricsVisibilitySettings = () => wrapper.find({ ref: 'metrics-visibility-settings' });
   const findOperationsSettings = () => wrapper.find({ ref: 'operations-settings' });
+  const findConfirmDangerButton = () => wrapper.findComponent(ConfirmDanger);
 
   afterEach(() => {
     wrapper.destroy();
@@ -176,6 +179,18 @@ describe('Settings Panel', () => {
       wrapper = mountComponent({ currentSettings: { visibilityLevel: visibilityOptions.PRIVATE } });
 
       expect(findRequestAccessEnabledInput().exists()).toBe(false);
+    });
+
+    it('should render the confirmation dialog if the visibility is reduced', async () => {
+      wrapper = mountComponent({
+        currentSettings: { visibilityLevel: visibilityOptions.INTERNAL },
+      });
+
+      expect(findConfirmDangerButton().exists()).toBe(false);
+
+      await findProjectVisibilityLevelInput().setValue(visibilityOptions.PRIVATE);
+
+      expect(findConfirmDangerButton().exists()).toBe(true);
     });
   });
 
