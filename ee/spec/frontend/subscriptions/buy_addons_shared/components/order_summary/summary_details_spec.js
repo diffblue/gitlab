@@ -1,8 +1,11 @@
 import { GlSprintf } from '@gitlab/ui';
 import SummaryDetails from 'ee/subscriptions/buy_addons_shared/components/order_summary/summary_details.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { useFakeDate } from 'helpers/fake_date';
 
 describe('SummaryDetails', () => {
+  useFakeDate(2021, 0, 16);
+
   let wrapper;
 
   const createComponent = (props = {}) => {
@@ -88,7 +91,7 @@ describe('SummaryDetails', () => {
 
     it('renders subscription period', () => {
       expect(findSubscriptionPeriod().isVisible()).toBe(true);
-      expect(findSubscriptionPeriod().text()).toBe('Jul 6, 2020 - Jul 6, 2021');
+      expect(findSubscriptionPeriod().text()).toBe('Jan 16, 2021 - Jan 16, 2022');
     });
   });
 
@@ -99,7 +102,7 @@ describe('SummaryDetails', () => {
 
     it('renders subscription period', () => {
       expect(findSubscriptionPeriod().isVisible()).toBe(true);
-      expect(findSubscriptionPeriod().text()).toBe('Jul 6, 2020 - Feb 6, 2021');
+      expect(findSubscriptionPeriod().text()).toBe('Jan 16, 2021 - Feb 6, 2021');
     });
   });
 
