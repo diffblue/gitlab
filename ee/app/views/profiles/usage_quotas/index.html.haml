@@ -1,3 +1,8 @@
+- content_for :page_specific_javascripts do
+  = render "layouts/google_tag_manager_head"
+  = render "layouts/one_trust"
+= render "layouts/google_tag_manager_body"
+
 - page_title s_("UsageQuota|Usage")
 - @content_class = "limit-container-width" unless fluid_layout
 - url_to_purchase_storage = purchase_storage_url if purchase_storage_link_enabled?(@namespace)
