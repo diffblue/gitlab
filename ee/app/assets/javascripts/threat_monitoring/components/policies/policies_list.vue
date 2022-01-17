@@ -133,7 +133,7 @@ export default {
         [POLICY_TYPE_OPTIONS.POLICY_TYPE_NETWORK.value]: this.networkPolicies,
         [POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_EXECUTION.value]: this.scanExecutionPolicies,
       };
-      if (this.isFeatureEnabled) {
+      if (this.isScanResultPolicyEnabled) {
         allTypes[POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_RESULT.value] = this.scanResultPolicies;
       }
       return allTypes;
@@ -228,7 +228,7 @@ export default {
 
       return fields;
     },
-    isFeatureEnabled() {
+    isScanResultPolicyEnabled() {
       return this.glFeatures.scanResultPolicy;
     },
   },
