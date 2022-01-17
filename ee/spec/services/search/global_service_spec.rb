@@ -5,9 +5,8 @@ require 'spec_helper'
 RSpec.describe Search::GlobalService do
   include SearchResultHelpers
   include ProjectHelpers
-  using RSpec::Parameterized::TableSyntax
 
-  let(:user) { create(:user) }
+  let_it_be(:user) { create(:user) }
 
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
@@ -40,6 +39,7 @@ RSpec.describe Search::GlobalService do
     shared_examples 'search respects visibility' do
       it 'respects visibility' do
         enable_admin_mode!(user) if admin_mode
+        project.update!(visibility_level: Gitlab::VisibilityLevel.level_value(project_level.to_s))
         update_feature_access_level(project, feature_access_level)
         ensure_elasticsearch_index!
 
@@ -50,8 +50,8 @@ RSpec.describe Search::GlobalService do
     end
 
     let_it_be(:group) { create(:group) }
+    let_it_be_with_reload(:project) { create(:project, namespace: group) }
 
-    let(:project) { create(:project, project_level, namespace: group) }
     let(:user) { create_user_from_membership(project, membership) }
 
     context 'merge request' do
@@ -91,7 +91,7 @@ RSpec.describe Search::GlobalService do
     end
 
     context 'blob and commit' do
-      let!(:project) { create(:project, project_level, :repository, namespace: group ) }
+      let_it_be_with_reload(:project) { create(:project, :repository, namespace: group) }
 
       where(:project_level, :feature_access_level, :membership, :admin_mode, :expected_count) do
         permission_table_for_guest_feature_access_and_non_private_project_only
@@ -143,7 +143,8 @@ RSpec.describe Search::GlobalService do
       end
 
       context 'on commits' do
-        let!(:project) { create(:project, project_level, :repository, namespace: group ) }
+        let_it_be_with_reload(:project) { create(:project, :repository, namespace: group) }
+
         let!(:note) { create :note_on_commit, project: project }
 
         where(:project_level, :feature_access_level, :membership, :admin_mode, :expected_count) do
@@ -188,7 +189,8 @@ RSpec.describe Search::GlobalService do
     end
 
     context 'wiki' do
-      let!(:project) { create(:project, project_level, :wiki_repo) }
+      let_it_be_with_reload(:project) { create(:project, :wiki_repo) }
+
       let(:scope) { 'wiki_blobs' }
       let(:search) { 'term' }
 
@@ -219,8 +221,9 @@ RSpec.describe Search::GlobalService do
         it "respects visibility" do
           enable_admin_mode!(user) if admin_mode
           project.update!(
-            'issues_access_level' => issues_access_level,
-            'merge_requests_access_level' => merge_requests_access_level
+            visibility_level: Gitlab::VisibilityLevel.level_value(project_level.to_s),
+            issues_access_level: issues_access_level,
+            merge_requests_access_level: merge_requests_access_level
           )
           ensure_elasticsearch_index!
 
@@ -238,6 +241,8 @@ RSpec.describe Search::GlobalService do
 
       with_them do
         it "respects visibility" do
+          project.update!(visibility_level: Gitlab::VisibilityLevel.level_value(project_level.to_s))
+
           ElasticCommitIndexerWorker.new.perform(project.id)
           ensure_elasticsearch_index!
 
@@ -258,8 +263,9 @@ RSpec.describe Search::GlobalService do
 
   context 'sorting', :elastic, :clean_gitlab_redis_shared_state, :sidekiq_inline do
     context 'issue' do
+      let_it_be_with_reload(:project) { create(:project, :public) }
+
       let(:scope) { 'issues' }
-      let_it_be(:project) { create(:project, :public) }
 
       let!(:old_result) { create(:issue, project: project, title: 'sorted old', created_at: 1.month.ago) }
       let!(:new_result) { create(:issue, project: project, title: 'sorted recent', created_at: 1.day.ago) }
@@ -280,8 +286,9 @@ RSpec.describe Search::GlobalService do
     end
 
     context 'merge request' do
+      let_it_be_with_reload(:project) { create(:project, :public) }
+
       let(:scope) { 'merge_requests' }
-      let(:project) { create(:project, :public) }
 
       let!(:old_result) { create(:merge_request, :opened, source_project: project, source_branch: 'old-1', title: 'sorted old', created_at: 1.month.ago) }
       let!(:new_result) { create(:merge_request, :opened, source_project: project, source_branch: 'new-1', title: 'sorted recent', created_at: 1.day.ago) }
@@ -386,7 +393,7 @@ RSpec.describe Search::GlobalService do
   end
 
   context 'confidential notes' do
-    let(:project) { create(:project, :public, :repository) }
+    let_it_be(:project) { create(:project, :public, :repository) }
 
     context 'with notes on issues' do
       let(:noteable) { create :issue, project: project }
