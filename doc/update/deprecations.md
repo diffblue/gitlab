@@ -335,7 +335,7 @@ can cause production issues with large databases,
 and can interfere with object storage development.
 It is now considered deprecated, and will be removed in GitLab 15.0.
 
-Planned removal milestone: 15.0 (2021-05-22)
+Planned removal milestone: 15.0 (2022-05-22)
 
 ### Removal of Static Site Editor
 
