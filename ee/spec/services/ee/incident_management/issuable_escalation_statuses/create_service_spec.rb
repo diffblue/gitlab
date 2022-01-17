@@ -59,26 +59,6 @@ RSpec.describe IncidentManagement::IssuableEscalationStatuses::CreateService do
 
         it_behaves_like 'creates an escalation status for the incident with no policy set'
       end
-
-      context 'when alert pending escalations exist' do
-        let!(:first_pending_escalation) { create(:incident_management_pending_alert_escalation, alert: alert) }
-        let!(:second_pending_escalation) { create(:incident_management_pending_alert_escalation, alert: alert) }
-
-        it 'creates an escalation status with the pending escalation start time' do
-          execute
-
-          status = incident.incident_management_issuable_escalation_status
-          expect(status.escalations_started_at).to be_like_time(second_pending_escalation.created_at)
-        end
-      end
-
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(incident_escalations: false)
-        end
-
-        it_behaves_like 'creates an escalation status for the incident with no policy set'
-      end
     end
   end
 end
