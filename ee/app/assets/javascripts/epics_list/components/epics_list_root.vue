@@ -262,9 +262,14 @@ export default {
         @click="showBulkEditSidebar = true"
         >{{ __('Edit epics') }}</gl-button
       >
-      <gl-button v-if="canCreateEpic" category="primary" variant="confirm" :href="epicNewPath">{{
-        __('New epic')
-      }}</gl-button>
+      <gl-button
+        v-if="canCreateEpic"
+        category="primary"
+        variant="confirm"
+        :href="epicNewPath"
+        data-qa-selector="new_epic_button"
+        >{{ __('New epic') }}</gl-button
+      >
     </template>
     <template #bulk-edit-actions="{ checkedIssuables }">
       <gl-button

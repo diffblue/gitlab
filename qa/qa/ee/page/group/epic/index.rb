@@ -6,11 +6,11 @@ module QA
       module Group
         module Epic
           class Index < QA::Page::Base
-            view 'ee/app/views/groups/epics/_epic.html.haml' do
-              element :epic_title_text
+            view 'app/assets/javascripts/vue_shared/issuable/list/components/issuable_item.vue' do
+              element :issuable_title_link
             end
 
-            view 'ee/app/views/groups/epics/index.html.haml' do
+            view 'ee/app/assets/javascripts/epics_list/components/epics_list_root.vue' do
               element :new_epic_button
             end
 
@@ -19,13 +19,13 @@ module QA
             end
 
             def click_first_epic(page = nil)
-              all_elements(:epic_title_text, minimum: 1).first.click
+              all_elements(:issuable_title_link, minimum: 1).first.click
               page.validate_elements_present! if page
             end
 
             def has_epic_title?(title)
               wait_until do
-                has_element?(:epic_title_text, text: title)
+                has_element?(:issuable_title_link, text: title)
               end
             end
           end

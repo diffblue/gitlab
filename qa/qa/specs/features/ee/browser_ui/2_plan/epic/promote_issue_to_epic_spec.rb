@@ -1,20 +1,29 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Plan', :reliable do
+  # TODO: Remove :requires_admin when the `Runtime::Feature.enable` method call is removed
+  RSpec.describe 'Plan', :reliable, :requires_admin do
     describe 'promote issue to epic' do
-      it 'promotes issue to epic', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347970' do
-        Flow::Login.sign_in
-
-        project = Resource::Project.fabricate_via_api! do |project|
+      let(:project) do
+        Resource::Project.fabricate_via_api! do |project|
           project.name = 'promote-issue-to-epic'
           project.description = 'Project to promote issue to epic'
         end
+      end
 
-        issue = Resource::Issue.fabricate_via_api! do |issue|
+      let(:issue) do
+        Resource::Issue.fabricate_via_api! do |issue|
           issue.project = project
         end
+      end
 
+      before do
+        Runtime::Feature.enable(:vue_epics_list, group: project.group)
+
+        Flow::Login.sign_in
+      end
+
+      it 'promotes issue to epic', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347970' do
         issue.visit!
 
         Page::Project::Issue::Show.perform do |show|
