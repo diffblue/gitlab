@@ -1,9 +1,8 @@
 <script>
-import { GlIcon, GlPopover, GlBadge } from '@gitlab/ui';
+import { GlPopover, GlBadge } from '@gitlab/ui';
 
 export default {
   components: {
-    GlIcon,
     GlPopover,
     GlBadge,
   },
@@ -25,9 +24,7 @@ export default {
 
 <template>
   <div class="gl-display-inline-block">
-    <gl-badge ref="badge" variant="info">
-      <gl-icon name="check-circle-dashed" />
-    </gl-badge>
+    <gl-badge ref="badge" variant="info" icon="check-circle-dashed" />
     <gl-popover
       ref="popover"
       :content="
