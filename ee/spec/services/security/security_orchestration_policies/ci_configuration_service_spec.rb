@@ -39,6 +39,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
               }
             },
             variables: {
+              GIT_DEPTH: '50',
               SECURE_ANALYZERS_PREFIX: 'registry.gitlab.com/gitlab-org/security-products/analyzers',
               SECRETS_ANALYZER_VERSION: '3',
               SECRET_DETECTION_EXCLUDED_PATHS: '',
