@@ -95,7 +95,7 @@ RSpec.describe 'admin Geo Nodes', :js, :geo do
   end
 
   describe 'node form fields' do
-    primary_only_fields = %w(node-internal-url-field node-reverification-interval-field)
+    primary_only_fields = %w(node-reverification-interval-field)
     secondary_only_fields = %w(node-selective-synchronization-field node-repository-capacity-field node-file-capacity-field node-object-storage-field)
 
     it 'when primary renders only primary fields' do

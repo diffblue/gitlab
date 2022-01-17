@@ -52,7 +52,7 @@ export default {
         <gl-icon name="external-link" class="gl-ml-1" />
       </gl-link>
     </div>
-    <div v-if="node.primary" class="gl-display-flex gl-flex-direction-column gl-lg-my-5">
+    <div class="gl-display-flex gl-flex-direction-column gl-lg-my-5">
       <span>{{ $options.i18n.internalUrl }}</span>
       <span class="gl-font-weight-bold" data-testid="node-internal-url">{{
         node.internalUrl

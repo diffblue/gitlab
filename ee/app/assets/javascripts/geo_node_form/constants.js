@@ -17,7 +17,7 @@ export const NODE_NAME_MORE_INFO = helpPagePath('user/admin_area/geo_nodes.html'
 });
 
 export const NODE_INTERNAL_URL_MORE_INFO = helpPagePath('user/admin_area/geo_nodes.html', {
-  anchor: 'using-a-different-url-for-synchronization',
+  anchor: 'set-up-the-internal-urls',
 });
 
 export const SELECTIVE_SYNC_MORE_INFO = helpPagePath(
