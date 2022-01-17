@@ -12,7 +12,7 @@ module EE
       end
 
       def saas_user_caps_help_text(group)
-        user_cap_docs_link_url = help_page_path("/user/admin_area/settings/sign_up_restrictions", anchor: "user-cap")
+        user_cap_docs_link_url = help_page_path('user/group/index', anchor: 'user-cap-for-groups')
         user_cap_docs_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: user_cap_docs_link_url }
 
         html_escape(saas_user_caps_i18n_string(group)) % { user_cap_docs_link_start: user_cap_docs_link_start, user_cap_docs_link_end: '</a>'.html_safe }
