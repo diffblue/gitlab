@@ -225,6 +225,27 @@ RSpec.describe Gitlab::GitalyClient::OperationService do
         expect { subject }.to raise_error(GRPC::PermissionDenied)
       end
     end
+
+    context 'with ReferenceUpdateError' do
+      let(:reference_update_error) do
+        new_detailed_error(GRPC::Core::StatusCodes::FAILED_PRECONDITION,
+                           "some ignored error message",
+                           Gitaly::UserMergeBranchError.new(
+                             reference_update: Gitaly::ReferenceUpdateError.new(
+                               reference_name: "refs/heads/something",
+                               old_oid: "1234",
+                               new_oid: "6789"
+                             )))
+      end
+
+      it 'returns nil' do
+        expect_any_instance_of(Gitaly::OperationService::Stub)
+          .to receive(:user_merge_branch).with(kind_of(Enumerator), kind_of(Hash))
+          .and_raise(reference_update_error)
+
+        expect(subject).to be_nil
+      end
+    end
   end
 
   describe '#user_ff_branch' do
