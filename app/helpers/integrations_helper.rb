@@ -228,6 +228,10 @@ module IntegrationsHelper
       name: integration.to_param
     }
   end
+
+  def vue_integration_form_enabled?
+    Feature.enabled?(:vue_integration_form, current_user, default_enabled: :yaml)
+  end
 end
 
 IntegrationsHelper.prepend_mod_with('IntegrationsHelper')
