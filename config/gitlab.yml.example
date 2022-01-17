@@ -10,7 +10,7 @@
 # a MR on https://gitlab.com/gitlab-org/omnibus-gitlab/merge_requests. #
 # For more details see https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/doc/settings/gitlab.yml.md #
 # Be sure to create a MR against the GDK configuration                 #
-# file (support/templates/gitlab/config/gitlab.yml.erb) too.           #
+# file (https://gitlab.com/gitlab-org/gitlab-development-kit/-/blob/main/support/templates/gitlab/config/gitlab.yml.erb) too. #
 ########################################################################
 #
 #
