@@ -3,7 +3,6 @@ import {
   GlLink,
   GlDeprecatedSkeletonLoading as GlSkeletonLoading,
   GlBadge,
-  GlIcon,
   GlFriendlyWrap,
 } from '@gitlab/ui';
 import { LICENSE_APPROVAL_CLASSIFICATION } from 'ee/vue_shared/license_compliance/constants';
@@ -16,7 +15,6 @@ export default {
     GlLink,
     GlSkeletonLoading,
     GlBadge,
-    GlIcon,
     GlFriendlyWrap,
   },
   props: {
@@ -81,10 +79,8 @@ export default {
         <div class="table-mobile-content d-md-flex justify-content-between align-items-center">
           <license-component-links :components="license.components" :title="license.name" />
           <div v-if="isDenied" class="d-inline-block">
-            <!-- This badge usage will be simplified in https://gitlab.com/gitlab-org/gitlab/-/issues/213789 -->
-            <gl-badge variant="warning">
-              <gl-icon name="warning" class="mr-1" />
-              <span>{{ s__('Licenses|Policy violation: denied') }}</span>
+            <gl-badge variant="warning" icon="warning">
+              {{ s__('Licenses|Policy violation: denied') }}
             </gl-badge>
           </div>
         </div>
