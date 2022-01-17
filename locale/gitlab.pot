@@ -17832,7 +17832,13 @@ msgstr ""
 msgid "Identities"
 msgstr ""
 
+msgid "IdentityVerification|Before you create your first project, we need you to verify your identity with a valid payment method. You will not be charged during this step. If we ever need to charge you, we will let you know."
+msgstr ""
+
 msgid "IdentityVerification|Before you create your group, we need you to verify your identity with a valid payment method."
+msgstr ""
+
+msgid "IdentityVerification|Create a project"
 msgstr ""
 
 msgid "IdentityVerification|Verify your identity"

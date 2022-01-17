@@ -20256,6 +20256,7 @@ CREATE TABLE user_details (
     pronunciation text,
     registration_objective smallint,
     phone text,
+    requires_credit_card_verification boolean DEFAULT false NOT NULL,
     CONSTRAINT check_245664af82 CHECK ((char_length(webauthn_xid) <= 100)),
     CONSTRAINT check_a73b398c60 CHECK ((char_length(phone) <= 50)),
     CONSTRAINT check_b132136b01 CHECK ((char_length(other_role) <= 100)),

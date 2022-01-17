@@ -28,6 +28,28 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
 
         subject
       end
+
+      it 'publishes the required verification experiment to the database' do
+        expect_next_instance_of(RequireVerificationForNamespaceCreationExperiment) do |experiment|
+          expect(experiment).to receive(:publish_to_database)
+        end
+
+        subject
+      end
+    end
+  end
+
+  shared_context 'records a conversion event' do
+    let_it_be(:experiment) { create(:experiment, name: :require_verification_for_namespace_creation) }
+    let_it_be(:experiment_subject) { create(:experiment_subject, experiment: experiment, user: user) }
+
+    before do
+      stub_experiments(require_verification_for_namespace_creation: true)
+    end
+
+    it 'records a conversion event for the required verification experiment' do
+      expect { subject }.to change { experiment_subject.reload.converted_at }.from(nil)
+        .and change { experiment_subject.context }.to include('namespace_id')
     end
   end
 
@@ -54,6 +76,8 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
       end
 
       it_behaves_like 'hides email confirmation warning'
+
+      it_behaves_like 'records a conversion event'
 
       context 'when group and project can be created' do
         it 'creates a group' do
@@ -233,6 +257,8 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
       end
 
       it_behaves_like 'hides email confirmation warning'
+
+      it_behaves_like 'records a conversion event'
 
       context "when a group can't be created" do
         before do

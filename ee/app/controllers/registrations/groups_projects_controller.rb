@@ -6,11 +6,17 @@ module Registrations
     include Registrations::CreateGroup
     include OneTrustCSP
 
+    skip_before_action :require_verification, only: :new
+    before_action :set_requires_verification, only: :new, if: -> { helpers.require_verification_experiment.candidate? }
+    before_action :require_verification, only: [:create, :import], if: -> { current_user.requires_credit_card_verification }
+
     layout 'minimal'
 
     feature_category :onboarding
 
     def new
+      helpers.require_verification_experiment.publish_to_database
+
       @group = Group.new(visibility_level: helpers.default_group_visibility)
       @project = Project.new(namespace: @group)
 
@@ -51,6 +57,7 @@ module Registrations
               success_url = new_trial_path
             end
 
+            helpers.require_verification_experiment.record_conversion(@group)
             redirect_to success_url
           end
         else
@@ -66,6 +73,7 @@ module Registrations
       @group = Groups::CreateService.new(current_user, modified_group_params).execute
       if @group.persisted?
         combined_registration_experiment.track(:create_group, namespace: @group)
+        helpers.require_verification_experiment.record_conversion(@group)
 
         import_url = URI.join(root_url, params[:import_url], "?namespace_id=#{@group.id}").to_s
         redirect_to import_url
