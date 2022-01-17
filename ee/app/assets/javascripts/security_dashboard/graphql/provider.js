@@ -3,6 +3,7 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
 import { vulnerabilityLocationTypes } from '~/graphql_shared/fragment_types/vulnerability_location_types';
+import tempResolvers from '~/security_configuration/resolver';
 
 Vue.use(VueApollo);
 
@@ -13,7 +14,9 @@ const fragmentMatcher = new IntrospectionFragmentMatcher({
 });
 
 const defaultClient = createDefaultClient(
-  {},
+  {
+    ...tempResolvers,
+  },
   {
     cacheConfig: {
       fragmentMatcher,
