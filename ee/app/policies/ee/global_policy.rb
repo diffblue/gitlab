@@ -14,7 +14,8 @@ module EE
       end
 
       condition(:adjourned_project_deletion_available) do
-        License.feature_available?(:adjourned_deletion_for_projects_and_groups)
+        License.feature_available?(:adjourned_deletion_for_projects_and_groups) &&
+          (::Feature.enabled?(:ff_projects_pending_deletion_tab) || can?(:admin_all_resources))
       end
 
       condition(:export_user_permissions_available) do

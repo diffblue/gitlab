@@ -46,7 +46,6 @@ module EE
 
       def finder_params_for_removed
         finder_params = { aimed_for_deletion: true }
-        finder_params[:skip_sorting] = true
 
         unless current_user.can_admin_all_resources?
           # only list projects with at least owner access if the user is not an admin

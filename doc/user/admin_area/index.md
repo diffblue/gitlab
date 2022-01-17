@@ -111,6 +111,12 @@ You can combine the filter options. For example, to list only public projects wi
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/37014) in GitLab 13.3.
 > - [Tab renamed](https://gitlab.com/gitlab-org/gitlab/-/issues/347468) from **Deleted projects** in GitLab 14.6.
+> - [Available to non-admin users](https://gitlab.com/gitlab-org/gitlab/-/issues/346976) in GitLab 14.8. [with a flag](../../administration/feature_flags.md) named `ff_projects_pending_deletion_tab`. Disabled by default.
+
+FLAG:
+On self-managed GitLab, by default this feature is not available to non-admin users. To make it available,
+ask an administrator to [enable the feature flag](../../administration/feature_flags.md) named `ff_projects_pending_deletion_tab`.
+On GitLab.com, this feature is not available to non-admin users. The feature is not ready for production use.
 
 When delayed project deletion is [enabled for a group](../group/index.md#enable-delayed-project-deletion),
 projects within that group are not deleted immediately, but only after a delay. To access a list of all projects that are pending deletion:

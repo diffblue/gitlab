@@ -55,7 +55,7 @@ module EE
       def projects_submenu_items(builder:)
         super
 
-        if License.feature_available?(:adjourned_deletion_for_projects_and_groups)
+        if current_user.can?(:list_removable_projects)
           builder.add_primary_menu_item(id: 'deleted', title: _('Pending deletion'), href: removed_dashboard_projects_path)
         end
       end
