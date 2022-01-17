@@ -216,7 +216,7 @@ describe('Settings Panel', () => {
         await findProjectVisibilityLevelInput().setValue(visibilityOptions.PRIVATE);
         await findConfirmDangerButton().vm.$emit('confirm');
 
-        expect(wrapper.emitted('confirm').length).toBe(1);
+        expect(wrapper.emitted('confirm')).toHaveLength(1);
       });
     });
   });
