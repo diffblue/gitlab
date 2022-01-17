@@ -49,6 +49,7 @@ const defaultProps = {
   packagesHelpPath: '/help/user/packages/index',
   requestCveAvailable: true,
   confirmationPhrase: 'my-fake-project',
+  showVisibilityConfirmModal: false,
 };
 
 describe('Settings Panel', () => {
@@ -181,7 +182,7 @@ describe('Settings Panel', () => {
       expect(findRequestAccessEnabledInput().exists()).toBe(false);
     });
 
-    it('should render the confirmation dialog if the visibility is reduced', async () => {
+    it('does not require confirmation if the visibility is reduced', async () => {
       wrapper = mountComponent({
         currentSettings: { visibilityLevel: visibilityOptions.INTERNAL },
       });
@@ -190,7 +191,33 @@ describe('Settings Panel', () => {
 
       await findProjectVisibilityLevelInput().setValue(visibilityOptions.PRIVATE);
 
-      expect(findConfirmDangerButton().exists()).toBe(true);
+      expect(findConfirmDangerButton().exists()).toBe(false);
+    });
+
+    describe('showVisibilityConfirmModal=true', () => {
+      beforeEach(() => {
+        wrapper = mountComponent({
+          currentSettings: { visibilityLevel: visibilityOptions.INTERNAL },
+          showVisibilityConfirmModal: true,
+        });
+      });
+
+      it('will render the confirmation dialog if the visibility is reduced', async () => {
+        expect(findConfirmDangerButton().exists()).toBe(false);
+
+        await findProjectVisibilityLevelInput().setValue(visibilityOptions.PRIVATE);
+
+        expect(findConfirmDangerButton().exists()).toBe(true);
+      });
+
+      it('emits the `confirm` event when the reduce visibility warning is confirmed', async () => {
+        expect(wrapper.emitted('confirm')).toBeUndefined();
+
+        await findProjectVisibilityLevelInput().setValue(visibilityOptions.PRIVATE);
+        await findConfirmDangerButton().vm.$emit('confirm');
+
+        expect(wrapper.emitted('confirm').length).toBe(1);
+      });
     });
   });
 

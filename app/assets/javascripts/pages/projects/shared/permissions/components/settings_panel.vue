@@ -170,6 +170,11 @@ export default {
       type: String,
       required: true,
     },
+    showVisibilityConfirmModal: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
   },
   data() {
     const defaults = {
@@ -282,7 +287,10 @@ export default {
       return this.visibilityLevel !== visibilityOptions.PUBLIC;
     },
     isVisibilityReduced() {
-      return this.visibilityLevel < this.currentSettings.visibilityLevel;
+      return (
+        this.showVisibilityConfirmModal &&
+        this.visibilityLevel < this.currentSettings.visibilityLevel
+      );
     },
   },
 

@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import { parseBoolean } from '~/lib/utils/common_utils';
 import settingsPanel from './components/settings_panel.vue';
 
 export default function initProjectPermissionsSettings() {
@@ -11,22 +12,25 @@ export default function initProjectPermissionsSettings() {
     additionalInformation,
     confirmDangerMessage,
     confirmButtonText,
+    showVisibilityConfirmModal,
+    htmlConfirmationMessage,
     phrase: confirmationPhrase,
   } = mountPoint.dataset;
 
   return new Vue({
     el: mountPoint,
     provide: {
-      htmlConfirmationMessage: true,
       additionalInformation,
       confirmDangerMessage,
       confirmButtonText,
+      htmlConfirmationMessage: parseBoolean(htmlConfirmationMessage),
     },
     render: (createElement) =>
       createElement(settingsPanel, {
         props: {
           ...componentProps,
           confirmationPhrase,
+          showVisibilityConfirmModal: parseBoolean(showVisibilityConfirmModal),
         },
         on: {
           confirm: () => {

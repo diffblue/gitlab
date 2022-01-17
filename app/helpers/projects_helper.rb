@@ -680,7 +680,8 @@ module ProjectsHelper
       confirm_danger_message: confirm_reduce_visibility_message(project),
       phrase: project.full_path,
       additional_information: _('Note: current forks will keep their visibility level.'),
-      html_confirmation_message: true
+      html_confirmation_message: true.to_s,
+      show_visibility_confirm_modal: show_visibility_confirm_modal?(project).to_s
     }
   end
 
