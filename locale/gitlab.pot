@@ -38633,6 +38633,9 @@ msgstr ""
 msgid "User cap"
 msgstr ""
 
+msgid "User cap cannot be enabled. The group or one of its subgroups or projects is shared externally."
+msgstr ""
+
 msgid "User created at"
 msgstr ""
 

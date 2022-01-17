@@ -432,32 +432,58 @@ RSpec.describe 'Edit group settings' do
     context 'when user cap feature is available', :js do
       let(:user_caps_selector) { '[name="group[new_user_signups_cap]"]' }
 
-      before do
-        visit edit_group_path(group)
+      context 'when group is not the root group' do
+        let(:subgroup) { create(:group, parent: group) }
+
+        before do
+          visit edit_group_path(subgroup)
+        end
+
+        it 'is not visible' do
+          expect(page).not_to have_content('User cap')
+        end
       end
 
-      it 'is visible' do
-        expect(page).to have_content('User cap')
-      end
+      context 'when the group is the root group' do
+        before do
+          visit edit_group_path(group)
+        end
 
-      it 'will save positive numbers' do
-        find(user_caps_selector).set(5)
+        it 'is visible' do
+          expect(page).to have_content('User cap')
+        end
 
-        click_button 'Save changes'
-        wait_for_requests
+        it 'will save positive numbers' do
+          find(user_caps_selector).set(5)
 
-        expect(page).to have_content("Group 'Foo bar' was successfully updated.")
-      end
+          click_button 'Save changes'
+          wait_for_requests
 
-      it 'will not allow negative number' do
-        find(user_caps_selector).set(-5)
+          expect(page).to have_content("Group 'Foo bar' was successfully updated.")
+        end
 
-        click_button 'Save changes'
-        expect(page).to have_content('This field is required.')
+        it 'will not allow negative number' do
+          find(user_caps_selector).set(-5)
 
-        wait_for_requests
+          click_button 'Save changes'
+          expect(page).to have_content('This field is required.')
 
-        expect(page).not_to have_content("Group 'Foo bar' was successfully updated.")
+          wait_for_requests
+
+          expect(page).not_to have_content("Group 'Foo bar' was successfully updated.")
+        end
+
+        context 'when the group cannot set a user cap' do
+          before do
+            create(:group_group_link, shared_group: group)
+
+            visit edit_group_path(group)
+          end
+
+          it 'will be a disabled input' do
+            expect(find(user_caps_selector)).to be_disabled
+          end
+        end
       end
     end
 
