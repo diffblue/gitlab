@@ -16,9 +16,6 @@ describe('IssueBoardFilter', () => {
       provide: {
         isSignedIn: true,
         releasesFetchPath: '/releases',
-        glFeatures: {
-          iterationCadences: true,
-        },
       },
     });
   };

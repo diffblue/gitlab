@@ -47,19 +47,15 @@ export default {
           useIdValue: true,
           fullPath: this.epicsGroupPath,
         },
-        ...(this.glFeatures.iterationCadences
-          ? [
-              {
-                icon: 'iteration',
-                title: iteration,
-                type: 'iteration',
-                operators: OPERATOR_IS_AND_IS_NOT,
-                token: IterationToken,
-                unique: true,
-                fetchIterations: this.fetchIterations,
-              },
-            ]
-          : []),
+        {
+          icon: 'iteration',
+          title: iteration,
+          type: 'iteration',
+          operators: OPERATOR_IS_AND_IS_NOT,
+          token: IterationToken,
+          unique: true,
+          fetchIterations: this.fetchIterations,
+        },
         {
           type: 'weight',
           title: weight,
