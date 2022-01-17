@@ -14,7 +14,7 @@ RSpec.describe Geo::FilesExpireService, :geo do
     let!(:upload_registry) { create(:geo_upload_registry, :synced, file_id: upload.id) }
 
     before do
-      project.update(path: "#{project.path}_renamed")
+      project.update!(path: "#{project.path}_renamed")
     end
 
     context 'when in Geo secondary node' do

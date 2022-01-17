@@ -33,7 +33,7 @@ RSpec.describe StartPullMirroringService do
       context 'when project mirror has been updated in the interval' do
         it 'schedules next execution' do
           freeze_time do
-            import_state.update(last_update_at: (interval_minutes - 1).minutes.ago, last_successful_update_at: 10.minutes.ago)
+            import_state.update!(last_update_at: (interval_minutes - 1).minutes.ago, last_successful_update_at: 10.minutes.ago)
 
             expect { execute }
               .to change { import_state.next_execution_timestamp }
@@ -45,7 +45,7 @@ RSpec.describe StartPullMirroringService do
 
       context 'when project mirror has been updated outside of the interval' do
         before do
-          import_state.update(last_update_at: (interval_minutes + 1).minutes.ago, last_successful_update_at: 10.minutes.ago)
+          import_state.update!(last_update_at: (interval_minutes + 1).minutes.ago, last_successful_update_at: 10.minutes.ago)
         end
 
         it_behaves_like 'force mirror update'
@@ -53,7 +53,7 @@ RSpec.describe StartPullMirroringService do
 
       context 'when project mirror has been updated in interval but has never been successfully updated' do
         before do
-          import_state.update(last_update_at: (interval_minutes - 1).minutes.ago, last_successful_update_at: nil)
+          import_state.update!(last_update_at: (interval_minutes - 1).minutes.ago, last_successful_update_at: nil)
         end
 
         it_behaves_like 'force mirror update'
@@ -81,7 +81,7 @@ RSpec.describe StartPullMirroringService do
   end
 
   before do
-    import_state.update(next_execution_timestamp: 1.minute.from_now)
+    import_state.update!(next_execution_timestamp: 1.minute.from_now)
   end
 
   context 'when pause_on_hard_failure is false' do
@@ -89,7 +89,7 @@ RSpec.describe StartPullMirroringService do
 
     context "when retried more than #{Gitlab::Mirror::MAX_RETRY} times" do
       before do
-        import_state.update(retry_count: Gitlab::Mirror::MAX_RETRY + 1)
+        import_state.update!(retry_count: Gitlab::Mirror::MAX_RETRY + 1)
       end
 
       it_behaves_like 'pull mirroring has started'
@@ -100,7 +100,7 @@ RSpec.describe StartPullMirroringService do
 
       context 'when mirror is due to be updated' do
         before do
-          import_state.update(next_execution_timestamp: 1.minute.ago)
+          import_state.update!(next_execution_timestamp: 1.minute.ago)
         end
 
         it_behaves_like 'pull mirroring has started'
@@ -109,7 +109,7 @@ RSpec.describe StartPullMirroringService do
 
     context 'when does not reach the max retry limit yet' do
       before do
-        import_state.update(retry_count: Gitlab::Mirror::MAX_RETRY - 1)
+        import_state.update!(retry_count: Gitlab::Mirror::MAX_RETRY - 1)
       end
 
       it_behaves_like 'pull mirroring has started'
@@ -117,7 +117,7 @@ RSpec.describe StartPullMirroringService do
 
       context 'when mirror is due to be updated' do
         before do
-          import_state.update(next_execution_timestamp: 1.minute.ago)
+          import_state.update!(next_execution_timestamp: 1.minute.ago)
         end
 
         it_behaves_like 'pull mirroring has not started', :success
@@ -130,7 +130,7 @@ RSpec.describe StartPullMirroringService do
 
     context "when retried more than #{Gitlab::Mirror::MAX_RETRY} times" do
       before do
-        import_state.update(retry_count: Gitlab::Mirror::MAX_RETRY + 1)
+        import_state.update!(retry_count: Gitlab::Mirror::MAX_RETRY + 1)
       end
 
       it_behaves_like 'retry count did not reset'
@@ -139,7 +139,7 @@ RSpec.describe StartPullMirroringService do
 
     context 'when does not reach the max retry limit yet' do
       before do
-        import_state.update(retry_count: Gitlab::Mirror::MAX_RETRY - 1)
+        import_state.update!(retry_count: Gitlab::Mirror::MAX_RETRY - 1)
       end
 
       it_behaves_like 'pull mirroring has started'
@@ -147,7 +147,7 @@ RSpec.describe StartPullMirroringService do
 
       context 'when mirror is due to be updated' do
         before do
-          import_state.update(next_execution_timestamp: 1.minute.ago)
+          import_state.update!(next_execution_timestamp: 1.minute.ago)
         end
 
         it_behaves_like 'pull mirroring has not started', :success

@@ -125,7 +125,7 @@ RSpec.describe QuickActions::InterpretService do
         let(:merge_request) { create(:merge_request, source_project: project) }
 
         it 'fetches assignees and populates them if content contains /assign' do
-          merge_request.update(assignee_ids: [user.id])
+          merge_request.update!(assignee_ids: [user.id])
 
           _, updates = service.execute("/assign @#{user2.username}", merge_request)
 
@@ -134,7 +134,7 @@ RSpec.describe QuickActions::InterpretService do
 
         context 'assign command with multiple assignees' do
           it 'fetches assignee and populates assignee_ids if content contains /assign' do
-            merge_request.update(assignee_ids: [user.id])
+            merge_request.update!(assignee_ids: [user.id])
 
             _, updates = service.execute("/assign @#{user.username}\n/assign @#{user2.username} @#{user3.username}", issue)
 
@@ -147,7 +147,7 @@ RSpec.describe QuickActions::InterpretService do
             end
 
             it 'does not recognize /assign with multiple user references' do
-              merge_request.update(assignee_ids: [user.id])
+              merge_request.update!(assignee_ids: [user.id])
 
               _, updates = service.execute("/assign @#{user2.username} @#{user3.username}", merge_request)
 
@@ -163,7 +163,7 @@ RSpec.describe QuickActions::InterpretService do
         let(:merge_request) { create(:merge_request, source_project: project) }
 
         it 'fetches reviewers and populates them if content contains /assign_reviewer' do
-          merge_request.update(reviewer_ids: [user.id])
+          merge_request.update!(reviewer_ids: [user.id])
 
           _, updates = service.execute("/assign_reviewer @#{user2.username}\n/assign_reviewer @#{user3.username}", merge_request)
 
@@ -172,7 +172,7 @@ RSpec.describe QuickActions::InterpretService do
 
         context 'assign command with multiple reviewers' do
           it 'assigns multiple reviewers while respecting previous assignments' do
-            merge_request.update(reviewer_ids: [user.id])
+            merge_request.update!(reviewer_ids: [user.id])
 
             _, updates = service.execute("/assign_reviewer @#{user.username}\n/assign_reviewer @#{user2.username} @#{user3.username}", merge_request)
 
@@ -188,7 +188,7 @@ RSpec.describe QuickActions::InterpretService do
 
       context 'unassign_reviewer command with multiple assignees' do
         it 'unassigns both reviewers if content contains /unassign_reviewer @user @user1' do
-          merge_request.update(reviewer_ids: [user.id, user2.id, user3.id])
+          merge_request.update!(reviewer_ids: [user.id, user2.id, user3.id])
 
           _, updates = service.execute("/unassign_reviewer @#{user.username} @#{user2.username}", merge_request)
 
@@ -230,7 +230,7 @@ RSpec.describe QuickActions::InterpretService do
         let(:merge_request) { create(:merge_request, source_project: project) }
 
         it 'unassigns user if content contains /unassign @user' do
-          merge_request.update(assignee_ids: [user.id, user2.id])
+          merge_request.update!(assignee_ids: [user.id, user2.id])
 
           _, updates = service.execute("/unassign @#{user2.username}", merge_request)
 
@@ -239,7 +239,7 @@ RSpec.describe QuickActions::InterpretService do
 
         context 'unassign command with multiple assignees' do
           it 'unassigns both users if content contains /unassign @user @user1' do
-            merge_request.update(assignee_ids: [user.id, user2.id, user3.id])
+            merge_request.update!(assignee_ids: [user.id, user2.id, user3.id])
 
             _, updates = service.execute("/unassign @#{user.username} @#{user2.username}", merge_request)
 
@@ -252,7 +252,7 @@ RSpec.describe QuickActions::InterpretService do
             end
 
             it 'does not recognize /unassign @user' do
-              merge_request.update(assignee_ids: [user.id, user2.id, user3.id])
+              merge_request.update!(assignee_ids: [user.id, user2.id, user3.id])
 
               _, updates = service.execute("/unassign @#{user.username}", merge_request)
 
@@ -1193,7 +1193,7 @@ RSpec.describe QuickActions::InterpretService do
     context 'approved merge request can be merged' do
       before do
         merge_request.update!(approvals_before_merge: 1)
-        merge_request.approvals.create(user: current_user)
+        merge_request.approvals.create!(user: current_user)
       end
 
       it_behaves_like 'empty command' do

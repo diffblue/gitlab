@@ -130,7 +130,7 @@ RSpec.describe StatusPage::TriggerPublishService do
         context 'when destroyed' do
           include_examples 'trigger status page publish' do
             before do
-              triggered_by.destroy
+              triggered_by.destroy!
             end
           end
         end
@@ -161,7 +161,7 @@ RSpec.describe StatusPage::TriggerPublishService do
           context 'when destroyed' do
             include_examples 'trigger status page publish' do
               before do
-                triggered_by.destroy
+                triggered_by.destroy!
               end
             end
           end
@@ -241,7 +241,7 @@ RSpec.describe StatusPage::TriggerPublishService do
       context 'when status page is missing' do
         include_examples 'no trigger status page publish' do
           before do
-            project.status_page_setting.destroy
+            project.status_page_setting.destroy!
             project.reload
           end
         end

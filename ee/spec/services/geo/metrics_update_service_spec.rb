@@ -109,8 +109,8 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus do
       it 'updates metrics for all nodes' do
         allow(GeoNodeStatus).to receive(:current_node_status).and_return(GeoNodeStatus.from_json(primary_data.as_json))
 
-        secondary.update(status: GeoNodeStatus.from_json(data.as_json))
-        another_secondary.update(status: GeoNodeStatus.from_json(data.as_json))
+        secondary.update!(status: GeoNodeStatus.from_json(data.as_json))
+        another_secondary.update!(status: GeoNodeStatus.from_json(data.as_json))
 
         subject.execute
 
