@@ -38,7 +38,7 @@ RSpec.describe ProjectPolicy do
       %i[
         download_code download_wiki_code read_project read_issue_board read_issue_board_list
         read_project_for_iids read_issue_iid read_merge_request_iid read_wiki
-        read_issue read_label read_work_items_hierarchy read_issue_link read_milestone read_iteration
+        read_issue read_label read_issue_link read_milestone read_iteration
         read_snippet read_project_member read_note read_cycle_analytics
         read_pipeline read_build read_commit_status read_container_image
         read_environment read_deployment read_merge_request read_pages
