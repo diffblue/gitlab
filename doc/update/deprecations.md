@@ -352,6 +352,30 @@ only supported report file in 15.0, but this is the first step towards GitLab su
 
 Planned removal milestone: 15.0 (2022-05-22)
 
+### Sidekiq metrics and health checks configuration
+
+Exporting Sidekiq metrics and health checks using a single process and port is deprecated.
+Support will be removed in 15.0.
+
+We have updated Sidekiq to export [metrics and health checks from two separate processes](https://gitlab.com/groups/gitlab-org/-/epics/6409)
+to improve stability and availability and prevent data loss in edge cases.
+As those are two separate servers, a configuration change will be required in 15.0
+to explicitly set separate ports for metrics and health-checks.
+The newly introduced settings for `sidekiq['health_checks_*']`
+should always be set in `gitlab.rb`.
+For more information, check the documentation for [configuring Sidekiq](https://docs.gitlab.com/ee/administration/sidekiq.html).
+
+These changes also require updates in either Prometheus to scrape the new endpoint or k8s health-checks to target the new
+health-check port to work properly, otherwise either metrics or health-checks will disappear.
+
+For the deprecation period those settings are optional
+and GitLab will default the Sidekiq health-checks port to the same port as `sidekiq_exporter`
+and only run one server (not changing the current behaviour).
+Only if they are both set and a different port is provided, a separate metrics server will spin up
+to serve the Sidekiq metrics, similar to the way Sidekiq will behave in 15.0.
+
+Planned removal milestone: 15.0 (2022-05-22)
+
 ### Tracing in GitLab
 
 Tracing in GitLab is an integration with Jaeger, an open-source end-to-end distributed tracing system. GitLab users can navigate to their Jaeger instance to gain insight into the performance of a deployed application, tracking each function or microservice that handles a given request. Tracing in GitLab is deprecated in GitLab 14.7, and scheduled for removal in 15.0. To track work on a possible replacement, see the issue for [Opstrace integration with GitLab](https://gitlab.com/groups/gitlab-org/-/epics/6976).
