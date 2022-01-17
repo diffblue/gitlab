@@ -394,9 +394,11 @@ class License < ApplicationRecord
     self.data = file.read
   end
 
-  def md5
-    normalized_data = self.data.gsub("\r\n", "\n").gsub(/\n+$/, '') + "\n"
+  def normalized_data
+    data.gsub("\r\n", "\n").gsub(/\n+$/, '') + "\n"
+  end
 
+  def md5
     Digest::MD5.hexdigest(normalized_data)
   end
 

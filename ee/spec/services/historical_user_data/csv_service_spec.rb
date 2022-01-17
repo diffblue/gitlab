@@ -32,7 +32,12 @@ RSpec.describe HistoricalUserData::CsvService do
       end
 
       it 'shows the license key' do
-        expect(csv[0][1]).to eq(current_license.data)
+        license = create(:license, data: current_license.data.gsub("\n", "\r\n"))
+
+        allow(License).to receive(:current).and_return(license)
+
+        expect(license.data).not_to eq(license.normalized_data)
+        expect(csv[0][1]).to eq(license.normalized_data)
       end
     end
 

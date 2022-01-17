@@ -807,6 +807,26 @@ RSpec.describe License do
     end
   end
 
+  describe '#normalized_data' do
+    it 'replaces carriage returns' do
+      other_license = build(:license, data: license.data.gsub("\n", "\r\n"))
+
+      expect(other_license.normalized_data).not_to include("\r\n")
+    end
+
+    it 'adds a trailing newline' do
+      other_license = build(:license, data: license.data.chomp)
+
+      expect(other_license.normalized_data).to end_with("\n")
+    end
+
+    it 'replaces multiple trailing newlines with a single trailing newline' do
+      other_license = build(:license, data: "#{license.data}\n\n\n")
+
+      expect(other_license.normalized_data).to end_with(/\n{1}$/)
+    end
+  end
+
   describe "#md5" do
     it "returns the same MD5 for licenses with carriage returns and those without" do
       other_license = build(:license, data: license.data.gsub("\n", "\r\n"))
