@@ -8,7 +8,6 @@ RSpec.describe 'Path Locks', :js do
   let(:tree_path) { project_tree_path(project, project.repository.root_ref) }
 
   before do
-    allow(project).to receive(:feature_available?).with(:file_locks) { true }
     stub_feature_flags(bootstrap_confirmation_modals: false)
 
     project.add_maintainer(user)
@@ -37,10 +36,16 @@ RSpec.describe 'Path Locks', :js do
     end
 
     within '.file-actions' do
-      accept_confirm(text: 'Are you sure you want to lock VERSION?') { click_link "Lock" }
-
-      expect(page).to have_link('Unlock')
+      click_button "Lock"
     end
+
+    page.within '.modal' do
+      expect(page).to have_css('.modal-body', text: 'Are you sure you want to lock VERSION?')
+
+      click_button "Okay"
+    end
+
+    expect(page).to have_button('Unlock')
   end
 
   it 'unlocking files' do
@@ -49,16 +54,24 @@ RSpec.describe 'Path Locks', :js do
     end
 
     within '.file-actions' do
-      accept_confirm(text: 'Are you sure you want to lock VERSION?') { click_link "Lock" }
+      click_button "Lock"
+    end
 
-      expect(page).to have_link('Unlock')
+    page.within '.modal' do
+      click_button "Okay"
     end
 
     within '.file-actions' do
-      accept_confirm(text: 'Are you sure you want to unlock VERSION?') { click_link "Unlock" }
-
-      expect(page).to have_link('Lock')
+      click_button "Unlock"
     end
+
+    page.within '.modal' do
+      expect(page).to have_css('.modal-body', text: 'Are you sure you want to unlock VERSION?')
+
+      click_button "Okay"
+    end
+
+    expect(page).to have_button('Lock')
   end
 
   it 'managing of lock list' do
