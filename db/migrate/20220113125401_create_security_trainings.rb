@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class CreateSecurityTrainings < Gitlab::Database::Migration[1.0]
+  enable_lock_retries!
+
   def change
     create_table :security_trainings do |t|
       t.references :project, null: false, foreign_key: { on_delete: :cascade }
