@@ -20,8 +20,8 @@ module Gitlab
         !!self.fabricate(pattern, fallback: fallback)
       end
 
-      def self.fabricate(pattern, fallback: false)
-        self.fabricate!(pattern, fallback: fallback)
+      def self.fabricate(pattern, fallback: false, project: nil)
+        self.fabricate!(pattern, fallback: fallback, project: project)
       rescue RegexpError
         nil
       end
@@ -38,22 +38,18 @@ module Gitlab
           raise unless fallback &&
               Feature.enabled?(:allow_unsafe_ruby_regexp, default_enabled: false)
 
-          if log_untrusted_ruby_regexp?(project)
+          if Feature.enabled?(:ci_unsafe_regexp_logger, type: :ops, default_enabled: :yaml)
             Gitlab::AppJsonLogger.info(
               class: self.class.name,
-              regexp: pattern.to_s
+              regexp: pattern.to_s,
               fabricated: 'unsafe ruby regexp',
-              project_id: project.id,
-              project_path: project.full_path,
+              project_id: project&.id,
+              project_path: project&.full_path
             )
           end
 
           create_ruby_regexp(matches[:regexp], matches[:flags])
         end
-      end
-
-      def log_untrusted_ruby_regexp?(project)
-        project.present? && Feature.enabled?(:ci_unsafe_regexp_logger, project, type: :ops, default_enabled: :yaml)
       end
 
       def self.create_untrusted_regexp(pattern, flags)
