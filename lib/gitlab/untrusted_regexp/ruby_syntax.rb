@@ -26,7 +26,7 @@ module Gitlab
         nil
       end
 
-      def self.fabricate!(pattern, fallback: false)
+      def self.fabricate!(pattern, fallback: false, project: nil)
         raise RegexpError, 'Pattern is not string!' unless pattern.is_a?(String)
 
         matches = pattern.match(PATTERN)
@@ -38,8 +38,21 @@ module Gitlab
           raise unless fallback &&
               Feature.enabled?(:allow_unsafe_ruby_regexp, default_enabled: false)
 
+          if log_untrusted_ruby_regexp?(project)
+            Gitlab::AppJsonLogger.info(
+              class: self.class.name,
+              project_id: project.id,
+              project_path: project.full_path,
+              regexp: pattern.to_s
+            )
+          end
+
           create_ruby_regexp(matches[:regexp], matches[:flags])
         end
+      end
+
+      def log_untrusted_ruby_regexp?(project)
+        project.present? && Feature.enabled?(:ci_unsafe_regexp_logger, project, type: :ops, default_enabled: :yaml)
       end
 
       def self.create_untrusted_regexp(pattern, flags)
