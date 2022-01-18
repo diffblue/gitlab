@@ -3,7 +3,6 @@
 FactoryBot.define do
   factory :vulnerabilties_finding_evidence, class: 'Vulnerabilities::Finding::Evidence' do
     finding { association :vulnerabilities_finding }
-    summary { 'Evidence summary' }
     data do
       {
         summary: 'Credit card detected',
