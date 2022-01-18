@@ -3,8 +3,12 @@
 module BulkImports
   module Groups
     module Graphql
-      module GetIterationsQuery
-        extend self
+      class GetIterationsQuery
+        attr_reader :context
+
+        def initialize(context:)
+          @context = context
+        end
 
         def to_s
           <<-'GRAPHQL'
@@ -31,7 +35,7 @@ module BulkImports
           GRAPHQL
         end
 
-        def variables(context)
+        def variables
           {
             full_path: context.entity.source_full_path,
             cursor: context.tracker.next_page,
