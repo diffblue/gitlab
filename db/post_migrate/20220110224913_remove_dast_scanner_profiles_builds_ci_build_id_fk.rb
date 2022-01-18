@@ -7,6 +7,7 @@ class RemoveDastScannerProfilesBuildsCiBuildIdFk < Gitlab::Database::Migration[1
 
   def up
     with_lock_retries do
+      execute('LOCK ci_builds, dast_scanner_profiles_builds IN ACCESS EXCLUSIVE MODE')
       remove_foreign_key_if_exists(:dast_scanner_profiles_builds, :ci_builds, name: CONSTRAINT_NAME)
     end
   end
