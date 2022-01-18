@@ -15,6 +15,7 @@ RSpec.describe IssuableMetricImage do
 
     it { is_expected.not_to allow_value(txt_file).for(:file) }
     it { is_expected.to allow_value(img_file).for(:file) }
+    it { is_expected.to validate_length_of(:url_text).is_at_most(128) }
 
     describe 'url' do
       it { is_expected.not_to allow_value('test').for(:url) }
