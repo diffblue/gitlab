@@ -85,7 +85,7 @@ module Resolvers
     private
 
     def vulnerabilities(params)
-      apply_lookahead(Security::VulnerabilitiesFinder.new(vulnerable, params).execute)
+      apply_lookahead(::Security::VulnerabilitiesFinder.new(vulnerable, params).execute)
     end
   end
 end
