@@ -11988,6 +11988,9 @@ msgstr ""
 msgid "Deployment|This deployment was created using the API"
 msgstr ""
 
+msgid "Deployment|blocked"
+msgstr ""
+
 msgid "Deployment|canceled"
 msgstr ""
 
