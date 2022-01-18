@@ -72,6 +72,30 @@ module EE
               end
             end
 
+            desc 'Update a metric image for an issue' do
+              success Entities::IssuableMetricImage
+            end
+            params do
+              requires :metric_image_id, type: Integer, desc: 'The ID of metric image'
+              optional :url, type: String, desc: 'The url to view more metric info'
+              optional :url_text, type: String, desc: 'A description of the image or URL'
+            end
+            put ':metric_image_id' do
+              issue = find_project_issue(params[:issue_iid])
+
+              authorize!(:destroy_issuable_metric_image, issue)
+
+              metric_image = issue.metric_images.find_by_id(params[:metric_image_id])
+
+              render_api_error!('Metric image not found', 404) unless metric_image
+
+              if metric_image&.update(params.slice(:url, :url_text))
+                present metric_image, with: Entities::IssuableMetricImage, current_user: current_user, project: user_project
+              else
+                render_api_error!('Metric image could not be updated', 400)
+              end
+            end
+
             desc 'Remove a metric image for an issue' do
               success Entities::IssuableMetricImage
             end
