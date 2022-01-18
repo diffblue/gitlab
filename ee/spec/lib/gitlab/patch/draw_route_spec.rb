@@ -2,6 +2,8 @@
 
 require 'fast_spec_helper'
 
+require_relative '../../../../lib/ee/gitlab/patch/draw_route'
+
 RSpec.describe Gitlab::Patch::DrawRoute do
   subject do
     Class.new do

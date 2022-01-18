@@ -1,16 +1,14 @@
 # frozen_string_literal: true
 
-require 'fast_spec_helper'
-require 'support/helpers/stub_feature_flags'
+require 'spec_helper'
 
 RSpec.describe Elastic::Latest::Routing do
   let(:proxified_class) { Issue }
   let(:included_class) { Elastic::Latest::ApplicationClassProxy }
-
-  subject { included_class.new(proxified_class) }
-
   let(:project_ids) { [1, 2, 3] }
   let(:project_routing) { 'project_1,project_2,project_3' }
+
+  subject { included_class.new(proxified_class) }
 
   describe '#search' do
     it 'calls routing_options with empty hash' do

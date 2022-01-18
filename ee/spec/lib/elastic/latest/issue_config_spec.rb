@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'fast_spec_helper'
+require 'spec_helper'
 require_relative './config_shared_examples'
 
 RSpec.describe Elastic::Latest::IssueConfig do
