@@ -7,7 +7,7 @@ RSpec.describe Git::WikiPushService do
 
   let_it_be(:key_id) { create(:key, user: current_user).shell_id }
   let_it_be(:wiki) { create(:project_wiki) }
-  let_it_be(:current_user) { wiki.container.default_owner }
+  let_it_be(:current_user) { wiki.container.first_owner }
   let_it_be(:repository) { wiki.repository }
 
   let(:post_received) { ::Gitlab::GitPostReceive.new(wiki.container, key_id, changes, {}) }
