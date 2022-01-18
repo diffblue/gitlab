@@ -9,7 +9,7 @@ module EE
 
           override :configure_menu_items
           def configure_menu_items
-            return false unless super
+            return false if !super && !show_jira_menu_items?
 
             add_item(iterations_menu_item)
             add_item(requirements_menu_item)
@@ -26,7 +26,8 @@ module EE
           private
 
           def iterations_menu_item
-            if !context.project.licensed_feature_available?(:iterations) ||
+            if !show_issues_menu_items? ||
+              !context.project.licensed_feature_available?(:iterations) ||
               !can?(context.current_user, :read_iteration, context.project)
               return ::Sidebars::NilMenuItem.new(item_id: :iterations)
             end
@@ -43,7 +44,8 @@ module EE
           end
 
           def requirements_menu_item
-            if !context.project.licensed_feature_available?(:requirements) ||
+            if !show_issues_menu_items? ||
+              !context.project.licensed_feature_available?(:requirements) ||
               !can?(context.current_user, :read_requirement, context.project)
               return ::Sidebars::NilMenuItem.new(item_id: :requirements)
             end
