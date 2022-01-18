@@ -7,7 +7,7 @@ import { ERROR_FETCHING_DATA_HEADER, ERROR_FETCHING_DATA_DESCRIPTION } from '~/e
 import Checkout from 'ee/subscriptions/buy_addons_shared/components/checkout.vue';
 import AddonPurchaseDetails from 'ee/subscriptions/buy_addons_shared/components/checkout/addon_purchase_details.vue';
 import { formatNumber, sprintf } from '~/locale';
-import { CUSTOMERSDOT_CLIENT } from 'ee/subscriptions/buy_addons_shared/constants';
+import { CUSTOMERSDOT_CLIENT, I18N_ADDON } from 'ee/subscriptions/buy_addons_shared/constants';
 
 import plansQuery from 'ee/subscriptions/graphql/queries/plans.customer.query.graphql';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
@@ -25,10 +25,6 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   props: {
-    config: {
-      required: true,
-      type: Object,
-    },
     tags: {
       required: true,
       type: Array,
@@ -41,6 +37,9 @@ export default {
     };
   },
   computed: {
+    i18n() {
+      return this.plan?.code ? I18N_ADDON[this.plan.code] : {};
+    },
     emptySvgPath() {
       return `data:image/svg+xml;utf8,${encodeURIComponent(emptySvg)}`;
     },
@@ -54,14 +53,14 @@ export default {
       return Number.isFinite(this.quantity) && this.quantity > 0;
     },
     formulaText() {
-      const formulaText = this.isQuantityValid ? this.config.formula : this.config.formulaWithAlert;
+      const formulaText = this.isQuantityValid ? this.i18n.formula : this.i18n.formulaWithAlert;
       return sprintf(formulaText, {
-        quantity: formatNumber(this.config.quantityPerPack),
-        units: this.config.productUnit,
+        quantity: formatNumber(this.plan.quantityPerPack),
+        units: this.plan.productUnit,
       });
     },
     formulaTotal() {
-      const total = sprintf(this.config.formulaTotal, {
+      const total = sprintf(this.i18n.formulaTotal, {
         quantity: formatNumber(this.totalUnits),
       });
       return this.isQuantityValid ? total : '';
@@ -71,20 +70,20 @@ export default {
       return plan;
     },
     totalUnits() {
-      return this.quantity * this.config.quantityPerPack;
+      return this.quantity * this.plan.quantityPerPack;
     },
     summaryTitle() {
-      return sprintf(this.config.summaryTitle(this.quantity), { quantity: this.quantity });
+      return sprintf(this.i18n.summaryTitle(this.quantity), { quantity: this.quantity });
     },
     summaryTotal() {
-      return sprintf(this.config.summaryTotal, {
+      return sprintf(this.i18n.summaryTotal, {
         quantity: formatNumber(this.totalUnits),
       });
     },
   },
   methods: {
     pricePerUnitLabel(price) {
-      return sprintf(this.config.pricePerUnit, {
+      return sprintf(this.i18n.pricePerUnit, {
         selectedPlanPrice: price,
       });
     },
@@ -141,10 +140,10 @@ export default {
       <checkout :plan="plan">
         <template #purchase-details>
           <addon-purchase-details
-            :product-label="config.productLabel"
+            :product-label="plan.label"
             :quantity="quantity"
             :show-alert="true"
-            :alert-text="config.alertText"
+            :alert-text="i18n.alertText"
           >
             <template #formula>
               {{ formulaText }}
@@ -166,8 +165,8 @@ export default {
     >
       <order-summary
         :plan="plan"
-        :title="config.title"
-        :purchase-has-expiration="config.hasExpiration"
+        :title="i18n.title"
+        :purchase-has-expiration="plan.hasExpiration"
         @alertError="alertError"
       >
         <template #price-per-unit="{ price }">
@@ -176,8 +175,8 @@ export default {
         <template #tooltip>
           <gl-icon
             v-gl-tooltip.right
-            :title="config.tooltipNote"
-            :aria-label="config.tooltipNote"
+            :title="i18n.tooltipNote"
+            :aria-label="i18n.tooltipNote"
             role="tooltip"
             name="question"
           />
