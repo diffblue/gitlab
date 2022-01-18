@@ -1,4 +1,4 @@
-import { GlBadge, GlIcon } from '@gitlab/ui';
+import { GlBadge } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { merge } from 'lodash';
 import PipelineStatusBadge from 'ee/security_dashboard/components/shared/pipeline_status_badge.vue';
@@ -9,7 +9,6 @@ describe('Pipeline status badge', () => {
   const securityBuildsFailedPath = '/some/path/to/failed/jobs';
 
   const findGlBadge = () => wrapper.find(GlBadge);
-  const findGlIcon = () => wrapper.find(GlIcon);
 
   const createProps = (securityBuildsFailedCount) => ({ pipeline: { securityBuildsFailedCount } });
 
@@ -46,13 +45,11 @@ describe('Pipeline status badge', () => {
     it('does not display when there are 0 failed jobs', () => {
       createWrapper(createProps(0));
       expect(findGlBadge().exists()).toBe(false);
-      expect(findGlIcon().exists()).toBe(false);
     });
 
     it('does not display when there is no failed jobs count', () => {
       createWrapper();
       expect(findGlBadge().exists()).toBe(false);
-      expect(findGlIcon().exists()).toBe(false);
     });
   });
 });

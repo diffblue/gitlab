@@ -1,8 +1,8 @@
 <script>
-import { GlBadge, GlIcon } from '@gitlab/ui';
+import { GlBadge } from '@gitlab/ui';
 
 export default {
-  components: { GlBadge, GlIcon },
+  components: { GlBadge },
   props: {
     pipeline: {
       type: Object,
@@ -24,8 +24,7 @@ export default {
 </script>
 
 <template>
-  <gl-badge v-if="shouldShow" variant="danger" :href="failedPath">
-    <gl-icon name="status_failed" class="gl-mr-2" />
+  <gl-badge v-if="shouldShow" icon="status_failed" variant="danger" :href="failedPath">
     {{ n__('%d failed security job', '%d failed security jobs', failedCount) }}
   </gl-badge>
 </template>
