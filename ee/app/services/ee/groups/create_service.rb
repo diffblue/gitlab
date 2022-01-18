@@ -31,6 +31,8 @@ module EE
         if group.persisted? && create_event
           ::Groups::CreateEventWorker.perform_async(group.id, current_user.id, :created)
         end
+
+        track_verification_experiment_conversion
       end
 
       override :remove_unallowed_params
@@ -62,6 +64,13 @@ module EE
         PushRule.create(attributes.compact).tap do |push_rule|
           group.update(push_rule: push_rule)
         end
+      end
+
+      def track_verification_experiment_conversion
+        return unless group.persisted?
+        return unless group.root?
+
+        experiment(:require_verification_for_group_creation, user: current_user).track(:converted, namespace: group)
       end
     end
   end
