@@ -67,10 +67,8 @@ export default {
       return this.isQuantityValid ? total : '';
     },
     plan() {
-      return {
-        ...this.plans[0],
-        isAddon: true,
-      };
+      const [plan] = this.plans;
+      return plan;
     },
     totalUnits() {
       return this.quantity * this.config.quantityPerPack;

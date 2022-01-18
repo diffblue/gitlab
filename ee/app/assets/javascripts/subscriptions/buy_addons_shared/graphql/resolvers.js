@@ -6,10 +6,11 @@ import { ERROR_FETCHING_COUNTRIES, ERROR_FETCHING_STATES } from 'ee/subscription
 import { COUNTRY_TYPE, STATE_TYPE } from 'ee/subscriptions/buy_addons_shared/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import createFlash from '~/flash';
+import { planData } from 'ee/subscriptions/buy_addons_shared/graphql/data';
 
 // NOTE: These resolvers are temporary and will be removed in the future.
 // See https://gitlab.com/gitlab-org/gitlab/-/issues/321643
-export const resolvers = {
+export const gitLabResolvers = {
   Query: {
     countries: () => {
       return Api.fetchCountries()
@@ -41,5 +42,15 @@ export const resolvers = {
       });
       cache.writeQuery({ query: stateQuery, data: state });
     },
+  },
+};
+
+export const customersDotResolvers = {
+  Plan: {
+    hasExpiration: ({ code }) => planData[code]?.hasExpiration,
+    isAddon: ({ code }) => planData[code]?.isAddon,
+    label: ({ code }) => planData[code]?.label,
+    productUnit: ({ code }) => planData[code]?.productUnit,
+    quantityPerPack: ({ code }) => planData[code]?.quantityPerPack,
   },
 };

@@ -1,7 +1,7 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
-import { resolvers } from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
+import { gitLabResolvers } from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
 import { STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import BillingAddress from 'ee/vue_shared/purchase_flow/components/checkout/billing_address.vue';
@@ -28,7 +28,7 @@ describe('Billing Address', () => {
 
   const createComponent = (apolloLocalState = {}) => {
     const apolloProvider = createMockApolloProvider(STEPS, STEPS[1], {
-      ...resolvers,
+      ...gitLabResolvers,
       ...apolloResolvers,
     });
     apolloProvider.clients.defaultClient.cache.writeQuery({

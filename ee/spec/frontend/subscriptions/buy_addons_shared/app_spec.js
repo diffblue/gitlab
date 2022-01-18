@@ -42,7 +42,7 @@ localVue.use(VueApollo);
 describe('Buy Addons Shared App', () => {
   let wrapper;
 
-  function createComponent(apolloProvider, propsData) {
+  async function createComponent(apolloProvider, propsData) {
     wrapper = shallowMountExtended(App, {
       localVue,
       apolloProvider,
@@ -54,7 +54,7 @@ describe('Buy Addons Shared App', () => {
         SummaryDetails,
       },
     });
-    return waitForPromises();
+    await waitForPromises();
   }
 
   const STORAGE_ADDON_PROPS = {
@@ -112,10 +112,10 @@ describe('Buy Addons Shared App', () => {
 
   describe('Storage', () => {
     describe('when data is received', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         const plansQueryMock = jest.fn().mockResolvedValue({ data: { plans: mockStoragePlans } });
         const mockApollo = createMockApolloProvider({ plansQueryMock });
-        createComponent(mockApollo, STORAGE_ADDON_PROPS);
+        await createComponent(mockApollo, STORAGE_ADDON_PROPS);
       });
 
       it('should display the root element', () => {
@@ -235,10 +235,10 @@ describe('Buy Addons Shared App', () => {
 
   describe('CI Minutes', () => {
     describe('when data is received', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         const plansQueryMock = jest.fn().mockResolvedValue({ data: { plans: mockCiMinutesPlans } });
         const mockApollo = createMockApolloProvider({ plansQueryMock });
-        createComponent(mockApollo, CI_MINUTES_ADDON_PROPS);
+        await createComponent(mockApollo, CI_MINUTES_ADDON_PROPS);
       });
 
       it('should display the root element', () => {

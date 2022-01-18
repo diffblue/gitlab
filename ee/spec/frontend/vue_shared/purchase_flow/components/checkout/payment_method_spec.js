@@ -5,7 +5,7 @@ import {
   mockParsedNamespaces,
   stateData as initialStateData,
 } from 'ee_jest/subscriptions/mock_data';
-import { resolvers } from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
+import { gitLabResolvers } from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
 import { STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import PaymentMethod from 'ee/vue_shared/purchase_flow/components/checkout/payment_method.vue';
@@ -27,7 +27,7 @@ describe('Payment Method', () => {
   const isStepValid = () => wrapper.findComponent(Step).props('isValid');
   const createComponent = (apolloLocalState = {}) => {
     const apolloProvider = createMockApolloProvider(STEPS, STEPS[2], {
-      ...resolvers,
+      ...gitLabResolvers,
     });
     apolloProvider.clients.defaultClient.cache.writeQuery({
       query: stateQuery,
