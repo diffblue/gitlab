@@ -33,7 +33,7 @@ export default {
   inject: ['tags'],
   computed: {
     i18n() {
-      return this.plan?.code ? I18N_ADDON[this.plan.code] : {};
+      return this.plan?.code ? I18N_ADDON[this.plan.code] || {} : {};
     },
     emptySvgPath() {
       return `data:image/svg+xml;utf8,${encodeURIComponent(emptySvg)}`;
