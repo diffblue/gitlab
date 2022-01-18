@@ -5,17 +5,16 @@ require 'spec_helper'
 RSpec.describe Search::GroupService do
   include SearchResultHelpers
   include ProjectHelpers
-  using RSpec::Parameterized::TableSyntax
 
-  let(:user) { create(:user) }
-  let(:group) { create(:group) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:group) { create(:group) }
 
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
   end
 
   it_behaves_like 'EE search service shared examples', ::Gitlab::GroupSearchResults, ::Gitlab::Elastic::GroupSearchResults do
-    let(:scope) { create(:group) }
+    let(:scope) { group }
     let(:service) { described_class.new(user, scope, params) }
   end
 
@@ -74,6 +73,7 @@ RSpec.describe Search::GroupService do
       it 'respects visibility' do
         enable_admin_mode!(user) if admin_mode
         projects.each do |project|
+          project.update!(visibility_level: Gitlab::VisibilityLevel.level_value(project_level.to_s))
           update_feature_access_level(project, feature_access_level)
         end
         ensure_elasticsearch_index!
@@ -84,10 +84,9 @@ RSpec.describe Search::GroupService do
       end
     end
 
-    let_it_be(:group) { create(:group) }
+    let_it_be_with_reload(:project) { create(:project, namespace: group) }
+    let_it_be_with_reload(:project2) { create(:project) }
 
-    let!(:project) { create(:project, project_level, namespace: group) }
-    let!(:project2) { create(:project, project_level) }
     let(:user) { create_user_from_membership(project, membership) }
     let(:projects) { [project, project2] }
 
@@ -107,8 +106,8 @@ RSpec.describe Search::GroupService do
     end
 
     context 'blob and commit' do
-      let!(:project) { create(:project, project_level, :repository, namespace: group ) }
-      let!(:project2) { create(:project, project_level, :repository) }
+      let_it_be_with_reload(:project) { create(:project, :repository, namespace: group ) }
+      let_it_be_with_reload(:project2) { create(:project, :repository) }
 
       where(:project_level, :feature_access_level, :membership, :admin_mode, :expected_count) do
         permission_table_for_guest_feature_access_and_non_private_project_only
@@ -163,8 +162,9 @@ RSpec.describe Search::GroupService do
       end
 
       context 'on commits' do
-        let!(:project) { create(:project, project_level, :repository, namespace: group ) }
-        let!(:project2) { create(:project, project_level, :repository) }
+        let_it_be_with_reload(:project) { create(:project, :repository, namespace: group ) }
+        let_it_be_with_reload(:project2) { create(:project, :repository) }
+
         let!(:note) { create :note_on_commit, project: project }
         let!(:note2) { create :note_on_commit, project: project2, note: note.note }
 
@@ -212,7 +212,8 @@ RSpec.describe Search::GroupService do
     end
 
     context 'wiki' do
-      let!(:project) { create(:project, project_level, :wiki_repo) }
+      let_it_be_with_reload(:project) { create(:project, :wiki_repo) }
+
       let(:group) { project.namespace }
       let(:projects) { [project] }
       let(:scope) { 'wiki_blobs' }
@@ -243,8 +244,9 @@ RSpec.describe Search::GroupService do
         it "respects visibility" do
           enable_admin_mode!(user) if admin_mode
           project.update!(
-            'issues_access_level' => issues_access_level,
-            'merge_requests_access_level' => merge_requests_access_level
+            visibility_level: Gitlab::VisibilityLevel.level_value(project_level.to_s),
+            issues_access_level: issues_access_level,
+            merge_requests_access_level: merge_requests_access_level
           )
           ensure_elasticsearch_index!
 
@@ -256,7 +258,7 @@ RSpec.describe Search::GroupService do
     end
 
     context 'project' do
-      let(:project) { create(:project, project_level, namespace: group) }
+      let_it_be_with_reload(:project) { create(:project, namespace: group) }
 
       where(:project_level, :membership, :expected_count) do
         permission_table_for_project_access
@@ -264,6 +266,8 @@ RSpec.describe Search::GroupService do
 
       with_them do
         it "respects visibility" do
+          project.update!(visibility_level: Gitlab::VisibilityLevel.level_value(project_level.to_s))
+
           ElasticCommitIndexerWorker.new.perform(project.id)
           ensure_elasticsearch_index!
 
@@ -285,7 +289,6 @@ RSpec.describe Search::GroupService do
   context 'sorting', :elastic, :clean_gitlab_redis_shared_state do
     context 'issues' do
       let(:scope) { 'issues' }
-      let_it_be(:group) { create(:group) }
       let_it_be(:project) { create(:project, :public, group: group) }
 
       let!(:old_result) { create(:issue, project: project, title: 'sorted old', created_at: 1.month.ago) }
@@ -330,6 +333,8 @@ RSpec.describe Search::GroupService do
   end
 
   describe '#allowed_scopes' do
+    let(:group) { create(:group) }
+
     context 'epics scope' do
       let(:allowed_scopes) { described_class.new(user, group, {}).allowed_scopes }
 
