@@ -3,7 +3,7 @@ import { GlIntersperse } from '@gitlab/ui';
 import { n__, s__ } from '~/locale';
 import { removeUnnecessaryDashes } from '../../utils';
 import { fromYaml, humanizeNetworkPolicy } from '../policy_editor/network_policy/lib';
-import PolicyPreview from '../policy_editor/policy_preview.vue';
+import PolicyPreviewHuman from '../policy_editor/policy_preview_human.vue';
 import BasePolicy from './base_policy.vue';
 import PolicyInfoRow from './policy_info_row.vue';
 
@@ -12,11 +12,12 @@ export default {
     description: s__('SecurityOrchestration|Description'),
     network: s__('NetworkPolicies|Network'),
     status: s__('SecurityOrchestration|Status'),
+    summary: s__('SecurityOrchestration|Summary'),
   },
   components: {
     GlIntersperse,
     BasePolicy,
-    PolicyPreview,
+    PolicyPreviewHuman,
     PolicyInfoRow,
   },
   props: {
@@ -58,6 +59,10 @@ export default {
     <template #type>{{ $options.i18n.network }}</template>
 
     <template #default="{ statusLabel }">
+      <policy-info-row :label="$options.i18n.summary">
+        <policy-preview-human :policy-description="humanizedPolicy" content-class="" />
+      </policy-info-row>
+
       <div v-if="parsedYaml">
         <policy-info-row
           v-if="parsedYaml.description"
@@ -81,13 +86,6 @@ export default {
           </gl-intersperse>
         </policy-info-row>
       </div>
-
-      <policy-preview
-        class="gl-mt-4"
-        :initial-tab="initialTab"
-        :policy-yaml="policyYaml"
-        :policy-description="humanizedPolicy"
-      />
     </template>
   </base-policy>
 </template>

@@ -23593,9 +23593,6 @@ msgstr ""
 msgid "NetworkPolicies|%{strongOpen}any%{strongClose} port"
 msgstr ""
 
-msgid "NetworkPolicies|.yaml"
-msgstr ""
-
 msgid "NetworkPolicies|.yaml mode"
 msgstr ""
 
@@ -23672,9 +23669,6 @@ msgid "NetworkPolicies|Policy %{policyName} was successfully changed"
 msgstr ""
 
 msgid "NetworkPolicies|Policy definition"
-msgstr ""
-
-msgid "NetworkPolicies|Rule"
 msgstr ""
 
 msgid "NetworkPolicies|Rule mode"
@@ -31913,6 +31907,9 @@ msgid "SecurityOrchestration|Sorry, your filter produced no results."
 msgstr ""
 
 msgid "SecurityOrchestration|Status"
+msgstr ""
+
+msgid "SecurityOrchestration|Summary"
 msgstr ""
 
 msgid "SecurityOrchestration|The %{scanners} %{severities} in an open merge request targeting %{branches}."

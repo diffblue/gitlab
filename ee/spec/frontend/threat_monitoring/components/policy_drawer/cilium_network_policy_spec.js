@@ -2,7 +2,7 @@ import { GlIntersperse } from '@gitlab/ui';
 import BasePolicy from 'ee/threat_monitoring/components/policy_drawer/base_policy.vue';
 import CiliumNetworkPolicy from 'ee/threat_monitoring/components/policy_drawer/cilium_network_policy.vue';
 import { toYaml } from 'ee/threat_monitoring/components/policy_editor/network_policy/lib';
-import PolicyPreview from 'ee/threat_monitoring/components/policy_editor/policy_preview.vue';
+import PolicyPreviewHuman from 'ee/threat_monitoring/components/policy_editor/policy_preview_human.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 describe('CiliumNetworkPolicy component', () => {
@@ -15,7 +15,7 @@ describe('CiliumNetworkPolicy component', () => {
   });
   const unsupportedYaml = 'unsupportedPrimaryKey: test';
 
-  const findPolicyPreview = () => wrapper.findComponent(PolicyPreview);
+  const findPolicyPreview = () => wrapper.findComponent(PolicyPreviewHuman);
   const findDescription = () => wrapper.findByTestId('description');
   const findEnvironments = () => wrapper.findByTestId('environments');
 
@@ -40,7 +40,7 @@ describe('CiliumNetworkPolicy component', () => {
       factory({ propsData: { policy: { yaml: supportedYaml } } });
     });
 
-    it('renders policy preview tabs', () => {
+    it('renders policy preview', () => {
       expect(wrapper.find('div').element).toMatchSnapshot();
     });
 
@@ -50,11 +50,9 @@ describe('CiliumNetworkPolicy component', () => {
     });
 
     it('does render the policy preview', () => {
-      expect(findPolicyPreview().exists()).toBe(true);
       expect(findPolicyPreview().props()).toStrictEqual({
-        initialTab: 0,
+        contentClass: '',
         policyDescription: 'Deny all traffic',
-        policyYaml: supportedYaml,
       });
     });
   });
@@ -64,7 +62,7 @@ describe('CiliumNetworkPolicy component', () => {
       factory({ propsData: { policy: { yaml: unsupportedYaml } } });
     });
 
-    it('renders policy preview tabs', () => {
+    it('renders policy preview', () => {
       expect(wrapper.find('div').element).toMatchSnapshot();
     });
 
@@ -75,9 +73,8 @@ describe('CiliumNetworkPolicy component', () => {
     it('does render the policy preview', () => {
       expect(findPolicyPreview().exists()).toBe(true);
       expect(findPolicyPreview().props()).toStrictEqual({
-        initialTab: 1,
+        contentClass: '',
         policyDescription: null,
-        policyYaml: unsupportedYaml,
       });
     });
   });

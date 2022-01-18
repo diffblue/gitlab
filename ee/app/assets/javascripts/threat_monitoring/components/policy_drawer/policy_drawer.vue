@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlDrawer } from '@gitlab/ui';
+import { GlButton, GlDrawer, GlTabs, GlTab } from '@gitlab/ui';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { getContentWrapperHeight, removeUnnecessaryDashes } from '../../utils';
 import { POLICIES_LIST_CONTAINER_CLASS, POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
@@ -17,6 +17,8 @@ export default {
   components: {
     GlButton,
     GlDrawer,
+    GlTab,
+    GlTabs,
     PolicyYamlEditor: () =>
       import(/* webpackChunkName: 'policy_yaml_editor' */ '../policy_yaml_editor.vue'),
     CiliumNetworkPolicy,
@@ -70,7 +72,7 @@ export default {
     v-on="$listeners"
   >
     <template v-if="policy" #title>
-      <h3 class="gl-my-0">{{ policy.name }}</h3>
+      <h3 class="gl-my-0 gl-mr-3">{{ policy.name }}</h3>
     </template>
     <template v-if="policy" #header>
       <gl-button
@@ -82,15 +84,24 @@ export default {
         >{{ s__('NetworkPolicies|Edit policy') }}</gl-button
       >
     </template>
-    <div v-if="policy">
-      <component :is="policyComponent" v-if="policyComponent" :policy="policy" />
-      <div v-else>
-        <h5>{{ s__('NetworkPolicies|Policy definition') }}</h5>
-        <p>
-          {{ s__("NetworkPolicies|Define this policy's location, conditions and actions.") }}
-        </p>
-        <policy-yaml-editor :value="policyYaml" data-testid="policy-yaml-editor" />
-      </div>
-    </div>
+    <gl-tabs v-if="policy" class="gl-p-0!" justified content-class="gl-py-0" lazy>
+      <gl-tab title="Details" class="gl-mt-5 gl-ml-6 gl-mr-3">
+        <component :is="policyComponent" v-if="policyComponent" :policy="policy" />
+        <div v-else>
+          <h5>{{ s__('NetworkPolicies|Policy definition') }}</h5>
+          <p>
+            {{ s__("NetworkPolicies|Define this policy's location, conditions and actions.") }}
+          </p>
+          <policy-yaml-editor :value="policyYaml" data-testid="default-policy-yaml-editor" />
+        </div>
+      </gl-tab>
+      <gl-tab v-if="policyComponent" title="Yaml">
+        <policy-yaml-editor
+          class="gl-h-100vh"
+          :value="policyYaml"
+          data-testid="policy-yaml-editor-tab-content"
+        />
+      </gl-tab>
+    </gl-tabs>
   </gl-drawer>
 </template>
