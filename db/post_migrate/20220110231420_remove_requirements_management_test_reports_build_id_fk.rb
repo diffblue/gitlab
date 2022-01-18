@@ -7,6 +7,7 @@ class RemoveRequirementsManagementTestReportsBuildIdFk < Gitlab::Database::Migra
 
   def up
     with_lock_retries do
+      execute('LOCK ci_builds, requirements_management_test_reports IN ACCESS EXCLUSIVE MODE')
       remove_foreign_key_if_exists(:requirements_management_test_reports, :ci_builds, name: CONSTRAINT_NAME)
     end
   end
