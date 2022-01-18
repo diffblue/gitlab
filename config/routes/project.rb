@@ -158,6 +158,7 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
             get 'milestones'
             get 'commands'
             get 'snippets'
+            get 'contacts'
           end
         end
 
