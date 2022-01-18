@@ -94,14 +94,14 @@ RSpec.describe 'epics list', :js do
         sort_options = find('ul.dropdown-menu-sort li').all('a').collect(&:text)
 
         expect(sort_options[0]).to eq('Created date')
-        expect(sort_options[1]).to eq('Last updated')
+        expect(sort_options[1]).to eq('Updated date')
         expect(sort_options[2]).to eq('Start date')
         expect(sort_options[3]).to eq('Due date')
 
-        click_link 'Last updated'
+        click_link 'Updated date'
       end
 
-      expect(page).to have_button('Last updated')
+      expect(page).to have_button('Updated date')
 
       page.within('.content-wrapper .content') do
         expect(find('.top-area')).to have_content('All 3')
@@ -123,7 +123,7 @@ RSpec.describe 'epics list', :js do
 
       visit group_epics_path(group)
 
-      expect(page).to have_button('Last updated')
+      expect(page).to have_button('Updated date')
     end
 
     it 'renders the epic detail correctly after clicking the link' do
