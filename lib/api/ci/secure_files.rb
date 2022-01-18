@@ -37,7 +37,6 @@ module API
         route_setting :authentication, basic_auth_personal_access_token: true, job_token_allowed: true
         get ':id/secure_files/:secure_file_id' do
           secure_file = user_project.secure_files.find(params[:secure_file_id])
-          not_found!('Secure File') unless secure_file
           present secure_file, with: Entities::Ci::SecureFile
         end
 
@@ -45,7 +44,6 @@ module API
         route_setting :authentication, basic_auth_personal_access_token: true, job_token_allowed: true
         get ':id/secure_files/:secure_file_id/download' do
           secure_file = user_project.secure_files.find(params[:secure_file_id])
-          not_found!('Secure File') unless secure_file
 
           content_type 'application/octet-stream'
           env['api.format'] = :binary
@@ -69,8 +67,7 @@ module API
 
           secure_file.file = params[:file]
 
-          if secure_file.valid?
-            secure_file.save!
+          if secure_file.save
             present secure_file, with: Entities::Ci::SecureFile
           else
             render_validation_error!(secure_file)
@@ -81,8 +78,6 @@ module API
         route_setting :authentication, basic_auth_personal_access_token: true, job_token_allowed: true
         delete ':id/secure_files/:secure_file_id' do
           secure_file = user_project.secure_files.find(params[:secure_file_id])
-
-          not_found!('Secure File') unless secure_file
 
           secure_file.destroy!
 

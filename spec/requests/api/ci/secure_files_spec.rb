@@ -75,6 +75,43 @@ RSpec.describe API::Ci::SecureFiles do
     end
   end
 
+  describe 'GET /projects/:id/secure_files/:secure_file_id/download' do
+    context 'authorized user with proper permissions' do
+      it 'returns a secure file' do
+        sample_file = fixture_file('ci_secure_files/upload-keystore.jks')
+        secure_file.file = CarrierWaveStringFile.new(sample_file)
+        secure_file.save!
+
+        get api("/projects/#{project.id}/secure_files/#{secure_file.id}/download", user)
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(Base64.encode64(response.body)).to eq(Base64.encode64(sample_file))
+      end
+
+      it 'responds with 404 Not Found if requesting non-existing secure file' do
+        get api("/projects/#{project.id}/secure_files/99999/download", user)
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
+    context 'authorized user with invalid permissions' do
+      it 'does not return project secure file details' do
+        get api("/projects/#{project.id}/secure_files/#{secure_file.id}/download", user2)
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+
+    context 'unauthorized user' do
+      it 'does not return project secure file details' do
+        get api("/projects/#{project.id}/secure_files/#{secure_file.id}/download")
+
+        expect(response).to have_gitlab_http_status(:unauthorized)
+      end
+    end
+  end
+
   describe 'POST /projects/:id/secure_files' do
     context 'authorized user with proper permissions' do
       it 'creates a secure file' do
