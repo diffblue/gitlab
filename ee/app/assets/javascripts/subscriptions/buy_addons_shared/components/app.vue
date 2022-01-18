@@ -24,18 +24,13 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
-  props: {
-    tags: {
-      required: true,
-      type: Array,
-    },
-  },
   data() {
     return {
       hasError: false,
       alertMessage: '',
     };
   },
+  inject: ['tags'],
   computed: {
     i18n() {
       return this.plan?.code ? I18N_ADDON[this.plan.code] : {};
