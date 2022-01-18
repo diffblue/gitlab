@@ -13,6 +13,10 @@ module Gitlab
             assign_stage_metadata
           end
 
+          def identifier
+            self.class.name.demodulize.underscore.to_sym
+          end
+
           def value
             @value ||= Gitlab::CycleAnalytics::Summary::Value::PrettyNumeric.new(data_collector.median.days&.round(1))
           end
