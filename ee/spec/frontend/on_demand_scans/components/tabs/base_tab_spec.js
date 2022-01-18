@@ -18,6 +18,8 @@ import { scrollToElement } from '~/lib/utils/common_utils';
 import setWindowLocation from 'helpers/set_window_location_helper';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { BASE_TABS_TABLE_FIELDS, PIPELINES_POLL_INTERVAL } from 'ee/on_demand_scans/constants';
+import * as graphQlUtils from '~/pipelines/components/graph/utils';
+import { PROJECT_ON_DEMAND_SCAN_COUNTS_ETAG_MOCK } from '../../mocks';
 
 jest.mock('~/lib/utils/common_utils');
 
@@ -86,6 +88,7 @@ describe('BaseTab', () => {
           },
           provide: {
             projectPath,
+            projectOnDemandScanCountsEtag: PROJECT_ON_DEMAND_SCAN_COUNTS_ETAG_MOCK,
           },
           stubs: {
             GlTab: stubComponent(GlTab, {
@@ -122,6 +125,16 @@ describe('BaseTab', () => {
   });
 
   describe('when the app loads', () => {
+    it('controls the pipelines query with a visibility check', () => {
+      jest.spyOn(graphQlUtils, 'toggleQueryPollingByVisibility');
+      createComponent();
+
+      expect(graphQlUtils.toggleQueryPollingByVisibility).toHaveBeenCalledWith(
+        wrapper.vm.$apollo.queries.pipelines,
+        PIPELINES_POLL_INTERVAL,
+      );
+    });
+
     it('fetches the pipelines', () => {
       createComponent();
 
@@ -132,6 +145,15 @@ describe('BaseTab', () => {
         fullPath: projectPath,
         last: null,
       });
+    });
+
+    it('computes the ETag header', () => {
+      jest.spyOn(graphQlUtils, 'getQueryHeaders');
+      createComponent();
+
+      expect(graphQlUtils.getQueryHeaders).toHaveBeenCalledWith(
+        PROJECT_ON_DEMAND_SCAN_COUNTS_ETAG_MOCK,
+      );
     });
 
     it('polls for pipelines as long as the tab is active', async () => {

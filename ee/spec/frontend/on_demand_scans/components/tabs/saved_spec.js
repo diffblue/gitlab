@@ -15,6 +15,7 @@ import { s__ } from '~/locale';
 import ScanTypeBadge from 'ee/security_configuration/dast_profiles/components/dast_scan_type_badge.vue';
 import flushPromises from 'helpers/flush_promises';
 import { redirectTo } from '~/lib/utils/url_utility';
+import { PROJECT_ON_DEMAND_SCAN_COUNTS_ETAG_MOCK } from '../../mocks';
 
 Vue.use(VueApollo);
 
@@ -86,6 +87,7 @@ describe('Saved tab', () => {
           },
           provide: {
             projectPath,
+            projectOnDemandScanCountsEtag: PROJECT_ON_DEMAND_SCAN_COUNTS_ETAG_MOCK,
           },
           stubs: {
             BaseTab,
