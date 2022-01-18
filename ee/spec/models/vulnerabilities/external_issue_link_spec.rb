@@ -45,4 +45,12 @@ RSpec.describe Vulnerabilities::ExternalIssueLink do
       end
     end
   end
+
+  describe 'created_for_vulnerability' do
+    let_it_be(:external_links) { create_list(:vulnerabilities_external_issue_link, 2, :created) }
+
+    it 'gets external issue links for the specified vulnerability' do
+      expect(described_class.created_for_vulnerability(external_links.first.vulnerability).take).to eq(external_links.first)
+    end
+  end
 end
