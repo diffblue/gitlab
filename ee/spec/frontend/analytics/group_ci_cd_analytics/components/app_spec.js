@@ -3,6 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import { merge } from 'lodash';
 import CiCdAnalyticsApp from 'ee/analytics/group_ci_cd_analytics/components/app.vue';
 import ReleaseStatsCard from 'ee/analytics/group_ci_cd_analytics/components/release_stats_card.vue';
+import SharedRunnersUsage from 'ee/analytics/group_ci_cd_analytics/components/shared_runner_usage.vue';
 import DeploymentFrequencyCharts from 'ee/dora/components/deployment_frequency_charts.vue';
 import LeadTimeCharts from 'ee/dora/components/lead_time_charts.vue';
 import setWindowLocation from 'helpers/set_window_location_helper';
@@ -44,10 +45,11 @@ describe('ee/analytics/group_ci_cd_analytics/components/app.vue', () => {
 
       it('renders tabs in the correct order', () => {
         expect(findGlTabs().exists()).toBe(true);
-        expect(findAllGlTabs().length).toBe(3);
+        expect(findAllGlTabs().length).toBe(4);
         expect(findGlTabAtIndex(0).attributes('title')).toBe('Release statistics');
         expect(findGlTabAtIndex(1).attributes('title')).toBe('Deployment frequency');
         expect(findGlTabAtIndex(2).attributes('title')).toBe('Lead time');
+        expect(findGlTabAtIndex(3).attributes('title')).toBe('Shared runner usage');
       });
     });
 
@@ -56,12 +58,12 @@ describe('ee/analytics/group_ci_cd_analytics/components/app.vue', () => {
         createComponent({ provide: { shouldRenderDoraCharts: false } });
       });
 
-      it('does not render any tabs', () => {
-        expect(findGlTabs().exists()).toBe(false);
-      });
-
       it('renders the release statistics component', () => {
         expect(wrapper.findComponent(ReleaseStatsCard).exists()).toBe(true);
+      });
+
+      it('renders the shared runner usage component', () => {
+        expect(wrapper.findComponent(SharedRunnersUsage).exists()).toBe(true);
       });
     });
   });
