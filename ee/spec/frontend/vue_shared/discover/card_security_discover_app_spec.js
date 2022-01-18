@@ -22,7 +22,6 @@ describe('Card security discover app', () => {
       },
       linkMain: '/link/main',
       linkSecondary: '/link/secondary',
-      linkFeedback: 'link/feedback',
     };
     wrapper = mountFn(CardSecurityDiscoverApp, {
       localVue,
@@ -57,10 +56,6 @@ describe('Card security discover app', () => {
       expect(wrapper.find('.discover-title').html()).toContain(
         'Security capabilities, integrated into your development lifecycle',
       );
-    });
-
-    it('renders discover feedback link properly', () => {
-      expect(wrapper.find('.discover-button-feedback').html()).toContain('Send feedback');
     });
 
     it('renders discover upgrade links properly', () => {
@@ -105,15 +100,6 @@ describe('Card security discover app', () => {
         expect(spy).toHaveBeenCalledWith(expectedCategory, 'click_button', {
           label: 'security-discover-carousel',
           property: 'sliding0-1',
-        });
-      });
-
-      it('tracks an event when clicked on feedback', () => {
-        wrapper.find('.discover-button-feedback').trigger('click');
-
-        expect(spy).toHaveBeenCalledWith('_category_', 'click_button', {
-          label: 'security-discover-feedback-cta',
-          property: '0',
         });
       });
     });

@@ -50,11 +50,6 @@ export default {
       required: false,
       default: '',
     },
-    linkFeedback: {
-      type: String,
-      required: false,
-      default: '',
-    },
   },
   data() {
     return {
@@ -90,7 +85,6 @@ export default {
     discoverTitle: s__(
       'Discover|Security capabilities, integrated into your development lifecycle',
     ),
-    discoverFeedbackLabel: s__('Discover|Send feedback'),
     discoverUpgradeLabel: s__('Discover|Upgrade now'),
     discoverTrialLabel: s__('Discover|Start a free trial'),
     carouselCaptions: [
@@ -187,21 +181,6 @@ export default {
         :href="linkMain"
       >
         {{ $options.i18n.discoverTrialLabel }}
-      </gl-button>
-    </div>
-    <div id="tooltipcontainer" class="discover-feedback gl-fixed">
-      <gl-button
-        class="discover-button-feedback"
-        category="secondary"
-        variant="default"
-        target="_blank"
-        rel="noopener noreferrer"
-        data-track-action="click_button"
-        data-track-label="security-discover-feedback-cta"
-        :data-track-property="slide"
-        :href="linkFeedback"
-      >
-        {{ $options.i18n.discoverFeedbackLabel }}
       </gl-button>
     </div>
   </div>

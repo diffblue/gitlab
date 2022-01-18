@@ -19,8 +19,7 @@ module Projects::Security::DiscoverHelper
       },
       link: {
         main: new_trial_registration_path(glm_source: 'gitlab.com', glm_content: content),
-        secondary: link_upgrade,
-        feedback: 'https://gitlab.com/gitlab-org/growth/ui-ux/issues/25'
+        secondary: link_upgrade
       }
     }
 
