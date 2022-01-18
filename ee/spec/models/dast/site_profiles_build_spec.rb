@@ -27,4 +27,9 @@ RSpec.describe Dast::SiteProfilesBuild, type: :model do
       end
     end
   end
+
+  it_behaves_like 'cleanup by a loose foreign key' do
+    let!(:model) { create(:dast_site_profiles_build) }
+    let(:parent) { model.ci_build }
+  end
 end
