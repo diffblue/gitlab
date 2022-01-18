@@ -268,7 +268,7 @@ RSpec.describe SearchHelper do
     }
 
     mock_updated_sort = {
-      title: _('Last updated'),
+      title: _('Updated date'),
       sortable: true,
       sortParam: {
         asc: 'updated_asc',
