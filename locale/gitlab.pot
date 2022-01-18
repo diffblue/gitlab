@@ -42705,7 +42705,7 @@ msgstr ""
 msgid "mrWidget|Merge blocked: this merge request must be approved."
 msgstr ""
 
-msgid "mrWidget|Merge blocked: you can only merge once above items are resolved."
+msgid "mrWidget|Merge blocked: you can only merge after the above items are resolved."
 msgstr ""
 
 msgid "mrWidget|Merge failed."
