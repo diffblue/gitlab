@@ -583,8 +583,9 @@ RSpec.describe API::Issues, :mailer do
     let(:file) { fixture_file_upload('spec/fixtures/rails_sample.jpg', 'image/jpg') }
     let(:file_name) { 'rails_sample.jpg' }
     let(:url) { 'http://gitlab.com' }
+    let(:url_text) { 'GitLab' }
 
-    let(:params) { { url: url } }
+    let(:params) { { url: url, url_text: url_text } }
 
     subject do
       workhorse_finalize(
@@ -604,6 +605,7 @@ RSpec.describe API::Issues, :mailer do
         expect(response).to have_gitlab_http_status(:created)
         expect(json_response['filename']).to eq(file_name)
         expect(json_response['url']).to eq(url)
+        expect(json_response['url_text']).to eq(url_text)
         expect(json_response['file_path']).to match(%r{/uploads/-/system/issuable_metric_image/file/[\d+]/#{file_name}})
         expect(json_response['created_at']).not_to be_nil
         expect(json_response['id']).not_to be_nil
@@ -701,7 +703,8 @@ RSpec.describe API::Issues, :mailer do
             created_at: image.created_at.strftime('%Y-%m-%dT%H:%M:%S.%LZ'),
             filename: image.filename,
             file_path: image.file_path,
-            url: image.url
+            url: image.url,
+            url_text: nil
           }.with_indifferent_access
         )
       end

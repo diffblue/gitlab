@@ -34,6 +34,7 @@ module EE
             params do
               requires :file, type: ::API::Validations::Types::WorkhorseFile, desc: 'The image file to be uploaded'
               optional :url, type: String, desc: 'The url to view more metric info'
+              optional :url_text, type: String, desc: 'A description of the image or URL'
             end
             post do
               require_gitlab_workhorse!
@@ -44,7 +45,7 @@ module EE
               upload = ::IncidentManagement::Incidents::UploadMetricService.new(
                 issue,
                 current_user,
-                params.slice(:file, :url)
+                params.slice(:file, :url, :url_text)
               ).execute
 
               if upload.success?

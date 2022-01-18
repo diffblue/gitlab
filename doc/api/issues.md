@@ -2422,10 +2422,11 @@ POST /projects/:id/issues/:issue_iid/metric_images
 | `issue_iid` | integer | yes      | The internal ID of a project's issue |
 | `file` | file | yes      | The image file to be uploaded |
 | `url` | string | no      | The URL to view more metric information |
+| `url_text` | string | no      | A description of the image or URL |
 
 ```shell
 curl --header "PRIVATE-TOKEN: <your_access_token>" --form 'file=@/path/to/file.png' \
---form 'url=http://example.com' "https://gitlab.example.com/api/v4/projects/5/issues/93/metric_images"
+--form 'url=http://example.com' --form 'url_text=Example website' "https://gitlab.example.com/api/v4/projects/5/issues/93/metric_images"
 ```
 
 Example response:
@@ -2436,7 +2437,8 @@ Example response:
     "created_at": "2020-11-13T00:06:18.084Z",
     "filename": "file.png",
     "file_path": "/uploads/-/system/issuable_metric_image/file/23/file.png",
-    "url": "http://example.com"
+    "url": "http://example.com",
+    "url_text": "Example website"
 }
 ```
 
