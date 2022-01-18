@@ -41,9 +41,10 @@ module Gitlab
           if log_untrusted_ruby_regexp?(project)
             Gitlab::AppJsonLogger.info(
               class: self.class.name,
+              regexp: pattern.to_s
+              fabricated: 'unsafe ruby regexp',
               project_id: project.id,
               project_path: project.full_path,
-              regexp: pattern.to_s
             )
           end
 
