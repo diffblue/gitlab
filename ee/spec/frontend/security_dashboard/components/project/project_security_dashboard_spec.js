@@ -5,6 +5,7 @@ import VueApollo from 'vue-apollo';
 import ProjectSecurityDashboard from 'ee/security_dashboard/components/project/project_security_dashboard.vue';
 import ReportNotConfigured from 'ee/security_dashboard/components/shared/empty_states/report_not_configured_project.vue';
 import SecurityDashboardLayout from 'ee/security_dashboard/components/shared/security_dashboard_layout.vue';
+import SecurityTrainingPromo from 'ee/security_dashboard/components/shared/security_training_promo.vue';
 import projectsHistoryQuery from 'ee/security_dashboard/graphql/queries/project_vulnerabilities_by_day_and_count.query.graphql';
 import { useFakeDate } from 'helpers/fake_date';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -26,15 +27,21 @@ describe('Project Security Dashboard component', () => {
   const projectFullPath = 'project/path';
   const helpPath = 'docs/security/dashboard';
 
-  const findLineChart = () => wrapper.find(GlLineChart);
-  const findLoadingIcon = () => wrapper.find(GlLoadingIcon);
-  const findEmptyState = () => wrapper.find(ReportNotConfigured);
+  const findLineChart = () => wrapper.findComponent(GlLineChart);
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findEmptyState = () => wrapper.findComponent(ReportNotConfigured);
+  const findSecurityTrainingPromo = () => wrapper.findComponent(SecurityTrainingPromo);
 
   const createApolloProvider = (...queries) => {
     return createMockApollo([...queries]);
   };
 
-  const createComponent = ({ query, propsData, chartWidth = 1024 }) => {
+  const createComponent = ({
+    query,
+    propsData,
+    chartWidth = 1024,
+    secureVulnerabilityTrainingEnabled = true,
+  }) => {
     const component = shallowMount(ProjectSecurityDashboard, {
       localVue,
       apolloProvider: createApolloProvider([
@@ -49,6 +56,9 @@ describe('Project Security Dashboard component', () => {
       provide: {
         // To be consumed by SecurityDashboardLayout
         sbomSurveySvgPath: '/',
+        glFeatures: {
+          secureVulnerabilityTraining: secureVulnerabilityTrainingEnabled,
+        },
       },
       stubs: {
         SecurityDashboardLayout,
@@ -125,6 +135,10 @@ describe('Project Security Dashboard component', () => {
         startValue: '2021-03-12',
       });
     });
+
+    it('contains a promotion for the security training feature', () => {
+      expect(findSecurityTrainingPromo().exists()).toBe(true);
+    });
   });
 
   describe('when there is no history data', () => {
@@ -167,6 +181,20 @@ describe('Project Security Dashboard component', () => {
 
     it('should display the loading icon', () => {
       expect(findLoadingIcon().exists()).toBe(true);
+    });
+  });
+
+  describe('with the "secureVulnerabilityTraining" feature flag disabled', () => {
+    it('does not contain a promotion for the security training feature', async () => {
+      wrapper = createComponent({
+        query: mockProjectSecurityChartsWithData(),
+        propsData: { hasVulnerabilities: true },
+        secureVulnerabilityTrainingEnabled: false,
+      });
+
+      await wrapper.vm.$nextTick();
+
+      expect(findSecurityTrainingPromo().exists()).toBe(false);
     });
   });
 });
