@@ -17,6 +17,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { stubComponent } from 'helpers/stub_component';
+import { parseViolationsQueryFilter } from 'ee/compliance_dashboard/utils';
 
 Vue.use(VueApollo);
 
@@ -26,10 +27,12 @@ describe('ComplianceReport component', () => {
 
   const mergeCommitsCsvExportPath = '/csv';
   const groupPath = 'group-path';
+  const createdAfter = '2021-11-16';
+  const createdBefore = '2021-12-15';
   const defaultQuery = {
-    projectIds: ['gid://gitlab/Project/20'],
-    createdAfter: '2021-11-16',
-    createdBefore: '2021-12-15',
+    projectIds: ['20'],
+    createdAfter,
+    createdBefore,
   };
   const mockGraphQlError = new Error('GraphQL networkError');
 
@@ -53,6 +56,13 @@ describe('ComplianceReport component', () => {
     await findViolationsTable().findAll('tbody > tr').at(idx).trigger('click');
     await nextTick();
   };
+
+  const expectApolloVariables = (variables) => [
+    {},
+    variables,
+    expect.anything(),
+    expect.anything(),
+  ];
 
   function createMockApolloProvider() {
     return createMockApollo([], { Query: { group: mockResolver } });
@@ -110,12 +120,23 @@ describe('ComplianceReport component', () => {
 
   describe('when initializing', () => {
     beforeEach(() => {
+      mockResolver = jest.fn();
       wrapper = createComponent(mount);
     });
 
     it('renders the table loading icon', () => {
       expect(findViolationsTable().exists()).toBe(true);
       expect(findTableLoadingIcon().exists()).toBe(true);
+    });
+
+    it('fetches the list of merge request violations with the filter query', async () => {
+      expect(mockResolver).toHaveBeenCalledTimes(1);
+      expect(mockResolver).toHaveBeenCalledWith(
+        ...expectApolloVariables({
+          fullPath: groupPath,
+          filter: parseViolationsQueryFilter(defaultQuery),
+        }),
+      );
     });
   });
 
@@ -244,6 +265,13 @@ describe('ComplianceReport component', () => {
     });
 
     describe('violation filter', () => {
+      beforeEach(() => {
+        mockResolver = jest.fn().mockReturnValue(resolvers.Query.group());
+        wrapper = createComponent(mount);
+
+        return waitForPromises();
+      });
+
       it('configures the filter', () => {
         expect(findViolationFilter().props()).toMatchObject({
           groupPath,
@@ -251,20 +279,37 @@ describe('ComplianceReport component', () => {
         });
       });
 
-      it('updates the URL query when the filters changed', async () => {
-        const query = { foo: 'bar', projectIds: [1, 2, 3] };
+      describe('when the filters changed', () => {
+        const query = { createdAfter, createdBefore, projectIds: [1, 2, 3] };
 
-        await findViolationFilter().vm.$emit('filters-changed', query);
+        beforeEach(() => {
+          return findViolationFilter().vm.$emit('filters-changed', query);
+        });
 
-        expect(findUrlSync().props('query')).toMatchObject(query);
-      });
+        it('updates the URL query', () => {
+          expect(findUrlSync().props('query')).toMatchObject(query);
+        });
 
-      it('clears the project URL query param when the filters changed and the project array is empty', async () => {
-        const query = { foo: 'bar', projectIds: [] };
+        it('shows the table loading icon', () => {
+          expect(findTableLoadingIcon().exists()).toBe(true);
+        });
 
-        await findViolationFilter().vm.$emit('filters-changed', query);
+        it('clears the project URL query param if the project array is empty', async () => {
+          await findViolationFilter().vm.$emit('filters-changed', { ...query, projectIds: [] });
 
-        expect(findUrlSync().props('query')).toMatchObject({ ...query, projectIds: null });
+          expect(findUrlSync().props('query')).toMatchObject({ ...query, projectIds: null });
+        });
+
+        it('fetches the filtered violations', async () => {
+          expect(mockResolver).toHaveBeenCalledTimes(2);
+          expect(mockResolver).toHaveBeenNthCalledWith(
+            2,
+            ...expectApolloVariables({
+              fullPath: groupPath,
+              filter: parseViolationsQueryFilter(query),
+            }),
+          );
+        });
       });
     });
   });
