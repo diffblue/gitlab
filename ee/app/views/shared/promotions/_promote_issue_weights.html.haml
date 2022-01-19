@@ -24,7 +24,7 @@
             = s_('Promotions|When you have a lot of issues, it can be hard to get an overview. By adding a weight to your issues, you can get a better idea of the effort, cost, required time, or value of each, and so better manage them.')
           %p
             - if Gitlab::CurrentSettings.should_check_namespace_plan?
-              - subscription_link_url = EE::SUBSCRIPTIONS_PLANS_URL
+              - subscription_link_url = Gitlab::Saas.about_pricing_url
               - subscription_link_start = '<a href="%{url}" target="_blank" class="btn-link tr-issue-weights-bronze-features-cta">'.html_safe % { url: subscription_link_url }
               = s_("Promotions|See the other features in the %{subscription_link_start}Premium plan%{subscription_link_end}").html_safe % { subscription_link_start: subscription_link_start, subscription_link_end: '</a>'.html_safe }
             - else

@@ -7,7 +7,6 @@ module EE
   SUBSCRIPTIONS_MORE_MINUTES_URL = ::Gitlab::SubscriptionPortal.subscriptions_more_minutes_url.freeze
   SUBSCRIPTIONS_MORE_STORAGE_URL = ::Gitlab::SubscriptionPortal.subscriptions_more_storage_url.freeze
   SUBSCRIPTIONS_MANAGE_URL = ::Gitlab::SubscriptionPortal.subscriptions_manage_url.freeze
-  SUBSCRIPTIONS_PLANS_URL = ::Gitlab::SubscriptionPortal.subscriptions_plans_url.freeze
   SUBSCRIPTIONS_GITLAB_PLANS_URL = ::Gitlab::SubscriptionPortal.subscriptions_gitlab_plans_url.freeze
   SUBSCRIPTIONS_EDIT_ACCOUNT_URL = ::Gitlab::SubscriptionPortal.edit_account_url.freeze
   SUBSCRIPTION_PORTAL_ADMIN_EMAIL = ::Gitlab::SubscriptionPortal.subscription_portal_admin_email.freeze
