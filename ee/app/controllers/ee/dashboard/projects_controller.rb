@@ -33,13 +33,6 @@ module EE
              .with_group_saml_provider
       end
 
-      override :load_projects
-      def load_projects(finder_params)
-        @removed_projects_count = ::ProjectsFinder.new(params: finder_params_for_removed, current_user: current_user).execute # rubocop:disable Gitlab/ModuleWithInstanceVariables
-
-        super
-      end
-
       def check_adjourned_deletion_listing_availability
         return render_404 unless can?(current_user, :list_removable_projects)
       end

@@ -45,12 +45,6 @@ RSpec.describe Dashboard::ProjectsController do
 
           expect(assigns(:projects).count).to eq(1)
         end
-
-        it 'accounts total removable projects' do
-          subject
-
-          expect(assigns(:removed_projects_count).count).to eq(2)
-        end
       end
 
       context 'for non-admin users', :saas do
@@ -89,13 +83,14 @@ RSpec.describe Dashboard::ProjectsController do
 
           with_them do
             before do
+              allow(Kaminari.config).to receive(:default_per_page).and_return(10)
               stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan)
             end
 
             it 'accounts total removable projects' do
               subject
 
-              expect(assigns(:removed_projects_count).count).to eq(removed_projects_count)
+              expect(assigns(:projects).count).to eq(removed_projects_count)
             end
           end
         end
