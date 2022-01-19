@@ -16,7 +16,7 @@ same service. GitLab Runner written in Go turned out to be easier to use by the
 wider community, it was more efficient and reliable than the previous,
 Ruby-based, version.
 
-In February 2016 Kamil Trzciński implemented an auto-scaling feature to
+In February 2016 Kamil Trzciński [implemented an auto-scaling feature](https://gitlab.com/gitlab-org/gitlab-runner/-/merge_requests/53) to
 leverage cloud infrastructure to run many CI/CD jobs in parallel. This feature
 has become a foundation supporting CI/CD adoption on GitLab.com over the years,
 where we now run around 4 million builds per day at peak.
@@ -33,12 +33,12 @@ This design choice was crucial for the GitLab Runner success. Since that time
 the auto-scaling feature has been used by many users and customers and enabled
 rapid growth of CI/CD adoption on GitLab.com.
 
-We can not, however, continue using Docker Machine. Work on that project was
-paused in July 2018 and there was no development made since that time (except
+We can not, however, continue using Docker Machine. Work on that project [was
+paused in July 2018](https://github.com/docker/machine/issues/4537) and there was no development made since that time (except
 for some highly important security fixes). In 2018, after Docker Machine
-entered the “maintenance mode”, we decided to create our own fork to be able to
-keep using this and ship fixes and updates needed for our use case. On
-September 26th, 2021 the project got archived and the documentation for it has
+entered the “maintenance mode”, we decided to create [our own fork](https://gitlab.com/gitlab-org/ci-cd/docker-machine) to be able to
+keep using this and ship fixes and updates needed for our use case. [On
+September 26th, 2021 the project got archived](https://github.com/docker/docker.github.io/commit/2dc8b49dcbe85686cc7230e17aff8e9944cb47a5) and the documentation for it has
 been removed from the official page. This means that the original reason to use
 Docker Machine is no longer valid too.
 
@@ -75,8 +75,8 @@ mechanism with a reliable and flexible mechanism. We might be unable to build a
 drop-in replacement for Docker Machine, as there are presumably many reasons
 why it has been deprecated. It is very difficult to maintain compatibility with
 so many cloud providers, and it seems that Docker Machine has been deprecated
-in favor of Docker Desktop, which is not a viable replacement for us. This
-issue contains a discussion about how people are using Docker Machine right
+in favor of Docker Desktop, which is not a viable replacement for us. [This
+issue](https://github.com/docker/roadmap/issues/245) contains a discussion about how people are using Docker Machine right
 now, and it seems that GitLab CI is one of the most frequent reasons for people
 to keep using Docker Machine.
 
@@ -159,7 +159,7 @@ script. In auto-scaling, this is typically done using Docker executor.
 In order to reduce the scope of work, we only want to introduce the new
 abstraction layer in one place.
 
-A few years ago we introduced the Custom Executor feature in GitLab Runner. It
+A few years ago we introduced the [Custom Executor](https://docs.gitlab.com/runner/executors/custom.html) feature in GitLab Runner. It
 allows users to design custom build execution methods. The custom executor
 driver can be implemented in any way - from a simple shell script to a
 dedicated binary - that is then used by a Runner through os/exec system calls.
