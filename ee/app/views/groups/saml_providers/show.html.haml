@@ -27,7 +27,7 @@
     %h4.page-title
       = s_('GroupSAML|SCIM Token')
   .col-lg-9
-    = render 'scim_token'
+    #js-scim-token-app{ data: { endpoint_url: @scim_token_url, generate_token_path: group_scim_oauth_path } }
 %section.row.border-top.mt-4
   .col-lg-3.gl-mb-3
     %h4.page-title

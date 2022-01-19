@@ -1,7 +1,5 @@
 import Vue from 'vue';
 
-import SCIMTokenToggleArea from 'ee/saml_providers/scim_token_toggle_area';
-
 import ScimToken from './components/scim_token.vue';
 import { AUTO_REDIRECT_TO_PROVIDER_BUTTON_SELECTOR } from './constants';
 
@@ -18,19 +16,7 @@ export const redirectUserWithSSOIdentity = () => {
 export const initScimTokenApp = () => {
   const el = document.getElementById('js-scim-token-app');
 
-  if (!el) {
-    // `scim_token_vue` feature flag is disabled, load legacy JS.
-    const groupPath = document.querySelector('#issuer').value;
-
-    // eslint-disable-next-line no-new
-    new SCIMTokenToggleArea(
-      '.js-generate-scim-token-container',
-      '.js-scim-token-container',
-      groupPath,
-    );
-
-    return false;
-  }
+  if (!el) return null;
 
   const { endpointUrl, generateTokenPath } = el.dataset;
 
