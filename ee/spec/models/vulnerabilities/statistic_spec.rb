@@ -118,4 +118,11 @@ RSpec.describe Vulnerabilities::Statistic do
       end
     end
   end
+
+  context 'loose foreign key on vulnerability_statistics.latest_pipeline_id' do
+    it_behaves_like 'cleanup by a loose foreign key' do
+      let!(:parent) { create(:ci_pipeline) }
+      let!(:model) { create(:vulnerability_statistic, pipeline: parent) }
+    end
+  end
 end
