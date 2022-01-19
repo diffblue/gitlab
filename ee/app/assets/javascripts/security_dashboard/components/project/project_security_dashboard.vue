@@ -2,7 +2,9 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import { GlLineChart } from '@gitlab/ui/dist/charts';
 import projectsHistoryQuery from 'ee/security_dashboard/graphql/queries/project_vulnerabilities_by_day_and_count.query.graphql';
+import SecurityTrainingPromo from 'ee/security_dashboard/components/shared/security_training_promo.vue';
 import { PROJECT_LOADING_ERROR_MESSAGE } from 'ee/security_dashboard/helpers';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import createFlash from '~/flash';
 import { formatDate, getDateInPast } from '~/lib/utils/datetime_utility';
 import { getSvgIconPathContent } from '~/lib/utils/icon_utils';
@@ -26,9 +28,11 @@ export default {
   components: {
     ReportNotConfigured,
     SecurityDashboardLayout,
+    SecurityTrainingPromo,
     GlLoadingIcon,
     GlLineChart,
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     projectFullPath: {
       type: String,
@@ -172,6 +176,7 @@ export default {
       <report-not-configured />
     </template>
     <template v-else-if="shouldShowCharts" #default>
+      <security-training-promo v-if="glFeatures.secureVulnerabilityTraining" />
       <gl-line-chart
         class="gl-mt-6"
         :width="chartWidth"
