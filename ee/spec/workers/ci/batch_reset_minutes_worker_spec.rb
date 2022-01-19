@@ -74,9 +74,11 @@ RSpec.describe Ci::BatchResetMinutesWorker do
         end
       end
 
-      context 'when ci_use_new_monthly_minutes is disabled' do
+      context 'when ci_use_new_monthly_minutes and ci_skip_legacy_extra_minutes_recalculation are disabled' do
         before do
-          stub_feature_flags(ci_use_new_monthly_minutes: false)
+          stub_feature_flags(
+            ci_use_new_monthly_minutes: false,
+            ci_skip_legacy_extra_minutes_recalculation: false)
         end
 
         it 'recalculates purchased minutes for the namespace exceeding the monthly minutes' do
