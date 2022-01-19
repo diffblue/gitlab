@@ -6,7 +6,7 @@ RSpec.describe GitlabSubscription, :saas do
   using RSpec::Parameterized::TableSyntax
 
   %i[free_plan bronze_plan premium_plan ultimate_plan].each do |plan|
-    let_it_be(plan) { create(plan) }
+    let_it_be(plan) { create(plan) } # rubocop:disable Rails/SaveBang
   end
 
   describe 'default values', :freeze_time do
