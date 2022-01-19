@@ -27,7 +27,7 @@ export default {
   <div
     v-if="policyDescription"
     v-safe-html:[$options.safeHtmlConfig]="policyDescription"
-    class="gl-bg-white gl-rounded-base gl-py-3 gl-px-4 gl-border-1 gl-border-solid gl-border-gray-100"
+    class="gl-bg-gray-10 gl-py-3 gl-px-4"
   ></div>
   <div v-else>
     <gl-alert variant="info" :dismissible="false">

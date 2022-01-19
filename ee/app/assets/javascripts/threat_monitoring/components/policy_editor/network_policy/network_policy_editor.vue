@@ -4,7 +4,7 @@ import {
   GlFormGroup,
   GlFormInput,
   GlFormTextarea,
-  GlToggle,
+  GlFormCheckbox,
   GlButton,
   GlAlert,
   GlIcon,
@@ -35,11 +35,9 @@ import PolicyRuleBuilder from './policy_rule_builder.vue';
 export default {
   EDITOR_MODES,
   i18n: {
+    basicInformation: __('Basic information'),
     actions: s__('SecurityOrchestration|Actions'),
     addRule: s__('SecurityOrchestration|Add rule'),
-    defaultTrafficBehavior: s__(
-      'NetworkPolicies|Traffic that does not match any rule will be blocked.',
-    ),
     description: __('Description'),
     toggleLabel: s__('SecurityOrchestration|Policy status'),
     PARSING_ERROR_MESSAGE,
@@ -49,7 +47,8 @@ export default {
     ),
     noEnvironmentButton: __('Learn more'),
     yamlPreview: s__('SecurityOrchestration|.yaml preview'),
-    policyPreview: s__('SecurityOrchestration|Policy preview'),
+    policySummary: s__('SecurityOrchestration|Policy summary'),
+    policyEnabled: __('Enabled'),
     rules: s__('SecurityOrchestration|Rules'),
     saveButtonTooltip: s__(
       'NetworkPolicies|Network policy can be created after the environment is loaded successfully.',
@@ -61,7 +60,7 @@ export default {
     GlFormGroup,
     GlFormInput,
     GlFormTextarea,
-    GlToggle,
+    GlFormCheckbox,
     GlButton,
     GlAlert,
     GlIcon,
@@ -236,11 +235,15 @@ export default {
         {{ $options.i18n.PARSING_ERROR_MESSAGE }}
       </gl-alert>
 
+      <h5 class="gl-mt-0 gl-mb-5">
+        {{ $options.i18n.basicInformation }}
+      </h5>
+
       <gl-form-group :label="$options.i18n.name" label-for="policyName">
         <gl-form-input id="policyName" v-model="policy.name" :disabled="hasParsingError" />
       </gl-form-group>
 
-      <gl-form-group :label="$options.i18n.description" label-for="policyDescription">
+      <gl-form-group :label="$options.i18n.description" label-for="policyDescription" optional>
         <gl-form-textarea
           id="policyDescription"
           v-model="policy.description"
@@ -248,13 +251,26 @@ export default {
         />
       </gl-form-group>
 
-      <gl-form-group :disabled="hasParsingError" data-testid="policy-enable">
-        <gl-toggle v-model="policy.isEnabled" :label="$options.i18n.toggleLabel" />
+      <gl-form-group
+        :label="$options.i18n.toggleLabel"
+        :disabled="hasParsingError"
+        data-testid="policy-enable"
+        class="gl-mb-6"
+      >
+        <gl-form-checkbox id="policyStatus" v-model="policy.isEnabled">
+          {{ $options.i18n.policyEnabled }}
+        </gl-form-checkbox>
       </gl-form-group>
 
-      <dim-disable-container data-testid="rule-builder-container" :disabled="hasParsingError">
+      <dim-disable-container
+        class="gl-mb-6"
+        data-testid="rule-builder-container"
+        :disabled="hasParsingError"
+      >
         <template #title>
-          <h4>{{ $options.i18n.rules }}</h4>
+          <h5 class="gl-mt-0 gl-mb-5">
+            {{ $options.i18n.rules }}
+          </h5>
         </template>
 
         <template #disabled>
@@ -277,57 +293,53 @@ export default {
           @remove="removeRule(index)"
         />
 
-        <div
-          class="gl-p-5 gl-rounded-base gl-border-1 gl-border-solid gl-border-gray-100 gl-mb-5 gl-bg-gray-10"
-        >
-          <gl-button variant="link" data-testid="add-rule" icon="plus" @click="addRule">
-            {{ $options.i18n.addRule }}
-          </gl-button>
-        </div>
+        <gl-button variant="link" data-testid="add-rule" icon="plus" @click="addRule">
+          {{ $options.i18n.addRule }}
+        </gl-button>
       </dim-disable-container>
 
-      <dim-disable-container data-testid="policy-action-container" :disabled="hasParsingError">
+      <dim-disable-container
+        class="gl-mb-6"
+        data-testid="policy-action-container"
+        :disabled="hasParsingError"
+      >
         <template #title>
-          <h4>{{ $options.i18n.actions }}</h4>
-          <p>{{ $options.i18n.defaultTrafficBehavior }}</p>
+          <h5 class="gl-mt-0 gl-mb-5">{{ $options.i18n.actions }}</h5>
         </template>
 
         <template #disabled>
-          <div
-            class="gl-bg-gray-10 gl-border-solid gl-border-1 gl-border-gray-100 gl-rounded-base gl-p-6"
-          ></div>
+          <div class="gl-bg-gray-10 gl-p-6"></div>
         </template>
 
         <policy-action-picker />
         <policy-alert-picker :policy-alert="policyAlert" @update-alert="handleAlertUpdate" />
       </dim-disable-container>
-    </template>
-    <template #rule-editor-preview>
-      <h5>{{ $options.i18n.yamlPreview }}</h5>
-      <pre
-        data-testid="yaml-preview"
-        class="gl-bg-white gl-border-none gl-p-0"
-        :class="{ 'gl-opacity-5': hasParsingError }"
-        >{{ policyYaml || yamlEditorValue }}</pre
-      >
-    </template>
-    <template v-if="!hasParsingError" #bottom>
-      <div class="gl-my-6">
+
+      <div v-if="!hasParsingError" class="gl-my-6">
         <gl-button
           v-collapse-toggle="$options.policyPreviewHumanCollapseId"
           category="tertiary"
           class="gl-font-weight-bold gl-bg-transparent! gl-px-0!"
         >
-          {{ $options.i18n.policyPreview }}
+          {{ $options.i18n.policySummary }}
           <gl-icon :name="isPolicyPreviewHumanVisible ? 'angle-up' : 'angle-down'" :size="12" />
         </gl-button>
         <gl-collapse
           :id="$options.policyPreviewHumanCollapseId"
           v-model="isPolicyPreviewHumanVisible"
         >
-          <policy-preview-human class="gl-md-w-70p" :policy-description="humanizedPolicy" />
+          <policy-preview-human :policy-description="humanizedPolicy" />
         </gl-collapse>
       </div>
+    </template>
+    <template #rule-editor-preview>
+      <h5>{{ $options.i18n.yamlPreview }}</h5>
+      <pre
+        data-testid="yaml-preview"
+        class="gl-border-none gl-p-0"
+        :class="{ 'gl-opacity-5': hasParsingError }"
+        >{{ policyYaml || yamlEditorValue }}</pre
+      >
     </template>
   </policy-editor-layout>
   <gl-empty-state
