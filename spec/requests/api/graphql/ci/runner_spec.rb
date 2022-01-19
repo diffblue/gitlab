@@ -302,21 +302,36 @@ RSpec.describe 'Query.runner(id)' do
 
     let!(:job) { create(:ci_build, runner: project_runner1) }
 
-    context 'requesting project and job counts' do
+    context 'requesting projects and counts for projects and jobs' do
       let(:query) do
         %(
           query {
             projectRunner1: runner(id: "#{project_runner1.to_global_id}") {
               projectCount
               jobCount
+              projects {
+                nodes {
+                  id
+                }
+              }
             }
             projectRunner2: runner(id: "#{project_runner2.to_global_id}") {
               projectCount
               jobCount
+              projects {
+                nodes {
+                  id
+                }
+              }
             }
             activeInstanceRunner: runner(id: "#{active_instance_runner.to_global_id}") {
               projectCount
               jobCount
+              projects {
+                nodes {
+                  id
+                }
+              }
             }
           }
         )
@@ -335,13 +350,23 @@ RSpec.describe 'Query.runner(id)' do
 
         expect(runner1_data).to match a_hash_including(
           'jobCount' => 1,
-          'projectCount' => 2)
+          'projectCount' => 2,
+          'projects' => {
+            'nodes' => [
+              { 'id' => project1.to_global_id.to_s },
+              { 'id' => project2.to_global_id.to_s }
+            ]
+          })
         expect(runner2_data).to match a_hash_including(
           'jobCount' => 0,
-          'projectCount' => 0)
+          'projectCount' => 0,
+          'projects' => {
+            'nodes' => []
+          })
         expect(runner3_data).to match a_hash_including(
           'jobCount' => 0,
-          'projectCount' => nil)
+          'projectCount' => nil,
+          'projects' => nil)
       end
     end
   end

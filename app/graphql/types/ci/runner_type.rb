@@ -65,6 +65,8 @@ module Types
             feature_flag: :graphql_ci_runner_executor
       field :groups, ::Types::GroupType.connection_type, null: true,
             description: 'Groups the runner is associated with. For group runners only.'
+      field :projects, ::Types::ProjectType.connection_type, null: true,
+            description: 'Projects the runner is associated with. For project runners only.'
 
       def job_count
         # We limit to 1 above the JOB_COUNT_LIMIT to indicate that more items exist after JOB_COUNT_LIMIT
@@ -109,6 +111,26 @@ module Types
 
           runner_ids.each do |runner_id|
             loader.call(runner_id, group_ids_by_runner_id[runner_id]&.map { |group_id| groups[group_id] })
+          end
+        end
+      end
+
+      def projects
+        return unless runner.project_type?
+
+        BatchLoader::GraphQL.for(runner.id).batch(key: :runner_projects) do |runner_ids, loader, args|
+          runner_and_project_ids =
+            ::Ci::RunnerProject
+              .where(runner_id: runner_ids)
+              .pluck(:runner_id, :project_id)
+
+          project_ids_by_runner_id = runner_and_project_ids.group_by(&:first).transform_values { |v| v.pluck(1) }
+          project_ids = runner_and_project_ids.pluck(1).uniq
+
+          projects = Project.where(id: project_ids).index_by(&:id)
+
+          runner_ids.each do |runner_id|
+            loader.call(runner_id, project_ids_by_runner_id[runner_id]&.map { |project_id| projects[project_id] } || [])
           end
         end
       end
