@@ -272,3 +272,35 @@ run tests:
     reports:
       cobertura: build/coverage.xml
 ```
+
+### Go example
+
+The following [`.gitlab-ci.yml`](../../../ci/yaml/index.md) example for Go uses:
+
+- [`go test`](https://go.dev/doc/tutorial/add-a-test) to run tests.
+- [`gocover-cobertura`](https://github.com/t-yuki/gocover-cobertura) to convert Go's coverage profile into the Cobertura XML format.
+
+This example assumes that [Go modules](https://go.dev/ref/mod) are being used.
+Using Go modules causes paths within the coverage profile to be prefixed with your
+project's module identifier, which can be found in the `go.mod` file. This
+prefix must be removed for GitLab to parse the Cobertura XML file correctly. You can use the following `sed` command to remove the prefix:
+
+```shell
+sed -i 's;filename=\"<YOUR_MODULE_ID>/;filename=\";g' coverage.xml
+```
+
+Replace the `gitlab.com/my-group/my-project` placeholder in the following example with your own module identifier to make it work.
+
+```yaml
+run tests:
+  stage: test
+  image: golang:1.17
+  script:
+    - go install
+    - go test . -coverprofile=coverage.txt -covermode count
+    - go run github.com/t-yuki/gocover-cobertura < coverage.txt > coverage.xml
+    - sed -i 's;filename=\"gitlab.com/my-group/my-project/;filename=\";g' coverage.xml
+  artifacts:
+    reports:
+      cobertura: coverage.xml
+```
