@@ -10483,6 +10483,12 @@ CREATE TABLE application_settings (
     future_subscriptions jsonb DEFAULT '[]'::jsonb NOT NULL,
     user_email_lookup_limit integer DEFAULT 60 NOT NULL,
     packages_cleanup_package_file_worker_capacity smallint DEFAULT 2 NOT NULL,
+    container_registry_import_max_tags_count integer DEFAULT 100 NOT NULL,
+    container_registry_import_max_retries integer DEFAULT 3 NOT NULL,
+    container_registry_import_start_max_retries integer DEFAULT 50 NOT NULL,
+    container_registry_import_max_step_duration integer DEFAULT 300 NOT NULL,
+    container_registry_import_target_plan text DEFAULT 'free'::text NOT NULL,
+    container_registry_import_created_before timestamp with time zone DEFAULT '2022-01-23 00:00:00+00'::timestamp with time zone NOT NULL,
     runner_token_expiration_interval integer,
     group_runner_token_expiration_interval integer,
     project_runner_token_expiration_interval integer,
@@ -10496,6 +10502,7 @@ CREATE TABLE application_settings (
     CONSTRAINT check_17d9558205 CHECK ((char_length((kroki_url)::text) <= 1024)),
     CONSTRAINT check_2dba05b802 CHECK ((char_length(gitpod_url) <= 255)),
     CONSTRAINT check_32710817e9 CHECK ((char_length(static_objects_external_storage_auth_token_encrypted) <= 255)),
+    CONSTRAINT check_3559645ae5 CHECK ((char_length(container_registry_import_target_plan) <= 255)),
     CONSTRAINT check_3def0f1829 CHECK ((char_length(sentry_clientside_dsn) <= 255)),
     CONSTRAINT check_4f8b811780 CHECK ((char_length(sentry_dsn) <= 255)),
     CONSTRAINT check_51700b31b5 CHECK ((char_length(default_branch_name) <= 255)),
@@ -12910,7 +12917,19 @@ CREATE TABLE container_repositories (
     status smallint,
     expiration_policy_started_at timestamp with time zone,
     expiration_policy_cleanup_status smallint DEFAULT 0 NOT NULL,
-    expiration_policy_completed_at timestamp with time zone
+    expiration_policy_completed_at timestamp with time zone,
+    migration_pre_import_started_at timestamp with time zone,
+    migration_pre_import_done_at timestamp with time zone,
+    migration_import_started_at timestamp with time zone,
+    migration_import_done_at timestamp with time zone,
+    migration_aborted_at timestamp with time zone,
+    migration_skipped_at timestamp with time zone,
+    migration_retries_count integer DEFAULT 0 NOT NULL,
+    migration_skipped_reason smallint,
+    migration_state text DEFAULT 'default'::text NOT NULL,
+    migration_aborted_in_state text,
+    CONSTRAINT check_13c58fe73a CHECK ((char_length(migration_state) <= 255)),
+    CONSTRAINT check_97f0249439 CHECK ((char_length(migration_aborted_in_state) <= 255))
 );
 
 CREATE SEQUENCE container_repositories_id_seq
