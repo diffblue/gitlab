@@ -96,51 +96,42 @@ module Types
           end
         end
       end
+      # rubocop: enable CodeReuse/ActiveRecord
 
       def groups
-        BatchLoader::GraphQL.for(runner.id).batch(key: :runner_groups) do |runner_ids, loader, args|
-          runner_and_namespace_ids =
-            ::Ci::RunnerNamespace
-              .where(runner_id: runner_ids)
-              .pluck(:runner_id, :namespace_id)
+        return unless runner.group_type?
 
-          group_ids_by_runner_id = runner_and_namespace_ids.group_by(&:first).transform_values { |v| v.pluck(1) }
-          group_ids = runner_and_namespace_ids.pluck(1).uniq
-
-          groups = Group.where(id: group_ids).index_by(&:id)
-
-          runner_ids.each do |runner_id|
-            loader.call(runner_id, group_ids_by_runner_id[runner_id]&.map { |group_id| groups[group_id] })
-          end
-        end
+        batched_owners(::Ci::RunnerNamespace, Group, :runner_groups, :namespace_id)
       end
 
       def projects
         return unless runner.project_type?
 
-        BatchLoader::GraphQL.for(runner.id).batch(key: :runner_projects) do |runner_ids, loader, args|
-          runner_and_project_ids =
-            ::Ci::RunnerProject
-              .where(runner_id: runner_ids)
-              .pluck(:runner_id, :project_id)
-
-          project_ids_by_runner_id = runner_and_project_ids.group_by(&:first).transform_values { |v| v.pluck(1) }
-          project_ids = runner_and_project_ids.pluck(1).uniq
-
-          projects = Project.where(id: project_ids).index_by(&:id)
-
-          runner_ids.each do |runner_id|
-            loader.call(runner_id, project_ids_by_runner_id[runner_id]&.map { |project_id| projects[project_id] } || [])
-          end
-        end
+        batched_owners(::Ci::RunnerProject, Project, :runner_projects, :project_id)
       end
-      # rubocop: enable CodeReuse/ActiveRecord
 
       private
 
       def can_admin_runners?
         context[:current_user]&.can_admin_all_resources?
       end
+
+      # rubocop: disable CodeReuse/ActiveRecord
+      def batched_owners(runner_assoc_type, assoc_type, key, column_name)
+        BatchLoader::GraphQL.for(runner.id).batch(key: key) do |runner_ids, loader, args|
+          runner_and_owner_ids = runner_assoc_type.where(runner_id: runner_ids).pluck(:runner_id, column_name)
+
+          owner_ids_by_runner_id = runner_and_owner_ids.group_by(&:first).transform_values { |v| v.pluck(1) }
+          owner_ids = runner_and_owner_ids.pluck(1).uniq
+
+          owners = assoc_type.where(id: owner_ids).index_by(&:id)
+
+          runner_ids.each do |runner_id|
+            loader.call(runner_id, owner_ids_by_runner_id[runner_id]&.map { |owner_id| owners[owner_id] } || [])
+          end
+        end
+      end
+      # rubocop: enable CodeReuse/ActiveRecord
     end
   end
 end
