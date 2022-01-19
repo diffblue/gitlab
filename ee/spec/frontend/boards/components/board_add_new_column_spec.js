@@ -110,12 +110,12 @@ describe('BoardAddNewColumn', () => {
     await nextTick();
   };
 
-  const testIterationWithTitle = () => {
+  const expectIterationWithTitle = () => {
     expect(findIterationItemAt(1).text()).toContain(getIterationPeriod(mockIterations[1]));
     expect(findIterationItemAt(1).text()).toContain(mockIterations[1].title);
   };
 
-  const testIterationWithoutTitle = () => {
+  const expectIterationWithoutTitle = () => {
     expect(findIterationItemAt(0).text()).toContain(getIterationPeriod(mockIterations[0]));
     expect(findIterationItemAt(0).find("[data-testid='new-column-iteration-title']").exists()).toBe(
       false,
@@ -250,8 +250,8 @@ describe('BoardAddNewColumn', () => {
       const itemList = wrapper.findComponent(GlDropdown).findAllComponents(GlFormRadio);
 
       expect(itemList).toHaveLength(mockIterations.length);
-      testIterationWithoutTitle();
-      testIterationWithTitle();
+      expectIterationWithoutTitle();
+      expectIterationWithTitle();
     });
   });
 
@@ -285,8 +285,8 @@ describe('BoardAddNewColumn', () => {
     });
 
     it('displays iteration period optionally with title', async () => {
-      testIterationWithoutTitle();
-      testIterationWithTitle();
+      expectIterationWithoutTitle();
+      expectIterationWithTitle();
     });
   });
 });

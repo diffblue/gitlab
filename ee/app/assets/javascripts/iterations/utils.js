@@ -14,7 +14,7 @@ export function getIterationPeriod({ startDate, dueDate }) {
 }
 
 export function getIterationTitle(iteration) {
-  return iteration?.title ? iteration.title : false;
+  return iteration?.title;
 }
 
 /**

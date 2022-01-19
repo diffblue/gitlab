@@ -333,9 +333,12 @@ export default {
               data-testid="new-column-iteration-item"
             >
               {{ iteration.period }}
-              <div v-if="getIterationTitle(iteration)" data-testid="new-column-iteration-title">
-                <iteration-title>{{ getIterationTitle(iteration) }}</iteration-title>
-              </div>
+              <iteration-title
+                v-if="getIterationTitle(iteration)"
+                data-testid="new-column-iteration-title"
+              >
+                {{ getIterationTitle(iteration) }}
+              </iteration-title>
             </gl-form-radio>
           </gl-dropdown-text>
         </div>
@@ -378,9 +381,12 @@ export default {
             data-testid="new-column-iteration-item"
           >
             {{ getIterationPeriod(item) }}
-            <div v-if="getIterationTitle(item)" data-testid="new-column-iteration-title">
-              <iteration-title>{{ getIterationTitle(item) }}</iteration-title>
-            </div>
+            <iteration-title
+              v-if="getIterationTitle(item)"
+              data-testid="new-column-iteration-title"
+            >
+              {{ getIterationTitle(item) }}
+            </iteration-title>
           </div>
           <div v-else class="gl-display-inline-block">
             {{ item.title }}

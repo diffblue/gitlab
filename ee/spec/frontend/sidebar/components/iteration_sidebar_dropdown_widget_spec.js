@@ -1,5 +1,6 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
+import Vue from 'vue';
 import IterationSidebarDropdownWidget from 'ee/sidebar/components/iteration_sidebar_dropdown_widget.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -18,7 +19,7 @@ import {
 } from '../mock_data';
 import { waitForApollo, clickEdit, search } from '../helpers';
 
-const localVue = createLocalVue();
+Vue.use(VueApollo);
 
 describe('IterationSidebarDropdownWidget', () => {
   let wrapper;
@@ -33,7 +34,6 @@ describe('IterationSidebarDropdownWidget', () => {
     iterationCadences = false,
     currentIterationResponse = mockCurrentIterationResponse1,
   } = {}) => {
-    localVue.use(VueApollo);
     mockApollo = createMockApollo([
       [groupIterationsQuery, jest.fn().mockResolvedValue(mockGroupIterationsResponse)],
       [projectIssueIterationQuery, jest.fn().mockResolvedValue(currentIterationResponse)],
@@ -41,7 +41,6 @@ describe('IterationSidebarDropdownWidget', () => {
 
     wrapper = extendedWrapper(
       mount(IterationSidebarDropdownWidget, {
-        localVue,
         provide: {
           glFeatures: { iterationCadences },
           issuableAttributesQueries,
