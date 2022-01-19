@@ -6,18 +6,15 @@ module EE
     extend ::Gitlab::Utils::Override
 
     prepended do
-      state_machine :state, initial: :created do
+      state_machine :state, initial: :active do
         event :wait do
-          transition created: :awaiting
           transition active: :awaiting
         end
 
         event :activate do
-          transition created: :active
           transition awaiting: :active
         end
 
-        state :created, value: ::Member::STATE_CREATED
         state :awaiting, value: ::Member::STATE_AWAITING
         state :active, value: ::Member::STATE_ACTIVE
       end
@@ -150,9 +147,9 @@ module EE
     end
 
     def set_membership_activation
-      return unless group && ::Feature.enabled?(:saas_user_caps, group.root_ancestor, default_enabled: :yaml)
+      return unless group
 
-      self.state = group.user_cap_reached? ? ::Member::STATE_AWAITING : ::Member::STATE_ACTIVE
+      self.state = ::Member::STATE_AWAITING if group.user_cap_reached?
     end
   end
 end
