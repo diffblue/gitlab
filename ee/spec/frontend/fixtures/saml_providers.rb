@@ -14,7 +14,6 @@ RSpec.describe Groups::SamlProvidersController, '(JavaScript fixtures)', type: :
     group.add_owner(user)
     allow(Devise).to receive(:omniauth_providers).and_return(%i(group_saml))
     stub_licensed_features(group_saml: true)
-    stub_feature_flags(scim_token_vue: false)
   end
 
   it 'groups/saml_providers/show.html' do
