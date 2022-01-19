@@ -8,7 +8,7 @@ import {
 } from '@gitlab/ui';
 import { __ } from '~/locale';
 
-export const EMPTY_NAMESPACE_ID = -1
+export const EMPTY_NAMESPACE_ID = -1;
 export const i18n = {
   DEFAULT_TEXT: __('Select a new namespace'),
   DEFAULT_EMPTY_NAMESPACE_TEXT: __('No namespace'),

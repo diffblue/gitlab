@@ -4,6 +4,14 @@ import { __, s__ } from '~/locale';
 import ConfirmDanger from '~/vue_shared/components/confirm_danger/confirm_danger.vue';
 import NamespaceSelect from '~/vue_shared/components/namespace_select/namespace_select.vue';
 
+export const i18n = {
+  emptyNamespaceTitle: __('No parent group'),
+  dropdownTitle: s__('GroupSettings|Select parent group'),
+  paidGroupMessage: s__(
+    "GroupSettings|This group can't be transfered because it is linked to a subscription. To transfer this group, %{linkStart}link the subscription%{linkEnd} with a different group.",
+  ),
+};
+
 export default {
   name: 'TransferGroupForm',
   components: {
@@ -59,13 +67,7 @@ export default {
       this.selectedId = id;
     },
   },
-  i18n: {
-    emptyNamespaceTitle: __('No parent group'),
-    dropdownTitle: s__('GroupSettings|Select parent group'),
-    paidGroupMessage: s__(
-      "GroupSettings|This group can't be transfered because it is linked to a subscription. To transfer this group, %{linkStart}link the subscription%{linkEnd} with a different group.",
-    ),
-  },
+  i18n,
 };
 </script>
 <template>
