@@ -6,6 +6,8 @@ module EE
     extend ::Gitlab::Utils::Override
 
     prepended do
+      include ::Registrations::Verification
+
       around_action :set_current_ip_address
     end
 
