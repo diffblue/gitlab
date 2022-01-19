@@ -98,10 +98,13 @@ GitLab auto-scaling plugin, whatever cloud provider they might be using. We
 want to design a simple abstraction that users will be able to build on top, as
 will we to support existing workflows on GitLab.com.
 
-The designed mechanism should abstract what Docker Machine executor was doing:
-providing a way to create - externally - Docker environment ready to execute
-our jobs and return credentials to Docker Engine API that we can hook into
-Docker executor.
+The designed mechanism should abstract what Docker Machine executor has been doing:
+providing a way to create an external Docker environment, waiting to execute
+jobs by provisioning this environment and returning credentials required to
+perform these operations.
+
+The new plugin system should be available for all major platforms: Linux,
+Windows, MacOS.
 
 ### 💡 Migrate existing Docker Machine solution to a plugin
 
