@@ -392,8 +392,6 @@ group :development, :test do
 
   gem 'parallel', '~> 1.19', require: false
 
-  gem 'rblineprof', '~> 0.3.6', platform: :mri, require: false
-
   gem 'test_file_finder', '~> 0.1.3'
 end
 
