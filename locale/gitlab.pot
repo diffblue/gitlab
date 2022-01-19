@@ -17289,9 +17289,6 @@ msgstr ""
 msgid "GroupSettings|Overrides user notification preferences for all members of the group, subgroups, and projects."
 msgstr ""
 
-msgid "GroupSettings|Parent Group"
-msgstr ""
-
 msgid "GroupSettings|Pipeline settings was updated for the group"
 msgstr ""
 
@@ -17317,9 +17314,6 @@ msgid "GroupSettings|Projects will be permanently deleted after a %{waiting_peri
 msgstr ""
 
 msgid "GroupSettings|Projects will be permanently deleted after a %{waiting_period}-day delay. This delay can be %{link_start}customized by an admin%{link_end} in instance settings. Inherited by subgroups."
-msgstr ""
-
-msgid "GroupSettings|Search groups"
 msgstr ""
 
 msgid "GroupSettings|Select a project with the %{code_start}.gitlab/insights.yml%{code_end} file"
@@ -17350,6 +17344,9 @@ msgid "GroupSettings|There was a problem updating Auto DevOps pipeline: %{error_
 msgstr ""
 
 msgid "GroupSettings|There was a problem updating the pipeline settings: %{error_messages}."
+msgstr ""
+
+msgid "GroupSettings|This group can't be transfered because it is linked to a subscription. To transfer this group, %{linkStart}link the subscription%{linkEnd} with a different group."
 msgstr ""
 
 msgid "GroupSettings|This setting is applied on %{ancestor_group} and has been overridden on this subgroup."
@@ -24208,6 +24205,9 @@ msgid "No milestone"
 msgstr ""
 
 msgid "No milestones to show"
+msgstr ""
+
+msgid "No namespace"
 msgstr ""
 
 msgid "No other labels with such name or description"
@@ -36629,9 +36629,6 @@ msgstr ""
 msgid "This group can't be removed because it is linked to a subscription. To remove this group, %{linkStart}link the subscription%{linkEnd} with a different group."
 msgstr ""
 
-msgid "This group can't be transfered because it is linked to a subscription. To transfer this group, %{linkStart}link the subscription%{linkEnd} with a different group."
-msgstr ""
-
 msgid "This group cannot be invited to a project inside a group with enforced SSO"
 msgstr ""
 
@@ -40859,6 +40856,9 @@ msgid "You are going to remove %{group_name}. This will also delete all of its s
 msgstr ""
 
 msgid "You are going to remove the fork relationship from %{project_full_name}. Are you ABSOLUTELY sure?"
+msgstr ""
+
+msgid "You are going to transfer %{group_name} to another namespace. Are you ABSOLUTELY sure?"
 msgstr ""
 
 msgid "You are going to transfer %{project_full_name} to another namespace. Are you ABSOLUTELY sure?"

@@ -76,16 +76,11 @@ export default {
         :default-text="$options.i18n.dropdownTitle"
         :data="parentGroups"
         :empty-namespace-title="$options.i18n.emptyNamespaceTitle"
+        :include-headers="false"
         include-empty-namespace
-        include-headers
         @select="handleSelected"
       />
-      <input
-        id="new_parent_group_id"
-        type="hidden"
-        name="new_parent_group_id"
-        :value="selectedId"
-      />
+      <input type="hidden" name="new_parent_group_id" :value="selectedId" />
     </gl-form-group>
     <gl-alert v-if="isPaidGroup" class="gl-mb-5">
       <gl-sprintf :message="$options.i18n.paidGroupMessage">

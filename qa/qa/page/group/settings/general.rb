@@ -7,6 +7,7 @@ module QA
         class General < QA::Page::Base
           include ::QA::Page::Settings::Common
           include Page::Component::VisibilitySetting
+          include Page::Component::ConfirmModal
 
           view 'app/views/groups/edit.html.haml' do
             element :permission_lfs_2fa_content
@@ -39,13 +40,16 @@ module QA
           end
 
           view 'app/views/groups/settings/_transfer.html.haml' do
-            element :select_group_dropdown
             element :transfer_group_button
           end
 
           view 'app/helpers/dropdowns_helper.rb' do
             element :dropdown_input_field
             element :dropdown_list_content
+          end
+
+          view 'app/assets/javascripts/groups/components/transfer_group_form.vue' do
+            element :select_group_dropdown
           end
 
           def set_group_name(name)
@@ -122,6 +126,9 @@ module QA
             end
 
             click_element :transfer_group_button
+
+            fill_confirmation_text(target_group)
+            confirm_transfer
           end
         end
       end
