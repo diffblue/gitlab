@@ -5370,6 +5370,9 @@ msgstr ""
 msgid "Based on"
 msgstr ""
 
+msgid "Basic information"
+msgstr ""
+
 msgid "Be careful. Changing the project's namespace can have unintended side effects."
 msgstr ""
 
@@ -23550,9 +23553,6 @@ msgstr ""
 msgid "NetworkPolicies|To enable alerts, %{installLinkStart}install an agent%{installLinkEnd} first."
 msgstr ""
 
-msgid "NetworkPolicies|Traffic that does not match any rule will be blocked."
-msgstr ""
-
 msgid "NetworkPolicies|all DNS names"
 msgstr ""
 
@@ -31681,10 +31681,10 @@ msgstr ""
 msgid "SecurityOrchestration|Policy editor"
 msgstr ""
 
-msgid "SecurityOrchestration|Policy preview"
+msgid "SecurityOrchestration|Policy status"
 msgstr ""
 
-msgid "SecurityOrchestration|Policy status"
+msgid "SecurityOrchestration|Policy summary"
 msgstr ""
 
 msgid "SecurityOrchestration|Policy type"

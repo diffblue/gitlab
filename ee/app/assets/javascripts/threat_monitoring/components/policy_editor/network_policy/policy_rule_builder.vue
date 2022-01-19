@@ -132,13 +132,11 @@ export default {
 </script>
 
 <template>
-  <div
-    class="gl-bg-gray-10 gl-border-solid gl-border-1 gl-border-gray-100 gl-rounded-base px-3 pt-3 gl-relative"
-  >
-    <gl-form inline @submit.prevent>
+  <div class="gl-bg-gray-10 gl-px-3 gl-pt-3 gl-relative gl-display-flex">
+    <gl-form class="gl-flex-grow-1" inline @submit.prevent>
       <gl-sprintf :message="sprintfTemplate">
         <template #ifLabel="{ content }">
-          <label for="ruleType" class="text-uppercase gl-font-lg gl-mr-4 gl-mb-5!">{{
+          <label for="ruleType" class="text-uppercase gl-font-lg gl-mr-4 gl-mb-3!">{{
             content
           }}</label>
         </template>
@@ -146,14 +144,14 @@ export default {
         <template #ruleType>
           <gl-form-select
             id="ruleType"
-            class="gl-mr-4 gl-mb-5"
+            class="gl-mr-4 gl-mb-3"
             :value="ruleType"
             :options="$options.ruleTypes"
           />
         </template>
 
         <template #isLabel="{ content }">
-          <label for="direction" class="gl-mr-4 gl-mb-5! gl-font-weight-normal">{{
+          <label for="direction" class="gl-mr-4 gl-mb-3! gl-font-weight-normal">{{
             content
           }}</label>
         </template>
@@ -163,7 +161,7 @@ export default {
           <gl-form-select
             id="direction"
             v-model="rule.direction"
-            class="gl-mr-4 gl-mb-5"
+            class="gl-mr-4 gl-mb-3"
             :options="$options.trafficDirections"
           />
           <!-- eslint-enable vue/no-mutating-props -->
@@ -172,7 +170,7 @@ export default {
         <template #ruleSelector>
           <gl-form-select
             data-testid="endpoint-match-mode"
-            class="gl-mr-4 gl-mb-5"
+            class="gl-mr-4 gl-mb-3"
             :value="endpointMatchMode"
             :disabled="endpointSelectorDisabled"
             :options="$options.endpointMatchModes"
@@ -183,7 +181,7 @@ export default {
           <gl-form-input
             v-if="shouldShowEndpointLabels"
             data-testid="endpoint-labels"
-            class="gl-mr-4 gl-mb-5 gl-bg-white!"
+            class="gl-mr-4 gl-mb-3 gl-bg-white!"
             placeholder="key:value"
             :value="endpointLabels"
             :disabled="endpointSelectorDisabled"
@@ -193,23 +191,23 @@ export default {
         </template>
 
         <template #directionLabel="{ content }">
-          <label for="ruleMode" class="gl-mr-4 gl-mb-5! gl-font-weight-normal">{{ content }}</label>
+          <label for="ruleMode" class="gl-mr-4 gl-mb-3! gl-font-weight-normal">{{ content }}</label>
         </template>
 
         <template #rule>
           <gl-form-select
             id="ruleMode"
-            class="gl-mr-4 gl-mb-5"
+            class="gl-mr-4 gl-mb-3"
             :value="rule.ruleType"
             :options="$options.ruleModes"
             @change="$emit('rule-type-change', $event)"
           />
 
-          <component :is="ruleComponentName" v-model="ruleComponentModel" class="gl-mr-4 gl-mb-5" />
+          <component :is="ruleComponentName" v-model="ruleComponentModel" class="gl-mr-4 gl-mb-3" />
         </template>
 
         <template #portsLabel="{ content }">
-          <label for="portMatch" class="gl-mr-4 gl-mb-5! gl-font-weight-normal">{{
+          <label for="portMatch" class="gl-mr-4 gl-mb-3! gl-font-weight-normal">{{
             content
           }}</label>
         </template>
@@ -219,7 +217,7 @@ export default {
           <gl-form-select
             id="portMatch"
             v-model="rule.portMatchMode"
-            class="gl-mr-4 gl-mb-5"
+            class="gl-mr-4 gl-mb-3"
             :options="$options.portMatchModes"
           />
           <!-- placeholder is the same in all languages-->
@@ -228,7 +226,7 @@ export default {
             v-if="shouldShowPorts"
             v-model="rule.ports"
             data-testid="ports"
-            class="gl-mr-4 gl-mb-5 gl-bg-white!"
+            class="gl-mr-4 gl-mb-3 gl-bg-white!"
             placeholder="80/tcp"
           />
           <!-- eslint-enable @gitlab/vue-require-i18n-attribute-strings -->
@@ -236,11 +234,10 @@ export default {
         </template>
       </gl-sprintf>
     </gl-form>
-
     <gl-button
       icon="remove"
       category="tertiary"
-      class="gl-absolute gl-top-3 gl-right-3"
+      class="gl-align-self-start gl-ml-3"
       :aria-label="__('Remove')"
       data-testid="remove-rule"
       @click="$emit('remove')"

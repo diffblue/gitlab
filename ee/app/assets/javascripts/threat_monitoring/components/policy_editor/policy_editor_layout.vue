@@ -1,7 +1,6 @@
 <script>
 import {
   GlButton,
-  GlFormGroup,
   GlModal,
   GlModalDirective,
   GlSegmentedControl,
@@ -16,7 +15,6 @@ export default {
   },
   components: {
     GlButton,
-    GlFormGroup,
     GlModal,
     GlSegmentedControl,
     PolicyYamlEditor: () =>
@@ -127,19 +125,17 @@ export default {
 </script>
 
 <template>
-  <section>
-    <div class="gl-mb-5 gl-border-1 gl-border-solid gl-border-gray-100 gl-rounded-base">
-      <gl-form-group
-        class="gl-px-5 gl-py-3 gl-mb-0 gl-bg-gray-10 gl-border-b-solid gl-border-b-gray-100 gl-border-b-1 gl-rounded-top-base"
-      >
+  <section class="gl-mt-6">
+    <div class="gl-mb-5">
+      <div class="gl-border-b-solid gl-border-b-1 gl-border-gray-100 gl-mb-6 gl-pb-6">
         <gl-segmented-control
           :options="editorModes"
           :checked="selectedEditorMode"
           @input="updateEditorMode"
         />
-      </gl-form-group>
+      </div>
       <div class="gl-display-flex gl-sm-flex-direction-column">
-        <section class="gl-w-full" :class="{ 'gl-p-5': shouldShowRuleEditor }">
+        <section class="gl-w-full gl-mr-7">
           <div v-if="shouldShowRuleEditor" data-testid="rule-editor">
             <slot name="rule-editor"></slot>
           </div>
@@ -153,7 +149,7 @@ export default {
         </section>
         <section
           v-if="shouldShowRuleEditor"
-          class="gl-md-w-50p gl-md-max-w-30p gl-p-5 gl-border-l-gray-100 gl-border-l-1 gl-md-border-l-solid"
+          class="gl-md-w-50p gl-md-max-w-30p gl-p-5 gl-bg-gray-10 gl-ml-11 gl-align-self-start"
           data-testid="rule-editor-preview"
         >
           <slot name="rule-editor-preview"></slot>
