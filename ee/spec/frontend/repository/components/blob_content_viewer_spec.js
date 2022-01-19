@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import VueRouter from 'vue-router';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -16,6 +17,8 @@ import {
 } from 'jest/repository/mock_data';
 
 jest.mock('~/lib/utils/common_utils');
+Vue.use(VueRouter);
+const router = new VueRouter();
 
 let wrapper;
 let mockResolver;
@@ -53,6 +56,7 @@ const createComponent = async (mockData = {}) => {
   const fakeApollo = createMockApollo([[blobInfoQuery, mockResolver]]);
 
   wrapper = mountExtended(BlobContentViewer, {
+    router,
     apolloProvider: fakeApollo,
     propsData: {
       ...propsMock,
