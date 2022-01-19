@@ -70,7 +70,6 @@ export default {
     6,
     8,
     10,
-    12,
   ],
 
   components: {
