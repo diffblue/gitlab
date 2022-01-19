@@ -55,7 +55,7 @@ RSpec.describe 'Query.runner(id)' do
 
       runner = get_runner(runner_id)
       expect(runner_data).to match a_hash_including(
-        'id' => "gid://gitlab/Ci::Runner/#{runner.id}",
+        'id' => runner.to_global_id.to_s,
         'description' => runner.description,
         'createdAt' => runner.created_at&.iso8601,
         'contactedAt' => runner.contacted_at&.iso8601,
@@ -103,7 +103,7 @@ RSpec.describe 'Query.runner(id)' do
 
       runner = get_runner(runner_id)
       expect(runner_data).to match a_hash_including(
-        'id' => "gid://gitlab/Ci::Runner/#{runner.id}",
+        'id' => runner.to_global_id.to_s,
         'adminUrl' => nil
       )
       expect(runner_data['tagList']).to match_array runner.tag_list
@@ -179,7 +179,7 @@ RSpec.describe 'Query.runner(id)' do
         runner_data = graphql_data_at(:runner)
 
         expect(runner_data).to match a_hash_including(
-          'id' => "gid://gitlab/Ci::Runner/#{project_runner.id}",
+          'id' => project_runner.to_global_id.to_s,
           'locked' => is_locked
         )
       end
@@ -216,7 +216,7 @@ RSpec.describe 'Query.runner(id)' do
         a_hash_including(
           'webUrl' => "http://localhost/groups/#{group.full_path}/-/runners/#{active_group_runner.id}",
           'node' => {
-            'id' => "gid://gitlab/Ci::Runner/#{active_group_runner.id}"
+            'id' => active_group_runner.to_global_id.to_s
           }
         )
       ]
@@ -227,7 +227,7 @@ RSpec.describe 'Query.runner(id)' do
     let(:query) do
       %(
         query {
-          runner(id: "gid://gitlab/Ci::Runner/#{active_group_runner.id}") {
+          runner(id: "#{active_group_runner.to_global_id}") {
             groups {
               nodes {
                 id
