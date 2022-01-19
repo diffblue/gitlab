@@ -60,12 +60,15 @@ module API
 
         route_setting :authentication, basic_auth_personal_access_token: true, job_token_allowed: true
         post ':id/secure_files' do
+  
           secure_file = user_project.secure_files.new(
             name: params[:name],
             permissions: params[:permissions] || :read_only
           )
 
           secure_file.file = params[:file]
+
+          file_too_large! unless secure_file.file.size < ::Ci::SecureFile::FILE_SIZE_LIMIT.to_i
 
           if secure_file.save
             present secure_file, with: Entities::Ci::SecureFile

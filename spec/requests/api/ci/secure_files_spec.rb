@@ -226,6 +226,21 @@ RSpec.describe API::Ci::SecureFiles do
 
         expect(response).to have_gitlab_http_status(:bad_request)
       end
+
+      it 'returns a 413 error when the file size is too large' do
+        allow_next_instance_of(Ci::SecureFile) do |instance|
+          allow(instance).to receive_message_chain(:file, :size).and_return(6.megabytes.to_i)
+        end
+
+        post_params = {
+          file: fixture_file_upload('spec/fixtures/ci_secure_files/upload-keystore.jks'),
+          name: 'upload-keystore.jks'
+        }
+
+        post api("/projects/#{project.id}/secure_files", user), params: post_params
+
+        expect(response).to have_gitlab_http_status(:payload_too_large)
+      end
     end
 
     context 'authorized user with invalid permissions' do
