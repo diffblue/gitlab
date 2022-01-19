@@ -665,7 +665,7 @@ RSpec.describe UsersController do
         stub_application_setting(signup_enabled: false)
         get user_exists_url 'foo'
 
-        expected_json = { error: "You must be authenticated to access this path" }.to_json
+        expected_json = { error: "You must be authenticated to access this path." }.to_json
         expect(response).to have_gitlab_http_status(:unauthorized)
         expect(response.body).to eq(expected_json)
       end
