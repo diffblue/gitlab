@@ -156,6 +156,7 @@ export default {
           v-model.trim="form.fields.activationCode.value"
           v-validation:[form.showValidation]
           class="gl-mb-4"
+          data-qa-selector="activation_code"
           :disabled="isLoading"
           :placeholder="$options.i18n.pasteActivationCode"
           :state="form.fields.activationCode.state"
@@ -197,6 +198,7 @@ export default {
         category="primary"
         class="gl-mt-6 js-no-auto-disable"
         data-testid="activate-button"
+        data-qa-selector="activate"
         type="submit"
         variant="confirm"
       >
