@@ -1,5 +1,5 @@
 <script>
-import { GlTooltipDirective, GlTable, GlLoadingIcon } from '@gitlab/ui';
+import { GlTooltipDirective, GlTableLite, GlLoadingIcon } from '@gitlab/ui';
 import { GlSparklineChart } from '@gitlab/ui/dist/charts';
 import { SEVERITY_LEVELS, DAYS } from 'ee/security_dashboard/store/constants';
 import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
@@ -23,7 +23,7 @@ export default {
   components: {
     ChartButtons,
     GlSparklineChart,
-    GlTable,
+    GlTableLite,
     GlLoadingIcon,
     SeverityBadge,
   },
@@ -208,7 +208,7 @@ export default {
     </div>
 
     <gl-loading-icon v-if="isLoadingHistory" size="lg" class="gl-my-12" />
-    <gl-table
+    <gl-table-lite
       v-else
       :fields="$options.fields"
       :items="charts"
@@ -244,6 +244,6 @@ export default {
       <template #cell(currentVulnerabilitiesCount)="{ value }">
         <span ref="currentVulnerabilitiesCount">{{ value }}</span>
       </template>
-    </gl-table>
+    </gl-table-lite>
   </section>
 </template>
