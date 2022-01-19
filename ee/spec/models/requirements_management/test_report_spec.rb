@@ -168,4 +168,9 @@ RSpec.describe RequirementsManagement::TestReport do
       end
     end
   end
+
+  it_behaves_like 'cleanup by a loose foreign key' do
+    let!(:model) { create(:test_report) }
+    let(:parent) { model.build }
+  end
 end
