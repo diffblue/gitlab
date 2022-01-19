@@ -20,9 +20,7 @@ describe('Zuora', () => {
   let wrapper;
 
   const createComponent = (props = {}, data = {}, apolloLocalState = {}) => {
-    const apolloProvider = createMockApolloProvider(STEPS, STEPS[1], {
-      ...gitLabResolvers,
-    });
+    const apolloProvider = createMockApolloProvider(STEPS, STEPS[1], gitLabResolvers);
     apolloProvider.clients.defaultClient.cache.writeQuery({
       query: stateQuery,
       data: merge({}, initialStateData, apolloLocalState),

@@ -3,10 +3,36 @@ import { merge } from 'lodash';
 import Api from 'ee/api';
 import * as SubscriptionsApi from 'ee/api/subscriptions_api';
 import { ERROR_FETCHING_COUNTRIES, ERROR_FETCHING_STATES } from 'ee/subscriptions/constants';
-import { COUNTRY_TYPE, STATE_TYPE } from 'ee/subscriptions/buy_addons_shared/constants';
+import {
+  COUNTRY_TYPE,
+  STATE_TYPE,
+  CI_MINUTES_PER_PACK,
+  I18N_CI_MINUTES_PRODUCT_LABEL,
+  I18N_CI_MINUTES_PRODUCT_UNIT,
+  I18N_STORAGE_PRODUCT_LABEL,
+  I18N_STORAGE_PRODUCT_UNIT,
+  planCode,
+  STORAGE_PER_PACK,
+} from 'ee/subscriptions/buy_addons_shared/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import createFlash from '~/flash';
-import { planData } from 'ee/subscriptions/buy_addons_shared/graphql/data';
+
+const planData = {
+  [planCode.CI_1000_MINUTES_PLAN]: {
+    hasExpiration: false,
+    isAddon: true,
+    label: I18N_CI_MINUTES_PRODUCT_LABEL,
+    productUnit: I18N_CI_MINUTES_PRODUCT_UNIT,
+    quantityPerPack: CI_MINUTES_PER_PACK,
+  },
+  [planCode.STORAGE_PLAN]: {
+    hasExpiration: true,
+    isAddon: true,
+    label: I18N_STORAGE_PRODUCT_LABEL,
+    productUnit: I18N_STORAGE_PRODUCT_UNIT,
+    quantityPerPack: STORAGE_PER_PACK,
+  },
+};
 
 // NOTE: These resolvers are temporary and will be removed in the future.
 // See https://gitlab.com/gitlab-org/gitlab/-/issues/321643
