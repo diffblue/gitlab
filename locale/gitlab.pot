@@ -31828,6 +31828,9 @@ msgstr ""
 msgid "SecurityPolicies|Policy type"
 msgstr ""
 
+msgid "SecurityReports|%{count}+ projects"
+msgstr ""
+
 msgid "SecurityReports|%{firstProject} and %{secondProject}"
 msgstr ""
 

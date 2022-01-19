@@ -8,7 +8,6 @@ import { severityGroupTypes } from 'ee/security_dashboard/store/modules/vulnerab
 import { Accordion, AccordionItem } from 'ee/vue_shared/components/accordion';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { trimText } from 'helpers/text_helper';
-import { n__ } from '~/locale';
 import {
   mockProjectsWithSeverityCounts,
   mockInstanceVulnerabilityGrades,
@@ -72,7 +71,7 @@ describe('Vulnerability Severity component', () => {
         'D 1 project',
         'C 2 projects',
         'B 1 project',
-        'A 2 projects',
+        'A 2+ projects',
       ]);
     });
   });
@@ -93,7 +92,7 @@ describe('Vulnerability Severity component', () => {
         'D 1 project',
         'C 2 projects',
         'B 1 project',
-        'A 2 projects',
+        'A 2+ projects',
       ]);
     });
   });
@@ -158,10 +157,6 @@ describe('Vulnerability Severity component', () => {
           expect(projectLink.text()).toBe(project.nameWithNamespace);
           expect(projectLink.attributes('href')).toBe(project.securityDashboardPath);
         });
-      });
-
-      it('states how many projects are there in the group', () => {
-        expect(text).toContain(n__('%d project', '%d projects', relatedProjects.length));
       });
 
       it('states which levels belong to the group', () => {
