@@ -119,17 +119,32 @@ Docker Machine used to support, it seems to be important to provide
 GitLab-maintained plugins for the major cloud providers like AWS, Google Cloud
 Platform and Azure.
 
+We should build them, presumably in separate repositories, in a way that they
+are easy to contribute to, fork, modify for certain needs the wider community
+team members might have. It should be also easy to install a new plugin without
+the need of rebuilding GitLab Runner whenever it happens.
+
 ### 💡 Write a solid documentation about how to build your own plugin
 
 It is important to show users how to build an auto-scaling plugin, so that they
 can implement support for their own cloud infrastructure.
 
+Building new plugins should be simple, and with the support of great
+documentation it should not require advanced skills, like understanding how
+gRPC works. We want to design the plugin system in a way that the entry barrier
+for contributing new plugins is very low.
+
 ### 💡 Build a PoC to run multiple builds on a single machine
 
 We want to better understand what kind of efficiency can running multiple jobs
 on a single machine bring. It is difficult to predict that, so ideally we
-should build a PoC that will  help us to better understand what we can expect
+should build a PoC that will help us to better understand what we can expect
 from this.
+
+To run this experiement we most likely we will need to build an experimental
+plugin, that not only allows us to schedule running multiple builds on a single
+machine, but also has a set of comprehensive metrics built into it, to make it
+easier to understand how it performs.
 
 ## Details
 
