@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { __ } from '~/locale';
+import { parseBoolean } from '~/lib/utils/common_utils';
 import TransferGroupForm from './components/transfer_group_form.vue';
 
 const prepareGroups = (rawGroups) => {
@@ -23,6 +23,8 @@ export default () => {
     phrase: confirmationPhrase = '',
     confirmDangerMessage = '',
     parentGroups = [],
+    isPaidGroup,
+    paidGroupHelpLink,
   } = el.dataset;
 
   return new Vue({
@@ -34,6 +36,8 @@ export default () => {
       return createElement(TransferGroupForm, {
         props: {
           parentGroups: prepareGroups(parentGroups),
+          isPaidGroup: parseBoolean(isPaidGroup),
+          paidGroupHelpLink,
           confirmButtonText,
           confirmationPhrase,
         },
