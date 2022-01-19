@@ -1,11 +1,20 @@
 <script>
-import { GlAlert, GlKeysetPagination, GlLoadingIcon } from '@gitlab/ui';
-import { MAX_LIST_COUNT, ACTIVE_CONNECTION_TIME } from '../constants';
+import { GlAlert, GlKeysetPagination, GlLoadingIcon, GlSprintf, GlLink } from '@gitlab/ui';
+import { s__ } from '~/locale';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { MAX_LIST_COUNT, ACTIVE_CONNECTION_TIME, AGENT_FEEDBACK_ISSUE } from '../constants';
 import getAgentsQuery from '../graphql/queries/get_agents.query.graphql';
 import AgentEmptyState from './agent_empty_state.vue';
 import AgentTable from './agent_table.vue';
 
 export default {
+  i18n: {
+    feedbackAlert: s__(
+      'ClusterAgents|Tell us your experience with the GitLab Agent %{linkStart}in this feedback issue%{linkEnd}.',
+    ),
+    error: s__('ClusterAgents|An error occurred while loading your GitLab Agents'),
+  },
+  AGENT_FEEDBACK_ISSUE,
   apollo: {
     agents: {
       query: getAgentsQuery,
@@ -31,7 +40,10 @@ export default {
     GlAlert,
     GlKeysetPagination,
     GlLoadingIcon,
+    GlSprintf,
+    GlLink,
   },
+  mixins: [glFeatureFlagMixin()],
   inject: ['projectPath'],
   props: {
     defaultBranchName: {
@@ -85,6 +97,12 @@ export default {
     },
     treePageInfo() {
       return this.agents?.project?.repository?.tree?.trees?.pageInfo || {};
+    },
+    showFeedbackAlert() {
+      return this.glFeatures.showGitlabAgentFeedback;
+    },
+    feedbackAlertClasses() {
+      return this.isChildComponent ? 'gl-my-2' : 'gl-mb-4';
     },
   },
   methods: {
@@ -151,6 +169,19 @@ export default {
 
   <section v-else-if="agentList">
     <div v-if="agentList.length">
+      <gl-alert
+        v-if="showFeedbackAlert"
+        variant="tip"
+        :class="feedbackAlertClasses"
+        :dismissible="false"
+      >
+        <gl-sprintf :message="$options.i18n.feedbackAlert"
+          ><template #link="{ content }">
+            <gl-link :href="$options.AGENT_FEEDBACK_ISSUE">{{ content }}</gl-link>
+          </template>
+        </gl-sprintf>
+      </gl-alert>
+
       <agent-table
         :agents="agentList"
         :default-branch-name="defaultBranchName"
@@ -166,6 +197,6 @@ export default {
   </section>
 
   <gl-alert v-else variant="danger" :dismissible="false">
-    {{ s__('ClusterAgents|An error occurred while loading your GitLab Agents') }}
+    {{ $options.i18n.error }}
   </gl-alert>
 </template>

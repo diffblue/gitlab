@@ -7755,6 +7755,9 @@ msgstr ""
 msgid "ClusterAgents|Select an agent to register with GitLab"
 msgstr ""
 
+msgid "ClusterAgents|Tell us your experience with the GitLab Agent %{linkStart}in this feedback issue%{linkEnd}."
+msgstr ""
+
 msgid "ClusterAgents|The GitLab Agent provides an increased level of security when connecting Kubernetes clusters to GitLab. %{linkStart}Learn more about the GitLab Agent.%{linkEnd}"
 msgstr ""
 

@@ -1,11 +1,11 @@
-import { GlAlert, GlKeysetPagination, GlLoadingIcon } from '@gitlab/ui';
+import { GlAlert, GlKeysetPagination, GlLoadingIcon, GlSprintf, GlLink } from '@gitlab/ui';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import { nextTick } from 'vue';
 import AgentEmptyState from '~/clusters_list/components/agent_empty_state.vue';
 import AgentTable from '~/clusters_list/components/agent_table.vue';
 import Agents from '~/clusters_list/components/agents.vue';
-import { ACTIVE_CONNECTION_TIME } from '~/clusters_list/constants';
+import { ACTIVE_CONNECTION_TIME, AGENT_FEEDBACK_ISSUE } from '~/clusters_list/constants';
 import getAgentsQuery from '~/clusters_list/graphql/queries/get_agents.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 
@@ -24,6 +24,7 @@ describe('Agents', () => {
 
   const createWrapper = async ({
     props = {},
+    glFeatures = {},
     agents = [],
     pageInfo = null,
     trees = [],
@@ -51,15 +52,23 @@ describe('Agents', () => {
         ...defaultProps,
         ...props,
       },
-      provide: provideData,
+      provide: {
+        ...provideData,
+        glFeatures,
+      },
+      stubs: {
+        GlSprintf,
+      },
     });
 
     await nextTick();
   };
 
-  const findAgentTable = () => wrapper.find(AgentTable);
-  const findEmptyState = () => wrapper.find(AgentEmptyState);
-  const findPaginationButtons = () => wrapper.find(GlKeysetPagination);
+  const findAgentTable = () => wrapper.findComponent(AgentTable);
+  const findEmptyState = () => wrapper.findComponent(AgentEmptyState);
+  const findPaginationButtons = () => wrapper.findComponent(GlKeysetPagination);
+  const findAlert = () => wrapper.findComponent(GlAlert);
+  const findLink = () => wrapper.findComponent(GlLink);
 
   afterEach(() => {
     if (wrapper) {
@@ -150,6 +159,29 @@ describe('Agents', () => {
       expect(wrapper.emitted().onAgentsLoad).toEqual([[count]]);
     });
 
+    describe('when the agent feedback feature flag is enabled', () => {
+      const glFeatures = {
+        showGitlabAgentFeedback: true,
+      };
+      beforeEach(() => {
+        return createWrapper({ glFeatures, agents, count, trees });
+      });
+
+      it('should show agent feedback alert', () => {
+        expect(findAlert().exists()).toBe(true);
+      });
+
+      it('should render the correct issue link', () => {
+        expect(findLink().attributes('href')).toBe(AGENT_FEEDBACK_ISSUE);
+      });
+    });
+
+    describe('when the agent feedback feature flag is disabled', () => {
+      it('should not show agent feedback alert', () => {
+        expect(findAlert().exists()).toBe(false);
+      });
+    });
+
     describe('when the agent has recently connected tokens', () => {
       it('should set agent status to active', () => {
         expect(findAgentTable().props('agents')).toMatchObject(expectedAgentsList);
@@ -223,6 +255,10 @@ describe('Agents', () => {
       expect(findAgentTable().exists()).toBe(false);
       expect(findEmptyState().exists()).toBe(true);
     });
+
+    it('should not show agent feedback alert', () => {
+      expect(findAlert().exists()).toBe(false);
+    });
   });
 
   describe('when agents query has errored', () => {
@@ -231,7 +267,7 @@ describe('Agents', () => {
     });
 
     it('displays an alert message', () => {
-      expect(wrapper.find(GlAlert).exists()).toBe(true);
+      expect(findAlert().text()).toBe('An error occurred while loading your GitLab Agents');
     });
   });
 
