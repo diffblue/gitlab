@@ -9,7 +9,7 @@ module EE
 
           override :configure_menu_items
           def configure_menu_items
-            return false if !super && !show_jira_menu_items?
+            return false unless super || show_jira_menu_items?
 
             add_item(iterations_menu_item)
             add_item(requirements_menu_item)
