@@ -200,6 +200,12 @@ module Geo
         verification_state_table_class.arel_table
       end
 
+      # @return whether primary checksum data is stored in a table separate
+      #         from the model table
+      def separate_verification_state_table?
+        verification_state_table_name != table_name
+      end
+
       def verification_timed_out_batch_query
         return verification_timed_out unless separate_verification_state_table?
 
