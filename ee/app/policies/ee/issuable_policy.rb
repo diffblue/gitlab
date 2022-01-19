@@ -22,6 +22,10 @@ module EE
         enable :read_incident_management_timeline_event
       end
 
+      rule { can?(:read_issue) & can?(:developer_access) & timeline_events_available }.policy do
+        enable :admin_incident_management_timeline_event
+      end
+
       rule { can?(:create_issue) & can?(:update_issue) }.policy do
         enable :upload_issuable_metric_image
       end
