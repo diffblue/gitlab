@@ -11988,7 +11988,28 @@ msgstr[1] ""
 msgid "Deployment|API"
 msgstr ""
 
+msgid "Deployment|Cancelled"
+msgstr ""
+
+msgid "Deployment|Created"
+msgstr ""
+
+msgid "Deployment|Failed"
+msgstr ""
+
+msgid "Deployment|Running"
+msgstr ""
+
+msgid "Deployment|Skipped"
+msgstr ""
+
+msgid "Deployment|Success"
+msgstr ""
+
 msgid "Deployment|This deployment was created using the API"
+msgstr ""
+
+msgid "Deployment|Waiting"
 msgstr ""
 
 msgid "Deployment|blocked"
