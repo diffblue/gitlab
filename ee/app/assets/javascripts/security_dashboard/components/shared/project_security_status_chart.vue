@@ -1,5 +1,6 @@
 <script>
 import { GlLink, GlTooltipDirective, GlIcon, GlLoadingIcon } from '@gitlab/ui';
+import { keyBy } from 'lodash';
 import {
   severityGroupTypes,
   severityLevels,
@@ -8,6 +9,7 @@ import {
   SEVERITY_GROUPS,
 } from 'ee/security_dashboard/store/modules/vulnerable_projects/constants';
 import { Accordion, AccordionItem } from 'ee/vue_shared/components/accordion';
+import { s__, n__, sprintf } from '~/locale';
 
 export default {
   css: {
@@ -61,7 +63,16 @@ export default {
         };
       },
       update(results) {
-        return this.processRawData(results);
+        const { vulnerabilityGrades } = this.groupFullPath
+          ? results.group
+          : results.instanceSecurityDashboard;
+
+        // This will convert the results array into an object where the key is the grade property:
+        // {
+        //    A: { grade: 'A', count: 1, projects: { nodes: [ ... ] },
+        //    B: { grade: 'B', count: 2, projects: { nodes: [ ... ] }
+        // }
+        return keyBy(vulnerabilityGrades, 'grade');
       },
       error() {
         this.errorLoadingVulnerabilitiesGrades = true;
@@ -75,6 +86,7 @@ export default {
     severityGroups() {
       return SEVERITY_GROUPS.map((group) => ({
         ...group,
+        count: this.vulnerabilityGrades[group.type]?.count || 0,
         projects: this.findProjectsForGroup(group),
       }));
     },
@@ -85,7 +97,7 @@ export default {
         return [];
       }
 
-      return this.vulnerabilityGrades[group.type].map((project) => ({
+      return this.vulnerabilityGrades[group.type].projects.nodes.map((project) => ({
         ...project,
         mostSevereVulnerability: this.findMostSevereVulnerabilityForGroup(project, group),
       }));
@@ -110,16 +122,6 @@ export default {
 
       return mostSevereVulnerability;
     },
-    processRawData(results) {
-      const { vulnerabilityGrades } = this.groupFullPath
-        ? results.group
-        : results.instanceSecurityDashboard;
-
-      return vulnerabilityGrades.reduce((acc, v) => {
-        acc[v.grade] = v.projects.nodes;
-        return acc;
-      }, {});
-    },
     shouldAccordionItemBeDisabled({ projects }) {
       return projects?.length < 1;
     },
@@ -131,6 +133,17 @@ export default {
     },
     severityText(severityLevel) {
       return severityLevelsTranslations[severityLevel];
+    },
+    getProjectCountString({ count, projects }) {
+      // The backend only returns the first 100 projects, so if the project count is greater than
+      // the projects array length, we'll show "100+ projects". Note that n__ only works with
+      // numbers, so we can't pass it a string like "100+", which is why we need the ternary to
+      // use a different string for "100+ projects". This is temporary code until this backend issue
+      // is complete, and we can show the actual counts and page through the projects:
+      // https://gitlab.com/gitlab-org/gitlab/-/issues/350110
+      return count > projects.length
+        ? sprintf(s__('SecurityReports|%{count}+ projects'), { count: projects.length })
+        : n__('%d project', '%d projects', count);
     },
   },
 };
@@ -186,7 +199,7 @@ export default {
                 {{ severityGroup.type }}
               </span>
               <span :class="{ 'gl-font-weight-bold': isExpanded, 'gl-text-gray-500': isDisabled }">
-                {{ n__('%d project', '%d projects', severityGroup.projects.length) }}
+                {{ getProjectCountString(severityGroup) }}
               </span>
             </h5>
           </template>

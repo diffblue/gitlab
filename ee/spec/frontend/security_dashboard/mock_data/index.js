@@ -73,30 +73,35 @@ const projectsMemoized = mockProjectsWithSeverityCounts();
 const vulnerabilityGrades = [
   {
     grade: 'F',
+    count: 1,
     projects: {
       nodes: [projectsMemoized[0]],
     },
   },
   {
     grade: 'D',
+    count: 1,
     projects: {
       nodes: [projectsMemoized[1]],
     },
   },
   {
     grade: 'C',
+    count: 2,
     projects: {
       nodes: [projectsMemoized[0], projectsMemoized[1]],
     },
   },
   {
     grade: 'B',
+    count: 1,
     projects: {
       nodes: [projectsMemoized[1]],
     },
   },
   {
     grade: 'A',
+    count: 3,
     projects: {
       nodes: [projectsMemoized[2], projectsMemoized[3]],
     },
