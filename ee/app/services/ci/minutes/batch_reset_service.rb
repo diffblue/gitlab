@@ -63,6 +63,7 @@ module Ci
       # rubocop: disable CodeReuse/ActiveRecord
       def recalculate_extra_shared_runners_minutes_limits!(namespaces)
         return if Feature.enabled?(:ci_use_new_monthly_minutes, default_enabled: :yaml)
+        return if Feature.enabled?(:ci_skip_legacy_extra_minutes_recalculation, default_enabled: :yaml)
 
         namespaces
           .joins(:namespace_statistics)

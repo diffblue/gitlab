@@ -53,7 +53,7 @@ RSpec.describe Ci::Minutes::BatchResetService do
         subject
       end
 
-      context 'when feature flag ci_use_new_monthly_minutes is enabled' do
+      context 'when feature flags ci_use_new_monthly_minutes and ci_skip_legacy_extra_minutes_recalculation are enabled' do
         it 'resets CI minutes but does not recalculate purchased minutes for the namespace exceeding the monthly minutes' do
           subject
 
@@ -71,9 +71,11 @@ RSpec.describe Ci::Minutes::BatchResetService do
         end
       end
 
-      context 'when feature flag ci_use_new_monthly_minutes is disabled' do
+      context 'when feature flag ci_use_new_monthly_minutes and ci_skip_legacy_extra_minutes_recalculation are disabled' do
         before do
-          stub_feature_flags(ci_use_new_monthly_minutes: false)
+          stub_feature_flags(
+            ci_use_new_monthly_minutes: false,
+            ci_skip_legacy_extra_minutes_recalculation: false)
         end
 
         it 'resets CI minutes and recalculates purchased minutes for the namespace exceeding the monthly minutes' do
@@ -153,7 +155,9 @@ RSpec.describe Ci::Minutes::BatchResetService do
 
         before do
           allow(::Gitlab::CurrentSettings).to receive(:shared_runners_minutes).and_return(global_limit)
-          stub_feature_flags(ci_use_new_monthly_minutes: false)
+          stub_feature_flags(
+            ci_use_new_monthly_minutes: false,
+            ci_skip_legacy_extra_minutes_recalculation: false)
         end
 
         it 'does not recalculate purchased minutes for any namespaces' do
