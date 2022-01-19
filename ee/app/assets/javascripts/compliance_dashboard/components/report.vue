@@ -1,14 +1,14 @@
 <script>
-import { GlAlert, GlLoadingIcon, GlTable } from '@gitlab/ui';
+import { GlAlert, GlLoadingIcon, GlTable, GlLink } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
-import { __ } from '~/locale';
+import { s__, __ } from '~/locale';
 import { thWidthClass } from '~/lib/utils/table_utility';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import complianceViolationsQuery from '../graphql/compliance_violations.query.graphql';
 import { mapViolations } from '../graphql/mappers';
-import EmptyState from './empty_state.vue';
 import MergeCommitsExportButton from './merge_requests/merge_commits_export_button.vue';
 import MergeRequestDrawer from './drawer.vue';
 import ViolationReason from './violations/reason.vue';
@@ -17,10 +17,10 @@ import ViolationFilter from './violations/filter.vue';
 export default {
   name: 'ComplianceReport',
   components: {
-    EmptyState,
     GlAlert,
     GlLoadingIcon,
     GlTable,
+    GlLink,
     MergeCommitsExportButton,
     MergeRequestDrawer,
     ViolationReason,
@@ -29,10 +29,6 @@ export default {
     UrlSync,
   },
   props: {
-    emptyStateSvgPath: {
-      type: String,
-      required: true,
-    },
     mergeCommitsCsvExportPath: {
       type: String,
       required: false,
@@ -78,9 +74,6 @@ export default {
     isLoading() {
       return this.$apollo.queries.violations.loading;
     },
-    hasViolations() {
-      return this.violations.length > 0;
-    },
     hasMergeCommitsCsvExportPath() {
       return this.mergeCommitsCsvExportPath !== '';
     },
@@ -92,10 +85,10 @@ export default {
       if (!mergeRequest || (this.showDrawer && id === this.drawerMergeRequest.id)) {
         this.closeDrawer();
       } else {
-        this.openDrawer(id, mergeRequest, project);
+        this.openDrawer(mergeRequest, project);
       }
     },
-    openDrawer(id, mergeRequest, project) {
+    openDrawer(mergeRequest, project) {
       this.showDrawer = true;
       this.drawerMergeRequest = mergeRequest;
       this.drawerProject = project;
@@ -143,16 +136,22 @@ export default {
     subheading: __(
       'The compliance report shows the merge request violations merged in protected environments.',
     ),
-    queryError: __(
-      'Retrieving the compliance report failed. Please refresh the page and try again.',
-    ),
+    queryError: __('Retrieving the compliance report failed. Refresh the page and try again.'),
+    noViolationsFound: s__('ComplianceReport|No violations found'),
+    learnMore: __('Learn more.'),
   },
+  documentationPath: helpPagePath('user/compliance/compliance_report/index.md', {
+    anchor: 'approval-status-and-separation-of-duties',
+  }),
   DRAWER_Z_INDEX,
 };
 </script>
 
 <template>
   <section>
+    <gl-alert v-if="queryError" variant="danger" class="gl-mt-3" :dismissible="false">
+      {{ $options.i18n.queryError }}
+    </gl-alert>
     <header class="gl-mb-6">
       <div class="gl-mt-5 d-flex">
         <h2 class="gl-flex-grow-1 gl-my-0">{{ $options.i18n.heading }}</h2>
@@ -161,46 +160,47 @@ export default {
           :merge-commits-csv-export-path="mergeCommitsCsvExportPath"
         />
       </div>
-      <p class="gl-mt-5">{{ $options.i18n.subheading }}</p>
+      <p class="gl-mt-5" data-testid="subheading">
+        {{ $options.i18n.subheading }}
+        <gl-link :href="$options.documentationPath" target="_blank">{{
+          $options.i18n.learnMore
+        }}</gl-link>
+      </p>
     </header>
-    <gl-loading-icon v-if="isLoading" size="xl" />
-    <gl-alert
-      v-else-if="queryError"
-      variant="danger"
-      :dismissible="false"
-      :title="$options.i18n.queryError"
+    <violation-filter
+      :group-path="groupPath"
+      :default-query="defaultQuery"
+      @filters-changed="updateUrlQuery"
     />
-    <template v-else-if="hasViolations">
-      <violation-filter
-        :group-path="groupPath"
-        :default-query="defaultQuery"
-        @filters-changed="updateUrlQuery"
-      />
-      <gl-table
-        ref="table"
-        :fields="$options.fields"
-        :items="violations"
-        head-variant="white"
-        stacked="lg"
-        select-mode="single"
-        selectable
-        hover
-        selected-variant="primary"
-        thead-class="gl-border-b-solid gl-border-b-1 gl-border-b-gray-100"
-        @row-selected="toggleDrawer"
-      >
-        <template #cell(reason)="{ item: { reason, violatingUser } }">
-          <violation-reason :reason="reason" :user="violatingUser" />
-        </template>
-        <template #cell(mergeRequest)="{ item: { mergeRequest } }">
-          {{ mergeRequest.title }}
-        </template>
-        <template #cell(mergedAt)="{ item: { mergeRequest } }">
-          <time-ago-tooltip :time="mergeRequest.mergedAt" />
-        </template>
-      </gl-table>
-    </template>
-    <empty-state v-else :image-path="emptyStateSvgPath" />
+    <gl-table
+      ref="table"
+      :fields="$options.fields"
+      :items="violations"
+      :busy="isLoading"
+      :empty-text="$options.i18n.noViolationsFound"
+      :selectable="true"
+      show-empty
+      head-variant="white"
+      stacked="lg"
+      select-mode="single"
+      hover
+      selected-variant="primary"
+      thead-class="gl-border-b-solid gl-border-b-1 gl-border-b-gray-100"
+      @row-selected="toggleDrawer"
+    >
+      <template #cell(reason)="{ item: { reason, violatingUser } }">
+        <violation-reason :reason="reason" :user="violatingUser" />
+      </template>
+      <template #cell(mergeRequest)="{ item: { mergeRequest } }">
+        {{ mergeRequest.title }}
+      </template>
+      <template #cell(mergedAt)="{ item: { mergeRequest } }">
+        <time-ago-tooltip :time="mergeRequest.mergedAt" />
+      </template>
+      <template #table-busy>
+        <gl-loading-icon size="lg" color="dark" class="mt-3" />
+      </template>
+    </gl-table>
     <merge-request-drawer
       :show-drawer="showDrawer"
       :merge-request="drawerMergeRequest"

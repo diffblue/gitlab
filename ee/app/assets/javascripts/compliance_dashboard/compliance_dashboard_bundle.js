@@ -6,7 +6,6 @@ import { queryToObject } from '~/lib/utils/url_utility';
 import resolvers from './graphql/resolvers';
 import ComplianceDashboard from './components/dashboard.vue';
 import ComplianceReport from './components/report.vue';
-import { parseViolationsQuery } from './utils';
 
 export default () => {
   const el = document.getElementById('js-compliance-report');
@@ -26,9 +25,7 @@ export default () => {
       defaultClient: createDefaultClient(resolvers),
     });
 
-    const defaultQuery = parseViolationsQuery(
-      queryToObject(window.location.search, { gatherArrays: true }),
-    );
+    const defaultQuery = queryToObject(window.location.search, { gatherArrays: true });
 
     return new Vue({
       el,
@@ -36,7 +33,6 @@ export default () => {
       render: (createElement) =>
         createElement(ComplianceReport, {
           props: {
-            emptyStateSvgPath,
             mergeCommitsCsvExportPath,
             groupPath,
             defaultQuery,

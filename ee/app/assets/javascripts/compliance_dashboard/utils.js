@@ -16,10 +16,8 @@ export const mapDashboardToDrawerData = (mergeRequest) => ({
   },
 });
 
-export const parseViolationsQuery = ({ projectIds = [], ...rest }) => ({
-  projectIds: convertToGraphQLIds(
+export const convertProjectIdsToGraphQl = (projectIds) =>
+  convertToGraphQLIds(
     TYPE_PROJECT,
     projectIds.filter((id) => Boolean(id)),
-  ),
-  ...rest,
-});
+  );

@@ -8962,6 +8962,9 @@ msgstr ""
 msgid "ComplianceReport|Less than 2 approvers"
 msgstr ""
 
+msgid "ComplianceReport|No violations found"
+msgstr ""
+
 msgid "Component"
 msgstr ""
 
@@ -30449,7 +30452,7 @@ msgstr ""
 msgid "Resync"
 msgstr ""
 
-msgid "Retrieving the compliance report failed. Please refresh the page and try again."
+msgid "Retrieving the compliance report failed. Refresh the page and try again."
 msgstr ""
 
 msgid "Retry"
