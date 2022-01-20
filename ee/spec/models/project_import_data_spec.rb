@@ -143,9 +143,9 @@ RSpec.describe ProjectImportData do
 
       it 'returns the public counterpart of the SSH private key' do
         comment = "git@#{::Gitlab.config.gitlab.host}"
-        expected = SSHKey.new(import_data.ssh_private_key, comment: comment)
+        public_counterpart = SSHData::PrivateKey.parse(import_data.ssh_private_key).first.public_key.openssh(comment: comment)
 
-        is_expected.to eq(expected.ssh_public_key)
+        is_expected.to eq(public_counterpart)
       end
     end
   end
