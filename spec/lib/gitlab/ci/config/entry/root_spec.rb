@@ -354,9 +354,9 @@ RSpec.describe Gitlab::Ci::Config::Entry::Root do
       root.compose!
     end
 
-    context 'when before script is not an array' do
+    context 'when before script is a number' do
       let(:hash) do
-        { before_script: 'ls' }
+        { before_script: 123 }
       end
 
       describe '#valid?' do
@@ -368,7 +368,7 @@ RSpec.describe Gitlab::Ci::Config::Entry::Root do
       describe '#errors' do
         it 'reports errors from child nodes' do
           expect(root.errors)
-            .to include 'before_script config should be an array containing strings and arrays of strings'
+            .to include 'before_script config should be a string or a nested array of strings up to 10 levels deep'
         end
       end
     end

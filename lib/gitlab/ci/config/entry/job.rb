@@ -45,7 +45,7 @@ module Gitlab
             end
           end
 
-          entry :before_script, Entry::Script,
+          entry :before_script, Entry::Commands,
             description: 'Global before script overridden in this job.',
             inherit: true
 
@@ -58,7 +58,7 @@ module Gitlab
             inherit: false,
             deprecation: { deprecated: '9.0', warning: '14.8', removed: '15.0' }
 
-          entry :after_script, Entry::Script,
+          entry :after_script, Entry::Commands,
             description: 'Commands that will be executed when finishing job.',
             inherit: true
 
