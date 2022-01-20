@@ -5,12 +5,6 @@ require 'spec_helper'
 RSpec.describe EE::RegistrationsHelper do
   include Devise::Test::ControllerHelpers
 
-  describe '#signup_username_data_attributes' do
-    it 'has expected attributes' do
-      expect(helper.signup_username_data_attributes.keys).to include(:api_path)
-    end
-  end
-
   describe '#shuffled_registration_objective_options' do
     subject(:shuffled_options) { helper.shuffled_registration_objective_options }
 
