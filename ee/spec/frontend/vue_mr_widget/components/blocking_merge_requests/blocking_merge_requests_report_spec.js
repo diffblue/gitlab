@@ -53,7 +53,7 @@ describe('BlockingMergeRequestsReport', () => {
 
   it('passes merged MRs as resolved issues and anything else as unresolved ', () => {
     createComponent();
-    const reportSectionProps = wrapper.find(ReportSection).props();
+    const reportSectionProps = wrapper.findComponent(ReportSection).props();
 
     expect(reportSectionProps.resolvedIssues).toHaveLength(1);
     expect(reportSectionProps.resolvedIssues[0].id).toBe(3);
@@ -61,7 +61,7 @@ describe('BlockingMergeRequestsReport', () => {
 
   it('passes all non "merged" MRs as unresolved issues', () => {
     createComponent();
-    const reportSectionProps = wrapper.find(ReportSection).props();
+    const reportSectionProps = wrapper.findComponent(ReportSection).props();
 
     expect(reportSectionProps.unresolvedIssues.map((issue) => issue.id)).toEqual([2, 1]);
   });
@@ -69,7 +69,7 @@ describe('BlockingMergeRequestsReport', () => {
   it('sets status to "ERROR" when there are unmerged blocking MRs', () => {
     createComponent();
 
-    expect(wrapper.find(ReportSection).props().status).toBe(reportStatus.ERROR);
+    expect(wrapper.findComponent(ReportSection).props().status).toBe(reportStatus.ERROR);
   });
 
   it('sets status to "SUCCESS" when all blocking MRs are merged', () => {
@@ -79,7 +79,7 @@ describe('BlockingMergeRequestsReport', () => {
     };
     createComponent();
 
-    expect(wrapper.find(ReportSection).props().status).toBe(reportStatus.SUCCESS);
+    expect(wrapper.findComponent(ReportSection).props().status).toBe(reportStatus.SUCCESS);
   });
 
   describe('blockedByText', () => {

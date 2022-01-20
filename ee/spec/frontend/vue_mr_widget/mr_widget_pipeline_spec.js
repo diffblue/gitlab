@@ -8,7 +8,7 @@ describe('MRWidgetPipeline', () => {
   let wrapper;
 
   const findPipelineInfoContainer = () => wrapper.find('[data-testid="pipeline-info-container"');
-  const findPipelinesMiniList = () => wrapper.find(LinkedPipelinesMiniList);
+  const findPipelinesMiniList = () => wrapper.findComponent(LinkedPipelinesMiniList);
 
   const createWrapper = (props) => {
     wrapper = shallowMount(MrWidgetPipeline, {

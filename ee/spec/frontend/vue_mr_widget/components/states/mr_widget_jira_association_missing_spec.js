@@ -5,7 +5,7 @@ import StatusIcon from '~/vue_merge_request_widget/components/mr_widget_status_i
 describe('MrWidgetJiraAssociationMissing', () => {
   let wrapper;
 
-  const findStatusIcon = () => wrapper.find(StatusIcon);
+  const findStatusIcon = () => wrapper.findComponent(StatusIcon);
 
   const createComponent = () => {
     wrapper = shallowMount(MrWidgetJiraAssociationMissing);

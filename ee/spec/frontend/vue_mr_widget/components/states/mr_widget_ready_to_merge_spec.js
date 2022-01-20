@@ -78,13 +78,13 @@ describe('ReadyToMerge', () => {
     ({ vm } = wrapper);
   };
 
-  const findResolveItemsMessage = () => wrapper.find(GlSprintf);
+  const findResolveItemsMessage = () => wrapper.findComponent(GlSprintf);
   const findPipelineConflictMessage = () =>
     wrapper.find('[data-testid="pipeline-succeed-conflict"]');
   const findMergeButton = () => wrapper.find('[data-testid="merge-button"]');
   const findMergeButtonDropdown = () => wrapper.find('.js-merge-moment');
   const findMergeImmediatelyButton = () => wrapper.find('.js-merge-immediately-button');
-  const findMergeTrainHelperIcon = () => wrapper.find(MergeTrainHelperIcon);
+  const findMergeTrainHelperIcon = () => wrapper.findComponent(MergeTrainHelperIcon);
   const findFailedPipelineMergeTrainText = () =>
     wrapper.find('[data-testid="failed-pipeline-merge-train-text"]');
   const findMergeTrainFailedPipelineConfirmationDialog = () =>
@@ -298,7 +298,7 @@ describe('ReadyToMerge', () => {
     let dialog;
 
     const clickMergeImmediately = () => {
-      dialog = wrapper.find(MergeImmediatelyConfirmationDialog);
+      dialog = wrapper.findComponent(MergeImmediatelyConfirmationDialog);
 
       expect(dialog.exists()).toBe(true);
       dialog.vm.show = jest.fn();

@@ -25,13 +25,13 @@ describe('EE MRWidget approvals footer', () => {
     });
   };
 
-  const findToggle = () => wrapper.find(GlButton);
-  const findToggleIcon = () => findToggle().find(GlIcon);
-  const findToggleLoadingIcon = () => findToggle().find(GlLoadingIcon);
+  const findToggle = () => wrapper.findComponent(GlButton);
+  const findToggleIcon = () => findToggle().findComponent(GlIcon);
+  const findToggleLoadingIcon = () => findToggle().findComponent(GlLoadingIcon);
   const findExpandButton = () => wrapper.find('[data-testid="approvers-expand-button"]');
   const findCollapseButton = () => wrapper.find('[data-testid="approvers-collapse-button"]');
-  const findList = () => wrapper.find(ApprovalsList);
-  const findAvatars = () => wrapper.find(UserAvatarList);
+  const findList = () => wrapper.findComponent(ApprovalsList);
+  const findAvatars = () => wrapper.findComponent(UserAvatarList);
 
   afterEach(() => {
     wrapper.destroy();

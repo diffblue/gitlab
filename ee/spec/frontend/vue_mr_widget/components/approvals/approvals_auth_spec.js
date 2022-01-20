@@ -61,7 +61,7 @@ describe('Approval auth component', () => {
 
     it('emits the approve event', (done) => {
       findInput().setValue(TEST_PASSWORD);
-      wrapper.find(GlModal).vm.$emit('ok', { preventDefault: () => null });
+      wrapper.findComponent(GlModal).vm.$emit('ok', { preventDefault: () => null });
       waitForTick(done);
 
       expect(wrapper.emitted().approve).toEqual([[TEST_PASSWORD]]);
