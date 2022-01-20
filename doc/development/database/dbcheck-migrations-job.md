@@ -1,0 +1,66 @@
+---
+stage: Enablement
+group: Database
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#assignments
+---
+
+# db:check-migrations job
+
+This job runs on the test stage of a merge request pipeline. It does 3 checks:
+
+- a schema dump comparison between the author's working branch and the target branch,
+  after executing a rollback of your new migrations, to validate that the
+  schema properly resets to what it was before executing this new migration.
+- a schema dump comparison between the author's working branch and the `db/structure.sql`
+  file that the author committed, to guarantee that it contains all the expected changes
+  in the migration.
+- a Git diff between the `db/schema_migrations` that the author committed and the
+  one that the script generated after running migrations, to guarantee that everything
+  was properly committed.
+  
+## Troubleshooting
+
+### False positives
+
+This jobs is allowed to fail, because it can throw some false positives.
+
+For example, when we drop a column and then we rollback, this column is always
+re-added at the end of the list of columns. Meaning that, if this column was previously in
+the middle of the list, the rollback won't bring the schema back exactly to what it was.
+This will cause the job to fail, but it's an acceptable situation.
+
+See [this failed job](https://gitlab.com/gitlab-org/gitlab/-/jobs/2006544972#L138) for a
+real life example. In this case, the author dropped the `position` column.
+
+### Schema dump comparison fails after rollback 
+
+This often happens if your working branch is behind the target branch. Here is a real life
+scenario:
+
+```mermaid
+graph LR
+    Main((main<br>commit A)) ===> |remove constraint<br>fk_rails_dbebdaa8fe| MainB((main<br>commit B))
+    Main((main<br>commit A)) --> |checkout<br>dev| DevA((dev<br>commit A)):::dev
+    DevA((dev<br>commit A)) --> |add column<br>dependency_proxy_size| DevC((dev<br>commit C)):::dev
+    DevC -.-> |CI pipeline<br>executes| JOB-FAILED((JOB FAILED!)):::error
+
+    classDef main fill:#f4f0ff,stroke:#7b58cf
+    classDef dev fill:#e9f3fc,stroke:#1f75cb
+    classDef error fill:#f15146,stroke:#d4121a
+```
+
+1. You checkout the `dev` working branch from the `main` target branch. At this point
+each have their `HEAD` at commit A.
+1. Someone works on the `main` branch and drops the `dependency_proxy_size` constraint, thus creating
+   commit B on `main`.
+1. You add column `dependency_proxy_size` to your `dev` branch.
+1. The `db:check-migrations` job fails for your `dev` branch's CI pipeline complaining that
+the `structure.sql` file did not rollback to its expected state.
+
+This happened because `dev` had only commits A and C, not B. Thus, its database schema
+did not know about the removal of the `dependency_proxy_size` constraint. So, when comparing the two
+schemas, the `dev` branch will have this constraint while the `main` branch won't.
+
+This example really happened. See the [job failure logs](https://gitlab.com/gitlab-org/gitlab/-/jobs/1992050890).
+   
+To fix these kind of issues, rebase the working branch onto the target branch to get the latest changes.
