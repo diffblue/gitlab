@@ -32,7 +32,7 @@ module Gitlab
             description: 'List of external YAML files to include.',
             reserved: true
 
-          entry :before_script, Entry::Script,
+          entry :before_script, Entry::Commands,
             description: 'Script that will be executed before each job.',
             reserved: true
 
@@ -44,7 +44,7 @@ module Gitlab
             description: 'Docker images that will be linked to the container.',
             reserved: true
 
-          entry :after_script, Entry::Script,
+          entry :after_script, Entry::Commands,
             description: 'Script that will be executed after each job.',
             reserved: true
 
