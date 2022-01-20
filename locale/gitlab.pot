@@ -29448,7 +29448,7 @@ msgstr ""
 msgid "RegistrationFeatures|Enable Service Ping and register for this feature."
 msgstr ""
 
-msgid "RegistrationFeatures|Read more about the %{linkStart}%{label}%{linkEnd}."
+msgid "RegistrationFeatures|Read more about the %{link_start}Registration Features Program%{link_end}."
 msgstr ""
 
 msgid "RegistrationFeatures|Registration Features Program"
@@ -30212,6 +30212,9 @@ msgid "Repository must contain at least 1 file."
 msgstr ""
 
 msgid "Repository size is above the limit."
+msgstr ""
+
+msgid "Repository size limit (MB)"
 msgstr ""
 
 msgid "Repository storage"

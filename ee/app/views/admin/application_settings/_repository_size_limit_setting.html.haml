@@ -1,14 +1,11 @@
+- return unless repo_size_limit_feature_available?
+
 - form = local_assigns.fetch(:form)
 
 .form-group
   = form.label :repository_size_limit, class: 'label-bold' do
     = _('Size limit per repository (MB)')
-  - if repo_size_limit_feature_available?
-    = form.number_field :repository_size_limit, value: form.object.repository_size_limit.try(:to_mb), class: 'form-control gl-form-input', min: 0, title: _('Maximum size limit for each repository.'), data: { toggle: 'tooltip', container: 'body' }
-    %span.form-text.text-muted#repository_size_limit_help_block
-      = _('Includes LFS objects. It can be overridden per group, or per project. 0 for unlimited.')
-      = link_to _('Learn more.'), help_page_path('user/admin_area/settings/account_and_limit_settings'), target: '_blank', rel: 'noopener noreferrer'
-  - else
-    = form.number_field :disabled_repository_size_limit, value: '', class: 'form-control gl-form-input', disabled: true
-    %span.form-text.text-muted
-      = render 'shared/registration_features_discovery_message'
+  = form.number_field :repository_size_limit, value: form.object.repository_size_limit.try(:to_mb), class: 'form-control gl-form-input', min: 0, title: _('Maximum size limit for each repository.'), data: { toggle: 'tooltip', container: 'body' }
+  %span.form-text.text-muted#repository_size_limit_help_block
+    = _('Includes LFS objects. It can be overridden per group, or per project. 0 for unlimited.')
+    = link_to _('Learn more.'), help_page_path('user/admin_area/settings/account_and_limit_settings'), target: '_blank', rel: 'noopener noreferrer'
