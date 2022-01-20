@@ -138,6 +138,9 @@ export default {
         window.location.href,
       );
     },
+    memoryReportPath() {
+      return mergeUrlParams({ performance_bar: 'memory' }, window.location.href);
+    },
   },
   safeHtmlConfig: { ADD_TAGS: ['gl-emoji'] },
 };
@@ -180,6 +183,15 @@ export default {
       <div v-if="currentRequest.details" id="peek-download" class="view">
         <a class="gl-text-blue-200" :download="downloadName" :href="downloadPath">{{
           s__('PerformanceBar|Download')
+        }}</a>
+      </div>
+      <div
+        v-if="currentRequest.details && env === 'development'"
+        id="peek-memory-report"
+        class="view"
+      >
+        <a class="gl-text-blue-200" :href="memoryReportPath()">{{
+          s__('PerformanceBar|Memory report')
         }}</a>
       </div>
       <div v-if="currentRequest.details" id="peek-flamegraph" class="view">
