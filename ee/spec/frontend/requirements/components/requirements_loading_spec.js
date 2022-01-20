@@ -79,7 +79,9 @@ describe('RequirementsLoading', () => {
 
   describe('template', () => {
     it('renders gl-skeleton-loading component project has some requirements and current tab has requirements to show', () => {
-      const loaders = wrapper.find('.requirements-list-loading').findAll(GlSkeletonLoading);
+      const loaders = wrapper
+        .find('.requirements-list-loading')
+        .findAllComponents(GlSkeletonLoading);
 
       expect(loaders).toHaveLength(2);
       expect(loaders.at(0).props('lines')).toBe(2);
@@ -96,7 +98,7 @@ describe('RequirementsLoading', () => {
 
       return wrapper.vm.$nextTick(() => {
         expect(wrapper.find('.requirements-list-loading').exists()).toBe(false);
-        expect(wrapper.find(GlLoadingIcon).exists()).toBe(true);
+        expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
       });
     });
   });

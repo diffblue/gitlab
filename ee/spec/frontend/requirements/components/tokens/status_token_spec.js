@@ -55,7 +55,7 @@ describe('StatusToken', () => {
 
   describe('template', () => {
     it('renders gl-filtered-search-token component', () => {
-      const token = wrapper.find(GlFilteredSearchToken);
+      const token = wrapper.findComponent(GlFilteredSearchToken);
       expect(token.exists()).toBe(true);
       expect(token.props('config')).toMatchObject(mockStatusToken);
     });
@@ -70,17 +70,17 @@ describe('StatusToken', () => {
       ({ value, text, icon }) => {
         wrapper = createComponent({ value: { data: value } });
 
-        expect(wrapper.find(GlToken).text()).toContain(text);
-        expect(wrapper.find(GlIcon).props('name')).toBe(icon);
+        expect(wrapper.findComponent(GlToken).text()).toContain(text);
+        expect(wrapper.findComponent(GlIcon).props('name')).toBe(icon);
       },
     );
 
     it('renders provided statuses as suggestions', async () => {
-      const suggestions = wrapper.findAll(GlFilteredSearchSuggestion);
+      const suggestions = wrapper.findAllComponents(GlFilteredSearchSuggestion);
 
       expect(suggestions).toHaveLength(mockStatuses.length);
       mockStatuses.forEach((status, index) => {
-        const iconEl = suggestions.at(index).find(GlIcon);
+        const iconEl = suggestions.at(index).findComponent(GlIcon);
 
         expect(iconEl.exists()).toBe(true);
         expect(iconEl.props('name')).toBe(status.icon);

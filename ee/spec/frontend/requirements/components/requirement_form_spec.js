@@ -134,7 +134,7 @@ describe('RequirementForm', () => {
 
             await nextTick();
 
-            expect(wrapper.find(GlFormCheckbox).vm.$attrs.checked).toBe(satisfied);
+            expect(wrapper.findComponent(GlFormCheckbox).vm.$attrs.checked).toBe(satisfied);
           },
         );
       });
@@ -149,7 +149,7 @@ describe('RequirementForm', () => {
 
         it('does not render the satisfied checkbox', async () => {
           await nextTick();
-          expect(wrapper.find(GlFormCheckbox).exists()).toBe(false);
+          expect(wrapper.findComponent(GlFormCheckbox).exists()).toBe(false);
         });
       });
     });
@@ -300,21 +300,21 @@ describe('RequirementForm', () => {
 
   describe('template', () => {
     it('renders gl-drawer as component container element', () => {
-      expect(wrapper.find(GlDrawer).exists()).toBe(true);
+      expect(wrapper.findComponent(GlDrawer).exists()).toBe(true);
     });
 
     it('renders drawer header with `requirement.reference` and test report badge', () => {
       expect(
         getByText(wrapperWithRequirement.element, `REQ-${mockRequirementsOpen[0].iid}`),
       ).not.toBeNull();
-      expect(wrapperWithRequirement.find(RequirementStatusBadge).exists()).toBe(true);
-      expect(wrapperWithRequirement.find(RequirementStatusBadge).props('testReport')).toBe(
+      expect(wrapperWithRequirement.findComponent(RequirementStatusBadge).exists()).toBe(true);
+      expect(wrapperWithRequirement.findComponent(RequirementStatusBadge).props('testReport')).toBe(
         mockTestReport,
       );
     });
 
     it('renders issuable-body component', () => {
-      const issuableBody = wrapperWithRequirement.find(IssuableBody);
+      const issuableBody = wrapperWithRequirement.findComponent(IssuableBody);
 
       expect(issuableBody.exists()).toBe(true);
       expect(issuableBody.props()).toMatchObject({
@@ -335,9 +335,9 @@ describe('RequirementForm', () => {
 
       await nextTick();
 
-      const issuableBody = wrapperWithRequirement.find(IssuableBody);
+      const issuableBody = wrapperWithRequirement.findComponent(IssuableBody);
 
-      expect(issuableBody.find(GlFormCheckbox).exists()).toBe(true);
+      expect(issuableBody.findComponent(GlFormCheckbox).exists()).toBe(true);
       expect(issuableBody.find('[data-testid="requirement-save"]').exists()).toBe(true);
       expect(issuableBody.find('[data-testid="requirement-cancel"]').exists()).toBe(true);
     });

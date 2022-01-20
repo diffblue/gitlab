@@ -103,7 +103,7 @@ describe('RequirementsEmptyState', () => {
     });
 
     it('renders new requirement button when project has no requirements', () => {
-      const newReqButton = wrapper.find(GlButton);
+      const newReqButton = wrapper.findComponent(GlButton);
 
       expect(newReqButton.exists()).toBe(true);
       expect(newReqButton.text()).toBe('New requirement');
@@ -119,7 +119,7 @@ describe('RequirementsEmptyState', () => {
       });
 
       return wrapper.vm.$nextTick(() => {
-        const newReqButton = wrapper.find(GlButton);
+        const newReqButton = wrapper.findComponent(GlButton);
 
         expect(newReqButton.exists()).toBe(false);
       });
@@ -131,7 +131,7 @@ describe('RequirementsEmptyState', () => {
       });
 
       return wrapper.vm.$nextTick(() => {
-        const newReqButton = wrapper.find(GlButton);
+        const newReqButton = wrapper.findComponent(GlButton);
 
         expect(newReqButton.exists()).toBe(false);
       });

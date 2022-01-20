@@ -38,28 +38,28 @@ describe('RequirementsTabs', () => {
 
   describe('template', () => {
     it('renders "Open" tab', () => {
-      const tabEl = wrapper.findAll(GlTab).at(0);
+      const tabEl = wrapper.findAllComponents(GlTab).at(0);
 
       expect(tabEl.text()).toContain('Open');
-      expect(tabEl.find(GlBadge).text()).toBe(`${mockRequirementsCount.OPENED}`);
+      expect(tabEl.findComponent(GlBadge).text()).toBe(`${mockRequirementsCount.OPENED}`);
     });
 
     it('renders "Archived" tab', () => {
-      const tabEl = wrapper.findAll(GlTab).at(1);
+      const tabEl = wrapper.findAllComponents(GlTab).at(1);
 
       expect(tabEl.text()).toContain('Archived');
-      expect(tabEl.find(GlBadge).text()).toBe(`${mockRequirementsCount.ARCHIVED}`);
+      expect(tabEl.findComponent(GlBadge).text()).toBe(`${mockRequirementsCount.ARCHIVED}`);
     });
 
     it('renders "All" tab', () => {
-      const tabEl = wrapper.findAll(GlTab).at(2);
+      const tabEl = wrapper.findAllComponents(GlTab).at(2);
 
       expect(tabEl.text()).toContain('All');
-      expect(tabEl.find(GlBadge).text()).toBe(`${mockRequirementsCount.ALL}`);
+      expect(tabEl.findComponent(GlBadge).text()).toBe(`${mockRequirementsCount.ALL}`);
     });
 
     it('renders class `active` on currently selected tab', () => {
-      const tabEl = wrapper.findAll(GlTab).at(0);
+      const tabEl = wrapper.findAllComponents(GlTab).at(0);
 
       expect(tabEl.attributes('active')).toBeDefined();
     });
@@ -70,7 +70,7 @@ describe('RequirementsTabs', () => {
       });
 
       return wrapper.vm.$nextTick(() => {
-        const buttonEl = wrapper.findAll(GlButton).at(2);
+        const buttonEl = wrapper.findAllComponents(GlButton).at(2);
 
         expect(buttonEl.exists()).toBe(true);
         expect(buttonEl.text()).toBe('New requirement');
@@ -83,7 +83,7 @@ describe('RequirementsTabs', () => {
       });
 
       return wrapper.vm.$nextTick(() => {
-        const buttonEl = wrapper.find(GlButton);
+        const buttonEl = wrapper.findComponent(GlButton);
 
         expect(buttonEl.exists()).toBe(false);
       });
@@ -96,7 +96,7 @@ describe('RequirementsTabs', () => {
       });
 
       return wrapper.vm.$nextTick(() => {
-        const buttonEl = wrapper.find(GlButton);
+        const buttonEl = wrapper.findComponent(GlButton);
 
         expect(buttonEl.exists()).toBe(false);
       });
@@ -108,7 +108,7 @@ describe('RequirementsTabs', () => {
       });
 
       return wrapper.vm.$nextTick(() => {
-        const buttonEl = wrapper.findAll(GlButton);
+        const buttonEl = wrapper.findAllComponents(GlButton);
 
         expect(buttonEl.at(0).props('disabled')).toBe(true);
         expect(buttonEl.at(1).props('disabled')).toBe(true);
