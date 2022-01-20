@@ -22,11 +22,13 @@ describe('Registration Trial Toggle', () => {
 
   describe('Default state', () => {
     it('renders component properly', () => {
-      expect(wrapper.find(RegistrationTrialToggle).exists()).toBe(true);
+      expect(wrapper.findComponent(RegistrationTrialToggle).exists()).toBe(true);
     });
 
     it('shows the toggle component', () => {
-      expect(wrapper.find(GlToggle).props('label')).toBe(RegistrationTrialToggle.i18n.toggleLabel);
+      expect(wrapper.findComponent(GlToggle).props('label')).toBe(
+        RegistrationTrialToggle.i18n.toggleLabel,
+      );
     });
 
     it('sets the default value to be false', () => {
@@ -40,7 +42,7 @@ describe('Registration Trial Toggle', () => {
     });
 
     it('emits another event', () => {
-      wrapper.find(GlToggle).vm.$emit('change', true);
+      wrapper.findComponent(GlToggle).vm.$emit('change', true);
 
       expect(wrapper.vm.trial).toBe(true);
       expect(wrapper.emitted().changed).toEqual([[{ trial: false }], [{ trial: true }]]);

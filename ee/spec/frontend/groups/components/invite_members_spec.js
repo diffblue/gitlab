@@ -18,8 +18,8 @@ describe('User invites', () => {
     );
   };
 
-  const inputs = () => wrapper.findAll(GlFormInput);
-  const addButton = () => wrapper.find(GlButton);
+  const inputs = () => wrapper.findAllComponents(GlFormInput);
+  const addButton = () => wrapper.findComponent(GlButton);
 
   afterEach(() => {
     wrapper.destroy();

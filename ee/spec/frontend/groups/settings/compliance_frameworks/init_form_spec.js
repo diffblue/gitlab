@@ -15,7 +15,7 @@ describe('createComplianceFrameworksFormApp', () => {
   const graphqlFieldName = 'field';
   const testId = '1';
 
-  const findFormApp = (form) => wrapper.find(form);
+  const findFormApp = (form) => wrapper.findComponent(form);
 
   const setUpDocument = (id = null) => {
     el = document.createElement('div');

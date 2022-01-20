@@ -49,7 +49,7 @@ describe('Insights page component', () => {
     }, {});
   };
 
-  const findInsightsChartData = () => wrapper.find(InsightsChart);
+  const findInsightsChartData = () => wrapper.findComponent(InsightsChart);
 
   beforeEach(() => {
     store = createStore();
@@ -71,7 +71,7 @@ describe('Insights page component', () => {
     });
 
     it('shows an empty state', () => {
-      expect(wrapper.find(GlEmptyState).exists()).toBe(true);
+      expect(wrapper.findComponent(GlEmptyState).exists()).toBe(true);
     });
   });
 
@@ -88,7 +88,7 @@ describe('Insights page component', () => {
     });
 
     it('does not show empty state', () => {
-      expect(wrapper.find(GlEmptyState).exists()).toBe(false);
+      expect(wrapper.findComponent(GlEmptyState).exists()).toBe(false);
     });
 
     describe('pageConfig changes', () => {
@@ -97,7 +97,7 @@ describe('Insights page component', () => {
 
         await wrapper.vm.$nextTick();
 
-        expect(wrapper.find(GlEmptyState).exists()).toBe(true);
+        expect(wrapper.findComponent(GlEmptyState).exists()).toBe(true);
       });
     });
 
@@ -113,7 +113,7 @@ describe('Insights page component', () => {
       });
 
       it('does not display chart', () => {
-        expect(wrapper.find(GlColumnChart).exists()).toBe(false);
+        expect(wrapper.findComponent(GlColumnChart).exists()).toBe(false);
       });
     });
 

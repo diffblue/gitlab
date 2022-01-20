@@ -30,7 +30,7 @@ describe('CommaSeparatedListTokenSelector', () => {
     });
   };
 
-  const findTokenSelector = () => wrapper.find(GlTokenSelector);
+  const findTokenSelector = () => wrapper.findComponent(GlTokenSelector);
 
   const findTokenSelectorInput = () => findTokenSelector().find('input[type="text"]');
 
@@ -84,7 +84,7 @@ describe('CommaSeparatedListTokenSelector', () => {
 
         await nextTick();
 
-        wrapper.findAll(GlToken).wrappers.forEach((tokenWrapper, index) => {
+        wrapper.findAllComponents(GlToken).wrappers.forEach((tokenWrapper, index) => {
           expect(tokenWrapper.text()).toBe(expectedTokens[index]);
         });
       },

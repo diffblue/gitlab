@@ -103,11 +103,11 @@ describe('EpicSidebarComponent', () => {
     });
 
     it('renders SidebarSubscriptionsWidget', () => {
-      expect(wrapper.find(SidebarSubscriptionsWidget).exists()).toBe(true);
+      expect(wrapper.findComponent(SidebarSubscriptionsWidget).exists()).toBe(true);
     });
 
     it('renders SidebarTodoWidget when user is signed in', () => {
-      const todoWidget = wrapper.find(SidebarTodoWidget);
+      const todoWidget = wrapper.findComponent(SidebarTodoWidget);
       expect(todoWidget.exists()).toBe(true);
       expect(todoWidget.props()).toMatchObject({
         issuableId: 'gid://gitlab/Epic/1',
@@ -118,7 +118,7 @@ describe('EpicSidebarComponent', () => {
     });
 
     it('renders SidebarReferenceWidget', () => {
-      expect(wrapper.find(SidebarReferenceWidget).exists()).toBe(true);
+      expect(wrapper.findComponent(SidebarReferenceWidget).exists()).toBe(true);
     });
 
     describe('when sub-epics feature is not available', () => {
@@ -130,13 +130,13 @@ describe('EpicSidebarComponent', () => {
 
         await nextTick();
 
-        expect(wrapper.find(SidebarAncestorsWidget).exists()).toBe(false);
+        expect(wrapper.findComponent(SidebarAncestorsWidget).exists()).toBe(false);
       });
     });
 
     describe('when sub-epics feature is available', () => {
       it('renders ancestors list', () => {
-        expect(wrapper.find(SidebarAncestorsWidget).exists()).toBe(true);
+        expect(wrapper.findComponent(SidebarAncestorsWidget).exists()).toBe(true);
       });
     });
 
@@ -155,7 +155,7 @@ describe('EpicSidebarComponent', () => {
     });
 
     it('does not render SidebarTodoWidget', () => {
-      expect(wrapper.find(SidebarTodoWidget).exists()).toBe(false);
+      expect(wrapper.findComponent(SidebarTodoWidget).exists()).toBe(false);
     });
   });
 

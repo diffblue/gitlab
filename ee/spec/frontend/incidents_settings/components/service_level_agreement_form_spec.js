@@ -34,9 +34,9 @@ describe('Alert integration settings form', () => {
     }
   });
 
-  const findForm = () => wrapper.find(GlForm);
-  const findFormGroup = () => wrapper.find(GlFormGroup);
-  const findSubmitButton = () => wrapper.find(GlButton);
+  const findForm = () => wrapper.findComponent(GlForm);
+  const findFormGroup = () => wrapper.findComponent(GlFormGroup);
+  const findSubmitButton = () => wrapper.findComponent(GlButton);
 
   it('renders an empty component when feature not available', () => {
     mountComponent({ provide: { serviceLevelAgreementSettings: { available: false } } });

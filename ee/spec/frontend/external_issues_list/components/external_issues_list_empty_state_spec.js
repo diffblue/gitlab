@@ -139,11 +139,11 @@ describe('ExternalIssuesListEmptyState', () => {
 
   describe('template', () => {
     it('renders gl-empty-state component', () => {
-      expect(wrapper.find(GlEmptyState).exists()).toBe(true);
+      expect(wrapper.findComponent(GlEmptyState).exists()).toBe(true);
     });
 
     it('renders empty state title', async () => {
-      const emptyStateEl = wrapper.find(GlEmptyState);
+      const emptyStateEl = wrapper.findComponent(GlEmptyState);
 
       expect(emptyStateEl.props()).toMatchObject({
         svgPath: mockProvide.emptyStatePath,
@@ -174,7 +174,7 @@ describe('ExternalIssuesListEmptyState', () => {
     });
 
     it('renders empty state description', () => {
-      const descriptionEl = wrapper.find(GlSprintf);
+      const descriptionEl = wrapper.findComponent(GlSprintf);
 
       expect(descriptionEl.exists()).toBe(true);
       expect(descriptionEl.attributes('message')).toBe(
@@ -192,7 +192,7 @@ describe('ExternalIssuesListEmptyState', () => {
 
       await wrapper.vm.$nextTick();
 
-      const descriptionEl = wrapper.find(GlSprintf);
+      const descriptionEl = wrapper.findComponent(GlSprintf);
 
       expect(descriptionEl.exists()).toBe(false);
     });
