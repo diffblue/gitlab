@@ -61,7 +61,7 @@ describe('dashboard', () => {
     store.replaceState(state());
   });
 
-  const findPagination = () => wrapper.find(GlPagination);
+  const findPagination = () => wrapper.findComponent(GlPagination);
 
   it('should match the snapshot', () => {
     expect(wrapper.element).toMatchSnapshot();
@@ -72,7 +72,7 @@ describe('dashboard', () => {
   });
 
   it('should render the empty state component', () => {
-    expect(wrapper.find(GlEmptyState).exists()).toBe(true);
+    expect(wrapper.findComponent(GlEmptyState).exists()).toBe(true);
   });
 
   it('should not render pagination in empty state', () => {
@@ -93,7 +93,7 @@ describe('dashboard', () => {
     });
 
     it('includes the correct documentation link in the message', () => {
-      const helpLink = message.find(GlLink);
+      const helpLink = message.findComponent(GlLink);
 
       expect(helpLink.text()).toBe('More information');
       expect(helpLink.attributes('href')).toBe(propsData.environmentsDashboardHelpPath);
@@ -105,7 +105,7 @@ describe('dashboard', () => {
     let button;
 
     beforeEach(() => {
-      button = wrapper.find(GlButton);
+      button = wrapper.findComponent(GlButton);
     });
 
     it('is labelled correctly', () => {
@@ -128,12 +128,12 @@ describe('dashboard', () => {
 
     describe('project header', () => {
       it('should have one project header per project', () => {
-        const headers = wrapper.findAll(ProjectHeader);
+        const headers = wrapper.findAllComponents(ProjectHeader);
         expect(headers).toHaveLength(2);
       });
 
       it('should remove a project if it emits `remove`', () => {
-        const header = wrapper.find(ProjectHeader);
+        const header = wrapper.findComponent(ProjectHeader);
         header.vm.$emit('remove');
         expect(actionSpies.removeProject).toHaveBeenCalled();
       });
@@ -141,39 +141,39 @@ describe('dashboard', () => {
 
     describe('environment component', () => {
       it('should have one environment component per environment', () => {
-        const environments = wrapper.findAll(Environment);
+        const environments = wrapper.findAllComponents(Environment);
         expect(environments).toHaveLength(3);
       });
     });
 
     describe('project selector modal', () => {
       beforeEach(() => {
-        wrapper.find(GlButton).trigger('click');
+        wrapper.findComponent(GlButton).trigger('click');
         return nextTick();
       });
 
       it('should fire the add projects action on ok', () => {
-        wrapper.find(GlModal).vm.$emit('ok');
+        wrapper.findComponent(GlModal).vm.$emit('ok');
         expect(actionSpies.addProjectsToDashboard).toHaveBeenCalled();
       });
 
       it('should fire clear search when the modal is hidden', () => {
-        wrapper.find(GlModal).vm.$emit('hidden');
+        wrapper.findComponent(GlModal).vm.$emit('hidden');
         expect(actionSpies.clearSearchResults).toHaveBeenCalled();
       });
 
       it('should set the search query when searching', () => {
-        wrapper.find(ProjectSelector).vm.$emit('searched', 'test');
+        wrapper.findComponent(ProjectSelector).vm.$emit('searched', 'test');
         expect(actionSpies.setSearchQuery).toHaveBeenCalledWith(expect.any(Object), 'test');
       });
 
       it('should fetch query results when searching', () => {
-        wrapper.find(ProjectSelector).vm.$emit('searched', 'test');
+        wrapper.findComponent(ProjectSelector).vm.$emit('searched', 'test');
         expect(actionSpies.fetchSearchResults).toHaveBeenCalled();
       });
 
       it('should toggle a project when clicked', () => {
-        wrapper.find(ProjectSelector).vm.$emit('projectClicked', { name: 'test', id: 1 });
+        wrapper.findComponent(ProjectSelector).vm.$emit('projectClicked', { name: 'test', id: 1 });
         expect(actionSpies.toggleSelectedProject).toHaveBeenCalledWith(expect.any(Object), {
           name: 'test',
           id: 1,
@@ -181,7 +181,7 @@ describe('dashboard', () => {
       });
 
       it('should fetch the next page when bottom is reached', () => {
-        wrapper.find(ProjectSelector).vm.$emit('bottomReached');
+        wrapper.findComponent(ProjectSelector).vm.$emit('bottomReached');
         expect(actionSpies.fetchNextPage).toHaveBeenCalled();
       });
 
@@ -189,7 +189,7 @@ describe('dashboard', () => {
         store.state.pageInfo = { totalResults: 100 };
 
         await nextTick();
-        expect(wrapper.find(ProjectSelector).props('totalResults')).toBe(100);
+        expect(wrapper.findComponent(ProjectSelector).props('totalResults')).toBe(100);
       });
     });
 

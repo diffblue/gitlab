@@ -34,9 +34,9 @@ describe('Iterations report summary cards', () => {
     wrapper = null;
   });
 
-  const findCompleteCard = () => wrapper.findAll(GlCard).at(0).text();
-  const findIncompleteCard = () => wrapper.findAll(GlCard).at(1).text();
-  const findUnstartedCard = () => wrapper.findAll(GlCard).at(2).text();
+  const findCompleteCard = () => wrapper.findAllComponents(GlCard).at(0).text();
+  const findIncompleteCard = () => wrapper.findAllComponents(GlCard).at(1).text();
+  const findUnstartedCard = () => wrapper.findAllComponents(GlCard).at(2).text();
 
   describe('with valid totals', () => {
     beforeEach(() => {

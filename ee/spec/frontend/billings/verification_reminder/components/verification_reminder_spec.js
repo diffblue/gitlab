@@ -31,12 +31,12 @@ describe('VerificationReminder', () => {
     });
   };
 
-  const findVerificationModal = () => wrapper.find({ ref: 'modal' });
-  const calloutDismisser = () => wrapper.find({ ref: 'calloutDismisser' });
-  const findWarningAlert = () => wrapper.find({ ref: 'warningAlert' });
-  const findSuccessAlert = () => wrapper.find({ ref: 'successAlert' });
-  const findValidateLink = () => wrapper.find({ ref: 'validateLink' });
-  const findDocsLink = () => wrapper.find({ ref: 'docsLink' });
+  const findVerificationModal = () => wrapper.findComponent({ ref: 'modal' });
+  const calloutDismisser = () => wrapper.findComponent({ ref: 'calloutDismisser' });
+  const findWarningAlert = () => wrapper.findComponent({ ref: 'warningAlert' });
+  const findSuccessAlert = () => wrapper.findComponent({ ref: 'successAlert' });
+  const findValidateLink = () => wrapper.findComponent({ ref: 'validateLink' });
+  const findDocsLink = () => wrapper.findComponent({ ref: 'docsLink' });
 
   beforeEach(() => {
     window.gon = {

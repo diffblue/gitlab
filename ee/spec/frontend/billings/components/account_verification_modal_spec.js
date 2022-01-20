@@ -17,7 +17,7 @@ describe('Account verification modal', () => {
     });
   };
 
-  const findModal = () => wrapper.find({ ref: 'modal' });
+  const findModal = () => wrapper.findComponent({ ref: 'modal' });
 
   const zuoraSubmitSpy = jest.fn();
 

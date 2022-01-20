@@ -26,7 +26,7 @@ describe('Environments', () => {
   });
 
   it('renders an empty state if no deployments are found', () => {
-    const emptyState = wrapper.find(GlEmptyState);
+    const emptyState = wrapper.findComponent(GlEmptyState);
     const emptyStateText = emptyState.text().replace(/\s+/g, ' ');
 
     expect(emptyState.exists()).toBe(true);
@@ -45,7 +45,7 @@ describe('Environments', () => {
         stubs: { deploymentInstance: { template: '<div class="js-deployment-instance"></div>' } },
       });
 
-      table = wrapper.find(GlTable);
+      table = wrapper.findComponent(GlTable);
     });
 
     it('renders a table component', () => {
@@ -77,7 +77,7 @@ describe('Environments', () => {
           const { status } = environment.rolloutStatus;
 
           if (status === 'loading') {
-            const loader = tableRows.at(i).find(GlLoadingIcon);
+            const loader = tableRows.at(i).findComponent(GlLoadingIcon);
 
             expect(loader.exists()).toBe(true);
           }
@@ -101,7 +101,7 @@ describe('Environments', () => {
 
           if (status !== 'loading' && instances.length === 0) {
             const emptyState = tableRows.at(i).find('.deployments-empty');
-            const emptyStateIcon = emptyState.find(GlIcon);
+            const emptyStateIcon = emptyState.findComponent(GlIcon);
 
             expect(emptyState.exists()).toBe(true);
             expect(emptyStateIcon.exists()).toBe(true);
