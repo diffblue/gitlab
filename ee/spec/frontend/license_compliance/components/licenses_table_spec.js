@@ -13,7 +13,7 @@ describe('LicensesTable component', () => {
   };
 
   const findTableRowHeader = () => wrapper.find('.table-row-header');
-  const findRows = () => wrapper.findAll(LicensesTableRow);
+  const findRows = () => wrapper.findAllComponents(LicensesTableRow);
 
   afterEach(() => {
     wrapper.destroy();

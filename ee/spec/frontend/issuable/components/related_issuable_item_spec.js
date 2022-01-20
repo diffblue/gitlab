@@ -47,6 +47,6 @@ describe('RelatedIssuableItem', () => {
   });
 
   it('renders weight component with correct weight', () => {
-    expect(wrapper.find(IssueWeight).props('weight')).toBe(props.weight);
+    expect(wrapper.findComponent(IssueWeight).props('weight')).toBe(props.weight);
   });
 });

@@ -36,10 +36,10 @@ describe('MaintenanceModeSettingsApp', () => {
     wrapper = null;
   });
 
-  const findMaintenanceModeSettingsForm = () => wrapper.find(GlForm);
-  const findGlLoadingIcon = () => wrapper.find(GlLoadingIcon);
-  const findGlToggle = () => wrapper.find(GlToggle);
-  const findGlFormTextarea = () => wrapper.find(GlFormTextarea);
+  const findMaintenanceModeSettingsForm = () => wrapper.findComponent(GlForm);
+  const findGlLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findGlToggle = () => wrapper.findComponent(GlToggle);
+  const findGlFormTextarea = () => wrapper.findComponent(GlFormTextarea);
   const findSubmitButton = () => findMaintenanceModeSettingsForm().find('[type="submit"]');
 
   describe('template', () => {

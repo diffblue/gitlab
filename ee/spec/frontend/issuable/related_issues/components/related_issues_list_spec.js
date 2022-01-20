@@ -29,7 +29,7 @@ describe('RelatedIssuesList', () => {
     });
 
     it('shows weight', () => {
-      expect(wrapper.find(IssueWeight).find('.board-card-info-text').text()).toBe(
+      expect(wrapper.findComponent(IssueWeight).find('.board-card-info-text').text()).toBe(
         issuable1.weight.toString(),
       );
     });

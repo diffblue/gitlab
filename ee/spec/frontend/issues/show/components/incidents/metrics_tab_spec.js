@@ -54,9 +54,9 @@ describe('Metrics tab', () => {
     }
   });
 
-  const findUploadDropzone = () => wrapper.find(UploadDropzone);
-  const findImages = () => wrapper.findAll(MetricsImage);
-  const findModal = () => wrapper.find(GlModal);
+  const findUploadDropzone = () => wrapper.findComponent(UploadDropzone);
+  const findImages = () => wrapper.findAllComponents(MetricsImage);
+  const findModal = () => wrapper.findComponent(GlModal);
   const submitModal = () => findModal().vm.$emit('primary', mockEvent);
   const cancelModal = () => findModal().vm.$emit('hidden');
 
@@ -145,7 +145,7 @@ describe('Metrics tab', () => {
       });
 
       it('should display the url field', () => {
-        expect(wrapper.find(GlFormInput).attributes('value')).toBe(testUrl);
+        expect(wrapper.findComponent(GlFormInput).attributes('value')).toBe(testUrl);
       });
 
       it('should clear url when cancelled', async () => {
@@ -153,7 +153,7 @@ describe('Metrics tab', () => {
 
         await waitForPromises();
 
-        expect(wrapper.find(GlFormInput).attributes('value')).toBe('');
+        expect(wrapper.findComponent(GlFormInput).attributes('value')).toBe('');
       });
 
       it('should clear url when submitted', async () => {
@@ -161,7 +161,7 @@ describe('Metrics tab', () => {
 
         await waitForPromises();
 
-        expect(wrapper.find(GlFormInput).attributes('value')).toBe('');
+        expect(wrapper.findComponent(GlFormInput).attributes('value')).toBe('');
       });
     });
   });

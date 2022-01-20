@@ -47,10 +47,10 @@ describe('Metrics upload item', () => {
     }
   });
 
-  const findImageLink = () => wrapper.find(GlLink);
+  const findImageLink = () => wrapper.findComponent(GlLink);
   const findCollapseButton = () => wrapper.find('[data-testid="collapse-button"]');
   const findMetricImageBody = () => wrapper.find('[data-testid="metric-image-body"]');
-  const findModal = () => wrapper.find(GlModal);
+  const findModal = () => wrapper.findComponent(GlModal);
   const findDeleteButton = () => wrapper.find('[data-testid="delete-button"]');
 
   const closeModal = () => findModal().vm.$emit('hidden');

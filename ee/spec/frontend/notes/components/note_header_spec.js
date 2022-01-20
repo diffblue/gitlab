@@ -43,7 +43,7 @@ describe('NoteHeader component', () => {
 
       // Wait for dynamic imports to resolve
       return new Promise(setImmediate).then(() => {
-        expect(wrapper.find(GitlabTeamMemberBadge).exists()).toBe(expected);
+        expect(wrapper.findComponent(GitlabTeamMemberBadge).exists()).toBe(expected);
       });
     },
   );

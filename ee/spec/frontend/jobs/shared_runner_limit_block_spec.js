@@ -39,7 +39,7 @@ describe('Shared Runner Limit Block', () => {
     });
 
     it('renders call to action gl-button with the right href', () => {
-      const glButton = wrapper.find(GlButton);
+      const glButton = wrapper.findComponent(GlButton);
 
       expect(glButton.isVisible()).toBe(true);
       expect(glButton.attributes('variant')).toBe('danger');
