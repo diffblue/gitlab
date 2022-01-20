@@ -6,7 +6,7 @@ import { joinPaths } from '~/lib/utils/url_utility';
 import RegistryList from '~/packages_and_registries/shared/components/registry_list.vue';
 
 import PersistedSearch from '~/packages_and_registries/shared/components/persisted_search.vue';
-import { FILTERED_SEARCH_TERM } from '~/packages_and_registries/shared/constants/index';
+import { FILTERED_SEARCH_TERM } from '~/packages_and_registries/shared/constants';
 import TagsLoader from '~/packages_and_registries/shared/components/tags_loader.vue';
 import {
   REMOVE_TAGS_BUTTON_TITLE,
