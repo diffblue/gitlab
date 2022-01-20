@@ -16,6 +16,7 @@ import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.gra
 import statesQuery from 'ee/subscriptions/graphql/queries/states.query.graphql';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
 import {
+  COUNTRIES_WITH_STATES_ALLOWED,
   LEADS_COMPANY_NAME_LABEL,
   LEADS_COMPANY_SIZE_LABEL,
   LEADS_COUNTRY_LABEL,
@@ -26,7 +27,6 @@ import {
   companySizes,
 } from 'ee/vue_shared/leads/constants';
 import {
-  COUNTRIES_WITH_STATES_ALLOWED,
   PQL_COMPANY_SIZE_PROMPT,
   PQL_PHONE_DESCRIPTION,
   PQL_STATE_LABEL,
