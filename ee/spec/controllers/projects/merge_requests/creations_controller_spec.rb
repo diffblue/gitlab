@@ -12,6 +12,53 @@ RSpec.describe Projects::MergeRequests::CreationsController do
     sign_in(viewer)
   end
 
+  describe 'GET #new' do
+    render_views
+
+    context 'default templates' do
+      let(:selected_field) { 'data-selected="Default"' }
+      let(:files) { { '.gitlab/merge_request_templates/Default.md' => '' } }
+
+      subject do
+        get :new,
+        params: {
+          namespace_id: project.namespace,
+          project_id: project,
+          merge_request: {
+            source_project_id: project.id,
+            source_branch: 'feature',
+            target_project_id: project.id,
+            target_branch: 'master'
+          }
+        }
+      end
+
+      before do
+        project.repository.create_branch('feature', 'master')
+      end
+
+      context 'when a template has been set via project settings' do
+        let(:project) { create(:project, :custom_repo, merge_requests_template: 'Content', files: files ) }
+
+        it 'does not select a default template' do
+          subject
+
+          expect(response.body).not_to include(selected_field)
+        end
+      end
+
+      context 'when a template has not been set via project settings' do
+        let(:project) { create(:project, :custom_repo, files: files ) }
+
+        it 'selects a default template' do
+          subject
+
+          expect(response.body).to include(selected_field)
+        end
+      end
+    end
+  end
+
   describe 'POST #create' do
     let(:created_merge_request) { assigns(:merge_request) }
 

@@ -340,6 +340,58 @@ RSpec.describe Projects::MergeRequestsController do
     end
   end
 
+  describe 'GET #edit' do
+    render_views
+
+    let(:params) do
+      {
+        namespace_id: project.namespace.to_param,
+        project_id: project,
+        id: merge_request.iid
+      }
+    end
+
+    subject { get :edit, params: params }
+
+    context 'default templates' do
+      let(:selected_field) { 'data-selected="Default"' }
+      let(:files) { { '.gitlab/merge_request_templates/Default.md' => '' } }
+      let(:project) { create(:project, :custom_repo, files: files ) }
+
+      context 'when a merge request description has content' do
+        let(:merge_request) { create(:merge_request_with_diffs, source_project: project, author: author, description: 'An existing description') }
+
+        it 'does not select a default template' do
+          subject
+
+          expect(response.body).not_to include(selected_field)
+        end
+      end
+
+      context 'when a merge request description is blank' do
+        let(:merge_request) { create(:merge_request_with_diffs, source_project: project, author: author, description: '') }
+
+        context 'when a default template does not exist in the repository' do
+          let(:project) { create(:project ) }
+
+          it 'does not select a default template' do
+            subject
+
+            expect(response.body).not_to include(selected_field)
+          end
+        end
+
+        context 'when a default template exists in the repository' do
+          it 'selects a default template' do
+            subject
+
+            expect(response.body).to include(selected_field)
+          end
+        end
+      end
+    end
+  end
+
   describe 'GET #dependency_scanning_reports' do
     let_it_be_with_reload(:merge_request) { create(:ee_merge_request, :with_dependency_scanning_reports, source_project: project, author: author) }
 
