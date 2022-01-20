@@ -2,7 +2,6 @@ import { GlButton, GlForm } from '@gitlab/ui';
 import { createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import createMockApollo from 'helpers/mock_apollo_helper';
 import TrialCreateLeadForm from 'ee/trials/components/trial_create_lead_form.vue';
 import { TRIAL_FORM_SUBMIT_TEXT } from 'ee/trials/constants';
 import { trackSaasTrialSubmit } from '~/google_tag_manager';
@@ -19,17 +18,8 @@ describe('TrialCreateLeadForm', () => {
   let wrapper;
 
   const createComponent = ({ mountFunction = shallowMountExtended } = {}) => {
-    const mockResolvers = {
-      Query: {
-        countries() {
-          return [{ id: 'US', name: 'United States' }];
-        },
-      },
-    };
-
     return mountFunction(TrialCreateLeadForm, {
       localVue,
-      apolloProvider: createMockApollo([], mockResolvers),
       provide: {
         submitPath,
         user: formData,
@@ -61,7 +51,6 @@ describe('TrialCreateLeadForm', () => {
       ${'company_name'} | ${'ACME'}
       ${'phone_number'} | ${'192919'}
       ${'company_size'} | ${'1-99'}
-      ${'country'}      | ${'US'}
     `('has the default injected value for $testid', ({ testid, value }) => {
       expect(findFormInput(testid).attributes('value')).toBe(value);
     });
@@ -73,7 +62,6 @@ describe('TrialCreateLeadForm', () => {
         'company_name',
         'company_size',
         'phone_number',
-        'country',
       ];
 
       visibleFields.forEach((f) => expect(wrapper.findByTestId(f).exists()).toBe(true));
