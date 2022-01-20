@@ -6,7 +6,6 @@ RSpec.describe Geo::VerificationTimeoutWorker, :geo do
   include ::EE::GeoHelpers
 
   let(:replicable_name) { 'snippet_repository' }
-  let(:replicator_class) { double('snippet_repository_replicator_class') }
 
   it 'uses a Geo queue' do
     expect(described_class.new.sidekiq_options_hash).to include(
@@ -32,6 +31,8 @@ RSpec.describe Geo::VerificationTimeoutWorker, :geo do
   end
 
   describe 'idempotent behaviour' do
+    let(:replicator_class) { double('snippet_repository_replicator_class') }
+
     before do
       allow(::Gitlab::Geo::Replicator).to receive(:for_replicable_name).with(replicable_name).and_return(replicator_class)
 
