@@ -5,6 +5,7 @@ import orderPreviewQuery from 'ee/subscriptions/graphql/queries/order_preview.cu
 import { createMockClient } from 'helpers/mock_apollo_helper';
 import { CUSTOMERSDOT_CLIENT } from 'ee/subscriptions/buy_addons_shared/constants';
 import { mockDefaultCache, mockOrderPreview } from 'ee_jest/subscriptions/mock_data';
+import { customersDotResolvers } from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
 
 export function createMockApolloProvider(mockResponses = {}, dataset = {}) {
   const {
@@ -17,10 +18,13 @@ export function createMockApolloProvider(mockResponses = {}, dataset = {}) {
   const { quantity } = dataset;
 
   const mockDefaultClient = createMockClient();
-  const mockCustomersDotClient = createMockClient([
-    [plansQuery, plansQueryMock],
-    [orderPreviewQuery, orderPreviewQueryMock],
-  ]);
+  const mockCustomersDotClient = createMockClient(
+    [
+      [plansQuery, plansQueryMock],
+      [orderPreviewQuery, orderPreviewQueryMock],
+    ],
+    customersDotResolvers,
+  );
 
   const apolloProvider = new VueApollo({
     defaultClient: mockDefaultClient,

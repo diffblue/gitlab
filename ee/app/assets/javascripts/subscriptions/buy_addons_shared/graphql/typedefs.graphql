@@ -1,0 +1,16 @@
+type Plan {
+  id: Int!
+  name: String!
+  code: String!
+  pricePerYear: Int!
+  label: String!
+  isAddon: Boolean!
+  hasExpiration: Boolean!
+  productUnit: String!
+  quantityPerPack: String!
+}
+
+enum PlanTag {
+  CI_1000_MINUTES_PLAN
+  STORAGE_PLAN
+}

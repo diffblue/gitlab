@@ -4,7 +4,7 @@ import AxiosMockAdapter from 'axios-mock-adapter';
 import { merge } from 'lodash';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { resolvers } from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
+import { gitLabResolvers } from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
 import { STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import Zuora from 'ee/vue_shared/purchase_flow/components/checkout/zuora.vue';
@@ -20,9 +20,7 @@ describe('Zuora', () => {
   let wrapper;
 
   const createComponent = (props = {}, data = {}, apolloLocalState = {}) => {
-    const apolloProvider = createMockApolloProvider(STEPS, STEPS[1], {
-      ...resolvers,
-    });
+    const apolloProvider = createMockApolloProvider(STEPS, STEPS[1], gitLabResolvers);
     apolloProvider.clients.defaultClient.cache.writeQuery({
       query: stateQuery,
       data: merge({}, initialStateData, apolloLocalState),

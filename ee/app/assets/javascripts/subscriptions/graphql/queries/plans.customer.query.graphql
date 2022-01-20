@@ -4,5 +4,10 @@ query getPlans($tags: [PlanTag!]) {
     name
     code
     pricePerYear
+    hasExpiration @client
+    isAddon @client
+    label @client
+    productUnit @client
+    quantityPerPack @client
   }
 }

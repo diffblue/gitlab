@@ -1,6 +1,6 @@
 import Api from 'ee/api';
 import * as SubscriptionsApi from 'ee/api/subscriptions_api';
-import { resolvers } from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
+import { gitLabResolvers } from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
 import { ERROR_FETCHING_COUNTRIES, ERROR_FETCHING_STATES } from 'ee/subscriptions/constants';
 import createFlash from '~/flash';
 
@@ -58,7 +58,7 @@ describe('~/subscriptions/buy_addons_shared/graphql/resolvers', () => {
         });
 
         it('returns an array of countries with typename', async () => {
-          const result = await resolvers.Query.countries();
+          const result = await gitLabResolvers.Query.countries();
 
           expect(createFlash).not.toHaveBeenCalled();
           expect(result).toStrictEqual([
@@ -74,7 +74,7 @@ describe('~/subscriptions/buy_addons_shared/graphql/resolvers', () => {
         });
 
         it('shows a flash message', async () => {
-          await resolvers.Query.countries();
+          await gitLabResolvers.Query.countries();
 
           expect(createFlash).toHaveBeenCalledWith({ message: ERROR_FETCHING_COUNTRIES });
         });
@@ -88,7 +88,7 @@ describe('~/subscriptions/buy_addons_shared/graphql/resolvers', () => {
         });
 
         it('returns an array of states with typename', async () => {
-          const result = await resolvers.Query.states(null, { countryId: 1 });
+          const result = await gitLabResolvers.Query.states(null, { countryId: 1 });
 
           expect(createFlash).not.toHaveBeenCalled();
           expect(result).toStrictEqual([{ id: 'CA', name: 'California', __typename: 'State' }]);
@@ -101,7 +101,7 @@ describe('~/subscriptions/buy_addons_shared/graphql/resolvers', () => {
         });
 
         it('shows a flash message', async () => {
-          await resolvers.Query.states(null, { countryId: 1 });
+          await gitLabResolvers.Query.states(null, { countryId: 1 });
 
           expect(createFlash).toHaveBeenCalledWith({ message: ERROR_FETCHING_STATES });
         });
@@ -113,7 +113,7 @@ describe('~/subscriptions/buy_addons_shared/graphql/resolvers', () => {
     it('calls the REST api', async () => {
       const expectedArgs = { groupId: 1, customer, subscription };
 
-      await resolvers.Mutation.purchaseMinutes(null, expectedArgs);
+      await gitLabResolvers.Mutation.purchaseMinutes(null, expectedArgs);
 
       expect(SubscriptionsApi.createSubscription).toHaveBeenCalledWith(1, customer, subscription);
     });
@@ -124,7 +124,7 @@ describe('~/subscriptions/buy_addons_shared/graphql/resolvers', () => {
       });
 
       it('returns an error array', async () => {
-        const result = await resolvers.Mutation.purchaseMinutes(null, {
+        const result = await gitLabResolvers.Mutation.purchaseMinutes(null, {
           groupId: 1,
           customer,
           subscription,
@@ -140,7 +140,7 @@ describe('~/subscriptions/buy_addons_shared/graphql/resolvers', () => {
       });
 
       it('returns a redirect location', async () => {
-        const result = await resolvers.Mutation.purchaseMinutes(null, {
+        const result = await gitLabResolvers.Mutation.purchaseMinutes(null, {
           groupId: 1,
           customer,
           subscription,

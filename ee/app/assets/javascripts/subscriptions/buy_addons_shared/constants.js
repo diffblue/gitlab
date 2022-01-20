@@ -6,6 +6,11 @@ export const planTags = {
   STORAGE_PLAN: 'STORAGE_PLAN',
 };
 /* eslint-enable @gitlab/require-i18n-strings */
+export const planCode = {
+  CI_1000_MINUTES_PLAN: 'ci_minutes',
+  STORAGE_PLAN: 'storage',
+};
+
 export const CUSTOMERSDOT_CLIENT = 'customersDotClient';
 export const GITLAB_CLIENT = 'gitlabClient';
 export const CUSTOMER_TYPE = 'Customer';
