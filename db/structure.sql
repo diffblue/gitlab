@@ -19394,7 +19394,6 @@ CREATE TABLE security_findings (
     confidence smallint NOT NULL,
     project_fingerprint text,
     deduplicated boolean DEFAULT false NOT NULL,
-    "position" integer,
     uuid uuid,
     overridden_uuid uuid,
     CONSTRAINT check_b9508c6df8 CHECK ((char_length(project_fingerprint) <= 40))
@@ -27552,8 +27551,6 @@ CREATE INDEX index_security_findings_on_confidence ON security_findings USING bt
 CREATE INDEX index_security_findings_on_project_fingerprint ON security_findings USING btree (project_fingerprint);
 
 CREATE INDEX index_security_findings_on_scan_id_and_deduplicated ON security_findings USING btree (scan_id, deduplicated);
-
-CREATE UNIQUE INDEX index_security_findings_on_scan_id_and_position ON security_findings USING btree (scan_id, "position");
 
 CREATE INDEX index_security_findings_on_scanner_id ON security_findings USING btree (scanner_id);
 
