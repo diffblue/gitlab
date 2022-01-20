@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'fast_spec_helper'
+require_dependency 'action_controller'
 
 RSpec.describe Gitlab::Insights::Validators::ParamsValidator do
   subject { described_class.new(params).validate! }
