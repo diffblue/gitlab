@@ -92,6 +92,13 @@ RSpec.describe HistoricalUserData::CsvService do
     end
   end
 
+  context 'Empty Row' do
+    it 'adds an empty row between the License Information Header and the User Count Table' do
+      expect(csv[6][0]).to eq('')
+      expect(csv[6][1]).to eq('')
+    end
+  end
+
   context 'User Count Table' do
     let_it_be(:historical_datum) do
       create(:historical_data, recorded_at: license_start_date, active_user_count: 1)
