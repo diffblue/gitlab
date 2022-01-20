@@ -11997,6 +11997,9 @@ msgstr ""
 msgid "Deployment|Failed"
 msgstr ""
 
+msgid "Deployment|Latest Deployed"
+msgstr ""
+
 msgid "Deployment|Running"
 msgstr ""
 
