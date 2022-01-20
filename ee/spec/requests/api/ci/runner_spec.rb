@@ -100,7 +100,7 @@ RSpec.describe API::Ci::Runner do
           context 'job has secrets configured' do
             let(:secrets) { valid_secrets }
 
-            it 'doesn not return secrets configuration' do
+            it 'does not return secrets configuration' do
               request_job_with_secrets_supported
 
               expect(response).to have_gitlab_http_status(:created)
