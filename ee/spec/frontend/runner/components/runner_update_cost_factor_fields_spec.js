@@ -1,6 +1,5 @@
-import { mount } from '@vue/test-utils';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import RunnerUpdateCostFactorFields from 'ee/runner/components/runner_update_cost_factor_fields.vue';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { runnerData } from 'jest/runner/mock_data';
 
 const mockRunner = runnerData.data.runner;
@@ -20,13 +19,11 @@ describe('RunnerUpdateCostFactorFields', () => {
   };
 
   const createComponent = () => {
-    wrapper = extendedWrapper(
-      mount(RunnerUpdateCostFactorFields, {
-        propsData: {
-          value: mockRunner,
-        },
-      }),
-    );
+    wrapper = mountExtended(RunnerUpdateCostFactorFields, {
+      propsData: {
+        value: mockRunner,
+      },
+    });
   };
 
   describe('when on dot_com', () => {
