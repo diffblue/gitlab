@@ -14,7 +14,6 @@ RSpec.describe Projects::CleanupService do
   describe '#execute' do
     before do
       stub_current_geo_node(primary)
-      stub_feature_flags(geo_upload_verification: false)
     end
 
     it 'sends a Geo notification about the update on success' do
