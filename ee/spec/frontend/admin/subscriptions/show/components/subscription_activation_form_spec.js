@@ -9,9 +9,9 @@ import {
   SUBSCRIPTION_ACTIVATION_FAILURE_EVENT,
   SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
   SUBSCRIPTION_ACTIVATION_FINALIZED_EVENT,
-  subscriptionQueries,
   subscriptionActivationForm,
 } from 'ee/admin/subscriptions/show/constants';
+import activateSubscriptionMutation from 'ee/admin/subscriptions/show/graphql/mutations/activate_subscription.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { stubComponent } from 'helpers/stub_component';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -29,7 +29,7 @@ describe('SubscriptionActivationForm', () => {
   let wrapper;
 
   const createMockApolloProvider = (resolverMock) => {
-    return createMockApollo([[subscriptionQueries.mutation, resolverMock]]);
+    return createMockApollo([[activateSubscriptionMutation, resolverMock]]);
   };
 
   const findActivateButton = () => wrapper.findByTestId('activate-button');
