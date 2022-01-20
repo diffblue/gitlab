@@ -14,12 +14,15 @@ RSpec.describe 'Trial Capture Lead', :js do
   end
 
   context 'with valid company information' do
+    let(:country) { { id: 'US', name: 'United States of America' } }
+    let(:extra_trial_params) { { "state" => form_data.dig(:state, :id) } }
     let(:form_data) do
       {
         phone_number: '+1 23 456-78-90',
         company_size: '1 - 99',
         company_name: 'GitLab',
-        country: { id: 'US', name: 'United States of America' }
+        country: country,
+        state: { id: 'CA', name: 'California' }
       }
     end
 
@@ -38,7 +41,7 @@ RSpec.describe 'Trial Capture Lead', :js do
         "gitlab_com_trial" => true,
         "provider" => "gitlab",
         "newsletter_segment" => user.email_opted_in
-      }
+      }.merge(extra_trial_params)
 
       lead_params = {
         trial_user: ActionController::Parameters.new(trial_user_params).permit!
@@ -49,16 +52,38 @@ RSpec.describe 'Trial Capture Lead', :js do
       end
     end
 
-    it 'proceeds to the next step' do
-      fill_in 'company_name', with: form_data[:company_name]
-      select form_data[:company_size], from: 'company_size'
-      fill_in 'phone_number', with: form_data[:phone_number]
-      select form_data.dig(:country, :name), from: 'country'
+    context 'with state' do
+      it 'proceeds to the next step' do
+        fill_in 'company_name', with: form_data[:company_name]
+        select form_data[:company_size], from: 'company_size'
+        fill_in 'phone_number', with: form_data[:phone_number]
+        select form_data.dig(:country, :name), from: 'country'
+        select form_data.dig(:state, :name), from: 'state'
 
-      click_button 'Continue'
+        click_button 'Continue'
 
-      expect(page).not_to have_css('flash-container')
-      expect(current_path).to eq(select_trials_path)
+        expect(page).not_to have_css('flash-container')
+        expect(current_path).to eq(select_trials_path)
+      end
+    end
+
+    context 'without state' do
+      let(:country) { { id: 'AF', name: 'Afghanistan' } }
+      let(:extra_trial_params) { {} }
+
+      it 'proceeds to the next step' do
+        fill_in 'company_name', with: form_data[:company_name]
+        select form_data[:company_size], from: 'company_size'
+        fill_in 'phone_number', with: form_data[:phone_number]
+        select form_data.dig(:country, :name), from: 'country'
+
+        expect(page).not_to have_selector('[data-testid="state"]')
+
+        click_button 'Continue'
+
+        expect(page).not_to have_css('flash-container')
+        expect(current_path).to eq(select_trials_path)
+      end
     end
   end
 

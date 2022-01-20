@@ -21,5 +21,3 @@ export const PQL_HAND_RAISE_ACTION_ERROR = s__(
 export const PQL_HAND_RAISE_ACTION_SUCCESS = s__(
   'PQL|Thank you for reaching out! Our sales team will get back to you soon.',
 );
-
-export const COUNTRIES_WITH_STATES_ALLOWED = ['US', 'CA'];

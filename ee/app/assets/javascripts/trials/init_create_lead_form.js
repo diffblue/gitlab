@@ -12,6 +12,7 @@ export const initTrialCreateLeadForm = () => {
     companyName,
     companySize,
     country,
+    state,
     phoneNumber,
   } = el.dataset;
 
@@ -25,6 +26,7 @@ export const initTrialCreateLeadForm = () => {
         companyName,
         companySize: companySize || null,
         country: country || null,
+        state: state || null,
         phoneNumber,
       },
       submitPath,
