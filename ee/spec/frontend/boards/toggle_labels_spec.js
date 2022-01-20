@@ -38,7 +38,7 @@ describe('ToggleLabels component', () => {
   it('onStorageUpdate parses empty value as false', async () => {
     wrapper = createComponent();
 
-    const localStorageSync = wrapper.find(LocalStorageSync);
+    const localStorageSync = wrapper.findComponent(LocalStorageSync);
     localStorageSync.vm.$emit('input', '');
 
     await wrapper.vm.$nextTick();
@@ -49,10 +49,10 @@ describe('ToggleLabels component', () => {
   it('sets GlToggle value from store.isShowingLabels', () => {
     wrapper = createComponent({ isShowingLabels: true });
 
-    expect(wrapper.find(GlToggle).props('value')).toEqual(true);
+    expect(wrapper.findComponent(GlToggle).props('value')).toEqual(true);
 
     wrapper = createComponent({ isShowingLabels: false });
 
-    expect(wrapper.find(GlToggle).props('value')).toEqual(false);
+    expect(wrapper.findComponent(GlToggle).props('value')).toEqual(false);
   });
 });

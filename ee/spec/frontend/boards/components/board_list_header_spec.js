@@ -106,7 +106,7 @@ describe('Board List Header Component', () => {
     });
   };
 
-  const findSettingsButton = () => wrapper.find({ ref: 'settingsBtn' });
+  const findSettingsButton = () => wrapper.findComponent({ ref: 'settingsBtn' });
   const findIterationPeriod = () => wrapper.find('[data-testid="board-list-iteration-period"]');
 
   afterEach(() => {
@@ -211,7 +211,7 @@ describe('Board List Header Component', () => {
 
       await waitForPromises();
 
-      const weightTooltip = wrapper.find({ ref: 'weightTooltip' });
+      const weightTooltip = wrapper.findComponent({ ref: 'weightTooltip' });
 
       expect(weightTooltip.exists()).toBe(true);
       expect(weightTooltip.text()).toContain(boardListQueryResponse().data.boardList.totalWeight);
@@ -220,7 +220,7 @@ describe('Board List Header Component', () => {
     it('weightFeatureAvailable is false', () => {
       createComponent();
 
-      expect(wrapper.find({ ref: 'weightTooltip' }).exists()).toBe(false);
+      expect(wrapper.findComponent({ ref: 'weightTooltip' }).exists()).toBe(false);
     });
   });
 

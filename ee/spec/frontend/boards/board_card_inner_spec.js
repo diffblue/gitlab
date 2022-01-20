@@ -114,8 +114,8 @@ describe('Board card component', () => {
 
       createComponent({ groupId: 1 });
 
-      expect(wrapper.findAll(GlLabel)).toHaveLength(3);
-      expect(wrapper.find(GlLabel).props('title')).toContain(title);
+      expect(wrapper.findAllComponents(GlLabel)).toHaveLength(3);
+      expect(wrapper.findComponent(GlLabel).props('title')).toContain(title);
     });
 
     it('shows no labels when the isShowingLabels state is false', () => {
@@ -130,7 +130,7 @@ describe('Board card component', () => {
     it('shows weight component', () => {
       createComponent();
 
-      expect(wrapper.find(IssueCardWeight).exists()).toBe(true);
+      expect(wrapper.findComponent(IssueCardWeight).exists()).toBe(true);
     });
   });
 });
