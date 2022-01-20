@@ -114,7 +114,7 @@ describe('RelatedItemsTree', () => {
       describe('onFormSubmit', () => {
         it('emits `createEpicFormSubmit` event on component with input value as param', () => {
           const value = 'foo';
-          wrapper.find(GlFormInput).vm.$emit('input', value);
+          wrapper.findComponent(GlFormInput).vm.$emit('input', value);
           wrapper.vm.onFormSubmit();
 
           expect(wrapper.emitted().createEpicFormSubmit).toBeTruthy();
@@ -153,20 +153,20 @@ describe('RelatedItemsTree', () => {
 
     describe('template', () => {
       it('renders input element within form', () => {
-        const inputEl = wrapper.find(GlFormInput);
+        const inputEl = wrapper.findComponent(GlFormInput);
 
         expect(inputEl.attributes('placeholder')).toBe('New epic title');
       });
 
       it('renders form action buttons', () => {
-        const actionButtons = wrapper.findAll(GlButton);
+        const actionButtons = wrapper.findAllComponents(GlButton);
 
         expect(actionButtons.at(0).text()).toBe('Create epic');
         expect(actionButtons.at(1).text()).toBe('Cancel');
       });
 
       it('renders parent group item as the first dropdown item', () => {
-        const items = wrapper.findAll(GlDropdownItem);
+        const items = wrapper.findAllComponents(GlDropdownItem);
 
         expect(items.at(0).text()).toContain(mockParentItem.groupName);
       });

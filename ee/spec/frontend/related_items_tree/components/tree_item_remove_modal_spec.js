@@ -120,7 +120,7 @@ describe('RelatedItemsTree', () => {
 
     describe('template', () => {
       it('renders modal component', () => {
-        const modal = wrapper.find(GlModal);
+        const modal = wrapper.findComponent(GlModal);
 
         expect(modal.isVisible()).toBe(true);
         expect(modal.attributes('modalid')).toBe('item-remove-confirmation');

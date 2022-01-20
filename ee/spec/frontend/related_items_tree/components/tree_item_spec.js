@@ -132,21 +132,21 @@ describe('RelatedItemsTree', () => {
       });
 
       it('renders expand/collapse button', () => {
-        const chevronButton = wrapper.find(GlButton);
+        const chevronButton = wrapper.findComponent(GlButton);
 
         expect(chevronButton.isVisible()).toBe(true);
         expect(chevronButton.attributes('title')).toBe('Collapse');
       });
 
       it('has the proper class on the expand/collapse button to avoid dragging', () => {
-        const chevronButton = wrapper.find(GlButton);
+        const chevronButton = wrapper.findComponent(GlButton);
 
         expect(chevronButton.attributes('class')).toContain(treeItemChevronBtnClassName);
       });
 
       it('renders expand/collapse icon', () => {
-        const expandedIcon = wrapperExpanded.find(GlIcon);
-        const collapsedIcon = wrapperCollapsed.find(GlIcon);
+        const expandedIcon = wrapperExpanded.findComponent(GlIcon);
+        const collapsedIcon = wrapperCollapsed.findComponent(GlIcon);
 
         expect(expandedIcon.isVisible()).toBe(true);
         expect(expandedIcon.props('name')).toBe('chevron-down');
@@ -161,14 +161,14 @@ describe('RelatedItemsTree', () => {
         });
 
         return wrapper.vm.$nextTick(() => {
-          const loadingIcon = wrapper.find(GlLoadingIcon);
+          const loadingIcon = wrapper.findComponent(GlLoadingIcon);
 
           expect(loadingIcon.isVisible()).toBe(true);
         });
       });
 
       it('renders tree item body component', () => {
-        const itemBody = wrapper.find(TreeItemBody);
+        const itemBody = wrapper.findComponent(TreeItemBody);
 
         expect(itemBody.isVisible()).toBe(true);
       });

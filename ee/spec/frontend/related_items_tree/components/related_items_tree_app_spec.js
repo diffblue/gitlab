@@ -41,8 +41,8 @@ describe('RelatedItemsTreeApp', () => {
   let axiosMock;
   let wrapper;
 
-  const findCreateIssueForm = () => wrapper.find(CreateIssueForm);
-  const findAddItemForm = () => wrapper.find(AddIssuableForm);
+  const findCreateIssueForm = () => wrapper.findComponent(CreateIssueForm);
+  const findAddItemForm = () => wrapper.findComponent(AddIssuableForm);
 
   beforeEach(() => {
     axiosMock = new AxiosMockAdapter(axios);
@@ -209,7 +209,7 @@ describe('RelatedItemsTreeApp', () => {
       });
 
       return wrapper.vm.$nextTick().then(() => {
-        expect(wrapper.find(GlLoadingIcon).isVisible()).toBe(true);
+        expect(wrapper.findComponent(GlLoadingIcon).isVisible()).toBe(true);
       });
     });
 
@@ -228,7 +228,7 @@ describe('RelatedItemsTreeApp', () => {
 
     it('renders tree header component', () =>
       wrapper.vm.$nextTick().then(() => {
-        expect(wrapper.find(RelatedItemsTreeHeader).isVisible()).toBe(true);
+        expect(wrapper.findComponent(RelatedItemsTreeHeader).isVisible()).toBe(true);
       }));
 
     it('renders item add/create form container element', () => {

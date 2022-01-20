@@ -82,11 +82,11 @@ describe('RelatedItemsTree', () => {
   describe('TreeItemBody', () => {
     let wrapper;
 
-    const findChildLabels = () => wrapper.findAll(GlLabel);
-    const findCountBadge = () => wrapper.find({ ref: 'countBadge' });
+    const findChildLabels = () => wrapper.findAllComponents(GlLabel);
+    const findCountBadge = () => wrapper.findComponent({ ref: 'countBadge' });
     const findEpicHealthStatus = () => wrapper.find('[data-testid="epic-health-status"]');
     const findIssueHealthStatus = () => wrapper.find('[data-testid="issue-health-status"]');
-    const findIssueIcon = () => wrapper.find({ ref: 'stateIconMd' });
+    const findIssueIcon = () => wrapper.findComponent({ ref: 'stateIconMd' });
     const findLink = () => wrapper.findComponent(GlLink);
     const enableHealthStatus = () => {
       wrapper.vm.$store.commit('SET_INITIAL_CONFIG', {
@@ -278,7 +278,7 @@ describe('RelatedItemsTree', () => {
 
       describe('itemHierarchy', () => {
         it('returns string containing item id and item path', () => {
-          const stateTooltip = wrapper.findAll(StateTooltip).at(0);
+          const stateTooltip = wrapper.findAllComponents(StateTooltip).at(0);
           expect(stateTooltip.props('path')).toBe('gitlab-org/gitlab-shell#8');
         });
       });
@@ -381,19 +381,19 @@ describe('RelatedItemsTree', () => {
       });
 
       it('renders item state icon for large screens', () => {
-        const statusIcon = wrapper.findAll(GlIcon).at(0);
+        const statusIcon = wrapper.findAllComponents(GlIcon).at(0);
 
         expect(statusIcon.props('name')).toBe('issues');
       });
 
       it('renders item state tooltip for large screens', () => {
-        const stateTooltip = wrapper.findAll(StateTooltip).at(0);
+        const stateTooltip = wrapper.findAllComponents(StateTooltip).at(0);
 
         expect(stateTooltip.props('state')).toBe(mockItem.state);
       });
 
       it('renders item path in tooltip for large screens', () => {
-        const stateTooltip = wrapper.findAll(StateTooltip).at(0);
+        const stateTooltip = wrapper.findAllComponents(StateTooltip).at(0);
 
         const { itemPath, itemId } = wrapper.vm;
         const path = itemPath + mockItem.pathIdSeparator + itemId;
@@ -403,7 +403,7 @@ describe('RelatedItemsTree', () => {
       });
 
       it('renders confidential icon when `item.confidential` is true', () => {
-        const confidentialIcon = wrapper.findAll(GlIcon).at(1);
+        const confidentialIcon = wrapper.findAllComponents(GlIcon).at(1);
 
         expect(confidentialIcon.isVisible()).toBe(true);
         expect(confidentialIcon.props('name')).toBe('eye-slash');
@@ -415,7 +415,7 @@ describe('RelatedItemsTree', () => {
       });
 
       it('renders item state tooltip for medium and small screens', () => {
-        const stateTooltip = wrapper.findAll(StateTooltip).at(0);
+        const stateTooltip = wrapper.findAllComponents(StateTooltip).at(0);
 
         expect(stateTooltip.props('state')).toBe(mockItem.state);
       });

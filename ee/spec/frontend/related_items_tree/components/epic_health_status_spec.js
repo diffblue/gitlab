@@ -49,7 +49,7 @@ describe('EpicHealthStatus', () => {
     });
 
     it('renders tooltip', () => {
-      const tooltip = wrapper.find(GlTooltip);
+      const tooltip = wrapper.findComponent(GlTooltip);
 
       expect(tooltip.exists()).toBe(true);
     });
