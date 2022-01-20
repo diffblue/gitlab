@@ -13,6 +13,7 @@ RSpec.describe AuditEvents::ExternalAuditEventDestination do
     it { is_expected.to validate_uniqueness_of(:destination_url).scoped_to(:namespace_id) }
     it { is_expected.to validate_length_of(:destination_url).is_at_most(255) }
     it { is_expected.to validate_presence_of(:destination_url) }
+    it { is_expected.to have_db_column(:verification_token).of_type(:text) }
   end
 
   it_behaves_like 'includes Limitable concern' do
