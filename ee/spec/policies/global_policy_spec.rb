@@ -202,7 +202,7 @@ RSpec.describe GlobalPolicy do
   describe 'list_removable_projects' do
     context 'when feature flag is enabled' do
       before do
-        stub_feature_flags(ff_projects_pending_deletion_tab: true)
+        stub_feature_flags(project_owners_list_project_pending_deletion: true)
       end
 
       context 'when user is an admin', :enable_admin_mode do
@@ -248,7 +248,7 @@ RSpec.describe GlobalPolicy do
 
     context 'when feature flag is disabled' do
       before do
-        stub_feature_flags(ff_projects_pending_deletion_tab: false)
+        stub_feature_flags(project_owners_list_project_pending_deletion: false)
       end
 
       context 'when user is an admin', :enable_admin_mode do

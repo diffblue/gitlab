@@ -12,7 +12,7 @@ module EE
 
       # rubocop:disable Gitlab/ModuleWithInstanceVariables
       def removed
-        @projects = load_projects(params.merge(finder_params_for_removed))
+        @projects = load_projects(params.merge(projects_pending_deletion_params))
 
         respond_to do |format|
           format.html
@@ -37,7 +37,7 @@ module EE
         return render_404 unless can?(current_user, :list_removable_projects)
       end
 
-      def finder_params_for_removed
+      def projects_pending_deletion_params
         finder_params = { aimed_for_deletion: true }
 
         unless current_user.can_admin_all_resources?

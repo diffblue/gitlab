@@ -124,42 +124,40 @@ RSpec.describe Nav::TopNavHelper do
         expect(subject[:primary]).to eq([expected_primary])
       end
 
-      context 'projects' do
-        context 'when licensed feature is available' do
-          before do
-            stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
-          end
+      context 'when licensed feature is available' do
+        before do
+          stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
+        end
 
-          it 'has expected :linksPrimary' do
-            expected_links_primary = [
-              ::Gitlab::Nav::TopNavMenuItem.build(
-                href: '/dashboard/projects',
-                id: 'your',
-                title: 'Your projects'
-              ),
-              ::Gitlab::Nav::TopNavMenuItem.build(
-                href: '/dashboard/projects/starred',
-                id: 'starred',
-                title: 'Starred projects'
-              ),
-              ::Gitlab::Nav::TopNavMenuItem.build(
-                href: '/explore',
-                id: 'explore',
-                title: 'Explore projects'
-              ),
-              ::Gitlab::Nav::TopNavMenuItem.build(
-                href: '/explore/projects/topics',
-                id: 'topics',
-                title: 'Explore topics'
-              ),
-              ::Gitlab::Nav::TopNavMenuItem.build(
-                href: '/dashboard/projects/removed',
-                id: 'deleted',
-                title: 'Pending deletion'
-              )
-            ]
-            expect(projects_view[:linksPrimary]).to eq(expected_links_primary)
-          end
+        it 'has expected :linksPrimary' do
+          expected_links_primary = [
+            ::Gitlab::Nav::TopNavMenuItem.build(
+              href: '/dashboard/projects',
+              id: 'your',
+              title: 'Your projects'
+            ),
+            ::Gitlab::Nav::TopNavMenuItem.build(
+              href: '/dashboard/projects/starred',
+              id: 'starred',
+              title: 'Starred projects'
+            ),
+            ::Gitlab::Nav::TopNavMenuItem.build(
+              href: '/explore',
+              id: 'explore',
+              title: 'Explore projects'
+            ),
+            ::Gitlab::Nav::TopNavMenuItem.build(
+              href: '/explore/projects/topics',
+              id: 'topics',
+              title: 'Explore topics'
+            ),
+            ::Gitlab::Nav::TopNavMenuItem.build(
+              href: '/dashboard/projects/removed',
+              id: 'deleted',
+              title: 'Pending deletion'
+            )
+          ]
+          expect(projects_view[:linksPrimary]).to eq(expected_links_primary)
         end
       end
     end

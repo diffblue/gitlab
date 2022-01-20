@@ -135,7 +135,7 @@ module EE
       scope :verification_failed_repos, -> { joins(:repository_state).merge(ProjectRepositoryState.verification_failed_repos) }
       scope :verification_failed_wikis, -> { joins(:repository_state).merge(ProjectRepositoryState.verification_failed_wikis) }
       scope :for_plan_name, -> (name) { joins(namespace: { gitlab_subscription: :hosted_plan }).where(plans: { name: name }) }
-      scope :with_feature, -> (name) do
+      scope :with_feature_available, -> (name) do
         projects_with_feature_available_in_plan = ::Project.for_group(::Group.with_feature_available_in_plan(name))
         public_projects_in_public_groups = ::Project.public_only.for_group(::Group.public_only)
         from_union([projects_with_feature_available_in_plan, public_projects_in_public_groups])

@@ -31,7 +31,7 @@ module EE
 
     def by_feature_available(collection)
       if feature = params[:feature_available].presence
-        collection.with_feature(feature)
+        collection.with_feature_available(feature)
       else
         collection
       end

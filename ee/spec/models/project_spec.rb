@@ -444,6 +444,22 @@ RSpec.describe Project do
         it { is_expected.to contain_exactly(project_1, project_2) }
       end
     end
+
+    describe '.with_feature_available', :saas do
+      let_it_be(:user) { create(:user) }
+      let_it_be(:ultimate_group) { create(:group_with_plan, plan: :ultimate_plan) }
+      let_it_be(:premium_group) { create(:group_with_plan, plan: :premium_plan) }
+      let_it_be(:no_plan_group) { create(:group_with_plan, plan: nil) }
+      let_it_be(:ultimate_project) { create(:project, :archived, creator: user, namespace: ultimate_group) }
+      let_it_be(:premium_project) { create(:project, :archived, creator: user, namespace: premium_group) }
+      let_it_be(:no_plan_project) { create(:project, :archived, creator: user, namespace: no_plan_group) }
+      let_it_be(:no_plan_public_project) { create(:project, :archived, creator: user, visibility: ::Gitlab::VisibilityLevel::PUBLIC, namespace: no_plan_group) }
+
+      it 'lists projects with the feature available' do
+        expect(described_class.with_feature_available(:adjourned_deletion_for_projects_and_groups)).to contain_exactly(premium_project, ultimate_project, no_plan_public_project)
+        expect(described_class.with_feature_available(:adjourned_deletion_for_projects_and_groups)).not_to include(no_plan_project)
+      end
+    end
   end
 
   describe 'validations' do
