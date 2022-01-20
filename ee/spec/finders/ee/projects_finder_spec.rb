@@ -52,7 +52,7 @@ RSpec.describe ProjectsFinder do
       context 'filter by aimed for deletion' do
         let_it_be(:params) { { aimed_for_deletion: true } }
         let_it_be(:aimed_for_deletion_project) { create(:project, :public, marked_for_deletion_at: 2.days.ago, pending_delete: false) }
-        let_it_be(:deleted_project) { create(:project, :public, marked_for_deletion_at: 1.month.ago, pending_delete: true) }
+        let_it_be(:pending_deletion_project) { create(:project, :public, marked_for_deletion_at: 1.month.ago, pending_delete: true) }
 
         it { is_expected.to contain_exactly(aimed_for_deletion_project) }
       end

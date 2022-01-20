@@ -97,7 +97,7 @@ RSpec.describe Dashboard::ProjectsController, :aggregate_failures do
       subject { get :starred, format: :json }
 
       let(:projects) { create_list(:project, 2, creator: user) }
-      let(:pending_deletion_project) { create_list(:project, 2, :archived, creator: user, marked_for_deletion_at: 3.days.ago) }
+      let(:aimed_for_deletion_project) { create_list(:project, 2, :archived, creator: user, marked_for_deletion_at: 3.days.ago) }
 
       before do
         projects.each do |project|
@@ -105,7 +105,7 @@ RSpec.describe Dashboard::ProjectsController, :aggregate_failures do
           create(:users_star_project, project_id: project.id, user_id: user.id)
         end
 
-        pending_deletion_project.each do |project|
+        aimed_for_deletion_project.each do |project|
           project.add_developer(user)
           create(:users_star_project, project_id: project.id, user_id: user.id)
         end

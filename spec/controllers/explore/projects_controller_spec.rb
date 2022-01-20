@@ -77,12 +77,12 @@ RSpec.describe Explore::ProjectsController do
       context 'projects pending deletion' do
         let(:project1) { create(:project, :public, updated_at: 3.days.ago) }
         let(:project2) { create(:project, :public, updated_at: 1.day.ago) }
-        let(:pending_deletion_project) { create(:project, :public, :archived, updated_at: 2.days.ago, marked_for_deletion_at: 2.days.ago) }
+        let(:aimed_for_deletion_project) { create(:project, :public, :archived, updated_at: 2.days.ago, marked_for_deletion_at: 2.days.ago) }
 
         before do
           create(:trending_project, project: project1)
           create(:trending_project, project: project2)
-          create(:trending_project, project: pending_deletion_project)
+          create(:trending_project, project: aimed_for_deletion_project)
         end
 
         it 'does not list projects pending deletion' do
