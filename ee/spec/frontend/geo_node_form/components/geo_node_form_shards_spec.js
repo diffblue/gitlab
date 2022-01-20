@@ -24,7 +24,7 @@ describe('GeoNodeFormShards', () => {
     wrapper.destroy();
   });
 
-  const findGlDropdown = () => wrapper.find(GlDropdown);
+  const findGlDropdown = () => wrapper.findComponent(GlDropdown);
   const findDropdownItems = () => findGlDropdown().findAll('li');
 
   describe('template', () => {
@@ -55,7 +55,7 @@ describe('GeoNodeFormShards', () => {
         const dropdownItems = findDropdownItems();
 
         dropdownItems.wrappers.forEach((dI, index) => {
-          const dropdownItemIcon = dI.find(GlIcon);
+          const dropdownItemIcon = dI.findComponent(GlIcon);
 
           expect(dropdownItemIcon.classes('invisible')).toBe(
             !wrapper.vm.isSelected(wrapper.vm.syncShardsOptions[index]),

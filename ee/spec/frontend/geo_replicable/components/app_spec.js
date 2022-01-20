@@ -44,12 +44,12 @@ describe('GeoReplicableApp', () => {
   });
 
   const findGeoReplicableContainer = () => wrapper.find('.geo-replicable-container');
-  const findGlLoadingIcon = () => findGeoReplicableContainer().find(GlLoadingIcon);
-  const findGeoReplicable = () => findGeoReplicableContainer().find(GeoReplicable);
+  const findGlLoadingIcon = () => findGeoReplicableContainer().findComponent(GlLoadingIcon);
+  const findGeoReplicable = () => findGeoReplicableContainer().findComponent(GeoReplicable);
   const findGeoReplicableEmptyState = () =>
-    findGeoReplicableContainer().find(GeoReplicableEmptyState);
+    findGeoReplicableContainer().findComponent(GeoReplicableEmptyState);
   const findGeoReplicableFilterBar = () =>
-    findGeoReplicableContainer().find(GeoReplicableFilterBar);
+    findGeoReplicableContainer().findComponent(GeoReplicableFilterBar);
 
   describe.each`
     isLoading | graphqlFieldName         | replicableItems              | showReplicableItems | showEmptyState | showFilterBar | showLoader

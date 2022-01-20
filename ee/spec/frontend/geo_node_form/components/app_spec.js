@@ -24,8 +24,8 @@ describe('GeoNodeFormApp', () => {
   });
 
   const findGeoNodeFormTitle = () => wrapper.find('h2');
-  const findGeoNodeFormBadge = () => wrapper.find(GlBadge);
-  const findGeoForm = () => wrapper.find(GeoNodeForm);
+  const findGeoNodeFormBadge = () => wrapper.findComponent(GlBadge);
+  const findGeoForm = () => wrapper.findComponent(GeoNodeForm);
 
   describe('render', () => {
     beforeEach(() => {

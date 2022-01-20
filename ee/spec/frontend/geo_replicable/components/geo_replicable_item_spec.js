@@ -47,8 +47,8 @@ describe('GeoReplicableItem', () => {
   });
 
   const findCard = () => wrapper.find('.card');
-  const findGlLink = () => findCard().find(GlLink);
-  const findGlButton = () => findCard().find(GlButton);
+  const findGlLink = () => findCard().findComponent(GlLink);
+  const findGlButton = () => findCard().findComponent(GlButton);
   const findCardHeader = () => findCard().find('.card-header');
   const findTextTitle = () => findCardHeader().find('span');
   const findCardBody = () => findCard().find('.card-body');

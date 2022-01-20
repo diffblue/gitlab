@@ -39,8 +39,9 @@ describe('GeoReplicable', () => {
   });
 
   const findGeoReplicableContainer = () => wrapper.find('section');
-  const findGlPagination = () => findGeoReplicableContainer().find(GlPagination);
-  const findGeoReplicableItem = () => findGeoReplicableContainer().findAll(GeoReplicableItem);
+  const findGlPagination = () => findGeoReplicableContainer().findComponent(GlPagination);
+  const findGeoReplicableItem = () =>
+    findGeoReplicableContainer().findAllComponents(GeoReplicableItem);
 
   describe('template', () => {
     beforeEach(() => {

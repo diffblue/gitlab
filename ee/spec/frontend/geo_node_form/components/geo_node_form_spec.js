@@ -41,9 +41,9 @@ describe('GeoNodeForm', () => {
     wrapper.destroy();
   });
 
-  const findGeoNodeFormCoreField = () => wrapper.find(GeoNodeFormCore);
-  const findGeoNodeFormSelectiveSyncField = () => wrapper.find(GeoNodeFormSelectiveSync);
-  const findGeoNodeFormCapacitiesField = () => wrapper.find(GeoNodeFormCapacities);
+  const findGeoNodeFormCoreField = () => wrapper.findComponent(GeoNodeFormCore);
+  const findGeoNodeFormSelectiveSyncField = () => wrapper.findComponent(GeoNodeFormSelectiveSync);
+  const findGeoNodeFormCapacitiesField = () => wrapper.findComponent(GeoNodeFormCapacities);
   const findGeoNodeSaveButton = () => wrapper.find('#node-save-button');
   const findGeoNodeCancelButton = () => wrapper.find('#node-cancel-button');
 

@@ -50,7 +50,7 @@ describe('GeoNodeFormCapacities', () => {
   });
 
   const findGeoNodeFormCapcitiesSectionDescription = () => wrapper.find('p');
-  const findGeoNodeFormCapacitiesMoreInfoLink = () => wrapper.find(GlLink);
+  const findGeoNodeFormCapacitiesMoreInfoLink = () => wrapper.findComponent(GlLink);
   const findGeoNodeFormRepositoryCapacityField = () =>
     wrapper.find('#node-repository-capacity-field');
   const findGeoNodeFormFileCapacityField = () => wrapper.find('#node-file-capacity-field');

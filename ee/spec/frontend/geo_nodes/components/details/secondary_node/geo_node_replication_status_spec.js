@@ -28,7 +28,7 @@ describe('GeoNodeReplicationStatus', () => {
   });
 
   const findReplicationStatusText = () => wrapper.findByTestId('replication-status-text');
-  const findQuestionIcon = () => wrapper.find({ ref: 'replicationStatus' });
+  const findQuestionIcon = () => wrapper.findComponent({ ref: 'replicationStatus' });
   const findGlPopover = () => wrapper.findComponent(GlPopover);
   const findGlPopoverLink = () => findGlPopover().findComponent(GlLink);
 

@@ -50,14 +50,16 @@ describe('GeoNodeReplicationStatusMobile', () => {
       });
 
       it('renders sync progress correctly', () => {
-        expect(findItemSyncStatus().find(GeoNodeProgressBar).exists()).toBe(renderSyncProgress);
+        expect(findItemSyncStatus().findComponent(GeoNodeProgressBar).exists()).toBe(
+          renderSyncProgress,
+        );
         expect(extendedWrapper(findItemSyncStatus()).findByText('N/A').exists()).toBe(
           !renderSyncProgress,
         );
       });
 
       it('renders verification progress correctly', () => {
-        expect(findItemVerificationStatus().find(GeoNodeProgressBar).exists()).toBe(
+        expect(findItemVerificationStatus().findComponent(GeoNodeProgressBar).exists()).toBe(
           renderVerifProgress,
         );
         expect(extendedWrapper(findItemVerificationStatus()).findByText('N/A').exists()).toBe(
