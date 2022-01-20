@@ -58,7 +58,6 @@ describe('Transfer group form', () => {
   it('sets the namespace select properties', () => {
     const attrs = findNamespaceSelect().attributes();
     expect(attrs).toMatchObject({
-      'data-qa-selector': 'select_group_dropdown',
       defaulttext: 'Select parent group',
       emptynamespacetitle: 'No parent group',
       includeemptynamespace: 'true',

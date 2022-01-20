@@ -103,36 +103,39 @@ export default {
 };
 </script>
 <template>
-  <gl-dropdown :text="selectedNamespaceText" :block="fullWidth">
+  <gl-dropdown :text="selectedNamespaceText" :block="fullWidth" data-qa-selector="namespaces_list">
     <template #header>
       <gl-search-box-by-type v-model.trim="searchTerm" />
     </template>
     <div v-if="includeEmptyNamespace">
-      <gl-dropdown-item class="qa-namespaces-list-item" @click="handleSelectEmptyNamespace()">
+      <gl-dropdown-item
+        data-qa-selector="namespaces_list_item"
+        @click="handleSelectEmptyNamespace()"
+      >
         {{ emptyNamespace }}
       </gl-dropdown-item>
       <gl-dropdown-divider />
     </div>
-    <div v-if="hasGroupNamespaces" class="qa-namespaces-list-groups">
+    <div v-if="hasGroupNamespaces" data-qa-selector="namespaces_list_groups">
       <gl-dropdown-section-header v-if="includeHeaders">{{
         $options.i18n.GROUPS
       }}</gl-dropdown-section-header>
       <gl-dropdown-item
         v-for="item in filteredGroupNamespaces"
         :key="item.id"
-        class="qa-namespaces-list-item"
+        data-qa-selector="namespaces_list_item"
         @click="handleSelect(item)"
         >{{ item.humanName }}</gl-dropdown-item
       >
     </div>
-    <div v-if="hasUserNamespaces" class="qa-namespaces-list-users">
+    <div v-if="hasUserNamespaces" data-qa-selector="namespaces_list_users">
       <gl-dropdown-section-header v-if="includeHeaders">{{
         $options.i18n.USERS
       }}</gl-dropdown-section-header>
       <gl-dropdown-item
         v-for="item in filteredUserNamespaces"
         :key="item.id"
-        class="qa-namespaces-list-item"
+        data-qa-selector="namespaces_list_item"
         @click="handleSelect(item)"
         >{{ item.humanName }}</gl-dropdown-item
       >

@@ -74,7 +74,6 @@ export default {
   <div>
     <gl-form-group>
       <namespace-select
-        data-qa-selector="select_group_dropdown"
         :default-text="$options.i18n.dropdownTitle"
         :data="parentGroups"
         :empty-namespace-title="$options.i18n.emptyNamespaceTitle"

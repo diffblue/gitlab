@@ -8,6 +8,7 @@ module QA
           include ::QA::Page::Settings::Common
           include Page::Component::VisibilitySetting
           include Page::Component::ConfirmModal
+          include Page::Component::NamespaceSelect
 
           view 'app/views/groups/edit.html.haml' do
             element :permission_lfs_2fa_content
@@ -39,17 +40,15 @@ module QA
             element :project_creation_level_dropdown
           end
 
-          view 'app/views/groups/settings/_transfer.html.haml' do
-            element :transfer_group_button
-          end
-
           view 'app/helpers/dropdowns_helper.rb' do
             element :dropdown_input_field
             element :dropdown_list_content
           end
 
-          view 'app/assets/javascripts/groups/components/transfer_group_form.vue' do
-            element :select_group_dropdown
+          def wait_for_enabled_button(target)
+            wait_until(reload: false) do
+              !find_element(target).disabled?
+            end
           end
 
           def set_group_name(name)
@@ -115,19 +114,13 @@ module QA
             click_element(:save_permissions_changes_button)
           end
 
-          def transfer_group(target_group)
+          def transfer_group(target_group, source_group)
             expand_content :advanced_settings_content
 
-            click_element :select_group_dropdown
-            fill_element(:dropdown_input_field, target_group)
+            select_namespace(target_group)
+            click_element(:transfer_button)
 
-            within_element(:dropdown_list_content) do
-              click_on target_group
-            end
-
-            click_element :transfer_group_button
-
-            fill_confirmation_text(target_group)
+            fill_confirmation_text(source_group)
             confirm_transfer
           end
         end
