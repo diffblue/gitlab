@@ -8,9 +8,11 @@ class AuditEventPresenter < Gitlab::View::Presenter::Simple
   end
 
   def author_url
-    return if author.is_a?(Gitlab::Audit::NullAuthor)
-
-    url_for(user_path(author))
+    if author.is_a?(Gitlab::Audit::NullAuthor)
+      author.full_path
+    else
+      url_for(user_path(author))
+    end
   end
 
   def target
