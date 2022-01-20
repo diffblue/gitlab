@@ -1,4 +1,5 @@
-[{
+[
+  {
     "id": "gid://gitlab/IncidentManagement::OncallRotation/2",
     "name": "Rotation 242",
     "startsAt": "2021-01-13T11:04:56.333Z",
@@ -180,65 +181,66 @@
         }
       ]
     }
-},
-{
-  "id": "gid://gitlab/IncidentManagement::OncallRotation/5",
-  "name": "Rotation 247",
-  "startsAt": "2021-01-06T10:04:56.333Z",
-  "endsAt": "2021-01-11T10:04:56.333Z",
-  "length": 1,
-  "lengthUnit": "WEEKS",
-  "activePeriod": {
-    "startTime": "02:00",
-    "endTime": "10:00"
   },
-  "participants": {
-    "nodes": [
-      {
-        "id": "51",
-        "user": {
-          "id": "gid://gitlab/IncidentManagement::OncallParticipant/51",
-          "username": "oregand",
-          "avatarUrl": "/url",
-          "name": "david"
-        },
-        "colorWeight": "600",
-        "colorPalette": "orange"
-      }
-    ]
-  },
-  "shifts": {
-    "nodes": [
-      {
-        "participant": {
-          "id": "43",
-          "colorWeight": "600",
-          "colorPalette": "orange",
+  {
+    "id": "gid://gitlab/IncidentManagement::OncallRotation/5",
+    "name": "Rotation 247",
+    "startsAt": "2021-01-06T10:04:56.333Z",
+    "endsAt": "2021-01-11T10:04:56.333Z",
+    "length": 1,
+    "lengthUnit": "WEEKS",
+    "activePeriod": {
+      "startTime": "02:00",
+      "endTime": "10:00"
+    },
+    "participants": {
+      "nodes": [
+        {
+          "id": "51",
           "user": {
-            "id": "gid://gitlab/User/43",
-            "avatarUrl": "url",
+            "id": "gid://gitlab/IncidentManagement::OncallParticipant/51",
             "username": "oregand",
+            "avatarUrl": "/url",
             "name": "david"
-          }
-        },
-        "startsAt": "2021-01-12T10:04:56.333Z",
-        "endsAt": "2021-01-15T10:04:56.333Z"
-      },
-      {
-        "participant": {
-          "id": "44",
+          },
           "colorWeight": "600",
-          "colorPalette": "aqua",
-          "user": {
-            "id": "gid://gitlab/User/44",
-            "avatarUrl": "url",
-            "username": "sarah.w",
-            "name": "sarah"
-          }
+          "colorPalette": "orange"
+        }
+      ]
+    },
+    "shifts": {
+      "nodes": [
+        {
+          "participant": {
+            "id": "43",
+            "colorWeight": "600",
+            "colorPalette": "orange",
+            "user": {
+              "id": "gid://gitlab/User/43",
+              "avatarUrl": "url",
+              "username": "oregand",
+              "name": "david"
+            }
+          },
+          "startsAt": "2021-01-12T10:04:56.333Z",
+          "endsAt": "2021-01-15T10:04:56.333Z"
         },
-        "startsAt": "2021-01-16T10:04:56.333Z",
-        "endsAt": "2021-01-30T10:04:56.333Z"
-      }
-    ]
+        {
+          "participant": {
+            "id": "44",
+            "colorWeight": "600",
+            "colorPalette": "aqua",
+            "user": {
+              "id": "gid://gitlab/User/44",
+              "avatarUrl": "url",
+              "username": "sarah.w",
+              "name": "sarah"
+            }
+          },
+          "startsAt": "2021-01-16T10:04:56.333Z",
+          "endsAt": "2021-01-30T10:04:56.333Z"
+        }
+      ]
+    }
   }
-}]
+]

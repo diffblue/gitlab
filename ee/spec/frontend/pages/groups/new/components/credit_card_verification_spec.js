@@ -66,7 +66,7 @@ describe('Verification page', () => {
         .spyOn(wrapper.find('iframe').element.contentWindow, 'postMessage')
         .mockImplementation(dispatchWindowMessageEvent);
 
-      wrapper.find(GlButton).vm.$emit('click');
+      wrapper.findComponent(GlButton).vm.$emit('click');
     });
 
     it('triggers postMessage on the Zuora iframe', () => {

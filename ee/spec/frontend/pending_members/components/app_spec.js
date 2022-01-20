@@ -82,6 +82,6 @@ describe('PendingMembersApp', () => {
       initialGetters: { tableItems: () => [mockInvitedApprovedMember] },
       initialState: { members: [mockInvitedApprovedMember] },
     });
-    expect(wrapper.find(GlBadge).text()).toEqual('Awaiting member signup');
+    expect(wrapper.findComponent(GlBadge).text()).toEqual('Awaiting member signup');
   });
 });

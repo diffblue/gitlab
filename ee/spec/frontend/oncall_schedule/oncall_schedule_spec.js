@@ -96,9 +96,9 @@ describe('On-call schedule', () => {
   const findScheduleDescription = () => findSchedule().text();
   const findRotations = () => wrapper.findByTestId('rotationsBody');
   const findRotationsShiftPreset = () => wrapper.findByTestId('shift-preset-change');
-  const findAddRotationsBtn = () => findRotationsHeader().find(GlButton);
-  const findScheduleTimeline = () => findRotations().find(ScheduleTimelineSection);
-  const findRotationsList = () => findRotations().find(RotationsListSection);
+  const findAddRotationsBtn = () => findRotationsHeader().findComponent(GlButton);
+  const findScheduleTimeline = () => findRotations().findComponent(ScheduleTimelineSection);
+  const findRotationsList = () => findRotations().findComponent(RotationsListSection);
   const findLoadPreviousTimeframeBtn = () => wrapper.findByTestId('previous-timeframe-btn');
   const findLoadNextTimeframeBtn = () => wrapper.findByTestId('next-timeframe-btn');
   const findCollapsible = () => wrapper.findComponent(GlCollapse);

@@ -5,7 +5,7 @@ import RelatedIssuableInput from '~/related_issues/components/related_issuable_i
 describe('blocking mr input root', () => {
   let wrapper;
 
-  const getInput = () => wrapper.find(RelatedIssuableInput);
+  const getInput = () => wrapper.findComponent(RelatedIssuableInput);
   const addTokenizedInput = (input) => {
     getInput().vm.$emit('addIssuableFormInput', {
       untouchedRawReferences: [input],

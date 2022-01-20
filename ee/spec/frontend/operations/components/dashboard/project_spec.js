@@ -50,7 +50,7 @@ describe('project component', () => {
       });
 
       it('shows project title', () => {
-        const header = wrapper.find(ProjectHeader);
+        const header = wrapper.findComponent(ProjectHeader);
 
         expect(header.props('project')).toEqual(project);
       });
@@ -61,7 +61,9 @@ describe('project component', () => {
 
       it('shows upgrade license text', () => {
         expect(findDashboardCard().text()).toContain('upgrade its group plan to Premium');
-        expect(findDashboardCard().find(GlLink).attributes('href')).toBe(project.upgrade_path);
+        expect(findDashboardCard().findComponent(GlLink).attributes('href')).toBe(
+          project.upgrade_path,
+        );
       });
 
       it('hides commit info', () => {
@@ -96,7 +98,7 @@ describe('project component', () => {
 
     describe('project header', () => {
       it('binds project', () => {
-        const header = wrapper.find(ProjectHeader);
+        const header = wrapper.findComponent(ProjectHeader);
 
         expect(header.props('project')).toEqual(mockOneProject);
       });
@@ -104,7 +106,7 @@ describe('project component', () => {
 
     describe('alerts', () => {
       it('binds alert count to count', () => {
-        const alert = wrapper.find(Alerts);
+        const alert = wrapper.findComponent(Alerts);
 
         expect(alert.props('count')).toBe(mockOneProject.alert_count);
       });
@@ -114,7 +116,7 @@ describe('project component', () => {
       let commit;
 
       beforeEach(() => {
-        commit = wrapper.find(Commit);
+        commit = wrapper.findComponent(Commit);
       });
 
       it('binds commitRef', () => {

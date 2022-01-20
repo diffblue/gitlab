@@ -36,7 +36,7 @@ describe('dashboard component', () => {
       stubs,
     });
 
-  const findEmptyState = () => wrapper.find(GlEmptyState);
+  const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findAddProjectButton = () => wrapper.find('[data-testid=add-projects-button]');
 
   beforeEach(() => {
@@ -85,7 +85,7 @@ describe('dashboard component', () => {
           .then(waitForPromises)
           .then(() => {
             expect(store.state.projects.length).toEqual(2);
-            expect(wrapper.findAll(Project).length).toEqual(2);
+            expect(wrapper.findAllComponents(Project).length).toEqual(2);
           });
       });
     });
@@ -102,14 +102,14 @@ describe('dashboard component', () => {
       });
 
       it('includes a dashboard project component for each project', () => {
-        const projectComponents = wrapper.findAll(Project);
+        const projectComponents = wrapper.findAllComponents(Project);
 
         expect(projectComponents).toHaveLength(projectCount);
       });
 
       it('passes each project to the dashboard project component', () => {
         const [oneProject] = store.state.projects;
-        const projectComponent = wrapper.find(Project);
+        const projectComponent = wrapper.findComponent(Project);
 
         expect(projectComponent.props().project).toEqual(oneProject);
       });
@@ -133,7 +133,7 @@ describe('dashboard component', () => {
 
           return waitForPromises().then(() => {
             expect(store.state.projects.length).toEqual(0);
-            expect(wrapper.findAll(Project).length).toEqual(0);
+            expect(wrapper.findAllComponents(Project).length).toEqual(0);
           });
         });
       });

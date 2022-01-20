@@ -45,10 +45,10 @@ describe('AddEditScheduleForm', () => {
     wrapper.destroy();
   });
 
-  const findTimezoneDropdown = () => wrapper.find(GlDropdown);
+  const findTimezoneDropdown = () => wrapper.findComponent(GlDropdown);
   const findDropdownOptions = () => wrapper.findAllComponents(GlDropdownItem);
-  const findTimezoneSearchBox = () => wrapper.find(GlSearchBoxByType);
-  const findScheduleName = () => wrapper.find(GlFormGroup);
+  const findTimezoneSearchBox = () => wrapper.findComponent(GlSearchBoxByType);
+  const findScheduleName = () => wrapper.findComponent(GlFormGroup);
 
   it('renders form layout', () => {
     createComponent({

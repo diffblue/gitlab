@@ -49,9 +49,9 @@ describe('AddEditRotationForm', () => {
   const findRotationLength = () => wrapper.find('[id="rotation-length"]');
   const findRotationStartTime = () => wrapper.find('[data-testid="rotation-start-time"]');
   const findRotationEndsContainer = () => wrapper.find('[data-testid="rotation-ends-on"]');
-  const findEndDateToggle = () => wrapper.find(GlToggle);
+  const findEndDateToggle = () => wrapper.findComponent(GlToggle);
   const findRotationEndTime = () => wrapper.find('[data-testid="rotation-end-time"]');
-  const findUserSelector = () => wrapper.find(GlTokenSelector);
+  const findUserSelector = () => wrapper.findComponent(GlTokenSelector);
   const findRotationFormGroups = () => wrapper.findAllComponents(GlFormGroup);
   const findStartsOnTimeOptions = () => findRotationStartTime().findAllComponents(GlDropdownItem);
   const findEndsOnTimeOptions = () => findRotationEndTime().findAllComponents(GlDropdownItem);
