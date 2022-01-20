@@ -39,7 +39,7 @@ describe('DastScannerProfileForm', () => {
 
   const findBaseDastProfileForm = () => wrapper.findComponent(BaseDastProfileForm);
   const findParentFormGroup = () => wrapper.findByTestId('dast-scanner-parent-group');
-  const findForm = () => wrapper.find(GlForm);
+  const findForm = () => wrapper.findComponent(GlForm);
   const findProfileNameInput = () => wrapper.findByTestId('profile-name-input');
   const findSpiderTimeoutInput = () => wrapper.findByTestId('spider-timeout-input');
   const findTargetTimeoutInput = () => wrapper.findByTestId('target-timeout-input');

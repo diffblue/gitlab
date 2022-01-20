@@ -30,7 +30,7 @@ const redirectParam = 'foo';
 describe('EE - SecurityConfigurationSnippetModal', () => {
   let wrapper;
 
-  const findModal = () => wrapper.find(GlModal);
+  const findModal = () => wrapper.findComponent(GlModal);
   const helpText = () => wrapper.findByTestId('configuration-modal-help-text');
   const findEditor = () => wrapper.findComponent(SourceEditor);
 

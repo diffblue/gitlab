@@ -13,7 +13,7 @@ describe('DynamicFields component', () => {
     });
   };
 
-  const findFields = () => wrapper.findAll({ ref: 'fields' });
+  const findFields = () => wrapper.findAllComponents({ ref: 'fields' });
 
   afterEach(() => {
     wrapper.destroy();

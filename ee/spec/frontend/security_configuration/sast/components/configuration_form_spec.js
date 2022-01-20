@@ -65,11 +65,11 @@ describe('ConfigurationForm component', () => {
   };
 
   const findForm = () => wrapper.find('form');
-  const findSubmitButton = () => wrapper.find({ ref: 'submitButton' });
+  const findSubmitButton = () => wrapper.findComponent({ ref: 'submitButton' });
   const findErrorAlert = () => wrapper.find('[data-testid="analyzers-error-alert"]');
-  const findCancelButton = () => wrapper.find({ ref: 'cancelButton' });
-  const findDynamicFieldsComponents = () => wrapper.findAll(DynamicFields);
-  const findAnalyzerConfigurations = () => wrapper.findAll(AnalyzerConfiguration);
+  const findCancelButton = () => wrapper.findComponent({ ref: 'cancelButton' });
+  const findDynamicFieldsComponents = () => wrapper.findAllComponents(DynamicFields);
+  const findAnalyzerConfigurations = () => wrapper.findAllComponents(AnalyzerConfiguration);
   const findAnalyzersSection = () => wrapper.find('[data-testid="analyzers-section"]');
   const findAnalyzersSectionTip = () => wrapper.find('[data-testid="analyzers-section-tip"]');
 
@@ -177,7 +177,7 @@ describe('ConfigurationForm component', () => {
     });
 
     it('has a link to the documentation', () => {
-      const link = findAnalyzersSection().find(GlLink);
+      const link = findAnalyzersSection().findComponent(GlLink);
       expect(link.exists()).toBe(true);
       expect(link.attributes('href')).toBe(sastAnalyzersDocumentationPath);
     });

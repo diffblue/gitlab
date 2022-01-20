@@ -63,10 +63,10 @@ describe('EE - DastProfiles', () => {
 
   const withinComponent = () => within(wrapper.element);
   const getProfilesComponent = (profileType) => wrapper.find(`[data-testid="${profileType}List"]`);
-  const getDropdownComponent = () => wrapper.find(GlDropdown);
+  const getDropdownComponent = () => wrapper.findComponent(GlDropdown);
   const getSiteProfilesDropdownItem = (text) =>
     within(getDropdownComponent().element).queryByText(text);
-  const getTabsComponent = () => wrapper.find(GlTabs);
+  const getTabsComponent = () => wrapper.findComponent(GlTabs);
   const getTab = ({ tabName, selected }) =>
     withinComponent().getByRole('tab', {
       name: tabName,

@@ -60,7 +60,7 @@ describe('DastSiteValidationRevokeModal', () => {
   const createComponent = componentFactory();
   const createFullComponent = componentFactory(mount);
 
-  const withinComponent = () => within(wrapper.find(GlModal).element);
+  const withinComponent = () => within(wrapper.findComponent(GlModal).element);
   const findByTestId = (id) => wrapper.find(`[data-testid="${id}"`);
   const findRevokeButton = () => findByTestId('revoke-validation-button');
 
@@ -93,7 +93,7 @@ describe('DastSiteValidationRevokeModal', () => {
     });
 
     it('renders no alert', () => {
-      expect(wrapper.find(GlAlert).exists()).toBe(false);
+      expect(wrapper.findComponent(GlAlert).exists()).toBe(false);
     });
 
     it('renders warning message', () => {
@@ -132,7 +132,7 @@ describe('DastSiteValidationRevokeModal', () => {
         findRevokeButton().trigger('click');
         await waitForPromises();
 
-        expect(wrapper.find(GlAlert).exists()).toBe(true);
+        expect(wrapper.findComponent(GlAlert).exists()).toBe(true);
         expect(
           withinComponent().getByText('Could not revoke validation. Please try again.'),
         ).not.toBe(null);
