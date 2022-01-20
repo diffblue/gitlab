@@ -1,5 +1,5 @@
 <script>
-import { GlLink, GlSprintf } from '@gitlab/ui';
+import { GlLink, GlIcon, GlTooltipDirective, GlSprintf } from '@gitlab/ui';
 import formattingMixins from 'ee/subscriptions/new/formatting_mixins';
 import { formatNumber } from '~/locale';
 import {
@@ -9,12 +9,17 @@ import {
   I18N_SUMMARY_TAX,
   I18N_SUMMARY_TAX_NOTE,
   I18N_SUMMARY_TOTAL,
+  I18N_STORAGE_TOOLTIP_NOTE,
 } from '../../constants';
 
 export default {
   components: {
     GlLink,
     GlSprintf,
+    GlIcon,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   mixins: [formattingMixins],
   props: {
@@ -93,6 +98,7 @@ export default {
     tax: I18N_SUMMARY_TAX,
     taxNote: I18N_SUMMARY_TAX_NOTE,
     total: I18N_SUMMARY_TOTAL,
+    tooltipNote: I18N_STORAGE_TOOLTIP_NOTE,
   },
 };
 </script>
@@ -120,7 +126,14 @@ export default {
             endDate: formatDate(endDate),
           })
         }}
-        <slot name="tooltip"></slot>
+        <gl-icon
+          v-if="subscriptionEndDate"
+          v-gl-tooltip.right
+          :title="$options.i18n.tooltipNote"
+          :aria-label="$options.i18n.tooltipNote"
+          role="tooltip"
+          name="question"
+        />
       </div>
     </div>
     <div class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-py-3">

@@ -1,6 +1,6 @@
 <script>
 import emptySvg from '@gitlab/svgs/dist/illustrations/security-dashboard-empty-state.svg';
-import { GlEmptyState, GlIcon, GlAlert, GlTooltipDirective } from '@gitlab/ui';
+import { GlEmptyState, GlAlert } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import OrderSummary from 'ee/subscriptions/buy_addons_shared/components/order_summary.vue';
 import { ERROR_FETCHING_DATA_HEADER, ERROR_FETCHING_DATA_DESCRIPTION } from '~/ensure_data';
@@ -17,12 +17,8 @@ export default {
     AddonPurchaseDetails,
     Checkout,
     GlEmptyState,
-    GlIcon,
     GlAlert,
     OrderSummary,
-  },
-  directives: {
-    GlTooltip: GlTooltipDirective,
   },
   props: {
     config: {
@@ -172,15 +168,6 @@ export default {
       >
         <template #price-per-unit="{ price }">
           {{ pricePerUnitLabel(price) }}
-        </template>
-        <template #tooltip>
-          <gl-icon
-            v-gl-tooltip.right
-            :title="config.tooltipNote"
-            :aria-label="config.tooltipNote"
-            role="tooltip"
-            name="question"
-          />
         </template>
       </order-summary>
     </div>

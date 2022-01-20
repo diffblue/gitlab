@@ -51,7 +51,6 @@ describe('Buy Minutes App', () => {
       summaryTitle: i18nCIMinutesSummaryTitle,
       summaryTotal: I18N_CI_MINUTES_SUMMARY_TOTAL,
       title: I18N_CI_MINUTES_TITLE,
-      tooltipNote: '',
     });
   });
 });

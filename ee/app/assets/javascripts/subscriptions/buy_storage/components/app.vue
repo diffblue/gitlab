@@ -10,7 +10,6 @@ import {
   I18N_STORAGE_SUMMARY_TOTAL,
   I18N_STORAGE_TITLE,
   I18N_STORAGE_PRICE_PER_UNIT,
-  I18N_STORAGE_TOOLTIP_NOTE,
   planTags,
   STORAGE_PER_PACK,
 } from 'ee/subscriptions/buy_addons_shared/constants';
@@ -39,7 +38,6 @@ export default {
         summaryTitle: i18nStorageSummaryTitle,
         summaryTotal: I18N_STORAGE_SUMMARY_TOTAL,
         title: I18N_STORAGE_TITLE,
-        tooltipNote: I18N_STORAGE_TOOLTIP_NOTE,
       };
     },
   },
