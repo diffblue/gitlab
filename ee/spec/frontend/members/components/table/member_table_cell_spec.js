@@ -62,7 +62,7 @@ describe('MemberTableCell', () => {
     });
   };
 
-  const findWrappedComponent = () => wrapper.find(WrappedComponent);
+  const findWrappedComponent = () => wrapper.findComponent(WrappedComponent);
 
   afterEach(() => {
     wrapper.destroy();

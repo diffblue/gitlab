@@ -24,7 +24,7 @@ describe('RoleDropdown', () => {
     return waitForPromises();
   };
 
-  const findDropdown = () => wrapper.find(GlDropdown);
+  const findDropdown = () => wrapper.findComponent(GlDropdown);
 
   afterEach(() => {
     wrapper.destroy();
@@ -40,7 +40,7 @@ describe('RoleDropdown', () => {
           member: { ...member, isOverridden: true },
         });
 
-        expect(wrapper.find(LdapDropdownItem).exists()).toBe(true);
+        expect(wrapper.findComponent(LdapDropdownItem).exists()).toBe(true);
       });
     });
 
@@ -66,7 +66,7 @@ describe('RoleDropdown', () => {
         },
       });
 
-      expect(wrapper.find(LdapDropdownItem).exists()).toBe(false);
+      expect(wrapper.findComponent(LdapDropdownItem).exists()).toBe(false);
     });
   });
 });
