@@ -1,5 +1,6 @@
 <script>
 import {
+  GlButton,
   GlFormGroup,
   GlSegmentedControl,
   GlDropdown,
@@ -11,6 +12,7 @@ import { mapState, mapActions } from 'vuex';
 import { visitUrl, mergeUrlParams, updateHistory, setUrlParams } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import FilteredSearchBar from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 import { EPICS_STATES, PRESET_TYPES, DATE_RANGES } from '../constants';
 import EpicsFilteredSearchMixin from '../mixins/filtered_search_mixin';
@@ -48,6 +50,7 @@ export default {
     },
   ],
   components: {
+    GlButton,
     GlFormGroup,
     GlSegmentedControl,
     GlDropdown,
@@ -55,7 +58,7 @@ export default {
     GlDropdownDivider,
     FilteredSearchBar,
   },
-  mixins: [EpicsFilteredSearchMixin],
+  mixins: [EpicsFilteredSearchMixin, glFeatureFlagMixin()],
   props: {
     timeframeRangeType: {
       type: String,
@@ -161,6 +164,9 @@ export default {
       this.fetchEpics();
     },
   },
+  i18n: {
+    settings: __('Settings'),
+  },
 };
 </script>
 
@@ -232,6 +238,16 @@ export default {
         @onFilter="handleFilterEpics"
         @onSort="handleSortEpics"
       />
+      <gl-button
+        v-if="glFeatures.roadmapSettings"
+        icon="settings"
+        class="gl-mb-3 gl-lg-ml-3 gl-sm-mt-3"
+        :aria-label="$options.i18n.settings"
+        data-testid="settings-button"
+        @click="$emit('toggleSettings', $event)"
+      >
+        {{ $options.i18n.settings }}
+      </gl-button>
     </div>
   </div>
 </template>

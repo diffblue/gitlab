@@ -1,6 +1,7 @@
 import { GlLoadingIcon } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import EpicsListEmpty from 'ee/roadmap/components/epics_list_empty.vue';
 import RoadmapApp from 'ee/roadmap/components/roadmap_app.vue';
 import RoadmapFilters from 'ee/roadmap/components/roadmap_filters.vue';
@@ -18,12 +19,11 @@ import {
   mockTimeframeInitialDate,
 } from 'ee_jest/roadmap/mock_data';
 
+Vue.use(Vuex);
+
 describe('RoadmapApp', () => {
-  const localVue = createLocalVue();
   let store;
   let wrapper;
-
-  localVue.use(Vuex);
 
   const currentGroupId = mockGroupId;
   const emptyStateIllustrationPath = mockSvgPath;
@@ -36,9 +36,8 @@ describe('RoadmapApp', () => {
     initialDate: mockTimeframeInitialDate,
   });
 
-  const createComponent = (mountFunction = shallowMount) => {
-    return mountFunction(RoadmapApp, {
-      localVue,
+  const createComponent = ({ roadmapSettings = false } = {}) => {
+    return shallowMountExtended(RoadmapApp, {
       propsData: {
         emptyStateIllustrationPath,
         presetType,
@@ -47,10 +46,13 @@ describe('RoadmapApp', () => {
         groupFullPath: 'gitlab-org',
         groupMilestonesPath: '/groups/gitlab-org/-/milestones.json',
         listEpicsPath: '/groups/gitlab-org/-/epics',
+        glFeatures: { roadmapSettings },
       },
       store,
     });
   };
+
+  const findSettingsSidebar = () => wrapper.findByTestId('roadmap-settings');
 
   beforeEach(() => {
     store = createStore();
@@ -67,7 +69,6 @@ describe('RoadmapApp', () => {
 
   afterEach(() => {
     wrapper.destroy();
-    wrapper = null;
   });
 
   describe.each`
@@ -150,6 +151,20 @@ describe('RoadmapApp', () => {
         presetType,
         timeframe,
         milestones: [],
+      });
+    });
+
+    it('does not render settings sidebar', () => {
+      expect(findSettingsSidebar().exists()).toBe(false);
+    });
+
+    describe('when roadmapSettings feature flag is on', () => {
+      beforeEach(() => {
+        wrapper = createComponent({ roadmapSettings: true });
+      });
+
+      it('renders settings button', () => {
+        expect(findSettingsSidebar().exists()).toBe(true);
       });
     });
   });

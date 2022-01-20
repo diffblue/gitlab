@@ -119,6 +119,19 @@ RSpec.describe 'group epic roadmap', :js do
           expect(page).to have_selector('.epics-list-item .epic-title', count: 3)
         end
       end
+
+      it 'toggles settings sidebar on click settings button' do
+        page.within('.content-wrapper .content') do
+          expect(page).not_to have_selector('[data-testid="roadmap-sidebar"]')
+          expect(page).to have_selector('[data-testid="settings-button"]')
+
+          click_button 'Settings'
+          expect(page).to have_selector('[data-testid="roadmap-settings"]')
+
+          click_button 'Settings'
+          expect(page).not_to have_selector('[data-testid="roadmap-settings"]')
+        end
+      end
     end
 
     describe 'roadmap page with epics state filter' do
