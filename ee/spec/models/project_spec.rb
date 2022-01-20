@@ -3231,9 +3231,8 @@ RSpec.describe Project do
 
   describe '#upstream_projects' do
     it 'returns the upstream projects' do
-      primary_project = create(:project, :public)
       upstream_project = create(:project, :public)
-      primary_project.upstream_projects << upstream_project
+      primary_project = create(:project, :public, upstream_projects: [upstream_project])
 
       with_cross_joins_prevented do
         expect(primary_project.upstream_projects).to eq([upstream_project])
@@ -3243,9 +3242,8 @@ RSpec.describe Project do
 
   describe '#upstream_projects_count' do
     it 'returns the upstream projects count' do
-      primary_project = create(:project, :public)
       upstream_projects = create_list(:project, 2, :public)
-      primary_project.upstream_projects = upstream_projects
+      primary_project = create(:project, :public, upstream_projects: upstream_projects)
 
       with_cross_joins_prevented do
         expect(primary_project.upstream_projects_count).to eq(2)
@@ -3255,9 +3253,8 @@ RSpec.describe Project do
 
   describe '#downstream_projects' do
     it 'returns the downstream projects' do
-      primary_project = create(:project, :public)
       downstream_project = create(:project, :public)
-      primary_project.downstream_projects << downstream_project
+      primary_project = create(:project, :public, downstream_projects: [downstream_project])
 
       with_cross_joins_prevented do
         expect(primary_project.downstream_projects).to eq([downstream_project])
@@ -3267,9 +3264,8 @@ RSpec.describe Project do
 
   describe '#downstream_projects_count' do
     it 'returns the downstream projects count' do
-      primary_project = create(:project, :public)
       downstream_projects = create_list(:project, 2, :public)
-      primary_project.downstream_projects = downstream_projects
+      primary_project = create(:project, :public, downstream_projects: downstream_projects)
 
       with_cross_joins_prevented do
         expect(primary_project.downstream_projects_count).to eq(2)
