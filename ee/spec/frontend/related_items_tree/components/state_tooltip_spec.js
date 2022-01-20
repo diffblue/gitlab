@@ -154,15 +154,15 @@ describe('RelatedItemsTree', () => {
 
     describe('template', () => {
       it('renders gl-tooltip as container element', () => {
-        expect(wrapper.find(GlTooltip).isVisible()).toBe(true);
+        expect(wrapper.findComponent(GlTooltip).isVisible()).toBe(true);
       });
 
       it('renders path in bold', () => {
-        expect(wrapper.find({ ref: 'statePath' }).text().trim()).toBe('/foo/bar#1');
+        expect(wrapper.findComponent({ ref: 'statePath' }).text().trim()).toBe('/foo/bar#1');
       });
 
       it('renders stateText in bold', () => {
-        expect(wrapper.find({ ref: 'stateText' }).text().trim()).toBe('Closed');
+        expect(wrapper.findComponent({ ref: 'stateText' }).text().trim()).toBe('Closed');
       });
 
       it('renders stateTimeInWords', () => {
@@ -170,7 +170,9 @@ describe('RelatedItemsTree', () => {
       });
 
       it('renders stateTimestamp in muted', () => {
-        expect(wrapper.find({ ref: 'stateTimestamp' }).text().trim()).toContain(mockClosedAtYear);
+        expect(wrapper.findComponent({ ref: 'stateTimestamp' }).text().trim()).toContain(
+          mockClosedAtYear,
+        );
       });
     });
   });

@@ -452,13 +452,13 @@ describe('RelatedItemsTree', () => {
       });
 
       it('renders `Show more` link', () => {
-        expect(wrapper.find(GlButton).text()).toBe('Show more');
+        expect(wrapper.findComponent(GlButton).text()).toBe('Show more');
       });
 
       it('calls `handleShowMoreClick` when `Show more` link is clicked', () => {
         jest.spyOn(wrapper.vm, 'handleShowMoreClick').mockImplementation(() => {});
 
-        wrapper.find(GlButton).vm.$emit('click');
+        wrapper.findComponent(GlButton).vm.$emit('click');
 
         expect(wrapper.vm.handleShowMoreClick).toHaveBeenCalled();
       });

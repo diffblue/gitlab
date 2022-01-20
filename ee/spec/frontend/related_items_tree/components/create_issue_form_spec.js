@@ -205,7 +205,9 @@ describe('CreateIssueForm', () => {
 
       const content = projectsDropdownButton.find('[data-testid="recent-items-content"]');
       expect(content.exists()).toBe(true);
-      expect(content.findAll(GlDropdownItem)).toHaveLength(mockFrequentlyUsedProjects.length);
+      expect(content.findAllComponents(GlDropdownItem)).toHaveLength(
+        mockFrequentlyUsedProjects.length,
+      );
 
       removeLocalstorageFrequentItems();
     });
@@ -220,7 +222,9 @@ describe('CreateIssueForm', () => {
       const projectsDropdownButton = wrapper.findComponent(GlDropdown);
 
       expect(
-        projectsDropdownButton.find('[data-testid="recent-items-content"]').findAll(GlDropdownItem),
+        projectsDropdownButton
+          .find('[data-testid="recent-items-content"]')
+          .findAllComponents(GlDropdownItem),
       ).toHaveLength(mockMixedFrequentlyUsedProjects.length - 1);
 
       removeLocalstorageFrequentItems();

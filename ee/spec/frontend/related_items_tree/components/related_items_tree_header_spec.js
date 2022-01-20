@@ -47,7 +47,7 @@ describe('RelatedItemsTree', () => {
   describe('RelatedItemsTreeHeader', () => {
     let wrapper;
 
-    const findEpicsIssuesSplitButton = () => wrapper.find(EpicActionsSplitButton);
+    const findEpicsIssuesSplitButton = () => wrapper.findComponent(EpicActionsSplitButton);
 
     afterEach(() => {
       wrapper.destroy();
@@ -59,12 +59,12 @@ describe('RelatedItemsTree', () => {
       });
 
       it('returns string containing epic count based on available direct children within state', () => {
-        expect(wrapper.find(GlTooltip).text()).toContain(`Epics •
+        expect(wrapper.findComponent(GlTooltip).text()).toContain(`Epics •
         1 open, 1 closed`);
       });
 
       it('returns string containing issue count based on available direct children within state', () => {
-        expect(wrapper.find(GlTooltip).text()).toContain(`Issues •
+        expect(wrapper.findComponent(GlTooltip).text()).toContain(`Issues •
         2 open, 1 closed`);
       });
     });
@@ -85,7 +85,7 @@ describe('RelatedItemsTree', () => {
       });
 
       it('toggle labels component is visible', () => {
-        expect(wrapper.find(ToggleLabels).isVisible()).toBe(true);
+        expect(wrapper.findComponent(ToggleLabels).isVisible()).toBe(true);
       });
     });
 
@@ -211,7 +211,7 @@ describe('RelatedItemsTree', () => {
 
       it('renders epics count and gl-icon', () => {
         const epicsEl = wrapper.findAll('.issue-count-badge > span').at(0);
-        const epicIcon = epicsEl.find(GlIcon);
+        const epicIcon = epicsEl.findComponent(GlIcon);
 
         expect(epicsEl.text().trim()).toContain('2');
         expect(epicIcon.isVisible()).toBe(true);
@@ -233,7 +233,7 @@ describe('RelatedItemsTree', () => {
         });
 
         it('does not render health status', () => {
-          expect(wrapper.find(EpicHealthStatus).exists()).toBe(false);
+          expect(wrapper.findComponent(EpicHealthStatus).exists()).toBe(false);
         });
       });
 
@@ -248,13 +248,13 @@ describe('RelatedItemsTree', () => {
         });
 
         it('does not render health status', () => {
-          expect(wrapper.find(EpicHealthStatus).exists()).toBe(true);
+          expect(wrapper.findComponent(EpicHealthStatus).exists()).toBe(true);
         });
       });
 
       it('renders issues count and gl-icon', () => {
         const issuesEl = wrapper.findAll('.issue-count-badge > span').at(1);
-        const issueIcon = issuesEl.find(GlIcon);
+        const issueIcon = issuesEl.findComponent(GlIcon);
 
         expect(issuesEl.text().trim()).toContain('3');
         expect(issueIcon.isVisible()).toBe(true);
@@ -263,7 +263,7 @@ describe('RelatedItemsTree', () => {
 
       it('renders totalWeight count and gl-icon', () => {
         const weightEl = wrapper.findAll('.issue-count-badge > span').at(2);
-        const weightIcon = weightEl.find(GlIcon);
+        const weightIcon = weightEl.findComponent(GlIcon);
 
         expect(weightEl.text().trim()).toContain('15');
         expect(weightIcon.isVisible()).toBe(true);
