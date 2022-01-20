@@ -40,7 +40,7 @@ describe('MrWidgetPipelineContainer', () => {
         autoMergeStrategy: MT_MERGE_STRATEGY,
       });
 
-      expect(wrapper.find(MergeTrainPositionIndicator).exists()).toBe(false);
+      expect(wrapper.findComponent(MergeTrainPositionIndicator).exists()).toBe(false);
     });
 
     it('should not render the merge train indicator if the MR is closed', () => {
@@ -49,7 +49,7 @@ describe('MrWidgetPipelineContainer', () => {
         autoMergeStrategy: MT_MERGE_STRATEGY,
       });
 
-      expect(wrapper.find(MergeTrainPositionIndicator).exists()).toBe(false);
+      expect(wrapper.findComponent(MergeTrainPositionIndicator).exists()).toBe(false);
     });
 
     it('should not render the merge train indicator if the MR is not on the merge train', () => {
@@ -58,7 +58,7 @@ describe('MrWidgetPipelineContainer', () => {
         autoMergeStrategy: MWPS_MERGE_STRATEGY,
       });
 
-      expect(wrapper.find(MergeTrainPositionIndicator).exists()).toBe(false);
+      expect(wrapper.findComponent(MergeTrainPositionIndicator).exists()).toBe(false);
     });
   });
 });

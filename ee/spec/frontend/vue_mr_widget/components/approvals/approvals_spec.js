@@ -53,7 +53,7 @@ describe('EE MRWidget approvals', () => {
     });
   };
 
-  const findAction = () => wrapper.find(GlButton);
+  const findAction = () => wrapper.findComponent(GlButton);
   const findActionData = () => {
     const action = findAction();
 
@@ -65,9 +65,9 @@ describe('EE MRWidget approvals', () => {
           text: action.text(),
         };
   };
-  const findSummary = () => wrapper.find(ApprovalsSummary);
-  const findOptionalSummary = () => wrapper.find(ApprovalsSummaryOptional);
-  const findFooter = () => wrapper.find(ApprovalsFooter);
+  const findSummary = () => wrapper.findComponent(ApprovalsSummary);
+  const findOptionalSummary = () => wrapper.findComponent(ApprovalsSummaryOptional);
+  const findFooter = () => wrapper.findComponent(ApprovalsFooter);
 
   beforeEach(() => {
     service = {
@@ -108,7 +108,7 @@ describe('EE MRWidget approvals', () => {
     });
 
     it('shows loading message', () => {
-      wrapper.find(ApprovalsFoss).setData({ fetchingApprovals: true });
+      wrapper.findComponent(ApprovalsFoss).setData({ fetchingApprovals: true });
 
       return wrapper.vm.$nextTick().then(() => {
         expect(wrapper.text()).toContain(FETCH_LOADING);
@@ -323,7 +323,7 @@ describe('EE MRWidget approvals', () => {
           });
 
           describe('when emits approve', () => {
-            const findApprovalsAuth = () => wrapper.find(ApprovalsAuth);
+            const findApprovalsAuth = () => wrapper.findComponent(ApprovalsAuth);
 
             beforeEach(() => {
               jest.spyOn(service, 'approveMergeRequestWithAuth').mockRejectedValue();
@@ -339,7 +339,7 @@ describe('EE MRWidget approvals', () => {
             });
 
             it('sets isApproving', () => {
-              wrapper.find(ApprovalsFoss).setData({ isApproving: true });
+              wrapper.findComponent(ApprovalsFoss).setData({ isApproving: true });
 
               return wrapper.vm.$nextTick().then(() => {
                 expect(findApprovalsAuth().props('isApproving')).toBe(true);
@@ -347,7 +347,7 @@ describe('EE MRWidget approvals', () => {
             });
 
             it('sets hasError when auth fails', () => {
-              wrapper.find(ApprovalsFoss).setData({ hasApprovalAuthError: true });
+              wrapper.findComponent(ApprovalsFoss).setData({ hasApprovalAuthError: true });
 
               return wrapper.vm.$nextTick().then(() => {
                 expect(findApprovalsAuth().props('hasError')).toBe(true);

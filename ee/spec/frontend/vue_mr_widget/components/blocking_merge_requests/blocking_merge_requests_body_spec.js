@@ -25,6 +25,6 @@ describe('BlockingMergeRequestBody', () => {
     });
 
     expect(wrapper.html()).not.toContain("merge requests that you don't have access to");
-    expect(wrapper.find(RelatedIssuableItem).exists()).toBe(true);
+    expect(wrapper.findComponent(RelatedIssuableItem).exists()).toBe(true);
   });
 });

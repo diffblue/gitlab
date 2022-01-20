@@ -13,7 +13,7 @@ describe('EE MRWidget approved icon', () => {
     });
   };
 
-  const findIcon = () => wrapper.find(GlIcon);
+  const findIcon = () => wrapper.findComponent(GlIcon);
   const findSquare = () => wrapper.find('.square');
 
   afterEach(() => {
