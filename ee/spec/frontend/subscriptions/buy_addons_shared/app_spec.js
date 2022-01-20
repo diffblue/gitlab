@@ -21,7 +21,6 @@ import {
   I18N_STORAGE_SUMMARY_TOTAL,
   I18N_STORAGE_TITLE,
   I18N_STORAGE_PRICE_PER_UNIT,
-  I18N_STORAGE_TOOLTIP_NOTE,
   I18N_API_ERROR,
   planTags,
   STORAGE_PER_PACK,
@@ -71,7 +70,6 @@ describe('Buy Addons Shared App', () => {
       summaryTitle: i18nStorageSummaryTitle,
       summaryTotal: I18N_STORAGE_SUMMARY_TOTAL,
       title: I18N_STORAGE_TITLE,
-      tooltipNote: I18N_STORAGE_TOOLTIP_NOTE,
     },
     tags: [planTags.STORAGE_PLAN],
   };
@@ -89,7 +87,6 @@ describe('Buy Addons Shared App', () => {
       summaryTitle: i18nCIMinutesSummaryTitle,
       summaryTotal: I18N_CI_MINUTES_SUMMARY_TOTAL,
       title: I18N_CI_MINUTES_TITLE,
-      tooltipNote: '',
     },
     tags: [planTags.CI_1000_MINUTES_PLAN],
   };
