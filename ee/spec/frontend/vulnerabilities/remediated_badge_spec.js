@@ -9,7 +9,7 @@ const POPOVER_CONTENT =
 describe('Remediated badge component', () => {
   let wrapper;
 
-  const findBadge = () => wrapper.find(GlBadge);
+  const findBadge = () => wrapper.findComponent(GlBadge);
 
   const createWrapper = () => {
     return shallowMount(RemediatedBadge);
@@ -26,12 +26,12 @@ describe('Remediated badge component', () => {
   });
 
   it('should link the badge and the popover', () => {
-    const popover = wrapper.find({ ref: 'popover' });
+    const popover = wrapper.findComponent({ ref: 'popover' });
     expect(popover.props('target')()).toEqual(findBadge().element);
   });
 
   it('should pass down the data to the popover', () => {
-    const popoverAttributes = wrapper.find(GlPopover).attributes();
+    const popoverAttributes = wrapper.findComponent(GlPopover).attributes();
 
     expect(popoverAttributes.title).toEqual(POPOVER_TITLE);
     expect(popoverAttributes.content).toEqual(POPOVER_CONTENT);

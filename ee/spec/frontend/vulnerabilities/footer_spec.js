@@ -226,8 +226,8 @@ describe('Vulnerability Footer', () => {
       const properties = { remediations: [{ diff: [{}] }], solution: 'some solution' };
       createWrapper({ properties, discussionsHandler: discussionsHandler({ discussions: [] }) });
 
-      expect(wrapper.find(SolutionCard).exists()).toBe(true);
-      expect(wrapper.find(SolutionCard).props()).toEqual({
+      expect(wrapper.findComponent(SolutionCard).exists()).toBe(true);
+      expect(wrapper.findComponent(SolutionCard).props()).toEqual({
         solution: properties.solution,
         remediation: properties.remediations[0],
         hasDownload: true,
@@ -237,7 +237,7 @@ describe('Vulnerability Footer', () => {
 
     it('does not show solution card when there is not one', () => {
       createWrapper();
-      expect(wrapper.find(SolutionCard).exists()).toBe(false);
+      expect(wrapper.findComponent(SolutionCard).exists()).toBe(false);
     });
   });
 
@@ -305,7 +305,7 @@ describe('Vulnerability Footer', () => {
 
   describe('detection note', () => {
     const detectionNote = () => wrapper.find('[data-testid="detection-note"]');
-    const statusDescription = () => wrapper.find(StatusDescription);
+    const statusDescription = () => wrapper.findComponent(StatusDescription);
     const vulnerabilityStates = Object.keys(VULNERABILITY_STATES);
 
     it.each(vulnerabilityStates)(

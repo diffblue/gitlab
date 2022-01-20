@@ -22,11 +22,11 @@ describe('Vulnerability status description component', () => {
     wrapper.destroy();
   });
 
-  const timeAgo = () => wrapper.find(TimeAgoTooltip);
-  const pipelineLink = () => wrapper.find(GlLink);
-  const userAvatar = () => wrapper.find(UserAvatarLink);
-  const userLoadingIcon = () => wrapper.find(GlLoadingIcon);
-  const skeletonLoader = () => wrapper.find(GlSkeletonLoading);
+  const timeAgo = () => wrapper.findComponent(TimeAgoTooltip);
+  const pipelineLink = () => wrapper.findComponent(GlLink);
+  const userAvatar = () => wrapper.findComponent(UserAvatarLink);
+  const userLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const skeletonLoader = () => wrapper.findComponent(GlSkeletonLoading);
   const statusEl = () => wrapper.find('[data-testid="status"]');
 
   // Create a date using the passed-in string, or just use the current time if nothing was passed in.
