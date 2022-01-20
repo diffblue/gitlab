@@ -18,7 +18,7 @@ const createComponent = () => {
 };
 
 const findTableRow = () => wrapper.find('[data-testid="projectTableRow"]');
-const findProjectStorageDetail = () => wrapper.find(ProjectStorageDetail);
+const findProjectStorageDetail = () => wrapper.findComponent(ProjectStorageDetail);
 
 describe('CollapsibleProjectStorageDetail', () => {
   beforeEach(() => {
@@ -26,7 +26,7 @@ describe('CollapsibleProjectStorageDetail', () => {
   });
 
   it('renders project avatar', () => {
-    expect(wrapper.find(ProjectAvatar).exists()).toBe(true);
+    expect(wrapper.findComponent(ProjectAvatar).exists()).toBe(true);
   });
 
   it('renders project name', () => {

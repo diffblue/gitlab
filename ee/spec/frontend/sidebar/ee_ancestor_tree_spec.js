@@ -67,7 +67,7 @@ describe('AncestorsTreeContainer', () => {
       isFetching: true,
     });
 
-    expect(wrapper.find(GlLoadingIcon).exists()).toBe(true);
+    expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
   });
 
   it('escapes html in the tooltip', () => {

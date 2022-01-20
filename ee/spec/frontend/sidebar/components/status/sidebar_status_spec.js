@@ -76,11 +76,11 @@ describe('SidebarStatus', () => {
     beforeEach(() => {});
 
     it('renders Status component', () => {
-      expect(wrapper.find(Status).exists()).toBe(true);
+      expect(wrapper.findComponent(Status).exists()).toBe(true);
     });
 
     it('calls apollo mutate when receiving an onDropdownClick event from Status component', () => {
-      wrapper.find(Status).vm.$emit('onDropdownClick', 'onTrack');
+      wrapper.findComponent(Status).vm.$emit('onDropdownClick', 'onTrack');
 
       const variables = {
         projectPath: 'foo/bar',

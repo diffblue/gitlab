@@ -73,7 +73,7 @@ describe('Subscription Seats', () => {
 
   const findPageHeading = () => wrapper.find('[data-testid="heading-info"]');
   const findPageHeadingText = () => findPageHeading().find('[data-testid="heading-info-text"]');
-  const findPageHeadingBadge = () => findPageHeading().find(GlBadge);
+  const findPageHeadingBadge = () => findPageHeading().findComponent(GlBadge);
 
   const findExportButton = () => wrapper.findByTestId('export-button');
 
@@ -207,7 +207,7 @@ describe('Subscription Seats', () => {
             );
 
             if (membershipType === currentMember.user.membership_type) {
-              expect(avatarLinkWrapper.find(GlBadge).text()).toBe(badgeText);
+              expect(avatarLinkWrapper.findComponent(GlBadge).text()).toBe(badgeText);
             }
           });
         },

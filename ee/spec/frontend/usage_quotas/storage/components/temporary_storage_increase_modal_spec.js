@@ -17,7 +17,7 @@ describe('Temporary storage increase modal', () => {
       },
     });
   };
-  const findModal = () => wrapper.find(GlModal);
+  const findModal = () => wrapper.findComponent(GlModal);
   const showModal = () => {
     findModal().vm.show();
     return wrapper.vm.$nextTick();

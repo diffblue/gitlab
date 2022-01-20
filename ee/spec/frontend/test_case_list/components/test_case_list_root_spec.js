@@ -34,7 +34,7 @@ const mockPageInfo = {
 describe('TestCaseListRoot', () => {
   let wrapper;
 
-  const getIssuableList = () => wrapper.find(IssuableList);
+  const getIssuableList = () => wrapper.findComponent(IssuableList);
 
   const createComponent = ({
     provide = mockProvide,

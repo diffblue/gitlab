@@ -45,7 +45,7 @@ describe('SidebarDropdownWidget', () => {
   const findDropdown = () => wrapper.findComponent(GlDropdown);
   const findDropdownText = () => wrapper.findComponent(GlDropdownText);
   const findSearchBox = () => wrapper.findComponent(GlSearchBoxByType);
-  const findAllDropdownItems = () => wrapper.findAll(GlDropdownItem);
+  const findAllDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
   const findDropdownItemWithText = (text) =>
     findAllDropdownItems().wrappers.find((x) => x.text() === text);
 
@@ -79,7 +79,7 @@ describe('SidebarDropdownWidget', () => {
 
   // Used with createComponent which shallow mounts components
   const toggleDropdown = async () => {
-    wrapper.find(SidebarEditableItem).vm.$emit('open');
+    wrapper.findComponent(SidebarEditableItem).vm.$emit('open');
 
     await waitForDropdown();
   };
@@ -203,7 +203,7 @@ describe('SidebarDropdownWidget', () => {
         });
 
         it('focuses on the input when dropdown is shown', async () => {
-          expect(document.activeElement).toEqual(wrapper.find(GlFormInput).element);
+          expect(document.activeElement).toEqual(wrapper.findComponent(GlFormInput).element);
         });
 
         describe('when currentAttribute is not equal to attribute id', () => {

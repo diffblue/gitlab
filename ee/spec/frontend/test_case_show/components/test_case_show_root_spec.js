@@ -276,13 +276,13 @@ describe('TestCaseShowRoot', () => {
 
       await wrapper.vm.$nextTick();
 
-      expect(wrapper.find(GlLoadingIcon).exists()).toBe(true);
+      expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
     });
 
     it('renders gl-alert when issuable-show component emits `task-list-update-failure` event', async () => {
-      await wrapper.find(IssuableShow).vm.$emit('task-list-update-failure');
+      await wrapper.findComponent(IssuableShow).vm.$emit('task-list-update-failure');
 
-      const alertEl = wrapper.find(GlAlert);
+      const alertEl = wrapper.findComponent(GlAlert);
 
       expect(alertEl.exists()).toBe(true);
       expect(alertEl.text()).toBe(
@@ -299,7 +299,7 @@ describe('TestCaseShowRoot', () => {
         updatePath,
         lockVersion,
       } = mockProvide;
-      const issuableShowEl = wrapper.find(IssuableShow);
+      const issuableShowEl = wrapper.findComponent(IssuableShow);
 
       expect(issuableShowEl.exists()).toBe(true);
       expect(issuableShowEl.props()).toMatchObject({
@@ -319,7 +319,7 @@ describe('TestCaseShowRoot', () => {
     });
 
     it('refetches taskCompletionStatus when issuable-show emits `task-list-update-success` event', async () => {
-      await wrapper.find(IssuableShow).vm.$emit('task-list-update-success');
+      await wrapper.findComponent(IssuableShow).vm.$emit('task-list-update-success');
 
       expect(wrapper.vm.$apollo.queries.taskCompletionStatus.refetch).toHaveBeenCalled();
     });
@@ -334,7 +334,7 @@ describe('TestCaseShowRoot', () => {
 
       await wrapper.vm.$nextTick();
 
-      expect(wrapper.find(IssuableShow).exists()).toBe(false);
+      expect(wrapper.findComponent(IssuableShow).exists()).toBe(false);
     });
 
     it('renders status-badge slot contents', () => {
@@ -357,7 +357,7 @@ describe('TestCaseShowRoot', () => {
       const statusEl = wrapperMoved.find('[data-testid="status"]');
 
       expect(statusEl.text()).toContain('Archived');
-      expect(statusEl.find(GlLink).attributes('href')).toBe(movedTestCase.movedTo.webUrl);
+      expect(statusEl.findComponent(GlLink).attributes('href')).toBe(movedTestCase.movedTo.webUrl);
 
       wrapperMoved.destroy();
     });

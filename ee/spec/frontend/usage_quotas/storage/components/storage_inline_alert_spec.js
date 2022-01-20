@@ -17,7 +17,7 @@ describe('StorageInlineAlert', () => {
     });
   }
 
-  const findAlert = () => wrapper.find(GlAlert);
+  const findAlert = () => wrapper.findComponent(GlAlert);
 
   describe('no excess storage and no purchase', () => {
     beforeEach(() => {

@@ -9,18 +9,18 @@ const getStatusText = (wrapper) => wrapper.find('.value .text-plain').text();
 const getStatusTitleText = (wrapper) => wrapper.find('[data-testid="statusTitle"]').text();
 
 const getStatusTooltipValue = (wrapper) =>
-  getBinding(wrapper.find({ ref: 'status' }).element, 'gl-tooltip').value;
+  getBinding(wrapper.findComponent({ ref: 'status' }).element, 'gl-tooltip').value;
 
 const getEditButtonTooltipValue = (wrapper) =>
   getBinding(wrapper.find('[data-testid="editButtonTooltip"]').element, 'gl-tooltip').value;
 
-const getEditButton = (wrapper) => wrapper.find({ ref: 'editButton' });
+const getEditButton = (wrapper) => wrapper.findComponent({ ref: 'editButton' });
 
 const getDropdownClasses = (wrapper) => wrapper.find('[data-testid="dropdownWrapper"]').classes();
 
-const getDropdownElement = (wrapper) => wrapper.find(GlDropdown);
+const getDropdownElement = (wrapper) => wrapper.findComponent(GlDropdown);
 
-const getRemoveStatusItem = (wrapper) => wrapper.find(GlDropdownItem);
+const getRemoveStatusItem = (wrapper) => wrapper.findComponent(GlDropdownItem);
 
 describe('Status', () => {
   let wrapper;
@@ -61,7 +61,7 @@ describe('Status', () => {
 
       shallowMountStatus(props);
 
-      expect(wrapper.find(GlLoadingIcon).exists()).toBe(true);
+      expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
     });
 
     it('is hidden when not retrieving data', () => {
@@ -71,7 +71,7 @@ describe('Status', () => {
 
       shallowMountStatus(props);
 
-      expect(wrapper.find(GlLoadingIcon).exists()).toBe(false);
+      expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(false);
     });
   });
 
@@ -273,7 +273,7 @@ describe('Status', () => {
       });
 
       it('hides form when a dropdown item is clicked', async () => {
-        const dropdownItem = wrapper.findAll(GlDropdownItem).at(1);
+        const dropdownItem = wrapper.findAllComponents(GlDropdownItem).at(1);
 
         dropdownItem.vm.$emit('click');
 
@@ -300,7 +300,7 @@ describe('Status', () => {
       });
 
       it('shows 4 dropdown items', () => {
-        expect(wrapper.findAll(GlDropdownItem)).toHaveLength(4);
+        expect(wrapper.findAllComponents(GlDropdownItem)).toHaveLength(4);
       });
 
       // Test that "On track", "Needs attention", and "At risk" are displayed
@@ -309,7 +309,7 @@ describe('Status', () => {
         (statusText, index) => {
           expect(
             wrapper
-              .findAll(GlDropdownItem)
+              .findAllComponents(GlDropdownItem)
               .at(index + 1) // +1 in index to account for 1st item as `No status`
               .text(),
           ).toContain(statusText);
@@ -321,7 +321,7 @@ describe('Status', () => {
         'emits onFormSubmit event with argument "%s" when user selects the option and submits form',
         async (status, index) => {
           wrapper
-            .findAll(GlDropdownItem)
+            .findAllComponents(GlDropdownItem)
             .at(index + 1)
             .vm.$emit('click', { preventDefault: () => null });
 
