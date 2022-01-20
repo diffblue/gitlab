@@ -1729,22 +1729,44 @@ RSpec.describe Project do
 
     subject { project.disabled_integrations }
 
-    where(:license_feature, :disabled_integrations) do
-      :github_project_service_integration | %w[github]
-    end
-
-    with_them do
-      context 'when feature is available' do
-        before do
-          stub_licensed_features(license_feature => true)
-        end
-
-        it { is_expected.not_to include(*disabled_integrations) }
+    context 'github' do
+      where(:license_feature, :disabled_integrations) do
+        :github_project_service_integration | %w[github]
       end
 
-      context 'when feature is unavailable' do
+      with_them do
+        context 'when feature is available' do
+          before do
+            stub_licensed_features(license_feature => true)
+          end
+
+          it { is_expected.not_to include(*disabled_integrations) }
+        end
+
+        context 'when feature is unavailable' do
+          before do
+            stub_licensed_features(license_feature => false)
+          end
+
+          it { is_expected.to include(*disabled_integrations) }
+        end
+      end
+    end
+
+    context 'slack' do
+      let(:slack_app_enabled) { false }
+
+      where(:development, :slack_app_enabled, :disabled_integrations) do
+        true | true | []
+        true | false | []
+        false | true | %w[slack_slash_commands]
+        false | false | %w[gitlab_slack_application]
+      end
+
+      with_them do
         before do
-          stub_licensed_features(license_feature => false)
+          allow(Rails.env).to receive(:development?).and_return(development)
+          allow(Gitlab::CurrentSettings).to receive(:slack_app_enabled).and_return(slack_app_enabled)
         end
 
         it { is_expected.to include(*disabled_integrations) }
