@@ -35,9 +35,9 @@ describe('Iterations report', () => {
   };
   const labelsFetchPath = '/labels.json';
 
-  const findTopbar = () => wrapper.find({ ref: 'topbar' });
-  const findTitle = () => wrapper.find({ ref: 'title' });
-  const findDescription = () => wrapper.find({ ref: 'description' });
+  const findTopbar = () => wrapper.findComponent({ ref: 'topbar' });
+  const findTitle = () => wrapper.findComponent({ ref: 'title' });
+  const findDescription = () => wrapper.findComponent({ ref: 'description' });
   const findActionsDropdown = () => wrapper.find('[data-testid="actions-dropdown"]');
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);

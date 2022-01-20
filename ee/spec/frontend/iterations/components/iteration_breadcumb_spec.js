@@ -26,7 +26,7 @@ describe('Iteration Breadcrumb', () => {
   const cadenceId = 1234;
   const iterationId = 4567;
 
-  const findBreadcrumb = () => wrapper.find(GlBreadcrumb);
+  const findBreadcrumb = () => wrapper.findComponent(GlBreadcrumb);
 
   const waitForApollo = async () => {
     jest.runOnlyPendingTimers();
@@ -101,7 +101,7 @@ describe('Iteration Breadcrumb', () => {
     it('finds GlIcon', () => {
       mountComponent(shallowMount);
 
-      expect(findBreadcrumb().find(GlIcon).exists()).toBe(true);
+      expect(findBreadcrumb().findComponent(GlIcon).exists()).toBe(true);
     });
   });
 

@@ -36,8 +36,8 @@ describe('Iterations', () => {
       loading: true,
     });
 
-    expect(wrapper.find(GlLoadingIcon).exists()).toBeTruthy();
-    expect(wrapper.find(IterationsList).exists()).toBeFalsy();
+    expect(wrapper.findComponent(GlLoadingIcon).exists()).toBeTruthy();
+    expect(wrapper.findComponent(IterationsList).exists()).toBeFalsy();
   });
 
   it('shows iterations list when not loading', () => {
@@ -45,8 +45,8 @@ describe('Iterations', () => {
       loading: false,
     });
 
-    expect(wrapper.find(GlLoadingIcon).exists()).toBeFalsy();
-    expect(wrapper.find(IterationsList).exists()).toBeTruthy();
+    expect(wrapper.findComponent(GlLoadingIcon).exists()).toBeFalsy();
+    expect(wrapper.findComponent(IterationsList).exists()).toBeTruthy();
   });
 
   it('sets computed state from tabIndex', () => {
@@ -64,7 +64,7 @@ describe('Iterations', () => {
   });
 
   describe('pagination', () => {
-    const findPagination = () => wrapper.find(GlPagination);
+    const findPagination = () => wrapper.findComponent(GlPagination);
     const setPage = (page) => {
       findPagination().vm.$emit('input', page);
       return findPagination().vm.$nextTick();
@@ -131,7 +131,7 @@ describe('Iterations', () => {
         afterCursor: 'last-item',
       });
 
-      wrapper.find(GlTabs).vm.$emit('activate-tab', 2);
+      wrapper.findComponent(GlTabs).vm.$emit('activate-tab', 2);
 
       await wrapper.vm.$nextTick();
 
@@ -195,7 +195,7 @@ describe('Iterations', () => {
     });
 
     it('tab shows error in alert', () => {
-      expect(wrapper.find(GlAlert).text()).toContain('Oh no!');
+      expect(wrapper.findComponent(GlAlert).text()).toContain('Oh no!');
     });
   });
 });

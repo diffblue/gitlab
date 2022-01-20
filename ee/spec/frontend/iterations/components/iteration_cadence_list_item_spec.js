@@ -264,7 +264,7 @@ describe('Iteration cadence list item', () => {
       });
 
       it('hides dropdown and delete button', () => {
-        expect(wrapper.find(GlDropdown).exists()).toBe(false);
+        expect(wrapper.findComponent(GlDropdown).exists()).toBe(false);
       });
     });
 
@@ -278,7 +278,7 @@ describe('Iteration cadence list item', () => {
       });
 
       it('shows delete button', () => {
-        expect(wrapper.find(GlDropdown).exists()).toBe(true);
+        expect(wrapper.findComponent(GlDropdown).exists()).toBe(true);
       });
 
       it('opens confirmation modal to delete cadence', () => {
@@ -288,7 +288,7 @@ describe('Iteration cadence list item', () => {
       });
 
       it('emits delete-cadence event with cadence ID', () => {
-        wrapper.find(GlModal).vm.$emit('ok');
+        wrapper.findComponent(GlModal).vm.$emit('ok');
 
         expect(wrapper.emitted('delete-cadence')).toEqual([[cadence.id]]);
       });
@@ -298,13 +298,13 @@ describe('Iteration cadence list item', () => {
   it('hides dropdown when canEditCadence is false', async () => {
     await createComponent({ canEditCadence: false });
 
-    expect(wrapper.find(GlDropdown).exists()).toBe(false);
+    expect(wrapper.findComponent(GlDropdown).exists()).toBe(false);
   });
 
   it('shows dropdown when canEditCadence is true', async () => {
     await createComponent({ canEditCadence: true });
 
-    expect(wrapper.find(GlDropdown).exists()).toBe(true);
+    expect(wrapper.findComponent(GlDropdown).exists()).toBe(true);
   });
 
   it.each([

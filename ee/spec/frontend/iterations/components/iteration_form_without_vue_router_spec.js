@@ -52,7 +52,7 @@ describe('Iteration Form', () => {
     wrapper = null;
   });
 
-  const findPageTitle = () => wrapper.find({ ref: 'pageTitle' });
+  const findPageTitle = () => wrapper.findComponent({ ref: 'pageTitle' });
   const findTitle = () => wrapper.find('#iteration-title');
   const findDescription = () => wrapper.find('#iteration-description');
   const findStartDate = () => wrapper.find('#iteration-start-date');
@@ -65,7 +65,7 @@ describe('Iteration Form', () => {
 
   it('renders a form', () => {
     createComponent();
-    expect(wrapper.find(GlForm).exists()).toBe(true);
+    expect(wrapper.findComponent(GlForm).exists()).toBe(true);
   });
 
   describe('New iteration', () => {
