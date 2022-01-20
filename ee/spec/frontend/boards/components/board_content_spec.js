@@ -49,11 +49,11 @@ describe('ee/BoardContent', () => {
     });
 
     it(`renders BoardContentSidebar = ${resultIssue}`, () => {
-      expect(wrapper.find(BoardContentSidebar).exists()).toBe(resultIssue);
+      expect(wrapper.findComponent(BoardContentSidebar).exists()).toBe(resultIssue);
     });
 
     it(`renders EpicBoardContentSidebar = ${resultEpic}`, () => {
-      expect(wrapper.find(EpicBoardContentSidebar).exists()).toBe(resultEpic);
+      expect(wrapper.findComponent(EpicBoardContentSidebar).exists()).toBe(resultEpic);
     });
   });
 });

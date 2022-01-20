@@ -38,7 +38,7 @@ describe('EpicFilteredSearch', () => {
     });
 
     it('finds BoardFilteredSearch', () => {
-      expect(wrapper.find(BoardFilteredSearch).exists()).toBe(true);
+      expect(wrapper.findComponent(BoardFilteredSearch).exists()).toBe(true);
     });
 
     it('passes tokens to BoardFilteredSearch', () => {
@@ -73,7 +73,7 @@ describe('EpicFilteredSearch', () => {
           ],
         },
       ];
-      expect(wrapper.find(BoardFilteredSearch).props('tokens').toString()).toBe(
+      expect(wrapper.findComponent(BoardFilteredSearch).props('tokens').toString()).toBe(
         orderBy(tokens, ['title']).toString(),
       );
     });

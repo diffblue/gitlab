@@ -42,7 +42,7 @@ describe('IssueBoardFilter', () => {
     });
 
     it('finds BoardFilteredSearch', () => {
-      expect(wrapper.find(BoardFilteredSearch).exists()).toBe(true);
+      expect(wrapper.findComponent(BoardFilteredSearch).exists()).toBe(true);
     });
 
     it('passes the correct tokens to BoardFilteredSearch including epics', () => {
@@ -53,7 +53,9 @@ describe('IssueBoardFilter', () => {
         wrapper.vm.fetchIterations,
       );
 
-      expect(wrapper.find(BoardFilteredSearch).props('tokens')).toEqual(orderBy(tokens, ['title']));
+      expect(wrapper.findComponent(BoardFilteredSearch).props('tokens')).toEqual(
+        orderBy(tokens, ['title']),
+      );
     });
   });
 });

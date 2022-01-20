@@ -5,10 +5,11 @@ import WeightSelect from 'ee/boards/components/weight_select.vue';
 describe('WeightSelect', () => {
   let wrapper;
 
-  const editButton = () => wrapper.find(GlButton);
+  const editButton = () => wrapper.findComponent(GlButton);
   const valueContainer = () => wrapper.find('[data-testid="selected-weight"]');
-  const weightDropdown = () => wrapper.find(GlDropdown);
-  const getWeightItemAtIndex = (index) => weightDropdown().findAll(GlDropdownItem).at(index);
+  const weightDropdown = () => wrapper.findComponent(GlDropdown);
+  const getWeightItemAtIndex = (index) =>
+    weightDropdown().findAllComponents(GlDropdownItem).at(index);
   const defaultProps = {
     weights: ['Any', 'None', 0, 1, 2, 3],
     board: {
