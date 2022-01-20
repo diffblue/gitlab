@@ -6,7 +6,7 @@ import timeagoMixin from '~/vue_shared/mixins/timeago';
 import {
   PACKAGE_ERROR_STATUS,
   PACKAGE_DEFAULT_STATUS,
-} from '~/packages_and_registries/shared/constants/index';
+} from '~/packages_and_registries/shared/constants';
 import PackagePath from '~/packages_and_registries/shared/components/package_path.vue';
 import PackageTags from '~/packages_and_registries/shared/components/package_tags.vue';
 import PublishMethod from '~/packages_and_registries/shared/components/publish_method.vue';

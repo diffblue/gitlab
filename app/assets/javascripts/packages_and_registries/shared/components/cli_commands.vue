@@ -10,7 +10,7 @@ import {
   COPY_BUILD_TITLE,
   PUSH_COMMAND_LABEL,
   COPY_PUSH_TITLE,
-} from '../constants/index';
+} from '../constants';
 
 const trackingLabel = 'quickstart_dropdown';
 

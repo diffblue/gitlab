@@ -12,7 +12,7 @@ import { get } from 'lodash';
 import getContainerRepositoriesQuery from 'shared_queries/container_registry/get_container_repositories.query.graphql';
 import createFlash from '~/flash';
 import CleanupPolicyEnabledAlert from '~/packages_and_registries/shared/components/cleanup_policy_enabled_alert.vue';
-import { FILTERED_SEARCH_TERM } from '~/packages_and_registries/shared/constants/index';
+import { FILTERED_SEARCH_TERM } from '~/packages_and_registries/shared/constants';
 import { extractFilterAndSorting } from '~/packages_and_registries/shared/utils';
 import Tracking from '~/tracking';
 import RegistrySearch from '~/vue_shared/components/registry/registry_search.vue';
