@@ -25,6 +25,8 @@ RSpec.describe 'Query.runner(id)' do
            access_level: 0, tag_list: %w[tag1 tag2], run_untagged: true, executor_type: :shell)
   end
 
+  let_it_be(:active_project_runner) { create(:ci_runner, :project) }
+
   def get_runner(id)
     case id
     when :active_instance_runner
@@ -33,6 +35,8 @@ RSpec.describe 'Query.runner(id)' do
       inactive_instance_runner
     when :active_group_runner
       active_group_runner
+    when :active_project_runner
+      active_project_runner
     end
   end
 
@@ -380,6 +384,10 @@ RSpec.describe 'Query.runner(id)' do
 
     context 'on group runner' do
       it_behaves_like 'retrieval by unauthorized user', :active_group_runner
+    end
+
+    context 'on project runner' do
+      it_behaves_like 'retrieval by unauthorized user', :active_project_runner
     end
   end
 
