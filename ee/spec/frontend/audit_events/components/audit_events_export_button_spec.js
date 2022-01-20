@@ -8,7 +8,7 @@ const EXPORT_HREF = 'http://example.com/audit_log_reports.csv?created_after=2020
 describe('AuditEventsExportButton component', () => {
   let wrapper;
 
-  const findExportButton = () => wrapper.find(GlButton);
+  const findExportButton = () => wrapper.findComponent(GlButton);
 
   const createComponent = (props = {}) => {
     return shallowMount(AuditEventsExportButton, {

@@ -21,7 +21,13 @@ describe('AuditEventsTable component', () => {
   };
 
   const getCell = (trIdx, tdIdx) => {
-    return wrapper.find(GlTable).find('tbody').findAll('tr').at(trIdx).findAll('td').at(tdIdx);
+    return wrapper
+      .findComponent(GlTable)
+      .find('tbody')
+      .findAll('tr')
+      .at(trIdx)
+      .findAll('td')
+      .at(tdIdx);
   };
 
   beforeEach(() => {
@@ -49,13 +55,13 @@ describe('AuditEventsTable component', () => {
 
   describe('Pagination behaviour', () => {
     it('should show', () => {
-      expect(wrapper.find(GlPagination).exists()).toBe(true);
+      expect(wrapper.findComponent(GlPagination).exists()).toBe(true);
     });
 
     it('should hide if there is no data', () => {
       wrapper.setProps({ events: [] });
       wrapper.vm.$nextTick(() => {
-        expect(wrapper.find(GlPagination).exists()).toBe(false);
+        expect(wrapper.findComponent(GlPagination).exists()).toBe(false);
       });
     });
 
@@ -63,27 +69,27 @@ describe('AuditEventsTable component', () => {
       setWindowLocation('?page=2');
       wrapper = createComponent();
 
-      expect(wrapper.find(GlPagination).props().value).toBe(2);
+      expect(wrapper.findComponent(GlPagination).props().value).toBe(2);
     });
 
     it('should not have a prevPage if the page is 1', () => {
       setWindowLocation('?page=1');
       wrapper = createComponent();
 
-      expect(wrapper.find(GlPagination).props().prevPage).toBe(null);
+      expect(wrapper.findComponent(GlPagination).props().prevPage).toBe(null);
     });
 
     it('should set the prevPage to 1 if the page is 2', () => {
       setWindowLocation('?page=2');
       wrapper = createComponent();
 
-      expect(wrapper.find(GlPagination).props().prevPage).toBe(1);
+      expect(wrapper.findComponent(GlPagination).props().prevPage).toBe(1);
     });
 
     it('should not have a nextPage if isLastPage is true', () => {
       wrapper.setProps({ isLastPage: true });
       wrapper.vm.$nextTick(() => {
-        expect(wrapper.find(GlPagination).props().nextPage).toBe(null);
+        expect(wrapper.findComponent(GlPagination).props().nextPage).toBe(null);
       });
     });
 
@@ -91,11 +97,11 @@ describe('AuditEventsTable component', () => {
       setWindowLocation('?page=1');
       wrapper = createComponent();
 
-      expect(wrapper.find(GlPagination).props().nextPage).toBe(2);
+      expect(wrapper.findComponent(GlPagination).props().nextPage).toBe(2);
     });
 
     it('should set the nextPage to 2 if the page is not set', () => {
-      expect(wrapper.find(GlPagination).props().nextPage).toBe(2);
+      expect(wrapper.findComponent(GlPagination).props().nextPage).toBe(2);
     });
   });
 });

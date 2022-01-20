@@ -65,32 +65,32 @@ describe('AuditEventsApp', () => {
     });
 
     it('renders audit events table', () => {
-      expect(wrapper.find(AuditEventsTable).props()).toEqual({
+      expect(wrapper.findComponent(AuditEventsTable).props()).toEqual({
         events,
         isLastPage: true,
       });
     });
 
     it('renders audit events filter', () => {
-      expect(wrapper.find(AuditEventsFilter).props()).toEqual({
+      expect(wrapper.findComponent(AuditEventsFilter).props()).toEqual({
         filterTokenOptions,
         value: TEST_FILTER_VALUE,
       });
     });
 
     it('renders date range field', () => {
-      expect(wrapper.find(DateRangeField).props()).toEqual({
+      expect(wrapper.findComponent(DateRangeField).props()).toEqual({
         startDate: TEST_START_DATE,
         endDate: TEST_END_DATE,
       });
     });
 
     it('renders sorting field', () => {
-      expect(wrapper.find(SortingField).props()).toEqual({ sortBy: TEST_SORT_BY });
+      expect(wrapper.findComponent(SortingField).props()).toEqual({ sortBy: TEST_SORT_BY });
     });
 
     it('renders the audit events export button', () => {
-      expect(wrapper.find(AuditEventsExportButton).props()).toEqual({
+      expect(wrapper.findComponent(AuditEventsExportButton).props()).toEqual({
         exportHref:
           'http://example.com/audit_log_reports.csv?created_after=2020-01-01&created_before=2020-02-02',
       });
@@ -111,7 +111,7 @@ describe('AuditEventsApp', () => {
     `('for $name, it calls $handler', ({ field, action, payload }) => {
       expect(store.dispatch).not.toHaveBeenCalled();
 
-      wrapper.find(field).vm.$emit('selected', payload);
+      wrapper.findComponent(field).vm.$emit('selected', payload);
 
       expect(store.dispatch).toHaveBeenCalledWith(action, payload);
     });
@@ -123,7 +123,7 @@ describe('AuditEventsApp', () => {
     });
 
     it('does not render the audit events export button', () => {
-      expect(wrapper.find(AuditEventsExportButton).exists()).toBe(false);
+      expect(wrapper.findComponent(AuditEventsExportButton).exists()).toBe(false);
     });
   });
 
@@ -133,7 +133,7 @@ describe('AuditEventsApp', () => {
     });
 
     it('does not render the audit events filter', () => {
-      expect(wrapper.find(AuditEventsFilter).exists()).toBe(false);
+      expect(wrapper.findComponent(AuditEventsFilter).exists()).toBe(false);
     });
   });
 });

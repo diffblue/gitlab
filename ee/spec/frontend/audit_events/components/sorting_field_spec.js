@@ -12,7 +12,7 @@ describe('SortingField component', () => {
   };
 
   const getCheckedOptions = () =>
-    wrapper.findAll(GlDropdownItem).filter((item) => item.props().isChecked);
+    wrapper.findAllComponents(GlDropdownItem).filter((item) => item.props().isChecked);
 
   beforeEach(() => {
     initComponent();
@@ -25,7 +25,7 @@ describe('SortingField component', () => {
 
   describe('when initialized', () => {
     it('should have sorting options', () => {
-      expect(wrapper.findAll(GlDropdownItem)).toHaveLength(2);
+      expect(wrapper.findAllComponents(GlDropdownItem)).toHaveLength(2);
     });
 
     it('should set the sorting option to `created_desc` by default', () => {
@@ -49,7 +49,7 @@ describe('SortingField component', () => {
   describe('when the user clicks on a option', () => {
     beforeEach(() => {
       initComponent();
-      wrapper.findAll(GlDropdownItem).at(1).vm.$emit('click');
+      wrapper.findAllComponents(GlDropdownItem).at(1).vm.$emit('click');
     });
 
     it('should emit the "selected" event with clicked option', () => {
