@@ -62,7 +62,7 @@ describe('LdapOverrideConfirmationModal', () => {
     });
   };
 
-  const findModal = () => wrapper.find(GlModal);
+  const findModal = () => wrapper.findComponent(GlModal);
   const getByText = (text, options) =>
     createWrapper(within(findModal().element).getByText(text, options));
   const getEditPermissionsButton = () =>
