@@ -88,7 +88,7 @@ describe('Transfer group form', () => {
     });
   });
 
-  describe('with a selected proejct', () => {
+  describe('with a selected project', () => {
     const [firstGroup] = groups;
     beforeEach(() => {
       findNamespaceSelect().vm.$emit('select', firstGroup);
@@ -117,8 +117,20 @@ describe('Transfer group form', () => {
       wrapper = createComponent({ isPaidGroup: true });
     });
 
-    it('renders an alert with a link for additional information', () => {
+    it('renders a warning alert with a link for additional information', () => {
       expect(findAlert().text()).toMatchInterpolatedText(i18n.paidGroupMessage);
+      expect(findAlert().props()).toMatchObject({
+        dismissible: false,
+        variant: 'warning',
+      });
+    });
+
+    it('disables the transfer button', () => {
+      expect(findConfirmDanger().props()).toMatchObject({ disabled: true });
+    });
+
+    it('hides the namespace selector button', () => {
+      expect(findNamespaceSelect().exists()).toBe(false);
     });
   });
 });

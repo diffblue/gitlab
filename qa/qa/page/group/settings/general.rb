@@ -40,17 +40,6 @@ module QA
             element :project_creation_level_dropdown
           end
 
-          view 'app/helpers/dropdowns_helper.rb' do
-            element :dropdown_input_field
-            element :dropdown_list_content
-          end
-
-          def wait_for_enabled_button(target)
-            wait_until(reload: false) do
-              !find_element(target).disabled?
-            end
-          end
-
           def set_group_name(name)
             find_element(:group_name_field).send_keys([:command, 'a'], :backspace)
             find_element(:group_name_field).set name
