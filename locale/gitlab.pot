@@ -11994,6 +11994,9 @@ msgstr ""
 msgid "Deployment|Created"
 msgstr ""
 
+msgid "Deployment|Deployment ID"
+msgstr ""
+
 msgid "Deployment|Failed"
 msgstr ""
 
