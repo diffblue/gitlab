@@ -8,6 +8,7 @@ module API
       before do
         authenticate!
         authorize! :admin_build, user_project
+        feature_flag_enabled?
       end
 
       feature_category :pipeline_authoring
@@ -60,7 +61,6 @@ module API
 
         route_setting :authentication, basic_auth_personal_access_token: true, job_token_allowed: true
         post ':id/secure_files' do
-  
           secure_file = user_project.secure_files.new(
             name: params[:name],
             permissions: params[:permissions] || :read_only
@@ -85,6 +85,12 @@ module API
           secure_file.destroy!
 
           no_content!
+        end
+      end
+
+      helpers do
+        def feature_flag_enabled?
+          service_unavailable! unless Feature.enabled?(:ci_secure_files, user_project, default_enabled: :yaml)
         end
       end
     end

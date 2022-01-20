@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe API::Ci::SecureFiles do
   before do
     stub_ci_secure_file_object_storage
+    stub_feature_flags(ci_secure_files: true)
   end
 
   let_it_be(:user) { create(:user) }
@@ -15,6 +16,23 @@ RSpec.describe API::Ci::SecureFiles do
   let_it_be(:secure_file) { create(:ci_secure_file, project: project) }
 
   describe 'GET /projects/:id/secure_files' do
+    context 'feature flag' do
+      it 'returns a 503 when the feature flag is disabled' do
+        stub_feature_flags(ci_secure_files: false)
+
+        get api("/projects/#{project.id}/secure_files", user)
+
+        expect(response).to have_gitlab_http_status(:service_unavailable)
+      end
+
+      it 'returns a 200 when the feature flag is enabled' do
+        get api("/projects/#{project.id}/secure_files", user)
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response).to be_a(Array)
+      end
+    end
+
     context 'authorized user with proper permissions' do
       it 'returns project secure files' do
         get api("/projects/#{project.id}/secure_files", user)
