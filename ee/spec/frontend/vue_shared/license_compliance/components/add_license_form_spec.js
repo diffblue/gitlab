@@ -17,7 +17,8 @@ const createComponent = (props = {}, mountFn = shallowMount) => {
 describe('AddLicenseForm', () => {
   const findSubmitButton = () => wrapper.find('.js-submit');
   const findCancelButton = () => wrapper.find('.js-cancel');
-  const findRadioInputs = () => wrapper.find(GlFormRadioGroup).findAll(GlFormRadio);
+  const findRadioInputs = () =>
+    wrapper.findComponent(GlFormRadioGroup).findAllComponents(GlFormRadio);
 
   beforeEach(() => {
     createComponent();

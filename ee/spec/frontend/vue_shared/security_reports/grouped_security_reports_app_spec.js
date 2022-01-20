@@ -41,7 +41,7 @@ describe('Grouped security reports app', () => {
   let wrapper;
   let mock;
 
-  const findReportSection = () => wrapper.find(ReportSection);
+  const findReportSection = () => wrapper.findComponent(ReportSection);
   const findReportSummary = () => wrapper.find('[data-testid="report-section-code-text"]');
   const findCollapseButton = () => wrapper.find('.js-collapse-btn');
   const findSpinner = () => wrapper.find('.gl-spinner');

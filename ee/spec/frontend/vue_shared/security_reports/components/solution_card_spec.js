@@ -8,7 +8,7 @@ describe('Solution Card', () => {
 
   let wrapper;
 
-  const findSolutionText = () => wrapper.find({ ref: 'solution-text' });
+  const findSolutionText = () => wrapper.findComponent({ ref: 'solution-text' });
   const findSolutionTitle = () => wrapper.find('h3');
 
   const createComponent = ({ propsData } = {}) => {

@@ -19,7 +19,7 @@ describe('DismissalCommentBox', () => {
   });
 
   it('should submit the comment when cmd+enter is pressed', () => {
-    wrapper.find(GlFormTextarea).trigger('keydown.enter', {
+    wrapper.findComponent(GlFormTextarea).trigger('keydown.enter', {
       metaKey: true,
     });
 
@@ -42,7 +42,7 @@ describe('DismissalCommentBox', () => {
     wrapper.setProps({ placeholder });
 
     return wrapper.vm.$nextTick(() => {
-      expect(wrapper.find(GlFormTextarea).attributes('placeholder')).toBe(placeholder);
+      expect(wrapper.findComponent(GlFormTextarea).attributes('placeholder')).toBe(placeholder);
     });
   });
 });

@@ -204,7 +204,7 @@ describe('Grouped metrics reports app', () => {
       });
 
       it('renders custom metric issue body', () => {
-        const issueBody = wrapper.find(MetricsReportsIssueBody);
+        const issueBody = wrapper.findComponent(MetricsReportsIssueBody);
 
         expect(issueBody.props('issue').name).toEqual('name');
         expect(issueBody.props('issue').value).toEqual('value');

@@ -26,7 +26,7 @@ describe('Severity Badge', () => {
     wrapper = null;
   });
 
-  const findIcon = () => wrapper.find(GlIcon);
+  const findIcon = () => wrapper.findComponent(GlIcon);
   const findTooltip = () => getBinding(findIcon().element, 'tooltip').value;
 
   describe.each(SEVERITY_LEVELS)('given a valid severity "%s"', (severity) => {

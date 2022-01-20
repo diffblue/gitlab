@@ -22,7 +22,7 @@ describe('DismissalButton', () => {
     });
 
     it('should emit dismiss vulnerability when clicked', () => {
-      wrapper.find(GlButton).trigger('click');
+      wrapper.findComponent(GlButton).trigger('click');
       return wrapper.vm.$nextTick().then(() => {
         expect(wrapper.emitted().dismissVulnerability).toBeTruthy();
       });
@@ -53,7 +53,7 @@ describe('DismissalButton', () => {
     });
 
     it('should emit revertDismissVulnerability when clicked', () => {
-      wrapper.find(GlButton).trigger('click');
+      wrapper.findComponent(GlButton).trigger('click');
       return wrapper.vm.$nextTick().then(() => {
         expect(wrapper.emitted().revertDismissVulnerability).toBeTruthy();
       });

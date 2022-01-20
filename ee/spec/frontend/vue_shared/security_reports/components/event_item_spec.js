@@ -11,7 +11,7 @@ describe('Event Item', () => {
     wrapper = mountFn(Component, options);
   };
 
-  const noteHeader = () => wrapper.find(NoteHeader);
+  const noteHeader = () => wrapper.findComponent(NoteHeader);
 
   describe('initial state', () => {
     const propsData = {
@@ -92,12 +92,12 @@ describe('Event Item', () => {
     });
 
     it('renders the action buttons', () => {
-      expect(wrapper.findAll(GlButton)).toHaveLength(2);
+      expect(wrapper.findAllComponents(GlButton)).toHaveLength(2);
       expect(wrapper.element).toMatchSnapshot();
     });
 
     it('emits the button events when clicked', () => {
-      const buttons = wrapper.findAll(GlButton);
+      const buttons = wrapper.findAllComponents(GlButton);
       buttons.at(0).trigger('click');
       return wrapper.vm
         .$nextTick()

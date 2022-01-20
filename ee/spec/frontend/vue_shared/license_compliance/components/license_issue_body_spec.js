@@ -12,7 +12,7 @@ describe('LicenseIssueBody', () => {
 
   const findLicenseIssueBody = () => wrapper.findComponent(LicenseIssueBody);
   const findLicensePackages = () => wrapper.findComponent(LicensePackages);
-  const findGlLink = () => wrapper.find(GlLink);
+  const findGlLink = () => wrapper.findComponent(GlLink);
   const findText = () => wrapper.find('[data-testid="license-copy"]');
 
   const createComponent = (props = {}) => {

@@ -21,7 +21,7 @@ import {
 describe('Security Issue Body', () => {
   let wrapper;
 
-  const findReportLink = () => wrapper.find(ReportLink);
+  const findReportLink = () => wrapper.findComponent(ReportLink);
 
   const createComponent = (issue) => {
     wrapper = extendedWrapper(
@@ -52,11 +52,11 @@ describe('Security Issue Body', () => {
 
     if (severity) {
       it(`shows SeverityBadge if severity is present`, () => {
-        expect(wrapper.find(SeverityBadge).props('severity')).toBe(severity);
+        expect(wrapper.findComponent(SeverityBadge).props('severity')).toBe(severity);
       });
     } else {
       it(`does not show SeverityBadge if severity is not present`, () => {
-        expect(wrapper.find(SeverityBadge).exists()).toBe(false);
+        expect(wrapper.findComponent(SeverityBadge).exists()).toBe(false);
       });
     }
 

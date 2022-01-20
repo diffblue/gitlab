@@ -146,7 +146,7 @@ describe('EpicToken', () => {
     });
 
     it('renders token item when value is selected', () => {
-      const tokenSegments = wrapper.findAll(GlFilteredSearchTokenSegment);
+      const tokenSegments = wrapper.findAllComponents(GlFilteredSearchTokenSegment);
 
       expect(tokenSegments).toHaveLength(3);
       expect(tokenSegments.at(2).text()).toBe(`${mockEpics[0].title}::&${mockEpics[0].iid}`);

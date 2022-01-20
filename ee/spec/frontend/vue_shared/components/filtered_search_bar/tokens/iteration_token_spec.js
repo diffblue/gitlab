@@ -61,7 +61,7 @@ describe('IterationToken', () => {
     });
 
     it('renders iteration start date and due date', () => {
-      const suggestions = wrapper.findAll(GlFilteredSearchSuggestion);
+      const suggestions = wrapper.findAllComponents(GlFilteredSearchSuggestion);
 
       expect(suggestions.at(3).text()).toContain('Nov 5, 2021 - Nov 10, 2021');
     });
