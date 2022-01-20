@@ -30738,6 +30738,9 @@ msgstr ""
 msgid "Runners|Command to register runner"
 msgstr ""
 
+msgid "Runners|Configuration"
+msgstr ""
+
 msgid "Runners|Copy instructions"
 msgstr ""
 
@@ -30754,6 +30757,9 @@ msgid "Runners|Deploy GitLab Runner in AWS"
 msgstr ""
 
 msgid "Runners|Description"
+msgstr ""
+
+msgid "Runners|Details"
 msgstr ""
 
 msgid "Runners|Download and install binary"
@@ -30904,6 +30910,9 @@ msgid "Runners|Runners"
 msgstr ""
 
 msgid "Runners|Runners in this group: %{groupRunnersCount}"
+msgstr ""
+
+msgid "Runners|Runs untagged jobs"
 msgstr ""
 
 msgid "Runners|Shared runners are available to every project in a GitLab instance. If you want a runner to build only specific projects, restrict the project in the table below. After you restrict a runner to a project, you cannot change it back to a shared runner."
