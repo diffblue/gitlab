@@ -74,13 +74,13 @@ describe('History Comment', () => {
       .mockResolvedValue(createMutationResponse({ queryName: UPDATE_NOTE, note }));
   });
 
-  const addCommentButton = () => wrapper.find({ ref: 'addCommentButton' });
+  const addCommentButton = () => wrapper.findComponent({ ref: 'addCommentButton' });
   const commentEditor = () => wrapper.findComponent(HistoryCommentEditor);
   const eventItem = () => wrapper.findComponent(EventItem);
   const editButton = () => wrapper.find('[title="Edit Comment"]');
   const deleteButton = () => wrapper.find('[title="Delete Comment"]');
-  const confirmDeleteButton = () => wrapper.find({ ref: 'confirmDeleteButton' });
-  const cancelDeleteButton = () => wrapper.find({ ref: 'cancelDeleteButton' });
+  const confirmDeleteButton = () => wrapper.findComponent({ ref: 'confirmDeleteButton' });
+  const cancelDeleteButton = () => wrapper.findComponent({ ref: 'cancelDeleteButton' });
 
   // Check that the passed-in elements exist, and that everything else does not exist.
   const expectExists = (...expectedElements) => {

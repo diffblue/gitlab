@@ -11,9 +11,9 @@ describe('History Comment Editor', () => {
     });
   };
 
-  const textarea = () => wrapper.find(GlFormTextarea);
-  const saveButton = () => wrapper.find({ ref: 'saveButton' });
-  const cancelButton = () => wrapper.find({ ref: 'cancelButton' });
+  const textarea = () => wrapper.findComponent(GlFormTextarea);
+  const saveButton = () => wrapper.findComponent({ ref: 'saveButton' });
+  const cancelButton = () => wrapper.findComponent({ ref: 'cancelButton' });
 
   afterEach(() => wrapper.destroy());
 
