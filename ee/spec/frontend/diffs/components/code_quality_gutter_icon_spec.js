@@ -78,7 +78,7 @@ describe('EE CodeQualityGutterIcon', () => {
 
       wrapper.findComponent(GlIcon).trigger('mouseover');
 
-      expect(wrapper.find(GlPopover).props().target).toBe(popoverTarget);
+      expect(wrapper.findComponent(GlPopover).props().target).toBe(popoverTarget);
     });
 
     it('passes the issue data into the issue components correctly', () => {

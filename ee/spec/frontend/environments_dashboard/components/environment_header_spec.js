@@ -33,15 +33,17 @@ describe('Environment Header', () => {
     });
 
     it('renders a link to the environment page', () => {
-      expect(wrapper.find(GlLink).attributes('href')).toBe(propsData.environment.environment_path);
+      expect(wrapper.findComponent(GlLink).attributes('href')).toBe(
+        propsData.environment.environment_path,
+      );
     });
 
     it('does not show a badge with the number of environments in the folder', () => {
-      expect(wrapper.find(GlBadge).exists()).toBe(false);
+      expect(wrapper.findComponent(GlBadge).exists()).toBe(false);
     });
 
     it('renders a link to the external app', () => {
-      expect(wrapper.find(ReviewAppLink).attributes('href')).toBe(
+      expect(wrapper.findComponent(ReviewAppLink).attributes('href')).toBe(
         propsData.environment.external_url,
       );
     });
@@ -64,12 +66,12 @@ describe('Environment Header', () => {
 
     it('shows a badge with the number of other environments in the folder', () => {
       const expected = propsData.environment.size.toString();
-      expect(wrapper.find(GlBadge).text()).toBe(expected);
+      expect(wrapper.findComponent(GlBadge).text()).toBe(expected);
     });
 
     it('shows an icon stating the environment is one of many in a folder', () => {
-      expect(wrapper.find(GlIcon).attributes('name')).toBe('information');
-      expect(wrapper.find(GlIcon).attributes('title')).toMatch(/last updated environment/);
+      expect(wrapper.findComponent(GlIcon).attributes('name')).toBe('information');
+      expect(wrapper.findComponent(GlIcon).attributes('title')).toMatch(/last updated environment/);
     });
 
     it('matches the snapshot', () => {

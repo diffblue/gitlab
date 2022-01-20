@@ -11,7 +11,7 @@ describe('Burnup chart', () => {
     dueDate: '2019-09-09T00:00:00.000Z',
   };
 
-  const findChart = () => wrapper.find(GlLineChart);
+  const findChart = () => wrapper.findComponent(GlLineChart);
 
   const createComponent = (props = {}) => {
     wrapper = shallowMount(BurnupChart, {

@@ -29,14 +29,14 @@ describe('Environment', () => {
   describe('wrapped components', () => {
     describe('environment header', () => {
       it('binds environment', () => {
-        expect(wrapper.find(EnvironmentHeader).props('environment')).toBe(environment);
+        expect(wrapper.findComponent(EnvironmentHeader).props('environment')).toBe(environment);
       });
     });
     describe('alerts', () => {
       let alert;
 
       beforeEach(() => {
-        alert = wrapper.find(Alert);
+        alert = wrapper.findComponent(Alert);
       });
       it('binds alert count to count', () => {
         expect(alert.props('count')).toBe(environment.alert_count);
@@ -49,7 +49,7 @@ describe('Environment', () => {
       let commit;
 
       beforeEach(() => {
-        commit = wrapper.find(Commit);
+        commit = wrapper.findComponent(Commit);
       });
 
       it('binds commitRef', () => {

@@ -72,7 +72,7 @@ describe('Environment', () => {
       });
 
       it('should render deploy boards', () => {
-        expect(wrapper.find(DeployBoard).exists()).toBe(true);
+        expect(wrapper.findComponent(DeployBoard).exists()).toBe(true);
       });
 
       it('should render arrow to open deploy boards', () => {

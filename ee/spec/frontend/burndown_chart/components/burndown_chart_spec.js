@@ -12,7 +12,7 @@ describe('burndown_chart', () => {
     openIssuesWeight: [],
   };
 
-  const findChart = () => wrapper.find(GlLineChart);
+  const findChart = () => wrapper.findComponent(GlLineChart);
 
   const createComponent = (props = {}) => {
     wrapper = shallowMount(BurndownChart, {
