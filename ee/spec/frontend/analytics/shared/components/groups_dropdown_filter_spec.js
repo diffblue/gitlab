@@ -42,11 +42,11 @@ describe('GroupsDropdownFilter component', () => {
     Api.groups.mockImplementation(() => Promise.resolve(groups));
   });
 
-  const findDropdown = () => wrapper.find(GlDropdown);
+  const findDropdown = () => wrapper.findComponent(GlDropdown);
 
   const findDropdownItems = () =>
     findDropdown()
-      .findAll(GlDropdownItem)
+      .findAllComponents(GlDropdownItem)
       .filter((w) => w.text() !== 'No matching results');
 
   const findDropdownAtIndex = (index) => findDropdownItems().at(index);

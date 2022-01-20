@@ -14,7 +14,7 @@ describe('Test coverage table component', () => {
   const findGroupCoverageChart = () => wrapper.findByTestId('group-coverage-chart');
   const findChartLoadingState = () => wrapper.findByTestId('group-coverage-chart-loading');
   const findChartEmptyState = () => wrapper.findByTestId('group-coverage-chart-empty');
-  const findLoadingState = () => wrapper.find(GlSkeletonLoading);
+  const findLoadingState = () => wrapper.findComponent(GlSkeletonLoading);
 
   const createComponent = ({ data = {} } = {}) => {
     wrapper = extendedWrapper(

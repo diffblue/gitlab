@@ -21,7 +21,7 @@ describe('MergeRequestTableRow component', () => {
 
   const findMrDetails = () => wrapper.find('.js-mr-details');
   const findMrMetrics = () => wrapper.find('.js-mr-metrics');
-  const findMetricColumns = () => findMrMetrics().findAll(MetricColumn);
+  const findMetricColumns = () => findMrMetrics().findAllComponents(MetricColumn);
 
   afterEach(() => {
     wrapper.destroy();
@@ -43,7 +43,7 @@ describe('MergeRequestTableRow component', () => {
     });
 
     it('renders the avatar with correct URL', () => {
-      const avatar = wrapper.find(GlAvatar);
+      const avatar = wrapper.findComponent(GlAvatar);
 
       expect(avatar.exists()).toBe(true);
       expect(avatar.props('src')).toEqual(defaultProps.mergeRequest.author_avatar_url);
@@ -72,7 +72,7 @@ describe('MergeRequestTableRow component', () => {
           },
         };
         factory(props);
-        expect(wrapper.find({ ref: selector }).exists()).toBe(false);
+        expect(wrapper.findComponent({ ref: selector }).exists()).toBe(false);
       });
     });
 

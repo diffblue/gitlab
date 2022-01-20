@@ -42,15 +42,16 @@ describe('DevopsAdoptionOverviewTable', () => {
 
   const findCol = (testId) => wrapper.findByTestId(testId);
 
-  const findColRowChild = (col, row, child) => wrapper.findAllByTestId(col).at(row).find(child);
+  const findColRowChild = (col, row, child) =>
+    wrapper.findAllByTestId(col).at(row).findComponent(child);
 
   const findColSubComponent = (colTestId, childComponent) =>
-    findCol(colTestId).find(childComponent);
+    findCol(colTestId).findComponent(childComponent);
 
   const findDeleteModal = () => wrapper.findComponent(DevopsAdoptionDeleteModal);
 
-  const findSortByLocalStorageSync = () => wrapper.findAll(LocalStorageSync).at(0);
-  const findSortDescLocalStorageSync = () => wrapper.findAll(LocalStorageSync).at(1);
+  const findSortByLocalStorageSync = () => wrapper.findAllComponents(LocalStorageSync).at(0);
+  const findSortDescLocalStorageSync = () => wrapper.findAllComponents(LocalStorageSync).at(1);
 
   describe('table headings', () => {
     beforeEach(() => {

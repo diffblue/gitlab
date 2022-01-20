@@ -27,7 +27,7 @@ describe('Release stats card', () => {
     wrapper = null;
   });
 
-  const findLoadingIndicators = () => wrapper.findAll(GlSkeletonLoader);
+  const findLoadingIndicators = () => wrapper.findAllComponents(GlSkeletonLoader);
   const findStats = () => wrapper.find('[data-testid="stats-container"]');
 
   const expectLoadingIndicators = () => {

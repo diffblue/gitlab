@@ -60,7 +60,7 @@ describe('ThroughputTable', () => {
   }
 
   const displaysComponent = (component, visible) => {
-    expect(wrapper.find(component).exists()).toBe(visible);
+    expect(wrapper.findComponent(component).exists()).toBe(visible);
   };
 
   const additionalData = (data) => {
@@ -74,7 +74,7 @@ describe('ThroughputTable', () => {
     });
   };
 
-  const findTable = () => wrapper.find(GlTableLite);
+  const findTable = () => wrapper.findComponent(GlTableLite);
 
   const findCol = (testId) => findTable().find(`[data-testid="${testId}"]`);
 
@@ -82,9 +82,9 @@ describe('ThroughputTable', () => {
     findCol(colTestId).find(`[data-testid="${childTetestId}"]`);
 
   const findColSubComponent = (colTestId, childComponent) =>
-    findCol(colTestId).find(childComponent);
+    findCol(colTestId).findComponent(childComponent);
 
-  const findPagination = () => wrapper.find(GlPagination);
+  const findPagination = () => wrapper.findComponent(GlPagination);
 
   const findPrevious = () => findPagination().findAll('.page-item').at(0);
 
@@ -101,7 +101,7 @@ describe('ThroughputTable', () => {
     });
 
     it('displays an empty state message when there is no data', () => {
-      const alert = wrapper.find(GlAlert);
+      const alert = wrapper.findComponent(GlAlert);
 
       expect(alert.exists()).toBe(true);
       expect(alert.text()).toBe(THROUGHPUT_TABLE_STRINGS.NO_DATA);
@@ -195,7 +195,7 @@ describe('ThroughputTable', () => {
 
         it('includes an inactive label icon by default', () => {
           const labels = findColSubItem(TEST_IDS.MERGE_REQUEST_DETAILS, TEST_IDS.LABEL_DETAILS);
-          const icon = labels.find(GlIcon);
+          const icon = labels.findComponent(GlIcon);
 
           expect(labels.text()).toBe('0');
           expect(labels.classes()).toContain('gl-opacity-5');
@@ -208,7 +208,7 @@ describe('ThroughputTable', () => {
             TEST_IDS.MERGE_REQUEST_DETAILS,
             TEST_IDS.COMMENT_COUNT,
           );
-          const icon = commentCount.find(GlIcon);
+          const icon = commentCount.findComponent(GlIcon);
 
           expect(commentCount.text()).toBe('0');
           expect(commentCount.classes()).toContain('gl-opacity-5');
@@ -229,7 +229,7 @@ describe('ThroughputTable', () => {
             TEST_IDS.MERGE_REQUEST_DETAILS,
             TEST_IDS.LABEL_DETAILS,
           );
-          const icon = labelDetails.find(GlIcon);
+          const icon = labelDetails.findComponent(GlIcon);
 
           expect(labelDetails.text()).toBe('1');
           expect(labelDetails.classes()).not.toContain('gl-opacity-5');
@@ -248,7 +248,7 @@ describe('ThroughputTable', () => {
             TEST_IDS.MERGE_REQUEST_DETAILS,
             TEST_IDS.COMMENT_COUNT,
           );
-          const icon = commentCount.find(GlIcon);
+          const icon = commentCount.findComponent(GlIcon);
 
           expect(commentCount.text()).toBe('2');
           expect(commentCount.classes()).not.toContain('gl-opacity-5');
@@ -273,7 +273,7 @@ describe('ThroughputTable', () => {
 
           const icon = findColSubComponent(TEST_IDS.MERGE_REQUEST_DETAILS, GlIcon);
 
-          expect(icon.find(GlIcon).exists()).toBe(true);
+          expect(icon.findComponent(GlIcon).exists()).toBe(true);
           expect(icon.props('name')).toBe(iconName);
         });
 
@@ -300,7 +300,7 @@ describe('ThroughputTable', () => {
             await wrapper.vm.$nextTick();
 
             const approved = findColSubItem(TEST_IDS.MERGE_REQUEST_DETAILS, TEST_IDS.APPROVED);
-            const icon = approved.find(GlIcon);
+            const icon = approved.findComponent(GlIcon);
 
             expect(approved.text()).toBe('1 Approval');
             expect(icon.exists()).toBe(true);
@@ -324,7 +324,7 @@ describe('ThroughputTable', () => {
             await wrapper.vm.$nextTick();
 
             const approved = findColSubItem(TEST_IDS.MERGE_REQUEST_DETAILS, TEST_IDS.APPROVED);
-            const icon = approved.find(GlIcon);
+            const icon = approved.findComponent(GlIcon);
 
             expect(approved.text()).toBe('2 Approvals');
             expect(icon.exists()).toBe(true);
@@ -455,7 +455,7 @@ describe('ThroughputTable', () => {
     });
 
     it('displays an error message', () => {
-      const alert = wrapper.find(GlAlert);
+      const alert = wrapper.findComponent(GlAlert);
 
       expect(alert.exists()).toBe(true);
       expect(alert.text()).toBe(THROUGHPUT_TABLE_STRINGS.ERROR_FETCHING_DATA);

@@ -25,10 +25,10 @@ describe('MergeRequestTable component', () => {
     });
   };
 
-  const findMergeRequestTableRows = () => wrapper.findAll(MergeRequestTableRow);
+  const findMergeRequestTableRows = () => wrapper.findAllComponents(MergeRequestTableRow);
   const findTableHeader = () => wrapper.find('.table-row-header');
-  const findDropdown = () => wrapper.find(GlDropdown);
-  const findDropdownItems = () => wrapper.findAll(GlDropdownItem);
+  const findDropdown = () => wrapper.findComponent(GlDropdown);
+  const findDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
   const findFirstDropdownItem = () => findDropdownItems().at(0);
 
   beforeEach(() => {
