@@ -1,8 +1,5 @@
 import { __, s__ } from '~/locale';
 import { PROMO_URL } from 'jh_else_ce/lib/utils/url_utility';
-import activateSubscriptionMutation from './graphql/mutations/activate_subscription.mutation.graphql';
-import getCurrentLicense from './graphql/queries/get_current_license.query.graphql';
-import getLicenseHistory from './graphql/queries/get_license_history.query.graphql';
 
 export const subscriptionMainTitle = s__('SuperSonics|Your subscription');
 export const subscriptionActivationNotificationText = s__(
@@ -20,6 +17,13 @@ export const subscriptionActivationInsertCode = __(
 export const howToActivateSubscription = s__(
   'SuperSonics|Learn how to %{linkStart}activate your subscription%{linkEnd}.',
 );
+export const subscriptionHistoryFailedTitle = s__('SuperSonics|Subscription unavailable');
+export const subscriptionHistoryFailedMessage = s__(
+  'SuperSonics|Your %{subscriptionEntryName} cannot be displayed at the moment. Please refresh the page to try again.',
+);
+export const currentSubscriptionsEntryName = s__('SuperSonics|current subscription');
+export const historySubscriptionsEntryName = s__('SuperSonics|history subscriptions');
+
 export const cancelLabel = __('Cancel');
 export const activateLabel = s__('AdminUsers|Activate');
 export const activateSubscription = s__('SuperSonics|Activate subscription');
@@ -39,7 +43,7 @@ export const detailsLabels = {
   email: __('Email'),
   id: __('ID'),
   lastSync: __('Last Sync'),
-  name: __('Name'),
+  name: licensedToHeaderText,
   plan: __('Plan'),
   expiresAt: __('Renews'),
   startsAt: __('Started'),
@@ -102,15 +106,6 @@ export const subscriptionSyncStatus = {
 export const subscriptionTypes = {
   CLOUD: 'cloud',
   LICENSE_FILE: 'license_file',
-};
-
-export const subscriptionQueries = {
-  query: getCurrentLicense,
-  mutation: activateSubscriptionMutation,
-};
-
-export const subscriptionHistoryQueries = {
-  query: getLicenseHistory,
 };
 
 export const trialCard = {
