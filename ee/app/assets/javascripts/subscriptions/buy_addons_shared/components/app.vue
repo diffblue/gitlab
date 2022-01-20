@@ -7,7 +7,7 @@ import { ERROR_FETCHING_DATA_HEADER, ERROR_FETCHING_DATA_DESCRIPTION } from '~/e
 import Checkout from 'ee/subscriptions/buy_addons_shared/components/checkout.vue';
 import AddonPurchaseDetails from 'ee/subscriptions/buy_addons_shared/components/checkout/addon_purchase_details.vue';
 import { formatNumber, sprintf } from '~/locale';
-import { CUSTOMERSDOT_CLIENT, I18N_ADDON } from 'ee/subscriptions/buy_addons_shared/constants';
+import { CUSTOMERSDOT_CLIENT } from 'ee/subscriptions/buy_addons_shared/constants';
 
 import plansQuery from 'ee/subscriptions/graphql/queries/plans.customer.query.graphql';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
@@ -20,7 +20,7 @@ export default {
     GlAlert,
     OrderSummary,
   },
-  inject: ['tags'],
+  inject: ['tags', 'i18n'],
   data() {
     return {
       hasError: false,
@@ -28,9 +28,6 @@ export default {
     };
   },
   computed: {
-    i18n() {
-      return this.plan?.code ? I18N_ADDON[this.plan.code] || {} : {};
-    },
     emptySvgPath() {
       return `data:image/svg+xml;utf8,${encodeURIComponent(emptySvg)}`;
     },

@@ -3,9 +3,9 @@ import { createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import { pick } from 'lodash';
 import {
-  I18N_ADDON,
+  I18N_CI_1000_MINUTES_PLAN,
+  I18N_STORAGE_PLAN,
   I18N_API_ERROR,
-  planCode,
   planTags,
 } from 'ee/subscriptions/buy_addons_shared/constants';
 import Checkout from 'ee/subscriptions/buy_addons_shared/components/checkout.vue';
@@ -59,6 +59,7 @@ describe('Buy Addons Shared App', () => {
   describe('Storage', () => {
     const injectedProps = {
       tags: [planTags.STORAGE_PLAN],
+      i18n: I18N_STORAGE_PLAN,
     };
     describe('when data is received', () => {
       beforeEach(async () => {
@@ -81,7 +82,7 @@ describe('Buy Addons Shared App', () => {
       it('provides the correct props to order summary', () => {
         expect(findOrderSummary().props()).toMatchObject({
           plan: { ...getStoragePlan, isAddon: true },
-          title: I18N_ADDON[planCode.STORAGE_PLAN].title,
+          title: I18N_STORAGE_PLAN.title,
         });
       });
 
@@ -185,6 +186,7 @@ describe('Buy Addons Shared App', () => {
   describe('CI Minutes', () => {
     const injectedProps = {
       tags: [planTags.CI_1000_MINUTES_PLAN],
+      i18n: I18N_CI_1000_MINUTES_PLAN,
     };
 
     describe('when data is received', () => {
@@ -208,7 +210,7 @@ describe('Buy Addons Shared App', () => {
       it('provides the correct props to order summary', () => {
         expect(findOrderSummary().props()).toMatchObject({
           plan: { ...getCiMinutesPlan, isAddon: true },
-          title: I18N_ADDON[planCode.CI_1000_MINUTES_PLAN].title,
+          title: I18N_CI_1000_MINUTES_PLAN.title,
         });
       });
     });

@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import ensureData from '~/ensure_data';
-import { planTags } from 'ee/subscriptions/buy_addons_shared/constants';
+import { planTags, I18N_STORAGE_PLAN } from 'ee/subscriptions/buy_addons_shared/constants';
 import App from 'ee/subscriptions/buy_addons_shared/components/app.vue';
 import apolloProvider from '../buy_addons_shared/graphql';
 import { writeInitialDataToApolloCache } from '../buy_addons_shared/utils';
@@ -16,6 +16,7 @@ export default (el) => {
     shouldLog: true,
     provide: {
       tags: [planTags.STORAGE_PLAN],
+      i18n: I18N_STORAGE_PLAN,
     },
   });
 

@@ -6,10 +6,6 @@ export const planTags = {
   STORAGE_PLAN: 'STORAGE_PLAN',
 };
 /* eslint-enable @gitlab/require-i18n-strings */
-export const planCode = {
-  CI_1000_MINUTES_PLAN: 'ci_minutes',
-  STORAGE_PLAN: 'storage',
-};
 
 export const CUSTOMERSDOT_CLIENT = 'customersDotClient';
 export const GITLAB_CLIENT = 'gitlabClient';
@@ -59,33 +55,28 @@ export const I18N_API_ERROR = s__(
 );
 
 // Addon label translations
-export const I18N_ADDON = {
-  [planCode.CI_1000_MINUTES_PLAN]: {
-    alertText: s__(
-      "Checkout|CI minute packs are only used after you've used your subscription's monthly quota. The additional minutes will roll over month to month and are valid for one year.",
-    ),
-    formula: I18N_DETAILS_FORMULA,
-    formulaWithAlert: I18N_DETAILS_FORMULA_WITH_ALERT,
-    formulaTotal: s__('Checkout|%{quantity} CI minutes'),
-    pricePerUnit: s__('Checkout|$%{selectedPlanPrice} per pack of 1,000 minutes'),
-    summaryTitle: (quantity) =>
-      n__('Checkout|%d CI minute pack', 'Checkout|%d CI minute packs', quantity),
-    summaryTotal: s__('Checkout|Total minutes: %{quantity}'),
-    title: s__("Checkout|%{name}'s CI minutes"),
-    tooltipNote: '',
-  },
-  [planCode.STORAGE_PLAN]: {
-    alertText: '',
-    formula: I18N_DETAILS_FORMULA,
-    formulaWithAlert: I18N_DETAILS_FORMULA_WITH_ALERT,
-    formulaTotal: s__('Checkout|%{quantity} GB of storage'),
-    pricePerUnit: s__('Checkout|$%{selectedPlanPrice} per 10 GB storage pack per year'),
-    summaryTitle: (quantity) =>
-      n__('Checkout|%{quantity} storage pack', 'Checkout|%{quantity} storage packs', quantity),
-    summaryTotal: s__('Checkout|Total storage: %{quantity} GB'),
-    title: s__("Checkout|%{name}'s storage subscription"),
-    tooltipNote: s__(
-      'Checkout|Your storage subscription has the same term as your main subscription, and the price is prorated accordingly.',
-    ),
-  },
+export const I18N_CI_1000_MINUTES_PLAN = {
+  alertText: s__(
+    "Checkout|CI minute packs are only used after you've used your subscription's monthly quota. The additional minutes will roll over month to month and are valid for one year.",
+  ),
+  formula: I18N_DETAILS_FORMULA,
+  formulaWithAlert: I18N_DETAILS_FORMULA_WITH_ALERT,
+  formulaTotal: s__('Checkout|%{quantity} CI minutes'),
+  pricePerUnit: s__('Checkout|$%{selectedPlanPrice} per pack of 1,000 minutes'),
+  summaryTitle: (quantity) =>
+    n__('Checkout|%d CI minute pack', 'Checkout|%d CI minute packs', quantity),
+  summaryTotal: s__('Checkout|Total minutes: %{quantity}'),
+  title: s__("Checkout|%{name}'s CI minutes"),
+};
+
+export const I18N_STORAGE_PLAN = {
+  alertText: '',
+  formula: I18N_DETAILS_FORMULA,
+  formulaWithAlert: I18N_DETAILS_FORMULA_WITH_ALERT,
+  formulaTotal: s__('Checkout|%{quantity} GB of storage'),
+  pricePerUnit: s__('Checkout|$%{selectedPlanPrice} per 10 GB storage pack per year'),
+  summaryTitle: (quantity) =>
+    n__('Checkout|%{quantity} storage pack', 'Checkout|%{quantity} storage packs', quantity),
+  summaryTotal: s__('Checkout|Total storage: %{quantity} GB'),
+  title: s__("Checkout|%{name}'s storage subscription"),
 };

@@ -11,11 +11,15 @@ import {
   I18N_CI_MINUTES_PRODUCT_UNIT,
   I18N_STORAGE_PRODUCT_LABEL,
   I18N_STORAGE_PRODUCT_UNIT,
-  planCode,
   STORAGE_PER_PACK,
 } from 'ee/subscriptions/buy_addons_shared/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import createFlash from '~/flash';
+
+const planCode = {
+  CI_1000_MINUTES_PLAN: 'ci_minutes',
+  STORAGE_PLAN: 'storage',
+};
 
 const planData = {
   [planCode.CI_1000_MINUTES_PLAN]: {
