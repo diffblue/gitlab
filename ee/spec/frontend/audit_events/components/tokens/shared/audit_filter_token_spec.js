@@ -24,7 +24,7 @@ describe('AuditFilterToken', () => {
   const findFilteredSearchSuggestions = () => wrapper.findAllByTestId('audit-filter-suggestion');
   const findFilteredSearchToken = () => wrapper.find('#filtered-search-token');
   const findItemAvatar = () => wrapper.findByTestId('audit-filter-item-avatar');
-  const findLoadingIcon = (type) => wrapper.find(type).find(GlLoadingIcon);
+  const findLoadingIcon = (type) => wrapper.find(type).findComponent(GlLoadingIcon);
   const findViewLoadingIcon = () => findLoadingIcon('.view');
   const findSuggestionsLoadingIcon = () => findLoadingIcon('.suggestions');
 
@@ -187,7 +187,7 @@ describe('AuditFilterToken', () => {
 
       it('renders an avatar for each suggestion', () => {
         mockSuggestions.forEach((suggestion, index) => {
-          const avatar = findFilteredSearchSuggestions().at(index).find(GlAvatar);
+          const avatar = findFilteredSearchSuggestions().at(index).findComponent(GlAvatar);
 
           expect(avatar.props()).toMatchObject({
             alt: `${suggestion.name}'s avatar`,

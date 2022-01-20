@@ -9,7 +9,7 @@ describe('AuditEventsFilter', () => {
   let wrapper;
 
   const value = [{ type: 'project', value: { data: 1, operator: '=' } }];
-  const findFilteredSearch = () => wrapper.find(GlFilteredSearch);
+  const findFilteredSearch = () => wrapper.findComponent(GlFilteredSearch);
   const getAvailableTokens = () => findFilteredSearch().props('availableTokens');
   const getAvailableTokenProps = (type) =>
     getAvailableTokens().find((token) => token.type === type);
