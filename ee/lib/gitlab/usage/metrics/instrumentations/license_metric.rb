@@ -32,6 +32,7 @@ module Gitlab
 
           def value
             return ::License.trial_ends_on if license_attribute == "trial_ends_on"
+            return ::License.current.restricted_user_count if license_attribute == "user_count"
 
             alt_usage_data(fallback: nil) do
               # license_attribute is checked in the constructor, so it's safe

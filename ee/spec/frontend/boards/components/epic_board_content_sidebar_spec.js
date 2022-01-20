@@ -73,7 +73,7 @@ describe('EpicBoardContentSidebar', () => {
   });
 
   it('confirms we render MountingPortal', () => {
-    expect(wrapper.find(MountingPortal).props()).toMatchObject({
+    expect(wrapper.findComponent(MountingPortal).props()).toMatchObject({
       mountTo: '#js-right-sidebar-portal',
       append: true,
       name: 'epic-board-sidebar',
@@ -111,7 +111,7 @@ describe('EpicBoardContentSidebar', () => {
   });
 
   it('renders 2 SidebarDateWidget', () => {
-    expect(wrapper.findAll(SidebarDateWidget)).toHaveLength(2);
+    expect(wrapper.findAllComponents(SidebarDateWidget)).toHaveLength(2);
   });
 
   it('renders SidebarParticipantsWidget', () => {
@@ -135,7 +135,7 @@ describe('EpicBoardContentSidebar', () => {
     });
 
     it('calls toggleBoardItem with correct parameters', async () => {
-      wrapper.find(GlDrawer).vm.$emit('close');
+      wrapper.findComponent(GlDrawer).vm.$emit('close');
 
       expect(toggleBoardItem).toHaveBeenCalledTimes(1);
       expect(toggleBoardItem).toHaveBeenCalledWith(expect.any(Object), {

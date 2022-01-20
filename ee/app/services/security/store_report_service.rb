@@ -98,7 +98,7 @@ module Security
 
       vulnerability_finding_to_finding_map[vulnerability_finding] = finding
 
-      update_vulnerability_finding(vulnerability_finding, vulnerability_params.merge(location: entity_params[:location], location_fingerprint: finding.location.fingerprint))
+      update_vulnerability_finding(vulnerability_finding, vulnerability_params.merge(location: entity_params[:location], location_fingerprint: finding.location_fingerprint))
       reset_remediations_for(vulnerability_finding, finding)
 
       if project.licensed_feature_available?(:vulnerability_finding_signatures)
@@ -113,7 +113,7 @@ module Security
       find_params = {
         scanner: scanners_objects[finding.scanner.key],
         primary_identifier: identifiers_objects[finding.primary_identifier.key],
-        location_fingerprint: finding.location.fingerprint
+        location_fingerprint: finding.location_fingerprint
       }
 
       begin

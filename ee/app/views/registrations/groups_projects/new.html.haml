@@ -18,7 +18,9 @@
 
       %p.gl-text-center= _('Projects help you organize your work. They contain your file repository, issues, merge requests, and so much more.')
 
-      .js-toggle-container.gl-w-full
+      - if (verify = require_verification_experiment.candidate?)
+        .js-credit-card-verification{ data: credit_card_verification_data }
+      .js-toggle-container.gl-w-full{ class: ('gl-display-none' if verify) }
         %ul.nav.nav-tabs.nav-links.gitlab-tabs.js-group-project-tabs{ role: 'tablist' }
           %li.nav-item{ role: 'presentation' }
             %a#blank-project-tab.nav-link.active{ href: '#blank-project-pane', data: { toggle: 'tab', track_label: 'blank_project', track_action: 'click_tab', track_value: '' }, role: 'tab' }

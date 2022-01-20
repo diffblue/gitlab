@@ -77,8 +77,23 @@ RSpec.describe ApplicationSetting do
     it { is_expected.to validate_numericality_of(:container_registry_cleanup_tags_service_max_list_size).only_integer.is_greater_than_or_equal_to(0) }
     it { is_expected.to validate_numericality_of(:container_registry_expiration_policies_worker_capacity).only_integer.is_greater_than_or_equal_to(0) }
 
+    it { is_expected.to validate_numericality_of(:container_registry_import_max_tags_count).only_integer.is_greater_than_or_equal_to(0) }
+    it { is_expected.to validate_numericality_of(:container_registry_import_max_retries).only_integer.is_greater_than_or_equal_to(0) }
+    it { is_expected.to validate_numericality_of(:container_registry_import_start_max_retries).only_integer.is_greater_than_or_equal_to(0) }
+    it { is_expected.to validate_numericality_of(:container_registry_import_max_step_duration).only_integer.is_greater_than_or_equal_to(0) }
+    it { is_expected.not_to allow_value(nil).for(:container_registry_import_max_tags_count) }
+    it { is_expected.not_to allow_value(nil).for(:container_registry_import_max_retries) }
+    it { is_expected.not_to allow_value(nil).for(:container_registry_import_start_max_retries) }
+    it { is_expected.not_to allow_value(nil).for(:container_registry_import_max_step_duration) }
+
+    it { is_expected.to validate_presence_of(:container_registry_import_target_plan) }
+    it { is_expected.to validate_presence_of(:container_registry_import_created_before) }
+
     it { is_expected.to validate_numericality_of(:dependency_proxy_ttl_group_policy_worker_capacity).only_integer.is_greater_than_or_equal_to(0) }
     it { is_expected.not_to allow_value(nil).for(:dependency_proxy_ttl_group_policy_worker_capacity) }
+
+    it { is_expected.to validate_numericality_of(:packages_cleanup_package_file_worker_capacity).only_integer.is_greater_than_or_equal_to(0) }
+    it { is_expected.not_to allow_value(nil).for(:packages_cleanup_package_file_worker_capacity) }
 
     it { is_expected.to validate_numericality_of(:snippet_size_limit).only_integer.is_greater_than(0) }
     it { is_expected.to validate_numericality_of(:wiki_page_max_content_bytes).only_integer.is_greater_than_or_equal_to(1024) }

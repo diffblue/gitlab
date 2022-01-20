@@ -47,6 +47,29 @@ RSpec.shared_examples 'labels sidebar widget' do
       end
     end
 
+    it 'adds first label by pressing enter when search' do
+      within(labels_widget) do
+        page.within('[data-testid="value-wrapper"]') do
+          expect(page).not_to have_content(development.name)
+        end
+
+        fill_in 'Search', with: 'Devel'
+        expect(page).to have_css('.labels-fetch-loading')
+        wait_for_all_requests
+
+        expect(page).to have_css('[data-testid="dropdown-content"] .gl-new-dropdown-item')
+        expect(page.all(:css, '[data-testid="dropdown-content"] .gl-new-dropdown-item').length).to eq(1)
+
+        find_field('Search').native.send_keys(:enter)
+        click_button 'Close'
+        wait_for_requests
+
+        page.within('[data-testid="value-wrapper"]') do
+          expect(page).to have_content(development.name)
+        end
+      end
+    end
+
     it 'escapes XSS when viewing issuable labels' do
       page.within(labels_widget) do
         expect(page).to have_content '<script>alert("xss");</script>'

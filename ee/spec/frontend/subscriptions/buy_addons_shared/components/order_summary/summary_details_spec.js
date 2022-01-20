@@ -1,4 +1,4 @@
-import { GlSprintf } from '@gitlab/ui';
+import { GlSprintf, GlIcon } from '@gitlab/ui';
 import SummaryDetails from 'ee/subscriptions/buy_addons_shared/components/order_summary/summary_details.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { useFakeDate } from 'helpers/fake_date';
@@ -21,6 +21,7 @@ describe('SummaryDetails', () => {
       },
       stubs: {
         GlSprintf,
+        GlIcon,
       },
     });
   };
@@ -32,6 +33,7 @@ describe('SummaryDetails', () => {
   const findVat = () => wrapper.findByTestId('vat');
   const findVatHelpLink = () => wrapper.findByTestId('vat-help-link');
   const findVatInfoLine = () => wrapper.findByTestId('vat-info-line');
+  const findToolip = () => wrapper.findComponent(GlIcon);
 
   afterEach(() => {
     wrapper.destroy();
@@ -93,6 +95,10 @@ describe('SummaryDetails', () => {
       expect(findSubscriptionPeriod().isVisible()).toBe(true);
       expect(findSubscriptionPeriod().text()).toBe('Jan 16, 2021 - Jan 16, 2022');
     });
+
+    it('hides a tooltip', () => {
+      expect(findToolip().exists()).toBe(false);
+    });
   });
 
   describe('when subscription has expiration and the end date provided', () => {
@@ -103,6 +109,10 @@ describe('SummaryDetails', () => {
     it('renders subscription period', () => {
       expect(findSubscriptionPeriod().isVisible()).toBe(true);
       expect(findSubscriptionPeriod().text()).toBe('Jan 16, 2021 - Feb 6, 2021');
+    });
+
+    it('shows a tooltip', () => {
+      expect(findToolip().isVisible()).toBe(true);
     });
   });
 

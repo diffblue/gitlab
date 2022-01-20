@@ -233,8 +233,6 @@ class Issue < ApplicationRecord
   end
 
   def next_object_by_relative_position(ignoring: nil, order: :asc)
-    return super unless Feature.enabled?(:optimized_issue_neighbor_queries, project, default_enabled: :yaml)
-
     array_mapping_scope = -> (id_expression) do
       relation = Issue.where(Issue.arel_table[:project_id].eq(id_expression))
 
@@ -586,7 +584,7 @@ class Issue < ApplicationRecord
   def readable_by?(user)
     if user.can_read_all_resources?
       true
-    elsif project.owner == user
+    elsif project.personal? && project.team.owner?(user)
       true
     elsif confidential? && !assignee_or_author?(user)
       project.team.member?(user, Gitlab::Access::REPORTER)

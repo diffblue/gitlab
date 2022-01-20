@@ -30,6 +30,12 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
 
         subject
       end
+
+      it 'sends the correct verification header' do
+        expect(Gitlab::HTTP).to receive(:post).with(an_instance_of(String), a_hash_including(headers: { 'X-Gitlab-Event-Streaming-Token' => anything })).once
+
+        subject
+      end
     end
 
     context 'when the group has several destinations' do

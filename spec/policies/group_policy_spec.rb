@@ -909,7 +909,6 @@ RSpec.describe GroupPolicy do
     context 'feature enabled' do
       before do
         stub_config(dependency_proxy: { enabled: true })
-        group.create_dependency_proxy_setting!(enabled: true)
       end
 
       context 'reporter' do
@@ -955,7 +954,6 @@ RSpec.describe GroupPolicy do
 
       before do
         stub_config(dependency_proxy: { enabled: true })
-        group.create_dependency_proxy_setting!(enabled: true)
       end
 
       it { is_expected.to be_allowed(:read_dependency_proxy) }
@@ -1169,8 +1167,12 @@ RSpec.describe GroupPolicy do
   end
 
   context 'when crm_enabled is false' do
-    let(:group) { create(:group, :crm_enabled) }
     let(:current_user) { owner }
+
+    before_all do
+      group.crm_settings.enabled = false
+      group.crm_settings.save!
+    end
 
     it { is_expected.to be_disallowed(:read_crm_contact) }
     it { is_expected.to be_disallowed(:read_crm_organization) }

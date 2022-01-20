@@ -80,7 +80,7 @@ describe('EE DiffLineNoteForm', () => {
   });
 
   const submitNoteAddToReview = () =>
-    wrapper.find(NoteForm).vm.$emit('handleFormUpdateAddToReview', note);
+    wrapper.findComponent(NoteForm).vm.$emit('handleFormUpdateAddToReview', note);
   const saveDraftCommitId = () => saveDraft.mock.calls[0][1].data.note.commit_id;
 
   describe('when user submits note to review', () => {

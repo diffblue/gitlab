@@ -476,7 +476,7 @@ example:
 ```ruby
 git_data_dirs({
   'default' => { 'gitaly_address' => 'tcp://gitaly1.internal:8075' },
-  # Address of the GitLab server that has Gitaly running on it
+  # Address of the GitLab server that also has Gitaly running on it
   'storage1' => { 'gitaly_address' => 'tcp://gitlab.internal:8075', 'path' => '/mnt/gitlab/git-data' },
   'storage2' => { 'gitaly_address' => 'tcp://gitaly2.internal:8075' },
 })
@@ -565,6 +565,12 @@ Note the following:
 - You can configure Gitaly servers with both an unencrypted listening address `listen_addr` and an
   encrypted listening address `tls_listen_addr` at the same time. This allows you to gradually
   transition from unencrypted to encrypted traffic if necessary.
+- When running Praefect sub-commands such as `dial-nodes` and `list-untracked-repositories` from the command line with Gitaly TLS enabled, you must set
+  the `SSL_CERT_DIR` or `SSL_CERT_FILE` environment variable so that the Gitaly certificate is trusted. For example: 
+
+   ```shell
+   sudo SSL_CERT_DIR=/etc/gitlab/trusted_certs /opt/gitlab/embedded/bin/praefect -config /var/opt/gitlab/praefect/config.toml dial-nodes
+   ```
 
 To configure Gitaly with TLS:
 

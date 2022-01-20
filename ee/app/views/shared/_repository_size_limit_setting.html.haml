@@ -1,4 +1,4 @@
-- return unless current_user.admin?
+- return unless current_user.admin? && repo_size_limit_feature_available?
 
 - form = local_assigns.fetch(:form)
 - is_project = local_assigns.fetch(:type) == :project
@@ -6,12 +6,7 @@
 .row
   .form-group.col-md-9
     = form.label :repository_size_limit, class: 'label-bold' do
-      Repository size limit (MB)
-    - if repo_size_limit_feature_available?
-      = form.number_field :repository_size_limit, value: form.object.repository_size_limit.try(:to_mb), class: 'form-control', min: 0, data: { qa_selector: 'repository_size_limit_field' }
-      %span.form-text.text-muted#repository_size_limit_help_block
-        = is_project ? size_limit_message(@project) : size_limit_message_for_group(@group)
-    - else
-      = form.number_field :disabled_repository_size_limit, value: '', class: 'form-control', disabled: true
-      %span.form-text.text-muted
-        = render 'shared/registration_features_discovery_message'
+      = _('Repository size limit (MB)')
+    = form.number_field :repository_size_limit, value: form.object.repository_size_limit.try(:to_mb), class: 'form-control', min: 0, data: { qa_selector: 'repository_size_limit_field' }
+    %span.form-text.text-muted#repository_size_limit_help_block
+      = is_project ? size_limit_message(@project) : size_limit_message_for_group(@group)

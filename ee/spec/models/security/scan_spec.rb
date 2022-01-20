@@ -3,6 +3,11 @@
 require 'spec_helper'
 
 RSpec.describe Security::Scan do
+  it_behaves_like 'cleanup by a loose foreign key' do
+    let!(:model) { create(:security_scan) }
+    let(:parent) { model.build }
+  end
+
   describe 'associations' do
     it { is_expected.to belong_to(:build) }
     it { is_expected.to belong_to(:project) }

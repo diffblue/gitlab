@@ -3,9 +3,9 @@ import { sprintf, s__ } from '~/locale';
 
 export const validateName = (data) => {
   if (!data) {
-    return s__("Geo|Node name can't be blank");
+    return s__("Geo|Site name can't be blank");
   } else if (data.length > 255) {
-    return s__('Geo|Node name should be between 1 and 255 characters');
+    return s__('Geo|Site name should be between 1 and 255 characters');
   }
 
   return '';

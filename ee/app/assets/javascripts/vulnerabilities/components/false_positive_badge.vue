@@ -1,10 +1,9 @@
 <script>
-import { GlIcon, GlPopover, GlBadge, GlSprintf, GlLink } from '@gitlab/ui';
+import { GlPopover, GlBadge, GlSprintf, GlLink } from '@gitlab/ui';
 import { s__ } from '~/locale';
 
 export default {
   components: {
-    GlIcon,
     GlPopover,
     GlBadge,
     GlSprintf,
@@ -40,9 +39,7 @@ export default {
 
 <template>
   <div v-if="canViewFalsePositive" class="gl-display-inline-block">
-    <gl-badge ref="badge" variant="warning">
-      <gl-icon name="false-positive" />
-    </gl-badge>
+    <gl-badge ref="badge" icon="false-positive" variant="warning" />
     <gl-popover ref="popover" :target="target" :title="$options.i18n.title" placement="top">
       <gl-sprintf :message="$options.i18n.message">
         <template #link="{ content }">

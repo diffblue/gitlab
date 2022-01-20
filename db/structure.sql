@@ -10482,15 +10482,27 @@ CREATE TABLE application_settings (
     static_objects_external_storage_auth_token_encrypted text,
     future_subscriptions jsonb DEFAULT '[]'::jsonb NOT NULL,
     user_email_lookup_limit integer DEFAULT 60 NOT NULL,
+    packages_cleanup_package_file_worker_capacity smallint DEFAULT 2 NOT NULL,
+    container_registry_import_max_tags_count integer DEFAULT 100 NOT NULL,
+    container_registry_import_max_retries integer DEFAULT 3 NOT NULL,
+    container_registry_import_start_max_retries integer DEFAULT 50 NOT NULL,
+    container_registry_import_max_step_duration integer DEFAULT 300 NOT NULL,
+    container_registry_import_target_plan text DEFAULT 'free'::text NOT NULL,
+    container_registry_import_created_before timestamp with time zone DEFAULT '2022-01-23 00:00:00+00'::timestamp with time zone NOT NULL,
+    runner_token_expiration_interval integer,
+    group_runner_token_expiration_interval integer,
+    project_runner_token_expiration_interval integer,
     CONSTRAINT app_settings_container_reg_cleanup_tags_max_list_size_positive CHECK ((container_registry_cleanup_tags_service_max_list_size >= 0)),
     CONSTRAINT app_settings_dep_proxy_ttl_policies_worker_capacity_positive CHECK ((dependency_proxy_ttl_group_policy_worker_capacity >= 0)),
     CONSTRAINT app_settings_ext_pipeline_validation_service_url_text_limit CHECK ((char_length(external_pipeline_validation_service_url) <= 255)),
+    CONSTRAINT app_settings_p_cleanup_package_file_worker_capacity_positive CHECK ((packages_cleanup_package_file_worker_capacity >= 0)),
     CONSTRAINT app_settings_registry_exp_policies_worker_capacity_positive CHECK ((container_registry_expiration_policies_worker_capacity >= 0)),
     CONSTRAINT app_settings_yaml_max_depth_positive CHECK ((max_yaml_depth > 0)),
     CONSTRAINT app_settings_yaml_max_size_positive CHECK ((max_yaml_size_bytes > 0)),
     CONSTRAINT check_17d9558205 CHECK ((char_length((kroki_url)::text) <= 1024)),
     CONSTRAINT check_2dba05b802 CHECK ((char_length(gitpod_url) <= 255)),
     CONSTRAINT check_32710817e9 CHECK ((char_length(static_objects_external_storage_auth_token_encrypted) <= 255)),
+    CONSTRAINT check_3559645ae5 CHECK ((char_length(container_registry_import_target_plan) <= 255)),
     CONSTRAINT check_3def0f1829 CHECK ((char_length(sentry_clientside_dsn) <= 255)),
     CONSTRAINT check_4f8b811780 CHECK ((char_length(sentry_dsn) <= 255)),
     CONSTRAINT check_51700b31b5 CHECK ((char_length(default_branch_name) <= 255)),
@@ -10763,7 +10775,9 @@ CREATE TABLE audit_events_external_audit_event_destinations (
     destination_url text NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
-    CONSTRAINT check_2feafb9daf CHECK ((char_length(destination_url) <= 255))
+    verification_token text,
+    CONSTRAINT check_2feafb9daf CHECK ((char_length(destination_url) <= 255)),
+    CONSTRAINT check_8ec80a7d06 CHECK ((char_length(verification_token) <= 24))
 );
 
 CREATE SEQUENCE audit_events_external_audit_event_destinations_id_seq
@@ -12905,7 +12919,19 @@ CREATE TABLE container_repositories (
     status smallint,
     expiration_policy_started_at timestamp with time zone,
     expiration_policy_cleanup_status smallint DEFAULT 0 NOT NULL,
-    expiration_policy_completed_at timestamp with time zone
+    expiration_policy_completed_at timestamp with time zone,
+    migration_pre_import_started_at timestamp with time zone,
+    migration_pre_import_done_at timestamp with time zone,
+    migration_import_started_at timestamp with time zone,
+    migration_import_done_at timestamp with time zone,
+    migration_aborted_at timestamp with time zone,
+    migration_skipped_at timestamp with time zone,
+    migration_retries_count integer DEFAULT 0 NOT NULL,
+    migration_skipped_reason smallint,
+    migration_state text DEFAULT 'default'::text NOT NULL,
+    migration_aborted_in_state text,
+    CONSTRAINT check_13c58fe73a CHECK ((char_length(migration_state) <= 255)),
+    CONSTRAINT check_97f0249439 CHECK ((char_length(migration_aborted_in_state) <= 255))
 );
 
 CREATE SEQUENCE container_repositories_id_seq
@@ -15271,6 +15297,7 @@ CREATE TABLE integrations (
     group_id bigint,
     type_new text,
     vulnerability_events boolean DEFAULT false NOT NULL,
+    archive_trace_events boolean DEFAULT false NOT NULL,
     CONSTRAINT check_a948a0aa7e CHECK ((char_length(type_new) <= 255))
 );
 
@@ -15979,7 +16006,8 @@ CREATE TABLE members (
     ldap boolean DEFAULT false NOT NULL,
     override boolean DEFAULT false NOT NULL,
     state smallint DEFAULT 0,
-    invite_email_success boolean DEFAULT true NOT NULL
+    invite_email_success boolean DEFAULT true NOT NULL,
+    member_namespace_id bigint
 );
 
 CREATE SEQUENCE members_id_seq
@@ -16501,6 +16529,9 @@ CREATE TABLE namespace_settings (
     new_user_signups_cap integer,
     setup_for_company boolean,
     jobs_to_be_done smallint,
+    runner_token_expiration_interval integer,
+    subgroup_runner_token_expiration_interval integer,
+    project_runner_token_expiration_interval integer,
     CONSTRAINT check_0ba93c78c7 CHECK ((char_length(default_branch_name) <= 255))
 );
 
@@ -18165,7 +18196,8 @@ CREATE TABLE project_ci_cd_settings (
     auto_rollback_enabled boolean DEFAULT false NOT NULL,
     keep_latest_artifact boolean DEFAULT true NOT NULL,
     restrict_user_defined_variables boolean DEFAULT false NOT NULL,
-    job_token_scope_enabled boolean DEFAULT false NOT NULL
+    job_token_scope_enabled boolean DEFAULT false NOT NULL,
+    runner_token_expiration_interval integer
 );
 
 CREATE SEQUENCE project_ci_cd_settings_id_seq
@@ -19445,6 +19477,47 @@ CREATE SEQUENCE security_scans_id_seq
 
 ALTER SEQUENCE security_scans_id_seq OWNED BY security_scans.id;
 
+CREATE TABLE security_training_providers (
+    id bigint NOT NULL,
+    name text NOT NULL,
+    description text,
+    url text NOT NULL,
+    logo_url text,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    CONSTRAINT check_544b3dc935 CHECK ((char_length(url) <= 512)),
+    CONSTRAINT check_6fe222f071 CHECK ((char_length(logo_url) <= 512)),
+    CONSTRAINT check_a8ff21ced5 CHECK ((char_length(description) <= 512)),
+    CONSTRAINT check_dae433eed6 CHECK ((char_length(name) <= 256))
+);
+
+CREATE SEQUENCE security_training_providers_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE security_training_providers_id_seq OWNED BY security_training_providers.id;
+
+CREATE TABLE security_trainings (
+    id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    provider_id bigint NOT NULL,
+    is_primary boolean DEFAULT false NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
+);
+
+CREATE SEQUENCE security_trainings_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE security_trainings_id_seq OWNED BY security_trainings.id;
+
 CREATE TABLE self_managed_prometheus_alert_events (
     id bigint NOT NULL,
     project_id bigint NOT NULL,
@@ -20256,6 +20329,7 @@ CREATE TABLE user_details (
     pronunciation text,
     registration_objective smallint,
     phone text,
+    requires_credit_card_verification boolean DEFAULT false NOT NULL,
     CONSTRAINT check_245664af82 CHECK ((char_length(webauthn_xid) <= 100)),
     CONSTRAINT check_a73b398c60 CHECK ((char_length(phone) <= 50)),
     CONSTRAINT check_b132136b01 CHECK ((char_length(other_role) <= 100)),
@@ -22072,6 +22146,10 @@ ALTER TABLE ONLY security_orchestration_policy_configurations ALTER COLUMN id SE
 ALTER TABLE ONLY security_orchestration_policy_rule_schedules ALTER COLUMN id SET DEFAULT nextval('security_orchestration_policy_rule_schedules_id_seq'::regclass);
 
 ALTER TABLE ONLY security_scans ALTER COLUMN id SET DEFAULT nextval('security_scans_id_seq'::regclass);
+
+ALTER TABLE ONLY security_training_providers ALTER COLUMN id SET DEFAULT nextval('security_training_providers_id_seq'::regclass);
+
+ALTER TABLE ONLY security_trainings ALTER COLUMN id SET DEFAULT nextval('security_trainings_id_seq'::regclass);
 
 ALTER TABLE ONLY self_managed_prometheus_alert_events ALTER COLUMN id SET DEFAULT nextval('self_managed_prometheus_alert_events_id_seq'::regclass);
 
@@ -24014,6 +24092,12 @@ ALTER TABLE ONLY security_orchestration_policy_rule_schedules
 ALTER TABLE ONLY security_scans
     ADD CONSTRAINT security_scans_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY security_training_providers
+    ADD CONSTRAINT security_training_providers_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY security_trainings
+    ADD CONSTRAINT security_trainings_pkey PRIMARY KEY (id);
+
 ALTER TABLE ONLY self_managed_prometheus_alert_events
     ADD CONSTRAINT self_managed_prometheus_alert_events_pkey PRIMARY KEY (id);
 
@@ -25272,6 +25356,8 @@ CREATE INDEX index_approvers_on_target_id_and_target_type ON approvers USING btr
 CREATE INDEX index_approvers_on_user_id ON approvers USING btree (user_id);
 
 CREATE UNIQUE INDEX index_atlassian_identities_on_extern_uid ON atlassian_identities USING btree (extern_uid);
+
+CREATE UNIQUE INDEX index_audit_events_external_audit_on_verification_token ON audit_events_external_audit_event_destinations USING btree (verification_token);
 
 CREATE INDEX index_authentication_events_on_provider ON authentication_events USING btree (provider);
 
@@ -26567,6 +26653,8 @@ CREATE INDEX index_members_on_invite_email ON members USING btree (invite_email)
 
 CREATE UNIQUE INDEX index_members_on_invite_token ON members USING btree (invite_token);
 
+CREATE INDEX index_members_on_member_namespace_id ON members USING btree (member_namespace_id);
+
 CREATE INDEX index_members_on_requested_at ON members USING btree (requested_at);
 
 CREATE INDEX index_members_on_source_id_and_source_type ON members USING btree (source_id, source_type);
@@ -26962,6 +27050,8 @@ CREATE INDEX index_packages_package_files_on_package_id_and_file_name ON package
 CREATE INDEX index_packages_package_files_on_package_id_id ON packages_package_files USING btree (package_id, id);
 
 CREATE INDEX index_packages_package_files_on_package_id_status_and_id ON packages_package_files USING btree (package_id, status, id);
+
+CREATE INDEX index_packages_package_files_on_status ON packages_package_files USING btree (status);
 
 CREATE INDEX index_packages_package_files_on_verification_state ON packages_package_files USING btree (verification_state);
 
@@ -27482,6 +27572,12 @@ CREATE INDEX index_security_scans_on_date_created_at_and_id ON security_scans US
 CREATE INDEX index_security_scans_on_pipeline_id ON security_scans USING btree (pipeline_id);
 
 CREATE INDEX index_security_scans_on_project_id ON security_scans USING btree (project_id);
+
+CREATE INDEX index_security_trainings_on_project_id ON security_trainings USING btree (project_id);
+
+CREATE INDEX index_security_trainings_on_provider_id ON security_trainings USING btree (provider_id);
+
+CREATE UNIQUE INDEX index_security_trainings_on_unique_project_id ON security_trainings USING btree (project_id) WHERE (is_primary IS TRUE);
 
 CREATE INDEX index_self_managed_prometheus_alert_events_on_environment_id ON self_managed_prometheus_alert_events USING btree (environment_id);
 
@@ -29562,9 +29658,6 @@ ALTER TABLE ONLY ci_builds
 ALTER TABLE ONLY ci_pipelines
     ADD CONSTRAINT fk_a23be95014 FOREIGN KEY (merge_request_id) REFERENCES merge_requests(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY dast_site_profiles_builds
-    ADD CONSTRAINT fk_a325505e99 FOREIGN KEY (ci_build_id) REFERENCES ci_builds(id) ON DELETE CASCADE;
-
 ALTER TABLE ONLY bulk_import_entities
     ADD CONSTRAINT fk_a44ff95be5 FOREIGN KEY (parent_id) REFERENCES bulk_import_entities(id) ON DELETE CASCADE;
 
@@ -29586,6 +29679,9 @@ ALTER TABLE ONLY epics
 ALTER TABLE ONLY dast_profiles
     ADD CONSTRAINT fk_aa76ef30e9 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY members
+    ADD CONSTRAINT fk_aa82dcc1c6 FOREIGN KEY (member_namespace_id) REFERENCES namespaces(id) ON DELETE SET NULL;
+
 ALTER TABLE ONLY alert_management_alerts
     ADD CONSTRAINT fk_aad61aedca FOREIGN KEY (environment_id) REFERENCES environments(id) ON DELETE SET NULL;
 
@@ -29597,9 +29693,6 @@ ALTER TABLE ONLY boards
 
 ALTER TABLE ONLY member_tasks
     ADD CONSTRAINT fk_ab636303dd FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY ci_sources_pipelines
-    ADD CONSTRAINT fk_acd9737679 FOREIGN KEY (source_project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY merge_requests
     ADD CONSTRAINT fk_ad525e1f87 FOREIGN KEY (merge_user_id) REFERENCES users(id) ON DELETE SET NULL;
@@ -29817,9 +29910,6 @@ ALTER TABLE ONLY gitlab_subscriptions
 ALTER TABLE ONLY ci_triggers
     ADD CONSTRAINT fk_e3e63f966e FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY dast_scanner_profiles_builds
-    ADD CONSTRAINT fk_e4c49200f8 FOREIGN KEY (ci_build_id) REFERENCES ci_builds(id) ON DELETE CASCADE;
-
 ALTER TABLE ONLY merge_requests
     ADD CONSTRAINT fk_e719a85f8a FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE SET NULL;
 
@@ -29843,9 +29933,6 @@ ALTER TABLE ONLY application_settings
 
 ALTER TABLE ONLY vulnerability_statistics
     ADD CONSTRAINT fk_e8b13c928f FOREIGN KEY (latest_pipeline_id) REFERENCES ci_pipelines(id) ON DELETE SET NULL;
-
-ALTER TABLE ONLY ci_triggers
-    ADD CONSTRAINT fk_e8e10d1964 FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY integrations
     ADD CONSTRAINT fk_e8fe908a34 FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
@@ -29915,9 +30002,6 @@ ALTER TABLE ONLY system_note_metadata
 
 ALTER TABLE ONLY vulnerability_remediations
     ADD CONSTRAINT fk_fc61a535a0 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY merge_requests
-    ADD CONSTRAINT fk_fd82eae0b9 FOREIGN KEY (head_pipeline_id) REFERENCES ci_pipelines(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY project_import_data
     ADD CONSTRAINT fk_ffb9ee3a10 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
@@ -30390,9 +30474,6 @@ ALTER TABLE ONLY user_custom_attributes
 ALTER TABLE ONLY upcoming_reconciliations
     ADD CONSTRAINT fk_rails_497b4938ac FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY ci_pipeline_artifacts
-    ADD CONSTRAINT fk_rails_4a70390ca6 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
-
 ALTER TABLE ONLY ci_job_token_project_scope_links
     ADD CONSTRAINT fk_rails_4b2ee3290b FOREIGN KEY (source_project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
@@ -30428,9 +30509,6 @@ ALTER TABLE ONLY geo_repository_renamed_events
 
 ALTER TABLE ONLY aws_roles
     ADD CONSTRAINT fk_rails_4ed56f4720 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY security_scans
-    ADD CONSTRAINT fk_rails_4ef1e6b4c6 FOREIGN KEY (build_id) REFERENCES ci_builds(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY packages_debian_publications
     ADD CONSTRAINT fk_rails_4fc8ebd03e FOREIGN KEY (distribution_id) REFERENCES packages_debian_project_distributions(id) ON DELETE CASCADE;
@@ -30746,6 +30824,9 @@ ALTER TABLE ONLY required_code_owners_sections
 
 ALTER TABLE ONLY dast_site_profiles
     ADD CONSTRAINT fk_rails_83e309d69e FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY security_trainings
+    ADD CONSTRAINT fk_rails_84c7951d72 FOREIGN KEY (provider_id) REFERENCES security_training_providers(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY zentao_tracker_data
     ADD CONSTRAINT fk_rails_84efda7be0 FOREIGN KEY (integration_id) REFERENCES integrations(id) ON DELETE CASCADE;
@@ -31263,9 +31344,6 @@ ALTER TABLE ONLY issues_prometheus_alert_events
 ALTER TABLE ONLY board_user_preferences
     ADD CONSTRAINT fk_rails_dbebdaa8fe FOREIGN KEY (board_id) REFERENCES boards(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY ci_running_builds
-    ADD CONSTRAINT fk_rails_dc1d0801e8 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
-
 ALTER TABLE ONLY vulnerability_occurrence_pipelines
     ADD CONSTRAINT fk_rails_dc3ae04693 FOREIGN KEY (occurrence_id) REFERENCES vulnerability_occurrences(id) ON DELETE CASCADE;
 
@@ -31331,9 +31409,6 @@ ALTER TABLE ONLY approval_merge_request_rule_sources
 
 ALTER TABLE ONLY prometheus_alerts
     ADD CONSTRAINT fk_rails_e6351447ec FOREIGN KEY (prometheus_metric_id) REFERENCES prometheus_metrics(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY requirements_management_test_reports
-    ADD CONSTRAINT fk_rails_e67d085910 FOREIGN KEY (build_id) REFERENCES ci_builds(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY merge_request_metrics
     ADD CONSTRAINT fk_rails_e6d7c24d1b FOREIGN KEY (merge_request_id) REFERENCES merge_requests(id) ON DELETE CASCADE;
@@ -31452,11 +31527,11 @@ ALTER TABLE ONLY internal_ids
 ALTER TABLE ONLY issues_self_managed_prometheus_alert_events
     ADD CONSTRAINT fk_rails_f7db2d72eb FOREIGN KEY (self_managed_prometheus_alert_event_id) REFERENCES self_managed_prometheus_alert_events(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY security_trainings
+    ADD CONSTRAINT fk_rails_f80240fae0 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY merge_requests_closing_issues
     ADD CONSTRAINT fk_rails_f8540692be FOREIGN KEY (issue_id) REFERENCES issues(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY merge_trains
-    ADD CONSTRAINT fk_rails_f90820cb08 FOREIGN KEY (pipeline_id) REFERENCES ci_pipelines(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY banned_users
     ADD CONSTRAINT fk_rails_fa5bb598e5 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;

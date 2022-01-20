@@ -7,6 +7,7 @@ import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __ } from '~/locale';
 import getGroupProjects from '../../graphql/violation_group_projects.query.graphql';
 import { CURRENT_DATE } from '../../../audit_events/constants';
+import { convertProjectIdsToGraphQl } from '../../utils';
 
 export default {
   components: {
@@ -30,7 +31,7 @@ export default {
   },
   data() {
     return {
-      filterQuery: {},
+      filterQuery: { ...this.defaultQuery },
       defaultProjects: [],
       loadingDefaultProjects: false,
     };
@@ -47,7 +48,8 @@ export default {
   },
   async created() {
     if (this.showProjectFilter && this.defaultQuery.projectIds?.length > 0) {
-      this.defaultProjects = await this.fetchProjects(this.defaultQuery.projectIds);
+      const projectIds = convertProjectIdsToGraphQl(this.defaultQuery.projectIds);
+      this.defaultProjects = await this.fetchProjects(projectIds);
     }
   },
   methods: {

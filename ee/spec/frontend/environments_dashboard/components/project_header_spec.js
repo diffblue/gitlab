@@ -36,7 +36,7 @@ describe('Project Header', () => {
 
   describe('renders project namespace, name, and avatars', () => {
     it('shows the project namespace avatar', () => {
-      const projectNamespaceAvatar = wrapper.findAll(ProjectAvatar).at(0);
+      const projectNamespaceAvatar = wrapper.findAllComponents(ProjectAvatar).at(0);
       expect(projectNamespaceAvatar.props('project')).toEqual(propsData.project.namespace);
     });
 
@@ -50,7 +50,7 @@ describe('Project Header', () => {
     });
 
     it('shows the project avatar', () => {
-      const projectAvatar = wrapper.findAll(ProjectAvatar).at(1);
+      const projectAvatar = wrapper.findAllComponents(ProjectAvatar).at(1);
       expect(projectAvatar.props('project')).toEqual(propsData.project);
     });
 
@@ -66,16 +66,16 @@ describe('Project Header', () => {
   describe('more actions', () => {
     it('should list "remove" as an action', () => {
       const removeLink = wrapper
-        .find(GlDropdown)
-        .findAll(GlDropdownItem)
+        .findComponent(GlDropdown)
+        .findAllComponents(GlDropdownItem)
         .filter((w) => w.text() === 'Remove');
       expect(removeLink.exists()).toBe(true);
     });
 
     it('should emit a "remove" event when "remove" is clicked', () => {
       const removeLink = wrapper
-        .find(GlDropdown)
-        .findAll(GlDropdownItem)
+        .findComponent(GlDropdown)
+        .findAllComponents(GlDropdownItem)
         .filter((w) => w.text() === 'Remove');
       removeLink.at(0).vm.$emit('click');
 

@@ -159,9 +159,6 @@ export default {
           <template #price-per-unit="{ price }">
             <slot name="price-per-unit" :price="price"></slot>
           </template>
-          <template #tooltip>
-            <slot name="tooltip"></slot>
-          </template>
         </summary-details>
       </gl-collapse>
     </div>
@@ -183,9 +180,6 @@ export default {
       >
         <template #price-per-unit="{ price }">
           <slot name="price-per-unit" :price="price"></slot>
-        </template>
-        <template #tooltip>
-          <slot name="tooltip"></slot>
         </template>
       </summary-details>
     </div>

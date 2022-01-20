@@ -24,7 +24,7 @@ describe('UserActionButtons', () => {
     return waitForPromises();
   };
 
-  const findLdapOverrideButton = () => wrapper.find(LdapOverrideButton);
+  const findLdapOverrideButton = () => wrapper.findComponent(LdapOverrideButton);
 
   afterEach(() => {
     wrapper.destroy();

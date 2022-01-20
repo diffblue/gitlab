@@ -546,7 +546,7 @@ RSpec.describe Issue do
 
           award_emoji = create(:award_emoji, :upvote, awardable: issue)
 
-          award_emoji.destroy
+          award_emoji.destroy!
         end
       end
     end
@@ -620,7 +620,7 @@ RSpec.describe Issue do
       end
 
       it 'positions issues even when after and before positions are the same' do
-        issue1.update relative_position: issue.relative_position
+        issue1.update! relative_position: issue.relative_position
 
         new_issue.move_between(issue, issue1)
         [issue, issue1].each(&:reset)
@@ -630,7 +630,7 @@ RSpec.describe Issue do
       end
 
       it 'positions issues between other two if distance is 1' do
-        issue1.update relative_position: issue.relative_position + 1
+        issue1.update! relative_position: issue.relative_position + 1
 
         new_issue.move_between(issue, issue1)
         [issue, issue1].each(&:reset)
@@ -640,8 +640,8 @@ RSpec.describe Issue do
       end
 
       it 'positions issue in the middle of other two if distance is big enough' do
-        issue.update relative_position: 6000
-        issue1.update relative_position: 10000
+        issue.update! relative_position: 6000
+        issue1.update! relative_position: 10000
 
         new_issue.move_between(issue, issue1)
 
@@ -662,8 +662,8 @@ RSpec.describe Issue do
       end
 
       it 'positions issue in the middle of other two if distance is not big enough' do
-        issue.update relative_position: 100
-        issue1.update relative_position: 400
+        issue.update! relative_position: 100
+        issue1.update! relative_position: 400
 
         new_issue.move_between(issue, issue1)
 
@@ -671,8 +671,8 @@ RSpec.describe Issue do
       end
 
       it 'positions issue in the middle of other two is there is no place' do
-        issue.update relative_position: 100
-        issue1.update relative_position: 101
+        issue.update! relative_position: 100
+        issue1.update! relative_position: 101
 
         new_issue.move_between(issue, issue1)
         [issue, issue1].each(&:reset)
@@ -682,10 +682,10 @@ RSpec.describe Issue do
       end
 
       it 'uses rebalancing if there is no place' do
-        issue.update relative_position: 100
-        issue1.update relative_position: 101
+        issue.update! relative_position: 100
+        issue1.update! relative_position: 101
         issue2 = create(:issue, relative_position: 102, project: project)
-        new_issue.update relative_position: 103
+        new_issue.update! relative_position: 103
 
         new_issue.move_between(issue1, issue2)
         new_issue.save!
@@ -698,10 +698,10 @@ RSpec.describe Issue do
       end
 
       it 'positions issue right if we pass non-sequential parameters' do
-        issue.update relative_position: 99
-        issue1.update relative_position: 101
+        issue.update! relative_position: 99
+        issue1.update! relative_position: 101
         issue2 = create(:issue, relative_position: 102, project: project)
-        new_issue.update relative_position: 103
+        new_issue.update! relative_position: 103
 
         new_issue.move_between(issue, issue2)
         new_issue.save!
@@ -849,7 +849,7 @@ RSpec.describe Issue do
         create(:issue_link, source: issue, target: blocked_issue_2, link_type: IssueLink::TYPE_BLOCKS)
         create(:issue_link, source: issue, target: blocked_issue_3, link_type: IssueLink::TYPE_BLOCKS)
         # Set to 0 for proper testing, this is being set by IssueLink callbacks.
-        issue.update(blocking_issues_count: 0)
+        issue.update!(blocking_issues_count: 0)
 
         expect { issue.update_blocking_issues_count! }
           .to change { issue.blocking_issues_count }.from(0).to(3)
@@ -871,7 +871,7 @@ RSpec.describe Issue do
     end
 
     before do
-      blocked_issue.update(blocking_issues_count: 0)
+      blocked_issue.update!(blocking_issues_count: 0)
     end
 
     context 'when blocked issue is closed' do
@@ -887,9 +887,9 @@ RSpec.describe Issue do
     context 'when blocked issue is reopened' do
       before do
         blocked_issue.close
-        blocked_issue.update(blocking_issues_count: 0)
-        blocking_issue1.update(blocking_issues_count: 0)
-        blocking_issue2.update(blocking_issues_count: 0)
+        blocked_issue.update!(blocking_issues_count: 0)
+        blocking_issue1.update!(blocking_issues_count: 0)
+        blocking_issue2.update!(blocking_issues_count: 0)
       end
 
       it 'updates blocking and blocked issues cache' do
@@ -1021,7 +1021,7 @@ RSpec.describe Issue do
       before do
         stub_licensed_features(incident_sla: license_available)
         issue_type = incident_type ? 'incident' : 'issue'
-        issue.update(issue_type: issue_type)
+        issue.update!(issue_type: issue_type)
       end
 
       it 'returns the expected value' do

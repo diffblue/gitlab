@@ -29,9 +29,9 @@ describe('MergeTrainFailedPipelineConfirmationDialog', () => {
     });
   };
 
-  const findModal = () => wrapper.find(GlModal);
+  const findModal = () => wrapper.findComponent(GlModal);
   const findStartMergeTrainBtn = () => wrapper.find('[data-testid="start-merge-train"]');
-  const findCancelBtn = () => wrapper.find({ ref: 'cancelButton' });
+  const findCancelBtn = () => wrapper.findComponent({ ref: 'cancelButton' });
 
   beforeEach(() => {
     createComponent();

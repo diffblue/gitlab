@@ -331,6 +331,7 @@ class User < ApplicationRecord
   delegate :pronouns, :pronouns=, to: :user_detail, allow_nil: true
   delegate :pronunciation, :pronunciation=, to: :user_detail, allow_nil: true
   delegate :registration_objective, :registration_objective=, to: :user_detail, allow_nil: true
+  delegate :requires_credit_card_verification, :requires_credit_card_verification=, to: :user_detail, allow_nil: true
 
   accepts_nested_attributes_for :user_preference, update_only: true
   accepts_nested_attributes_for :user_detail, update_only: true
@@ -1535,8 +1536,8 @@ class User < ApplicationRecord
     end
   end
 
-  def manageable_namespaces
-    @manageable_namespaces ||= [namespace] + manageable_groups
+  def forkable_namespaces
+    @forkable_namespaces ||= [namespace] + manageable_groups(include_groups_with_developer_maintainer_access: true)
   end
 
   def manageable_groups(include_groups_with_developer_maintainer_access: false)
@@ -1605,23 +1606,32 @@ class User < ApplicationRecord
 
   def ci_owned_runners
     @ci_owned_runners ||= begin
-      project_runners = Ci::RunnerProject
-        .where(project: authorized_projects(Gitlab::Access::MAINTAINER))
-        .joins(:runner)
-        .select('ci_runners.*')
-
-      group_runners = Ci::RunnerNamespace
-        .where(namespace_id: owned_groups.self_and_descendant_ids)
-        .joins(:runner)
-        .select('ci_runners.*')
-
-      Ci::Runner.from_union([project_runners, group_runners]).allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/336436')
+      if ci_owned_runners_cross_joins_fix_enabled?
+        Ci::Runner
+          .from_union([ci_owned_project_runners_from_project_members,
+                       ci_owned_project_runners_from_group_members,
+                       ci_owned_group_runners])
+      else
+        Ci::Runner
+          .from_union([ci_legacy_owned_project_runners, ci_legacy_owned_group_runners])
+          .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/336436')
+      end
     end
   end
 
   def owns_runner?(runner)
-    ::Gitlab::Database.allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/336436') do
+    if ci_owned_runners_cross_joins_fix_enabled?
       ci_owned_runners.exists?(runner.id)
+    else
+      ::Gitlab::Database.allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/336436') do
+        ci_owned_runners.exists?(runner.id)
+      end
+    end
+  end
+
+  def ci_owned_runners_cross_joins_fix_enabled?
+    strong_memoize(:ci_owned_runners_cross_joins_fix_enabled) do
+      Feature.enabled?(:ci_owned_runners_cross_joins_fix, self, default_enabled: :yaml)
     end
   end
 
@@ -2198,6 +2208,50 @@ class User < ApplicationRecord
     return unless ::Gitlab::Auth::Ldap::Config.enabled? && ldap_blocked?
 
     ::Gitlab::Auth::Ldap::Access.allowed?(self)
+  end
+
+  def ci_legacy_owned_project_runners
+    Ci::RunnerProject
+      .select('ci_runners.*')
+      .joins(:runner)
+      .where(project: authorized_projects(Gitlab::Access::MAINTAINER))
+  end
+
+  def ci_legacy_owned_group_runners
+    Ci::RunnerNamespace
+      .select('ci_runners.*')
+      .joins(:runner)
+      .where(namespace_id: owned_groups.self_and_descendant_ids)
+  end
+
+  def ci_owned_project_runners_from_project_members
+    Ci::RunnerProject
+      .select('ci_runners.*')
+      .joins(:runner)
+      .where(project: project_members.where('access_level >= ?', Gitlab::Access::MAINTAINER).pluck(:source_id))
+  end
+
+  def ci_owned_project_runners_from_group_members
+    Ci::RunnerProject
+      .select('ci_runners.*')
+      .joins(:runner)
+      .joins('JOIN ci_project_mirrors ON ci_project_mirrors.project_id = ci_runner_projects.project_id')
+      .joins('JOIN ci_namespace_mirrors ON ci_namespace_mirrors.namespace_id = ci_project_mirrors.namespace_id')
+      .merge(ci_namespace_mirrors_for_group_members(Gitlab::Access::MAINTAINER))
+  end
+
+  def ci_owned_group_runners
+    Ci::RunnerNamespace
+      .select('ci_runners.*')
+      .joins(:runner)
+      .joins('JOIN ci_namespace_mirrors ON ci_namespace_mirrors.namespace_id = ci_runner_namespaces.namespace_id')
+      .merge(ci_namespace_mirrors_for_group_members(Gitlab::Access::OWNER))
+  end
+
+  def ci_namespace_mirrors_for_group_members(level)
+    Ci::NamespaceMirror.contains_any_of_namespaces(
+      group_members.where('access_level >= ?', level).pluck(:source_id)
+    )
   end
 end
 

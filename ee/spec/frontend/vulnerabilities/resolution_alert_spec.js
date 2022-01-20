@@ -12,7 +12,7 @@ describe('Vulnerability list component', () => {
     wrapper = shallowMount(ResolutionAlert, options);
   };
 
-  const findAlert = () => wrapper.find(GlAlert);
+  const findAlert = () => wrapper.findComponent(GlAlert);
 
   afterEach(() => {
     wrapper.destroy();

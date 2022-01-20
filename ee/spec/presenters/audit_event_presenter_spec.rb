@@ -67,6 +67,28 @@ RSpec.describe AuditEventPresenter do
         end
       end
     end
+
+    context 'event authored by a runner registration token user' do
+      let(:audit_event) { build(:audit_event, user: nil, details: details) }
+      let(:author_double) { double(:author) }
+      let(:details) do
+        {
+          author_name: nil,
+          ip_address: '127.0.0.1',
+          target_details: 'target name',
+          entity_path: 'path',
+          runner_registration_token: 'abc123'
+        }
+      end
+
+      it "returns author's full_path" do
+        allow(author_double).to receive(:is_a?).with(Gitlab::Audit::NullAuthor).and_return(true)
+        expect(author_double).to receive(:full_path).and_return('author path')
+
+        expect(audit_event).to receive(:author).at_least(:once).and_return(author_double)
+        expect(presenter.author_url).to eq('author path')
+      end
+    end
   end
 
   describe '#target' do

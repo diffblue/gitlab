@@ -46,7 +46,7 @@ describe('SAST Configuration App', () => {
 
   const findHeader = () => wrapper.find('header');
   const findSubHeading = () => findHeader().find('p');
-  const findLink = (container = wrapper) => container.find(GlLink);
+  const findLink = (container = wrapper) => container.findComponent(GlLink);
   const findConfigurationForm = () => wrapper.findComponent(ConfigurationForm);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findErrorAlert = () => wrapper.findByTestId('error-alert');
@@ -69,7 +69,7 @@ describe('SAST Configuration App', () => {
     });
 
     it('links to the feedback issue', () => {
-      const link = findFeedbackAlert().find(GlLink);
+      const link = findFeedbackAlert().findComponent(GlLink);
       expect(link.attributes()).toMatchObject({
         href: SASTConfigurationApp.feedbackIssue,
         target: '_blank',

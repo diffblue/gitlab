@@ -39,6 +39,7 @@ describe('GeoNodeActionsDesktop', () => {
   });
 
   const findGeoDesktopActionsButtons = () => wrapper.findAllComponents(GlButton);
+  const findGeoDesktopActionsEditButton = () => wrapper.findByTestId('geo-desktop-edit-action');
   const findGeoDesktopActionsRemoveButton = () => wrapper.findByTestId('geo-desktop-remove-action');
 
   describe('template', () => {
@@ -47,11 +48,10 @@ describe('GeoNodeActionsDesktop', () => {
         createComponent();
       });
 
-      it('renders an Edit and Remove button', () => {
-        expect(findGeoDesktopActionsButtons().wrappers.map((w) => w.text())).toStrictEqual([
-          'Edit',
-          'Remove',
-        ]);
+      it('renders an Edit and Remove button icon', () => {
+        expect(
+          findGeoDesktopActionsButtons().wrappers.map((w) => w.attributes('icon')),
+        ).toStrictEqual(['pencil', 'remove']);
       });
 
       it('renders edit link correctly', () => {
@@ -79,6 +79,28 @@ describe('GeoNodeActionsDesktop', () => {
       describe(`when canRemoveNode is ${canRemoveNode}`, () => {
         it(`does ${canRemoveNode ? 'not ' : ''}disable the Desktop Remove button`, () => {
           expect(findGeoDesktopActionsRemoveButton().attributes('disabled')).toBe(disabled);
+        });
+      });
+    });
+
+    describe.each`
+      primary  | editTooltip              | removeTooltip
+      ${false} | ${'Edit secondary site'} | ${'Remove secondary site'}
+      ${true}  | ${'Edit primary site'}   | ${'Remove primary site'}
+    `('action tooltips', ({ primary, editTooltip, removeTooltip }) => {
+      describe(`when node is ${primary ? '' : ' not'} a primary node`, () => {
+        beforeEach(() => {
+          createComponent({ node: { ...MOCK_NODES[0], primary } });
+        });
+
+        it(`sets edit tooltip to ${editTooltip}`, () => {
+          expect(findGeoDesktopActionsEditButton().attributes('title')).toBe(editTooltip);
+          expect(findGeoDesktopActionsEditButton().attributes('aria-label')).toBe(editTooltip);
+        });
+
+        it(`sets remove tooltip to ${removeTooltip}`, () => {
+          expect(findGeoDesktopActionsRemoveButton().attributes('title')).toBe(removeTooltip);
+          expect(findGeoDesktopActionsRemoveButton().attributes('aria-label')).toBe(removeTooltip);
         });
       });
     });

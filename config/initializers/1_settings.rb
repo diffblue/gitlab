@@ -545,6 +545,10 @@ Settings.cron_jobs['image_ttl_group_policy_worker']['job_class'] = 'DependencyPr
 Settings.cron_jobs['cleanup_dependency_proxy_worker'] ||= Settingslogic.new({})
 Settings.cron_jobs['cleanup_dependency_proxy_worker']['cron'] ||= '20 3,15 * * *'
 Settings.cron_jobs['cleanup_dependency_proxy_worker']['job_class'] = 'DependencyProxy::CleanupDependencyProxyWorker'
+Settings.cron_jobs['cleanup_package_registry_worker'] ||= Settingslogic.new({})
+Settings.cron_jobs['cleanup_package_registry_worker']['cron'] ||= '20 0,12 * * *'
+Settings.cron_jobs['cleanup_package_registry_worker']['job_class'] = 'Packages::CleanupPackageRegistryWorker'
+
 Settings.cron_jobs['x509_issuer_crl_check_worker'] ||= Settingslogic.new({})
 Settings.cron_jobs['x509_issuer_crl_check_worker']['cron'] ||= '30 1 * * *'
 Settings.cron_jobs['x509_issuer_crl_check_worker']['job_class'] = 'X509IssuerCrlCheckWorker'
@@ -731,7 +735,7 @@ Gitlab.ee do
   Settings.cron_jobs['app_sec_dast_profile_schedule_worker']['cron'] ||= '7-59/15 * * * *'
   Settings.cron_jobs['app_sec_dast_profile_schedule_worker']['job_class'] = 'AppSec::Dast::ProfileScheduleWorker'
   Settings.cron_jobs['loose_foreign_keys_cleanup_worker'] ||= Settingslogic.new({})
-  Settings.cron_jobs['loose_foreign_keys_cleanup_worker']['cron'] ||= '*/5 * * * *'
+  Settings.cron_jobs['loose_foreign_keys_cleanup_worker']['cron'] ||= '*/1 * * * *'
   Settings.cron_jobs['loose_foreign_keys_cleanup_worker']['job_class'] = 'LooseForeignKeys::CleanupWorker'
 end
 

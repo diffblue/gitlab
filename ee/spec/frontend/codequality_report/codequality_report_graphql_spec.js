@@ -33,7 +33,7 @@ describe('Codequality report app', () => {
   const findStatus = () => wrapper.find('.js-code-text');
   const findSuccessIcon = () => wrapper.find('.js-ci-status-icon-success');
   const findWarningIcon = () => wrapper.find('.js-ci-status-icon-warning');
-  const findInfiniteScroll = () => wrapper.find(GlInfiniteScroll);
+  const findInfiniteScroll = () => wrapper.findComponent(GlInfiniteScroll);
 
   afterEach(() => {
     wrapper.destroy();

@@ -112,6 +112,13 @@ module Ci
       from("(#{union_sql}) #{table_name}")
     }
 
+    scope :belonging_to_group_and_ancestors, -> (group_id) {
+      group_self_and_ancestors_ids = ::Group.find_by(id: group_id)&.self_and_ancestor_ids
+
+      joins(:runner_namespaces)
+        .where(ci_runner_namespaces: { namespace_id: group_self_and_ancestors_ids })
+    }
+
     # deprecated
     # split this into: belonging_to_group & belonging_to_group_and_ancestors
     scope :legacy_belonging_to_group, -> (group_id, include_ancestors: false) {
@@ -381,8 +388,6 @@ module Ci
     end
 
     def tag_list
-      return super unless Feature.enabled?(:ci_preload_runner_tags, default_enabled: :yaml)
-
       if tags.loaded?
         tags.map(&:name)
       else

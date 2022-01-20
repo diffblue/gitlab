@@ -1,5 +1,6 @@
 <script>
 import { GlAlert, GlFormGroup, GlFormSelect } from '@gitlab/ui';
+import { s__ } from '~/locale';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import EnvironmentPicker from '../environment_picker.vue';
 import NetworkPolicyEditor from './network_policy/network_policy_editor.vue';
@@ -66,6 +67,9 @@ export default {
       this.newPolicyType = type;
     },
   },
+  i18n: {
+    title: s__('SecurityOrchestration|Policy description'),
+  },
 };
 </script>
 
@@ -75,7 +79,7 @@ export default {
       {{ error }}
     </gl-alert>
     <header class="gl-pb-5">
-      <h3>{{ s__('SecurityOrchestration|Policy description') }}</h3>
+      <h3>{{ $options.i18n.title }}</h3>
     </header>
     <div class="gl-display-flex">
       <gl-form-group :label="s__('SecurityOrchestration|Policy type')" label-for="policyType">

@@ -228,7 +228,8 @@ RSpec.describe ProjectsHelper do
           auto_fix_mrs_path: end_with('/merge_requests?label_name=GitLab-auto-fix'),
           scanners: '[{"id":123,"vendor":"Security Vendor","report_type":"SAST"}]',
           can_admin_vulnerability: 'true',
-          can_view_false_positive: 'false'
+          can_view_false_positive: 'false',
+          security_configuration_path: kind_of(String)
         }
       end
 

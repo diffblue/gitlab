@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Secure' do
+  RSpec.describe 'Secure', :aggregate_failures do
     context 'Enable Scanning from UI' do
       let(:test_data_sast_string_fields_array) do
         [
@@ -53,20 +53,13 @@ module QA
 
       describe 'enable dependency scanning from configuration' do
         it 'runs dependency scanning job when enabled from configuration', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347621' do
-          Flow::Pipeline.visit_latest_pipeline
-
-          # Baseline that we do not initially have a Dependency Scanning job
-          Page::Project::Pipeline::Show.perform do |pipeline|
-            aggregate_failures "test Dependency Scanning jobs are not present in pipeline" do
-              expect(pipeline).to have_no_job('gemnasium-dependency_scanning')
-              expect(pipeline).to have_no_job('bundler-audit-dependency_scanning')
-            end
-          end
-
           Page::Project::Menu.perform(&:click_on_security_configuration_link)
 
           Page::Project::Secure::ConfigurationForm.perform do |config_form|
             expect(config_form).to have_dependency_scanning_status('Not enabled')
+            expect(config_form).to have_auto_devops_container
+            expect(config_form).to have_auto_devops_container_description
+            expect(config_form).to have_no_security_configuration_history_link
 
             config_form.click_dependency_scanning_mr_button
           end
@@ -83,36 +76,48 @@ module QA
           Flow::Pipeline.visit_latest_pipeline
 
           Page::Project::Pipeline::Show.perform do |pipeline|
-            aggregate_failures "test Dependency Scanning jobs are present in pipeline" do
-              expect(pipeline).to have_job('gemnasium-dependency_scanning')
-              expect(pipeline).to have_job('bundler-audit-dependency_scanning')
-            end
+            expect(pipeline).to have_job('gemnasium-dependency_scanning')
+            expect(pipeline).to have_job('bundler-audit-dependency_scanning')
           end
 
           Page::Project::Menu.perform(&:click_on_security_configuration_link)
 
           Page::Project::Secure::ConfigurationForm.perform do |config_form|
-            aggregate_failures "test Dependency Scanning status is Enabled" do
-              expect(config_form).to have_dependency_scanning_status('Enabled')
-              expect(config_form).not_to have_dependency_scanning_status('Not enabled')
-            end
+            expect(config_form).to have_dependency_scanning_status('Enabled')
+            expect(config_form).to have_no_dependency_scanning_status('Not enabled')
+            expect(config_form).to have_security_configuration_history_link
+            expect(config_form).to have_no_auto_devops_container
+
+            config_form.click_security_configuration_history_link
+          end
+
+          Page::File::Show.perform do |file_page|
+            expect(file_page).to have_content('template: Security/Dependency-Scanning.gitlab-ci.yml')
           end
         end
       end
 
       describe 'enable sast from configuration' do
-        it 'runs sast job when enabled from configuration', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347685' do
-          Flow::Pipeline.visit_latest_pipeline
-
-          # Baseline that we do not initially have a sast job
-          Page::Project::Pipeline::Show.perform do |pipeline|
-            expect(pipeline).to have_no_job('brakeman-sast')
+        def sast_config_expects(current_page, sast_string_fields, sast_int_fields)
+          expect(current_page).to have_file('.gitlab-ci.yml')
+          sast_string_fields.each do |field_type, field_value|
+            expect(current_page).to have_content("#{field_type}: #{field_value}")
           end
+          sast_int_fields.each do |field_type, field_value|
+            expect(current_page).to have_content("#{field_type}: '#{field_value}'")
+          end
+          expect(current_page).to have_content("stage: #{test_stage_name}")
+          expect(current_page).to have_content("SAST_EXCLUDED_ANALYZERS: #{test_data_checkbox_exclude_array.join(', ')}")
+        end
 
+        it 'runs sast job when enabled from configuration', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347685' do
           Page::Project::Menu.perform(&:click_on_security_configuration_link)
 
           Page::Project::Secure::ConfigurationForm.perform do |config_form|
             expect(config_form).to have_sast_status('Not enabled')
+            expect(config_form).to have_auto_devops_container
+            expect(config_form).to have_auto_devops_container_description
+            expect(config_form).to have_no_security_configuration_history_link
 
             config_form.click_sast_enable_button
             config_form.click_expand_button
@@ -136,17 +141,7 @@ module QA
 
             new_merge_request.click_diffs_tab
 
-            aggregate_failures "test Merge Request contents" do
-              expect(new_merge_request).to have_file('.gitlab-ci.yml')
-              test_data_sast_string_fields_array.each do |test_data_string_array|
-                expect(new_merge_request).to have_content("#{test_data_string_array.first}: #{test_data_string_array[1]}")
-              end
-              test_data_int_fields_array.each do |test_data_int_array|
-                expect(new_merge_request).to have_content("#{test_data_int_array.first}: '#{test_data_int_array[1]}'")
-              end
-              expect(new_merge_request).to have_content("stage: #{test_stage_name}")
-              expect(new_merge_request).to have_content("SAST_EXCLUDED_ANALYZERS: #{test_data_checkbox_exclude_array.join(', ')}")
-            end
+            sast_config_expects(new_merge_request, test_data_sast_string_fields_array, test_data_int_fields_array)
 
             new_merge_request.create_merge_request
           end
@@ -164,10 +159,16 @@ module QA
           Page::Project::Menu.perform(&:click_on_security_configuration_link)
 
           Page::Project::Secure::ConfigurationForm.perform do |config_form|
-            aggregate_failures "test SAST status is Enabled" do
-              expect(config_form).to have_sast_status('Enabled')
-              expect(config_form).not_to have_sast_status('Not enabled')
-            end
+            expect(config_form).to have_sast_status('Enabled')
+            expect(config_form).to have_no_sast_status('Not enabled')
+            expect(config_form).to have_security_configuration_history_link
+            expect(config_form).to have_no_auto_devops_container
+
+            config_form.click_security_configuration_history_link
+          end
+
+          Page::File::Show.perform do |file_page|
+            sast_config_expects(file_page, test_data_sast_string_fields_array, test_data_int_fields_array)
           end
         end
       end

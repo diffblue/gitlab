@@ -10,6 +10,10 @@ module EE
               description: 'Information about security analyzers used in the project.',
               method: :itself
 
+        field :security_training_providers, [::Types::Security::TrainingType], null: true,
+              description: 'List of security training providers for the project',
+              resolver: ::Resolvers::SecurityTrainingProvidersResolver
+
         field :vulnerabilities,
               ::Types::VulnerabilityType.connection_type,
               null: true,

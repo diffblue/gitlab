@@ -138,7 +138,7 @@ export default {
       </template>
       <!-- eslint-disable vue/no-mutating-props -->
       <gl-form-checkbox id="node-object-storage-field" v-model="nodeData.syncObjectStorage">{{
-        __('Allow this secondary node to replicate content on Object Storage')
+        __('Allow this secondary site to replicate content on Object Storage')
       }}</gl-form-checkbox>
       <!-- eslint-enable vue/no-mutating-props -->
     </gl-form-group>

@@ -83,6 +83,9 @@ RSpec.describe User do
 
     it { is_expected.to delegate_method(:registration_objective).to(:user_detail).allow_nil }
     it { is_expected.to delegate_method(:registration_objective=).to(:user_detail).with_arguments(:args).allow_nil }
+
+    it { is_expected.to delegate_method(:requires_credit_card_verification).to(:user_detail).allow_nil }
+    it { is_expected.to delegate_method(:requires_credit_card_verification=).to(:user_detail).with_arguments(:args).allow_nil }
   end
 
   describe 'associations' do
@@ -2055,7 +2058,7 @@ RSpec.describe User do
     it { expect(user.authorized_groups).to eq([group]) }
     it { expect(user.owned_groups).to eq([group]) }
     it { expect(user.namespaces).to contain_exactly(user.namespace, group) }
-    it { expect(user.manageable_namespaces).to contain_exactly(user.namespace, group) }
+    it { expect(user.forkable_namespaces).to contain_exactly(user.namespace, group) }
 
     context 'with owned groups only' do
       before do
@@ -2069,9 +2072,12 @@ RSpec.describe User do
     context 'with child groups' do
       let!(:subgroup) { create(:group, parent: group) }
 
-      describe '#manageable_namespaces' do
-        it 'includes all the namespaces the user can manage' do
-          expect(user.manageable_namespaces).to contain_exactly(user.namespace, group, subgroup)
+      describe '#forkable_namespaces' do
+        it 'includes all the namespaces the user can fork into' do
+          developer_group = create(:group, project_creation_level: ::Gitlab::Access::DEVELOPER_MAINTAINER_PROJECT_ACCESS)
+          developer_group.add_developer(user)
+
+          expect(user.forkable_namespaces).to contain_exactly(user.namespace, group, subgroup, developer_group)
         end
       end
 
@@ -3967,7 +3973,7 @@ RSpec.describe User do
     end
   end
 
-  describe '#ci_owned_runners' do
+  shared_context '#ci_owned_runners' do
     let(:user) { create(:user) }
 
     shared_examples :nested_groups_owner do
@@ -4272,6 +4278,16 @@ RSpec.describe User do
 
       it_behaves_like :group_member
     end
+  end
+
+  it_behaves_like '#ci_owned_runners'
+
+  context 'when FF ci_owned_runners_cross_joins_fix is disabled' do
+    before do
+      stub_feature_flags(ci_owned_runners_cross_joins_fix: false)
+    end
+
+    it_behaves_like '#ci_owned_runners'
   end
 
   describe '#projects_with_reporter_access_limited_to' do

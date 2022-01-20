@@ -57,6 +57,10 @@ ci_runner_namespaces:
   - table: namespaces
     column: namespace_id
     on_delete: async_delete
+ci_running_builds:
+  - table: projects
+    column: project_id
+    on_delete: async_delete
 ci_namespace_mirrors:
   - table: namespaces
     column: namespace_id
@@ -130,6 +134,10 @@ ci_pipeline_schedules:
   - table: users
     column: owner_id
     on_delete: async_nullify
+merge_trains:
+  - table: ci_pipelines
+    column: pipeline_id
+    on_delete: async_nullify
 ci_group_variables:
   - table: namespaces
     column: group_id
@@ -149,4 +157,16 @@ security_scans:
 ci_secure_files:
   - table: projects
     column: project_id
+    on_delete: async_delete
+ci_pipeline_artifacts:
+  - table: projects
+    column: project_id
+    on_delete: async_delete
+ci_sources_pipelines:
+  - table: projects
+    column: source_project_id
+    on_delete: async_delete
+ci_triggers:
+  - table: users
+    column: owner_id
     on_delete: async_delete

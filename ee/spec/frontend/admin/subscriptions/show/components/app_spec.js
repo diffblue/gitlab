@@ -1,23 +1,28 @@
-import { GlButton } from '@gitlab/ui';
+import { GlButton, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import SubscriptionManagementApp from 'ee/admin/subscriptions/show/components/app.vue';
 import SubscriptionActivationCard from 'ee/admin/subscriptions/show/components/subscription_activation_card.vue';
 import SubscriptionBreakdown from 'ee/admin/subscriptions/show/components/subscription_breakdown.vue';
-
 import {
   noActiveSubscription,
   subscriptionActivationNotificationText,
   subscriptionActivationFutureDatedNotificationTitle,
-  subscriptionHistoryQueries,
+  subscriptionHistoryFailedTitle,
+  subscriptionHistoryFailedMessage,
+  currentSubscriptionsEntryName,
+  historySubscriptionsEntryName,
   subscriptionMainTitle,
-  subscriptionQueries,
   SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
 } from 'ee/admin/subscriptions/show/constants';
+import getCurrentLicense from 'ee/admin/subscriptions/show/graphql/queries/get_current_license.query.graphql';
+import getLicenseHistory from 'ee/admin/subscriptions/show/graphql/queries/get_license_history.query.graphql';
+import waitForPromises from 'helpers/wait_for_promises';
 import { useFakeDate } from 'helpers/fake_date';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { sprintf } from '~/locale';
 import { license, subscriptionHistory } from '../mock_data';
 
 Vue.use(VueApollo);
@@ -35,6 +40,8 @@ describe('SubscriptionManagementApp', () => {
   const findSubscriptionMainTitle = () => wrapper.findByTestId('subscription-main-title');
   const findSubscriptionActivationSuccessAlert = () =>
     wrapper.findByTestId('subscription-activation-success-alert');
+  const findSubscriptionFetchErrorAlert = () =>
+    wrapper.findByTestId('subscription-fetch-error-alert');
   const findExportLicenseUsageFileLink = () => wrapper.findComponent(GlButton);
 
   let currentSubscriptionResolver;
@@ -42,8 +49,8 @@ describe('SubscriptionManagementApp', () => {
   const createMockApolloProvider = ([subscriptionResolver, historyResolver]) => {
     Vue.use(VueApollo);
     return createMockApollo([
-      [subscriptionQueries.query, subscriptionResolver],
-      [subscriptionHistoryQueries.query, historyResolver],
+      [getCurrentLicense, subscriptionResolver],
+      [getLicenseHistory, historyResolver],
     ]);
   };
 
@@ -55,12 +62,57 @@ describe('SubscriptionManagementApp', () => {
           licenseUsageFilePath: 'about:blank',
           ...props,
         },
+        stubs: {
+          GlSprintf,
+        },
       }),
     );
   };
 
   afterEach(() => {
     wrapper.destroy();
+  });
+
+  describe('when failing to fetch subcriptions', () => {
+    describe('when failing to fetch history subcriptions', () => {
+      describe.each`
+        currentFails | historyFails
+        ${true}      | ${false}
+        ${false}     | ${true}
+        ${true}      | ${true}
+      `(
+        'with current subscription failing to fetch=$currentFails and history subscriptions failing to fetch=$historyFails',
+        ({ currentFails, historyFails }) => {
+          const error = new Error('Network error!');
+
+          beforeEach(async () => {
+            currentSubscriptionResolver = currentFails
+              ? jest.fn().mockRejectedValue({ error })
+              : jest.fn().mockResolvedValue({ data: { currentLicense: license.ULTIMATE } });
+            subscriptionHistoryResolver = historyFails
+              ? jest.fn().mockRejectedValue({ error })
+              : jest.fn().mockResolvedValue({
+                  data: { licenseHistoryEntries: { nodes: subscriptionHistory } },
+                });
+
+            createComponent({}, [currentSubscriptionResolver, subscriptionHistoryResolver]);
+            await waitForPromises();
+          });
+
+          it('renders the error alert', () => {
+            const alert = findSubscriptionFetchErrorAlert();
+            const subscriptionEntryName = historyFails
+              ? historySubscriptionsEntryName
+              : currentSubscriptionsEntryName;
+            expect(alert.exists()).toBe(true);
+            expect(alert.props('title')).toBe(subscriptionHistoryFailedTitle);
+            expect(alert.text().replace(/\s+/g, ' ')).toBe(
+              sprintf(subscriptionHistoryFailedMessage, { subscriptionEntryName }),
+            );
+          });
+        },
+      );
+    });
   });
 
   describe('Subscription Activation Form', () => {

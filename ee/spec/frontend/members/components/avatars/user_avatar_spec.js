@@ -32,7 +32,7 @@ describe('UserAvatar', () => {
     `('renders the "$badgeText" badge', ({ member, badgeText }) => {
       createComponent({ member });
 
-      expect(wrapper.find(GlBadge).text()).toBe(badgeText);
+      expect(wrapper.findComponent(GlBadge).text()).toBe(badgeText);
     });
   });
 });

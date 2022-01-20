@@ -1,8 +1,0 @@
----
-name: geo_upload_verification
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/65921
-rollout_issue_url:
-milestone: '14.6'
-type: development
-group: group::geo
-default_enabled: true

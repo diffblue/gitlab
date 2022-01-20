@@ -67,7 +67,7 @@ describe('EE MRWidget approvals list', () => {
 
   const findRows = () => wrapper.findAll('tbody tr');
   const findRowElement = (row, name) => row.find(`.js-${name}`);
-  const findRowIcon = (row) => row.find(ApprovedIcon);
+  const findRowIcon = (row) => row.findComponent(ApprovedIcon);
 
   afterEach(() => {
     wrapper.destroy();
@@ -141,7 +141,7 @@ describe('EE MRWidget approvals list', () => {
 
     it('renders approvers', () => {
       const approversCell = findRowElement(row, 'approvers');
-      const approvers = approversCell.find(UserAvatarList);
+      const approvers = approversCell.findComponent(UserAvatarList);
 
       expect(approvers.exists()).toBe(true);
       expect(approvers.props()).toEqual(
@@ -159,7 +159,7 @@ describe('EE MRWidget approvals list', () => {
 
     it('renders approved_by user avatar list', () => {
       const approvedBy = findRowElement(row, 'approved-by');
-      const approvers = approvedBy.find(UserAvatarList);
+      const approvers = approvedBy.findComponent(UserAvatarList);
 
       expect(approvers.exists()).toBe(true);
       expect(approvers.props()).toEqual(
@@ -172,7 +172,7 @@ describe('EE MRWidget approvals list', () => {
 
     it('renders commented by user avatar list', () => {
       const commentedRow = findRowElement(row, 'commented-by');
-      const commentedBy = commentedRow.find(UserAvatarList);
+      const commentedBy = commentedRow.findComponent(UserAvatarList);
 
       expect(commentedBy.props()).toEqual(
         expect.objectContaining({
@@ -198,7 +198,7 @@ describe('EE MRWidget approvals list', () => {
       });
 
       it('renders approvers list', () => {
-        const approvers = summary.findAll(UserAvatarList).at(0);
+        const approvers = summary.findAllComponents(UserAvatarList).at(0);
 
         expect(approvers.exists()).toBe(true);
         expect(approvers.props()).toEqual(
@@ -209,7 +209,7 @@ describe('EE MRWidget approvals list', () => {
       });
 
       it('renders commented by list', () => {
-        const commentedBy = summary.findAll(UserAvatarList).at(1);
+        const commentedBy = summary.findAllComponents(UserAvatarList).at(1);
 
         expect(commentedBy.props()).toEqual(
           expect.objectContaining({
@@ -219,7 +219,7 @@ describe('EE MRWidget approvals list', () => {
       });
 
       it('renders approved by list', () => {
-        const approvedBy = summary.findAll(UserAvatarList).at(2);
+        const approvedBy = summary.findAllComponents(UserAvatarList).at(2);
 
         expect(approvedBy.props()).toEqual(
           expect.objectContaining({
@@ -305,7 +305,7 @@ describe('EE MRWidget approvals list', () => {
 
     it('does not render approvers in summary', () => {
       const summary = findRowElement(row, 'summary');
-      const lists = summary.findAll(UserAvatarList);
+      const lists = summary.findAllComponents(UserAvatarList);
 
       expect(lists).toHaveLength(2);
       expect(lists.at(0).props('items')).toEqual(rule.commented_by);

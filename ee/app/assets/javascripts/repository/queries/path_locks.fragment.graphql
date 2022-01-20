@@ -1,0 +1,13 @@
+fragment ProjectPathLocksFragment on Project {
+  id
+  pathLocks {
+    nodes {
+      id
+      path
+      user {
+        id
+        username
+      }
+    }
+  }
+}

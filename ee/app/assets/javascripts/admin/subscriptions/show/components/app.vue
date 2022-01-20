@@ -1,5 +1,5 @@
 <script>
-import { GlAlert, GlButton } from '@gitlab/ui';
+import { GlAlert, GlButton, GlSprintf } from '@gitlab/ui';
 import { isInFuture } from '~/lib/utils/datetime/date_calculation_utility';
 import { sprintf } from '~/locale';
 import {
@@ -8,12 +8,16 @@ import {
   subscriptionActivationNotificationText,
   subscriptionActivationFutureDatedNotificationTitle,
   subscriptionActivationFutureDatedNotificationMessage,
-  subscriptionHistoryQueries,
+  subscriptionHistoryFailedTitle,
+  subscriptionHistoryFailedMessage,
+  currentSubscriptionsEntryName,
+  historySubscriptionsEntryName,
   subscriptionMainTitle,
-  subscriptionQueries,
   exportLicenseUsageBtnText,
   SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
 } from '../constants';
+import getCurrentLicense from '../graphql/queries/get_current_license.query.graphql';
+import getLicenseHistory from '../graphql/queries/get_license_history.query.graphql';
 import SubscriptionActivationCard from './subscription_activation_card.vue';
 import SubscriptionBreakdown from './subscription_breakdown.vue';
 import SubscriptionPurchaseCard from './subscription_purchase_card.vue';
@@ -24,6 +28,7 @@ export default {
   components: {
     GlAlert,
     GlButton,
+    GlSprintf,
     SubscriptionActivationCard,
     SubscriptionBreakdown,
     SubscriptionPurchaseCard,
@@ -34,6 +39,8 @@ export default {
     exportLicenseUsageBtnText,
     noActiveSubscription,
     subscriptionMainTitle,
+    subscriptionHistoryFailedTitle,
+    subscriptionHistoryFailedMessage,
   },
   props: {
     licenseUsageFilePath: {
@@ -48,15 +55,21 @@ export default {
   },
   apollo: {
     currentSubscription: {
-      query: subscriptionQueries.query,
+      query: getCurrentLicense,
       update({ currentLicense }) {
         return currentLicense || {};
       },
+      error() {
+        this.subscriptionFetchError = currentSubscriptionsEntryName;
+      },
     },
     subscriptionHistory: {
-      query: subscriptionHistoryQueries.query,
+      query: getLicenseHistory,
       update({ licenseHistoryEntries }) {
-        return licenseHistoryEntries.nodes || [];
+        return licenseHistoryEntries?.nodes || [];
+      },
+      error() {
+        this.subscriptionFetchError = historySubscriptionsEntryName;
       },
     },
   },
@@ -65,6 +78,7 @@ export default {
       currentSubscription: {},
       activationNotification: null,
       subscriptionHistory: [],
+      subscriptionFetchError: null,
     };
   },
   computed: {
@@ -96,6 +110,9 @@ export default {
     dismissActivationNotification() {
       this.activationNotification = null;
     },
+    dismissSubscriptionFetchError() {
+      this.subscriptionFetchError = null;
+    },
   },
 };
 </script>
@@ -120,6 +137,20 @@ export default {
       @dismiss="dismissActivationNotification"
     >
       {{ activationNotification.message }}
+    </gl-alert>
+    <gl-alert
+      v-if="subscriptionFetchError"
+      :title="$options.i18n.subscriptionHistoryFailedTitle"
+      variant="danger"
+      class="gl-mb-6"
+      data-testid="subscription-fetch-error-alert"
+      @dismiss="dismissSubscriptionFetchError"
+    >
+      <gl-sprintf :message="$options.i18n.subscriptionHistoryFailedMessage">
+        <template #subscriptionEntryName>
+          {{ subscriptionFetchError }}
+        </template>
+      </gl-sprintf>
     </gl-alert>
     <subscription-breakdown
       v-if="canShowSubscriptionDetails"

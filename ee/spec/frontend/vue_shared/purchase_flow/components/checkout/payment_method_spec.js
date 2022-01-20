@@ -26,9 +26,7 @@ describe('Payment Method', () => {
 
   const isStepValid = () => wrapper.findComponent(Step).props('isValid');
   const createComponent = (apolloLocalState = {}) => {
-    const apolloProvider = createMockApolloProvider(STEPS, STEPS[2], {
-      ...gitLabResolvers,
-    });
+    const apolloProvider = createMockApolloProvider(STEPS, STEPS[2], gitLabResolvers);
     apolloProvider.clients.defaultClient.cache.writeQuery({
       query: stateQuery,
       data: merge({}, initialStateData, apolloLocalState),

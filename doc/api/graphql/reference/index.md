@@ -4336,6 +4336,25 @@ Input type: `TerraformStateUnlockInput`
 | <a id="mutationterraformstateunlockclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationterraformstateunlockerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
+### `Mutation.timelineEventDestroy`
+
+Input type: `TimelineEventDestroyInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationtimelineeventdestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationtimelineeventdestroyid"></a>`id` | [`IncidentManagementTimelineEventID!`](#incidentmanagementtimelineeventid) | Timeline event ID to remove. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationtimelineeventdestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationtimelineeventdestroyerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationtimelineeventdestroytimelineevent"></a>`timelineEvent` | [`TimelineEventType`](#timelineeventtype) | Timeline event. |
+
 ### `Mutation.todoCreate`
 
 Input type: `TodoCreateInput`
@@ -10512,6 +10531,7 @@ Represents an external resource to send audit events to.
 | <a id="externalauditeventdestinationdestinationurl"></a>`destinationUrl` | [`String!`](#string) | External destination to send audit events to. |
 | <a id="externalauditeventdestinationgroup"></a>`group` | [`Group!`](#group) | Group the destination belongs to. |
 | <a id="externalauditeventdestinationid"></a>`id` | [`ID!`](#id) | ID of the destination. |
+| <a id="externalauditeventdestinationverificationtoken"></a>`verificationToken` | [`String!`](#string) | Verification token to validate source of event. |
 
 ### `ExternalIssue`
 
@@ -10751,6 +10771,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="groupparent"></a>`parent` | [`Group`](#group) | Parent group. |
 | <a id="grouppath"></a>`path` | [`String!`](#string) | Path of the namespace. |
 | <a id="groupprojectcreationlevel"></a>`projectCreationLevel` | [`String`](#string) | Permission level required to create projects in the group. |
+| <a id="grouprecentissueboards"></a>`recentIssueBoards` | [`BoardConnection`](#boardconnection) | List of recently visited boards of the group. Maximum size is 4. (see [Connections](#connections)) |
 | <a id="grouprepositorysizeexcessprojectcount"></a>`repositorySizeExcessProjectCount` | [`Int!`](#int) | Number of projects in the root namespace where the repository size exceeds the limit. |
 | <a id="grouprequestaccessenabled"></a>`requestAccessEnabled` | [`Boolean`](#boolean) | Indicates if users can request access to namespace. |
 | <a id="grouprequiretwofactorauthentication"></a>`requireTwoFactorAuthentication` | [`Boolean`](#boolean) | Indicates if all users in this group are required to set up two-factor authentication. |
@@ -11837,6 +11858,7 @@ Maven metadata.
 | <a id="mergerequestautomergestrategy"></a>`autoMergeStrategy` | [`String`](#string) | Selected auto merge strategy. |
 | <a id="mergerequestavailableautomergestrategies"></a>`availableAutoMergeStrategies` | [`[String!]`](#string) | Array of available auto merge strategies. |
 | <a id="mergerequestcommitcount"></a>`commitCount` | [`Int`](#int) | Number of commits in the merge request. |
+| <a id="mergerequestcommits"></a>`commits` | [`CommitConnection`](#commitconnection) | Merge request commits. (see [Connections](#connections)) |
 | <a id="mergerequestcommitswithoutmergecommits"></a>`commitsWithoutMergeCommits` | [`CommitConnection`](#commitconnection) | Merge request commits excluding merge commits. (see [Connections](#connections)) |
 | <a id="mergerequestconflicts"></a>`conflicts` | [`Boolean!`](#boolean) | Indicates if the merge request has conflicts. |
 | <a id="mergerequestcreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp of when the merge request was created. |
@@ -13236,6 +13258,7 @@ Represents vulnerability finding of a security report on the pipeline.
 | <a id="projectprintingmergerequestlinkenabled"></a>`printingMergeRequestLinkEnabled` | [`Boolean`](#boolean) | Indicates if a link to create or view a merge request should display after a push to Git repositories of the project from the command line. |
 | <a id="projectpublicjobs"></a>`publicJobs` | [`Boolean`](#boolean) | Indicates if there is public access to pipelines and job details of the project, including output logs and artifacts. |
 | <a id="projectpushrules"></a>`pushRules` | [`PushRules`](#pushrules) | Project's push rules settings. |
+| <a id="projectrecentissueboards"></a>`recentIssueBoards` | [`BoardConnection`](#boardconnection) | List of recently visited boards of the project. Maximum size is 4. (see [Connections](#connections)) |
 | <a id="projectremovesourcebranchaftermerge"></a>`removeSourceBranchAfterMerge` | [`Boolean`](#boolean) | Indicates if `Delete source branch` option should be enabled by default for all new merge requests of the project. |
 | <a id="projectrepository"></a>`repository` | [`Repository`](#repository) | Git repository of the project. |
 | <a id="projectrepositorysizeexcess"></a>`repositorySizeExcess` | [`Float`](#float) | Size of repository that exceeds the limit in bytes. |
@@ -14024,6 +14047,18 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="projectscanexecutionpoliciesactionscantypes"></a>`actionScanTypes` | [`[SecurityReportTypeEnum!]`](#securityreporttypeenum) | Filters policies by the action scan type. Only these scan types are supported: `dast`, `secret_detection`, `cluster_image_scanning`, `container_scanning`, `sast`. |
 
+##### `Project.securityTrainingProviders`
+
+List of security training providers for the project.
+
+Returns [`[ProjectSecurityTraining!]`](#projectsecuritytraining).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectsecuritytrainingprovidersonlyenabled"></a>`onlyEnabled` | [`Boolean`](#boolean) | Filter the list by only enabled security trainings. |
+
 ##### `Project.sentryDetailedError`
 
 Detailed version of a Sentry error on the project.
@@ -14246,6 +14281,20 @@ Represents a Project Membership.
 | <a id="projectpermissionsupdatepages"></a>`updatePages` | [`Boolean!`](#boolean) | Indicates the user can perform `update_pages` on this resource. |
 | <a id="projectpermissionsupdatewiki"></a>`updateWiki` | [`Boolean!`](#boolean) | Indicates the user can perform `update_wiki` on this resource. |
 | <a id="projectpermissionsuploadfile"></a>`uploadFile` | [`Boolean!`](#boolean) | Indicates the user can perform `upload_file` on this resource. |
+
+### `ProjectSecurityTraining`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectsecuritytrainingdescription"></a>`description` | [`String`](#string) | Description of the training provider. |
+| <a id="projectsecuritytrainingid"></a>`id` | [`GlobalID!`](#globalid) | ID of the training provider. |
+| <a id="projectsecuritytrainingisenabled"></a>`isEnabled` | [`Boolean!`](#boolean) | Represents whether the provider is enabled or not. |
+| <a id="projectsecuritytrainingisprimary"></a>`isPrimary` | [`Boolean!`](#boolean) | Represents whether the provider is set as primary or not. |
+| <a id="projectsecuritytraininglogourl"></a>`logoUrl` | [`String`](#string) | Logo URL of the provider. |
+| <a id="projectsecuritytrainingname"></a>`name` | [`String!`](#string) | Name of the training provider. |
+| <a id="projectsecuritytrainingurl"></a>`url` | [`String!`](#string) | URL of the provider. |
 
 ### `ProjectStatistics`
 
@@ -14487,6 +14536,7 @@ Returns [`Tree`](#tree).
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="repositoryblobarchived"></a>`archived` | [`Boolean`](#boolean) | Whether the current project is archived. |
 | <a id="repositoryblobblamepath"></a>`blamePath` | [`String`](#string) | Web path to blob blame page. |
 | <a id="repositoryblobcancurrentuserpushtobranch"></a>`canCurrentUserPushToBranch` | [`Boolean`](#boolean) | Whether the current user can push to the branch. |
 | <a id="repositoryblobcanmodifyblob"></a>`canModifyBlob` | [`Boolean`](#boolean) | Whether the current user can modify the blob. |

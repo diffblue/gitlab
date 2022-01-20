@@ -55,7 +55,7 @@ describe('LdapDropdownItem', () => {
     beforeEach(() => {
       createComponent();
 
-      wrapper.find(GlDropdownItem).find('[role="menuitem"]').trigger('click');
+      wrapper.findComponent(GlDropdownItem).find('[role="menuitem"]').trigger('click');
     });
 
     it('calls `updateLdapOverride` action', () => {

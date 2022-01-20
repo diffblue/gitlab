@@ -7,9 +7,10 @@ RSpec.describe Projects::CreateService, '#execute' do
   include GitHelpers
 
   let(:user) { create :user }
+  let(:project_name) { 'GitLab' }
   let(:opts) do
     {
-      name: 'GitLab',
+      name: project_name,
       namespace_id: user.namespace.id
     }
   end
@@ -119,7 +120,7 @@ RSpec.describe Projects::CreateService, '#execute' do
       project = create_project(user, opts)
 
       expect(project).to be_valid
-      expect(project.owner).to eq(user)
+      expect(project.first_owner).to eq(user)
       expect(project.team.maintainers).to include(user)
       expect(project.namespace).to eq(user.namespace)
       expect(project.project_namespace).to be_in_sync_with_project(project)
@@ -144,6 +145,12 @@ RSpec.describe Projects::CreateService, '#execute' do
 
       subject { create_project(user, opts) }
     end
+
+    it 'logs creation' do
+      expect(Gitlab::AppLogger).to receive(:info).with(/#{user.name} created a new project/)
+
+      create_project(user, opts)
+    end
   end
 
   context "admin creates project with other user's namespace_id" do
@@ -154,6 +161,7 @@ RSpec.describe Projects::CreateService, '#execute' do
 
         expect(project).to be_persisted
         expect(project.owner).to eq(user)
+        expect(project.first_owner).to eq(user)
         expect(project.team.maintainers).to contain_exactly(user)
         expect(project.namespace).to eq(user.namespace)
         expect(project.project_namespace).to be_in_sync_with_project(project)
@@ -201,7 +209,7 @@ RSpec.describe Projects::CreateService, '#execute' do
 
     let(:opts) do
       {
-        name: 'GitLab',
+        name: project_name,
         namespace_id: shared_group.id
       }
     end
@@ -236,7 +244,7 @@ RSpec.describe Projects::CreateService, '#execute' do
     let(:share_max_access_level) { Gitlab::Access::MAINTAINER }
     let(:opts) do
       {
-        name: 'GitLab',
+        name: project_name,
         namespace_id: subgroup_for_projects.id
       }
     end
@@ -675,7 +683,7 @@ RSpec.describe Projects::CreateService, '#execute' do
 
         let(:opts) do
           {
-            name: 'GitLab',
+            name: project_name,
             namespace_id: group.id
           }
         end
@@ -696,7 +704,7 @@ RSpec.describe Projects::CreateService, '#execute' do
 
           let(:opts) do
             {
-              name: 'GitLab',
+              name: project_name,
               namespace_id: subgroup.id
             }
           end
@@ -807,7 +815,7 @@ RSpec.describe Projects::CreateService, '#execute' do
 
     let(:opts) do
       {
-        name: 'GitLab',
+        name: project_name,
         namespace_id: group.id
       }
     end

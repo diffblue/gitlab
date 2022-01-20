@@ -17,8 +17,7 @@ RSpec.describe Projects::Security::DiscoverHelper do
         },
         link: {
           main: new_trial_registration_path(glm_source: 'gitlab.com', glm_content: content),
-          secondary: profile_billings_path(project.group, source: content),
-          feedback: 'https://gitlab.com/gitlab-org/growth/ui-ux/issues/25'
+          secondary: profile_billings_path(project.group, source: content)
         }
       }.merge(helper.hand_raise_props(project.root_ancestor))
     end

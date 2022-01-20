@@ -57,7 +57,7 @@ describe('IssuesLaneList', () => {
     });
 
     it('renders one BoardCard component per issue passed in props', () => {
-      expect(wrapper.findAll(BoardCard)).toHaveLength(wrapper.props('issues').length);
+      expect(wrapper.findAllComponents(BoardCard)).toHaveLength(wrapper.props('issues').length);
     });
   });
 
@@ -73,7 +73,7 @@ describe('IssuesLaneList', () => {
     });
 
     it('does not renders BoardCard components', () => {
-      expect(wrapper.findAll(BoardCard)).toHaveLength(0);
+      expect(wrapper.findAllComponents(BoardCard)).toHaveLength(0);
     });
   });
 

@@ -26,7 +26,7 @@ describe('Action buttons', () => {
   describe('corpus management', () => {
     it('renders the action buttons', () => {
       createComponent();
-      expect(wrapper.findAll(GlButton)).toHaveLength(2);
+      expect(wrapper.findAllComponents(GlButton)).toHaveLength(2);
     });
 
     describe('delete confirmation modal', () => {

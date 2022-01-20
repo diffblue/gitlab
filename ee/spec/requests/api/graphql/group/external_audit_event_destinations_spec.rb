@@ -35,9 +35,11 @@ RSpec.describe 'getting a list of external audit event destinations for a group'
     it 'returns the groups external audit event destinations' do
       post_graphql(query, current_user: current_user)
 
+      verification_token_regex = /\A\w{24}\z/i
+
       expect(graphql_data_at(*path)).to contain_exactly(
-        a_hash_including('destinationUrl' => destination_1.destination_url),
-        a_hash_including('destinationUrl' => destination_2.destination_url)
+        a_hash_including('destinationUrl' => destination_1.destination_url, 'verificationToken' => a_string_matching(verification_token_regex)),
+        a_hash_including('destinationUrl' => destination_2.destination_url, 'verificationToken' => a_string_matching(verification_token_regex))
       )
     end
   end

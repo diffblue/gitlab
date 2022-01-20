@@ -69,12 +69,18 @@ const fetchGroupEpics = (
 
 export const fetchChildrenEpics = (state, { parentItem }) => {
   const { iid, group } = parentItem;
-  const { filterParams, epicsState } = state;
+  const { filterParams, epicsState, sortedBy } = state;
 
   return epicUtils.gqClient
     .query({
       query: epicChildEpics,
-      variables: { iid, fullPath: group?.fullPath, state: epicsState, ...filterParams },
+      variables: {
+        iid,
+        fullPath: group?.fullPath,
+        state: epicsState,
+        sort: sortedBy,
+        ...filterParams,
+      },
     })
     .then(({ data }) => {
       const edges = data?.group?.epic?.children?.edges || [];

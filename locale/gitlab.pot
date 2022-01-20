@@ -3542,7 +3542,7 @@ msgstr ""
 msgid "Allow this key to push to this repository"
 msgstr ""
 
-msgid "Allow this secondary node to replicate content on Object Storage"
+msgid "Allow this secondary site to replicate content on Object Storage"
 msgstr ""
 
 msgid "Allow use of licensed EE features"
@@ -4712,9 +4712,6 @@ msgstr ""
 msgid "Are you sure you want to remove this list?"
 msgstr ""
 
-msgid "Are you sure you want to reset the SCIM token? SCIM provisioning will stop working until the new token is updated."
-msgstr ""
-
 msgid "Are you sure you want to reset the health check token?"
 msgstr ""
 
@@ -5371,6 +5368,9 @@ msgid "BambooService|The user with API access to the Bamboo server."
 msgstr ""
 
 msgid "Based on"
+msgstr ""
+
+msgid "Basic information"
 msgstr ""
 
 msgid "Be careful. Changing the project's namespace can have unintended side effects."
@@ -6284,7 +6284,19 @@ msgstr ""
 msgid "CICDAnalytics|Releases"
 msgstr ""
 
+msgid "CICDAnalytics|Shared Runners Usage"
+msgstr ""
+
+msgid "CICDAnalytics|Shared runner usage"
+msgstr ""
+
+msgid "CICDAnalytics|Shared runner usage is the total runtime of all jobs that ran on shared runners"
+msgstr ""
+
 msgid "CICDAnalytics|Something went wrong while fetching release statistics"
+msgstr ""
+
+msgid "CICDAnalytics|What is shared runner usage?"
 msgstr ""
 
 msgid "CICD|Add a %{base_domain_link_start}base domain%{link_end} to your %{kubernetes_cluster_link_start}Kubernetes cluster%{link_end} for your deployment strategy to work."
@@ -6519,6 +6531,9 @@ msgid "Cannot assign a confidential epic to a non-confidential issue. Make the i
 msgstr ""
 
 msgid "Cannot be merged automatically"
+msgstr ""
+
+msgid "Cannot create the abuse report. The reported user was invalid. Please try again or contact support."
 msgstr ""
 
 msgid "Cannot create the abuse report. The user has been deleted."
@@ -7506,7 +7521,7 @@ msgstr ""
 msgid "ClusterAgents|%{name} successfully deleted"
 msgstr ""
 
-msgid "ClusterAgents|%{number} of %{total} agents"
+msgid "ClusterAgents|%{number} of %{total} Agents"
 msgstr ""
 
 msgid "ClusterAgents|%{number} of %{total} clusters connected through cluster certificates"
@@ -7578,10 +7593,10 @@ msgstr ""
 msgid "ClusterAgents|Connect existing cluster"
 msgstr ""
 
-msgid "ClusterAgents|Connect with a certificate"
+msgid "ClusterAgents|Connect with Agent"
 msgstr ""
 
-msgid "ClusterAgents|Connect with the Agent"
+msgid "ClusterAgents|Connect with a certificate"
 msgstr ""
 
 msgid "ClusterAgents|Connect with the GitLab Agent"
@@ -7644,7 +7659,7 @@ msgstr ""
 msgid "ClusterAgents|How to register an agent?"
 msgstr ""
 
-msgid "ClusterAgents|Install a new agent"
+msgid "ClusterAgents|Install new Agent"
 msgstr ""
 
 msgid "ClusterAgents|Last connected %{timeAgo}."
@@ -7671,7 +7686,7 @@ msgstr ""
 msgid "ClusterAgents|Never connected"
 msgstr ""
 
-msgid "ClusterAgents|No agents"
+msgid "ClusterAgents|No Agents"
 msgstr ""
 
 msgid "ClusterAgents|No clusters connected through cluster certificates"
@@ -8948,6 +8963,9 @@ msgid "ComplianceReport|Approved by committer"
 msgstr ""
 
 msgid "ComplianceReport|Less than 2 approvers"
+msgstr ""
+
+msgid "ComplianceReport|No violations found"
 msgstr ""
 
 msgid "Component"
@@ -11973,7 +11991,37 @@ msgstr[1] ""
 msgid "Deployment|API"
 msgstr ""
 
+msgid "Deployment|Cancelled"
+msgstr ""
+
+msgid "Deployment|Created"
+msgstr ""
+
+msgid "Deployment|Deployment ID"
+msgstr ""
+
+msgid "Deployment|Failed"
+msgstr ""
+
+msgid "Deployment|Latest Deployed"
+msgstr ""
+
+msgid "Deployment|Running"
+msgstr ""
+
+msgid "Deployment|Skipped"
+msgstr ""
+
+msgid "Deployment|Success"
+msgstr ""
+
 msgid "Deployment|This deployment was created using the API"
+msgstr ""
+
+msgid "Deployment|Waiting"
+msgstr ""
+
+msgid "Deployment|blocked"
 msgstr ""
 
 msgid "Deployment|canceled"
@@ -12534,9 +12582,6 @@ msgid "Discover|Security capabilities, integrated into your development lifecycl
 msgstr ""
 
 msgid "Discover|See the other features of the %{linkStart}ultimate plan%{linkEnd}"
-msgstr ""
-
-msgid "Discover|Send feedback"
 msgstr ""
 
 msgid "Discover|Start a free trial"
@@ -13234,6 +13279,9 @@ msgstr ""
 msgid "Enable kuromoji custom analyzer: Search"
 msgstr ""
 
+msgid "Enable logs collection"
+msgstr ""
+
 msgid "Enable maintenance mode"
 msgstr ""
 
@@ -13259,6 +13307,12 @@ msgid "Enable reCAPTCHA for login."
 msgstr ""
 
 msgid "Enable repository checks"
+msgstr ""
+
+msgid "Enable security training"
+msgstr ""
+
+msgid "Enable security training to help your developers learn how to fix vulnerabilities. Developers can view security training from selected educational providers, relevant to the detected vulnerability."
 msgstr ""
 
 msgid "Enable shared runners for all projects and subgroups in this group."
@@ -15716,6 +15770,9 @@ msgstr ""
 msgid "Geo|Does not match the primary storage configuration"
 msgstr ""
 
+msgid "Geo|Edit %{nodeType} site"
+msgstr ""
+
 msgid "Geo|Failed"
 msgstr ""
 
@@ -15791,12 +15848,6 @@ msgstr ""
 msgid "Geo|No available replication slots"
 msgstr ""
 
-msgid "Geo|Node name can't be blank"
-msgstr ""
-
-msgid "Geo|Node name should be between 1 and 255 characters"
-msgstr ""
-
 msgid "Geo|Not synced yet"
 msgstr ""
 
@@ -15845,16 +15896,19 @@ msgstr ""
 msgid "Geo|Remove"
 msgstr ""
 
+msgid "Geo|Remove %{nodeType} site"
+msgstr ""
+
 msgid "Geo|Remove entry"
 msgstr ""
 
-msgid "Geo|Remove node"
+msgid "Geo|Remove site"
 msgstr ""
 
 msgid "Geo|Remove tracking database entry"
 msgstr ""
 
-msgid "Geo|Removing a Geo node stops the synchronization to and from that node. Are you sure?"
+msgid "Geo|Removing a Geo site stops the synchronization to and from that site. Are you sure?"
 msgstr ""
 
 msgid "Geo|Replicated data is verified with the secondary site(s) using checksums"
@@ -15917,6 +15971,12 @@ msgstr ""
 msgid "Geo|Selective (%{syncLabel})"
 msgstr ""
 
+msgid "Geo|Site name can't be blank"
+msgstr ""
+
+msgid "Geo|Site name should be between 1 and 255 characters"
+msgstr ""
+
 msgid "Geo|Site's status was updated %{timeAgo}."
 msgstr ""
 
@@ -15953,10 +16013,10 @@ msgstr ""
 msgid "Geo|There are no %{replicable_type} to show"
 msgstr ""
 
-msgid "Geo|There was an error deleting the Geo Node"
+msgid "Geo|There was an error deleting the Geo Site"
 msgstr ""
 
-msgid "Geo|There was an error fetching the Geo Nodes"
+msgid "Geo|There was an error fetching the Geo Sites"
 msgstr ""
 
 msgid "Geo|This will resync all %{replicableType}. It may take some time to complete. Are you sure you want to continue?"
@@ -17042,16 +17102,10 @@ msgstr ""
 msgid "GroupSAML|SAML group link was successfully removed."
 msgstr ""
 
-msgid "GroupSAML|SCIM API endpoint URL"
-msgstr ""
-
 msgid "GroupSAML|SCIM Token"
 msgstr ""
 
 msgid "GroupSAML|SHA1 fingerprint of the SAML token signing certificate. Get this from your identity provider, where it can also be called \"Thumbprint\"."
-msgstr ""
-
-msgid "GroupSAML|The SCIM token is now hidden. To see the value of the token again, you need to "
 msgstr ""
 
 msgid "GroupSAML|The SCIM token is now hidden. To see the value of the token again, you need to %{linkStart}reset it%{linkEnd}."
@@ -17076,9 +17130,6 @@ msgid "GroupSAML|Valid SAML Response"
 msgstr ""
 
 msgid "GroupSAML|With prohibit outer forks flag enabled group members will be able to fork project only inside your group."
-msgstr ""
-
-msgid "GroupSAML|Your SCIM token"
 msgstr ""
 
 msgid "GroupSAML|as %{access_level}"
@@ -17838,7 +17889,13 @@ msgstr ""
 msgid "Identities"
 msgstr ""
 
+msgid "IdentityVerification|Before you create your first project, we need you to verify your identity with a valid payment method. You will not be charged during this step. If we ever need to charge you, we will let you know."
+msgstr ""
+
 msgid "IdentityVerification|Before you create your group, we need you to verify your identity with a valid payment method."
+msgstr ""
+
+msgid "IdentityVerification|Create a project"
 msgstr ""
 
 msgid "IdentityVerification|Verify your identity"
@@ -23547,9 +23604,6 @@ msgstr ""
 msgid "NetworkPolicies|To enable alerts, %{installLinkStart}install an agent%{installLinkEnd} first."
 msgstr ""
 
-msgid "NetworkPolicies|Traffic that does not match any rule will be blocked."
-msgstr ""
-
 msgid "NetworkPolicies|all DNS names"
 msgstr ""
 
@@ -26149,6 +26203,9 @@ msgstr ""
 msgid "Pipelines|Are you sure you want to run this pipeline?"
 msgstr ""
 
+msgid "Pipelines|Auto DevOps"
+msgstr ""
+
 msgid "Pipelines|Build with confidence"
 msgstr ""
 
@@ -26161,7 +26218,7 @@ msgstr ""
 msgid "Pipelines|CI/CD template to test and deploy your %{name} project."
 msgstr ""
 
-msgid "Pipelines|Child pipeline"
+msgid "Pipelines|Child pipeline (%{link_start}parent%{link_end})"
 msgstr ""
 
 msgid "Pipelines|Clear runner caches"
@@ -26326,10 +26383,25 @@ msgstr ""
 msgid "Pipelines|Visualize"
 msgstr ""
 
+msgid "Pipelines|detached"
+msgstr ""
+
+msgid "Pipelines|error"
+msgstr ""
+
 msgid "Pipelines|invalid"
 msgstr ""
 
-msgid "Pipelines|parent"
+msgid "Pipelines|latest"
+msgstr ""
+
+msgid "Pipelines|stuck"
+msgstr ""
+
+msgid "Pipelines|train"
+msgstr ""
+
+msgid "Pipelines|yaml invalid"
 msgstr ""
 
 msgid "Pipeline|Actions"
@@ -29302,6 +29374,9 @@ msgstr ""
 msgid "Reduce project visibility"
 msgstr ""
 
+msgid "Reduce risk and triage fewer vulnerabilities with security training"
+msgstr ""
+
 msgid "Reduce this project’s visibility?"
 msgstr ""
 
@@ -29376,7 +29451,7 @@ msgstr ""
 msgid "RegistrationFeatures|Enable Service Ping and register for this feature."
 msgstr ""
 
-msgid "RegistrationFeatures|Read more about the %{linkStart}%{label}%{linkEnd}."
+msgid "RegistrationFeatures|Read more about the %{link_start}Registration Features Program%{link_end}."
 msgstr ""
 
 msgid "RegistrationFeatures|Registration Features Program"
@@ -30142,6 +30217,9 @@ msgstr ""
 msgid "Repository size is above the limit."
 msgstr ""
 
+msgid "Repository size limit (MB)"
+msgstr ""
+
 msgid "Repository storage"
 msgstr ""
 
@@ -30428,7 +30506,7 @@ msgstr ""
 msgid "Resync"
 msgstr ""
 
-msgid "Retrieving the compliance report failed. Please refresh the page and try again."
+msgid "Retrieving the compliance report failed. Refresh the page and try again."
 msgstr ""
 
 msgid "Retry"
@@ -30652,6 +30730,9 @@ msgid "Runners|Available to all projects and subgroups in the group"
 msgstr ""
 
 msgid "Runners|Can run untagged jobs"
+msgstr ""
+
+msgid "Runners|Change to project runner"
 msgstr ""
 
 msgid "Runners|Command to register runner"
@@ -31657,10 +31738,10 @@ msgstr ""
 msgid "SecurityOrchestration|Policy editor"
 msgstr ""
 
-msgid "SecurityOrchestration|Policy preview"
+msgid "SecurityOrchestration|Policy status"
 msgstr ""
 
-msgid "SecurityOrchestration|Policy status"
+msgid "SecurityOrchestration|Policy summary"
 msgstr ""
 
 msgid "SecurityOrchestration|Policy type"
@@ -31790,6 +31871,9 @@ msgid "SecurityPolicies|Environment(s)"
 msgstr ""
 
 msgid "SecurityPolicies|Policy type"
+msgstr ""
+
+msgid "SecurityReports|%{count}+ projects"
 msgstr ""
 
 msgid "SecurityReports|%{firstProject} and %{secondProject}"
@@ -32832,9 +32916,6 @@ msgstr ""
 msgid "SharedRunnersMinutesSettings|Reset used pipeline minutes"
 msgstr ""
 
-msgid "Sherlock Transactions"
-msgstr ""
-
 msgid "Shimo|Go to Shimo Workspace"
 msgstr ""
 
@@ -33169,10 +33250,19 @@ msgstr ""
 msgid "SlackIntegration|GitLab for Slack"
 msgstr ""
 
+msgid "SlackIntegration|Project alias"
+msgstr ""
+
 msgid "SlackIntegration|Select a GitLab project to link with your Slack workspace."
 msgstr ""
 
 msgid "SlackIntegration|Sends notifications about project events to Slack channels."
+msgstr ""
+
+msgid "SlackIntegration|Team name"
+msgstr ""
+
+msgid "SlackIntegration|To set up this integration press \"Add to Slack\""
 msgstr ""
 
 msgid "SlackService|1. %{slash_command_link_start}Add a slash command%{slash_command_link_end} in your Slack team using this information:"
@@ -33545,9 +33635,6 @@ msgid "SortOptions|Last Contact"
 msgstr ""
 
 msgid "SortOptions|Last created"
-msgstr ""
-
-msgid "SortOptions|Last updated"
 msgstr ""
 
 msgid "SortOptions|Least popular"
@@ -33923,6 +34010,9 @@ msgid "Starts: %{startsAt}"
 msgstr ""
 
 msgid "State your message to activate"
+msgstr ""
+
+msgid "State/Province"
 msgstr ""
 
 msgid "State/Province/City"
@@ -34612,6 +34702,9 @@ msgstr ""
 msgid "SuperSonics|Subscription details"
 msgstr ""
 
+msgid "SuperSonics|Subscription unavailable"
+msgstr ""
+
 msgid "SuperSonics|Sync subscription details"
 msgstr ""
 
@@ -34666,6 +34759,9 @@ msgstr ""
 msgid "SuperSonics|You'll be charged for %{trueUpLinkStart}users over license%{trueUpLinkEnd} on a quarterly or annual basis, depending on the terms of your agreement."
 msgstr ""
 
+msgid "SuperSonics|Your %{subscriptionEntryName} cannot be displayed at the moment. Please refresh the page to try again."
+msgstr ""
+
 msgid "SuperSonics|Your future dated license was successfully added"
 msgstr ""
 
@@ -34676,6 +34772,12 @@ msgid "SuperSonics|Your subscription details will sync shortly."
 msgstr ""
 
 msgid "SuperSonics|Your subscription was successfully activated. You can see the details below."
+msgstr ""
+
+msgid "SuperSonics|current subscription"
+msgstr ""
+
+msgid "SuperSonics|history subscriptions"
 msgstr ""
 
 msgid "Support"
@@ -36047,7 +36149,7 @@ msgstr ""
 msgid "There was an error fetching the Geo Settings"
 msgstr ""
 
-msgid "There was an error fetching the Node's Groups"
+msgid "There was an error fetching the Sites's Groups"
 msgstr ""
 
 msgid "There was an error fetching the deploy freezes."
@@ -36098,7 +36200,7 @@ msgstr ""
 msgid "There was an error retrieving the Jira users."
 msgstr ""
 
-msgid "There was an error saving this Geo Node."
+msgid "There was an error saving this Geo Site"
 msgstr ""
 
 msgid "There was an error saving your changes."
@@ -38237,6 +38339,9 @@ msgstr ""
 msgid "Updated %{updated_at} by %{updated_by}"
 msgstr ""
 
+msgid "Updated date"
+msgstr ""
+
 msgid "Updates"
 msgstr ""
 
@@ -40166,6 +40271,9 @@ msgstr ""
 msgid "When enabled, existing personal access tokens may be revoked. Leave blank for no limit."
 msgstr ""
 
+msgid "When enabled, job logs are collected by Datadog and displayed along with pipeline execution traces."
+msgstr ""
+
 msgid "When inactive, an external authentication provider must be used."
 msgstr ""
 
@@ -40932,6 +41040,9 @@ msgstr ""
 msgid "You have insufficient permissions to create an on-call schedule for this project"
 msgstr ""
 
+msgid "You have insufficient permissions to manage timeline events for this incident"
+msgstr ""
+
 msgid "You have insufficient permissions to remove an on-call rotation from this project"
 msgstr ""
 
@@ -41365,9 +41476,6 @@ msgid "Your name"
 msgstr ""
 
 msgid "Your new %{type}"
-msgstr ""
-
-msgid "Your new SCIM token"
 msgstr ""
 
 msgid "Your new access token has been created."
@@ -42678,7 +42786,7 @@ msgstr ""
 msgid "mrWidget|Merge blocked: this merge request must be approved."
 msgstr ""
 
-msgid "mrWidget|Merge blocked: you can only merge once above items are resolved."
+msgid "mrWidget|Merge blocked: you can only merge after the above items are resolved."
 msgstr ""
 
 msgid "mrWidget|Merge failed."
@@ -43106,9 +43214,6 @@ msgid "repository:"
 msgstr ""
 
 msgid "required"
-msgstr ""
-
-msgid "reset it."
 msgstr ""
 
 msgid "satisfied"

@@ -18,6 +18,10 @@ module EE
         field :group, ::Types::GroupType,
               null: false,
               description: 'Group the destination belongs to.'
+
+        field :verification_token, GraphQL::Types::String,
+              null: false,
+              description: 'Verification token to validate source of event.'
       end
     end
   end

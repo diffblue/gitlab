@@ -17,7 +17,8 @@ RSpec.describe EE::TrialHelper do
         company_name: '_params_company_name_',
         company_size: '_company_size_',
         phone_number: '1234',
-        country: '_country_'
+        country: '_country_',
+        state: '_state_'
       }
     end
 

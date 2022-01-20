@@ -25,8 +25,8 @@ describe('FormInput component', () => {
 
   const findInput = () => wrapper.find('input[type="text"]');
   const findLabel = () => wrapper.find('label');
-  const findInputComponent = () => wrapper.find(GlFormInput);
-  const findRestoreDefaultLink = () => wrapper.find(GlLink);
+  const findInputComponent = () => wrapper.findComponent(GlFormInput);
+  const findRestoreDefaultLink = () => wrapper.findComponent(GlLink);
 
   afterEach(() => {
     wrapper.destroy();

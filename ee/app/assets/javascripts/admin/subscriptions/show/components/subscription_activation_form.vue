@@ -18,9 +18,9 @@ import {
   SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
   SUBSCRIPTION_ACTIVATION_FINALIZED_EVENT,
   subscriptionActivationForm,
-  subscriptionQueries,
 } from '../constants';
 import { getErrorsAsData, getLicenseFromData, updateSubscriptionAppCache } from '../graphql/utils';
+import activateSubscriptionMutation from '../graphql/mutations/activate_subscription.mutation.graphql';
 
 const feedbackMap = {
   valueMissing: {
@@ -103,7 +103,7 @@ export default {
       this.isLoading = true;
       this.$apollo
         .mutate({
-          mutation: subscriptionQueries.mutation,
+          mutation: activateSubscriptionMutation,
           variables: {
             gitlabSubscriptionActivateInput: {
               activationCode: this.form.fields.activationCode.value,
@@ -156,6 +156,7 @@ export default {
           v-model.trim="form.fields.activationCode.value"
           v-validation:[form.showValidation]
           class="gl-mb-4"
+          data-qa-selector="activation_code"
           :disabled="isLoading"
           :placeholder="$options.i18n.pasteActivationCode"
           :state="form.fields.activationCode.state"
@@ -197,6 +198,7 @@ export default {
         category="primary"
         class="gl-mt-6 js-no-auto-disable"
         data-testid="activate-button"
+        data-qa-selector="activate"
         type="submit"
         variant="confirm"
       >

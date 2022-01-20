@@ -72,7 +72,7 @@ describe('DastSiteValidationModal', () => {
   const createComponent = componentFactory();
   const createFullComponent = componentFactory(mount);
 
-  const withinComponent = () => within(wrapper.find(GlModal).element);
+  const withinComponent = () => within(wrapper.findComponent(GlModal).element);
   const findByTestId = (id) => wrapper.find(`[data-testid="${id}"`);
   const findDownloadButton = () => findByTestId('download-dast-text-file-validation-button');
   const findValidationPathPrefix = () => findByTestId('dast-site-validation-path-prefix');
@@ -119,9 +119,9 @@ describe('DastSiteValidationModal', () => {
       });
 
       it('renders a skeleton loader, no alert and no form group while token is being created', () => {
-        expect(wrapper.find(GlSkeletonLoader).exists()).toBe(true);
-        expect(wrapper.find(GlAlert).exists()).toBe(false);
-        expect(wrapper.find(GlFormGroup).exists()).toBe(false);
+        expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(true);
+        expect(wrapper.findComponent(GlAlert).exists()).toBe(false);
+        expect(wrapper.findComponent(GlFormGroup).exists()).toBe(false);
       });
     });
 
@@ -136,9 +136,9 @@ describe('DastSiteValidationModal', () => {
       });
 
       it('renders an alert and no skeleton loader or form group if token could not be created', () => {
-        expect(wrapper.find(GlAlert).exists()).toBe(true);
-        expect(wrapper.find(GlSkeletonLoader).exists()).toBe(false);
-        expect(wrapper.find(GlFormGroup).exists()).toBe(false);
+        expect(wrapper.findComponent(GlAlert).exists()).toBe(true);
+        expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(false);
+        expect(wrapper.findComponent(GlFormGroup).exists()).toBe(false);
       });
     });
 
@@ -149,9 +149,9 @@ describe('DastSiteValidationModal', () => {
       });
 
       it('renders form groups, no alert and no skeleton loader', () => {
-        expect(wrapper.find(GlFormGroup).exists()).toBe(true);
-        expect(wrapper.find(GlAlert).exists()).toBe(false);
-        expect(wrapper.find(GlSkeletonLoader).exists()).toBe(false);
+        expect(wrapper.findComponent(GlFormGroup).exists()).toBe(true);
+        expect(wrapper.findComponent(GlAlert).exists()).toBe(false);
+        expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(false);
       });
 
       it('renders a download button containing the token', () => {
@@ -275,7 +275,7 @@ describe('DastSiteValidationModal', () => {
       });
 
       it('shows a button that copies the http-header to the clipboard', () => {
-        const clipboardButton = wrapper.find(ModalCopyButton);
+        const clipboardButton = wrapper.findComponent(ModalCopyButton);
 
         expect(clipboardButton.exists()).toBe(true);
         expect(clipboardButton.props()).toMatchObject({
@@ -310,7 +310,7 @@ describe('DastSiteValidationModal', () => {
       });
 
       it('shows a button that copies the meta tag to the clipboard', () => {
-        const clipboardButton = wrapper.find(ModalCopyButton);
+        const clipboardButton = wrapper.findComponent(ModalCopyButton);
 
         expect(clipboardButton.exists()).toBe(true);
         expect(clipboardButton.props()).toMatchObject({

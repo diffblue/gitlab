@@ -82,7 +82,7 @@ describe('EpicLane', () => {
     });
 
     it('displays 1 icon', () => {
-      expect(wrapper.findAll(GlIcon)).toHaveLength(1);
+      expect(wrapper.findAllComponents(GlIcon)).toHaveLength(1);
     });
 
     it('displays epic title', () => {
@@ -90,17 +90,17 @@ describe('EpicLane', () => {
     });
 
     it('renders one IssuesLaneList component per list passed in props', () => {
-      expect(wrapper.findAll(IssuesLaneList)).toHaveLength(wrapper.props('lists').length);
+      expect(wrapper.findAllComponents(IssuesLaneList)).toHaveLength(wrapper.props('lists').length);
     });
 
     it('hides issues when collapsing', () => {
-      expect(wrapper.findAll(IssuesLaneList)).toHaveLength(wrapper.props('lists').length);
+      expect(wrapper.findAllComponents(IssuesLaneList)).toHaveLength(wrapper.props('lists').length);
       expect(wrapper.vm.isCollapsed).toBe(false);
 
       findChevronButton().vm.$emit('click');
 
       return wrapper.vm.$nextTick().then(() => {
-        expect(wrapper.findAll(IssuesLaneList)).toHaveLength(0);
+        expect(wrapper.findAllComponents(IssuesLaneList)).toHaveLength(0);
         expect(wrapper.vm.isCollapsed).toBe(true);
       });
     });

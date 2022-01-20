@@ -1,4 +1,4 @@
-import { GlEmptyState, GlToggle } from '@gitlab/ui';
+import { GlEmptyState, GlFormCheckbox, GlFormGroup } from '@gitlab/ui';
 import { EDITOR_MODE_YAML } from 'ee/threat_monitoring/components/policy_editor/constants';
 import DimDisableContainer from 'ee/threat_monitoring/components/policy_editor/dim_disable_container.vue';
 import {
@@ -65,7 +65,11 @@ describe('NetworkPolicyEditor component', () => {
         ...provide,
       },
       store,
-      stubs: { DimDisableContainer, PolicyYamlEditor: true, transition: stubTransition() },
+      stubs: {
+        DimDisableContainer,
+        PolicyYamlEditor: true,
+        transition: stubTransition(),
+      },
     });
   };
 
@@ -82,7 +86,7 @@ describe('NetworkPolicyEditor component', () => {
   const findPolicyEditorLayout = () => wrapper.findComponent(PolicyEditorLayout);
   const findCollapseToggle = () =>
     wrapper.findByRole('button', {
-      name: NetworkPolicyEditor.i18n.policyPreview,
+      name: NetworkPolicyEditor.i18n.policySummary,
     });
 
   const modifyPolicyAlert = async ({ isAlertEnabled }) => {
@@ -96,11 +100,12 @@ describe('NetworkPolicyEditor component', () => {
     wrapper.destroy();
   });
 
-  it('renders toggle with label', () => {
+  it('renders checkbox with label', () => {
     factory();
-    const policyEnableToggle = findPolicyEnableContainer().findComponent(GlToggle);
-    expect(policyEnableToggle.exists()).toBe(true);
-    expect(policyEnableToggle.props('label')).toBe(NetworkPolicyEditor.i18n.toggleLabel);
+    expect(findPolicyEnableContainer().findComponent(GlFormGroup).attributes('label')).toBe(
+      NetworkPolicyEditor.i18n.toggleLabel,
+    );
+    expect(findPolicyEnableContainer().findComponent(GlFormCheckbox).exists()).toBe(true);
   });
 
   it('disables the tooltip and enables the save button', () => {

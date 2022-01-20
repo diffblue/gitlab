@@ -6,4 +6,5 @@ export const formData = {
   companySize: '1-99',
   phoneNumber: '192919',
   country: 'US',
+  state: 'CA',
 };

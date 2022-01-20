@@ -46,28 +46,10 @@ RSpec.describe CommitStatus do
   describe 'status state machine' do
     let!(:commit_status) { create(:commit_status, :running, project: project) }
 
-    context 'when expire_job_and_pipeline_cache_synchronously is enabled' do
-      before do
-        stub_feature_flags(expire_job_and_pipeline_cache_synchronously: true)
-      end
+    it 'invalidates the cache after a transition' do
+      expect(commit_status).to receive(:expire_etag_cache!)
 
-      it 'invalidates the cache after a transition' do
-        expect(commit_status).to receive(:expire_etag_cache!)
-
-        commit_status.success!
-      end
-    end
-
-    context 'when expire_job_and_pipeline_cache_synchronously is disabled' do
-      before do
-        stub_feature_flags(expire_job_and_pipeline_cache_synchronously: false)
-      end
-
-      it 'invalidates the cache after a transition' do
-        expect(ExpireJobCacheWorker).to receive(:perform_async).with(commit_status.id)
-
-        commit_status.success!
-      end
+      commit_status.success!
     end
 
     describe 'transitioning to running' do
@@ -771,6 +753,26 @@ RSpec.describe CommitStatus do
 
       it 'is able to be dropped' do
         expect { commit_status.drop! }.to change { commit_status.status }.from('manual').to('failed')
+      end
+    end
+
+    context 'when a failure reason is provided' do
+      context 'when a failure reason is a symbol' do
+        it 'correctly sets a failure reason' do
+          commit_status.drop!(:script_failure)
+
+          expect(commit_status).to be_script_failure
+        end
+      end
+
+      context 'when a failure reason is an object' do
+        it 'correctly sets a failure reason' do
+          reason = ::Gitlab::Ci::Build::Status::Reason.new(commit_status, :script_failure)
+
+          commit_status.drop!(reason)
+
+          expect(commit_status).to be_script_failure
+        end
       end
     end
   end

@@ -379,13 +379,16 @@ RSpec.describe Security::StoreReportService, '#execute', :snowplow do
       end
 
       it 'updates UUIDv4 to UUIDv5' do
+        # We run `OverrideUuidsService` if the signatures are enabled which
+        # kinda disables the logic of this test.
+        next if vulnerability_finding_signatures
+
         finding.uuid = '00000000-1111-2222-3333-444444444444'
         finding.save!
 
         # this report_finding should be used to update the finding's uuid
         report_finding = new_report.findings.find { |f| f.location.fingerprint == '0e7d0291d912f56880e39d4fbd80d99dd5d327ba' }
         allow(report_finding).to receive(:uuid).and_return(desired_uuid)
-        report_finding.signatures.pop
 
         subject
 

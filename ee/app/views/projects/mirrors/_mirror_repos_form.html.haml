@@ -10,7 +10,7 @@
 .form-group
   = label_tag :mirror_direction, _('Mirror direction'), class: 'label-light'
   .select-wrapper
-    = select_tag :mirror_direction, options_for_select(direction_options), class: 'form-control gl-form-input select-control js-mirror-direction qa-mirror-direction', disabled: (direction_options.count == 1) || has_existing_pull_mirror
+    = select_tag :mirror_direction, options_for_select(direction_options), class: 'form-control gl-form-select select-control js-mirror-direction qa-mirror-direction', disabled: (direction_options.count == 1) || has_existing_pull_mirror
     = sprite_icon('chevron-down', css_class: "gl-icon gl-absolute gl-top-3 gl-right-3 gl-text-gray-200")
 
 .js-form-insertion-point

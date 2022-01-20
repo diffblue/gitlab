@@ -28,7 +28,7 @@ describe('DastSiteAuthSection', () => {
   const findParentFormGroup = () => wrapper.findByTestId('dast-site-auth-parent-group');
   const findByNameAttribute = (name) => wrapper.find(`[name="${name}"]`);
   const findAuthForm = () => wrapper.findByTestId('auth-form');
-  const findAuthCheckbox = () => wrapper.find(GlFormCheckbox);
+  const findAuthCheckbox = () => wrapper.findComponent(GlFormCheckbox);
 
   const setAuthentication = ({ enabled }) => {
     findAuthCheckbox().vm.$emit('input', enabled);

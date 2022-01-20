@@ -8,6 +8,8 @@ export const LEADS_PHONE_NUMBER_LABEL = __('Telephone number');
 export const LEADS_COUNTRY_LABEL = __('Country');
 export const LEADS_COUNTRY_PROMPT = __('Please select a country');
 
+export const COUNTRIES_WITH_STATES_ALLOWED = ['US', 'CA'];
+
 export const companySizes = Object.freeze([
   {
     name: '1 - 99',

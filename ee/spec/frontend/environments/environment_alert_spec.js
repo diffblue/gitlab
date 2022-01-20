@@ -20,7 +20,7 @@ describe('Environment Alert', () => {
     });
   };
 
-  const findSeverityBadge = () => wrapper.find(SeverityBadge);
+  const findSeverityBadge = () => wrapper.findComponent(SeverityBadge);
 
   beforeEach(() => {
     factory();

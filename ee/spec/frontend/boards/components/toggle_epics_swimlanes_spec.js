@@ -25,13 +25,13 @@ describe('ToggleEpicsSwimlanes', () => {
 
   describe('dropdownLabel', () => {
     it('displays "None" when isShowingEpicsSwimlanes is false', () => {
-      expect(wrapper.find(GlDropdown).props('text')).toEqual('None');
+      expect(wrapper.findComponent(GlDropdown).props('text')).toEqual('None');
     });
 
     it('returns "Epics" when isShowingEpicsSwimlanes is true', () => {
       store = new Vuex.Store({ state: { isShowingEpicsSwimlanes: true } });
       createComponent();
-      expect(wrapper.find(GlDropdown).props('text')).toEqual('Epic');
+      expect(wrapper.findComponent(GlDropdown).props('text')).toEqual('Epic');
     });
   });
 
@@ -45,8 +45,8 @@ describe('ToggleEpicsSwimlanes', () => {
     });
 
     it('renders dropdown with 2 options', () => {
-      expect(wrapper.find(GlDropdown).exists()).toBe(true);
-      expect(wrapper.findAll(GlDropdownItem).length).toEqual(2);
+      expect(wrapper.findComponent(GlDropdown).exists()).toBe(true);
+      expect(wrapper.findAllComponents(GlDropdownItem).length).toEqual(2);
     });
   });
 });

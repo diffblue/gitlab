@@ -140,7 +140,7 @@ describe('EpicsSwimlanes', () => {
 
     it('renders virtual-list', () => {
       const virtualList = wrapper.findComponent(VirtualList);
-      const scrollableContainer = wrapper.find({ ref: 'scrollableContainer' }).element;
+      const scrollableContainer = wrapper.findComponent({ ref: 'scrollableContainer' }).element;
 
       expect(BoardUtils.calculateSwimlanesBufferSize).toHaveBeenCalledWith(
         wrapper.element.offsetTop,

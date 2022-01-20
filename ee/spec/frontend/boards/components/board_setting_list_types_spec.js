@@ -61,16 +61,18 @@ describe('BoardSettingsListType', () => {
     it('renders gl-avatar-link with correct href', () => {
       createComponent({ activeId: 1, boardListType: 'assignee' });
 
-      expect(wrapper.find(GlAvatarLink).exists()).toBe(true);
-      expect(wrapper.find(GlAvatarLink).attributes('href')).toBe('https://gitlab.com/root');
+      expect(wrapper.findComponent(GlAvatarLink).exists()).toBe(true);
+      expect(wrapper.findComponent(GlAvatarLink).attributes('href')).toBe(
+        'https://gitlab.com/root',
+      );
     });
 
     it('renders gl-avatar-labeled with "root" as username and name as "root"', () => {
       createComponent({ activeId: 1, boardListType: 'assignee' });
 
-      expect(wrapper.find(GlAvatarLabeled).exists()).toBe(true);
-      expect(wrapper.find(GlAvatarLabeled).attributes('label')).toBe('root');
-      expect(wrapper.find(GlAvatarLabeled).attributes('sublabel')).toBe('@root');
+      expect(wrapper.findComponent(GlAvatarLabeled).exists()).toBe(true);
+      expect(wrapper.findComponent(GlAvatarLabeled).attributes('label')).toBe('root');
+      expect(wrapper.findComponent(GlAvatarLabeled).attributes('sublabel')).toBe('@root');
     });
 
     it('renders the correct list type text', () => {

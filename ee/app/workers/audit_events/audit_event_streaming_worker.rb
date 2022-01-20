@@ -4,6 +4,7 @@ module AuditEvents
   class AuditEventStreamingWorker
     include ApplicationWorker
 
+    HEADER_KEY = "X-Gitlab-Event-Streaming-Token"
     REQUEST_BODY_SIZE_LIMIT = 25.megabytes
 
     # Audit Events contains a unique ID so the ingesting system should
@@ -26,7 +27,9 @@ module AuditEvents
 
       group.external_audit_event_destinations.each do |destination|
         Gitlab::HTTP.post(destination.destination_url,
-                          body: Gitlab::Json::LimitedEncoder.encode(audit_event.as_json, limit: REQUEST_BODY_SIZE_LIMIT), use_read_total_timeout: true)
+                          body: Gitlab::Json::LimitedEncoder.encode(audit_event.as_json, limit: REQUEST_BODY_SIZE_LIMIT),
+                          use_read_total_timeout: true,
+                          headers: { HEADER_KEY => destination.verification_token })
       end
     end
 

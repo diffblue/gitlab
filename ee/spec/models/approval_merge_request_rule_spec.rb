@@ -78,7 +78,7 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep do
 
         expect(rule).not_to be_valid
         expect(rule.errors.messages).to eq(rule_type: ['any-approver for the merge request already exists'])
-        expect { rule.save(validate: false) }.to raise_error(ActiveRecord::RecordNotUnique)
+        expect { rule.save!(validate: false) }.to raise_error(ActiveRecord::RecordNotUnique)
       end
     end
   end
@@ -264,7 +264,7 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep do
 
     context 'when project merge_requests_author_approval is true' do
       it 'contains author' do
-        merge_request.project.update(merge_requests_author_approval: true)
+        merge_request.project.update!(merge_requests_author_approval: true)
 
         expect(subject.approvers).to contain_exactly(merge_request.author)
       end
@@ -272,7 +272,7 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep do
 
     context 'when project merge_requests_author_approval is false' do
       before do
-        merge_request.project.update(merge_requests_author_approval: false)
+        merge_request.project.update!(merge_requests_author_approval: false)
       end
 
       it 'does not contain author' do

@@ -33,6 +33,9 @@ export const I18N_CI_MINUTES_PRODUCT_UNIT = s__('Checkout|minutes');
 // Storage addon translations
 export const I18N_STORAGE_PRODUCT_LABEL = s__('Checkout|Storage packs');
 export const I18N_STORAGE_PRODUCT_UNIT = s__('Checkout|GB');
+export const I18N_STORAGE_TOOLTIP_NOTE = s__(
+  'Checkout|Your storage subscription has the same term as your main subscription, and the price is prorated accordingly.',
+);
 
 // Shared addon translations
 export const I18N_DETAILS_STEP_TITLE = s__('Checkout|Purchase details');

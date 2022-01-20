@@ -19,7 +19,7 @@ describe('GroupToken', () => {
   const value = { data: 123 };
   const config = { type: 'foo' };
 
-  const findAuditFilterToken = () => wrapper.find(AuditFilterToken);
+  const findAuditFilterToken = () => wrapper.findComponent(AuditFilterToken);
 
   const initComponent = () => {
     wrapper = shallowMount(GroupToken, {

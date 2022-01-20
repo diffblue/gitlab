@@ -1,18 +1,18 @@
 <script>
-import { GlButton, GlModalDirective, GlSafeHtmlDirective as SafeHtml } from '@gitlab/ui';
+import { GlButton, GlModalDirective, GlSafeHtmlDirective as SafeHtml, GlForm } from '@gitlab/ui';
 import axios from 'axios';
 import * as Sentry from '@sentry/browser';
 import { mapState, mapActions, mapGetters } from 'vuex';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
-  VALIDATE_INTEGRATION_FORM_EVENT,
   I18N_FETCH_TEST_SETTINGS_DEFAULT_ERROR_MESSAGE,
   I18N_DEFAULT_ERROR_MESSAGE,
   I18N_SUCCESSFUL_CONNECTION_MESSAGE,
+  INTEGRATION_FORM_SELECTOR,
   integrationLevels,
 } from '~/integrations/constants';
 import { refreshCurrentPage } from '~/lib/utils/url_utility';
-import eventHub from '../event_hub';
+import csrf from '~/lib/utils/csrf';
 import { testIntegrationSettings } from '../api';
 import ActiveCheckbox from './active_checkbox.vue';
 import ConfirmationModal from './confirmation_modal.vue';
@@ -35,6 +35,7 @@ export default {
     ConfirmationModal,
     ResetConfirmationModal,
     GlButton,
+    GlForm,
   },
   directives: {
     GlModal: GlModalDirective,
@@ -42,10 +43,6 @@ export default {
   },
   mixins: [glFeatureFlagsMixin()],
   props: {
-    formSelector: {
-      type: String,
-      required: true,
-    },
     helpHtml: {
       type: String,
       required: false,
@@ -58,6 +55,7 @@ export default {
       isTesting: false,
       isSaving: false,
       isResetting: false,
+      isValidated: false,
     };
   },
   computed: {
@@ -84,19 +82,40 @@ export default {
     disableButtons() {
       return Boolean(this.isSaving || this.isResetting || this.isTesting);
     },
+    useVueForm() {
+      return this.glFeatures?.vueIntegrationForm;
+    },
+    formContainerProps() {
+      return this.useVueForm
+        ? {
+            ref: 'integrationForm',
+            method: 'post',
+            class: 'gl-mb-3 gl-show-field-errors integration-settings-form',
+            action: this.propsSource.formPath,
+            novalidate: !this.integrationActive,
+          }
+        : {};
+    },
+    formContainer() {
+      return this.useVueForm ? GlForm : 'div';
+    },
   },
   mounted() {
-    // this form element is defined in Haml
-    this.form = document.querySelector(this.formSelector);
+    this.form = this.useVueForm
+      ? this.$refs.integrationForm.$el
+      : document.querySelector(INTEGRATION_FORM_SELECTOR);
   },
   methods: {
-    ...mapActions(['setOverride', 'fetchResetIntegration', 'requestJiraIssueTypes']),
+    ...mapActions(['setOverride', 'requestJiraIssueTypes']),
+    setIsValidated() {
+      this.isValidated = true;
+    },
     onSaveClick() {
       this.isSaving = true;
 
       if (this.integrationActive && !this.form.checkValidity()) {
         this.isSaving = false;
-        eventHub.$emit(VALIDATE_INTEGRATION_FORM_EVENT);
+        this.setIsValidated();
         return;
       }
 
@@ -106,14 +125,14 @@ export default {
       this.isTesting = true;
 
       if (!this.form.checkValidity()) {
-        eventHub.$emit(VALIDATE_INTEGRATION_FORM_EVENT);
+        this.setIsValidated();
         return;
       }
 
       testIntegrationSettings(this.propsSource.testPath, this.getFormData())
         .then(({ data: { error, message = I18N_FETCH_TEST_SETTINGS_DEFAULT_ERROR_MESSAGE } }) => {
           if (error) {
-            eventHub.$emit(VALIDATE_INTEGRATION_FORM_EVENT);
+            this.setIsValidated();
             this.$toast.show(message);
             return;
           }
@@ -152,7 +171,7 @@ export default {
     },
     onToggleIntegrationState(integrationActive) {
       this.integrationActive = integrationActive;
-      if (!this.form) {
+      if (!this.form || this.useVueForm) {
         return;
       }
 
@@ -169,11 +188,23 @@ export default {
     ADD_TAGS: ['use'], // to support icon SVGs
     FORBID_ATTR: [], // This is trusted input so we can override the default config to allow data-* attributes
   },
+  csrf,
 };
 </script>
 
 <template>
-  <div class="gl-mb-3">
+  <component :is="formContainer" v-bind="formContainerProps">
+    <template v-if="useVueForm">
+      <input type="hidden" name="_method" value="put" />
+      <input type="hidden" name="authenticity_token" :value="$options.csrf.token" />
+      <input
+        type="hidden"
+        name="redirect_to"
+        :value="propsSource.redirectTo"
+        data-testid="redirect-to-field"
+      />
+    </template>
+
     <override-dropdown
       v-if="defaultState !== null"
       :inherit-from-id="defaultState.id"
@@ -198,6 +229,7 @@ export default {
           v-if="isJira"
           :key="`${currentKey}-jira-trigger-fields`"
           v-bind="propsSource.triggerFieldsProps"
+          :is-validated="isValidated"
         />
         <trigger-fields
           v-else-if="propsSource.triggerEvents.length"
@@ -209,11 +241,13 @@ export default {
           v-for="field in propsSource.fields"
           :key="`${currentKey}-${field.name}`"
           v-bind="field"
+          :is-validated="isValidated"
         />
         <jira-issues-fields
           v-if="isJira && !isInstanceOrGroupLevel"
           :key="`${currentKey}-jira-issues-fields`"
           v-bind="propsSource.jiraIssuesProps"
+          :is-validated="isValidated"
           @request-jira-issue-types="onRequestJiraIssueTypes"
         />
 
@@ -282,5 +316,5 @@ export default {
         </div>
       </div>
     </div>
-  </div>
+  </component>
 </template>

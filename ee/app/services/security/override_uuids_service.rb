@@ -120,7 +120,8 @@ module Security
     delegate :project, to: :pipeline, private: true
 
     def existing_scanners
-      @existing_scanners ||= project.vulnerability_scanners.index_by(&:external_id)
+      # Reloading the scanners will make sure that the collection proxy will be up-to-date.
+      @existing_scanners ||= project.vulnerability_scanners.reset.index_by(&:external_id)
     end
   end
 end

@@ -441,34 +441,22 @@ RSpec.describe Ci::CreateDownstreamPipelineService, '#execute' do
       end
     end
 
-    context 'when relationship between pipelines is cyclical' do
-      before do
-        pipeline_a = create(:ci_pipeline, project: upstream_project)
-        pipeline_b = create(:ci_pipeline, project: downstream_project)
-        pipeline_c = create(:ci_pipeline, project: upstream_project)
-
-        create_source_pipeline(pipeline_a, pipeline_b)
-        create_source_pipeline(pipeline_b, pipeline_c)
-        create_source_pipeline(pipeline_c, upstream_pipeline)
-      end
-
-      it 'does not create a new pipeline' do
-        expect { service.execute(bridge) }
-          .not_to change { Ci::Pipeline.count }
-      end
-
-      it 'changes status of the bridge build' do
-        service.execute(bridge)
-
-        expect(bridge.reload).to be_failed
-        expect(bridge.failure_reason).to eq 'pipeline_loop_detected'
-      end
-
-      context 'when ci_drop_cyclical_triggered_pipelines is not enabled' do
-        before do
-          stub_feature_flags(ci_drop_cyclical_triggered_pipelines: false)
+    describe 'cyclical dependency detection' do
+      shared_examples 'detects cyclical pipelines' do
+        it 'does not create a new pipeline' do
+          expect { service.execute(bridge) }
+            .not_to change { Ci::Pipeline.count }
         end
 
+        it 'changes status of the bridge build' do
+          service.execute(bridge)
+
+          expect(bridge.reload).to be_failed
+          expect(bridge.failure_reason).to eq 'pipeline_loop_detected'
+        end
+      end
+
+      shared_examples 'passes cyclical pipeline precondition' do
         it 'creates a new pipeline' do
           expect { service.execute(bridge) }
             .to change { Ci::Pipeline.count }
@@ -479,6 +467,73 @@ RSpec.describe Ci::CreateDownstreamPipelineService, '#execute' do
 
           expect(bridge.reload).not_to be_failed
         end
+      end
+
+      context 'when pipeline ancestry contains 2 cycles of dependencies' do
+        before do
+          # A(push on master) -> B(pipeline on master) -> A(push on master) ->
+          #   B(pipeline on master) -> A(push on master)
+          pipeline_1 = create(:ci_pipeline, project: upstream_project, source: :push)
+          pipeline_2 = create(:ci_pipeline, project: downstream_project, source: :pipeline)
+          pipeline_3 = create(:ci_pipeline, project: upstream_project, source: :push)
+          pipeline_4 = create(:ci_pipeline, project: downstream_project, source: :pipeline)
+
+          create_source_pipeline(pipeline_1, pipeline_2)
+          create_source_pipeline(pipeline_2, pipeline_3)
+          create_source_pipeline(pipeline_3, pipeline_4)
+          create_source_pipeline(pipeline_4, upstream_pipeline)
+        end
+
+        it_behaves_like 'detects cyclical pipelines'
+
+        context 'when ci_drop_cyclical_triggered_pipelines is not enabled' do
+          before do
+            stub_feature_flags(ci_drop_cyclical_triggered_pipelines: false)
+          end
+
+          it_behaves_like 'passes cyclical pipeline precondition'
+        end
+      end
+
+      context 'when source in the ancestry differ' do
+        before do
+          # A(push on master) -> B(pipeline on master) -> A(pipeline on master)
+          pipeline_1 = create(:ci_pipeline, project: upstream_project, source: :push)
+          pipeline_2 = create(:ci_pipeline, project: downstream_project, source: :pipeline)
+          upstream_pipeline.update!(source: :pipeline)
+
+          create_source_pipeline(pipeline_1, pipeline_2)
+          create_source_pipeline(pipeline_2, upstream_pipeline)
+        end
+
+        it_behaves_like 'passes cyclical pipeline precondition'
+      end
+
+      context 'when ref in the ancestry differ' do
+        before do
+          # A(push on master) -> B(pipeline on master) -> A(push on feature-1)
+          pipeline_1 = create(:ci_pipeline, ref: 'master', project: upstream_project, source: :push)
+          pipeline_2 = create(:ci_pipeline, ref: 'master', project: downstream_project, source: :pipeline)
+          upstream_pipeline.update!(ref: 'feature-1')
+
+          create_source_pipeline(pipeline_1, pipeline_2)
+          create_source_pipeline(pipeline_2, upstream_pipeline)
+        end
+
+        it_behaves_like 'passes cyclical pipeline precondition'
+      end
+
+      context 'when only 1 cycle is detected' do
+        before do
+          # A(push on master) -> B(pipeline on master) -> A(push on master)
+          pipeline_1 = create(:ci_pipeline, ref: 'master', project: upstream_project, source: :push)
+          pipeline_2 = create(:ci_pipeline, ref: 'master', project: downstream_project, source: :pipeline)
+
+          create_source_pipeline(pipeline_1, pipeline_2)
+          create_source_pipeline(pipeline_2, upstream_pipeline)
+        end
+
+        it_behaves_like 'passes cyclical pipeline precondition'
       end
     end
 
@@ -604,7 +659,7 @@ RSpec.describe Ci::CreateDownstreamPipelineService, '#execute' do
     context 'when configured with bridge job rules' do
       before do
         stub_ci_pipeline_yaml_file(config)
-        downstream_project.add_maintainer(upstream_project.owner)
+        downstream_project.add_maintainer(upstream_project.first_owner)
       end
 
       let(:config) do
@@ -622,13 +677,13 @@ RSpec.describe Ci::CreateDownstreamPipelineService, '#execute' do
       end
 
       let(:primary_pipeline) do
-        Ci::CreatePipelineService.new(upstream_project, upstream_project.owner, { ref: 'master' })
+        Ci::CreatePipelineService.new(upstream_project, upstream_project.first_owner, { ref: 'master' })
           .execute(:push, save_on_errors: false)
           .payload
       end
 
       let(:bridge)  { primary_pipeline.processables.find_by(name: 'bridge-job') }
-      let(:service) { described_class.new(upstream_project, upstream_project.owner) }
+      let(:service) { described_class.new(upstream_project, upstream_project.first_owner) }
 
       context 'that include the bridge job' do
         it 'creates the downstream pipeline' do

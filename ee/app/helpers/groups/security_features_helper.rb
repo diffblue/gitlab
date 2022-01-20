@@ -46,8 +46,7 @@ module Groups::SecurityFeaturesHelper
       },
       link: {
         main: new_trial_registration_path(glm_source: 'gitlab.com', glm_content: content),
-        secondary: group_billings_path(group.root_ancestor, source: content),
-        feedback: 'https://gitlab.com/gitlab-org/growth/ui-ux/issues/25'
+        secondary: group_billings_path(group.root_ancestor, source: content)
       }
     }
 

@@ -221,7 +221,7 @@ the [reviewer values](https://about.gitlab.com/handbook/engineering/workflow/rev
 - [Geo development](geo.md)
 - [Redis guidelines](redis.md)
   - [Adding a new Redis instance](redis/new_redis_instance.md)
-- [Sidekiq guidelines](sidekiq_style_guide.md) for working with Sidekiq workers
+- [Sidekiq guidelines](sidekiq/index.md) for working with Sidekiq workers
 - [Working with Gitaly](gitaly.md)
 - [Elasticsearch integration docs](elasticsearch.md)
 - [Working with Merge Request diffs](diffs.md)
@@ -264,8 +264,7 @@ the [reviewer values](https://about.gitlab.com/handbook/engineering/workflow/rev
 - [Caching guidelines](caching.md) for using caching in Rails under a GitLab environment.
 - [Merge request performance guidelines](merge_request_performance_guidelines.md)
   for ensuring merge requests do not negatively impact GitLab performance
-- [Profiling](profiling.md) a URL, measuring performance using Sherlock, or
-  tracking down N+1 queries using Bullet.
+- [Profiling](profiling.md) a URL or tracking down N+1 queries using Bullet.
 - [Cached queries guidelines](cached_queries.md), for tracking down N+1 queries
   masked by query caching, memory profiling and why should we avoid cached
   queries.

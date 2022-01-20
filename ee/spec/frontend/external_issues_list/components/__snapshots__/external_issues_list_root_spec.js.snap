@@ -149,7 +149,7 @@ Object {
         "ascending": "updated_asc",
         "descending": "updated_desc",
       },
-      "title": "Last updated",
+      "title": "Updated date",
     },
   ],
   "tabCounts": null,

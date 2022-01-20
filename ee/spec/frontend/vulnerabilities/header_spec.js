@@ -82,11 +82,11 @@ describe('Vulnerability Header', () => {
     return user;
   };
 
-  const findGlButton = () => wrapper.find(GlButton);
-  const findSplitButton = () => wrapper.find(SplitButton);
-  const findBadge = () => wrapper.find(GlBadge);
-  const findResolutionAlert = () => wrapper.find(ResolutionAlert);
-  const findStatusDescription = () => wrapper.find(StatusDescription);
+  const findGlButton = () => wrapper.findComponent(GlButton);
+  const findSplitButton = () => wrapper.findComponent(SplitButton);
+  const findBadge = () => wrapper.findComponent(GlBadge);
+  const findResolutionAlert = () => wrapper.findComponent(ResolutionAlert);
+  const findStatusDescription = () => wrapper.findComponent(StatusDescription);
 
   const createWrapper = ({ vulnerability = {}, apolloProvider }) => {
     wrapper = shallowMount(Header, {
@@ -139,7 +139,7 @@ describe('Vulnerability Header', () => {
       });
 
       it(`emits the updated vulnerability properly - ${action}`, async () => {
-        const dropdown = wrapper.find(VulnerabilityStateDropdown);
+        const dropdown = wrapper.findComponent(VulnerabilityStateDropdown);
         dropdown.vm.$emit('change', { action });
 
         await waitForPromises();
@@ -149,7 +149,7 @@ describe('Vulnerability Header', () => {
       });
 
       it(`emits an event when the state is changed - ${action}`, async () => {
-        const dropdown = wrapper.find(VulnerabilityStateDropdown);
+        const dropdown = wrapper.findComponent(VulnerabilityStateDropdown);
         dropdown.vm.$emit('change', { action });
 
         await waitForPromises();
@@ -175,7 +175,7 @@ describe('Vulnerability Header', () => {
       });
 
       it('when the vulnerability state changes but the API call fails, an error message is displayed', async () => {
-        const dropdown = wrapper.find(VulnerabilityStateDropdown);
+        const dropdown = wrapper.findComponent(VulnerabilityStateDropdown);
         dropdown.vm.$emit('change', { action });
 
         await waitForPromises();

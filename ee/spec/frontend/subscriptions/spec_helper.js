@@ -23,7 +23,7 @@ export function createMockApolloProvider(mockResponses = {}, dataset = {}) {
       [plansQuery, plansQueryMock],
       [orderPreviewQuery, orderPreviewQueryMock],
     ],
-    { ...customersDotResolvers },
+    customersDotResolvers,
   );
 
   const apolloProvider = new VueApollo({

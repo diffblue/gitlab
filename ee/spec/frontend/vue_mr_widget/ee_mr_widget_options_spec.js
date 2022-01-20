@@ -386,7 +386,7 @@ describe('ee merge request widget options', () => {
 
         it('should render performance issue body component', (done) => {
           setImmediate(() => {
-            expect(wrapper.find(PerformanceIssueBody).exists()).toBe(true);
+            expect(wrapper.findComponent(PerformanceIssueBody).exists()).toBe(true);
             done();
           });
         });
@@ -533,7 +533,7 @@ describe('ee merge request widget options', () => {
         });
 
         it('should render performance issue body component', () => {
-          expect(wrapper.find(PerformanceIssueBody).exists()).toBe(true);
+          expect(wrapper.findComponent(PerformanceIssueBody).exists()).toBe(true);
         });
 
         describe('text connector', () => {

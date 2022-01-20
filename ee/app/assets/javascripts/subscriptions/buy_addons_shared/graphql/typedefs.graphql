@@ -1,13 +1,13 @@
 type Plan {
-  id: ID
-  name: String
-  code: String
-  pricePerYear: Int
-  label: String
-  isAddon: Boolean
-  hasExpiration: Boolean
-  productUnit: String
-  quantityPerPack: String
+  id: Int!
+  name: String!
+  code: String!
+  pricePerYear: Int!
+  label: String!
+  isAddon: Boolean!
+  hasExpiration: Boolean!
+  productUnit: String!
+  quantityPerPack: String!
 }
 
 enum PlanTag {

@@ -179,6 +179,7 @@ export default {
           :subscription="subscription"
           :sync-did-fail="syncDidFail"
           data-testid="subscription-details"
+          data-qa-selector="subscription_details"
         >
           <template v-if="shouldShowFooter" #footer>
             <div class="gl-display-flex gl-flex-wrap gl-align-items-flex-start">

@@ -50,7 +50,7 @@ module Security
                         project_fingerprint: project_fingerprint,
                         primary_identifier_id: identifier_ids.first,
                         location: report_finding.location_data,
-                        location_fingerprint: report_finding.location.fingerprint
+                        location_fingerprint: report_finding.location_fingerprint
                       )
       end
     end

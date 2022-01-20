@@ -229,6 +229,9 @@
   - "vendor/assets/**/*"
   - "{,ee/,jh/}{app/assets,app/helpers,app/presenters,app/views,locale,public,symbol}/**/*"
 
+.controllers-patterns: &controllers-patterns
+  - "{,ee/,jh/}{app/controllers}/**/*"
+
 .startup-css-patterns: &startup-css-patterns
   - "{,ee/,jh/}app/assets/stylesheets/startup/**/*"
 
@@ -280,7 +283,7 @@
   - ".dockerignore"
   - "qa/**/*"
 
-# Code patterns + .ci-patterns + .workhorse-patterns
+# Code patterns + .ci-patterns
 .code-patterns: &code-patterns
   - "{package.json,yarn.lock}"
   - ".browserslistrc"
@@ -597,9 +600,13 @@
     - <<: *if-stable-branch-refs
       when: never
     - <<: *if-merge-request-labels-as-if-jh
+      allow_failure: true
     - <<: *if-merge-request-labels-run-all-rspec
+      allow_failure: true
     - changes: *code-backstage-qa-patterns
+      allow_failure: true
     - changes: *startup-css-patterns
+      allow_failure: true
 
 .frontend:rules:default-frontend-jobs:
   rules:
@@ -634,11 +641,15 @@
     - <<: *if-stable-branch-refs
       when: never
     - <<: *if-merge-request-labels-as-if-jh
+      allow_failure: true
     - <<: *if-merge-request-labels-run-all-rspec
+      allow_failure: true
     - <<: *if-merge-request
       changes: *startup-css-patterns
+      allow_failure: true
     - <<: *if-merge-request
       changes: *ci-patterns
+      allow_failure: true
 
 .frontend:rules:jest:
   rules:
@@ -929,6 +940,8 @@
     - <<: *if-merge-request
       changes: *core-backend-patterns
     - <<: *if-merge-request
+      changes: *workhorse-patterns
+    - <<: *if-merge-request
       changes: *ci-patterns
     - <<: *if-automated-merge-request
       changes: *code-backstage-patterns
@@ -952,6 +965,9 @@
       changes: *core-backend-patterns
       when: never
     - <<: *if-merge-request
+      changes: *workhorse-patterns
+      when: never
+    - <<: *if-merge-request
       changes: *ci-patterns
       when: never
     - <<: *if-merge-request
@@ -964,32 +980,7 @@
       changes: *core-backend-patterns
     - <<: *if-merge-request
       changes: *ci-patterns
-    - <<: *if-automated-merge-request
-      changes: ["config/**/*"]
-    - <<: *if-security-merge-request
-      changes: ["config/**/*"]
-    - <<: *if-merge-request-not-approved
-      when: never
     - changes: ["config/**/*"]
-
-.rails:rules:ee-and-foss-fast_spec_helper:minimal:
-  rules:
-    - <<: *if-merge-request-approved
-      when: never
-    - <<: *if-automated-merge-request
-      when: never
-    - <<: *if-security-merge-request
-      when: never
-    - <<: *if-merge-request-labels-run-all-rspec
-      when: never
-    - <<: *if-merge-request
-      changes: *core-backend-patterns
-      when: never
-    - <<: *if-merge-request
-      changes: *ci-patterns
-      when: never
-    - <<: *if-merge-request
-      changes: ["config/**/*"]
 
 .rails:rules:code-backstage-qa:
   rules:
@@ -1121,6 +1112,8 @@
     - <<: *if-merge-request
       changes: *core-backend-patterns
     - <<: *if-merge-request
+      changes: *workhorse-patterns
+    - <<: *if-merge-request
       changes: *ci-patterns
     - <<: *if-automated-merge-request
       changes: *code-backstage-patterns
@@ -1144,6 +1137,9 @@
       when: never
     - <<: *if-merge-request
       changes: *core-backend-patterns
+      when: never
+    - <<: *if-merge-request
+      changes: *workhorse-patterns
       when: never
     - <<: *if-merge-request
       changes: *ci-patterns
@@ -1273,6 +1269,8 @@
     - <<: *if-merge-request
       changes: *core-backend-patterns
     - <<: *if-merge-request
+      changes: *workhorse-patterns
+    - <<: *if-merge-request
       changes: *ci-patterns
     - <<: *if-automated-merge-request
       changes: *code-backstage-patterns
@@ -1295,6 +1293,9 @@
       when: never
     - <<: *if-merge-request
       changes: *core-backend-patterns
+      when: never
+    - <<: *if-merge-request
+      changes: *workhorse-patterns
       when: never
     - <<: *if-merge-request
       changes: *ci-patterns
@@ -1614,11 +1615,13 @@
     - <<: *if-dot-com-gitlab-org-merge-request
       changes: *frontend-patterns
     - <<: *if-dot-com-gitlab-org-merge-request
+      changes: *controllers-patterns
+    - <<: *if-dot-com-gitlab-org-merge-request
+      changes: *qa-patterns
+    - <<: *if-dot-com-gitlab-org-merge-request
       changes: *code-patterns
       when: manual
       allow_failure: true
-    - <<: *if-dot-com-gitlab-org-merge-request
-      changes: *qa-patterns
     - <<: *if-dot-com-gitlab-org-schedule
       variables:
         KNAPSACK_GENERATE_REPORT: "true"
@@ -1793,9 +1796,13 @@
     - <<: *if-stable-branch-refs
       when: never
     - <<: *if-merge-request-labels-as-if-jh
+      allow_failure: true
     - <<: *if-merge-request-labels-run-all-rspec
+      allow_failure: true
     - changes: *code-backstage-qa-patterns
+      allow_failure: true
     - changes: *startup-css-patterns
+      allow_failure: true
 
 #######################
 # Test metadata rules #

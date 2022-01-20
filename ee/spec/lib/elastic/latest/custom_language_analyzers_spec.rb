@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-require 'fast_spec_helper'
-require 'rspec-parameterized'
+require 'spec_helper'
 
 RSpec.describe Elastic::Latest::CustomLanguageAnalyzers do
   describe '.custom_analyzers_mappings' do

@@ -69,7 +69,7 @@ describe('SubscriptionTable component', () => {
     });
 
     it('shows loading icon', () => {
-      expect(wrapper.find(GlLoadingIcon).isVisible()).toBeTruthy();
+      expect(wrapper.findComponent(GlLoadingIcon).isVisible()).toBeTruthy();
     });
 
     it('dispatches the correct actions', () => {
@@ -90,7 +90,7 @@ describe('SubscriptionTable component', () => {
     });
 
     it('should render a "Usage" and a "Billing" row', () => {
-      expect(wrapper.findAll(SubscriptionTableRow)).toHaveLength(2);
+      expect(wrapper.findAllComponents(SubscriptionTableRow)).toHaveLength(2);
     });
   });
 

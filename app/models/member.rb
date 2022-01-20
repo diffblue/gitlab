@@ -18,15 +18,15 @@ class Member < ApplicationRecord
   AVATAR_SIZE = 40
   ACCESS_REQUEST_APPROVERS_TO_BE_NOTIFIED_LIMIT = 10
 
-  STATE_CREATED = 0
+  STATE_ACTIVE = 0
   STATE_AWAITING = 1
-  STATE_ACTIVE = 2
 
   attr_accessor :raw_invite_token
 
   belongs_to :created_by, class_name: "User"
   belongs_to :user
   belongs_to :source, polymorphic: true # rubocop:disable Cop/PolymorphicAssociations
+  belongs_to :member_namespace, inverse_of: :namespace_members, foreign_key: 'member_namespace_id', class_name: 'Namespace'
   has_one :member_task
 
   delegate :name, :username, :email, :last_activity_on, to: :user, prefix: true

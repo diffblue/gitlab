@@ -1,11 +1,10 @@
 <script>
-import { GlIcon, GlPopover, GlBadge } from '@gitlab/ui';
+import { GlPopover, GlBadge } from '@gitlab/ui';
 import IssueLink from 'ee/vulnerabilities/components/issue_link.vue';
 import { n__ } from '~/locale';
 
 export default {
   components: {
-    GlIcon,
     GlBadge,
     GlPopover,
     IssueLink,
@@ -37,8 +36,7 @@ export default {
 
 <template>
   <div class="gl-display-inline-block">
-    <gl-badge ref="issueBadge" class="gl-px-3">
-      <gl-icon name="issues" class="gl-mr-2" />
+    <gl-badge ref="issueBadge" icon="issues" class="gl-px-3">
       {{ numberOfIssues }}
     </gl-badge>
     <gl-popover ref="popover" :target="issueBadgeEl" placement="top">

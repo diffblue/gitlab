@@ -196,7 +196,7 @@ gem 'acts-as-taggable-on', '~> 9.0'
 
 # Background jobs
 gem 'sidekiq', '~> 6.3'
-gem 'sidekiq-cron', '~> 1.0'
+gem 'sidekiq-cron', '~> 1.2'
 gem 'redis-namespace', '~> 1.8.1'
 gem 'gitlab-sidekiq-fetcher', '0.8.0', require: 'sidekiq-reliable-fetch'
 
@@ -295,7 +295,7 @@ gem 'gon', '~> 6.4.0'
 gem 'request_store', '~> 1.5'
 gem 'base32', '~> 0.3.0'
 
-gem 'gitlab-license', '~> 2.0'
+gem 'gitlab-license', '~> 2.1.0'
 
 # Protect against bruteforcing
 gem 'rack-attack', '~> 6.3.0'
@@ -392,8 +392,6 @@ group :development, :test do
 
   gem 'parallel', '~> 1.19', require: false
 
-  gem 'rblineprof', '~> 0.3.6', platform: :mri, require: false
-
   gem 'test_file_finder', '~> 0.1.3'
 end
 
@@ -470,7 +468,7 @@ gem 'net-ntp'
 
 # SSH host key support
 gem 'net-ssh', '~> 6.0'
-gem 'sshkey', '~> 2.0'
+gem 'ssh_data', '~> 1.2'
 
 # Required for ED25519 SSH host key support
 group :ed25519 do

@@ -7,6 +7,35 @@ RSpec.describe Sidebars::Projects::Menus::IssuesMenu do
   let(:user) { project.owner }
   let(:context) { Sidebars::Projects::Context.new(current_user: user, container: project) }
 
+  describe '#render?' do
+    let_it_be_with_refind(:project) { create(:project, has_external_issue_tracker: true) }
+    let_it_be(:jira) { create(:jira_integration, project: project, project_key: 'GL') }
+
+    let(:context) { Sidebars::Projects::Context.new(current_user: user, container: project, jira_issues_integration: jira_issues_integration) }
+    let(:jira_issues_integration) { true }
+
+    subject { described_class.new(context).render? }
+
+    context 'when user cannot read issues and Jira is not enabled' do
+      let(:user) { nil }
+      let(:jira_issues_integration) { false }
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when user cannot read issues but Jira is enabled' do
+      let(:user) { nil }
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when Jira is not enabled but user can read issues' do
+      let(:jira_issues_integration) { false }
+
+      it { is_expected.to eq(true) }
+    end
+  end
+
   describe 'Iterations' do
     subject { described_class.new(context).renderable_items.index { |e| e.item_id == :iterations} }
 

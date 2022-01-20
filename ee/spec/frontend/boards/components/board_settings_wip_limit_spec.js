@@ -18,7 +18,7 @@ describe('BoardSettingsWipLimit', () => {
   const clickEdit = () => wrapper.find('.js-edit-button').vm.$emit('click');
   const findRemoveWipLimit = () => wrapper.find('.js-remove-limit');
   const findWipLimit = () => wrapper.find('.js-wip-limit');
-  const findInput = () => wrapper.find(GlFormInput);
+  const findInput = () => wrapper.findComponent(GlFormInput);
 
   const createComponent = ({
     vuexState = { activeId: listId },

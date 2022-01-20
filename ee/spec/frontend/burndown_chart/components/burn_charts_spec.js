@@ -20,15 +20,17 @@ describe('burndown_chart', () => {
   let wrapper;
   let mock;
 
-  const findFilterLabel = () => wrapper.find({ ref: 'filterLabel' });
-  const findIssuesButton = () => wrapper.find({ ref: 'totalIssuesButton' });
-  const findWeightButton = () => wrapper.find({ ref: 'totalWeightButton' });
+  const findFilterLabel = () => wrapper.findComponent({ ref: 'filterLabel' });
+  const findIssuesButton = () => wrapper.findComponent({ ref: 'totalIssuesButton' });
+  const findWeightButton = () => wrapper.findComponent({ ref: 'totalWeightButton' });
   const findActiveButtons = () =>
-    wrapper.findAll(GlButton).filter((button) => button.attributes().category === 'primary');
-  const findBurndownChart = () => wrapper.find(BurndownChart);
-  const findBurnupChart = () => wrapper.find(BurnupChart);
-  const findOldBurndownChartButton = () => wrapper.find({ ref: 'oldBurndown' });
-  const findNewBurndownChartButton = () => wrapper.find({ ref: 'newBurndown' });
+    wrapper
+      .findAllComponents(GlButton)
+      .filter((button) => button.attributes().category === 'primary');
+  const findBurndownChart = () => wrapper.findComponent(BurndownChart);
+  const findBurnupChart = () => wrapper.findComponent(BurnupChart);
+  const findOldBurndownChartButton = () => wrapper.findComponent({ ref: 'oldBurndown' });
+  const findNewBurndownChartButton = () => wrapper.findComponent({ ref: 'newBurndown' });
 
   const defaultProps = {
     fullPath: 'gitlab-org/subgroup',
@@ -146,7 +148,7 @@ describe('burndown_chart', () => {
       },
     });
 
-    expect(wrapper.find(OpenTimeboxSummary).props()).toEqual({
+    expect(wrapper.findComponent(OpenTimeboxSummary).props()).toEqual({
       iterationId: 'gid://gitlab/Iteration/11',
       displayValue: 'count',
       namespaceType: 'group',
@@ -167,7 +169,7 @@ describe('burndown_chart', () => {
       },
     });
 
-    expect(wrapper.find(TimeboxSummaryCards).exists()).toBe(true);
+    expect(wrapper.findComponent(TimeboxSummaryCards).exists()).toBe(true);
   });
 
   it('uses burndown data computed from burnup data', () => {

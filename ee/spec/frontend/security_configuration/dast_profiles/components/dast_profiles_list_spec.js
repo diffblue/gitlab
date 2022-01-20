@@ -59,7 +59,7 @@ describe('EE - DastProfilesList', () => {
   const getErrorDetails = () => withinComponent().queryByRole('list', { name: /error details/i });
   const getDeleteButtonWithin = (element) =>
     createWrapper(within(element).queryByTestId('dast-profile-delete-button'));
-  const getModal = () => wrapper.find(GlModal);
+  const getModal = () => wrapper.findComponent(GlModal);
   const getDeleteTooltip = () => wrapper.find('[data-testid="dast-profile-delete-tooltip"');
 
   afterEach(() => {

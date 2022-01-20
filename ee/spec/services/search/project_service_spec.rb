@@ -13,24 +13,27 @@ RSpec.describe Search::ProjectService do
 
   context 'when a single project provided' do
     it_behaves_like 'EE search service shared examples', ::Gitlab::ProjectSearchResults, ::Gitlab::Elastic::ProjectSearchResults do
+      let_it_be(:scope) { create(:project) }
+
       let(:user) { scope.owner }
-      let(:scope) { create(:project) }
       let(:service) { described_class.new(scope, user, params) }
     end
   end
 
   context 'when a multiple projects provided' do
     it_behaves_like 'EE search service shared examples', ::Gitlab::ProjectSearchResults, ::Gitlab::Elastic::SearchResults do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:scope) { create_list(:project, 3, namespace: group) }
+
       let(:user) { group.owner }
-      let(:group) { create(:group) }
-      let(:scope) { create_list(:project, 3, namespace: group) }
-      let(:service) { described_class.new( scope, user, params) }
+      let(:service) { described_class.new(scope, user, params) }
     end
   end
 
   context 'default branch support' do
+    let_it_be(:scope) { create(:project) }
+
     let(:user) { scope.owner }
-    let(:scope) { create(:project) }
     let(:service) { described_class.new(scope, user, params) }
 
     describe '#use_default_branch?' do
@@ -98,6 +101,7 @@ RSpec.describe Search::ProjectService do
       it 'respects visibility' do
         enable_admin_mode!(user) if admin_mode
         projects.each do |project|
+          project.update!(visibility_level: Gitlab::VisibilityLevel.level_value(project_level.to_s))
           update_feature_access_level(project, feature_access_level)
         end
 
@@ -110,9 +114,9 @@ RSpec.describe Search::ProjectService do
     end
 
     let_it_be(:group) { create(:group) }
+    let_it_be_with_reload(:project) { create(:project, namespace: group) }
+    let_it_be_with_reload(:project2) { create(:project) }
 
-    let!(:project) { create(:project, project_level, namespace: group) }
-    let!(:project2) { create(:project, project_level) }
     let(:user) { create_user_from_membership(project, membership) }
     let(:projects) { [project, project2] }
 
@@ -132,8 +136,8 @@ RSpec.describe Search::ProjectService do
     end
 
     context 'blob and commit' do
-      let!(:project) { create(:project, project_level, :repository, namespace: group ) }
-      let!(:project2) { create(:project, project_level, :repository) }
+      let_it_be_with_reload(:project) { create(:project, :repository, namespace: group ) }
+      let_it_be_with_reload(:project2) { create(:project, :repository) }
 
       where(:project_level, :feature_access_level, :membership, :admin_mode, :expected_count) do
         permission_table_for_guest_feature_access_and_non_private_project_only
@@ -188,8 +192,9 @@ RSpec.describe Search::ProjectService do
       end
 
       context 'on commits' do
-        let!(:project) { create(:project, project_level, :repository, namespace: group ) }
-        let!(:project2) { create(:project, project_level, :repository) }
+        let_it_be_with_reload(:project) { create(:project, :repository, namespace: group ) }
+        let_it_be_with_reload(:project2) { create(:project, :repository) }
+
         let!(:note) { create :note_on_commit, project: project }
         let!(:note2) { create :note_on_commit, project: project2, note: note.note }
 
@@ -237,7 +242,8 @@ RSpec.describe Search::ProjectService do
     end
 
     context 'wiki' do
-      let!(:project) { create(:project, project_level, :wiki_repo) }
+      let_it_be_with_reload(:project) { create(:project, :wiki_repo) }
+
       let(:projects) { [project] }
       let(:scope) { 'wiki_blobs' }
       let(:search) { 'term' }
@@ -267,8 +273,9 @@ RSpec.describe Search::ProjectService do
         it "respects visibility" do
           enable_admin_mode!(user) if admin_mode
           project.update!(
-            'issues_access_level' => issues_access_level,
-            'merge_requests_access_level' => merge_requests_access_level
+            visibility_level: Gitlab::VisibilityLevel.level_value(project_level.to_s),
+            issues_access_level: issues_access_level,
+            merge_requests_access_level: merge_requests_access_level
           )
 
           ensure_elasticsearch_index!

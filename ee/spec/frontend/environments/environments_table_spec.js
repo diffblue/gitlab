@@ -44,6 +44,6 @@ describe('Environment table', () => {
       shallowMount,
     );
 
-    expect(wrapper.find(EnvironmentAlert).exists()).toBe(true);
+    expect(wrapper.findComponent(EnvironmentAlert).exists()).toBe(true);
   });
 });

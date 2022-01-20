@@ -26,7 +26,7 @@ describe('EE - DastSavedScansList', () => {
     createWrapper({ branch, editPath });
 
     expect(wrapper.text()).toContain(branch.name);
-    expect(wrapper.find(GlIcon).props('name')).toBe('branch');
+    expect(wrapper.findComponent(GlIcon).props('name')).toBe('branch');
   });
 
   describe('branch does not exist', () => {
@@ -37,11 +37,11 @@ describe('EE - DastSavedScansList', () => {
 
     it('renders a warning message', () => {
       expect(wrapper.text()).toContain('Branch missing');
-      expect(wrapper.find(GlIcon).props('name')).toBe('warning');
+      expect(wrapper.findComponent(GlIcon).props('name')).toBe('warning');
     });
 
     it('renders the edit link', () => {
-      const link = wrapper.find(GlLink);
+      const link = wrapper.findComponent(GlLink);
       expect(link.text()).toBe('Select branch');
       expect(link.attributes('href')).toBe(scanWithInexistingBranch.editPath);
     });

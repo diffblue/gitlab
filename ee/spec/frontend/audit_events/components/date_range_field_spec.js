@@ -16,8 +16,8 @@ describe('DateRangeField component', () => {
   const startDate = parsePikadayDate('2020-03-13');
   const endDate = parsePikadayDate('2020-03-14');
 
-  const findDatePicker = () => wrapper.find(GlDaterangePicker);
-  const findDateRangeButtons = () => wrapper.find(DateRangeButtons);
+  const findDatePicker = () => wrapper.findComponent(GlDaterangePicker);
+  const findDateRangeButtons = () => wrapper.findComponent(DateRangeButtons);
 
   const createComponent = (props = {}, stubs = {}) => {
     wrapper = shallowMount(DateRangeField, {

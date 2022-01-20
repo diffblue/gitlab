@@ -1,10 +1,10 @@
-import { GlAlert, GlLoadingIcon, GlTable } from '@gitlab/ui';
+import { GlAlert, GlLoadingIcon, GlTable, GlLink } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
 import * as Sentry from '@sentry/browser';
+import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import ComplianceReport from 'ee/compliance_dashboard/components/report.vue';
-import EmptyState from 'ee/compliance_dashboard/components/empty_state.vue';
 import MergeRequestDrawer from 'ee/compliance_dashboard/components/drawer.vue';
 import MergeCommitsExportButton from 'ee/compliance_dashboard/components/merge_requests/merge_commits_export_button.vue';
 import ViolationReason from 'ee/compliance_dashboard/components/violations/reason.vue';
@@ -25,7 +25,6 @@ describe('ComplianceReport component', () => {
   let mockResolver;
 
   const mergeCommitsCsvExportPath = '/csv';
-  const emptyStateSvgPath = 'empty.svg';
   const groupPath = 'group-path';
   const defaultQuery = {
     projectIds: ['gid://gitlab/Project/20'],
@@ -34,11 +33,11 @@ describe('ComplianceReport component', () => {
   };
   const mockGraphQlError = new Error('GraphQL networkError');
 
-  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findSubheading = () => wrapper.findByTestId('subheading');
   const findErrorMessage = () => wrapper.findComponent(GlAlert);
   const findViolationsTable = () => wrapper.findComponent(GlTable);
+  const findTableLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findMergeRequestDrawer = () => wrapper.findComponent(MergeRequestDrawer);
-  const findEmptyState = () => wrapper.findComponent(EmptyState);
   const findMergeCommitsExportButton = () => wrapper.findComponent(MergeCommitsExportButton);
   const findViolationReason = () => wrapper.findComponent(ViolationReason);
   const findTimeAgoTooltip = () => wrapper.findComponent(TimeAgoTooltip);
@@ -60,20 +59,22 @@ describe('ComplianceReport component', () => {
   }
 
   const createComponent = (mountFn = shallowMount, props = {}) => {
-    return mountFn(ComplianceReport, {
-      apolloProvider: createMockApolloProvider(),
-      propsData: {
-        mergeCommitsCsvExportPath,
-        emptyStateSvgPath,
-        groupPath,
-        defaultQuery,
-        ...props,
-      },
-      stubs: {
-        GlTable: false,
-        ViolationFilter: stubComponent(ViolationFilter),
-      },
-    });
+    return extendedWrapper(
+      mountFn(ComplianceReport, {
+        apolloProvider: createMockApolloProvider(),
+        propsData: {
+          mergeCommitsCsvExportPath,
+          groupPath,
+          defaultQuery,
+          ...props,
+        },
+        stubs: {
+          GlLink,
+          GlTable: false,
+          ViolationFilter: stubComponent(ViolationFilter),
+        },
+      }),
+    );
   };
 
   afterEach(() => {
@@ -81,16 +82,40 @@ describe('ComplianceReport component', () => {
     mockResolver = null;
   });
 
-  describe('loading', () => {
+  describe('default behavior', () => {
     beforeEach(() => {
       wrapper = createComponent();
     });
 
-    it('renders the loading icon', () => {
-      expect(findLoadingIcon().exists()).toBe(true);
+    it('renders the subheading with a help link', () => {
+      const helpLink = findSubheading().find(GlLink);
+
+      expect(findSubheading().text()).toContain(
+        'The compliance report shows the merge request violations merged in protected environments.',
+      );
+      expect(helpLink.text()).toBe('Learn more.');
+      expect(helpLink.attributes('href')).toBe(
+        '/help/user/compliance/compliance_report/index.md#approval-status-and-separation-of-duties',
+      );
+    });
+
+    it('renders the merge commit export button', () => {
+      expect(findMergeCommitsExportButton().exists()).toBe(true);
+    });
+
+    it('does not render an error message', () => {
       expect(findErrorMessage().exists()).toBe(false);
-      expect(findViolationsTable().exists()).toBe(false);
-      expect(findViolationFilter().exists()).toBe(false);
+    });
+  });
+
+  describe('when initializing', () => {
+    beforeEach(() => {
+      wrapper = createComponent(mount);
+    });
+
+    it('renders the table loading icon', () => {
+      expect(findViolationsTable().exists()).toBe(true);
+      expect(findTableLoadingIcon().exists()).toBe(true);
     });
   });
 
@@ -104,10 +129,9 @@ describe('ComplianceReport component', () => {
     it('renders the error message', async () => {
       await waitForPromises();
 
-      expect(findLoadingIcon().exists()).toBe(false);
       expect(findErrorMessage().exists()).toBe(true);
-      expect(findErrorMessage().props('title')).toBe(
-        'Retrieving the compliance report failed. Please refresh the page and try again.',
+      expect(findErrorMessage().text()).toBe(
+        'Retrieving the compliance report failed. Refresh the page and try again.',
       );
       expect(Sentry.captureException.mock.calls[0][0].networkError).toBe(mockGraphQlError);
     });
@@ -121,14 +145,8 @@ describe('ComplianceReport component', () => {
       return waitForPromises();
     });
 
-    it('renders the merge commit export button', () => {
-      expect(findMergeCommitsExportButton().exists()).toBe(true);
-    });
-
-    it('renders the violations table', async () => {
-      expect(findLoadingIcon().exists()).toBe(false);
-      expect(findErrorMessage().exists()).toBe(false);
-      expect(findViolationsTable().exists()).toBe(true);
+    it('does not render the table loading icon', () => {
+      expect(findTableLoadingIcon().exists()).toBe(false);
     });
 
     it('has the correct table headers', () => {
@@ -261,18 +279,13 @@ describe('ComplianceReport component', () => {
           nodes: [],
         },
       });
-      wrapper = createComponent();
+      wrapper = createComponent(mount);
 
       return waitForPromises();
     });
 
-    it('does not render the violations table', () => {
-      expect(findViolationsTable().exists()).toBe(false);
-    });
-
-    it('renders the empty state', () => {
-      expect(findEmptyState().exists()).toBe(true);
-      expect(findEmptyState().props('imagePath')).toBe(emptyStateSvgPath);
+    it('renders the empty table message', () => {
+      expect(findViolationsTable().text()).toContain('No violations found');
     });
   });
 
