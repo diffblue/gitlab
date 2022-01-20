@@ -42,22 +42,14 @@ RSpec.describe 'projects/edit' do
   end
 
   describe 'prompt user about registration features' do
-    let(:message) { s_("RegistrationFeatures|Want to %{feature_title} for free?") % { feature_title: s_('RegistrationFeatures|use this feature') } }
-
     context 'with no license and service ping disabled' do
       before do
         allow(License).to receive(:current).and_return(nil)
         stub_application_setting(usage_ping_enabled: false)
-
-        render
       end
 
-      it 'renders registration features CTA' do
-        expect(rendered).to have_content(message)
-        expect(rendered).to have_link(s_('RegistrationFeatures|Registration Features Program'))
-        expect(rendered).to have_link(s_('RegistrationFeatures|Enable Service Ping and register for this feature.'))
-        expect(rendered).to have_field('project_disabled_repository_size_limit', disabled: true)
-      end
+      it_behaves_like 'renders registration features prompt', :project_disabled_repository_size_limit
+      it_behaves_like 'renders registration features settings link'
     end
 
     context 'with a valid license and service ping disabled' do
@@ -65,13 +57,9 @@ RSpec.describe 'projects/edit' do
         license = build(:license)
         allow(License).to receive(:current).and_return(license)
         stub_application_setting(usage_ping_enabled: false)
-
-        render
       end
 
-      it 'does not render registration features CTA' do
-        expect(rendered).not_to have_content(message)
-      end
+      it_behaves_like 'does not render registration features prompt', :project_disabled_repository_size_limit
     end
   end
 end
