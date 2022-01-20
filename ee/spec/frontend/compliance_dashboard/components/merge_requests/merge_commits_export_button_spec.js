@@ -9,12 +9,12 @@ const CSV_EXPORT_PATH = '/merge_commit_reports';
 describe('MergeCommitsExportButton component', () => {
   let wrapper;
 
-  const findCommitForm = () => wrapper.find(GlForm);
-  const findCommitInput = () => wrapper.find(GlFormInput);
-  const findCommitInputGroup = () => wrapper.find(GlFormGroup);
+  const findCommitForm = () => wrapper.findComponent(GlForm);
+  const findCommitInput = () => wrapper.findComponent(GlFormInput);
+  const findCommitInputGroup = () => wrapper.findComponent(GlFormGroup);
   const findCommitInputFeedback = () => wrapper.find('.invalid-feedback');
   const findCommitExportButton = () => wrapper.find('[data-test-id="merge-commit-submit-button"]');
-  const findCsvExportButton = () => wrapper.find({ ref: 'listMergeCommitsButton' });
+  const findCsvExportButton = () => wrapper.findComponent({ ref: 'listMergeCommitsButton' });
 
   const createComponent = ({ mountFn = shallowMount, data = {} } = {}) => {
     return mountFn(MergeCommitsExportButton, {

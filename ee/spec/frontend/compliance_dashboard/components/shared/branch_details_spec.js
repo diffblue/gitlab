@@ -35,7 +35,7 @@ describe('BranchDetails component', () => {
       });
 
       it('has no links', () => {
-        expect(wrapper.find(GlLink).exists()).toBe(false);
+        expect(wrapper.findComponent(GlLink).exists()).toBe(false);
       });
 
       it('has the correct text', () => {
@@ -49,7 +49,7 @@ describe('BranchDetails component', () => {
       });
 
       it('has one link', () => {
-        expect(wrapper.findAll(GlLink)).toHaveLength(1);
+        expect(wrapper.findAllComponents(GlLink)).toHaveLength(1);
       });
 
       it('has a link to the target branch', () => {
@@ -67,7 +67,7 @@ describe('BranchDetails component', () => {
       });
 
       it('has two links', () => {
-        expect(wrapper.findAll(GlLink)).toHaveLength(2);
+        expect(wrapper.findAllComponents(GlLink)).toHaveLength(2);
       });
 
       it('has a link to the source branch', () => {

@@ -7,7 +7,7 @@ describe('ApprovalStatus component', () => {
   let wrapper;
 
   const findIcon = () => wrapper.find('.ci-icon');
-  const findLink = () => wrapper.find(GlLink);
+  const findLink = () => wrapper.findComponent(GlLink);
 
   const createComponent = (status) => {
     return shallowMount(Approval, {
