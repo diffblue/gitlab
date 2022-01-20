@@ -25,17 +25,17 @@ describe('EE - ApiFuzzingConfigurationForm', () => {
 
   const findEnableAuthenticationCheckbox = () =>
     wrapper.findByTestId('api-fuzzing-enable-authentication-checkbox');
-  const findTargetUrlInput = () => wrapper.findAll(FormInput).at(0);
-  const findScanModeInput = () => wrapper.findAll(DropdownInput).at(0);
-  const findSpecificationFileInput = () => wrapper.findAll(FormInput).at(1);
+  const findTargetUrlInput = () => wrapper.findAllComponents(FormInput).at(0);
+  const findScanModeInput = () => wrapper.findAllComponents(DropdownInput).at(0);
+  const findSpecificationFileInput = () => wrapper.findAllComponents(FormInput).at(1);
   const findAuthenticationNotice = () => wrapper.findByTestId('api-fuzzing-authentication-notice');
-  const findAuthenticationFields = () => wrapper.find(DynamicFields);
-  const findScanProfileDropdownInput = () => wrapper.findAll(DropdownInput).at(1);
+  const findAuthenticationFields = () => wrapper.findComponent(DynamicFields);
+  const findScanProfileDropdownInput = () => wrapper.findAllComponents(DropdownInput).at(1);
   const findScanProfileYamlViewer = () =>
     wrapper.findByTestId('api-fuzzing-scan-profile-yaml-viewer');
   const findSubmitButton = () => wrapper.findByTestId('api-fuzzing-configuration-submit-button');
   const findCancelButton = () => wrapper.findByTestId('api-fuzzing-configuration-cancel-button');
-  const findConfigurationSnippetModal = () => wrapper.find(ConfigurationSnippetModal);
+  const findConfigurationSnippetModal = () => wrapper.findComponent(ConfigurationSnippetModal);
 
   const setFormData = async () => {
     findTargetUrlInput().vm.$emit('input', 'https://gitlab.com');
@@ -104,7 +104,7 @@ describe('EE - ApiFuzzingConfigurationForm', () => {
     });
 
     it('by default, the specification file input is hidden', () => {
-      expect(wrapper.findAll(FormInput)).toHaveLength(1);
+      expect(wrapper.findAllComponents(FormInput)).toHaveLength(1);
     });
 
     describe.each(Object.keys(SCAN_MODES))('when %s scan mode is selected', (scanMode) => {

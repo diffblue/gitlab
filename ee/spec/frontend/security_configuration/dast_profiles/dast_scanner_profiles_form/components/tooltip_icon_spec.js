@@ -6,7 +6,7 @@ import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 describe('Tooltip Icon', () => {
   let wrapper;
 
-  const findIcon = () => wrapper.find(GlIcon);
+  const findIcon = () => wrapper.findComponent(GlIcon);
   const title = 'Hello world';
 
   const createComponent = (props = {}, mountFn = shallowMount) => {

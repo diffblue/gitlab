@@ -39,8 +39,8 @@ describe('DropdownInput component', () => {
   const findToggle = () => wrapper.find('button');
   const findLabel = () => wrapper.find('label');
   const findDescription = () => wrapper.findByTestId('dropdown-input-description');
-  const findInputComponent = () => wrapper.find(GlDropdown);
-  const findRestoreDefaultLink = () => wrapper.find(GlLink);
+  const findInputComponent = () => wrapper.findComponent(GlDropdown);
+  const findRestoreDefaultLink = () => wrapper.findComponent(GlLink);
   const findSectionHeader = () => wrapper.findByTestId('dropdown-input-section-header');
 
   afterEach(() => {

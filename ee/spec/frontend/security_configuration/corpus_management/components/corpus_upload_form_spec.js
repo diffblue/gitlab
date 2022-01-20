@@ -10,7 +10,7 @@ describe('Corpus upload modal', () => {
   const findUploadAttachment = () => wrapper.find('[data-testid="upload-attachment-button"]');
   const findUploadCorpus = () => wrapper.find('[data-testid="upload-corpus"]');
   const findUploadStatus = () => wrapper.find('[data-testid="upload-status"]');
-  const findFileInput = () => wrapper.find({ ref: 'fileUpload' });
+  const findFileInput = () => wrapper.findComponent({ ref: 'fileUpload' });
   const findCancelButton = () => wrapper.find('[data-testid="cancel-upload"]');
 
   const createComponent = (propsData, options = {}) => {

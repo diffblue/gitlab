@@ -16,7 +16,7 @@ describe('AnalyzerConfiguration component', () => {
   };
 
   const findInputElement = () => wrapper.find('input[type="checkbox"]');
-  const findDynamicFields = () => wrapper.find(DynamicFields);
+  const findDynamicFields = () => wrapper.findComponent(DynamicFields);
 
   beforeEach(() => {
     [entity] = makeAnalyzerEntities(1);

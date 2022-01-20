@@ -6,7 +6,7 @@ import { SCAN_TYPE } from 'ee/security_configuration/dast_profiles/dast_scanner_
 describe('EE - DastScanTypeBadge', () => {
   let wrapper;
 
-  const findBadge = () => wrapper.find(GlBadge);
+  const findBadge = () => wrapper.findComponent(GlBadge);
 
   const wrapperFactory = (mountFn = shallowMount) => (options = {}) => {
     wrapper = mountFn(DastScanTypeBadge, options);

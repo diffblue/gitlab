@@ -21,8 +21,8 @@ describe('EE - ApiFuzzingConfigurationApp', () => {
   const createMockApolloProvider = (handler) =>
     createMockApollo([[apiFuzzingCiConfigurationQuery, handler]]);
 
-  const findLoadingSpinner = () => wrapper.find(GlLoadingIcon);
-  const findConfigurationForm = () => wrapper.find(ConfigurationForm);
+  const findLoadingSpinner = () => wrapper.findComponent(GlLoadingIcon);
+  const findConfigurationForm = () => wrapper.findComponent(ConfigurationForm);
 
   const createWrapper = (options) => {
     wrapper = shallowMount(
@@ -80,7 +80,7 @@ describe('EE - ApiFuzzingConfigurationApp', () => {
     });
 
     it('includes a link to API fuzzing documentation ', () => {
-      const link = wrapper.find(GlLink);
+      const link = wrapper.findComponent(GlLink);
       expect(link.exists()).toBe(true);
       expect(link.attributes('href')).toBe('/api_fuzzing/documentation/path');
     });
