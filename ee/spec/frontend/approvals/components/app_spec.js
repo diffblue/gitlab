@@ -30,7 +30,7 @@ describe('EE Approvals App', () => {
   };
   const findAddButton = () => wrapper.find('[data-testid="add-approval-rule"]');
   const findResetButton = () => wrapper.find('[data-testid="reset-to-defaults"]');
-  const findLoadingIcon = () => wrapper.find(GlLoadingIcon);
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findRules = () => wrapper.find(`.${TEST_RULES_CLASS}`);
 
   beforeEach(() => {
@@ -104,7 +104,7 @@ describe('EE Approvals App', () => {
     it('renders create modal', () => {
       factory();
 
-      const modal = wrapper.find(ModalRuleCreate);
+      const modal = wrapper.findComponent(ModalRuleCreate);
 
       expect(modal.exists()).toBe(true);
       expect(modal.props('modalId')).toBe(`${APP_PREFIX}-approvals-create-modal`);
@@ -113,7 +113,7 @@ describe('EE Approvals App', () => {
     it('renders delete modal', () => {
       factory();
 
-      const modal = wrapper.find(ModalRuleRemove);
+      const modal = wrapper.findComponent(ModalRuleRemove);
 
       expect(modal.exists()).toBe(true);
       expect(modal.props('modalId')).toBe(`${APP_PREFIX}-approvals-remove-modal`);

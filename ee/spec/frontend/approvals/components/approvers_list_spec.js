@@ -37,7 +37,7 @@ describe('ApproversList', () => {
     it('renders empty', () => {
       factory();
 
-      expect(wrapper.find(ApproversListEmpty).exists()).toBe(true);
+      expect(wrapper.findComponent(ApproversListEmpty).exists()).toBe(true);
       expect(wrapper.find('ul').exists()).toBe(false);
     });
   });
@@ -51,7 +51,7 @@ describe('ApproversList', () => {
       factory();
 
       const items = wrapper
-        .findAll(ApproversListItem)
+        .findAllComponents(ApproversListItem)
         .wrappers.map((item) => item.props('approver'));
 
       expect(items).toEqual(TEST_APPROVERS);
@@ -61,7 +61,7 @@ describe('ApproversList', () => {
       it(`when remove (${idx}), emits new input`, () => {
         factory();
 
-        const item = wrapper.findAll(ApproversListItem).at(idx);
+        const item = wrapper.findAllComponents(ApproversListItem).at(idx);
         item.vm.$emit('remove', approver);
 
         return wrapper.vm.$nextTick().then(() => {

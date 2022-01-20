@@ -56,11 +56,13 @@ describe('EE Approvals MREditApp', () => {
     });
 
     it('does not render MR rules', () => {
-      expect(wrapper.find(MRRules).findAll('.js-name')).toHaveLength(0);
+      expect(wrapper.findComponent(MRRules).findAll('.js-name')).toHaveLength(0);
     });
 
     it('renders hidden inputs', () => {
-      expect(wrapper.find('.js-approval-rules').find(MRRulesHiddenInputs).exists()).toBe(true);
+      expect(wrapper.find('.js-approval-rules').findComponent(MRRulesHiddenInputs).exists()).toBe(
+        true,
+      );
     });
   });
 
@@ -71,14 +73,16 @@ describe('EE Approvals MREditApp', () => {
       store.modules.approvals.state.rules = [{ id: 7, approvers: [] }];
 
       factory();
-      expect(wrapper.find(MRRules).findAll('.js-name')).toHaveLength(1);
+      expect(wrapper.findComponent(MRRules).findAll('.js-name')).toHaveLength(1);
     });
 
     it('renders hidden inputs', () => {
       store.modules.approvals.state.rules = [{ id: 7, approvers: [] }];
 
       factory();
-      expect(wrapper.find('.js-approval-rules').find(MRRulesHiddenInputs).exists()).toBe(true);
+      expect(wrapper.find('.js-approval-rules').findComponent(MRRulesHiddenInputs).exists()).toBe(
+        true,
+      );
     });
 
     describe('summary text', () => {

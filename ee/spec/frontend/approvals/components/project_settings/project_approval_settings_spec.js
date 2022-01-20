@@ -14,7 +14,7 @@ describe('ProjectApprovalSettings', () => {
   let wrapper;
   let store;
 
-  const findApprovalSettings = () => wrapper.find(ApprovalSettings);
+  const findApprovalSettings = () => wrapper.findComponent(ApprovalSettings);
 
   const setupStore = (data = {}) => {
     store = createStore({

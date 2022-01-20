@@ -25,24 +25,26 @@ describe('Approval Check Popover', () => {
     });
 
     it('should render the documentation link', () => {
-      expect(wrapper.find(GlPopover).find(GlLink).attributes('href')).toBe(documentationLink);
+      expect(wrapper.findComponent(GlPopover).findComponent(GlLink).attributes('href')).toBe(
+        documentationLink,
+      );
     });
   });
 
   describe('without a documentation link', () => {
     it('should not render the documentation link', () => {
-      expect(wrapper.find(GlPopover).find(GlLink).exists()).toBeFalsy();
+      expect(wrapper.findComponent(GlPopover).findComponent(GlLink).exists()).toBeFalsy();
     });
   });
 
   it('renders an Icon with an id that matches the Popover target', () => {
-    expect(wrapper.find(GlPopover).props().target).toBe(
-      wrapper.find(GlIcon).element.getAttribute('id'),
+    expect(wrapper.findComponent(GlPopover).props().target).toBe(
+      wrapper.findComponent(GlIcon).element.getAttribute('id'),
     );
   });
 
   it('should render gl-popover with correct props', () => {
-    expect(wrapper.find(GlPopover).props()).toMatchObject({
+    expect(wrapper.findComponent(GlPopover).props()).toMatchObject({
       title,
       target: `reportInfo-${title}`,
       placement: 'top',

@@ -23,8 +23,8 @@ const getRowData = (tr) => {
   const approvalsRequired = findCell(tr, 'approvals-required');
   return {
     name: name.text(),
-    approvers: members.find(UserAvatarList).props('items'),
-    approvalsRequired: approvalsRequired.find(RuleInput).props('rule').approvalsRequired,
+    approvers: members.findComponent(UserAvatarList).props('items'),
+    approvalsRequired: approvalsRequired.findComponent(RuleInput).props('rule').approvalsRequired,
   };
 };
 
@@ -71,7 +71,7 @@ describe('Approvals ProjectRules', () => {
         })),
       );
 
-      expect(wrapper.findComponent(Rules).findAll(RuleName).length).toBe(rows.length);
+      expect(wrapper.findComponent(Rules).findAllComponents(RuleName).length).toBe(rows.length);
     });
 
     it('should always have any_approver rule', () => {
@@ -99,7 +99,7 @@ describe('Approvals ProjectRules', () => {
 
     it('does not render name', () => {
       expect(findCell(row, 'name').exists()).toBe(false);
-      expect(wrapper.findComponent(Rules).find(RuleName).exists()).toBe(false);
+      expect(wrapper.findComponent(Rules).findComponent(RuleName).exists()).toBe(false);
     });
 
     it('should only display 1 rule', () => {
@@ -119,7 +119,7 @@ describe('Approvals ProjectRules', () => {
 
     beforeEach(() => {
       factory();
-      rows = wrapper.find(Rules).findAll('tbody tr');
+      rows = wrapper.findComponent(Rules).findAll('tbody tr');
     });
 
     it('should not render the popover for a standard approval group', () => {
@@ -130,7 +130,7 @@ describe('Approvals ProjectRules', () => {
     });
 
     it('should render the unconfigured-security-rules component', () => {
-      expect(wrapper.find(UnconfiguredSecurityRules).exists()).toBe(true);
+      expect(wrapper.findComponent(UnconfiguredSecurityRules).exists()).toBe(true);
     });
   });
 
@@ -145,7 +145,7 @@ describe('Approvals ProjectRules', () => {
     });
 
     it(`should render the unconfigured-security-rules component`, () => {
-      expect(wrapper.find(UnconfiguredSecurityRules).exists()).toBe(true);
+      expect(wrapper.findComponent(UnconfiguredSecurityRules).exists()).toBe(true);
     });
   });
 });

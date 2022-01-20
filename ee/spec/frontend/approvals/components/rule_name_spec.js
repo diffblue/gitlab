@@ -37,12 +37,12 @@ describe('RuleName component', () => {
     });
 
     it(`should ${hasTooltip ? '' : 'not'} render the tooltip`, () => {
-      expect(wrapper.find(GlPopover).exists()).toBe(hasTooltip);
-      expect(wrapper.find(GlIcon).exists()).toBe(hasTooltip);
+      expect(wrapper.findComponent(GlPopover).exists()).toBe(hasTooltip);
+      expect(wrapper.findComponent(GlIcon).exists()).toBe(hasTooltip);
     });
 
     it(`should ${hasLink ? '' : 'not'} render the tooltip more info link`, () => {
-      expect(wrapper.find(GlLink).exists()).toBe(hasLink);
+      expect(wrapper.findComponent(GlLink).exists()).toBe(hasLink);
     });
 
     it('should render the name', () => {
