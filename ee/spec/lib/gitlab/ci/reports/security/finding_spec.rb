@@ -472,4 +472,48 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding do
 
     it { is_expected.to eq([finding_2, finding_1, finding_3]) }
   end
+
+  describe '#location_fingerprint' do
+    let(:signature_1) { ::Gitlab::Ci::Reports::Security::FindingSignature.new(algorithm_type: 'location', signature_value: 'value1') }
+    let(:signature_2) { ::Gitlab::Ci::Reports::Security::FindingSignature.new(algorithm_type: 'scope_offset', signature_value: 'value2') }
+    let(:location) { build(:ci_reports_security_locations_sast) }
+    let(:finding) { build(:ci_reports_security_finding, vulnerability_finding_signatures_enabled: signatures_enabled, signatures: signatures, location: location) }
+
+    let(:fingerprint_from_location) { location.fingerprint }
+    let(:fingerprint_from_signature) { signature_2.signature_hex }
+
+    subject { finding.location_fingerprint }
+
+    context 'when the signatures feature is enabled' do
+      let(:signatures_enabled) { true }
+
+      context 'when the signatures are empty' do
+        let(:signatures) { [] }
+
+        it { is_expected.to eq(fingerprint_from_location) }
+      end
+
+      context 'when the signatures are not empty' do
+        let(:signatures) { [signature_1, signature_2] }
+
+        it { is_expected.to eq(fingerprint_from_signature) }
+      end
+    end
+
+    context 'when the signatures feature is not enabled' do
+      let(:signatures_enabled) { false }
+
+      context 'when the signatures are empty' do
+        let(:signatures) { [] }
+
+        it { is_expected.to eq(fingerprint_from_location) }
+      end
+
+      context 'when the signatures are not empty' do
+        let(:signatures) { [signature_1, signature_2] }
+
+        it { is_expected.to eq(fingerprint_from_location) }
+      end
+    end
+  end
 end
