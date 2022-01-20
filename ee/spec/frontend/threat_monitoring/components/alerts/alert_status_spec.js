@@ -13,8 +13,8 @@ describe('AlertStatus', () => {
     mutate: jest.fn(),
   };
 
-  const findStatusDropdown = () => wrapper.find(GlDropdown);
-  const findFirstStatusOption = () => findStatusDropdown().find(GlDropdownItem);
+  const findStatusDropdown = () => wrapper.findComponent(GlDropdown);
+  const findFirstStatusOption = () => findStatusDropdown().findComponent(GlDropdownItem);
 
   const selectFirstStatusOption = () => {
     findFirstStatusOption().vm.$emit('click');

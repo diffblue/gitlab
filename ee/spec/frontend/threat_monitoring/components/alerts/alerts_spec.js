@@ -5,7 +5,7 @@ import AlertsList from 'ee/threat_monitoring/components/alerts/alerts_list.vue';
 describe('Alerts component', () => {
   let wrapper;
 
-  const findAlertsList = () => wrapper.find(AlertsList);
+  const findAlertsList = () => wrapper.findComponent(AlertsList);
 
   const createWrapper = () => {
     wrapper = shallowMount(Alerts);

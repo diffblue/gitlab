@@ -22,7 +22,7 @@ describe('PolicyRuleEntity component', () => {
     wrapper.destroy();
   });
 
-  const findDropdown = () => wrapper.find(GlDropdown);
+  const findDropdown = () => wrapper.findComponent(GlDropdown);
 
   describe("when value has 'all' entity", () => {
     beforeEach(() => {
@@ -31,7 +31,9 @@ describe('PolicyRuleEntity component', () => {
 
     it('selects all items', () => {
       const dropdown = findDropdown();
-      const selectedItems = dropdown.findAll(GlDropdownItem).filter((el) => el.props('isChecked'));
+      const selectedItems = dropdown
+        .findAllComponents(GlDropdownItem)
+        .filter((el) => el.props('isChecked'));
       expect(selectedItems.length).toEqual(Object.keys(EntityTypes).length);
       expect(dropdown.props('text')).toEqual('All selected');
     });
@@ -48,7 +50,7 @@ describe('PolicyRuleEntity component', () => {
     it("emits change with 'all' entity", () => {
       const dropdown = findDropdown();
       dropdown
-        .findAll(GlDropdownItem)
+        .findAllComponents(GlDropdownItem)
         .filter((el) => el.text() === EntityTypes.HOST)
         .at(0)
         .vm.$emit('click');

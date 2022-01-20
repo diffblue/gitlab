@@ -46,7 +46,7 @@ describe('StatisticsHistory component', () => {
     wrapper.destroy();
   });
 
-  const findChart = () => wrapper.find(GlAreaChart);
+  const findChart = () => wrapper.findComponent(GlAreaChart);
 
   describe('the data passed to the chart', () => {
     beforeEach(() => {
