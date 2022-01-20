@@ -76,7 +76,7 @@ describe('GeoNodeForm Store Actions', () => {
   });
 
   describe('receiveSaveGeoNodeError', () => {
-    const defaultErrorMessage = 'There was an error saving this Geo Node.';
+    const defaultErrorMessage = 'There was an error saving this Geo Site';
 
     it('when message passed it builds the error message correctly', () => {
       return testAction(

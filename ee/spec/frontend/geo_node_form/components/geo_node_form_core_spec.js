@@ -101,9 +101,9 @@ describe('GeoNodeFormCore', () => {
     describe('errors', () => {
       describe.each`
         data               | showError | errorMessage
-        ${null}            | ${true}   | ${"Node name can't be blank"}
-        ${''}              | ${true}   | ${"Node name can't be blank"}
-        ${STRING_OVER_255} | ${true}   | ${'Node name should be between 1 and 255 characters'}
+        ${null}            | ${true}   | ${"Site name can't be blank"}
+        ${''}              | ${true}   | ${"Site name can't be blank"}
+        ${STRING_OVER_255} | ${true}   | ${'Site name should be between 1 and 255 characters'}
         ${'Test'}          | ${false}  | ${null}
       `(`Name Field`, ({ data, showError, errorMessage }) => {
         beforeEach(() => {

@@ -124,7 +124,7 @@ export const MOCK_SECONDARY_SYNC_INFO = [
 export const MOCK_NODES = [
   {
     id: 1,
-    name: 'Test Node 1',
+    name: 'Test Site 1',
     url: 'http://127.0.0.1:3001/',
     primary: true,
     enabled: true,
@@ -144,7 +144,7 @@ export const MOCK_NODES = [
   },
   {
     id: 2,
-    name: 'Test Node 2',
+    name: 'Test Site 2',
     url: 'http://127.0.0.1:3002/',
     primary: false,
     enabled: true,
@@ -181,7 +181,7 @@ export const MOCK_NODES = [
 export const MOCK_NODES_RES = [
   {
     id: 1,
-    name: 'Test Node 1',
+    name: 'Test Site 1',
     url: 'http://127.0.0.1:3001/',
     primary: true,
     enabled: true,
@@ -189,7 +189,7 @@ export const MOCK_NODES_RES = [
   },
   {
     id: 2,
-    name: 'Test Node 2',
+    name: 'Test Site 2',
     url: 'http://127.0.0.1:3002/',
     primary: false,
     enabled: true,
