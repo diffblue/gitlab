@@ -509,6 +509,7 @@ You can filter by the following:
 - Milestone
 - My Reaction
 - Release
+- Type (issue/incident) ([introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/268152) in GitLab 14.6)
 - Weight
 
 #### Filtering issues in a group board
