@@ -78,19 +78,18 @@ export default {
       />
     </gl-form-group>
     <section
-      class="gl-display-flex gl-align-items-center gl-p-5 gl-mt-6 gl-bg-gray-10 gl-border-t-solid gl-border-b-solid gl-border-t-1 gl-border-b-1 gl-border-gray-100"
+      class="gl-display-flex gl-align-items-center gl-p-5 gl-mt-6 gl-bg-gray-10 gl-border-t-solid gl-border-t-1 gl-border-gray-100"
     >
       <gl-button
         data-testid="settingsSaveButton"
         data-qa-selector="add_node_button"
-        variant="success"
+        class="gl-mr-5"
+        variant="info"
         :disabled="formHasError"
         @click="updateGeoSettings"
         >{{ __('Save changes') }}</gl-button
       >
-      <gl-button data-testid="settingsCancelButton" class="gl-ml-auto" @click="redirect">{{
-        __('Cancel')
-      }}</gl-button>
+      <gl-button data-testid="settingsCancelButton" @click="redirect">{{ __('Cancel') }}</gl-button>
     </section>
   </form>
 </template>
