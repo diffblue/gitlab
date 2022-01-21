@@ -54,15 +54,6 @@ module EE
       class_methods do
         extend ::Gitlab::Utils::Override
 
-        override :usage_data_counters
-        def usage_data_counters
-          super + [
-            ::Gitlab::UsageDataCounters::LicensesList,
-            ::Gitlab::StatusPage::UsageDataCounters::IncidentCounter,
-            ::Gitlab::UsageDataCounters::NetworkPolicyCounter
-          ]
-        end
-
         override :uncached_data
         def uncached_data
           with_finished_at(:recording_ee_finished_at) do
