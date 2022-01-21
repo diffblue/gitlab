@@ -55,7 +55,7 @@ RSpec.describe 'Project Subscriptions', :js do
       end
 
       expect(page).to have_content(upstream_project.name)
-      expect(page).to have_content(upstream_project.owner.name)
+      expect(page).to have_content(upstream_project.namespace.name)
     end
 
     expect(page).to have_content('Subscription successfully created.')

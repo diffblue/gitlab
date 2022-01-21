@@ -5,8 +5,8 @@
     = link_to project.name, project_path(project)
   %td
     .gl-display-flex.gl-align-items-center
-      = avatar_without_link(project.owner, size: 32)
-      = project.owner.name
+      = avatar_without_link(project.namespace, size: 32)
+      = project.namespace.name
   - if is_upstream_mode
     %td.gl-text-right
       = link_to project_subscription_path(@project, subscription.id), method: :delete, data: { toggle: 'tooltip', title: tooltip, container: 'body', testid: 'delete-subscription' }, class: "gl-button btn btn-danger" do
