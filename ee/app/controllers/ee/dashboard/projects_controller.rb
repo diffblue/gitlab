@@ -41,11 +41,9 @@ module EE
         finder_params = { aimed_for_deletion: true }
 
         unless current_user.can_admin_all_resources?
-          # only list projects with at least owner access if the user is not an admin
           finder_params[:min_access_level] = ::Gitlab::Access::OWNER
 
           if ::Gitlab::CurrentSettings.should_check_namespace_plan?
-            # only list projects that have delayed deletion feature available
             finder_params[:feature_available] = :adjourned_deletion_for_projects_and_groups
           end
         end
