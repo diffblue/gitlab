@@ -7,13 +7,15 @@
 
 - aws\/credentials$
 
-# RSA DSA ECSDA and ED25519 SSH keys
+# RSA, DSA, ECSDA, ED25519, ECDSA_SK, ED25519_SK SSH keys
 
-- (ssh|config)\/(personal|server)_(rsa|dsa|ed\d+|ecdsa)
+- (ssh|config)\/(personal|server)_(rsa|dsa|ed25519|ecdsa|ecdsa_sk|ed25519_sk)
 - id_rsa$
 - id_dsa$
 - id_ed25519$
 - id_ecdsa$
+- id_ecdsa_sk$
+- id_ed25519_sk$
 
 # privatekey.pem and secret.key
 
