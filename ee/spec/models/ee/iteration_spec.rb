@@ -40,6 +40,28 @@ RSpec.describe Iteration do
     end
   end
 
+  describe '#display_text' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:iterations_cadence) { create(:iterations_cadence, title: "Plan cadence", group: group) }
+    let_it_be(:iteration) { create(:iteration, iterations_cadence: iterations_cadence, start_date: Date.new(2022, 9, 30), due_date: Date.new(2022, 10, 4)) }
+
+    subject { iteration.display_text }
+
+    before do
+      stub_feature_flags(iteration_cadences: false)
+    end
+
+    it { is_expected.to eq('Sep 30, 2022 - Oct 4, 2022') }
+
+    context 'when iteration_cadences FF enabled' do
+      before do
+        stub_feature_flags(iteration_cadences: true)
+      end
+
+      it { is_expected.to eq('Plan cadence Sep 30, 2022 - Oct 4, 2022') }
+    end
+  end
+
   describe '.reference_pattern' do
     let_it_be(:group) { create(:group) }
     let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group) }

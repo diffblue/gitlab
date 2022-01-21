@@ -149,6 +149,12 @@ module EE
       end
     end
 
+    def display_text
+      return period unless group.iteration_cadences_feature_flag_enabled?
+
+      "#{iterations_cadence.title} #{period}"
+    end
+
     def state
       STATE_ENUM_MAP.key(state_enum)
     end
@@ -294,6 +300,10 @@ module EE
       title_exists = relation.find_by_title(title)
 
       errors.add(:title, _('already being used for another iteration within this cadence.')) if title_exists
+    end
+
+    def period
+      "#{start_date.to_s(:medium)} - #{due_date.to_s(:medium)}"
     end
   end
 end

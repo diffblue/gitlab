@@ -1,1 +1,1 @@
-<%= _('Iteration changed to') %> <%= @iteration.name %><% if date_range = timebox_date_range(@iteration) %> (<%= date_range %>)<% end %> ( <%= @iteration_url %> )
+<%= _('Iteration changed to') %> <%= @iteration.display_text %> (<%= @iteration.title %>) ( <%= @iteration_url %> )
