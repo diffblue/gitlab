@@ -19,6 +19,8 @@ module Registrations::Verification
     end
 
     def set_requires_verification
+      return if current_user.credit_card_validation.present?
+
       ::Users::UpdateService.new(current_user, user: current_user, requires_credit_card_verification: true).execute!
     end
   end
