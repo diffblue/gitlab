@@ -4,7 +4,7 @@ module Gitlab
   module Analytics
     module CycleAnalytics
       module Summary
-        class LeadTimeForChanges
+        class LeadTimeForChanges < BaseTime
           def initialize(stage:, current_user:, options:)
             @stage = stage
             @current_user = current_user

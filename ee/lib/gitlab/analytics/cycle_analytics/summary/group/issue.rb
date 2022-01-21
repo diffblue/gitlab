@@ -14,6 +14,10 @@ module Gitlab
               @options = options
             end
 
+            def identifier
+              :issues
+            end
+
             def title
               n_('New Issue', 'New Issues', value.to_i)
             end

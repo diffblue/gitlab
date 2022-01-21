@@ -14,6 +14,13 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::Group::StageSummary d
     group.add_owner(user)
   end
 
+  describe '#identifier' do
+    it 'returns identifiers for each metric' do
+      identifiers = subject.pluck(:identifier)
+      expect(identifiers).to eq(%i[issues deploys deployment_frequency])
+    end
+  end
+
   describe "#new_issues" do
     context 'with from date' do
       before do

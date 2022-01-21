@@ -12,6 +12,10 @@ module Gitlab
               n_('Deploy', 'Deploys', value.to_i)
             end
 
+            def identifier
+              :deploys
+            end
+
             def value
               @value ||= ::Gitlab::CycleAnalytics::Summary::Value::PrettyNumeric.new(deployments_count)
             end

@@ -23,6 +23,13 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary do
     group.add_owner(user)
   end
 
+  describe '#identifier' do
+    it 'returns identifiers for each metric' do
+      identifiers = subject.pluck(:identifier)
+      expect(identifiers).to eq(%i[lead_time cycle_time])
+    end
+  end
+
   context 'when the use_aggregated_data_collector option is given' do
     context 'when aggregated data is available yet' do
       it 'shows no value' do
