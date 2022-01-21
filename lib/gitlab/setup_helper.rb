@@ -113,7 +113,7 @@ module Gitlab
               # sidekiq jobs, and concurrency will be low anyway in test.
               git: {
                 catfile_cache_size: 5,
-                bin_path: File.expand_path(File.join(gitaly_dir, '_build', 'deps', 'git', 'install', 'bin', 'git'))
+                use_bundled_binaries: true
               },
               prometheus_listen_addr: prometheus_listen_addr
             }.compact
