@@ -1,0 +1,18 @@
+data_category: optional
+key_path: counts.users_clicking_license_testing_visiting_external_website
+description: Total number of clicks on licence-compliance details to visit external information website
+product_section: sec
+product_stage: secure
+product_group: group::static analysis
+product_category: dependency_scanning
+value_type: number
+status: active 
+milestone: '14.7'
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/76917
+time_frame: all
+data_source: redis
+distribution:
+  - ee
+tier:
+  - premium
+  - ultimate

@@ -1,0 +1,8 @@
+---
+name: usage_data_users_visiting_testing_license_compliance_full_report
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/76917
+rollout_issue_url:
+milestone: '14.7'
+type: development
+group: group::secure
+default_enabled: false

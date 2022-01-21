@@ -120,6 +120,8 @@ RSpec.describe Gitlab::UsageData do
         template_repositories
         network_policy_forwards
         network_policy_drops
+        users_visiting_testing_license_compliance_full_report
+        users_clicking_license_testing_visiting_external_website
       ))
 
       expect(count_data[:status_page_projects]).to eq(1)
