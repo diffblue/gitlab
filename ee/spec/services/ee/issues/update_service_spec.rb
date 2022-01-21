@@ -473,7 +473,7 @@ RSpec.describe Issues::UpdateService do
         end
 
         it 'triggers side-effects' do
-          expect(escalation_update_class).to receive(:new).with(issue, user).and_return(service_double)
+          expect(escalation_update_class).to receive(:new).with(issue, user, status_change_reason: nil).and_return(service_double)
           expect(service_double).to receive(:execute)
 
           update_issue(opts)
