@@ -1577,6 +1577,7 @@ RSpec.describe Group do
     let_it_be(:subgroup_1) { create(:group, parent: group) }
     let_it_be(:subgroup_2) { create(:group, parent: group) }
     let_it_be(:external_group) { create(:group) }
+    let_it_be(:project) { create(:project, group: subgroup_1) }
 
     subject(:shared_externally?) { group.shared_externally? }
 
@@ -1604,6 +1605,18 @@ RSpec.describe Group do
 
     it 'returns false when the only shared groups are outside of the namespace hierarchy' do
       create(:group_group_link)
+
+      expect(shared_externally?).to be false
+    end
+
+    it 'returns true when the group project is shared outside of the namespace hierarchy' do
+      create(:project_group_link, project: project, group: external_group)
+
+      expect(shared_externally?).to be true
+    end
+
+    it 'returns false when the group project is only shared internally within the namespace hierarchy' do
+      create(:project_group_link, project: project, group: subgroup_2)
 
       expect(shared_externally?).to be false
     end
