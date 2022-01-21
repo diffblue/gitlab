@@ -171,7 +171,7 @@ describe('EpicsListRoot', () => {
   });
 
   describe('template', () => {
-    const getIssuableList = () => wrapper.find(IssuableList);
+    const getIssuableList = () => wrapper.findComponent(IssuableList);
 
     it('renders issuable-list component', async () => {
       jest.spyOn(wrapper.vm, 'getFilteredSearchTokens');

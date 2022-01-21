@@ -78,7 +78,7 @@ describe('ExternalIssuesSidebarAssignee', () => {
       });
 
       it('renders AssigneeTitle with correct props', () => {
-        const title = wrapper.find(AssigneeTitle);
+        const title = wrapper.findComponent(AssigneeTitle);
 
         expect(title.exists()).toBe(true);
         expect(title.props('numberOfAssignees')).toBe(1);

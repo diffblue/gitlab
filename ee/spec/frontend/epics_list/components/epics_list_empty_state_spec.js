@@ -32,7 +32,7 @@ describe('EpicsListEmptyState', () => {
 
   describe('template', () => {
     it('renders gl-empty-state component', () => {
-      const emptyStateEl = wrapper.find(GlEmptyState);
+      const emptyStateEl = wrapper.findComponent(GlEmptyState);
 
       expect(emptyStateEl.exists()).toBe(true);
       expect(emptyStateEl.props('svgPath')).toBe('/assets/illustrations/empty-state/epics.svg');

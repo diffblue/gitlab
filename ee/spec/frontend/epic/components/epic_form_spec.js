@@ -47,8 +47,8 @@ describe('ee/epic/components/epic_form.vue', () => {
     wrapper = null;
   });
 
-  const findForm = () => wrapper.find(GlForm);
-  const findLabels = () => wrapper.find(LabelsSelectWidget);
+  const findForm = () => wrapper.findComponent(GlForm);
+  const findLabels = () => wrapper.findComponent(LabelsSelectWidget);
   const findTitle = () => wrapper.find('[data-testid="epic-title"]');
   const findDescription = () => wrapper.find('[data-testid="epic-description"]');
   const findConfidentialityCheck = () => wrapper.find('[data-testid="epic-confidentiality"]');

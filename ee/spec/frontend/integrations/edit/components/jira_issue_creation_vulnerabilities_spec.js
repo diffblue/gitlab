@@ -43,7 +43,7 @@ describe('JiraIssuesFields', () => {
   const findEnableJiraVulnerabilities = () => wrapper.findByTestId('enable-jira-vulnerabilities');
   const findIssueTypeSection = () => wrapper.findByTestId('issue-type-section');
   const findIssueTypeDropdown = () => wrapper.findComponent(GlDropdown);
-  const findAllIssueDropdownItems = () => findIssueTypeDropdown().findAll(GlDropdownItem);
+  const findAllIssueDropdownItems = () => findIssueTypeDropdown().findAllComponents(GlDropdownItem);
   const findFetchIssueTypeButton = () => wrapper.findByTestId('fetch-issue-types');
   const findFetchErrorAlert = () => wrapper.findComponent(GlAlert);
   const setEnableJiraVulnerabilitiesChecked = (isChecked) =>

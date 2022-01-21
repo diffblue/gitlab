@@ -6,7 +6,7 @@ import ListEmptyState from 'ee/groups/settings/compliance_frameworks/components/
 describe('ListEmptyState', () => {
   let wrapper;
 
-  const findEmptyState = () => wrapper.find(GlEmptyState);
+  const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const createComponent = (props = {}) => {
     wrapper = shallowMount(ListEmptyState, {
       propsData: {

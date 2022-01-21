@@ -38,8 +38,8 @@ describe('Insights chart component', () => {
     it('displays the chart loader in the container', () => {
       wrapper = factory(DEFAULT_PROPS);
 
-      expect(wrapper.find(ChartSkeletonLoader).exists()).toBe(true);
-      expect(wrapper.find(ResizableChartContainer).exists()).toBe(true);
+      expect(wrapper.findComponent(ChartSkeletonLoader).exists()).toBe(true);
+      expect(wrapper.findComponent(ResizableChartContainer).exists()).toBe(true);
     });
   });
 
@@ -58,9 +58,9 @@ describe('Insights chart component', () => {
         data,
       });
 
-      expect(wrapper.find(ChartSkeletonLoader).exists()).toBe(false);
-      expect(wrapper.find(ResizableChartContainer).exists()).toBe(true);
-      expect(wrapper.find(component).exists()).toBe(true);
+      expect(wrapper.findComponent(ChartSkeletonLoader).exists()).toBe(false);
+      expect(wrapper.findComponent(ResizableChartContainer).exists()).toBe(true);
+      expect(wrapper.findComponent(component).exists()).toBe(true);
     });
   });
 
@@ -76,9 +76,9 @@ describe('Insights chart component', () => {
     });
 
     it('displays info about the error', () => {
-      expect(wrapper.find(ChartSkeletonLoader).exists()).toBe(false);
-      expect(wrapper.find(ResizableChartContainer).exists()).toBe(false);
-      expect(wrapper.find(InsightsChartError).exists()).toBe(true);
+      expect(wrapper.findComponent(ChartSkeletonLoader).exists()).toBe(false);
+      expect(wrapper.findComponent(ResizableChartContainer).exists()).toBe(false);
+      expect(wrapper.findComponent(InsightsChartError).exists()).toBe(true);
     });
   });
 });

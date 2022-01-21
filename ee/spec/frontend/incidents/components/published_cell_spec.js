@@ -33,7 +33,7 @@ describe('Incidents Published Cell', () => {
     });
 
     it('render a cell with unpublished by default', () => {
-      expect(findCell().find(GlIcon).exists()).toBe(false);
+      expect(findCell().findComponent(GlIcon).exists()).toBe(false);
       expect(findCell().text()).toBe('Unpublished');
     });
 
@@ -41,7 +41,7 @@ describe('Incidents Published Cell', () => {
       wrapper.setProps({ statusPagePublishedIncident: true });
 
       return wrapper.vm.$nextTick().then(() => {
-        expect(findCell().find(GlIcon).exists()).toBe(true);
+        expect(findCell().findComponent(GlIcon).exists()).toBe(true);
       });
     });
   });

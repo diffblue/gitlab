@@ -49,13 +49,14 @@ describe('EscalationRule', () => {
   });
 
   const findStatusDropdown = () => wrapper.findByTestId('alert-status-dropdown');
-  const findStatusDropdownOptions = () => findStatusDropdown().findAll(GlDropdownItem);
+  const findStatusDropdownOptions = () => findStatusDropdown().findAllComponents(GlDropdownItem);
 
   const findActionDropdown = () => wrapper.findByTestId('action-dropdown');
-  const findActionDropdownOptions = () => findActionDropdown().findAll(GlDropdownItem);
+  const findActionDropdownOptions = () => findActionDropdown().findAllComponents(GlDropdownItem);
 
   const findSchedulesDropdown = () => wrapper.findByTestId('schedules-dropdown');
-  const findSchedulesDropdownOptions = () => findSchedulesDropdown().findAll(GlDropdownItem);
+  const findSchedulesDropdownOptions = () =>
+    findSchedulesDropdown().findAllComponents(GlDropdownItem);
   const findUserSelect = () => wrapper.findComponent(UserSelect);
   const findFormGroup = () => wrapper.findComponent(GlFormGroup);
 

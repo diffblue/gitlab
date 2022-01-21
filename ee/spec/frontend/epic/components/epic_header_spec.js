@@ -31,7 +31,8 @@ describe('EpicHeaderComponent', () => {
   const findStatusBox = () => wrapper.find('[data-testid="status-box"]');
   const findStatusIcon = () => wrapper.find('[data-testid="status-icon"]');
   const findStatusText = () => wrapper.find('[data-testid="status-text"]');
-  const findConfidentialIcon = () => wrapper.find('[data-testid="confidential-icon"]').find(GlIcon);
+  const findConfidentialIcon = () =>
+    wrapper.find('[data-testid="confidential-icon"]').findComponent(GlIcon);
   const findAuthorDetails = () => wrapper.find('[data-testid="author-details"]');
   const findActionButtons = () => wrapper.find('[data-testid="action-buttons"]');
   const findToggleStatusButton = () => wrapper.find('[data-testid="toggle-status-button"]');
@@ -114,7 +115,7 @@ describe('EpicHeaderComponent', () => {
       const statusBox = findStatusBox();
 
       expect(statusBox.exists()).toBe(true);
-      expect(statusBox.find(GlIcon).props('name')).toBe('issue-open-m');
+      expect(statusBox.findComponent(GlIcon).props('name')).toBe('issue-open-m');
       expect(statusBox.find('span').text()).toBe('Open');
     });
 
@@ -133,8 +134,8 @@ describe('EpicHeaderComponent', () => {
       const epicDetails = findAuthorDetails();
 
       expect(epicDetails.exists()).toBe(true);
-      expect(epicDetails.find(TimeagoTooltip).exists()).toBe(true);
-      expect(epicDetails.find(UserAvatarLink).exists()).toBe(true);
+      expect(epicDetails.findComponent(TimeagoTooltip).exists()).toBe(true);
+      expect(epicDetails.findComponent(UserAvatarLink).exists()).toBe(true);
     });
 
     it('renders action buttons element', () => {
