@@ -12,7 +12,7 @@ module EE
 
       # rubocop:disable Gitlab/ModuleWithInstanceVariables
       def removed
-        @projects = load_projects(params.merge(aimed_for_deletion: true))
+        @projects = load_projects(params.merge(projects_pending_deletion_params))
 
         respond_to do |format|
           format.html
@@ -33,15 +33,22 @@ module EE
              .with_group_saml_provider
       end
 
-      override :load_projects
-      def load_projects(finder_params)
-        @removed_projects_count = ::ProjectsFinder.new(params: { aimed_for_deletion: true }, current_user: current_user).execute # rubocop:disable Gitlab/ModuleWithInstanceVariables
-
-        super
-      end
-
       def check_adjourned_deletion_listing_availability
         return render_404 unless can?(current_user, :list_removable_projects)
+      end
+
+      def projects_pending_deletion_params
+        finder_params = { aimed_for_deletion: true }
+
+        unless current_user.can_admin_all_resources?
+          finder_params[:min_access_level] = ::Gitlab::Access::OWNER
+
+          if ::Gitlab::CurrentSettings.should_check_namespace_plan?
+            finder_params[:feature_available] = :adjourned_deletion_for_projects_and_groups
+          end
+        end
+
+        finder_params
       end
     end
   end

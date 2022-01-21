@@ -1,0 +1,8 @@
+---
+name: project_owners_list_project_pending_deletion
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/76484
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/350727
+milestone: '14.8'
+type: development
+group: group::compliance
+default_enabled: false

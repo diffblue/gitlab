@@ -11,6 +11,7 @@ module EE
     extend ::Gitlab::Cache::RequestCache
     include ::Gitlab::Utils::StrongMemoize
     include ::Admin::RepoSizeLimitHelper
+    include FromUnion
 
     GIT_LFS_DOWNLOAD_OPERATION = 'download'
     PUBLIC_COST_FACTOR_RELEASE_DAY = Date.new(2021, 7, 17).freeze
@@ -134,6 +135,11 @@ module EE
       scope :verification_failed_repos, -> { joins(:repository_state).merge(ProjectRepositoryState.verification_failed_repos) }
       scope :verification_failed_wikis, -> { joins(:repository_state).merge(ProjectRepositoryState.verification_failed_wikis) }
       scope :for_plan_name, -> (name) { joins(namespace: { gitlab_subscription: :hosted_plan }).where(plans: { name: name }) }
+      scope :with_feature_available, -> (name) do
+        projects_with_feature_available_in_plan = ::Project.for_group(::Group.with_feature_available_in_plan(name))
+        public_projects_in_public_groups = ::Project.public_only.for_group(::Group.public_only)
+        from_union([projects_with_feature_available_in_plan, public_projects_in_public_groups])
+      end
       scope :requiring_code_owner_approval,
             -> { joins(:protected_branches).where(protected_branches: { code_owner_approval_required: true }) }
       scope :github_imported, -> { where(import_type: 'github') }

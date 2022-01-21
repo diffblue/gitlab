@@ -1,4 +1,3 @@
 - if can?(current_user, :list_removable_projects)
   = gl_tab_link_to removed_dashboard_projects_path, { data: { placement: 'right' } } do
     = _("Pending deletion")
-    = gl_tab_counter_badge(limited_counter_with_delimiter(removed_projects_count))

@@ -17,12 +17,21 @@ module EE
     def filter_projects(collection)
       collection = super(collection)
       collection = by_plans(collection)
+      collection = by_feature_available(collection)
       by_aimed_for_deletion(collection)
     end
 
     def by_plans(collection)
       if names = params[:plans].presence
         collection.for_plan_name(names)
+      else
+        collection
+      end
+    end
+
+    def by_feature_available(collection)
+      if feature = params[:feature_available].presence
+        collection.with_feature_available(feature)
       else
         collection
       end

@@ -50,6 +50,15 @@ module EE
           )
         end
       end
+
+      override :projects_submenu_items
+      def projects_submenu_items(builder:)
+        super
+
+        if current_user.can?(:list_removable_projects)
+          builder.add_primary_menu_item(id: 'deleted', title: _('Pending deletion'), href: removed_dashboard_projects_path)
+        end
+      end
     end
   end
 end
