@@ -134,7 +134,7 @@ describe('Scheduled tab', () => {
 
     it('renders the schedule cell', () => {
       const scheduleCell = findCellAt(5);
-      const dastScanScheduleComponent = scheduleCell.find(DastScanSchedule);
+      const dastScanScheduleComponent = scheduleCell.findComponent(DastScanSchedule);
 
       expect(dastScanScheduleComponent.exists()).toBe(true);
       expect(dastScanScheduleComponent.props('schedule')).toEqual(firstProfile.dastProfileSchedule);

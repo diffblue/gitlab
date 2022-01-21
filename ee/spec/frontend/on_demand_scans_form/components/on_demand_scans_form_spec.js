@@ -70,7 +70,7 @@ describe('OnDemandScansForm', () => {
     template: '<input />',
   });
 
-  const findForm = () => wrapper.find(GlForm);
+  const findForm = () => wrapper.findComponent(GlForm);
   const findByTestId = (testId) => wrapper.find(`[data-testid="${testId}"]`);
   const findHelpPageLink = () => findByTestId('help-page-link');
   const findNameInput = () => findByTestId('dast-scan-name-input');
@@ -111,7 +111,7 @@ describe('OnDemandScansForm', () => {
     return setValidFormData();
   };
   const selectProfile = (component) => async (profile) => {
-    wrapper.find(component).vm.$emit('input', profile.id);
+    wrapper.findComponent(component).vm.$emit('input', profile.id);
     await wrapper.vm.$nextTick();
   };
   const selectScannerProfile = selectProfile(ScannerProfileSelector);
@@ -248,7 +248,7 @@ describe('OnDemandScansForm', () => {
           },
         });
 
-        expect(wrapper.find(GlSkeletonLoader).exists()).toBe(isLoading);
+        expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(isLoading);
       },
     );
   });
@@ -577,7 +577,7 @@ describe('OnDemandScansForm', () => {
     });
 
     it('automatically selects the only available profile', () => {
-      expect(wrapper.find(selector).attributes('value')).toBe(profile.id);
+      expect(wrapper.findComponent(selector).attributes('value')).toBe(profile.id);
     });
   });
 

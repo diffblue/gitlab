@@ -59,9 +59,9 @@ describe('Issue Analytics component', () => {
     axiosMock.restore();
   });
 
-  const findLoadingIcon = () => wrapper.find(GlLoadingIcon);
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findChartContainer = () => wrapper.find('.issues-analytics-chart');
-  const findEmptyState = () => wrapper.find(GlEmptyState);
+  const findEmptyState = () => wrapper.findComponent(GlEmptyState);
 
   it('fetches chart data when mounted', () => {
     expect(store.dispatch).toHaveBeenCalledWith('issueAnalytics/fetchChartData', TEST_HOST);
@@ -113,6 +113,6 @@ describe('Issue Analytics component', () => {
   });
 
   it('renders the issues table', () => {
-    expect(wrapper.find(IssuesAnalyticsTable).exists()).toBe(true);
+    expect(wrapper.findComponent(IssuesAnalyticsTable).exists()).toBe(true);
   });
 });

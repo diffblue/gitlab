@@ -20,7 +20,7 @@ describe('LicensesTableRow component', () => {
     });
   };
 
-  const findLoading = () => wrapper.find(GlSkeletonLoading);
+  const findLoading = () => wrapper.findComponent(GlSkeletonLoading);
   const findContent = () => wrapper.find('.js-license-row');
   const findNameSection = () => findContent().find('.section-30');
   const findComponentSection = () => findContent().find('.section-70');
@@ -66,7 +66,7 @@ describe('LicensesTableRow component', () => {
     });
 
     it('shows name', () => {
-      const nameLink = findNameSection().find(GlLink);
+      const nameLink = findNameSection().findComponent(GlLink);
 
       expect(nameLink.exists()).toBe(true);
       expect(nameLink.attributes('href')).toEqual(license.url);
@@ -74,7 +74,7 @@ describe('LicensesTableRow component', () => {
     });
 
     it('shows components', () => {
-      const componentLinks = findComponentSection().find(LicenseComponentLinks);
+      const componentLinks = findComponentSection().findComponent(LicenseComponentLinks);
 
       expect(componentLinks.exists()).toBe(true);
       expect(componentLinks.props()).toEqual(
@@ -100,9 +100,9 @@ describe('LicensesTableRow component', () => {
     it('renders the GlFriendlyWrap and GlLink components', () => {
       const nameSection = findNameSection();
 
-      expect(nameSection.find(GlLink).exists()).toBe(true);
-      expect(nameSection.find(GlFriendlyWrap).exists()).toBe(true);
-      expect(nameSection.find(GlFriendlyWrap).attributes().text).toBe(license.name);
+      expect(nameSection.findComponent(GlLink).exists()).toBe(true);
+      expect(nameSection.findComponent(GlFriendlyWrap).exists()).toBe(true);
+      expect(nameSection.findComponent(GlFriendlyWrap).attributes().text).toBe(license.name);
     });
   });
 
@@ -120,7 +120,7 @@ describe('LicensesTableRow component', () => {
       const nameSection = findNameSection();
 
       expect(nameSection.text()).toContain(license.name);
-      expect(nameSection.find(GlLink).exists()).toBe(false);
+      expect(nameSection.findComponent(GlLink).exists()).toBe(false);
     });
   });
 
@@ -135,8 +135,8 @@ describe('LicensesTableRow component', () => {
     });
 
     it('shows the policy violation badge', () => {
-      expect(wrapper.find(GlBadge).exists()).toBe(true);
-      expect(wrapper.find(GlBadge).text()).toContain('Policy violation: denied');
+      expect(wrapper.findComponent(GlBadge).exists()).toBe(true);
+      expect(wrapper.findComponent(GlBadge).text()).toContain('Policy violation: denied');
     });
   });
 
@@ -151,7 +151,7 @@ describe('LicensesTableRow component', () => {
     });
 
     it('does not show the policy violation badge', () => {
-      expect(wrapper.find(GlBadge).exists()).toBe(false);
+      expect(wrapper.findComponent(GlBadge).exists()).toBe(false);
     });
   });
 });

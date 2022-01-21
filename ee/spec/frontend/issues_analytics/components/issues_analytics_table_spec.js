@@ -54,7 +54,7 @@ describe('IssuesAnalyticsTable', () => {
     });
 
     it('displays a loading icon', () => {
-      expect(wrapper.find(GlLoadingIcon).exists()).toBe(true);
+      expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
     });
 
     it('does not display the table', () => {
@@ -64,7 +64,7 @@ describe('IssuesAnalyticsTable', () => {
 
   describe('fetching data completed', () => {
     it('hides the loading state', () => {
-      expect(wrapper.find(GlLoadingIcon).exists()).toBe(false);
+      expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(false);
     });
 
     it('displays the table', () => {

@@ -33,7 +33,7 @@ describe('Incident SLA', () => {
     }
   });
 
-  const findSLA = () => wrapper.find(ServiceLevelAgreement);
+  const findSLA = () => wrapper.findComponent(ServiceLevelAgreement);
 
   it('renders a blank component when there is no data', () => {
     mountComponent({

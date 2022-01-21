@@ -35,7 +35,7 @@ describe('LicenseComponentLinks component', () => {
   // query helpers
   const findComponentsList = () => wrapper.find('.js-component-links-component-list');
   const findComponentListItems = () => wrapper.findAll('.js-component-links-component-list-item');
-  const findModal = () => wrapper.find(GlModal);
+  const findModal = () => wrapper.findComponent(GlModal);
   const findModalItem = () => wrapper.findAll('.js-component-links-modal-item');
   const findModalTrigger = () => wrapper.find('.js-component-links-modal-trigger');
 
@@ -55,7 +55,7 @@ describe('LicenseComponentLinks component', () => {
   it('intersperses the list of licenses correctly', () => {
     factory();
 
-    const intersperseInstance = wrapper.find(GlIntersperse);
+    const intersperseInstance = wrapper.findComponent(GlIntersperse);
 
     expect(intersperseInstance.exists()).toBe(true);
     expect(intersperseInstance.attributes('lastseparator')).toBe(' and ');
@@ -80,11 +80,11 @@ describe('LicenseComponentLinks component', () => {
     ({ numComponents, numComponentsWithUrl, expectedNumVisibleLinks, expectedNumModalLinks }) => {
       factory({ numComponents, numComponentsWithUrl });
 
-      expect(findComponentsList().findAll(GlLink)).toHaveLength(expectedNumVisibleLinks);
+      expect(findComponentsList().findAllComponents(GlLink)).toHaveLength(expectedNumVisibleLinks);
 
       // findModal() is an empty wrapper if we have less than VISIBLE_COMPONENT_COUNT
       if (numComponents > VISIBLE_COMPONENT_COUNT) {
-        expect(findModal().findAll(GlLink)).toHaveLength(expectedNumModalLinks);
+        expect(findModal().findAllComponents(GlLink)).toHaveLength(expectedNumModalLinks);
       } else {
         expect(findModal().exists()).toBe(false);
       }
@@ -94,7 +94,7 @@ describe('LicenseComponentLinks component', () => {
   it('sets all links to open in new windows/tabs', () => {
     factory({ numComponents: 8, numComponentsWithUrl: 8 });
 
-    const links = wrapper.findAll(GlLink);
+    const links = wrapper.findAllComponents(GlLink);
 
     links.wrappers.forEach((link) => {
       expect(link.attributes('target')).toBe('_blank');
@@ -128,13 +128,13 @@ describe('LicenseComponentLinks component', () => {
     ({ numComponents, expectedNumModals }) => {
       factory({ numComponents, expectedNumModals });
 
-      expect(wrapper.findAll(GlModal)).toHaveLength(expectedNumModals);
+      expect(wrapper.findAllComponents(GlModal)).toHaveLength(expectedNumModals);
     },
   );
 
   it('opens the modal when the trigger gets clicked', () => {
     factory({ numComponents: 3 });
-    const modalId = wrapper.find(GlModal).props('modalId');
+    const modalId = wrapper.findComponent(GlModal).props('modalId');
     const modalTrigger = findModalTrigger();
 
     const rootEmit = jest.spyOn(wrapper.vm.$root, '$emit');
@@ -149,7 +149,7 @@ describe('LicenseComponentLinks component', () => {
 
     while (usedModalIds.length < 10) {
       factory({ numComponents });
-      const modalId = wrapper.find(GlModal).props('modalId');
+      const modalId = wrapper.findComponent(GlModal).props('modalId');
 
       expect(usedModalIds).not.toContain(modalId);
       usedModalIds.push(modalId);
@@ -160,13 +160,13 @@ describe('LicenseComponentLinks component', () => {
     const title = 'test-component';
     factory({ numComponents: 3, title });
 
-    expect(wrapper.find(GlModal).attributes('title')).toEqual(title);
+    expect(wrapper.findComponent(GlModal).attributes('title')).toEqual(title);
   });
 
   it('assigns the correct action button text to the modal', () => {
     factory({ numComponents: 3 });
 
-    expect(wrapper.find(GlModal).attributes('ok-title')).toEqual('Close');
+    expect(wrapper.findComponent(GlModal).attributes('ok-title')).toEqual('Close');
   });
 
   it.each`

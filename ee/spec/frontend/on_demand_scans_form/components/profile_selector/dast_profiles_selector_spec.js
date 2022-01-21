@@ -126,7 +126,7 @@ describe('EE - DAST Profiles Selector', () => {
           },
         });
 
-        expect(wrapper.find(GlSkeletonLoader).exists()).toBe(isLoading);
+        expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(isLoading);
       },
     );
   });
@@ -179,7 +179,7 @@ describe('EE - DAST Profiles Selector', () => {
     });
 
     it('automatically selects the only available profile', () => {
-      expect(wrapper.find(selector).attributes('value')).toBe(profile.id);
+      expect(wrapper.findComponent(selector).attributes('value')).toBe(profile.id);
     });
   });
 
@@ -209,8 +209,10 @@ describe('EE - DAST Profiles Selector', () => {
       );
       createComponent();
 
-      expect(wrapper.find(SiteProfileSelector).attributes('value')).toBe(siteProfile.id);
-      expect(wrapper.find(ScannerProfileSelector).attributes('value')).toBe(scannerProfile.id);
+      expect(wrapper.findComponent(SiteProfileSelector).attributes('value')).toBe(siteProfile.id);
+      expect(wrapper.findComponent(ScannerProfileSelector).attributes('value')).toBe(
+        scannerProfile.id,
+      );
     });
   });
 });

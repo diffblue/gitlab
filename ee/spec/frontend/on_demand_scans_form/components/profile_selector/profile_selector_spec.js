@@ -40,13 +40,13 @@ describe('OnDemandScansProfileSelector', () => {
   // Helpers
   const parseDropdownItems = () =>
     findProfilesDropdown()
-      .findAll(GlDropdownItem)
+      .findAllComponents(GlDropdownItem)
       .wrappers.map((x) => ({
         text: x.text(),
         isChecked: x.props('isChecked'),
       }));
   const selectFirstProfile = () => {
-    return findProfilesDropdown().find(GlDropdownItem).vm.$emit('click');
+    return findProfilesDropdown().findComponent(GlDropdownItem).vm.$emit('click');
   };
 
   const createFullComponent = (options = {}) => {

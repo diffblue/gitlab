@@ -114,24 +114,24 @@ describe('Project Licenses', () => {
     });
 
     it('shows the loading component', () => {
-      expect(wrapper.find(GlLoadingIcon).exists()).toBe(true);
+      expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
     });
 
     it('does not show the empty state component', () => {
-      expect(wrapper.find(GlEmptyState).exists()).toBe(false);
+      expect(wrapper.findComponent(GlEmptyState).exists()).toBe(false);
     });
 
     it('does not show the list of detected in project licenses', () => {
-      expect(wrapper.find(DetectedLicensesTable).exists()).toBe(false);
+      expect(wrapper.findComponent(DetectedLicensesTable).exists()).toBe(false);
     });
 
     it('does not show the list of license policies', () => {
-      expect(wrapper.find(LicenseManagement).exists()).toBe(false);
+      expect(wrapper.findComponent(LicenseManagement).exists()).toBe(false);
     });
 
     it('does not render any tabs', () => {
-      expect(wrapper.find(GlTabs).exists()).toBe(false);
-      expect(wrapper.find(GlTab).exists()).toBe(false);
+      expect(wrapper.findComponent(GlTabs).exists()).toBe(false);
+      expect(wrapper.findComponent(GlTab).exists()).toBe(false);
     });
   });
 
@@ -150,24 +150,24 @@ describe('Project Licenses', () => {
     });
 
     it('shows the empty state component', () => {
-      expect(wrapper.find(GlEmptyState).exists()).toBe(true);
+      expect(wrapper.findComponent(GlEmptyState).exists()).toBe(true);
     });
 
     it('does not show the loading component', () => {
-      expect(wrapper.find(GlLoadingIcon).exists()).toBe(false);
+      expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(false);
     });
 
     it('does not show the list of detected in project licenses', () => {
-      expect(wrapper.find(DetectedLicensesTable).exists()).toBe(false);
+      expect(wrapper.findComponent(DetectedLicensesTable).exists()).toBe(false);
     });
 
     it('does not show the list of license policies', () => {
-      expect(wrapper.find(LicenseManagement).exists()).toBe(false);
+      expect(wrapper.findComponent(LicenseManagement).exists()).toBe(false);
     });
 
     it('does not render any tabs', () => {
-      expect(wrapper.find(GlTabs).exists()).toBe(false);
-      expect(wrapper.find(GlTab).exists()).toBe(false);
+      expect(wrapper.findComponent(GlTabs).exists()).toBe(false);
+      expect(wrapper.findComponent(GlTab).exists()).toBe(false);
     });
   });
 
@@ -186,7 +186,7 @@ describe('Project Licenses', () => {
     });
 
     it('does not render a policy violations alert', () => {
-      expect(wrapper.find(GlAlert).exists()).toBe(false);
+      expect(wrapper.findComponent(GlAlert).exists()).toBe(false);
     });
 
     it('renders the SbomBannercomponent with the right props', () => {
@@ -196,21 +196,21 @@ describe('Project Licenses', () => {
     });
 
     it('renders a "Detected in project" tab and a "Policies" tab', () => {
-      expect(wrapper.find(GlTabs).exists()).toBe(true);
-      expect(wrapper.find(GlTab).exists()).toBe(true);
+      expect(wrapper.findComponent(GlTabs).exists()).toBe(true);
+      expect(wrapper.findComponent(GlTab).exists()).toBe(true);
       expect(wrapper.findAllComponents(GlTab)).toHaveLength(2);
     });
 
     it('it renders the "Detected in project" table', () => {
-      expect(wrapper.find(DetectedLicensesTable).exists()).toBe(true);
+      expect(wrapper.findComponent(DetectedLicensesTable).exists()).toBe(true);
     });
 
     it('it renders the "Policies" table', () => {
-      expect(wrapper.find(LicenseManagement).exists()).toBe(true);
+      expect(wrapper.findComponent(LicenseManagement).exists()).toBe(true);
     });
 
     it('renders the pipeline info', () => {
-      expect(wrapper.find(PipelineInfo).exists()).toBe(true);
+      expect(wrapper.findComponent(PipelineInfo).exists()).toBe(true);
     });
 
     describe.each`
@@ -329,8 +329,8 @@ describe('Project Licenses', () => {
       });
 
       it('renders a policy violations alert', () => {
-        expect(wrapper.find(GlAlert).exists()).toBe(true);
-        expect(wrapper.find(GlAlert).text()).toContain(
+        expect(wrapper.findComponent(GlAlert).exists()).toBe(true);
+        expect(wrapper.findComponent(GlAlert).text()).toContain(
           "Detected licenses that are out-of-compliance with the project's assigned policies",
         );
       });

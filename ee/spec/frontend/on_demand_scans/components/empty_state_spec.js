@@ -6,7 +6,7 @@ describe('EmptyState', () => {
   let wrapper;
 
   // Finders
-  const findGlEmptyState = () => wrapper.find(GlEmptyState);
+  const findGlEmptyState = () => wrapper.findComponent(GlEmptyState);
 
   // Helpers
   const defaultGlEmptyStateProp = (prop) => GlEmptyState.props[prop].default;
