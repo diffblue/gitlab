@@ -8,7 +8,12 @@ query groupMilestonesEE(
   group(fullPath: $fullPath) {
     id
     name
-    milestones(state: $state, includeDescendants: $includeDescendants, includeAncestors: $includeAncestors, timeframe: $timeframe) {
+    milestones(
+      state: $state
+      includeDescendants: $includeDescendants
+      includeAncestors: $includeAncestors
+      timeframe: $timeframe
+    ) {
       edges {
         node {
           id
