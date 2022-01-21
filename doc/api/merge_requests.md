@@ -78,7 +78,7 @@ Parameters:
 | Attribute                       | Type           | Required | Description                                                                                                            |
 | ------------------------------- | -------------- | -------- | ---------------------------------------------------------------------------------------------------------------------- |
 | `state`                         | string         | no       | Return all merge requests or just those that are `opened`, `closed`, `locked`, or `merged`.                             |
-| `order_by`                      | string         | no       | Return requests ordered by `created_at`, `title`, or `updated_at` fields. Default is `created_at`.                                |
+| `order_by`                      | string         | no       | Return requests ordered by `created_at`, `title`, or `updated_at` fields. Default is `created_at`. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/331625) in GitLab 14.8.|
 | `sort`                          | string         | no       | Return requests sorted in `asc` or `desc` order. Default is `desc`.                                                     |
 | `milestone`                     | string         | no       | Return merge requests for a specific milestone. `None` returns merge requests with no milestone. `Any` returns merge requests that have an assigned milestone. |
 | `view`                          | string         | no       | If `simple`, returns the `iid`, URL, title, description, and basic state of merge request.                              |
