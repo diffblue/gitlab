@@ -117,7 +117,7 @@ module Geo
 
     def fetch_geo_mirror(repository)
       # Fetch the repository, using a JWT header for authentication
-      repository.fetch_as_mirror(replicator.remote_url, forced: true, http_authorization_header: replicator.jwt_authentication_header)
+      repository.fetch_as_mirror(replicator.remote_url, forced: true, http_authorization_header: replicator.jwt_authentication_header(repository))
     end
 
     # Use snapshotting for redownloads *only* when enabled.

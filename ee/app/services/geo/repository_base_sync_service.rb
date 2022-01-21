@@ -41,6 +41,10 @@ module Geo
       LEASE_TIMEOUT
     end
 
+    def repository
+      raise NotImplementedError, 'Define a reference to the repository'
+    end
+
     private
 
     def fetch_repository
@@ -57,9 +61,9 @@ module Geo
         redownload_repository
         @new_repository = true
       elsif repository.exists?
-        fetch_geo_mirror(repository)
+        fetch_geo_mirror
       else
-        clone_geo_mirror(repository)
+        clone_geo_mirror
         repository.expire_status_cache # after_create
 
         # Because we ensure a repository exists by this point, we need to
@@ -101,16 +105,20 @@ module Geo
     end
 
     # Update an existing repository using special credentials
-    # @param [Repository] repository
-    def fetch_geo_mirror(repository)
+    #
+    def fetch_geo_mirror
       # Fetch the repository, using a JWT header for authentication
-      repository.fetch_as_mirror(remote_url, forced: true, http_authorization_header: jwt_authentication_header)
+      repository.fetch_as_mirror(remote_url,
+                                 forced: true,
+                                 http_authorization_header: jwt_authentication_header)
     end
 
     # Clone a new repository using Geo special credentials
-    # @param [Repository] repository
-    def clone_geo_mirror(repository)
-      repository.clone_as_mirror(remote_url, http_authorization_header: jwt_authentication_header)
+    #
+    def clone_geo_mirror
+      # Clone the repository, using a JWT header for authentication
+      repository.clone_as_mirror(remote_url,
+                                 http_authorization_header: jwt_authentication_header)
     end
 
     # Build a JWT header for authentication
