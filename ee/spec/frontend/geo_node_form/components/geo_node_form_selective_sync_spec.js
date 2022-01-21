@@ -34,12 +34,12 @@ describe('GeoNodeFormSelectiveSync', () => {
   });
 
   const findGeoNodeFormSyncContainer = () =>
-    wrapper.find({ ref: 'geoNodeFormSelectiveSyncContainer' });
+    wrapper.findComponent({ ref: 'geoNodeFormSelectiveSyncContainer' });
   const findGeoNodeFormSelectiveSyncMoreInfoLink = () =>
     wrapper.find('[data-testid="selectiveSyncMoreInfo"]');
   const findGeoNodeFormSyncTypeField = () => wrapper.find('#node-selective-synchronization-field');
-  const findGeoNodeFormNamespacesField = () => wrapper.find(GeoNodeFormNamespaces);
-  const findGeoNodeFormShardsField = () => wrapper.find(GeoNodeFormShards);
+  const findGeoNodeFormNamespacesField = () => wrapper.findComponent(GeoNodeFormNamespaces);
+  const findGeoNodeFormShardsField = () => wrapper.findComponent(GeoNodeFormShards);
   const findGeoNodeObjectStorageField = () => wrapper.find('#node-object-storage-field');
   const findGeoNodeFormObjectStorageMoreInformation = () =>
     wrapper.find('[data-testid="objectStorageMoreInfo"]');

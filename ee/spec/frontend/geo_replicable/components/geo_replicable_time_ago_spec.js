@@ -30,8 +30,8 @@ describe('GeoReplicableTimeAgo', () => {
     wrapper.destroy();
   });
 
-  const findGeoReplicableTimeAgo = () => wrapper.find(GeoReplicableTimeAgo);
-  const findTimeAgo = () => findGeoReplicableTimeAgo().find(TimeAgo);
+  const findGeoReplicableTimeAgo = () => wrapper.findComponent(GeoReplicableTimeAgo);
+  const findTimeAgo = () => findGeoReplicableTimeAgo().findComponent(TimeAgo);
   const findDefaultText = () => findGeoReplicableTimeAgo().find('span');
 
   describe('template', () => {

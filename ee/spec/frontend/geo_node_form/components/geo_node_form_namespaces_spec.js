@@ -45,11 +45,11 @@ describe('GeoNodeFormNamespaces', () => {
     wrapper.destroy();
   });
 
-  const findGlDropdown = () => wrapper.find(GlDropdown);
-  const findGlDropdownSearch = () => findGlDropdown().find(GlSearchBoxByType);
+  const findGlDropdown = () => wrapper.findComponent(GlDropdown);
+  const findGlDropdownSearch = () => findGlDropdown().findComponent(GlSearchBoxByType);
   const findDropdownItems = () => findGlDropdown().findAll('button');
   const findDropdownItemsText = () => findDropdownItems().wrappers.map((w) => w.text());
-  const findGlIcons = () => wrapper.findAll(GlIcon);
+  const findGlIcons = () => wrapper.findAllComponents(GlIcon);
 
   describe('template', () => {
     beforeEach(() => {

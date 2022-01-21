@@ -34,7 +34,7 @@ describe('GeoReplicableStatus', () => {
   });
 
   const findGeoReplicableStatusContainer = () => wrapper.find('div');
-  const findIcon = () => findGeoReplicableStatusContainer().find(GlIcon);
+  const findIcon = () => findGeoReplicableStatusContainer().findComponent(GlIcon);
 
   describe('template', () => {
     beforeEach(() => {
