@@ -97,11 +97,11 @@ describe('TestCaseListEmptyState', () => {
 
   describe('template', () => {
     it('renders gl-empty-state component', () => {
-      expect(wrapper.find(GlEmptyState).exists()).toBe(true);
+      expect(wrapper.findComponent(GlEmptyState).exists()).toBe(true);
     });
 
     it('renders empty state description', () => {
-      const descriptionEl = wrapper.find(GlSprintf);
+      const descriptionEl = wrapper.findComponent(GlSprintf);
 
       expect(descriptionEl.exists()).toBe(true);
       expect(descriptionEl.attributes('message')).toBe(
@@ -110,7 +110,7 @@ describe('TestCaseListEmptyState', () => {
     });
 
     it('renders "New test cases" button', () => {
-      const buttonEl = wrapper.find(GlButton);
+      const buttonEl = wrapper.findComponent(GlButton);
 
       expect(buttonEl.exists()).toBe(true);
       expect(buttonEl.attributes('href')).toBe('/gitlab-org/gitlab-test/-/quality/test_cases/new');

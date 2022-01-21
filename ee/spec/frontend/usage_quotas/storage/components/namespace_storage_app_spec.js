@@ -23,10 +23,10 @@ describe('NamespaceStorageApp', () => {
   const findPurchaseStorageLink = () => wrapper.find("[data-testid='purchase-storage-link']");
   const findTemporaryStorageIncreaseButton = () =>
     wrapper.find("[data-testid='temporary-storage-increase-button']");
-  const findUsageGraph = () => wrapper.find(UsageGraph);
-  const findUsageStatistics = () => wrapper.find(UsageStatistics);
-  const findStorageInlineAlert = () => wrapper.find(StorageInlineAlert);
-  const findProjectList = () => wrapper.find(ProjectList);
+  const findUsageGraph = () => wrapper.findComponent(UsageGraph);
+  const findUsageStatistics = () => wrapper.findComponent(UsageStatistics);
+  const findStorageInlineAlert = () => wrapper.findComponent(StorageInlineAlert);
+  const findProjectList = () => wrapper.findComponent(ProjectList);
   const findPrevButton = () => wrapper.find('[data-testid="prevButton"]');
   const findNextButton = () => wrapper.find('[data-testid="nextButton"]');
 
@@ -81,7 +81,7 @@ describe('NamespaceStorageApp', () => {
 
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.findAll(CollapsibleProjectStorageDetail)).toHaveLength(3);
+    expect(wrapper.findAllComponents(CollapsibleProjectStorageDetail)).toHaveLength(3);
   });
 
   describe('limit', () => {
@@ -229,7 +229,7 @@ describe('NamespaceStorageApp', () => {
       });
 
       it('renders modal', () => {
-        expect(wrapper.find(TemporaryStorageIncreaseModal).props()).toEqual({
+        expect(wrapper.findComponent(TemporaryStorageIncreaseModal).props()).toEqual({
           limit: formatUsageSize(TEST_LIMIT),
           modalId: NamespaceStorageApp.modalId,
         });

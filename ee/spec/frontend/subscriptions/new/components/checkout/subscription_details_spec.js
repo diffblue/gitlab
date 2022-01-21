@@ -47,10 +47,10 @@ describe('Subscription Details', () => {
     });
   }
 
-  const organizationNameInput = () => wrapper.find({ ref: 'organization-name' });
-  const groupSelect = () => wrapper.find({ ref: 'group-select' });
-  const numberOfUsersInput = () => wrapper.find({ ref: 'number-of-users' });
-  const companyLink = () => wrapper.find({ ref: 'company-link' });
+  const organizationNameInput = () => wrapper.findComponent({ ref: 'organization-name' });
+  const groupSelect = () => wrapper.findComponent({ ref: 'group-select' });
+  const numberOfUsersInput = () => wrapper.findComponent({ ref: 'number-of-users' });
+  const companyLink = () => wrapper.findComponent({ ref: 'company-link' });
 
   afterEach(() => {
     wrapper.destroy();
@@ -488,15 +488,17 @@ describe('Subscription Details', () => {
     });
 
     it('should show the selected plan', () => {
-      expect(wrapper.find({ ref: 'summary-line-1' }).text()).toEqual('Bronze plan');
+      expect(wrapper.findComponent({ ref: 'summary-line-1' }).text()).toEqual('Bronze plan');
     });
 
     it('should show the entered group name', () => {
-      expect(wrapper.find({ ref: 'summary-line-2' }).text()).toEqual('Group: My Organization');
+      expect(wrapper.findComponent({ ref: 'summary-line-2' }).text()).toEqual(
+        'Group: My Organization',
+      );
     });
 
     it('should show the entered number of users', () => {
-      expect(wrapper.find({ ref: 'summary-line-3' }).text()).toEqual('Users: 25');
+      expect(wrapper.findComponent({ ref: 'summary-line-3' }).text()).toEqual('Users: 25');
     });
 
     describe('selecting an existing group', () => {
@@ -505,7 +507,9 @@ describe('Subscription Details', () => {
       });
 
       it('should show the selected group name', () => {
-        expect(wrapper.find({ ref: 'summary-line-2' }).text()).toEqual('Group: My second group');
+        expect(wrapper.findComponent({ ref: 'summary-line-2' }).text()).toEqual(
+          'Group: My second group',
+        );
       });
     });
   });

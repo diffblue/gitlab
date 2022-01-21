@@ -36,10 +36,12 @@ describe('UsageStatistics', () => {
     wrapper.destroy();
   });
 
-  const getStatisticsCards = () => wrapper.findAll(UsageStatisticsCard);
+  const getStatisticsCards = () => wrapper.findAllComponents(UsageStatisticsCard);
   const getStatisticsCard = (testId) => wrapper.find(`[data-testid="${testId}"]`);
   const findGlLinkInCard = (cardName) =>
-    getStatisticsCard(cardName).find('[data-testid="statistics-card-footer"]').find(GlLink);
+    getStatisticsCard(cardName)
+      .find('[data-testid="statistics-card-footer"]')
+      .findComponent(GlLink);
   const findPurchasedUsageButton = () =>
     getStatisticsCard('purchased-usage').findComponent(GlButton);
 

@@ -151,8 +151,8 @@ describe('TestCaseCreateRoot', () => {
         labelsManagePath,
       } = mockProvide;
 
-      expect(wrapper.find(IssuableCreate).exists()).toBe(true);
-      expect(wrapper.find(IssuableCreate).props()).toMatchObject({
+      expect(wrapper.findComponent(IssuableCreate).exists()).toBe(true);
+      expect(wrapper.findComponent(IssuableCreate).props()).toMatchObject({
         descriptionPreviewPath,
         descriptionHelpPath,
         labelsFetchPath,

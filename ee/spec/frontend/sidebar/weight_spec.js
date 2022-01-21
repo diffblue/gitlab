@@ -33,7 +33,7 @@ describe('Weight', () => {
   const findCollapsedBlock = () => wrapper.find('.js-weight-collapsed-block');
   const findEditLink = () => wrapper.find('.js-weight-edit-link');
   const findRemoveLink = () => wrapper.find('.js-weight-remove-link');
-  const containsEditableField = () => wrapper.find({ ref: 'editableField' }).exists();
+  const containsEditableField = () => wrapper.findComponent({ ref: 'editableField' }).exists();
   const containsInputError = () => wrapper.find('.gl-field-error').exists();
 
   it('shows loading spinner when fetching', () => {

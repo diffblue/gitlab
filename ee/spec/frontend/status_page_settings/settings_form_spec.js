@@ -6,10 +6,10 @@ describe('Status Page settings form', () => {
   let wrapper;
   const store = createStore();
 
-  const findForm = () => wrapper.find({ ref: 'settingsForm' });
-  const findToggleButton = () => wrapper.find({ ref: 'toggleBtn' });
-  const findSectionHeader = () => wrapper.find({ ref: 'sectionHeader' });
-  const findSectionSubHeader = () => wrapper.find({ ref: 'sectionSubHeader' });
+  const findForm = () => wrapper.findComponent({ ref: 'settingsForm' });
+  const findToggleButton = () => wrapper.findComponent({ ref: 'toggleBtn' });
+  const findSectionHeader = () => wrapper.findComponent({ ref: 'sectionHeader' });
+  const findSectionSubHeader = () => wrapper.findComponent({ ref: 'sectionSubHeader' });
 
   beforeEach(() => {
     wrapper = shallowMount(StatusPageSettingsForm, { store });

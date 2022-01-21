@@ -269,8 +269,8 @@ describe('TestCaseSidebar', () => {
 
       expect(todoEl.exists()).toBe(true);
       expect(todoEl.text()).toContain('To Do');
-      expect(todoEl.find(GlButton).exists()).toBe(true);
-      expect(todoEl.find(GlButton).text()).toBe('Add a to do');
+      expect(todoEl.findComponent(GlButton).exists()).toBe(true);
+      expect(todoEl.findComponent(GlButton).text()).toBe('Add a to do');
 
       wrapper.setProps({
         sidebarExpanded: false,
@@ -282,13 +282,13 @@ describe('TestCaseSidebar', () => {
 
       expect(todoEl.exists()).toBe(true);
       expect(todoEl.attributes('title')).toBe('Add a to do');
-      expect(todoEl.find(GlIcon).exists()).toBe(true);
+      expect(todoEl.findComponent(GlIcon).exists()).toBe(true);
     });
 
     it('renders label-select', async () => {
       const { selectedLabels, testCaseLabelsSelectInProgress } = wrapper.vm;
       const { canEditTestCase, labelsFetchPath, labelsManagePath } = mockProvide;
-      const labelSelectEl = wrapper.find(LabelsSelect);
+      const labelSelectEl = wrapper.findComponent(LabelsSelect);
 
       expect(labelSelectEl.exists()).toBe(true);
       expect(labelSelectEl.props()).toMatchObject({
@@ -307,7 +307,7 @@ describe('TestCaseSidebar', () => {
     it('renders project-select', async () => {
       const { selectProjectDropdownButtonTitle, testCaseMoveInProgress } = wrapper.vm;
       const { projectsFetchPath } = mockProvide;
-      const projectSelectEl = wrapper.find(ProjectSelect);
+      const projectSelectEl = wrapper.findComponent(ProjectSelect);
 
       expect(projectSelectEl.exists()).toBe(true);
       expect(projectSelectEl.props()).toMatchObject({

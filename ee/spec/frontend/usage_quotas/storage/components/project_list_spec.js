@@ -19,7 +19,7 @@ const createComponent = ({ additionalRepoStorageByNamespace = false } = {}) => {
   });
 };
 
-const findTableRows = () => wrapper.findAll(CollapsibleProjectStorageDetail);
+const findTableRows = () => wrapper.findAllComponents(CollapsibleProjectStorageDetail);
 
 describe('ProjectList', () => {
   beforeEach(() => {

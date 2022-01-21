@@ -41,7 +41,7 @@ describe('LockButton component', () => {
   describe('lock button', () => {
     let lockMutationMock;
     const mockEvent = { preventDefault: jest.fn() };
-    const findLockButton = () => wrapper.find(GlButton);
+    const findLockButton = () => wrapper.findComponent(GlButton);
     const findModal = () => wrapper.findComponent(GlModal);
     const clickSubmit = () => findModal().vm.$emit('primary', mockEvent);
     const clickHide = () => findModal().vm.$emit('hide', mockEvent);
