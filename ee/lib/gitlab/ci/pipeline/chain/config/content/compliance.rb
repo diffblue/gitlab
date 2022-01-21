@@ -11,6 +11,7 @@ module Gitlab
                 strong_memoize(:content) do
                   next unless available?
                   next unless pipeline_configuration_full_path.present?
+                  next if command.bridge
 
                   path_file, path_project = pipeline_configuration_full_path.split('@', 2)
                   YAML.dump('include' => [{ 'project' => path_project, 'file' => path_file }])
