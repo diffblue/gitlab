@@ -10796,6 +10796,9 @@ msgstr ""
 msgid "DORA4Metrics|%{startDate} - %{endDate}"
 msgstr ""
 
+msgid "DORA4Metrics|Average (last %{days}d)"
+msgstr ""
+
 msgid "DORA4Metrics|Date"
 msgstr ""
 

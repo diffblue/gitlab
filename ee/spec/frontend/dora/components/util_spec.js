@@ -1,5 +1,9 @@
 import lastWeekData from 'test_fixtures/api/dora/metrics/daily_lead_time_for_changes_for_last_week.json';
-import { apiDataToChartSeries, buildNullSeriesForLeadTimeChart } from 'ee/dora/components/util';
+import {
+  apiDataToChartSeries,
+  buildNullSeriesForLeadTimeChart,
+  seriesToAverageSeries,
+} from 'ee/dora/components/util';
 
 describe('ee/dora/components/util.js', () => {
   describe('apiDataToChartSeries', () => {
@@ -207,6 +211,42 @@ describe('ee/dora/components/util.js', () => {
       );
 
       expect(chartData).toMatchSnapshot();
+    });
+  });
+
+  describe('seriesToAverageSeries', () => {
+    const seriesName = 'Average';
+
+    it('returns an empty object if chart data is undefined', () => {
+      const data = seriesToAverageSeries(undefined, seriesName);
+
+      expect(data).toStrictEqual({});
+    });
+
+    it('returns an empty object if chart data is blank', () => {
+      const data = seriesToAverageSeries(null, seriesName);
+
+      expect(data).toStrictEqual({});
+    });
+
+    it('returns the correct average values', () => {
+      const data = seriesToAverageSeries(
+        [
+          ['Jul 1', 2],
+          ['Jul 2', 3],
+          ['Jul 3', 4],
+        ],
+        seriesName,
+      );
+
+      expect(data).toStrictEqual({
+        name: seriesName,
+        data: [
+          ['Jul 1', 3],
+          ['Jul 2', 3],
+          ['Jul 3', 3],
+        ],
+      });
     });
   });
 });
