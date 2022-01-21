@@ -1515,7 +1515,7 @@ class Project < ApplicationRecord
   def owner
     # This will be phased out and replaced with `owners` relationship
     # backed by memberships with direct/inherited Owner access roles
-    # See https://gitlab.com/gitlab-org/gitlab/-/issues/241503
+    # See https://gitlab.com/groups/gitlab-org/-/epics/7405
     group || namespace.try(:owner)
   end
 
