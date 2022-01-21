@@ -6,6 +6,8 @@
       %span.ref-name= protected_environment.name
   %td
     = render partial: 'projects/protected_environments/update_deploy_access_level_dropdown', locals: { protected_environment: protected_environment, access_levels: protected_environment.deploy_access_levels, disabled: !can_admin_project }
+  %td.gl-min-w-20
+    = protected_environment.required_approval_count
 
   - if can_admin_project
     %td

@@ -8,6 +8,8 @@ import { initAccessDropdown } from '~/projects/settings/init_access_dropdown';
 import { ACCESS_LEVELS } from './constants';
 
 const PROTECTED_ENVIRONMENT_INPUT = 'input[name="protected_environment[name]"]';
+const REQUIRED_APPROVAL_COUNT_INPUT =
+  'select[name="protected_environment[required_approval_count]"]';
 
 export default class ProtectedEnvironmentCreate {
   constructor() {
@@ -82,6 +84,7 @@ export default class ProtectedEnvironmentCreate {
       authenticity_token: this.$form.find('input[name="authenticity_token"]').val(),
       protected_environment: {
         name: this.$form.find(PROTECTED_ENVIRONMENT_INPUT).val(),
+        required_approval_count: this.$form.find(REQUIRED_APPROVAL_COUNT_INPUT).val(),
       },
     };
     formData.protected_environment[`${ACCESS_LEVELS.DEPLOY}_attributes`] = this.selected;
