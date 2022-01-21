@@ -1,13 +1,15 @@
-import { GlIcon, GlPopover, GlLink, GlButton } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { GlIcon, GlPopover, GlLink, GlButton, GlSprintf } from '@gitlab/ui';
 import Vue from 'vue';
 import Vuex from 'vuex';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoNodeReplicationDetails from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_details.vue';
 import GeoNodeReplicationDetailsResponsive from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_details_responsive.vue';
 import GeoNodeReplicationStatusMobile from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_status_mobile.vue';
-import { GEO_REPLICATION_TYPES_URL } from 'ee/geo_nodes/constants';
+import {
+  GEO_REPLICATION_TYPES_URL,
+  GEO_REPLICATION_SUPPORTED_TYPES_URL,
+} from 'ee/geo_nodes/constants';
 import { MOCK_NODES, MOCK_REPLICABLE_TYPES } from 'ee_jest/geo_nodes/mock_data';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 Vue.use(Vuex);
 
@@ -31,16 +33,14 @@ describe('GeoNodeReplicationDetails', () => {
       },
     });
 
-    wrapper = extendedWrapper(
-      shallowMount(GeoNodeReplicationDetails, {
-        store,
-        propsData: {
-          ...defaultProps,
-          ...props,
-        },
-        stubs: { GeoNodeReplicationDetailsResponsive },
-      }),
-    );
+    wrapper = shallowMountExtended(GeoNodeReplicationDetails, {
+      store,
+      propsData: {
+        ...defaultProps,
+        ...props,
+      },
+      stubs: { GeoNodeReplicationDetailsResponsive, GlSprintf },
+    });
   };
 
   afterEach(() => {
@@ -57,6 +57,7 @@ describe('GeoNodeReplicationDetails', () => {
   const findGlPopover = () => wrapper.findComponent(GlPopover);
   const findGlPopoverLink = () => findGlPopover().findComponent(GlLink);
   const findCollapseButton = () => wrapper.findComponent(GlButton);
+  const findNAVerificationHelpLink = () => wrapper.findByTestId('naVerificationHelpLink');
 
   describe('template', () => {
     describe('always', () => {
@@ -104,6 +105,12 @@ describe('GeoNodeReplicationDetails', () => {
           'gl-display-none',
           'gl-md-display-block',
         ]);
+      });
+
+      it('renders N/A Verification Help Text with correct link', () => {
+        expect(findNAVerificationHelpLink().attributes('href')).toBe(
+          GEO_REPLICATION_SUPPORTED_TYPES_URL,
+        );
       });
     });
 
@@ -168,30 +175,37 @@ describe('GeoNodeReplicationDetails', () => {
     };
 
     describe.each`
-      description                    | mockSyncData  | mockVerificationData | expectedProps
-      ${'with no data'}              | ${[]}         | ${[]}                | ${[mockExpectedNoValues]}
-      ${'with no verification data'} | ${[mockSync]} | ${[]}                | ${[mockExpectedOnlySync]}
-      ${'with no sync data'}         | ${[]}         | ${[mockVerif]}       | ${[mockExpectedOnlyVerif]}
-      ${'with all data'}             | ${[mockSync]} | ${[mockVerif]}       | ${[mockExpectedBothTypes]}
-    `('$description', ({ mockSyncData, mockVerificationData, expectedProps }) => {
-      beforeEach(() => {
-        createComponent({ replicableTypes: [MOCK_REPLICABLE_TYPES[0]] }, null, {
-          syncInfo: () => () => mockSyncData,
-          verificationInfo: () => () => mockVerificationData,
+      description                    | mockSyncData  | mockVerificationData | expectedProps              | hasNAVerificationHelpText
+      ${'with no data'}              | ${[]}         | ${[]}                | ${[mockExpectedNoValues]}  | ${true}
+      ${'with no verification data'} | ${[mockSync]} | ${[]}                | ${[mockExpectedOnlySync]}  | ${true}
+      ${'with no sync data'}         | ${[]}         | ${[mockVerif]}       | ${[mockExpectedOnlyVerif]} | ${false}
+      ${'with all data'}             | ${[mockSync]} | ${[mockVerif]}       | ${[mockExpectedBothTypes]} | ${false}
+    `(
+      '$description',
+      ({ mockSyncData, mockVerificationData, expectedProps, hasNAVerificationHelpText }) => {
+        beforeEach(() => {
+          createComponent({ replicableTypes: [MOCK_REPLICABLE_TYPES[0]] }, null, {
+            syncInfo: () => () => mockSyncData,
+            verificationInfo: () => () => mockVerificationData,
+          });
         });
-      });
 
-      it('passes the correct props to the mobile replication details', () => {
-        expect(findGeoMobileReplicationDetails().props('replicationItems')).toStrictEqual(
-          expectedProps,
-        );
-      });
+        it('passes the correct props to the mobile replication details', () => {
+          expect(findGeoMobileReplicationDetails().props('replicationItems')).toStrictEqual(
+            expectedProps,
+          );
+        });
 
-      it('passes the correct props to the desktop replication details', () => {
-        expect(findGeoDesktopReplicationDetails().props('replicationItems')).toStrictEqual(
-          expectedProps,
-        );
-      });
-    });
+        it('passes the correct props to the desktop replication details', () => {
+          expect(findGeoDesktopReplicationDetails().props('replicationItems')).toStrictEqual(
+            expectedProps,
+          );
+        });
+
+        it(`does ${hasNAVerificationHelpText ? '' : 'not '}show N/A verification help text`, () => {
+          expect(findNAVerificationHelpLink().exists()).toBe(hasNAVerificationHelpText);
+        });
+      },
+    );
   });
 });
