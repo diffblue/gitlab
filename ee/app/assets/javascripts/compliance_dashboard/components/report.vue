@@ -9,6 +9,7 @@ import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import complianceViolationsQuery from '../graphql/compliance_violations.query.graphql';
 import { mapViolations } from '../graphql/mappers';
+import { parseViolationsQueryFilter } from '../utils';
 import MergeCommitsExportButton from './merge_requests/merge_commits_export_button.vue';
 import MergeRequestDrawer from './drawer.vue';
 import ViolationReason from './violations/reason.vue';
@@ -45,7 +46,7 @@ export default {
   },
   data() {
     return {
-      urlQuery: {},
+      urlQuery: { ...this.defaultQuery },
       queryError: false,
       violations: [],
       showDrawer: false,
@@ -58,7 +59,8 @@ export default {
       query: complianceViolationsQuery,
       variables() {
         return {
-          fullPath: 'groups-path',
+          fullPath: this.groupPath,
+          filter: parseViolationsQueryFilter(this.urlQuery),
         };
       },
       update(data) {
