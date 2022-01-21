@@ -66,7 +66,7 @@ describe('InstallAgentModal', () => {
       .wrappers.find((button) => button.props('variant') === variant);
   const findActionButton = () => findButtonByVariant('confirm');
   const findCancelButton = () => findButtonByVariant('default');
-  const findSecondaryButton = () => wrapper.findByTestId('agent-secondary-button');
+  const findPrimaryButton = () => wrapper.findByTestId('agent-primary-button');
   const findImage = () => wrapper.findByRole('img', { alt: I18N_AGENT_MODAL.empty_state.altText });
 
   const expectDisabledAttribute = (element, disabled) => {
@@ -295,9 +295,9 @@ describe('InstallAgentModal', () => {
       expect(findImage().attributes('src')).toBe(emptyStateImage);
     });
 
-    it('renders a secondary button', () => {
-      expect(findSecondaryButton().isVisible()).toBe(true);
-      expect(findSecondaryButton().text()).toBe(i18n.secondaryButton);
+    it('renders a primary button', () => {
+      expect(findPrimaryButton().isVisible()).toBe(true);
+      expect(findPrimaryButton().text()).toBe(i18n.primaryButton);
     });
 
     it('sends the event with the modalType', () => {
@@ -335,7 +335,7 @@ describe('InstallAgentModal', () => {
     });
 
     it("doesn't render a secondary button", () => {
-      expect(findSecondaryButton().exists()).toBe(false);
+      expect(findPrimaryButton().exists()).toBe(false);
     });
   });
 });
