@@ -46,7 +46,7 @@ RSpec.describe 'GEO Nodes', :geo do
     end
 
     describe 'Geo Nodes admin screen' do
-      it "has a 'Replication details' button on listed secondary geo nodes pointing to correct URL", :js do
+      it "has a 'Open replications' button on listed secondary geo nodes pointing to correct URL", :js do
         visit admin_geo_nodes_path
 
         expect(page).to have_content(geo_primary.url)
@@ -56,7 +56,7 @@ RSpec.describe 'GEO Nodes', :geo do
 
         expected_url = File.join(geo_secondary.url, '/admin/geo/projects')
 
-        expect(all('.geo-node-details-grid-columns').last).to have_link('Replication details', href: expected_url)
+        expect(all('.geo-node-details-grid-columns').last).to have_link('Open replications', href: expected_url)
       end
     end
   end

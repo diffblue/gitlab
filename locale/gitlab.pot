@@ -15869,6 +15869,9 @@ msgstr ""
 msgid "Geo|Offline"
 msgstr ""
 
+msgid "Geo|Open replications"
+msgstr ""
+
 msgid "Geo|Pending synchronization"
 msgstr ""
 
@@ -15924,9 +15927,6 @@ msgid "Geo|Replicated data is verified with the secondary site(s) using checksum
 msgstr ""
 
 msgid "Geo|Replication Details"
-msgstr ""
-
-msgid "Geo|Replication details"
 msgstr ""
 
 msgid "Geo|Replication slot WAL"
