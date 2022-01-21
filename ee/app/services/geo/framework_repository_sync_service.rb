@@ -78,14 +78,15 @@ module Geo
         redownload_repository
         @new_repository = true
       elsif repository.exists?
-        fetch_geo_mirror(repository)
+        fetch_geo_mirror
       else
+        clone_geo_mirror
+
         ensure_repository
         # Because we ensure a repository exists by this point, we need to
         # mark it as new, even if fetching the mirror fails, we should run
         # housekeeping to enable object deduplication to run
         @new_repository = true
-        fetch_geo_mirror(repository)
       end
 
       update_root_ref
@@ -102,9 +103,8 @@ module Geo
 
       log_info("Attempting to fetch repository via git")
 
-      # `git fetch` needs an empty bare repository to fetch into
-      temp_repo.create_repository
-      fetch_geo_mirror(temp_repo)
+      clone_geo_mirror(target_repository: temp_repo)
+      temp_repo.create_repository unless temp_repo.exists?
 
       set_temp_repository_as_main
     ensure
@@ -115,9 +115,18 @@ module Geo
       ::Gitlab::Geo.current_node
     end
 
-    def fetch_geo_mirror(repository)
+    # Updates an existing repository using JWT authentication mechanism
+    #
+    def fetch_geo_mirror
       # Fetch the repository, using a JWT header for authentication
-      repository.fetch_as_mirror(replicator.remote_url, forced: true, http_authorization_header: replicator.jwt_authentication_header(repository))
+      repository.fetch_as_mirror(replicator.remote_url, forced: true, http_authorization_header: replicator.jwt_authentication_header)
+    end
+
+    # Clone a Geo repository using JWT authentication mechanism
+    #
+    # @param [Repository] target_repository specify a different temporary repository (default: current repository)
+    def clone_geo_mirror(target_repository: repository)
+      target_repository.clone_as_mirror(replicator.remote_url, http_authorization_header: replicator.jwt_authentication_header)
     end
 
     # Use snapshotting for redownloads *only* when enabled.

@@ -841,7 +841,7 @@ module Gitlab
         end
       end
 
-      def import_repository(url, http_authorization_header: "")
+      def import_repository(url, http_authorization_header: '')
         raise ArgumentError, "don't use disk paths with import_repository: #{url.inspect}" if url.start_with?('.', '/')
 
         wrapped_gitaly_errors do

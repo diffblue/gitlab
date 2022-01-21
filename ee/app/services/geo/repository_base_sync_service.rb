@@ -70,7 +70,6 @@ module Geo
         # mark it as new, even if fetching the mirror fails, we should run
         # housekeeping to enable object deduplication to run
         @new_repository = true
-        fetch_geo_mirror(repository)
       end
 
       update_root_ref
@@ -91,9 +90,7 @@ module Geo
 
       log_info("Attempting to fetch repository via git")
 
-      # `git fetch` needs an empty bare repository to fetch into
-      temp_repo.create_repository
-      fetch_geo_mirror(temp_repo)
+      clone_geo_mirror(target_repository: temp_repo)
 
       set_temp_repository_as_main
     ensure
@@ -104,7 +101,7 @@ module Geo
       ::Gitlab::Geo.current_node
     end
 
-    # Update an existing repository using special credentials
+    # Updates an existing repository using JWT authentication mechanism
     #
     def fetch_geo_mirror
       # Fetch the repository, using a JWT header for authentication
@@ -113,12 +110,12 @@ module Geo
                                  http_authorization_header: jwt_authentication_header)
     end
 
-    # Clone a new repository using Geo special credentials
+    # Clone a Geo repository using JWT authentication mechanism
     #
-    def clone_geo_mirror
-      # Clone the repository, using a JWT header for authentication
-      repository.clone_as_mirror(remote_url,
-                                 http_authorization_header: jwt_authentication_header)
+    # @param [Repository] target_repository specify a different temporary repository (default: current repository)
+    def clone_geo_mirror(target_repository: repository)
+      target_repository.clone_as_mirror(remote_url,
+                                        http_authorization_header: jwt_authentication_header)
     end
 
     # Build a JWT header for authentication
