@@ -13,7 +13,7 @@
           %p
             %span= _('Try all GitLab has to offer for 30 days.')
             %span.d-none.d-sm-inline= _('No credit card required.')
-          = link_to _('Start your free trial'), new_trial_registration_path(glm_source: 'gitlab.com', glm_content: 'gold-callout'), class: "btn btn-confirm gl-button mt-2 mt-sm-0 #{button_css_class}", target: '_blank', rel: 'noopener noreferrer'
+          = link_to _('Start your free trial'), trials_link_url, class: "btn btn-confirm gl-button mt-2 mt-sm-0 #{button_css_class}", target: '_blank', rel: 'noopener noreferrer'
         - if is_dismissable
           %button.btn.gl-banner-close.btn-default.btn-sm.gl-button.btn-default-tertiary.btn-icon.close.js-close{ class: 'gl-opacity-10!', type: 'button', 'aria-label' => _('Dismiss trial promotion') }
             = sprite_icon('close', css_class: 'dismiss-icon gl-text-gray-700!')
