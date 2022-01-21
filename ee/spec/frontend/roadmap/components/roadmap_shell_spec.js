@@ -1,4 +1,5 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 
 import EpicsListSection from 'ee/roadmap/components/epics_list_section.vue';
@@ -26,8 +27,7 @@ const mockTimeframeMonths = getTimeframeForRangeType({
 });
 
 describe('RoadmapShell', () => {
-  const localVue = createLocalVue();
-  localVue.use(Vuex);
+  Vue.use(Vuex);
 
   let store;
   let wrapper;
@@ -51,7 +51,6 @@ describe('RoadmapShell', () => {
     el,
   ) => {
     wrapper = shallowMount(RoadmapShell, {
-      localVue,
       store,
       attachTo: el,
       propsData: {

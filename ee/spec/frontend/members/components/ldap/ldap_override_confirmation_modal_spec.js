@@ -1,7 +1,7 @@
 import { GlModal } from '@gitlab/ui';
 import { within } from '@testing-library/dom';
-import { mount, createLocalVue, createWrapper } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import { mount, createWrapper } from '@vue/test-utils';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import LdapOverrideConfirmationModal from 'ee/members/components/ldap/ldap_override_confirmation_modal.vue';
 import { LDAP_OVERRIDE_CONFIRMATION_MODAL_ID } from 'ee/members/constants';
@@ -9,8 +9,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { member } from 'jest/members/mock_data';
 import { MEMBER_TYPES } from '~/members/constants';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('LdapOverrideConfirmationModal', () => {
   let wrapper;
@@ -48,7 +47,6 @@ describe('LdapOverrideConfirmationModal', () => {
 
   const createComponent = (state) => {
     wrapper = mount(LdapOverrideConfirmationModal, {
-      localVue,
       store: createStore(state),
       provide: {
         namespace: MEMBER_TYPES.user,

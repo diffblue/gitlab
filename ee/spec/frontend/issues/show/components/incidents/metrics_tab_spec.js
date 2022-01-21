@@ -1,5 +1,6 @@
 import { GlFormInput, GlModal } from '@gitlab/ui';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import merge from 'lodash/merge';
 import Vuex from 'vuex';
 import MetricsImage from 'ee/issues/show/components/incidents/metrics_image.vue';
@@ -16,8 +17,7 @@ jest.mock('ee/issues/show/components/incidents/service', () => ({
 
 const mockEvent = { preventDefault: jest.fn() };
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('Metrics tab', () => {
   let wrapper;
@@ -30,7 +30,6 @@ describe('Metrics tab', () => {
       MetricsTab,
       merge(
         {
-          localVue,
           store,
           provide: {
             canUpdate: true,

@@ -1,13 +1,13 @@
 import { GlButton } from '@gitlab/ui';
-import { mount, createLocalVue } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import LdapOverrideButton from 'ee/members/components/ldap/ldap_override_button.vue';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { member } from 'jest/members/mock_data';
 import { MEMBER_TYPES } from '~/members/constants';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('LdapOverrideButton', () => {
   let wrapper;
@@ -30,7 +30,6 @@ describe('LdapOverrideButton', () => {
 
   const createComponent = (propsData = {}) => {
     wrapper = mount(LdapOverrideButton, {
-      localVue,
       propsData: {
         member,
         ...propsData,

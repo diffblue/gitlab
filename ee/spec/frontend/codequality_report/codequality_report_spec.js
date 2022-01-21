@@ -1,4 +1,5 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import CodequalityReportApp from 'ee/codequality_report/codequality_report.vue';
 import PaginationLinks from '~/vue_shared/components/pagination_links.vue';
@@ -6,8 +7,7 @@ import { parsedIssues } from './mock_data';
 
 jest.mock('~/flash');
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('Codequality report app', () => {
   let wrapper;
@@ -27,7 +27,6 @@ describe('Codequality report app', () => {
     });
 
     wrapper = mountFn(CodequalityReportApp, {
-      localVue,
       store,
       provide: {
         glFeatures,

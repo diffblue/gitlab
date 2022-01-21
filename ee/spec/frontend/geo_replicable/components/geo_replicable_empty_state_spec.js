@@ -1,5 +1,6 @@
 import { getByRole } from '@testing-library/dom';
-import { createLocalVue, mount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import GeoReplicableEmptyState from 'ee/geo_replicable/components/geo_replicable_empty_state.vue';
 import createStore from 'ee/geo_replicable/store';
@@ -9,8 +10,7 @@ import {
   MOCK_REPLICABLE_TYPE,
 } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('GeoReplicableEmptyState', () => {
   let wrapper;
@@ -22,7 +22,6 @@ describe('GeoReplicableEmptyState', () => {
 
   const createComponent = () => {
     wrapper = mount(GeoReplicableEmptyState, {
-      localVue,
       store: createStore({ replicableType: MOCK_REPLICABLE_TYPE, graphqlFieldName: null }),
       propsData,
     });

@@ -1,5 +1,6 @@
 import { GlLoadingIcon } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import AxiosMockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
 
@@ -15,8 +16,7 @@ import { issuableTypesMap } from '~/related_issues/constants';
 
 import { mockInitialConfig, mockParentItem, mockEpics, mockIssues } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 const createComponent = () => {
   const store = createDefaultStore();
@@ -29,7 +29,6 @@ const createComponent = () => {
   });
 
   return shallowMount(RelatedItemsTreeApp, {
-    localVue,
     store,
     stubs: {
       SlotSwitch,

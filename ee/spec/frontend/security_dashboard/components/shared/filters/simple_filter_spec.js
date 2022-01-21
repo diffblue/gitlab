@@ -1,9 +1,9 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueRouter from 'vue-router';
 import SimpleFilter from 'ee/security_dashboard/components/shared/filters/simple_filter.vue';
 
-const localVue = createLocalVue();
-localVue.use(VueRouter);
+Vue.use(VueRouter);
 const router = new VueRouter();
 
 const generateOptions = (length) =>
@@ -24,7 +24,6 @@ describe('Simple Filter component', () => {
 
   const createWrapper = (filterOptions, props) => {
     wrapper = shallowMount(SimpleFilter, {
-      localVue,
       router,
       propsData: { filter: { ...filter, ...filterOptions }, ...props },
     });

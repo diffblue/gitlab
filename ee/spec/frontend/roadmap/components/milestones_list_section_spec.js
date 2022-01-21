@@ -1,5 +1,5 @@
 import { GlIcon, GlButton } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import MilestoneTimeline from 'ee/roadmap/components/milestone_timeline.vue';
 import milestonesListSectionComponent from 'ee/roadmap/components/milestones_list_section.vue';
 import {
@@ -56,9 +56,7 @@ describe('MilestonesListSectionComponent', () => {
   };
 
   const createWrapper = (props = {}) => {
-    const localVue = createLocalVue();
     wrapper = shallowMount(milestonesListSectionComponent, {
-      localVue,
       store,
       stubs: {
         MilestoneTimeline: false,

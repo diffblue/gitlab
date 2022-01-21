@@ -1,5 +1,6 @@
 import { GlLoadingIcon } from '@gitlab/ui';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import GeoReplicableApp from 'ee/geo_replicable/components/app.vue';
 import GeoReplicable from 'ee/geo_replicable/components/geo_replicable.vue';
@@ -14,8 +15,7 @@ import {
   MOCK_GRAPHQL_REGISTRY,
 } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('GeoReplicableApp', () => {
   let wrapper;
@@ -33,7 +33,6 @@ describe('GeoReplicableApp', () => {
 
   const createComponent = () => {
     wrapper = shallowMount(GeoReplicableApp, {
-      localVue,
       store,
       propsData,
     });

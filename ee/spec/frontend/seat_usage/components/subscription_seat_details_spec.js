@@ -1,5 +1,6 @@
 import { GlTable } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import Api from 'ee/api';
 import SubscriptionSeatDetails from 'ee/seat_usage/components/subscription_seat_details.vue';
@@ -9,8 +10,7 @@ import initState from 'ee/seat_usage/store/state';
 import { mockMemberDetails } from 'ee_jest/seat_usage/mock_data';
 import { stubComponent } from 'helpers/stub_component';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('SubscriptionSeatDetails', () => {
   let wrapper;
@@ -26,7 +26,6 @@ describe('SubscriptionSeatDetails', () => {
         seatMemberId: 1,
       },
       store: new Vuex.Store({ ...store, actions }),
-      localVue,
       stubs: {
         GlTable: stubComponent(GlTable),
       },

@@ -1,12 +1,12 @@
 import { GlTable, GlDeprecatedSkeletonLoading as GlSkeletonLoading } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import MembersApp from 'ee/pages/groups/saml_providers/saml_members/index.vue';
 import createInitialState from 'ee/pages/groups/saml_providers/saml_members/store/state';
 import TablePagination from '~/vue_shared/components/pagination/table_pagination.vue';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('SAML providers members app', () => {
   let wrapper;
@@ -25,7 +25,6 @@ describe('SAML providers members app', () => {
 
     wrapper = shallowMount(MembersApp, {
       store,
-      localVue,
     });
   };
 

@@ -1,5 +1,6 @@
 import { GlAreaChart } from '@gitlab/ui/dist/charts';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import { TOTAL_REQUESTS, ANOMALOUS_REQUESTS } from 'ee/threat_monitoring/components/constants';
 import StatisticsHistory from 'ee/threat_monitoring/components/statistics_history.vue';
 import { mockNominalHistory, mockAnomalousHistory } from '../mocks/mock_data';
@@ -20,15 +21,13 @@ const MockResizeObserverDirective = {
   },
 };
 
-const localVue = createLocalVue();
-localVue.directive('gl-resize-observer-directive', MockResizeObserverDirective);
+Vue.directive('gl-resize-observer-directive', MockResizeObserverDirective);
 
 describe('StatisticsHistory component', () => {
   let wrapper;
 
   const factory = ({ options } = {}) => {
     wrapper = shallowMount(StatisticsHistory, {
-      localVue,
       propsData: {
         data: {
           anomalous: { title: 'Anomoulous', values: mockAnomalousHistory },

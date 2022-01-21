@@ -1,12 +1,12 @@
 import { GlDropdownItem } from '@gitlab/ui';
-import { mount, createLocalVue } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import LdapDropdownItem from 'ee/members/components/ldap/ldap_dropdown_item.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import { MEMBER_TYPES } from '~/members/constants';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('LdapDropdownItem', () => {
   let wrapper;
@@ -36,7 +36,6 @@ describe('LdapDropdownItem', () => {
         memberId: 1,
         ...propsData,
       },
-      localVue,
       store: createStore(),
       provide: {
         namespace: MEMBER_TYPES.user,

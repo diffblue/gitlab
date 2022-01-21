@@ -1,4 +1,5 @@
-import { createLocalVue, mount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import GeoReplicableTimeAgo from 'ee/geo_replicable/components/geo_replicable_time_ago.vue';
 import createStore from 'ee/geo_replicable/store';
@@ -6,8 +7,7 @@ import { useFakeDate } from 'helpers/fake_date';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import { MOCK_REPLICABLE_TYPE } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('GeoReplicableTimeAgo', () => {
   let wrapper;
@@ -20,7 +20,6 @@ describe('GeoReplicableTimeAgo', () => {
 
   const createComponent = () => {
     wrapper = mount(GeoReplicableTimeAgo, {
-      localVue,
       store: createStore({ replicableType: MOCK_REPLICABLE_TYPE, graphqlFieldName: null }),
       propsData,
     });

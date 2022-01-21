@@ -1,6 +1,7 @@
 import { GlEmptyState } from '@gitlab/ui';
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 
 import InsightsChart from 'ee/insights/components/insights_chart.vue';
@@ -9,8 +10,7 @@ import { createStore } from 'ee/insights/stores';
 import { chartInfo, pageInfo, pageInfoNoCharts, barChartData } from 'ee_jest/insights/mock_data';
 import { TEST_HOST } from 'helpers/test_constants';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('Insights page component', () => {
   let store;
@@ -18,7 +18,6 @@ describe('Insights page component', () => {
 
   const createComponent = (props = {}) => {
     wrapper = shallowMount(InsightsPage, {
-      localVue,
       store,
       propsData: {
         queryEndpoint: `${TEST_HOST}/query`,

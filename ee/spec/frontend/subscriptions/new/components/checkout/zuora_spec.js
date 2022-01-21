@@ -1,13 +1,13 @@
 import { GlLoadingIcon } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import Component from 'ee/subscriptions/new/components/checkout/zuora.vue';
 import { getStoreConfig } from 'ee/subscriptions/new/store';
 import * as types from 'ee/subscriptions/new/store/mutation_types';
 
 describe('Zuora', () => {
-  const localVue = createLocalVue();
-  localVue.use(Vuex);
+  Vue.use(Vuex);
 
   let store;
   let wrapper;
@@ -34,7 +34,6 @@ describe('Zuora', () => {
         active: true,
         ...props,
       },
-      localVue,
       store,
     });
   };
@@ -81,7 +80,7 @@ describe('Zuora', () => {
       beforeEach(() => {
         store.commit(types.UPDATE_IS_LOADING_PAYMENT_METHOD, true);
 
-        return localVue.nextTick();
+        return nextTick();
       });
 
       it('shows the loading icon', () => {
@@ -116,7 +115,7 @@ describe('Zuora', () => {
 
       store.commit(types.UPDATE_PAYMENT_FORM_PARAMS, {});
 
-      return localVue.nextTick().then(() => {
+      return nextTick().then(() => {
         expect(actionMocks.zuoraIframeRendered).toHaveBeenCalled();
       });
     });

@@ -1,11 +1,11 @@
 import { GlIcon, GlSearchBoxByType, GlDropdown } from '@gitlab/ui';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import GeoNodeFormNamespaces from 'ee/geo_node_form/components/geo_node_form_namespaces.vue';
 import { MOCK_SYNC_NAMESPACES } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 jest.mock('~/flash');
 
@@ -32,7 +32,6 @@ describe('GeoNodeFormNamespaces', () => {
     });
 
     wrapper = shallowMount(GeoNodeFormNamespaces, {
-      localVue,
       store: fakeStore,
       propsData: {
         ...defaultProps,

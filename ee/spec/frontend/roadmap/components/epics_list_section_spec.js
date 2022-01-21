@@ -1,6 +1,5 @@
 import { GlIntersectionObserver, GlLoadingIcon } from '@gitlab/ui';
 
-import { createLocalVue } from '@vue/test-utils';
 import EpicItem from 'ee/roadmap/components/epic_item.vue';
 import EpicsListSection from 'ee/roadmap/components/epics_list_section.vue';
 import {
@@ -56,8 +55,6 @@ const mockEpics = store.state.epics;
 
 store.state.childrenEpics[mockEpics[0].id] = [mockFormattedChildEpic1, mockFormattedChildEpic2];
 
-const localVue = createLocalVue();
-
 const createComponent = ({
   epics = mockEpics,
   timeframe = mockTimeframeMonths,
@@ -66,7 +63,6 @@ const createComponent = ({
   hasFiltersApplied = false,
 } = {}) => {
   return shallowMountExtended(EpicsListSection, {
-    localVue,
     store,
     stubs: {
       EpicItem: false,

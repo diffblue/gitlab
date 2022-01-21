@@ -1,5 +1,6 @@
 import { GlEmptyState, GlFormCheckbox } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import SecurityDashboardTable from 'ee/security_dashboard/components/pipeline/security_dashboard_table.vue';
 import SecurityDashboardTableRow from 'ee/security_dashboard/components/pipeline/security_dashboard_table_row.vue';
@@ -12,8 +13,7 @@ import {
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import mockDataVulnerabilities from '../../store/modules/vulnerabilities/data/mock_data_vulnerabilities';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('Security Dashboard Table', () => {
   const vulnerabilitiesEndpoint = '/vulnerabilitiesEndpoint.json';
@@ -23,7 +23,6 @@ describe('Security Dashboard Table', () => {
   beforeEach(() => {
     store = createStore();
     wrapper = shallowMountExtended(SecurityDashboardTable, {
-      localVue,
       store,
     });
     store.state.vulnerabilities.vulnerabilitiesEndpoint = vulnerabilitiesEndpoint;
@@ -113,7 +112,6 @@ describe('Security Dashboard Table', () => {
   describe('with a custom empty state', () => {
     beforeEach(() => {
       wrapper = shallowMount(SecurityDashboardTable, {
-        localVue,
         store,
         slots: {
           'empty-state': '<div class="customEmptyState">Hello World</div>',

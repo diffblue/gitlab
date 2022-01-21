@@ -1,5 +1,6 @@
 import { GlPagination } from '@gitlab/ui';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import GeoReplicable from 'ee/geo_replicable/components/geo_replicable.vue';
 import GeoReplicableItem from 'ee/geo_replicable/components/geo_replicable_item.vue';
@@ -14,8 +15,7 @@ import {
   MOCK_GRAPHQL_REGISTRY,
 } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('GeoReplicable', () => {
   let wrapper;
@@ -28,7 +28,6 @@ describe('GeoReplicable', () => {
 
   const createComponent = () => {
     wrapper = shallowMount(GeoReplicable, {
-      localVue,
       store,
     });
   };

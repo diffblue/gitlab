@@ -1,5 +1,6 @@
 import { GlEmptyState, GlLoadingIcon } from '@gitlab/ui';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
@@ -15,8 +16,7 @@ jest.mock('ee/issues_analytics/filtered_search_issues_analytics', () =>
   })),
 );
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('Issue Analytics component', () => {
   let wrapper;
@@ -42,7 +42,6 @@ describe('Issue Analytics component', () => {
       };
 
       return shallowMount(IssuesAnalytics, {
-        localVue,
         propsData,
         stubs: {
           GlColumnChart: true,

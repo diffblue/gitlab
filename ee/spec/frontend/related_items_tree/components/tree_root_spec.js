@@ -1,5 +1,6 @@
 import { GlButton } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Draggable from 'vuedraggable';
 import Vuex from 'vuex';
 
@@ -19,8 +20,7 @@ import {
 
 const { epic } = mockQueryResponse.data.group;
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 const createComponent = ({
   parentItem = mockParentItem,
@@ -48,7 +48,6 @@ const createComponent = ({
   });
 
   return shallowMount(TreeRoot, {
-    localVue,
     store,
     stubs: {
       'tree-item': true,

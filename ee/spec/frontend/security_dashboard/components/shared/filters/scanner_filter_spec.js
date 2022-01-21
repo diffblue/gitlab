@@ -1,5 +1,6 @@
 import { GlDropdownItem, GlDropdownDivider } from '@gitlab/ui';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import { sampleSize, cloneDeep } from 'lodash';
 import VueRouter from 'vue-router';
 import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_item.vue';
@@ -7,8 +8,7 @@ import ScannerFilter from 'ee/security_dashboard/components/shared/filters/scann
 import { DEFAULT_SCANNER, SCANNER_ID_PREFIX } from 'ee/security_dashboard/constants';
 import { vendorScannerFilterNoClusterImage } from 'ee/security_dashboard/helpers';
 
-const localVue = createLocalVue();
-localVue.use(VueRouter);
+Vue.use(VueRouter);
 const router = new VueRouter();
 
 const createScannerConfig = (vendor, reportType, id) => ({
@@ -44,7 +44,6 @@ describe('Scanner Filter component', () => {
     filter = cloneDeep(vendorScannerFilterNoClusterImage);
 
     wrapper = shallowMount(ScannerFilter, {
-      localVue,
       router,
       propsData: { filter },
       provide: { scanners },

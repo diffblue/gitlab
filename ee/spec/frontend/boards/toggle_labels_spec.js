@@ -1,11 +1,11 @@
 import { GlToggle } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import ToggleLabels from 'ee/boards/components/toggle_labels.vue';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('ToggleLabels component', () => {
   let wrapper;
@@ -14,7 +14,6 @@ describe('ToggleLabels component', () => {
   function createComponent(state = {}) {
     setShowLabels = jest.fn();
     return shallowMount(ToggleLabels, {
-      localVue,
       store: new Vuex.Store({
         state: {
           isShowingLabels: true,

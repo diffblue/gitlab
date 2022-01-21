@@ -1,5 +1,6 @@
 import { GlTooltip, GlIcon } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 
 import EpicHealthStatus from 'ee/related_items_tree/components/epic_health_status.vue';
@@ -12,8 +13,7 @@ import * as epicUtils from 'ee/related_items_tree/utils/epic_utils';
 import { issuableTypesMap } from '~/related_issues/constants';
 import { mockInitialConfig, mockParentItem, mockQueryResponse } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 const createComponent = ({ slots } = {}) => {
   const store = createDefaultStore();
@@ -37,7 +37,6 @@ const createComponent = ({ slots } = {}) => {
   store.dispatch('setChildrenCount', mockParentItem.descendantCounts);
 
   return shallowMount(RelatedItemsTreeHeader, {
-    localVue,
     store,
     slots,
   });

@@ -1,4 +1,5 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 
 import diffFileMockDataReadable from 'jest/diffs/mock_data/diff_file';
@@ -10,9 +11,8 @@ const getReadableFile = () => JSON.parse(JSON.stringify(diffFileMockDataReadable
 
 function createComponent({ withCodequality = true, provide = {} }) {
   const diffFile = getReadableFile();
-  const localVue = createLocalVue();
 
-  localVue.use(Vuex);
+  Vue.use(Vuex);
 
   const store = new Vuex.Store({
     modules: {
@@ -39,7 +39,6 @@ function createComponent({ withCodequality = true, provide = {} }) {
 
   const wrapper = mount(DiffViewComponent, {
     store,
-    localVue,
     propsData: {
       diffFile,
       diffLines: [],
@@ -48,7 +47,6 @@ function createComponent({ withCodequality = true, provide = {} }) {
   });
 
   return {
-    localVue,
     wrapper,
     store,
   };

@@ -1,4 +1,5 @@
-import { createLocalVue, mount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import GeoNodeFormCore from 'ee/geo_node_form/components/geo_node_form_core.vue';
 import {
@@ -8,8 +9,7 @@ import {
 } from 'ee/geo_node_form/constants';
 import { MOCK_NODE, STRING_OVER_255 } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('GeoNodeFormCore', () => {
   let wrapper;
@@ -35,7 +35,6 @@ describe('GeoNodeFormCore', () => {
     });
 
     wrapper = mount(GeoNodeFormCore, {
-      localVue,
       store,
       propsData: {
         ...defaultProps,

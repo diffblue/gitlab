@@ -1,11 +1,10 @@
 import { GlSprintf } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import { shallowMount } from '@vue/test-utils';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import RemoveBillableMemberModal from 'ee/seat_usage/components/remove_billable_member_modal.vue';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('RemoveBillableMemberModal', () => {
   let wrapper;
@@ -32,7 +31,6 @@ describe('RemoveBillableMemberModal', () => {
       stubs: {
         GlSprintf,
       },
-      localVue,
     });
   };
 

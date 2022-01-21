@@ -1,11 +1,11 @@
 import { GlToggle, GlFormTextarea, GlForm, GlLoadingIcon } from '@gitlab/ui';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import MaintenanceModeSettingsApp from 'ee/maintenance_mode_settings/components/app.vue';
 import { MOCK_BASIC_SETTINGS_DATA } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('MaintenanceModeSettingsApp', () => {
   let wrapper;
@@ -26,7 +26,6 @@ describe('MaintenanceModeSettingsApp', () => {
     });
 
     wrapper = shallowMount(MaintenanceModeSettingsApp, {
-      localVue,
       store,
     });
   };

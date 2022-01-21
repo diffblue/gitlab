@@ -1,5 +1,6 @@
 import { GlIcon } from '@gitlab/ui';
-import { createLocalVue, mount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import GeoReplicableStatus from 'ee/geo_replicable/components/geo_replicable_status.vue';
 import {
@@ -11,8 +12,7 @@ import {
 import createStore from 'ee/geo_replicable/store';
 import { MOCK_REPLICABLE_TYPE } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('GeoReplicableStatus', () => {
   let wrapper;
@@ -23,7 +23,6 @@ describe('GeoReplicableStatus', () => {
 
   const createComponent = () => {
     wrapper = mount(GeoReplicableStatus, {
-      localVue,
       store: createStore({ replicableType: MOCK_REPLICABLE_TYPE, graphqlFieldName: null }),
       propsData,
     });

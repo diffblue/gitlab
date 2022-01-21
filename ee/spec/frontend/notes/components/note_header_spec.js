@@ -1,10 +1,10 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import GitlabTeamMemberBadge from 'ee/vue_shared/components/user_avatar/badges/gitlab_team_member_badge.vue';
 import NoteHeader from '~/notes/components/note_header.vue';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('NoteHeader component', () => {
   let wrapper;
@@ -20,7 +20,6 @@ describe('NoteHeader component', () => {
 
   const createComponent = (props) => {
     wrapper = shallowMount(NoteHeader, {
-      localVue,
       store: new Vuex.Store(),
       propsData: { ...props },
     });

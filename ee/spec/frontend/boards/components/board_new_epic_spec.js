@@ -1,4 +1,5 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 
 import BoardNewEpic from 'ee/boards/components/board_new_epic.vue';
@@ -8,16 +9,13 @@ import { mockList } from 'jest/boards/mock_data';
 import BoardNewItem from '~/boards/components/board_new_item.vue';
 import eventHub from '~/boards/eventhub';
 
-const localVue = createLocalVue();
-
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 const addListNewEpicSpy = jest.fn().mockResolvedValue();
 const mockActions = { addListNewEpic: addListNewEpicSpy };
 
 const createComponent = ({ actions = mockActions, getters = { isGroupBoard: () => true } } = {}) =>
   shallowMount(BoardNewEpic, {
-    localVue,
     store: new Vuex.Store({
       actions,
       getters,
