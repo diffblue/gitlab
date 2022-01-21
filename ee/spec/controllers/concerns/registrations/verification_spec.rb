@@ -67,5 +67,15 @@ RSpec.describe Registrations::Verification do
     it 'sets the requires_credit_card_verification attribute' do
       expect { get :new }.to change { user.reload.requires_credit_card_verification }.to(true)
     end
+
+    context 'when a credit card validation exists' do
+      before do
+        create(:credit_card_validation, user: user)
+      end
+
+      it 'does not change the requires_credit_card_verification attribute' do
+        expect { get :new }.not_to change { user.reload.requires_credit_card_verification }
+      end
+    end
   end
 end
