@@ -327,8 +327,8 @@ module GitalySetup
 
     message += "\nCheck log/gitaly-test.log for errors.\n"
 
-    unless ci?
-      message += "\nIf binaries are missing, try running `make -C tmp/tests/gitaly build git.`\n"
+    unless ENV['CI']
+      message += "\nIf binaries are missing, try running `make -C tmp/tests/gitaly all WITH_BUNDLED_GIT=YesPlease`.\n"
       message += "\nOtherwise, try running `rm -rf #{tmp_tests_gitaly_dir}`."
     end
 
