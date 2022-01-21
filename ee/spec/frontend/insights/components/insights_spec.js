@@ -1,5 +1,6 @@
 import { GlAlert, GlDropdown, GlDropdownItem, GlEmptyState } from '@gitlab/ui';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
@@ -8,8 +9,7 @@ import { createStore } from 'ee/insights/stores';
 import { pageInfo } from 'ee_jest/insights/mock_data';
 import { TEST_HOST } from 'helpers/test_constants';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 const defaultMocks = {
   $route: {
     params: {},
@@ -23,7 +23,6 @@ const defaultMocks = {
 const createComponent = (store, options = {}) => {
   const { mocks = defaultMocks } = options;
   return shallowMount(Insights, {
-    localVue,
     store,
     propsData: {
       endpoint: TEST_HOST,

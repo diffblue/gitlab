@@ -1,13 +1,13 @@
 import { GlIcon } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import SubscriptionTableRow from 'ee/billings/subscriptions/components/subscription_table_row.vue';
 import initialStore from 'ee/billings/subscriptions/store';
 import { dateInWords } from '~/lib/utils/datetime_utility';
 import Popover from '~/vue_shared/components/help_popover.vue';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('subscription table row', () => {
   let store;
@@ -49,7 +49,6 @@ describe('subscription table row', () => {
         billableSeatsHref,
       },
       store,
-      localVue,
     });
   };
 

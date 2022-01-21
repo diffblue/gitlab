@@ -1,5 +1,6 @@
 import { GlEmptyState } from '@gitlab/ui';
-import { mount, createLocalVue } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import MockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
 import Dashboard from 'ee/operations/components/dashboard/dashboard.vue';
@@ -9,8 +10,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
 import { mockProjectData, mockText } from '../../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('dashboard component', () => {
   const mockAddEndpoint = 'mock-addPath';
@@ -25,7 +25,6 @@ describe('dashboard component', () => {
   const mountComponent = ({ stubs = {}, state = {} } = {}) =>
     mount(Dashboard, {
       store,
-      localVue,
       propsData: {
         addPath: mockAddEndpoint,
         listPath: mockListEndpoint,

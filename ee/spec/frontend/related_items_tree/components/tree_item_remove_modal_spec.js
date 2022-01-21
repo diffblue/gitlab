@@ -1,5 +1,6 @@
 import { GlModal } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 
 import TreeItemRemoveModal from 'ee/related_items_tree/components/tree_item_remove_modal.vue';
@@ -11,8 +12,7 @@ import { PathIdSeparator } from '~/related_issues/constants';
 
 import { mockParentItem, mockQueryResponse, mockIssue1 } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 const mockItem = {
   ...mockIssue1,
@@ -41,7 +41,6 @@ const createComponent = (parentItem = mockParentItem, item = mockItem) => {
   });
 
   return shallowMount(TreeItemRemoveModal, {
-    localVue,
     store,
   });
 };

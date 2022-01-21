@@ -1,4 +1,5 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import GeoNodeForm from 'ee/geo_node_form/components/geo_node_form.vue';
 import GeoNodeFormCapacities from 'ee/geo_node_form/components/geo_node_form_capacities.vue';
@@ -13,8 +14,7 @@ import {
   MOCK_NODES_PATH,
 } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 jest.mock('~/helpers/help_page_helper');
 jest.mock('~/lib/utils/url_utility', () => ({

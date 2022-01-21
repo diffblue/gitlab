@@ -1,5 +1,6 @@
 import { GlLink, GlModal } from '@gitlab/ui';
-import { createLocalVue, shallowMount, mount } from '@vue/test-utils';
+import { shallowMount, mount } from '@vue/test-utils';
+import Vue from 'vue';
 import merge from 'lodash/merge';
 import Vuex from 'vuex';
 import MetricsImage from 'ee/issues/show/components/incidents/metrics_image.vue';
@@ -14,8 +15,7 @@ const defaultProps = {
 
 const mockEvent = { preventDefault: jest.fn() };
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('Metrics upload item', () => {
   let wrapper;
@@ -28,7 +28,6 @@ describe('Metrics upload item', () => {
       MetricsImage,
       merge(
         {
-          localVue,
           store,
           propsData: {
             ...defaultProps,

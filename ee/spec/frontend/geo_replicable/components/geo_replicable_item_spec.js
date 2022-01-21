@@ -1,13 +1,13 @@
 import { GlLink, GlButton } from '@gitlab/ui';
-import { createLocalVue, mount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import GeoReplicableItem from 'ee/geo_replicable/components/geo_replicable_item.vue';
 import { ACTION_TYPES } from 'ee/geo_replicable/constants';
 import { getStoreConfig } from 'ee/geo_replicable/store';
 import { MOCK_BASIC_FETCH_DATA_MAP, MOCK_REPLICABLE_TYPE } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('GeoReplicableItem', () => {
   let wrapper;
@@ -33,7 +33,6 @@ describe('GeoReplicableItem', () => {
     });
 
     wrapper = mount(GeoReplicableItem, {
-      localVue,
       store: fakeStore,
       propsData: {
         ...defaultProps,

@@ -1,5 +1,6 @@
 import { GlFormInput, GlButton, GlDropdownItem } from '@gitlab/ui';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
@@ -9,8 +10,7 @@ import createDefaultStore from 'ee/related_items_tree/store';
 
 import { mockInitialConfig, mockParentItem } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 const createComponent = (isSubmitting = false) => {
   const store = createDefaultStore();
@@ -19,7 +19,6 @@ const createComponent = (isSubmitting = false) => {
   store.dispatch('setInitialParentItem', mockParentItem);
 
   return shallowMount(CreateEpicForm, {
-    localVue,
     store,
     propsData: {
       isSubmitting,

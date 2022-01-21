@@ -1,5 +1,6 @@
 import { GlLoadingIcon } from '@gitlab/ui';
-import { createLocalVue, mount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import MockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
 import SubscriptionTable from 'ee/billings/subscriptions/components/subscription_table.vue';
@@ -21,8 +22,7 @@ const defaultInjectedProps = {
   planName: 'Gold',
 };
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('SubscriptionTable component', () => {
   let store;
@@ -40,7 +40,6 @@ describe('SubscriptionTable component', () => {
     wrapper = extendedWrapper(
       mount(SubscriptionTable, {
         store,
-        localVue,
         provide: {
           ...defaultInjectedProps,
           ...provide,

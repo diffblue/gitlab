@@ -1,4 +1,5 @@
-import { createLocalVue, mount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import GeoSettingsForm from 'ee/geo_settings/components/geo_settings_form.vue';
 import initStore from 'ee/geo_settings/store';
@@ -6,8 +7,7 @@ import * as types from 'ee/geo_settings/store/mutation_types';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { STRING_OVER_255, MOCK_NODES_PATH } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 jest.mock('~/lib/utils/url_utility', () => ({
   visitUrl: jest.fn().mockName('visitUrlMock'),

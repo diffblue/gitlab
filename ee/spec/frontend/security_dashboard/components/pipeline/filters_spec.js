@@ -1,5 +1,6 @@
 import { GlToggle } from '@gitlab/ui';
-import { shallowMount, mount, createLocalVue } from '@vue/test-utils';
+import { shallowMount, mount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import Filters from 'ee/security_dashboard/components/pipeline/filters.vue';
 import { simpleScannerFilter } from 'ee/security_dashboard/helpers';
@@ -7,8 +8,7 @@ import createStore from 'ee/security_dashboard/store';
 import state from 'ee/security_dashboard/store/modules/filters/state';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('Filter component', () => {
   let wrapper;
@@ -17,7 +17,6 @@ describe('Filter component', () => {
   const createWrapper = ({ mountFn = shallowMount } = {}) => {
     wrapper = extendedWrapper(
       mountFn(Filters, {
-        localVue,
         store,
         slots: {
           buttons: '<div class="button-slot"></div>',

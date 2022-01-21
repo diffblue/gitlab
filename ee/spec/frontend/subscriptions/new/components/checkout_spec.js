@@ -1,12 +1,12 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import ProgressBar from 'ee/registrations/components/progress_bar.vue';
 import Component from 'ee/subscriptions/new/components/checkout.vue';
 import createStore from 'ee/subscriptions/new/store';
 
 describe('Checkout', () => {
-  const localVue = createLocalVue();
-  localVue.use(Vuex);
+  Vue.use(Vuex);
 
   let store;
   let wrapper;

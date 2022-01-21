@@ -1,12 +1,12 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import diffFileMockData from 'jest/diffs/mock_data/diff_file';
 import note from 'jest/notes/mock_data';
 import DiffLineNoteForm from '~/diffs/components/diff_line_note_form.vue';
 import NoteForm from '~/notes/components/note_form.vue';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('EE DiffLineNoteForm', () => {
   let storeOptions;
@@ -66,7 +66,6 @@ describe('EE DiffLineNoteForm', () => {
         ...props,
       },
       store,
-      localVue,
     });
   };
 

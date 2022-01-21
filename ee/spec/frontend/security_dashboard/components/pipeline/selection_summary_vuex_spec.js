@@ -1,5 +1,6 @@
 import { GlButton, GlFormSelect } from '@gitlab/ui';
-import { mount, createLocalVue } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
@@ -13,8 +14,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import httpStatus from '~/lib/utils/http_status';
 import mockDataVulnerabilities from '../../store/modules/vulnerabilities/data/mock_data_vulnerabilities';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 jest.mock('~/vue_shared/plugins/global_toast');
 
@@ -26,7 +26,6 @@ describe('Selection Summary', () => {
   const createComponent = () => {
     store = createStore();
     wrapper = mount(SelectionSummary, {
-      localVue,
       store,
     });
 

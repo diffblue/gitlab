@@ -1,4 +1,4 @@
-import { createLocalVue } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import {
   getMetricImages,
@@ -25,8 +25,7 @@ const defaultState = {
   projectId: '2',
 };
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('Metrics tab store actions', () => {
   let store;

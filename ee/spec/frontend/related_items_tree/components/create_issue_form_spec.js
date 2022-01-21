@@ -8,7 +8,8 @@ import {
   GlDropdownDivider,
   GlDropdownSectionHeader,
 } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 
 import mockProjects from 'test_fixtures_static/projects.json';
@@ -23,8 +24,7 @@ import {
   mockMixedFrequentlyUsedProjects,
 } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 const createComponent = () => {
   const store = createDefaultStore();
@@ -33,7 +33,6 @@ const createComponent = () => {
   store.dispatch('setInitialParentItem', mockParentItem);
 
   return shallowMount(CreateIssueForm, {
-    localVue,
     store,
   });
 };

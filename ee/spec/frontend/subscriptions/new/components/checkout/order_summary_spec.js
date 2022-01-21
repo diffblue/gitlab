@@ -1,4 +1,4 @@
-import { createLocalVue } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import Component from 'ee/subscriptions/new/components/order_summary.vue';
 import createStore from 'ee/subscriptions/new/store';
@@ -6,8 +6,7 @@ import * as types from 'ee/subscriptions/new/store/mutation_types';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 
 describe('Order Summary', () => {
-  const localVue = createLocalVue();
-  localVue.use(Vuex);
+  Vue.use(Vuex);
 
   let wrapper;
 
@@ -30,7 +29,6 @@ describe('Order Summary', () => {
   const store = createStore(initialData);
   const createComponent = (opts = {}) => {
     wrapper = mountExtended(Component, {
-      localVue,
       store,
       ...opts,
     });

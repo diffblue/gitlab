@@ -1,5 +1,6 @@
 import { GlSprintf, GlLink } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import Project from 'ee/operations/components/dashboard/project.vue';
 import ProjectHeader from 'ee/operations/components/dashboard/project_header.vue';
@@ -8,8 +9,7 @@ import store from 'ee/vue_shared/dashboards/store';
 import Commit from '~/vue_shared/components/commit.vue';
 import { mockOneProject } from '../../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('project component', () => {
   let wrapper;
@@ -17,7 +17,6 @@ describe('project component', () => {
   const createComponent = (props = {}) => {
     wrapper = shallowMount(Project, {
       store,
-      localVue,
       propsData: {
         project: mockOneProject,
         ...props,

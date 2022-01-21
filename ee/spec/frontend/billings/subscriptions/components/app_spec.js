@@ -1,10 +1,10 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import SubscriptionApp from 'ee/billings/subscriptions/components/app.vue';
 import initialStore from 'ee/billings/subscriptions/store';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('SubscriptionApp component', () => {
   let store;
@@ -26,7 +26,6 @@ describe('SubscriptionApp component', () => {
       provide: {
         ...providedFields,
       },
-      localVue,
     });
   };
 

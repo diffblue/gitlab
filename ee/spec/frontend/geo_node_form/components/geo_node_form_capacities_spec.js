@@ -1,5 +1,6 @@
 import { GlLink } from '@gitlab/ui';
-import { createLocalVue, mount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import GeoNodeFormCapacities from 'ee/geo_node_form/components/geo_node_form_capacities.vue';
 import {
@@ -9,8 +10,7 @@ import {
 } from 'ee/geo_node_form/constants';
 import { MOCK_NODE } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('GeoNodeFormCapacities', () => {
   let wrapper;
@@ -36,7 +36,6 @@ describe('GeoNodeFormCapacities', () => {
     });
 
     wrapper = mount(GeoNodeFormCapacities, {
-      localVue,
       store,
       propsData: {
         ...defaultProps,

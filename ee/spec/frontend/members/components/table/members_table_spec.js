@@ -1,12 +1,12 @@
 import { within } from '@testing-library/dom';
-import { mount, createLocalVue, createWrapper } from '@vue/test-utils';
+import { mount, createWrapper } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import { member as memberMock, directMember, members } from 'jest/members/mock_data';
 import MembersTable from '~/members/components/table/members_table.vue';
 import { MEMBER_TYPES } from '~/members/constants';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('MemberList', () => {
   let wrapper;
@@ -33,7 +33,6 @@ describe('MemberList', () => {
 
   const createComponent = (state) => {
     wrapper = mount(MembersTable, {
-      localVue,
       store: createStore(state),
       provide: {
         sourceId: 1,
