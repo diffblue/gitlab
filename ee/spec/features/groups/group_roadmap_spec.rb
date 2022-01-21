@@ -26,6 +26,19 @@ RSpec.describe 'group epic roadmap', :js do
     page.find('.gl-search-box-by-click-search-button').click
   end
 
+  def expand_epic_at(index)
+    expand_buttons = page.all("button[aria-label='Expand']")
+    expand_buttons[index].click
+    wait_for_requests
+  end
+
+  def toggle_sort_direction
+    page.within('.vue-filtered-search-bar-container .sort-dropdown-container') do
+      page.find("button[title^='Sort direction']").click
+      wait_for_requests
+    end
+  end
+
   before do
     stub_licensed_features(epics: true)
     stub_feature_flags(unfiltered_epic_aggregates: false)
@@ -192,6 +205,81 @@ RSpec.describe 'group epic roadmap', :js do
         page.within('.roadmap-container .epics-list-section') do
           expect(page).to have_selector('.epics-list-item .epic-title', count: 1)
           expect(page).to have_content(epic_with_bug.title)
+        end
+      end
+    end
+
+    describe 'roadmap page with sort order applied' do
+      let!(:parent_epic1) { create(:epic, title: 'Parent Epic 1', group: group, start_date: 19.days.ago, end_date: 9.days.ago) }
+      let!(:child_epic1) { create(:epic, title: 'Child Epic 1', group: group, parent_id: parent_epic1.id, start_date: 18.days.ago, end_date: 4.days.ago) }
+      let!(:child_epic2) { create(:epic, title: 'Child Epic 2', group: group, parent_id: parent_epic1.id, start_date: 17.days.ago, end_date: 6.days.ago) }
+
+      let!(:parent_epic2) { create(:epic, title: 'Parent Epic 2', group: group, start_date: 14.days.ago, end_date: 4.days.ago) }
+      let!(:child_epic3) { create(:epic, title: 'Child Epic 3', group: group, parent_id: parent_epic2.id, end_date: 4.days.ago) }
+      let!(:child_epic4) { create(:epic, title: 'Child Epic 4', group: group, parent_id: parent_epic2.id, end_date: 6.days.ago) }
+
+      before do
+        visit group_roadmap_path(group)
+        wait_for_requests
+      end
+
+      it 'renders the epics in expected order' do
+        page.within('.roadmap-container .epics-list-section') do
+          expect(page).to have_selector('.epics-list-item .epic-title', count: 5)
+          epic_titles = page.all('.epics-list-item .epic-title').collect(&:text)
+
+          expect(epic_titles).to eq([
+            closed_epic.title,
+            epic_with_critical.title,
+            parent_epic1.title,
+            parent_epic2.title,
+            epic_with_bug.title
+          ])
+
+          expand_epic_at(0)
+
+          expect(page).to have_selector('.epics-list-item .epic-title', count: 7)
+          epic_titles = page.all('.epics-list-item .epic-title').collect(&:text)
+
+          expect(epic_titles).to eq([
+            closed_epic.title,
+            epic_with_critical.title,
+            parent_epic1.title,
+            child_epic1.title,
+            child_epic2.title,
+            parent_epic2.title,
+            epic_with_bug.title
+          ])
+        end
+
+        toggle_sort_direction
+
+        page.within('.roadmap-container .epics-list-section') do
+          expect(page).to have_selector('.epics-list-item .epic-title', count: 5)
+          epic_titles = page.all('.epics-list-item .epic-title').collect(&:text)
+
+          expect(epic_titles).to eq([
+            epic_with_bug.title,
+            parent_epic2.title,
+            parent_epic1.title,
+            closed_epic.title,
+            epic_with_critical.title
+          ])
+
+          expand_epic_at(1)
+
+          expect(page).to have_selector('.epics-list-item .epic-title', count: 7)
+          epic_titles = page.all('.epics-list-item .epic-title').collect(&:text)
+
+          expect(epic_titles).to eq([
+            epic_with_bug.title,
+            parent_epic2.title,
+            parent_epic1.title,
+            child_epic2.title,
+            child_epic1.title,
+            closed_epic.title,
+            epic_with_critical.title
+          ])
         end
       end
     end
