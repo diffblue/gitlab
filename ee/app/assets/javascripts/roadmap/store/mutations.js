@@ -123,6 +123,7 @@ export default {
   },
 
   [types.SET_SORTED_BY](state, sortedBy) {
+    state.childrenEpics = {};
     state.sortedBy = sortedBy;
     resetEpics(state);
   },

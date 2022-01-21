@@ -304,17 +304,18 @@ describe('Roadmap Store Mutations', () => {
   });
 
   describe('SET_SORTED_BY', () => {
-    it('Should set `sortedBy` to the state and reset existing epics', () => {
+    it('Should set `sortedBy` to the state and reset existing parent epics and children epics', () => {
       const sortedBy = 'start_date_asc';
       setEpicMockData(state);
 
       mutations[types.SET_SORTED_BY](state, sortedBy);
 
       expect(state).toMatchObject({
-        sortedBy,
-        epics: [],
+        childrenEpics: {},
         childrenFlags: {},
         epicIds: [],
+        epics: [],
+        sortedBy,
       });
     });
   });
