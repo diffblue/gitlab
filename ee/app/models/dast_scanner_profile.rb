@@ -10,6 +10,7 @@ class DastScannerProfile < ApplicationRecord
 
   scope :project_id_in, -> (project_ids) { where(project_id: project_ids) }
   scope :with_name, -> (name) { where(name: name) }
+  scope :with_project, -> { includes(:project) }
 
   enum scan_type: {
     passive: 1,

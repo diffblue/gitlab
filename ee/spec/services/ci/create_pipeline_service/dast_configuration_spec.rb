@@ -226,8 +226,7 @@ RSpec.describe Ci::CreatePipelineService do
           1 + # INSERT INTO "ci_builds"
           1 + # INSERT INTO "ci_builds_metadata"
           1 + # SELECT "taggings".* FROM "taggings"
-          1 + # SELECT "ci_pipelines"."id" FROM
-          1 # SELECT "projects".id
+          1  # SELECT "ci_pipelines"."id" FROM
       end
 
       def execute_service
