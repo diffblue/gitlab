@@ -97,23 +97,23 @@ describe('ProductivityApp component', () => {
     mock.restore();
   });
 
-  const findMainMetricChart = () => wrapper.find({ ref: 'mainChart' });
-  const findClearFilterButton = () => wrapper.find({ ref: 'clearChartFiltersBtn' });
-  const findSecondaryChartsSection = () => wrapper.find({ ref: 'secondaryCharts' });
-  const findTimeBasedMetricChart = () => wrapper.find({ ref: 'timeBasedChart' });
-  const findCommitBasedMetricChart = () => wrapper.find({ ref: 'commitBasedChart' });
-  const findScatterplotMetricChart = () => wrapper.find({ ref: 'scatterplot' });
+  const findMainMetricChart = () => wrapper.findComponent({ ref: 'mainChart' });
+  const findClearFilterButton = () => wrapper.findComponent({ ref: 'clearChartFiltersBtn' });
+  const findSecondaryChartsSection = () => wrapper.findComponent({ ref: 'secondaryCharts' });
+  const findTimeBasedMetricChart = () => wrapper.findComponent({ ref: 'timeBasedChart' });
+  const findCommitBasedMetricChart = () => wrapper.findComponent({ ref: 'commitBasedChart' });
+  const findScatterplotMetricChart = () => wrapper.findComponent({ ref: 'scatterplot' });
   const findMrTableSortSection = () => wrapper.find('.js-mr-table-sort');
-  const findSortFieldDropdown = () => findMrTableSortSection().find(GlDropdown);
-  const findSortOrderToggle = () => findMrTableSortSection().find(GlButton);
+  const findSortFieldDropdown = () => findMrTableSortSection().findComponent(GlDropdown);
+  const findSortOrderToggle = () => findMrTableSortSection().findComponent(GlButton);
   const findMrTableSection = () => wrapper.find('.js-mr-table');
-  const findMrTable = () => findMrTableSection().find(MergeRequestTable);
+  const findMrTable = () => findMrTableSection().findComponent(MergeRequestTable);
 
   describe('template', () => {
     describe('without a group being selected', () => {
       it('renders the empty state illustration', () => {
         createComponent();
-        const emptyState = wrapper.find(GlEmptyState);
+        const emptyState = wrapper.findComponent(GlEmptyState);
         expect(emptyState.exists()).toBe(true);
 
         expect(emptyState.props('svgPath')).toBe(propsData.emptyStateSvgPath);
@@ -145,7 +145,7 @@ describe('ProductivityApp component', () => {
         });
 
         it('renders the no access illustration', () => {
-          const emptyState = wrapper.find(GlEmptyState);
+          const emptyState = wrapper.findComponent(GlEmptyState);
           expect(emptyState.exists()).toBe(true);
 
           expect(emptyState.props('svgPath')).toBe(propsData.noAccessSvgPath);
@@ -214,7 +214,9 @@ describe('ProductivityApp component', () => {
                   },
                 };
 
-                findMainMetricChart().find(GlColumnChart).vm.$emit('chartItemClicked', data);
+                findMainMetricChart()
+                  .findComponent(GlColumnChart)
+                  .vm.$emit('chartItemClicked', data);
               });
 
               it('dispatches updateSelectedItems action', () => {
@@ -317,7 +319,7 @@ describe('ProductivityApp component', () => {
                     });
 
                     it("should update the chart's x axis label", () => {
-                      const columnChart = findCommitBasedMetricChart().find(GlColumnChart);
+                      const columnChart = findCommitBasedMetricChart().findComponent(GlColumnChart);
                       expect(columnChart.props('xAxisTitle')).toBe('Number of LOCs per commit');
                     });
                   });
@@ -369,7 +371,7 @@ describe('ProductivityApp component', () => {
                     });
 
                     it("should update the chart's y axis label", () => {
-                      const scatterplot = findScatterplotMetricChart().find(Scatterplot);
+                      const scatterplot = findScatterplotMetricChart().findComponent(Scatterplot);
                       expect(scatterplot.props('yAxisTitle')).toBe('Number of LOCs per commit');
                     });
                   });
@@ -384,7 +386,7 @@ describe('ProductivityApp component', () => {
                 });
 
                 it('renders a loading indicator', () => {
-                  expect(findMrTableSection().find(GlLoadingIcon).exists()).toBe(true);
+                  expect(findMrTableSection().findComponent(GlLoadingIcon).exists()).toBe(true);
                 });
               });
 
@@ -402,7 +404,7 @@ describe('ProductivityApp component', () => {
                   });
 
                   it('doesn’t render a "no data" message', () => {
-                    expect(findMrTableSection().find(GlAlert).exists()).toBe(false);
+                    expect(findMrTableSection().findComponent(GlAlert).exists()).toBe(false);
                   });
 
                   it('should change the column metric', async () => {
@@ -425,7 +427,10 @@ describe('ProductivityApp component', () => {
                     });
 
                     it('should change the sort field', () => {
-                      findSortFieldDropdown().findAll(GlDropdownItem).at(0).vm.$emit('click');
+                      findSortFieldDropdown()
+                        .findAllComponents(GlDropdownItem)
+                        .at(0)
+                        .vm.$emit('click');
 
                       expect(tableActionSpies.setSortField).toHaveBeenCalled();
                     });
@@ -446,7 +451,7 @@ describe('ProductivityApp component', () => {
                   });
 
                   it('renders a "no data" message', () => {
-                    expect(findMrTableSection().find(GlAlert).exists()).toBe(true);
+                    expect(findMrTableSection().findComponent(GlAlert).exists()).toBe(true);
                   });
 
                   it('doesn`t render the MR table', () => {

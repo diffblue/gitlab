@@ -36,11 +36,11 @@ describe('MetricChart component', () => {
     wrapper.destroy();
   });
 
-  const findLoadingIndicator = () => wrapper.find(GlLoadingIcon);
-  const findInfoMessage = () => wrapper.find(GlAlert);
-  const findMetricDropdown = () => wrapper.find(GlDropdown);
-  const findMetricDropdownItems = () => findMetricDropdown().findAll(GlDropdownItem);
-  const findChartSlot = () => wrapper.find({ ref: 'chart' });
+  const findLoadingIndicator = () => wrapper.findComponent(GlLoadingIcon);
+  const findInfoMessage = () => wrapper.findComponent(GlAlert);
+  const findMetricDropdown = () => wrapper.findComponent(GlDropdown);
+  const findMetricDropdownItems = () => findMetricDropdown().findAllComponents(GlDropdownItem);
+  const findChartSlot = () => wrapper.findComponent({ ref: 'chart' });
 
   describe('template', () => {
     describe('when title exists', () => {
@@ -149,7 +149,9 @@ describe('MetricChart component', () => {
             wrapper.setProps({ selectedMetric: 'time_to_last_commit' });
 
             return wrapper.vm.$nextTick().then(() => {
-              expect(findMetricDropdownItems().at(0).find(GlIcon).classes()).toContain('invisible');
+              expect(findMetricDropdownItems().at(0).findComponent(GlIcon).classes()).toContain(
+                'invisible',
+              );
             });
           });
         });

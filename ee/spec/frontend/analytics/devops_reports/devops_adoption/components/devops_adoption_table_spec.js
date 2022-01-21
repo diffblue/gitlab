@@ -39,20 +39,20 @@ describe('DevopsAdoptionTable', () => {
     wrapper.destroy();
   });
 
-  const findTable = () => wrapper.find(GlTable);
+  const findTable = () => wrapper.findComponent(GlTable);
 
   const findCol = (testId) => findTable().find(`[data-testid="${testId}"]`);
 
   const findColRowChild = (col, row, child) =>
-    findTable().findAll(`[data-testid="${col}"]`).at(row).find(child);
+    findTable().findAll(`[data-testid="${col}"]`).at(row).findComponent(child);
 
   const findColSubComponent = (colTestId, childComponent) =>
-    findCol(colTestId).find(childComponent);
+    findCol(colTestId).findComponent(childComponent);
 
-  const findSortByLocalStorageSync = () => wrapper.findAll(LocalStorageSync).at(0);
-  const findSortDescLocalStorageSync = () => wrapper.findAll(LocalStorageSync).at(1);
+  const findSortByLocalStorageSync = () => wrapper.findAllComponents(LocalStorageSync).at(0);
+  const findSortDescLocalStorageSync = () => wrapper.findAllComponents(LocalStorageSync).at(1);
 
-  const findDeleteModal = () => wrapper.find(DevopsAdoptionDeleteModal);
+  const findDeleteModal = () => wrapper.findComponent(DevopsAdoptionDeleteModal);
 
   describe('table headings', () => {
     let headers;
@@ -83,12 +83,12 @@ describe('DevopsAdoptionTable', () => {
           const expected = Boolean(tooltipText);
 
           it(`${expected ? 'displays' : "doesn't display"} an information icon`, () => {
-            expect(headerWrapper.find(GlIcon).exists()).toBe(expected);
+            expect(headerWrapper.findComponent(GlIcon).exists()).toBe(expected);
           });
 
           if (expected) {
             it('includes a tooltip', () => {
-              const icon = headerWrapper.find(GlIcon);
+              const icon = headerWrapper.findComponent(GlIcon);
               const tooltip = getBinding(icon.element, 'gl-tooltip');
 
               expect(tooltip).toBeDefined();

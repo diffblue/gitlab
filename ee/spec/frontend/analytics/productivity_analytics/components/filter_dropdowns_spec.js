@@ -55,7 +55,7 @@ describe('FilterDropdowns component', () => {
 
   describe('template', () => {
     it('renders the groups dropdown', () => {
-      expect(wrapper.find(GroupsDropdownFilter).exists()).toBe(true);
+      expect(wrapper.findComponent(GroupsDropdownFilter).exists()).toBe(true);
     });
 
     describe('without a group selected', () => {
@@ -64,7 +64,7 @@ describe('FilterDropdowns component', () => {
       });
 
       it('does not render the projects dropdown', () => {
-        expect(wrapper.find(ProjectsDropdownFilter).exists()).toBe(false);
+        expect(wrapper.findComponent(ProjectsDropdownFilter).exists()).toBe(false);
       });
     });
 
@@ -75,7 +75,7 @@ describe('FilterDropdowns component', () => {
       });
 
       it('renders the projects dropdown', () => {
-        expect(wrapper.find(ProjectsDropdownFilter).exists()).toBe(true);
+        expect(wrapper.findComponent(ProjectsDropdownFilter).exists()).toBe(true);
       });
     });
   });

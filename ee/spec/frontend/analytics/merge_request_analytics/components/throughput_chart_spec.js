@@ -37,7 +37,7 @@ describe('ThroughputChart', () => {
   let wrapper;
 
   function displaysComponent(component, visible) {
-    const element = wrapper.find(component);
+    const element = wrapper.findComponent(component);
 
     expect(element.exists()).toBe(visible);
   }
@@ -68,7 +68,7 @@ describe('ThroughputChart', () => {
     });
 
     it('displays the throughput stats component', () => {
-      expect(wrapper.find(ThroughputStats).exists()).toBe(true);
+      expect(wrapper.findComponent(ThroughputStats).exists()).toBe(true);
     });
 
     it('displays the chart title', () => {
@@ -84,7 +84,7 @@ describe('ThroughputChart', () => {
     });
 
     it('displays an empty state message when there is no data', () => {
-      const alert = wrapper.find(GlAlert);
+      const alert = wrapper.findComponent(GlAlert);
 
       expect(alert.exists()).toBe(true);
       expect(alert.text()).toBe(THROUGHPUT_CHART_STRINGS.NO_DATA);
@@ -163,7 +163,7 @@ describe('ThroughputChart', () => {
     });
 
     it('displays an empty state message when there is no data', () => {
-      const alert = wrapper.find(GlAlert);
+      const alert = wrapper.findComponent(GlAlert);
 
       expect(alert.exists()).toBe(true);
       expect(alert.text()).toBe(THROUGHPUT_CHART_STRINGS.NO_DATA);
@@ -187,7 +187,7 @@ describe('ThroughputChart', () => {
     });
 
     it('displays an error message', () => {
-      const alert = wrapper.find(GlAlert);
+      const alert = wrapper.findComponent(GlAlert);
 
       expect(alert.exists()).toBe(true);
       expect(alert.text()).toBe(THROUGHPUT_CHART_STRINGS.ERROR_FETCHING_DATA);

@@ -56,10 +56,10 @@ describe('DevopsAdoptionDeleteModal', () => {
     });
   };
 
-  const findModal = () => wrapper.find(GlModal);
+  const findModal = () => wrapper.findComponent(GlModal);
   const cancelButtonDisabledState = () => findModal().props('actionCancel').attributes[0].disabled;
   const actionButtonLoadingState = () => findModal().props('actionPrimary').attributes[0].loading;
-  const findAlert = () => findModal().find(GlAlert);
+  const findAlert = () => findModal().findComponent(GlAlert);
 
   afterEach(() => {
     wrapper.destroy();

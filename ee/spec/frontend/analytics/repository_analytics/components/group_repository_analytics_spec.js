@@ -31,7 +31,7 @@ describe('Group repository analytics app', () => {
     });
 
     it('renders the download test coverage component', () => {
-      expect(wrapper.find(DownloadTestCoverage).exists()).toBe(true);
+      expect(wrapper.findComponent(DownloadTestCoverage).exists()).toBe(true);
     });
   });
 

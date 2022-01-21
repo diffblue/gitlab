@@ -53,7 +53,7 @@ describe('Shared runner usage tab', () => {
     wrapper.destroy();
   });
 
-  const findAreaChart = () => wrapper.find(GlAreaChart);
+  const findAreaChart = () => wrapper.findComponent(GlAreaChart);
 
   describe('when the data has successfully loaded', () => {
     beforeEach(() => {

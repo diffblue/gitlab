@@ -26,7 +26,7 @@ describe('DevopsAdoptionEmptyState', () => {
     });
   };
 
-  const findEmptyState = () => wrapper.find(GlEmptyState);
+  const findEmptyState = () => wrapper.findComponent(GlEmptyState);
 
   afterEach(() => {
     wrapper.destroy();

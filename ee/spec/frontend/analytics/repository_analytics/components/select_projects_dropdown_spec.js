@@ -15,8 +15,8 @@ describe('Select projects dropdown component', () => {
   const findProjectById = (id) => wrapper.find(`[data-testid="select-project-${id}"]`);
   const selectAllProjects = () => findSelectAllProjects().trigger('click');
   const selectProjectById = (id) => findProjectById(id).trigger('click');
-  const findIntersectionObserver = () => wrapper.find(GlIntersectionObserver);
-  const findLoadingIcon = () => wrapper.find(GlLoadingIcon);
+  const findIntersectionObserver = () => wrapper.findComponent(GlIntersectionObserver);
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
 
   const createComponent = ({ data = {}, apolloGroupProjects = {} } = {}) => {
     wrapper = shallowMount(SelectProjectsDropdown, {
@@ -66,9 +66,9 @@ describe('Select projects dropdown component', () => {
       selectAllProjects();
 
       return wrapper.vm.$nextTick().then(() => {
-        expect(findProjectById(initialData.groupProjects[0].id).find(GlIcon).classes()).toContain(
-          'gl-visibility-hidden',
-        );
+        expect(
+          findProjectById(initialData.groupProjects[0].id).findComponent(GlIcon).classes(),
+        ).toContain('gl-visibility-hidden');
       });
     });
 
@@ -99,7 +99,7 @@ describe('Select projects dropdown component', () => {
       selectProjectById(project.id);
 
       return wrapper.vm.$nextTick().then(() => {
-        expect(findProjectById(project.id).find(GlIcon).classes()).not.toContain(
+        expect(findProjectById(project.id).findComponent(GlIcon).classes()).not.toContain(
           'gl-visibility-hidden',
         );
       });
@@ -109,7 +109,9 @@ describe('Select projects dropdown component', () => {
       selectProjectById(initialData.groupProjects[0].id);
 
       return wrapper.vm.$nextTick().then(() => {
-        expect(findSelectAllProjects().find(GlIcon).classes()).toContain('gl-visibility-hidden');
+        expect(findSelectAllProjects().findComponent(GlIcon).classes()).toContain(
+          'gl-visibility-hidden',
+        );
       });
     });
 

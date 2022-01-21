@@ -17,7 +17,7 @@ describe('Download test coverage component', () => {
     wrapper
       .find('[data-testid="group-code-coverage-select-all-projects-button"]')
       .vm.$emit('click');
-  const findAlert = () => wrapper.find(GlAlert);
+  const findAlert = () => wrapper.findComponent(GlAlert);
 
   const injectedProperties = {
     groupAnalyticsCoverageReportsPath: '/coverage.csv',
