@@ -6,15 +6,20 @@ class DastScannerProfilesFinder
   end
 
   def execute
-    relation = DastScannerProfile.all
+    relation = init_collection
     relation = by_id(relation)
     relation = by_project(relation)
-    by_name(relation)
+    relation = by_name(relation)
+    relation.with_project
   end
 
   private
 
   attr_reader :params
+
+  def init_collection
+    DastScannerProfile.all
+  end
 
   def by_id(relation)
     return relation unless params[:ids]

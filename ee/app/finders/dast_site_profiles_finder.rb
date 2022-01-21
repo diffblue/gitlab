@@ -9,28 +9,25 @@ class DastSiteProfilesFinder
     relation = DastSiteProfile.with_dast_site_and_validation
     relation = by_id(relation)
     relation = by_project(relation)
-    by_name(relation)
+    relation = by_name(relation)
+    relation.with_project
   end
 
   private
 
   attr_reader :params
 
-  # rubocop: disable CodeReuse/ActiveRecord
   def by_id(relation)
     return relation if params[:id].nil?
 
-    relation.where(id: params[:id]).limit(1)
+    relation.id_in(params[:id]).limit(1)
   end
-  # rubocop: enable CodeReuse/ActiveRecord
 
-  # rubocop: disable CodeReuse/ActiveRecord
   def by_project(relation)
     return relation if params[:project_id].nil?
 
-    relation.where(project_id: params[:project_id])
+    relation.with_project_id(params[:project_id])
   end
-  # rubocop: enable CodeReuse/ActiveRecord
 
   def by_name(relation)
     return relation unless params[:name]
