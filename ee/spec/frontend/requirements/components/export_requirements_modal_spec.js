@@ -112,7 +112,7 @@ describe('ExportRequirementsModal', () => {
 
   describe('template', () => {
     it('GlModal open click emits export event', () => {
-      wrapper.find(GlModal).vm.$emit('ok');
+      wrapper.findComponent(GlModal).vm.$emit('ok');
 
       const emitted = wrapper.emitted('export');
 
@@ -120,13 +120,13 @@ describe('ExportRequirementsModal', () => {
     });
 
     it('renders checkboxes for advanced exporting', () => {
-      const checkboxes = wrapper.find('.scrollbox-body').findAll(GlFormCheckbox);
+      const checkboxes = wrapper.find('.scrollbox-body').findAllComponents(GlFormCheckbox);
 
       expect(checkboxes).toHaveLength(wrapper.vm.$options.fields.length);
     });
 
     it('renders Select all checkbox', () => {
-      const checkbox = wrapper.find('.scrollbox-header').findAll(GlFormCheckbox);
+      const checkbox = wrapper.find('.scrollbox-header').findAllComponents(GlFormCheckbox);
 
       expect(checkbox).toHaveLength(1);
     });

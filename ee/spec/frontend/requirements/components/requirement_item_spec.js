@@ -105,7 +105,7 @@ describe('RequirementItem', () => {
     });
 
     it('renders element containing requirement author information', () => {
-      const authorEl = wrapper.find(GlLink);
+      const authorEl = wrapper.findComponent(GlLink);
 
       expect(authorEl.attributes('href')).toBe(requirement1.author.webUrl);
       expect(authorEl.find('.author').text()).toBe(requirement1.author.name);
@@ -120,8 +120,10 @@ describe('RequirementItem', () => {
     });
 
     it('renders requirement-status-badge component', () => {
-      const statusBadgeElSm = wrapper.find('.issuable-main-info').find(RequirementStatusBadge);
-      const statusBadgeElMd = wrapper.find('.controls').find(RequirementStatusBadge);
+      const statusBadgeElSm = wrapper
+        .find('.issuable-main-info')
+        .findComponent(RequirementStatusBadge);
+      const statusBadgeElMd = wrapper.find('.controls').findComponent(RequirementStatusBadge);
 
       expect(statusBadgeElSm.exists()).toBe(true);
       expect(statusBadgeElMd.exists()).toBe(true);
@@ -131,7 +133,7 @@ describe('RequirementItem', () => {
     });
 
     it('renders element containing requirement `Edit` button when `requirement.userPermissions.updateRequirement` is true', () => {
-      const editButtonEl = wrapper.find('.controls .requirement-edit').find(GlButton);
+      const editButtonEl = wrapper.find('.controls .requirement-edit').findComponent(GlButton);
 
       expect(editButtonEl.exists()).toBe(true);
       expect(editButtonEl.attributes('title')).toBe('Edit');
@@ -157,7 +159,9 @@ describe('RequirementItem', () => {
     });
 
     it('renders element containing requirement `Archive` button when `requirement.userPermissions.adminRequirement` is true', () => {
-      const archiveButtonEl = wrapper.find('.controls .requirement-archive').find(GlButton);
+      const archiveButtonEl = wrapper
+        .find('.controls .requirement-archive')
+        .findComponent(GlButton);
 
       expect(archiveButtonEl.exists()).toBe(true);
       expect(archiveButtonEl.attributes('title')).toBe('Archive');
@@ -178,7 +182,7 @@ describe('RequirementItem', () => {
     });
 
     it('renders `Reopen` button when current requirement is archived and `requirement.userPermissions.adminRequirement` is true', () => {
-      const reopenButton = wrapperArchived.find('.requirement-reopen').find(GlButton);
+      const reopenButton = wrapperArchived.find('.requirement-reopen').findComponent(GlButton);
 
       expect(reopenButton.exists()).toBe(true);
       expect(reopenButton.props('loading')).toBe(false);

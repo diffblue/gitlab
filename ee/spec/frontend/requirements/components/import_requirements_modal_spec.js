@@ -66,7 +66,7 @@ describe('ImportRequirementsModal', () => {
         file,
       });
 
-      wrapper.find(GlModal).vm.$emit('ok');
+      wrapper.findComponent(GlModal).vm.$emit('ok');
 
       const emitted = wrapper.emitted('import')[0][0];
 

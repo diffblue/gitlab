@@ -15,8 +15,8 @@ const createComponent = ({
     },
   });
 
-const findGlBadge = (wrapper) => wrapper.find(GlBadge);
-const findGlTooltip = (wrapper) => wrapper.find(GlTooltip);
+const findGlBadge = (wrapper) => wrapper.findComponent(GlBadge);
+const findGlTooltip = (wrapper) => wrapper.findComponent(GlTooltip);
 
 const successBadgeProps = {
   variant: 'success',
@@ -96,8 +96,8 @@ describe('RequirementStatusBadge', () => {
           expect(badgeEl.exists()).toBe(true);
           expect(badgeEl.props('variant')).toBe(badgeProps.variant);
           expect(badgeEl.text()).toBe(badgeProps.text);
-          expect(badgeEl.find(GlIcon).exists()).toBe(true);
-          expect(badgeEl.find(GlIcon).props('name')).toBe(badgeProps.icon);
+          expect(badgeEl.findComponent(GlIcon).exists()).toBe(true);
+          expect(badgeEl.findComponent(GlIcon).props('name')).toBe(badgeProps.icon);
         });
 
         it('renders GlTooltip component', () => {

@@ -979,19 +979,19 @@ describe('RequirementsRoot', () => {
     });
 
     it('renders requirements-tabs component', () => {
-      expect(wrapper.find(RequirementsTabs).exists()).toBe(true);
+      expect(wrapper.findComponent(RequirementsTabs).exists()).toBe(true);
     });
 
     it('renders filtered-search-bar component', () => {
-      expect(wrapper.find(FilteredSearchBarRoot).exists()).toBe(true);
-      expect(wrapper.find(FilteredSearchBarRoot).props('searchInputPlaceholder')).toBe(
+      expect(wrapper.findComponent(FilteredSearchBarRoot).exists()).toBe(true);
+      expect(wrapper.findComponent(FilteredSearchBarRoot).props('searchInputPlaceholder')).toBe(
         'Search requirements',
       );
-      expect(wrapper.find(FilteredSearchBarRoot).props('tokens')).toEqual([
+      expect(wrapper.findComponent(FilteredSearchBarRoot).props('tokens')).toEqual([
         mockAuthorToken,
         mockStatusToken,
       ]);
-      expect(wrapper.find(FilteredSearchBarRoot).props('recentSearchesStorageKey')).toBe(
+      expect(wrapper.findComponent(FilteredSearchBarRoot).props('recentSearchesStorageKey')).toBe(
         'requirements',
       );
     });
@@ -1009,14 +1009,14 @@ describe('RequirementsRoot', () => {
       });
 
       return wrapper.vm.$nextTick(() => {
-        expect(wrapper.find(RequirementsEmptyState).exists()).toBe(true);
+        expect(wrapper.findComponent(RequirementsEmptyState).exists()).toBe(true);
       });
     });
 
     it('renders requirements-loading component when query results are still being loaded', () => {
       const wrapperLoading = createComponent({ loading: true });
 
-      expect(wrapperLoading.find(RequirementsLoading).isVisible()).toBe(true);
+      expect(wrapperLoading.findComponent(RequirementsLoading).isVisible()).toBe(true);
 
       wrapperLoading.destroy();
     });
@@ -1037,7 +1037,7 @@ describe('RequirementsRoot', () => {
       });
 
       return wrapper.vm.$nextTick(() => {
-        expect(wrapper.find(RequirementsEmptyState).exists()).toBe(false);
+        expect(wrapper.findComponent(RequirementsEmptyState).exists()).toBe(false);
       });
     });
 
@@ -1056,7 +1056,9 @@ describe('RequirementsRoot', () => {
         const itemsContainer = wrapper.find('ul.requirements-list');
 
         expect(itemsContainer.exists()).toBe(true);
-        expect(itemsContainer.findAll(RequirementItem)).toHaveLength(mockRequirementsOpen.length);
+        expect(itemsContainer.findAllComponents(RequirementItem)).toHaveLength(
+          mockRequirementsOpen.length,
+        );
       });
     });
 
@@ -1072,7 +1074,7 @@ describe('RequirementsRoot', () => {
       });
 
       return wrapper.vm.$nextTick(() => {
-        const pagination = wrapper.find(GlPagination);
+        const pagination = wrapper.findComponent(GlPagination);
 
         expect(pagination.exists()).toBe(true);
         expect(pagination.props('value')).toBe(1);
