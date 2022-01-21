@@ -36,6 +36,12 @@ const sharedRequestParams = {
   per_page: 100,
 };
 
+export const averageSeriesOptions = {
+  areaStyle: {
+    opacity: 0,
+  },
+};
+
 export const allChartDefinitions = [
   {
     id: LAST_WEEK,

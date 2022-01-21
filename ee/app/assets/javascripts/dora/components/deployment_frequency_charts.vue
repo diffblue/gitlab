@@ -2,12 +2,14 @@
 import * as Sentry from '@sentry/browser';
 import * as DoraApi from 'ee/api/dora_api';
 import createFlash from '~/flash';
-import { s__ } from '~/locale';
+import { s__, sprintf } from '~/locale';
 import CiCdAnalyticsCharts from '~/vue_shared/components/ci_cd_analytics/ci_cd_analytics_charts.vue';
 import DoraChartHeader from './dora_chart_header.vue';
 import {
   allChartDefinitions,
   areaChartOptions,
+  averageSeriesOptions,
+  averageSeriesName,
   chartDescriptionText,
   chartDocumentationHref,
   LAST_WEEK,
@@ -15,7 +17,7 @@ import {
   LAST_90_DAYS,
   CHART_TITLE,
 } from './static_data/deployment_frequency';
-import { apiDataToChartSeries } from './util';
+import { apiDataToChartSeries, seriesToAverageSeries } from './util';
 
 export default {
   name: 'DeploymentFrequencyCharts',
@@ -32,6 +34,11 @@ export default {
       type: String,
       default: '',
     },
+  },
+  chartInDays: {
+    [LAST_WEEK]: 7,
+    [LAST_MONTH]: 30,
+    [LAST_90_DAYS]: 90,
   },
   data() {
     return {
@@ -76,7 +83,19 @@ export default {
           throw new Error('Either projectPath or groupPath must be provided');
         }
 
-        this.chartData[id] = apiDataToChartSeries(apiData, startDate, endDate, CHART_TITLE);
+        const seriesData = apiDataToChartSeries(apiData, startDate, endDate, CHART_TITLE);
+        const { data } = seriesData[0];
+
+        this.chartData[id] = [
+          ...seriesData,
+          {
+            ...averageSeriesOptions,
+            ...seriesToAverageSeries(
+              data,
+              sprintf(averageSeriesName, { days: this.$options.chartInDays[id] }),
+            ),
+          },
+        ];
       }),
     );
 

@@ -147,3 +147,24 @@ export const buildNullSeriesForLeadTimeChart = (seriesData) => {
 
   return [nullSeries, nonNullSeries];
 };
+
+/**
+ * Converts a data series into a formatted average series
+ *
+ * @param {Array} chartSeriesData Correctly formatted chart series data
+ *
+ * @returns {Object} An object containing the series name and an array of original data keys with the average of the dataset as each value.
+ */
+export const seriesToAverageSeries = (chartSeriesData, seriesName) => {
+  if (!chartSeriesData) return {};
+
+  const average =
+    Math.round(
+      (chartSeriesData.reduce((acc, day) => acc + day[1], 0) / chartSeriesData.length) * 10,
+    ) / 10;
+
+  return {
+    name: seriesName,
+    data: chartSeriesData.map((day) => [day[0], average]),
+  };
+};
