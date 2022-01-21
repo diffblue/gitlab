@@ -12,14 +12,31 @@ RSpec.describe Emails::Issues do
   let_it_be(:issue) { create(:issue, project: project) }
 
   context 'iterations' do
-    let_it_be(:iteration) { create(:iteration, group: group) }
+    let_it_be(:iterations_cadence) { create(:iterations_cadence, title: "Plan cadence", group: group) }
+    let_it_be(:iteration) { create(:iteration, iterations_cadence: iterations_cadence, start_date: Date.new(2022, 9, 30), due_date: Date.new(2022, 10, 4)) }
 
-    describe '#changed_iteration_issue_email' do
+    describe '#changed_iteration_issue_email', :aggregate_failures do
       subject { Notify.changed_iteration_issue_email(user.id, issue.id, iteration, user.id) }
+
+      before do
+        stub_feature_flags(iteration_cadences: false)
+      end
 
       it 'shows the iteration it was changed to' do
         expect(subject).to have_body_text 'Iteration changed to'
+        expect(subject).to have_body_text 'Sep 30, 2022 - Oct 4, 2022'
         expect(subject).to have_body_text iteration.name
+        expect(subject).not_to have_body_text 'Plan cadence'
+      end
+
+      context 'when iteration_cadences FF enabled' do
+        before do
+          stub_feature_flags(iteration_cadences: true)
+        end
+
+        it 'shows the iteration it was changed to' do
+          expect(subject).to have_body_text 'Plan cadence Sep 30, 2022 - Oct 4, 2022'
+        end
       end
     end
 
