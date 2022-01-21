@@ -679,8 +679,21 @@ RSpec.describe ProjectsController do
         delete :destroy, params: { namespace_id: project.namespace, id: project }
 
         expect(project.reload.marked_for_deletion?).to be_truthy
+        expect(project.reload.hidden?).to be_falsey
         expect(response).to have_gitlab_http_status(:found)
         expect(response).to redirect_to(project_path(project))
+      end
+    end
+
+    shared_examples 'marks free project for deletion' do
+      it do
+        delete :destroy, params: { namespace_id: project.namespace, id: project }
+
+        expect(project.reload.marked_for_deletion?).to be_falsey
+        expect(project.reload.marked_for_deletion_at).to be_truthy
+        expect(project.reload.hidden?).to be_truthy
+        expect(response).to have_gitlab_http_status(:found)
+        expect(response).to redirect_to(dashboard_projects_path)
       end
     end
 
@@ -755,6 +768,18 @@ RSpec.describe ProjectsController do
         end
 
         it_behaves_like 'deletes project right away'
+      end
+
+      context 'when feature is not available for the project' do
+        before do
+          allow(group.namespace_settings).to receive(:delayed_project_removal?).and_return(true)
+          allow(project).to receive(:licensed_feature_available?).and_call_original
+          allow(project).to receive(:licensed_feature_available?).with(:adjourned_deletion_for_projects_and_groups).and_return(false)
+          allow(project).to receive(:feature_available?).and_call_original
+          allow(project).to receive(:feature_available?).with(:adjourned_deletion_for_projects_and_groups).and_return(false)
+        end
+
+        it_behaves_like 'marks free project for deletion'
       end
 
       context 'for projects in user namespace' do

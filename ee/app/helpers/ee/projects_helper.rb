@@ -109,7 +109,13 @@ module EE
 
     def marked_for_removal_message(project)
       date = permanent_deletion_date(Time.now.utc)
-      message = _("This action deletes %{codeOpen}%{project_path_with_namespace}%{codeClose} on %{date} and everything this project contains.")
+
+      message = if project.feature_available?(:adjourned_deletion_for_projects_and_groups)
+                  _("This action deletes %{codeOpen}%{project_path_with_namespace}%{codeClose} on %{date} and everything this project contains.")
+                else
+                  _("This action deletes %{codeOpen}%{project_path_with_namespace}%{codeClose} on %{date} and everything this project contains. %{strongOpen}There is no going back.%{strongClose}")
+                end
+
       html_escape(message) % remove_message_data(project).merge(date: date)
     end
 

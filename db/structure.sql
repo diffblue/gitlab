@@ -18894,7 +18894,8 @@ CREATE TABLE projects (
     marked_for_deletion_by_user_id integer,
     autoclose_referenced_issues boolean,
     suggestion_commit_message character varying(255),
-    project_namespace_id bigint
+    project_namespace_id bigint,
+    hidden boolean DEFAULT false
 );
 
 CREATE SEQUENCE projects_id_seq
@@ -25398,6 +25399,12 @@ CREATE UNIQUE INDEX idx_project_id_payload_key_self_managed_prometheus_alert_eve
 
 CREATE INDEX idx_project_repository_check_partial ON projects USING btree (repository_storage, created_at) WHERE (last_repository_check_at IS NULL);
 
+CREATE INDEX idx_projects_api_created_at_id_for_archived ON projects USING btree (created_at, id) WHERE ((archived = true) AND (pending_delete = false) AND (hidden = false));
+
+CREATE INDEX idx_projects_api_created_at_id_for_archived_vis20 ON projects USING btree (created_at, id) WHERE ((archived = true) AND (visibility_level = 20) AND (pending_delete = false) AND (hidden = false));
+
+CREATE INDEX idx_projects_api_created_at_id_for_vis10 ON projects USING btree (created_at, id) WHERE ((visibility_level = 10) AND (pending_delete = false) AND (hidden = false));
+
 CREATE INDEX idx_projects_id_created_at_disable_overriding_approvers_false ON projects USING btree (id, created_at) WHERE ((disable_overriding_approvers_per_merge_request = false) OR (disable_overriding_approvers_per_merge_request IS NULL));
 
 CREATE INDEX idx_projects_id_created_at_disable_overriding_approvers_true ON projects USING btree (id, created_at) WHERE (disable_overriding_approvers_per_merge_request = true);
@@ -27510,12 +27517,6 @@ CREATE INDEX index_projects_aimed_for_deletion ON projects USING btree (marked_f
 
 CREATE INDEX index_projects_api_created_at_id_desc ON projects USING btree (created_at, id DESC);
 
-CREATE INDEX index_projects_api_created_at_id_for_archived ON projects USING btree (created_at, id) WHERE ((archived = true) AND (pending_delete = false));
-
-CREATE INDEX index_projects_api_created_at_id_for_archived_vis20 ON projects USING btree (created_at, id) WHERE ((archived = true) AND (visibility_level = 20) AND (pending_delete = false));
-
-CREATE INDEX index_projects_api_created_at_id_for_vis10 ON projects USING btree (created_at, id) WHERE ((visibility_level = 10) AND (pending_delete = false));
-
 CREATE INDEX index_projects_api_last_activity_at_id_desc ON projects USING btree (last_activity_at, id DESC);
 
 CREATE INDEX index_projects_api_name_id_desc ON projects USING btree (name, id DESC);
@@ -27545,6 +27546,8 @@ CREATE INDEX index_projects_on_creator_id_and_id ON projects USING btree (creato
 CREATE INDEX index_projects_on_creator_id_import_type_and_created_at_partial ON projects USING btree (creator_id, import_type, created_at) WHERE (import_type IS NOT NULL);
 
 CREATE INDEX index_projects_on_description_trigram ON projects USING gin (description gin_trgm_ops);
+
+CREATE INDEX index_projects_on_hidden ON projects USING btree (hidden);
 
 CREATE INDEX index_projects_on_id_and_archived_and_pending_delete ON projects USING btree (id) WHERE ((archived = false) AND (pending_delete = false));
 

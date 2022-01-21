@@ -60,6 +60,7 @@ module EE
 
       rule { adjourned_project_deletion_available }.policy do
         enable :list_removable_projects
+        enable :delayed_project_deletion
       end
 
       rule { export_user_permissions_available & admin }.enable :export_user_permissions

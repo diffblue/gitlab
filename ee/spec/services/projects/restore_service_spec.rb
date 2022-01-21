@@ -13,18 +13,20 @@ RSpec.describe Projects::RestoreService do
       marked_for_deletion_at: 1.day.ago,
       deleting_user: user,
       archived: true,
+      hidden: true,
       pending_delete: pending_delete)
   end
 
   context 'restoring project' do
     subject { described_class.new(project, user).execute }
 
-    it 'marks project as unarchived and not marked for deletion' do
+    it 'marks project as not hidden, unarchived and not marked for deletion' do
       subject
 
       expect(Project.unscoped.all).to include(project)
 
       expect(project.archived).to eq(false)
+      expect(project.hidden).to eq(false)
       expect(project.marked_for_deletion_at).to be_nil
       expect(project.deleting_user).to eq(nil)
     end

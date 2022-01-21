@@ -67,11 +67,48 @@ RSpec.describe Projects::MarkForDeletionService do
         result = described_class.new(project, user).execute
 
         expect(result[:status]).to eq(:error)
+        expect(result[:message]).to eq('Cannot mark project for deletion: feature not supported')
         expect(Project.all).to include(project)
 
         expect(project.archived).to eq(false)
         expect(project.marked_for_deletion_at).to be_nil
         expect(project.deleting_user).to be_nil
+      end
+    end
+  end
+
+  describe "#project_update_service_params" do
+    subject { described_class.new(project, user) }
+
+    context 'when delayed deletion feature is not available' do
+      before do
+        expect(project).to receive(:feature_available?).with(:adjourned_deletion_for_projects_and_groups).and_return(false)
+      end
+
+      it "creates the params for project update service" do
+        project_update_service_params = subject.send(:project_update_service_params)
+
+        expect(project_update_service_params[:marked_for_deletion_at]).not_to be_nil
+        expect(project_update_service_params[:archived]).to eq(true)
+        expect(project_update_service_params[:hidden]).to eq(true)
+        expect(project_update_service_params[:deleting_user]).to eq(user)
+        expect(project_update_service_params[:name]).to eq("test project xyz-deleted-#{project.id}")
+      end
+    end
+
+    context 'when delayed deletion feature is available' do
+      before do
+        expect(project).to receive(:feature_available?).with(:adjourned_deletion_for_projects_and_groups).and_return(true)
+      end
+
+      it "creates the params for project update service" do
+        project_update_service_params = subject.send(:project_update_service_params)
+
+        expect(project_update_service_params[:marked_for_deletion_at]).not_to be_nil
+        expect(project_update_service_params[:archived]).to eq(true)
+        expect(project_update_service_params.has_key?(:hidden)).to eq(false)
+        expect(project_update_service_params[:deleting_user]).to eq(user)
+        expect(project_update_service_params[:name]).to eq("test project xyz-deleted-#{project.id}")
       end
     end
   end

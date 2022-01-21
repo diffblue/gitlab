@@ -24,7 +24,12 @@ class Projects::ApplicationController < ApplicationController
     return unless params[:project_id] || params[:id]
 
     path = File.join(params[:namespace_id], params[:project_id] || params[:id])
-    auth_proc = ->(project) { !project.pending_delete? }
+
+    auth_proc = if params[:controller] == "projects" && params[:action] == "restore"
+                  ->(project) { !project.pending_delete? }
+                else
+                  ->(project) { !project.pending_delete_or_hidden? }
+                end
 
     @project = find_routable!(Project, path, request.fullpath, extra_authorization_proc: auth_proc)
   end
