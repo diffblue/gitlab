@@ -1,5 +1,5 @@
 import { GlSegmentedControl, GlDropdown, GlDropdownItem } from '@gitlab/ui';
-import { createLocalVue } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 
 import RoadmapFilters from 'ee/roadmap/components/roadmap_filters.vue';
@@ -29,6 +29,8 @@ jest.mock('~/lib/utils/url_utility', () => ({
   updateHistory: jest.requireActual('~/lib/utils/url_utility').updateHistory,
 }));
 
+Vue.use(Vuex);
+
 const createComponent = ({
   presetType = PRESET_TYPES.MONTHS,
   epicsState = EPICS_STATES.ALL,
@@ -43,11 +45,9 @@ const createComponent = ({
   }),
   filterParams = {},
   timeframeRangeType = DATE_RANGES.THREE_YEARS,
+  roadmapSettings = false,
 } = {}) => {
-  const localVue = createLocalVue();
   const store = createStore();
-
-  localVue.use(Vuex);
 
   store.dispatch('setInitialData', {
     presetType,
@@ -58,12 +58,12 @@ const createComponent = ({
   });
 
   return shallowMountExtended(RoadmapFilters, {
-    localVue,
     store,
     provide: {
       groupFullPath,
       groupMilestonesPath,
       listEpicsPath,
+      glFeatures: { roadmapSettings },
     },
     props: {
       timeframeRangeType,
@@ -73,6 +73,7 @@ const createComponent = ({
 
 describe('RoadmapFilters', () => {
   let wrapper;
+  const findSettingsButton = () => wrapper.findByTestId('settings-button');
 
   beforeEach(() => {
     wrapper = createComponent();
@@ -151,6 +152,10 @@ describe('RoadmapFilters', () => {
 
       expect(epicsStateDropdown.exists()).toBe(true);
       expect(epicsStateDropdown.findAll(GlDropdownItem)).toHaveLength(3);
+    });
+
+    it('does not render settings button', () => {
+      expect(findSettingsButton().exists()).toBe(false);
     });
 
     describe('FilteredSearchBar', () => {
@@ -381,6 +386,22 @@ describe('RoadmapFilters', () => {
           }
         },
       );
+    });
+  });
+
+  describe('when roadmapSettings feature flag is on', () => {
+    beforeEach(() => {
+      wrapper = createComponent({ roadmapSettings: true });
+    });
+
+    it('renders settings button', () => {
+      expect(findSettingsButton().exists()).toBe(true);
+    });
+
+    it('emits toggleSettings event on click settings button', () => {
+      findSettingsButton().vm.$emit('click');
+
+      expect(wrapper.emitted('toggleSettings')).toBeTruthy();
     });
   });
 });

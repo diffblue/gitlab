@@ -2,9 +2,12 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
 
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+
 import { DATE_RANGES } from '../constants';
 import EpicsListEmpty from './epics_list_empty.vue';
 import RoadmapFilters from './roadmap_filters.vue';
+import RoadmapSettings from './roadmap_settings.vue';
 import RoadmapShell from './roadmap_shell.vue';
 
 export default {
@@ -12,8 +15,10 @@ export default {
     EpicsListEmpty,
     GlLoadingIcon,
     RoadmapFilters,
+    RoadmapSettings,
     RoadmapShell,
   },
+  mixins: [glFeatureFlagMixin()],
   props: {
     timeframeRangeType: {
       type: String,
@@ -28,6 +33,11 @@ export default {
       type: String,
       required: true,
     },
+  },
+  data() {
+    return {
+      isSettingsSidebarOpen: false,
+    };
   },
   computed: {
     ...mapState([
@@ -66,6 +76,9 @@ export default {
   },
   methods: {
     ...mapActions(['fetchEpics', 'fetchMilestones']),
+    toggleSettings() {
+      this.isSettingsSidebarOpen = !this.isSettingsSidebarOpen;
+    },
   },
 };
 </script>
@@ -75,6 +88,7 @@ export default {
     <roadmap-filters
       v-if="showFilteredSearchbar && !epicIid"
       :timeframe-range-type="timeframeRangeType"
+      @toggleSettings="toggleSettings"
     />
     <div :class="{ 'overflow-reset': epicsFetchResultEmpty }" class="roadmap-container">
       <gl-loading-icon v-if="epicsFetchInProgress" class="gl-mt-5" size="md" />
@@ -96,6 +110,13 @@ export default {
         :timeframe="timeframe"
         :current-group-id="currentGroupId"
         :has-filters-applied="hasFiltersApplied"
+        :is-settings-sidebar-open="isSettingsSidebarOpen"
+      />
+      <roadmap-settings
+        v-if="glFeatures.roadmapSettings"
+        :is-open="isSettingsSidebarOpen"
+        data-testid="roadmap-settings"
+        @toggleSettings="toggleSettings"
       />
     </div>
   </div>
