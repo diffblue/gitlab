@@ -8716,6 +8716,9 @@ msgstr ""
 msgid "Commit Message"
 msgstr ""
 
+msgid "Commit SHA"
+msgstr ""
+
 msgid "Commit changes"
 msgstr ""
 
