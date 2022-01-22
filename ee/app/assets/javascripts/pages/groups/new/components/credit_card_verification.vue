@@ -3,14 +3,12 @@ import { GlBreadcrumb, GlButton, GlSafeHtmlDirective as SafeHtml } from '@gitlab
 import newGroupIllustration from '@gitlab/svgs/dist/illustrations/group-new.svg';
 import CreateGroupDescriptionDetails from '~/pages/groups/new/components/create_group_description_details.vue';
 import Zuora from 'ee/billings/components/zuora.vue';
-import { s__ } from '~/locale';
-
-const I18N_SIDE_PANE_TITLE = s__('GroupsNew|Create group');
-const I18N_FORM_TITLE = s__('IdentityVerification|Verify your identity');
-const I18N_FORM_EXPLANATION = s__(
-  'IdentityVerification|Before you create your group, we need you to verify your identity with a valid payment method.',
-);
-const I18N_FORM_SUBMIT = s__('IdentityVerification|Verify your identity');
+import {
+  I18N_FORM_EXPLANATION,
+  I18N_FORM_SUBMIT,
+  I18N_FORM_TITLE,
+  I18N_SIDE_PANE_TITLE,
+} from '../constants';
 
 export default {
   components: {

@@ -1,6 +1,7 @@
 import { GlButton } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import CreditCardVerification from 'ee/pages/groups/new/components/credit_card_verification.vue';
+import { I18N_FORM_TITLE, I18N_FORM_EXPLANATION } from 'ee/pages/groups/new/constants';
 
 describe('Verification page', () => {
   let wrapper;
@@ -27,17 +28,11 @@ describe('Verification page', () => {
     });
 
     it('renders the title', () => {
-      expect(wrapper.findByText('Verify your identity').exists()).toBe(true);
+      expect(wrapper.findByText(I18N_FORM_TITLE).exists()).toBe(true);
     });
 
     it('renders the explanation', () => {
-      expect(
-        wrapper
-          .findByText(
-            'Before you create your group, we need you to verify your identity with a valid payment method.',
-          )
-          .exists(),
-      ).toBe(true);
+      expect(wrapper.findByText(I18N_FORM_EXPLANATION).exists()).toBe(true);
     });
   });
 
