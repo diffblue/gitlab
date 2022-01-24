@@ -42,7 +42,6 @@ RSpec.describe 'cross-database foreign keys' do
       ci_unit_tests.project_id
       ci_variables.project_id
       dast_site_profiles_pipelines.ci_pipeline_id
-      external_pull_requests.project_id
       vulnerability_feedback.pipeline_id
     ).freeze
   end
