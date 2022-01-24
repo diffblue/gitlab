@@ -84,7 +84,7 @@ describe('Project List component', () => {
       await wrapper.vm.$nextTick();
 
       expect(getAllProjectItems()).toHaveLength(projectsCount);
-      expect(wrapper.find(GlBadge).text()).toBe(projectsCount.toString());
+      expect(wrapper.findComponent(GlBadge).text()).toBe(projectsCount.toString());
     },
   );
 
@@ -96,7 +96,7 @@ describe('Project List component', () => {
     });
 
     it('renders a project item with an avatar', () => {
-      expect(getFirstProjectItem().find(ProjectAvatar).exists()).toBe(true);
+      expect(getFirstProjectItem().findComponent(ProjectAvatar).exists()).toBe(true);
     });
 
     it('renders a project item with a project name', () => {

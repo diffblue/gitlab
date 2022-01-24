@@ -13,10 +13,10 @@ localVue.use(VueApollo);
 describe('Instance Security Dashboard Vulnerabilities Component', () => {
   let wrapper;
 
-  const findIntersectionObserver = () => wrapper.find(GlIntersectionObserver);
-  const findVulnerabilities = () => wrapper.find(VulnerabilityList);
-  const findAlert = () => wrapper.find(GlAlert);
-  const findLoadingIcon = () => wrapper.find(GlLoadingIcon);
+  const findIntersectionObserver = () => wrapper.findComponent(GlIntersectionObserver);
+  const findVulnerabilities = () => wrapper.findComponent(VulnerabilityList);
+  const findAlert = () => wrapper.findComponent(GlAlert);
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
 
   const expectLoadingState = ({ initial = false, nextPage = false }) => {
     expect(findVulnerabilities().props('isLoading')).toBe(initial);

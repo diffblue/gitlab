@@ -44,11 +44,12 @@ describe('Vulnerability Severity component', () => {
     });
   };
 
-  const findHelpLink = () => wrapper.find(GlLink);
+  const findHelpLink = () => wrapper.findComponent(GlLink);
   const findHeader = () => wrapper.find('h4');
   const findDescription = () => wrapper.find('p');
-  const findAccordionItemByGrade = (grade) => wrapper.find({ ref: `accordionItem${grade}` });
-  const findProjectName = (accordion) => accordion.findAll(GlLink);
+  const findAccordionItemByGrade = (grade) =>
+    wrapper.findComponent({ ref: `accordionItem${grade}` });
+  const findProjectName = (accordion) => accordion.findAllComponents(GlLink);
 
   afterEach(() => {
     wrapper.destroy();

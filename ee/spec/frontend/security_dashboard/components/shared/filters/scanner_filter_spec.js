@@ -51,7 +51,7 @@ describe('Scanner Filter component', () => {
   };
 
   const getTestIds = (selector) =>
-    wrapper.findAll(selector).wrappers.map((x) => x.attributes('data-testid'));
+    wrapper.findAllComponents(selector).wrappers.map((x) => x.attributes('data-testid'));
 
   afterEach(() => {
     wrapper.destroy();
@@ -68,8 +68,8 @@ describe('Scanner Filter component', () => {
       const expectedOptions = ['all', ...filter.options.map((x) => x.id)];
 
       expect(options).toEqual(expectedOptions);
-      expect(wrapper.find(GlDropdownDivider).exists()).toBe(false);
-      expect(wrapper.find(GlDropdownItem).exists()).toBe(false);
+      expect(wrapper.findComponent(GlDropdownDivider).exists()).toBe(false);
+      expect(wrapper.findComponent(GlDropdownItem).exists()).toBe(false);
     });
   });
 
@@ -96,7 +96,7 @@ describe('Scanner Filter component', () => {
       createWrapper();
       const expectSelectedItems = (items) => {
         const checkedItems = wrapper
-          .findAll(FilterItem)
+          .findAllComponents(FilterItem)
           .wrappers.filter((x) => x.props('isChecked'))
           .map((x) => x.attributes('data-testid'));
         const expectedItems = items.map((x) => x.id);

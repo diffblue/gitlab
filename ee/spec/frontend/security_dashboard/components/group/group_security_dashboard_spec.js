@@ -26,11 +26,12 @@ describe('Group Security Dashboard component', () => {
   // To be consumed by SecurityDashboardLayout
   const sbomSurveySvgPath = '/';
 
-  const findSecurityChartsLayoutComponent = () => wrapper.find(SecurityDashboardLayout);
-  const findLoadingIcon = () => wrapper.find(GlLoadingIcon);
-  const findVulnerabilitiesOverTimeChart = () => wrapper.find(VulnerabilitiesOverTimeChart);
-  const findVulnerabilitySeverities = () => wrapper.find(VulnerabilitySeverities);
-  const findReportNotConfigured = () => wrapper.find(ReportNotConfiguredGroup);
+  const findSecurityChartsLayoutComponent = () => wrapper.findComponent(SecurityDashboardLayout);
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findVulnerabilitiesOverTimeChart = () =>
+    wrapper.findComponent(VulnerabilitiesOverTimeChart);
+  const findVulnerabilitySeverities = () => wrapper.findComponent(VulnerabilitySeverities);
+  const findReportNotConfigured = () => wrapper.findComponent(ReportNotConfiguredGroup);
 
   const createWrapper = ({ loading = false } = {}) => {
     wrapper = shallowMount(GroupSecurityDashboard, {

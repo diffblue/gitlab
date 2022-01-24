@@ -73,7 +73,7 @@ describe('Security Dashboard component', () => {
     });
 
     it('renders the security dashboard table ', () => {
-      expect(wrapper.find(SecurityDashboardTable).exists()).toBe(true);
+      expect(wrapper.findComponent(SecurityDashboardTable).exists()).toBe(true);
     });
 
     it('sets the pipeline id', () => {
@@ -85,7 +85,7 @@ describe('Security Dashboard component', () => {
     });
 
     it('renders the issue modal', () => {
-      expect(wrapper.find(IssueModal).exists()).toBe(true);
+      expect(wrapper.findComponent(IssueModal).exists()).toBe(true);
     });
 
     it.each`
@@ -108,7 +108,7 @@ describe('Security Dashboard component', () => {
         store.state.vulnerabilities.modal.vulnerability = 'bar';
 
         jest.spyOn(store, 'dispatch').mockImplementation(() => Promise.resolve());
-        wrapper.find(IssueModal).vm.$emit(emittedModalEvent, eventPayload);
+        wrapper.findComponent(IssueModal).vm.$emit(emittedModalEvent, eventPayload);
 
         expect(store.dispatch).toHaveBeenCalledWith(
           expectedDispatchedAction,
@@ -142,7 +142,7 @@ describe('Security Dashboard component', () => {
         Object.assign(store.state.vulnerabilities, givenState);
         await nextTick();
 
-        expect(wrapper.find(IssueModal).props()).toStrictEqual(expectedProps);
+        expect(wrapper.findComponent(IssueModal).props()).toStrictEqual(expectedProps);
       },
     );
   });
@@ -164,13 +164,13 @@ describe('Security Dashboard component', () => {
     it.each([401, 403])('displays an error on error %s', async (errorCode) => {
       store.dispatch('vulnerabilities/receiveVulnerabilitiesError', errorCode);
       await nextTick();
-      expect(wrapper.find(LoadingError).exists()).toBe(true);
+      expect(wrapper.findComponent(LoadingError).exists()).toBe(true);
     });
 
     it.each([404, 500])('does not display an error on error %s', async (errorCode) => {
       store.dispatch('vulnerabilities/receiveVulnerabilitiesError', errorCode);
       await nextTick();
-      expect(wrapper.find(LoadingError).exists()).toBe(false);
+      expect(wrapper.findComponent(LoadingError).exists()).toBe(false);
     });
   });
 });

@@ -17,9 +17,9 @@ describe('Project Pipeline Status Component', () => {
     },
   };
 
-  const findPipelineStatusBadge = () => wrapper.find(PipelineStatusBadge);
-  const findTimeAgoTooltip = () => wrapper.find(TimeAgoTooltip);
-  const findLink = () => wrapper.find(GlLink);
+  const findPipelineStatusBadge = () => wrapper.findComponent(PipelineStatusBadge);
+  const findTimeAgoTooltip = () => wrapper.findComponent(TimeAgoTooltip);
+  const findLink = () => wrapper.findComponent(GlLink);
   const findAutoFixMrsLink = () => wrapper.findByTestId('auto-fix-mrs-link');
 
   const createWrapper = (options = {}) => {
@@ -100,7 +100,7 @@ describe('Project Pipeline Status Component', () => {
       });
 
       it('renders a link to open auto-fix MRs if any', () => {
-        const link = findAutoFixMrsLink().find(GlLink);
+        const link = findAutoFixMrsLink().findComponent(GlLink);
         expect(link.exists()).toBe(true);
         expect(link.attributes('href')).toBe('/merge_requests?label_name=GitLab-auto-fix');
       });

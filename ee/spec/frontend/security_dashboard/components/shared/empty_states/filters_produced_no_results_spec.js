@@ -13,7 +13,7 @@ describe('filters produced no results empty state', () => {
       },
     });
 
-  const findGlEmptyState = () => wrapper.find(GlEmptyState);
+  const findGlEmptyState = () => wrapper.findComponent(GlEmptyState);
 
   beforeEach(() => {
     wrapper = createWrapper();

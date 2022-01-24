@@ -24,11 +24,12 @@ jest.mock(
 describe('Instance Security Dashboard component', () => {
   let wrapper;
 
-  const findSecurityChartsLayoutComponent = () => wrapper.find(SecurityDashboardLayout);
-  const findLoadingIcon = () => wrapper.find(GlLoadingIcon);
-  const findVulnerabilitiesOverTimeChart = () => wrapper.find(VulnerabilitiesOverTimeChart);
-  const findVulnerabilitySeverities = () => wrapper.find(VulnerabilitySeverities);
-  const findReportNotConfigured = () => wrapper.find(ReportNotConfiguredInstance);
+  const findSecurityChartsLayoutComponent = () => wrapper.findComponent(SecurityDashboardLayout);
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findVulnerabilitiesOverTimeChart = () =>
+    wrapper.findComponent(VulnerabilitiesOverTimeChart);
+  const findVulnerabilitySeverities = () => wrapper.findComponent(VulnerabilitySeverities);
+  const findReportNotConfigured = () => wrapper.findComponent(ReportNotConfiguredInstance);
 
   const createWrapper = ({ loading = false } = {}) => {
     wrapper = shallowMount(InstanceSecurityDashboard, {

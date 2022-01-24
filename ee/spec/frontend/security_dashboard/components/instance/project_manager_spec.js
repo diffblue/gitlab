@@ -47,9 +47,9 @@ describe('Project Manager component', () => {
     });
   };
 
-  const findAddProjectsButton = () => wrapper.find(GlButton);
-  const findProjectList = () => wrapper.find(ProjectList);
-  const findProjectSelector = () => wrapper.find(ProjectSelector);
+  const findAddProjectsButton = () => wrapper.findComponent(GlButton);
+  const findProjectList = () => wrapper.findComponent(ProjectList);
+  const findProjectSelector = () => wrapper.findComponent(ProjectSelector);
 
   afterEach(() => {
     wrapper.destroy();

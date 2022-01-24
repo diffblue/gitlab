@@ -32,7 +32,7 @@ describe('Security Dashboard Table', () => {
     wrapper.destroy();
   });
 
-  const findCheckbox = () => wrapper.find(GlFormCheckbox);
+  const findCheckbox = () => wrapper.findComponent(GlFormCheckbox);
   const findSelectionSummaryCollapse = () => wrapper.findByTestId('selection-summary-collapse');
 
   describe('while loading', () => {
@@ -41,7 +41,7 @@ describe('Security Dashboard Table', () => {
     });
 
     it('should render 10 skeleton rows in the table', () => {
-      expect(wrapper.findAll(SecurityDashboardTableRow)).toHaveLength(10);
+      expect(wrapper.findAllComponents(SecurityDashboardTableRow)).toHaveLength(10);
     });
   });
 
@@ -54,7 +54,7 @@ describe('Security Dashboard Table', () => {
     });
 
     it('should render a row for each vulnerability', () => {
-      expect(wrapper.findAll(SecurityDashboardTableRow)).toHaveLength(
+      expect(wrapper.findAllComponents(SecurityDashboardTableRow)).toHaveLength(
         mockDataVulnerabilities.length,
       );
     });
@@ -91,7 +91,7 @@ describe('Security Dashboard Table', () => {
     });
 
     it('should render the empty state', () => {
-      expect(wrapper.find(GlEmptyState).exists()).toBe(true);
+      expect(wrapper.findComponent(GlEmptyState).exists()).toBe(true);
     });
   });
 
@@ -101,7 +101,7 @@ describe('Security Dashboard Table', () => {
     });
 
     it('should not render the empty state', () => {
-      expect(wrapper.find(GlEmptyState).exists()).toBe(false);
+      expect(wrapper.findComponent(GlEmptyState).exists()).toBe(false);
     });
 
     it('should render the error alert', () => {
