@@ -35,7 +35,7 @@ export const license = {
   },
 };
 
-export const subscriptionHistory = [
+export const subscriptionPastHistory = [
   {
     activatedAt: '2022-03-16',
     company: 'ACME Corp',
@@ -59,6 +59,29 @@ export const subscriptionHistory = [
     startsAt: '2020-03-16',
     type: subscriptionTypes.LICENSE_FILE,
     usersInLicenseCount: '5',
+  },
+];
+
+export const subscriptionFutureHistory = [
+  {
+    company: 'ACME Corp',
+    email: 'user@acmecorp.com',
+    expiresAt: '2023-03-16',
+    name: 'Jane Doe',
+    plan: 'ultimate',
+    startsAt: '2022-03-11',
+    type: subscriptionTypes.CLOUD,
+    usersInLicenseCount: '15',
+  },
+  {
+    company: 'ACME Corp',
+    email: 'user@acmecorp.com',
+    expiresAt: '2022-03-16',
+    name: 'Jane Doe',
+    plan: 'ultimate',
+    startsAt: '2021-03-16',
+    type: subscriptionTypes.CLOUD,
+    usersInLicenseCount: '10',
   },
 ];
 
