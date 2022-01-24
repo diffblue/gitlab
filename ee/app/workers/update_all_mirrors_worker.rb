@@ -18,7 +18,16 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
 
     scheduled = 0
     with_lease do
+      # Clean-up completed jobs with stale status
+      job_tracker.clean_up
+
       scheduled = schedule_mirrors!
+
+      if scheduled > 0
+        # Wait for all ProjectImportScheduleWorker jobs to complete
+        deadline = Time.current + SCHEDULE_WAIT_TIMEOUT
+        sleep 1 while job_tracker.count > 0 && Time.current < deadline
+      end
     end
 
     # If we didn't get the lease, or no updates were scheduled, exit early
@@ -71,12 +80,6 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
       break if projects.length < batch_size
 
       last = projects.last.import_state.next_execution_timestamp
-    end
-
-    if scheduled > 0
-      # Wait for all ProjectImportScheduleWorker jobs to complete
-      deadline = Time.current + SCHEDULE_WAIT_TIMEOUT
-      sleep 1 while ProjectImportScheduleWorker.queue_size > 0 && Time.current < deadline
     end
 
     scheduled
@@ -156,4 +159,8 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
     end.to_sql
   end
   # rubocop: enable CodeReuse/ActiveRecord
+
+  def job_tracker
+    @job_tracker ||= LimitedCapacity::JobTracker.new(ProjectImportScheduleWorker.name)
+  end
 end

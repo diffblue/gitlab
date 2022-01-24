@@ -11,7 +11,14 @@ RSpec.describe ProjectImportScheduleWorker do
 
       let(:job_args) { [project.id] }
 
+      let(:job_tracker_instance) { double(LimitedCapacity::JobTracker) }
+
       before do
+        allow(Gitlab::Mirror).to receive(:available_capacity).and_return(5)
+        allow(LimitedCapacity::JobTracker).to receive(:new).with('ProjectImportScheduleWorker').and_return(job_tracker_instance)
+        allow(job_tracker_instance).to receive(:register)
+        allow(job_tracker_instance).to receive(:remove)
+
         allow(Project).to receive(:find_by_id).with(project.id).and_return(project)
         allow(project).to receive(:add_import_job)
       end
@@ -30,6 +37,13 @@ RSpec.describe ProjectImportScheduleWorker do
         subject
 
         expect(import_state).to be_scheduled
+      end
+
+      it 'tracks the status of the worker' do
+        subject
+
+        expect(job_tracker_instance).to have_received(:register).with(any_args, 5).at_least(:once)
+        expect(job_tracker_instance).to have_received(:remove).with(any_args).at_least(:once)
       end
     end
 
