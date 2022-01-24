@@ -16,7 +16,6 @@ RSpec.describe 'cross-database foreign keys' do
       ci_daily_build_group_report_results.group_id
       ci_daily_build_group_report_results.project_id
       ci_freeze_periods.project_id
-      ci_job_artifacts.project_id
       ci_job_token_project_scope_links.added_by_id
       ci_job_token_project_scope_links.target_project_id
       ci_pending_builds.namespace_id
