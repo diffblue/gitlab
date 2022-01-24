@@ -7,6 +7,7 @@ class Groups::EpicIssuesController < Groups::ApplicationController
   before_action :authorize_issue_link_association!, only: [:destroy, :update]
 
   feature_category :portfolio_management
+  urgency :default
 
   def update
     result = EpicIssues::UpdateService.new(link, current_user, params[:epic]).execute

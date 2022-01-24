@@ -61,7 +61,7 @@ module API
         end
       end
       [':id/epics', ':id/-/epics'].each do |path|
-        get path do
+        get path, urgency: :low do
           validate_anonymous_search_access! if declared_params[:search].present?
           epics = paginate(find_epics(finder_params: { group_id: user_group.id })).with_api_entity_associations
 

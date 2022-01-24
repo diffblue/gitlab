@@ -13,6 +13,7 @@ module Groups
     end
 
     feature_category :portfolio_management
+    urgency :medium, [:show]
 
     # show roadmap for a group
     def show
