@@ -32,7 +32,7 @@ module Types
             description: 'Indicates the runner is allowed to receive jobs.',
             deprecated: { reason: 'Use paused', milestone: '14.8' }
       field :paused, GraphQL::Types::Boolean, null: false,
-            description: 'Indicates the runner is paused and not allowed to receive jobs.'
+            description: 'Indicates the runner is paused and not available to run jobs.'
       field :status,
             Types::Ci::RunnerStatusEnum,
             null: false,

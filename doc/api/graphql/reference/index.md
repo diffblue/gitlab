@@ -9028,7 +9028,7 @@ Represents the total number of issues and their weights for a particular day.
 | <a id="cirunnerjobcount"></a>`jobCount` | [`Int`](#int) | Number of jobs processed by the runner (limited to 1000, plus one to indicate that more items exist). |
 | <a id="cirunnerlocked"></a>`locked` | [`Boolean`](#boolean) | Indicates the runner is locked. |
 | <a id="cirunnermaximumtimeout"></a>`maximumTimeout` | [`Int`](#int) | Maximum timeout (in seconds) for jobs processed by the runner. |
-| <a id="cirunnerpaused"></a>`paused` | [`Boolean!`](#boolean) | Indicates the runner is paused and not allowed to receive jobs. |
+| <a id="cirunnerpaused"></a>`paused` | [`Boolean!`](#boolean) | Indicates the runner is paused and not available to run jobs. |
 | <a id="cirunnerprivateprojectsminutescostfactor"></a>`privateProjectsMinutesCostFactor` | [`Float`](#float) | Private projects' "minutes cost factor" associated with the runner (GitLab.com only). |
 | <a id="cirunnerprojectcount"></a>`projectCount` | [`Int`](#int) | Number of projects that the runner is associated with. |
 | <a id="cirunnerprojects"></a>`projects` | [`ProjectConnection`](#projectconnection) | Projects the runner is associated with. For project runners only. (see [Connections](#connections)) |
@@ -16492,12 +16492,12 @@ Values for sorting runners.
 
 | Value | Description |
 | ----- | ----------- |
-| <a id="cirunnerstatusactive"></a>`ACTIVE` **{warning-solid}** | **Deprecated** in 14.6. Use CiRunnerType.paused instead. |
+| <a id="cirunnerstatusactive"></a>`ACTIVE` **{warning-solid}** | **Deprecated** in 14.6. This was renamed. Use: [`CiRunner.paused`](#cirunnerpaused). |
 | <a id="cirunnerstatusnever_contacted"></a>`NEVER_CONTACTED` | Runner that has never contacted this instance. Set legacyMode to null to utilize this value. Will replace NOT_CONNECTED starting in 15.0. |
 | <a id="cirunnerstatusnot_connected"></a>`NOT_CONNECTED` **{warning-solid}** | **Deprecated** in 14.6. Use NEVER_CONTACTED instead. NEVER_CONTACTED will have a slightly different scope starting in 15.0, with STALE being returned instead after 3 months of no contact. |
 | <a id="cirunnerstatusoffline"></a>`OFFLINE` **{warning-solid}** | **Deprecated** in 14.6. This field will have a slightly different scope starting in 15.0, with STALE being returned after a certain period offline. |
 | <a id="cirunnerstatusonline"></a>`ONLINE` | Runner that contacted this instance within the last 2 hours. |
-| <a id="cirunnerstatuspaused"></a>`PAUSED` **{warning-solid}** | **Deprecated** in 14.6. Use CiRunnerType.paused instead. |
+| <a id="cirunnerstatuspaused"></a>`PAUSED` **{warning-solid}** | **Deprecated** in 14.6. This was renamed. Use: [`CiRunner.paused`](#cirunnerpaused). |
 | <a id="cirunnerstatusstale"></a>`STALE` | Runner that has not contacted this instance within the last 3 months. Only available if legacyMode is null. Will be a possible return value starting in 15.0. |
 
 ### `CiRunnerType`
