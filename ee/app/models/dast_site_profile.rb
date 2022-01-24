@@ -42,7 +42,7 @@ class DastSiteProfile < ApplicationRecord
       if target_type == 'website'
         variables.append(key: 'DAST_WEBSITE', value: url)
       else
-        variables.append(key: 'DAST_API_SPECIFICATION', value: url)
+        variables.append(key: 'DAST_API_OPENAPI', value: url)
         variables.append(key: 'DAST_API_HOST_OVERRIDE', value: URI(url).host)
       end
 
