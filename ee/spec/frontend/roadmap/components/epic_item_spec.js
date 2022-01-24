@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils';
 
 import { delay } from 'lodash';
 
+import { nextTick } from 'vue';
 import CurrentDayIndicator from 'ee/roadmap/components/current_day_indicator.vue';
 import EpicItemComponent from 'ee/roadmap/components/epic_item.vue';
 import EpicItemContainer from 'ee/roadmap/components/epic_item_container.vue';
@@ -144,7 +145,7 @@ describe('EpicItemComponent', () => {
 
   describe('methods', () => {
     describe('removeHighlight', () => {
-      it('should wait 3 seconds before toggling `epic.newEpic` from true to false', () => {
+      it('should wait 3 seconds before toggling `epic.newEpic` from true to false', async () => {
         wrapper.setProps({
           epic: {
             ...wrapper.vm.epic,
@@ -154,9 +155,8 @@ describe('EpicItemComponent', () => {
 
         wrapper.vm.removeHighlight();
 
-        return wrapper.vm.$nextTick().then(() => {
-          expect(delay).toHaveBeenCalledWith(expect.any(Function), 3000);
-        });
+        await nextTick();
+        expect(delay).toHaveBeenCalledWith(expect.any(Function), 3000);
       });
     });
   });

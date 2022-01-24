@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import BlockingMrInputRoot from 'ee/projects/merge_requests/blocking_mr_input_root.vue';
 import RelatedIssuableInput from '~/related_issues/components/related_issuable_input.vue';
 
@@ -86,22 +87,20 @@ describe('blocking mr input root', () => {
         expectShouldUpdateRefsToBe(false);
       });
 
-      it('is true after a ref is removed', () => {
+      it('is true after a ref is removed', async () => {
         createComponent({ existingRefs: ['!1'] });
         removeRef(0);
 
-        return wrapper.vm.$nextTick().then(() => {
-          expectShouldUpdateRefsToBe(true);
-        });
+        await nextTick();
+        expectShouldUpdateRefsToBe(true);
       });
 
-      it('is true after a ref is added', () => {
+      it('is true after a ref is added', async () => {
         createComponent();
         addTokenizedInput('foo');
 
-        return wrapper.vm.$nextTick(() => {
-          expectShouldUpdateRefsToBe(true);
-        });
+        await nextTick();
+        expectShouldUpdateRefsToBe(true);
       });
     });
 
@@ -129,13 +128,12 @@ describe('blocking mr input root', () => {
         expectRemoveHiddenBlockingMergeRequestsToBe(false);
       });
 
-      it('is false when ref has been removed', () => {
+      it('is false when ref has been removed', async () => {
         makeComponentWithHiddenMrs();
         removeRef(2);
 
-        return wrapper.vm.$nextTick().then(() => {
-          expectRemoveHiddenBlockingMergeRequestsToBe(true);
-        });
+        await nextTick();
+        expectRemoveHiddenBlockingMergeRequestsToBe(true);
       });
     });
   });

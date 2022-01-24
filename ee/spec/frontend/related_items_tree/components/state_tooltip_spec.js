@@ -1,6 +1,7 @@
 import { GlTooltip } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
+import { nextTick } from 'vue';
 import StateTooltip from 'ee/related_items_tree/components/state_tooltip.vue';
 
 // Ensure that mock dates dynamically computed from today
@@ -48,24 +49,22 @@ describe('RelatedItemsTree', () => {
 
     describe('computed', () => {
       describe('stateText', () => {
-        it('returns string `Created` when `isOpen` prop is true', () => {
+        it('returns string `Created` when `isOpen` prop is true', async () => {
           wrapper.setProps({
             isOpen: true,
           });
 
-          return wrapper.vm.$nextTick(() => {
-            expect(wrapper.vm.stateText).toBe('Created');
-          });
+          await nextTick();
+          expect(wrapper.vm.stateText).toBe('Created');
         });
 
-        it('returns string `Closed` when `isOpen` prop is false', () => {
+        it('returns string `Closed` when `isOpen` prop is false', async () => {
           wrapper.setProps({
             isOpen: false,
           });
 
-          return wrapper.vm.$nextTick(() => {
-            expect(wrapper.vm.stateText).toBe('Closed');
-          });
+          await nextTick();
+          expect(wrapper.vm.stateText).toBe('Closed');
         });
       });
 
@@ -94,46 +93,42 @@ describe('RelatedItemsTree', () => {
       });
 
       describe('stateTimeInWords', () => {
-        it('returns string using `createdAtInWords` prop when `isOpen` is true', () => {
+        it('returns string using `createdAtInWords` prop when `isOpen` is true', async () => {
           wrapper.setProps({
             isOpen: true,
           });
 
-          return wrapper.vm.$nextTick(() => {
-            expect(wrapper.vm.stateTimeInWords).toBe('2 years ago');
-          });
+          await nextTick();
+          expect(wrapper.vm.stateTimeInWords).toBe('2 years ago');
         });
 
-        it('returns string using `closedAtInWords` prop when `isOpen` is false', () => {
+        it('returns string using `closedAtInWords` prop when `isOpen` is false', async () => {
           wrapper.setProps({
             isOpen: false,
           });
 
-          return wrapper.vm.$nextTick(() => {
-            expect(wrapper.vm.stateTimeInWords).toBe('1 year ago');
-          });
+          await nextTick();
+          expect(wrapper.vm.stateTimeInWords).toBe('1 year ago');
         });
       });
 
       describe('stateTimestamp', () => {
-        it('returns string using `createdAtTimestamp` prop when `isOpen` is true', () => {
+        it('returns string using `createdAtTimestamp` prop when `isOpen` is true', async () => {
           wrapper.setProps({
             isOpen: true,
           });
 
-          return wrapper.vm.$nextTick(() => {
-            expect(wrapper.vm.stateTimestamp).toContain(mockCreatedAtYear);
-          });
+          await nextTick();
+          expect(wrapper.vm.stateTimestamp).toContain(mockCreatedAtYear);
         });
 
-        it('returns string using `closedAtInWords` prop when `isOpen` is false', () => {
+        it('returns string using `closedAtInWords` prop when `isOpen` is false', async () => {
           wrapper.setProps({
             isOpen: false,
           });
 
-          return wrapper.vm.$nextTick(() => {
-            expect(wrapper.vm.stateTimestamp).toContain(mockClosedAtYear);
-          });
+          await nextTick();
+          expect(wrapper.vm.stateTimestamp).toContain(mockClosedAtYear);
         });
       });
     });

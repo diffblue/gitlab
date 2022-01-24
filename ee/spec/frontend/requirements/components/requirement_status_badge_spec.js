@@ -1,6 +1,7 @@
 import { GlBadge, GlIcon, GlTooltip } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
+import { nextTick } from 'vue';
 import RequirementStatusBadge from 'ee/requirements/components/requirement_status_badge.vue';
 import { mockTestReport, mockTestReportFailed, mockTestReportMissing } from '../mock_data';
 
@@ -49,28 +50,26 @@ describe('RequirementStatusBadge', () => {
         expect(wrapper.vm.testReportBadge).toEqual(successBadgeProps);
       });
 
-      it('returns object containing variant, icon, text and tooltipTitle when status is "FAILED"', () => {
+      it('returns object containing variant, icon, text and tooltipTitle when status is "FAILED"', async () => {
         wrapper.setProps({
           testReport: mockTestReportFailed,
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.testReportBadge).toEqual(failedBadgeProps);
-        });
+        await nextTick();
+        expect(wrapper.vm.testReportBadge).toEqual(failedBadgeProps);
       });
 
-      it('returns object containing variant, icon, text and tooltipTitle when status missing', () => {
+      it('returns object containing variant, icon, text and tooltipTitle when status missing', async () => {
         wrapper.setProps({
           testReport: mockTestReportMissing,
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.testReportBadge).toEqual({
-            variant: 'warning',
-            icon: 'status_warning',
-            text: 'missing',
-            tooltipTitle: '',
-          });
+        await nextTick();
+        expect(wrapper.vm.testReportBadge).toEqual({
+          variant: 'warning',
+          icon: 'status_warning',
+          text: 'missing',
+          tooltipTitle: '',
         });
       });
     });

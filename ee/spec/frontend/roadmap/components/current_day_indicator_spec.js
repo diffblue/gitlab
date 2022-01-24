@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 
+import { nextTick } from 'vue';
 import CurrentDayIndicator from 'ee/roadmap/components/current_day_indicator.vue';
 import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
@@ -54,7 +55,7 @@ describe('CurrentDayIndicator', () => {
 
   describe('computed', () => {
     describe('hasToday', () => {
-      it('returns true when presetType is QUARTERS and currentDate is within current quarter', () => {
+      it('returns true when presetType is QUARTERS and currentDate is within current quarter', async () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
@@ -66,12 +67,11 @@ describe('CurrentDayIndicator', () => {
           timeframeItem: mockTimeframeQuarters[0],
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.hasToday).toBe(true);
-        });
+        await nextTick();
+        expect(wrapper.vm.hasToday).toBe(true);
       });
 
-      it('returns true when presetType is MONTHS and currentDate is within current month', () => {
+      it('returns true when presetType is MONTHS and currentDate is within current month', async () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
@@ -83,12 +83,11 @@ describe('CurrentDayIndicator', () => {
           timeframeItem: new Date(2020, 0, 1),
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.hasToday).toBe(true);
-        });
+        await nextTick();
+        expect(wrapper.vm.hasToday).toBe(true);
       });
 
-      it('returns true when presetType is WEEKS and currentDate is within current week', () => {
+      it('returns true when presetType is WEEKS and currentDate is within current week', async () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
@@ -100,16 +99,15 @@ describe('CurrentDayIndicator', () => {
           timeframeItem: mockTimeframeWeeks[0],
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.hasToday).toBe(true);
-        });
+        await nextTick();
+        expect(wrapper.vm.hasToday).toBe(true);
       });
     });
   });
 
   describe('methods', () => {
     describe('getIndicatorStyles', () => {
-      it('returns object containing `left` with value `34%` when presetType is QUARTERS', () => {
+      it('returns object containing `left` with value `34%` when presetType is QUARTERS', async () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
@@ -121,16 +119,15 @@ describe('CurrentDayIndicator', () => {
           timeframeItem: mockTimeframeQuarters[0],
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.getIndicatorStyles()).toEqual(
-            expect.objectContaining({
-              left: '34%',
-            }),
-          );
-        });
+        await nextTick();
+        expect(wrapper.vm.getIndicatorStyles()).toEqual(
+          expect.objectContaining({
+            left: '34%',
+          }),
+        );
       });
 
-      it('returns object containing `left` with value `48%` when presetType is MONTHS', () => {
+      it('returns object containing `left` with value `48%` when presetType is MONTHS', async () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
@@ -142,16 +139,15 @@ describe('CurrentDayIndicator', () => {
           timeframeItem: new Date(2020, 0, 1),
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.getIndicatorStyles()).toEqual(
-            expect.objectContaining({
-              left: '48%',
-            }),
-          );
-        });
+        await nextTick();
+        expect(wrapper.vm.getIndicatorStyles()).toEqual(
+          expect.objectContaining({
+            left: '48%',
+          }),
+        );
       });
 
-      it('returns object containing `left` with value `7%` when presetType is WEEKS', () => {
+      it('returns object containing `left` with value `7%` when presetType is WEEKS', async () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
@@ -163,19 +159,18 @@ describe('CurrentDayIndicator', () => {
           timeframeItem: mockTimeframeWeeks[0],
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.getIndicatorStyles()).toEqual(
-            expect.objectContaining({
-              left: '7%',
-            }),
-          );
-        });
+        await nextTick();
+        expect(wrapper.vm.getIndicatorStyles()).toEqual(
+          expect.objectContaining({
+            left: '7%',
+          }),
+        );
       });
     });
   });
 
   describe('template', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       wrapper = createComponent();
       // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
       // eslint-disable-next-line no-restricted-syntax
@@ -183,7 +178,7 @@ describe('CurrentDayIndicator', () => {
         currentDate: mockTimeframeMonths[0],
       });
 
-      return wrapper.vm.$nextTick();
+      await nextTick();
     });
 
     it('renders span element containing class `current-day-indicator`', () => {

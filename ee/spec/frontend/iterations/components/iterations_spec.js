@@ -1,5 +1,6 @@
 import { GlAlert, GlLoadingIcon, GlPagination, GlTab, GlTabs } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import Iterations from 'ee/iterations/components/iterations.vue';
 import IterationsList from 'ee/iterations/components/iterations_list.vue';
 import { Namespace } from 'ee/iterations/constants';
@@ -65,9 +66,9 @@ describe('Iterations', () => {
 
   describe('pagination', () => {
     const findPagination = () => wrapper.findComponent(GlPagination);
-    const setPage = (page) => {
+    const setPage = async (page) => {
       findPagination().vm.$emit('input', page);
-      return findPagination().vm.$nextTick();
+      await nextTick();
     };
 
     beforeEach(() => {
@@ -133,7 +134,7 @@ describe('Iterations', () => {
 
       wrapper.findComponent(GlTabs).vm.$emit('activate-tab', 2);
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.vm.pagination).toEqual({
         currentPage: 1,

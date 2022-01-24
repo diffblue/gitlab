@@ -1,6 +1,6 @@
 import { GlModal } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 import TreeItemRemoveModal from 'ee/related_items_tree/components/tree_item_remove_modal.vue';
@@ -65,54 +65,50 @@ describe('RelatedItemsTree', () => {
       });
 
       describe('modalTitle', () => {
-        it('returns title for modal when item.type is `Epic`', () => {
+        it('returns title for modal when item.type is `Epic`', async () => {
           wrapper.vm.$store.dispatch('setRemoveItemModalProps', {
             parentItem: mockParentItem,
             item: { ...mockItem, type: ChildType.Epic },
           });
 
-          return wrapper.vm.$nextTick(() => {
-            expect(wrapper.vm.modalTitle).toBe('Remove epic');
-          });
+          await nextTick();
+          expect(wrapper.vm.modalTitle).toBe('Remove epic');
         });
 
-        it('returns title for modal when item.type is `Issue`', () => {
+        it('returns title for modal when item.type is `Issue`', async () => {
           wrapper.vm.$store.dispatch('setRemoveItemModalProps', {
             parentItem: mockParentItem,
             item: mockItem,
           });
 
-          return wrapper.vm.$nextTick(() => {
-            expect(wrapper.vm.modalTitle).toBe('Remove issue');
-          });
+          await nextTick();
+          expect(wrapper.vm.modalTitle).toBe('Remove issue');
         });
       });
 
       describe('modalBody', () => {
-        it('returns body text for modal when item.type is `Epic`', () => {
+        it('returns body text for modal when item.type is `Epic`', async () => {
           wrapper.vm.$store.dispatch('setRemoveItemModalProps', {
             parentItem: mockParentItem,
             item: { ...mockItem, type: ChildType.Epic },
           });
 
-          return wrapper.vm.$nextTick(() => {
-            expect(wrapper.vm.modalBody).toBe(
-              'This will also remove any descendents of <b>Nostrum cum mollitia quia recusandae fugit deleniti voluptatem delectus.</b> from <b>Some sample epic</b>. Are you sure?',
-            );
-          });
+          await nextTick();
+          expect(wrapper.vm.modalBody).toBe(
+            'This will also remove any descendents of <b>Nostrum cum mollitia quia recusandae fugit deleniti voluptatem delectus.</b> from <b>Some sample epic</b>. Are you sure?',
+          );
         });
 
-        it('returns body text for modal when item.type is `Issue`', () => {
+        it('returns body text for modal when item.type is `Issue`', async () => {
           wrapper.vm.$store.dispatch('setRemoveItemModalProps', {
             parentItem: mockParentItem,
             item: mockItem,
           });
 
-          return wrapper.vm.$nextTick(() => {
-            expect(wrapper.vm.modalBody).toBe(
-              'Are you sure you want to remove <b>Nostrum cum mollitia quia recusandae fugit deleniti voluptatem delectus.</b> from <b>Some sample epic</b>?',
-            );
-          });
+          await nextTick();
+          expect(wrapper.vm.modalBody).toBe(
+            'Are you sure you want to remove <b>Nostrum cum mollitia quia recusandae fugit deleniti voluptatem delectus.</b> from <b>Some sample epic</b>?',
+          );
         });
       });
     });

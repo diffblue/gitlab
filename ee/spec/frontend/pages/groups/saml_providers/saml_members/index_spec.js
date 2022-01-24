@@ -1,6 +1,6 @@
 import { GlTable, GlDeprecatedSkeletonLoading as GlSkeletonLoading } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import MembersApp from 'ee/pages/groups/saml_providers/saml_members/index.vue';
 import createInitialState from 'ee/pages/groups/saml_providers/saml_members/store/state';
@@ -66,12 +66,11 @@ describe('SAML providers members app', () => {
       expect(wrapper.findComponent(GlTable).exists()).toBe(true);
     });
 
-    it('requests next page when pagination component performs change', () => {
+    it('requests next page when pagination component performs change', async () => {
       const changeFn = wrapper.findComponent(TablePagination).props('change');
       changeFn(2);
-      return wrapper.vm.$nextTick(() => {
-        expect(fetchPageMock).toHaveBeenCalledWith(expect.anything(), 2);
-      });
+      await nextTick();
+      expect(fetchPageMock).toHaveBeenCalledWith(expect.anything(), 2);
     });
   });
 });

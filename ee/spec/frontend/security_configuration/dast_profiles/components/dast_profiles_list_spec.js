@@ -2,6 +2,7 @@ import { GlModal } from '@gitlab/ui';
 import { within } from '@testing-library/dom';
 import { mount, shallowMount, createWrapper } from '@vue/test-utils';
 import { merge } from 'lodash';
+import { nextTick } from 'vue';
 import DastProfilesList from 'ee/security_configuration/dast_profiles/components/dast_profiles_list.vue';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { siteProfiles as profiles, policySiteProfiles } from '../mocks/mock_data';
@@ -204,7 +205,7 @@ describe('EE - DastProfilesList', () => {
 
         getCurrentProfileDeleteButton().trigger('click');
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(
           within(getModal().element).getByText(/are you sure you want to delete this profile/i),
@@ -216,7 +217,7 @@ describe('EE - DastProfilesList', () => {
 
         getCurrentProfileDeleteButton().trigger('click');
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         getModal().vm.$emit('ok');
 

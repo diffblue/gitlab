@@ -1,6 +1,7 @@
 import { GlForm } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { ApolloMutation } from 'vue-apollo';
+import { nextTick } from 'vue';
 import IterationForm from 'ee/iterations/components/iteration_form_without_vue_router.vue';
 import createIteration from 'ee/iterations/queries/create_iteration.mutation.graphql';
 import updateIteration from 'ee/iterations/queries/update_iteration.mutation.graphql';
@@ -61,7 +62,6 @@ describe('Iteration Form', () => {
   const findCancelButton = () => wrapper.find('[data-testid="cancel-iteration"]');
   const clickSave = () => findSaveButton().vm.$emit('click');
   const clickCancel = () => findCancelButton().vm.$emit('click');
-  const nextTick = () => wrapper.vm.$nextTick();
 
   it('renders a form', () => {
     createComponent();
@@ -107,15 +107,14 @@ describe('Iteration Form', () => {
         });
       });
 
-      it('redirects to Iteration page on success', () => {
+      it('redirects to Iteration page on success', async () => {
         createComponent();
 
         clickSave();
 
-        return nextTick().then(() => {
-          expect(findSaveButton().props('loading')).toBe(true);
-          expect(visitUrl).toHaveBeenCalled();
-        });
+        await nextTick();
+        expect(findSaveButton().props('loading')).toBe(true);
+        expect(visitUrl).toHaveBeenCalled();
       });
 
       it('loading=false on error', () => {
@@ -196,7 +195,7 @@ describe('Iteration Form', () => {
       });
     });
 
-    it('emits updated event after successful mutation', () => {
+    it('emits updated event after successful mutation', async () => {
       createComponent({
         props: propsWithIteration,
         mutationResult: updateMutationSuccess,
@@ -204,13 +203,12 @@ describe('Iteration Form', () => {
 
       clickSave();
 
-      return nextTick().then(() => {
-        expect(findSaveButton().props('loading')).toBe(true);
-        expect(wrapper.emitted('updated')).toHaveLength(1);
-      });
+      await nextTick();
+      expect(findSaveButton().props('loading')).toBe(true);
+      expect(wrapper.emitted('updated')).toHaveLength(1);
     });
 
-    it('emits updated event after failed mutation', () => {
+    it('emits updated event after failed mutation', async () => {
       createComponent({
         props: propsWithIteration,
         mutationResult: updateMutationFailure,
@@ -218,12 +216,11 @@ describe('Iteration Form', () => {
 
       clickSave();
 
-      return nextTick().then(() => {
-        expect(wrapper.emitted('updated')).toBeUndefined();
-      });
+      await nextTick();
+      expect(wrapper.emitted('updated')).toBeUndefined();
     });
 
-    it('emits cancel when cancel clicked', () => {
+    it('emits cancel when cancel clicked', async () => {
       createComponent({
         props: propsWithIteration,
         mutationResult: updateMutationSuccess,
@@ -231,9 +228,8 @@ describe('Iteration Form', () => {
 
       clickCancel();
 
-      return nextTick().then(() => {
-        expect(wrapper.emitted('cancel')).toHaveLength(1);
-      });
+      await nextTick();
+      expect(wrapper.emitted('cancel')).toHaveLength(1);
     });
   });
 });

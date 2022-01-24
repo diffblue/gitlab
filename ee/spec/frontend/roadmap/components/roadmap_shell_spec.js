@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 import EpicsListSection from 'ee/roadmap/components/epics_list_section.vue';
@@ -97,7 +97,7 @@ describe('RoadmapShell', () => {
       it('emits `epicsListScrolled` event via eventHub', async () => {
         jest.spyOn(eventHub, '$emit').mockImplementation(() => {});
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
         wrapper.vm.handleScroll();
 
         expect(eventHub.$emit).toHaveBeenCalledWith('epicsListScrolled', expect.any(Object));

@@ -1,6 +1,7 @@
 import { GlDeprecatedSkeletonLoading as GlSkeletonLoading, GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
+import { nextTick } from 'vue';
 import RequirementsLoading from 'ee/requirements/components/requirements_loading.vue';
 
 import { FilterState, mockRequirementsCount } from '../mock_data';
@@ -50,17 +51,16 @@ describe('RequirementsLoading', () => {
         expect(wrapper.vm.loaderCount).toBe(2);
       });
 
-      it('returns value of remainder requirements for last page when current page is the last page total requirements are more than DEFAULT_PAGE_SIZE', () => {
+      it('returns value of remainder requirements for last page when current page is the last page total requirements are more than DEFAULT_PAGE_SIZE', async () => {
         wrapper.setProps({
           currentPage: 2,
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.loaderCount).toBe(1);
-        });
+        await nextTick();
+        expect(wrapper.vm.loaderCount).toBe(1);
       });
 
-      it('returns value DEFAULT_PAGE_SIZE when current page is the last page total requirements are less than DEFAULT_PAGE_SIZE', () => {
+      it('returns value DEFAULT_PAGE_SIZE when current page is the last page total requirements are less than DEFAULT_PAGE_SIZE', async () => {
         wrapper.setProps({
           currentPage: 1,
           requirementsCount: {
@@ -70,9 +70,8 @@ describe('RequirementsLoading', () => {
           },
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.loaderCount).toBe(1);
-        });
+        await nextTick();
+        expect(wrapper.vm.loaderCount).toBe(1);
       });
     });
   });
@@ -87,7 +86,7 @@ describe('RequirementsLoading', () => {
       expect(loaders.at(0).props('lines')).toBe(2);
     });
 
-    it('renders gl-loading-icon component project has no requirements and current tab has nothing to show', () => {
+    it('renders gl-loading-icon component project has no requirements and current tab has nothing to show', async () => {
       wrapper.setProps({
         requirementsCount: {
           OPENED: 0,
@@ -96,10 +95,9 @@ describe('RequirementsLoading', () => {
         },
       });
 
-      return wrapper.vm.$nextTick(() => {
-        expect(wrapper.find('.requirements-list-loading').exists()).toBe(false);
-        expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
-      });
+      await nextTick();
+      expect(wrapper.find('.requirements-list-loading').exists()).toBe(false);
+      expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
     });
   });
 });

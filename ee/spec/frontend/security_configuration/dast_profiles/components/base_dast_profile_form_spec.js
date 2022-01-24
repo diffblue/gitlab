@@ -1,5 +1,5 @@
 import { GlAlert, GlForm, GlModal } from '@gitlab/ui';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import merge from 'lodash/merge';
 import VueApollo from 'vue-apollo';
 import BaseDastProfileForm from 'ee/security_configuration/dast_profiles/components/base_dast_profile_form.vue';
@@ -169,7 +169,7 @@ describe('BaseDastProfileForm', () => {
       expectSubmitNotLoading();
 
       submitForm();
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findSubmitButton().props('loading')).toBe(true);
     });

@@ -1,6 +1,6 @@
 import { GlAlert, GlDropdown, GlDropdownItem, GlEmptyState } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
@@ -84,13 +84,13 @@ describe('Insights component', () => {
       });
 
       it('has the correct nav tabs', async () => {
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(wrapper.findComponent(GlDropdown).exists()).toBe(true);
         expect(wrapper.findComponent(GlDropdown).findComponent(GlDropdownItem).text()).toBe(title);
       });
 
       it('should not disable the tab selector', async () => {
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(wrapper.findComponent(GlDropdown).attributes().disabled).toBeUndefined();
       });
     });
@@ -110,13 +110,13 @@ describe('Insights component', () => {
       });
 
       it('has the correct nav tabs', async () => {
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(wrapper.findComponent(GlDropdown).exists()).toBe(true);
         expect(wrapper.findComponent(GlDropdown).findComponent(GlDropdownItem).text()).toBe(title);
       });
 
       it('disables the tab selector', async () => {
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(wrapper.findComponent(GlDropdown).attributes()).toMatchObject({ disabled: 'true' });
       });
     });
@@ -140,7 +140,7 @@ describe('Insights component', () => {
       });
 
       it('enables the tab selector', async () => {
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(wrapper.findComponent(GlDropdown).attributes()).toMatchObject({ disabled: 'true' });
       });
     });
@@ -163,7 +163,7 @@ describe('Insights component', () => {
       });
 
       it('disables the tab selector', async () => {
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(wrapper.findComponent(GlDropdown).attributes()).toMatchObject({ disabled: 'true' });
       });
     });
@@ -187,7 +187,7 @@ describe('Insights component', () => {
       });
 
       it('enables the tab selector', async () => {
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(wrapper.findComponent(GlDropdown).attributes().disabled).toBeUndefined();
       });
     });
@@ -211,7 +211,7 @@ describe('Insights component', () => {
       });
 
       it('enables the tab selector', async () => {
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(wrapper.findComponent(GlDropdown).attributes().disabled).toBeUndefined();
       });
     });
@@ -224,14 +224,14 @@ describe('Insights component', () => {
     });
 
     it('it displays a warning', async () => {
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.findComponent(GlEmptyState).attributes()).toMatchObject({
         title: 'Invalid Insights config file detected',
       });
     });
 
     it('does not display dropdown', async () => {
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.findComponent(GlDropdown).exists()).toBe(false);
     });
   });
@@ -243,14 +243,14 @@ describe('Insights component', () => {
     });
 
     it('it displays a warning', async () => {
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.findComponent(GlAlert).text()).toContain(
         'This project is filtered out in the insights.yml file',
       );
     });
 
     it('does not display dropdown', async () => {
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.findComponent(GlDropdown).exists()).toBe(false);
     });
   });
@@ -281,7 +281,7 @@ describe('Insights component', () => {
 
       jest.runOnlyPendingTimers();
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(vuexStore.dispatch).toHaveBeenCalledWith('insights/setActiveTab', defaultKey);
     });
 
@@ -297,7 +297,7 @@ describe('Insights component', () => {
 
       jest.runOnlyPendingTimers();
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(vuexStore.dispatch).toHaveBeenCalledWith('insights/setActiveTab', selectedKey);
     });
   });

@@ -1,6 +1,7 @@
 import { GlEmptyState, GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
+import { nextTick } from 'vue';
 import RequirementsEmptyState from 'ee/requirements/components/requirements_empty_state.vue';
 import { FilterState } from 'ee/requirements/constants';
 
@@ -33,7 +34,7 @@ describe('RequirementsEmptyState', () => {
 
   describe('computed', () => {
     describe('emptyStateTitle', () => {
-      it('returns string "There are no open requirements" when value of `filterBy` prop is "OPENED" and project has some requirements', () => {
+      it('returns string "There are no open requirements" when value of `filterBy` prop is "OPENED" and project has some requirements', async () => {
         wrapper.setProps({
           requirementsCount: {
             OPENED: 0,
@@ -42,12 +43,11 @@ describe('RequirementsEmptyState', () => {
           },
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.emptyStateTitle).toBe('There are no open requirements');
-        });
+        await nextTick();
+        expect(wrapper.vm.emptyStateTitle).toBe('There are no open requirements');
       });
 
-      it('returns string "There are no archived requirements" when value of `filterBy` prop is "ARCHIVED" and project has some requirements', () => {
+      it('returns string "There are no archived requirements" when value of `filterBy` prop is "ARCHIVED" and project has some requirements', async () => {
         wrapper.setProps({
           filterBy: FilterState.archived,
           requirementsCount: {
@@ -57,9 +57,8 @@ describe('RequirementsEmptyState', () => {
           },
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.emptyStateTitle).toBe('There are no archived requirements');
-        });
+        await nextTick();
+        expect(wrapper.vm.emptyStateTitle).toBe('There are no archived requirements');
       });
 
       it('returns a generic string when project has no requirements', () => {
@@ -76,7 +75,7 @@ describe('RequirementsEmptyState', () => {
         );
       });
 
-      it('returns a null when project has some requirements', () => {
+      it('returns a null when project has some requirements', async () => {
         wrapper.setProps({
           requirementsCount: {
             OPENED: 2,
@@ -85,9 +84,8 @@ describe('RequirementsEmptyState', () => {
           },
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.emptyStateDescription).toBeNull();
-        });
+        await nextTick();
+        expect(wrapper.vm.emptyStateDescription).toBeNull();
       });
     });
   });
@@ -109,7 +107,7 @@ describe('RequirementsEmptyState', () => {
       expect(newReqButton.text()).toBe('New requirement');
     });
 
-    it('does not render new requirement button when project some requirements', () => {
+    it('does not render new requirement button when project some requirements', async () => {
       wrapper.setProps({
         requirementsCount: {
           OPENED: 2,
@@ -118,23 +116,21 @@ describe('RequirementsEmptyState', () => {
         },
       });
 
-      return wrapper.vm.$nextTick(() => {
-        const newReqButton = wrapper.findComponent(GlButton);
+      await nextTick();
+      const newReqButton = wrapper.findComponent(GlButton);
 
-        expect(newReqButton.exists()).toBe(false);
-      });
+      expect(newReqButton.exists()).toBe(false);
     });
 
-    it('does not render new requirement button when user is not authenticated', () => {
+    it('does not render new requirement button when user is not authenticated', async () => {
       wrapper = createComponent({
         canCreateRequirement: false,
       });
 
-      return wrapper.vm.$nextTick(() => {
-        const newReqButton = wrapper.findComponent(GlButton);
+      await nextTick();
+      const newReqButton = wrapper.findComponent(GlButton);
 
-        expect(newReqButton.exists()).toBe(false);
-      });
+      expect(newReqButton.exists()).toBe(false);
     });
   });
 });

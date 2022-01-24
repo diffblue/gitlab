@@ -2,6 +2,7 @@ import { GlDropdown, GlTabs } from '@gitlab/ui';
 import { within } from '@testing-library/dom';
 import { mount, shallowMount } from '@vue/test-utils';
 import { merge } from 'lodash';
+import { nextTick } from 'vue';
 import DastFailedSiteValidations from 'ee/security_configuration/dast_profiles/components/dast_failed_site_validations.vue';
 import DastProfiles from 'ee/security_configuration/dast_profiles/components/dast_profiles.vue';
 import setWindowLocation from 'helpers/set_window_location_helper';
@@ -188,7 +189,7 @@ describe('EE - DastProfiles', () => {
       wrapper.setData({
         profileTypes: { [profileType]: givenData },
       });
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(getProfilesComponent(profileType)[propGetter](key)).toEqual(expectedValue);
     },

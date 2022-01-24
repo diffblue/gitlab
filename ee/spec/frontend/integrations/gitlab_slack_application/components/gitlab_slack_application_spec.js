@@ -1,5 +1,6 @@
 import { GlButton } from '@gitlab/ui';
 
+import { nextTick } from 'vue';
 import GitlabSlackApplication from 'ee/integrations/gitlab_slack_application/components/gitlab_slack_application.vue';
 import { addProjectToSlack } from 'ee/integrations/gitlab_slack_application/api';
 import { i18n } from 'ee/integrations/gitlab_slack_application/constants';
@@ -83,7 +84,7 @@ describe('GitlabSlackApplication', () => {
           addProjectToSlack.mockResolvedValue(addToSlackData);
 
           findProjectsDropdown().vm.$emit('project-selected', mockProject);
-          await wrapper.vm.$nextTick();
+          await nextTick();
 
           expect(findProjectsDropdown().props('selectedProject')).toBe(mockProject);
           expect(findGlButton().props('disabled')).toBe(false);

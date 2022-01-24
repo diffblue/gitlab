@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils';
 import { merge } from 'lodash';
+import { nextTick } from 'vue';
 import ConfigurationForm from 'ee/security_configuration/api_fuzzing/components/configuration_form.vue';
 import { SCAN_MODES } from 'ee/security_configuration/api_fuzzing/constants';
 import ConfigurationSnippetModal from 'ee/security_configuration/components/configuration_snippet_modal.vue';
@@ -111,7 +112,7 @@ describe('EE - ApiFuzzingConfigurationForm', () => {
       it('the specificationfile input becomes visible and has the correct labels', async () => {
         const selectedScanMode = SCAN_MODES[scanMode];
         findScanModeInput().vm.$emit('input', scanMode);
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         const specificationFileInput = findSpecificationFileInput();
         expect(specificationFileInput.exists()).toBe(true);
@@ -181,7 +182,7 @@ describe('EE - ApiFuzzingConfigurationForm', () => {
     it('when a scan profile is selected, its YAML is visible', async () => {
       const [selectedScanProfile] = apiFuzzingCiConfiguration.scanProfiles;
       findScanProfileDropdownInput().vm.$emit('input', selectedScanProfile.name);
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findScanProfileYamlViewer().exists()).toBe(true);
       expect(findScanProfileYamlViewer().text()).toBe(selectedScanProfile.yaml.trim());
@@ -227,7 +228,7 @@ describe('EE - ApiFuzzingConfigurationForm', () => {
       jest.spyOn(wrapper.vm.$refs[CONFIGURATION_SNIPPET_MODAL_ID], 'show');
       await setFormData();
       wrapper.find('form').trigger('submit');
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.vm.$refs[CONFIGURATION_SNIPPET_MODAL_ID].show).toHaveBeenCalled();
       expect(findConfigurationSnippetModal().props()).toEqual({

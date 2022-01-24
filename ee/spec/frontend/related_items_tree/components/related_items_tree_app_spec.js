@@ -1,6 +1,6 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import AxiosMockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
 
@@ -201,44 +201,41 @@ describe('RelatedItemsTreeApp', () => {
       });
     });
 
-    it('renders loading icon when `state.itemsFetchInProgress` prop is true', () => {
+    it('renders loading icon when `state.itemsFetchInProgress` prop is true', async () => {
       wrapper.vm.$store.dispatch('requestItems', {
         parentItem: mockParentItem,
         isSubItem: false,
       });
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(wrapper.findComponent(GlLoadingIcon).isVisible()).toBe(true);
-      });
+      await nextTick();
+      expect(wrapper.findComponent(GlLoadingIcon).isVisible()).toBe(true);
     });
 
-    it('renders tree container element when `state.itemsFetchInProgress` prop is false', () =>
-      wrapper.vm.$nextTick().then(() => {
-        expect(wrapper.find('.related-items-tree').isVisible()).toBe(true);
-      }));
+    it('renders tree container element when `state.itemsFetchInProgress` prop is false', async () => {
+      await nextTick();
+      expect(wrapper.find('.related-items-tree').isVisible()).toBe(true);
+    });
 
-    it('renders tree container element with `disabled-content` class when `state.itemsFetchInProgress` prop is false and `state.itemAddInProgress` or `state.itemCreateInProgress` is true', () => {
+    it('renders tree container element with `disabled-content` class when `state.itemsFetchInProgress` prop is false and `state.itemAddInProgress` or `state.itemCreateInProgress` is true', async () => {
       wrapper.vm.$store.dispatch('requestAddItem');
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(wrapper.find('.related-items-tree.disabled-content').isVisible()).toBe(true);
-      });
+      await nextTick();
+      expect(wrapper.find('.related-items-tree.disabled-content').isVisible()).toBe(true);
     });
 
-    it('renders tree header component', () =>
-      wrapper.vm.$nextTick().then(() => {
-        expect(wrapper.findComponent(RelatedItemsTreeHeader).isVisible()).toBe(true);
-      }));
+    it('renders tree header component', async () => {
+      await nextTick();
+      expect(wrapper.findComponent(RelatedItemsTreeHeader).isVisible()).toBe(true);
+    });
 
-    it('renders item add/create form container element', () => {
+    it('renders item add/create form container element', async () => {
       wrapper.vm.$store.dispatch('toggleAddItemForm', {
         toggleState: true,
         issuableType: issuableTypesMap.EPIC,
       });
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(wrapper.find('.add-item-form-container').isVisible()).toBe(true);
-      });
+      await nextTick();
+      expect(wrapper.find('.add-item-form-container').isVisible()).toBe(true);
     });
 
     it('does not render create issue form', () => {
@@ -265,7 +262,7 @@ describe('RelatedItemsTreeApp', () => {
         wrapper.vm.$store.state.autoCompleteIssues = autoCompleteIssues;
         wrapper.vm.$store.state.autoCompleteEpics = autoCompleteEpics;
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(findAddItemForm().props()).toMatchObject({
           autoCompleteIssues: expectedAutoCompleteIssues,
