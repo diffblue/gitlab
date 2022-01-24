@@ -3,27 +3,10 @@ import { createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import { pick } from 'lodash';
 import {
-  CI_MINUTES_PER_PACK,
-  I18N_CI_MINUTES_PRICE_PER_UNIT,
-  I18N_CI_MINUTES_PRODUCT_LABEL,
-  I18N_CI_MINUTES_PRODUCT_UNIT,
-  I18N_CI_MINUTES_FORMULA_TOTAL,
-  i18nCIMinutesSummaryTitle,
-  I18N_CI_MINUTES_SUMMARY_TOTAL,
-  I18N_CI_MINUTES_ALERT_TEXT,
-  I18N_CI_MINUTES_TITLE,
-  I18N_STORAGE_PRODUCT_LABEL,
-  I18N_STORAGE_PRODUCT_UNIT,
-  I18N_DETAILS_FORMULA,
-  I18N_STORAGE_FORMULA_TOTAL,
-  I18N_DETAILS_FORMULA_WITH_ALERT,
-  i18nStorageSummaryTitle,
-  I18N_STORAGE_SUMMARY_TOTAL,
-  I18N_STORAGE_TITLE,
-  I18N_STORAGE_PRICE_PER_UNIT,
+  I18N_CI_1000_MINUTES_PLAN,
+  I18N_STORAGE_PLAN,
   I18N_API_ERROR,
   planTags,
-  STORAGE_PER_PACK,
 } from 'ee/subscriptions/buy_addons_shared/constants';
 import Checkout from 'ee/subscriptions/buy_addons_shared/components/checkout.vue';
 import AddonPurchaseDetails from 'ee/subscriptions/buy_addons_shared/components/checkout/addon_purchase_details.vue';
@@ -41,11 +24,11 @@ localVue.use(VueApollo);
 describe('Buy Addons Shared App', () => {
   let wrapper;
 
-  async function createComponent(apolloProvider, propsData) {
+  async function createComponent(apolloProvider, injectedProps) {
     wrapper = shallowMountExtended(App, {
       localVue,
       apolloProvider,
-      propsData,
+      provide: injectedProps,
       stubs: {
         Checkout,
         AddonPurchaseDetails,
@@ -56,40 +39,6 @@ describe('Buy Addons Shared App', () => {
     await waitForPromises();
   }
 
-  const STORAGE_ADDON_PROPS = {
-    config: {
-      alertText: '',
-      formula: I18N_DETAILS_FORMULA,
-      formulaWithAlert: I18N_DETAILS_FORMULA_WITH_ALERT,
-      formulaTotal: I18N_STORAGE_FORMULA_TOTAL,
-      hasExpiration: true,
-      pricePerUnit: I18N_STORAGE_PRICE_PER_UNIT,
-      productLabel: I18N_STORAGE_PRODUCT_LABEL,
-      productUnit: I18N_STORAGE_PRODUCT_UNIT,
-      quantityPerPack: STORAGE_PER_PACK,
-      summaryTitle: i18nStorageSummaryTitle,
-      summaryTotal: I18N_STORAGE_SUMMARY_TOTAL,
-      title: I18N_STORAGE_TITLE,
-    },
-    tags: [planTags.STORAGE_PLAN],
-  };
-  const CI_MINUTES_ADDON_PROPS = {
-    config: {
-      alertText: I18N_CI_MINUTES_ALERT_TEXT,
-      formula: I18N_DETAILS_FORMULA,
-      formulaWithAlert: I18N_DETAILS_FORMULA_WITH_ALERT,
-      formulaTotal: I18N_CI_MINUTES_FORMULA_TOTAL,
-      hasExpiration: false,
-      pricePerUnit: I18N_CI_MINUTES_PRICE_PER_UNIT,
-      productLabel: I18N_CI_MINUTES_PRODUCT_LABEL,
-      productUnit: I18N_CI_MINUTES_PRODUCT_UNIT,
-      quantityPerPack: CI_MINUTES_PER_PACK,
-      summaryTitle: i18nCIMinutesSummaryTitle,
-      summaryTotal: I18N_CI_MINUTES_SUMMARY_TOTAL,
-      title: I18N_CI_MINUTES_TITLE,
-    },
-    tags: [planTags.CI_1000_MINUTES_PLAN],
-  };
   const getStoragePlan = () => pick(mockStoragePlans[0], ['id', 'code', 'pricePerYear', 'name']);
   const getCiMinutesPlan = () =>
     pick(mockCiMinutesPlans[0], ['id', 'code', 'pricePerYear', 'name']);
@@ -108,11 +57,15 @@ describe('Buy Addons Shared App', () => {
   });
 
   describe('Storage', () => {
+    const injectedProps = {
+      tags: [planTags.STORAGE_PLAN],
+      i18n: I18N_STORAGE_PLAN,
+    };
     describe('when data is received', () => {
       beforeEach(async () => {
         const plansQueryMock = jest.fn().mockResolvedValue({ data: { plans: mockStoragePlans } });
         const mockApollo = createMockApolloProvider({ plansQueryMock });
-        await createComponent(mockApollo, STORAGE_ADDON_PROPS);
+        await createComponent(mockApollo, injectedProps);
       });
 
       it('should display the root element', () => {
@@ -129,7 +82,7 @@ describe('Buy Addons Shared App', () => {
       it('provides the correct props to order summary', () => {
         expect(findOrderSummary().props()).toMatchObject({
           plan: { ...getStoragePlan, isAddon: true },
-          title: I18N_STORAGE_TITLE,
+          title: I18N_STORAGE_PLAN.title,
         });
       });
 
@@ -153,7 +106,7 @@ describe('Buy Addons Shared App', () => {
         const mockApollo = createMockApolloProvider({
           plansQueryMock: jest.fn().mockResolvedValue({ data: null }),
         });
-        await createComponent(mockApollo, STORAGE_ADDON_PROPS);
+        await createComponent(mockApollo, injectedProps);
 
         expect(findRootElement().exists()).toBe(false);
         expect(findEmptyState().exists()).toBe(true);
@@ -163,7 +116,7 @@ describe('Buy Addons Shared App', () => {
         const mockApollo = createMockApolloProvider({
           plansQueryMock: jest.fn().mockResolvedValue({ data: { plans: null } }),
         });
-        await createComponent(mockApollo, STORAGE_ADDON_PROPS);
+        await createComponent(mockApollo, injectedProps);
 
         expect(findRootElement().exists()).toBe(false);
         expect(findEmptyState().exists()).toBe(true);
@@ -173,7 +126,7 @@ describe('Buy Addons Shared App', () => {
         const mockApollo = createMockApolloProvider({
           plansQueryMock: jest.fn().mockResolvedValue({ data: { plans: {} } }),
         });
-        await createComponent(mockApollo, STORAGE_ADDON_PROPS);
+        await createComponent(mockApollo, injectedProps);
 
         expect(findRootElement().exists()).toBe(false);
         expect(findEmptyState().exists()).toBe(true);
@@ -185,7 +138,7 @@ describe('Buy Addons Shared App', () => {
         const mockApollo = createMockApolloProvider({
           plansQueryMock: jest.fn().mockRejectedValue(new Error('An error happened!')),
         });
-        await createComponent(mockApollo, STORAGE_ADDON_PROPS);
+        await createComponent(mockApollo, injectedProps);
 
         expect(findRootElement().exists()).toBe(false);
         expect(findEmptyState().exists()).toBe(true);
@@ -196,7 +149,7 @@ describe('Buy Addons Shared App', () => {
       const plansQueryMock = jest.fn().mockResolvedValue({ data: { plans: mockStoragePlans } });
       it('shows labels correctly for 1 pack', async () => {
         const mockApollo = createMockApolloProvider({ plansQueryMock });
-        await createComponent(mockApollo, STORAGE_ADDON_PROPS);
+        await createComponent(mockApollo, injectedProps);
 
         expect(findQuantityText().text()).toMatchInterpolatedText(
           'x 10 GB per pack = 10 GB of storage',
@@ -209,7 +162,7 @@ describe('Buy Addons Shared App', () => {
 
       it('shows labels correctly for 2 packs', async () => {
         const mockApollo = createMockApolloProvider({ plansQueryMock }, { quantity: 2 });
-        await createComponent(mockApollo, STORAGE_ADDON_PROPS);
+        await createComponent(mockApollo, injectedProps);
 
         expect(findQuantityText().text()).toMatchInterpolatedText(
           'x 10 GB per pack = 20 GB of storage',
@@ -222,7 +175,7 @@ describe('Buy Addons Shared App', () => {
 
       it('does not show labels if input is invalid', async () => {
         const mockApollo = createMockApolloProvider({ plansQueryMock }, { quantity: -1 });
-        await createComponent(mockApollo, STORAGE_ADDON_PROPS);
+        await createComponent(mockApollo, injectedProps);
 
         expect(findQuantityText().text()).toMatchInterpolatedText('x 10 GB per pack');
         expect(wrapper.text()).toMatchSnapshot();
@@ -231,11 +184,16 @@ describe('Buy Addons Shared App', () => {
   });
 
   describe('CI Minutes', () => {
+    const injectedProps = {
+      tags: [planTags.CI_1000_MINUTES_PLAN],
+      i18n: I18N_CI_1000_MINUTES_PLAN,
+    };
+
     describe('when data is received', () => {
       beforeEach(async () => {
         const plansQueryMock = jest.fn().mockResolvedValue({ data: { plans: mockCiMinutesPlans } });
         const mockApollo = createMockApolloProvider({ plansQueryMock });
-        await createComponent(mockApollo, CI_MINUTES_ADDON_PROPS);
+        await createComponent(mockApollo, injectedProps);
       });
 
       it('should display the root element', () => {
@@ -252,7 +210,7 @@ describe('Buy Addons Shared App', () => {
       it('provides the correct props to order summary', () => {
         expect(findOrderSummary().props()).toMatchObject({
           plan: { ...getCiMinutesPlan, isAddon: true },
-          title: I18N_CI_MINUTES_TITLE,
+          title: I18N_CI_1000_MINUTES_PLAN.title,
         });
       });
     });
@@ -262,7 +220,7 @@ describe('Buy Addons Shared App', () => {
         const mockApollo = createMockApolloProvider({
           plansQueryMock: jest.fn().mockResolvedValue({ data: null }),
         });
-        await createComponent(mockApollo, CI_MINUTES_ADDON_PROPS);
+        await createComponent(mockApollo, injectedProps);
 
         expect(findRootElement().exists()).toBe(false);
         expect(findEmptyState().exists()).toBe(true);
@@ -272,7 +230,7 @@ describe('Buy Addons Shared App', () => {
         const mockApollo = createMockApolloProvider({
           plansQueryMock: jest.fn().mockResolvedValue({ data: { plans: null } }),
         });
-        await createComponent(mockApollo, CI_MINUTES_ADDON_PROPS);
+        await createComponent(mockApollo, injectedProps);
 
         expect(findRootElement().exists()).toBe(false);
         expect(findEmptyState().exists()).toBe(true);
@@ -282,7 +240,7 @@ describe('Buy Addons Shared App', () => {
         const mockApollo = createMockApolloProvider({
           plansQueryMock: jest.fn().mockResolvedValue({ data: { plans: {} } }),
         });
-        await createComponent(mockApollo, CI_MINUTES_ADDON_PROPS);
+        await createComponent(mockApollo, injectedProps);
 
         expect(findRootElement().exists()).toBe(false);
         expect(findEmptyState().exists()).toBe(true);
@@ -294,7 +252,7 @@ describe('Buy Addons Shared App', () => {
         const mockApollo = createMockApolloProvider({
           plansQueryMock: jest.fn().mockRejectedValue(new Error('An error happened!')),
         });
-        await createComponent(mockApollo, CI_MINUTES_ADDON_PROPS);
+        await createComponent(mockApollo, injectedProps);
 
         expect(findRootElement().exists()).toBe(false);
         expect(findEmptyState().exists()).toBe(true);
@@ -305,7 +263,7 @@ describe('Buy Addons Shared App', () => {
       const plansQueryMock = jest.fn().mockResolvedValue({ data: { plans: mockCiMinutesPlans } });
       it('shows labels correctly for 1 pack', async () => {
         const mockApollo = createMockApolloProvider({ plansQueryMock });
-        await createComponent(mockApollo, CI_MINUTES_ADDON_PROPS);
+        await createComponent(mockApollo, injectedProps);
 
         expect(findQuantityText().text()).toMatchInterpolatedText(
           'x 1,000 minutes per pack = 1,000 CI minutes',
@@ -318,7 +276,7 @@ describe('Buy Addons Shared App', () => {
 
       it('shows labels correctly for 2 packs', async () => {
         const mockApollo = createMockApolloProvider({ plansQueryMock }, { quantity: 2 });
-        await createComponent(mockApollo, CI_MINUTES_ADDON_PROPS);
+        await createComponent(mockApollo, injectedProps);
 
         expect(findQuantityText().text()).toMatchInterpolatedText(
           'x 1,000 minutes per pack = 2,000 CI minutes',
@@ -331,7 +289,7 @@ describe('Buy Addons Shared App', () => {
 
       it('does not show labels if input is invalid', async () => {
         const mockApollo = createMockApolloProvider({ plansQueryMock }, { quantity: -1 });
-        await createComponent(mockApollo, CI_MINUTES_ADDON_PROPS);
+        await createComponent(mockApollo, injectedProps);
 
         expect(findQuantityText().text()).toMatchInterpolatedText('x 1,000 minutes per pack');
         expect(wrapper.text()).toMatchSnapshot();

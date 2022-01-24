@@ -20,16 +20,7 @@ export default {
     GlAlert,
     OrderSummary,
   },
-  props: {
-    config: {
-      required: true,
-      type: Object,
-    },
-    tags: {
-      required: true,
-      type: Array,
-    },
-  },
+  inject: ['tags', 'i18n'],
   data() {
     return {
       hasError: false,
@@ -50,14 +41,14 @@ export default {
       return Number.isFinite(this.quantity) && this.quantity > 0;
     },
     formulaText() {
-      const formulaText = this.isQuantityValid ? this.config.formula : this.config.formulaWithAlert;
+      const formulaText = this.isQuantityValid ? this.i18n.formula : this.i18n.formulaWithAlert;
       return sprintf(formulaText, {
-        quantity: formatNumber(this.config.quantityPerPack),
-        units: this.config.productUnit,
+        quantity: formatNumber(this.plan.quantityPerPack),
+        units: this.plan.productUnit,
       });
     },
     formulaTotal() {
-      const total = sprintf(this.config.formulaTotal, {
+      const total = sprintf(this.i18n.formulaTotal, {
         quantity: formatNumber(this.totalUnits),
       });
       return this.isQuantityValid ? total : '';
@@ -67,20 +58,20 @@ export default {
       return plan;
     },
     totalUnits() {
-      return this.quantity * this.config.quantityPerPack;
+      return this.quantity * this.plan.quantityPerPack;
     },
     summaryTitle() {
-      return sprintf(this.config.summaryTitle(this.quantity), { quantity: this.quantity });
+      return sprintf(this.i18n.summaryTitle(this.quantity), { quantity: this.quantity });
     },
     summaryTotal() {
-      return sprintf(this.config.summaryTotal, {
+      return sprintf(this.i18n.summaryTotal, {
         quantity: formatNumber(this.totalUnits),
       });
     },
   },
   methods: {
     pricePerUnitLabel(price) {
-      return sprintf(this.config.pricePerUnit, {
+      return sprintf(this.i18n.pricePerUnit, {
         selectedPlanPrice: price,
       });
     },
@@ -137,10 +128,10 @@ export default {
       <checkout :plan="plan">
         <template #purchase-details>
           <addon-purchase-details
-            :product-label="config.productLabel"
+            :product-label="plan.label"
             :quantity="quantity"
             :show-alert="true"
-            :alert-text="config.alertText"
+            :alert-text="i18n.alertText"
           >
             <template #formula>
               {{ formulaText }}
@@ -162,8 +153,8 @@ export default {
     >
       <order-summary
         :plan="plan"
-        :title="config.title"
-        :purchase-has-expiration="config.hasExpiration"
+        :title="i18n.title"
+        :purchase-has-expiration="plan.hasExpiration"
         @alertError="alertError"
       >
         <template #price-per-unit="{ price }">

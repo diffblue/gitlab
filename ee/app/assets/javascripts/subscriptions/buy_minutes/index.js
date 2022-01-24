@@ -1,8 +1,9 @@
 import Vue from 'vue';
 import ensureData from '~/ensure_data';
-import apolloProvider from '../buy_addons_shared/graphql';
+import { planTags, I18N_CI_1000_MINUTES_PLAN } from 'ee/subscriptions/buy_addons_shared/constants';
+import App from 'ee/subscriptions/buy_addons_shared/components/app.vue';
 import { writeInitialDataToApolloCache } from '../buy_addons_shared/utils';
-import App from './components/app.vue';
+import apolloProvider from '../buy_addons_shared/graphql';
 
 export default (el) => {
   if (!el) {
@@ -13,6 +14,10 @@ export default (el) => {
     parseData: writeInitialDataToApolloCache.bind(null, apolloProvider),
     data: el.dataset,
     shouldLog: true,
+    provide: {
+      tags: [planTags.CI_1000_MINUTES_PLAN],
+      i18n: I18N_CI_1000_MINUTES_PLAN,
+    },
   });
 
   return new Vue({
