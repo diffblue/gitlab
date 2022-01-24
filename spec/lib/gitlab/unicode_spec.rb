@@ -3,10 +3,10 @@
 require "spec_helper"
 
 RSpec.describe Gitlab::Unicode do
-  describe described_class::BIDI_REGEXP do
+  describe described_class::REGEXP do
     using RSpec::Parameterized::TableSyntax
 
-    where(:bidi_string, :match) do
+    where(:string, :match) do
       "\u2066"       | true # left-to-right isolate
       "\u2067"       | true # right-to-left isolate
       "\u2068"       | true # first strong isolate
@@ -20,13 +20,18 @@ RSpec.describe Gitlab::Unicode do
       ""             | false
       "foo"          | false
       "\u2713"       | false # checkmark
+      "\u037E"       | true # greek question mark
+      ";"            | false # normal semicolon
+      "1234567890"   | false
+      "<>{}[]()-^=+/\,.;:!?#$%&'_|\"" | false
+      ("a".."z").to_a.join            | false
     end
 
     with_them do
-      let(:utf8_string) { bidi_string.encode("utf-8") }
+      let(:utf8_string) { string.encode("utf-8") }
 
-      it "matches only the bidi characters" do
-        expect(utf8_string.match?(subject)).to eq(match)
+      it "matches only the unicode characters" do
+        expect(utf8_string.match?(Regexp.union(subject.values))).to eq(match)
       end
     end
   end

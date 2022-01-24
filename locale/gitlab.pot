@@ -26848,6 +26848,9 @@ msgstr ""
 msgid "Potentially unwanted character detected: Unicode BiDi Control"
 msgstr ""
 
+msgid "Potentially unwanted character detected: Unicode Homoglyph"
+msgstr ""
+
 msgid "Pre-defined push rules."
 msgstr ""
 
@@ -28033,7 +28036,7 @@ msgstr ""
 msgid "ProjectSettings|Global"
 msgstr ""
 
-msgid "ProjectSettings|Highlight the usage of hidden unicode characters. These have innocent uses for right-to-left languages, but can also be used in potential exploits."
+msgid "ProjectSettings|Highlight the usage of hidden and homoglyph unicode characters. These have innocent uses in some languages but can also be used for exploits."
 msgstr ""
 
 msgid "ProjectSettings|If merge trains are enabled, merging is only possible if the branch can be rebased without conflicts."

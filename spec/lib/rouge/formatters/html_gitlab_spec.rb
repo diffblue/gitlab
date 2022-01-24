@@ -57,5 +57,20 @@ RSpec.describe Rouge::Formatters::HTMLGitlab do
         is_expected.to include(%{<span class="unicode-bidi has-tooltip" data-toggle="tooltip" title="#{message}">}).exactly(4).times
       end
     end
+
+    context 'when homoglyphs are used' do
+      let(:tokens) { lexer.lex(code, continue: false) }
+      let(:code) do
+        <<~JS
+          var foo = bar;
+        JS
+      end
+
+      it 'highlights the homoglyphs' do
+        message = "Potentially unwanted character detected: Unicode Homoglyph"
+
+        is_expected.to include(%{<span class="unicode-homoglyph has-tooltip" data-toggle="tooltip" title="#{message}">}).once
+      end
+    end
   end
 end

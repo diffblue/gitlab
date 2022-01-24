@@ -39,7 +39,7 @@ export default {
     wikiLabel: s__('ProjectSettings|Wiki'),
     pucWarningLabel: s__('ProjectSettings|Warn about Potentially Unwanted Characters'),
     pucWarningHelpText: s__(
-      'ProjectSettings|Highlight the usage of hidden unicode characters. These have innocent uses for right-to-left languages, but can also be used in potential exploits.',
+      'ProjectSettings|Highlight the usage of hidden and homoglyph unicode characters. These have innocent uses in some languages but can also be used for exploits.',
     ),
     confirmButtonText: __('Save changes'),
   },
