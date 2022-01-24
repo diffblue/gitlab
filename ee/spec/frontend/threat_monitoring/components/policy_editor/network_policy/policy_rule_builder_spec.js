@@ -42,10 +42,10 @@ describe('PolicyRuleBuilder component', () => {
   }
 
   const findEndpointLabels = () => wrapper.find("[data-testid='endpoint-labels']");
-  const findRuleEndpoint = () => wrapper.find(PolicyRuleEndpoint);
-  const findRuleEntity = () => wrapper.find(PolicyRuleEntity);
-  const findRuleCIDR = () => wrapper.find(PolicyRuleCIDR);
-  const findRuleFQDN = () => wrapper.find(PolicyRuleFQDN);
+  const findRuleEndpoint = () => wrapper.findComponent(PolicyRuleEndpoint);
+  const findRuleEntity = () => wrapper.findComponent(PolicyRuleEntity);
+  const findRuleCIDR = () => wrapper.findComponent(PolicyRuleCIDR);
+  const findRuleFQDN = () => wrapper.findComponent(PolicyRuleFQDN);
   const findPorts = () => wrapper.find("[data-testid='ports']");
 
   afterEach(() => {

@@ -12,8 +12,8 @@ const emptyStateSvgPath = '/svgs';
 describe('NoEnvironmentEmptyState component', () => {
   let wrapper;
 
-  const findGlEmptyState = () => wrapper.find(GlEmptyState);
-  const findGlSprintf = () => wrapper.find(GlSprintf);
+  const findGlEmptyState = () => wrapper.findComponent(GlEmptyState);
+  const findGlSprintf = () => wrapper.findComponent(GlSprintf);
 
   const factory = () => {
     wrapper = shallowMount(NoEnvironmentEmptyState, {

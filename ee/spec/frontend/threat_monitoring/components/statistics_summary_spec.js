@@ -11,8 +11,8 @@ describe('StatisticsSummary component', () => {
     });
   };
 
-  const findAnomalousStat = () => wrapper.findAll(GlSingleStat).at(0);
-  const findNominalStat = () => wrapper.findAll(GlSingleStat).at(1);
+  const findAnomalousStat = () => wrapper.findAllComponents(GlSingleStat).at(0);
+  const findNominalStat = () => wrapper.findAllComponents(GlSingleStat).at(1);
 
   beforeEach(() => {
     factory({

@@ -7,7 +7,7 @@ import { trimText } from 'helpers/text_helper';
 describe('AlertFilters component', () => {
   let wrapper;
 
-  const findDropdownItemAtIndex = (index) => wrapper.findAll(GlDropdownItem).at(index);
+  const findDropdownItemAtIndex = (index) => wrapper.findAllComponents(GlDropdownItem).at(index);
   const clickDropdownItemAtIndex = (index) => findDropdownItemAtIndex(index).vm.$emit('click');
   const findSearch = () => wrapper.findComponent(GlSearchBoxByType);
   const findDropdownMessage = () =>

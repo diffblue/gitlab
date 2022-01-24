@@ -33,8 +33,8 @@ describe('ThreatMonitoringFilters component', () => {
     });
   };
 
-  const findEnvironmentsPicker = () => wrapper.find(EnvironmentPicker);
-  const findShowLastDropdown = () => wrapper.find(DateTimePicker);
+  const findEnvironmentsPicker = () => wrapper.findComponent(EnvironmentPicker);
+  const findShowLastDropdown = () => wrapper.findComponent(DateTimePicker);
 
   afterEach(() => {
     wrapper.destroy();
