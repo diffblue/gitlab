@@ -35,11 +35,11 @@ describe('ScanNewPolicyModal Component', () => {
     shouldSubmit = true,
   } = {}) => {
     findInstanceProjectSelector().vm.$emit('projectClicked', project);
-    await wrapper.vm.$nextTick();
+    await waitForPromises();
 
     if (shouldSubmit) {
       findModal().vm.$emit('ok');
-      await wrapper.vm.$nextTick();
+      await waitForPromises();
     }
   };
 
@@ -163,6 +163,7 @@ describe('ScanNewPolicyModal Component', () => {
       createWrapper({
         provide: { assignedPolicyProject: { id: 'gid://gitlab/Project/0', name: 'Test 0' } },
       });
+      await waitForPromises();
 
       expect(findModal().attributes('ok-disabled')).toBe('true');
 
@@ -171,7 +172,7 @@ describe('ScanNewPolicyModal Component', () => {
         name: 'Test 1',
       });
 
-      await wrapper.vm.$nextTick();
+      await waitForPromises();
 
       expect(findModal().attributes('ok-disabled')).toBeUndefined();
     });

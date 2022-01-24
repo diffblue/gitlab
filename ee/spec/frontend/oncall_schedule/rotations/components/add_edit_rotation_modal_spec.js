@@ -35,12 +35,6 @@ describe('AddEditRotationModal', () => {
   let userSearchQueryHandler;
   let createRotationHandler;
 
-  async function awaitApolloDomMock() {
-    await wrapper.vm.$nextTick(); // kick off the DOM update
-    await jest.runOnlyPendingTimers(); // kick off the mocked GQL stuff (promises)
-    await wrapper.vm.$nextTick(); // kick off the DOM update for flash
-  }
-
   async function createRotation(localWrapper) {
     localWrapper.findComponent(GlModal).vm.$emit('primary', { preventDefault: jest.fn() });
   }
@@ -322,7 +316,7 @@ describe('AddEditRotationModal', () => {
         },
       });
       createComponentWithApollo({ search: 'root' });
-      await awaitApolloDomMock();
+      await waitForPromises();
       expect(userSearchQueryHandler).toHaveBeenCalledWith({
         search: 'root',
         fullPath: projectPath,
@@ -334,7 +328,7 @@ describe('AddEditRotationModal', () => {
       expect(wrapper.emitted('rotation-updated')).toBeUndefined();
 
       await createRotation(wrapper);
-      await awaitApolloDomMock();
+      await waitForPromises();
 
       expect(mockHideModal).toHaveBeenCalled();
       expect(createRotationHandler).toHaveBeenCalled();
@@ -350,7 +344,7 @@ describe('AddEditRotationModal', () => {
       });
 
       await createRotation(wrapper);
-      await awaitApolloDomMock();
+      await waitForPromises();
 
       const alert = findAlert();
       expect(alert.exists()).toBe(true);
@@ -361,7 +355,7 @@ describe('AddEditRotationModal', () => {
   describe('edit mode', () => {
     beforeEach(async () => {
       await createComponentWithApollo({ props: { isEditMode: true } });
-      await awaitApolloDomMock();
+      await waitForPromises();
 
       findModal().vm.$emit('show');
     });

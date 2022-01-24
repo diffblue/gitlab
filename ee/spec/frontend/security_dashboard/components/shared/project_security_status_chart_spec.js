@@ -7,6 +7,7 @@ import instanceVulnerabilityGradesQuery from 'ee/security_dashboard/graphql/quer
 import { severityGroupTypes } from 'ee/security_dashboard/store/modules/vulnerable_projects/constants';
 import { Accordion, AccordionItem } from 'ee/vue_shared/components/accordion';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import { trimText } from 'helpers/text_helper';
 import {
   mockProjectsWithSeverityCounts,
@@ -55,14 +56,13 @@ describe('Vulnerability Severity component', () => {
   });
 
   describe('when loading the project severity component for group level dashboard', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       wrapper = createComponent({
         provide: { groupFullPath: 'gitlab-org' },
         query: groupVulnerabilityGradesQuery,
         mockData: mockGroupVulnerabilityGrades(),
       });
-
-      return wrapper.vm.$nextTick();
+      await waitForPromises();
     });
 
     it('should process the data returned from GraphQL properly', () => {
@@ -77,13 +77,13 @@ describe('Vulnerability Severity component', () => {
   });
 
   describe('when loading the project severity component for instance level dashboard', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       wrapper = createComponent({
         query: instanceVulnerabilityGradesQuery,
         mockData: mockInstanceVulnerabilityGrades(),
       });
 
-      return wrapper.vm.$nextTick();
+      await waitForPromises();
     });
 
     it('should process the data returned from GraphQL properly', () => {
@@ -98,11 +98,13 @@ describe('Vulnerability Severity component', () => {
   });
 
   describe('for all cases', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       wrapper = createComponent({
         query: instanceVulnerabilityGradesQuery,
         mockData: mockInstanceVulnerabilityGrades(),
       });
+
+      await waitForPromises();
     });
 
     it('has the link to the help page', () => {
@@ -141,7 +143,7 @@ describe('Vulnerability Severity component', () => {
           mockData: mockInstanceVulnerabilityGrades(),
         });
 
-        await wrapper.vm.$nextTick();
+        await waitForPromises();
 
         accordion = findAccordionItemByGrade(grade);
         text = trimText(accordion.text());

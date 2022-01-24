@@ -50,8 +50,9 @@ describe('Codequality report app', () => {
   });
 
   describe('on error', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createComponent(jest.fn().mockRejectedValueOnce(new Error('Error!')));
+      await waitForPromises();
     });
 
     it('shows a warning icon and error message', () => {
@@ -61,8 +62,9 @@ describe('Codequality report app', () => {
   });
 
   describe('when there are codequality issues', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createComponent(jest.fn().mockResolvedValue(mockGetCodeQualityViolationsResponse));
+      await waitForPromises();
     });
 
     it('renders the codequality issues', () => {
@@ -104,7 +106,7 @@ describe('Codequality report app', () => {
   });
 
   describe('when there are no codequality issues', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       const emptyResponse = {
         data: {
           project: {
@@ -122,6 +124,7 @@ describe('Codequality report app', () => {
       };
 
       createComponent(jest.fn().mockResolvedValue(emptyResponse));
+      await waitForPromises();
     });
 
     it('shows a message that no codequality issues were found', () => {

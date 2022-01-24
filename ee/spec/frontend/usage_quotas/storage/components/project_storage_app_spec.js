@@ -114,9 +114,10 @@ describe('ProjectStorageApp', () => {
   describe('with apollo fetching error', () => {
     let mockApollo;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       mockApollo = createMockApolloProvider();
       createComponent({ mockApollo, reject: true });
+      await waitForPromises();
     });
 
     it('renders gl-alert', () => {

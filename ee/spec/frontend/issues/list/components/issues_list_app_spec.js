@@ -5,6 +5,7 @@ import VueApollo from 'vue-apollo';
 import getIssuesQuery from 'ee_else_ce/issues/list/queries/get_issues.query.graphql';
 import getIssuesCountsQuery from 'ee_else_ce/issues/list/queries/get_issues_counts.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import { getIssuesCountsQueryResponse, getIssuesQueryResponse } from 'jest/issues/list/mock_data';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
@@ -63,9 +64,10 @@ describe('EE IssuesListApp component', () => {
   });
 
   describe('template', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       wrapper = mountComponent();
       jest.runOnlyPendingTimers();
+      await waitForPromises();
     });
 
     it('shows blocking issues count', () => {

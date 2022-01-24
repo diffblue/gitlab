@@ -65,7 +65,7 @@ describe('BaseTab', () => {
     jest.advanceTimersByTime(PIPELINES_POLL_INTERVAL);
   };
 
-  const triggerActionError = (errorMessage) => {
+  const triggerActionError = async (errorMessage) => {
     findActions().vm.$emit('error', errorMessage);
     return nextTick();
   };
@@ -161,7 +161,7 @@ describe('BaseTab', () => {
 
       expect(requestHandler).toHaveBeenCalledTimes(1);
 
-      await nextTick();
+      await waitForPromises();
       advanceToNextFetch();
 
       expect(requestHandler).toHaveBeenCalledTimes(2);
@@ -201,12 +201,13 @@ describe('BaseTab', () => {
   });
 
   describe('when there are pipelines', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createComponent({
         propsData: {
           itemsCount: 30,
         },
       });
+      await waitForPromises();
     });
 
     it('renders the title with the item count', async () => {
@@ -273,7 +274,7 @@ describe('BaseTab', () => {
   });
 
   describe('rendered cells', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createFullComponent({
         propsData: {
           itemsCount: 30,
@@ -282,6 +283,7 @@ describe('BaseTab', () => {
           GlTable: false,
         },
       });
+      await waitForPromises();
     });
 
     it('renders the status badge', () => {
@@ -366,9 +368,10 @@ describe('BaseTab', () => {
   });
 
   describe('when there are no pipelines', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       requestHandler = jest.fn().mockResolvedValue(allPipelinesWithoutPipelinesMock);
       createComponent();
+      await waitForPromises();
     });
 
     it('renders an empty state', () => {
@@ -435,7 +438,7 @@ describe('BaseTab', () => {
       expect(wrapper.text()).toContain(errorMessage);
 
       findActions().vm.$emit('action');
-      await nextTick();
+      await waitForPromises();
 
       expect(wrapper.text()).not.toContain(errorMessage);
     });

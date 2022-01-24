@@ -7,6 +7,7 @@ import AlertsList from 'ee/threat_monitoring/components/alerts/alerts_list.vue';
 import { DEFAULT_FILTERS } from 'ee/threat_monitoring/components/alerts/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import getAlertsQuery from '~/graphql_shared/queries/get_alerts.query.graphql';
 import {
   getAlertsQuerySpy,
@@ -102,8 +103,9 @@ describe('AlertsList component', () => {
   });
 
   describe('default state', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createWrapper();
+      await waitForPromises();
     });
 
     it('shows threat monitoring alert filters', () => {
@@ -223,8 +225,9 @@ describe('AlertsList component', () => {
   });
 
   describe('empty state', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createWrapper({ apolloSpy: emptyGetAlertsQuerySpy });
+      await waitForPromises();
     });
 
     it('does show the empty state', () => {

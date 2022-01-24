@@ -9,6 +9,7 @@ import OnCallScheduleWrapper, {
 } from 'ee/oncall_schedules/components/oncall_schedules_wrapper.vue';
 import getOncallSchedulesWithRotationsQuery from 'ee/oncall_schedules/graphql/queries/get_oncall_schedules.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { preExistingSchedule, newlyCreatedSchedule } from './mocks/apollo_mock';
@@ -169,8 +170,7 @@ describe('On-call schedule wrapper', () => {
 
     it('should render newly created schedule', async () => {
       mountComponentWithApollo();
-      jest.runOnlyPendingTimers();
-      await nextTick();
+      await waitForPromises();
       const schedule = findSchedules().at(1);
       expect(schedule.props('schedule')).toEqual(newlyCreatedSchedule);
     });

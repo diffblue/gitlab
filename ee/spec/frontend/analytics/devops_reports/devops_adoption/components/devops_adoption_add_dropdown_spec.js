@@ -13,6 +13,7 @@ import {
 import bulkEnableDevopsAdoptionNamespacesMutation from 'ee/analytics/devops_reports/devops_adoption/graphql/mutations/bulk_enable_devops_adoption_namespaces.mutation.graphql';
 import disableDevopsAdoptionNamespaceMutation from 'ee/analytics/devops_reports/devops_adoption/graphql/mutations/disable_devops_adoption_namespace.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
@@ -203,7 +204,8 @@ describe('DevopsAdoptionAddDropdown', () => {
             clickFirstRow();
           });
 
-          it('calls sentry', () => {
+          it('calls sentry', async () => {
+            await waitForPromises();
             expect(Sentry.captureException.mock.calls[0][0].networkError).toBe(
               genericDeleteErrorMessage,
             );

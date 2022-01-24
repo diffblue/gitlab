@@ -146,7 +146,8 @@ describe('On-call schedule', () => {
     });
   });
 
-  it('renders rotations list', () => {
+  it('renders rotations list', async () => {
+    await waitForPromises();
     const rotationsList = findRotationsList();
     expect(rotationsList.exists()).toBe(true);
     expect(rotationsList.props()).toEqual({
@@ -290,7 +291,6 @@ describe('On-call schedule', () => {
 
     it('does not renders rotations list from API response when skipped', async () => {
       createComponent({ scheduleIndex: 1 });
-      await nextTick();
       await waitForPromises();
 
       expect(findRotationsList().props('rotations')).toHaveLength(0);

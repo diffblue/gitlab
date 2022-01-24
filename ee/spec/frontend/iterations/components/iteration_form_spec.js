@@ -182,7 +182,7 @@ describe('Iteration Form', () => {
             groupIterationsSuccess: emptyGroupIterationsSuccess,
           });
 
-          await nextTick();
+          await waitForPromises();
         });
 
         it('uses cadence start date', () => {
@@ -229,7 +229,7 @@ describe('Iteration Form', () => {
       expect(findSaveButton().text()).toBe('Update iteration');
     });
 
-    it('triggers mutation with form data', () => {
+    it('triggers mutation with form data', async () => {
       const resolverMock = jest.fn().mockResolvedValue(updateMutationSuccess);
       createComponent({ mutationQuery: updateIteration, resolverMock });
 
@@ -244,6 +244,7 @@ describe('Iteration Form', () => {
       findDueDate().vm.$emit('input', dueDate);
 
       clickSave();
+      await waitForPromises();
 
       expect(resolverMock).toHaveBeenCalledWith({
         input: {
@@ -265,10 +266,11 @@ describe('Iteration Form', () => {
       });
 
       clickSave();
-
       await nextTick();
-
       expect(findSaveButton().props('loading')).toBe(true);
+
+      await waitForPromises();
+
       expect(resolverMock).toHaveBeenCalledWith({
         input: {
           groupPath,

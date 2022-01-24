@@ -96,12 +96,6 @@ describe('DeleteEscalationPolicyModal', () => {
   const findModal = () => wrapper.findComponent(GlModal);
   const findAlert = () => wrapper.findComponent(GlAlert);
 
-  async function awaitApolloDomMock() {
-    await wrapper.vm.$nextTick(); // kick off the DOM update
-    await jest.runOnlyPendingTimers(); // kick off the mocked GQL stuff (promises)
-    await wrapper.vm.$nextTick(); // kick off the DOM update
-  }
-
   async function deleteEscalationPolicy(localWrapper) {
     localWrapper.findComponent(GlModal).vm.$emit('primary', { preventDefault: jest.fn() });
   }
@@ -186,7 +180,7 @@ describe('DeleteEscalationPolicyModal', () => {
       });
 
       await deleteEscalationPolicy(wrapper);
-      await awaitApolloDomMock();
+      await waitForPromises();
 
       const alert = findAlert();
       expect(alert.exists()).toBe(true);

@@ -6,6 +6,7 @@ import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleto
 import DevopsAdoptionOverviewChart from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_overview_chart.vue';
 import getSnapshotsQuery from 'ee/analytics/devops_reports/devops_adoption/graphql/queries/devops_adoption_overview_chart.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import { namespaceWithSnapotsData } from '../mock_data';
 
 Vue.use(VueApollo);
@@ -38,8 +39,9 @@ describe('DevopsAdoptionOverviewChart', () => {
   };
 
   describe('default state', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createComponent();
+      await waitForPromises();
     });
 
     it('does not display the chart loader', () => {
@@ -68,7 +70,7 @@ describe('DevopsAdoptionOverviewChart', () => {
   });
 
   describe('chart tooltip', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       const mockParams = {
         value: 'Jan',
         seriesData: [{ dataIndex: 0 }],
@@ -94,6 +96,7 @@ describe('DevopsAdoptionOverviewChart', () => {
           },
         },
       });
+      await waitForPromises();
     });
 
     it('displays the tooltip information correctly', () => {

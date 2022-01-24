@@ -13,7 +13,7 @@ import {
   stateData as mockStateData,
 } from 'ee_jest/subscriptions/mock_data';
 import createMockApollo, { createMockClient } from 'helpers/mock_apollo_helper';
-
+import waitForPromises from 'helpers/wait_for_promises';
 import orderPreviewQuery from 'ee/subscriptions/graphql/queries/order_preview.customer.query.graphql';
 import { CUSTOMERSDOT_CLIENT, I18N_API_ERROR } from 'ee/subscriptions/buy_addons_shared/constants';
 
@@ -97,7 +97,7 @@ describe('Order Summary', () => {
 
   describe('when subscription has expiration date', () => {
     describe('calls api that returns prorated amount', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         const orderPreviewQueryMock = jest
           .fn()
           .mockResolvedValue({ data: { orderPreview: mockOrderPreview } });
@@ -106,6 +106,7 @@ describe('Order Summary', () => {
           orderPreviewQueryMock,
         );
         createComponent(apolloProvider, { purchaseHasExpiration: true });
+        await waitForPromises();
       });
 
       it('renders prorated amount', () => {
@@ -114,13 +115,14 @@ describe('Order Summary', () => {
     });
 
     describe('calls api that returns empty value', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         const orderPreviewQueryMock = jest.fn().mockResolvedValue({ data: { orderPreview: null } });
         const apolloProvider = createMockApolloProvider(
           { subscription: { quantity: 1 } },
           orderPreviewQueryMock,
         );
         createComponent(apolloProvider, { purchaseHasExpiration: true });
+        await waitForPromises();
       });
 
       it('renders default amount without proration from the state', () => {

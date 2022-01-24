@@ -80,10 +80,10 @@ describe('Jobs app', () => {
 
   it('handles infinite scrolling by calling fetchMore', async () => {
     createComponent(resolverSpy);
-
     await waitForPromises();
 
     triggerInfiniteScroll();
+    await waitForPromises();
 
     expect(resolverSpy).toHaveBeenCalledWith({
       after: 'eyJpZCI6Ijg0NyJ9',
@@ -96,10 +96,10 @@ describe('Jobs app', () => {
     createComponent(resolverSpy);
 
     expect(findSkeletonLoader().exists()).toBe(true);
-
     await waitForPromises();
 
     triggerInfiniteScroll();
+    await waitForPromises();
 
     expect(findSkeletonLoader().exists()).toBe(false);
   });

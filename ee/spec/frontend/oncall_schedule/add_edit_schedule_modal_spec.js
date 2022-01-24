@@ -57,12 +57,6 @@ describe('AddScheduleModal', () => {
     wrapper.vm.$refs.addUpdateScheduleModal.hide = mockHideModal;
   };
 
-  async function awaitApolloDomMock() {
-    await nextTick(); // kick off the DOM update
-    await jest.runOnlyPendingTimers(); // kick off the mocked GQL stuff (promises)
-    await nextTick(); // kick off the DOM update for flash
-  }
-
   async function updateSchedule(localWrapper) {
     localWrapper.findComponent(GlModal).vm.$emit('primary', { preventDefault: jest.fn() });
   }
@@ -287,7 +281,7 @@ describe('AddScheduleModal', () => {
         });
 
         await updateSchedule(wrapper);
-        await awaitApolloDomMock();
+        await waitForPromises();
 
         const alert = findAlert();
         expect(alert.exists()).toBe(true);

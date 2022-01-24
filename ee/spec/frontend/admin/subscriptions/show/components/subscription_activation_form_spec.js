@@ -104,7 +104,7 @@ describe('SubscriptionActivationForm', () => {
   });
 
   describe('form validation', () => {
-    const mutationMock = jest.fn();
+    const mutationMock = jest.fn().mockRejectedValue({});
     beforeEach(async () => {
       createComponentWithApollo({ mutationMock, mountMethod: mount });
       await findAgreementCheckbox().vm.$emit('input', false);

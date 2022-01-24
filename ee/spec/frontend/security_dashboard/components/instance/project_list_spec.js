@@ -4,6 +4,7 @@ import VueApollo from 'vue-apollo';
 import ProjectList from 'ee/security_dashboard/components/instance/project_list.vue';
 import projectsQuery from 'ee/security_dashboard/graphql/queries/instance_projects.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import ProjectAvatar from '~/vue_shared/components/deprecated_project_avatar/default.vue';
 
@@ -57,7 +58,7 @@ describe('Project List component', () => {
 
   it('shows an empty state if there are no projects', async () => {
     createWrapper({ projects: [] });
-    await wrapper.vm.$nextTick();
+    await waitForPromises();
 
     expect(wrapper.findByTestId('empty-message').exists()).toBe(true);
   });
@@ -71,7 +72,7 @@ describe('Project List component', () => {
 
     it('hides the loading indicator when query is not loading', async () => {
       createWrapper({ projects: [] });
-      await wrapper.vm.$nextTick();
+      await waitForPromises();
 
       expect(getLoadingIcon().exists()).toBe(false);
     });
@@ -81,7 +82,7 @@ describe('Project List component', () => {
     'renders a list of projects and displays the correct count for %s projects',
     async (projectsCount) => {
       createWrapper({ projects: generateMockProjects(projectsCount) });
-      await wrapper.vm.$nextTick();
+      await waitForPromises();
 
       expect(getAllProjectItems()).toHaveLength(projectsCount);
       expect(wrapper.find(GlBadge).text()).toBe(projectsCount.toString());
@@ -91,8 +92,9 @@ describe('Project List component', () => {
   describe('project item', () => {
     const projects = generateMockProjects(1);
 
-    beforeEach(() => {
+    beforeEach(async () => {
       createWrapper({ projects });
+      await waitForPromises();
     });
 
     it('renders a project item with an avatar', () => {

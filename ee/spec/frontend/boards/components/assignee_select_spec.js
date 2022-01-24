@@ -105,7 +105,7 @@ describe('Assignee select component', () => {
       findEditButton().vm.$emit('click');
       await waitForPromises();
       jest.advanceTimersByTime(ASSIGNEES_DEBOUNCE_DELAY);
-      await nextTick();
+      await waitForPromises();
       expect(usersQueryHandlerSuccess).toHaveBeenCalled();
 
       expect(findDropdown().isVisible()).toBe(true);

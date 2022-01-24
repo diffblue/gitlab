@@ -7,6 +7,7 @@ import FindingModal from 'ee/security_dashboard/components/pipeline/vulnerabilit
 import VulnerabilityList from 'ee/security_dashboard/components/shared/vulnerability_list.vue';
 import pipelineFindingsQuery from 'ee/security_dashboard/graphql/queries/pipeline_findings.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import { mockPipelineFindingsResponse } from '../../mock_data';
 
 describe('Pipeline findings', () => {
@@ -70,8 +71,9 @@ describe('Pipeline findings', () => {
   });
 
   describe('with findings', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createWrapperWithApollo(jest.fn().mockResolvedValue(mockPipelineFindingsResponse()));
+      await waitForPromises();
     });
 
     it('passes false as the loading state prop', () => {
@@ -113,9 +115,10 @@ describe('Pipeline findings', () => {
   });
 
   describe('with multiple page findings', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createWrapperWithApollo(
         jest.fn().mockResolvedValue(mockPipelineFindingsResponse({ hasNextPage: true })),
+        await waitForPromises(),
       );
     });
 
@@ -125,8 +128,9 @@ describe('Pipeline findings', () => {
   });
 
   describe('with failed query', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createWrapperWithApollo(jest.fn().mockRejectedValue(new Error('GraphQL error')));
+      await waitForPromises();
     });
 
     it('does not show the vulnerability list', () => {
