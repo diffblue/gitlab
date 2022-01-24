@@ -86,8 +86,14 @@ td.line-numbers {
   line-height: 1;
 }
 
-.project-highlight-puc .unicode-bidi::before {
-  content: '�';
-  cursor: pointer;
-  text-decoration: underline wavy $red-500;
+.project-highlight-puc {
+  .unicode-bidi::before {
+    content: '�';
+    cursor: pointer;
+  }
+
+  .unicode-bidi::before,
+  .unicode-homoglyph {
+    text-decoration: underline wavy $red-500;
+  }
 }
