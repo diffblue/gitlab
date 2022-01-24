@@ -59,3 +59,21 @@ export const canRemoveNode = (state) => (id) => {
 
   return !node.primary || state.nodes.length === 1;
 };
+
+export const filteredNodes = (state) => {
+  if (!state.statusFilter) {
+    return state.nodes;
+  }
+
+  return state.nodes.filter((n) =>
+    n.healthStatus
+      ? n.healthStatus.toLowerCase() === state.statusFilter
+      : state.statusFilter === 'unknown',
+  );
+};
+
+export const countNodesForStatus = (state) => (status) => {
+  return state.nodes.filter((n) =>
+    n.healthStatus ? n.healthStatus.toLowerCase() === status : status === 'unknown',
+  ).length;
+};

@@ -105,4 +105,12 @@ describe('GeoNodes Store Mutations', () => {
       expect(state.nodeToBeRemoved).toEqual(null);
     });
   });
+
+  describe('SET_STATUS_FILTER', () => {
+    it('sets statusFilter', () => {
+      mutations[types.SET_STATUS_FILTER](state, 'healthy');
+
+      expect(state.statusFilter).toBe('healthy');
+    });
+  });
 });

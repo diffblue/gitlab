@@ -33,4 +33,7 @@ export default {
     state.isLoading = false;
     state.nodeToBeRemoved = null;
   },
+  [types.SET_STATUS_FILTER](state, status) {
+    state.statusFilter = status;
+  },
 };

@@ -1,8 +1,9 @@
 <script>
 import { GlLink, GlButton, GlLoadingIcon, GlModal, GlSprintf } from '@gitlab/ui';
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapState, mapGetters } from 'vuex';
 import { s__, __ } from '~/locale';
 import { GEO_INFO_URL, REMOVE_NODE_MODAL_ID } from '../constants';
+import GeoNodesFilters from './geo_nodes_filters.vue';
 import GeoNodes from './geo_nodes.vue';
 import GeoNodesEmptyState from './geo_nodes_empty_state.vue';
 
@@ -25,6 +26,7 @@ export default {
     GlLink,
     GlButton,
     GlLoadingIcon,
+    GeoNodesFilters,
     GeoNodes,
     GeoNodesEmptyState,
     GlModal,
@@ -42,14 +44,15 @@ export default {
   },
   computed: {
     ...mapState(['nodes', 'isLoading']),
+    ...mapGetters(['filteredNodes']),
     noNodes() {
       return !this.nodes || this.nodes.length === 0;
     },
     primaryNodes() {
-      return this.nodes.filter((n) => n.primary);
+      return this.filteredNodes.filter((n) => n.primary);
     },
     secondaryNodes() {
-      return this.nodes.filter((n) => !n.primary);
+      return this.filteredNodes.filter((n) => !n.primary);
     },
   },
   created() {
@@ -100,14 +103,19 @@ export default {
     <gl-loading-icon v-if="isLoading" size="xl" class="gl-mt-5" />
     <template v-if="!isLoading">
       <div v-if="!noNodes">
-        <h4 class="gl-font-lg gl-my-5">{{ $options.i18n.primarySite }}</h4>
+        <geo-nodes-filters :total-nodes="nodes.length" />
+        <h4 v-if="primaryNodes.length" class="gl-font-lg gl-my-5">
+          {{ $options.i18n.primarySite }}
+        </h4>
         <geo-nodes
           v-for="node in primaryNodes"
           :key="node.id"
           :node="node"
           data-testid="primary-nodes"
         />
-        <h4 class="gl-font-lg gl-my-5">{{ $options.i18n.secondarySite }}</h4>
+        <h4 v-if="secondaryNodes.length" class="gl-font-lg gl-my-5">
+          {{ $options.i18n.secondarySite }}
+        </h4>
         <geo-nodes
           v-for="node in secondaryNodes"
           :key="node.id"

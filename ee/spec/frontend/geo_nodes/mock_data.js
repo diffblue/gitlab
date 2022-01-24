@@ -241,3 +241,24 @@ export const MOCK_NODE_STATUSES_RES = [
     web_geo_projects_url: 'http://127.0.0.1:3002/replication/projects',
   },
 ];
+
+export const MOCK_HEALTH_STATUS_NODES = [
+  {
+    healthStatus: 'Healthy',
+  },
+  {
+    healthStatus: 'Healthy',
+  },
+  {
+    healthStatus: 'Unhealthy',
+  },
+  {
+    healthStatus: 'Disabled',
+  },
+  {
+    healthStatus: 'Offline',
+  },
+  {
+    healthStatus: null,
+  },
+];
