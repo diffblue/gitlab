@@ -201,7 +201,7 @@ export default {
           v-if="item.group.latestSnapshot"
           :key="col.key"
           :data-testid="col.testId"
-          class="gl-display-flex gl-align-items-center gl-justify-content-end gl-justify-content-md-start"
+          class="gl-display-flex gl-align-items-center gl-justify-content-end gl-md-justify-content-start"
         >
           <span class="gl-w-7 gl-mr-3">{{ item.adoption[col.key].percent }}</span>
           <gl-progress-bar
