@@ -474,6 +474,7 @@ export const mockTokens = (fetchLabels, fetchAuthors, fetchMilestones, fetchIter
     symbol: '%',
     type: 'milestone',
     token: MilestoneToken,
+    shouldSkipSort: true,
     unique: true,
     fetchMilestones,
   },
