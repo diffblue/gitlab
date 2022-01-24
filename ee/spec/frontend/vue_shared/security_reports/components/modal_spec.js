@@ -1,6 +1,6 @@
 import { GlModal, GlAlert } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import IssueNote from 'ee/vue_shared/security_reports/components/issue_note.vue';
 import MergeRequestNote from 'ee/vue_shared/security_reports/components/merge_request_note.vue';
 import component from 'ee/vue_shared/security_reports/components/modal.vue';
@@ -132,7 +132,7 @@ describe('Security Reports modal', () => {
       describe('with merge request created', () => {
         const findActionButton = () => wrapper.find('[data-testid=create-issue-button]');
 
-        it('renders the issue button as a single button', (done) => {
+        it('renders the issue button as a single button', async () => {
           const propsData = {
             modal: createState().modal,
             canCreateIssue: true,
@@ -143,15 +143,11 @@ describe('Security Reports modal', () => {
 
           wrapper.setProps(propsData);
 
-          Vue.nextTick()
-            .then(() => {
-              expect(wrapper.find('.js-split-button').exists()).toBe(false);
-              expect(findActionButton().exists()).toBe(true);
-              expect(findActionButton().text()).not.toContain('Resolve with merge request');
-              expect(findActionButton().text()).toContain('Create issue');
-              done();
-            })
-            .catch(done.fail);
+          await nextTick();
+          expect(wrapper.find('.js-split-button').exists()).toBe(false);
+          expect(findActionButton().exists()).toBe(true);
+          expect(findActionButton().text()).not.toContain('Resolve with merge request');
+          expect(findActionButton().text()).toContain('Create issue');
         });
       });
     });
@@ -340,7 +336,7 @@ describe('Security Reports modal', () => {
       const solution = 'Upgrade to XYZ';
       propsData.modal.vulnerability.solution = solution;
       mountComponent(propsData, mount);
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       const solutionCard = modal.find(SolutionCard);
 
@@ -357,7 +353,7 @@ describe('Security Reports modal', () => {
       const diff = 'foo';
       propsData.modal.vulnerability.remediations = [{ summary, diff }];
       mountComponent(propsData, mount);
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       const solutionCard = wrapper.find(SolutionCard);
 
@@ -372,7 +368,7 @@ describe('Security Reports modal', () => {
         modal: createState().modal,
       };
       mountComponent(propsData, mount);
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       const solutionCard = wrapper.find(SolutionCard);
 

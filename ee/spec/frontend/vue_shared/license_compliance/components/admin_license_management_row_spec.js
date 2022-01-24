@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 import AdminLicenseManagementRow from 'ee/vue_shared/license_compliance/components/admin_license_management_row.vue';
@@ -54,9 +54,9 @@ describe('AdminLicenseManagementRow', () => {
   });
 
   describe('approved license', () => {
-    beforeEach((done) => {
+    beforeEach(async () => {
       vm.license = { ...approvedLicense, approvalStatus: LICENSE_APPROVAL_STATUS.ALLOWED };
-      Vue.nextTick(done);
+      await nextTick();
     });
 
     describe('computed', () => {
@@ -89,9 +89,9 @@ describe('AdminLicenseManagementRow', () => {
   });
 
   describe('blacklisted license', () => {
-    beforeEach((done) => {
+    beforeEach(async () => {
       vm.license = { ...approvedLicense, approvalStatus: LICENSE_APPROVAL_STATUS.DENIED };
-      Vue.nextTick(done);
+      await nextTick();
     });
 
     describe('computed', () => {

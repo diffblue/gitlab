@@ -1,6 +1,6 @@
 import { GlFormRadio, GlFormRadioGroup } from '@gitlab/ui';
 import { shallowMount, mount } from '@vue/test-utils';
-import Vue from 'vue';
+import { nextTick } from 'vue';
 import LicenseIssueBody from 'ee/vue_shared/license_compliance/components/add_license_form.vue';
 import { LICENSE_APPROVAL_STATUS } from 'ee/vue_shared/license_compliance/constants';
 
@@ -38,7 +38,7 @@ describe('AddLicenseForm', () => {
       // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ approvalStatus: LICENSE_APPROVAL_STATUS.ALLOWED, licenseName: name });
 
-      await Vue.nextTick();
+      await nextTick();
 
       const linkEl = findSubmitButton();
       linkEl.trigger('click');
@@ -141,7 +141,7 @@ describe('AddLicenseForm', () => {
       // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
       // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ licenseName: 'FOO' });
-      await Vue.nextTick();
+      await nextTick();
 
       const feedbackElement = wrapper.find('.invalid-feedback');
 
@@ -158,7 +158,7 @@ describe('AddLicenseForm', () => {
         },
       });
 
-      await Vue.nextTick();
+      await nextTick();
 
       const descriptionElement = wrapper.findAll('.text-secondary');
 
@@ -173,7 +173,7 @@ describe('AddLicenseForm', () => {
       // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
       // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ licenseName: '' });
-      await Vue.nextTick();
+      await nextTick();
 
       expect(vm.submitDisabled).toBe(true);
 
@@ -185,7 +185,7 @@ describe('AddLicenseForm', () => {
 
     it('disables submit and cancel while a new license is being added', async () => {
       wrapper.setProps({ loading: true });
-      await Vue.nextTick();
+      await nextTick();
 
       const submitButton = findSubmitButton();
       const cancelButton = findCancelButton();

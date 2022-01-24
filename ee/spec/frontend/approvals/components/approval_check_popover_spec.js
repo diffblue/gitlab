@@ -1,6 +1,6 @@
 import { GlPopover, GlLink, GlIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import { nextTick } from 'vue';
 import component from 'ee/approvals/components/approval_check_popover.vue';
 import { TEST_HOST } from 'helpers/test_constants';
 
@@ -17,11 +17,11 @@ describe('Approval Check Popover', () => {
 
   describe('with a documentation link', () => {
     const documentationLink = `${TEST_HOST}/documentation`;
-    beforeEach((done) => {
+    beforeEach(async () => {
       wrapper.setProps({
         documentationLink,
       });
-      Vue.nextTick(done);
+      await nextTick();
     });
 
     it('should render the documentation link', () => {
