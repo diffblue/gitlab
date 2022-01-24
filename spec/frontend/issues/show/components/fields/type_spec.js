@@ -1,6 +1,7 @@
 import { GlFormGroup, GlDropdown, GlDropdownItem, GlIcon } from '@gitlab/ui';
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
+import { nextTick } from 'vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import IssueTypeField, { i18n } from '~/issues/show/components/fields/type.vue';
@@ -93,7 +94,7 @@ describe('Issue type field component', () => {
 
     it('updates the `issue_type` in the apollo cache when the value is changed', async () => {
       findTypeFromDropDownItems().at(1).vm.$emit('click', issuableTypes.incident);
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(findTypeFromDropDown().attributes('value')).toBe(issuableTypes.incident);
     });
 
