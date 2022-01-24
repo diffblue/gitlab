@@ -2,9 +2,9 @@
 
 module IncidentManagement
   module OncallSchedules
-    class BaseService
+    class BaseService < ::BaseProjectService
       def allowed?
-        user&.can?(:admin_incident_management_oncall_schedule, project)
+        current_user&.can?(:admin_incident_management_oncall_schedule, project)
       end
 
       def available?

@@ -33,10 +33,6 @@ module Geo
 
         mark_as_synced = download_result.success
 
-        if download_result.primary_missing_file && Feature.disabled?(:geo_treat_missing_files_as_sync_failed, default_enabled: :yaml)
-          mark_as_synced = true
-        end
-
         if mark_as_synced
           registry.synced!
         else
