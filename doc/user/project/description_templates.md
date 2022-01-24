@@ -116,7 +116,7 @@ You might also be interested in templates for various
 
 ### Set a default template for merge requests and issues
 
-> `Default.md` template [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/78302) in GitLab 14.7.
+> `Default.md` template [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/78302) in GitLab 14.8.
 
 In a project, you can choose a default description template for new issues and merge requests.
 As a result, every time a new merge request or issue is created, it's pre-filled with the text you
