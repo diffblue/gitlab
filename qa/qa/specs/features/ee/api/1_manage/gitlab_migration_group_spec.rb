@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Manage', :requires_admin do
+  RSpec.describe 'Manage', :requires_admin, quarantine: {
+    only: { subdomain: :staging },
+    type: :investigating,
+    issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/350965'
+  } do
     describe 'Gitlab migration' do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:api_client) { Runtime::API::Client.new(user: user) }
