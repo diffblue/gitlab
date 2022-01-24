@@ -1,6 +1,7 @@
 import { GlEmptyState } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 
+import { nextTick } from 'vue';
 import EpicsListEmptyState from 'ee/epics_list/components/epics_list_empty_state.vue';
 
 const createComponent = (props = {}) =>
@@ -47,7 +48,7 @@ describe('EpicsListEmptyState', () => {
         },
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.find('h1').text()).toBe('There are no open epics');
     });
@@ -62,7 +63,7 @@ describe('EpicsListEmptyState', () => {
         },
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.find('h1').text()).toBe('There are no closed epics');
     });
@@ -82,7 +83,7 @@ describe('EpicsListEmptyState', () => {
         },
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.find('p').exists()).toBe(true);
       expect(wrapper.find('p').text()).toContain(
@@ -99,7 +100,7 @@ describe('EpicsListEmptyState', () => {
         },
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.find('p').exists()).toBe(false);
     });

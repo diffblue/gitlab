@@ -1,4 +1,5 @@
 import { GlSorting, GlSortingItem } from '@gitlab/ui';
+import { nextTick } from 'vue';
 import DependenciesActions from 'ee/dependencies/components/dependencies_actions.vue';
 import createStore from 'ee/dependencies/store';
 import { DEPENDENCY_LIST_TYPES } from 'ee/dependencies/store/constants';
@@ -28,12 +29,12 @@ describe('DependenciesActions component', () => {
   const findExportButton = () => wrapper.findByTestId('export');
   const findSorting = () => wrapper.findComponent(GlSorting);
 
-  beforeEach(() => {
+  beforeEach(async () => {
     factory({
       propsData: { namespace },
     });
     store.state[namespace].endpoint = `${TEST_HOST}/dependencies.json`;
-    return wrapper.vm.$nextTick();
+    await nextTick();
   });
 
   afterEach(() => {

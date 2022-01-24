@@ -1,6 +1,6 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import App from 'ee/approvals/components/app.vue';
 import ModalRuleCreate from 'ee/approvals/components/modal_rule_create.vue';
@@ -212,21 +212,21 @@ describe('EE Approvals App', () => {
       store.modules.approvals.state.rules = [{ id: 1 }];
     });
 
-    it('calls fetchRules to reset to defaults', () => {
+    it('calls fetchRules to reset to defaults', async () => {
       factory();
 
       findResetButton().vm.$emit('click');
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(
-          store.modules.approvals.actions.fetchRules,
-        ).toHaveBeenLastCalledWith(expect.anything(), { targetBranch, resetToDefault: true });
-        expect(showToast).toHaveBeenCalledWith('Approval rules reset to project defaults', {
-          action: {
-            text: 'Undo',
-            onClick: expect.anything(),
-          },
-        });
+      await nextTick();
+      expect(store.modules.approvals.actions.fetchRules).toHaveBeenLastCalledWith(
+        expect.anything(),
+        { targetBranch, resetToDefault: true },
+      );
+      expect(showToast).toHaveBeenCalledWith('Approval rules reset to project defaults', {
+        action: {
+          text: 'Undo',
+          onClick: expect.anything(),
+        },
       });
     });
   });

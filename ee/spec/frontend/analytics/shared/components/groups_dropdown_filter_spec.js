@@ -1,5 +1,6 @@
 import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import GroupsDropdownFilter from 'ee/analytics/shared/components/groups_dropdown_filter.vue';
 import { TEST_HOST } from 'helpers/test_constants';
 import Api from '~/api';
@@ -116,21 +117,19 @@ describe('GroupsDropdownFilter component', () => {
       expect(wrapper.emitted().selected).toEqual([[groups[1]]]);
     });
 
-    it('renders an avatar in the dropdown button when the group has an avatar_url', () => {
+    it('renders an avatar in the dropdown button when the group has an avatar_url', async () => {
       selectDropdownAtIndex(0);
 
-      return wrapper.vm.$nextTick().then(() => {
-        shouldContainAvatar({ dropdown: findDropdownButton(), hasIdenticon: false });
-      });
+      await nextTick();
+      shouldContainAvatar({ dropdown: findDropdownButton(), hasIdenticon: false });
     });
 
-    it("renders an identicon in the dropdown button when the group doesn't have an avatar_url", () => {
+    it("renders an identicon in the dropdown button when the group doesn't have an avatar_url", async () => {
       selectDropdownAtIndex(1);
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(findDropdownButton().find('img.gl-avatar').exists()).toBe(false);
-        expect(findDropdownButton().find('.gl-avatar-identicon').exists()).toBe(true);
-      });
+      await nextTick();
+      expect(findDropdownButton().find('img.gl-avatar').exists()).toBe(false);
+      expect(findDropdownButton().find('.gl-avatar-identicon').exists()).toBe(true);
     });
   });
 });

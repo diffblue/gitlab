@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import DependenciesTable from 'ee/dependencies/components/dependencies_table.vue';
 import PaginatedDependenciesTable from 'ee/dependencies/components/paginated_dependencies_table.vue';
 import createStore from 'ee/dependencies/store';
@@ -26,7 +27,7 @@ describe('PaginatedDependenciesTable component', () => {
     expect(componentWrapper.props()).toEqual(expect.objectContaining(props));
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     factory({ namespace });
 
     const originalDispatch = store.dispatch;
@@ -36,7 +37,7 @@ describe('PaginatedDependenciesTable component', () => {
       headers: { 'X-Total': mockDependenciesResponse.dependencies.length },
     });
 
-    return wrapper.vm.$nextTick();
+    await nextTick();
   });
 
   afterEach(() => {
@@ -72,7 +73,7 @@ describe('PaginatedDependenciesTable component', () => {
   `('given $context', ({ isLoading, errorLoading, isListEmpty }) => {
     let module;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       module = store.state[namespace];
       if (isListEmpty) {
         module.dependencies = [];
@@ -82,7 +83,7 @@ describe('PaginatedDependenciesTable component', () => {
       module.isLoading = isLoading;
       module.errorLoading = errorLoading;
 
-      return wrapper.vm.$nextTick();
+      await nextTick();
     });
 
     // See https://github.com/jest-community/eslint-plugin-jest/issues/229 for

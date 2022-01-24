@@ -2,6 +2,7 @@ import { GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { nextTick } from 'vue';
 import BurnCharts from 'ee/burndown_chart/components/burn_charts.vue';
 import BurndownChart from 'ee/burndown_chart/components/burndown_chart.vue';
 import BurnupChart from 'ee/burndown_chart/components/burnup_chart.vue';
@@ -105,7 +106,7 @@ describe('burndown_chart', () => {
 
     findWeightButton().vm.$emit('click');
 
-    await wrapper.vm.$nextTick();
+    await nextTick();
 
     expect(findActiveButtons()).toHaveLength(1);
     expect(findActiveButtons().at(0).text()).toBe('Issue weight');
@@ -130,7 +131,7 @@ describe('burndown_chart', () => {
 
     findWeightButton().vm.$emit('click');
 
-    await wrapper.vm.$nextTick();
+    await nextTick();
 
     expect(findBurnupChart().props('issuesSelected')).toBe(false);
   });

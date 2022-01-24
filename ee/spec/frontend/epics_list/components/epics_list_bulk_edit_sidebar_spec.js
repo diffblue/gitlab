@@ -1,6 +1,7 @@
 import { GlForm, GlFormGroup } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
+import { nextTick } from 'vue';
 import EpicsListBulkEditSidebar from 'ee/epics_list/components/epics_list_bulk_edit_sidebar.vue';
 import { mockFormattedEpic, mockFormattedEpic2 } from 'ee_jest/roadmap/mock_data';
 import {
@@ -73,13 +74,13 @@ describe('EpicsListBulkEditSidebar', () => {
     // 2 labels (as last 2 elements) that epics have present.
     findLabelsSelect().vm.$emit('updateSelectedLabels', mockLabels.slice(0, 2));
 
-    await wrapper.vm.$nextTick();
+    await nextTick();
 
     wrapper.findComponent(GlForm).vm.$emit('submit', {
       preventDefault: jest.fn(),
     });
 
-    await wrapper.vm.$nextTick();
+    await nextTick();
 
     expect(wrapper.emitted('bulk-update')).toBeDefined();
     expect(wrapper.emitted('bulk-update')[0]).toEqual([

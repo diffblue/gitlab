@@ -1,7 +1,7 @@
 import { GlAlert } from '@gitlab/ui';
 import { GlAreaChart } from '@gitlab/ui/dist/charts';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import ThroughputChart from 'ee/analytics/merge_request_analytics/components/throughput_chart.vue';
 import ThroughputStats from 'ee/analytics/merge_request_analytics/components/throughput_stats.vue';
@@ -221,7 +221,7 @@ describe('ThroughputChart', () => {
           { value: labels[1], operator },
         ],
       });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(
         wrapper.vm.$options.apollo.throughputChartData.variables.bind(wrapper.vm)(),
       ).toMatchObject({

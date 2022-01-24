@@ -1,5 +1,6 @@
 import { GlLoadingIcon, GlDropdown, GlDropdownItem, GlAlert, GlIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import MetricChart from 'ee/analytics/productivity_analytics/components/metric_chart.vue';
 import httpStatusCodes from '~/lib/utils/http_status';
 
@@ -145,14 +146,13 @@ describe('MetricChart component', () => {
             expect(wrapper.vm.$emit).toHaveBeenCalledWith('metricTypeChange', 'time_to_merge');
           });
 
-          it('should set the `invisible` class on the icon of the first dropdown item', () => {
+          it('should set the `invisible` class on the icon of the first dropdown item', async () => {
             wrapper.setProps({ selectedMetric: 'time_to_last_commit' });
 
-            return wrapper.vm.$nextTick().then(() => {
-              expect(findMetricDropdownItems().at(0).findComponent(GlIcon).classes()).toContain(
-                'invisible',
-              );
-            });
+            await nextTick();
+            expect(findMetricDropdownItems().at(0).findComponent(GlIcon).classes()).toContain(
+              'invisible',
+            );
           });
         });
 

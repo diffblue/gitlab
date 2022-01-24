@@ -1,4 +1,5 @@
 import { mount, shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import EnvironmentAlert from 'ee/environments/components/environment_alert.vue';
 import EnvironmentTable from '~/environments/components/environments_table.vue';
 
@@ -13,7 +14,7 @@ describe('Environment table', () => {
     wrapper = m(EnvironmentTable, {
       ...options,
     });
-    await wrapper.vm.$nextTick();
+    await nextTick();
     await jest.runOnlyPendingTimers();
   };
 

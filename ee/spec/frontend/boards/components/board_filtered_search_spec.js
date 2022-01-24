@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import BoardFilteredSearch from 'ee/boards/components/board_filtered_search.vue';
 import BoardFilteredSearchCe from '~/boards/components/board_filtered_search.vue';
@@ -36,7 +36,7 @@ describe('ee/BoardFilteredSearch', () => {
 
       store.state.boardConfig = { labels: [{ title: 'test', color: 'black', id: '1' }] };
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
     });
 
     it('calls performSearch', () => {
@@ -66,13 +66,13 @@ describe('ee/BoardFilteredSearch', () => {
     it('renders BoardFilteredSearchCe', async () => {
       store.state.boardConfig = {};
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findFilteredSearch().exists()).toEqual(false);
 
       store.state.boardConfig = { labels: [] };
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findFilteredSearch().exists()).toBe(true);
     });

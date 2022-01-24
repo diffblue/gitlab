@@ -1,6 +1,6 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import MockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
 import SubscriptionTable from 'ee/billings/subscriptions/components/subscription_table.vue';
@@ -33,7 +33,7 @@ describe('SubscriptionTable component', () => {
   const findRenewButton = () => wrapper.findByTestId('renew-button');
   const findRefreshSeatsButton = () => wrapper.findByTestId('refresh-seats-button');
 
-  const createComponentWithStore = ({ props = {}, provide = {}, state = {} } = {}) => {
+  const createComponentWithStore = async ({ props = {}, provide = {}, state = {} } = {}) => {
     store = new Vuex.Store(initialStore());
     jest.spyOn(store, 'dispatch').mockImplementation();
 
@@ -49,7 +49,7 @@ describe('SubscriptionTable component', () => {
     );
 
     Object.assign(store.state, state);
-    return wrapper.vm.$nextTick();
+    await nextTick();
   };
 
   afterEach(() => {
@@ -77,11 +77,11 @@ describe('SubscriptionTable component', () => {
   });
 
   describe('with success', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createComponentWithStore();
       store.state.isLoadingSubscription = false;
       store.commit(types.RECEIVE_SUBSCRIPTION_SUCCESS, mockDataSubscription.gold);
-      return wrapper.vm.$nextTick();
+      await nextTick();
     });
 
     it('should render the card title "GitLab.com: Gold"', () => {

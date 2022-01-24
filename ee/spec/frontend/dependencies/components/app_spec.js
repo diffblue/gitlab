@@ -1,5 +1,6 @@
 import { GlEmptyState, GlLoadingIcon, GlLink } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import DependenciesApp from 'ee/dependencies/components/app.vue';
 import DependenciesActions from 'ee/dependencies/components/dependencies_actions.vue';
 import DependencyListIncompleteAlert from 'ee/dependencies/components/dependency_list_incomplete_alert.vue';
@@ -180,10 +181,10 @@ describe('DependenciesApp component', () => {
     });
 
     describe('given the dependency list job has not yet run', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         setStateJobNotRun();
 
-        return wrapper.vm.$nextTick();
+        await nextTick();
       });
 
       it('shows only the empty state', () => {
@@ -197,10 +198,10 @@ describe('DependenciesApp component', () => {
     });
 
     describe('given a list of dependencies and ok report', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         setStateLoaded();
 
-        return wrapper.vm.$nextTick();
+        await nextTick();
       });
 
       it('shows the dependencies table with the correct props', () => {
@@ -231,11 +232,11 @@ describe('DependenciesApp component', () => {
       });
 
       describe('given the user has public permissions', () => {
-        beforeEach(() => {
+        beforeEach(async () => {
           store.state[allNamespace].reportInfo.generatedAt = '';
           store.state[allNamespace].reportInfo.jobPath = '';
 
-          return wrapper.vm.$nextTick();
+          await nextTick();
         });
 
         it('shows the header', () => {
@@ -253,10 +254,10 @@ describe('DependenciesApp component', () => {
     });
 
     describe('given the dependency list job failed', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         setStateJobFailed();
 
-        return wrapper.vm.$nextTick();
+        await nextTick();
       });
 
       it('passes the correct props to the job failure alert', () => {
@@ -268,10 +269,10 @@ describe('DependenciesApp component', () => {
       it('shows the dependencies table with the correct props', expectDependenciesTable);
 
       describe('when the job failure alert emits the dismiss event', () => {
-        beforeEach(() => {
+        beforeEach(async () => {
           const alertWrapper = findJobFailedAlert();
           alertWrapper.vm.$emit('dismiss');
-          return wrapper.vm.$nextTick();
+          await nextTick();
         });
 
         it('does not render the job failure alert', () => {
@@ -281,10 +282,10 @@ describe('DependenciesApp component', () => {
     });
 
     describe('given a dependency list which is known to be incomplete', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         setStateListIncomplete();
 
-        return wrapper.vm.$nextTick();
+        await nextTick();
       });
 
       it('passes the correct props to the incomplete-list alert', () => {
@@ -294,10 +295,10 @@ describe('DependenciesApp component', () => {
       it('shows the dependencies table with the correct props', expectDependenciesTable);
 
       describe('when the incomplete-list alert emits the dismiss event', () => {
-        beforeEach(() => {
+        beforeEach(async () => {
           const alertWrapper = findIncompleteListAlert();
           alertWrapper.vm.$emit('dismiss');
-          return wrapper.vm.$nextTick();
+          await nextTick();
         });
 
         it('does not render the incomplete-list alert', () => {

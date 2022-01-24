@@ -1,6 +1,6 @@
 import { GlDropdown, GlDropdownItem, GlSearchBoxByType, GlLoadingIcon } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import GroupSelect from 'ee/boards/components/group_select.vue';
 import defaultState from 'ee/boards/stores/state';
@@ -101,7 +101,7 @@ describe('GroupSelect component', () => {
       // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
       // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ initialLoading: true });
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findGlDropdownLoadingIcon().exists()).toBe(true);
     });

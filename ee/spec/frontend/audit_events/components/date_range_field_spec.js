@@ -1,6 +1,7 @@
 import { GlDaterangePicker } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
+import { nextTick } from 'vue';
 import DateRangeButtons from 'ee/audit_events/components/date_range_buttons.vue';
 import DateRangeField from 'ee/audit_events/components/date_range_field.vue';
 import { CURRENT_DATE, MAX_DATE_RANGE } from 'ee/audit_events/constants';
@@ -91,7 +92,7 @@ describe('DateRangeField component', () => {
       createComponent();
       findDatePicker().vm.$emit('input', { endDate });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.emitted().selected[0]).toEqual([
         {
           startDate: getDateInPast(endDate, 1),
@@ -106,7 +107,7 @@ describe('DateRangeField component', () => {
       createComponent();
       findDatePicker().vm.$emit('input', { startDate, endDate });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.emitted().selected[0]).toEqual([
         {
           startDate,
@@ -121,7 +122,7 @@ describe('DateRangeField component', () => {
       createComponent();
       findDateRangeButtons().vm.$emit('input', { startDate, endDate });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.emitted().selected[0]).toEqual([
         {
           startDate,
