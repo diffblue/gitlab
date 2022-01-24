@@ -9,12 +9,12 @@ module Resolvers
 
       argument :active, ::GraphQL::Types::Boolean,
                required: false,
-               description: 'Filter runners by active (true) or paused (false) status.',
-               deprecated: { reason: 'Use paused', milestone: '14.8' }
+               description: 'Filter runners by `active` (true) or `paused` (false) status.',
+               deprecated: { reason: :renamed, replacement: 'paused', milestone: '14.8' }
 
       argument :paused, ::GraphQL::Types::Boolean,
                required: false,
-               description: 'Filter runners by paused (true) or active (false) status.'
+               description: 'Filter runners by `paused` (true) or `active` (false) status.'
 
       argument :status, ::Types::Ci::RunnerStatusEnum,
                required: false,
