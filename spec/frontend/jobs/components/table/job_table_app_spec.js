@@ -1,6 +1,7 @@
 import { GlSkeletonLoader, GlAlert, GlEmptyState, GlPagination } from '@gitlab/ui';
 import { createLocalVue, mount, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
+import { nextTick } from 'vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import getJobsQuery from '~/jobs/components/table/graphql/queries/get_jobs.query.graphql';
@@ -124,7 +125,7 @@ describe('Job table app', () => {
         },
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findPrevious().exists()).toBe(true);
       expect(findNext().exists()).toBe(true);
