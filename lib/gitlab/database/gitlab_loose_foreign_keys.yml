@@ -150,6 +150,10 @@ requirements_management_test_reports:
   - table: ci_builds
     column: build_id
     on_delete: async_nullify
+ci_subscriptions_projects:
+  - table: projects
+    column: downstream_project_id
+    on_delete: async_delete
 security_scans:
   - table: ci_builds
     column: build_id
