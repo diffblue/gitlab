@@ -40,6 +40,7 @@ Other coverage analysis frameworks support the format out of the box, for exampl
 
 - [Istanbul](https://istanbul.js.org/docs/advanced/alternative-reporters/#cobertura) (JavaScript)
 - [Coverage.py](https://coverage.readthedocs.io/en/coverage-5.0.4/cmd.html#xml-reporting) (Python)
+- [PHPUnit](https://github.com/sebastianbergmann/phpunit-documentation-english/blob/master/src/textui.rst#command-line-options) (PHP)
 
 Once configured, if you create a merge request that triggers a pipeline which collects
 coverage reports, the coverage is shown in the diff view. This includes reports
@@ -236,13 +237,49 @@ run tests:
   image: python:3
   script:
     - pip install pytest pytest-cov
-    - coverage run -m pytest 
+    - coverage run -m pytest
     - coverage report
     - coverage xml
   artifacts:
     reports:
       cobertura: coverage.xml
 ```
+
+### PHP example
+
+The following [`.gitlab-ci.yml`](../../../ci/yaml/index.md) example for PHP uses [PHPUnit](https://phpunit.readthedocs.io/)
+to collect test coverage data and generate the report.
+
+With a minimal [`phpunit.xml`](https://phpunit.readthedocs.io/en/9.5/configuration.html) file (you may reference
+[this example repository](https://gitlab.com/yookoala/code-coverage-visualization-with-php/)), you can run the test and
+generate the coverage xml:
+
+```yaml
+run tests:
+  stage: test
+  image: php:latest
+  variables:
+    XDEBUG_MODE: coverage
+  before_script:
+    - apt-get update && apt-get -yq install git unzip zip libzip-dev zlib1g-dev
+    - docker-php-ext-install zip
+    - pecl install xdebug && docker-php-ext-enable xdebug
+    - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+    - php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+    - composer install
+    - composer require --dev phpunit/phpunit phpunit/php-code-coverage
+  script:
+    - php ./vendor/bin/phpunit --coverage-text --coverage-cobertura=coverage.cobertura.xml
+  artifacts:
+    reports:
+      cobertura: coverage.cobertura.xml
+```
+
+[Codeception](https://codeception.com/), through PHPUnit, also supports generating Cobertura report with
+[`run`](https://codeception.com/docs/reference/Commands#run). The path for the generated file
+depends on the `--coverage-cobertura` option and [`paths`](https://codeception.com/docs/reference/Configuration#paths)
+configuration for the [unit test suite](https://codeception.com/docs/05-UnitTests). Configure `.gitlab-ci.yml`
+to find Cobertura in the appropriate path.
 
 ### C/C++ example
 
