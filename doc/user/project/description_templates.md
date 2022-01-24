@@ -116,7 +116,7 @@ You might also be interested in templates for various
 
 ### Set a default template for merge requests and issues
 
-> The `Default.md` template was [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/78302) in GitLab 14.7.
+> `Default.md` template [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/78302) in GitLab 14.7.
 
 In a project, you can choose a default description template for new issues and merge requests.
 As a result, every time a new merge request or issue is created, it's pre-filled with the text you
@@ -129,9 +129,9 @@ Prerequisites:
 
 To set a default description template for merge requests, either:
 
-- [Create a merge request template](#create-a-merge-request-template) named `Default.md` and save it in `.gitlab/merge_request_templates/` **FREE**.
+- [Create a merge request template](#create-a-merge-request-template) named `Default.md` and save it in `.gitlab/merge_request_templates/`.
   This will not overwrite the default template if one has been set in the project settings.
-- Set the default template in project settings **PREMIUM**:
+- Users on GitLab Premium and higher: set the default template in project settings:
 
   1. On the top bar, select **Menu > Projects** and find your project.
   1. On the left sidebar, select **Settings**.
@@ -141,9 +141,9 @@ To set a default description template for merge requests, either:
 
 To set a default description template for issues, either:
 
-- [Create an issue template](#create-an-issue-template) named `Default.md` and save it in `.gitlab/issue_templates/` **FREE**.
+- [Create an issue template](#create-an-issue-template) named `Default.md` and save it in `.gitlab/issue_templates/`.
   This will not overwrite the default template if one has been set in the project settings.
-- Set the default template in project settings **PREMIUM**:
+- Users on GitLab Premium and higher: set the default template in project settings:
 
   1. On the top bar, select **Menu > Projects** and find your project.
   1. On the left sidebar, select **Settings**.
