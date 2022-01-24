@@ -17799,6 +17799,9 @@ msgstr ""
 msgid "I forgot my password"
 msgstr ""
 
+msgid "I understand the responsibilities involved with managing service account keys"
+msgstr ""
+
 msgid "I want to explore GitLab to see if it’s worth switching to"
 msgstr ""
 
