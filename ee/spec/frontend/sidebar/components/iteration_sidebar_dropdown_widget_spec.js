@@ -4,6 +4,7 @@ import Vue from 'vue';
 import IterationSidebarDropdownWidget from 'ee/sidebar/components/iteration_sidebar_dropdown_widget.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import { IssuableType } from '~/issues/constants';
 import groupIterationsQuery from 'ee/sidebar/queries/group_iterations.query.graphql';
 import projectIssueIterationQuery from 'ee/sidebar/queries/project_issue_iteration.query.graphql';
@@ -17,7 +18,7 @@ import {
   mockCurrentIterationResponse1,
   mockCurrentIterationResponse2,
 } from '../mock_data';
-import { waitForApollo, clickEdit, search } from '../helpers';
+import { clickEdit } from '../helpers';
 
 Vue.use(VueApollo);
 
@@ -57,7 +58,8 @@ describe('IterationSidebarDropdownWidget', () => {
       }),
     );
 
-    await waitForApollo();
+    jest.runOnlyPendingTimers();
+    await waitForPromises();
   };
 
   afterEach(() => {
@@ -87,7 +89,6 @@ describe('IterationSidebarDropdownWidget', () => {
       it('renders iterations', async () => {
         await createComponentWithApollo();
         await clickEdit(wrapper);
-        await search(wrapper, 'iteration');
 
         // mockIteration1 has no title
         expect(findIterationItemsTextAt(0)).toContain(getIterationPeriod(mockIteration1));
@@ -128,7 +129,6 @@ describe('IterationSidebarDropdownWidget', () => {
       it('renders iterations with cadence names', async () => {
         await createComponentWithApollo({ iterationCadences: true });
         await clickEdit(wrapper);
-        await search(wrapper, 'iteration');
 
         // mockIteration1 has no title
         expect(findIterationCadenceTitleAt(0)).toContain(mockIteration1.iterationCadence.title);

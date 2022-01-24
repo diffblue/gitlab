@@ -9,11 +9,7 @@ import {
   GlLoadingIcon,
 } from '@gitlab/ui';
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
-import {
-  groupByIterationCadences,
-  getIterationPeriod,
-  getIterationTitle,
-} from 'ee/iterations/utils';
+import { groupByIterationCadences, getIterationPeriod } from 'ee/iterations/utils';
 import { __ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { iterationSelectTextMap, iterationDisplayState } from '../constants';
@@ -99,7 +95,6 @@ export default {
       this.shouldFetch = true;
     },
     getIterationPeriod,
-    getIterationTitle,
   },
 };
 </script>
@@ -128,9 +123,7 @@ export default {
         @click="onClick(iterationItem)"
       >
         {{ getIterationPeriod(iterationItem) }}
-        <iteration-title v-if="getIterationTitle(iterationItem)">
-          {{ getIterationTitle(iterationItem) }}
-        </iteration-title>
+        <iteration-title v-if="iterationItem.title" :title="iterationItem.title" />
       </gl-dropdown-item>
     </template>
     <template v-else>
@@ -147,9 +140,7 @@ export default {
           @click="onClick(iterationItem)"
         >
           {{ iterationItem.period }}
-          <iteration-title v-if="getIterationTitle(iterationItem)">
-            {{ getIterationTitle(iterationItem) }}
-          </iteration-title>
+          <iteration-title v-if="iterationItem.title" :title="iterationItem.title" />
         </gl-dropdown-item>
       </template>
     </template>

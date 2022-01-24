@@ -8,11 +8,7 @@ import {
 } from '@gitlab/ui';
 import SidebarDropdownWidget from 'ee/sidebar/components/sidebar_dropdown_widget.vue';
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
-import {
-  getIterationPeriod,
-  getIterationTitle,
-  groupByIterationCadences,
-} from 'ee/iterations/utils';
+import { getIterationPeriod, groupByIterationCadences } from 'ee/iterations/utils';
 import { IssuableType } from '~/issues/constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { IssuableAttributeType } from '../constants';
@@ -56,7 +52,6 @@ export default {
     },
     groupByIterationCadences,
     getIterationPeriod,
-    getIterationTitle,
   },
 };
 </script>
@@ -82,9 +77,7 @@ export default {
           <gl-icon name="iteration" class="gl-mr-1" />
           {{ getIterationPeriod(currentAttribute) }}
         </div>
-        <iteration-title v-if="getIterationTitle(currentAttribute)">{{
-          getIterationTitle(currentAttribute)
-        }}</iteration-title>
+        <iteration-title v-if="currentAttribute.title" :title="currentAttribute.title" />
       </gl-link>
     </template>
     <template #list="{ attributesList = [], isAttributeChecked, updateAttribute }">
@@ -106,9 +99,7 @@ export default {
           @click="updateAttribute(iteration.id)"
         >
           {{ iteration.period }}
-          <iteration-title v-if="getIterationTitle(iteration)">{{
-            getIterationTitle(iteration)
-          }}</iteration-title>
+          <iteration-title v-if="iteration.title" :title="iteration.title" />
         </gl-dropdown-item>
       </template>
     </template>

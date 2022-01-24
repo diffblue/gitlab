@@ -13,6 +13,7 @@ import IterationDropdown from 'ee/sidebar/components/iteration_dropdown.vue';
 import groupIterationsQuery from 'ee/sidebar/queries/iterations.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { getIterationPeriod } from 'ee/iterations/utils';
+import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 
 Vue.use(VueApollo);
 
@@ -112,6 +113,9 @@ describe('IterationDropdown', () => {
       propsData: {
         fullPath: TEST_FULL_PATH,
       },
+      stubs: {
+        IterationTitle,
+      },
       provide: {
         glFeatures: {
           iterationCadences,
@@ -171,18 +175,8 @@ describe('IterationDropdown', () => {
     });
 
     it('shows checkable dropdown items in unchecked state', () => {
-      expect(findDropdownItems().wrappers.map((x) => x.props('isCheckItem'))).toEqual([
-        true,
-        true,
-        true,
-        true,
-      ]);
-      expect(findDropdownItems().wrappers.map((x) => x.props('isChecked'))).toEqual([
-        false,
-        false,
-        false,
-        false,
-      ]);
+      expect(findDropdownItems().wrappers.every((x) => x.props('isCheckItem'))).toBe(true);
+      expect(findDropdownItems().wrappers.every((x) => x.props('isChecked'))).toBe(false);
     });
 
     it('populates dropdown items with correct names', () => {
@@ -237,12 +231,7 @@ describe('IterationDropdown', () => {
         });
 
         it('shows item as unchecked', () => {
-          expect(findDropdownItems().wrappers.map((x) => x.props('isChecked'))).toEqual([
-            false,
-            false,
-            false,
-            false,
-          ]);
+          expect(findDropdownItems().wrappers.every((x) => x.props('isChecked'))).toBe(false);
         });
 
         it('emits event', () => {

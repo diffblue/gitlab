@@ -17,11 +17,7 @@ import { ListType } from '~/boards/constants';
 import { isScopedLabel } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import {
-  groupByIterationCadences,
-  getIterationTitle,
-  getIterationPeriod,
-} from 'ee/iterations/utils';
+import { groupByIterationCadences, getIterationPeriod } from 'ee/iterations/utils';
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 
 export const listTypeInfo = {
@@ -245,7 +241,6 @@ export default {
       }
     },
 
-    getIterationTitle,
     getIterationPeriod,
   },
 };
@@ -333,12 +328,7 @@ export default {
               data-testid="new-column-iteration-item"
             >
               {{ iteration.period }}
-              <iteration-title
-                v-if="getIterationTitle(iteration)"
-                data-testid="new-column-iteration-title"
-              >
-                {{ getIterationTitle(iteration) }}
-              </iteration-title>
+              <iteration-title v-if="iteration.title" :title="iteration.title" />
             </gl-form-radio>
           </gl-dropdown-text>
         </div>
@@ -381,12 +371,7 @@ export default {
             data-testid="new-column-iteration-item"
           >
             {{ getIterationPeriod(item) }}
-            <iteration-title
-              v-if="getIterationTitle(item)"
-              data-testid="new-column-iteration-title"
-            >
-              {{ getIterationTitle(item) }}
-            </iteration-title>
+            <iteration-title v-if="item.title" :title="item.title" />
           </div>
           <div v-else class="gl-display-inline-block">
             {{ item.title }}

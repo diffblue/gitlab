@@ -7,7 +7,7 @@ import {
 } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { mount } from '@vue/test-utils';
-import Vue, { nextTick } from 'vue';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import SidebarDropdownWidget from 'ee/sidebar/components/sidebar_dropdown_widget.vue';
 import { IssuableAttributeType, issuableAttributesQueries } from 'ee/sidebar/constants';
@@ -16,10 +16,11 @@ import projectIssueEpicMutation from 'ee/sidebar/queries/project_issue_epic.muta
 import projectIssueEpicQuery from 'ee/sidebar/queries/project_issue_epic.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import createFlash from '~/flash';
 import { IssuableType } from '~/issues/constants';
 import SidebarEditableItem from '~/sidebar/components/sidebar_editable_item.vue';
-import { waitForDropdown, waitForApollo, clickEdit, search } from '../helpers';
+import { clickEdit, search } from '../helpers';
 
 import {
   mockIssue,
@@ -51,7 +52,7 @@ describe('SidebarDropdownWidget', () => {
   const toggleDropdown = async () => {
     wrapper.findComponent(SidebarEditableItem).vm.$emit('open');
 
-    await waitForDropdown();
+    await waitForPromises();
   };
 
   const createComponentWithApollo = async ({
@@ -81,7 +82,8 @@ describe('SidebarDropdownWidget', () => {
       }),
     );
 
-    await waitForApollo();
+    jest.runOnlyPendingTimers();
+    await waitForPromises();
   };
 
   const createComponent = ({
@@ -257,7 +259,7 @@ describe('SidebarDropdownWidget', () => {
             });
 
             it('sends a groupEpics query with empty title and undefined in param', async () => {
-              await nextTick();
+              await waitForPromises();
 
               // Account for debouncing
               jest.runAllTimers();

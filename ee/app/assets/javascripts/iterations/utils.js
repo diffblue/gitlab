@@ -13,10 +13,6 @@ export function getIterationPeriod({ startDate, dueDate }) {
   return `${start} - ${due}`;
 }
 
-export function getIterationTitle(iteration) {
-  return iteration?.title;
-}
-
 /**
  * Group a list of iterations by cadence.
  *

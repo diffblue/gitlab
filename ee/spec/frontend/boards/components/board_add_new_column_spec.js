@@ -5,6 +5,7 @@ import Vuex from 'vuex';
 import BoardAddNewColumn, { listTypeInfo } from 'ee/boards/components/board_add_new_column.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import BoardAddNewColumnForm from '~/boards/components/board_add_new_column_form.vue';
+import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 import { ListType } from '~/boards/constants';
 import defaultState from '~/boards/stores/state';
 import { getIterationPeriod } from 'ee/iterations/utils';
@@ -47,6 +48,7 @@ describe('BoardAddNewColumn', () => {
           BoardAddNewColumnForm,
           GlFormRadio,
           GlFormRadioGroup,
+          IterationTitle,
         },
         data() {
           return {
@@ -117,9 +119,7 @@ describe('BoardAddNewColumn', () => {
 
   const expectIterationWithoutTitle = () => {
     expect(findIterationItemAt(0).text()).toContain(getIterationPeriod(mockIterations[0]));
-    expect(findIterationItemAt(0).find("[data-testid='new-column-iteration-title']").exists()).toBe(
-      false,
-    );
+    expect(findIterationItemAt(0).findComponent(IterationTitle).exists()).toBe(false);
   };
 
   it('clicking cancel hides the form', () => {
