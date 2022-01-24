@@ -214,14 +214,6 @@ class TrialsController < ApplicationController
     group
   end
 
-  def redirect_trial_user_to_feature_experiment_flow
-    experiment(:redirect_trial_user_to_feature, namespace: @namespace) do |e|
-      e.use { redirect_to group_url(@namespace, { trial: true }) }
-      e.try { redirect_to group_security_dashboard_url(@namespace, { trial: true }) }
-      e.publish_to_database
-    end
-  end
-
   def discover_group_security_flow?
     %w(discover-group-security discover-project-security).include?(params[:glm_content])
   end
@@ -238,7 +230,7 @@ class TrialsController < ApplicationController
       experiment(:combined_registration, user: current_user).track(:create_trial)
 
       if discover_group_security_flow?
-        redirect_trial_user_to_feature_experiment_flow
+        redirect_to group_security_dashboard_url(@namespace, { trial: true })
       else
         redirect_to stored_location_or_provided_path(group_url(@namespace, { trial: true }))
       end
