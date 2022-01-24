@@ -135,6 +135,7 @@ RSpec.describe 'Every Sidekiq worker' do
         'AutoDevops::DisableWorker' => 3,
         'AutoMergeProcessWorker' => 3,
         'BackgroundMigrationWorker' => 3,
+        'BackgroundMigration::CiDatabaseWorker' => 3,
         'BuildFinishedWorker' => 3,
         'BuildHooksWorker' => 3,
         'BuildQueueWorker' => 3,
