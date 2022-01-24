@@ -332,6 +332,6 @@ RSpec.describe ProtectedEnvironment do
   end
 
   def create_deploy_access_level(protected_environment, **opts)
-    protected_environment.deploy_access_levels.create(**opts)
+    protected_environment.deploy_access_levels.create!(**opts)
   end
 end

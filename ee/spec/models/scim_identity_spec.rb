@@ -49,7 +49,7 @@ RSpec.describe ScimIdentity do
       user = create(:user)
       group = create(:group)
 
-      identity = user.scim_identities.create(group: group, extern_uid: user.email)
+      identity = user.scim_identities.create!(group: group, extern_uid: user.email)
 
       expect(group.scim_identities.with_extern_uid(user.email.upcase).first).to eq identity
     end
