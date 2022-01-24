@@ -57,6 +57,12 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Config::Content do
           expect(pipeline.pipeline_config.content).to eq(content_result)
           expect(command.config_content).to eq(content_result)
         end
+
+        context 'when pipeline is downstream of a bridge' do
+          let(:command) { Gitlab::Ci::Pipeline::Chain::Command.new(project: project, content: content, source: source, bridge: create(:ci_bridge)) }
+
+          it_behaves_like 'does not include compliance pipeline configuration content'
+        end
       end
 
       context 'when compliance pipeline configuration is not defined' do
