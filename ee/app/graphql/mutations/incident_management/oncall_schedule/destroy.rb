@@ -18,9 +18,9 @@ module Mutations
           oncall_schedule = authorized_find!(project_path: project_path, iid: iid)
 
           response ::IncidentManagement::OncallSchedules::DestroyService.new(
-            oncall_schedule,
-            current_user
-          ).execute
+            project: oncall_schedule.project,
+            current_user: current_user
+          ).execute(oncall_schedule)
         end
       end
     end

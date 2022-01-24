@@ -28,9 +28,9 @@ module Mutations
           project = authorized_find!(args[:project_path])
 
           response ::IncidentManagement::OncallSchedules::CreateService.new(
-            project,
-            current_user,
-            args.slice(:name, :description, :timezone)
+            project: project,
+            current_user: current_user,
+            params: args.slice(:name, :description, :timezone)
           ).execute
         end
       end

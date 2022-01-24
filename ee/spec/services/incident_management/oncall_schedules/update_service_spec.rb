@@ -11,7 +11,7 @@ RSpec.describe IncidentManagement::OncallSchedules::UpdateService do
   let(:current_user) { user_with_permissions }
   let(:new_timezone) { 'America/New_York' }
   let(:params) { { name: 'Updated name', description: 'Updated description', timezone: new_timezone } }
-  let(:service) { described_class.new(oncall_schedule, current_user, params) }
+  let(:service) { described_class.new(project: project, current_user: current_user, params: params) }
 
   before do
     stub_licensed_features(oncall_schedules: true)
@@ -26,7 +26,7 @@ RSpec.describe IncidentManagement::OncallSchedules::UpdateService do
       end
     end
 
-    subject(:execute) { service.execute }
+    subject(:execute) { service.execute(oncall_schedule) }
 
     context 'when the current_user is anonymous' do
       let(:current_user) { nil }

@@ -10,7 +10,7 @@ RSpec.describe IncidentManagement::OncallSchedules::DestroyService do
   let!(:oncall_schedule) { create(:incident_management_oncall_schedule, project: project) }
   let(:current_user) { user_with_permissions }
   let(:params) { {} }
-  let(:service) { described_class.new(oncall_schedule, current_user) }
+  let(:service) { described_class.new(project: project, current_user: current_user) }
 
   before do
     stub_licensed_features(oncall_schedules: true)
@@ -25,7 +25,7 @@ RSpec.describe IncidentManagement::OncallSchedules::DestroyService do
       end
     end
 
-    subject(:execute) { service.execute }
+    subject(:execute) { service.execute(oncall_schedule) }
 
     context 'when the current_user is anonymous' do
       let(:current_user) { nil }

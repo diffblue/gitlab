@@ -3,24 +3,13 @@
 module IncidentManagement
   module OncallSchedules
     class UpdateService < OncallSchedules::BaseService
-      # @param oncall_schedule [IncidentManagement::OncallSchedule]
-      # @param user [User]
-      # @param params [Hash]
-      def initialize(oncall_schedule, user, params)
-        @oncall_schedule = oncall_schedule
-        @original_schedule_timezone = oncall_schedule.timezone
-        @user = user
-        @params = params
-        @project = oncall_schedule.project
-      end
-
-      def execute
+      def execute(oncall_schedule)
         return error_no_license unless available?
         return error_no_permissions unless allowed?
 
         IncidentManagement::OncallSchedule.transaction do
           oncall_schedule.update!(params)
-          update_rotations!
+          update_rotations!(oncall_schedule)
         end
 
         success(oncall_schedule)
@@ -32,22 +21,16 @@ module IncidentManagement
 
       private
 
-      attr_reader :oncall_schedule, :original_schedule_timezone, :user, :params, :project
+      def update_rotations!(oncall_schedule)
+        return unless oncall_schedule.timezone_previously_changed?
 
-      def update_rotations!
-        return if same_schedule_timezone?
-
-        update_rotation_active_periods!
-      end
-
-      def same_schedule_timezone?
-        original_schedule_timezone == oncall_schedule.timezone
+        update_rotation_active_periods!(oncall_schedule)
       end
 
       # Converts & updates the active period to the new timezone
       # Ex: 8:00 - 17:00 Europe/Berlin becomes 6:00 - 15:00 UTC
-      def update_rotation_active_periods!
-        original_schedule_current_time = Time.current.in_time_zone(original_schedule_timezone)
+      def update_rotation_active_periods!(oncall_schedule)
+        original_schedule_current_time = Time.current.in_time_zone(oncall_schedule.timezone_previously_was)
 
         oncall_schedule.rotations.with_active_period.each do |rotation|
           active_period = rotation.active_period.for_date(original_schedule_current_time)
@@ -55,7 +38,7 @@ module IncidentManagement
 
           service = IncidentManagement::OncallRotations::EditService.new(
             rotation,
-            user,
+            current_user,
             {
               active_period_start: new_start_time,
               active_period_end: new_end_time

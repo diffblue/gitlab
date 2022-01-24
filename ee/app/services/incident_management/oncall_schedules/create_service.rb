@@ -3,15 +3,6 @@
 module IncidentManagement
   module OncallSchedules
     class CreateService < OncallSchedules::BaseService
-      # @param project [Project]
-      # @param user [User]
-      # @param params [Hash]
-      def initialize(project, user, params)
-        @project = project
-        @user = user
-        @params = params
-      end
-
       def execute
         return error_no_license unless available?
         return error_no_permissions unless allowed?
@@ -23,8 +14,6 @@ module IncidentManagement
       end
 
       private
-
-      attr_reader :project, :user, :params
 
       def error_no_permissions
         error(_('You have insufficient permissions to create an on-call schedule for this project'))
