@@ -41,8 +41,8 @@ describe('Security Dashboard Table Row', () => {
   const findContent = (i) => wrapper.findAll('.table-mobile-content').at(i);
   const findAllIssueCreated = () => wrapper.findAll('[data-testid="issues-icon"]');
   const hasSelectedClass = () => wrapper.classes('gl-bg-blue-50');
-  const findCheckbox = () => wrapper.find(GlFormCheckbox);
-  const findSeverityBadge = () => wrapper.find(SeverityBadge);
+  const findCheckbox = () => wrapper.findComponent(GlFormCheckbox);
+  const findSeverityBadge = () => wrapper.findComponent(SeverityBadge);
 
   describe('when loading', () => {
     beforeEach(() => {
@@ -111,7 +111,7 @@ describe('Security Dashboard Table Row', () => {
         jest.spyOn(store, 'dispatch').mockImplementation();
         jest.spyOn(wrapper.vm.$root, '$emit');
 
-        const el = wrapper.find({ ref: 'vulnerability-title' });
+        const el = wrapper.findComponent({ ref: 'vulnerability-title' });
         el.trigger('click');
 
         expect(store.dispatch).toHaveBeenCalledWith('vulnerabilities/setModalData', {

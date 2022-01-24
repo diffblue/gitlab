@@ -222,7 +222,7 @@ describe('Security reports summary component', () => {
     });
 
     it('should have the modal with id dastUrl', () => {
-      const modal = wrapper.find(Modal);
+      const modal = wrapper.findComponent(Modal);
 
       expect(modal.exists()).toBe(true);
       expect(modal.attributes('modalid')).toBe('dastUrl');

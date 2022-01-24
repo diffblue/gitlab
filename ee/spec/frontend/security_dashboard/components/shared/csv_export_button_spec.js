@@ -26,10 +26,10 @@ describe('Csv Button Export', () => {
   let wrapper;
 
   const issueUrl = 'https://gitlab.com/gitlab-org/gitlab/issues/197111';
-  const findPopoverExternalLink = () => wrapper.find({ ref: 'popoverExternalLink' });
-  const findPopoverButton = () => wrapper.find({ ref: 'popoverButton' });
-  const findPopover = () => wrapper.find({ ref: 'popover' });
-  const findCsvExportButton = () => wrapper.find({ ref: 'csvExportButton' });
+  const findPopoverExternalLink = () => wrapper.findComponent({ ref: 'popoverExternalLink' });
+  const findPopoverButton = () => wrapper.findComponent({ ref: 'popoverButton' });
+  const findPopover = () => wrapper.findComponent({ ref: 'popover' });
+  const findCsvExportButton = () => wrapper.findComponent({ ref: 'csvExportButton' });
 
   const createComponent = () => {
     return shallowMount(CsvExportButton, {

@@ -45,9 +45,9 @@ describe('Selection Summary', () => {
     mock.restore();
   });
 
-  const formSelect = () => wrapper.find(GlFormSelect);
+  const formSelect = () => wrapper.findComponent(GlFormSelect);
   const dismissMessage = () => wrapper.find('[data-testid="dismiss-message"]');
-  const dismissButton = () => wrapper.find(GlButton);
+  const dismissButton = () => wrapper.findComponent(GlButton);
 
   const selectByIndex = (index) =>
     store.commit(`vulnerabilities/${SELECT_VULNERABILITY}`, mockDataVulnerabilities[index].id);

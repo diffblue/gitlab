@@ -56,7 +56,7 @@ describe('Selection Summary component', () => {
 
     describe('with selected state', () => {
       beforeEach(async () => {
-        wrapper.find(StatusDropdown).vm.$emit('change', { action: 'confirm' });
+        wrapper.findComponent(StatusDropdown).vm.$emit('change', { action: 'confirm' });
         await wrapper.vm.$nextTick();
       });
 
@@ -71,7 +71,7 @@ describe('Selection Summary component', () => {
 
     describe('with no selected state', () => {
       beforeEach(async () => {
-        wrapper.find(StatusDropdown).vm.$emit('change', { action: null });
+        wrapper.findComponent(StatusDropdown).vm.$emit('change', { action: null });
         await wrapper.vm.$nextTick();
       });
 
@@ -109,7 +109,7 @@ describe('Selection Summary component', () => {
     ];
 
     const submitForm = async () => {
-      wrapper.find(StatusDropdown).vm.$emit('change', { action, payload });
+      wrapper.findComponent(StatusDropdown).vm.$emit('change', { action, payload });
       findForm().trigger('submit');
       await waitForPromises();
     };

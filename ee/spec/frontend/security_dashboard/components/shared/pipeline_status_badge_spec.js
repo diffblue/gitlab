@@ -8,7 +8,7 @@ describe('Pipeline status badge', () => {
 
   const securityBuildsFailedPath = '/some/path/to/failed/jobs';
 
-  const findGlBadge = () => wrapper.find(GlBadge);
+  const findGlBadge = () => wrapper.findComponent(GlBadge);
 
   const createProps = (securityBuildsFailedCount) => ({ pipeline: { securityBuildsFailedCount } });
 

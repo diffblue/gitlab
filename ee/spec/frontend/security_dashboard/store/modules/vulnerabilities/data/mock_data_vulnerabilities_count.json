@@ -1,7 +1,7 @@
 {
-   "critical": 2,
-   "high": 4,
-   "low": 7,
-   "medium": 8,
-   "unknown": 0
+  "critical": 2,
+  "high": 4,
+  "low": 7,
+  "medium": 8,
+  "unknown": 0
 }

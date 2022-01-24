@@ -113,7 +113,7 @@ describe('Filter Body component', () => {
     `('$phrase the loading icon when the loading prop is $loading', ({ loading }) => {
       createComponent({ loading });
 
-      expect(wrapper.find(GlLoadingIcon).exists()).toBe(loading);
+      expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(loading);
     });
   });
 });

@@ -30,11 +30,11 @@ describe('LoadingError component', () => {
     });
 
     it('renders an empty state', () => {
-      expect(wrapper.find(GlEmptyState).exists()).toBe(true);
+      expect(wrapper.findComponent(GlEmptyState).exists()).toBe(true);
     });
 
     it('empty state has correct props', () => {
-      expect(wrapper.find(GlEmptyState).props()).toMatchSnapshot();
+      expect(wrapper.findComponent(GlEmptyState).props()).toMatchSnapshot();
     });
   });
 });

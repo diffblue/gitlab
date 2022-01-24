@@ -57,11 +57,11 @@ describe('Vulnerabilities app component', () => {
     },
   });
 
-  const findIntersectionObserver = () => wrapper.find(GlIntersectionObserver);
-  const findAlert = () => wrapper.find(GlAlert);
+  const findIntersectionObserver = () => wrapper.findComponent(GlIntersectionObserver);
+  const findAlert = () => wrapper.findComponent(GlAlert);
   const findSecurityScannerAlert = (root = wrapper) => root.findComponent(SecurityScannerAlert);
-  const findVulnerabilityList = () => wrapper.find(VulnerabilityList);
-  const findLoadingIcon = () => wrapper.find(GlLoadingIcon);
+  const findVulnerabilityList = () => wrapper.findComponent(VulnerabilityList);
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
 
   const expectLoadingState = ({ initial = false, nextPage = false }) => {
     expect(findVulnerabilityList().props('isLoading')).toBe(initial);

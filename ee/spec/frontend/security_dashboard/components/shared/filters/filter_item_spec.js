@@ -17,8 +17,8 @@ describe('Filter Item component', () => {
     });
   };
 
-  const dropdownItem = () => wrapper.find(GlDropdownItem);
-  const name = () => wrapper.find(GlTruncate);
+  const dropdownItem = () => wrapper.findComponent(GlDropdownItem);
+  const name = () => wrapper.findComponent(GlTruncate);
 
   afterEach(() => {
     wrapper.destroy();

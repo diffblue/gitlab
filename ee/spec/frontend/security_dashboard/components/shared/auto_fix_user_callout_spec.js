@@ -18,8 +18,8 @@ describe('AutoFixUserCallout', () => {
   it('renders properly', () => {
     createWrapper();
 
-    expect(wrapper.find(GlBanner).exists()).toBe(true);
-    expect(wrapper.find(GlBanner).props()).toMatchObject({
+    expect(wrapper.findComponent(GlBanner).exists()).toBe(true);
+    expect(wrapper.findComponent(GlBanner).props()).toMatchObject({
       title: 'Introducing GitLab auto-fix',
       buttonText: 'Learn more',
       buttonLink: helpPagePath,
