@@ -25,11 +25,11 @@ describe('CreditCardVerification', () => {
   };
 
   const verifyToggleEnabled = () =>
-    wrapper.find({ ref: 'verifyToggle' }).attributes('enabled') === 'true';
+    wrapper.findComponent({ ref: 'verifyToggle' }).attributes('enabled') === 'true';
   const createToggleEnabled = () =>
-    wrapper.find({ ref: 'createToggle' }).attributes('enabled') === 'true';
-  const findZuora = () => wrapper.find({ ref: 'zuora' });
-  const findSubmitButton = () => wrapper.find({ ref: 'submitButton' });
+    wrapper.findComponent({ ref: 'createToggle' }).attributes('enabled') === 'true';
+  const findZuora = () => wrapper.findComponent({ ref: 'zuora' });
+  const findSubmitButton = () => wrapper.findComponent({ ref: 'submitButton' });
   const toggleContainerHidden = () =>
     document.querySelector('.js-toggle-container').classList.contains('gl-display-none');
 

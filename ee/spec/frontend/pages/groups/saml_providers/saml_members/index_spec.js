@@ -47,7 +47,7 @@ describe('SAML providers members app', () => {
     });
 
     it('renders loader', () => {
-      expect(wrapper.find(GlSkeletonLoading).exists()).toBe(true);
+      expect(wrapper.findComponent(GlSkeletonLoading).exists()).toBe(true);
     });
   });
 
@@ -59,15 +59,15 @@ describe('SAML providers members app', () => {
     });
 
     it('does not render loader', () => {
-      expect(wrapper.find(GlSkeletonLoading).exists()).toBe(false);
+      expect(wrapper.findComponent(GlSkeletonLoading).exists()).toBe(false);
     });
 
     it('renders table', () => {
-      expect(wrapper.find(GlTable).exists()).toBe(true);
+      expect(wrapper.findComponent(GlTable).exists()).toBe(true);
     });
 
     it('requests next page when pagination component performs change', () => {
-      const changeFn = wrapper.find(TablePagination).props('change');
+      const changeFn = wrapper.findComponent(TablePagination).props('change');
       changeFn(2);
       return wrapper.vm.$nextTick(() => {
         expect(fetchPageMock).toHaveBeenCalledWith(expect.anything(), 2);

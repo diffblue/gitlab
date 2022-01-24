@@ -60,11 +60,11 @@ describe('project header component', () => {
   describe('wrapped components', () => {
     describe('project avatar', () => {
       it('renders', () => {
-        expect(wrapper.findAll(ProjectAvatar)).toHaveLength(1);
+        expect(wrapper.findAllComponents(ProjectAvatar)).toHaveLength(1);
       });
 
       it('binds project', () => {
-        expect(wrapper.find(ProjectAvatar).props('project')).toEqual(mockOneProject);
+        expect(wrapper.findComponent(ProjectAvatar).props('project')).toEqual(mockOneProject);
       });
     });
   });

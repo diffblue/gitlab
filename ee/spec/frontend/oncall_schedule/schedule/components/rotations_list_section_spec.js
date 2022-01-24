@@ -77,7 +77,7 @@ describe('RotationsListSectionComponent', () => {
     });
 
     it('renders current day indicator in the first timeline cell', () => {
-      expect(findTimelineCells().at(0).find(CurrentDayIndicator).exists()).toBe(true);
+      expect(findTimelineCells().at(0).findComponent(CurrentDayIndicator).exists()).toBe(true);
     });
 
     it('render the correct amount of rotation assignees with their related information', () => {

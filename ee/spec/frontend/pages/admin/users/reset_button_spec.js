@@ -32,7 +32,7 @@ describe('Reset pipeline minutes button', () => {
     wrapper = null;
   });
 
-  const findResetButton = () => wrapper.find(GlButton);
+  const findResetButton = () => wrapper.findComponent(GlButton);
 
   it('should contain a button with the "Reset pipeline minutes" text', () => {
     const button = findResetButton();

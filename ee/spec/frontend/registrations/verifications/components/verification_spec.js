@@ -34,12 +34,12 @@ describe('Verification', () => {
     });
   };
 
-  const findSubmitButton = () => wrapper.find({ ref: 'submitButton' });
-  const findZuora = () => wrapper.find({ ref: 'zuora' });
-  const findSkipLink = () => wrapper.find({ ref: 'skipLink' });
-  const findPopover = () => wrapper.find({ ref: 'popover' });
-  const findPopoverClose = () => wrapper.find({ ref: 'popoverClose' });
-  const findSkipConfirmationLink = () => wrapper.find({ ref: 'skipConfirmationLink' });
+  const findSubmitButton = () => wrapper.findComponent({ ref: 'submitButton' });
+  const findZuora = () => wrapper.findComponent({ ref: 'zuora' });
+  const findSkipLink = () => wrapper.findComponent({ ref: 'skipLink' });
+  const findPopover = () => wrapper.findComponent({ ref: 'popover' });
+  const findPopoverClose = () => wrapper.findComponent({ ref: 'popoverClose' });
+  const findSkipConfirmationLink = () => wrapper.findComponent({ ref: 'skipConfirmationLink' });
 
   const expectRedirect = () => expect(redirectTo).toHaveBeenCalledWith(NEXT_STEP_URL);
   const expectTrackingOfEvent = (event) => {

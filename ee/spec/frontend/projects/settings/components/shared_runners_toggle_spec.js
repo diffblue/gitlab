@@ -26,7 +26,7 @@ describe('projects/settings/components/shared_runners', () => {
     });
   };
 
-  const findSharedRunnersToggle = () => wrapper.find(GlToggle);
+  const findSharedRunnersToggle = () => wrapper.findComponent(GlToggle);
   const findCcValidationRequiredAlert = () => wrapper.findComponent(CcValidationRequiredAlert);
   const getToggleValue = () => findSharedRunnersToggle().props('value');
   const isToggleDisabled = () => findSharedRunnersToggle().props('disabled');
