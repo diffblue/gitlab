@@ -77,7 +77,7 @@ describe('Security Reports modal footer', () => {
     });
 
     it('has the external-link icon', () => {
-      expect(findActionButton().find(GlIcon).props('name')).toBe('external-link');
+      expect(findActionButton().findComponent(GlIcon).props('name')).toBe('external-link');
     });
   });
 
@@ -140,7 +140,7 @@ describe('Security Reports modal footer', () => {
     it('renders create merge request and issue button as a split button', () => {
       expect(wrapper.find('.js-split-button').exists()).toBe(true);
       expect(wrapper.vm.actionButtons).toHaveLength(2);
-      expect(wrapper.find(SplitButton).exists()).toBe(true);
+      expect(wrapper.findComponent(SplitButton).exists()).toBe(true);
       expect(wrapper.find('.js-split-button').text()).toContain('Resolve with merge request');
       expect(wrapper.find('.js-split-button').text()).toContain('Create issue');
     });
@@ -159,7 +159,7 @@ describe('Security Reports modal footer', () => {
 
     it('renders the split button', () => {
       expect(wrapper.vm.actionButtons).toHaveLength(3);
-      expect(wrapper.find(SplitButton).exists()).toBe(true);
+      expect(wrapper.findComponent(SplitButton).exists()).toBe(true);
       expect(wrapper.find('.js-split-button').text()).toContain('Resolve with merge request');
       expect(wrapper.find('.js-split-button').text()).toContain('Create issue');
       expect(wrapper.find('.js-split-button').text()).toContain('Download patch to resolve');
@@ -176,7 +176,7 @@ describe('Security Reports modal footer', () => {
     });
 
     it('should render the dismiss button', () => {
-      expect(wrapper.find(DismissButton).exists()).toBe(true);
+      expect(wrapper.findComponent(DismissButton).exists()).toBe(true);
     });
   });
 });

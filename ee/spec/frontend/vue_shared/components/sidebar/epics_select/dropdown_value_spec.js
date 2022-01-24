@@ -50,7 +50,7 @@ describe('EpicsSelect', () => {
       });
 
       it('should render epic title link element when `hasEpic` is true', () => {
-        const titleEl = wrapper.find(GlLink);
+        const titleEl = wrapper.findComponent(GlLink);
 
         expect(titleEl.exists()).toBe(true);
         expect(titleEl.attributes('href')).toBe(mockEpic1.url);

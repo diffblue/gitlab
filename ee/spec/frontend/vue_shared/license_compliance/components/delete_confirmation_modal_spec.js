@@ -44,7 +44,7 @@ describe('DeleteConfirmationModal', () => {
     });
   };
 
-  const findModal = () => wrapper.find(GlModal);
+  const findModal = () => wrapper.findComponent(GlModal);
 
   beforeEach(() => {
     createComponent();

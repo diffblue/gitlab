@@ -15,7 +15,7 @@ describe('DismissalCommentBox', () => {
     });
 
     it('should not render the dismissal comment box', () => {
-      expect(wrapper.find(DismissalCommentBox).exists()).toBeFalsy();
+      expect(wrapper.findComponent(DismissalCommentBox).exists()).toBeFalsy();
     });
   });
 
@@ -29,7 +29,7 @@ describe('DismissalCommentBox', () => {
     });
 
     it('should render the dismissal comment box', () => {
-      expect(wrapper.find(DismissalCommentBox).exists()).toBeTruthy();
+      expect(wrapper.findComponent(DismissalCommentBox).exists()).toBeTruthy();
     });
 
     it('should not render the placeholder text box', () => {

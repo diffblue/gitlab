@@ -36,10 +36,10 @@ describe('AccordionItem component', () => {
     });
   };
 
-  const loadingIndicator = () => wrapper.find({ ref: 'loadingIndicator' });
-  const expansionTrigger = () => wrapper.find({ ref: 'expansionTrigger' });
-  const contentContainer = () => wrapper.find({ ref: 'contentContainer' });
-  const content = () => wrapper.find({ ref: 'content' });
+  const loadingIndicator = () => wrapper.findComponent({ ref: 'loadingIndicator' });
+  const expansionTrigger = () => wrapper.findComponent({ ref: 'expansionTrigger' });
+  const contentContainer = () => wrapper.findComponent({ ref: 'contentContainer' });
+  const content = () => wrapper.findComponent({ ref: 'content' });
   const namespacedCloseOtherAccordionItemsEvent = `${accordionId}.closeOtherAccordionItems`;
 
   afterEach(() => {

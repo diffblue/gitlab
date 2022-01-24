@@ -201,11 +201,11 @@ describe('EpicsSelect', () => {
       });
 
       it('should render DropdownValueCollapsed component', () => {
-        expect(wrapper.find(DropdownValueCollapsed).exists()).toBe(true);
+        expect(wrapper.findComponent(DropdownValueCollapsed).exists()).toBe(true);
       });
 
       it('should not render DropdownValueCollapsed component when variant is "standalone"', () => {
-        expect(wrapperStandalone.find(DropdownValueCollapsed).exists()).toBe(false);
+        expect(wrapperStandalone.findComponent(DropdownValueCollapsed).exists()).toBe(false);
       });
 
       it('should render a dropdown title component', () => {
@@ -220,11 +220,11 @@ describe('EpicsSelect', () => {
         wrapper.vm.showDropdown = false;
 
         await wrapper.vm.$nextTick();
-        expect(wrapper.find(DropdownValue).exists()).toBe(true);
+        expect(wrapper.findComponent(DropdownValue).exists()).toBe(true);
       });
 
       it('should not render DropdownValue component when variant is "standalone"', () => {
-        expect(wrapperStandalone.find(DropdownValue).exists()).toBe(false);
+        expect(wrapperStandalone.findComponent(DropdownValue).exists()).toBe(false);
       });
 
       it('should render dropdown container element when props `canEdit` & `showDropdown` are true', async () => {

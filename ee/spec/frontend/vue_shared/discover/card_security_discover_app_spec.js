@@ -49,7 +49,7 @@ describe('Card security discover app', () => {
     });
 
     it('renders component properly', () => {
-      expect(wrapper.find(CardSecurityDiscoverApp).exists()).toBe(true);
+      expect(wrapper.findComponent(CardSecurityDiscoverApp).exists()).toBe(true);
     });
 
     it('renders discover title properly', () => {

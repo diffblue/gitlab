@@ -28,8 +28,8 @@ const PaginatedList = {
 };
 
 const noop = () => {};
-const findIcon = () => wrapper.find(GlIcon);
-const findPopover = () => wrapper.find(GlPopover);
+const findIcon = () => wrapper.findComponent(GlIcon);
+const findPopover = () => wrapper.findComponent(GlPopover);
 
 const createComponent = ({ state, getters, props, actionMocks, isAdmin, options, provide }) => {
   const fakeStore = new Vuex.Store({
@@ -87,7 +87,7 @@ describe('License Management', () => {
     `('$desc', ({ isAdmin }) => {
       it('should render loading icon during initial loading', () => {
         createComponent({ state: { isLoadingManagedLicenses: true }, isAdmin });
-        expect(wrapper.find(GlLoadingIcon).exists()).toBe(true);
+        expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
       });
 
       it('should render list of managed licenses while updating a license', () => {
@@ -96,7 +96,7 @@ describe('License Management', () => {
           getters: { hasPendingLicenses: () => true },
           isAdmin,
         });
-        expect(wrapper.find(PaginatedList).props('list')).toBe(managedLicenses);
+        expect(wrapper.findComponent(PaginatedList).props('list')).toBe(managedLicenses);
       });
 
       describe('when not loading', () => {
@@ -105,7 +105,7 @@ describe('License Management', () => {
         });
 
         it('should render list of managed licenses', () => {
-          expect(wrapper.find(PaginatedList).props('list')).toBe(managedLicenses);
+          expect(wrapper.findComponent(PaginatedList).props('list')).toBe(managedLicenses);
         });
       });
 
@@ -134,10 +134,10 @@ describe('License Management', () => {
           actionMocks: { setLicenseApproval: setLicenseApprovalMock },
           isAdmin: true,
         });
-        wrapper.find(GlButton).vm.$emit('click');
+        wrapper.findComponent(GlButton).vm.$emit('click');
 
         return wrapper.vm.$nextTick().then(() => {
-          wrapper.find(AddLicenseForm).vm.$emit('addLicense');
+          wrapper.findComponent(AddLicenseForm).vm.$emit('addLicense');
           expect(setLicenseApprovalMock).toHaveBeenCalled();
         });
       });
@@ -148,30 +148,30 @@ describe('License Management', () => {
         });
 
         it('should render the license-approvals section accordingly', () => {
-          expect(wrapper.find(LicenseComplianceApprovals).exists()).toBe(true);
+          expect(wrapper.findComponent(LicenseComplianceApprovals).exists()).toBe(true);
         });
 
         it('should render the form if the form is open and disable the form button', () => {
-          wrapper.find(GlButton).vm.$emit('click');
+          wrapper.findComponent(GlButton).vm.$emit('click');
 
           return wrapper.vm.$nextTick().then(() => {
-            expect(wrapper.find(AddLicenseForm).exists()).toBe(true);
-            expect(wrapper.find(GlButton).attributes('disabled')).toBe('true');
+            expect(wrapper.findComponent(AddLicenseForm).exists()).toBe(true);
+            expect(wrapper.findComponent(GlButton).attributes('disabled')).toBe('true');
           });
         });
 
         it('should not render the form if the form is closed and have active button', () => {
-          expect(wrapper.find(AddLicenseForm).exists()).toBe(false);
-          expect(wrapper.find(GlButton).attributes('disabled')).not.toBe('true');
+          expect(wrapper.findComponent(AddLicenseForm).exists()).toBe(false);
+          expect(wrapper.findComponent(GlButton).attributes('disabled')).not.toBe('true');
         });
 
         it('should render delete confirmation modal', () => {
-          expect(wrapper.find(DeleteConfirmationModal).exists()).toBe(true);
+          expect(wrapper.findComponent(DeleteConfirmationModal).exists()).toBe(true);
         });
 
         it('renders the admin row', () => {
-          expect(wrapper.find(LicenseManagementRow).exists()).toBe(false);
-          expect(wrapper.find(AdminLicenseManagementRow).exists()).toBe(true);
+          expect(wrapper.findComponent(LicenseManagementRow).exists()).toBe(false);
+          expect(wrapper.findComponent(AdminLicenseManagementRow).exists()).toBe(true);
         });
       });
 
@@ -194,8 +194,8 @@ describe('License Management', () => {
           actionMocks: { setLicenseApproval: setLicenseApprovalMock },
           isAdmin: false,
         });
-        expect(wrapper.find(GlButton).exists()).toBe(false);
-        expect(wrapper.find(AddLicenseForm).exists()).toBe(false);
+        expect(wrapper.findComponent(GlButton).exists()).toBe(false);
+        expect(wrapper.findComponent(AddLicenseForm).exists()).toBe(false);
         expect(setLicenseApprovalMock).not.toHaveBeenCalled();
       });
 
@@ -205,21 +205,21 @@ describe('License Management', () => {
         });
 
         it('should not render the approval section', () => {
-          expect(wrapper.find(LicenseComplianceApprovals).exists()).toBe(false);
+          expect(wrapper.findComponent(LicenseComplianceApprovals).exists()).toBe(false);
         });
 
         it('should not render the form', () => {
-          expect(wrapper.find(AddLicenseForm).exists()).toBe(false);
-          expect(wrapper.find(GlButton).exists()).toBe(false);
+          expect(wrapper.findComponent(AddLicenseForm).exists()).toBe(false);
+          expect(wrapper.findComponent(GlButton).exists()).toBe(false);
         });
 
         it('should not render delete confirmation modal', () => {
-          expect(wrapper.find(DeleteConfirmationModal).exists()).toBe(false);
+          expect(wrapper.findComponent(DeleteConfirmationModal).exists()).toBe(false);
         });
 
         it('renders the read-only row', () => {
-          expect(wrapper.find(LicenseManagementRow).exists()).toBe(true);
-          expect(wrapper.find(AdminLicenseManagementRow).exists()).toBe(false);
+          expect(wrapper.findComponent(LicenseManagementRow).exists()).toBe(true);
+          expect(wrapper.findComponent(AdminLicenseManagementRow).exists()).toBe(false);
         });
       });
 

@@ -31,7 +31,7 @@ describe('EpicsSelect', () => {
       });
 
       it('should render Icon component', () => {
-        const iconEl = wrapper.find(GlIcon);
+        const iconEl = wrapper.findComponent(GlIcon);
 
         expect(iconEl.exists()).toBe(true);
         expect(iconEl.attributes('name')).toBe('epic');

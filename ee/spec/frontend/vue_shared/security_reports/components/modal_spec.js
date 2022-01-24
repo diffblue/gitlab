@@ -24,7 +24,7 @@ describe('Security Reports modal', () => {
         ...propsData,
       },
     });
-    modal = wrapper.find(GlModal);
+    modal = wrapper.findComponent(GlModal);
   };
 
   describe('modal', () => {
@@ -106,7 +106,9 @@ describe('Security Reports modal', () => {
       });
 
       it('allows the vulnerability to be dismissed', () => {
-        expect(wrapper.find({ ref: 'footer' }).props('canDismissVulnerability')).toBe(true);
+        expect(wrapper.findComponent({ ref: 'footer' }).props('canDismissVulnerability')).toBe(
+          true,
+        );
       });
     });
 
@@ -180,7 +182,7 @@ describe('Security Reports modal', () => {
       });
 
       it('disallows any actions in the footer', () => {
-        expect(wrapper.find({ ref: 'footer' }).props()).toMatchObject({
+        expect(wrapper.findComponent({ ref: 'footer' }).props()).toMatchObject({
           canCreateIssue: false,
           canCreateMergeRequest: false,
           canDownloadPatch: false,
@@ -199,7 +201,7 @@ describe('Security Reports modal', () => {
     });
 
     it('disallows any actions in the footer', () => {
-      expect(wrapper.find({ ref: 'footer' }).props()).toMatchObject({
+      expect(wrapper.findComponent({ ref: 'footer' }).props()).toMatchObject({
         canCreateIssue: false,
         canCreateMergeRequest: false,
         canDownloadPatch: false,
@@ -222,7 +224,7 @@ describe('Security Reports modal', () => {
       });
 
       it('displays a link to the issue', () => {
-        expect(wrapper.find(IssueNote).exists()).toBe(true);
+        expect(wrapper.findComponent(IssueNote).exists()).toBe(true);
       });
     });
 
@@ -239,7 +241,7 @@ describe('Security Reports modal', () => {
       });
 
       it('hides the link to the issue', () => {
-        const note = wrapper.find(IssueNote);
+        const note = wrapper.findComponent(IssueNote);
         expect(note.exists()).toBe(false);
       });
     });
@@ -259,7 +261,7 @@ describe('Security Reports modal', () => {
       });
 
       it('displays a link to the merge request', () => {
-        expect(wrapper.find(MergeRequestNote).exists()).toBe(true);
+        expect(wrapper.findComponent(MergeRequestNote).exists()).toBe(true);
       });
     });
 
@@ -276,7 +278,7 @@ describe('Security Reports modal', () => {
       });
 
       it('hides the link to the merge request', () => {
-        const note = wrapper.find(MergeRequestNote);
+        const note = wrapper.findComponent(MergeRequestNote);
         expect(note.exists()).toBe(false);
       });
     });
@@ -292,7 +294,7 @@ describe('Security Reports modal', () => {
     });
 
     it('disallows any actions in the footer', () => {
-      expect(wrapper.find({ ref: 'footer' }).props()).toMatchObject({
+      expect(wrapper.findComponent({ ref: 'footer' }).props()).toMatchObject({
         canCreateIssue: false,
         canCreateMergeRequest: false,
         canDownloadPatch: false,
@@ -338,7 +340,7 @@ describe('Security Reports modal', () => {
       mountComponent(propsData, mount);
       await nextTick();
 
-      const solutionCard = modal.find(SolutionCard);
+      const solutionCard = modal.findComponent(SolutionCard);
 
       expect(solutionCard.exists()).toBe(true);
       expect(solutionCard.text()).toContain(solution);
@@ -355,7 +357,7 @@ describe('Security Reports modal', () => {
       mountComponent(propsData, mount);
       await nextTick();
 
-      const solutionCard = wrapper.find(SolutionCard);
+      const solutionCard = wrapper.findComponent(SolutionCard);
 
       expect(solutionCard.exists()).toBe(true);
       expect(solutionCard.text()).toContain(summary);
@@ -370,7 +372,7 @@ describe('Security Reports modal', () => {
       mountComponent(propsData, mount);
       await nextTick();
 
-      const solutionCard = wrapper.find(SolutionCard);
+      const solutionCard = wrapper.findComponent(SolutionCard);
 
       expect(solutionCard.exists()).toBe(true);
       expect(wrapper.find('hr').exists()).toBe(false);

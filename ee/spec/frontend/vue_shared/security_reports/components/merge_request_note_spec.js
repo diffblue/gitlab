@@ -30,11 +30,11 @@ describe('Merge request note', () => {
     });
 
     it('should pass the author to the event item', () => {
-      expect(wrapper.find(EventItem).props('author')).toBe(feedback.author);
+      expect(wrapper.findComponent(EventItem).props('author')).toBe(feedback.author);
     });
 
     it('should pass the created date to the event item', () => {
-      expect(wrapper.find(EventItem).props('createdAt')).toBe(feedback.created_at);
+      expect(wrapper.findComponent(EventItem).props('createdAt')).toBe(feedback.created_at);
     });
 
     it('should return the event text with no project data', () => {
