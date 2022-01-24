@@ -12,7 +12,9 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
   end
 
   around do |example|
-    Timecop.freeze(current_time) { example.run }
+    travel_to(current_time)
+    example.run
+    travel_back
   end
 
   def round_to_days(seconds)
@@ -596,13 +598,13 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
       before do
         group.add_user(user, GroupMember::MAINTAINER)
 
-        travel_to(Time.new(2019, 6, 1)) do
-          mr = create(:merge_request, source_project: project1)
-          mr.metrics.update!(merged_at: 1.hour.from_now)
+        travel_to(Time.new(2019, 6, 1))
+        mr = create(:merge_request, source_project: project1)
+        mr.metrics.update!(merged_at: 1.hour.from_now)
 
-          mr = create(:merge_request, source_project: project2)
-          mr.metrics.update!(merged_at: 1.hour.from_now)
-        end
+        mr = create(:merge_request, source_project: project2)
+        mr.metrics.update!(merged_at: 1.hour.from_now)
+        travel_back
       end
 
       shared_examples 'filter examples' do

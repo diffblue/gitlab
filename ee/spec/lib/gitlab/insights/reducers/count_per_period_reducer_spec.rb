@@ -26,7 +26,7 @@ RSpec.describe Gitlab::Insights::Reducers::CountPerPeriodReducer do
 
   context 'with no issues' do
     around do |example|
-      Timecop.freeze(Time.utc(2019, 5, 5)) { example.run }
+      travel_to(Time.utc(2019, 5, 5)) { example.run }
     end
 
     let(:project) { create(:project, :public) }
@@ -144,7 +144,7 @@ RSpec.describe Gitlab::Insights::Reducers::CountPerPeriodReducer do
         merge_request = public_send("issuable#{i}")
         merge_request_metrics_service = MergeRequestMetricsService.new(merge_request.metrics)
         Event.transaction do
-          Timecop.freeze(merge_request.created_at) do
+          travel_to(merge_request.created_at) do
             merge_event = EventCreateService.new.merge_mr(merge_request, merge_request.author)
             merge_request_metrics_service.merge(merge_event)
           end
