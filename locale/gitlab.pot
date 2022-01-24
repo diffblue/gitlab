@@ -27226,9 +27226,6 @@ msgstr ""
 msgid "Profiles|Clear status"
 msgstr ""
 
-msgid "Profiles|Click on icon to activate signin with one of the following services"
-msgstr ""
-
 msgid "Profiles|Commit email"
 msgstr ""
 
@@ -27404,6 +27401,9 @@ msgid "Profiles|Publicly visible private SSH keys can compromise your system."
 msgstr ""
 
 msgid "Profiles|Remove avatar"
+msgstr ""
+
+msgid "Profiles|Select a service to sign in with."
 msgstr ""
 
 msgid "Profiles|Set new profile picture"
