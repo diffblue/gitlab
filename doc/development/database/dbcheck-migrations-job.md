@@ -6,33 +6,34 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 # db:check-migrations job
 
-This job runs on the test stage of a merge request pipeline. It does 3 checks:
+This job runs on the test stage of a merge request pipeline. It checks:
 
-- a schema dump comparison between the author's working branch and the target branch,
-  after executing a rollback of your new migrations, to validate that the
-  schema properly resets to what it was before executing this new migration.
-- a schema dump comparison between the author's working branch and the `db/structure.sql`
-  file that the author committed, to guarantee that it contains all the expected changes
-  in the migration.
-- a Git diff between the `db/schema_migrations` that the author committed and the
-  one that the script generated after running migrations, to guarantee that everything
-  was properly committed.
-  
+1. A schema dump comparison between the author's working branch and the target branch,
+   after executing a rollback of your new migrations. This check validates that the
+   schema properly resets to what it was before executing this new migration.
+1. A schema dump comparison between the author's working branch and the `db/structure.sql`
+   file that the author committed. This check validates that it contains all the expected changes
+   in the migration.
+1. A Git diff between the `db/schema_migrations` that the author committed and the
+   one that the script generated after running migrations. This check validates that everything
+   was properly committed.
+
 ## Troubleshooting
 
 ### False positives
 
-This jobs is allowed to fail, because it can throw some false positives.
+This job is allowed to fail, because it can throw some false positives.
 
-For example, when we drop a column and then we rollback, this column is always
-re-added at the end of the list of columns. Meaning that, if this column was previously in
-the middle of the list, the rollback won't bring the schema back exactly to what it was.
-This will cause the job to fail, but it's an acceptable situation.
+For example, when we drop a column and then roll back, this column is always
+re-added at the end of the list of columns. If the column was previously in
+the middle of the list, the rollback can't return the schema back exactly to
+its previous state. The job to fail, but it's an acceptable situation.
 
-See [this failed job](https://gitlab.com/gitlab-org/gitlab/-/jobs/2006544972#L138) for a
-real life example. In this case, the author dropped the `position` column.
+For a real-life example, refer to
+[this failed job](https://gitlab.com/gitlab-org/gitlab/-/jobs/2006544972#L138).
+Here, the author dropped the `position` column.
 
-### Schema dump comparison fails after rollback 
+### Schema dump comparison fails after rollback
 
 This often happens if your working branch is behind the target branch. Here is a real life
 scenario:
@@ -62,5 +63,5 @@ did not know about the removal of the `dependency_proxy_size` constraint. So, wh
 schemas, the `dev` branch will have this constraint while the `main` branch won't.
 
 This example really happened. See the [job failure logs](https://gitlab.com/gitlab-org/gitlab/-/jobs/1992050890).
-   
+
 To fix these kind of issues, rebase the working branch onto the target branch to get the latest changes.
