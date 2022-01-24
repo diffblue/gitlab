@@ -1,6 +1,7 @@
 import Vue from 'vue';
+import { sprintf } from '~/locale';
 import { parseBoolean } from '~/lib/utils/common_utils';
-import TransferGroupForm from './components/transfer_group_form.vue';
+import TransferGroupForm, { i18n } from './components/transfer_group_form.vue';
 
 const prepareGroups = (rawGroups) => {
   const group = JSON.parse(rawGroups).map(({ id, text: humanName }) => ({
@@ -20,26 +21,23 @@ export default () => {
   const {
     targetFormId = null,
     buttonText: confirmButtonText = '',
-    phrase: confirmationPhrase = '',
-    confirmDangerMessage = '',
+    groupName = '',
     parentGroups = [],
     isPaidGroup,
-    paidGroupHelpLink,
   } = el.dataset;
 
   return new Vue({
     el,
     provide: {
-      confirmDangerMessage,
+      confirmDangerMessage: sprintf(i18n.confirmationMessage, { groupName }),
     },
     render(createElement) {
       return createElement(TransferGroupForm, {
         props: {
           parentGroups: prepareGroups(parentGroups),
           isPaidGroup: parseBoolean(isPaidGroup),
-          paidGroupHelpLink,
           confirmButtonText,
-          confirmationPhrase,
+          confirmationPhrase: groupName,
         },
         on: {
           confirm: () => {

@@ -41,7 +41,7 @@ export default {
     defaultText: {
       type: String,
       required: false,
-      default: null,
+      default: i18n.DEFAULT_TEXT,
     },
     includeHeaders: {
       type: Boolean,
@@ -51,7 +51,7 @@ export default {
     emptyNamespaceTitle: {
       type: String,
       required: false,
-      default: null,
+      default: i18n.DEFAULT_EMPTY_NAMESPACE_TEXT,
     },
     includeEmptyNamespace: {
       type: Boolean,
@@ -66,12 +66,6 @@ export default {
     };
   },
   computed: {
-    defaultTextDisplay() {
-      return this.defaultText || this.$options.i18n.DEFAULT_TEXT;
-    },
-    emptyNamespace() {
-      return this.emptyNamespaceTitle || this.$options.i18n.DEFAULT_EMPTY_NAMESPACE_TEXT;
-    },
     hasUserNamespaces() {
       return this.data.user?.length;
     },
@@ -87,7 +81,7 @@ export default {
       return filterByName(this.data.user, this.searchTerm);
     },
     selectedNamespaceText() {
-      return this.selectedNamespace?.humanName || this.defaultTextDisplay;
+      return this.selectedNamespace?.humanName || this.defaultText;
     },
   },
   methods: {
@@ -96,7 +90,7 @@ export default {
       this.$emit('select', item);
     },
     handleSelectEmptyNamespace() {
-      this.handleSelect({ id: EMPTY_NAMESPACE_ID, humanName: this.emptyNamespace });
+      this.handleSelect({ id: EMPTY_NAMESPACE_ID, humanName: this.emptyNamespaceTitle });
     },
   },
   i18n,
@@ -112,7 +106,7 @@ export default {
         data-qa-selector="namespaces_list_item"
         @click="handleSelectEmptyNamespace()"
       >
-        {{ emptyNamespace }}
+        {{ emptyNamespaceTitle }}
       </gl-dropdown-item>
       <gl-dropdown-divider />
     </div>

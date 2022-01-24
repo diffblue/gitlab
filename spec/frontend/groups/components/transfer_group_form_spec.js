@@ -56,14 +56,14 @@ describe('Transfer group form', () => {
   });
 
   it('sets the namespace select properties', () => {
-    const attrs = findNamespaceSelect().attributes();
-    expect(attrs).toMatchObject({
-      defaulttext: 'Select parent group',
-      emptynamespacetitle: 'No parent group',
-      includeemptynamespace: 'true',
+    expect(findNamespaceSelect().props()).toMatchObject({
+      defaultText: 'Select parent group',
+      fullWidth: false,
+      includeHeaders: false,
+      emptyNamespaceTitle: 'No parent group',
+      includeEmptyNamespace: true,
+      data: { groups },
     });
-
-    expect(findNamespaceSelect().props('data')).toEqual({ groups });
   });
 
   it('renders the hidden input field', () => {
