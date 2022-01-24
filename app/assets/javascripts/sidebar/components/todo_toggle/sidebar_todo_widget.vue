@@ -184,7 +184,7 @@ export default {
       class="sidebar-collapsed-icon sidebar-collapsed-container gl-rounded-0! gl-shadow-none!"
       @click.stop.prevent="toggleTodo"
     >
-      <gl-icon :size="16" :class="{ 'todo-undone': hasTodo }" :name="collapsedButtonIcon" />
+      <gl-icon :class="{ 'todo-undone': hasTodo }" :name="collapsedButtonIcon" />
     </gl-button>
   </div>
 </template>
