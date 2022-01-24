@@ -77,7 +77,7 @@ export default {
       return groupByIterationCadences(this.iterations);
     },
     dropdownSelectedText() {
-      return this.currentIteration?.period
+      return this.currentIteration?.startDate || this.currentIteration?.period
         ? this.getIterationPeriod(this.currentIteration)
         : __('Select iteration');
     },

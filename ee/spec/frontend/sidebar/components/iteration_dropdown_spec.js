@@ -84,6 +84,7 @@ describe('IterationDropdown', () => {
     await wrapper.vm.$nextTick();
     jest.runOnlyPendingTimers();
   };
+
   const findDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
   const findDropdownItemsAt = (i) => findDropdownItems().at(i);
   const findDropdownItemWithText = (text) =>
@@ -206,22 +207,26 @@ describe('IterationDropdown', () => {
     describe.each([
       {
         text: IterationDropdown.noIteration.text,
+        dropdownText: 'Select iteration',
         iteration: IterationDropdown.noIteration,
       },
       {
         text: getIterationPeriod(TEST_ITERATIONS[0]),
+        dropdownText: getIterationPeriod(TEST_ITERATIONS[0]),
         iteration: TEST_ITERATIONS[0],
       },
       {
         text: getIterationPeriod(TEST_ITERATIONS[1]),
+        dropdownText: getIterationPeriod(TEST_ITERATIONS[1]),
         iteration: TEST_ITERATIONS[1],
       },
-    ])("when iteration '%s' is selected", ({ text, iteration }) => {
+    ])("when iteration '%s' is selected", ({ text, dropdownText, iteration }) => {
       beforeEach(async () => {
         await selectDropdownItemAndWait(text);
       });
 
-      it('shows item as checked and emits event', () => {
+      it('shows item as checked with text and emits event', () => {
+        expect(findDropdown().props('text')).toBe(dropdownText);
         expect(findDropdownItemWithText(text).props('isChecked')).toBe(true);
         expect(wrapper.emitted('onIterationSelect')).toEqual([[iteration]]);
       });
@@ -285,15 +290,15 @@ describe('IterationDropdown', () => {
 
       expect(dropdownItems.at(2).findComponent(GlDropdownDivider).exists()).toBe(true);
       expect(dropdownItems.at(3).findComponent(GlDropdownSectionHeader).text()).toBe('My Cadence');
-      expect(dropdownItems.at(4).text()).toContain('Oct 1, 2021 - Oct 5, 2021');
+      expect(dropdownItems.at(4).text()).toContain(getIterationPeriod(TEST_ITERATIONS[0]));
       expect(dropdownItems.at(4).text()).toContain('Test Title');
-      expect(dropdownItems.at(5).text()).toContain('Oct 11, 2021 - Oct 15, 2021');
+      expect(dropdownItems.at(5).text()).toContain(getIterationPeriod(TEST_ITERATIONS[2]));
 
       expect(dropdownItems.at(6).findComponent(GlDropdownDivider).exists()).toBe(true);
       expect(dropdownItems.at(7).findComponent(GlDropdownSectionHeader).text()).toBe(
         'My Second Cadence',
       );
-      expect(dropdownItems.at(8).text()).toContain('Oct 6, 2021 - Oct 10, 2021');
+      expect(dropdownItems.at(8).text()).toContain(getIterationPeriod(TEST_ITERATIONS[1]));
     });
   });
 });
