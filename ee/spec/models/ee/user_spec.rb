@@ -1202,63 +1202,6 @@ RSpec.describe User do
     end
   end
 
-  describe '.username_suggestion' do
-    context 'namespace with input name does not exist' do
-      let(:name) { 'Arthur Morgan' }
-
-      it 'returns the parameterized name' do
-        username = described_class.username_suggestion(name)
-
-        expect(username).to eq('arthur_morgan')
-      end
-    end
-
-    context 'namespace with input name exists' do
-      let(:name) { 'Disney' }
-
-      before do
-        create(:user, name: 'disney')
-      end
-
-      it 'returns the parameterized name with a suffix' do
-        username = described_class.username_suggestion(name)
-
-        expect(username).to eq('disney1')
-      end
-    end
-
-    context 'namespace with input name and suffix exists' do
-      let(:name) { 'Disney' }
-
-      before do
-        create(:user, name: 'disney')
-        create(:user, name: 'disney1')
-      end
-
-      it 'loops through parameterized name with suffixes, until it finds one that does not exist' do
-        username = described_class.username_suggestion(name)
-
-        expect(username).to eq('disney2')
-      end
-    end
-
-    context 'when max attempts for suggestion is exceeded' do
-      let(:name) { 'Disney' }
-      let(:max_attempts) { described_class::MAX_USERNAME_SUGGESTION_ATTEMPTS }
-
-      before do
-        allow(::Namespace).to receive(:find_by_path_or_name).with("disney").and_return(true)
-        max_attempts.times { |count| allow(::Namespace).to receive(:find_by_path_or_name).with("disney#{count}").and_return(true) }
-      end
-
-      it 'returns an empty response' do
-        username = described_class.username_suggestion(name)
-
-        expect(username).to eq('')
-      end
-    end
-  end
-
   describe '#manageable_groups_eligible_for_trial', :saas do
     let_it_be(:user) { create :user }
     let_it_be(:non_trialed_group_z) { create :group_with_plan, name: 'Zeta', plan: :free_plan }

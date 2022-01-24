@@ -50,28 +50,5 @@ RSpec.describe 'Trial Sign Up' do
         expect(page).to have_content('Start your Free Ultimate Trial')
       end
     end
-
-    context 'entering', :js do
-      using RSpec::Parameterized::TableSyntax
-
-      where(:case_name, :first_name, :last_name, :suggested_username) do
-        'first name'               | 'foobar'  | nil      | 'foobar'
-        'last name'                | nil       | 'foobar' | 'foobar'
-        'first name and last name' | 'foo'     | 'bar'    | 'foo_bar'
-      end
-
-      with_them do
-        it 'suggests the username' do
-          visit new_trial_registration_path
-          click_on 'Continue'
-
-          fill_in 'new_user_first_name', with: first_name if first_name
-          fill_in 'new_user_last_name', with: last_name if last_name
-          find('body').click
-
-          expect(page).to have_field('new_user_username', with: suggested_username)
-        end
-      end
-    end
   end
 end

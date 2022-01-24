@@ -13,7 +13,6 @@ module EE
 
     DEFAULT_ROADMAP_LAYOUT = 'months'
     DEFAULT_GROUP_VIEW = 'details'
-    MAX_USERNAME_SUGGESTION_ATTEMPTS = 15
 
     prepended do
       include UsageStatistics
@@ -139,19 +138,6 @@ module EE
       def find_by_smartcard_identity(certificate_subject, certificate_issuer)
         joins(:smartcard_identities)
           .find_by(smartcard_identities: { subject: certificate_subject, issuer: certificate_issuer })
-      end
-
-      def username_suggestion(base_name)
-        suffix = nil
-        base_name = base_name.parameterize(separator: '_')
-        MAX_USERNAME_SUGGESTION_ATTEMPTS.times do |attempt|
-          username = "#{base_name}#{suffix}"
-          return username unless ::Namespace.find_by_path_or_name(username)
-
-          suffix = attempt + 1
-        end
-
-        ''
       end
 
       # Limits the users to those who have an identity that belongs to
