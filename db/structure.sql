@@ -13687,7 +13687,9 @@ CREATE TABLE draft_notes (
     "position" text,
     original_position text,
     change_position text,
-    commit_id bytea
+    commit_id bytea,
+    line_code text,
+    CONSTRAINT check_c497a94a0e CHECK ((char_length(line_code) <= 255))
 );
 
 CREATE SEQUENCE draft_notes_id_seq
