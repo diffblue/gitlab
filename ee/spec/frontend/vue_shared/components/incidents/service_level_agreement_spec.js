@@ -4,6 +4,7 @@ import VueApollo from 'vue-apollo';
 import getIncidentStateQuery from 'ee/graphql_shared/queries/get_incident_state.query.graphql';
 import ServiceLevelAgreementCell from 'ee/vue_shared/components/incidents/service_level_agreement.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import { calculateRemainingMilliseconds, formatTime } from '~/lib/utils/datetime_utility';
 
 const formatTimeActual = jest.requireActual('~/lib/utils/datetime_utility').formatTime;
@@ -164,7 +165,7 @@ describe('Service Level Agreement', () => {
         const mockApollo = createMockApolloProvider(issueState);
         mountComponent({ props: { slaDueAt: mockDateString }, mockApollo });
 
-        await nextTick();
+        await waitForPromises();
 
         expect(wrapper.text()).toBe('Missed SLA');
       });
@@ -174,7 +175,7 @@ describe('Service Level Agreement', () => {
         const mockApollo = createMockApolloProvider(issueState);
         mountComponent({ props: { slaDueAt: mockDateString }, mockApollo });
 
-        await nextTick();
+        await waitForPromises();
 
         expect(wrapper.text()).toBe('Achieved SLA');
       });

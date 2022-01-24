@@ -7,6 +7,7 @@ import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_help
 import ScheduledTab from 'ee/on_demand_scans/components/tabs/scheduled.vue';
 import BaseTab from 'ee/on_demand_scans/components/tabs/base_tab.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import scheduledDastProfilesQuery from 'ee/on_demand_scans/graphql/scheduled_dast_profiles.query.graphql';
 import { createRouter } from 'ee/on_demand_scans/router';
 import { SCHEDULED_TAB_TABLE_FIELDS, LEARN_MORE_TEXT } from 'ee/on_demand_scans/constants';
@@ -105,8 +106,9 @@ describe('Scheduled tab', () => {
   describe('custom table cells', () => {
     const [firstProfile] = scheduledDastProfilesMock.data.project.pipelines.nodes;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       createFullComponent();
+      await waitForPromises();
     });
 
     it('renders the next run cell', () => {

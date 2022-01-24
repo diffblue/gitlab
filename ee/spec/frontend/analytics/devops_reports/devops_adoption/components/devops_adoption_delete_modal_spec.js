@@ -127,12 +127,13 @@ describe('DevopsAdoptionDeleteModal', () => {
     });
 
     describe('successful submission', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         createComponent();
 
         wrapper.vm.$refs.modal.hide = jest.fn();
 
         findModal().vm.$emit('primary', mockEvent);
+        await waitForPromises();
       });
 
       it('submits the correct request variables', () => {

@@ -125,10 +125,10 @@ describe('Alert Drawer', () => {
     const errorMessage = `GraphQL error: ${getAlertDetailsQueryErrorMessage}`;
     const captureExceptionSpy = jest.spyOn(Sentry, 'captureException');
     createWrapper({ apolloSpy: erroredGetAlertDetailsQuerySpy });
-    await wrapper.vm.$nextTick();
+    await waitForPromises();
     expect(findAlert().exists()).toBe(true);
     expect(findAlert().text()).toBe(DRAWER_ERRORS.DETAILS);
-    expect(captureExceptionSpy).toHaveBeenCalledTimes(1);
+    expect(captureExceptionSpy).toHaveBeenCalledTimes(2);
     expect(captureExceptionSpy.mock.calls[0][0].message).toBe(errorMessage);
   });
 

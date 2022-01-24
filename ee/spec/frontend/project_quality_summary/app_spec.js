@@ -3,6 +3,7 @@ import { createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import mockProjectQualityResponse from 'test_fixtures/graphql/project_quality_summary/graphql/queries/get_project_quality.query.graphql.json';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import createFlash from '~/flash';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 
@@ -52,8 +53,9 @@ describe('Project quality summary app component', () => {
   });
 
   describe('on error', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createComponent(jest.fn().mockRejectedValueOnce(new Error('Error!')));
+      await waitForPromises();
     });
 
     it('shows a flash message', () => {
@@ -62,8 +64,9 @@ describe('Project quality summary app component', () => {
   });
 
   describe('with data', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createComponent();
+      await waitForPromises();
     });
 
     describe('test runs card', () => {

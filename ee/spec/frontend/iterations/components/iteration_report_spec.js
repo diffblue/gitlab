@@ -281,7 +281,7 @@ describe('Iterations report', () => {
       `(
         'when user $description and they are viewing an iteration within a $namespaceType',
         ({ canEdit, namespaceType, canEditIteration }) => {
-          beforeEach(() => {
+          beforeEach(async () => {
             const mockQueryResponse = {
               [Namespace.Group]: mockGroupIterations,
               [Namespace.Project]: mockProjectIterations,
@@ -295,6 +295,7 @@ describe('Iterations report', () => {
               },
               mockQueryResponse,
             });
+            await waitForPromises();
           });
 
           it(`${canEditIteration ? 'is shown' : 'is hidden'}`, () => {

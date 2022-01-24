@@ -1,12 +1,13 @@
 import { GlTable } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
-import Vue, { nextTick } from 'vue';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import SelectProjectsDropdown from 'ee/analytics/repository_analytics/components/select_projects_dropdown.vue';
 import TestCoverageTable from 'ee/analytics/repository_analytics/components/test_coverage_table.vue';
 import getGroupProjects from 'ee/analytics/repository_analytics/graphql/queries/get_group_projects.query.graphql';
 import getProjectsTestCoverage from 'ee/analytics/repository_analytics/graphql/queries/get_projects_test_coverage.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import Api from '~/api';
 import { getTimeago } from '~/lib/utils/datetime_utility';
@@ -32,11 +33,9 @@ describe('Test coverage table component', () => {
   const findProjectDateById = (id) => wrapper.findByTestId(`${id}-date`);
 
   const clickSelectAllProjects = async () => {
-    findProjectsDropdown().vm.$emit('select-all-projects');
-
-    await nextTick();
+    await findProjectsDropdown().vm.$emit('select-all-projects');
     jest.runOnlyPendingTimers();
-    await nextTick();
+    await waitForPromises();
   };
 
   const createComponent = ({ glFeatures = {}, mockData = {}, mountFn = shallowMount } = {}) => {

@@ -80,8 +80,10 @@ describe('List', () => {
   });
 
   describe('fetching error', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       wrapper = createComponentWithApollo(fetchWithErrors);
+      jest.spyOn(Sentry, 'captureException');
+      await waitForPromises();
     });
 
     it('shows the alert', () => {
@@ -104,17 +106,14 @@ describe('List', () => {
     });
 
     it('sends the error to Sentry', async () => {
-      jest.spyOn(Sentry, 'captureException');
-
-      await waitForPromises();
-
       expect(Sentry.captureException.mock.calls[0][0].networkError).toBe(sentryError);
     });
   });
 
   describe('empty state', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       wrapper = createComponentWithApollo(fetchEmpty);
+      await waitForPromises();
     });
 
     it('shows the empty state', () => {
@@ -133,8 +132,9 @@ describe('List', () => {
   });
 
   describe('content', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       wrapper = createComponentWithApollo(fetch);
+      await waitForPromises();
     });
 
     it('does not show the other parts of the app', () => {

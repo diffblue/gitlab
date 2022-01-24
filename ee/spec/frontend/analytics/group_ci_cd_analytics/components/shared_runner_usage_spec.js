@@ -4,6 +4,7 @@ import VueApollo from 'vue-apollo';
 import SharedRunnerUsage from 'ee/analytics/group_ci_cd_analytics/components/shared_runner_usage.vue';
 import getCiMinutesUsageByNamespace from 'ee/analytics/group_ci_cd_analytics/graphql/ci_minutes.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import { ciMinutesUsageNamespace } from './mock_data';
 
 const localVue = createLocalVue();
@@ -56,8 +57,9 @@ describe('Shared runner usage tab', () => {
   const findAreaChart = () => wrapper.findComponent(GlAreaChart);
 
   describe('when the data has successfully loaded', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createComponentWithApollo();
+      await waitForPromises();
     });
 
     it('should display the chart', () => {

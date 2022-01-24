@@ -6,6 +6,7 @@ import VueApollo from 'vue-apollo';
 import ReleaseStatsCard from 'ee/analytics/group_ci_cd_analytics/components/release_stats_card.vue';
 import groupReleaseStatsQuery from 'ee/analytics/group_ci_cd_analytics/graphql/group_release_stats.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import { groupReleaseStatsQueryResponse } from './mock_data';
 
 Vue.use(VueApollo);
@@ -52,12 +53,13 @@ describe('Release stats card', () => {
   });
 
   describe('when the data has successfully loaded', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       const apolloProvider = createMockApollo([
         [groupReleaseStatsQuery, jest.fn().mockResolvedValueOnce(groupReleaseStatsQueryResponse)],
       ]);
 
       createComponent({ apolloProvider });
+      await waitForPromises();
     });
 
     it('does not render loading indicators', () => {
@@ -77,7 +79,7 @@ describe('Release stats card', () => {
   });
 
   describe('when the data is successfully returned, but the stats are all 0', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       const responseWithZeros = merge({}, groupReleaseStatsQueryResponse, {
         data: {
           group: {
@@ -96,6 +98,7 @@ describe('Release stats card', () => {
       ]);
 
       createComponent({ apolloProvider });
+      await waitForPromises();
     });
 
     it('renders the statistics', () => {
@@ -104,12 +107,13 @@ describe('Release stats card', () => {
   });
 
   describe('when an error occurs while loading data', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       const apolloProvider = createMockApollo([
         [groupReleaseStatsQuery, jest.fn().mockRejectedValueOnce(new Error('network error'))],
       ]);
 
       createComponent({ apolloProvider });
+      await waitForPromises();
     });
 
     it('does not render loading indicators', () => {

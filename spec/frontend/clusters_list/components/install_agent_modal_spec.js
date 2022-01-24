@@ -118,7 +118,7 @@ describe('InstallAgentModal', () => {
     createWrapper();
     writeQuery();
 
-    await wrapper.vm.$nextTick();
+    await waitForPromises();
 
     wrapper.vm.setAgentName('agent-name');
     findActionButton().vm.$emit('click');
@@ -126,11 +126,12 @@ describe('InstallAgentModal', () => {
     return waitForPromises();
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     apolloProvider = createMockApollo([
       [getAgentConfigurations, jest.fn().mockResolvedValue(apolloQueryResponse)],
     ]);
     createWrapper();
+    await waitForPromises();
     trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
   });
 

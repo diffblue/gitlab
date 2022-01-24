@@ -1,9 +1,9 @@
 import { GlEmptyState } from '@gitlab/ui';
 import { shallowMount, createLocalVue } from '@vue/test-utils';
-import { nextTick } from 'vue';
 import Vuex from 'vuex';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import pipelineSecurityReportSummaryQuery from 'ee/security_dashboard/graphql/queries/pipeline_security_report_summary.query.graphql';
 import PipelineSecurityDashboard from 'ee/security_dashboard/components/pipeline/pipeline_security_dashboard.vue';
 import ScanErrorsAlert from 'ee/security_dashboard/components/pipeline/scan_errors_alert.vue';
@@ -161,7 +161,7 @@ describe('Pipeline Security Dashboard component', () => {
 
   describe('scans error alert', () => {
     describe('with errors', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         factoryWithApollo({
           requestHandlers: [
             [
@@ -170,6 +170,7 @@ describe('Pipeline Security Dashboard component', () => {
             ],
           ],
         });
+        await waitForPromises();
       });
 
       it('shows an alert with information about each scan with errors', () => {
@@ -209,7 +210,7 @@ describe('Pipeline Security Dashboard component', () => {
           ],
         });
 
-        await nextTick();
+        await waitForPromises();
 
         expect(wrapper.findComponent(SecurityReportsSummary).exists()).toBe(
           shouldShowReportSummary,

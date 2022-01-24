@@ -6,6 +6,7 @@ import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_help
 import SavedTab from 'ee/on_demand_scans/components/tabs/saved.vue';
 import BaseTab from 'ee/on_demand_scans/components/tabs/base_tab.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import dastProfilesQuery from 'ee/on_demand_scans/graphql/dast_profiles.query.graphql';
 import dastProfileRunMutation from 'ee/on_demand_scans/graphql/dast_profile_run.mutation.graphql';
 import dastProfileDeleteMutation from 'ee/on_demand_scans/graphql/dast_profile_delete.mutation.graphql';
@@ -141,8 +142,9 @@ describe('Saved tab', () => {
   });
 
   describe('custom table cells', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createFullComponent();
+      await waitForPromises();
     });
 
     it('renders the branch name in the name cell', () => {
@@ -230,8 +232,8 @@ describe('Saved tab', () => {
             GlTable: GlTableMock,
           },
         });
-        await flushPromises();
         findRunScanButton().vm.$emit('click');
+        await waitForPromises();
       });
 
       it('shows the error message', () => {
@@ -289,7 +291,7 @@ describe('Saved tab', () => {
         expect(wrapper.vm.$refs['delete-scan-modal'].show).toHaveBeenCalled();
       });
 
-      it('confirming the deletion in the modal triggers the delete mutation with the profile ID', () => {
+      it('confirming the deletion in the modal triggers the delete mutation with the profile ID', async () => {
         deleteButton.vm.$emit('click');
         findDeleteModal().vm.$emit('ok');
 
@@ -315,8 +317,9 @@ describe('Saved tab', () => {
             GlTable: GlTableMock,
           },
         });
-        await flushPromises();
+        await waitForPromises();
         findDeleteModal().vm.$emit('ok');
+        await waitForPromises();
       });
 
       it('shows the error message', () => {

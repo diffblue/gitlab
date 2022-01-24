@@ -181,7 +181,7 @@ describe('SubscriptionManagementApp', () => {
     });
 
     describe('activating the license', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         currentSubscriptionResolver = jest
           .fn()
           .mockResolvedValue({ data: { currentLicense: license.ULTIMATE } });
@@ -192,6 +192,7 @@ describe('SubscriptionManagementApp', () => {
           currentSubscriptionResolver,
           subscriptionHistoryResolver,
         ]);
+        await waitForPromises();
       });
 
       it('passes the correct data to the subscription breakdown', () => {
@@ -223,7 +224,7 @@ describe('SubscriptionManagementApp', () => {
     });
 
     describe('with active license', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         currentSubscriptionResolver = jest
           .fn()
           .mockResolvedValue({ data: { currentLicense: license.ULTIMATE } });
@@ -234,6 +235,7 @@ describe('SubscriptionManagementApp', () => {
           currentSubscriptionResolver,
           subscriptionHistoryResolver,
         ]);
+        await waitForPromises();
       });
 
       it('queries for the current license', () => {

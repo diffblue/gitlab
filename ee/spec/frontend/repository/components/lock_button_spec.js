@@ -92,6 +92,7 @@ describe('LockButton component', () => {
     });
 
     it('executes a lock mutation once lock is confirmed', async () => {
+      lockMutationMock = jest.fn().mockRejectedValue('Test');
       createComponent({}, lockMutationMock);
       findLockButton().vm.$emit('click');
       clickSubmit();

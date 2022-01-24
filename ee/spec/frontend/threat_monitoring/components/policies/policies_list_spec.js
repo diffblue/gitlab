@@ -255,8 +255,9 @@ describe('PoliciesList component', () => {
   });
 
   describe('status column', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       mountWrapper();
+      await waitForPromises();
     });
 
     it('renders a checkmark icon for enabled policies', () => {
@@ -316,7 +317,7 @@ describe('PoliciesList component', () => {
   });
 
   describe('given an autodevops policy', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       const autoDevOpsPolicy = {
         ...mockNetworkPoliciesResponse[1],
         name: 'auto-devops',
@@ -327,6 +328,7 @@ describe('PoliciesList component', () => {
           networkPolicies: networkPolicies([autoDevOpsPolicy]),
         },
       });
+      await waitForPromises();
     });
 
     it('renders autodevops alert', () => {
@@ -335,8 +337,9 @@ describe('PoliciesList component', () => {
   });
 
   describe('given no environments', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       mountWrapper({ state: { threatMonitoring: { hasEnvironment: false } } });
+      await waitForPromises();
     });
 
     it('does not make a request for network policies', () => {
