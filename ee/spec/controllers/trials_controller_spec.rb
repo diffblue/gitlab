@@ -411,30 +411,16 @@ RSpec.describe TrialsController, :saas do
       context 'redirect trial user to feature' do
         using RSpec::Parameterized::TableSyntax
 
-        where(:segment, :glm_content, :redirect) do
-          :control | 'discover-group-security' | :group_url
-          :candidate | 'discover-group-security' | :group_security_dashboard_url
-          :control | 'discover-project-security' | :group_url
-          :candidate | 'discover-project-security' | :group_security_dashboard_url
+        where(:glm_content, :redirect) do
+          'discover-group-security' | :group_security_dashboard_url
+          'discover-project-security' | :group_security_dashboard_url
         end
 
         with_them do
           let(:post_params) { { namespace_id: namespace.id, glm_content: glm_content } }
-          let(:variant) { segment == :control ? :control : :experimental }
-          let(:redirect_url) do
-            redirect == :group_url ? group_url(namespace, { trial: true }) : group_security_dashboard_url(namespace, { trial: true })
-          end
-
-          before do
-            stub_experiments(redirect_trial_user_to_feature: segment)
-          end
+          let(:redirect_url) { group_security_dashboard_url(namespace, { trial: true }) }
 
           it { is_expected.to redirect_to(redirect_url) }
-          it 'records the subject' do
-            expect(Experiment).to receive(:add_subject).with('redirect_trial_user_to_feature', variant: variant, subject: namespace)
-
-            post_apply
-          end
         end
       end
 
