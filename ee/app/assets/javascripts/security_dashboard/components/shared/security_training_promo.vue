@@ -1,10 +1,12 @@
 <script>
 import { GlBanner } from '@gitlab/ui';
 import { __ } from '~/locale';
+import UserCalloutDismisser from '~/vue_shared/components/user_callout_dismisser.vue';
 
 export default {
   components: {
     GlBanner,
+    UserCalloutDismisser,
   },
   inject: ['securityConfigurationPath'],
   i18n: {
@@ -23,12 +25,18 @@ export default {
 </script>
 
 <template>
-  <gl-banner
-    :title="$options.i18n.title"
-    :button-text="$options.i18n.buttonText"
-    :button-link="buttonLink"
-    variant="introduction"
-  >
-    <p>{{ $options.i18n.content }}</p>
-  </gl-banner>
+  <user-callout-dismisser feature-name="security_training_feature_promotion">
+    <template #default="{ dismiss, shouldShowCallout }">
+      <gl-banner
+        v-if="shouldShowCallout"
+        :title="$options.i18n.title"
+        :button-text="$options.i18n.buttonText"
+        :button-link="buttonLink"
+        variant="introduction"
+        @close="dismiss"
+      >
+        <p>{{ $options.i18n.content }}</p>
+      </gl-banner>
+    </template>
+  </user-callout-dismisser>
 </template>
