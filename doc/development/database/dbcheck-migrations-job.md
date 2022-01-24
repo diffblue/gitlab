@@ -27,7 +27,7 @@ This job is allowed to fail, because it can throw some false positives.
 For example, when we drop a column and then roll back, this column is always
 re-added at the end of the list of columns. If the column was previously in
 the middle of the list, the rollback can't return the schema back exactly to
-its previous state. The job to fail, but it's an acceptable situation.
+its previous state. The job fails, but it's an acceptable situation.
 
 For a real-life example, refer to
 [this failed job](https://gitlab.com/gitlab-org/gitlab/-/jobs/2006544972#L138).
@@ -35,8 +35,8 @@ Here, the author dropped the `position` column.
 
 ### Schema dump comparison fails after rollback
 
-This often happens if your working branch is behind the target branch. Here is a real life
-scenario:
+This failure often happens if your working branch is behind the target branch.
+A real scenario:
 
 ```mermaid
 graph LR
@@ -50,18 +50,18 @@ graph LR
     classDef error fill:#f15146,stroke:#d4121a
 ```
 
-1. You checkout the `dev` working branch from the `main` target branch. At this point
-each have their `HEAD` at commit A.
-1. Someone works on the `main` branch and drops the `fk_rails_dbebdaa8fe` constraint, thus creating
-   commit B on `main`.
+1. You check out the `dev` working branch from the `main` target branch. At this point,
+   each branch has their `HEAD` at commit A.
+1. Someone works on the `main` branch and drops the `fk_rails_dbebdaa8fe` constraint,
+   thus creating commit B on `main`.
 1. You add column `dependency_proxy_size` to your `dev` branch.
-1. The `db:check-migrations` job fails for your `dev` branch's CI pipeline complaining that
-the `structure.sql` file did not rollback to its expected state.
+1. The `db:check-migrations` job fails for your `dev` branch's CI/CD pipeline, because
+   the `structure.sql` file did not rollback to its expected state.
 
-This happened because `dev` had only commits A and C, not B. Thus, its database schema
-did not know about the removal of the `fk_rails_dbebdaa8fe` constraint. So, when comparing the two
-schemas, the `dev` branch will have this constraint while the `main` branch won't.
+This happened because branch `dev` contained commits A and C, not B. Its database schema
+did not know about the removal of the `fk_rails_dbebdaa8fe` constraint. When comparing the two
+schemas, the `dev` branch contained this constraint while the `main` branch didn't.
 
-This example really happened. See the [job failure logs](https://gitlab.com/gitlab-org/gitlab/-/jobs/1992050890).
+This example really happened. Read the [job failure logs](https://gitlab.com/gitlab-org/gitlab/-/jobs/1992050890).
 
 To fix these kind of issues, rebase the working branch onto the target branch to get the latest changes.
