@@ -51,14 +51,14 @@ graph LR
 
 1. You checkout the `dev` working branch from the `main` target branch. At this point
 each have their `HEAD` at commit A.
-1. Someone works on the `main` branch and drops the `dependency_proxy_size` constraint, thus creating
+1. Someone works on the `main` branch and drops the `fk_rails_dbebdaa8fe` constraint, thus creating
    commit B on `main`.
 1. You add column `dependency_proxy_size` to your `dev` branch.
 1. The `db:check-migrations` job fails for your `dev` branch's CI pipeline complaining that
 the `structure.sql` file did not rollback to its expected state.
 
 This happened because `dev` had only commits A and C, not B. Thus, its database schema
-did not know about the removal of the `dependency_proxy_size` constraint. So, when comparing the two
+did not know about the removal of the `fk_rails_dbebdaa8fe` constraint. So, when comparing the two
 schemas, the `dev` branch will have this constraint while the `main` branch won't.
 
 This example really happened. See the [job failure logs](https://gitlab.com/gitlab-org/gitlab/-/jobs/1992050890).
