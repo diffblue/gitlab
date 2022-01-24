@@ -1,4 +1,3 @@
 - if @project.mirror_ever_updated_successfully? && @repository.diverged_from_upstream?(branch.name)
-  %span.badge.gl-badge.sm.badge-pill.badge-danger.gl-ml-2.has-tooltip{ data: { html: "true", title: branch_diverged_tooltip_message } }
-    = sprite_icon('warning-solid', size: 12, css_class: 'gl-mr-2')
+  = gl_badge_tag({ variant: :danger, size: :sm, icon: 'warning-solid' }, { class: 'has-tooltip gl-ml-2', data: { html: 'true', title: branch_diverged_tooltip_message } }) do
     = s_('Branches|diverged from upstream')
