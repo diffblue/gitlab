@@ -20,7 +20,7 @@ RSpec.describe Projects::ImportExport::ExportService do
         end
 
         it 'succeeds' do
-          expect(Gitlab::ImportExport::Saver).to receive(:save).with(exportable: project_template, shared: shared)
+          expect(Gitlab::ImportExport::Saver).to receive(:save).with(exportable: project_template, shared: shared).and_return(true)
 
           subject
         end
@@ -32,7 +32,7 @@ RSpec.describe Projects::ImportExport::ExportService do
         end
 
         it 'succeeds' do
-          expect(Gitlab::ImportExport::Saver).to receive(:save).with(exportable: project_template, shared: shared)
+          expect(Gitlab::ImportExport::Saver).to receive(:save).with(exportable: project_template, shared: shared).and_return(true)
 
           subject
         end
