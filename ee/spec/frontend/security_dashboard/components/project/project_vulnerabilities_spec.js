@@ -2,6 +2,7 @@ import { GlAlert, GlIntersectionObserver, GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import { Portal } from 'portal-vue';
 import VueApollo from 'vue-apollo';
+import { nextTick } from 'vue';
 import ProjectVulnerabilities from 'ee/security_dashboard/components/project/project_vulnerabilities.vue';
 import SecurityScannerAlert from 'ee/security_dashboard/components/project/security_scanner_alert.vue';
 import VulnerabilityList from 'ee/security_dashboard/components/shared/vulnerability_list.vue';
@@ -325,7 +326,7 @@ describe('Vulnerabilities app component', () => {
 
         scannerAlert.vm.$emit('dismiss');
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(scannerAlert.exists()).toBe(false);
       });
@@ -333,7 +334,7 @@ describe('Vulnerabilities app component', () => {
       it('should remember the dismissal state', async () => {
         findSecurityScannerAlert().vm.$emit('dismiss');
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(window.localStorage.setItem.mock.calls).toContainEqual([
           ProjectVulnerabilities.SCANNER_ALERT_DISMISSED_LOCAL_STORAGE_KEY,

@@ -1,6 +1,7 @@
 import { GlIntersectionObserver, GlSkeletonLoading } from '@gitlab/ui';
 import { createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
+import { nextTick } from 'vue';
 import AlertFilters from 'ee/threat_monitoring/components/alerts/alert_filters.vue';
 import AlertStatus from 'ee/threat_monitoring/components/alerts/alert_status.vue';
 import AlertsList from 'ee/threat_monitoring/components/alerts/alerts_list.vue';
@@ -129,7 +130,7 @@ describe('AlertsList component', () => {
       const newFilters = { statuses: [] };
       expect(wrapper.vm.filters).toEqual(DEFAULT_FILTERS);
       findAlertFilters().vm.$emit('filter-change', newFilters);
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.vm.filters).toEqual(newFilters);
     });
 
@@ -170,13 +171,13 @@ describe('AlertsList component', () => {
       expect(findStatusColumnHeader().attributes('aria-sort')).toBe('none');
 
       findStatusColumnHeader().trigger('click');
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.vm.sort).toBe('STATUS_DESC');
       expect(findStatusColumnHeader().attributes('aria-sort')).toBe('descending');
 
       findStatusColumnHeader().trigger('click');
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.vm.sort).toBe('STATUS_ASC');
       expect(findStatusColumnHeader().attributes('aria-sort')).toBe('ascending');
@@ -270,7 +271,7 @@ describe('AlertsList component', () => {
       wrapper.setData({
         errored: true,
       });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(findErrorAlert().exists()).toBe(true);
       expect(findUnconfiguredAlert().exists()).toBe(false);
     });
@@ -281,7 +282,7 @@ describe('AlertsList component', () => {
       wrapper.setData({
         isErrorAlertDismissed: true,
       });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(findUnconfiguredAlert().exists()).toBe(false);
     });
   });
@@ -296,7 +297,7 @@ describe('AlertsList component', () => {
         }),
       });
       findGlIntersectionObserver().vm.$emit('appear');
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.vm.$apollo.queries.alerts.fetchMore).toHaveBeenCalledTimes(1);
     });
   });
@@ -315,7 +316,7 @@ describe('AlertsList component', () => {
     it('does refetch the alerts when an alert status has changed', async () => {
       expect(refetchSpy).toHaveBeenCalledTimes(0);
       findStatusColumn().vm.$emit('alert-update');
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(refetchSpy).toHaveBeenCalledTimes(1);
     });
 
@@ -323,7 +324,7 @@ describe('AlertsList component', () => {
       const error = 'Error.';
       expect(findErrorAlert().exists()).toBe(false);
       findStatusColumn().vm.$emit('alert-error', error);
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(findErrorAlert().exists()).toBe(true);
       expect(findErrorAlert().text()).toBe(error);
     });

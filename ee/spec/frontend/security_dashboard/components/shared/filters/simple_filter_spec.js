@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueRouter from 'vue-router';
 import SimpleFilter from 'ee/security_dashboard/components/shared/filters/simple_filter.vue';
 
@@ -37,12 +37,12 @@ describe('Simple Filter component', () => {
 
   const clickAllOptionItem = async () => {
     allOptionItem().vm.$emit('click');
-    await wrapper.vm.$nextTick();
+    await nextTick();
   };
 
   const clickItemAt = async (index) => {
     dropdownItemAt(index).vm.$emit('click');
-    await wrapper.vm.$nextTick();
+    await nextTick();
   };
 
   const expectSelectedItems = (indexes) => {
@@ -157,7 +157,7 @@ describe('Simple Filter component', () => {
       // to fake it by doing it manually.
       router.replace({ query: { [filter.id]: ids } });
       window.dispatchEvent(new Event('popstate'));
-      await wrapper.vm.$nextTick();
+      await nextTick();
     };
 
     describe('clicking on items', () => {
@@ -295,7 +295,7 @@ describe('Simple Filter component', () => {
         const query = { [filter.id]: ids, other };
         router.push({ query });
         window.dispatchEvent(new Event('popstate'));
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expectSelectedItems([1, 2, 3]);
         expect(wrapper.vm.$route.query.other).toEqual(other);

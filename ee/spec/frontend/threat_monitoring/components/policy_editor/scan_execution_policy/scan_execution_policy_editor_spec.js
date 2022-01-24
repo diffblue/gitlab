@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import { GlEmptyState } from '@gitlab/ui';
+import { nextTick } from 'vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import PolicyEditorLayout from 'ee/threat_monitoring/components/policy_editor/policy_editor_layout.vue';
 import {
@@ -97,7 +98,7 @@ describe('ScanExecutionPolicyEditor', () => {
   describe('default', () => {
     it('updates the policy yaml when "update-yaml" is emitted', async () => {
       factory();
-      await wrapper.vm.$nextTick();
+      await nextTick();
       const newManifest = 'new yaml!';
       expect(findPolicyEditorLayout().attributes('yamleditorvalue')).toBe(
         DEFAULT_SCAN_EXECUTION_POLICY,
@@ -115,7 +116,7 @@ describe('ScanExecutionPolicyEditor', () => {
       'navigates to the new merge request when "modifyPolicy" is emitted $status',
       async ({ action, event, factoryFn, yamlEditorValue, currentlyAssignedPolicyProject }) => {
         factoryFn();
-        await wrapper.vm.$nextTick();
+        await nextTick();
         findPolicyEditorLayout().vm.$emit(event);
         await waitForPromises();
         expect(modifyPolicy).toHaveBeenCalledTimes(1);
@@ -129,7 +130,7 @@ describe('ScanExecutionPolicyEditor', () => {
           projectPath: defaultProjectPath,
           yamlEditorValue,
         });
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(visitUrl).toHaveBeenCalled();
         expect(visitUrl).toHaveBeenCalledWith(
           `/${currentlyAssignedPolicyProject.fullPath}/-/merge_requests/2`,
@@ -141,7 +142,7 @@ describe('ScanExecutionPolicyEditor', () => {
   describe('when a user is not an owner of the project', () => {
     it('displays the empty state with the appropriate properties', async () => {
       factory({ provide: { disableScanExecutionUpdate: true } });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(findEmptyState().props()).toMatchObject({
         primaryButtonLink: scanExecutionDocumentationPath,
         svgPath: policyEditorEmptyStateSvgPath,

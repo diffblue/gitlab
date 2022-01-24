@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -73,7 +73,7 @@ describe('CountryOrRegionSelector', () => {
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({ countries, states, country });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(findFormInput('state').exists()).toBe(display);
       });

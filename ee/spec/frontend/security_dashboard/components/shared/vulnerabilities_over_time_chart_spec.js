@@ -53,14 +53,13 @@ describe('Vulnerabilities Over Time Chart Component', () => {
       ${'2000-01-01T00:00:00Z'} | ${30}    | ${'December 2nd'}
     `(
       'shows "$expectedStartDate" when the date range is set to "$dayRange" days',
-      ({ mockDate, dayRange, expectedStartDate }) => {
+      async ({ mockDate, dayRange, expectedStartDate }) => {
         jest.spyOn(global.Date, 'now').mockImplementation(() => new Date(mockDate));
 
         wrapper = createComponent({ data: () => ({ vulnerabilitiesHistoryDayRange: dayRange }) });
 
-        return wrapper.vm.$nextTick().then(() => {
-          expect(findTimeInfo().text()).toContain(expectedStartDate);
-        });
+        await nextTick();
+        expect(findTimeInfo().text()).toContain(expectedStartDate);
       },
     );
   });

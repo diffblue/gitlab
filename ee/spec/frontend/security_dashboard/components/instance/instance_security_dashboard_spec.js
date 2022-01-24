@@ -1,5 +1,6 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import InstanceSecurityDashboard from 'ee/security_dashboard/components/instance/instance_security_dashboard.vue';
 import ReportNotConfiguredInstance from 'ee/security_dashboard/components/shared/empty_states/report_not_configured_instance.vue';
 import VulnerabilitySeverities from 'ee/security_dashboard/components/shared/project_security_status_chart.vue';
@@ -96,7 +97,7 @@ describe('Instance Security Dashboard component', () => {
     // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
     // eslint-disable-next-line no-restricted-syntax
     wrapper.setData({ projects: [{ name: 'project1' }] });
-    await wrapper.vm.$nextTick();
+    await nextTick();
 
     const securityChartsLayout = findSecurityChartsLayoutComponent();
     const reportNotConfigured = findReportNotConfigured();

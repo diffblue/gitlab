@@ -1,7 +1,7 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import { GlLineChart } from '@gitlab/ui/dist/charts';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import ProjectSecurityDashboard from 'ee/security_dashboard/components/project/project_security_dashboard.vue';
 import ReportNotConfigured from 'ee/security_dashboard/components/shared/empty_states/report_not_configured_project.vue';
@@ -78,13 +78,13 @@ describe('Project Security Dashboard component', () => {
   });
 
   describe('when chartWidth is 0', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       wrapper = createComponent({
         query: mockProjectSecurityChartsWithData(),
         propsData: { hasVulnerabilities: true },
         chartWidth: 0,
       });
-      return wrapper.vm.$nextTick();
+      await nextTick();
     });
 
     it('should not display the line chart', () => {
@@ -99,12 +99,12 @@ describe('Project Security Dashboard component', () => {
   describe('when there is history data', () => {
     useFakeDate(2021, 3, 11);
 
-    beforeEach(() => {
+    beforeEach(async () => {
       wrapper = createComponent({
         query: mockProjectSecurityChartsWithData(),
         propsData: { hasVulnerabilities: true },
       });
-      return wrapper.vm.$nextTick();
+      await nextTick();
     });
 
     it('should display the chart with data', () => {
@@ -141,12 +141,12 @@ describe('Project Security Dashboard component', () => {
   });
 
   describe('when there is no history data', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       wrapper = createComponent({
         query: mockProjectSecurityChartsWithoutData(),
         propsData: { hasVulnerabilities: false },
       });
-      return wrapper.vm.$nextTick();
+      await nextTick();
     });
 
     it('should display the empty state', () => {
@@ -191,7 +191,7 @@ describe('Project Security Dashboard component', () => {
         secureVulnerabilityTrainingEnabled: false,
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findSecurityTrainingPromo().exists()).toBe(false);
     });

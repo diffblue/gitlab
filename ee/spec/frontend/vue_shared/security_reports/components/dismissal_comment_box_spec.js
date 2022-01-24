@@ -1,5 +1,6 @@
 import { GlFormTextarea } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import component from 'ee/vue_shared/security_reports/components/dismissal_comment_box.vue';
 
 describe('DismissalCommentBox', () => {
@@ -18,31 +19,28 @@ describe('DismissalCommentBox', () => {
     expect(wrapper.emitted().clearError).toBeTruthy();
   });
 
-  it('should submit the comment when cmd+enter is pressed', () => {
+  it('should submit the comment when cmd+enter is pressed', async () => {
     wrapper.findComponent(GlFormTextarea).trigger('keydown.enter', {
       metaKey: true,
     });
 
-    return wrapper.vm.$nextTick(() => {
-      expect(wrapper.emitted().submit).toBeTruthy();
-    });
+    await nextTick();
+    expect(wrapper.emitted().submit).toBeTruthy();
   });
 
-  it('should render the error message', () => {
+  it('should render the error message', async () => {
     const errorMessage = 'You did something wrong';
     wrapper.setProps({ errorMessage });
 
-    return wrapper.vm.$nextTick(() => {
-      expect(wrapper.find('.js-error').text()).toBe(errorMessage);
-    });
+    await nextTick();
+    expect(wrapper.find('.js-error').text()).toBe(errorMessage);
   });
 
-  it('should render the placeholder', () => {
+  it('should render the placeholder', async () => {
     const placeholder = 'Please type into the box';
     wrapper.setProps({ placeholder });
 
-    return wrapper.vm.$nextTick(() => {
-      expect(wrapper.findComponent(GlFormTextarea).attributes('placeholder')).toBe(placeholder);
-    });
+    await nextTick();
+    expect(wrapper.findComponent(GlFormTextarea).attributes('placeholder')).toBe(placeholder);
   });
 });

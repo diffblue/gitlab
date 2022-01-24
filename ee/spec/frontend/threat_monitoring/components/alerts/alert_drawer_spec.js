@@ -2,6 +2,7 @@ import { GlAlert, GlDrawer, GlSkeletonLoader } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
+import { nextTick } from 'vue';
 import AlertDrawer from 'ee/threat_monitoring/components/alerts/alert_drawer.vue';
 import { DRAWER_ERRORS } from 'ee/threat_monitoring/components/alerts/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -104,7 +105,7 @@ describe('Alert Drawer', () => {
       ${'skeleton loader'}       | ${'does not display'} | ${findSkeletonLoader}    | ${false} | ${mountExtended}
     `('$status the $component', async ({ findComponent, state, mount }) => {
       createWrapper({ $apollo: shallowApolloMock({}), mount });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(findComponent().exists()).toBe(state);
     });
   });

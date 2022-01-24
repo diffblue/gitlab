@@ -1,5 +1,5 @@
 import { GlTable, GlDrawer } from '@gitlab/ui';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
 import { POLICY_TYPE_OPTIONS } from 'ee/threat_monitoring/components/constants';
@@ -225,7 +225,7 @@ describe('PoliciesList component', () => {
       ${'scan result'}    | ${POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_RESULT}    | ${[POLICY_TYPE_OPTIONS.POLICY_TYPE_NETWORK, POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_EXECUTION]}
     `('policies filtered by $description type', async ({ filterBy, hiddenTypes }) => {
       findPolicyTypeFilter().vm.$emit('input', filterBy.value);
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findPoliciesTable().text()).toContain(filterBy.text);
       hiddenTypes.forEach((hiddenType) => {
@@ -237,16 +237,16 @@ describe('PoliciesList component', () => {
       expect(scanExecutionPoliciesSpy).toHaveBeenCalledTimes(1);
       expect(wrapper.emitted('update-policy-list')).toBeUndefined();
       wrapper.setProps({ shouldUpdatePolicyList: true });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.emitted('update-policy-list')).toStrictEqual([[false]]);
       expect(scanExecutionPoliciesSpy).toHaveBeenCalledTimes(2);
     });
 
     it('does not emit `update-policy-list` or refetch scan execution policies on `shouldUpdatePolicyList` change to `false`', async () => {
       wrapper.setProps({ shouldUpdatePolicyList: true });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       wrapper.setProps({ shouldUpdatePolicyList: false });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.emitted('update-policy-list')).toStrictEqual([[false]]);
       expect(scanExecutionPoliciesSpy).toHaveBeenCalledTimes(2);
     });

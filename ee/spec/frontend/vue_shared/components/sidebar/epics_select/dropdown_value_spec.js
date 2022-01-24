@@ -1,6 +1,7 @@
 import { GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
+import { nextTick } from 'vue';
 import DropdownValue from 'ee/vue_shared/components/sidebar/epics_select/dropdown_value.vue';
 
 import { mockEpic1 } from '../mock_data';
@@ -30,14 +31,13 @@ describe('EpicsSelect', () => {
           expect(wrapper.vm.hasEpic).toBe(true);
         });
 
-        it('should return `false` when provided `epic` prop is an invalid Epic object', () => {
+        it('should return `false` when provided `epic` prop is an invalid Epic object', async () => {
           wrapper.setProps({
             epic: {},
           });
 
-          return wrapper.vm.$nextTick().then(() => {
-            expect(wrapper.vm.hasEpic).toBe(false);
-          });
+          await nextTick();
+          expect(wrapper.vm.hasEpic).toBe(false);
         });
       });
     });
@@ -57,17 +57,16 @@ describe('EpicsSelect', () => {
         expect(titleEl.text()).toBe(mockEpic1.title);
       });
 
-      it('should render no value element with slot contents when `hasEpic` is false', () => {
+      it('should render no value element with slot contents when `hasEpic` is false', async () => {
         wrapper.setProps({
           epic: {},
         });
 
-        return wrapper.vm.$nextTick().then(() => {
-          const noValueEl = wrapper.find('span.no-value');
+        await nextTick();
+        const noValueEl = wrapper.find('span.no-value');
 
-          expect(noValueEl.exists()).toBe(true);
-          expect(noValueEl.text()).toBe('None');
-        });
+        expect(noValueEl.exists()).toBe(true);
+        expect(noValueEl.text()).toBe('None');
       });
     });
   });

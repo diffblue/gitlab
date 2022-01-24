@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import component from 'ee/vue_shared/security_reports/components/dismissal_comment_modal_footer.vue';
 import Tracking from '~/tracking';
 
@@ -29,24 +30,22 @@ describe('DismissalCommentModalFooter', () => {
       expect(findAddAndDismissButton().text()).toBe('Add comment & dismiss');
     });
 
-    it('should emit the "addCommentAndDismiss" event when clicked', () => {
+    it('should emit the "addCommentAndDismiss" event when clicked', async () => {
       findAddAndDismissButton().trigger('click');
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(wrapper.emitted().addCommentAndDismiss).toBeTruthy();
-        expect(Tracking.event).toHaveBeenCalledWith(
-          '_track_category_',
-          'click_add_comment_and_dismiss',
-        );
-      });
+      await nextTick();
+      expect(wrapper.emitted().addCommentAndDismiss).toBeTruthy();
+      expect(Tracking.event).toHaveBeenCalledWith(
+        '_track_category_',
+        'click_add_comment_and_dismiss',
+      );
     });
 
-    it('should emit the cancel event when the cancel button is clicked', () => {
+    it('should emit the cancel event when the cancel button is clicked', async () => {
       wrapper.find('.js-cancel').trigger('click');
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(wrapper.emitted().cancel).toBeTruthy();
-      });
+      await nextTick();
+      expect(wrapper.emitted().cancel).toBeTruthy();
     });
   });
 
@@ -63,13 +62,12 @@ describe('DismissalCommentModalFooter', () => {
         expect(findAddAndDismissButton().text()).toBe('Add comment');
       });
 
-      it('should emit the "addCommentAndDismiss" event when clicked', () => {
+      it('should emit the "addCommentAndDismiss" event when clicked', async () => {
         findAddAndDismissButton().trigger('click');
 
-        return wrapper.vm.$nextTick().then(() => {
-          expect(wrapper.emitted().addDismissalComment).toBeTruthy();
-          expect(Tracking.event).toHaveBeenCalledWith('_track_category_', 'click_add_comment');
-        });
+        await nextTick();
+        expect(wrapper.emitted().addDismissalComment).toBeTruthy();
+        expect(Tracking.event).toHaveBeenCalledWith('_track_category_', 'click_add_comment');
       });
     });
 
@@ -86,13 +84,12 @@ describe('DismissalCommentModalFooter', () => {
         expect(findAddAndDismissButton().text()).toBe('Save comment');
       });
 
-      it('should emit the "addCommentAndDismiss" event when clicked', () => {
+      it('should emit the "addCommentAndDismiss" event when clicked', async () => {
         findAddAndDismissButton().trigger('click');
 
-        return wrapper.vm.$nextTick().then(() => {
-          expect(wrapper.emitted().addDismissalComment).toBeTruthy();
-          expect(Tracking.event).toHaveBeenCalledWith('_track_category_', 'click_edit_comment');
-        });
+        await nextTick();
+        expect(wrapper.emitted().addDismissalComment).toBeTruthy();
+        expect(Tracking.event).toHaveBeenCalledWith('_track_category_', 'click_edit_comment');
       });
     });
   });

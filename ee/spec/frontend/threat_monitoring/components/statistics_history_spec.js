@@ -1,6 +1,6 @@
 import { GlAreaChart } from '@gitlab/ui/dist/charts';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import { TOTAL_REQUESTS, ANOMALOUS_REQUESTS } from 'ee/threat_monitoring/components/constants';
 import StatisticsHistory from 'ee/threat_monitoring/components/statistics_history.vue';
 import { mockNominalHistory, mockAnomalousHistory } from '../mocks/mock_data';
@@ -108,7 +108,7 @@ describe('StatisticsHistory component', () => {
   });
 
   describe('chart tooltip', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       const mockParams = {
         seriesData: [
           {
@@ -140,7 +140,7 @@ describe('StatisticsHistory component', () => {
         },
       });
 
-      return wrapper.vm.$nextTick();
+      await nextTick();
     });
 
     it('renders the title and series data correctly', () => {

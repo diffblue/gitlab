@@ -1,5 +1,6 @@
 import { GlDropdownItem, GlSearchBoxByType } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import AlertFilters from 'ee/threat_monitoring/components/alerts/alert_filters.vue';
 import { ALL, DEFAULT_FILTERS, STATUSES } from 'ee/threat_monitoring/components/alerts/constants';
 import { trimText } from 'helpers/text_helper';
@@ -38,7 +39,7 @@ describe('AlertFilters component', () => {
         const searchTerm = 'abc';
         const search = findSearch();
         search.vm.$emit('input', searchTerm);
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(wrapper.emitted('filter-change')).toStrictEqual([
           [{ ...DEFAULT_FILTERS, searchTerm }],
         ]);

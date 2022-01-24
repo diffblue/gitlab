@@ -1,5 +1,6 @@
 import { GlModal } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import TemporaryStorageIncreaseModal from 'ee/usage_quotas/storage/components/temporary_storage_increase_modal.vue';
 
 const TEST_LIMIT = '8 bytes';
@@ -18,9 +19,9 @@ describe('Temporary storage increase modal', () => {
     });
   };
   const findModal = () => wrapper.findComponent(GlModal);
-  const showModal = () => {
+  const showModal = async () => {
     findModal().vm.show();
-    return wrapper.vm.$nextTick();
+    await nextTick();
   };
   const findModalText = () => document.body.innerText;
 

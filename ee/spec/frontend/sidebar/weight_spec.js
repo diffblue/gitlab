@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import Weight from 'ee/sidebar/components/weight/weight.vue';
 import { mockTracking, unmockTracking, triggerEvent } from 'helpers/tracking_helper';
 import { ENTER_KEY_CODE } from '~/lib/utils/keycodes';
@@ -85,7 +86,7 @@ describe('Weight', () => {
 
     findCollapsedBlock().trigger('click');
 
-    await wrapper.vm.$nextTick;
+    await nextTick;
 
     expect(wrapper.classes()).toContain('collapse-after-update');
   });
@@ -99,7 +100,7 @@ describe('Weight', () => {
 
     findEditLink().trigger('click');
 
-    await wrapper.vm.$nextTick;
+    await nextTick;
 
     expect(containsEditableField()).toBe(true);
   });
@@ -117,7 +118,7 @@ describe('Weight', () => {
 
     findEditLink().trigger('click');
 
-    await wrapper.vm.$nextTick;
+    await nextTick;
 
     const event = new CustomEvent('keydown');
     event.keyCode = ENTER_KEY_CODE;
@@ -127,7 +128,7 @@ describe('Weight', () => {
     editableField.value = expectedWeightValue;
     editableField.dispatchEvent(event);
 
-    await wrapper.vm.$nextTick;
+    await nextTick;
 
     expect(containsInputError()).toBe(false);
     expect(eventHub.$emit).toHaveBeenCalledWith('updateWeight', {
@@ -149,7 +150,7 @@ describe('Weight', () => {
 
     findRemoveLink().trigger('click');
 
-    await wrapper.vm.$nextTick;
+    await nextTick;
 
     expect(containsInputError()).toBe(false);
     expect(eventHub.$emit).toHaveBeenCalledWith('updateWeight', { id: mockId, value: '' });
@@ -162,7 +163,7 @@ describe('Weight', () => {
 
     findEditLink().trigger('click');
 
-    await wrapper.vm.$nextTick;
+    await nextTick;
 
     const event = new CustomEvent('keydown');
     event.keyCode = ENTER_KEY_CODE;
@@ -172,7 +173,7 @@ describe('Weight', () => {
     editableField.value = -9001;
     editableField.dispatchEvent(event);
 
-    await wrapper.vm.$nextTick;
+    await nextTick;
 
     expect(containsInputError()).toBe(true);
   });
@@ -197,7 +198,7 @@ describe('Weight', () => {
     it('calls trackEvent when "Edit" is clicked', async () => {
       triggerEvent(findEditLink().element);
 
-      await wrapper.vm.$nextTick;
+      await nextTick;
 
       expect(trackingSpy).toHaveBeenCalled();
     });

@@ -1,6 +1,7 @@
 import { GlLink, GlLoadingIcon, GlSprintf, GlAlert } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
+import { nextTick } from 'vue';
 import TestCaseShowRoot from 'ee/test_case_show/components/test_case_show_root.vue';
 import TestCaseSidebar from 'ee/test_case_show/components/test_case_sidebar.vue';
 import { mockCurrentUserTodo } from 'jest/vue_shared/issuable/list/mock_data';
@@ -94,7 +95,7 @@ describe('TestCaseShowRoot', () => {
             },
           });
 
-          await wrapper.vm.$nextTick();
+          await nextTick();
         });
 
         it.each`
@@ -243,7 +244,7 @@ describe('TestCaseShowRoot', () => {
           editTestCaseFormVisible: true,
         });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         wrapper.vm.handleCancelClick();
 
@@ -274,7 +275,7 @@ describe('TestCaseShowRoot', () => {
         testCaseLoading: true,
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
     });
@@ -332,7 +333,7 @@ describe('TestCaseShowRoot', () => {
         testCaseLoadFailed: true,
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.findComponent(IssuableShow).exists()).toBe(false);
     });
@@ -375,7 +376,7 @@ describe('TestCaseShowRoot', () => {
         editTestCaseFormVisible: true,
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.find('[data-testid="save-test-case"]').exists()).toBe(true);
       expect(wrapper.find('[data-testid="cancel-test-case-edit"]').exists()).toBe(true);
@@ -390,7 +391,7 @@ describe('TestCaseShowRoot', () => {
       expect(testCaseSidebar.props('sidebarExpanded')).toBe(true);
 
       testCaseSidebar.vm.$emit('sidebar-toggle');
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(testCaseSidebar.props('sidebarExpanded')).toBe(false);
     });

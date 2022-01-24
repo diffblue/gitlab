@@ -1,5 +1,6 @@
 import { GlBanner, GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import SharedSurveyBanner from 'ee/vue_shared/survey_banner/survey_banner.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
@@ -77,7 +78,7 @@ describe('Shared Survey Banner component', () => {
     async ({ localStorageValue, isShown }) => {
       localStorage.setItem(TEST_LOCAL_STORAGE_KEY, localStorageValue);
       createWrapper();
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findGlBanner().exists()).toBe(isShown);
     },
@@ -92,7 +93,7 @@ describe('Shared Survey Banner component', () => {
       expect(findGlBanner().exists()).toBe(true);
 
       findAskLaterButton().vm.$emit('click');
-      await wrapper.vm.$nextTick();
+      await nextTick();
       const date = new Date(localStorage.getItem(TEST_LOCAL_STORAGE_KEY));
 
       expect(findGlBanner().exists()).toBe(false);
@@ -104,7 +105,7 @@ describe('Shared Survey Banner component', () => {
       expect(findGlBanner().exists()).toBe(true);
 
       findGlBanner().vm.$emit('close');
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findGlBanner().exists()).toBe(false);
       expect(localStorage.getItem(TEST_LOCAL_STORAGE_KEY)).toBe(TEST_BANNER_ID);

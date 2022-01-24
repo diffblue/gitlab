@@ -1,6 +1,6 @@
 import { GlCard } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import component from 'ee/vue_shared/security_reports/components/solution_card_vuex.vue';
 import { s__ } from '~/locale';
 
@@ -78,16 +78,15 @@ describe('Solution Card', () => {
       });
 
       describe('with download patch', () => {
-        beforeEach(() => {
+        beforeEach(async () => {
           wrapper.setProps({ hasDownload: true });
-          return wrapper.vm.$nextTick();
+          await nextTick();
         });
 
-        it('does not render the download and apply solution message when there is a file download and a merge request already exists', () => {
+        it('does not render the download and apply solution message when there is a file download and a merge request already exists', async () => {
           wrapper.setProps({ hasMr: true });
-          return wrapper.vm.$nextTick().then(() => {
-            expect(wrapper.find('.card-footer').exists()).toBe(false);
-          });
+          await nextTick();
+          expect(wrapper.find('.card-footer').exists()).toBe(false);
         });
 
         it('renders the create a merge request to implement this solution message', () => {
