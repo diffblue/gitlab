@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 
 import SidebarTodo from 'ee/epic/components/sidebar_items/sidebar_todo.vue';
 import createStore from 'ee/epic/store';
@@ -31,16 +31,12 @@ describe('SidebarTodoComponent', () => {
   });
 
   describe('template', () => {
-    it('renders component container element with classes `block` & `todo` when `isUserSignedIn` & `sidebarCollapsed` is `true`', (done) => {
+    it('renders component container element with classes `block` & `todo` when `isUserSignedIn` & `sidebarCollapsed` is `true`', async () => {
       vm.sidebarCollapsed = true;
 
-      vm.$nextTick()
-        .then(() => {
-          expect(vm.$el.classList.contains('block')).toBe(true);
-          expect(vm.$el.classList.contains('todo')).toBe(true);
-        })
-        .then(done)
-        .catch(done.fail);
+      await nextTick();
+      expect(vm.$el.classList.contains('block')).toBe(true);
+      expect(vm.$el.classList.contains('todo')).toBe(true);
     });
 
     it('renders Todo toggle button element', () => {

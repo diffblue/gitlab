@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import '~/behaviors/markdown/render_gfm';
 import { TEST_HOST } from 'helpers/test_constants';
 import mountComponent from 'helpers/vue_mount_component_helper';
@@ -36,51 +36,37 @@ describe('Description component', () => {
     $('.issuable-meta .flash-container').remove();
   });
 
-  it('doesnt animate first description changes', () => {
+  it('doesnt animate first description changes', async () => {
     vm.descriptionHtml = 'changed';
 
-    return vm.$nextTick().then(() => {
-      expect(
-        vm.$el.querySelector('.md').classList.contains('issue-realtime-pre-pulse'),
-      ).toBeFalsy();
-      jest.runAllTimers();
-      return vm.$nextTick();
-    });
+    await nextTick();
+    expect(vm.$el.querySelector('.md').classList.contains('issue-realtime-pre-pulse')).toBeFalsy();
+    jest.runAllTimers();
   });
 
-  it('animates description changes on live update', () => {
+  it('animates description changes on live update', async () => {
     vm.descriptionHtml = 'changed';
-    return vm
-      .$nextTick()
-      .then(() => {
-        vm.descriptionHtml = 'changed second time';
-        return vm.$nextTick();
-      })
-      .then(() => {
-        expect(
-          vm.$el.querySelector('.md').classList.contains('issue-realtime-pre-pulse'),
-        ).toBeTruthy();
-        jest.runAllTimers();
-        return vm.$nextTick();
-      })
-      .then(() => {
-        expect(
-          vm.$el.querySelector('.md').classList.contains('issue-realtime-trigger-pulse'),
-        ).toBeTruthy();
-      });
+    await nextTick();
+    vm.descriptionHtml = 'changed second time';
+    await nextTick();
+    expect(vm.$el.querySelector('.md').classList.contains('issue-realtime-pre-pulse')).toBeTruthy();
+    jest.runAllTimers();
+    await nextTick();
+    expect(
+      vm.$el.querySelector('.md').classList.contains('issue-realtime-trigger-pulse'),
+    ).toBeTruthy();
   });
 
-  it('applies syntax highlighting and math when description changed', () => {
+  it('applies syntax highlighting and math when description changed', async () => {
     const vmSpy = jest.spyOn(vm, 'renderGFM');
     const prototypeSpy = jest.spyOn($.prototype, 'renderGFM');
     vm.descriptionHtml = 'changed';
 
-    return vm.$nextTick().then(() => {
-      expect(vm.$refs['gfm-content']).toBeDefined();
-      expect(vmSpy).toHaveBeenCalled();
-      expect(prototypeSpy).toHaveBeenCalled();
-      expect($.prototype.renderGFM).toHaveBeenCalled();
-    });
+    await nextTick();
+    expect(vm.$refs['gfm-content']).toBeDefined();
+    expect(vmSpy).toHaveBeenCalled();
+    expect(prototypeSpy).toHaveBeenCalled();
+    expect($.prototype.renderGFM).toHaveBeenCalled();
   });
 
   it('sets data-update-url', () => {
@@ -123,32 +109,29 @@ describe('Description component', () => {
   });
 
   describe('taskStatus', () => {
-    it('adds full taskStatus', () => {
+    it('adds full taskStatus', async () => {
       vm.taskStatus = '1 of 1';
 
-      return vm.$nextTick().then(() => {
-        expect(document.querySelector('.issuable-meta #task_status').textContent.trim()).toBe(
-          '1 of 1',
-        );
-      });
+      await nextTick();
+      expect(document.querySelector('.issuable-meta #task_status').textContent.trim()).toBe(
+        '1 of 1',
+      );
     });
 
-    it('adds short taskStatus', () => {
+    it('adds short taskStatus', async () => {
       vm.taskStatus = '1 of 1';
 
-      return vm.$nextTick().then(() => {
-        expect(document.querySelector('.issuable-meta #task_status_short').textContent.trim()).toBe(
-          '1/1 task',
-        );
-      });
+      await nextTick();
+      expect(document.querySelector('.issuable-meta #task_status_short').textContent.trim()).toBe(
+        '1/1 task',
+      );
     });
 
-    it('clears task status text when no tasks are present', () => {
+    it('clears task status text when no tasks are present', async () => {
       vm.taskStatus = '0 of 0';
 
-      return vm.$nextTick().then(() => {
-        expect(document.querySelector('.issuable-meta #task_status').textContent.trim()).toBe('');
-      });
+      await nextTick();
+      expect(document.querySelector('.issuable-meta #task_status').textContent.trim()).toBe('');
     });
   });
 

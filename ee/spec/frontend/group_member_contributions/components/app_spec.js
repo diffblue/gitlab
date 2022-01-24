@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 
 import AppComponent from 'ee/group_member_contributions/components/app.vue';
 import GroupMemberStore from 'ee/group_member_contributions/store/group_member_store';
@@ -48,25 +48,23 @@ describe('AppComponent', () => {
       expect(vm.$el.querySelector('h3').innerText.trim()).toBe('Contributions per group member');
     });
 
-    it('shows loading icon when isLoading prop is true', () => {
+    it('shows loading icon when isLoading prop is true', async () => {
       vm.store.state.isLoading = true;
 
-      return vm.$nextTick().then(() => {
-        const loadingEl = vm.$el.querySelector('.loading-animation');
+      await nextTick();
+      const loadingEl = vm.$el.querySelector('.loading-animation');
 
-        expect(loadingEl).not.toBeNull();
-        expect(loadingEl.querySelector('span').getAttribute('aria-label')).toBe(
-          'Loading contribution stats for group members',
-        );
-      });
+      expect(loadingEl).not.toBeNull();
+      expect(loadingEl.querySelector('span').getAttribute('aria-label')).toBe(
+        'Loading contribution stats for group members',
+      );
     });
 
-    it('renders table container element', () => {
+    it('renders table container element', async () => {
       vm.store.state.isLoading = false;
 
-      return vm.$nextTick().then(() => {
-        expect(vm.$el.querySelector('table.table.gl-sortable')).not.toBeNull();
-      });
+      await nextTick();
+      expect(vm.$el.querySelector('table.table.gl-sortable')).not.toBeNull();
     });
   });
 });

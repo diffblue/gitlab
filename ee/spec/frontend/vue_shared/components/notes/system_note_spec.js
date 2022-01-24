@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
+import { nextTick } from 'vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
 import createStore from '~/notes/stores';
@@ -76,27 +77,23 @@ describe('system note component', () => {
     expect(findDescriptionVersion().exists()).toBe(false);
   });
 
-  it('click on button to toggle description diff displays description diff with delete icon button', (done) => {
+  it('click on button to toggle description diff displays description diff with delete icon button', async () => {
     mockFetchDiff();
     expect(findDescriptionVersion().exists()).toBe(false);
 
     const button = findBlankBtn();
     button.trigger('click');
-    return wrapper.vm
-      .$nextTick()
-      .then(() => waitForPromises())
-      .then(() => {
-        expect(findDescriptionVersion().exists()).toBe(true);
-        expect(findDescriptionVersion().html()).toContain(diffData);
-        expect(
-          wrapper
-            .find(
-              '.description-version button.delete-description-history svg[data-testid="remove-icon"]',
-            )
-            .exists(),
-        ).toBe(true);
-        done();
-      });
+    await nextTick();
+    await waitForPromises();
+    expect(findDescriptionVersion().exists()).toBe(true);
+    expect(findDescriptionVersion().html()).toContain(diffData);
+    expect(
+      wrapper
+        .find(
+          '.description-version button.delete-description-history svg[data-testid="remove-icon"]',
+        )
+        .exists(),
+    ).toBe(true);
   });
 
   describe('click on delete icon button', () => {
