@@ -73,56 +73,28 @@ RSpec.describe Geo::BlobDownloadService do
           end
 
           context "when the file is missing on the primary" do
-            context "when the feature flag geo_treat_missing_files_as_sync_failed is enabled" do
-              let(:result) { double(:result, success: false, primary_missing_file: true, bytes_downloaded: 123, reason: "foo", extra_details: nil) }
+            let(:result) { double(:result, success: false, primary_missing_file: true, bytes_downloaded: 123, reason: "foo", extra_details: nil) }
 
-              it "creates the registry" do
-                expect do
-                  subject.execute
-                end.to change { registry_class.count }.by(1)
-              end
-
-              it "sets sync state to failed" do
+            it "creates the registry" do
+              expect do
                 subject.execute
-
-                expect(registry_class.last).to be_failed
-              end
-
-              it 'caps retry wait time to 4 hours' do
-                registry = replicator.registry
-                registry.retry_count = 9999
-                registry.save!
-
-                subject.execute
-
-                expect(registry.reload.retry_at).to be_within(10.minutes).of(4.hours.from_now)
-              end
+              end.to change { registry_class.count }.by(1)
             end
 
-            context "when the feature flag geo_treat_missing_files_as_sync_failed is disabled" do
-              let(:result) { double(:result, success: false, primary_missing_file: true, bytes_downloaded: 123, reason: "foo", extra_details: nil) }
+            it "sets sync state to failed" do
+              subject.execute
 
-              before do
-                stub_feature_flags(geo_treat_missing_files_as_sync_failed: false)
-              end
+              expect(registry_class.last).to be_failed
+            end
 
-              it "creates the registry" do
-                expect do
-                  subject.execute
-                end.to change { registry_class.count }.by(1)
-              end
+            it 'caps retry wait time to 4 hours' do
+              registry = replicator.registry
+              registry.retry_count = 9999
+              registry.save!
 
-              it "sets sync state to synced" do
-                subject.execute
+              subject.execute
 
-                expect(registry_class.last).to be_synced
-              end
-
-              it 'does not set retry_at because it is not a failure' do
-                subject.execute
-
-                expect(registry_class.last.retry_at).to be_nil
-              end
+              expect(registry.reload.retry_at).to be_within(10.minutes).of(4.hours.from_now)
             end
           end
         end

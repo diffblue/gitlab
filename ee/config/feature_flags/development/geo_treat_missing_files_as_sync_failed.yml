@@ -1,8 +1,0 @@
----
-name: geo_treat_missing_files_as_sync_failed
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/76801
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/348590
-milestone: '14.6'
-type: development
-group: group::geo
-default_enabled: true
