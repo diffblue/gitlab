@@ -17751,9 +17751,6 @@ msgstr ""
 msgid "Housekeeping successfully started"
 msgstr ""
 
-msgid "Housekeeping, export, path, transfer, remove, archive."
-msgstr ""
-
 msgid "How do I configure Akismet?"
 msgstr ""
 
@@ -28055,6 +28052,9 @@ msgid "ProjectSettings|Global"
 msgstr ""
 
 msgid "ProjectSettings|Highlight the usage of hidden unicode characters. These have innocent uses for right-to-left languages, but can also be used in potential exploits."
+msgstr ""
+
+msgid "ProjectSettings|Housekeeping, export, archive, change path, transfer, and delete."
 msgstr ""
 
 msgid "ProjectSettings|If merge trains are enabled, merging is only possible if the branch can be rebased without conflicts."
