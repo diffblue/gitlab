@@ -32,7 +32,9 @@ module Security
       def mark_as_resolved(missing_ids)
         return if missing_ids.blank?
 
-        Vulnerability.id_in(missing_ids).update_all(resolved_on_default_branch: true)
+        Vulnerability.id_in(missing_ids)
+                     .with_resolution(false)
+                     .update_all(resolved_on_default_branch: true)
       end
     end
   end
