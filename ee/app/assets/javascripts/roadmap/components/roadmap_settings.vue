@@ -16,7 +16,8 @@ export default {
       const wrapperEl = document.querySelector('.roadmap-container');
 
       if (wrapperEl) {
-        return `${wrapperEl.offsetTop}px`;
+        const topPosition = wrapperEl.getBoundingClientRect().top + window.pageYOffset;
+        return `${topPosition}px`;
       }
 
       return '';
