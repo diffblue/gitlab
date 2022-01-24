@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import { nextTick } from 'vue';
 import component from 'ee/approvals/components/approval_check_rule_popover.vue';
 import {
   VULNERABILITY_CHECK_NAME,
@@ -20,107 +20,87 @@ describe('Approval Check Popover', () => {
   describe('computed props', () => {
     const securityApprovalsHelpPagePath = `${TEST_HOST}/documentation`;
 
-    beforeEach((done) => {
+    beforeEach(async () => {
       wrapper.setProps({ securityApprovalsHelpPagePath });
-      Vue.nextTick(done);
+      await nextTick();
     });
 
     describe('showVulnerabilityCheckPopover', () => {
-      it('return true if the rule type is "Vulnerability-Check"', (done) => {
+      it('return true if the rule type is "Vulnerability-Check"', async () => {
         wrapper.setProps({ rule: { name: VULNERABILITY_CHECK_NAME } });
-        Vue.nextTick(() => {
-          expect(wrapper.vm.showVulnerabilityCheckPopover).toBe(true);
-          done();
-        });
+        await nextTick();
+        expect(wrapper.vm.showVulnerabilityCheckPopover).toBe(true);
       });
-      it('return false if the rule type is "Vulnerability-Check"', (done) => {
+      it('return false if the rule type is "Vulnerability-Check"', async () => {
         wrapper.setProps({ rule: { name: 'FooRule' } });
-        Vue.nextTick(() => {
-          expect(wrapper.vm.showVulnerabilityCheckPopover).toBe(false);
-          done();
-        });
+        await nextTick();
+        expect(wrapper.vm.showVulnerabilityCheckPopover).toBe(false);
       });
     });
 
     describe('showLicenseCheckPopover', () => {
-      it('return true if the rule type is "License-Check"', (done) => {
+      it('return true if the rule type is "License-Check"', async () => {
         wrapper.setProps({ rule: { name: LICENSE_CHECK_NAME } });
-        Vue.nextTick(() => {
-          expect(wrapper.vm.showLicenseCheckPopover).toBe(true);
-          done();
-        });
+        await nextTick();
+        expect(wrapper.vm.showLicenseCheckPopover).toBe(true);
       });
-      it('return false if the rule type is "License-Check"', (done) => {
+      it('return false if the rule type is "License-Check"', async () => {
         wrapper.setProps({ rule: { name: 'FooRule' } });
-        Vue.nextTick(() => {
-          expect(wrapper.vm.showLicenseCheckPopover).toBe(false);
-          done();
-        });
+        await nextTick();
+        expect(wrapper.vm.showLicenseCheckPopover).toBe(false);
       });
     });
 
     describe('approvalConfig', () => {
-      it('returns "Vulnerability-Check" config', (done) => {
+      it('returns "Vulnerability-Check" config', async () => {
         wrapper.setProps({ rule: { name: VULNERABILITY_CHECK_NAME } });
-        Vue.nextTick(() => {
-          expect(wrapper.vm.approvalRuleConfig.title).toBe(
-            APPROVAL_RULE_CONFIGS[VULNERABILITY_CHECK_NAME].title,
-          );
-          expect(wrapper.vm.approvalRuleConfig.popoverText).toBe(
-            APPROVAL_RULE_CONFIGS[VULNERABILITY_CHECK_NAME].popoverText,
-          );
-          expect(wrapper.vm.approvalRuleConfig.documentationText).toBe(
-            APPROVAL_RULE_CONFIGS[VULNERABILITY_CHECK_NAME].documentationText,
-          );
-          done();
-        });
+        await nextTick();
+        expect(wrapper.vm.approvalRuleConfig.title).toBe(
+          APPROVAL_RULE_CONFIGS[VULNERABILITY_CHECK_NAME].title,
+        );
+        expect(wrapper.vm.approvalRuleConfig.popoverText).toBe(
+          APPROVAL_RULE_CONFIGS[VULNERABILITY_CHECK_NAME].popoverText,
+        );
+        expect(wrapper.vm.approvalRuleConfig.documentationText).toBe(
+          APPROVAL_RULE_CONFIGS[VULNERABILITY_CHECK_NAME].documentationText,
+        );
       });
-      it('returns "License-Check" config', (done) => {
+      it('returns "License-Check" config', async () => {
         wrapper.setProps({ rule: { name: LICENSE_CHECK_NAME } });
-        Vue.nextTick(() => {
-          expect(wrapper.vm.approvalRuleConfig.title).toBe(
-            APPROVAL_RULE_CONFIGS[LICENSE_CHECK_NAME].title,
-          );
-          expect(wrapper.vm.approvalRuleConfig.popoverText).toBe(
-            APPROVAL_RULE_CONFIGS[LICENSE_CHECK_NAME].popoverText,
-          );
-          expect(wrapper.vm.approvalRuleConfig.documentationText).toBe(
-            APPROVAL_RULE_CONFIGS[LICENSE_CHECK_NAME].documentationText,
-          );
-          done();
-        });
+        await nextTick();
+        expect(wrapper.vm.approvalRuleConfig.title).toBe(
+          APPROVAL_RULE_CONFIGS[LICENSE_CHECK_NAME].title,
+        );
+        expect(wrapper.vm.approvalRuleConfig.popoverText).toBe(
+          APPROVAL_RULE_CONFIGS[LICENSE_CHECK_NAME].popoverText,
+        );
+        expect(wrapper.vm.approvalRuleConfig.documentationText).toBe(
+          APPROVAL_RULE_CONFIGS[LICENSE_CHECK_NAME].documentationText,
+        );
       });
-      it('returns an undefined config', (done) => {
+      it('returns an undefined config', async () => {
         wrapper.setProps({ rule: { name: 'FooRule' } });
-        Vue.nextTick(() => {
-          expect(wrapper.vm.approvalConfig).toBe(undefined);
-          done();
-        });
+        await nextTick();
+        expect(wrapper.vm.approvalConfig).toBe(undefined);
       });
     });
 
     describe('documentationLink', () => {
-      it('returns documentation link for "License-Check"', (done) => {
+      it('returns documentation link for "License-Check"', async () => {
         wrapper.setProps({ rule: { name: 'License-Check' } });
-        Vue.nextTick(() => {
-          expect(wrapper.vm.documentationLink).toBe(securityApprovalsHelpPagePath);
-          done();
-        });
+        await nextTick();
+        expect(wrapper.vm.documentationLink).toBe(securityApprovalsHelpPagePath);
       });
-      it('returns documentation link for "Vulnerability-Check"', (done) => {
+      it('returns documentation link for "Vulnerability-Check"', async () => {
         wrapper.setProps({ rule: { name: 'Vulnerability-Check' } });
-        Vue.nextTick(() => {
-          expect(wrapper.vm.documentationLink).toBe(securityApprovalsHelpPagePath);
-          done();
-        });
+        await nextTick();
+        expect(wrapper.vm.documentationLink).toBe(securityApprovalsHelpPagePath);
       });
-      it('returns empty text', (done) => {
+      it('returns empty text', async () => {
         const text = '';
         wrapper.setProps({ rule: { name: 'FooRule' } });
-        Vue.nextTick(() => {
-          expect(wrapper.vm.documentationLink).toBe(text);
-          done();
-        });
+        await nextTick();
+        expect(wrapper.vm.documentationLink).toBe(text);
       });
     });
   });

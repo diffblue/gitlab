@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 
 import QuartersHeaderItemComponent from 'ee/roadmap/components/preset_quarters/quarters_header_item.vue';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
@@ -81,18 +81,14 @@ describe('QuartersHeaderItemComponent', () => {
         expect(vm.timelineHeaderClass).toBe('');
       });
 
-      it('returns string containing `label-dark label-bold` when current quarter is same as timeframeItem quarter', (done) => {
+      it('returns string containing `label-dark label-bold` when current quarter is same as timeframeItem quarter', async () => {
         vm = createComponent({
           timeframeItem: mockTimeframeQuarters[1],
         });
 
         [, vm.currentDate] = mockTimeframeQuarters[1].range;
-        Vue.nextTick()
-          .then(() => {
-            expect(vm.timelineHeaderClass).toBe('label-dark label-bold');
-          })
-          .then(done)
-          .catch(done.fail);
+        await nextTick();
+        expect(vm.timelineHeaderClass).toBe('label-dark label-bold');
       });
 
       it('returns string containing `label-dark` when current quarter is less than timeframeItem quarter', () => {

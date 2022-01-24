@@ -1,4 +1,5 @@
 import { mount, createLocalVue } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import { STEPS } from 'ee/subscriptions/constants';
@@ -365,37 +366,33 @@ describe('Subscription Details', () => {
         expect(isStepValid()).toBe(true);
       });
 
-      it('should be invalid when no plan is selected', () => {
+      it('should be invalid when no plan is selected', async () => {
         store.commit(types.UPDATE_SELECTED_PLAN, null);
 
-        return localVue.nextTick().then(() => {
-          expect(isStepValid()).toBe(false);
-        });
+        await nextTick();
+        expect(isStepValid()).toBe(false);
       });
 
-      it('should be invalid when no organization name is given, and no group is selected', () => {
+      it('should be invalid when no organization name is given, and no group is selected', async () => {
         store.commit(types.UPDATE_ORGANIZATION_NAME, null);
         store.commit(types.UPDATE_SELECTED_GROUP, null);
 
-        return localVue.nextTick().then(() => {
-          expect(isStepValid()).toBe(false);
-        });
+        await nextTick();
+        expect(isStepValid()).toBe(false);
       });
 
-      it('should be invalid when number of users is 0', () => {
+      it('should be invalid when number of users is 0', async () => {
         store.commit(types.UPDATE_NUMBER_OF_USERS, 0);
 
-        return localVue.nextTick().then(() => {
-          expect(isStepValid()).toBe(false);
-        });
+        await nextTick();
+        expect(isStepValid()).toBe(false);
       });
 
-      it('should be invalid when number of users is smaller than the selected group users', () => {
+      it('should be invalid when number of users is smaller than the selected group users', async () => {
         store.commit(types.UPDATE_NUMBER_OF_USERS, 10);
 
-        return localVue.nextTick().then(() => {
-          expect(isStepValid()).toBe(false);
-        });
+        await nextTick();
+        expect(isStepValid()).toBe(false);
       });
     });
 
@@ -440,36 +437,32 @@ describe('Subscription Details', () => {
         expect(isStepValid()).toBe(true);
       });
 
-      it('should be invalid when no plan is selected', () => {
+      it('should be invalid when no plan is selected', async () => {
         store.commit(types.UPDATE_SELECTED_PLAN, null);
 
-        return localVue.nextTick().then(() => {
-          expect(isStepValid()).toBe(false);
-        });
+        await nextTick();
+        expect(isStepValid()).toBe(false);
       });
 
-      it('should be invalid when number users is 0', () => {
+      it('should be invalid when number users is 0', async () => {
         store.commit(types.UPDATE_NUMBER_OF_USERS, 0);
 
-        return localVue.nextTick().then(() => {
-          expect(isStepValid()).toBe(false);
-        });
+        await nextTick();
+        expect(isStepValid()).toBe(false);
       });
 
-      it('should be valid when number of users is greater than group users', () => {
+      it('should be valid when number of users is greater than group users', async () => {
         store.commit(types.UPDATE_NUMBER_OF_USERS, 4);
 
-        return localVue.nextTick().then(() => {
-          expect(isStepValid()).toBe(true);
-        });
+        await nextTick();
+        expect(isStepValid()).toBe(true);
       });
 
-      it('should not be valid when number of users is less than group users', () => {
+      it('should not be valid when number of users is less than group users', async () => {
         store.commit(types.UPDATE_NUMBER_OF_USERS, 2);
 
-        return localVue.nextTick().then(() => {
-          expect(isStepValid()).toBe(false);
-        });
+        await nextTick();
+        expect(isStepValid()).toBe(false);
       });
     });
   });

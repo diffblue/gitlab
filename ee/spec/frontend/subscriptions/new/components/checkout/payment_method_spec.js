@@ -1,4 +1,5 @@
 import { mount, createLocalVue } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import { STEPS } from 'ee/subscriptions/constants';
@@ -50,12 +51,11 @@ describe('Payment Method', () => {
       expect(isStepValid()).toBe(true);
     });
 
-    it('should be invalid when paymentMethodId is undefined', () => {
+    it('should be invalid when paymentMethodId is undefined', async () => {
       store.commit(types.UPDATE_PAYMENT_METHOD_ID, null);
 
-      return localVue.nextTick().then(() => {
-        expect(isStepValid()).toBe(false);
-      });
+      await nextTick();
+      expect(isStepValid()).toBe(false);
     });
   });
 
