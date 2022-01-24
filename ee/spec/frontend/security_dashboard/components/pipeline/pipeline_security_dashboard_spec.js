@@ -1,5 +1,6 @@
 import { GlEmptyState } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -17,8 +18,7 @@ import {
   pipelineSecurityReportSummaryEmpty,
 } from './mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 const dashboardDocumentation = '/help/docs';
 const emptyStateSvgPath = '/svgs/empty/svg';
@@ -62,7 +62,6 @@ describe('Pipeline Security Dashboard component', () => {
     jest.spyOn(store, 'dispatch').mockImplementation();
 
     wrapper = shallowMount(PipelineSecurityDashboard, {
-      localVue,
       apolloProvider,
       store,
       provide: {
@@ -85,7 +84,7 @@ describe('Pipeline Security Dashboard component', () => {
   };
 
   const factoryWithApollo = ({ requestHandlers }) => {
-    localVue.use(VueApollo);
+    Vue.use(VueApollo);
 
     factory({ apolloProvider: createMockApollo(requestHandlers) });
   };

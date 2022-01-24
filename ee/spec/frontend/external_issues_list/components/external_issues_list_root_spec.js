@@ -1,6 +1,7 @@
 import { GlAlert } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
-import { shallowMount, createLocalVue, mount } from '@vue/test-utils';
+import { shallowMount, mount } from '@vue/test-utils';
+import Vue from 'vue';
 import MockAdapter from 'axios-mock-adapter';
 import VueApollo from 'vue-apollo';
 
@@ -42,8 +43,6 @@ const resolvedValue = {
   data: mockExternalIssues,
 };
 
-const localVue = createLocalVue();
-
 const resolvers = {
   Query: {
     externalIssues: jiraIssuesResolver,
@@ -51,7 +50,7 @@ const resolvers = {
 };
 
 function createMockApolloProvider(mockResolvers = resolvers) {
-  localVue.use(VueApollo);
+  Vue.use(VueApollo);
   return createMockApollo([], mockResolvers);
 }
 
@@ -89,7 +88,6 @@ describe('ExternalIssuesListRoot', () => {
         initialFilterParams,
       },
       provide,
-      localVue,
       apolloProvider,
     });
   };
@@ -183,7 +181,6 @@ describe('ExternalIssuesListRoot', () => {
             initialFilterParams: {},
           },
           provide: mockProvide,
-          localVue,
           apolloProvider: createMockApolloProvider(),
         });
         await waitForPromises();
@@ -203,7 +200,6 @@ describe('ExternalIssuesListRoot', () => {
             initialFilterParams: {},
           },
           provide: mockProvide,
-          localVue,
           apolloProvider: createMockApolloProvider(),
         });
         await waitForPromises();

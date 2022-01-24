@@ -1,5 +1,6 @@
 import { GlDropdown, GlEmptyState, GlLoadingIcon, GlTab, GlTabs } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import IterationReport from 'ee/iterations/components/iteration_report.vue';
 import IterationReportTabs from 'ee/iterations/components/iteration_report_tabs.vue';
@@ -12,7 +13,6 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { mockIterationNode, mockGroupIterations, mockProjectIterations } from '../mock_data';
 
-const localVue = createLocalVue();
 const $router = {
   push: jest.fn(),
   currentRoute: {
@@ -50,14 +50,13 @@ describe('Iterations report', () => {
     deleteMutationResponse = { data: { iterationDelete: { errors: [] } } },
     deleteMutationMock = jest.fn().mockResolvedValue(deleteMutationResponse),
   } = {}) => {
-    localVue.use(VueApollo);
+    Vue.use(VueApollo);
     mockApollo = createMockApollo([
       [query, iterationQueryHandler],
       [deleteIteration, deleteMutationMock],
     ]);
 
     wrapper = shallowMount(IterationReport, {
-      localVue,
       apolloProvider: mockApollo,
       propsData: props,
       provide: {

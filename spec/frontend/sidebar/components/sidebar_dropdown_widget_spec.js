@@ -8,7 +8,8 @@ import {
   GlLoadingIcon,
 } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
-import { createLocalVue, shallowMount, mount } from '@vue/test-utils';
+import { shallowMount, mount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -36,8 +37,6 @@ import {
 } from '../mock_data';
 
 jest.mock('~/flash');
-
-const localVue = createLocalVue();
 
 describe('SidebarDropdownWidget', () => {
   let wrapper;
@@ -108,7 +107,7 @@ describe('SidebarDropdownWidget', () => {
     projectMilestonesSpy = jest.fn().mockResolvedValue(mockProjectMilestonesResponse),
     currentMilestoneSpy = jest.fn().mockResolvedValue(noCurrentMilestoneResponse),
   } = {}) => {
-    localVue.use(VueApollo);
+    Vue.use(VueApollo);
     mockApollo = createMockApollo([
       [projectMilestonesQuery, projectMilestonesSpy],
       [projectIssueMilestoneQuery, currentMilestoneSpy],
@@ -117,7 +116,6 @@ describe('SidebarDropdownWidget', () => {
 
     wrapper = extendedWrapper(
       mount(SidebarDropdownWidget, {
-        localVue,
         provide: { canUpdate: true },
         apolloProvider: mockApollo,
         propsData: {

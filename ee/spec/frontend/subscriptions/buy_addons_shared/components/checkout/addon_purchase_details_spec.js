@@ -1,5 +1,5 @@
 import { GlAlert } from '@gitlab/ui';
-import { createLocalVue } from '@vue/test-utils';
+import Vue from 'vue';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
 import { stateData as initialStateData } from 'ee_jest/subscriptions/mock_data';
@@ -11,8 +11,7 @@ import purchaseFlowResolvers from 'ee/vue_shared/purchase_flow/graphql/resolvers
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('AddonPurchaseDetails', () => {
   const resolvers = { ...purchaseFlowResolvers, ...subscriptionsResolvers };
@@ -31,7 +30,6 @@ describe('AddonPurchaseDetails', () => {
   const createComponent = (stateData = {}, props = {}) => {
     const apolloProvider = createMockApolloProvider(stateData);
     wrapper = mountExtended(AddonPurchaseDetails, {
-      localVue,
       apolloProvider,
       stubs: {
         Step,

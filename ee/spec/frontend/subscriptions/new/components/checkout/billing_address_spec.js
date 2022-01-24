@@ -1,5 +1,6 @@
-import { mount, createLocalVue } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import { mount } from '@vue/test-utils';
+import Vue, { nextTick } from 'vue';
+
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import { STEPS } from 'ee/subscriptions/constants';
@@ -10,9 +11,8 @@ import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/activate_next_step.mutation.graphql';
 import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
-localVue.use(VueApollo);
+Vue.use(Vuex);
+Vue.use(VueApollo);
 
 describe('Billing Address', () => {
   let store;
@@ -40,7 +40,6 @@ describe('Billing Address', () => {
 
   function createComponent(options = {}) {
     return mount(BillingAddress, {
-      localVue,
       ...options,
     });
   }

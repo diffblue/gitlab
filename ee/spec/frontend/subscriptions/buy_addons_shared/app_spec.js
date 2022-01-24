@@ -1,5 +1,5 @@
 import { GlEmptyState, GlAlert } from '@gitlab/ui';
-import { createLocalVue } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { pick } from 'lodash';
 import {
@@ -18,15 +18,13 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { createMockApolloProvider } from 'ee_jest/subscriptions/spec_helper';
 import { mockCiMinutesPlans, mockStoragePlans } from 'ee_jest/subscriptions/mock_data';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('Buy Addons Shared App', () => {
   let wrapper;
 
   async function createComponent(apolloProvider, injectedProps) {
     wrapper = shallowMountExtended(App, {
-      localVue,
       apolloProvider,
       provide: injectedProps,
       stubs: {

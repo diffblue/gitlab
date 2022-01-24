@@ -1,4 +1,5 @@
-import { shallowMount, mount, createLocalVue } from '@vue/test-utils';
+import { shallowMount, mount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { stubExperiments } from 'helpers/experimentation_helper';
 
@@ -8,8 +9,7 @@ import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/
 import { mockTracking } from 'helpers/tracking_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('Card security discover app', () => {
   let wrapper;
@@ -24,7 +24,6 @@ describe('Card security discover app', () => {
       linkSecondary: '/link/secondary',
     };
     wrapper = mountFn(CardSecurityDiscoverApp, {
-      localVue,
       propsData,
       apolloProvider: createMockApollo([], {}),
       provide: {

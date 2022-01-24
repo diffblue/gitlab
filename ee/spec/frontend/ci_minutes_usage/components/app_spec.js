@@ -1,4 +1,5 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import CiMinutesUsageApp from 'ee/ci_minutes_usage/components/app.vue';
 import MinutesUsageMonthChart from 'ee/ci_minutes_usage/components/minutes_usage_month_chart.vue';
@@ -7,8 +8,7 @@ import ciMinutesUsage from 'ee/ci_minutes_usage/graphql/queries/ci_minutes.graph
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { ciMinutesUsageMockData } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('CI minutes usage app', () => {
   let wrapper;
@@ -23,7 +23,6 @@ describe('CI minutes usage app', () => {
     const { fakeApollo } = options;
 
     return shallowMount(CiMinutesUsageApp, {
-      localVue,
       apolloProvider: fakeApollo,
     });
   }

@@ -6,7 +6,8 @@ import {
   GlFormInput,
 } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
-import { createLocalVue, mount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 
 import SidebarDropdownWidget from 'ee/sidebar/components/sidebar_dropdown_widget.vue';
@@ -31,8 +32,6 @@ import {
 } from '../mock_data';
 
 jest.mock('~/flash');
-
-const localVue = createLocalVue();
 
 describe('SidebarDropdownWidget', () => {
   let wrapper;
@@ -89,7 +88,7 @@ describe('SidebarDropdownWidget', () => {
     groupEpicsSpy = jest.fn().mockResolvedValue(mockGroupEpicsResponse),
     currentEpicSpy = jest.fn().mockResolvedValue(noCurrentEpicResponse),
   } = {}) => {
-    localVue.use(VueApollo);
+    Vue.use(VueApollo);
     mockApollo = createMockApollo([
       [groupEpicsQuery, groupEpicsSpy],
       [projectIssueEpicQuery, currentEpicSpy],
@@ -98,7 +97,6 @@ describe('SidebarDropdownWidget', () => {
 
     wrapper = extendedWrapper(
       mount(SidebarDropdownWidget, {
-        localVue,
         provide: { canUpdate: true, issuableAttributesQueries },
         apolloProvider: mockApollo,
         propsData: {

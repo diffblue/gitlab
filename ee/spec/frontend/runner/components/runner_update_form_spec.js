@@ -1,8 +1,9 @@
-import Vue from 'vue';
 import { GlForm } from '@gitlab/ui';
+import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { runnerData } from 'jest/runner/mock_data';
 import { createAlert, VARIANT_SUCCESS } from '~/flash';
@@ -34,13 +35,15 @@ describe('RunnerUpdateForm', () => {
   const submitFormAndWait = () => submitForm().then(waitForPromises);
 
   const createComponent = ({ props } = {}) => {
-    wrapper = mountExtended(RunnerUpdateForm, {
-      propsData: {
-        runner: mockRunner,
-        ...props,
-      },
-      apolloProvider: createMockApollo([[runnerUpdateMutation, runnerUpdateHandler]]),
-    });
+    wrapper = extendedWrapper(
+      mount(RunnerUpdateForm, {
+        propsData: {
+          runner: mockRunner,
+          ...props,
+        },
+        apolloProvider: createMockApollo([[runnerUpdateMutation, runnerUpdateHandler]]),
+      }),
+    );
   };
 
   const expectToHaveSubmittedRunnerContaining = (submittedRunner) => {

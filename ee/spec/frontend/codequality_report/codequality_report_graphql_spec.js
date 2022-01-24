@@ -1,5 +1,6 @@
 import { GlInfiniteScroll } from '@gitlab/ui';
-import { mount, createLocalVue } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -7,8 +8,7 @@ import CodequalityReportApp from 'ee/codequality_report/codequality_report_graph
 import getCodeQualityViolations from 'ee/codequality_report/graphql/queries/get_code_quality_violations.query.graphql';
 import { mockGetCodeQualityViolationsResponse, codeQualityViolations } from './mock_data';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('Codequality report app', () => {
   let wrapper;
@@ -20,7 +20,6 @@ describe('Codequality report app', () => {
     const apolloProvider = createMockApollo([[getCodeQualityViolations, mockReturnValue]]);
 
     wrapper = mountFn(CodequalityReportApp, {
-      localVue,
       apolloProvider,
       provide: {
         projectPath: 'project-path',

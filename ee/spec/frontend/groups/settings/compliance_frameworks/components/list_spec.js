@@ -1,7 +1,8 @@
 import { GlAlert, GlButton, GlLoadingIcon } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import { shallowMount } from '@vue/test-utils';
+import Vue, { nextTick } from 'vue';
+
 import VueApollo from 'vue-apollo';
 
 import DeleteModal from 'ee/groups/settings/compliance_frameworks/components/delete_modal.vue';
@@ -14,8 +15,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { validFetchResponse, emptyFetchResponse } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('List', () => {
   let wrapper;
@@ -34,7 +34,7 @@ describe('List', () => {
   const findListItems = () => wrapper.findAllComponents(ListItem);
 
   function createMockApolloProvider(resolverMock) {
-    localVue.use(VueApollo);
+    Vue.use(VueApollo);
 
     const requestHandlers = [[getComplianceFrameworkQuery, resolverMock]];
 
@@ -43,7 +43,6 @@ describe('List', () => {
 
   function createComponentWithApollo(resolverMock, props = {}) {
     return shallowMount(List, {
-      localVue,
       apolloProvider: createMockApolloProvider(resolverMock),
       propsData: {
         addFrameworkPath: 'group/framework/new',

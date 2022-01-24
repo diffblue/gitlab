@@ -1,6 +1,7 @@
 import { GlDropdown, GlInfiniteScroll, GlModal, GlSkeletonLoader } from '@gitlab/ui';
-import { createLocalVue, RouterLinkStub } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import { RouterLinkStub } from '@vue/test-utils';
+import Vue, { nextTick } from 'vue';
+
 import VueApollo from 'vue-apollo';
 import IterationCadenceListItem from 'ee/iterations/components/iteration_cadence_list_item.vue';
 import TimeboxStatusBadge from 'ee/iterations/components/timebox_status_badge.vue';
@@ -18,10 +19,8 @@ const $router = {
   push,
 };
 
-const localVue = createLocalVue();
-
 function createMockApolloProvider(requestHandlers) {
-  localVue.use(VueApollo);
+  Vue.use(VueApollo);
 
   return createMockApollo(requestHandlers);
 }
@@ -99,7 +98,6 @@ describe('Iteration cadence list item', () => {
     apolloProvider = createMockApolloProvider([[query, resolverMock]]);
 
     wrapper = mount(IterationCadenceListItem, {
-      localVue,
       apolloProvider,
       mocks: {
         $router: {

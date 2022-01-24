@@ -1,12 +1,12 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import PolicyAlertPicker from 'ee/threat_monitoring/components/policy_editor/policy_alert_picker.vue';
 import getAgentCount from 'ee/threat_monitoring/graphql/queries/get_agent_count.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('PolicyAlertPicker component', () => {
   let wrapper;
@@ -33,7 +33,6 @@ describe('PolicyAlertPicker component', () => {
     wrapper = extendedWrapper(
       shallowMount(PolicyAlertPicker, {
         apolloProvider,
-        localVue,
         propsData: {
           ...propsData,
         },

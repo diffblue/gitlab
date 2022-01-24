@@ -1,6 +1,7 @@
 import { GlAlert, GlIntersectionObserver, GlLoadingIcon } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import { shallowMount } from '@vue/test-utils';
+import Vue, { nextTick } from 'vue';
+
 import VueApollo from 'vue-apollo';
 import PipelineFindings from 'ee/security_dashboard/components/pipeline/pipeline_findings.vue';
 import FindingModal from 'ee/security_dashboard/components/pipeline/vulnerability_finding_modal.vue';
@@ -18,14 +19,11 @@ describe('Pipeline findings', () => {
   };
 
   const createWrapper = ({ props = {}, mocks, apolloProvider } = {}) => {
-    const localVue = createLocalVue();
-
     if (apolloProvider) {
-      localVue.use(VueApollo);
+      Vue.use(VueApollo);
     }
 
     wrapper = shallowMount(PipelineFindings, {
-      localVue,
       apolloProvider,
       provide: {
         projectFullPath: 'gitlab/security-reports',

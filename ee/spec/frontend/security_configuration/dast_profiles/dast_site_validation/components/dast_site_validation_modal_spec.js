@@ -1,6 +1,7 @@
 import { GlAlert, GlFormGroup, GlModal, GlSkeletonLoader } from '@gitlab/ui';
 import { within } from '@testing-library/dom';
-import { createLocalVue, mount, shallowMount, createWrapper } from '@vue/test-utils';
+import { mount, shallowMount, createWrapper } from '@vue/test-utils';
+import Vue from 'vue';
 import merge from 'lodash/merge';
 import VueApollo from 'vue-apollo';
 import DastSiteValidationModal from 'ee/security_configuration/dast_site_validation/components/dast_site_validation_modal.vue';
@@ -14,8 +15,7 @@ import * as responses from '../mock_data/apollo_mock';
 
 jest.mock('~/lib/utils/downloader');
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 const fullPath = 'group/project';
 const targetUrl = 'https://example.com/';
@@ -60,7 +60,6 @@ describe('DastSiteValidationModal', () => {
         },
         mountOptions,
         {
-          localVue,
           apolloProvider: createApolloProvider([
             [dastSiteTokenCreateMutation, requestHandlers.dastSiteTokenCreate],
             [dastSiteValidationCreateMutation, requestHandlers.dastSiteValidationCreate],

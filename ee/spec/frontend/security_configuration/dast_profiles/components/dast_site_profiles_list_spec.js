@@ -1,5 +1,6 @@
 import { within, fireEvent } from '@testing-library/dom';
-import { mount, shallowMount, createLocalVue } from '@vue/test-utils';
+import { mount, shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
 import ProfilesList from 'ee/security_configuration/dast_profiles/components/dast_profiles_list.vue';
@@ -20,7 +21,6 @@ jest.mock('ee/security_configuration/dast_profiles/graphql/cache_utils', () => (
 }));
 
 describe('EE - DastSiteProfileList', () => {
-  let localVue;
   let wrapper;
   let requestHandlers;
   let apolloProvider;
@@ -39,13 +39,12 @@ describe('EE - DastSiteProfileList', () => {
   };
 
   const createMockApolloProvider = (handlers) => {
-    localVue.use(VueApollo);
+    Vue.use(VueApollo);
     requestHandlers = handlers;
     return createApolloProvider([[dastSiteValidationsQuery, requestHandlers.dastSiteValidations]]);
   };
 
   const wrapperFactory = (mountFn = shallowMount) => (options = {}, handlers) => {
-    localVue = createLocalVue();
     apolloProvider = handlers && createMockApolloProvider(handlers);
     wrapper = mountFn(
       Component,
@@ -53,7 +52,7 @@ describe('EE - DastSiteProfileList', () => {
         {
           propsData: defaultProps,
         },
-        { ...options, localVue, apolloProvider },
+        { ...options, apolloProvider },
       ),
     );
   };

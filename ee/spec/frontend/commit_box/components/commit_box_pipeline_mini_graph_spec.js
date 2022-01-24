@@ -1,5 +1,6 @@
 import { GlLoadingIcon } from '@gitlab/ui';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -16,8 +17,7 @@ import {
 
 const fullPath = 'gitlab-org/gitlab';
 const iid = '315';
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 jest.mock('~/flash');
 
@@ -53,7 +53,6 @@ describe('Commit box pipeline mini graph', () => {
           iid,
           dataMethod: 'graphql',
         },
-        localVue,
         apolloProvider: createMockApolloProvider(handler),
       }),
     );

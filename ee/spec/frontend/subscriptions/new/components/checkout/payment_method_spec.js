@@ -1,5 +1,5 @@
-import { mount, createLocalVue } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import { mount } from '@vue/test-utils';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import { STEPS } from 'ee/subscriptions/constants';
@@ -10,16 +10,14 @@ import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';
 
 describe('Payment Method', () => {
-  const localVue = createLocalVue();
-  localVue.use(Vuex);
-  localVue.use(VueApollo);
+  Vue.use(Vuex);
+  Vue.use(VueApollo);
 
   let store;
   let wrapper;
 
   function createComponent(options = {}) {
     return mount(PaymentMethod, {
-      localVue,
       store,
       ...options,
     });

@@ -1,6 +1,7 @@
 import { GlButton } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import { shallowMount } from '@vue/test-utils';
+import Vue, { nextTick } from 'vue';
+
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import AssigneeSelect from 'ee/boards/components/assignee_select.vue';
@@ -17,8 +18,7 @@ import searchProjectUsersQuery from '~/graphql_shared/queries/users_search.query
 import { ASSIGNEES_DEBOUNCE_DELAY } from '~/sidebar/constants';
 import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('Assignee select component', () => {
   let wrapper;
@@ -51,7 +51,6 @@ describe('Assignee select component', () => {
       [searchGroupUsersQuery, groupUsersQueryHandlerSuccess],
     ]);
     wrapper = shallowMount(AssigneeSelect, {
-      localVue,
       store,
       apolloProvider: fakeApollo,
       propsData: {

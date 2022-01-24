@@ -1,5 +1,5 @@
 import { GlSkeletonLoader } from '@gitlab/ui';
-import { createLocalVue } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import mockProjectQualityResponse from 'test_fixtures/graphql/project_quality_summary/graphql/queries/get_project_quality.query.graphql.json';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -12,8 +12,7 @@ import getProjectQuality from 'ee/project_quality_summary/graphql/queries/get_pr
 
 jest.mock('~/flash');
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('Project quality summary app component', () => {
   let wrapper;
@@ -32,7 +31,6 @@ describe('Project quality summary app component', () => {
     const apolloProvider = createMockApollo([[getProjectQuality, mockReturnValue]]);
 
     wrapper = mountExtended(ProjectQualitySummary, {
-      localVue,
       apolloProvider,
       provide: {
         projectPath: 'project-path',
