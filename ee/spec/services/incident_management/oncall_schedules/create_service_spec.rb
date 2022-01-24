@@ -9,7 +9,7 @@ RSpec.describe IncidentManagement::OncallSchedules::CreateService do
 
   let(:current_user) { user_with_permissions }
   let(:params) { { name: 'On-call schedule', description: 'On-call schedule description', timezone: 'Europe/Berlin' } }
-  let(:service) { described_class.new(project, current_user, params) }
+  let(:service) { described_class.new(project: project, current_user: current_user, params: params) }
 
   before do
     stub_licensed_features(oncall_schedules: true)

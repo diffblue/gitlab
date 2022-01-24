@@ -30,10 +30,10 @@ module Mutations
           oncall_schedule = authorized_find!(project_path: args[:project_path], iid: args[:iid])
 
           response ::IncidentManagement::OncallSchedules::UpdateService.new(
-            oncall_schedule,
-            current_user,
-            args.slice(:name, :description, :timezone)
-          ).execute
+            project: oncall_schedule.project,
+            current_user: current_user,
+            params: args.slice(:name, :description, :timezone)
+          ).execute(oncall_schedule)
         end
       end
     end
