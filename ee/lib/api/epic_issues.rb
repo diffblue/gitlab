@@ -5,6 +5,7 @@ module API
     include PaginationParams
 
     feature_category :portfolio_management
+    urgency :low
 
     before do
       authenticate!

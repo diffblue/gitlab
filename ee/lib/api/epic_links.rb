@@ -5,6 +5,7 @@ module API
     include ::Gitlab::Utils::StrongMemoize
 
     feature_category :portfolio_management
+    urgency :low
 
     before do
       authenticate!

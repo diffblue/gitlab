@@ -7,6 +7,7 @@ module EE
 
       prepended do
         feature_category :portfolio_management, [:epics]
+        urgency :medium, [:epics]
         feature_category :vulnerability_management, [:vulnerabilities]
       end
 
