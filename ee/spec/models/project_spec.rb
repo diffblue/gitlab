@@ -1754,8 +1754,6 @@ RSpec.describe Project do
     end
 
     context 'slack' do
-      let(:slack_app_enabled) { false }
-
       where(:development, :slack_app_enabled, :disabled_integrations) do
         true | true | []
         true | false | []

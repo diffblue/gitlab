@@ -8,6 +8,8 @@ RSpec.describe Integration do
   end
 
   describe '.project_specific_integration_names' do
+    subject { described_class.project_specific_integration_names }
+
     before do
       allow(::Gitlab).to receive(:com?).and_return(com)
     end
@@ -15,19 +17,22 @@ RSpec.describe Integration do
     context 'when not on gitlab.com' do
       let(:com) { false }
 
-      it do
-        expect(described_class.project_specific_integration_names)
-          .to include(*described_class::EE_PROJECT_SPECIFIC_INTEGRATION_NAMES)
+      it { is_expected.to include(*described_class::EE_PROJECT_SPECIFIC_INTEGRATION_NAMES) }
+      it { is_expected.not_to include(*described_class::EE_COM_PROJECT_SPECIFIC_INTEGRATION_NAMES) }
+
+      context 'when on dev' do
+        before do
+          allow(Rails.env).to receive(:development?).and_return(true)
+        end
+
+        it { is_expected.to include(*described_class::EE_COM_PROJECT_SPECIFIC_INTEGRATION_NAMES) }
       end
     end
 
     context 'when on gitlab.com' do
       let(:com) { true }
 
-      it do
-        expect(described_class.project_specific_integration_names)
-          .to include(*described_class::EE_PROJECT_SPECIFIC_INTEGRATION_NAMES, *Integration::EE_COM_PROJECT_SPECIFIC_INTEGRATION_NAMES)
-      end
+      it { is_expected.to include(*described_class::EE_PROJECT_SPECIFIC_INTEGRATION_NAMES, *Integration::EE_COM_PROJECT_SPECIFIC_INTEGRATION_NAMES) }
     end
   end
 
