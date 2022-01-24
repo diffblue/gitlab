@@ -74,7 +74,7 @@ describe('Jobs app', () => {
     await waitForPromises();
 
     expect(createFlash).toHaveBeenCalledWith({
-      message: 'An error occured while fetching the pipelines jobs.',
+      message: 'An error occurred while fetching the pipelines jobs.',
     });
   });
 
