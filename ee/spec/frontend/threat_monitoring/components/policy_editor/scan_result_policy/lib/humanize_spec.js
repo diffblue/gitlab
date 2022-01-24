@@ -1,14 +1,16 @@
 import {
   humanizeRules,
   humanizeAction,
-  NO_RULE_MESSAGE,
 } from 'ee/threat_monitoring/components/policy_editor/scan_result_policy/lib';
+
+import { NO_RULE_MESSAGE } from 'ee/threat_monitoring/components/policy_editor/constants';
 
 jest.mock('~/locale', () => ({
   getPreferredLocales: jest.fn().mockReturnValue(['en']),
   sprintf: jest.requireActual('~/locale').sprintf,
   s__: jest.requireActual('~/locale').s__, // eslint-disable-line no-underscore-dangle
   n__: jest.requireActual('~/locale').n__, // eslint-disable-line no-underscore-dangle
+  __: jest.requireActual('~/locale').__,
 }));
 
 const mockActions = [

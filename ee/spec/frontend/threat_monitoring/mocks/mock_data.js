@@ -200,14 +200,14 @@ export const mockScanExecutionPolicy = {
   latestScan: { date: new Date('2021-06-07T00:00:00.000Z'), pipelineUrl: 'path/to/pipeline' },
 };
 
-export const mockScanResultManifest = `type: scan_execution_policy
+export const mockScanResultManifest = `type: scan_result_policy
 name: critical vulnerability CS approvals
 description: This policy enforces critical vulnerability CS approvals
 enabled: true
 rules:
   - type: scan_finding
     branches:
-      - master
+      - main
     scanners:
       - container_scanning
     vulnerability_allowed: 1
@@ -221,6 +221,30 @@ actions:
     user_approvers:
       - the.one
 `;
+
+export const mockScanResultObject = {
+  type: 'scan_result_policy',
+  name: 'critical vulnerability CS approvals',
+  description: 'This policy enforces critical vulnerability CS approvals',
+  enabled: true,
+  rules: [
+    {
+      type: 'scan_finding',
+      branches: ['main'],
+      scanners: ['container_scanning'],
+      vulnerability_allowed: 1,
+      severity_levels: ['critical'],
+      vulnerability_states: ['newly_added'],
+    },
+  ],
+  actions: [
+    {
+      type: 'require_approval',
+      approvals_required: 1,
+      user_approvers: ['the.one'],
+    },
+  ],
+};
 
 export const mockScanResultPolicy = {
   __typename: 'ScanResultPolicy',

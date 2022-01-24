@@ -1,7 +1,7 @@
 import cronstrue from 'cronstrue/i18n';
 import { convertToTitleCase, humanize } from '~/lib/utils/text_utility';
 import { getPreferredLocales, sprintf, s__, n__ } from '~/locale';
-import { NO_RULE_MESSAGE } from './constants';
+import { NO_RULE_MESSAGE } from '../../constants';
 
 const getActionText = (scanType) =>
   sprintf(s__('SecurityOrchestration|Executes a %{scanType} scan'), {
