@@ -244,8 +244,8 @@ RSpec.describe Member, type: :model do
         context 'when the user is already an active project member' do
           it 'sets the group member to active' do
             create(:project_member, :active, project: project, user: user)
-            subgroup.add_owner(user)
 
+            expect { subgroup.add_owner(user) }.to change { ::Member.with_state(:active).count }.by(1)
             expect(user.group_members.last).to be_active
           end
         end

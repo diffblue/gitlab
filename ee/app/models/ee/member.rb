@@ -148,7 +148,7 @@ module EE
 
     def set_membership_activation
       return unless group
-      return if user && ::Member.in_hierarchy(group.root_ancestor).with_user(user).with_state(:active).limit(1).any?
+      return if user && ::Member.in_hierarchy(group).with_user(user).with_state(:active).any?
 
       self.state = ::Member::STATE_AWAITING if group.user_cap_reached?
     end
