@@ -96,8 +96,9 @@ module Ci
 
       def project_usage
         strong_memoize(:project_usage) do
-          ::Ci::Minutes::ProjectMonthlyUsage.find_or_create_current(project_id: @project_id)
-        rescue ActiveRecord::InvalidForeignKey
+          if @project.present?
+            ::Ci::Minutes::ProjectMonthlyUsage.find_or_create_current(project_id: @project_id)
+          end
         end
       end
 
