@@ -10,7 +10,7 @@ import {
 } from '../constants';
 import PolicyEditorLayout from '../policy_editor_layout.vue';
 import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
-import { DEFAULT_SCAN_EXECUTION_POLICY, fromYaml, toYaml } from './lib';
+import { DEFAULT_SCAN_RESULT_POLICY, fromYaml, toYaml } from './lib';
 
 export default {
   SECURITY_POLICY_ACTIONS,
@@ -20,7 +20,7 @@ export default {
     createMergeRequest: __('Create via merge request'),
     notOwnerButtonText: __('Learn more'),
     notOwnerDescription: s__(
-      'SecurityOrchestration|Scan execution policies can only be created by project owners.',
+      'SecurityOrchestration|Scan result policies can only be created by project owners.',
     ),
   },
   components: {
@@ -53,7 +53,7 @@ export default {
   data() {
     const yamlEditorValue = this.existingPolicy
       ? toYaml(this.existingPolicy)
-      : DEFAULT_SCAN_EXECUTION_POLICY;
+      : DEFAULT_SCAN_RESULT_POLICY;
 
     return {
       error: '',
@@ -67,6 +67,11 @@ export default {
   computed: {
     originalName() {
       return this.existingPolicy?.name;
+    },
+    policyActionName() {
+      return this.isEditing
+        ? this.$options.SECURITY_POLICY_ACTIONS.REPLACE
+        : this.$options.SECURITY_POLICY_ACTIONS.APPEND;
     },
   },
   methods: {
@@ -85,11 +90,7 @@ export default {
       return this.newlyCreatedPolicyProject || this.assignedPolicyProject;
     },
     async handleModifyPolicy(act) {
-      const action =
-        act ||
-        (this.isEditing
-          ? this.$options.SECURITY_POLICY_ACTIONS.REPLACE
-          : this.$options.SECURITY_POLICY_ACTIONS.APPEND);
+      const action = act || this.policyActionName;
 
       this.$emit('error', '');
       this.setLoadingFlag(action, true);

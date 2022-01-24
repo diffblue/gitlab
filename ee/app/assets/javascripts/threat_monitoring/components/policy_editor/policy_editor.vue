@@ -1,10 +1,12 @@
 <script>
 import { GlAlert, GlFormGroup, GlFormSelect } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import EnvironmentPicker from '../environment_picker.vue';
 import NetworkPolicyEditor from './network_policy/network_policy_editor.vue';
 import ScanExecutionPolicyEditor from './scan_execution_policy/scan_execution_policy_editor.vue';
+import ScanResultPolicyEditor from './scan_result_policy/scan_result_policy_editor.vue';
 
 export default {
   components: {
@@ -14,7 +16,9 @@ export default {
     EnvironmentPicker,
     NetworkPolicyEditor,
     ScanExecutionPolicyEditor,
+    ScanResultPolicyEditor,
   },
+  mixins: [glFeatureFlagMixin()],
   inject: ['policyType'],
   props: {
     assignedPolicyProject: {
@@ -38,13 +42,23 @@ export default {
       return this.isEditing ? this.policyType : this.newPolicyType;
     },
     isEditing() {
+      if (!this.existingPolicy) {
+        return false;
+      }
       return Boolean(
-        this.existingPolicy?.creation_timestamp ||
-          this.existingPolicy?.type === POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter,
+        this.existingPolicy.creation_timestamp ||
+          [
+            POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter,
+            POLICY_TYPE_COMPONENT_OPTIONS.scanResult?.urlParameter,
+          ].includes(this.existingPolicy.type),
       );
     },
     policyTypes() {
-      return Object.values(POLICY_TYPE_COMPONENT_OPTIONS);
+      const types = Object.values(POLICY_TYPE_COMPONENT_OPTIONS);
+
+      return this.isScanResultPolicyEnabled
+        ? types
+        : types.filter((type) => type.value !== POLICY_TYPE_COMPONENT_OPTIONS.scanResult?.value);
     },
     policyOptions() {
       return (
@@ -57,6 +71,9 @@ export default {
     },
     shouldAllowPolicyTypeSelection() {
       return !this.existingPolicy;
+    },
+    isScanResultPolicyEnabled() {
+      return this.glFeatures.scanResultPolicy;
     },
   },
   methods: {

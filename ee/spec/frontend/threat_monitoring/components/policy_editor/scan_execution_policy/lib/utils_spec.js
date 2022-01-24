@@ -1,7 +1,7 @@
 import {
   assignSecurityPolicyProject,
   modifyPolicy,
-} from 'ee/threat_monitoring/components/policy_editor/scan_execution_policy/lib/utils';
+} from 'ee/threat_monitoring/components/policy_editor/utils';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/threat_monitoring/constants';
 import createPolicyProject from 'ee/threat_monitoring/graphql/mutations/create_policy_project.mutation.graphql';
 import createScanExecutionPolicy from 'ee/threat_monitoring/graphql/mutations/create_scan_execution_policy.mutation.graphql';

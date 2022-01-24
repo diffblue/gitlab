@@ -1,5 +1,5 @@
 import { sprintf, s__, n__ } from '~/locale';
-import { NO_RULE_MESSAGE } from './constants';
+import { NO_RULE_MESSAGE } from '../../constants';
 
 /**
  * Simple logic for indefinite articles which does not include the exceptions
