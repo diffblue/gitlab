@@ -8,7 +8,7 @@ const IMAGE_PATH = 'empty.svg';
 describe('EmptyState component', () => {
   let wrapper;
 
-  const emptyStateProp = (prop) => wrapper.find(GlEmptyState).props(prop);
+  const emptyStateProp = (prop) => wrapper.findComponent(GlEmptyState).props(prop);
 
   const createComponent = (props = {}) => {
     return shallowMount(EmptyState, {

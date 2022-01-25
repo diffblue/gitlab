@@ -16,9 +16,9 @@ describe('Status component', () => {
   const checkStatusComponentExists = (status, exists) => {
     switch (status.type) {
       case 'approval':
-        return expect(wrapper.find(Approval).exists()).toBe(exists);
+        return expect(wrapper.findComponent(Approval).exists()).toBe(exists);
       case 'pipeline':
-        return expect(wrapper.find(Pipeline).exists()).toBe(exists);
+        return expect(wrapper.findComponent(Pipeline).exists()).toBe(exists);
       default:
         throw new Error(`Unknown status type: ${status.type}`);
     }

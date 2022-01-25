@@ -9,7 +9,7 @@ import { createMergeRequest } from '../../mock_data';
 describe('MergeRequest component', () => {
   let wrapper;
 
-  const findAuthorAvatarLink = () => wrapper.find('.issuable-authored').find(GlAvatarLink);
+  const findAuthorAvatarLink = () => wrapper.find('.issuable-authored').findComponent(GlAvatarLink);
   const findComplianceFrameworkLabel = () => wrapper.findComponent(ComplianceFrameworkLabel);
 
   const createComponent = (mergeRequest) => {
@@ -54,7 +54,7 @@ describe('MergeRequest component', () => {
     });
 
     it('renders the author avatar', () => {
-      expect(findAuthorAvatarLink().find(GlAvatar).exists()).toEqual(true);
+      expect(findAuthorAvatarLink().findComponent(GlAvatar).exists()).toEqual(true);
     });
 
     it('renders the author name', () => {
