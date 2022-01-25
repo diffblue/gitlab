@@ -9,6 +9,7 @@ import MergeRequestDrawer from 'ee/compliance_dashboard/components/drawer.vue';
 import MergeCommitsExportButton from 'ee/compliance_dashboard/components/merge_requests/merge_commits_export_button.vue';
 import ViolationReason from 'ee/compliance_dashboard/components/violations/reason.vue';
 import ViolationFilter from 'ee/compliance_dashboard/components/violations/filter.vue';
+import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
 import resolvers from 'ee/compliance_dashboard/graphql/resolvers';
 import { mapViolations } from 'ee/compliance_dashboard/graphql/mappers';
 import { stripTypenames } from 'helpers/graphql_helpers';
@@ -43,6 +44,7 @@ describe('ComplianceReport component', () => {
   const findMergeRequestDrawer = () => wrapper.findComponent(MergeRequestDrawer);
   const findMergeCommitsExportButton = () => wrapper.findComponent(MergeCommitsExportButton);
   const findViolationReason = () => wrapper.findComponent(ViolationReason);
+  const findSeverityBadge = () => wrapper.findComponent(SeverityBadge);
   const findTimeAgoTooltip = () => wrapper.findComponent(TimeAgoTooltip);
   const findViolationFilter = () => wrapper.findComponent(ViolationFilter);
   const findUrlSync = () => wrapper.findComponent(UrlSync);
@@ -176,17 +178,21 @@ describe('ComplianceReport component', () => {
       expect(headerTexts).toStrictEqual(['Severity', 'Violation', 'Merge request', 'Date merged']);
     });
 
-    // Note: This should be refactored as each table component is created
-    // Severity: https://gitlab.com/gitlab-org/gitlab/-/issues/342900
     it('has the correct first row data', () => {
       const headerTexts = findTablesFirstRowData().wrappers.map((d) => d.text());
 
       expect(headerTexts).toEqual([
-        '1',
+        'High',
         'Approved by committer',
         'Officiis architecto voluptas ut sit qui qui quisquam sequi consectetur porro.',
         'in 1 year',
       ]);
+    });
+
+    it('renders the violation severity badge', () => {
+      const { severity } = mapViolations(mockResolver().mergeRequestViolations.nodes)[0];
+
+      expect(findSeverityBadge().props()).toStrictEqual({ severity });
     });
 
     it('renders the violation reason', () => {

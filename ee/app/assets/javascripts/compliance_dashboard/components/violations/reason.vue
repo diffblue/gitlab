@@ -29,7 +29,7 @@ export default {
 </script>
 
 <template>
-  <div class="gl-display-flex gl-align-items-center">
+  <div class="gl-display-inline-flex gl-align-items-center">
     <span class="gl-mr-2">{{ violationMessage }}</span>
     <user-avatar v-if="user" :user="user" />
   </div>
