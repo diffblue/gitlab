@@ -5,12 +5,17 @@ require 'spec_helper'
 RSpec.describe Mutations::ComplianceManagement::Frameworks::Destroy do
   include GraphqlHelpers
 
-  let_it_be(:framework) { create(:compliance_framework) }
+  let_it_be(:namespace) { create(:group) }
+  let_it_be(:framework) { create(:compliance_framework, namespace: namespace) }
 
-  let(:user) { framework.namespace.owner }
+  let(:user) { create(:user) }
   let(:mutation) { described_class.new(object: nil, context: { current_user: user }, field: nil) }
 
   subject { mutation.resolve(id: global_id_of(framework)) }
+
+  before do
+    namespace.add_owner(user)
+  end
 
   shared_examples 'a compliance framework that cannot be found' do
     it 'raises an error' do

@@ -5,10 +5,11 @@ require 'spec_helper'
 RSpec.describe 'Update a compliance framework' do
   include GraphqlHelpers
 
-  let_it_be(:framework) { create(:compliance_framework) }
+  let_it_be(:namespace) { create(:group) }
+  let_it_be(:framework) { create(:compliance_framework, namespace: namespace) }
 
+  let(:current_user) { create(:user) }
   let(:mutation) { graphql_mutation(:update_compliance_framework, { id: global_id_of(framework), **params }) }
-  let(:current_user) { framework.namespace.owner }
   let(:params) do
     {
       params: {
@@ -20,6 +21,10 @@ RSpec.describe 'Update a compliance framework' do
   end
 
   subject { post_graphql_mutation(mutation, current_user: current_user) }
+
+  before do
+    namespace.add_owner(current_user)
+  end
 
   def mutation_response
     graphql_mutation_response(:update_compliance_framework)
@@ -94,7 +99,9 @@ RSpec.describe 'Update a compliance framework' do
       end
 
       context 'current_user is not permitted to update framework' do
-        let_it_be(:current_user) { create(:user) }
+        before do
+          namespace.update!(owners: [])
+        end
 
         it_behaves_like 'a mutation that returns top-level errors',
                         errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
