@@ -28201,6 +28201,9 @@ msgstr ""
 msgid "ProjectSettings|Disable email notifications"
 msgstr ""
 
+msgid "ProjectSettings|Disable the inclusion of code diffs in an MR review ."
+msgstr ""
+
 msgid "ProjectSettings|Do not allow"
 msgstr ""
 
@@ -28403,6 +28406,9 @@ msgid "ProjectSettings|Squashing is always performed. Checkbox is visible and se
 msgstr ""
 
 msgid "ProjectSettings|Squashing is never performed and the checkbox is hidden."
+msgstr ""
+
+msgid "ProjectSettings|Stop displaying diffs in MR emails"
 msgstr ""
 
 msgid "ProjectSettings|Submit changes to be merged upstream."

@@ -199,6 +199,7 @@ export default {
       requestAccessEnabled: true,
       highlightChangesClass: false,
       emailsDisabled: false,
+      hideDiffsInEmail: false,
       cveIdRequestEnabled: true,
       featureAccessLevelEveryone,
       featureAccessLevelMembers,
@@ -759,6 +760,22 @@ export default {
       <span class="form-text text-muted">{{
         s__('ProjectSettings|Override user notification preferences for all project members.')
       }}</span>
+    </project-setting-row>
+    <project-setting-row class="mb-3">
+      <input
+        :value="hideDiffsInEmail"
+        type="hidden"
+        name="project[project_setting_attributes][hide_diffs_in_email]"
+      />
+      <gl-form-checkbox
+        v-model="hideDiffsInEmail"
+        name="project[project_setting_attributes][hide_diffs_in_email]"
+      >
+        {{ s__('ProjectSettings|Stop displaying diffs in MR emails') }}
+        <template #help>{{
+          s__('ProjectSettings|Disable the inclusion of code diffs in an MR review .')
+        }}</template>
+      </gl-form-checkbox>
     </project-setting-row>
     <project-setting-row class="mb-3">
       <input

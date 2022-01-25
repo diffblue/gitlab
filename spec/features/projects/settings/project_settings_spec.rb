@@ -85,6 +85,36 @@ RSpec.describe 'Projects settings' do
     end
   end
 
+  context 'hide diffs in emails', :js do
+    it 'does not hide diffs by default' do
+      visit edit_project_path(project)
+
+      hide_diffs_in_email_input = find('input[name="project[project_setting_attributes][hide_diffs_in_email]"]', visible: :hidden)
+
+      expect(hide_diffs_in_email_input.value).to eq('false')
+    end
+
+    it 'hides diffs in emails when toggled on' do
+      visit edit_project_path(project)
+
+      hide_diffs_in_email_input = find('input[name="project[project_setting_attributes][hide_diffs_in_email]"]', visible: :hidden)
+      hide_diffs_in_email_checkbox = find('input[name="project[project_setting_attributes][hide_diffs_in_email]"][type=checkbox]')
+
+      expect(hide_diffs_in_email_input.value).to eq('false')
+
+      hide_diffs_in_email_checkbox.click
+
+      expect(hide_diffs_in_email_input.value).to eq('true')
+
+      page.within('.sharing-permissions') do
+        find('[data-testid="project-features-save-button"]').click
+      end
+      wait_for_requests
+
+      expect(hide_diffs_in_email_input.value).to eq('true')
+    end
+  end
+
   def expect_toggle_state(state)
     is_collapsed = state == :collapsed
 
