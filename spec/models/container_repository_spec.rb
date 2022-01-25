@@ -209,6 +209,46 @@ RSpec.describe ContainerRepository do
     end
   end
 
+  context 'registry migration' do
+    shared_examples 'handling the migration step' do |step|
+      let(:client_response) { :foobar }
+
+      before do
+        allow(repository.gitlab_api_client).to receive(:supports_gitlab_api?).and_return(true)
+      end
+
+      it 'returns the same response as the client' do
+        expect(repository.gitlab_api_client)
+          .to receive(step).with(repository.path).and_return(client_response)
+        expect(subject).to eq(client_response)
+      end
+
+      context 'when the gitlab_api feature is not supported' do
+        before do
+          allow(repository.gitlab_api_client).to receive(:supports_gitlab_api?).and_return(false)
+        end
+
+        it 'returns :error' do
+          expect(repository.gitlab_api_client).not_to receive(step)
+
+          expect(subject).to eq(:error)
+        end
+      end
+    end
+
+    describe '#migration_pre_import' do
+      subject { repository.migration_pre_import }
+
+      it_behaves_like 'handling the migration step', :pre_import_repository
+    end
+
+    describe '#migration_import' do
+      subject { repository.migration_import }
+
+      it_behaves_like 'handling the migration step', :import_repository
+    end
+  end
+
   describe '.build_from_path' do
     let(:registry_path) do
       ContainerRegistry::Path.new(project.full_path + '/some/image')
