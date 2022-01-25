@@ -578,7 +578,7 @@ module EE
 
     def billed_user_ids_excluding_guests
       strong_memoize(:billed_user_ids_excluding_guests) do
-        group_member_user_ids = billed_group_members.non_guests.distinct.pluck(:user_id)
+        group_member_user_ids = billed_group_users(non_guests: true).distinct.pluck(:id)
         project_member_user_ids = billed_project_users(non_guests: true).distinct.pluck(:id)
         shared_group_user_ids = billed_shared_non_guests_group_members.non_guests.distinct.pluck(:user_id)
         shared_project_user_ids = billed_invited_non_guests_group_to_project_members.non_guests.distinct.pluck(:user_id)
@@ -595,7 +595,7 @@ module EE
 
     def billed_user_ids_including_guests
       strong_memoize(:billed_user_ids_including_guests) do
-        group_member_user_ids = billed_group_members.distinct.pluck(:user_id)
+        group_member_user_ids = billed_group_users.distinct.pluck(:id)
         project_member_user_ids = billed_project_users.distinct.pluck(:id)
         shared_group_user_ids = billed_shared_group_members.distinct.pluck(:user_id)
         shared_project_user_ids = billed_invited_group_to_project_members.distinct.pluck(:user_id)
@@ -611,10 +611,16 @@ module EE
     end
 
     # Members belonging directly to Group or its subgroups
-    def billed_group_members
-      ::GroupMember.active_without_invites_and_requests.where(
+    def billed_group_users(non_guests: false)
+      members = ::GroupMember.active_without_invites_and_requests.where(
         source_id: self_and_descendants
       )
+
+      members = members.non_guests if non_guests
+
+      user_ids = members.distinct.select(:user_id)
+
+      ::User.without_project_bot.where(id: user_ids)
     end
 
     # Members belonging directly to Projects within Group or Projects within subgroups
