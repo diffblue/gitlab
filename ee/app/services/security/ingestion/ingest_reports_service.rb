@@ -39,14 +39,8 @@ module Security
         IngestReportService.execute(security_scan)
       end
 
-      # This can cause issues if we have lots of existing ids
-      # or, if we try to update lots of records at once.
-      # Maybe we can extract this into a different service class
-      # and update the records iteratively.
       def mark_resolved_vulnerabilities(existing_ids)
-        project.vulnerabilities
-               .id_not_in(existing_ids)
-               .update_all(resolved_on_default_branch: true)
+        MarkAsResolvedService.execute(project, existing_ids)
       end
 
       def mark_project_as_vulnerable!
