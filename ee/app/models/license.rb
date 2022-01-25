@@ -584,6 +584,10 @@ class License < ApplicationRecord
     !!license&.cloud_licensing?
   end
 
+  def offline_cloud_license?
+    !!license&.offline_cloud_licensing?
+  end
+
   def customer_service_enabled?
     !!license&.operational_metrics?
   end

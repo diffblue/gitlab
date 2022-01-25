@@ -19,6 +19,14 @@ FactoryBot.define do
       cloud_licensing_enabled { true }
     end
 
+    trait :offline_enabled do
+      offline_cloud_licensing_enabled { true }
+    end
+
+    trait :offline_disabled do
+      offline_cloud_licensing_enabled { false }
+    end
+
     transient do
       plan { License::STARTER_PLAN }
     end

@@ -166,14 +166,26 @@ RSpec.describe Gitlab::SeatLinkData do
       it { is_expected.to be_falsey }
     end
 
+    context 'when not a cloud license' do
+      let(:license) { build(:license) }
+
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when cloud license for offline use' do
+      let(:license) { build(:license, cloud: true, offline_cloud_licensing_enabled: true) }
+
+      it { is_expected.to be_falsey }
+    end
+
     context 'when expires_at is not set' do
-      let(:license) { build(:license, expires_at: nil) }
+      let(:license) { build(:license, cloud: true, expires_at: nil) }
 
       it { is_expected.to be_falsey }
     end
 
     context 'when license is trial' do
-      let(:license) { build(:license, trial: true) }
+      let(:license) { build(:license, cloud: true, trial: true) }
 
       it { is_expected.to be_falsey }
     end
