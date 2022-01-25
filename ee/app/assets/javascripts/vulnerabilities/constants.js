@@ -86,6 +86,6 @@ export const SUPPORTING_MESSAGE_TYPES = {
   RECORDED: 'Recorded',
 };
 
-export const SUPPORTED_REFERENCE_SCHEMA = {
+export const SUPPORTED_IDENTIFIER_TYPES = {
   cwe: 'cwe',
 };

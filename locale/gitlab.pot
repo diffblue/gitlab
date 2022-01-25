@@ -39848,6 +39848,9 @@ msgstr ""
 msgid "Vulnerability|Scanner Provider"
 msgstr ""
 
+msgid "Vulnerability|Secure Code Warrior"
+msgstr ""
+
 msgid "Vulnerability|Security Audit"
 msgstr ""
 
@@ -39879,6 +39882,9 @@ msgid "Vulnerability|Training not available for this vulnerability."
 msgstr ""
 
 msgid "Vulnerability|Unmodified Response"
+msgstr ""
+
+msgid "Vulnerability|View training"
 msgstr ""
 
 msgid "WARNING:"
