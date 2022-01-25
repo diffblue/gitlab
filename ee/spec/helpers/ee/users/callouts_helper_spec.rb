@@ -462,5 +462,11 @@ RSpec.describe EE::Users::CalloutsHelper do
         it { is_expected.to eq(false) }
       end
     end
+
+    describe '#trials_link_url' do
+      it 'returns value of glm_source is gitlab.com' do
+        expect(helper.send(:trials_link_url)).to eq('/-/trial_registrations/new?glm_content=gold-callout&glm_source=gitlab.com')
+      end
+    end
   end
 end

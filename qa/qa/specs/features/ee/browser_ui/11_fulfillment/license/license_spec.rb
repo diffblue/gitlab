@@ -5,8 +5,7 @@ module QA
 
   RSpec.describe 'Fulfillment', :requires_admin, :skip_live_env, except: { job: 'review-qa-*' } do
     let(:user) { 'GitLab QA' }
-    let(:user_email) { 'gitlab-qa@gitlab.com' }
-    let(:company) { 'GitLab' }
+    let(:company) { 'QA User' }
     let(:user_count) { 10_000 }
     let(:plan) { ULTIMATE_SELF_MANAGED }
 
@@ -19,9 +18,9 @@ module QA
       it 'shows up in subscription page', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347607' do
         Gitlab::Page::Admin::Subscription.perform do |subscription|
           aggregate_failures do
-            expect { subscription.name }.to eventually_eq(user).within(max_duration: 30)
-            expect(subscription.email).to eq(user_email)
-            expect(subscription.company).to eq(company)
+            expect { subscription.subscription_details?}.to eventually_be_truthy.within(max_duration: 60)
+            expect(subscription.name).to eq(user)
+            expect(subscription.company).to include(company)
             expect(subscription.plan).to eq(plan[:name].capitalize)
             expect(subscription.users_in_subscription).to eq(user_count.to_s)
             expect(subscription).to have_subscription_record(plan, user_count, LICENSE_TYPE[:license_file])
