@@ -22,7 +22,7 @@ module EE
       override :project_specific_integration_names
       def project_specific_integration_names
         integrations = super + EE_PROJECT_SPECIFIC_INTEGRATION_NAMES
-        integrations += EE_COM_PROJECT_SPECIFIC_INTEGRATION_NAMES if ::Gitlab.com?
+        integrations += EE_COM_PROJECT_SPECIFIC_INTEGRATION_NAMES if ::Gitlab.dev_env_or_com?
         integrations
       end
     end

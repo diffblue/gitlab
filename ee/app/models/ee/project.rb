@@ -658,7 +658,13 @@ module EE
     def disabled_integrations
       strong_memoize(:disabled_integrations) do
         gh = github_integration_enabled? ? [] : %w[github]
-        slack = ::Gitlab::CurrentSettings.slack_app_enabled ? %w[slack_slash_commands] : %w[gitlab_slack_application]
+        slack = if Rails.env.development?
+                  []
+                elsif ::Gitlab::CurrentSettings.slack_app_enabled
+                  %w[slack_slash_commands]
+                else
+                  %w[gitlab_slack_application]
+                end
 
         super + gh + slack
       end
