@@ -156,7 +156,7 @@ for builds archival. Instead we should leverage a long-standing policy saying
 that builds created more 24 hours ago need to be removed from the queue. This
 business rule is present in the product since the inception of GitLab CI.
 
-Epic: [Partition builds queuing tables](https://gitlab.com/gitlab-org/gitlab/-/issues/347027).
+Epic: [Partition builds queuing tables](https://gitlab.com/groups/gitlab-org/-/epics/7438).
 
 ## Principles
 
