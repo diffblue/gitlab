@@ -14,5 +14,7 @@ RSpec.describe Security::Ingestion::Tasks::IngestFindingPipelines do
     it 'associates the findings with pipeline' do
       expect { ingest_finding_pipelines }.to change { finding.finding_pipelines.pluck(:pipeline_id) }.from([]).to([pipeline.id])
     end
+
+    it_behaves_like 'bulk insertable task'
   end
 end

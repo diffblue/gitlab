@@ -31,5 +31,7 @@ RSpec.describe Security::Ingestion::Tasks::IngestIdentifiers do
           .from([])
           .to(expected_fingerprints))
     end
+
+    it_behaves_like 'bulk insertable task'
   end
 end
