@@ -2,6 +2,7 @@ import { GlDropdown, GlModal, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import { nextTick } from 'vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import InitCommandModal from '~/terraform/components/init_command_modal.vue';
@@ -58,7 +59,7 @@ describe('StatesTableActions', () => {
     );
   };
 
-  const createComponent = (propsData = defaultProps) => {
+  const createComponent = async (propsData = defaultProps) => {
     const apolloProvider = createMockApolloProvider();
 
     toast = jest.fn();
@@ -70,7 +71,7 @@ describe('StatesTableActions', () => {
       stubs: { GlDropdown, GlModal, GlSprintf },
     });
 
-    return wrapper.vm.$nextTick();
+    await nextTick();
   };
 
   const findActionsDropdown = () => wrapper.findComponent(GlDropdown);
