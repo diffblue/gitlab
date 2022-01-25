@@ -22,6 +22,7 @@ RSpec.describe Security::Ingestion::IngestReportsService do
 
     before do
       allow(Security::Ingestion::IngestReportService).to receive(:execute).and_return(ids_1, ids_2)
+      allow(Security::Ingestion::MarkAsResolvedService).to receive(:execute)
     end
 
     it 'calls IngestReportService for each succeeded security scan' do
@@ -35,8 +36,12 @@ RSpec.describe Security::Ingestion::IngestReportsService do
     it 'sets the resolved vulnerabilities, latest pipeline ID and has_vulnerabilities flag' do
       expect { ingest_reports }.to change { project.reload.project_setting&.has_vulnerabilities }.to(true)
                                .and change { project.reload.vulnerability_statistic&.latest_pipeline_id }.to(pipeline.id)
-                               .and change { vulnerability_2.reload.resolved_on_default_branch }.from(false).to(true)
-                               .and not_change { vulnerability_1.reload.resolved_on_default_branch }.from(false)
+    end
+
+    it 'calls MarkAsResolvedService with the recently ingested vulnerability IDs' do
+      ingest_reports
+
+      expect(Security::Ingestion::MarkAsResolvedService).to have_received(:execute).with(project, ids_1)
     end
 
     describe 'scheduling the AutoFix background job' do
