@@ -7,6 +7,8 @@ module QA
     let(:container_scan_example_vuln) { 'CVE-2017-18269 in glibc' }
     let(:sast_scan_example_vuln) { 'Cipher with no integrity' }
     let(:dast_scan_example_vuln) { 'Cookie Without SameSite Attribute' }
+    let(:sast_scan_fp_example_vuln) { "Possible unprotected redirect" }
+    let(:sast_scan_fp_example_vuln_desc) { "Possible unprotected redirect near line 46" }
 
     describe 'Security Reports' do
       before(:context) do
@@ -76,6 +78,7 @@ module QA
 
             filter_report_and_perform(pipeline, "SAST") do
               expect(pipeline).to have_vulnerability_info_content sast_scan_example_vuln
+              expect(pipeline).to have_vulnerability_info_content sast_scan_fp_example_vuln
             end
 
             filter_report_and_perform(pipeline, "DAST") do
@@ -99,6 +102,8 @@ module QA
 
             filter_report_and_perform(dashboard, "SAST") do
               expect(dashboard).to have_vulnerability sast_scan_example_vuln
+              expect(dashboard).to have_vulnerability sast_scan_fp_example_vuln
+              expect(dashboard).to have_false_positive_vulnerability
             end
 
             filter_report_and_perform(dashboard, "DAST") do
@@ -137,6 +142,32 @@ module QA
 
             filter_report_and_perform(dashboard, "DAST") do
               expect(dashboard).to have_vulnerability dast_scan_example_vuln
+            end
+          end
+        end
+
+        it 'displays false positives for the vulnerabilities', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/350412' do
+          Page::Project::Menu.perform(&:click_project)
+          Page::Project::Menu.perform(&:click_on_vulnerability_report)
+
+          EE::Page::Project::Secure::Show.perform do |security_dashboard|
+            filter_report_and_perform(security_dashboard, "SAST") do
+              expect(security_dashboard).to have_vulnerability sast_scan_fp_example_vuln
+            end
+          end
+
+          EE::Page::Project::Secure::SecurityDashboard.perform do |security_dashboard|
+            security_dashboard.click_vulnerability(description: sast_scan_fp_example_vuln)
+          end
+
+          EE::Page::Project::Secure::VulnerabilityDetails.perform do |vulnerability_details|
+            aggregate_failures "testing False positive vulnerability details" do
+              expect(vulnerability_details).to have_component(component_name: :vulnerability_header)
+              expect(vulnerability_details).to have_component(component_name: :vulnerability_details)
+              expect(vulnerability_details).to have_vulnerability_title(title: sast_scan_fp_example_vuln)
+              expect(vulnerability_details).to have_vulnerability_description(description: sast_scan_fp_example_vuln_desc)
+              expect(vulnerability_details).to have_component(component_name: :vulnerability_footer)
+              expect(vulnerability_details).to have_component(component_name: :false_positive_alert)
             end
           end
         end

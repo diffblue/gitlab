@@ -10,8 +10,16 @@ module QA
               element :vulnerability
             end
 
+            view 'ee/app/assets/javascripts/security_dashboard/components/shared/vulnerability_list.vue' do
+              element :false_positive_vulnerability
+            end
+
             def has_vulnerability?(description:)
               has_element?(:vulnerability, vulnerability_description: description)
+            end
+
+            def has_false_positive_vulnerability?
+              has_element?(:false_positive_vulnerability)
             end
 
             def click_vulnerability(description:)
