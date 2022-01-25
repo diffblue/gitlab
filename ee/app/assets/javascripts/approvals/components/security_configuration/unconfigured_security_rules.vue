@@ -47,7 +47,7 @@ export default {
         {
           name: LICENSE_CHECK_NAME,
           description: s__(
-            'SecurityApprovals|Requires approval for Denied licenses. %{linkStart}More information%{linkEnd}',
+            'SecurityApprovals|Requires approval for Denied licenses. %{linkStart}Learn more.%{linkEnd}',
           ),
           docsPath: this.licenseCheckHelpPagePath,
         },

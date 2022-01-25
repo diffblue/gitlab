@@ -75,16 +75,16 @@ export const APPROVAL_SETTINGS_I18N = {
 };
 
 export const PROJECT_APPROVAL_SETTINGS_LABELS_I18N = {
-  authorApprovalLabel: s__('ApprovalSettings|Prevent approval by author.'),
+  authorApprovalLabel: s__('ApprovalSettings|Prevent approval by author'),
   preventMrApprovalRuleEditLabel: s__(
-    'ApprovalSettings|Prevent editing approval rules in merge requests.',
+    'ApprovalSettings|Prevent editing approval rules in merge requests',
   ),
   preventCommittersApprovalLabel: s__(
-    'ApprovalSettings|Prevent approvals by users who add commits.',
+    'ApprovalSettings|Prevent approvals by users who add commits',
   ),
-  requireUserPasswordLabel: s__('ApprovalSettings|Require user password to approve.'),
+  requireUserPasswordLabel: s__('ApprovalSettings|Require user password to approve'),
   removeApprovalsOnPushLabel: s__(
-    'ApprovalSettings|Remove all approvals when commits are added to the source branch.',
+    'ApprovalSettings|Remove all approvals when commits are added to the source branch',
   ),
 };
 
