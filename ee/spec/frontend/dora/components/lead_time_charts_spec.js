@@ -1,6 +1,7 @@
 import { GlSprintf } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
+import { nextTick } from 'vue';
 import lastWeekData from 'test_fixtures/api/dora/metrics/daily_lead_time_for_changes_for_last_week.json';
 import lastMonthData from 'test_fixtures/api/dora/metrics/daily_lead_time_for_changes_for_last_month.json';
 import last90DaysData from 'test_fixtures/api/dora/metrics/daily_lead_time_for_changes_for_last_90_days.json';
@@ -109,7 +110,7 @@ describe('lead_time_charts.vue', () => {
           const formatTooltipText = findCiCdAnalyticsCharts().vm.$attrs['format-tooltip-text'];
           formatTooltipText(params);
 
-          await wrapper.vm.$nextTick();
+          await nextTick();
 
           expect(getTooltipValue()).toBe('1.5 hours');
         });

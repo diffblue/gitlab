@@ -2,6 +2,7 @@ import { GlTabs, GlTab } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Cookies from 'js-cookie';
 
+import { nextTick } from 'vue';
 import ComplianceDashboard from 'ee/compliance_dashboard/components/dashboard.vue';
 import MergeRequestDrawer from 'ee/compliance_dashboard/components/drawer.vue';
 import MergeRequestGrid from 'ee/compliance_dashboard/components/merge_requests/grid.vue';
@@ -103,10 +104,9 @@ describe('ComplianceDashboard component', () => {
       wrapper = createComponent({ mergeCommitsCsvExportPath: '' });
     });
 
-    it('does not render the merge commit export button', () => {
-      return wrapper.vm.$nextTick().then(() => {
-        expect(findMergeCommitsExportButton().exists()).toBe(false);
-      });
+    it('does not render the merge commit export button', async () => {
+      await nextTick();
+      expect(findMergeCommitsExportButton().exists()).toBe(false);
     });
   });
 

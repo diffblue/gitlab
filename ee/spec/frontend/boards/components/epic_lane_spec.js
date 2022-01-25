@@ -1,5 +1,5 @@
 import { GlButton, GlIcon, GlLoadingIcon } from '@gitlab/ui';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import EpicLane from 'ee/boards/components/epic_lane.vue';
 import IssuesLaneList from 'ee/boards/components/issues_lane_list.vue';
@@ -93,16 +93,15 @@ describe('EpicLane', () => {
       expect(wrapper.findAllComponents(IssuesLaneList)).toHaveLength(wrapper.props('lists').length);
     });
 
-    it('hides issues when collapsing', () => {
+    it('hides issues when collapsing', async () => {
       expect(wrapper.findAllComponents(IssuesLaneList)).toHaveLength(wrapper.props('lists').length);
       expect(wrapper.vm.isCollapsed).toBe(false);
 
       findChevronButton().vm.$emit('click');
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(wrapper.findAllComponents(IssuesLaneList)).toHaveLength(0);
-        expect(wrapper.vm.isCollapsed).toBe(true);
-      });
+      await nextTick();
+      expect(wrapper.findAllComponents(IssuesLaneList)).toHaveLength(0);
+      expect(wrapper.vm.isCollapsed).toBe(true);
     });
 
     it('does not display loading icon when issues are not loading', () => {
@@ -115,25 +114,24 @@ describe('EpicLane', () => {
       expect(wrapper.findByTestId('epic-lane-issue-count').exists()).toBe(false);
     });
 
-    it('invokes `updateBoardEpicUserPreferences` method on collapse', () => {
+    it('invokes `updateBoardEpicUserPreferences` method on collapse', async () => {
       const collapsedValue = false;
 
       expect(wrapper.vm.isCollapsed).toBe(collapsedValue);
 
       findChevronButton().vm.$emit('click');
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(updateBoardEpicUserPreferencesSpy).toHaveBeenCalled();
+      await nextTick();
+      expect(updateBoardEpicUserPreferencesSpy).toHaveBeenCalled();
 
-        const payload = updateBoardEpicUserPreferencesSpy.mock.calls[0][1];
+      const payload = updateBoardEpicUserPreferencesSpy.mock.calls[0][1];
 
-        expect(payload).toEqual({
-          collapsed: !collapsedValue,
-          epicId: mockEpic.id,
-        });
-
-        expect(wrapper.vm.isCollapsed).toBe(true);
+      expect(payload).toEqual({
+        collapsed: !collapsedValue,
+        epicId: mockEpic.id,
       });
+
+      expect(wrapper.vm.isCollapsed).toBe(true);
     });
 
     it('does not render when issuesCount is 0', () => {

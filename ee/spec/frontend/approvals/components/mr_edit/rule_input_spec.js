@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import RuleInput from 'ee/approvals/components/mr_edit/rule_input.vue';
 import { createStoreOptions } from 'ee/approvals/stores';
@@ -73,7 +73,7 @@ describe('Rule Input', () => {
     expect(Number(wrapper.attributes('min'))).toEqual(0);
   });
 
-  it('dispatches putRule on change', () => {
+  it('dispatches putRule on change', async () => {
     const action = store.modules.approvals.actions.putRule;
     createComponent();
     wrapper.element.value = wrapper.props().rule.approvalsRequired + 1;
@@ -81,8 +81,7 @@ describe('Rule Input', () => {
 
     jest.runAllTimers();
 
-    return wrapper.vm.$nextTick().then(() => {
-      expect(action).toHaveBeenCalledWith(expect.anything(), { approvalsRequired: 10, id: 5 });
-    });
+    await nextTick();
+    expect(action).toHaveBeenCalledWith(expect.anything(), { approvalsRequired: 10, id: 5 });
   });
 });

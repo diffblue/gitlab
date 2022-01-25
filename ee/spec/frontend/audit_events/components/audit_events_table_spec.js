@@ -1,6 +1,7 @@
 import { GlPagination, GlTable } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 
+import { nextTick } from 'vue';
 import AuditEventsTable from 'ee/audit_events/components/audit_events_table.vue';
 import setWindowLocation from 'helpers/set_window_location_helper';
 import createEvents from '../mock_data';
@@ -45,11 +46,10 @@ describe('AuditEventsTable component', () => {
       expect(getCell(0, 1).text()).toBe('User');
     });
 
-    it('should show the empty state if there is no data', () => {
+    it('should show the empty state if there is no data', async () => {
       wrapper.setProps({ events: [] });
-      wrapper.vm.$nextTick(() => {
-        expect(getCell(0, 0).text()).toBe('There are no records to show');
-      });
+      await nextTick();
+      expect(getCell(0, 0).text()).toBe('There are no records to show');
     });
   });
 
@@ -58,11 +58,10 @@ describe('AuditEventsTable component', () => {
       expect(wrapper.findComponent(GlPagination).exists()).toBe(true);
     });
 
-    it('should hide if there is no data', () => {
+    it('should hide if there is no data', async () => {
       wrapper.setProps({ events: [] });
-      wrapper.vm.$nextTick(() => {
-        expect(wrapper.findComponent(GlPagination).exists()).toBe(false);
-      });
+      await nextTick();
+      expect(wrapper.findComponent(GlPagination).exists()).toBe(false);
     });
 
     it('should get the page number from the URL', () => {
@@ -86,11 +85,10 @@ describe('AuditEventsTable component', () => {
       expect(wrapper.findComponent(GlPagination).props().prevPage).toBe(1);
     });
 
-    it('should not have a nextPage if isLastPage is true', () => {
+    it('should not have a nextPage if isLastPage is true', async () => {
       wrapper.setProps({ isLastPage: true });
-      wrapper.vm.$nextTick(() => {
-        expect(wrapper.findComponent(GlPagination).props().nextPage).toBe(null);
-      });
+      await nextTick();
+      expect(wrapper.findComponent(GlPagination).props().nextPage).toBe(null);
     });
 
     it('should set the nextPage to 2 if the page is 1', () => {

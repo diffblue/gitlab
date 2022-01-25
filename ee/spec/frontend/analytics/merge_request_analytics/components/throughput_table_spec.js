@@ -7,7 +7,7 @@ import {
   GlPagination,
 } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import ThroughputTable from 'ee/analytics/merge_request_analytics/components/throughput_table.vue';
 import {
@@ -223,7 +223,7 @@ describe('ThroughputTable', () => {
             },
           });
 
-          await wrapper.vm.$nextTick();
+          await nextTick();
 
           const labelDetails = findColSubItem(
             TEST_IDS.MERGE_REQUEST_DETAILS,
@@ -242,7 +242,7 @@ describe('ThroughputTable', () => {
             userNotesCount: 2,
           });
 
-          await wrapper.vm.$nextTick();
+          await nextTick();
 
           const commentCount = findColSubItem(
             TEST_IDS.MERGE_REQUEST_DETAILS,
@@ -269,7 +269,7 @@ describe('ThroughputTable', () => {
             },
           });
 
-          await wrapper.vm.$nextTick();
+          await nextTick();
 
           const icon = findColSubComponent(TEST_IDS.MERGE_REQUEST_DETAILS, GlIcon);
 
@@ -297,7 +297,7 @@ describe('ThroughputTable', () => {
               },
             });
 
-            await wrapper.vm.$nextTick();
+            await nextTick();
 
             const approved = findColSubItem(TEST_IDS.MERGE_REQUEST_DETAILS, TEST_IDS.APPROVED);
             const icon = approved.findComponent(GlIcon);
@@ -321,7 +321,7 @@ describe('ThroughputTable', () => {
               },
             });
 
-            await wrapper.vm.$nextTick();
+            await nextTick();
 
             const approved = findColSubItem(TEST_IDS.MERGE_REQUEST_DETAILS, TEST_IDS.APPROVED);
             const icon = approved.findComponent(GlIcon);
@@ -352,7 +352,7 @@ describe('ThroughputTable', () => {
           milestone: { title },
         });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(findCol(TEST_IDS.MILESTONE).text()).toBe(title);
       });
@@ -410,7 +410,7 @@ describe('ThroughputTable', () => {
         },
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findPrevious().classes()).not.toContain('disabled');
       expect(findNext().classes()).toContain('disabled');
@@ -431,7 +431,7 @@ describe('ThroughputTable', () => {
         },
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findPrevious().classes()).not.toContain('disabled');
       expect(findNext().classes()).not.toContain('disabled');
@@ -489,7 +489,7 @@ describe('ThroughputTable', () => {
           { value: labels[1], operator },
         ],
       });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(
         wrapper.vm.$options.apollo.throughputTableData.variables.bind(wrapper.vm)(),
       ).toMatchObject({

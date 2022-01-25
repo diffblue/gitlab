@@ -6,6 +6,7 @@ import {
   GlIcon,
 } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import SelectProjectsDropdown from 'ee/analytics/repository_analytics/components/select_projects_dropdown.vue';
 
 describe('Select projects dropdown component', () => {
@@ -62,14 +63,13 @@ describe('Select projects dropdown component', () => {
       createComponent({ data: initialData });
     });
 
-    it('should reset all selected projects', () => {
+    it('should reset all selected projects', async () => {
       selectAllProjects();
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(
-          findProjectById(initialData.groupProjects[0].id).findComponent(GlIcon).classes(),
-        ).toContain('gl-visibility-hidden');
-      });
+      await nextTick();
+      expect(
+        findProjectById(initialData.groupProjects[0].id).findComponent(GlIcon).classes(),
+      ).toContain('gl-visibility-hidden');
     });
 
     it('should emit select-all-projects event', () => {
@@ -94,25 +94,23 @@ describe('Select projects dropdown component', () => {
       });
     });
 
-    it('should check selected project', () => {
+    it('should check selected project', async () => {
       const project = initialData.groupProjects[0];
       selectProjectById(project.id);
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(findProjectById(project.id).findComponent(GlIcon).classes()).not.toContain(
-          'gl-visibility-hidden',
-        );
-      });
+      await nextTick();
+      expect(findProjectById(project.id).findComponent(GlIcon).classes()).not.toContain(
+        'gl-visibility-hidden',
+      );
     });
 
-    it('should uncheck select all projects', () => {
+    it('should uncheck select all projects', async () => {
       selectProjectById(initialData.groupProjects[0].id);
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(findSelectAllProjects().findComponent(GlIcon).classes()).toContain(
-          'gl-visibility-hidden',
-        );
-      });
+      await nextTick();
+      expect(findSelectAllProjects().findComponent(GlIcon).classes()).toContain(
+        'gl-visibility-hidden',
+      );
     });
 
     it('should emit select-project event', () => {
@@ -145,29 +143,27 @@ describe('Select projects dropdown component', () => {
     });
 
     describe('when the intersection observer component appears in view', () => {
-      it('makes a query to fetch more projects', () => {
+      it('makes a query to fetch more projects', async () => {
         jest
           .spyOn(wrapper.vm.$apollo.queries.groupProjects, 'fetchMore')
           .mockImplementation(jest.fn().mockResolvedValue());
 
         findIntersectionObserver().vm.$emit('appear');
 
-        return wrapper.vm.$nextTick().then(() => {
-          expect(wrapper.vm.$apollo.queries.groupProjects.fetchMore).toHaveBeenCalledTimes(1);
-        });
+        await nextTick();
+        expect(wrapper.vm.$apollo.queries.groupProjects.fetchMore).toHaveBeenCalledTimes(1);
       });
 
       describe('when the fetchMore query throws an error', () => {
-        it('emits an error event', () => {
+        it('emits an error event', async () => {
           jest.spyOn(wrapper.vm, '$emit');
           jest
             .spyOn(wrapper.vm.$apollo.queries.groupProjects, 'fetchMore')
             .mockImplementation(jest.fn().mockRejectedValue());
 
           findIntersectionObserver().vm.$emit('appear');
-          return wrapper.vm.$nextTick().then(() => {
-            expect(wrapper.vm.$emit).toHaveBeenCalledWith('projects-query-error');
-          });
+          await nextTick();
+          expect(wrapper.vm.$emit).toHaveBeenCalledWith('projects-query-error');
         });
       });
     });

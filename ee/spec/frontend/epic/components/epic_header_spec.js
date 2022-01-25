@@ -1,6 +1,7 @@
 import { GlIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
+import { nextTick } from 'vue';
 import EpicHeader from 'ee/epic/components/epic_header.vue';
 import { statusType } from 'ee/epic/constants';
 import createStore from 'ee/epic/store';
@@ -47,12 +48,11 @@ describe('EpicHeaderComponent', () => {
         expect(findStatusIcon().props('name')).toBe('issue-open-m');
       });
 
-      it('returns string `mobile-issue-close` when `isEpicOpen` is false', () => {
+      it('returns string `mobile-issue-close` when `isEpicOpen` is false', async () => {
         store.state.state = statusType.close;
 
-        return wrapper.vm.$nextTick().then(() => {
-          expect(findStatusIcon().props('name')).toBe('mobile-issue-close');
-        });
+        await nextTick();
+        expect(findStatusIcon().props('name')).toBe('mobile-issue-close');
       });
     });
 
@@ -63,12 +63,11 @@ describe('EpicHeaderComponent', () => {
         expect(findStatusText().text()).toBe('Open');
       });
 
-      it('returns string `Closed` when `isEpicOpen` is false', () => {
+      it('returns string `Closed` when `isEpicOpen` is false', async () => {
         store.state.state = statusType.close;
 
-        return wrapper.vm.$nextTick().then(() => {
-          expect(findStatusText().text()).toBe('Closed');
-        });
+        await nextTick();
+        expect(findStatusText().text()).toBe('Closed');
       });
     });
 
@@ -79,12 +78,11 @@ describe('EpicHeaderComponent', () => {
         expect(findToggleStatusButton().classes()).toContain('btn-close');
       });
 
-      it('returns `btn-open` when `isEpicOpen` is false', () => {
+      it('returns `btn-open` when `isEpicOpen` is false', async () => {
         store.state.state = statusType.close;
 
-        return wrapper.vm.$nextTick().then(() => {
-          expect(findToggleStatusButton().classes()).toContain('btn-open');
-        });
+        await nextTick();
+        expect(findToggleStatusButton().classes()).toContain('btn-open');
       });
     });
 
@@ -95,12 +93,11 @@ describe('EpicHeaderComponent', () => {
         expect(findToggleStatusButton().text()).toBe('Close epic');
       });
 
-      it('returns string `Reopen epic` when `isEpicOpen` is false', () => {
+      it('returns string `Reopen epic` when `isEpicOpen` is false', async () => {
         store.state.state = statusType.close;
 
-        return wrapper.vm.$nextTick().then(() => {
-          expect(findToggleStatusButton().text()).toBe('Reopen epic');
-        });
+        await nextTick();
+        expect(findToggleStatusButton().text()).toBe('Reopen epic');
       });
     });
   });
@@ -119,15 +116,14 @@ describe('EpicHeaderComponent', () => {
       expect(statusBox.find('span').text()).toBe('Open');
     });
 
-    it('renders confidential icon when `confidential` prop is true', () => {
+    it('renders confidential icon when `confidential` prop is true', async () => {
       store.state.confidential = true;
 
-      return wrapper.vm.$nextTick(() => {
-        const confidentialIcon = findConfidentialIcon();
+      await nextTick();
+      const confidentialIcon = findConfidentialIcon();
 
-        expect(confidentialIcon.exists()).toBe(true);
-        expect(confidentialIcon.props('name')).toBe('eye-slash');
-      });
+      expect(confidentialIcon.exists()).toBe(true);
+      expect(confidentialIcon.props('name')).toBe('eye-slash');
     });
 
     it('renders epic author details element', () => {
@@ -157,29 +153,26 @@ describe('EpicHeaderComponent', () => {
       );
     });
 
-    it('renders GitLab team member badge when `author.isGitlabEmployee` is `true`', () => {
+    it('renders GitLab team member badge when `author.isGitlabEmployee` is `true`', async () => {
       store.state.author.isGitlabEmployee = true;
 
       // Wait for dynamic imports to resolve
-      return new Promise(setImmediate).then(() => {
-        expect(wrapper.vm.$refs.gitlabTeamMemberBadge).not.toBeUndefined();
-      });
+      await new Promise(setImmediate);
+      expect(wrapper.vm.$refs.gitlabTeamMemberBadge).not.toBeUndefined();
     });
 
-    it('does not render new epic button if user cannot create it', () => {
+    it('does not render new epic button if user cannot create it', async () => {
       store.state.canCreate = false;
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(findNewEpicButton().exists()).toBe(false);
-      });
+      await nextTick();
+      expect(findNewEpicButton().exists()).toBe(false);
     });
 
-    it('renders new epic button if user can create it', () => {
+    it('renders new epic button if user can create it', async () => {
       store.state.canCreate = true;
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(findNewEpicButton().exists()).toBe(true);
-      });
+      await nextTick();
+      expect(findNewEpicButton().exists()).toBe(true);
     });
   });
 });

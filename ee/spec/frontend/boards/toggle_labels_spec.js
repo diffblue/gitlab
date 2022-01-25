@@ -1,6 +1,6 @@
 import { GlToggle } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import ToggleLabels from 'ee/boards/components/toggle_labels.vue';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
@@ -40,7 +40,7 @@ describe('ToggleLabels component', () => {
     const localStorageSync = wrapper.findComponent(LocalStorageSync);
     localStorageSync.vm.$emit('input', '');
 
-    await wrapper.vm.$nextTick();
+    await nextTick();
 
     expect(setShowLabels).toHaveBeenCalledWith(expect.any(Object), false);
   });

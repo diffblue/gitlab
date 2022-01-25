@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import ApproversList from 'ee/approvals/components/approvers_list.vue';
 import ApproversListEmpty from 'ee/approvals/components/approvers_list_empty.vue';
 import ApproversListItem from 'ee/approvals/components/approvers_list_item.vue';
@@ -58,17 +59,16 @@ describe('ApproversList', () => {
     });
 
     TEST_APPROVERS.forEach((approver, idx) => {
-      it(`when remove (${idx}), emits new input`, () => {
+      it(`when remove (${idx}), emits new input`, async () => {
         factory();
 
         const item = wrapper.findAll(ApproversListItem).at(idx);
         item.vm.$emit('remove', approver);
 
-        return wrapper.vm.$nextTick().then(() => {
-          const expected = TEST_APPROVERS.filter((x, i) => i !== idx);
+        await nextTick();
+        const expected = TEST_APPROVERS.filter((x, i) => i !== idx);
 
-          expect(wrapper.emitted().input).toEqual([[expected]]);
-        });
+        expect(wrapper.emitted().input).toEqual([[expected]]);
       });
     });
   });

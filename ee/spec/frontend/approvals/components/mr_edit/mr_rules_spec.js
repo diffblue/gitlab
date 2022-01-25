@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import MRRules from 'ee/approvals/components/mr_edit/mr_rules.vue';
 import RuleControls from 'ee/approvals/components/rule_controls.vue';
@@ -94,13 +94,12 @@ describe('EE Approvals MRRules', () => {
       expect(store.modules.approvals.actions.setTargetBranch).toHaveBeenCalled();
     });
 
-    it('re-fetches rules when target branch has changed', () => {
+    it('re-fetches rules when target branch has changed', async () => {
       factory();
       store.modules.approvals.state.targetBranch = 'main123';
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(store.modules.approvals.actions.fetchRules).toHaveBeenCalled();
-      });
+      await nextTick();
+      expect(store.modules.approvals.actions.fetchRules).toHaveBeenCalled();
     });
 
     it('disconnects MutationObserver when component gets destroyed', () => {

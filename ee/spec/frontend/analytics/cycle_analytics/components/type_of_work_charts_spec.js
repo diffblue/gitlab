@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import TasksByTypeChart from 'ee/analytics/cycle_analytics/components/tasks_by_type/tasks_by_type_chart.vue';
 import TasksByTypeFilters from 'ee/analytics/cycle_analytics/components/tasks_by_type/tasks_by_type_filters.vue';
@@ -128,10 +128,10 @@ describe('TypeOfWorkCharts', () => {
       value: TASKS_BY_TYPE_SUBJECT_MERGE_REQUEST,
     };
 
-    beforeEach(() => {
+    beforeEach(async () => {
       wrapper = createComponent();
       findSubjectFilters(wrapper).vm.$emit('update-filter', payload);
-      return wrapper.vm.$nextTick();
+      await nextTick();
     });
 
     it('calls the setTasksByTypeFilters method', () => {

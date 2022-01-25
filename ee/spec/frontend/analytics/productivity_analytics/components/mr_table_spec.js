@@ -1,5 +1,6 @@
 import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import MergeRequestTable from 'ee/analytics/productivity_analytics/components/mr_table.vue';
 import MergeRequestTableRow from 'ee/analytics/productivity_analytics/components/mr_table_row.vue';
 import { mockMergeRequests } from '../mock_data';
@@ -72,12 +73,11 @@ describe('MergeRequestTable component', () => {
   });
 
   describe('columnMetricChange', () => {
-    it('it emits the metric key when item is selected from the dropdown', () => {
+    it('it emits the metric key when item is selected from the dropdown', async () => {
       findFirstDropdownItem().vm.$emit('click');
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(wrapper.emitted().columnMetricChange[0]).toEqual(['time_to_first_comment']);
-      });
+      await nextTick();
+      expect(wrapper.emitted().columnMetricChange[0]).toEqual(['time_to_first_comment']);
     });
   });
 });

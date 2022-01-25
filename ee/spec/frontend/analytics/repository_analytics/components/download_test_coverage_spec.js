@@ -1,5 +1,6 @@
 import { GlAlert, GlDropdown, GlDropdownItem, GlModal } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import DownloadTestCoverage from 'ee/analytics/repository_analytics/components/download_test_coverage.vue';
 import SelectProjectsDropdown from 'ee/analytics/repository_analytics/components/select_projects_dropdown.vue';
 
@@ -58,14 +59,13 @@ describe('Download test coverage component', () => {
     });
 
     describe('when there is an error fetching the projects', () => {
-      it('displays an alert for the failed query', () => {
+      it('displays an alert for the failed query', async () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({ hasError: true });
 
-        return wrapper.vm.$nextTick().then(() => {
-          expect(findAlert().exists()).toBe(true);
-        });
+        await nextTick();
+        expect(findAlert().exists()).toBe(true);
       });
     });
 
@@ -73,44 +73,41 @@ describe('Download test coverage component', () => {
       const groupAnalyticsCoverageReportsPathWithDates = `${injectedProperties.groupAnalyticsCoverageReportsPath}?start_date=2020-06-06&end_date=2020-07-06`;
 
       describe('with all projects selected', () => {
-        it('renders primary action as a link with no project_ids param', () => {
+        it('renders primary action as a link with no project_ids param', async () => {
           // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
           // eslint-disable-next-line no-restricted-syntax
           wrapper.setData({ allProjectsSelected: true, selectedProjectIds: [] });
 
-          return wrapper.vm.$nextTick().then(() => {
-            expect(findCodeCoverageDownloadButton().attributes('href')).toBe(
-              groupAnalyticsCoverageReportsPathWithDates,
-            );
-          });
+          await nextTick();
+          expect(findCodeCoverageDownloadButton().attributes('href')).toBe(
+            groupAnalyticsCoverageReportsPathWithDates,
+          );
         });
       });
 
       describe('with two or more projects selected without selecting all projects', () => {
-        it('renders primary action as a link with two project IDs as parameters', () => {
+        it('renders primary action as a link with two project IDs as parameters', async () => {
           // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
           // eslint-disable-next-line no-restricted-syntax
           wrapper.setData({ allProjectsSelected: false, selectedProjectIds: [1, 2] });
           const projectIdsQueryParam = `project_ids[]=1&project_ids[]=2`;
           const expectedPath = `${groupAnalyticsCoverageReportsPathWithDates}&${projectIdsQueryParam}`;
 
-          return wrapper.vm.$nextTick().then(() => {
-            expect(findCodeCoverageDownloadButton().attributes('href')).toBe(expectedPath);
-          });
+          await nextTick();
+          expect(findCodeCoverageDownloadButton().attributes('href')).toBe(expectedPath);
         });
       });
 
       describe('with one project selected', () => {
-        it('renders primary action as a link with one project ID as a parameter', () => {
+        it('renders primary action as a link with one project ID as a parameter', async () => {
           // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
           // eslint-disable-next-line no-restricted-syntax
           wrapper.setData({ allProjectsSelected: false, selectedProjectIds: [1] });
           const projectIdsQueryParam = `project_ids[]=1`;
           const expectedPath = `${groupAnalyticsCoverageReportsPathWithDates}&${projectIdsQueryParam}`;
 
-          return wrapper.vm.$nextTick().then(() => {
-            expect(findCodeCoverageDownloadButton().attributes('href')).toBe(expectedPath);
-          });
+          await nextTick();
+          expect(findCodeCoverageDownloadButton().attributes('href')).toBe(expectedPath);
         });
       });
 
@@ -121,18 +118,17 @@ describe('Download test coverage component', () => {
       });
 
       describe('when clicking the select all button', () => {
-        it('selects all projects and removes the disabled attribute from the download button', () => {
+        it('selects all projects and removes the disabled attribute from the download button', async () => {
           // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
           // eslint-disable-next-line no-restricted-syntax
           wrapper.setData({ allProjectsSelected: false, selectedProjectIds: [] });
           clickSelectAllProjectsButton();
 
-          return wrapper.vm.$nextTick().then(() => {
-            expect(findCodeCoverageDownloadButton().attributes('href')).toBe(
-              groupAnalyticsCoverageReportsPathWithDates,
-            );
-            expect(findCodeCoverageDownloadButton().attributes('disabled')).toBeUndefined();
-          });
+          await nextTick();
+          expect(findCodeCoverageDownloadButton().attributes('href')).toBe(
+            groupAnalyticsCoverageReportsPathWithDates,
+          );
+          expect(findCodeCoverageDownloadButton().attributes('disabled')).toBeUndefined();
         });
       });
     });
@@ -147,14 +143,13 @@ describe('Download test coverage component', () => {
         ${90} | ${`${injectedProperties.groupAnalyticsCoverageReportsPath}?start_date=2020-04-07&end_date=2020-07-06`}
       `(
         'updates CSV path to have the start date be $date days before today',
-        ({ date, expected }) => {
+        async ({ date, expected }) => {
           wrapper
             .find(`[data-testid="group-code-coverage-download-select-date-${date}"]`)
             .vm.$emit('click');
 
-          return wrapper.vm.$nextTick().then(() => {
-            expect(findCodeCoverageDownloadButton().attributes('href')).toBe(expected);
-          });
+          await nextTick();
+          expect(findCodeCoverageDownloadButton().attributes('href')).toBe(expected);
         },
       );
     });

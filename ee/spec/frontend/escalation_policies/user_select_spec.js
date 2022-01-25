@@ -1,5 +1,6 @@
 import { GlTokenSelector, GlAvatar, GlToken } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import UserSelect from 'ee/escalation_policies/components/user_select.vue';
 
 const mockUsers = [
@@ -64,14 +65,14 @@ describe('UserSelect', () => {
       const tokenSelector = findTokenSelector();
       expect(tokenSelector.exists()).toBe(true);
       tokenSelector.vm.$emit('input', [mockUsers[0]]);
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(tokenSelector.exists()).toBe(false);
     });
 
     it('shows selected user token with name and avatar', async () => {
       const selectedUser = mockUsers[0];
       findTokenSelector().vm.$emit('input', [selectedUser]);
-      await wrapper.vm.$nextTick();
+      await nextTick();
       const userToken = findSelectedUserToken();
       expect(userToken.exists()).toBe(true);
       expect(userToken.text()).toMatchInterpolatedText(selectedUser.name);
@@ -84,12 +85,12 @@ describe('UserSelect', () => {
     it('hides selected user token and avatar, shows token selector', async () => {
       // select user
       findTokenSelector().vm.$emit('input', [mockUsers[0]]);
-      await wrapper.vm.$nextTick();
+      await nextTick();
       const userToken = findSelectedUserToken();
       expect(userToken.exists()).toBe(true);
       // deselect user
       userToken.vm.$emit('close');
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(userToken.exists()).toBe(false);
       expect(findTokenSelector().exists()).toBe(true);
     });

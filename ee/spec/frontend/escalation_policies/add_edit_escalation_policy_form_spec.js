@@ -104,7 +104,7 @@ describe('AddEscalationPolicyForm', () => {
       };
 
       createComponent({ props: { form: { rules: [ruleBeforeUpdate] } } });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       const updatedRule = {
         status: 'TRIGGERED',
         elapsedTimeMinutes: 3,

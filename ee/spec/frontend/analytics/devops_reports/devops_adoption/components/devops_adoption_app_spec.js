@@ -1,6 +1,6 @@
 import { GlAlert, GlTabs } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import DevopsAdoptionAddDropdown from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_add_dropdown.vue';
 import DevopsAdoptionApp from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_app.vue';
@@ -225,7 +225,7 @@ describe('DevopsAdoptionApp', () => {
           };
           wrapper = createComponent({ mockApollo, provide });
           await waitForPromises();
-          await wrapper.vm.$nextTick();
+          await nextTick();
         });
 
         it('does not attempt to enable a group', () => {
@@ -242,7 +242,7 @@ describe('DevopsAdoptionApp', () => {
           };
           wrapper = createComponent({ mockApollo, provide });
           await waitForPromises();
-          await wrapper.vm.$nextTick();
+          await nextTick();
         });
 
         describe('enables the group', () => {
@@ -282,7 +282,7 @@ describe('DevopsAdoptionApp', () => {
               });
               wrapper = createComponent({ mockApollo, provide });
               await waitForPromises();
-              await wrapper.vm.$nextTick();
+              await nextTick();
             });
 
             it('does not render the devops section', () => {

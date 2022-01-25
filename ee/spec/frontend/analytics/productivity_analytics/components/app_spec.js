@@ -10,7 +10,7 @@ import { GlColumnChart } from '@gitlab/ui/dist/charts';
 import { shallowMount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import ProductivityApp from 'ee/analytics/productivity_analytics/components/app.vue';
 import MetricChart from 'ee/analytics/productivity_analytics/components/metric_chart.vue';
@@ -153,10 +153,10 @@ describe('ProductivityApp component', () => {
       });
 
       describe('user has access to the group', () => {
-        beforeEach(() => {
+        beforeEach(async () => {
           mockStore.state.charts.charts[chartKeys.main].errorCode = null;
 
-          return wrapper.vm.$nextTick();
+          await nextTick();
         });
 
         describe('when the main chart is loading', () => {
@@ -305,10 +305,10 @@ describe('ProductivityApp component', () => {
                   });
 
                   describe('when the user changes the metric', () => {
-                    beforeEach(() => {
+                    beforeEach(async () => {
                       jest.spyOn(mockStore, 'dispatch');
                       findCommitBasedMetricChart().vm.$emit('metricTypeChange', 'loc_per_commit');
-                      return wrapper.vm.$nextTick();
+                      await nextTick();
                     });
 
                     it('should call setMetricType  when `metricTypeChange` is emitted on the metric chart', () => {
@@ -357,10 +357,10 @@ describe('ProductivityApp component', () => {
                   });
 
                   describe('when the user changes the metric', () => {
-                    beforeEach(() => {
+                    beforeEach(async () => {
                       jest.spyOn(mockStore, 'dispatch');
                       findScatterplotMetricChart().vm.$emit('metricTypeChange', 'loc_per_commit');
-                      return wrapper.vm.$nextTick();
+                      await nextTick();
                     });
 
                     it('should call setMetricType  when `metricTypeChange` is emitted on the metric chart', () => {

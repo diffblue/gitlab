@@ -1,6 +1,7 @@
 import { GlModal, GlAlert } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { cloneDeep } from 'lodash';
+import { nextTick } from 'vue';
 import AddEscalationPolicyForm from 'ee/escalation_policies/components/add_edit_escalation_policy_form.vue';
 import AddEscalationPolicyModal, {
   i18n,
@@ -111,7 +112,7 @@ describe('AddEditsEscalationPolicyModal', () => {
 
     it('clears the form on modal cancel', async () => {
       updateForm();
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(findEscalationPolicyForm().props('form')).toMatchObject({
         name: updatedName,
         description: updatedDescription,
@@ -119,7 +120,7 @@ describe('AddEditsEscalationPolicyModal', () => {
       });
 
       findModal().vm.$emit('canceled', { preventDefault: jest.fn() });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(findEscalationPolicyForm().props('form')).toMatchObject({
         name: '',
         description: '',
@@ -136,11 +137,11 @@ describe('AddEditsEscalationPolicyModal', () => {
         field: 'name',
         value: '',
       });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(getNameValidationState()).toBe(false);
 
       findModal().vm.$emit('canceled', { preventDefault: jest.fn() });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(getNameValidationState()).toBe(null);
     });
   });
@@ -182,7 +183,7 @@ describe('AddEditsEscalationPolicyModal', () => {
 
     it('clears the form on modal cancel', async () => {
       updateForm();
-      await wrapper.vm.$nextTick();
+      await nextTick();
       const getForm = () => findEscalationPolicyForm().props('form');
       expect(getForm()).toMatchObject({
         name: updatedName,
@@ -193,7 +194,7 @@ describe('AddEditsEscalationPolicyModal', () => {
       findModal().vm.$emit('canceled', { preventDefault: jest.fn() });
       const { name, description, rules } = mockEscalationPolicy;
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(getForm()).toMatchObject({
         name,
@@ -213,11 +214,11 @@ describe('AddEditsEscalationPolicyModal', () => {
         field: 'name',
         value: '',
       });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(getNameValidationState()).toBe(false);
 
       findModal().vm.$emit('canceled', { preventDefault: jest.fn() });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(getNameValidationState()).toBe(null);
     });
   });
@@ -256,7 +257,7 @@ describe('AddEditsEscalationPolicyModal', () => {
         field: 'name',
         value: '',
       });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(findModal().props('actionPrimary').attributes).toContainEqual({ disabled: true });
     });
 
@@ -277,7 +278,7 @@ describe('AddEditsEscalationPolicyModal', () => {
           },
         ],
       });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(findModal().props('actionPrimary').attributes).toContainEqual({ disabled: false });
     });
   });
