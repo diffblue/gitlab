@@ -121,7 +121,7 @@ module EE
     end
 
     def incident_management_owners(project)
-      return [project.owner] unless project.group
+      return project.owners if project.personal?
 
       MembersFinder
         .new(project, nil, params: { active_without_invites_and_requests: true })
