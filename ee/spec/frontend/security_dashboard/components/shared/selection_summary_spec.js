@@ -1,6 +1,6 @@
 import { GlAlert } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import SelectionSummary from 'ee/security_dashboard/components/shared/selection_summary.vue';
 import StatusDropdown from 'ee/security_dashboard/components/shared/status_dropdown.vue';
@@ -56,7 +56,7 @@ describe('Selection Summary component', () => {
     describe('with selected state', () => {
       beforeEach(async () => {
         wrapper.findComponent(StatusDropdown).vm.$emit('change', { action: 'confirm' });
-        await wrapper.vm.$nextTick();
+        await nextTick();
       });
 
       it('displays the submit button when there is s state selected', () => {
@@ -71,7 +71,7 @@ describe('Selection Summary component', () => {
     describe('with no selected state', () => {
       beforeEach(async () => {
         wrapper.findComponent(StatusDropdown).vm.$emit('change', { action: null });
-        await wrapper.vm.$nextTick();
+        await nextTick();
       });
 
       it('does not display the submit button when there is s state selected', () => {
@@ -185,7 +185,7 @@ describe('Selection Summary component', () => {
       it(`the submit button is unclickable during form submission - ${action}`, async () => {
         expect(findSubmitButton().exists()).toBe(false);
         submitForm();
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(isSubmitButtonDisabled()).toBe(true);
         await waitForPromises();
         expect(isSubmitButtonDisabled()).toBe(false);

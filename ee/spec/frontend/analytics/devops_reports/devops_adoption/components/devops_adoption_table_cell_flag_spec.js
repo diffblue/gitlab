@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import DevopsAdoptionTableCellFlag from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_table_cell_flag.vue';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 
@@ -40,7 +41,7 @@ describe('DevopsAdoptionTableCellFlag', () => {
       beforeEach(async () => {
         wrapper.setProps({ enabled: false });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
       });
 
       it('matches the snapshot', () => {
@@ -59,7 +60,7 @@ describe('DevopsAdoptionTableCellFlag', () => {
       beforeEach(async () => {
         wrapper.setProps({ variant: 'primary' });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
       });
 
       it('matches the snapshot', () => {
@@ -86,7 +87,7 @@ describe('DevopsAdoptionTableCellFlag', () => {
       beforeEach(async () => {
         wrapper.setProps({ enabled: true });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
       });
 
       it('matches the snapshot', () => {

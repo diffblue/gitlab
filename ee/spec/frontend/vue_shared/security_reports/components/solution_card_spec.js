@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import SolutionCard from 'ee/vue_shared/security_reports/components/solution_card.vue';
 import { s__ } from '~/locale';
 
@@ -57,9 +58,9 @@ describe('Solution Card', () => {
     });
 
     describe('with download patch', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         wrapper.setProps({ hasDownload: true });
-        return wrapper.vm.$nextTick();
+        await nextTick();
       });
 
       it('renders the create a merge request to implement this solution message', () => {

@@ -169,7 +169,7 @@ describe('Subscription Breakdown', () => {
     it('updates visible of subscription activation modal when change emitted', async () => {
       findSubscriptionActivationModal().vm.$emit('change', true);
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findSubscriptionActivationModal().props('visible')).toBe(true);
     });

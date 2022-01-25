@@ -1,6 +1,6 @@
 import { GlButton, GlFormSelect } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
@@ -93,7 +93,7 @@ describe('Selection Summary', () => {
       option.setSelected();
       formSelect().trigger('change');
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.vm.dismissalReason).toEqual(option.attributes('value'));
       expect(dismissButton().props().disabled).toBe(false);

@@ -7,7 +7,7 @@ import {
   GlSearchBoxByType,
 } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import IterationDropdown from 'ee/sidebar/components/iteration_dropdown.vue';
 import groupIterationsQuery from 'ee/sidebar/queries/iterations.query.graphql';
@@ -80,7 +80,7 @@ describe('IterationDropdown', () => {
   });
 
   const waitForDebounce = async () => {
-    await wrapper.vm.$nextTick();
+    await nextTick();
     jest.runOnlyPendingTimers();
   };
   const findDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
@@ -97,7 +97,7 @@ describe('IterationDropdown', () => {
 
     item.vm.$emit('click');
 
-    await wrapper.vm.$nextTick();
+    await nextTick();
   };
   const findDropdown = () => wrapper.findComponent(GlDropdown);
   const showDropdownAndWait = async () => {

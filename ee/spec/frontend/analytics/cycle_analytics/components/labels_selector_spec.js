@@ -2,7 +2,7 @@ import { GlDropdownSectionHeader } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import LabelsSelector from 'ee/analytics/cycle_analytics/components/labels_selector.vue';
 import createStore from 'ee/analytics/cycle_analytics/store';
@@ -103,16 +103,15 @@ describe('Value Stream Analytics LabelsSelector', () => {
         return waitForPromises();
       });
 
-      it('will emit the "select-label" event', () => {
+      it('will emit the "select-label" event', async () => {
         expect(wrapper.emitted('select-label')).toBeUndefined();
 
         const elem = wrapper.findAll('.dropdown-item').at(1);
         elem.trigger('click');
 
-        return wrapper.vm.$nextTick().then(() => {
-          expect(wrapper.emitted('select-label').length > 0).toBe(true);
-          expect(wrapper.emitted('select-label')[0]).toContain(groupLabels[1].id);
-        });
+        await nextTick();
+        expect(wrapper.emitted('select-label').length > 0).toBe(true);
+        expect(wrapper.emitted('select-label')[0]).toContain(groupLabels[1].id);
       });
     });
   });

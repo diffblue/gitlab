@@ -1,5 +1,6 @@
 import { GlIcon } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import DismissButton from 'ee/vue_shared/security_reports/components/dismiss_button.vue';
 import component from 'ee/vue_shared/security_reports/components/modal_footer.vue';
 import SplitButton from 'ee/vue_shared/security_reports/components/split_button.vue';
@@ -40,12 +41,11 @@ describe('Security Reports modal footer', () => {
       expect(findActionButton().text()).toBe('Create issue');
     });
 
-    it('emits createIssue when create issue button is clicked', () => {
+    it('emits createIssue when create issue button is clicked', async () => {
       findActionButton().trigger('click');
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(wrapper.emitted().createNewIssue).toBeTruthy();
-      });
+      await nextTick();
+      expect(wrapper.emitted().createNewIssue).toBeTruthy();
     });
   });
 
@@ -95,12 +95,11 @@ describe('Security Reports modal footer', () => {
       expect(findActionButton().text()).toBe('Resolve with merge request');
     });
 
-    it('emits createMergeRequest when create merge request button is clicked', () => {
+    it('emits createMergeRequest when create merge request button is clicked', async () => {
       findActionButton().trigger('click');
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(wrapper.emitted().createMergeRequest).toBeTruthy();
-      });
+      await nextTick();
+      expect(wrapper.emitted().createMergeRequest).toBeTruthy();
     });
   });
 
@@ -118,12 +117,11 @@ describe('Security Reports modal footer', () => {
       expect(findActionButton().text()).toBe('Download patch to resolve');
     });
 
-    it('emits downloadPatch when download patch button is clicked', () => {
+    it('emits downloadPatch when download patch button is clicked', async () => {
       findActionButton().trigger('click');
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(wrapper.emitted().downloadPatch).toBeTruthy();
-      });
+      await nextTick();
+      expect(wrapper.emitted().downloadPatch).toBeTruthy();
     });
   });
 

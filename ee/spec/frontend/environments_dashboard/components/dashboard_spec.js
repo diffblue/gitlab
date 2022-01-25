@@ -147,9 +147,9 @@ describe('dashboard', () => {
     });
 
     describe('project selector modal', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         wrapper.findComponent(GlButton).trigger('click');
-        return nextTick();
+        await nextTick();
       });
 
       it('should fire the add projects action on ok', () => {
@@ -198,7 +198,7 @@ describe('dashboard', () => {
         store.state.projectsPage.pageInfo.totalPages = totalPages;
         const shouldRenderPagination = totalPages > 1;
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(findPagination().exists()).toBe(shouldRenderPagination);
       };
 

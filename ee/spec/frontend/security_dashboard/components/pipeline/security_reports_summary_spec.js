@@ -1,5 +1,6 @@
 import { GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import SecurityReportsSummary from 'ee/security_dashboard/components/pipeline/security_reports_summary.vue';
 import Modal from 'ee/vue_shared/security_reports/components/dast_modal.vue';
 import { mockPipelineJobs } from 'ee_jest/security_dashboard/mock_data/jobs';
@@ -148,7 +149,7 @@ describe('Security reports summary component', () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({ isVisible: false });
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(localStorage.setItem).toHaveBeenCalledWith(LOCAL_STORAGE_KEY, '1');
       });
@@ -168,7 +169,7 @@ describe('Security reports summary component', () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({ isVisible: true });
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(localStorage.removeItem).toHaveBeenCalledWith(LOCAL_STORAGE_KEY);
       });

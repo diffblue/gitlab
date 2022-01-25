@@ -9,6 +9,7 @@ import {
   GlTable,
 } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import IterationReportIssues from 'ee/iterations/components/iteration_report_issues.vue';
 import { Namespace } from 'ee/iterations/constants';
 
@@ -183,9 +184,9 @@ describe('Iterations report issues', () => {
       });
 
       const findPagination = () => wrapper.findComponent(GlPagination);
-      const setPage = (page) => {
+      const setPage = async (page) => {
         findPagination().vm.$emit('input', page);
-        return findPagination().vm.$nextTick();
+        await nextTick();
       };
 
       it('passes prev, next, and current page props', () => {

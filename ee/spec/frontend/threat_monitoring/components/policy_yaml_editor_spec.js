@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import PolicyYamlEditor from 'ee/threat_monitoring/components/policy_yaml_editor.vue';
 import SourceEditor from '~/vue_shared/components/source_editor.vue';
 
@@ -42,7 +43,7 @@ describe('PolicyYamlEditor component', () => {
   it("emits input event on editor's input", async () => {
     const editor = findEditor();
     editor.vm.$emit('input');
-    await wrapper.vm.$nextTick();
+    await nextTick();
     expect(wrapper.emitted().input).toBeTruthy();
   });
 });

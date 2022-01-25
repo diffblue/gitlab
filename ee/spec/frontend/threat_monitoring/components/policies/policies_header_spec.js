@@ -1,4 +1,5 @@
 import { GlAlert, GlButton, GlSprintf } from '@gitlab/ui';
+import { nextTick } from 'vue';
 import { NEW_POLICY_BUTTON_TEXT } from 'ee/threat_monitoring/components/constants';
 import PoliciesHeader from 'ee/threat_monitoring/components/policies/policies_header.vue';
 import ScanNewPolicyModal from 'ee/threat_monitoring/components/policies/scan_new_policy_modal.vue';
@@ -24,7 +25,7 @@ describe('Policies Header Component', () => {
       text: projectLinkSuccessText,
       variant: 'success',
     });
-    await wrapper.vm.$nextTick();
+    await nextTick();
   };
 
   const createWrapper = ({ provide } = {}) => {
@@ -98,7 +99,7 @@ describe('Policies Header Component', () => {
 
       it('hides the previous alert when scan new modal policy is processing a new link', async () => {
         findScanNewPolicyModal().vm.$emit('updating-project');
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(findAlert().exists()).toBe(false);
       });
     });

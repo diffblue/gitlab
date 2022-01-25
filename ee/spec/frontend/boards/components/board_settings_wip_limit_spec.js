@@ -1,7 +1,7 @@
 import { GlFormInput } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { noop } from 'lodash';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import BoardSettingsWipLimit from 'ee_component/boards/components/board_settings_wip_limit.vue';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -101,7 +101,7 @@ describe('BoardSettingsWipLimit', () => {
 
       clickEdit();
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
     });
 
     it('renders an input', () => {
@@ -138,7 +138,7 @@ describe('BoardSettingsWipLimit', () => {
         findRemoveWipLimit().vm.$emit('click');
 
         await waitForPromises();
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(spy).toHaveBeenCalledWith(
           expect.anything(),
@@ -182,7 +182,7 @@ describe('BoardSettingsWipLimit', () => {
 
           triggerBlur(blurMethod);
 
-          await wrapper.vm.$nextTick();
+          await nextTick();
 
           expect(spy).toHaveBeenCalledTimes(1);
         });
@@ -201,7 +201,7 @@ describe('BoardSettingsWipLimit', () => {
 
             triggerBlur(blurMethod);
 
-            await wrapper.vm.$nextTick();
+            await nextTick();
 
             expect(spy).toHaveBeenCalledTimes(0);
           });
@@ -218,7 +218,7 @@ describe('BoardSettingsWipLimit', () => {
 
             triggerBlur(blurMethod);
 
-            await wrapper.vm.$nextTick();
+            await nextTick();
 
             expect(spy).toHaveBeenCalledTimes(0);
           });

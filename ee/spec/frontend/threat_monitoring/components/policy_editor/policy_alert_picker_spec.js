@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import PolicyAlertPicker from 'ee/threat_monitoring/components/policy_editor/policy_alert_picker.vue';
 import getAgentCount from 'ee/threat_monitoring/graphql/queries/get_agent_count.query.graphql';
@@ -42,7 +42,7 @@ describe('PolicyAlertPicker component', () => {
         },
       }),
     );
-    await wrapper.vm.$nextTick();
+    await nextTick();
   };
 
   afterEach(() => {

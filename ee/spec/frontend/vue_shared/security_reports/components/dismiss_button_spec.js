@@ -1,5 +1,6 @@
 import { GlButton } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import component from 'ee/vue_shared/security_reports/components/dismiss_button.vue';
 
 describe('DismissalButton', () => {
@@ -21,22 +22,20 @@ describe('DismissalButton', () => {
       expect(wrapper.text()).toBe('Dismiss vulnerability');
     });
 
-    it('should emit dismiss vulnerability when clicked', () => {
+    it('should emit dismiss vulnerability when clicked', async () => {
       wrapper.findComponent(GlButton).trigger('click');
-      return wrapper.vm.$nextTick().then(() => {
-        expect(wrapper.emitted().dismissVulnerability).toBeTruthy();
-      });
+      await nextTick();
+      expect(wrapper.emitted().dismissVulnerability).toBeTruthy();
     });
 
     it('should render the dismiss with comment button', () => {
       expect(wrapper.find('.js-dismiss-with-comment').exists()).toBe(true);
     });
 
-    it('should emit openDismissalCommentBox when clicked', () => {
+    it('should emit openDismissalCommentBox when clicked', async () => {
       wrapper.find('.js-dismiss-with-comment').trigger('click');
-      return wrapper.vm.$nextTick().then(() => {
-        expect(wrapper.emitted().openDismissalCommentBox).toBeTruthy();
-      });
+      await nextTick();
+      expect(wrapper.emitted().openDismissalCommentBox).toBeTruthy();
     });
   });
 
@@ -52,11 +51,10 @@ describe('DismissalButton', () => {
       expect(wrapper.text()).toBe('Undo dismiss');
     });
 
-    it('should emit revertDismissVulnerability when clicked', () => {
+    it('should emit revertDismissVulnerability when clicked', async () => {
       wrapper.findComponent(GlButton).trigger('click');
-      return wrapper.vm.$nextTick().then(() => {
-        expect(wrapper.emitted().revertDismissVulnerability).toBeTruthy();
-      });
+      await nextTick();
+      expect(wrapper.emitted().revertDismissVulnerability).toBeTruthy();
     });
 
     it('should not render the dismiss with comment button', () => {

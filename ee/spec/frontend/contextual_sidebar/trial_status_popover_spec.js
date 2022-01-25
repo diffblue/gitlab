@@ -1,7 +1,7 @@
 import { GlPopover } from '@gitlab/ui';
 import { GlBreakpointInstance } from '@gitlab/ui/dist/utils';
 import { mount, shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import {
   POPOVER,
   TRACKING_PROPERTY_WHEN_FORCED,
@@ -172,7 +172,7 @@ describe('TrialStatusPopover component', () => {
       describe('when clicked', () => {
         beforeEach(async () => {
           wrapper.findByTestId('closeBtn').trigger('click');
-          await wrapper.vm.$nextTick();
+          await nextTick();
         });
 
         it('closes the popover component', () => {
@@ -211,7 +211,7 @@ describe('TrialStatusPopover component', () => {
           jest.spyOn(GlBreakpointInstance, 'getBreakpointSize').mockReturnValue(bp);
 
           wrapper.vm.onResize();
-          await wrapper.vm.$nextTick();
+          await nextTick();
 
           expect(findGlPopover().attributes('disabled')).toBe(isDisabled);
         },

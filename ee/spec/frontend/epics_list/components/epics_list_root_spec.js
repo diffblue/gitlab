@@ -1,6 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import { pick } from 'lodash';
 
+import { nextTick } from 'vue';
 import EpicsListRoot from 'ee/epics_list/components/epics_list_root.vue';
 import { EpicsSortOptions } from 'ee/epics_list/constants';
 import { mockFormattedEpic } from 'ee_jest/roadmap/mock_data';
@@ -161,7 +162,7 @@ describe('EpicsListRoot', () => {
         });
         wrapper.vm.fetchEpicsBy('currentPage', 2);
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(wrapper.vm.prevPageCursor).toBe('');
         expect(wrapper.vm.nextPageCursor).toBe(mockPageInfo.endCursor);
@@ -183,7 +184,7 @@ describe('EpicsListRoot', () => {
         },
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(getIssuableList().exists()).toBe(true);
       expect(getIssuableList().props()).toMatchObject({
@@ -227,7 +228,7 @@ describe('EpicsListRoot', () => {
           },
         });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(getIssuableList().props('showPaginationControls')).toBe(returnValue);
       },
@@ -240,7 +241,7 @@ describe('EpicsListRoot', () => {
         currentPage: 3,
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.vm.previousPage).toBe(2);
     });
@@ -257,7 +258,7 @@ describe('EpicsListRoot', () => {
         },
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(getIssuableList().props('nextPage')).toBe(2);
     });
@@ -274,7 +275,7 @@ describe('EpicsListRoot', () => {
         },
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(getIssuableList().props('nextPage')).toBeNull();
     });

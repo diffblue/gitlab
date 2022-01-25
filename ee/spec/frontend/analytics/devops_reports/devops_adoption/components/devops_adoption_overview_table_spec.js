@@ -1,4 +1,5 @@
 import { GlButton, GlIcon, GlBadge, GlProgressBar, GlLink } from '@gitlab/ui';
+import { nextTick } from 'vue';
 import DevopsAdoptionDeleteModal from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_delete_modal.vue';
 import DevopsAdoptionOverviewTable from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_overview_table.vue';
 import { DEVOPS_ADOPTION_TABLE_CONFIGURATION } from 'ee/analytics/devops_reports/devops_adoption/constants';
@@ -186,7 +187,7 @@ describe('DevopsAdoptionOverviewTable', () => {
 
       const deleteButton = findColSubComponent(TABLE_TEST_IDS_ACTIONS, GlButton);
       deleteButton.vm.$emit('click');
-      await deleteButton.vm.$nextTick();
+      await nextTick();
     });
 
     it('renders delete modal', () => {

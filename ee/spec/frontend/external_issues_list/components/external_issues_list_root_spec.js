@@ -1,7 +1,7 @@
 import { GlAlert } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { shallowMount, mount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import MockAdapter from 'axios-mock-adapter';
 import VueApollo from 'vue-apollo';
 
@@ -106,7 +106,7 @@ describe('ExternalIssuesListRoot', () => {
       jest.spyOn(axios, 'get').mockResolvedValue(new Promise(() => {}));
 
       createComponent();
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       const issuableList = findIssuableList();
       expect(issuableList.props('issuablesLoading')).toBe(true);
@@ -253,7 +253,7 @@ describe('ExternalIssuesListRoot', () => {
           },
         });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(issuableList.props()).toMatchObject({
           currentPage: mockPage,
           previousPage: mockPage - 1,

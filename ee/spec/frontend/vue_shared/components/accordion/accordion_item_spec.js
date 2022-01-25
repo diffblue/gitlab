@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import { uniqueId } from 'lodash';
 import { AccordionItem } from 'ee/vue_shared/components/accordion';
 import accordionEventBus from 'ee/vue_shared/components/accordion/accordion_event_bus';
@@ -89,17 +90,16 @@ describe('AccordionItem component', () => {
 
     it.each([true, false])(
       'passes the "isExpanded" and "isDisabled" state to the title slot',
-      (state) => {
+      async (state) => {
         const titleSlot = jest.fn();
 
         factory({ propsData: { disabled: state }, titleSlot });
         wrapper.vm.isExpanded = state;
 
-        return wrapper.vm.$nextTick().then(() => {
-          expect(titleSlot).toHaveBeenCalledWith({
-            isExpanded: state,
-            isDisabled: state,
-          });
+        await nextTick();
+        expect(titleSlot).toHaveBeenCalledWith({
+          isExpanded: state,
+          isDisabled: state,
         });
       },
     );
@@ -112,14 +112,13 @@ describe('AccordionItem component', () => {
       expect(contentContainer().isVisible()).toBe(false);
     });
 
-    it('expands when the trigger-element gets clicked', () => {
+    it('expands when the trigger-element gets clicked', async () => {
       expect(contentContainer().isVisible()).toBe(false);
 
       expansionTrigger().trigger('click');
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(contentContainer().isVisible()).toBe(true);
-      });
+      await nextTick();
+      expect(contentContainer().isVisible()).toBe(true);
     });
 
     it('emits a namespaced "closeOtherAccordionItems" event, containing the trigger item as a payload', () => {
@@ -178,16 +177,15 @@ describe('AccordionItem component', () => {
       expect(contentContainer().attributes('id')).toBe(mockUniqueId);
     });
 
-    it('has a trigger element that has an "aria-expanded" attribute set, to show if it is expanded or collapsed', () => {
+    it('has a trigger element that has an "aria-expanded" attribute set, to show if it is expanded or collapsed', async () => {
       expect(expansionTrigger().attributes('aria-expanded')).toBeFalsy();
 
       // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
       // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ isExpanded: true });
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(expansionTrigger().attributes('aria-expanded')).toBe('true');
-      });
+      await nextTick();
+      expect(expansionTrigger().attributes('aria-expanded')).toBe('true');
     });
 
     it('has a trigger element that has a "aria-controls" attribute, which points to the content element', () => {

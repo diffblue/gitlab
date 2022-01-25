@@ -1,6 +1,6 @@
 import { GlModal, GlAlert, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import { cloneDeep } from 'lodash';
 import VueApollo from 'vue-apollo';
 import DeleteEscalationPolicyModal, {
@@ -158,7 +158,7 @@ describe('DeleteEscalationPolicyModal', () => {
       createComponentWithApollo();
 
       await jest.runOnlyPendingTimers();
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findModal().text()).toContain(cachedPolicy.name);
     });

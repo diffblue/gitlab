@@ -1,7 +1,7 @@
 import { GlFilteredSearchTokenSegment } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -79,7 +79,7 @@ describe('EpicToken', () => {
         },
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
     });
   });
 
@@ -138,7 +138,7 @@ describe('EpicToken', () => {
         data: { epics: mockEpics },
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
     });
 
     it('renders BaseToken component', () => {
@@ -161,7 +161,7 @@ describe('EpicToken', () => {
         value: { data: value },
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(getTokenValueEl().text()).toBe(tokenValueString);
     });

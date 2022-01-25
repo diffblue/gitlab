@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 import BoardNewEpic from 'ee/boards/components/board_new_epic.vue';
@@ -40,13 +40,13 @@ describe('Epic boards new epic form', () => {
 
     boardNewItem.vm.$emit('form-submit', { title: 'Foo' });
 
-    await wrapper.vm.$nextTick();
+    await nextTick();
   };
 
   beforeEach(async () => {
     wrapper = createComponent();
 
-    await wrapper.vm.$nextTick();
+    await nextTick();
   });
 
   afterEach(() => {
@@ -87,7 +87,7 @@ describe('Epic boards new epic form', () => {
     jest.spyOn(eventHub, '$emit').mockImplementation();
     findBoardNewItem().vm.$emit('form-cancel');
 
-    await wrapper.vm.$nextTick();
+    await nextTick();
     expect(eventHub.$emit).toHaveBeenCalledWith(`toggle-epic-form-${mockList.id}`);
   });
 });

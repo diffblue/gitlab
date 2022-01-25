@@ -1,6 +1,7 @@
 import { GlEmptyState, GlSprintf, GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
+import { nextTick } from 'vue';
 import ExternalIssuesListEmptyState from 'ee/external_issues_list/components/external_issues_list_empty_state.vue';
 import { externalIssuesListEmptyStateI18n } from 'ee/external_issues_list/constants';
 import { IssuableStates } from '~/vue_shared/issuable/list/constants';
@@ -50,7 +51,7 @@ describe('ExternalIssuesListEmptyState', () => {
           },
         });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(wrapper.vm.hasIssues).toBe(true);
       });
@@ -62,7 +63,7 @@ describe('ExternalIssuesListEmptyState', () => {
           hasFiltersApplied: true,
         });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(findEmptyState().props('title')).toBe(
           externalIssuesListEmptyStateI18n.titleWhenFilters,
@@ -78,7 +79,7 @@ describe('ExternalIssuesListEmptyState', () => {
           },
         });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(findEmptyState().props('title')).toBe(
           externalIssuesListEmptyStateI18n.filterStateEmptyMessage[IssuableStates.Opened],
@@ -90,7 +91,7 @@ describe('ExternalIssuesListEmptyState', () => {
           hasFiltersApplied: false,
         });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(findEmptyState().props('title')).toBe(mockProvide.emptyStateNoIssueText);
       });
@@ -102,7 +103,7 @@ describe('ExternalIssuesListEmptyState', () => {
           hasFiltersApplied: true,
         });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(wrapper.vm.emptyStateDescription).toBe(
           externalIssuesListEmptyStateI18n.descriptionWhenFilters,
@@ -114,7 +115,7 @@ describe('ExternalIssuesListEmptyState', () => {
           hasFiltersApplied: false,
         });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(wrapper.vm.emptyStateDescription).toBe(
           externalIssuesListEmptyStateI18n.descriptionWhenNoIssues,
@@ -130,7 +131,7 @@ describe('ExternalIssuesListEmptyState', () => {
           },
         });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(wrapper.vm.emptyStateDescription).toBe('');
       });
@@ -154,7 +155,7 @@ describe('ExternalIssuesListEmptyState', () => {
         hasFiltersApplied: true,
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(emptyStateEl.props('title')).toBe(externalIssuesListEmptyStateI18n.titleWhenFilters);
 
@@ -166,7 +167,7 @@ describe('ExternalIssuesListEmptyState', () => {
         },
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(emptyStateEl.props('title')).toBe(
         externalIssuesListEmptyStateI18n.filterStateEmptyMessage[IssuableStates.Opened],
@@ -190,7 +191,7 @@ describe('ExternalIssuesListEmptyState', () => {
         },
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       const descriptionEl = wrapper.findComponent(GlSprintf);
 

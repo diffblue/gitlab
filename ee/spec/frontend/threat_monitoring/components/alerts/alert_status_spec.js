@@ -1,5 +1,6 @@
 import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import AlertStatus from 'ee/threat_monitoring/components/alerts/alert_status.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import updateAlertStatusMutation from '~/graphql_shared/mutations/alert_status_update.mutation.graphql';
@@ -96,7 +97,7 @@ describe('AlertStatus', () => {
 
     it('emits an error when triggered a second time', async () => {
       await selectFirstStatusOption();
-      await wrapper.vm.$nextTick();
+      await nextTick();
       await selectFirstStatusOption();
       expect(wrapper.emitted('alert-error').length).toBeGreaterThan(1);
     });
@@ -105,7 +106,7 @@ describe('AlertStatus', () => {
       const status = 'Unreviewed';
       expect(findStatusDropdown().props('text')).toBe(status);
       await selectFirstStatusOption();
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(findStatusDropdown().props('text')).toBe(status);
     });
   });

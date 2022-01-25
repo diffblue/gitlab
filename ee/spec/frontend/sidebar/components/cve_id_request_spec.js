@@ -1,5 +1,6 @@
 import { getByTestId as getByTestIdHelper, within } from '@testing-library/dom';
 import { createWrapper, shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import CveIdRequest from 'ee/sidebar/components/cve_id_request/cve_id_request_sidebar.vue';
 import { store } from '~/notes/stores';
 
@@ -59,7 +60,7 @@ describe('CveIdRequest', () => {
     it('should show the "Help" pane when help button is clicked', async () => {
       findHelpButton().trigger('click');
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.vm.showHelpState).toBe(true);
 
       // let animations run
@@ -71,10 +72,10 @@ describe('CveIdRequest', () => {
     it('should not show the "Help" pane when help button is clicked and then closed', async () => {
       findHelpButton().trigger('click');
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       findCloseHelpButton().trigger('click');
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.vm.showHelpState).toBe(false);
       expect(queryHelpPane()).toBe(null);

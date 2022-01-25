@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import CollapsibleProjectStorageDetail from 'ee/usage_quotas/storage/components/collapsible_project_storage_detail.vue';
 import ProjectStorageDetail from 'ee/usage_quotas/storage/components/project_storage_detail.vue';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
@@ -39,19 +40,17 @@ describe('CollapsibleProjectStorageDetail', () => {
 
   describe('toggle row', () => {
     describe('on click', () => {
-      it('toggles isOpen', () => {
+      it('toggles isOpen', async () => {
         expect(findProjectStorageDetail().exists()).toBe(false);
 
         findTableRow().trigger('click');
 
-        wrapper.vm.$nextTick(() => {
-          expect(findProjectStorageDetail().exists()).toBe(true);
-          findTableRow().trigger('click');
+        await nextTick();
+        expect(findProjectStorageDetail().exists()).toBe(true);
+        findTableRow().trigger('click');
 
-          wrapper.vm.$nextTick(() => {
-            expect(findProjectStorageDetail().exists()).toBe(false);
-          });
-        });
+        await nextTick();
+        expect(findProjectStorageDetail().exists()).toBe(false);
       });
     });
   });

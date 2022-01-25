@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 
+import { nextTick } from 'vue';
 import TestCaseCreateRoot from 'ee/test_case_create/components/test_case_create_root.vue';
 import createTestCase from 'ee/test_case_create/queries/create_test_case.mutation.graphql';
 
@@ -185,7 +186,7 @@ describe('TestCaseCreateRoot', () => {
         createTestCaseRequestActive: true,
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.find('[data-testid="submit-test-case"]').props('loading')).toBe(true);
     });
@@ -197,7 +198,7 @@ describe('TestCaseCreateRoot', () => {
         createTestCaseRequestActive: true,
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.find('[data-testid="cancel-test-case"]').props('disabled')).toBe(true);
     });

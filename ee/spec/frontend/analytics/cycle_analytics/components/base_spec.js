@@ -2,7 +2,7 @@ import { GlEmptyState } from '@gitlab/ui';
 import { shallowMount, mount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import Component from 'ee/analytics/cycle_analytics/components/base.vue';
 import DurationChart from 'ee/analytics/cycle_analytics/components/duration_chart.vue';
@@ -97,7 +97,7 @@ function mockRequiredRoutes(mockAdapter) {
 }
 
 async function shouldMergeUrlParams(wrapper, result) {
-  await wrapper.vm.$nextTick();
+  await nextTick();
   expect(urlUtils.mergeUrlParams).toHaveBeenCalledWith(result, window.location.href, {
     spreadArrays: true,
   });
@@ -506,7 +506,7 @@ describe('EE Value Stream Analytics component', () => {
       beforeEach(async () => {
         wrapper = await createComponent();
         await store.dispatch('initializeCycleAnalytics', initialCycleAnalyticsState);
-        await wrapper.vm.$nextTick();
+        await nextTick();
       });
 
       it('sets the value_stream_id url parameter', async () => {
@@ -523,7 +523,7 @@ describe('EE Value Stream Analytics component', () => {
       beforeEach(async () => {
         wrapper = await createComponent();
         await store.dispatch('setSelectedProjects', selectedProjects);
-        await wrapper.vm.$nextTick();
+        await nextTick();
       });
 
       it('sets the project_ids url parameter', async () => {

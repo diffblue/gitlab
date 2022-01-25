@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import FilterBar from 'ee/analytics/merge_request_analytics/components/filter_bar.vue';
 import storeConfig from 'ee/analytics/merge_request_analytics/store';
@@ -57,7 +57,7 @@ const defaultParams = {
 };
 
 async function shouldMergeUrlParams(wrapper, result) {
-  await wrapper.vm.$nextTick();
+  await nextTick();
   expect(urlUtils.mergeUrlParams).toHaveBeenCalledWith(result, window.location.href, {
     spreadArrays: true,
   });

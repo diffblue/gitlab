@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
+import { nextTick } from 'vue';
 import RelatedIssues from 'ee/vulnerabilities/components/related_issues.vue';
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
@@ -178,7 +179,7 @@ describe('Vulnerability related issues component', () => {
       createWrapper({ data: { isFormVisible: from } });
 
       blockEmit('toggleAddRelatedIssuesForm');
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(blockProp('isFormVisible')).toBe(to);
     });
 
@@ -191,7 +192,7 @@ describe('Vulnerability related issues component', () => {
         },
       });
       blockEmit('addIssuableFormCancel');
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(blockProp('isFormVisible')).toBe(false);
       expect(blockProp('inputValue')).toBe('');
@@ -206,7 +207,7 @@ describe('Vulnerability related issues component', () => {
       const touchedReference = 'touchedReference';
       createWrapper({ data: { state: { pendingReferences } } });
       blockEmit('addIssuableFormInput', { untouchedRawReferences, touchedReference });
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(blockProp('pendingReferences')).toEqual(
         pendingReferences.concat(untouchedRawReferences),
@@ -217,7 +218,7 @@ describe('Vulnerability related issues component', () => {
     it('processes pending references', async () => {
       createWrapper();
       blockEmit('addIssuableFormBlur', '135 246');
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(blockProp('pendingReferences')).toEqual(['135', '246']);
       expect(blockProp('inputValue')).toBe('');
@@ -226,7 +227,7 @@ describe('Vulnerability related issues component', () => {
     it('removes pending reference', async () => {
       createWrapper({ data: { state: { pendingReferences: ['135', '246', '357'] } } });
       blockEmit('pendingIssuableRemoveRequest', 1);
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(blockProp('pendingReferences')).toEqual(['135', '357']);
     });

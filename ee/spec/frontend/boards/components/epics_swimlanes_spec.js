@@ -1,6 +1,6 @@
 import { GlIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VirtualList from 'vue-virtual-scroll-list';
 import Draggable from 'vuedraggable';
 import Vuex from 'vuex';
@@ -164,7 +164,7 @@ describe('EpicsSwimlanes', () => {
     it('displays IssueLaneList component when toggling unassigned issues lane', async () => {
       wrapper.findByTestId('unassigned-lane-toggle').vm.$emit('click');
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.findComponent(IssueLaneList).exists()).toBe(true);
     });
 
@@ -198,7 +198,7 @@ describe('EpicsSwimlanes', () => {
     it('calls fetchEpicsSwimlanes action when loading more epics', async () => {
       findLoadMoreEpicsButton().vm.$emit('click');
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(fetchEpicsSwimlanesSpy).toHaveBeenCalled();
     });

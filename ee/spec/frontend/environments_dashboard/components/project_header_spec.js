@@ -1,5 +1,6 @@
 import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import component from 'ee/environments_dashboard/components/dashboard/project_header.vue';
 import ProjectAvatar from '~/vue_shared/components/deprecated_project_avatar/default.vue';
 
@@ -72,16 +73,15 @@ describe('Project Header', () => {
       expect(removeLink.exists()).toBe(true);
     });
 
-    it('should emit a "remove" event when "remove" is clicked', () => {
+    it('should emit a "remove" event when "remove" is clicked', async () => {
       const removeLink = wrapper
         .findComponent(GlDropdown)
         .findAllComponents(GlDropdownItem)
         .filter((w) => w.text() === 'Remove');
       removeLink.at(0).vm.$emit('click');
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(wrapper.emitted('remove')).toContainEqual([propsData.project.remove_path]);
-      });
+      await nextTick();
+      expect(wrapper.emitted('remove')).toContainEqual([propsData.project.remove_path]);
     });
   });
 });

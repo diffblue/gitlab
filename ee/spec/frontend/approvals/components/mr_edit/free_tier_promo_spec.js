@@ -1,4 +1,5 @@
 import { GlButton, GlLink, GlCollapse } from '@gitlab/ui';
+import { nextTick } from 'vue';
 import { shallowMountExtended, extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { useLocalStorageSpy } from 'helpers/local_storage_helper';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
@@ -40,7 +41,6 @@ describe('FreeTierPromo component', () => {
     trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
   };
 
-  const waitForReady = () => wrapper.vm.$nextTick();
   const findCollapseToggleButton = () => wrapper.findByTestId('collapse-btn');
   const findCollapse = () => extendedWrapper(wrapper.findComponent(GlCollapse));
   const findLearnMore = () => findCollapse().findComponent(GlLink);
@@ -55,7 +55,7 @@ describe('FreeTierPromo component', () => {
   describe('when ready', () => {
     beforeEach(async () => {
       createComponent();
-      await waitForReady();
+      await nextTick();
     });
 
     it('shows summary', () => {
@@ -163,7 +163,7 @@ describe('FreeTierPromo component', () => {
     beforeEach(async () => {
       localStorage.setItem(MR_APPROVALS_PROMO_DISMISSED, 'true');
       createComponent();
-      await waitForReady();
+      await nextTick();
       localStorage.setItem.mockClear();
     });
 
