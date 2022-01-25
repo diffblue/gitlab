@@ -157,6 +157,16 @@ headings, lists, and so on.
 You can also provide `issues_template` and `merge_requests_template` attributes in the
 [Projects REST API](../../api/projects.md) to keep your default issue and merge request templates up to date.
 
+#### Priority of description templates
+
+When you set [merge request and issue description templates](#set-a-default-template-for-merge-requests-and-issues)
+in various places, they have the following priorities in a project.
+The ones higher up override the ones below:
+
+1. Template selected in project settings.
+1. `Default.md` from the parent group.
+1. `Default.md` from the project repository.
+
 ## Example description template
 
 We use description templates for issues and merge requests in the
