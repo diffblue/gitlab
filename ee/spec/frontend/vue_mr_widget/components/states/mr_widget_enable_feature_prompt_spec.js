@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import MrWidgetEnableFeaturePrompt from 'ee/vue_merge_request_widget/components/states/mr_widget_enable_feature_prompt.vue';
 import { stubExperiments } from 'helpers/experimentation_helper';
 import CiIcon from '~/vue_shared/components/ci_icon.vue';
@@ -56,7 +57,7 @@ describe('MrWidgetEnableFeaturePrompt', () => {
       const button = findDismissButton();
       button.vm.$emit('click');
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(localStorage.getItem(LOCAL_STORAGE_KEY)).toBe('true');
       expect(wrapper.text()).toBe('');

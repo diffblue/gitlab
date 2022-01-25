@@ -1,6 +1,7 @@
 import { GlLoadingIcon, GlIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
+import { nextTick } from 'vue';
 import CsvExportButton, {
   STORAGE_KEY,
 } from 'ee/security_dashboard/components/shared/csv_export_button.vue';
@@ -118,7 +119,7 @@ describe('Csv Button Export', () => {
       // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
       // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ isPreparingCsvExport: true });
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findCsvExportButton().props()).toMatchObject({
         icon: '',
@@ -134,7 +135,7 @@ describe('Csv Button Export', () => {
       it('closes the popover when the button is clicked', async () => {
         expect(findPopoverButton().text()).toBe('Got it!');
         findPopoverButton().vm.$emit('click');
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(findPopover().exists()).toBe(false);
       });
@@ -142,7 +143,7 @@ describe('Csv Button Export', () => {
       it('sets localStorage', async () => {
         jest.spyOn(AccessorUtils, 'canUseLocalStorage').mockImplementation(() => true);
         findPopoverButton().vm.$emit('click');
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(localStorage.setItem).toHaveBeenCalledTimes(1);
       });
@@ -150,7 +151,7 @@ describe('Csv Button Export', () => {
       it(`does not set localStorage if it's not available`, async () => {
         jest.spyOn(AccessorUtils, 'canUseLocalStorage').mockImplementation(() => false);
         findPopoverButton().vm.$emit('click');
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(localStorage.setItem).toHaveBeenCalledTimes(0);
       });

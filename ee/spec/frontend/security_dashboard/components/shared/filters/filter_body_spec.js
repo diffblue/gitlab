@@ -1,5 +1,6 @@
 import { GlDropdown, GlSearchBoxByType, GlLoadingIcon } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import FilterBody from 'ee/security_dashboard/components/shared/filters/filter_body.vue';
 
 describe('Filter Body component', () => {
@@ -75,7 +76,7 @@ describe('Filter Body component', () => {
       createComponent({ showSearchBox: true }, { attachTo: document.body });
       const spy = jest.spyOn(searchBox().vm, 'focusInput');
       dropdown().vm.$emit('show');
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(spy).toHaveBeenCalledTimes(1);
     });
@@ -84,7 +85,7 @@ describe('Filter Body component', () => {
       const text = 'abc';
       createComponent({ showSearchBox: true });
       searchBox().vm.$emit('input', text);
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.emitted('input')[0][0]).toBe(text);
     });

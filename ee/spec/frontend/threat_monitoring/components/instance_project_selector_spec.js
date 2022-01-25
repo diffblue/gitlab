@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import InstanceProjectSelector from 'ee/threat_monitoring/components/instance_project_selector.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -141,7 +141,7 @@ describe('InstanceProjectSelector Component', () => {
     it('notifies project selector of search error', async () => {
       querySpy = jest.fn().mockResolvedValue(mockGetUsersProjects.error);
       createWrapper({ queryResolver: querySpy });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       findProjectSelector().vm.$emit('searched', 'abc');
       await waitForPromises();
       expect(findProjectSelector().props()).toStrictEqual({
@@ -153,7 +153,7 @@ describe('InstanceProjectSelector Component', () => {
     it('notifies project selector of no results', async () => {
       querySpy = jest.fn().mockResolvedValue(mockGetUsersProjects.empty);
       createWrapper({ queryResolver: querySpy });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       findProjectSelector().vm.$emit('searched', 'abc');
       await waitForPromises();
       expect(findProjectSelector().props()).toStrictEqual({

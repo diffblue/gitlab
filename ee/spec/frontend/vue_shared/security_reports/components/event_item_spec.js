@@ -1,5 +1,6 @@
 import { GlButton } from '@gitlab/ui';
 
+import { nextTick } from 'vue';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import Component from 'ee/vue_shared/security_reports/components/event_item.vue';
 import NoteHeader from '~/notes/components/note_header.vue';
@@ -96,19 +97,14 @@ describe('Event Item', () => {
       expect(wrapper.element).toMatchSnapshot();
     });
 
-    it('emits the button events when clicked', () => {
+    it('emits the button events when clicked', async () => {
       const buttons = wrapper.findAllComponents(GlButton);
       buttons.at(0).trigger('click');
-      return wrapper.vm
-        .$nextTick()
-        .then(() => {
-          buttons.at(1).trigger('click');
-          return wrapper.vm.$nextTick();
-        })
-        .then(() => {
-          expect(propsData.actionButtons[0].onClick).toHaveBeenCalledTimes(1);
-          expect(propsData.actionButtons[1].onClick).toHaveBeenCalledTimes(1);
-        });
+      await nextTick();
+      buttons.at(1).trigger('click');
+      await nextTick();
+      expect(propsData.actionButtons[0].onClick).toHaveBeenCalledTimes(1);
+      expect(propsData.actionButtons[1].onClick).toHaveBeenCalledTimes(1);
     });
   });
 });

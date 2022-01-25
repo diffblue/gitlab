@@ -1,5 +1,6 @@
 import { GlFormTextarea } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import HistoryCommentEditor from 'ee/vulnerabilities/components/history_comment_editor.vue';
 
 describe('History Comment Editor', () => {
@@ -76,7 +77,7 @@ describe('History Comment Editor', () => {
   it('disables the save button when there is no text or only whitespace in the textarea', async () => {
     createWrapper({ initialComment: 'some comment' });
     textarea().vm.$emit('input', '    ');
-    await wrapper.vm.$nextTick();
+    await nextTick();
 
     expect(saveButton().props('disabled')).toBe(true);
   });

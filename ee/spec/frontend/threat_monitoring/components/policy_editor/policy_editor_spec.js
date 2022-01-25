@@ -1,5 +1,6 @@
 import { GlAlert, GlFormSelect } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/threat_monitoring/components/constants';
 import EnvironmentPicker from 'ee/threat_monitoring/components/environment_picker.vue';
 import NetworkPolicyEditor from 'ee/threat_monitoring/components/policy_editor/network_policy/network_policy_editor.vue';
@@ -66,7 +67,7 @@ describe('PolicyEditor component', () => {
     it('shows an alert when "error" is emitted from the component', async () => {
       const errorMessage = 'test';
       findNeworkPolicyEditor().vm.$emit('error', errorMessage);
-      await wrapper.vm.$nextTick();
+      await nextTick();
       const alert = findAlert();
       expect(alert.exists()).toBe(true);
       expect(alert.text()).toBe(errorMessage);
@@ -82,7 +83,7 @@ describe('PolicyEditor component', () => {
       async ({ findComponent, option, policyType }) => {
         const formSelect = findFormSelect();
         formSelect.vm.$emit('change', policyType);
-        await wrapper.vm.$nextTick();
+        await nextTick();
         const component = findComponent();
         expect(formSelect.attributes('value')).toBe(option.value);
         expect(component.exists()).toBe(true);
@@ -91,11 +92,11 @@ describe('PolicyEditor component', () => {
     );
 
     describe('with scan_result_policy feature flag disabled', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         factory({ provide: { glFeatures: { scanResultPolicy: false } } });
         const formSelect = findFormSelect();
         formSelect.vm.$emit('change', POLICY_TYPE_COMPONENT_OPTIONS.scanResult.value);
-        wrapper.vm.$nextTick();
+        await nextTick();
       });
 
       it('does not render scan result policy', () => {
@@ -124,7 +125,7 @@ describe('PolicyEditor component', () => {
           propsData: { existingPolicy },
           provide: { policyType, glFeatures: { scanResultPolicy: true } },
         });
-        await wrapper.vm.$nextTick();
+        await nextTick();
         const formSelect = findFormSelect();
         expect(formSelect.exists()).toBe(true);
         expect(formSelect.attributes('value')).toBe(option.value);

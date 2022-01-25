@@ -1,3 +1,4 @@
+import { nextTick } from 'vue';
 import NoPoliciesEmptyState from 'ee/threat_monitoring/components/policies/no_policies_empty_state.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
@@ -32,7 +33,7 @@ describe('NoPoliciesEmptyState component', () => {
     ${'does display the empty list state'}       | ${findEmptyListState}   | ${false} | ${() => factory(true)}
   `('$title', async ({ factoryFn, findComponent, state }) => {
     factoryFn();
-    await wrapper.vm.$nextTick();
+    await nextTick();
     expect(findComponent().exists()).toBe(state);
   });
 });

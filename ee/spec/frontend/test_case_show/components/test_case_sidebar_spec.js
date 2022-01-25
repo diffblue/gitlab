@@ -2,6 +2,7 @@ import { GlButton, GlIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Mousetrap from 'mousetrap';
 
+import { nextTick } from 'vue';
 import TestCaseSidebar from 'ee/test_case_show/components/test_case_sidebar.vue';
 import { mockCurrentUserTodo, mockLabels } from 'jest/vue_shared/issuable/list/mock_data';
 
@@ -65,7 +66,7 @@ describe('TestCaseSidebar', () => {
           },
         });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
       });
 
       it.each`
@@ -92,7 +93,7 @@ describe('TestCaseSidebar', () => {
             testCaseMoveInProgress,
           });
 
-          await wrapper.vm.$nextTick();
+          await nextTick();
 
           expect(wrapper.vm.selectProjectDropdownButtonTitle).toBe(returnValue);
         },
@@ -126,7 +127,7 @@ describe('TestCaseSidebar', () => {
             },
           });
 
-          await wrapper.vm.$nextTick();
+          await nextTick();
 
           wrapper.vm.handleTodoButtonClick();
 
@@ -162,7 +163,7 @@ describe('TestCaseSidebar', () => {
           sidebarExpanded: false,
         });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         wrapper.vm.expandSidebarAndOpenDropdown('.js-labels-block .js-sidebar-dropdown-toggle');
 
@@ -178,11 +179,11 @@ describe('TestCaseSidebar', () => {
           sidebarExpanded: false,
         });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         wrapper.vm.expandSidebarAndOpenDropdown('.js-labels-block .js-sidebar-dropdown-toggle');
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         wrapper.vm.sidebarEl.dispatchEvent(new Event('transitionend'));
 
@@ -205,7 +206,7 @@ describe('TestCaseSidebar', () => {
           sidebarExpandedOnClick: true,
         });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         wrapper.vm.handleSidebarDropdownClose();
 
@@ -276,7 +277,7 @@ describe('TestCaseSidebar', () => {
         sidebarExpanded: false,
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       todoEl = wrapper.find('button');
 

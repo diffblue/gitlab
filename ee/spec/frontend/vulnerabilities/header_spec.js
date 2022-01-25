@@ -1,6 +1,6 @@
 import { GlButton, GlBadge } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import MockAdapter from 'axios-mock-adapter';
 import VueApollo from 'vue-apollo';
 import Api from 'ee/api';
@@ -285,11 +285,10 @@ describe('Vulnerability Header', () => {
         expect(findGlButton().text()).toBe('Download patch to resolve');
       });
 
-      it('emits downloadPatch when download patch button is clicked', () => {
+      it('emits downloadPatch when download patch button is clicked', async () => {
         findGlButton().vm.$emit('click');
-        return wrapper.vm.$nextTick().then(() => {
-          expect(download).toHaveBeenCalledWith({ fileData: diff, fileName: `remediation.patch` });
-        });
+        await nextTick();
+        expect(download).toHaveBeenCalledWith({ fileData: diff, fileName: `remediation.patch` });
       });
     });
   });
@@ -369,7 +368,7 @@ describe('Vulnerability Header', () => {
 
     it('the resolution alert component should not be shown if when the vulnerability is already resolved', async () => {
       wrapper.vm.vulnerability.state = 'resolved';
-      await wrapper.vm.$nextTick();
+      await nextTick();
       const alert = findResolutionAlert();
 
       expect(alert.exists()).toBe(false);

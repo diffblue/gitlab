@@ -1,6 +1,6 @@
 import { GlButton, GlLoadingIcon, GlIcon, GlPopover } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import LicenseComplianceApprovals from 'ee/approvals/components/license_compliance/index.vue';
 import AddLicenseForm from 'ee/vue_shared/license_compliance/components/add_license_form.vue';
@@ -127,7 +127,7 @@ describe('License Management', () => {
 
   describe('permission based functionality', () => {
     describe('when admin', () => {
-      it('should invoke `setLicenseApproval` action on `addLicense` event on form only', () => {
+      it('should invoke `setLicenseApproval` action on `addLicense` event on form only', async () => {
         const setLicenseApprovalMock = jest.fn();
         createComponent({
           state: { isLoadingManagedLicenses: false },
@@ -136,10 +136,9 @@ describe('License Management', () => {
         });
         wrapper.findComponent(GlButton).vm.$emit('click');
 
-        return wrapper.vm.$nextTick().then(() => {
-          wrapper.findComponent(AddLicenseForm).vm.$emit('addLicense');
-          expect(setLicenseApprovalMock).toHaveBeenCalled();
-        });
+        await nextTick();
+        wrapper.findComponent(AddLicenseForm).vm.$emit('addLicense');
+        expect(setLicenseApprovalMock).toHaveBeenCalled();
       });
 
       describe('when not loading', () => {
@@ -151,13 +150,12 @@ describe('License Management', () => {
           expect(wrapper.findComponent(LicenseComplianceApprovals).exists()).toBe(true);
         });
 
-        it('should render the form if the form is open and disable the form button', () => {
+        it('should render the form if the form is open and disable the form button', async () => {
           wrapper.findComponent(GlButton).vm.$emit('click');
 
-          return wrapper.vm.$nextTick().then(() => {
-            expect(wrapper.findComponent(AddLicenseForm).exists()).toBe(true);
-            expect(wrapper.findComponent(GlButton).attributes('disabled')).toBe('true');
-          });
+          await nextTick();
+          expect(wrapper.findComponent(AddLicenseForm).exists()).toBe(true);
+          expect(wrapper.findComponent(GlButton).attributes('disabled')).toBe('true');
         });
 
         it('should not render the form if the form is closed and have active button', () => {

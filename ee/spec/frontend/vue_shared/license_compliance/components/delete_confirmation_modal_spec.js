@@ -1,6 +1,6 @@
 import { GlModal, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import Component from 'ee/vue_shared/license_compliance/components/delete_confirmation_modal.vue';
 import { approvedLicense } from '../mock_data';
@@ -98,13 +98,13 @@ describe('DeleteConfirmationModal', () => {
   describe('interaction', () => {
     it('triggering resetLicenseInModal on cancel', async () => {
       findModal().vm.$emit('cancel', mockEvent);
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(actions.resetLicenseInModal).toHaveBeenCalled();
     });
 
     it('triggering deleteLicense on cancel', async () => {
       findModal().vm.$emit('primary', mockEvent);
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(actions.deleteLicense).toHaveBeenCalled();
     });
   });

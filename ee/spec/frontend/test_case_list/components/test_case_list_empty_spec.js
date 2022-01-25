@@ -1,6 +1,7 @@
 import { GlEmptyState, GlSprintf, GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
+import { nextTick } from 'vue';
 import TestCaseListEmptyState from 'ee/test_case_list/components/test_case_list_empty_state.vue';
 
 const createComponent = (props = {}) =>
@@ -44,7 +45,7 @@ describe('TestCaseListEmptyState', () => {
           },
         });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(wrapper.vm.emptyStateTitle).toBe('There are no open test cases');
       });
@@ -59,7 +60,7 @@ describe('TestCaseListEmptyState', () => {
           },
         });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(wrapper.vm.emptyStateTitle).toBe('There are no archived test cases');
       });
@@ -87,7 +88,7 @@ describe('TestCaseListEmptyState', () => {
             },
           });
 
-          await wrapper.vm.$nextTick();
+          await nextTick();
 
           expect(wrapper.vm.showDescription).toBe(returnValue);
         },

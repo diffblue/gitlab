@@ -1,6 +1,6 @@
 import { GlDropdownItem, GlDropdownDivider } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import { sampleSize, cloneDeep } from 'lodash';
 import VueRouter from 'vue-router';
 import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_item.vue';
@@ -129,7 +129,7 @@ describe('Scanner Filter component', () => {
         ids.includes(`${x.vendor}.${x.report_type}`),
       );
       createWrapper();
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.emitted('filter-changed')[0][0]).toEqual({
         scannerId: expect.arrayContaining([

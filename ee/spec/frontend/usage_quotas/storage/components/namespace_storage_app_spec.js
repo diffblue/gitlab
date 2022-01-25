@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import NamespaceStorageApp from 'ee/usage_quotas/storage/components/namespace_storage_app.vue';
 import CollapsibleProjectStorageDetail from 'ee/usage_quotas/storage/components/collapsible_project_storage_detail.vue';
 import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
@@ -79,7 +80,7 @@ describe('NamespaceStorageApp', () => {
       namespace: namespaceData,
     });
 
-    await wrapper.vm.$nextTick();
+    await nextTick();
 
     expect(wrapper.findAllComponents(CollapsibleProjectStorageDetail)).toHaveLength(3);
   });
@@ -92,7 +93,7 @@ describe('NamespaceStorageApp', () => {
         namespace: namespaceData,
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.text()).toContain(formatUsageSize(namespaceData.limit));
     });
@@ -104,7 +105,7 @@ describe('NamespaceStorageApp', () => {
         namespace: { ...namespaceData, limit: 0 },
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.text()).not.toContain(formatUsageSize(0));
     });
@@ -118,7 +119,7 @@ describe('NamespaceStorageApp', () => {
         namespace: withRootStorageStatistics,
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findTotalUsage().text()).toContain(withRootStorageStatistics.totalUsage);
     });
@@ -132,7 +133,7 @@ describe('NamespaceStorageApp', () => {
         namespace: withRootStorageStatistics,
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findUsageGraph().exists()).toBe(true);
       expect(findUsageStatistics().exists()).toBe(false);
@@ -145,7 +146,7 @@ describe('NamespaceStorageApp', () => {
         namespace: withRootStorageStatistics,
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findUsageStatistics().exists()).toBe(true);
       expect(findUsageGraph().exists()).toBe(false);
@@ -161,7 +162,7 @@ describe('NamespaceStorageApp', () => {
         namespace: namespaceData,
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findTotalUsage().text()).toContain('N/A');
     });

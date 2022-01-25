@@ -1,5 +1,6 @@
 import { GlDropdown, GlDropdownItem, GlLoadingIcon } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import Status from 'ee/sidebar/components/status/status.vue';
 import { healthStatus, healthStatusTextMap, I18N_DROPDOWN } from 'ee/sidebar/constants';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
@@ -149,11 +150,11 @@ describe('Status', () => {
 
       wrapper.vm.isDropdownShowing = true;
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(getRemoveStatusItem(wrapper).exists()).toBe(true);
     });
 
-    it('emits an onDropdownClick event with argument null when clicked', () => {
+    it('emits an onDropdownClick event with argument null when clicked', async () => {
       const props = {
         isEditable: true,
         status: healthStatus.AT_RISK,
@@ -163,11 +164,10 @@ describe('Status', () => {
 
       wrapper.vm.isDropdownShowing = true;
 
-      wrapper.vm.$nextTick(() => {
-        getRemoveStatusItem(wrapper).vm.$emit('click', { preventDefault: () => null });
+      await nextTick();
+      getRemoveStatusItem(wrapper).vm.$emit('click', { preventDefault: () => null });
 
-        expect(wrapper.emitted().onDropdownClick[0]).toEqual([null]);
-      });
+      expect(wrapper.emitted().onDropdownClick[0]).toEqual([null]);
     });
   });
 
@@ -240,7 +240,7 @@ describe('Status', () => {
       it('shows the dropdown when the Edit button is clicked', async () => {
         getEditButton(wrapper).trigger('click');
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(getDropdownClasses(wrapper)).toContain('show');
       });
     });
@@ -268,7 +268,7 @@ describe('Status', () => {
       it('hides form when the `edit` button is clicked', async () => {
         getEditButton(wrapper).trigger('click');
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(getDropdownClasses(wrapper)).toContain('gl-display-none');
       });
 
@@ -277,7 +277,7 @@ describe('Status', () => {
 
         dropdownItem.vm.$emit('click');
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(getDropdownClasses(wrapper)).toContain('gl-display-none');
       });
     });
@@ -325,7 +325,7 @@ describe('Status', () => {
             .at(index + 1)
             .vm.$emit('click', { preventDefault: () => null });
 
-          await wrapper.vm.$nextTick();
+          await nextTick();
           expect(wrapper.emitted().onDropdownClick[0]).toEqual([status]);
         },
       );

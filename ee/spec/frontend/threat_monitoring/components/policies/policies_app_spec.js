@@ -1,3 +1,4 @@
+import { nextTick } from 'vue';
 import PoliciesApp from 'ee/threat_monitoring/components/policies/policies_app.vue';
 import PoliciesHeader from 'ee/threat_monitoring/components/policies/policies_header.vue';
 import PoliciesList from 'ee/threat_monitoring/components/policies/policies_list.vue';
@@ -35,7 +36,7 @@ describe('Policies App', () => {
       async ({ findFn }) => {
         expect(findPoliciesList().props('shouldUpdatePolicyList')).toBe(false);
         findFn().vm.$emit('update-policy-list', true);
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(findPoliciesList().props('shouldUpdatePolicyList')).toBe(true);
       },
     );

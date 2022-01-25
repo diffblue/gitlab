@@ -1,5 +1,6 @@
 import { GlSprintf, GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import MergeImmediatelyConfirmationDialog from 'ee/vue_merge_request_widget/components/merge_immediately_confirmation_dialog.vue';
 import { trimText } from 'helpers/text_helper';
 
@@ -7,7 +8,7 @@ describe('MergeImmediatelyConfirmationDialog', () => {
   const docsUrl = 'path/to/merge/immediately/docs';
   let wrapper;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     wrapper = shallowMount(MergeImmediatelyConfirmationDialog, {
       propsData: { docsUrl },
       stubs: {
@@ -15,7 +16,7 @@ describe('MergeImmediatelyConfirmationDialog', () => {
       },
     });
 
-    return wrapper.vm.$nextTick();
+    await nextTick();
   });
 
   it('should render informational text explaining why merging immediately can be dangerous', () => {

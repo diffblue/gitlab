@@ -1,6 +1,7 @@
 import { GlAlert, GlIntersectionObserver, GlLoadingIcon } from '@gitlab/ui';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
+import { nextTick } from 'vue';
 import InstanceVulnerabilities from 'ee/security_dashboard/components/instance/instance_vulnerabilities.vue';
 import VulnerabilityList from 'ee/security_dashboard/components/shared/vulnerability_list.vue';
 import vulnerabilitiesQuery from 'ee/security_dashboard/graphql/queries/instance_vulnerabilities.query.graphql';
@@ -69,12 +70,11 @@ describe('Instance Security Dashboard Vulnerabilities Component', () => {
       );
     });
 
-    it('should have an alert that is dismissable', () => {
+    it('should have an alert that is dismissable', async () => {
       const alert = findAlert();
       alert.vm.$emit('dismiss');
-      return wrapper.vm.$nextTick(() => {
-        expect(alert.exists()).toBe(false);
-      });
+      await nextTick();
+      expect(alert.exists()).toBe(false);
     });
 
     it('does not display the vulnerabilities', () => {

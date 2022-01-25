@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import {
   RuleDirectionOutbound,
   EndpointMatchModeAny,
@@ -54,13 +55,13 @@ describe('PolicyRuleBuilder component', () => {
 
   it('updates rule direction upon selecting', async () => {
     selectFirstOption("[id='direction']");
-    await wrapper.vm.$nextTick();
+    await nextTick();
     expect(rule.direction).toEqual(RuleDirectionOutbound);
   });
 
   it('emits endpoint-match-mode-change upon selecting', async () => {
     selectFirstOption("[data-testid='endpoint-match-mode']");
-    await wrapper.vm.$nextTick();
+    await nextTick();
     const event = wrapper.emitted()['endpoint-match-mode-change'];
     expect(event.length).toEqual(2);
     expect(event[0]).toEqual([EndpointMatchModeLabel]);
@@ -86,7 +87,7 @@ describe('PolicyRuleBuilder component', () => {
     it('emits endpoint-labels-change on change', async () => {
       const input = findEndpointLabels();
       input.setValue('foo:bar');
-      await wrapper.vm.$nextTick();
+      await nextTick();
       const event = wrapper.emitted()['endpoint-labels-change'];
       expect(event.length).toEqual(1);
       expect(event[0]).toEqual(['foo:bar']);
@@ -95,7 +96,7 @@ describe('PolicyRuleBuilder component', () => {
 
   it('emits rule-type-change upon selecting', async () => {
     selectFirstOption("[id='ruleMode']");
-    await wrapper.vm.$nextTick();
+    await nextTick();
     const event = wrapper.emitted()['rule-type-change'];
     expect(event.length).toEqual(2);
     expect(event[0]).toEqual([RuleTypeEntity]);
@@ -131,7 +132,7 @@ describe('PolicyRuleBuilder component', () => {
       el.findAll('button')
         .filter((e) => e.text() === 'host')
         .trigger('click');
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(rule.entities).toEqual(['host']);
     });
   });
@@ -153,7 +154,7 @@ describe('PolicyRuleBuilder component', () => {
       const el = findRuleCIDR();
       el.setValue('0.0.0.0/24');
       el.trigger('change');
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(rule.cidr).toEqual('0.0.0.0/24');
     });
   });
@@ -175,14 +176,14 @@ describe('PolicyRuleBuilder component', () => {
       const el = findRuleFQDN();
       el.setValue('some-service.com');
       el.trigger('change');
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(rule.fqdn).toEqual('some-service.com');
     });
   });
 
   it('updates port match mode upon selecting', async () => {
     selectFirstOption("[id='portMatch']");
-    await wrapper.vm.$nextTick();
+    await nextTick();
     expect(rule.portMatchMode).toEqual(PortMatchModePortProtocol);
   });
 
@@ -203,7 +204,7 @@ describe('PolicyRuleBuilder component', () => {
     it('updates ports', async () => {
       const input = findPorts();
       input.setValue('80/tcp');
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(rule.ports).toEqual('80/tcp');
     });
   });

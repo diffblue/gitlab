@@ -1,4 +1,5 @@
 import { GlEmptyState, GlFormCheckbox, GlFormGroup } from '@gitlab/ui';
+import { nextTick } from 'vue';
 import { EDITOR_MODE_YAML } from 'ee/threat_monitoring/components/policy_editor/constants';
 import DimDisableContainer from 'ee/threat_monitoring/components/policy_editor/dim_disable_container.vue';
 import {
@@ -357,7 +358,7 @@ describe('NetworkPolicyEditor component', () => {
 
       it('it does not redirect', async () => {
         findPolicyEditorLayout().vm.$emit('save-policy');
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(redirectTo).not.toHaveBeenCalledWith('/threat-monitoring');
       });
     });

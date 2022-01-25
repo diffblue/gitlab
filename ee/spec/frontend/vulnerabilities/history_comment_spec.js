@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import createNoteMutation from 'ee/security_dashboard/graphql/mutations/note_create.mutation.graphql';
 import destroyNoteMutation from 'ee/security_dashboard/graphql/mutations/note_destroy.mutation.graphql';
@@ -104,14 +104,14 @@ describe('History Comment', () => {
 
   // Either the add comment button or the edit button will exist, but not both at the same time, so we'll just find
   // whichever one exists and click it to show the editor.
-  const showEditView = () => {
+  const showEditView = async () => {
     if (addCommentButton().exists()) {
       addCommentButton().trigger('click');
     } else {
       editButton().vm.$emit('click');
     }
 
-    return wrapper.vm.$nextTick();
+    await nextTick();
   };
 
   const editAndSaveNewContent = async (content) => {
@@ -138,13 +138,11 @@ describe('History Comment', () => {
       });
     });
 
-    it('shows the add comment button when the cancel button is clicked in the comment editor', () => {
-      return showEditView()
-        .then(() => {
-          commentEditor().vm.$emit('onCancel');
-          return wrapper.vm.$nextTick();
-        })
-        .then(expectAddCommentView);
+    it('shows the add comment button when the cancel button is clicked in the comment editor', async () => {
+      await showEditView();
+      commentEditor().vm.$emit('onCancel');
+      await nextTick();
+      expectAddCommentView();
     });
   });
 
@@ -165,37 +163,28 @@ describe('History Comment', () => {
       });
     });
 
-    it('shows the comment when the cancel button is clicked in the comment editor', () => {
-      return showEditView()
-        .then(() => {
-          commentEditor().vm.$emit('onCancel');
-          return wrapper.vm.$nextTick();
-        })
-        .then(() => {
-          expectExistingCommentView();
-          expect(eventItem().element.innerHTML).toContain(note.bodyHtml);
-        });
+    it('shows the comment when the cancel button is clicked in the comment editor', async () => {
+      await showEditView();
+      commentEditor().vm.$emit('onCancel');
+      await nextTick();
+      expectExistingCommentView();
+      expect(eventItem().element.innerHTML).toContain(note.bodyHtml);
     });
 
-    it('shows the delete confirmation buttons when the delete button is clicked', () => {
+    it('shows the delete confirmation buttons when the delete button is clicked', async () => {
       deleteButton().trigger('click');
-
-      return wrapper.vm.$nextTick().then(expectDeleteConfirmView);
+      await nextTick();
+      expectDeleteConfirmView();
     });
 
-    it('shows the comment when the cancel button is clicked on the delete confirmation', () => {
+    it('shows the comment when the cancel button is clicked on the delete confirmation', async () => {
       deleteButton().trigger('click');
 
-      return wrapper.vm
-        .$nextTick()
-        .then(() => {
-          cancelDeleteButton().trigger('click');
-          return wrapper.vm.$nextTick();
-        })
-        .then(() => {
-          expectExistingCommentView();
-          expect(eventItem().element.innerHTML).toContain(note.bodyHtml);
-        });
+      await nextTick();
+      cancelDeleteButton().trigger('click');
+      await nextTick();
+      expectExistingCommentView();
+      expect(eventItem().element.innerHTML).toContain(note.bodyHtml);
     });
   });
 
@@ -233,7 +222,7 @@ describe('History Comment', () => {
       createWrapper({ propsData });
 
       await editAndSaveNewContent('new comment');
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(commentEditor().props('isSaving')).toBe(true);
     });
@@ -297,10 +286,10 @@ describe('History Comment', () => {
 
       deleteButton().trigger('click');
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
       confirmDeleteButton().trigger('click');
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(confirmDeleteButton().props('loading')).toBe(true);
       expect(cancelDeleteButton().props('disabled')).toBe(true);
 
@@ -313,7 +302,7 @@ describe('History Comment', () => {
       createWrapper({ propsData: { comment: note } });
 
       deleteButton().trigger('click');
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       confirmDeleteButton().trigger('click');
       expect(destroyNoteMutationSpy).toHaveBeenCalledWith({
@@ -327,7 +316,7 @@ describe('History Comment', () => {
 
       deleteButton().trigger('click');
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
       confirmDeleteButton().trigger('click');
 
       await waitForPromises();
@@ -343,7 +332,7 @@ describe('History Comment', () => {
 
       deleteButton().trigger('click');
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
       confirmDeleteButton().trigger('click');
 
       await waitForPromises();

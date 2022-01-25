@@ -1,6 +1,6 @@
 import { GlToggle } from '@gitlab/ui';
 import { shallowMount, mount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import Filters from 'ee/security_dashboard/components/pipeline/filters.vue';
 import { simpleScannerFilter } from 'ee/security_dashboard/helpers';
@@ -69,7 +69,7 @@ describe('Filter component', () => {
       });
 
       createWrapper({ mountFn: mount });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       // The other filters will trigger the mock as well, so we'll clear it before clicking on a
       // scanner filter item.
       mock.mockClear();
@@ -78,7 +78,7 @@ describe('Filter component', () => {
       const optionId = simpleScannerFilter.options[2].id;
       const option = wrapper.findByTestId(`${filterId}:${optionId}`);
       option.vm.$emit('click');
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(mock).toHaveBeenCalledTimes(1);
       expect(mock).toHaveBeenCalledWith(expect.any(Object), { [filterId]: [optionId] });

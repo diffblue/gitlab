@@ -1,5 +1,6 @@
 import { GlLink, GlSprintf } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import MergeImmediatelyConfirmationDialog from 'ee/vue_merge_request_widget/components/merge_immediately_confirmation_dialog.vue';
 import MergeTrainFailedPipelineConfirmationDialog from 'ee/vue_merge_request_widget/components/merge_train_failed_pipeline_confirmation_dialog.vue';
 import MergeTrainHelperIcon from 'ee/vue_merge_request_widget/components/merge_train_helper_icon.vue';
@@ -297,41 +298,35 @@ describe('ReadyToMerge', () => {
   describe('merge immediately warning dialog', () => {
     let dialog;
 
-    const clickMergeImmediately = () => {
+    const clickMergeImmediately = async () => {
       dialog = wrapper.findComponent(MergeImmediatelyConfirmationDialog);
 
       expect(dialog.exists()).toBe(true);
       dialog.vm.show = jest.fn();
       vm.handleMergeButtonClick = jest.fn();
       findMergeButtonDropdown().trigger('click');
-      return wrapper.vm.$nextTick().then(() => {
-        findMergeImmediatelyButton().trigger('click');
-        return wrapper.vm.$nextTick();
-      });
+      await nextTick();
+      findMergeImmediatelyButton().trigger('click');
+      await nextTick();
     };
 
-    it('should show a warning dialog asking for confirmation if the user is trying to skip the merge train', () => {
+    it('should show a warning dialog asking for confirmation if the user is trying to skip the merge train', async () => {
       factory({ preferredAutoMergeStrategy: MT_MERGE_STRATEGY }, false);
-      return clickMergeImmediately().then(() => {
-        expect(dialog.vm.show).toHaveBeenCalled();
-        expect(vm.handleMergeButtonClick).not.toHaveBeenCalled();
-      });
+      await clickMergeImmediately();
+      expect(dialog.vm.show).toHaveBeenCalled();
+      expect(vm.handleMergeButtonClick).not.toHaveBeenCalled();
     });
 
-    it('should perform the merge when the user confirms their intent to merge immediately', () => {
+    it('should perform the merge when the user confirms their intent to merge immediately', async () => {
       factory({ preferredAutoMergeStrategy: MT_MERGE_STRATEGY }, false);
-      return clickMergeImmediately()
-        .then(() => {
-          dialog.vm.$emit('mergeImmediately');
-          return wrapper.vm.$nextTick();
-        })
-        .then(() => {
-          // false (no auto merge), true (merge immediately), true (confirmation clicked)
-          expect(vm.handleMergeButtonClick).toHaveBeenCalledWith(false, true, true);
-        });
+      await clickMergeImmediately();
+      dialog.vm.$emit('mergeImmediately');
+      await nextTick();
+      // false (no auto merge), true (merge immediately), true (confirmation clicked)
+      expect(vm.handleMergeButtonClick).toHaveBeenCalledWith(false, true, true);
     });
 
-    it('should not ask for confirmation in non-merge train scenarios', () => {
+    it('should not ask for confirmation in non-merge train scenarios', async () => {
       factory(
         {
           isPipelineActive: true,
@@ -339,10 +334,9 @@ describe('ReadyToMerge', () => {
         },
         false,
       );
-      return clickMergeImmediately().then(() => {
-        expect(dialog.vm.show).not.toHaveBeenCalled();
-        expect(vm.handleMergeButtonClick).toHaveBeenCalled();
-      });
+      await clickMergeImmediately();
+      expect(dialog.vm.show).not.toHaveBeenCalled();
+      expect(vm.handleMergeButtonClick).toHaveBeenCalled();
     });
   });
 

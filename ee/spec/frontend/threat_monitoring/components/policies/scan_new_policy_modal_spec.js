@@ -1,5 +1,5 @@
 import { GlDropdown, GlModal, GlAlert } from '@gitlab/ui';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import InstanceProjectSelector from 'ee/threat_monitoring/components/instance_project_selector.vue';
 import ScanNewPolicyModal from 'ee/threat_monitoring/components/policies/scan_new_policy_modal.vue';
@@ -115,7 +115,7 @@ describe('ScanNewPolicyModal Component', () => {
     expect(findInstanceProjectSelector().props('selectedProjects')[0].name).toBe('Test 1');
 
     // should restore the previous state when action is not submitted
-    await wrapper.vm.$nextTick();
+    await nextTick();
     expect(findInstanceProjectSelector().props('selectedProjects')[0].name).toBeUndefined();
   });
 
@@ -139,7 +139,7 @@ describe('ScanNewPolicyModal Component', () => {
 
         // When we click on the delete button, the component should display a warning
         findUnlinkButton().trigger('click');
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(wrapper.findByText(wrapper.vm.$options.i18n.unlinkWarning).exists()).toBe(true);
         expect(findModal().attributes('ok-disabled')).toBeUndefined();

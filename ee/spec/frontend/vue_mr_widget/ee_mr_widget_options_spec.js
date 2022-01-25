@@ -393,30 +393,28 @@ describe('ee merge request widget options', () => {
 
         describe('text connector', () => {
           it('should only render information about fixed issues', (done) => {
-            setImmediate(() => {
+            setImmediate(async () => {
               wrapper.vm.mr.browserPerformanceMetrics.degraded = [];
               wrapper.vm.mr.browserPerformanceMetrics.same = [];
 
-              nextTick(() => {
-                expect(
-                  trimText(wrapper.find('.js-browser-performance-widget .js-code-text').text()),
-                ).toEqual('Browser performance test metrics: 1 improved');
-                done();
-              });
+              await nextTick();
+              expect(
+                trimText(wrapper.find('.js-browser-performance-widget .js-code-text').text()),
+              ).toEqual('Browser performance test metrics: 1 improved');
+              done();
             });
           });
 
           it('should only render information about added issues', (done) => {
-            setImmediate(() => {
+            setImmediate(async () => {
               wrapper.vm.mr.browserPerformanceMetrics.improved = [];
               wrapper.vm.mr.browserPerformanceMetrics.same = [];
 
-              nextTick(() => {
-                expect(
-                  trimText(wrapper.find('.js-browser-performance-widget .js-code-text').text()),
-                ).toEqual('Browser performance test metrics: 2 degraded');
-                done();
-              });
+              await nextTick();
+              expect(
+                trimText(wrapper.find('.js-browser-performance-widget .js-code-text').text()),
+              ).toEqual('Browser performance test metrics: 2 degraded');
+              done();
             });
           });
         });
@@ -537,28 +535,24 @@ describe('ee merge request widget options', () => {
         });
 
         describe('text connector', () => {
-          it('should only render information about fixed issues', (done) => {
+          it('should only render information about fixed issues', async () => {
             wrapper.vm.mr.loadPerformanceMetrics.degraded = [];
             wrapper.vm.mr.loadPerformanceMetrics.same = [];
 
-            nextTick(() => {
-              expect(
-                trimText(wrapper.find('.js-load-performance-widget .js-code-text').text()),
-              ).toBe('Load performance test metrics: 2 improved');
-              done();
-            });
+            await nextTick();
+            expect(trimText(wrapper.find('.js-load-performance-widget .js-code-text').text())).toBe(
+              'Load performance test metrics: 2 improved',
+            );
           });
 
-          it('should only render information about added issues', (done) => {
+          it('should only render information about added issues', async () => {
             wrapper.vm.mr.loadPerformanceMetrics.improved = [];
             wrapper.vm.mr.loadPerformanceMetrics.same = [];
 
-            nextTick(() => {
-              expect(
-                trimText(wrapper.find('.js-load-performance-widget .js-code-text').text()),
-              ).toBe('Load performance test metrics: 1 degraded');
-              done();
-            });
+            await nextTick();
+            expect(trimText(wrapper.find('.js-load-performance-widget .js-code-text').text())).toBe(
+              'Load performance test metrics: 1 degraded',
+            );
           });
         });
       });
@@ -1091,34 +1085,28 @@ describe('ee merge request widget options', () => {
       });
     });
 
-    it('renders when user cannot remove branch and branch should be removed', (done) => {
+    it('renders when user cannot remove branch and branch should be removed', async () => {
       wrapper.vm.mr.canRemoveSourceBranch = false;
       wrapper.vm.mr.shouldRemoveSourceBranch = true;
       wrapper.vm.mr.state = 'readyToMerge';
 
-      nextTick(() => {
-        const tooltip = wrapper.find('[data-testid="question-o-icon"]');
+      await nextTick();
+      const tooltip = wrapper.find('[data-testid="question-o-icon"]');
 
-        expect(wrapper.text()).toContain('Deletes the source branch');
-        expect(tooltip.attributes('title')).toBe(
-          'A user with write access to the source branch selected this option',
-        );
-
-        done();
-      });
+      expect(wrapper.text()).toContain('Deletes the source branch');
+      expect(tooltip.attributes('title')).toBe(
+        'A user with write access to the source branch selected this option',
+      );
     });
 
-    it('does not render in merged state', (done) => {
+    it('does not render in merged state', async () => {
       wrapper.vm.mr.canRemoveSourceBranch = false;
       wrapper.vm.mr.shouldRemoveSourceBranch = true;
       wrapper.vm.mr.state = 'merged';
 
-      nextTick(() => {
-        expect(wrapper.text()).toContain('The source branch has been deleted');
-        expect(wrapper.text()).not.toContain('Removes source branch');
-
-        done();
-      });
+      await nextTick();
+      expect(wrapper.text()).toContain('The source branch has been deleted');
+      expect(wrapper.text()).not.toContain('Removes source branch');
     });
   });
 
@@ -1137,7 +1125,7 @@ describe('ee merge request widget options', () => {
       status: SUCCESS,
     };
 
-    beforeEach((done) => {
+    beforeEach(async () => {
       createComponent({
         propsData: {
           mrData: {
@@ -1156,7 +1144,7 @@ describe('ee merge request widget options', () => {
         },
       );
 
-      nextTick(done);
+      await nextTick();
     });
 
     it('renders multiple deployments', () => {

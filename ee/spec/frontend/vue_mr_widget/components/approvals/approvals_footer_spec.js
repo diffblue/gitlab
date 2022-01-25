@@ -1,5 +1,6 @@
 import { GlButton, GlLoadingIcon, GlIcon } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import ApprovalsFooter from 'ee/vue_merge_request_widget/components/approvals/approvals_footer.vue';
 import ApprovalsList from 'ee/vue_merge_request_widget/components/approvals/approvals_list.vue';
 import stubChildren from 'helpers/stub_children';
@@ -140,14 +141,13 @@ describe('EE MRWidget approvals footer', () => {
         expect(icon.props('name')).toEqual('chevron-right');
       });
 
-      it('expands when clicked', () => {
+      it('expands when clicked', async () => {
         const button = findToggle();
 
         button.vm.$emit('click');
 
-        return wrapper.vm.$nextTick().then(() => {
-          expect(wrapper.emitted().input).toEqual([[true]]);
-        });
+        await nextTick();
+        expect(wrapper.emitted().input).toEqual([[true]]);
       });
     });
 
@@ -184,18 +184,13 @@ describe('EE MRWidget approvals footer', () => {
         expect(button.text()).toBe('View eligible approvers');
       });
 
-      it('expands when clicked', (done) => {
+      it('expands when clicked', async () => {
         expect(wrapper.props('value')).toBe(false);
 
         button.vm.$emit('click');
 
-        wrapper.vm
-          .$nextTick()
-          .then(() => {
-            expect(wrapper.emitted().input).toEqual([[true]]);
-          })
-          .then(done)
-          .catch(done.fail);
+        await nextTick();
+        expect(wrapper.emitted().input).toEqual([[true]]);
       });
     });
   });

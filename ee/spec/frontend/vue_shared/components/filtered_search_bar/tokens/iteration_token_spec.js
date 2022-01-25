@@ -4,6 +4,7 @@ import {
   GlFilteredSearchSuggestion,
 } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import createFlash from '~/flash';
 import IterationToken from 'ee/vue_shared/components/filtered_search_bar/tokens/iteration_token.vue';
@@ -70,7 +71,7 @@ describe('IterationToken', () => {
   it('renders iteration value', async () => {
     wrapper = createComponent({ value: { data: id } });
 
-    await wrapper.vm.$nextTick();
+    await nextTick();
 
     const tokenSegments = wrapper.findAllComponents(GlFilteredSearchTokenSegment);
 

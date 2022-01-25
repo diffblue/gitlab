@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -162,7 +162,7 @@ describe('Order Summary', () => {
       it('should emit `alertError` event', async () => {
         jest.spyOn(wrapper.vm, '$emit');
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(wrapper.vm.$emit).toHaveBeenCalledWith('alertError', I18N_API_ERROR);
       });
