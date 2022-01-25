@@ -2,6 +2,7 @@ import { GlDropdown, GlDropdownItem, GlLoadingIcon, GlSearchBoxByType } from '@g
 import { mount, shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import { nextTick } from 'vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import ProjectDropdown from '~/jira_connect/branches/components/project_dropdown.vue';
@@ -99,7 +100,7 @@ describe('ProjectDropdown', () => {
     beforeEach(async () => {
       createComponent();
       await waitForPromises();
-      await wrapper.vm.$nextTick();
+      await nextTick();
     });
 
     it('sets dropdown `loading` prop to `false`', () => {
