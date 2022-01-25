@@ -7,7 +7,7 @@ describe('Pagination component', () => {
   let wrapper;
   const origin = 'https://localhost';
 
-  const findGlPagination = () => wrapper.find(GlPagination);
+  const findGlPagination = () => wrapper.findComponent(GlPagination);
   const getLink = (query) => wrapper.find(query).element.getAttribute('href');
   const findPrevPageLink = () => getLink('a.prev-page-item');
   const findNextPageLink = () => getLink('a.next-page-item');

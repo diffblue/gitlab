@@ -10,7 +10,7 @@ describe('MergeRequest component', () => {
 
   const findMessage = () => wrapper.find('[data-testid="approvers"]');
   const findCounter = () => wrapper.find('.avatar-counter');
-  const findAvatarLinks = () => wrapper.findAll(GlAvatarLink);
+  const findAvatarLinks = () => wrapper.findAllComponents(GlAvatarLink);
 
   const createComponent = (approvers = []) => {
     return shallowMount(Approvers, {

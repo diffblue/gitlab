@@ -98,7 +98,7 @@ describe('ComplianceReport component', () => {
     });
 
     it('renders the subheading with a help link', () => {
-      const helpLink = findSubheading().find(GlLink);
+      const helpLink = findSubheading().findComponent(GlLink);
 
       expect(findSubheading().text()).toContain(
         'The compliance report shows the merge request violations merged in protected environments.',

@@ -8,7 +8,7 @@ describe('Pipeline component', () => {
   let wrapper;
 
   const findCiIcon = () => wrapper.find('.ci-icon');
-  const findCiLink = () => wrapper.find(GlLink);
+  const findCiLink = () => wrapper.findComponent(GlLink);
 
   const createComponent = (status) => {
     return shallowMount(Pipeline, {

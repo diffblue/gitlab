@@ -9,7 +9,7 @@ export default {
   name: 'GeoNodeReplicationSummary',
   i18n: {
     replicationSummary: s__('Geo|Replication summary'),
-    replicationDetailsButton: s__('Geo|Replication details'),
+    replicationDetailsButton: s__('Geo|Open replications'),
     replicationStatus: s__('Geo|Replication status'),
     syncSettings: s__('Geo|Synchronization settings'),
   },
@@ -36,6 +36,7 @@ export default {
       <gl-button
         class="gl-ml-auto"
         variant="confirm"
+        icon="external-link"
         category="secondary"
         :href="node.webGeoProjectsUrl"
         target="_blank"
