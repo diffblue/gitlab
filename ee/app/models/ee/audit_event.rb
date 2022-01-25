@@ -56,7 +56,6 @@ module EE
 
     def stream_to_external_destinations
       return if entity.nil?
-      return unless ::Feature.enabled?(:ff_external_audit_events_namespace, group_entity, default_enabled: :yaml)
       return unless group_entity&.licensed_feature_available?(:external_audit_events)
 
       AuditEvents::AuditEventStreamingWorker.perform_async(id)

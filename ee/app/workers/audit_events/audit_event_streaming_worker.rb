@@ -22,7 +22,6 @@ module AuditEvents
       group = group_entity(audit_event)
 
       return if group.nil? # Do nothing if the event can't be resolved to a single group.
-      return unless ::Feature.enabled?(:ff_external_audit_events_namespace, group, default_enabled: :yaml)
       return unless group.licensed_feature_available?(:external_audit_events)
 
       group.external_audit_event_destinations.each do |destination|

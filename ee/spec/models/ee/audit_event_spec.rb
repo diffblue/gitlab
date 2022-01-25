@@ -91,36 +91,14 @@ RSpec.describe AuditEvent, type: :model do
         let_it_be(:project) { create(:project, group: group) }
         let_it_be(:event) { create(:audit_event, :project_event, target_project: project) }
 
-        context 'when ff_external_audit_events_namespace is enabled' do
-          before do
-            stub_feature_flags(ff_external_audit_events_namespace: group.root_ancestor)
-          end
+        it 'enqueues one worker' do
+          expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).once
 
-          it 'enqueues one worker' do
-            expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).once
-
-            event.stream_to_external_destinations
-          end
-
-          context 'when entity is not a group or project' do
-            let_it_be(:event) { create(:user_audit_event) }
-
-            before do
-              stub_feature_flags(ff_external_audit_events_namespace: true)
-            end
-
-            it 'enqueues no workers' do
-              expect(AuditEvents::AuditEventStreamingWorker).not_to receive(:perform_async)
-
-              event.stream_to_external_destinations
-            end
-          end
+          event.stream_to_external_destinations
         end
 
-        context 'when ff_external_audit_events_namespace is disabled' do
-          before do
-            stub_feature_flags(ff_external_audit_events_namespace: false)
-          end
+        context 'when entity is not a group or project' do
+          let_it_be(:event) { create(:user_audit_event) }
 
           it 'enqueues no workers' do
             expect(AuditEvents::AuditEventStreamingWorker).not_to receive(:perform_async)
@@ -134,18 +112,6 @@ RSpec.describe AuditEvent, type: :model do
         expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).once
 
         event.stream_to_external_destinations
-      end
-
-      context 'feature is disabled' do
-        before do
-          stub_feature_flags(ff_external_audit_events_namespace: false)
-        end
-
-        it 'enqueues no workers' do
-          expect(AuditEvents::AuditEventStreamingWorker).not_to receive(:perform_async)
-
-          event.stream_to_external_destinations
-        end
       end
     end
 
