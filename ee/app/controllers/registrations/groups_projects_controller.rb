@@ -22,8 +22,6 @@ module Registrations
       @project = Project.new(namespace: @group)
 
       combined_registration_experiment.track(:view_new_group_action)
-      experiment(:trial_registration_with_reassurance, actor: current_user)
-        .track(:render, label: 'registrations:groups:new', user: current_user)
     end
 
     def create

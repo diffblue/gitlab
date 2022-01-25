@@ -47,22 +47,6 @@ RSpec.describe TrialsController, :saas do
       response
     end
 
-    context 'when the trial_registration_with_reassurance experiment is active', :experiment do
-      before do
-        stub_experiments(trial_registration_with_reassurance: :control)
-      end
-
-      it 'tracks a "render" event' do
-        expect(experiment(:trial_registration_with_reassurance)).to track(
-          :render,
-          user: user,
-          label: 'trials:new'
-        ).with_context(actor: user).on_next_instance
-
-        get_new
-      end
-    end
-
     it 'calls record_experiment_user for the experiments' do
       get_new
     end
@@ -323,22 +307,6 @@ RSpec.describe TrialsController, :saas do
 
     it_behaves_like 'an authenticated endpoint'
     it_behaves_like 'a dot-com only feature'
-
-    context 'when the trial_registration_with_reassurance experiment is active', :experiment do
-      before do
-        stub_experiments(trial_registration_with_reassurance: :control)
-      end
-
-      it 'tracks a "render" event' do
-        expect(experiment(:trial_registration_with_reassurance)).to track(
-          :render,
-          user: user,
-          label: 'trials:select'
-        ).with_context(actor: user).on_next_instance
-
-        get_select
-      end
-    end
   end
 
   describe '#apply' do
@@ -368,23 +336,6 @@ RSpec.describe TrialsController, :saas do
       let(:apply_trial_result) { true }
 
       it { is_expected.to redirect_to("/#{namespace.path}?trial=true") }
-
-      context 'when the trial_registration_with_reassurance experiment is active', :experiment do
-        before do
-          stub_experiments(trial_registration_with_reassurance: :control)
-        end
-
-        it 'tracks an "apply_trial" event' do
-          expect(experiment(:trial_registration_with_reassurance)).to track(
-            :apply_trial,
-            user: user,
-            namespace: namespace,
-            label: 'trials:apply'
-          ).with_context(actor: user).on_next_instance
-
-          post_apply
-        end
-      end
 
       it 'calls tracking event for combined_registration experiment', :experiment do
         expect(experiment(:combined_registration)).to track(:create_trial).on_next_instance

@@ -5,39 +5,25 @@
   = render "layouts/one_trust"
 = render "layouts/google_tag_manager_body"
 
-- registration_form_content = capture do
-  .signup-page
-    = render 'devise/shared/signup_box',
-      url: trial_registrations_path,
-      button_text: _('Continue'),
-      show_omniauth_providers: social_signin_enabled?,
-      omniauth_providers_placement: :top
-
-    = render 'devise/shared/sign_in_link'
-
-    %p.gl-text-center
-      = s_('InProductMarketing|Want to host GitLab on your servers?')
-      = link_to s_('InProductMarketing|Start a Self-Managed trial'), 'https://about.gitlab.com/free-trial/#selfmanaged/', data: { track_action: 'click_link', track_label: 'start_self-managed_trial' }
-
 .row
-  - experiment(:trial_registration_with_reassurance, actor: current_user) do |e|
-    - if e.should_track?
-      %span{ data: { track_action: :render, track_experiment: :trial_registration_with_reassurance } }
+  .col-lg-6.gl-display-none.gl-lg-display-flex.gl-flex-direction-column.gl-align-items-center.gl-justify-content-start
+    .gl-w-28
+      = render 'reassurances'
+  .col-md-6.offset-md-3.offset-lg-0
+    %h2.gl-lg-display-none.gl-mb-3.gl-mt-0.gl-text-gray-800
+      = s_('InProductMarketing|Free 30-day trial')
+    %p.gl-lg-display-none.gl-font-lg.gl-text-gray-800
+      = s_('InProductMarketing|No credit card required.')
 
-    - e.use do
-      .col-md-6.offset-md-3
-        %h2.gl-text-center.gl-pb-5.gl-my-0
-          = _('Start a Free Ultimate Trial')
-        = registration_form_content
+    .signup-page
+      = render 'devise/shared/signup_box',
+        url: trial_registrations_path,
+        button_text: _('Continue'),
+        show_omniauth_providers: social_signin_enabled?,
+        omniauth_providers_placement: :top
 
-    - e.try do
-      .col-lg-6.gl-display-none.gl-lg-display-flex.gl-flex-direction-column.gl-align-items-center.gl-justify-content-start
-        .gl-w-28
-          = render 'reassurances'
-      .col-md-6.offset-md-3.offset-lg-0
-        %h2.gl-lg-display-none.gl-mb-3.gl-mt-0.gl-text-gray-800
-          = s_('InProductMarketing|Free 30-day trial')
-        %p.gl-lg-display-none.gl-font-lg.gl-text-gray-800
-          = s_('InProductMarketing|No credit card required.')
+      = render 'devise/shared/sign_in_link'
 
-        = registration_form_content
+      %p.gl-text-center
+        = s_('InProductMarketing|Want to host GitLab on your servers?')
+        = link_to s_('InProductMarketing|Start a Self-Managed trial'), 'https://about.gitlab.com/free-trial/#selfmanaged/', data: { track_action: 'click_link', track_label: 'start_self-managed_trial' }
