@@ -235,7 +235,7 @@ rather than from the default branch.
 The `rspec:undercoverage` job runs [`undercover`](https://rubygems.org/gems/undercover)
 to detect, and fail if any changes introduced in the merge request has zero coverage.
 
-The `rsepc:undercoverage` job obtains coverage data from the `rspec:coverage`
+The `rspec:undercoverage` job obtains coverage data from the `rspec:coverage`
 job.
 
 In the event of an emergency, or false positive from this job, add the
