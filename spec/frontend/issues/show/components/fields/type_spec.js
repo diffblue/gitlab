@@ -1,8 +1,7 @@
 import { GlFormGroup, GlDropdown, GlDropdownItem, GlIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import { nextTick } from 'vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import IssueTypeField, { i18n } from '~/issues/show/components/fields/type.vue';

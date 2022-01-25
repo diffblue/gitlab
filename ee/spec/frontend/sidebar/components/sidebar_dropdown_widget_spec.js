@@ -7,9 +7,8 @@ import {
 } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { mount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-
 import SidebarDropdownWidget from 'ee/sidebar/components/sidebar_dropdown_widget.vue';
 import { IssuableAttributeType, issuableAttributesQueries } from 'ee/sidebar/constants';
 import groupEpicsQuery from 'ee/sidebar/queries/group_epics.query.graphql';
@@ -58,7 +57,7 @@ describe('SidebarDropdownWidget', () => {
     // It then emits `shown` event in a watcher for `visible`
     // Hence we need both of these:
     await waitForPromises();
-    await wrapper.vm.$nextTick();
+    await nextTick();
   };
 
   const waitForApollo = async () => {
@@ -168,7 +167,7 @@ describe('SidebarDropdownWidget', () => {
 
         findSearchBox().vm.$emit('input', 'non existing epics');
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(findDropdownText().text()).toBe('No open iteration found');
       });
@@ -268,7 +267,7 @@ describe('SidebarDropdownWidget', () => {
 
             it('sends a groupEpics query with the entered search term "foo" and in TITLE param', async () => {
               findSearchBox().vm.$emit('input', mockSearchTerm);
-              await wrapper.vm.$nextTick();
+              await nextTick();
 
               // Account for debouncing
               jest.runAllTimers();
@@ -292,7 +291,7 @@ describe('SidebarDropdownWidget', () => {
             });
 
             it('sends a groupEpics query with empty title and undefined in param', async () => {
-              await wrapper.vm.$nextTick();
+              await nextTick();
 
               // Account for debouncing
               jest.runAllTimers();
@@ -306,7 +305,7 @@ describe('SidebarDropdownWidget', () => {
 
             it('sends a groupEpics query for an IID with the entered search term "&1"', async () => {
               findSearchBox().vm.$emit('input', '&1');
-              await wrapper.vm.$nextTick();
+              await nextTick();
 
               // Account for debouncing
               jest.runAllTimers();
