@@ -1,7 +1,7 @@
 import { GlLink, GlEmptyState } from '@gitlab/ui';
+import { nextTick } from 'vue';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
-import { nextTick } from 'vue';
 import JiraConnectApp from '~/jira_connect/subscriptions/components/app.vue';
 import AddNamespaceButton from '~/jira_connect/subscriptions/components/add_namespace_button.vue';
 import SignInButton from '~/jira_connect/subscriptions/components/sign_in_button.vue';
