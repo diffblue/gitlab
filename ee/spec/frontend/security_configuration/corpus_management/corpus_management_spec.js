@@ -1,6 +1,6 @@
 import { merge } from 'lodash';
 import { GlLoadingIcon, GlKeysetPagination } from '@gitlab/ui';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { shallowMount } from '@vue/test-utils';
 
@@ -51,14 +51,14 @@ describe('EE - CorpusManagement', () => {
 
   const findPagination = () => wrapper.findComponent(GlKeysetPagination);
 
-  const nextPage = (cursor) => {
+  const nextPage = async (cursor) => {
     findPagination().vm.$emit('next', cursor);
-    return findPagination().vm.$nextTick();
+    await nextTick();
   };
 
-  const prevPage = (cursor) => {
+  const prevPage = async (cursor) => {
     findPagination().vm.$emit('prev', cursor);
-    return findPagination().vm.$nextTick();
+    await nextTick();
   };
 
   const createComponentFactory = (mountFn = shallowMount) => (options = {}) => {

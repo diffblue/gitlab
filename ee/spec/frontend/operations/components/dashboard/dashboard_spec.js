@@ -1,6 +1,6 @@
 import { GlEmptyState } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import MockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
 import Dashboard from 'ee/operations/components/dashboard/dashboard.vue';
@@ -67,25 +67,18 @@ describe('dashboard component', () => {
     });
 
     describe('when a project is added', () => {
-      it('immediately requests the project list again', () => {
+      it('immediately requests the project list again', async () => {
         mockAxios.reset();
         mockAxios.onGet(mockListEndpoint).replyOnce(200, { projects: mockProjectData(2) });
         mockAxios.onPost(mockAddEndpoint).replyOnce(200, { added: [1], invalid: [] });
 
-        return wrapper.vm
-          .$nextTick()
-          .then(() => {
-            wrapper.vm.projectClicked({ id: 1 });
-          })
-          .then(waitForPromises)
-          .then(() => {
-            wrapper.vm.onOk();
-          })
-          .then(waitForPromises)
-          .then(() => {
-            expect(store.state.projects.length).toEqual(2);
-            expect(wrapper.findAllComponents(Project).length).toEqual(2);
-          });
+        await nextTick();
+        wrapper.vm.projectClicked({ id: 1 });
+        await waitForPromises();
+        wrapper.vm.onOk();
+        await waitForPromises();
+        expect(store.state.projects.length).toEqual(2);
+        expect(wrapper.findAllComponents(Project).length).toEqual(2);
       });
     });
   });
@@ -144,64 +137,44 @@ describe('dashboard component', () => {
         store.state.selectedProjects = mockProjectData(1);
       });
 
-      it('clears state when adding a valid project', () => {
+      it('clears state when adding a valid project', async () => {
         mockAxios.onPost(mockAddEndpoint).replyOnce(200, { added: [1], invalid: [] });
 
-        return wrapper.vm
-          .$nextTick()
-          .then(() => {
-            wrapper.vm.onOk();
-          })
-          .then(waitForPromises)
-          .then(() => {
-            expect(store.state.projectSearchResults).toHaveLength(0);
-            expect(store.state.selectedProjects).toHaveLength(0);
-          });
+        await nextTick();
+        wrapper.vm.onOk();
+        await waitForPromises();
+        expect(store.state.projectSearchResults).toHaveLength(0);
+        expect(store.state.selectedProjects).toHaveLength(0);
       });
 
-      it('clears state when adding an invalid project', () => {
+      it('clears state when adding an invalid project', async () => {
         mockAxios.onPost(mockAddEndpoint).replyOnce(200, { added: [], invalid: [1] });
 
-        return wrapper.vm
-          .$nextTick()
-          .then(() => {
-            wrapper.vm.onOk();
-          })
-          .then(waitForPromises)
-          .then(() => {
-            expect(store.state.projectSearchResults).toHaveLength(0);
-            expect(store.state.selectedProjects).toHaveLength(0);
-          });
+        await nextTick();
+        wrapper.vm.onOk();
+        await waitForPromises();
+        expect(store.state.projectSearchResults).toHaveLength(0);
+        expect(store.state.selectedProjects).toHaveLength(0);
       });
 
-      it('clears state when canceled', () => {
-        return wrapper.vm
-          .$nextTick()
-          .then(() => {
-            wrapper.vm.onCancel();
-          })
-          .then(waitForPromises)
-          .then(() => {
-            expect(store.state.projectSearchResults).toHaveLength(0);
-            expect(store.state.selectedProjects).toHaveLength(0);
-          });
+      it('clears state when canceled', async () => {
+        await nextTick();
+        wrapper.vm.onCancel();
+        await waitForPromises();
+        expect(store.state.projectSearchResults).toHaveLength(0);
+        expect(store.state.selectedProjects).toHaveLength(0);
       });
 
-      it('clears state on error', () => {
+      it('clears state on error', async () => {
         mockAxios.onPost(mockAddEndpoint).replyOnce(500, {});
 
-        return wrapper.vm
-          .$nextTick()
-          .then(() => {
-            expect(store.state.projectSearchResults.length).not.toBe(0);
-            expect(store.state.selectedProjects.length).not.toBe(0);
-            wrapper.vm.onOk();
-          })
-          .then(waitForPromises)
-          .then(() => {
-            expect(store.state.projectSearchResults).toHaveLength(0);
-            expect(store.state.selectedProjects).toHaveLength(0);
-          });
+        await nextTick();
+        expect(store.state.projectSearchResults.length).not.toBe(0);
+        expect(store.state.selectedProjects.length).not.toBe(0);
+        wrapper.vm.onOk();
+        await waitForPromises();
+        expect(store.state.projectSearchResults).toHaveLength(0);
+        expect(store.state.selectedProjects).toHaveLength(0);
       });
     });
 

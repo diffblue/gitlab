@@ -2,6 +2,7 @@ import { GlDeprecatedSkeletonLoading as GlSkeletonLoading } from '@gitlab/ui';
 import { GlSingleStat } from '@gitlab/ui/dist/charts';
 import { mount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
+import { nextTick } from 'vue';
 import GroupActivityCard from 'ee/analytics/group_analytics/components/group_activity_card.vue';
 import Api from 'ee/api';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -48,39 +49,31 @@ describe('GroupActivity component', () => {
   const findAllSkeletonLoaders = () => wrapper.findAllComponents(GlSkeletonLoading);
   const findAllSingleStats = () => wrapper.findAllComponents(GlSingleStat);
 
-  it('fetches the metrics and updates isLoading properly', () => {
+  it('fetches the metrics and updates isLoading properly', async () => {
     createComponent();
 
     expect(wrapper.vm.isLoading).toBe(true);
 
-    return wrapper.vm
-      .$nextTick()
-      .then(() => {
-        expect(Api.groupActivityMergeRequestsCount).toHaveBeenCalledWith(TEST_GROUP_ID);
-        expect(Api.groupActivityIssuesCount).toHaveBeenCalledWith(TEST_GROUP_ID);
-        expect(Api.groupActivityNewMembersCount).toHaveBeenCalledWith(TEST_GROUP_ID);
+    await nextTick();
+    expect(Api.groupActivityMergeRequestsCount).toHaveBeenCalledWith(TEST_GROUP_ID);
+    expect(Api.groupActivityIssuesCount).toHaveBeenCalledWith(TEST_GROUP_ID);
+    expect(Api.groupActivityNewMembersCount).toHaveBeenCalledWith(TEST_GROUP_ID);
 
-        waitForPromises();
-      })
-      .then(() => {
-        expect(wrapper.vm.isLoading).toBe(false);
-        expect(wrapper.vm.metrics.mergeRequests.value).toBe(10);
-        expect(wrapper.vm.metrics.issues.value).toBe(20);
-        expect(wrapper.vm.metrics.newMembers.value).toBe(30);
-      });
+    await waitForPromises();
+    expect(wrapper.vm.isLoading).toBe(false);
+    expect(wrapper.vm.metrics.mergeRequests.value).toBe(10);
+    expect(wrapper.vm.metrics.issues.value).toBe(20);
+    expect(wrapper.vm.metrics.newMembers.value).toBe(30);
   });
 
-  it('updates the loading state properly', () => {
+  it('updates the loading state properly', async () => {
     createComponent();
 
     expect(findAllSkeletonLoaders()).toHaveLength(3);
 
-    return wrapper.vm
-      .$nextTick()
-      .then(waitForPromises)
-      .then(() => {
-        expect(findAllSkeletonLoaders()).toHaveLength(0);
-      });
+    await nextTick();
+    await waitForPromises();
+    expect(findAllSkeletonLoaders()).toHaveLength(0);
   });
 
   describe('metrics', () => {
@@ -93,16 +86,13 @@ describe('GroupActivity component', () => {
       ${0}  | ${10} | ${'Merge Requests opened'}
       ${1}  | ${20} | ${'Issues opened'}
       ${2}  | ${30} | ${'Members added'}
-    `('renders a GlSingleStat for "$title"', ({ index, value, title }) => {
+    `('renders a GlSingleStat for "$title"', async ({ index, value, title }) => {
       const singleStat = findAllSingleStats().at(index);
 
-      return wrapper.vm
-        .$nextTick()
-        .then(waitForPromises)
-        .then(() => {
-          expect(singleStat.props('value')).toBe(`${value}`);
-          expect(singleStat.props('title')).toBe(title);
-        });
+      await nextTick();
+      await waitForPromises();
+      expect(singleStat.props('value')).toBe(`${value}`);
+      expect(singleStat.props('title')).toBe(title);
     });
   });
 });
