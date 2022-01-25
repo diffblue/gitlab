@@ -632,6 +632,9 @@ msgstr ""
 msgid "%{group_name} group members"
 msgstr ""
 
+msgid "%{group_name} is approaching the limit of available seats"
+msgstr ""
+
 msgid "%{group_name} uses group managed accounts. You need to create a new GitLab account which will be managed by %{group_name}."
 msgstr ""
 
@@ -39506,6 +39509,9 @@ msgstr[1] ""
 msgid "View replaced file @ "
 msgstr ""
 
+msgid "View seat usage"
+msgstr ""
+
 msgid "View setting"
 msgstr ""
 
@@ -41563,6 +41569,9 @@ msgid "Your snippets"
 msgstr ""
 
 msgid "Your subscription expired!"
+msgstr ""
+
+msgid "Your subscription has %{remaining_seats_count} out of %{total_seats_count} seats remaining. Even if you reach the number of seats in your subscription, you can continue to add users, and GitLab will bill you for the overage."
 msgstr ""
 
 msgid "Your subscription is now expired. To renew, export your license usage file and email it to %{renewal_service_email}. A new license will be emailed to the email address registered in the %{customers_dot}. You can upload this license to your instance. To use Free tier, remove your current license."
