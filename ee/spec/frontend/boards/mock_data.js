@@ -121,7 +121,7 @@ export const mockMilestones = [
 export const mockIterations = [
   {
     id: 'gid://gitlab/Iteration/1',
-    title: 'Iteration 1',
+    title: null,
     iterationCadence: {
       id: 'gid://gitlab/Iterations::Cadence/1',
       title: 'GitLab.org Iterations',
@@ -131,7 +131,7 @@ export const mockIterations = [
   },
   {
     id: 'gid://gitlab/Iteration/2',
-    title: 'Iteration 2',
+    title: 'Some iteration',
     iterationCadence: {
       id: 'gid://gitlab/Iterations::Cadence/2',
       title: 'GitLab.org Iterations: Volume II',

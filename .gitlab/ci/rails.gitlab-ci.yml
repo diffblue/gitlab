@@ -555,7 +555,6 @@ rspec:coverage:
     - rspec-ee integration pg12 geo minimal
     - rspec-ee system pg12 geo minimal
     # Memory jobs
-    - memory-static
     - memory-on-boot
     # As-if-FOSS jobs
     - rspec migration pg12-as-if-foss

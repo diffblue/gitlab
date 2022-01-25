@@ -8,15 +8,15 @@ import {
   GlTooltipDirective,
   GlLoadingIcon,
 } from '@gitlab/ui';
-import IterationPeriod from 'ee/iterations/components/iteration_period.vue';
-import { groupByIterationCadences } from 'ee/iterations/utils';
+import IterationTitle from 'ee/iterations/components/iteration_title.vue';
+import { groupByIterationCadences, getIterationPeriod } from 'ee/iterations/utils';
 import { __ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { iterationSelectTextMap, iterationDisplayState } from '../constants';
 import groupIterationsQuery from '../queries/iterations.query.graphql';
 
 export default {
-  noIteration: { title: iterationSelectTextMap.noIteration, id: null },
+  noIteration: { text: iterationSelectTextMap.noIteration, id: null },
   directives: {
     GlTooltip: GlTooltipDirective,
   },
@@ -27,7 +27,7 @@ export default {
     GlSearchBoxByType,
     GlDropdownSectionHeader,
     GlLoadingIcon,
-    IterationPeriod,
+    IterationTitle,
   },
   mixins: [glFeatureFlagMixin()],
   apollo: {
@@ -72,8 +72,10 @@ export default {
     iterationCadences() {
       return groupByIterationCadences(this.iterations);
     },
-    title() {
-      return this.currentIteration?.title || __('Select iteration');
+    dropdownSelectedText() {
+      return this.currentIteration?.startDate || this.currentIteration?.period
+        ? this.getIterationPeriod(this.currentIteration)
+        : __('Select iteration');
     },
   },
   methods: {
@@ -92,12 +94,13 @@ export default {
     onDropdownShow() {
       this.shouldFetch = true;
     },
+    getIterationPeriod,
   },
 };
 </script>
 
 <template>
-  <gl-dropdown :text="title" class="gl-w-full" block @show="onDropdownShow">
+  <gl-dropdown :text="dropdownSelectedText" class="gl-w-full" block @show="onDropdownShow">
     <gl-dropdown-section-header class="gl-display-flex! gl-justify-content-center">{{
       __('Assign Iteration')
     }}</gl-dropdown-section-header>
@@ -107,7 +110,7 @@ export default {
       :is-checked="isIterationChecked($options.noIteration.id)"
       @click="onClick($options.noIteration)"
     >
-      {{ $options.noIteration.title }}
+      {{ $options.noIteration.text }}
     </gl-dropdown-item>
     <gl-dropdown-divider />
     <gl-loading-icon v-if="$apollo.queries.iterations.loading" size="sm" />
@@ -118,8 +121,10 @@ export default {
         :is-check-item="true"
         :is-checked="isIterationChecked(iterationItem.id)"
         @click="onClick(iterationItem)"
-        >{{ iterationItem.title }}</gl-dropdown-item
       >
+        {{ getIterationPeriod(iterationItem) }}
+        <iteration-title v-if="iterationItem.title" :title="iterationItem.title" />
+      </gl-dropdown-item>
     </template>
     <template v-else>
       <template v-for="(cadence, index) in iterationCadences">
@@ -134,8 +139,8 @@ export default {
           :is-checked="isIterationChecked(iterationItem.id)"
           @click="onClick(iterationItem)"
         >
-          {{ iterationItem.title }}
-          <IterationPeriod>{{ iterationItem.period }}</IterationPeriod>
+          {{ iterationItem.period }}
+          <iteration-title v-if="iterationItem.title" :title="iterationItem.title" />
         </gl-dropdown-item>
       </template>
     </template>

@@ -23,7 +23,7 @@ class ContainerRepository < ApplicationRecord
   enum expiration_policy_cleanup_status: { cleanup_unscheduled: 0, cleanup_scheduled: 1, cleanup_unfinished: 2, cleanup_ongoing: 3 }
   enum migration_skipped_reason: { not_in_plan: 0, too_many_retries: 1, too_many_tags: 2, root_namespace_in_deny_list: 3 }
 
-  delegate :client, to: :registry
+  delegate :client, :gitlab_api_client, to: :registry
 
   scope :ordered, -> { order(:name) }
   scope :with_api_entity_associations, -> { preload(project: [:route, { namespace: :route }]) }
@@ -148,6 +148,18 @@ class ContainerRepository < ApplicationRecord
 
   def migration_importing?
     migration_state == 'importing'
+  end
+
+  def migration_pre_import
+    return :error unless gitlab_api_client.supports_gitlab_api?
+
+    gitlab_api_client.pre_import_repository(self.path)
+  end
+
+  def migration_import
+    return :error unless gitlab_api_client.supports_gitlab_api?
+
+    gitlab_api_client.import_repository(self.path)
   end
 
   def self.build_from_path(path)

@@ -17,8 +17,8 @@ import { ListType } from '~/boards/constants';
 import { isScopedLabel } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { groupByIterationCadences } from 'ee/iterations/utils';
-import IterationPeriod from 'ee/iterations/components/iteration_period.vue';
+import { groupByIterationCadences, getIterationPeriod } from 'ee/iterations/utils';
+import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 
 export const listTypeInfo = {
   [ListType.label]: {
@@ -66,7 +66,7 @@ export default {
     GlFormGroup,
     GlFormRadio,
     GlFormRadioGroup,
-    IterationPeriod,
+    IterationTitle,
   },
   directives: {
     GlTooltip,
@@ -240,6 +240,8 @@ export default {
         this.selectedItem = { ...item };
       }
     },
+
+    getIterationPeriod,
   },
 };
 </script>
@@ -320,13 +322,13 @@ export default {
             </div>
           </gl-dropdown-section-header>
           <gl-dropdown-text v-for="iteration in cadence.iterations" :key="iteration.id">
-            <gl-form-radio :value="iteration.id" :aria-describedby="cadence.id">
-              {{ iteration.title }}
-              <div class="gl-display-inline-block">
-                <IterationPeriod data-testid="new-column-iteration-period">{{
-                  iteration.period
-                }}</IterationPeriod>
-              </div>
+            <gl-form-radio
+              :value="iteration.id"
+              :aria-describedby="cadence.id"
+              data-testid="new-column-iteration-item"
+            >
+              {{ iteration.period }}
+              <iteration-title v-if="iteration.title" :title="iteration.title" />
             </gl-form-radio>
           </gl-dropdown-text>
         </div>
@@ -363,6 +365,14 @@ export default {
             :sub-label="`@${item.username}`"
             :src="item.avatarUrl"
           />
+          <div
+            v-else-if="iterationTypeSelected"
+            class="gl-display-inline-block"
+            data-testid="new-column-iteration-item"
+          >
+            {{ getIterationPeriod(item) }}
+            <iteration-title v-if="item.title" :title="item.title" />
+          </div>
           <div v-else class="gl-display-inline-block">
             {{ item.title }}
           </div>

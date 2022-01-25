@@ -23,7 +23,15 @@ RSpec.describe 'Path Locks', :js do
       click_link "encoding"
     end
 
-    accept_confirm(text: 'Are you sure you want to lock this directory?') { find('.js-path-lock').click }
+    find('.js-path-lock').click
+    wait_for_requests
+
+    page.within '.modal' do
+      expect(page).to have_selector('.modal-body', visible: true)
+      expect(page).to have_css('.modal-body', text: 'Are you sure you want to lock this directory?')
+
+      click_button "OK"
+    end
 
     expect(page).to have_link('Unlock')
   end
