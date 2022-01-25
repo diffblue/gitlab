@@ -153,7 +153,11 @@ RSpec.describe 'epic boards', :js do
           click_button 'List settings'
         end
 
-        accept_confirm { click_button 'Remove list' }
+        click_button 'Remove list'
+
+        page.within('.modal') do
+          click_button('Remove list', match: :first)
+        end
 
         expect(page).not_to have_content(label.name)
       end
