@@ -3,7 +3,11 @@
 module QA
   include QA::Support::Helpers::Plan
 
-  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging } do
+  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging }, quarantine: {
+    only: { subdomain: %i[staging] },
+    issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/350856",
+    type: :broken
+  } do
     context 'Purchase CI minutes' do
       # the quantity of products to purchase
       let(:purchase_quantity) { 5 }
