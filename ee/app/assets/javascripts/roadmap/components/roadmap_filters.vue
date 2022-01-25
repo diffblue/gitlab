@@ -176,6 +176,7 @@ export default {
       class="epics-details-filters filtered-search-block gl-display-flex gl-flex-direction-column gl-xl-flex-direction-row gl-pb-3 row-content-block second-block"
     >
       <gl-dropdown
+        v-if="!glFeatures.roadmapSettings"
         icon="calendar"
         class="gl-mr-0 gl-lg-mr-3 mb-sm-2 roadmap-daterange-dropdown"
         toggle-class="gl-rounded-base!"
@@ -192,7 +193,10 @@ export default {
           >{{ dateRange.text }}</gl-dropdown-item
         >
       </gl-dropdown>
-      <gl-form-group v-if="availablePresets.length" class="gl-mr-0 gl-lg-mr-3 mb-sm-2">
+      <gl-form-group
+        v-if="availablePresets.length && !glFeatures.roadmapSettings"
+        class="gl-mr-0 gl-lg-mr-3 mb-sm-2"
+      >
         <gl-segmented-control
           :checked="presetType"
           :options="availablePresets"
