@@ -29696,9 +29696,6 @@ ALTER TABLE ONLY member_tasks
 ALTER TABLE ONLY merge_requests
     ADD CONSTRAINT fk_ad525e1f87 FOREIGN KEY (merge_user_id) REFERENCES users(id) ON DELETE SET NULL;
 
-ALTER TABLE ONLY ci_variables
-    ADD CONSTRAINT fk_ada5eb64b3 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
-
 ALTER TABLE ONLY merge_request_metrics
     ADD CONSTRAINT fk_ae440388cc FOREIGN KEY (latest_closed_by_id) REFERENCES users(id) ON DELETE SET NULL;
 
