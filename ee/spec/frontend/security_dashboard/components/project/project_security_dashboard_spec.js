@@ -1,6 +1,7 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import { GlLineChart } from '@gitlab/ui/dist/charts';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import ProjectSecurityDashboard from 'ee/security_dashboard/components/project/project_security_dashboard.vue';
 import ReportNotConfigured from 'ee/security_dashboard/components/shared/empty_states/report_not_configured_project.vue';
@@ -14,8 +15,7 @@ import {
   mockProjectSecurityChartsWithoutData,
 } from '../../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 jest.mock('~/lib/utils/icon_utils', () => ({
   getSvgIconPathContent: jest.fn().mockResolvedValue('mockSvgPathContent'),
@@ -43,7 +43,6 @@ describe('Project Security Dashboard component', () => {
     secureVulnerabilityTrainingEnabled = true,
   }) => {
     const component = shallowMount(ProjectSecurityDashboard, {
-      localVue,
       apolloProvider: createApolloProvider([
         projectsHistoryQuery,
         jest.fn().mockResolvedValue(query),

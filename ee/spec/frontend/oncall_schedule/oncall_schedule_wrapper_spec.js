@@ -1,6 +1,7 @@
 import { GlEmptyState, GlLoadingIcon, GlSprintf, GlLink } from '@gitlab/ui';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import { shallowMount } from '@vue/test-utils';
+import Vue, { nextTick } from 'vue';
+
 import VueApollo from 'vue-apollo';
 import AddScheduleModal from 'ee/oncall_schedules/components/add_edit_schedule_modal.vue';
 import OnCallSchedule from 'ee/oncall_schedules/components/oncall_schedule.vue';
@@ -13,8 +14,6 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { preExistingSchedule, newlyCreatedSchedule } from './mocks/apollo_mock';
-
-const localVue = createLocalVue();
 
 describe('On-call schedule wrapper', () => {
   let wrapper;
@@ -60,10 +59,9 @@ describe('On-call schedule wrapper', () => {
     const fakeApollo = createMockApollo([
       [getOncallSchedulesWithRotationsQuery, getOncallSchedulesQuerySpy],
     ]);
-    localVue.use(VueApollo);
+    Vue.use(VueApollo);
 
     wrapper = shallowMount(OnCallScheduleWrapper, {
-      localVue,
       apolloProvider: fakeApollo,
       data() {
         return {

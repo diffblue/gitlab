@@ -1,4 +1,5 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
 import { gitLabResolvers } from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
@@ -10,8 +11,7 @@ import { stateData as initialStateData } from 'ee_jest/subscriptions/mock_data';
 import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('Billing Address', () => {
   let wrapper;
@@ -37,7 +37,6 @@ describe('Billing Address', () => {
     });
 
     return mount(BillingAddress, {
-      localVue,
       apolloProvider,
     });
   };

@@ -1,5 +1,5 @@
-import { mount, createLocalVue } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import { mount } from '@vue/test-utils';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import { STEPS } from 'ee/subscriptions/constants';
@@ -30,16 +30,14 @@ const createDefaultInitialStoreData = (initialData) => ({
 });
 
 describe('Subscription Details', () => {
-  const localVue = createLocalVue();
-  localVue.use(Vuex);
-  localVue.use(VueApollo);
+  Vue.use(Vuex);
+  Vue.use(VueApollo);
 
   let wrapper;
 
   function createComponent(options = {}) {
     const { apolloProvider, store } = options;
     return mount(Component, {
-      localVue,
       store,
       apolloProvider,
       stubs: {

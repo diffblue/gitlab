@@ -6,15 +6,14 @@ import {
   GlDropdownSectionHeader,
   GlSearchBoxByType,
 } from '@gitlab/ui';
-import { mount, shallowMount, createLocalVue } from '@vue/test-utils';
+import { mount, shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import IterationDropdown from 'ee/sidebar/components/iteration_dropdown.vue';
 import groupIterationsQuery from 'ee/sidebar/queries/iterations.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 
-const localVue = createLocalVue();
-
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 const TEST_SEARCH = 'search';
 const TEST_FULL_PATH = 'gitlab-test/test';
@@ -112,7 +111,6 @@ describe('IterationDropdown', () => {
     fakeApollo = createMockApollo([[groupIterationsQuery, groupIterationsSpy]]);
 
     wrapper = mountFn(IterationDropdown, {
-      localVue,
       apolloProvider: fakeApollo,
       propsData: {
         fullPath: TEST_FULL_PATH,

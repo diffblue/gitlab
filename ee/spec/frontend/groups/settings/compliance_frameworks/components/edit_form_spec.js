@@ -1,5 +1,6 @@
 import * as Sentry from '@sentry/browser';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 
 import EditForm from 'ee/groups/settings/compliance_frameworks/components/edit_form.vue';
@@ -20,8 +21,7 @@ import {
   errorUpdateResponse,
 } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 jest.mock('~/lib/utils/url_utility');
 
@@ -51,14 +51,13 @@ describe('EditForm', () => {
   const findFormStatus = () => wrapper.findComponent(FormStatus);
 
   function createMockApolloProvider(requestHandlers) {
-    localVue.use(VueApollo);
+    Vue.use(VueApollo);
 
     return createMockApollo(requestHandlers);
   }
 
   function createComponent(requestHandlers = []) {
     return shallowMount(EditForm, {
-      localVue,
       apolloProvider: createMockApolloProvider(requestHandlers),
       propsData,
     });

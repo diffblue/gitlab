@@ -1,5 +1,5 @@
 import { GlTable, GlDrawer } from '@gitlab/ui';
-import { createLocalVue } from '@vue/test-utils';
+import Vue from 'vue';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
 import { POLICY_TYPE_OPTIONS } from 'ee/threat_monitoring/components/constants';
@@ -25,8 +25,7 @@ import {
   mockScanResultPoliciesResponse,
 } from '../../mocks/mock_data';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 const fullPath = 'project/path';
 const environments = [
@@ -105,7 +104,6 @@ describe('PoliciesList component', () => {
             }),
             NoPoliciesEmptyState: true,
           },
-          localVue,
         },
         wrapperOptions,
       ),

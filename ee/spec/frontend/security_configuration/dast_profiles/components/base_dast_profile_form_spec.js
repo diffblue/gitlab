@@ -1,5 +1,5 @@
 import { GlAlert, GlForm, GlModal } from '@gitlab/ui';
-import { createLocalVue } from '@vue/test-utils';
+import Vue from 'vue';
 import merge from 'lodash/merge';
 import VueApollo from 'vue-apollo';
 import BaseDastProfileForm from 'ee/security_configuration/dast_profiles/components/base_dast_profile_form.vue';
@@ -9,8 +9,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 const mutationVariables = {
   foo: 'bar',
@@ -52,7 +51,6 @@ describe('BaseDastProfileForm', () => {
       },
       options,
       {
-        localVue,
         apolloProvider,
       },
     );

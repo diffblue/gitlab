@@ -1,5 +1,6 @@
 import { GlAlert } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import SelectionSummary from 'ee/security_dashboard/components/shared/selection_summary.vue';
 import StatusDropdown from 'ee/security_dashboard/components/shared/status_dropdown.vue';
@@ -11,8 +12,7 @@ import toast from '~/vue_shared/plugins/global_toast';
 
 jest.mock('~/vue_shared/plugins/global_toast');
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('Selection Summary component', () => {
   let wrapper;
@@ -29,7 +29,6 @@ describe('Selection Summary component', () => {
 
   const createComponent = ({ props = {}, apolloProvider } = {}) => {
     wrapper = shallowMount(SelectionSummary, {
-      localVue,
       apolloProvider,
       stubs: {
         GlAlert,

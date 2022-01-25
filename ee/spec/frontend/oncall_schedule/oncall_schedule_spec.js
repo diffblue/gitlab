@@ -1,6 +1,6 @@
 import { GlButton, GlCard, GlIcon, GlCollapse } from '@gitlab/ui';
-import { createLocalVue } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
+
 import VueApollo from 'vue-apollo';
 import mockTimezones from 'test_fixtures/timezones/full.json';
 import OnCallSchedule, { i18n } from 'ee/oncall_schedules/components/oncall_schedule.vue';
@@ -16,8 +16,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import * as dateTimeUtility from '~/lib/utils/datetime/date_calculation_utility';
 import { getOncallSchedulesQueryResponse } from './mocks/apollo_mock';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('On-call schedule', () => {
   let wrapper;
@@ -56,7 +55,6 @@ describe('On-call schedule', () => {
     ]);
 
     wrapper = shallowMountExtended(OnCallSchedule, {
-      localVue,
       apolloProvider: fakeApollo,
       propsData: {
         schedule,

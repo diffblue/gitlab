@@ -1,5 +1,6 @@
 import { GlAlert, GlLoadingIcon } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -15,8 +16,7 @@ import {
   defaultProjectProvideValues,
 } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('ProjectStorageApp', () => {
   let wrapper;
@@ -38,7 +38,6 @@ describe('ProjectStorageApp', () => {
   const createComponent = ({ provide = {}, mockApollo } = {}) => {
     wrapper = extendedWrapper(
       shallowMount(ProjectStorageApp, {
-        localVue,
         apolloProvider: mockApollo,
         provide: {
           ...defaultProjectProvideValues,

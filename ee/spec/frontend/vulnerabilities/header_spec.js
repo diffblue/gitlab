@@ -1,5 +1,6 @@
 import { GlButton, GlBadge } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import MockAdapter from 'axios-mock-adapter';
 import VueApollo from 'vue-apollo';
 import Api from 'ee/api';
@@ -23,8 +24,7 @@ import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import download from '~/lib/utils/downloader';
 import * as urlUtility from '~/lib/utils/url_utility';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 const vulnerabilityStateEntries = Object.entries(VULNERABILITY_STATE_OBJECTS);
 const mockAxios = new MockAdapter(axios);
@@ -90,7 +90,6 @@ describe('Vulnerability Header', () => {
 
   const createWrapper = ({ vulnerability = {}, apolloProvider }) => {
     wrapper = shallowMount(Header, {
-      localVue,
       apolloProvider,
       propsData: {
         vulnerability: {

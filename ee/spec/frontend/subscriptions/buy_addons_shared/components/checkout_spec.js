@@ -1,4 +1,4 @@
-import { createLocalVue } from '@vue/test-utils';
+import Vue from 'vue';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
 import BillingAddress from 'ee/vue_shared/purchase_flow/components/checkout/billing_address.vue';
@@ -19,8 +19,7 @@ import flushPromises from 'helpers/flush_promises';
 
 jest.mock('~/flash');
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('Checkout', () => {
   let wrapper;
@@ -52,7 +51,6 @@ describe('Checkout', () => {
   const createComponent = (stateData = {}) => {
     const apolloProvider = createMockApolloProvider(stateData);
     wrapper = shallowMountExtended(Checkout, {
-      localVue,
       apolloProvider,
       propsData: {
         plan,

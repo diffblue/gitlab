@@ -1,5 +1,6 @@
 import { GlBadge, GlLoadingIcon } from '@gitlab/ui';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import ProjectList from 'ee/security_dashboard/components/instance/project_list.vue';
 import projectsQuery from 'ee/security_dashboard/graphql/queries/instance_projects.query.graphql';
@@ -8,8 +9,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import ProjectAvatar from '~/vue_shared/components/deprecated_project_avatar/default.vue';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 const generateMockProjects = (count) => {
   const projects = [];
@@ -43,7 +43,6 @@ describe('Project List component', () => {
 
     wrapper = extendedWrapper(
       shallowMount(ProjectList, {
-        localVue,
         apolloProvider: createMockApollo([[projectsQuery, jest.fn().mockResolvedValue(mockData)]]),
       }),
     );

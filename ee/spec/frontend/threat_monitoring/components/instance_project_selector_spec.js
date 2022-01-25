@@ -1,4 +1,4 @@
-import { createLocalVue } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import InstanceProjectSelector from 'ee/threat_monitoring/components/instance_project_selector.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -7,7 +7,6 @@ import waitForPromises from 'helpers/wait_for_promises';
 import getUsersProjects from '~/graphql_shared/queries/get_users_projects.query.graphql';
 import ProjectSelector from '~/vue_shared/components/project_selector/project_selector.vue';
 
-const localVue = createLocalVue();
 let querySpy;
 
 const defaultProjectSelectorProps = {
@@ -72,7 +71,7 @@ const mockGetUsersProjects = {
 };
 
 const createMockApolloProvider = (queryResolver) => {
-  localVue.use(VueApollo);
+  Vue.use(VueApollo);
   return createMockApollo([[getUsersProjects, queryResolver]]);
 };
 
@@ -83,7 +82,6 @@ describe('InstanceProjectSelector Component', () => {
 
   const createWrapper = ({ queryResolver, propsData = {} } = {}) => {
     wrapper = shallowMountExtended(InstanceProjectSelector, {
-      localVue,
       apolloProvider: createMockApolloProvider(queryResolver),
       propsData: {
         ...propsData,

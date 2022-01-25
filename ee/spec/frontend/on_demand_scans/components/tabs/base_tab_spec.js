@@ -1,6 +1,5 @@
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
 import { GlTab, GlTable, GlAlert } from '@gitlab/ui';
-import { createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import { cloneDeep, merge } from 'lodash';
 import allPipelinesWithPipelinesMock from 'test_fixtures/graphql/on_demand_scans/graphql/on_demand_scans.query.graphql.with_pipelines.json';
@@ -23,8 +22,7 @@ import { PROJECT_ON_DEMAND_SCAN_COUNTS_ETAG_MOCK } from '../../mocks';
 
 jest.mock('~/lib/utils/common_utils');
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 const [firstPipeline] = allPipelinesWithPipelinesMock.data.project.pipelines.nodes;
 
@@ -76,7 +74,6 @@ describe('BaseTab', () => {
       BaseTab,
       merge(
         {
-          localVue,
           apolloProvider: createMockApolloProvider(),
           router,
           propsData: {

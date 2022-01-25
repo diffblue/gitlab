@@ -1,6 +1,7 @@
 import { GlSprintf, GlModal } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 
 import DeleteModal from 'ee/groups/settings/compliance_frameworks/components/delete_modal.vue';
@@ -15,8 +16,7 @@ import {
   frameworkFoundResponse,
 } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('DeleteModal', () => {
   let wrapper;
@@ -31,7 +31,7 @@ describe('DeleteModal', () => {
   const clickDeleteFramework = () => findModal().vm.$emit('primary');
 
   function createMockApolloProvider(resolverMock) {
-    localVue.use(VueApollo);
+    Vue.use(VueApollo);
 
     const requestHandlers = [
       [getComplianceFrameworkQuery, fetchSuccess],
@@ -43,7 +43,6 @@ describe('DeleteModal', () => {
 
   const createComponent = (resolverMock) => {
     wrapper = shallowMount(DeleteModal, {
-      localVue,
       apolloProvider: createMockApolloProvider(resolverMock),
       propsData: {
         name: frameworkFoundResponse.name,

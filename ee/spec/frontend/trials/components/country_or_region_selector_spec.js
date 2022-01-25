@@ -1,4 +1,4 @@
-import { createLocalVue } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -6,8 +6,7 @@ import CountryOrRegionSelector from 'ee/trials/components/country_or_region_sele
 import { countries, states } from '../../hand_raise_leads/components/mock_data';
 import { formData } from './mock_data';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('CountryOrRegionSelector', () => {
   let wrapper;
@@ -25,7 +24,6 @@ describe('CountryOrRegionSelector', () => {
     };
 
     return mountFunction(CountryOrRegionSelector, {
-      localVue,
       apolloProvider: createMockApollo([], mockResolvers),
       provide: {
         user: formData,
