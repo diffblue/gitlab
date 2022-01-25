@@ -1,7 +1,7 @@
 import { GlAlert } from '@gitlab/ui';
 import { within } from '@testing-library/dom';
 import { mount, shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
 import DastFailedSiteValidations from 'ee/security_configuration/dast_profiles/components/dast_failed_site_validations.vue';
@@ -108,7 +108,7 @@ describe('EE - DastFailedSiteValidations', () => {
       expect(findValidationModal().exists()).toBe(false);
 
       findFirstRetryButton().click();
-      await wrapper.vm.$nextTick();
+      await nextTick();
       const modal = findValidationModal();
 
       expect(modal.exists()).toBe(true);
@@ -117,20 +117,20 @@ describe('EE - DastFailedSiteValidations', () => {
 
     it('destroys the modal after it has been hidden', async () => {
       findFirstRetryButton().click();
-      await wrapper.vm.$nextTick();
+      await nextTick();
       const modal = findValidationModal();
 
       expect(modal.exists()).toBe(true);
 
       modal.vm.$emit('hidden');
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(modal.exists()).toBe(false);
     });
 
     it('triggers the dastSiteValidationRevoke GraphQL mutation', async () => {
       findFirstDismissButton().click();
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.findAllComponents(GlAlert)).toHaveLength(1);
       expect(requestHandlers.dastSiteValidationRevoke).toHaveBeenCalledWith({

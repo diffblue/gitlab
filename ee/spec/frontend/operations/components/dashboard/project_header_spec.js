@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import ProjectHeader from 'ee/operations/components/dashboard/project_header.vue';
 import { trimText } from 'helpers/text_helper';
 import ProjectAvatar from '~/vue_shared/components/deprecated_project_avatar/default.vue';
@@ -48,12 +49,11 @@ describe('project header component', () => {
       expect(button.attributes('title')).toBe('Remove card');
     });
 
-    it('emits project removal link on click', () => {
+    it('emits project removal link on click', async () => {
       wrapper.find('.js-remove-button').vm.$emit('click');
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(wrapper.emitted().remove).toStrictEqual([[mockOneProject.remove_path]]);
-      });
+      await nextTick();
+      expect(wrapper.emitted().remove).toStrictEqual([[mockOneProject.remove_path]]);
     });
   });
 

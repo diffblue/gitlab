@@ -1,5 +1,5 @@
 import { GlButton, GlModal } from '@gitlab/ui';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { sprintf } from '~/locale';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -140,7 +140,7 @@ describe('HandRaiseLeadButton', () => {
       // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ countries, states, ...formData });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findModal().props('actionPrimary')).toStrictEqual({
         text: PQL_MODAL_PRIMARY,
@@ -164,7 +164,7 @@ describe('HandRaiseLeadButton', () => {
       // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ countries, states, country: state });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.findByTestId('state').exists()).toBe(display);
     });

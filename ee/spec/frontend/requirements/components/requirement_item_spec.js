@@ -1,6 +1,7 @@
 import { GlLink, GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
+import { nextTick } from 'vue';
 import RequirementItem from 'ee/requirements/components/requirement_item.vue';
 import RequirementStatusBadge from 'ee/requirements/components/requirement_status_badge.vue';
 
@@ -34,34 +35,32 @@ describe('RequirementItem', () => {
 
   describe('methods', () => {
     describe('handleArchiveClick', () => {
-      it('emits `archiveClick` event on component with object containing `requirement.iid` & `state` as "ARCHIVED" as param', () => {
+      it('emits `archiveClick` event on component with object containing `requirement.iid` & `state` as "ARCHIVED" as param', async () => {
         wrapper.vm.handleArchiveClick();
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.emitted('archiveClick')).toBeTruthy();
-          expect(wrapper.emitted('archiveClick')[0]).toEqual([
-            {
-              iid: requirement1.iid,
-              state: 'ARCHIVED',
-            },
-          ]);
-        });
+        await nextTick();
+        expect(wrapper.emitted('archiveClick')).toBeTruthy();
+        expect(wrapper.emitted('archiveClick')[0]).toEqual([
+          {
+            iid: requirement1.iid,
+            state: 'ARCHIVED',
+          },
+        ]);
       });
     });
 
     describe('handleReopenClick', () => {
-      it('emits `reopenClick` event on component with object containing `requirement.iid` & `state` as "OPENED" as param', () => {
+      it('emits `reopenClick` event on component with object containing `requirement.iid` & `state` as "OPENED" as param', async () => {
         wrapperArchived.vm.handleReopenClick();
 
-        return wrapperArchived.vm.$nextTick(() => {
-          expect(wrapperArchived.emitted('reopenClick')).toBeTruthy();
-          expect(wrapperArchived.emitted('reopenClick')[0]).toEqual([
-            {
-              iid: requirementArchived.iid,
-              state: 'OPENED',
-            },
-          ]);
-        });
+        await nextTick();
+        expect(wrapperArchived.emitted('reopenClick')).toBeTruthy();
+        expect(wrapperArchived.emitted('reopenClick')[0]).toEqual([
+          {
+            iid: requirementArchived.iid,
+            state: 'OPENED',
+          },
+        ]);
       });
     });
   });
@@ -71,14 +70,13 @@ describe('RequirementItem', () => {
       expect(wrapper.classes()).toContain('requirement');
     });
 
-    it('renders component container element with class `disabled-content` when `stateChangeRequestActive` prop is true', () => {
+    it('renders component container element with class `disabled-content` when `stateChangeRequestActive` prop is true', async () => {
       wrapper.setProps({
         stateChangeRequestActive: true,
       });
 
-      return wrapper.vm.$nextTick(() => {
-        expect(wrapper.classes()).toContain('disabled-content');
-      });
+      await nextTick();
+      expect(wrapper.classes()).toContain('disabled-content');
     });
 
     it('emits `show-click` event with requirement as param', () => {
@@ -189,7 +187,7 @@ describe('RequirementItem', () => {
       expect(reopenButton.text()).toBe('Reopen');
     });
 
-    it('does not render `Reopen` button when current requirement is archived and `requirement.userPermissions.adminRequirement` is false', () => {
+    it('does not render `Reopen` button when current requirement is archived and `requirement.userPermissions.adminRequirement` is false', async () => {
       wrapperArchived.setProps({
         requirement: {
           ...requirementArchived,
@@ -200,9 +198,8 @@ describe('RequirementItem', () => {
         },
       });
 
-      return wrapperArchived.vm.$nextTick(() => {
-        expect(wrapperArchived.find('.controls .requirement-reopen').exists()).toBe(false);
-      });
+      await nextTick();
+      expect(wrapperArchived.find('.controls .requirement-reopen').exists()).toBe(false);
     });
   });
 });

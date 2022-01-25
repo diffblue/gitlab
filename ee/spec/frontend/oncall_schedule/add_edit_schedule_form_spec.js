@@ -1,5 +1,6 @@
 import { GlSearchBoxByType, GlDropdown, GlDropdownItem, GlFormGroup } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import mockTimezones from 'test_fixtures/timezones/full.json';
 import AddEditScheduleForm, {
   i18n,
@@ -97,7 +98,7 @@ describe('AddEditScheduleForm', () => {
       it('should filter options based on search term', async () => {
         const searchTerm = 'Pacific';
         findTimezoneSearchBox().vm.$emit('input', searchTerm);
-        await wrapper.vm.$nextTick();
+        await nextTick();
         const options = findDropdownOptions();
         expect(options).toHaveLength(1);
         expect(options.at(0).text()).toContain(searchTerm);
@@ -106,7 +107,7 @@ describe('AddEditScheduleForm', () => {
       it('should display no results item when there are no filter matches', async () => {
         const searchTerm = 'someUnexistentTZ';
         findTimezoneSearchBox().vm.$emit('input', searchTerm);
-        await wrapper.vm.$nextTick();
+        await nextTick();
         const options = findDropdownOptions();
         expect(options).toHaveLength(1);
         expect(options.at(0).text()).toContain(i18n.noResults);
@@ -116,7 +117,7 @@ describe('AddEditScheduleForm', () => {
     it('should add a checkmark to the selected option', async () => {
       const selectedTZOption = findDropdownOptions().at(0);
       selectedTZOption.vm.$emit('click');
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(selectedTZOption.attributes('ischecked')).toBe('true');
     });
   });

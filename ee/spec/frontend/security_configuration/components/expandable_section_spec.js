@@ -1,4 +1,5 @@
 import { mount, shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import ExpandableSection from 'ee/security_configuration/components/expandable_section.vue';
 import { stubTransition } from 'helpers/stub_transition';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -82,7 +83,7 @@ describe('ExpandableSection component', () => {
     });
 
     it('hides the content by default', async () => {
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(findContent().isVisible()).toBe(false);
     });
 
@@ -95,7 +96,7 @@ describe('ExpandableSection component', () => {
         await waitForPromises();
         const button = findButton();
         button.trigger('click');
-        return wrapper.vm.$nextTick();
+        await nextTick();
       });
 
       it('shows the content', () => {

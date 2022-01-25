@@ -1,6 +1,7 @@
 import { GlDropdown, GlDropdownItem, GlEmptyState, GlLoadingIcon, GlTab, GlTabs } from '@gitlab/ui';
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
+import { nextTick } from 'vue';
 import IterationForm from 'ee/iterations/components/iteration_form_without_vue_router.vue';
 import IterationReportTabs from 'ee/iterations/components/iteration_report_tabs.vue';
 import IterationReport from 'ee/iterations/components/iteration_report_without_vue_router.vue';
@@ -232,7 +233,7 @@ describe('Iterations report', () => {
 
           clickEditButton();
 
-          await wrapper.vm.$nextTick();
+          await nextTick();
 
           expect(window.history.pushState).toHaveBeenCalledWith(
             { prev: 'viewIteration' },
@@ -264,7 +265,7 @@ describe('Iterations report', () => {
           jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
           findIterationForm().vm.$emit('cancel');
 
-          await wrapper.vm.$nextTick();
+          await nextTick();
 
           expect(window.history.pushState).toHaveBeenCalledWith(
             { prev: 'editIteration' },
@@ -277,7 +278,7 @@ describe('Iterations report', () => {
           jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
           findIterationForm().vm.$emit('updated');
 
-          await wrapper.vm.$nextTick();
+          await nextTick();
 
           expect(window.history.pushState).toHaveBeenCalledWith(
             { prev: 'editIteration' },

@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 
+import { nextTick } from 'vue';
 import RequirementItem from 'ee/requirements/components/requirement_item.vue';
 import { FilterState } from 'ee/requirements/constants';
 
@@ -51,7 +52,7 @@ describe('RequirementMeta Mixin', () => {
           },
         });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(wrapper.vm.isArchived).toBe(true);
       });

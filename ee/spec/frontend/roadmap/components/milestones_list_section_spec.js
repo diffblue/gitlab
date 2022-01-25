@@ -1,5 +1,6 @@
 import { GlIcon, GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import MilestoneTimeline from 'ee/roadmap/components/milestone_timeline.vue';
 import milestonesListSectionComponent from 'ee/roadmap/components/milestones_list_section.vue';
 import {
@@ -117,8 +118,8 @@ describe('MilestonesListSectionComponent', () => {
       it('calls `scrollToCurrentDay` following the component render', async () => {
         // Original method implementation waits for render cycle
         // to complete at 2 levels before scrolling.
-        await wrapper.vm.$nextTick(); // set offsetLeft value
-        await wrapper.vm.$nextTick(); // Wait for nextTick before scroll
+        await nextTick(); // set offsetLeft value
+        await nextTick(); // Wait for nextTick before scroll
         expect(scrollToCurrentDay).toHaveBeenCalledWith(wrapper.vm.$el);
       });
     });
@@ -194,10 +195,10 @@ describe('MilestonesListSectionComponent', () => {
   });
 
   describe('when the milestone list is expanded', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       findExpandButtonContainer().find(GlButton).vm.$emit('click');
 
-      return wrapper.vm.$nextTick();
+      await nextTick();
     });
 
     it('shows "chevron-right" icon when the milestone toggle button is clicked', () => {

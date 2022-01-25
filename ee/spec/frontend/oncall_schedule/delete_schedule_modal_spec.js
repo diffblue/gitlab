@@ -1,6 +1,7 @@
 import { GlModal, GlAlert, GlSprintf } from '@gitlab/ui';
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
+import { nextTick } from 'vue';
 import DeleteScheduleModal, {
   i18n,
 } from 'ee/oncall_schedules/components/delete_schedule_modal.vue';
@@ -147,7 +148,7 @@ describe('DeleteScheduleModal', () => {
       createComponentWithApollo();
 
       await jest.runOnlyPendingTimers();
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findModal().attributes('data-testid')).toBe(`delete-schedule-modal-${schedule.iid}`);
     });

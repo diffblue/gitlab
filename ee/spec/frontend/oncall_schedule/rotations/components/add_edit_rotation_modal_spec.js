@@ -1,6 +1,7 @@
 import { GlAlert, GlModal } from '@gitlab/ui';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
+import { nextTick } from 'vue';
 import AddEditRotationForm from 'ee/oncall_schedules/components/rotations/components/add_edit_rotation_form.vue';
 import AddEditRotationModal, {
   i18n,
@@ -147,7 +148,7 @@ describe('AddEditRotationModal', () => {
         mutation: expect.any(Object),
         variables: { input: expect.objectContaining({ projectPath }) },
       });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(findForm().props('form').name).toBe(undefined);
     });
 
@@ -279,7 +280,7 @@ describe('AddEditRotationModal', () => {
         it('should disable primary button when any of the fields is invalid', async () => {
           const form = findForm();
           form.vm.$emit('update-rotation-form', { type: 'name', value: 'lalal' });
-          await wrapper.vm.$nextTick();
+          await nextTick();
           expect(findModal().props('actionPrimary').attributes).toEqual(
             expect.arrayContaining([{ disabled: true }]),
           );
@@ -297,7 +298,7 @@ describe('AddEditRotationModal', () => {
             type: 'endsAt.date',
             value: new Date('12/10/2021'),
           });
-          await wrapper.vm.$nextTick();
+          await nextTick();
           expect(findModal().props('actionPrimary').attributes).toEqual(
             expect.arrayContaining([{ disabled: false }]),
           );

@@ -2,6 +2,7 @@ import { GlSprintf, GlSkeletonLoader } from '@gitlab/ui';
 import { createLocalVue } from '@vue/test-utils';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
+import { nextTick } from 'vue';
 import DastProfilesSelector from 'ee/on_demand_scans_form/components/profile_selector/dast_profiles_selector.vue';
 import ScannerProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/scanner_profile_selector.vue';
 import SiteProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/site_profile_selector.vue';
@@ -140,10 +141,10 @@ describe('EE - DAST Profiles Selector', () => {
   `(
     'profiles conflict prevention',
     ({ description, selectedScannerProfile, selectedSiteProfile, hasConflict }) => {
-      const setFormData = () => {
+      const setFormData = async () => {
         findScannerProfilesSelector().vm.$emit('input', selectedScannerProfile.id);
         findSiteProfilesSelector().vm.$emit('input', selectedSiteProfile.id);
-        return wrapper.vm.$nextTick();
+        await nextTick();
       };
 
       it(

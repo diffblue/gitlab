@@ -1,6 +1,7 @@
 import { GlToggle } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import MockAxiosAdapter from 'axios-mock-adapter';
+import { nextTick } from 'vue';
 import CcValidationRequiredAlert from 'ee_component/billings/components/cc_validation_required_alert.vue';
 import { TEST_HOST } from 'helpers/test_constants';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -67,7 +68,7 @@ describe('projects/settings/components/shared_runners', () => {
     it('credit card alert should be hidden after dismiss', async () => {
       findCcValidationRequiredAlert().vm.$emit('dismiss');
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findCcValidationRequiredAlert().exists()).toBe(false);
     });

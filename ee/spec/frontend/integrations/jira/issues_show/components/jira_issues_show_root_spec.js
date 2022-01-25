@@ -2,6 +2,7 @@ import { GlAlert, GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 
+import { nextTick } from 'vue';
 import JiraIssuesShow from 'ee/integrations/jira/issues_show/components/jira_issues_show_root.vue';
 import JiraIssueSidebar from 'ee/integrations/jira/issues_show/components/sidebar/jira_issues_sidebar_root.vue';
 import { IssuableStatus } from '~/issues/constants';
@@ -124,7 +125,7 @@ describe('JiraIssuesShow', () => {
       expect(jiraIssueSidebar.props('sidebarExpanded')).toBe(true);
 
       jiraIssueSidebar.vm.$emit('sidebar-toggle');
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(jiraIssueSidebar.props('sidebarExpanded')).toBe(false);
     });

@@ -1,6 +1,6 @@
 import { GlTooltip, GlIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 import EpicHealthStatus from 'ee/related_items_tree/components/epic_health_status.vue';
@@ -222,13 +222,13 @@ describe('RelatedItemsTree', () => {
       });
 
       describe('when issuable-health-status feature is not available', () => {
-        beforeEach(() => {
+        beforeEach(async () => {
           wrapper.vm.$store.commit('SET_INITIAL_CONFIG', {
             ...mockInitialConfig,
             allowIssuableHealthStatus: false,
           });
 
-          return wrapper.vm.$nextTick();
+          await nextTick();
         });
 
         it('does not render health status', () => {
@@ -237,13 +237,13 @@ describe('RelatedItemsTree', () => {
       });
 
       describe('when issuable-health-status feature is available', () => {
-        beforeEach(() => {
+        beforeEach(async () => {
           wrapper.vm.$store.commit('SET_INITIAL_CONFIG', {
             ...mockInitialConfig,
             allowIssuableHealthStatus: true,
           });
 
-          return wrapper.vm.$nextTick();
+          await nextTick();
         });
 
         it('does not render health status', () => {

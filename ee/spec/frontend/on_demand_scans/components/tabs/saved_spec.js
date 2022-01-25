@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { merge } from 'lodash';
 import dastProfilesMock from 'test_fixtures/graphql/on_demand_scans/graphql/dast_profiles.query.graphql.json';
@@ -204,7 +204,7 @@ describe('Saved tab', () => {
       it('put the button in the loading and disabled state', async () => {
         const runScanButton = findRunScanButton();
         runScanButton.vm.$emit('click');
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(runScanButton.props('loading')).toBe(true);
         expect(runScanButton.props('disabled')).toBe(true);
@@ -242,7 +242,7 @@ describe('Saved tab', () => {
 
       it('hides the error message when retrying the deletion', async () => {
         findRunScanButton().vm.$emit('click');
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(wrapper.text()).not.toContain(errorMessage);
       });
@@ -328,7 +328,7 @@ describe('Saved tab', () => {
 
       it('hides the error message when retrying the deletion', async () => {
         findDeleteModal().vm.$emit('ok');
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(wrapper.text()).not.toContain(errorMessage);
       });

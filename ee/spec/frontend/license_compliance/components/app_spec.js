@@ -1,6 +1,6 @@
 import { GlEmptyState, GlLoadingIcon, GlTab, GlTabs, GlAlert, GlBadge } from '@gitlab/ui';
 import { shallowMount, mount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 import LicenseComplianceApp from 'ee/license_compliance/components/app.vue';
@@ -290,12 +290,11 @@ describe('Project Licenses', () => {
         ${'licenses'}  | ${'#licenses'}
       `(
         'sets the location hash to "$expectedLocationHash" when the "$givenTab" tab is activate',
-        ({ givenActiveTab, expectedLocationHash }) => {
+        async ({ givenActiveTab, expectedLocationHash }) => {
           findByTestId(`${givenActiveTab}TabTitle`).trigger('click');
 
-          return wrapper.vm.$nextTick().then(() => {
-            expect(window.location.hash).toBe(expectedLocationHash);
-          });
+          await nextTick();
+          expect(window.location.hash).toBe(expectedLocationHash);
         },
       );
 

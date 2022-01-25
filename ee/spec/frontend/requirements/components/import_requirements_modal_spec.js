@@ -1,6 +1,7 @@
 import { GlModal } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
+import { nextTick } from 'vue';
 import ImportRequirementsModal from 'ee/requirements/components/import_requirements_modal.vue';
 
 const createComponent = ({ projectPath = 'gitLabTest' } = {}) =>
@@ -39,7 +40,7 @@ describe('ImportRequirementsModal', () => {
 
   describe('methods', () => {
     describe('handleCSVFile', () => {
-      it('sets the first file selected', () => {
+      it('sets the first file selected', async () => {
         const file = 'some file';
 
         const event = {
@@ -49,9 +50,8 @@ describe('ImportRequirementsModal', () => {
         };
         wrapper.vm.handleCSVFile(event);
 
-        wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.file).toBe(file);
-        });
+        await nextTick();
+        expect(wrapper.vm.file).toBe(file);
       });
     });
   });

@@ -1,6 +1,7 @@
 import { GlModal, GlAlert, GlSprintf } from '@gitlab/ui';
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
+import { nextTick } from 'vue';
 import DeleteRotationModal, {
   i18n,
 } from 'ee/oncall_schedules/components/rotations/components/delete_rotation_modal.vue';
@@ -153,7 +154,7 @@ describe('DeleteRotationModal', () => {
       createComponentWithApollo();
 
       await jest.runOnlyPendingTimers();
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findModal().attributes('data-testid')).toBe(`delete-rotation-modal-${rotation.id}`);
     });

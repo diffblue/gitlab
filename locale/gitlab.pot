@@ -35056,6 +35056,9 @@ msgstr ""
 msgid "Target-Branch"
 msgstr ""
 
+msgid "Task"
+msgstr ""
+
 msgid "Task ID: %{elastic_task}"
 msgstr ""
 
@@ -40616,6 +40619,15 @@ msgid "Work in progress (open and unassigned)"
 msgstr ""
 
 msgid "Work in progress Limit"
+msgstr ""
+
+msgid "WorkItem|Convert to work item"
+msgstr ""
+
+msgid "WorkItem|Create work item"
+msgstr ""
+
+msgid "WorkItem|New Task"
 msgstr ""
 
 msgid "WorkItem|Work Items"

@@ -1,5 +1,6 @@
 import { GlDatepicker, GlFormCheckbox, GlFormGroup } from '@gitlab/ui';
 import { merge } from 'lodash';
+import { nextTick } from 'vue';
 import mockTimezones from 'test_fixtures/timezones/full.json';
 import ScanSchedule from 'ee/on_demand_scans_form/components/scan_schedule.vue';
 import { SCAN_CADENCE_OPTIONS } from 'ee/on_demand_scans_form/settings';
@@ -22,11 +23,11 @@ describe('ScanSchedule', () => {
   const findCadenceInput = () => wrapper.findComponent(DropdownInput);
 
   // Helpers
-  const setTimeInputValue = (value) => {
+  const setTimeInputValue = async (value) => {
     const input = findTimeInput();
     input.element.value = value;
     input.trigger('input');
-    return wrapper.vm.$nextTick();
+    await nextTick();
   };
 
   const createComponent = (options = {}) => {
@@ -135,14 +136,14 @@ describe('ScanSchedule', () => {
 
     it('emits computed cadence value', async () => {
       findCadenceInput().vm.$emit('input', SCAN_CADENCE_OPTIONS[5].value);
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.emitted().input[1][0].cadence).toEqual({ unit: 'MONTH', duration: 6 });
     });
 
     it('deactives schedule when checkbox is unchecked', async () => {
       findCheckbox().vm.$emit('input', false);
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.emitted().input).toHaveLength(2);
       expect(wrapper.emitted().input[1]).toEqual([

@@ -1,6 +1,6 @@
 import { GlFormInput, GlButton, GlDropdownItem } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
@@ -47,7 +47,7 @@ describe('RelatedItemsTree', () => {
           expect(wrapper.vm.isSubmitButtonDisabled).toBe(true);
         });
 
-        it('returns false when either `inputValue` prop is non-empty or `isSubmitting` prop is false', () => {
+        it('returns false when either `inputValue` prop is non-empty or `isSubmitting` prop is false', async () => {
           const wrapperWithInput = createComponent(false);
 
           // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
@@ -56,23 +56,21 @@ describe('RelatedItemsTree', () => {
             inputValue: 'foo',
           });
 
-          return wrapperWithInput.vm.$nextTick(() => {
-            expect(wrapperWithInput.vm.isSubmitButtonDisabled).toBe(false);
+          await nextTick();
+          expect(wrapperWithInput.vm.isSubmitButtonDisabled).toBe(false);
 
-            wrapperWithInput.destroy();
-          });
+          wrapperWithInput.destroy();
         });
       });
 
       describe('buttonLabel', () => {
-        it('returns string "Creating epic" when `isSubmitting` prop is true', () => {
+        it('returns string "Creating epic" when `isSubmitting` prop is true', async () => {
           const wrapperSubmitting = createComponent(true);
 
-          return wrapperSubmitting.vm.$nextTick(() => {
-            expect(wrapperSubmitting.vm.buttonLabel).toBe('Creating epic');
+          await nextTick();
+          expect(wrapperSubmitting.vm.buttonLabel).toBe('Creating epic');
 
-            wrapperSubmitting.destroy();
-          });
+          wrapperSubmitting.destroy();
         });
 
         it('returns string "Create epic" when `isSubmitting` prop is false', () => {

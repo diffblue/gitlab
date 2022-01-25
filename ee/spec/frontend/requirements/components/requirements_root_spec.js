@@ -3,6 +3,7 @@ import { createLocalVue, shallowMount } from '@vue/test-utils';
 import { defaultDataIdFromObject } from 'apollo-cache-inmemory';
 import VueApollo from 'vue-apollo';
 
+import { nextTick } from 'vue';
 import RequirementItem from 'ee/requirements/components/requirement_item.vue';
 import RequirementStatusBadge from 'ee/requirements/components/requirement_status_badge.vue';
 import RequirementsEmptyState from 'ee/requirements/components/requirements_empty_state.vue';
@@ -164,7 +165,7 @@ describe('RequirementsRoot', () => {
         wrapperLoading.destroy();
       });
 
-      it('returns `true` when `requirements.list` is empty', () => {
+      it('returns `true` when `requirements.list` is empty', async () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
@@ -173,12 +174,11 @@ describe('RequirementsRoot', () => {
           },
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.requirementsListEmpty).toBe(true);
-        });
+        await nextTick();
+        expect(wrapper.vm.requirementsListEmpty).toBe(true);
       });
 
-      it('returns `true` when `requirementsCount` for current filterBy value is 0', () => {
+      it('returns `true` when `requirementsCount` for current filterBy value is 0', async () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
@@ -188,14 +188,13 @@ describe('RequirementsRoot', () => {
           },
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.requirementsListEmpty).toBe(true);
-        });
+        await nextTick();
+        expect(wrapper.vm.requirementsListEmpty).toBe(true);
       });
     });
 
     describe('totalRequirementsForCurrentTab', () => {
-      it('returns number representing total requirements for current tab', () => {
+      it('returns number representing total requirements for current tab', async () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
@@ -205,28 +204,26 @@ describe('RequirementsRoot', () => {
           },
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.totalRequirementsForCurrentTab).toBe(mockRequirementsCount.OPENED);
-        });
+        await nextTick();
+        expect(wrapper.vm.totalRequirementsForCurrentTab).toBe(mockRequirementsCount.OPENED);
       });
     });
 
     describe('showEmptyState', () => {
-      it('returns `false` when `showRequirementCreateDrawer` is true', () => {
+      it('returns `false` when `showRequirementCreateDrawer` is true', async () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           showRequirementCreateDrawer: true,
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.showEmptyState).toBe(false);
-        });
+        await nextTick();
+        expect(wrapper.vm.showEmptyState).toBe(false);
       });
     });
 
     describe('showPaginationControls', () => {
-      it('returns `true` when totalRequirements is more than default page size', () => {
+      it('returns `true` when totalRequirements is more than default page size', async () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
@@ -237,12 +234,11 @@ describe('RequirementsRoot', () => {
           requirementsCount: mockRequirementsCount,
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.showPaginationControls).toBe(true);
-        });
+        await nextTick();
+        expect(wrapper.vm.showPaginationControls).toBe(true);
       });
 
-      it('returns `false` when totalRequirements is less than default page size', () => {
+      it('returns `false` when totalRequirements is less than default page size', async () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
@@ -256,9 +252,8 @@ describe('RequirementsRoot', () => {
           },
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.showPaginationControls).toBe(false);
-        });
+        await nextTick();
+        expect(wrapper.vm.showPaginationControls).toBe(false);
       });
 
       it.each`
@@ -271,7 +266,7 @@ describe('RequirementsRoot', () => {
         ${true}         | ${true}      | ${true}
       `(
         'returns $isVisible when hasPreviousPage is $hasPreviousPage and hasNextPage is $hasNextPage within `requirements.pageInfo`',
-        ({ hasPreviousPage, hasNextPage, isVisible }) => {
+        async ({ hasPreviousPage, hasNextPage, isVisible }) => {
           // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
           // eslint-disable-next-line no-restricted-syntax
           wrapper.setData({
@@ -283,24 +278,22 @@ describe('RequirementsRoot', () => {
             },
           });
 
-          return wrapper.vm.$nextTick(() => {
-            expect(wrapper.vm.showPaginationControls).toBe(isVisible);
-          });
+          await nextTick();
+          expect(wrapper.vm.showPaginationControls).toBe(isVisible);
         },
       );
     });
 
     describe('prevPage', () => {
-      it('returns number representing previous page based on currentPage value', () => {
+      it('returns number representing previous page based on currentPage value', async () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           currentPage: 3,
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.prevPage).toBe(2);
-        });
+        await nextTick();
+        expect(wrapper.vm.prevPage).toBe(2);
       });
     });
 
@@ -309,16 +302,15 @@ describe('RequirementsRoot', () => {
         expect(wrapper.vm.nextPage).toBe(2);
       });
 
-      it('returns `null` when currentPage is already last page', () => {
+      it('returns `null` when currentPage is already last page', async () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           currentPage: 2,
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.nextPage).toBeNull();
-        });
+        await nextTick();
+        expect(wrapper.vm.nextPage).toBeNull();
       });
     });
   });
@@ -345,7 +337,7 @@ describe('RequirementsRoot', () => {
     };
 
     describe('getFilteredSearchValue', () => {
-      it('returns array containing applied filter search values', () => {
+      it('returns array containing applied filter search values', async () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
@@ -354,14 +346,13 @@ describe('RequirementsRoot', () => {
           textSearch: 'foo',
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.getFilteredSearchValue()).toEqual(mockFilters);
-        });
+        await nextTick();
+        expect(wrapper.vm.getFilteredSearchValue()).toEqual(mockFilters);
       });
     });
 
     describe('updateUrl', () => {
-      it('updates window URL based on presence of props for filtered search and sort criteria', () => {
+      it('updates window URL based on presence of props for filtered search and sort criteria', async () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
@@ -373,13 +364,12 @@ describe('RequirementsRoot', () => {
           sortBy: 'updated_asc',
         });
 
-        return wrapper.vm.$nextTick(() => {
-          wrapper.vm.updateUrl();
+        await nextTick();
+        wrapper.vm.updateUrl();
 
-          expect(global.window.location.href).toBe(
-            `${TEST_HOST}/?page=2&next=${mockPageInfo.endCursor}&state=all&search=foo&sort=updated_asc&author_username%5B%5D=root&author_username%5B%5D=john.doe`,
-          );
-        });
+        expect(global.window.location.href).toBe(
+          `${TEST_HOST}/?page=2&next=${mockPageInfo.endCursor}&state=all&search=foo&sort=updated_asc&author_username%5B%5D=root&author_username%5B%5D=john.doe`,
+        );
       });
     });
 
@@ -996,7 +986,7 @@ describe('RequirementsRoot', () => {
       );
     });
 
-    it('renders empty state when query results are empty', () => {
+    it('renders empty state when query results are empty', async () => {
       // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
       // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
@@ -1008,9 +998,8 @@ describe('RequirementsRoot', () => {
         },
       });
 
-      return wrapper.vm.$nextTick(() => {
-        expect(wrapper.findComponent(RequirementsEmptyState).exists()).toBe(true);
-      });
+      await nextTick();
+      expect(wrapper.findComponent(RequirementsEmptyState).exists()).toBe(true);
     });
 
     it('renders requirements-loading component when query results are still being loaded', () => {
@@ -1029,19 +1018,18 @@ describe('RequirementsRoot', () => {
       expect(wrapper.find('requirement-edit-form-stub').exists()).toBe(true);
     });
 
-    it('does not render requirement-empty-state component when `showRequirementCreateDrawer` prop is `true`', () => {
+    it('does not render requirement-empty-state component when `showRequirementCreateDrawer` prop is `true`', async () => {
       // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
       // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
         showRequirementCreateDrawer: true,
       });
 
-      return wrapper.vm.$nextTick(() => {
-        expect(wrapper.findComponent(RequirementsEmptyState).exists()).toBe(false);
-      });
+      await nextTick();
+      expect(wrapper.findComponent(RequirementsEmptyState).exists()).toBe(false);
     });
 
-    it('renders requirement items for all the requirements', () => {
+    it('renders requirement items for all the requirements', async () => {
       // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
       // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
@@ -1052,17 +1040,16 @@ describe('RequirementsRoot', () => {
         requirementsCount: mockRequirementsCount,
       });
 
-      return wrapper.vm.$nextTick(() => {
-        const itemsContainer = wrapper.find('ul.requirements-list');
+      await nextTick();
+      const itemsContainer = wrapper.find('ul.requirements-list');
 
-        expect(itemsContainer.exists()).toBe(true);
-        expect(itemsContainer.findAllComponents(RequirementItem)).toHaveLength(
-          mockRequirementsOpen.length,
-        );
-      });
+      expect(itemsContainer.exists()).toBe(true);
+      expect(itemsContainer.findAllComponents(RequirementItem)).toHaveLength(
+        mockRequirementsOpen.length,
+      );
     });
 
-    it('renders pagination controls', () => {
+    it('renders pagination controls', async () => {
       // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
       // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
@@ -1073,14 +1060,13 @@ describe('RequirementsRoot', () => {
         requirementsCount: mockRequirementsCount,
       });
 
-      return wrapper.vm.$nextTick(() => {
-        const pagination = wrapper.findComponent(GlPagination);
+      await nextTick();
+      const pagination = wrapper.findComponent(GlPagination);
 
-        expect(pagination.exists()).toBe(true);
-        expect(pagination.props('value')).toBe(1);
-        expect(pagination.props('perPage')).toBe(2); // We're mocking this page size
-        expect(pagination.props('align')).toBe('center');
-      });
+      expect(pagination.exists()).toBe(true);
+      expect(pagination.props('value')).toBe(1);
+      expect(pagination.props('perPage')).toBe(2); // We're mocking this page size
+      expect(pagination.props('align')).toBe('center');
     });
   });
 

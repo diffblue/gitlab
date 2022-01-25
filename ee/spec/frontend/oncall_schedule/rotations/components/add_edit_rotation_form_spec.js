@@ -1,6 +1,7 @@
 import { GlDropdownItem, GlTokenSelector, GlFormGroup, GlToggle } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { cloneDeep, merge } from 'lodash';
+import { nextTick } from 'vue';
 import AddEditRotationForm from 'ee/oncall_schedules/components/rotations/components/add_edit_rotation_form.vue';
 import { formEmptyState } from 'ee/oncall_schedules/components/rotations/components/add_edit_rotation_modal.vue';
 import { LENGTH_ENUM } from 'ee/oncall_schedules/constants';
@@ -121,7 +122,7 @@ describe('AddEditRotationForm', () => {
           },
         },
       });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(findStartsOnTimeOptions().at(time).props('isChecked')).toBe(true);
     });
   });
@@ -183,7 +184,7 @@ describe('AddEditRotationForm', () => {
         },
       });
       findEndDateToggle().vm.$emit('change', true);
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(findEndsOnTimeOptions().at(time).props('isChecked')).toBe(true);
     });
   });
