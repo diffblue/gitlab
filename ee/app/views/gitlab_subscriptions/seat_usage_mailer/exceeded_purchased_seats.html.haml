@@ -1,0 +1,17 @@
+%p
+  = s_('SubscriptionEmail|Dear %{customer_name},') % { customer_name: @customer_name }
+
+%p
+  = html_escape(s_("SubscriptionEmail|You have exceeded the number of seats in your GitLab subscription %{subscription_name} by %{seat_quantity}. Even if you've exceeded the seats in your subscription, you can continue to add users, and GitLab will bill you a prorated amount for any seat overages on a quarterly basis.")) % { subscription_name: "<strong>#{@subscription_name}</strong>".html_safe, seat_quantity: "<strong>#{@seat_overage}</strong>".html_safe }
+
+%p
+  = html_escape(s_('SubscriptionEmail|You can find more information about the quarterly reconciliation process in %{doc_link_start}our documentation%{doc_link_end}.')) % { doc_link_start: '<a href="https://docs.gitlab.com/ee/subscriptions/quarterly_reconciliation.html#quarterly-reconciliation-process">'.html_safe, doc_link_end: '</a>'.html_safe }
+
+%p
+  = html_escape(s_("SubscriptionEmail|%{doc_link_start}Please reach out if you have questions%{doc_link_end}, and we'll be happy to assist.")) % { doc_link_start: "<a href=\"#{Gitlab::Saas.customer_license_support_url}\">".html_safe, doc_link_end: "</a>".html_safe}
+
+%p
+  = s_("SubscriptionEmail|Thank you for your business!")
+
+%p
+  = s_("SubscriptionEmail|GitLab Billing Team")
