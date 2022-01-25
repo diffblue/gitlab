@@ -42,6 +42,10 @@ ci_daily_build_group_report_results:
   - table: projects
     column: project_id
     on_delete: async_delete
+external_pull_requests:
+  - table: projects
+    column: project_id
+    on_delete: async_delete
 ci_freeze_periods:
   - table: projects
     column: project_id
