@@ -7,6 +7,7 @@ import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
 import complianceViolationsQuery from '../graphql/compliance_violations.query.graphql';
 import { mapViolations } from '../graphql/mappers';
 import { parseViolationsQueryFilter } from '../utils';
@@ -25,6 +26,7 @@ export default {
     MergeCommitsExportButton,
     MergeRequestDrawer,
     ViolationReason,
+    SeverityBadge,
     TimeAgoTooltip,
     ViolationFilter,
     UrlSync,
@@ -190,6 +192,9 @@ export default {
       thead-class="gl-border-b-solid gl-border-b-1 gl-border-b-gray-100"
       @row-selected="toggleDrawer"
     >
+      <template #cell(severity)="{ item: { severity } }">
+        <severity-badge :severity="severity" />
+      </template>
       <template #cell(reason)="{ item: { reason, violatingUser } }">
         <violation-reason :reason="reason" :user="violatingUser" />
       </template>

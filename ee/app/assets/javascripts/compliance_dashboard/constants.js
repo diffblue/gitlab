@@ -29,3 +29,10 @@ export const MERGE_REQUEST_VIOLATION_MESSAGES = {
   [VIOLATION_TYPE_APPROVED_BY_COMMITTER]: s__('ComplianceReport|Approved by committer'),
   [VIOLATION_TYPE_APPROVED_BY_INSUFFICIENT_USERS]: s__('ComplianceReport|Less than 2 approvers'),
 };
+
+export const MERGE_REQUEST_VIOLATION_SEVERITY_LEVELS = {
+  1: 'high',
+  2: 'medium',
+  3: 'low',
+  4: 'info',
+};
