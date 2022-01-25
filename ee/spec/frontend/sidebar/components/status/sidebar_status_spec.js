@@ -1,4 +1,5 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import SidebarStatus from 'ee/sidebar/components/status/sidebar_status.vue';
 import Status from 'ee/sidebar/components/status/status.vue';
@@ -6,8 +7,7 @@ import { healthStatusQueries } from 'ee/sidebar/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { getHealthStatusMutationResponse, getHealthStatusQueryResponse } from './mock_data';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 const createQueryHandler = ({ state, healthStatus }) =>
   jest.fn().mockResolvedValue(getHealthStatusQueryResponse({ state, healthStatus }));
@@ -35,7 +35,6 @@ describe('SidebarStatus', () => {
     healthStatus = 'onTrack',
   } = {}) => {
     wrapper = shallowMount(SidebarStatus, {
-      localVue,
       propsData: {
         issuableType,
         iid: '1',

@@ -1,5 +1,6 @@
 import { GlModal, GlAlert, GlSprintf } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import { cloneDeep } from 'lodash';
 import VueApollo from 'vue-apollo';
 import DeleteEscalationPolicyModal, {
@@ -20,7 +21,6 @@ import mockPolicies from './mocks/mockPolicies.json';
 const projectPath = 'group/project';
 const mutate = jest.fn();
 const mockHideModal = jest.fn();
-const localVue = createLocalVue();
 
 describe('DeleteEscalationPolicyModal', () => {
   let wrapper;
@@ -59,7 +59,7 @@ describe('DeleteEscalationPolicyModal', () => {
   function createComponentWithApollo({
     destroyHandler = jest.fn().mockResolvedValue(destroyPolicyResponse),
   } = {}) {
-    localVue.use(VueApollo);
+    Vue.use(VueApollo);
     destroyPolicyHandler = destroyHandler;
 
     const requestHandlers = [
@@ -78,7 +78,6 @@ describe('DeleteEscalationPolicyModal', () => {
     });
 
     wrapper = shallowMount(DeleteEscalationPolicyModal, {
-      localVue,
       apolloProvider: fakeApollo,
       propsData: {
         escalationPolicy: cachedPolicy,

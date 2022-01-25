@@ -1,6 +1,8 @@
 import { GlSkeletonLoader, GlAlert, GlEmptyState, GlPagination } from '@gitlab/ui';
-import { createLocalVue, mount, shallowMount } from '@vue/test-utils';
+import { mount, shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import { nextTick } from 'vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import getJobsQuery from '~/jobs/components/table/graphql/queries/get_jobs.query.graphql';
@@ -10,8 +12,7 @@ import JobsTableTabs from '~/jobs/components/table/jobs_table_tabs.vue';
 import { mockJobsQueryResponse, mockJobsQueryEmptyResponse } from '../../mock_data';
 
 const projectPath = 'gitlab-org/gitlab';
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('Job table app', () => {
   let wrapper;
@@ -50,7 +51,6 @@ describe('Job table app', () => {
       provide: {
         projectPath,
       },
-      localVue,
       apolloProvider: createMockApolloProvider(handler),
     });
   };
@@ -124,7 +124,7 @@ describe('Job table app', () => {
         },
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findPrevious().exists()).toBe(true);
       expect(findNext().exists()).toBe(true);

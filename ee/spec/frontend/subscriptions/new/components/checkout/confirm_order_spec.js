@@ -1,5 +1,6 @@
 import { GlButton, GlLoadingIcon } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import Api from 'ee/api';
@@ -13,9 +14,8 @@ import flash from '~/flash';
 jest.mock('~/flash');
 
 describe('Confirm Order', () => {
-  const localVue = createLocalVue();
-  localVue.use(Vuex);
-  localVue.use(VueApollo);
+  Vue.use(Vuex);
+  Vue.use(VueApollo);
 
   let wrapper;
 
@@ -25,7 +25,6 @@ describe('Confirm Order', () => {
 
   function createComponent(options = {}) {
     return shallowMount(ConfirmOrder, {
-      localVue,
       store,
       ...options,
     });

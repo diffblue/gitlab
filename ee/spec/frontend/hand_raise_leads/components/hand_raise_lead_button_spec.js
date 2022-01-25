@@ -1,5 +1,5 @@
 import { GlButton, GlModal } from '@gitlab/ui';
-import { createLocalVue } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { sprintf } from '~/locale';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -16,8 +16,7 @@ import {
 import * as SubscriptionsApi from 'ee/api/subscriptions_api';
 import { formData, states, countries } from './mock_data';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('HandRaiseLeadButton', () => {
   let wrapper;
@@ -38,7 +37,6 @@ describe('HandRaiseLeadButton', () => {
     fakeApollo = createMockApollo([], mockResolvers);
 
     return shallowMountExtended(HandRaiseLeadButton, {
-      localVue,
       apolloProvider: fakeApollo,
       provide: {
         user: {

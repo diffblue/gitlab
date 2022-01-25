@@ -1,4 +1,4 @@
-import { createLocalVue } from '@vue/test-utils';
+import Vue from 'vue';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -17,8 +17,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import orderPreviewQuery from 'ee/subscriptions/graphql/queries/order_preview.customer.query.graphql';
 import { CUSTOMERSDOT_CLIENT, I18N_API_ERROR } from 'ee/subscriptions/buy_addons_shared/constants';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('Order Summary', () => {
   const resolvers = { ...purchaseFlowResolvers, ...subscriptionsResolvers };
@@ -46,7 +45,6 @@ describe('Order Summary', () => {
 
   const createComponent = (apolloProvider, props) => {
     wrapper = shallowMountExtended(OrderSummary, {
-      localVue,
       apolloProvider,
       propsData: {
         plan: mockStoragePlans[0],

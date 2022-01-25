@@ -1,5 +1,5 @@
 import { GlDropdown, GlModal, GlAlert } from '@gitlab/ui';
-import { createLocalVue } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import InstanceProjectSelector from 'ee/threat_monitoring/components/instance_project_selector.vue';
 import ScanNewPolicyModal from 'ee/threat_monitoring/components/policies/scan_new_policy_modal.vue';
@@ -14,8 +14,7 @@ import {
   mockUnlinkSecurityPolicyProjectResponses,
 } from '../../mocks/mock_apollo';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('ScanNewPolicyModal Component', () => {
   let wrapper;
@@ -49,7 +48,6 @@ describe('ScanNewPolicyModal Component', () => {
     provide = {},
   } = {}) => {
     wrapper = mountExtended(ScanNewPolicyModal, {
-      localVue,
       apolloProvider: createMockApollo([[mutationQuery, mutationResult]]),
       stubs: {
         GlModal: stubComponent(GlModal, {

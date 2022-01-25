@@ -1,5 +1,6 @@
 import { GlButton, GlLoadingIcon } from '@gitlab/ui';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import Api from 'ee/api';
 import { STEPS } from 'ee/subscriptions/constants';
@@ -25,12 +26,10 @@ describe('Confirm Order', () => {
   const findConfirmButton = () => wrapper.findComponent(GlButton);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
 
-  const localVue = createLocalVue();
-  localVue.use(VueApollo);
+  Vue.use(VueApollo);
   const createComponent = (options = {}) => {
     wrapper = extendedWrapper(
       shallowMount(ConfirmOrder, {
-        localVue,
         ...options,
       }),
     );

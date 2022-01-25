@@ -1,5 +1,6 @@
 import { GlLink } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -11,10 +12,8 @@ import { codeOwnerMock, codeOwnersDataMock, refMock } from '../mock_data';
 let wrapper;
 let mockResolver;
 
-const localVue = createLocalVue();
-
 const createComponent = async (codeOwners = [codeOwnerMock]) => {
-  localVue.use(VueApollo);
+  Vue.use(VueApollo);
 
   const project = {
     ...codeOwnersDataMock,
@@ -29,7 +28,6 @@ const createComponent = async (codeOwners = [codeOwnerMock]) => {
 
   wrapper = extendedWrapper(
     shallowMount(CodeOwners, {
-      localVue,
       apolloProvider: createMockApollo([[codeOwnersInfoQuery, mockResolver]]),
       propsData: { projectPath: 'some/project', filePath: 'some/file' },
       mixins: [{ data: () => ({ ref: refMock }) }],

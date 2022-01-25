@@ -1,6 +1,7 @@
 import { GlButton, GlModal } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import { shallowMount } from '@vue/test-utils';
+import Vue, { nextTick } from 'vue';
+
 import VueApollo from 'vue-apollo';
 import LockButton from 'ee_component/repository/components/lock_button.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -15,17 +16,15 @@ const DEFAULT_PROPS = {
 };
 
 describe('LockButton component', () => {
-  const localVue = createLocalVue();
   let wrapper;
 
   const createMockApolloProvider = (resolverMock) => {
-    localVue.use(VueApollo);
+    Vue.use(VueApollo);
     return createMockApollo([[lockPathMutation, resolverMock]]);
   };
 
   const createComponent = (props = {}, lockMutation = jest.fn()) => {
     wrapper = shallowMount(LockButton, {
-      localVue,
       apolloProvider: createMockApolloProvider(lockMutation),
       propsData: {
         ...DEFAULT_PROPS,

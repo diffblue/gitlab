@@ -1,5 +1,7 @@
-import { mount, shallowMount, createLocalVue } from '@vue/test-utils';
+import { mount, shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import { nextTick } from 'vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import getPipelineDetails from 'shared_queries/pipelines/get_pipeline_details.query.graphql';
@@ -41,13 +43,11 @@ describe('Linked Pipelines Column', () => {
   const findPipelineGraph = () => wrapper.find(PipelineGraph);
   const findExpandButton = () => wrapper.find('[data-testid="expand-pipeline-button"]');
 
-  const localVue = createLocalVue();
-  localVue.use(VueApollo);
+  Vue.use(VueApollo);
 
   const createComponent = ({ apolloProvider, mountFn = shallowMount, props = {} } = {}) => {
     wrapper = mountFn(LinkedPipelinesColumn, {
       apolloProvider,
-      localVue,
       propsData: {
         ...defaultProps,
         ...props,
@@ -108,7 +108,7 @@ describe('Linked Pipelines Column', () => {
         expect(layersFn).not.toHaveBeenCalled();
         await clickExpandButtonAndAwaitTimers();
         await wrapper.setProps({ viewType: LAYER_VIEW });
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(layersFn).toHaveBeenCalledTimes(1);
         await wrapper.setProps({ viewType: STAGE_VIEW });
         await wrapper.setProps({ viewType: LAYER_VIEW });

@@ -1,6 +1,7 @@
 import { GlAlert } from '@gitlab/ui';
 import { within } from '@testing-library/dom';
-import { mount, shallowMount, createLocalVue } from '@vue/test-utils';
+import { mount, shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
 import DastFailedSiteValidations from 'ee/security_configuration/dast_profiles/components/dast_failed_site_validations.vue';
@@ -21,14 +22,12 @@ const GlModal = {
   },
 };
 
-const localVue = createLocalVue();
-
 describe('EE - DastFailedSiteValidations', () => {
   let wrapper;
   let requestHandlers;
 
   const createMockApolloProvider = (handlers) => {
-    localVue.use(VueApollo);
+    Vue.use(VueApollo);
     requestHandlers = handlers;
     return createApolloProvider([
       [dastFailedSiteValidationsQuery, requestHandlers.dastFailedSiteValidations],
@@ -47,7 +46,6 @@ describe('EE - DastFailedSiteValidations', () => {
         merge(
           {
             propsData: defaultProps,
-            localVue,
             apolloProvider: createMockApolloProvider(handlers),
             stubs: {
               GlModal,

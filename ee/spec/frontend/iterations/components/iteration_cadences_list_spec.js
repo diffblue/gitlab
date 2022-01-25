@@ -1,6 +1,5 @@
 import { GlKeysetPagination, GlLoadingIcon } from '@gitlab/ui';
-import { createLocalVue } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import IterationCadenceListItem from 'ee/iterations/components/iteration_cadence_list_item.vue';
 import IterationCadencesList from 'ee/iterations/components/iteration_cadences_list.vue';
@@ -14,13 +13,11 @@ import { TEST_HOST } from 'helpers/test_constants';
 import { mountExtended as mount } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
-const localVue = createLocalVue();
-
 const baseUrl = '/cadences/';
 const router = createRouter(baseUrl);
 
 function createMockApolloProvider(requestHandlers) {
-  localVue.use(VueApollo);
+  Vue.use(VueApollo);
 
   return createMockApollo(requestHandlers);
 }
@@ -104,7 +101,6 @@ describe('Iteration cadences list', () => {
     ]);
 
     wrapper = mount(IterationCadencesList, {
-      localVue,
       apolloProvider,
       router,
       provide: {

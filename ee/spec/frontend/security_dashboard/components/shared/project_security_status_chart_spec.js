@@ -1,5 +1,6 @@
 import { GlLink, GlLoadingIcon } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import VulnerabilitySeverity from 'ee/security_dashboard/components/shared/project_security_status_chart.vue';
 import groupVulnerabilityGradesQuery from 'ee/security_dashboard/graphql/queries/group_vulnerability_grades.query.graphql';
@@ -15,8 +16,7 @@ import {
   mockGroupVulnerabilityGrades,
 } from '../../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('Vulnerability Severity component', () => {
   let wrapper;
@@ -31,7 +31,6 @@ describe('Vulnerability Severity component', () => {
 
   const createComponent = ({ provide, query, mockData } = {}) => {
     return shallowMount(VulnerabilitySeverity, {
-      localVue,
       apolloProvider: createMockApollo([[query, jest.fn().mockResolvedValue(mockData)]]),
       propsData: {
         query,

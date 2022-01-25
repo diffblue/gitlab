@@ -1,6 +1,7 @@
 import { GlButton, GlDropdown, GlDropdownItem } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import { shallowMount } from '@vue/test-utils';
+import Vue, { nextTick } from 'vue';
+
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import MilestoneSelect from 'ee/boards/components/milestone_select.vue';
@@ -20,8 +21,7 @@ import groupMilestonesQuery from '~/sidebar/queries/group_milestones.query.graph
 import projectMilestonesQuery from '~/sidebar/queries/project_milestones.query.graphql';
 import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('Milestone select component', () => {
   let wrapper;
@@ -54,7 +54,6 @@ describe('Milestone select component', () => {
       [groupMilestonesQuery, groupUsersQueryHandlerSuccess],
     ]);
     wrapper = shallowMount(MilestoneSelect, {
-      localVue,
       store,
       apolloProvider: fakeApollo,
       propsData: {

@@ -1,6 +1,8 @@
 import { GlDropdown, GlModal, GlSprintf } from '@gitlab/ui';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import { nextTick } from 'vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import InitCommandModal from '~/terraform/components/init_command_modal.vue';
@@ -9,8 +11,7 @@ import lockStateMutation from '~/terraform/graphql/mutations/lock_state.mutation
 import removeStateMutation from '~/terraform/graphql/mutations/remove_state.mutation.graphql';
 import unlockStateMutation from '~/terraform/graphql/mutations/unlock_state.mutation.graphql';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('StatesTableActions', () => {
   let lockResponse;
@@ -58,20 +59,19 @@ describe('StatesTableActions', () => {
     );
   };
 
-  const createComponent = (propsData = defaultProps) => {
+  const createComponent = async (propsData = defaultProps) => {
     const apolloProvider = createMockApolloProvider();
 
     toast = jest.fn();
 
     wrapper = shallowMount(StateActions, {
       apolloProvider,
-      localVue,
       propsData,
       mocks: { $toast: { show: toast } },
       stubs: { GlDropdown, GlModal, GlSprintf },
     });
 
-    return wrapper.vm.$nextTick();
+    await nextTick();
   };
 
   const findActionsDropdown = () => wrapper.findComponent(GlDropdown);

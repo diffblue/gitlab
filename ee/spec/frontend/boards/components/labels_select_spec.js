@@ -1,6 +1,7 @@
 import { GlButton, GlDropdown, GlDropdownItem } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import { shallowMount } from '@vue/test-utils';
+import Vue, { nextTick } from 'vue';
+
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import LabelsSelect from 'ee/boards/components/labels_select.vue';
@@ -21,8 +22,7 @@ import searchProjectLabels from '~/vue_shared/components/sidebar/labels_select_w
 import DropdownValue from '~/vue_shared/components/sidebar/labels_select_widget/dropdown_value.vue';
 import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
 
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+Vue.use(VueApollo);
 
 describe('Labels select component', () => {
   let wrapper;
@@ -64,7 +64,6 @@ describe('Labels select component', () => {
       [searchGroupLabels, groupLabelsQueryHandlerSuccess],
     ]);
     wrapper = shallowMount(LabelsSelect, {
-      localVue,
       store,
       apolloProvider: fakeApollo,
       propsData: {
