@@ -29102,7 +29102,7 @@ msgstr ""
 msgid "Purchase more storage"
 msgstr ""
 
-msgid "PurchaseStep|An error occurred in the purchase step. If the problem persists please contact support@gitlab.com."
+msgid "PurchaseStep|An error occurred in the purchase step. If the problem persists please contact support at https://support.gitlab.com."
 msgstr ""
 
 msgid "Push"
