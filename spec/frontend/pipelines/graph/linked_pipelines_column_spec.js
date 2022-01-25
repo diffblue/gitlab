@@ -1,7 +1,6 @@
 import { mount, shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import { nextTick } from 'vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import getPipelineDetails from 'shared_queries/pipelines/get_pipeline_details.query.graphql';
