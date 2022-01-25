@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import GeoNodeDetails from 'ee/geo_nodes/components/details/geo_node_details.vue';
 import GeoNodes from 'ee/geo_nodes/components/geo_nodes.vue';
 import GeoNodeHeader from 'ee/geo_nodes/components/header/geo_node_header.vue';
@@ -46,12 +47,11 @@ describe('GeoNodes', () => {
         expect(findGeoNodeDetails().exists()).toBe(true);
       });
 
-      it('is hidden when toggled', () => {
+      it('is hidden when toggled', async () => {
         findGeoNodeHeader().vm.$emit('collapse');
 
-        return wrapper.vm.$nextTick(() => {
-          expect(findGeoNodeDetails().exists()).toBe(false);
-        });
+        await nextTick();
+        expect(findGeoNodeDetails().exists()).toBe(false);
       });
     });
   });

@@ -1,5 +1,6 @@
 import { GlFormCheckbox } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import DastSiteAuthSection from 'ee/security_configuration/dast_profiles/dast_site_profiles/components/dast_site_auth_section.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
@@ -30,9 +31,9 @@ describe('DastSiteAuthSection', () => {
   const findAuthForm = () => wrapper.findByTestId('auth-form');
   const findAuthCheckbox = () => wrapper.findComponent(GlFormCheckbox);
 
-  const setAuthentication = ({ enabled }) => {
+  const setAuthentication = async ({ enabled }) => {
     findAuthCheckbox().vm.$emit('input', enabled);
-    return wrapper.vm.$nextTick();
+    await nextTick();
   };
   const getLatestInputEventPayload = () => {
     const latestInputEvent = [...wrapper.emitted('input')].pop();
@@ -118,7 +119,7 @@ describe('DastSiteAuthSection', () => {
           input.setValue(inputFieldValue);
           input.trigger('blur');
         });
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(getLatestInputEventPayload().state).toBe(true);
       });
     });

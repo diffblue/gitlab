@@ -1,5 +1,6 @@
 import { GlFormInput, GlLink } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import { SCHEMA_TO_PROP_SIZE_MAP } from 'ee/security_configuration/components/constants';
 import FormInput from 'ee/security_configuration/components/form_input.vue';
 
@@ -114,9 +115,9 @@ describe('FormInput component', () => {
       });
 
       describe('disabling the input', () => {
-        beforeEach(() => {
+        beforeEach(async () => {
           wrapper.setProps({ disabled: true });
-          return wrapper.vm.$nextTick();
+          await nextTick();
         });
 
         it('does not display the custom value message', () => {

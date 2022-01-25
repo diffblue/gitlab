@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import Actions from 'ee/security_configuration/corpus_management/components/columns/actions.vue';
 import CorpusTable from 'ee/security_configuration/corpus_management/components/corpus_table.vue';
 import { corpuses } from './mock_data';
@@ -58,7 +59,7 @@ describe('Corpus table', () => {
     describe('with no corpuses', () => {
       it('renders the empty state', async () => {
         wrapper.setProps({ corpuses: [] });
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(wrapper.text()).toContain('Currently, there are no uploaded or generated corpuses');
       });
     });

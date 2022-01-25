@@ -2,6 +2,7 @@ import { GlForm, GlFormInput, GlSkeletonLoader } from '@gitlab/ui';
 import { shallowMount, mount, createLocalVue } from '@vue/test-utils';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
+import { nextTick } from 'vue';
 import OnDemandScansForm from 'ee/on_demand_scans_form/components/on_demand_scans_form.vue';
 import ScannerProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/scanner_profile_selector.vue';
 import SiteProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/site_profile_selector.vue';
@@ -90,13 +91,13 @@ describe('OnDemandScansForm', () => {
     expect(findSiteProfilesSelector().attributes('value')).toBe(dastScan.dastSiteProfile.id);
   };
 
-  const setValidFormData = () => {
+  const setValidFormData = async () => {
     findNameInput().vm.$emit('input', 'My daily scan');
     findBranchInput().vm.$emit('input', selectedBranch);
     findScannerProfilesSelector().vm.$emit('input', passiveScannerProfile.id);
     findSiteProfilesSelector().vm.$emit('input', nonValidatedSiteProfile.id);
 
-    return wrapper.vm.$nextTick();
+    await nextTick();
   };
   const setupSuccess = ({ edit = false } = {}) => {
     wrapper.vm.$apollo.mutate.mockResolvedValue({
@@ -112,7 +113,7 @@ describe('OnDemandScansForm', () => {
   };
   const selectProfile = (component) => async (profile) => {
     wrapper.findComponent(component).vm.$emit('input', profile.id);
-    await wrapper.vm.$nextTick();
+    await nextTick();
   };
   const selectScannerProfile = selectProfile(ScannerProfileSelector);
   const selectSiteProfile = selectProfile(SiteProfileSelector);
@@ -326,7 +327,7 @@ describe('OnDemandScansForm', () => {
       );
 
       createShallowComponent();
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(findNameInput().attributes('value')).toBe(dastScan.name);
       expect(findDescriptionInput().attributes('value')).toBe(dastScan.description);
@@ -537,10 +538,10 @@ describe('OnDemandScansForm', () => {
   `(
     'profiles conflict prevention',
     ({ description, selectedScannerProfile, selectedSiteProfile, hasConflict }) => {
-      const setFormData = () => {
+      const setFormData = async () => {
         findScannerProfilesSelector().vm.$emit('input', selectedScannerProfile.id);
         findSiteProfilesSelector().vm.$emit('input', selectedSiteProfile.id);
-        return wrapper.vm.$nextTick();
+        await nextTick();
       };
 
       it(
@@ -661,7 +662,7 @@ describe('OnDemandScansForm', () => {
       );
 
       createShallowComponent();
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       hasSiteProfileAttributes();
     });

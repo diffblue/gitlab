@@ -1,6 +1,6 @@
 import { GlEmptyState, GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
@@ -66,49 +66,44 @@ describe('Issue Analytics component', () => {
     expect(store.dispatch).toHaveBeenCalledWith('issueAnalytics/fetchChartData', TEST_HOST);
   });
 
-  it('renders loading state when loading', () => {
+  it('renders loading state when loading', async () => {
     wrapper.vm.$store.state.issueAnalytics.loading = true;
 
-    return wrapper.vm.$nextTick(() => {
-      expect(findLoadingIcon().exists()).toBe(true);
-      expect(findChartContainer().exists()).toBe(false);
-    });
+    await nextTick();
+    expect(findLoadingIcon().exists()).toBe(true);
+    expect(findChartContainer().exists()).toBe(false);
   });
 
-  it('renders chart when data is present', () => {
+  it('renders chart when data is present', async () => {
     wrapper.vm.$store.state.issueAnalytics.chartData = mockChartData;
 
-    return wrapper.vm.$nextTick(() => {
-      expect(findChartContainer().exists()).toBe(true);
-    });
+    await nextTick();
+    expect(findChartContainer().exists()).toBe(true);
   });
 
-  it('fetches data when filters are applied', () => {
+  it('fetches data when filters are applied', async () => {
     wrapper.vm.$store.state.issueAnalytics.filters = '?hello=world';
 
-    return wrapper.vm.$nextTick(() => {
-      expect(store.dispatch).toHaveBeenCalledTimes(2);
-      expect(store.dispatch.mock.calls[1]).toEqual(['issueAnalytics/fetchChartData', TEST_HOST]);
-    });
+    await nextTick();
+    expect(store.dispatch).toHaveBeenCalledTimes(2);
+    expect(store.dispatch.mock.calls[1]).toEqual(['issueAnalytics/fetchChartData', TEST_HOST]);
   });
 
-  it('renders empty state when chart data is empty', () => {
+  it('renders empty state when chart data is empty', async () => {
     wrapper.vm.$store.state.issueAnalytics.chartData = {};
 
-    return wrapper.vm.$nextTick(() => {
-      expect(findEmptyState().exists()).toBe(true);
-      expect(wrapper.vm.showNoDataEmptyState).toBe(true);
-    });
+    await nextTick();
+    expect(findEmptyState().exists()).toBe(true);
+    expect(wrapper.vm.showNoDataEmptyState).toBe(true);
   });
 
-  it('renders filters empty state when filters are applied and chart data is empty', () => {
+  it('renders filters empty state when filters are applied and chart data is empty', async () => {
     wrapper.vm.$store.state.issueAnalytics.chartData = {};
     wrapper.vm.$store.state.issueAnalytics.filters = '?hello=world';
 
-    return wrapper.vm.$nextTick(() => {
-      expect(findEmptyState().exists()).toBe(true);
-      expect(wrapper.vm.showFiltersEmptyState).toBe(true);
-    });
+    await nextTick();
+    expect(findEmptyState().exists()).toBe(true);
+    expect(wrapper.vm.showFiltersEmptyState).toBe(true);
   });
 
   it('renders the issues table', () => {

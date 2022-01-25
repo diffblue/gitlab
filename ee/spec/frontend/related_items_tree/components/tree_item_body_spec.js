@@ -94,10 +94,10 @@ describe('RelatedItemsTree', () => {
         allowIssuableHealthStatus: true,
       });
     };
-    const setShowLabels = (isShowingLabels) => {
+    const setShowLabels = async (isShowingLabels) => {
       wrapper.vm.$store.dispatch('setShowLabels', isShowingLabels);
 
-      return nextTick();
+      await nextTick();
     };
 
     beforeEach(() => {
@@ -119,60 +119,55 @@ describe('RelatedItemsTree', () => {
       describe('itemWebPath', () => {
         const mockPath = '/foo/bar';
 
-        it('returns value of `item.path`', () => {
+        it('returns value of `item.path`', async () => {
           wrapper.setProps({
             item: { ...mockItem, path: mockPath, webPath: undefined },
           });
 
-          return wrapper.vm.$nextTick(() => {
-            expect(wrapper.vm.itemWebPath).toBe(mockPath);
-          });
+          await nextTick();
+          expect(wrapper.vm.itemWebPath).toBe(mockPath);
         });
 
-        it('returns value of `item.webPath` when `item.path` is undefined', () => {
+        it('returns value of `item.webPath` when `item.path` is undefined', async () => {
           wrapper.setProps({
             item: { ...mockItem, path: undefined, webPath: mockPath },
           });
 
-          return wrapper.vm.$nextTick(() => {
-            expect(wrapper.vm.itemWebPath).toBe(mockPath);
-          });
+          await nextTick();
+          expect(wrapper.vm.itemWebPath).toBe(mockPath);
         });
       });
 
       describe('isOpen', () => {
-        it('returns true when `item.state` value is `opened`', () => {
+        it('returns true when `item.state` value is `opened`', async () => {
           wrapper.setProps({
             item: { ...mockItem, state: ChildState.Open },
           });
 
-          return wrapper.vm.$nextTick(() => {
-            expect(findIssueIcon().attributes('name')).toBe('issues');
-          });
+          await nextTick();
+          expect(findIssueIcon().attributes('name')).toBe('issues');
         });
       });
 
       describe('isBlocked', () => {
-        it('returns true when `item.blocked` value is `true`', () => {
+        it('returns true when `item.blocked` value is `true`', async () => {
           wrapper.setProps({
             item: { ...mockItem, blocked: true },
           });
 
-          return wrapper.vm.$nextTick(() => {
-            expect(findIssueIcon().attributes('name')).toBe('issue-block');
-          });
+          await nextTick();
+          expect(findIssueIcon().attributes('name')).toBe('issue-block');
         });
       });
 
       describe('isClosed', () => {
-        it('returns true when `item.state` value is `closed`', () => {
+        it('returns true when `item.state` value is `closed`', async () => {
           wrapper.setProps({
             item: { ...mockItem, state: ChildState.Closed },
           });
 
-          return wrapper.vm.$nextTick(() => {
-            expect(findIssueIcon().attributes('name')).toBe('issue-closed');
-          });
+          await nextTick();
+          expect(findIssueIcon().attributes('name')).toBe('issue-closed');
         });
       });
 
@@ -219,60 +214,55 @@ describe('RelatedItemsTree', () => {
       });
 
       describe('stateText', () => {
-        it('returns string `Opened` when `item.state` value is `opened`', () => {
+        it('returns string `Opened` when `item.state` value is `opened`', async () => {
           wrapper.setProps({
             item: { ...mockItem, state: ChildState.Open },
           });
 
-          return wrapper.vm.$nextTick(() => {
-            expect(findIssueIcon().props('ariaLabel')).toBe('Opened');
-          });
+          await nextTick();
+          expect(findIssueIcon().props('ariaLabel')).toBe('Opened');
         });
 
-        it('returns string `Closed` when `item.state` value is `closed`', () => {
+        it('returns string `Closed` when `item.state` value is `closed`', async () => {
           wrapper.setProps({
             item: { ...mockItem, state: ChildState.Closed },
           });
 
-          return wrapper.vm.$nextTick(() => {
-            expect(findIssueIcon().props('ariaLabel')).toBe('Closed');
-          });
+          await nextTick();
+          expect(findIssueIcon().props('ariaLabel')).toBe('Closed');
         });
       });
 
       describe('stateIconClass', () => {
-        it('returns string `issue-token-state-icon-open gl-text-green-500` when `item.state` value is `opened`', () => {
+        it('returns string `issue-token-state-icon-open gl-text-green-500` when `item.state` value is `opened`', async () => {
           wrapper.setProps({
             item: { ...mockItem, state: ChildState.Open },
           });
 
-          return wrapper.vm.$nextTick(() => {
-            expect(findIssueIcon().attributes('class')).toContain(
-              'issue-token-state-icon-open gl-text-green-500',
-            );
-          });
+          await nextTick();
+          expect(findIssueIcon().attributes('class')).toContain(
+            'issue-token-state-icon-open gl-text-green-500',
+          );
         });
 
-        it('return string `gl-text-red-500` when `item.blocked` value is `true`', () => {
+        it('return string `gl-text-red-500` when `item.blocked` value is `true`', async () => {
           wrapper.setProps({
             item: { ...mockItem, blocked: true },
           });
 
-          return wrapper.vm.$nextTick(() => {
-            expect(findIssueIcon().attributes('class')).toContain('gl-text-red-500');
-          });
+          await nextTick();
+          expect(findIssueIcon().attributes('class')).toContain('gl-text-red-500');
         });
 
-        it('returns string `issue-token-state-icon-closed gl-text-blue-500` when `item.state` value is `closed`', () => {
+        it('returns string `issue-token-state-icon-closed gl-text-blue-500` when `item.state` value is `closed`', async () => {
           wrapper.setProps({
             item: { ...mockItem, state: ChildState.Closed },
           });
 
-          return wrapper.vm.$nextTick(() => {
-            expect(findIssueIcon().attributes('class')).toContain(
-              'issue-token-state-icon-closed gl-text-blue-500',
-            );
-          });
+          await nextTick();
+          expect(findIssueIcon().attributes('class')).toContain(
+            'issue-token-state-icon-closed gl-text-blue-500',
+          );
         });
       });
 
@@ -288,14 +278,13 @@ describe('RelatedItemsTree', () => {
           expect(findLink().attributes('href')).toBe(mockItem.webPath);
         });
 
-        it('returns `null` when `itemWebPath` is empty', () => {
+        it('returns `null` when `itemWebPath` is empty', async () => {
           wrapper.setProps({
             item: { ...mockItem, webPath: '' },
           });
 
-          return wrapper.vm.$nextTick(() => {
-            expect(findLink().attributes('href')).toBeUndefined();
-          });
+          await nextTick();
+          expect(findLink().attributes('href')).toBeUndefined();
         });
       });
 
@@ -333,7 +322,7 @@ describe('RelatedItemsTree', () => {
               item: mockItem,
             });
 
-            await wrapper.vm.$nextTick();
+            await nextTick();
 
             expect(findIssueIcon().props('name')).toBe(stateIconName);
           });
@@ -440,7 +429,7 @@ describe('RelatedItemsTree', () => {
           },
         });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(wrapper.findComponent(ItemDueDate).props('closed')).toBe(true);
       });
@@ -459,7 +448,7 @@ describe('RelatedItemsTree', () => {
           },
         });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         const weight = wrapper.findComponent(ItemWeight);
 
@@ -503,7 +492,7 @@ describe('RelatedItemsTree', () => {
 
           enableHealthStatus();
 
-          await wrapper.vm.$nextTick();
+          await nextTick();
 
           expect(findIssueHealthStatus().exists()).toBe(true);
         });

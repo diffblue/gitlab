@@ -1,5 +1,5 @@
 import { GlSegmentedControl, GlDropdown, GlDropdownItem } from '@gitlab/ui';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 import RoadmapFilters from 'ee/roadmap/components/roadmap_filters.vue';
@@ -113,7 +113,7 @@ describe('RoadmapFilters', () => {
         });
         wrapper.vm.$store.dispatch('setSortedBy', 'end_date_asc');
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(global.window.location.href).toBe(
           `${TEST_HOST}/?state=${EPICS_STATES.CLOSED}&sort=end_date_asc&layout=MONTHS&author_username=root&label_name%5B%5D=Bug&milestone_title=4.0&confidential=true`,
@@ -136,7 +136,7 @@ describe('RoadmapFilters', () => {
       // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({ selectedDaterange: DATE_RANGES.THREE_YEARS });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       wrapper.findComponent(GlSegmentedControl).vm.$emit('input', PRESET_TYPES.OPENED);
 
@@ -243,7 +243,7 @@ describe('RoadmapFilters', () => {
           'not[myReactionEmoji]': 'thumbs_up',
         });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(filteredSearchBar.props('initialFilterValue')).toEqual(mockInitialFilterValue);
       });
@@ -252,11 +252,11 @@ describe('RoadmapFilters', () => {
         jest.spyOn(wrapper.vm, 'setFilterParams');
         jest.spyOn(wrapper.vm, 'fetchEpics');
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         filteredSearchBar.vm.$emit('onFilter', mockInitialFilterValue);
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(wrapper.vm.setFilterParams).toHaveBeenCalledWith({
           authorUsername: 'root',
@@ -274,11 +274,11 @@ describe('RoadmapFilters', () => {
         jest.spyOn(wrapper.vm, 'setSortedBy');
         jest.spyOn(wrapper.vm, 'fetchEpics');
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         filteredSearchBar.vm.$emit('onSort', 'end_date_asc');
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(wrapper.vm.setSortedBy).toHaveBeenCalledWith('end_date_asc');
         expect(wrapper.vm.fetchEpics).toHaveBeenCalled();
@@ -290,7 +290,7 @@ describe('RoadmapFilters', () => {
 
         filteredSearchBar.vm.$emit('onFilter', [], false);
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(wrapper.vm.setFilterParams).not.toHaveBeenCalled();
         expect(wrapper.vm.fetchEpics).not.toHaveBeenCalled();
@@ -340,7 +340,7 @@ describe('RoadmapFilters', () => {
           timeframeRangeType: DATE_RANGES.CURRENT_QUARTER,
         });
 
-        await wrapperWithDaterangeFilter.vm.$nextTick();
+        await nextTick();
       });
 
       afterEach(() => {
@@ -351,7 +351,7 @@ describe('RoadmapFilters', () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapperWithDaterangeFilter.setData({ selectedDaterange: DATE_RANGES.CURRENT_QUARTER });
-        await wrapperWithDaterangeFilter.vm.$nextTick();
+        await nextTick();
 
         const daterangeDropdown = wrapperWithDaterangeFilter.findByTestId('daterange-dropdown');
 
@@ -374,7 +374,7 @@ describe('RoadmapFilters', () => {
           // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
           // eslint-disable-next-line no-restricted-syntax
           wrapperWithDaterangeFilter.setData({ selectedDaterange });
-          await wrapperWithDaterangeFilter.vm.$nextTick();
+          await nextTick();
 
           const layoutSwitches = wrapperWithDaterangeFilter.findComponent(GlSegmentedControl);
 

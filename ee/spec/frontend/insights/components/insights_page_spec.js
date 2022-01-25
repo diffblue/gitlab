@@ -1,7 +1,7 @@
 import { GlEmptyState } from '@gitlab/ui';
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 import InsightsChart from 'ee/insights/components/insights_chart.vue';
@@ -94,7 +94,7 @@ describe('Insights page component', () => {
       it('reflects new state', async () => {
         wrapper.setProps({ pageConfig: pageInfoNoCharts });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(wrapper.findComponent(GlEmptyState).exists()).toBe(true);
       });

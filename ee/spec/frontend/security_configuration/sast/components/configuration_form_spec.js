@@ -2,6 +2,7 @@ import { GlLink } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { shallowMount } from '@vue/test-utils';
 import { merge } from 'lodash';
+import { nextTick } from 'vue';
 import DynamicFields from 'ee/security_configuration/components/dynamic_fields.vue';
 import ExpandableSection from 'ee/security_configuration/components/expandable_section.vue';
 import AnalyzerConfiguration from 'ee/security_configuration/sast/components/analyzer_configuration.vue';
@@ -233,9 +234,9 @@ describe('ConfigurationForm component', () => {
       });
 
       describe('when alert-tip is dismissed', () => {
-        beforeEach(() => {
+        beforeEach(async () => {
           findAnalyzersSectionTip().vm.$emit('dismiss');
-          return wrapper.vm.$nextTick();
+          await nextTick();
         });
 
         it('should not be displayed', () => {

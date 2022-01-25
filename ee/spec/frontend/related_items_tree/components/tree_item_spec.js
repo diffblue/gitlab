@@ -1,6 +1,6 @@
 import { GlButton, GlLoadingIcon, GlIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 import TreeItem from 'ee/related_items_tree/components/tree_item.vue';
@@ -153,17 +153,16 @@ describe('RelatedItemsTree', () => {
         expect(collapsedIcon.props('name')).toBe('chevron-right');
       });
 
-      it('renders loading icon when item expand is in progress', () => {
+      it('renders loading icon when item expand is in progress', async () => {
         wrapper.vm.$store.dispatch('requestItems', {
           parentItem: mockItem,
           isSubItem: true,
         });
 
-        return wrapper.vm.$nextTick(() => {
-          const loadingIcon = wrapper.findComponent(GlLoadingIcon);
+        await nextTick();
+        const loadingIcon = wrapper.findComponent(GlLoadingIcon);
 
-          expect(loadingIcon.isVisible()).toBe(true);
-        });
+        expect(loadingIcon.isVisible()).toBe(true);
       });
 
       it('renders tree item body component', () => {

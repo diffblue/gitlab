@@ -9,7 +9,7 @@ import {
   GlDropdownSectionHeader,
 } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 import mockProjects from 'test_fixtures_static/projects.json';
@@ -72,16 +72,15 @@ describe('CreateIssueForm', () => {
 
   describe('computed', () => {
     describe('dropdownToggleText', () => {
-      it('returns project name with name_with_namespace when `selectedProject` is not empty', () => {
+      it('returns project name with name_with_namespace when `selectedProject` is not empty', async () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
           selectedProject: mockProjects[0],
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.dropdownToggleText).toBe(mockProjects[0].name_with_namespace);
-        });
+        await nextTick();
+        expect(wrapper.vm.dropdownToggleText).toBe(mockProjects[0].name_with_namespace);
       });
       it('returns project name with namespace when `selectedProject` is not empty and dont have name_with_namespace', async () => {
         const project = { ...mockProjects[0], name_with_namespace: undefined, namespace: 'foo' };
@@ -91,7 +90,7 @@ describe('CreateIssueForm', () => {
           selectedProject: project,
         });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(wrapper.vm.dropdownToggleText).toBe(project.namespace);
       });
@@ -100,17 +99,16 @@ describe('CreateIssueForm', () => {
 
   describe('methods', () => {
     describe('cancel', () => {
-      it('emits event `cancel` on component', () => {
+      it('emits event `cancel` on component', async () => {
         wrapper.vm.cancel();
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.emitted('cancel')).toBeTruthy();
-        });
+        await nextTick();
+        expect(wrapper.emitted('cancel')).toBeTruthy();
       });
     });
 
     describe('createIssue', () => {
-      it('emits event `submit` on component when `selectedProject` is not empty', () => {
+      it('emits event `submit` on component when `selectedProject` is not empty', async () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
@@ -125,11 +123,10 @@ describe('CreateIssueForm', () => {
 
         wrapper.vm.createIssue();
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.emitted('submit')[0]).toEqual(
-            expect.arrayContaining([{ issuesEndpoint: 'foo', title: 'Some issue' }]),
-          );
-        });
+        await nextTick();
+        expect(wrapper.emitted('submit')[0]).toEqual(
+          expect.arrayContaining([{ issuesEndpoint: 'foo', title: 'Some issue' }]),
+        );
       });
     });
 
@@ -164,21 +161,20 @@ describe('CreateIssueForm', () => {
       expect(projectsDropdownButton.props('text')).toBe('Select a project');
     });
 
-    it('renders Projects dropdown contents', () => {
+    it('renders Projects dropdown contents', async () => {
       wrapper.vm.$store.dispatch('receiveProjectsSuccess', mockProjects);
 
-      return wrapper.vm.$nextTick(() => {
-        const projectsDropdownButton = wrapper.findComponent(GlDropdown);
-        const dropdownItems = projectsDropdownButton.findAllComponents(GlDropdownItem);
-        const dropdownItem = dropdownItems.at(0);
+      await nextTick();
+      const projectsDropdownButton = wrapper.findComponent(GlDropdown);
+      const dropdownItems = projectsDropdownButton.findAllComponents(GlDropdownItem);
+      const dropdownItem = dropdownItems.at(0);
 
-        expect(projectsDropdownButton.findComponent(GlSearchBoxByType).exists()).toBe(true);
-        expect(projectsDropdownButton.findComponent(GlLoadingIcon).exists()).toBe(true);
-        expect(dropdownItems).toHaveLength(mockProjects.length);
-        expect(dropdownItem.text()).toContain(mockProjects[0].name);
-        expect(dropdownItem.text()).toContain(mockProjects[0].namespace.name);
-        expect(dropdownItem.findComponent(ProjectAvatar).exists()).toBe(true);
-      });
+      expect(projectsDropdownButton.findComponent(GlSearchBoxByType).exists()).toBe(true);
+      expect(projectsDropdownButton.findComponent(GlLoadingIcon).exists()).toBe(true);
+      expect(dropdownItems).toHaveLength(mockProjects.length);
+      expect(dropdownItem.text()).toContain(mockProjects[0].name);
+      expect(dropdownItem.text()).toContain(mockProjects[0].namespace.name);
+      expect(dropdownItem.findComponent(ProjectAvatar).exists()).toBe(true);
     });
 
     it('renders dropdown contents without recent items when `recentItems` are empty', () => {
@@ -195,7 +191,7 @@ describe('CreateIssueForm', () => {
 
       wrapper.vm.setRecentItems();
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       const projectsDropdownButton = wrapper.findComponent(GlDropdown);
 
@@ -216,7 +212,7 @@ describe('CreateIssueForm', () => {
 
       wrapper.vm.setRecentItems();
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       const projectsDropdownButton = wrapper.findComponent(GlDropdown);
 
@@ -229,7 +225,7 @@ describe('CreateIssueForm', () => {
       removeLocalstorageFrequentItems();
     });
 
-    it('renders Projects dropdown contents containing only matching project when searchKey is provided', () => {
+    it('renders Projects dropdown contents containing only matching project when searchKey is provided', async () => {
       const searchKey = 'Underscore';
       const filteredMockProjects = mockProjects.filter((project) => project.name === searchKey);
       jest.spyOn(wrapper.vm, 'fetchProjects').mockImplementation(jest.fn());
@@ -242,17 +238,12 @@ describe('CreateIssueForm', () => {
         searchKey,
       });
 
-      return wrapper.vm
-        .$nextTick()
-        .then(() => {
-          wrapper.vm.$store.dispatch('receiveProjectsSuccess', filteredMockProjects);
-        })
-        .then(() => {
-          expect(wrapper.findAllComponents(GlDropdownItem)).toHaveLength(1);
-        });
+      await nextTick();
+      await wrapper.vm.$store.dispatch('receiveProjectsSuccess', filteredMockProjects);
+      expect(wrapper.findAllComponents(GlDropdownItem)).toHaveLength(1);
     });
 
-    it('renders Projects dropdown contents containing string string "No matches found" when searchKey provided does not match any project', () => {
+    it('renders Projects dropdown contents containing string string "No matches found" when searchKey provided does not match any project', async () => {
       const searchKey = "this-project-shouldn't exist";
       const filteredMockProjects = mockProjects.filter((project) => project.name === searchKey);
       jest.spyOn(wrapper.vm, 'fetchProjects').mockImplementation(jest.fn());
@@ -265,14 +256,9 @@ describe('CreateIssueForm', () => {
         searchKey,
       });
 
-      return wrapper.vm
-        .$nextTick()
-        .then(() => {
-          wrapper.vm.$store.dispatch('receiveProjectsSuccess', filteredMockProjects);
-        })
-        .then(() => {
-          expect(wrapper.find('.dropdown-contents').text()).toContain('No matches found');
-        });
+      await nextTick();
+      await wrapper.vm.$store.dispatch('receiveProjectsSuccess', filteredMockProjects);
+      expect(wrapper.find('.dropdown-contents').text()).toContain('No matches found');
     });
 
     it('renders `Create issue` button', () => {
@@ -282,29 +268,27 @@ describe('CreateIssueForm', () => {
       expect(createIssueButton.text()).toBe('Create issue');
     });
 
-    it('renders loading icon within `Create issue` button when `itemCreateInProgress` is true', () => {
+    it('renders loading icon within `Create issue` button when `itemCreateInProgress` is true', async () => {
       wrapper.vm.$store.dispatch('requestCreateItem');
 
-      return wrapper.vm.$nextTick(() => {
-        const createIssueButton = wrapper.findAllComponents(GlButton).at(0);
+      await nextTick();
+      const createIssueButton = wrapper.findAllComponents(GlButton).at(0);
 
-        expect(createIssueButton.exists()).toBe(true);
-        expect(createIssueButton.props('disabled')).toBe(true);
-        expect(createIssueButton.props('loading')).toBe(true);
-      });
+      expect(createIssueButton.exists()).toBe(true);
+      expect(createIssueButton.props('disabled')).toBe(true);
+      expect(createIssueButton.props('loading')).toBe(true);
     });
 
-    it('renders loading icon within `Create issue` button when `recentItemFetchInProgress` is true', () => {
+    it('renders loading icon within `Create issue` button when `recentItemFetchInProgress` is true', async () => {
       wrapper.vm.recentItemFetchInProgress = true;
 
-      return wrapper.vm.$nextTick(() => {
-        const createIssueButton = wrapper.findAllComponents(GlButton).at(0);
+      await nextTick();
+      const createIssueButton = wrapper.findAllComponents(GlButton).at(0);
 
-        expect(createIssueButton.exists()).toBe(true);
-        expect(createIssueButton.props()).toMatchObject({
-          disabled: true,
-          loading: true,
-        });
+      expect(createIssueButton.exists()).toBe(true);
+      expect(createIssueButton.props()).toMatchObject({
+        disabled: true,
+        loading: true,
       });
     });
 

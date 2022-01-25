@@ -1,5 +1,6 @@
 import { GlIntersectionObserver, GlLoadingIcon } from '@gitlab/ui';
 
+import { nextTick } from 'vue';
 import EpicItem from 'ee/roadmap/components/epic_item.vue';
 import EpicsListSection from 'ee/roadmap/components/epics_list_section.vue';
 import {
@@ -130,14 +131,13 @@ describe('EpicsListSectionComponent', () => {
     });
 
     describe('epicsWithAssociatedParents', () => {
-      it('should return epics which contain parent associations', () => {
+      it('should return epics which contain parent associations', async () => {
         wrapper.setProps({
           epics: mockEpicsWithParents,
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.epicsWithAssociatedParents).toEqual(mockEpicsWithParents);
-        });
+        await nextTick();
+        expect(wrapper.vm.epicsWithAssociatedParents).toEqual(mockEpicsWithParents);
       });
     });
 
@@ -172,42 +172,39 @@ describe('EpicsListSectionComponent', () => {
         expect(wrapper.vm.bufferSize).toBe(16);
       });
 
-      it('sets value of `offsetLeft` with parentElement.offsetLeft', () => {
-        return wrapper.vm.$nextTick(() => {
-          // During tests, there's no `$el.parentElement` present
-          // hence offsetLeft is 0.
-          expect(wrapper.vm.offsetLeft).toBe(0);
-        });
+      it('sets value of `offsetLeft` with parentElement.offsetLeft', async () => {
+        await nextTick();
+        // During tests, there's no `$el.parentElement` present
+        // hence offsetLeft is 0.
+        expect(wrapper.vm.offsetLeft).toBe(0);
       });
 
       it('calls `scrollToCurrentDay` following the component render', async () => {
         // Original method implementation waits for render cycle
         // to complete at 2 levels before scrolling.
-        await wrapper.vm.$nextTick(); // set offsetLeft value
-        await wrapper.vm.$nextTick(); // Wait for nextTick before scroll
+        await nextTick(); // set offsetLeft value
+        await nextTick(); // Wait for nextTick before scroll
         expect(scrollToCurrentDay).toHaveBeenCalledWith(wrapper.vm.$el);
       });
 
-      it('sets style object to `emptyRowContainerStyles`', () => {
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.emptyRowContainerStyles).toEqual(
-            expect.objectContaining({
-              height: '0px',
-            }),
-          );
-        });
+      it('sets style object to `emptyRowContainerStyles`', async () => {
+        await nextTick();
+        expect(wrapper.vm.emptyRowContainerStyles).toEqual(
+          expect.objectContaining({
+            height: '0px',
+          }),
+        );
       });
     });
 
     describe('getEmptyRowContainerStyles', () => {
-      it('returns empty object when there are no epics available to render', () => {
+      it('returns empty object when there are no epics available to render', async () => {
         wrapper.setProps({
           epics: [],
         });
 
-        return wrapper.vm.$nextTick(() => {
-          expect(wrapper.vm.getEmptyRowContainerStyles()).toEqual({});
-        });
+        await nextTick();
+        expect(wrapper.vm.getEmptyRowContainerStyles()).toEqual({});
       });
 
       it('returns object containing `height` when there epics available to render', () => {
@@ -276,7 +273,7 @@ describe('EpicsListSectionComponent', () => {
     it('renders gl-loading icon when epicsFetchForNextPageInProgress is true', async () => {
       wrapper.vm.$store.commit(REQUEST_EPICS_FOR_NEXT_PAGE);
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.findByTestId('next-page-loading').text()).toContain('Loading epics');
       expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
@@ -293,15 +290,14 @@ describe('EpicsListSectionComponent', () => {
     });
   });
 
-  it('expands to show child epics when epic is toggled', () => {
+  it('expands to show child epics when epic is toggled', async () => {
     const epic = mockEpics[0];
 
     expect(store.state.childrenFlags[epic.id].itemExpanded).toBe(false);
 
     wrapper.vm.toggleIsEpicExpanded(epic);
 
-    return wrapper.vm.$nextTick().then(() => {
-      expect(store.state.childrenFlags[epic.id].itemExpanded).toBe(true);
-    });
+    await nextTick();
+    expect(store.state.childrenFlags[epic.id].itemExpanded).toBe(true);
   });
 });

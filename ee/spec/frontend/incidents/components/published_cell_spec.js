@@ -1,5 +1,6 @@
 import { GlIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import PublishedCell from 'ee/incidents/components/published_cell.vue';
 
 describe('Incidents Published Cell', () => {
@@ -37,12 +38,11 @@ describe('Incidents Published Cell', () => {
       expect(findCell().text()).toBe('Unpublished');
     });
 
-    it('render a status success icon if statusPagePublishedIncident returns true', () => {
+    it('render a status success icon if statusPagePublishedIncident returns true', async () => {
       wrapper.setProps({ statusPagePublishedIncident: true });
 
-      return wrapper.vm.$nextTick().then(() => {
-        expect(findCell().findComponent(GlIcon).exists()).toBe(true);
-      });
+      await nextTick();
+      expect(findCell().findComponent(GlIcon).exists()).toBe(true);
     });
   });
 });

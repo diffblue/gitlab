@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import DetectedLicensesTable from 'ee/license_compliance/components/detected_licenses_table.vue';
 import LicensesTable from 'ee/license_compliance/components/licenses_table.vue';
 import createStore from 'ee/license_compliance/store';
@@ -29,7 +30,7 @@ describe('DetectedLicenesTable component', () => {
     expect(componentWrapper.props()).toEqual(expect.objectContaining(props));
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     factory();
 
     store.dispatch(`${namespace}/receiveLicensesSuccess`, {
@@ -39,7 +40,7 @@ describe('DetectedLicenesTable component', () => {
 
     jest.spyOn(store, 'dispatch').mockImplementation();
 
-    return wrapper.vm.$nextTick();
+    await nextTick();
   });
 
   afterEach(() => {
@@ -76,7 +77,7 @@ describe('DetectedLicenesTable component', () => {
   `('given $context', ({ isLoading, errorLoading, isListEmpty, initialized }) => {
     let moduleState;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       moduleState = Object.assign(store.state[namespace], {
         isLoading,
         errorLoading,
@@ -88,7 +89,7 @@ describe('DetectedLicenesTable component', () => {
         moduleState.pageInfo.total = 0;
       }
 
-      return wrapper.vm.$nextTick();
+      await nextTick();
     });
 
     // See https://github.com/jest-community/eslint-plugin-jest/issues/229 for

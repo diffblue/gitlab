@@ -1,5 +1,5 @@
 import { GlLoadingIcon } from '@gitlab/ui';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import EpicsListEmpty from 'ee/roadmap/components/epics_list_empty.vue';
@@ -131,7 +131,7 @@ describe('RoadmapApp', () => {
         epicIid: mockFormattedEpic.iid,
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.findComponent(RoadmapFilters).exists()).toBe(false);
     });
