@@ -118,6 +118,40 @@
     },
     {
       "category": "sast",
+      "name": "Possible unprotected redirect",
+      "message": "Possible unprotected redirect",
+      "description": "Possible unprotected redirect near line 46",
+      "cve": "373414e0effe673bb93d1d8994f3e511ff089ce79337a16577e087556e9ae3cd",
+      "severity": "Low",
+      "confidence": "Low",
+      "scanner": {
+        "id": "brakeman",
+        "name": "Brakeman"
+      },
+      "location": {
+        "file": "app/controllers/groups_controller.rb",
+        "start_line": 6,
+        "class": "GroupsController",
+        "method": "new_group"
+      },
+      "flags": [
+        {
+          "type": "",
+          "origin": "",
+          "description": ""
+        }
+      ],
+      "identifiers": [
+        {
+          "type": "brakeman_warning_code",
+          "name": "Brakeman Warning Code 18",
+          "value": "18",
+          "url": "https://brakemanscanner.org/docs/warning_types/redirect/"
+        }
+      ]
+    },
+    {
+      "category": "sast",
       "name": "Cipher with no integrity",
       "message": "Cipher with no integrity",
       "cve": "groovy/src/main/java/com/gitlab/security_products/tests/App.groovy:29:CIPHER_INTEGRITY",
