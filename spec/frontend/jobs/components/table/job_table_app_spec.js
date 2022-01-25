@@ -1,8 +1,7 @@
 import { GlSkeletonLoader, GlAlert, GlEmptyState, GlPagination } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import { nextTick } from 'vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import getJobsQuery from '~/jobs/components/table/graphql/queries/get_jobs.query.graphql';
