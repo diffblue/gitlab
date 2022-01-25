@@ -61,6 +61,10 @@ module Gitlab
         "#{target_name}-migrations"
       end
 
+      def index_name_with_timestamp(alias_name)
+        "#{alias_name}-#{Time.now.utc.strftime('%Y%m%d-%H%M')}"
+      end
+
       def create_migrations_index
         settings = { number_of_shards: 1 }
         mappings = {
@@ -114,7 +118,7 @@ module Gitlab
         proxies = standalone_indices_proxies(target_classes: target_classes)
         proxies.each_with_object({}) do |proxy, indices|
           alias_name = proxy.index_name
-          new_index_name = "#{alias_name}-#{Time.now.strftime("%Y%m%d-%H%M")}"
+          new_index_name = index_name_with_timestamp(alias_name)
 
           create_index(new_index_name, alias_name, with_alias, proxy.settings.to_hash, proxy.mappings.to_hash, options)
           indices[new_index_name] = alias_name

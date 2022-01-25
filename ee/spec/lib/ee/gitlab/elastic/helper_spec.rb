@@ -63,6 +63,14 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
     end
   end
 
+  describe '#index_name_with_timestamp', time_travel_to: '2022-01-02 10:30:45 -0700' do
+    subject { helper.index_name_with_timestamp('gitlab-production') }
+
+    it 'returns correct index name' do
+      is_expected.to eq('gitlab-production-20220102-1730')
+    end
+  end
+
   describe '#create_migrations_index' do
     after do
       helper.delete_migrations_index
