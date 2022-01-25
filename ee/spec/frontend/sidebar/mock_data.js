@@ -9,12 +9,25 @@ export const mockIssue = {
 
 export const mockIssueId = 'gid://gitlab/Issue/1';
 
+export const mockCadence1 = {
+  id: 'gid://gitlab/Iterations::Cadence/1',
+  title: 'Plan cadence',
+};
+
+export const mockCadence2 = {
+  id: 'gid://gitlab/Iterations::Cadence/2',
+  title: 'Automatic cadence',
+};
+
 export const mockIteration1 = {
   __typename: 'Iteration',
   id: 'gid://gitlab/Iteration/1',
-  title: 'Foobar Iteration',
+  title: null,
   webUrl: 'http://gdk.test:3000/groups/gitlab-org/-/iterations/1',
   state: 'opened',
+  startDate: '2021-10-05',
+  dueDate: '2021-10-10',
+  iterationCadence: mockCadence1,
 };
 
 export const mockIteration2 = {
@@ -23,6 +36,9 @@ export const mockIteration2 = {
   title: 'Awesome Iteration',
   webUrl: 'http://gdk.test:3000/groups/gitlab-org/-/iterations/2',
   state: 'opened',
+  startDate: '2021-10-12',
+  dueDate: '2021-10-17',
+  iterationCadence: mockCadence2,
 };
 
 export const mockEpic1 = {
@@ -45,7 +61,7 @@ export const mockGroupIterationsResponse = {
   data: {
     workspace: {
       id: '1',
-      iterations: {
+      attributes: {
         nodes: [mockIteration1, mockIteration2],
       },
       __typename: 'IterationConnection',
@@ -90,6 +106,36 @@ export const emptyGroupEpicsResponse = {
       __typename: 'EpicConnection',
     },
     __typename: 'Group',
+  },
+};
+
+export const mockCurrentIterationResponse1 = {
+  data: {
+    errors: [],
+    workspace: {
+      id: '1',
+      issuable: {
+        id: mockIssueId,
+        attribute: mockIteration1,
+        __typename: 'Issue',
+      },
+      __typename: 'Project',
+    },
+  },
+};
+
+export const mockCurrentIterationResponse2 = {
+  data: {
+    errors: [],
+    workspace: {
+      id: '1',
+      issuable: {
+        id: mockIssueId,
+        attribute: mockIteration2,
+        __typename: 'Issue',
+      },
+      __typename: 'Project',
+    },
   },
 };
 

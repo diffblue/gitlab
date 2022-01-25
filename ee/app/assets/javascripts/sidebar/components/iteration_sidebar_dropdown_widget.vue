@@ -7,9 +7,10 @@ import {
   GlLink,
 } from '@gitlab/ui';
 import SidebarDropdownWidget from 'ee/sidebar/components/sidebar_dropdown_widget.vue';
-import IterationPeriod from 'ee/iterations/components/iteration_period.vue';
+import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 import { getIterationPeriod, groupByIterationCadences } from 'ee/iterations/utils';
 import { IssuableType } from '~/issues/constants';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { IssuableAttributeType } from '../constants';
 
 export default {
@@ -21,8 +22,9 @@ export default {
     GlIcon,
     GlLink,
     SidebarDropdownWidget,
-    IterationPeriod,
+    IterationTitle,
   },
+  mixins: [glFeatureFlagMixin()],
   props: {
     attrWorkspacePath: {
       required: true,
@@ -48,12 +50,8 @@ export default {
     getCadenceTitle(currentIteration) {
       return currentIteration?.iterationCadence?.title;
     },
-    getIterationPeriod(iteration) {
-      return getIterationPeriod({ startDate: iteration?.startDate, dueDate: iteration?.dueDate });
-    },
-    groupByIterationCadences(iterations) {
-      return groupByIterationCadences(iterations);
-    },
+    groupByIterationCadences,
+    getIterationPeriod,
   },
 };
 </script>
@@ -66,8 +64,8 @@ export default {
     :issuable-type="issuableType"
     :workspace-path="workspacePath"
   >
-    <template #value="{ attributeTitle, attributeUrl, currentAttribute }">
-      <p class="gl-font-weight-bold gl-line-height-20 gl-m-0">
+    <template #value="{ attributeUrl, currentAttribute }">
+      <p v-if="glFeatures.iterationCadences" class="gl-font-weight-bold gl-line-height-20 gl-m-0">
         {{ getCadenceTitle(currentAttribute) }}
       </p>
       <gl-link
@@ -77,15 +75,19 @@ export default {
       >
         <div>
           <gl-icon name="iteration" class="gl-mr-1" />
-          {{ attributeTitle }}
+          {{ getIterationPeriod(currentAttribute) }}
         </div>
-        <IterationPeriod>{{ getIterationPeriod(currentAttribute) }}</IterationPeriod>
+        <iteration-title v-if="currentAttribute.title" :title="currentAttribute.title" />
       </gl-link>
     </template>
     <template #list="{ attributesList = [], isAttributeChecked, updateAttribute }">
       <template v-for="(cadence, index) in groupByIterationCadences(attributesList)">
-        <gl-dropdown-divider v-if="index !== 0" :key="index" />
-        <gl-dropdown-section-header :key="cadence.title">
+        <gl-dropdown-divider v-if="index !== 0 && glFeatures.iterationCadences" :key="index" />
+        <gl-dropdown-section-header
+          v-if="glFeatures.iterationCadences"
+          :key="cadence.title"
+          data-testid="cadence-title"
+        >
           {{ cadence.title }}
         </gl-dropdown-section-header>
         <gl-dropdown-item
@@ -96,8 +98,8 @@ export default {
           :data-testid="`${$options.issuableAttribute}-items`"
           @click="updateAttribute(iteration.id)"
         >
-          {{ iteration.title }}
-          <IterationPeriod>{{ iteration.period }}</IterationPeriod>
+          {{ iteration.period }}
+          <iteration-title v-if="iteration.title" :title="iteration.title" />
         </gl-dropdown-item>
       </template>
     </template>
