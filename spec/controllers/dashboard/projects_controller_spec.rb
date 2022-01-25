@@ -129,7 +129,7 @@ RSpec.describe Dashboard::ProjectsController, :aggregate_failures do
         end
       end
 
-      it 'does not include projects pending deletion' do
+      it 'does not include projects aimed for deletion' do
         subject
 
         expect(assigns(:projects).count).to eq(2)
