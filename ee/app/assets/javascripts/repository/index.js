@@ -2,6 +2,7 @@ import Vue from 'vue';
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { __ } from '~/locale';
+import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
 import initTree from '~/repository';
 import CodeOwners from './components/code_owners.vue';
 
@@ -13,7 +14,7 @@ export default () => {
 
     if (!toggleBtn) return;
 
-    toggleBtn.addEventListener('click', (e) => {
+    toggleBtn.addEventListener('click', async (e) => {
       e.preventDefault();
 
       const { dataset } = e.target;
@@ -22,8 +23,9 @@ export default () => {
           ? __('Are you sure you want to lock this directory?')
           : __('Are you sure you want to unlock this directory?');
 
-      // eslint-disable-next-line no-alert
-      if (!window.confirm(message)) {
+      const confirmed = await confirmAction(message);
+
+      if (!confirmed) {
         return;
       }
 
