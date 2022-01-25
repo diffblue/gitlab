@@ -6,7 +6,7 @@ import IterationsList from 'ee/iterations/components/iterations_list.vue';
 describe('Iterations list', () => {
   let wrapper;
 
-  const findGlLink = () => wrapper.find(GlLink);
+  const findGlLink = () => wrapper.findComponent(GlLink);
 
   const mountComponent = (propsData = { iterations: [] }) => {
     wrapper = shallowMount(IterationsList, {

@@ -77,7 +77,7 @@ describe('Iteration Form', () => {
     wrapper.destroy();
   });
 
-  const findPageTitle = () => wrapper.find({ ref: 'pageTitle' });
+  const findPageTitle = () => wrapper.findComponent({ ref: 'pageTitle' });
   const findTitle = () => wrapper.find('#iteration-title');
   const findDescription = () => wrapper.find('#iteration-description');
   const findStartDate = () => wrapper.find('#iteration-start-date');
