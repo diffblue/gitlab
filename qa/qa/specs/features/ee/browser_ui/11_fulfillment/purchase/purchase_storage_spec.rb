@@ -17,7 +17,11 @@ module QA
     end
   end
 
-  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging } do
+  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging }, quarantine: {
+    only: { subdomain: %i[staging] },
+    issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/350856",
+    type: :broken
+  } do
     let(:hash) { SecureRandom.hex(4) }
     let(:user) do
       Resource::User.fabricate_via_api! do |user|
