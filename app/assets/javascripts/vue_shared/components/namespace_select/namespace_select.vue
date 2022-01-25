@@ -83,6 +83,10 @@ export default {
     selectedNamespaceText() {
       return this.selectedNamespace?.humanName || this.defaultText;
     },
+    filteredEmptyNamespaceTitle() {
+      const { includeEmptyNamespace, emptyNamespaceTitle, searchTerm } = this;
+      return includeEmptyNamespace && emptyNamespaceTitle.toLowerCase().includes(searchTerm);
+    },
   },
   methods: {
     handleSelect(item) {
@@ -101,7 +105,7 @@ export default {
     <template #header>
       <gl-search-box-by-type v-model.trim="searchTerm" />
     </template>
-    <div v-if="includeEmptyNamespace">
+    <div v-if="filteredEmptyNamespaceTitle">
       <gl-dropdown-item
         data-qa-selector="namespaces_list_item"
         @click="handleSelectEmptyNamespace()"

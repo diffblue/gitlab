@@ -1,3 +1,4 @@
+import { nextTick } from 'vue';
 import { GlDropdown, GlDropdownItem, GlDropdownSectionHeader } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import NamespaceSelect, {
@@ -99,12 +100,12 @@ describe('Namespace Select', () => {
   describe('with an empty namespace option', () => {
     const emptyNamespaceTitle = 'No namespace selected';
 
-    beforeEach(() => {
+    beforeEach(async () => {
       wrapper = createComponent({
         includeEmptyNamespace: true,
         emptyNamespaceTitle,
       });
-      return wrapper.vm.$nextTick();
+      await nextTick();
     });
 
     it('includes the empty namespace', () => {

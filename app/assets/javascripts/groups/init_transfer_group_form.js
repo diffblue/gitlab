@@ -41,7 +41,7 @@ export default () => {
         },
         on: {
           confirm: () => {
-            if (targetFormId) document.getElementById(targetFormId)?.submit();
+            document.getElementById(targetFormId)?.submit();
           },
         },
       });
