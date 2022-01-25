@@ -239,7 +239,7 @@ RSpec.describe DastSiteProfile, type: :model do
         it 'returns a collection of variables with api configuration only', :aggregate_failures do
           expect(keys).not_to include('DAST_WEBSITE')
 
-          expect(collection).to include(key: 'DAST_API_SPECIFICATION', value: subject.dast_site.url, public: true)
+          expect(collection).to include(key: 'DAST_API_OPENAPI', value: subject.dast_site.url, public: true)
           expect(collection).to include(key: 'DAST_API_HOST_OVERRIDE', value: URI(subject.dast_site.url).host, public: true)
         end
       end
