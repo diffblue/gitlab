@@ -500,6 +500,7 @@ describe('Roadmap Vuex Actions', () => {
           end: '2018-12-31',
         },
         includeDescendants: true,
+        includeAncestors: true,
       };
     });
 

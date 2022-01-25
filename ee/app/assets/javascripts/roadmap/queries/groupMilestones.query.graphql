@@ -3,11 +3,17 @@ query groupMilestonesEE(
   $state: MilestoneStateEnum
   $timeframe: Timeframe
   $includeDescendants: Boolean
+  $includeAncestors: Boolean
 ) {
   group(fullPath: $fullPath) {
     id
     name
-    milestones(state: $state, includeDescendants: $includeDescendants, timeframe: $timeframe) {
+    milestones(
+      state: $state
+      includeDescendants: $includeDescendants
+      includeAncestors: $includeAncestors
+      timeframe: $timeframe
+    ) {
       edges {
         node {
           id
