@@ -245,7 +245,7 @@ module Gitlab
           private
 
           def validation_message
-            'should be an array of strings or regexps using re2 syntax'
+            'should be an array of strings or regular expressions using re2 syntax'
           end
 
           def validate_array_of_strings_or_regexps(values)
@@ -270,7 +270,7 @@ module Gitlab
           #
           def validation_message
             if ::Feature.enabled?(:allow_unsafe_ruby_regexp, default_enabled: :yaml)
-              'should be an array of strings or regexps'
+              'should be an array of strings or regular expressions'
             else
               super
             end

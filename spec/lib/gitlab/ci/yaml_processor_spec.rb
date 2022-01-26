@@ -613,13 +613,13 @@ module Gitlab
           context 'when it is an array of integers' do
             let(:only) { [1, 1] }
 
-            it_behaves_like 'returns errors', 'jobs:rspec:only config should be an array of strings or regexps using re2 syntax'
+            it_behaves_like 'returns errors', 'jobs:rspec:only config should be an array of strings or regular expressions using re2 syntax'
           end
 
           context 'when it is invalid regex' do
             let(:only) { ["/*invalid/"] }
 
-            it_behaves_like 'returns errors', 'jobs:rspec:only config should be an array of strings or regexps using re2 syntax'
+            it_behaves_like 'returns errors', 'jobs:rspec:only config should be an array of strings or regular expressions using re2 syntax'
           end
         end
 
@@ -637,13 +637,13 @@ module Gitlab
           context 'when it is an array of integers' do
             let(:except) { [1, 1] }
 
-            it_behaves_like 'returns errors', 'jobs:rspec:except config should be an array of strings or regexps using re2 syntax'
+            it_behaves_like 'returns errors', 'jobs:rspec:except config should be an array of strings or regular expressions using re2 syntax'
           end
 
           context 'when it is invalid regex' do
             let(:except) { ["/*invalid/"] }
 
-            it_behaves_like 'returns errors', 'jobs:rspec:except config should be an array of strings or regexps using re2 syntax'
+            it_behaves_like 'returns errors', 'jobs:rspec:except config should be an array of strings or regular expressions using re2 syntax'
           end
         end
       end
