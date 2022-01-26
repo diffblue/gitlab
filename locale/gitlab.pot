@@ -41154,6 +41154,9 @@ msgstr ""
 msgid "You may close the milestone now."
 msgstr ""
 
+msgid "You must be authenticated to access this path."
+msgstr ""
+
 msgid "You must be logged in to search across all of GitLab"
 msgstr ""
 
