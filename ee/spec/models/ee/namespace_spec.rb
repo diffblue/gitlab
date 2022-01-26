@@ -913,11 +913,19 @@ RSpec.describe Namespace do
     end
   end
 
-  shared_context 'project bot users' do
+  shared_context 'bot user for project' do
     let(:project_bot) { create(:user, :project_bot) }
 
     before do
       project.add_maintainer(project_bot)
+    end
+  end
+
+  shared_context 'bot user for group' do
+    let(:group_bot) { create(:user, :project_bot) }
+
+    before do
+      group.add_maintainer(group_bot)
     end
   end
 
@@ -989,11 +997,18 @@ RSpec.describe Namespace do
               expect(billed_user_ids[:shared_project_user_ids]).to match_array([])
             end
 
-            context 'with project bot users' do
-              include_context 'project bot users'
+            context 'with bot users for project' do
+              include_context 'bot user for project'
 
               it { expect(billed_user_ids[:user_ids]).not_to include(project_bot.id) }
               it { expect(billed_user_ids[:project_member_user_ids]).not_to include(project_bot.id) }
+            end
+
+            context 'with bot users for group' do
+              include_context 'bot user for group'
+
+              it { expect(billed_user_ids[:user_ids]).not_to include(group_bot.id) }
+              it { expect(billed_user_ids[:group_member_user_ids]).not_to include(group_bot.id) }
             end
 
             context 'when group is invited to the project' do
@@ -1122,11 +1137,18 @@ RSpec.describe Namespace do
                 expect(billed_user_ids[:project_member_user_ids]).to match_array([developer.id, project_guest.id, project_developer.id])
               end
 
-              context 'with project bot users' do
-                include_context 'project bot users'
+              context 'with bot users for project' do
+                include_context 'bot user for project'
 
                 it { expect(billed_user_ids[:user_ids]).not_to include(project_bot.id) }
                 it { expect(billed_user_ids[:project_member_user_ids]).not_to include(project_bot.id) }
+              end
+
+              context 'with bot users for group' do
+                include_context 'bot user for group'
+
+                it { expect(billed_user_ids[:user_ids]).not_to include(group_bot.id) }
+                it { expect(billed_user_ids[:group_member_user_ids]).not_to include(group_bot.id) }
               end
 
               context 'when group is invited to the project' do
@@ -1232,10 +1254,11 @@ RSpec.describe Namespace do
             expect(group.billable_members_count).to eq(2)
           end
 
-          context 'with project bot users' do
-            include_context 'project bot users'
+          context 'with bot users for project and group' do
+            include_context 'bot user for project'
+            include_context 'bot user for group'
 
-            it 'does not include project bot users in the count' do
+            it 'does not include bot users in the count' do
               expect(group.billable_members_count).to eq(2)
             end
           end
@@ -1297,10 +1320,11 @@ RSpec.describe Namespace do
               expect(group.billable_members_count).to eq(4)
             end
 
-            context 'with project bot users' do
-              include_context 'project bot users'
+            context 'with bot users for project and group' do
+              include_context 'bot user for project'
+              include_context 'bot user for group'
 
-              it 'does not include project bot users in the count' do
+              it 'does not include bot users in the count' do
                 expect(group.billable_members_count).to eq(4)
               end
             end

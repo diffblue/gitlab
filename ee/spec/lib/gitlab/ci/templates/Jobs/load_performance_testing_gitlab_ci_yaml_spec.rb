@@ -25,7 +25,7 @@ RSpec.describe 'Jobs/Load-Performance-Testing.gitlab-ci.yml' do
       ])
     end
 
-    let(:user) { project.owner }
+    let(:user) { project.first_owner }
     let(:default_branch) { 'master' }
     let(:pipeline_ref) { default_branch }
     let(:service) { Ci::CreatePipelineService.new(project, user, ref: pipeline_ref) }

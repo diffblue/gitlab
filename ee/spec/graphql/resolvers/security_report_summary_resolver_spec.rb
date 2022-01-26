@@ -6,7 +6,7 @@ RSpec.describe Resolvers::SecurityReportSummaryResolver do
   include GraphqlHelpers
 
   let_it_be(:pipeline) { create(:ci_pipeline) }
-  let_it_be(:user) { pipeline.project.owner }
+  let_it_be(:user) { pipeline.project.first_owner }
 
   describe '#resolve' do
     before do

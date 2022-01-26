@@ -35,7 +35,7 @@ RSpec.describe Projects::Security::PoliciesHelper do
   end
 
   describe '#orchestration_policy_data' do
-    let(:owner) { project.owner }
+    let(:owner) { project.first_owner }
     let(:base_data) do
       {
         assigned_policy_project: "null",

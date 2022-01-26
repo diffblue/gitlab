@@ -29,7 +29,7 @@ RSpec.describe 'Jobs/DAST-Default-Branch-Deploy.gitlab-ci.yml' do
     end
 
     let(:project) { project_with_ci_kubernetes_active }
-    let(:user) { project.owner }
+    let(:user) { project.first_owner }
     let(:default_branch) { 'master' }
     let(:pipeline_ref) { default_branch }
     let(:service) { Ci::CreatePipelineService.new(project, user, ref: pipeline_ref) }
