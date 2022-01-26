@@ -240,7 +240,7 @@ A runner's status will only relate to runner contact status, such as:
 `online`, `offline`, or `not_connected`. Status `paused` or `active` will no longer appear.
 
 When checking if a runner is `paused`, API users are advised to check the boolean attribute
-`active` to be `false` instead. When checking if a runner is `active`, check if `active` is `true`.
+`paused` to be `true` instead. When checking if a runner is `active`, check if `paused` is `false`.
 
 **Planned removal milestone: 15.0 (2022-05-22)**
 
