@@ -351,4 +351,11 @@ RSpec.describe Vulnerabilities::Feedback do
       it { is_expected.to eq(finding) }
     end
   end
+
+  context 'loose foreign key on vulnerability_feedback.pipeline_id' do
+    it_behaves_like 'cleanup by a loose foreign key' do
+      let!(:parent) { create(:ci_pipeline) }
+      let!(:model) { create(:vulnerability_feedback, project: parent.project, pipeline: parent) }
+    end
+  end
 end
