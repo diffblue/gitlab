@@ -17,7 +17,7 @@ module Mutations
         project = issue.project
 
         authorize_escalation_status!(project)
-        check_feature_availability!(project, issue)
+        check_feature_availability!(issue)
 
         ::Issues::UpdateService.new(
           project: project,
@@ -39,8 +39,8 @@ module Mutations
         raise_resource_not_available_error!
       end
 
-      def check_feature_availability!(project, issue)
-        return if Feature.enabled?(:incident_escalations, project) && issue.supports_escalation?
+      def check_feature_availability!(issue)
+        return if issue.supports_escalation? && issue.alert_management_alert.blank?
 
         raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'Feature unavailable for provided issue'
       end

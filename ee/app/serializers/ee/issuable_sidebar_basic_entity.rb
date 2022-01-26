@@ -11,6 +11,7 @@ module EE
 
       expose :supports_weight?, as: :supports_weight
       expose :supports_iterations?, as: :supports_iterations
+      expose :escalation_policies_available?, as: :supports_escalation_policies
     end
   end
 end
