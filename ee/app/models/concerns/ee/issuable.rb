@@ -28,7 +28,6 @@ module EE
     end
 
     def escalation_policies_available?
-      return false unless ::Feature.enabled?(:incident_escalations, project)
       return false unless ::Gitlab::IncidentManagement.escalation_policies_available?(project)
 
       supports_escalation?

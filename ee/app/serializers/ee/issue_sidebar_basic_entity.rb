@@ -25,6 +25,13 @@ module EE
           && issue.project.public? \
           && issue.project.project_setting.cve_id_request_enabled?
       end
+
+      expose :current_user, merge: true do
+        expose :can_update_escalation_policy, if: -> (issue, _) { issue.escalation_policies_available? } do |issue|
+          can?(current_user, :update_escalation_status, issue.project) &&
+            issue.alert_management_alert.blank?
+        end
+      end
     end
   end
 end
