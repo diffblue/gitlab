@@ -5,13 +5,17 @@
 # params - Hash
 #   parent - The group in which to look-up iterations.
 #   include_ancestors - whether to look-up iterations in group ancestors.
-#   order - Orders by field default due date asc.
 #   title - Filter by title.
+#   search - Filter by fuzzy searching the given query in the selected fields.
+#   in - Array of searchable fields used with search param.
 #   state - Filters by state.
+#   sort - Items are sorted by due_date and title with id as a tie breaker if unspecified.
 
 class IterationsFinder
   include FinderMethods
   include TimeFrameFilter
+
+  SEARCHABLE_FIELDS = %i(title cadence_title).freeze
 
   attr_reader :params, :current_user
 
@@ -30,7 +34,7 @@ class IterationsFinder
     items = by_iid(items)
     items = by_groups(items)
     items = by_title(items)
-    items = by_search_title(items)
+    items = by_search(items)
     items = by_state(items)
     items = by_timeframe(items)
     items = by_iteration_cadences(items)
@@ -72,10 +76,20 @@ class IterationsFinder
     items.with_title(params[:title])
   end
 
-  def by_search_title(items)
-    return items unless params[:search_title].present?
+  def by_search(items)
+    return items unless params[:search].present? && params[:in].present?
 
-    items.search_title(params[:search_title])
+    query = params[:search]
+    in_title = params[:in].include?(:title)
+    in_cadence_title = params[:in].include?(:cadence_title)
+
+    if in_title && in_cadence_title
+      items.search_title_or_cadence_title(query)
+    elsif in_title
+      items.search_title(query)
+    elsif in_cadence_title
+      items.search_cadence_title(query)
+    end
   end
 
   def by_state(items)
@@ -96,6 +110,8 @@ class IterationsFinder
 
   # rubocop: disable CodeReuse/ActiveRecord
   def order(items)
+    return items.sort_by_cadence_id_and_due_date_asc if params[:sort].present? && params[:sort] == :cadence_and_due_date_asc
+
     items.reorder(:due_date).order(:title, { id: :asc })
   end
   # rubocop: enable CodeReuse/ActiveRecord

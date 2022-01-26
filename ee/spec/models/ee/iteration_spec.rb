@@ -538,6 +538,82 @@ RSpec.describe Iteration do
     end
   end
 
+  context 'search and sorting scopes' do
+    let_it_be(:group1) { create(:group) }
+    let_it_be(:group2) { create(:group) }
+    let_it_be(:subgroup) { create(:group, parent: group1) }
+    let_it_be(:plan_cadence) { create(:iterations_cadence, title: 'plan cadence', group: group1) }
+    let_it_be(:product_cadence) { create(:iterations_cadence, title: 'product management', group: subgroup) }
+    let_it_be(:cadence) { create(:iterations_cadence, title: 'cadence', group: group2) }
+    let_it_be(:plan_iteration1) { create(:iteration, :with_due_date, title: "Iteration 1", iterations_cadence: plan_cadence, start_date: 1.week.ago)}
+    let_it_be(:plan_iteration2) { create(:iteration, :with_due_date, title: "My iteration", iterations_cadence: plan_cadence, start_date: 2.weeks.ago)}
+    let_it_be(:product_iteration) { create(:iteration, :with_due_date, title: "Iteration 2", iterations_cadence: product_cadence, start_date: 1.week.from_now)}
+    let_it_be(:cadence_iteration) { create(:iteration, :with_due_date, iterations_cadence: cadence, start_date: Date.today)}
+
+    shared_examples "search returns correct records" do
+      it { is_expected.to contain_exactly(*expected_iterations) }
+    end
+
+    describe '.search_title' do
+      where(:query, :expected_iterations) do
+        'iter 1'         | lazy { [plan_iteration1] }
+        'iteration'      | lazy { [plan_iteration1, plan_iteration2, product_iteration] }
+        'iteration 1'    | lazy { [plan_iteration1] }
+        'my iteration 1' | lazy { [] }
+      end
+
+      with_them do
+        subject { described_class.search_title(query) }
+
+        it_behaves_like "search returns correct records"
+      end
+    end
+
+    describe '.search_cadence_title' do
+      where(:query, :expected_iterations) do
+        'plan'            | lazy { [plan_iteration1, plan_iteration2] }
+        'plan cadence'    | lazy { [plan_iteration1, plan_iteration2] }
+        'product cadence' | lazy { [] }
+        'cadence'         | lazy { [plan_iteration1, plan_iteration2, cadence_iteration] }
+      end
+
+      with_them do
+        subject { described_class.search_cadence_title(query) }
+
+        it_behaves_like "search returns correct records"
+      end
+    end
+
+    describe '.search_title_or_cadence_title' do
+      where(:query, :expected_iterations) do
+        # The same test cases used for .search_title
+        'iter 1'          | lazy { [plan_iteration1] }
+        'iteration'       | lazy { [plan_iteration1, plan_iteration2, product_iteration] }
+        'iteration 1'     | lazy { [plan_iteration1] }
+        'my iteration 1'  | lazy { [] }
+        # The same test cases used for .search_cadence_title
+        'plan'            | lazy { [plan_iteration1, plan_iteration2] }
+        'plan cadence'    | lazy { [plan_iteration1, plan_iteration2] }
+        'product cadence' | lazy { [] }
+        'cadence'         | lazy { [plan_iteration1, plan_iteration2, cadence_iteration] }
+        # At least one of cadence title or iteration title should contain all of the terms
+        'plan iteration'  | lazy { [] }
+      end
+
+      with_them do
+        subject { described_class.search_title_or_cadence_title(query) }
+
+        it_behaves_like "search returns correct records"
+      end
+    end
+
+    describe '.sort_by_cadence_id_and_due_date_asc' do
+      subject { described_class.all.sort_by_cadence_id_and_due_date_asc }
+
+      it { is_expected.to eq([plan_iteration2, plan_iteration1, product_iteration, cadence_iteration]) }
+    end
+  end
+
   context 'time scopes' do
     let_it_be(:group) { create(:group) }
     let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group) }

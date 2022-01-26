@@ -11,9 +11,9 @@ RSpec.describe 'getting iterations' do
   let_it_be(:iteration_cadence1) { create(:iterations_cadence, group: group, active: true, duration_in_weeks: 1, title: 'one week iterations') }
   let_it_be(:iteration_cadence2) { create(:iterations_cadence, group: group, active: true, duration_in_weeks: 2, title: 'two week iterations') }
 
-  let_it_be(:current_group_iteration) { create(:iteration, :skip_future_date_validation, iterations_cadence: iteration_cadence1, group: iteration_cadence1.group, title: 'one test', start_date: 1.day.ago, due_date: 1.week.from_now) }
-  let_it_be(:upcoming_group_iteration) { create(:iteration, iterations_cadence: iteration_cadence2, group: iteration_cadence2.group, start_date: 1.day.from_now, due_date: 2.days.from_now) }
-  let_it_be(:closed_group_iteration) { create(:iteration, :skip_project_validation, iterations_cadence: iteration_cadence1, group: iteration_cadence1.group, start_date: 3.weeks.ago, due_date: 1.week.ago) }
+  let_it_be(:current_group_iteration) { create(:iteration, :skip_future_date_validation, iterations_cadence: iteration_cadence1, title: 'one test', start_date: 1.day.ago, due_date: 1.week.from_now) }
+  let_it_be(:upcoming_group_iteration) { create(:iteration, iterations_cadence: iteration_cadence2, start_date: 1.day.from_now, due_date: 2.days.from_now) }
+  let_it_be(:closed_group_iteration) { create(:iteration, :skip_project_validation, iterations_cadence: iteration_cadence1, start_date: 3.weeks.ago, due_date: 1.week.ago) }
 
   before do
     group.add_maintainer(user)
@@ -47,6 +47,28 @@ RSpec.describe 'getting iterations' do
 
   describe 'query for iterations by cadence' do
     context 'with multiple cadences' do
+      context 'searching by cadence title or iteration title and sorting by cadence and due date ASC' do
+        using RSpec::Parameterized::TableSyntax
+
+        let_it_be(:past_iteration1) { create(:iteration, :with_due_date, iterations_cadence: iteration_cadence2, start_date: 4.weeks.ago) }
+        let_it_be(:past_iteration2) { create(:iteration, :with_due_date, iterations_cadence: iteration_cadence2, start_date: 2.weeks.ago) }
+
+        where(:search, :ordered_expected_iterations) do
+          'two'       | lazy { [past_iteration1, past_iteration2, upcoming_group_iteration] }
+          'iteration' | lazy { [closed_group_iteration, current_group_iteration, past_iteration1, past_iteration2, upcoming_group_iteration] }
+        end
+
+        with_them do
+          let(:field_queries) { "search: \"#{search}\", in: [TITLE, CADENCE_TITLE], sort: CADENCE_AND_DUE_DATE_ASC" }
+
+          it 'correctly returns ordered items' do
+            post_graphql(iterations_query(group, field_queries), current_user: user)
+
+            expect(actual_iterations).to eq(expected_iterations(ordered_expected_iterations))
+          end
+        end
+      end
+
       it 'returns iterations' do
         post_graphql(iteration_cadence_query(group, [iteration_cadence1.to_global_id, iteration_cadence2.to_global_id]), current_user: user)
 
@@ -103,11 +125,16 @@ RSpec.describe 'getting iterations' do
     QUERY
   end
 
-  def expect_iterations_response(*iterations)
-    actual_iterations = graphql_data['group']['iterations']['nodes'].map { |iteration| iteration['id'] }
-    expected_iterations = iterations.map { |iteration| iteration.to_global_id.to_s }
+  def actual_iterations
+    graphql_data['group']['iterations']['nodes'].map { |iteration| iteration['id'] }
+  end
 
-    expect(actual_iterations).to contain_exactly(*expected_iterations)
+  def expected_iterations(iterations)
+    iterations.map { |iteration| iteration.to_global_id.to_s }
+  end
+
+  def expect_iterations_response(*iterations)
+    expect(actual_iterations).to contain_exactly(*expected_iterations(iterations))
     expect(graphql_errors).to be_nil
   end
 end

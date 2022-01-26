@@ -15,7 +15,9 @@ RSpec.describe Resolvers::IterationsResolver do
         iteration_cadence_ids: nil,
         parent: nil,
         state: nil,
-        search_title: nil
+        search: nil,
+        in: nil,
+        sort: nil
       }
     end
 
@@ -50,6 +52,60 @@ RSpec.describe Resolvers::IterationsResolver do
       end
 
       context 'with parameters' do
+        context 'search' do
+          using RSpec::Parameterized::TableSyntax
+
+          let_it_be(:plan_cadence) { create(:iterations_cadence, title: 'plan cadence', group: group) }
+          let_it_be(:product_cadence) { create(:iterations_cadence, title: 'product management', group: group) }
+          let_it_be(:plan_iteration1) { create(:iteration, :with_due_date, title: "Iteration 1", iterations_cadence: plan_cadence, start_date: 1.week.ago)}
+          let_it_be(:plan_iteration2) { create(:iteration, :with_due_date, title: "My iteration", iterations_cadence: plan_cadence, start_date: 2.weeks.ago)}
+          let_it_be(:product_iteration) { create(:iteration, :with_due_date, iterations_cadence: product_cadence, start_date: 1.week.from_now)}
+
+          let(:all_iterations) { group.iterations }
+
+          context 'with search and in parameters' do
+            where(:search, :fields_to_search, :expected_iterations) do
+              ''          | []                       | lazy { all_iterations }
+              'iteration' | nil                      | lazy { plan_cadence.iterations }
+              'iteration' | []                       | lazy { plan_cadence.iterations }
+              'iteration' | [:title]                 | lazy { plan_cadence.iterations }
+              'iteration' | [:title, :cadence_title] | lazy { plan_cadence.iterations }
+              'plan'      | []                       | lazy { [] }
+              'plan'      | [:cadence_title]         | lazy { plan_cadence.iterations }
+            end
+
+            with_them do
+              it "returns correct items" do
+                expect(resolve_group_iterations({ search: search, in: fields_to_search }).items).to contain_exactly(*expected_iterations)
+              end
+            end
+          end
+
+          context "with the deprecated argument 'title' (to be deprecated in 15.4)" do
+            [
+              { search: "foo" },
+              { in: [:title] },
+              { in: [:cadence_title] }
+            ].each do |params|
+              it "raises an error when 'title' is used with #{params}" do
+                expect do
+                  resolve_group_iterations({ title: "foo", **params })
+                end.to raise_error(Gitlab::Graphql::Errors::ArgumentError, "'title' is deprecated in favor of 'search'. Please use 'search'.")
+              end
+            end
+
+            it "raises an error when 'in' is specified but 'search' is not" do
+              expect do
+                resolve_group_iterations({ in: [:title] })
+              end.to raise_error(Gitlab::Graphql::Errors::ArgumentError, "'search' must be specified when using 'in' argument.")
+            end
+
+            it "uses 'search' and 'in' arguments to search title" do
+              expect(resolve_group_iterations({ title: 'iteration' }).items).to contain_exactly(*plan_cadence.iterations)
+            end
+          end
+        end
+
         it 'calls IterationsFinder with correct parameters, using timeframe' do
           start_date = now
           end_date = start_date + 1.hour
@@ -58,11 +114,11 @@ RSpec.describe Resolvers::IterationsResolver do
           iid = 2
           iteration_cadence_ids = ['5']
 
-          params = params_list.merge(id: id, iid: iid, iteration_cadence_ids: iteration_cadence_ids, parent: group, include_ancestors: nil, state: 'closed', start_date: start_date, end_date: end_date, search_title: search)
+          params = params_list.merge(id: id, iid: iid, iteration_cadence_ids: iteration_cadence_ids, parent: group, include_ancestors: nil, state: 'closed', start_date: start_date, end_date: end_date, search: search, in: [:title])
 
           expect(IterationsFinder).to receive(:new).with(current_user, params).and_call_original
 
-          resolve_group_iterations(timeframe: { start: start_date, end: end_date }, state: 'closed', title: search, id: 'gid://gitlab/Iteration/1', iteration_cadence_ids: ['gid://gitlab/Iterations::Cadence/5'], iid: iid)
+          resolve_group_iterations(timeframe: { start: start_date, end: end_date }, state: 'closed', search: search, id: 'gid://gitlab/Iteration/1', iteration_cadence_ids: ['gid://gitlab/Iterations::Cadence/5'], iid: iid)
         end
 
         it 'calls IterationsFinder with correct parameters, using start and end date' do
@@ -73,11 +129,11 @@ RSpec.describe Resolvers::IterationsResolver do
           iid = 2
           iteration_cadence_ids = ['5']
 
-          params = params_list.merge(id: id, iid: iid, iteration_cadence_ids: iteration_cadence_ids, parent: group, include_ancestors: nil, state: 'closed', start_date: start_date, end_date: end_date, search_title: search)
+          params = params_list.merge(id: id, iid: iid, iteration_cadence_ids: iteration_cadence_ids, parent: group, include_ancestors: nil, state: 'closed', start_date: start_date, end_date: end_date, search: search, in: [:title])
 
           expect(IterationsFinder).to receive(:new).with(current_user, params).and_call_original
 
-          resolve_group_iterations(start_date: start_date, end_date: end_date, state: 'closed', title: search, id: 'gid://gitlab/Iteration/1', iteration_cadence_ids: ['gid://gitlab/Iterations::Cadence/5'], iid: iid)
+          resolve_group_iterations(start_date: start_date, end_date: end_date, state: 'closed', search: search, id: 'gid://gitlab/Iteration/1', iteration_cadence_ids: ['gid://gitlab/Iterations::Cadence/5'], iid: iid)
         end
 
         it 'accepts a raw model id for backward compatibility' do

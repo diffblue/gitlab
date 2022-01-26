@@ -60,6 +60,7 @@ module EE
       after_commit :reset, on: [:update, :create], if: :saved_change_to_start_or_due_date?
 
       scope :due_date_order_asc, -> { order(:due_date) }
+      scope :sort_by_cadence_id_and_due_date_asc, -> { reorder(iterations_cadence_id: :asc).due_date_order_asc.order(id: :asc) }
       scope :upcoming, -> { with_state(:upcoming) }
       scope :current, -> { with_state(:current) }
       scope :closed, -> { with_state(:closed) }
@@ -146,6 +147,28 @@ module EE
         when 'all' then iterations
         else raise ArgumentError, "Unknown state filter: #{state}"
         end
+      end
+
+      def search_title(query)
+        fuzzy_search(query, [::Resolvers::IterationsResolver::DEFAULT_IN_FIELD], use_minimum_char_limit: contains_digits?(query))
+      end
+
+      def search_cadence_title(query)
+        cadence_ids = Iterations::Cadence.search_title(query).pluck(:id)
+
+        where(iterations_cadence_id: cadence_ids)
+      end
+
+      def search_title_or_cadence_title(query)
+        union_sql = ::Gitlab::SQL::Union.new([search_title(query), search_cadence_title(query)]).to_sql
+
+        ::Iteration.from("(#{union_sql}) #{table_name}")
+      end
+
+      private
+
+      def contains_digits?(query)
+        !(query =~ / \d+ /).nil?
       end
     end
 

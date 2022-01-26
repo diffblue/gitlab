@@ -5,12 +5,23 @@ module Resolvers
     include Gitlab::Graphql::Authorize::AuthorizeResource
     include TimeFrameArguments
 
+    DEFAULT_IN_FIELD = :title
+
     argument :state, Types::IterationStateEnum,
              required: false,
              description: 'Filter iterations by state.'
     argument :title, GraphQL::Types::String,
              required: false,
-             description: 'Fuzzy search by title.'
+             description: 'Fuzzy search by title.',
+             deprecated: { reason: 'The argument will be removed in 15.4. Please use `search` and `in` fields instead', milestone: '15.4' }
+
+    argument :search, GraphQL::Types::String,
+             required: false,
+             description: 'Query used for fuzzy-searching in the fields selected in the argument `in`.'
+
+    argument :in, [Types::IterationSearchableFieldEnum],
+             required: false,
+             description: "Fields in which the fuzzy-search should be performed with the query given in the argument `search`. Defaults to `[#{DEFAULT_IN_FIELD}]`."
 
     # rubocop:disable Graphql/IDType
     argument :id, GraphQL::Types::ID,
@@ -29,16 +40,23 @@ module Resolvers
               required: false,
               description: 'Global iteration cadence IDs by which to look up the iterations.'
 
+    argument :sort, Types::IterationSortEnum,
+              required: false,
+              description: 'List iterations by sort order. If unspecified, an arbitrary order (subject to change) is used.'
+
     type Types::IterationType.connection_type, null: true
 
     def resolve(**args)
       validate_timeframe_params!(args)
+      validate_search_params!(args)
 
       authorize!
 
       args[:id] = id_from_args(args)
       args[:iteration_cadence_ids] = parse_iteration_cadence_ids(args[:iteration_cadence_ids])
       args[:include_ancestors] = true if args[:include_ancestors].nil? && args[:iid].nil?
+
+      handle_search_params!(args)
 
       iterations = IterationsFinder.new(context[:current_user], iterations_finder_params(args)).execute
 
@@ -50,6 +68,23 @@ module Resolvers
 
     private
 
+    def validate_search_params!(args)
+      if args[:title].present? && (args[:search].present? || args[:in].present?)
+        raise Gitlab::Graphql::Errors::ArgumentError, "'title' is deprecated in favor of 'search'. Please use 'search'."
+      end
+
+      if !args[:search].present? && args[:in].present?
+        raise Gitlab::Graphql::Errors::ArgumentError, "'search' must be specified when using 'in' argument."
+      end
+    end
+
+    def handle_search_params!(args)
+      return unless args[:search] || args[:title]
+
+      args[:in] = [DEFAULT_IN_FIELD] if args[:in].nil? || args[:in].empty?
+      args[:search] = args[:title] if args[:title]
+    end
+
     def iterations_finder_params(args)
       {
         parent: parent,
@@ -58,7 +93,9 @@ module Resolvers
         iid: args[:iid],
         iteration_cadence_ids: args[:iteration_cadence_ids],
         state: args[:state] || 'all',
-        search_title: args[:title]
+        search: args[:search],
+        in: args[:in],
+        sort: args[:sort]
       }.merge(transform_timeframe_parameters(args))
     end
 
