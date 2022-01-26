@@ -12,7 +12,9 @@ namespace :gitlab do
       end
 
       puts "Rendering using Gitlab's FullPipeline...\n\n"
-      puts Banzai::Pipeline::FullPipeline.to_html(markdown.join("\n"), project: nil)
+
+      html = MarkupHelper.markdown(markdown.join("\n"), { pipeline: :full, project: nil })
+      puts html.gsub('&#x000A;', "\n")
     end
   end
 end
