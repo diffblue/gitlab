@@ -62,6 +62,8 @@ module EE
 
     override :require_verification_for_group_creation_enabled?
     def require_verification_for_group_creation_enabled?
+      # Skip the verification for admins and auditors (added mainly for E2E tests)
+      return false if current_user.can_read_all_resources?
       # Experiment should only run when creating top-level groups
       return false if params[:parent_id]
 
