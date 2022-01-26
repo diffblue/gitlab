@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging } do
+  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging }, quarantine: {
+    only: { subdomain: %i[staging] },
+    issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/350856",
+    type: :broken
+  } do
     describe 'Purchase' do
       let(:api_client) { Runtime::API::Client.as_admin }
       let(:user) do
