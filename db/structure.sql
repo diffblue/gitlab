@@ -30607,9 +30607,6 @@ ALTER TABLE ONLY reviews
 ALTER TABLE ONLY operations_feature_flags
     ADD CONSTRAINT fk_rails_648e241be7 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY ci_sources_projects
-    ADD CONSTRAINT fk_rails_64b6855cbc FOREIGN KEY (source_project_id) REFERENCES projects(id) ON DELETE CASCADE;
-
 ALTER TABLE ONLY board_group_recent_visits
     ADD CONSTRAINT fk_rails_64bfc19bc5 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 
