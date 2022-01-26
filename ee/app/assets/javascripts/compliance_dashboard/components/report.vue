@@ -193,7 +193,7 @@ export default {
       @row-selected="toggleDrawer"
     >
       <template #cell(severity)="{ item: { severity } }">
-        <severity-badge :severity="severity" />
+        <severity-badge class="gl-reset-text-align!" :severity="severity" />
       </template>
       <template #cell(reason)="{ item: { reason, violatingUser } }">
         <violation-reason :reason="reason" :user="violatingUser" />
