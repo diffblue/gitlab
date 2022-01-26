@@ -8,7 +8,7 @@ RSpec.describe Resolvers::PathLocksResolver do
   let_it_be(:project) { create(:project) }
   let_it_be(:path_lock) { create(:path_lock, path: 'README.md', project: project) }
 
-  let(:user) { project.owner }
+  let(:user) { project.first_owner }
 
   describe '#resolve' do
     subject(:resolve_path_locks) { resolve(described_class, obj: project, lookahead: positive_lookahead, ctx: { current_user: user }) }

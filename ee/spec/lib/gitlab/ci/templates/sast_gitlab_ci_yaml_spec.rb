@@ -9,7 +9,7 @@ RSpec.describe 'SAST.gitlab-ci.yml' do
     let(:default_branch) { 'master' }
     let(:files) { { 'README.txt' => '' } }
     let(:project) { create(:project, :custom_repo, files: files) }
-    let(:user) { project.owner }
+    let(:user) { project.first_owner }
     let(:service) { Ci::CreatePipelineService.new(project, user, ref: 'master') }
     let(:pipeline) { service.execute!(:push).payload }
     let(:build_names) { pipeline.builds.pluck(:name) }

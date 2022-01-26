@@ -21,7 +21,7 @@ RSpec.describe ProjectsHelper do
   end
 
   describe '#can_update_security_orchestration_policy_project?' do
-    let(:owner) { project.owner }
+    let(:owner) { project.first_owner }
 
     before do
       allow(helper).to receive(:current_user) { owner }

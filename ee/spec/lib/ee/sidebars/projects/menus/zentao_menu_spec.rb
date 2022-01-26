@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Sidebars::Projects::Menus::ZentaoMenu do
   let(:project) { create(:project, has_external_issue_tracker: true) }
-  let(:user) { project.owner }
+  let(:user) { project.first_owner }
   let(:context) { Sidebars::Projects::Context.new(current_user: user, container: project) }
   let(:zentao_integration) { create(:zentao_integration, project: project) }
 

@@ -21,7 +21,7 @@ RSpec.describe 'Verify/Load-Performance-Testing.gitlab-ci.yml' do
   describe 'the created pipeline', :clean_gitlab_redis_cache do
     let_it_be(:project) { create(:project, :repository) }
 
-    let(:user) { project.owner }
+    let(:user) { project.first_owner }
     let(:default_branch) { 'master' }
     let(:pipeline_ref) { default_branch }
     let(:service) { Ci::CreatePipelineService.new(project, user, ref: pipeline_ref) }

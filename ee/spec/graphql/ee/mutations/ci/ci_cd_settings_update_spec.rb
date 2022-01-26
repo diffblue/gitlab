@@ -7,7 +7,7 @@ RSpec.describe Mutations::Ci::CiCdSettingsUpdate do
 
   let_it_be(:project) { create(:project) }
 
-  let(:user) { project.owner }
+  let(:user) { project.first_owner }
   let(:mutation) { described_class.new(object: nil, context: { current_user: user }, field: nil) }
 
   subject { mutation.resolve(full_path: project.full_path, **mutation_params) }

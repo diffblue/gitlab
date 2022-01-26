@@ -14,7 +14,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestLabel
     let_it_be(:record_with_data) { create(:merge_request, :unique_branches, source_project: project) }
     let_it_be(:record_without_data) { create(:merge_request) }
     let_it_be(:label) { create(:label, project: project) }
-    let_it_be(:user) { project.owner }
+    let_it_be(:user) { project.first_owner }
 
     let(:params) { { label: label } }
 

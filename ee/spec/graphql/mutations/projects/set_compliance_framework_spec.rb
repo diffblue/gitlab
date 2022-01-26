@@ -67,7 +67,7 @@ RSpec.describe Mutations::Projects::SetComplianceFramework do
       end
 
       context 'current_user is a project owner' do
-        let(:current_user) { project.owner }
+        let(:current_user) { project.first_owner }
 
         it_behaves_like "the user can change a project's compliance framework"
       end

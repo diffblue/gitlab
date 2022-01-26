@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Sidebars::Projects::Menus::AnalyticsMenu do
   let_it_be(:project) { create(:project, :repository) }
 
-  let(:user) { project.owner }
+  let(:user) { project.first_owner }
   let(:context) { Sidebars::Projects::Context.new(current_user: user, container: project, current_ref: project.repository.root_ref) }
 
   subject { described_class.new(context) }
