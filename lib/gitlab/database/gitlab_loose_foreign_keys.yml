@@ -163,6 +163,9 @@ ci_pipeline_schedules:
   - table: users
     column: owner_id
     on_delete: async_nullify
+  - table: projects
+    column: project_id
+    on_delete: async_delete
 merge_trains:
   - table: ci_pipelines
     column: pipeline_id
