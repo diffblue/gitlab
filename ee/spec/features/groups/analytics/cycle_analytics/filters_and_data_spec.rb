@@ -19,7 +19,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
 
   path_nav_selector = '[data-testid="vsa-path-navigation"]'
   filter_bar_selector = '[data-testid="vsa-filter-bar"]'
-  card_metric_selector = '[data-testid="vsa-time-metrics"] .gl-single-stat'
+  card_metric_selector = '[data-testid="vsa-metrics"] .gl-single-stat'
   new_issues_count = 3
 
   new_issues_count.times do |i|
