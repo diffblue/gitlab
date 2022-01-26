@@ -3,4 +3,8 @@ fragment UploadState on UploadState {
   progress
   cancelSource
   uploadedPackageId
+  errors {
+    name
+    file
+  }
 }

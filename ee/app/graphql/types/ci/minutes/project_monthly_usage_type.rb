@@ -16,7 +16,7 @@ module Types
               description: 'Name of the project.'
 
         def name
-          object.project.name
+          object.project&.name
         end
       end
     end

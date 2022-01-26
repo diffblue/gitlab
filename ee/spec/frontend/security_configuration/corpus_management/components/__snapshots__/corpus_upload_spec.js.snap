@@ -16,6 +16,7 @@ exports[`Corpus Upload component renders header 1`] = `
     buttontextclasses=""
     category="primary"
     class="gl-mr-5 gl-ml-auto"
+    data-testid="new-corpus"
     icon=""
     role="button"
     size="medium"

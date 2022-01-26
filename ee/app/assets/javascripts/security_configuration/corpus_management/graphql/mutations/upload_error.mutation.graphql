@@ -1,0 +1,3 @@
+mutation uploadError($projectPath: ID!, $error: String!) {
+  uploadError(projectPath: $projectPath, error: $error) @client
+}

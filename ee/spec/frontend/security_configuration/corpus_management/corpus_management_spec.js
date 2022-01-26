@@ -40,6 +40,11 @@ describe('EE - CorpusManagement', () => {
             progress: 0,
             cancelSource: null,
             uploadedPackageId: null,
+            errors: {
+              name: '',
+              file: '',
+              __typename: 'Errors',
+            },
             __typename: 'UploadState',
           };
         },

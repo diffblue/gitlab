@@ -6,7 +6,9 @@ import { TYPE_PACKAGES_PACKAGE } from '~/graphql_shared/constants';
 import getUploadState from '../queries/get_upload_state.query.graphql';
 import updateProgress from '../mutations/update_progress.mutation.graphql';
 import uploadComplete from '../mutations/upload_complete.mutation.graphql';
+import uploadError from '../mutations/upload_error.mutation.graphql';
 import corpusCreate from '../mutations/corpus_create.mutation.graphql';
+import { parseNameError, parseFileError } from './utils';
 
 export default {
   Query: {
@@ -16,6 +18,12 @@ export default {
         progress: 0,
         cancelSource: null,
         uploadedPackageId: null,
+        errors: {
+          name: '',
+          file: '',
+          /* eslint-disable-next-line @gitlab/require-i18n-strings */
+          __typename: 'Errors',
+        },
         __typename: 'UploadState',
       };
     },
@@ -64,12 +72,14 @@ export default {
         const { uploadState } = draftState;
         uploadState.isUploading = true;
         uploadState.cancelSource = source;
+        uploadState.errors.name = '';
+        uploadState.errors.file = '';
       });
 
       cache.writeQuery({ query: getUploadState, data: targetData, variables: { projectPath } });
 
       publishPackage(
-        { projectPath, name, version: 0, fileName: `${name}.zip`, files },
+        { projectPath, name, version: '1.0.0', fileName: `artifacts.zip`, files },
         { status: 'hidden', select: 'package_file' },
         { onUploadProgress, cancelToken: source.token },
       )
@@ -79,9 +89,30 @@ export default {
             variables: { projectPath, packageId: data.package_id },
           });
         })
-        .catch(() => {
-          /* TODO: Error handling */
+        .catch((e) => {
+          const { error } = e.response?.data;
+          client.mutate({
+            mutation: uploadError,
+            variables: { projectPath, error },
+          });
         });
+    },
+    uploadError: (_, { projectPath, error }, { cache }) => {
+      const sourceData = cache.readQuery({
+        query: getUploadState,
+        variables: { projectPath },
+      });
+
+      const data = produce(sourceData, (draftState) => {
+        const { uploadState } = draftState;
+        uploadState.isUploading = false;
+        uploadState.progress = 0;
+        uploadState.cancelSource = null;
+        uploadState.errors.name = parseNameError(error);
+        uploadState.errors.file = parseFileError(error);
+      });
+
+      cache.writeQuery({ query: getUploadState, data, variables: { projectPath } });
     },
     uploadComplete: (_, { projectPath, packageId }, { cache }) => {
       const sourceData = cache.readQuery({
@@ -94,6 +125,8 @@ export default {
         uploadState.isUploading = false;
         uploadState.cancelSource = null;
         uploadState.uploadedPackageId = packageId;
+        uploadState.errors.name = '';
+        uploadState.errors.file = '';
       });
 
       cache.writeQuery({ query: getUploadState, data, variables: { projectPath } });
@@ -108,6 +141,8 @@ export default {
         const { uploadState } = draftState;
         uploadState.isUploading = true;
         uploadState.progress = progress;
+        uploadState.errors.name = '';
+        uploadState.errors.file = '';
       });
 
       cache.writeQuery({ query: getUploadState, data, variables: { projectPath } });
@@ -125,6 +160,8 @@ export default {
         uploadState.isUploading = false;
         uploadState.progress = 0;
         uploadState.cancelToken = null;
+        uploadState.errors.name = '';
+        uploadState.errors.file = '';
       });
 
       cache.writeQuery({ query: getUploadState, data, variables: { projectPath } });

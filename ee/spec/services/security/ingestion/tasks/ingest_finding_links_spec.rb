@@ -41,5 +41,7 @@ RSpec.describe Security::Ingestion::Tasks::IngestFindingLinks do
                                       .and change { finding_1.finding_links.count }.by(0)
       end
     end
+
+    it_behaves_like 'bulk insertable task'
   end
 end

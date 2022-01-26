@@ -32,5 +32,7 @@ RSpec.describe Security::Ingestion::Tasks::IngestIssueLinks do
     it 'ingests the issue links only for the new records' do
       expect { ingest_issue_links }.to change { Vulnerabilities::IssueLink.for_issue(feedback.issue).count }.by(1)
     end
+
+    it_behaves_like 'bulk insertable task'
   end
 end

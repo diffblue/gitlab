@@ -51,18 +51,6 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
         subject
       end
 
-      context 'when feature is disabled' do
-        before do
-          stub_feature_flags(ff_external_audit_events_namespace: false)
-        end
-
-        it 'makes no HTTP calls' do
-          expect(Gitlab::HTTP).not_to receive(:post)
-
-          subject
-        end
-      end
-
       context 'when feature is unlicensed' do
         before do
           stub_licensed_features(external_audit_events: false)

@@ -651,7 +651,6 @@ RSpec.describe AuditEventService, :request_store do
 
     before do
       stub_licensed_features(external_audit_events: true)
-      stub_feature_flags(ff_external_audit_events_namespace: group.root_ancestor)
     end
 
     subject(:event) { described_class.new(user, project, details, save_type).for_project.security_event }
