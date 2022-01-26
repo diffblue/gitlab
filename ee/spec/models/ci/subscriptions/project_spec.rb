@@ -33,4 +33,11 @@ RSpec.describe Ci::Subscriptions::Project do
       let!(:model) { create(:ci_subscriptions_project, downstream_project: parent) }
     end
   end
+
+  context 'loose foreign key on ci_subscriptions_projects.upstream_project_id' do
+    it_behaves_like 'cleanup by a loose foreign key' do
+      let!(:parent) { create(:project, :public) }
+      let!(:model) { create(:ci_subscriptions_project, upstream_project: parent) }
+    end
+  end
 end
