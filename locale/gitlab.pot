@@ -16571,6 +16571,9 @@ msgstr ""
 msgid "Go to parent"
 msgstr ""
 
+msgid "Go to parent directory"
+msgstr ""
+
 msgid "Go to previous page"
 msgstr ""
 
