@@ -156,20 +156,22 @@ export default {
     <gl-alert v-if="queryError" variant="danger" class="gl-mt-3" :dismissible="false">
       {{ $options.i18n.queryError }}
     </gl-alert>
-    <header class="gl-mb-6">
-      <div class="gl-mt-5 d-flex">
+    <header
+      class="gl-mt-5 gl-mb-6 gl-display-flex gl-sm-flex-direction-column gl-justify-content-space-between"
+    >
+      <div>
         <h2 class="gl-flex-grow-1 gl-my-0">{{ $options.i18n.heading }}</h2>
-        <merge-commits-export-button
-          v-if="hasMergeCommitsCsvExportPath"
-          :merge-commits-csv-export-path="mergeCommitsCsvExportPath"
-        />
+        <p class="gl-mt-5" data-testid="subheading">
+          {{ $options.i18n.subheading }}
+          <gl-link :href="$options.documentationPath" target="_blank">{{
+            $options.i18n.learnMore
+          }}</gl-link>
+        </p>
       </div>
-      <p class="gl-mt-5" data-testid="subheading">
-        {{ $options.i18n.subheading }}
-        <gl-link :href="$options.documentationPath" target="_blank">{{
-          $options.i18n.learnMore
-        }}</gl-link>
-      </p>
+      <merge-commits-export-button
+        v-if="hasMergeCommitsCsvExportPath"
+        :merge-commits-csv-export-path="mergeCommitsCsvExportPath"
+      />
     </header>
     <violation-filter
       :group-path="groupPath"
