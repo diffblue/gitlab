@@ -34,6 +34,30 @@ RSpec.describe Geo::ReplicableModel do
     let(:replicator_class) { Geo::DummyReplicator }
   end
 
+  describe '.verifiables' do
+    context 'when the model can be filtered by locally stored files' do
+      it 'filters by locally stored files' do
+        allow(DummyModel).to receive(:respond_to?).with(:all).and_call_original
+        allow(DummyModel).to receive(:respond_to?).with(:with_files_stored_locally).and_return(true)
+
+        expect(DummyModel).to receive(:with_files_stored_locally)
+
+        DummyModel.verifiables
+      end
+    end
+
+    context 'when the model cannot be filtered by locally stored files' do
+      it 'does not filter by locally stored files' do
+        allow(DummyModel).to receive(:respond_to?).with(:all).and_call_original
+        allow(DummyModel).to receive(:respond_to?).with(:with_files_stored_locally).and_return(false)
+
+        expect(DummyModel).not_to receive(:with_files_stored_locally)
+
+        DummyModel.verifiables
+      end
+    end
+  end
+
   describe '#replicator' do
     it 'adds replicator method to the model' do
       expect(subject).to respond_to(:replicator)
