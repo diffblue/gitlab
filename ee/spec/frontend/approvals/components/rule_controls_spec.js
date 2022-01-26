@@ -26,7 +26,7 @@ describe('EE Approvals RuleControls', () => {
       store: new Vuex.Store(store),
     });
   };
-  const findButtons = () => wrapper.findAll(GlButton);
+  const findButtons = () => wrapper.findAllComponents(GlButton);
   const findButton = (label) =>
     findButtons().filter((button) => hasLabel(button, label)).wrappers[0];
   const findEditButton = () => findButton('Edit');

@@ -29,10 +29,10 @@ describe('Empty Rule Name', () => {
   it('renders a "more information" link ', () => {
     createComponent();
 
-    expect(wrapper.find(GlLink).attributes('href')).toBe(
+    expect(wrapper.findComponent(GlLink).attributes('href')).toBe(
       wrapper.props('eligibleApproversDocsPath'),
     );
-    expect(wrapper.find(GlLink).exists()).toBe(true);
-    expect(wrapper.find(GlLink).text()).toBe('More information');
+    expect(wrapper.findComponent(GlLink).exists()).toBe(true);
+    expect(wrapper.findComponent(GlLink).text()).toBe('More information');
   });
 });

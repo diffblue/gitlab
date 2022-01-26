@@ -25,7 +25,7 @@ describe('Empty Rule', () => {
         allowMultiRule: true,
         canEdit: true,
       });
-      expect(wrapper.find(GlButton).exists()).toBe(false);
+      expect(wrapper.findComponent(GlButton).exists()).toBe(false);
     });
   });
 
@@ -36,7 +36,7 @@ describe('Empty Rule', () => {
         canEdit: true,
       });
 
-      expect(wrapper.find(GlButton).exists()).toBe(true);
+      expect(wrapper.findComponent(GlButton).exists()).toBe(true);
     });
 
     it('does not display "Add approval rule" button if not allowed to edit', () => {
@@ -44,7 +44,7 @@ describe('Empty Rule', () => {
         allowMultiRule: true,
         canEdit: false,
       });
-      expect(wrapper.find(GlButton).exists()).toBe(false);
+      expect(wrapper.findComponent(GlButton).exists()).toBe(false);
     });
   });
 });
