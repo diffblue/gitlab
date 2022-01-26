@@ -190,13 +190,20 @@ RSpec.describe EpicsFinder do
           let_it_be(:subgroup2) { create(:group, :private, parent: subgroup) }
           let_it_be(:subgroup_epic) { create(:epic, group: subgroup) }
           let_it_be(:subgroup2_epic) { create(:epic, group: subgroup2) }
+          let_it_be(:confidential_epic) { create(:epic, :confidential, group: subgroup2) }
 
           before do
             subgroup.add_guest(subgroup_guest)
           end
 
           it 'returns all epics that belong to the given group and its subgroups' do
-            expect(epics).to contain_exactly(epic1, epic2, epic3, subgroup_epic, subgroup2_epic, epic5)
+            expect(epics)
+              .to contain_exactly(epic1, epic2, epic3, subgroup_epic, subgroup2_epic, epic5, confidential_epic)
+          end
+
+          it 'does not return confidential epic if user has no permissions to read them' do
+            expect(described_class.new(subgroup_guest, { group_id: subgroup.id }).execute)
+              .to contain_exactly(subgroup_epic, subgroup2_epic)
           end
 
           describe 'hierarchy params' do
@@ -205,7 +212,7 @@ RSpec.describe EpicsFinder do
             subject { epics(finder_params.merge(group_id: subgroup.id)) }
 
             it 'excludes ancestor groups and includes descendant groups by default' do
-              is_expected.to contain_exactly(subgroup_epic, subgroup2_epic)
+              is_expected.to contain_exactly(subgroup_epic, subgroup2_epic, confidential_epic)
             end
 
             context 'when user is a member of a subgroup project' do
@@ -225,6 +232,34 @@ RSpec.describe EpicsFinder do
 
               it 'gets only epics from the project ancestor groups' do
                 is_expected.to contain_exactly(epic1, epic2, epic3, subgroup3_epic, epic5)
+              end
+            end
+
+            context 'when user is a member of an ancestor group that is not the root ancestor' do
+              let_it_be(:subgroup_reporter) { create(:user) }
+
+              let(:finder) { described_class.new(subgroup_reporter, finder_params) }
+              let(:finder_params) { { include_descendant_groups: false, group_id: subgroup2.id } }
+
+              before do
+                subgroup.add_reporter(subgroup_reporter)
+              end
+
+              context 'when include_ancestor_groups is false' do
+                it 'includes subgroups confidential epics and no epics from ancestors' do
+                  finder_params[:include_ancestor_groups] = false
+
+                  expect(finder.execute).to contain_exactly(subgroup2_epic, confidential_epic)
+                end
+              end
+
+              context 'when include_ancestor_groups is true' do
+                it 'includes subgroups confidential epics and epics from ancestors' do
+                  finder_params[:include_ancestor_groups] = true
+
+                  expect(finder.execute)
+                    .to contain_exactly(subgroup_epic, subgroup2_epic, confidential_epic)
+                end
               end
             end
 
@@ -254,13 +289,13 @@ RSpec.describe EpicsFinder do
               context 'and include_ancestor_groups is false' do
                 let(:finder_params) { { include_ancestor_groups: false } }
 
-                it { is_expected.to contain_exactly(subgroup_epic, subgroup2_epic) }
+                it { is_expected.to contain_exactly(subgroup_epic, subgroup2_epic, confidential_epic) }
               end
 
               context 'and include_ancestor_groups is true' do
                 let(:finder_params) { { include_ancestor_groups: true } }
 
-                it { is_expected.to contain_exactly(subgroup_epic, subgroup2_epic, epic1, epic2, epic3, epic5) }
+                it { is_expected.to contain_exactly(subgroup_epic, subgroup2_epic, epic1, epic2, epic3, epic5, confidential_epic) }
 
                 context "when user does not have permission to view ancestor groups" do
                   let(:finder_params) { { group_id: subgroup.id, include_ancestor_groups: true } }
