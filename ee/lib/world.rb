@@ -31,3 +31,5 @@ module World
     ISO3166::Country[alpha2]&.alpha3
   end
 end
+
+World.prepend_mod
