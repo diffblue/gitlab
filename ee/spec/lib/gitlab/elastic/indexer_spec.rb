@@ -10,7 +10,7 @@ RSpec.describe Gitlab::Elastic::Indexer do
   end
 
   let(:project) { create(:project, :repository) }
-  let(:user) { project.owner }
+  let(:user) { project.first_owner }
 
   let(:expected_from_sha) { Gitlab::Git::EMPTY_TREE_ID }
   let(:to_commit) { project.commit }

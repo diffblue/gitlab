@@ -6,7 +6,7 @@ RSpec.describe PushRulesHelper do
   let(:global_push_rule) { create(:push_rule_sample) }
   let(:push_rule) { create(:push_rule) }
   let(:admin) { create(:admin) }
-  let(:project_owner) { push_rule.project.owner }
+  let(:project_owner) { push_rule.project.first_owner }
   let(:possible_help_texts) do
     {
       commit_committer_check_base_help: /Users can only push commits to this repository that were committed with one of their own verified emails/,

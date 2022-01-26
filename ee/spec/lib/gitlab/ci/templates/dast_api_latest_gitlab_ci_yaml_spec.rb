@@ -33,7 +33,7 @@ RSpec.describe 'DAST-API.latest.gitlab-ci.yml' do
     let(:pipeline_branch) { default_branch }
     let_it_be(:project) { create(:project, :custom_repo, files: { 'README.txt' => '' }) }
 
-    let(:user) { project.owner }
+    let(:user) { project.first_owner }
     let(:service) { Ci::CreatePipelineService.new(project, user, ref: pipeline_branch ) }
     let(:pipeline) { service.execute!(:push).payload }
     let(:build_names) { pipeline.builds.pluck(:name) }

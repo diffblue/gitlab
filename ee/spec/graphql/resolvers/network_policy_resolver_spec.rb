@@ -7,7 +7,7 @@ RSpec.describe Resolvers::NetworkPolicyResolver do
 
   let_it_be(:project) { create(:project) }
 
-  let(:user) { project.owner }
+  let(:user) { project.first_owner }
   let(:time_now) { Time.utc(2021, 6, 16) }
 
   let(:policy) do
