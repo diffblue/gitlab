@@ -406,9 +406,9 @@ the `build` job is still skipped. The job does not run for any of the files.
 
 With some configurations that use `changes`, [jobs or pipelines might run unexpectedly](#jobs-or-pipelines-run-unexpectedly-when-using-changes)
 
-#### Use `only:changes` with pipelines for merge requests
+#### Use `only:changes` with merge request pipelines
 
-With [pipelines for merge requests](../pipelines/merge_request_pipelines.md),
+With [merge request pipelines](../pipelines/merge_request_pipelines.md),
 it's possible to define a job to be created based on files modified
 in a merge request.
 
@@ -931,7 +931,7 @@ For example:
 
 You might have jobs or pipelines that run unexpectedly when using [`rules: changes`](../yaml/index.md#ruleschanges)
 or [`only: changes`](../yaml/index.md#onlychanges--exceptchanges) without
-[pipelines for merge requests](../pipelines/merge_request_pipelines.md).
+[merge request pipelines](../pipelines/merge_request_pipelines.md).
 
 Pipelines on branches or tags that don't have an explicit association with a merge request
 use a previous SHA to calculate the diff. This calculation is equivalent to `git diff HEAD~`
