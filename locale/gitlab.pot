@@ -30912,6 +30912,9 @@ msgstr ""
 msgid "Runners|Registration token copied!"
 msgstr ""
 
+msgid "Runners|Reset token"
+msgstr ""
+
 msgid "Runners|Revision"
 msgstr ""
 

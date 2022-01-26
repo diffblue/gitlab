@@ -15,8 +15,8 @@ describe('UnconfiguredSecurityRule component', () => {
   let wrapper;
   let description;
 
-  const findDescription = () => wrapper.find(GlSprintf);
-  const findButton = () => wrapper.find(GlButton);
+  const findDescription = () => wrapper.findComponent(GlSprintf);
+  const findButton = () => wrapper.findComponent(GlButton);
 
   const vulnCheckRule = {
     name: VULNERABILITY_CHECK_NAME,

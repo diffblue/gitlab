@@ -56,10 +56,10 @@ describe('EE Approvals Group Settings App', () => {
     store = null;
   });
 
-  const findSettingsBlock = () => wrapper.find(SettingsBlock);
+  const findSettingsBlock = () => wrapper.findComponent(SettingsBlock);
   const findDescriptionLink = () => wrapper.findByTestId('group-settings-description');
   const findLearnMoreLink = () => wrapper.findByTestId('group-settings-learn-more');
-  const findApprovalSettings = () => wrapper.find(ApprovalSettings);
+  const findApprovalSettings = () => wrapper.findComponent(ApprovalSettings);
 
   it('renders a settings block', () => {
     createWrapper();

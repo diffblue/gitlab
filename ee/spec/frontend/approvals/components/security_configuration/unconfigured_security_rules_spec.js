@@ -53,7 +53,7 @@ describe('UnconfiguredSecurityRules component', () => {
     });
 
     it('should render a unconfigured-security-rule component for every security rule ', () => {
-      expect(wrapper.findAll(UnconfiguredSecurityRule).length).toBe(3);
+      expect(wrapper.findAllComponents(UnconfiguredSecurityRule).length).toBe(3);
     });
   });
 
@@ -73,7 +73,7 @@ describe('UnconfiguredSecurityRules component', () => {
       });
 
       it(`should ${shouldRender ? '' : 'not'} render the loading skeleton`, () => {
-        expect(wrapper.find(GlSkeletonLoading).exists()).toBe(shouldRender);
+        expect(wrapper.findComponent(GlSkeletonLoading).exists()).toBe(shouldRender);
       });
     },
   );

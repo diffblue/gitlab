@@ -32,9 +32,9 @@ describe('EE Approvals MRRules', () => {
 
   const findHeaders = () => wrapper.findAll('thead th').wrappers.map((x) => x.text());
   const findRuleName = () => wrapper.find('.js-name');
-  const findRuleIndicator = () => wrapper.find({ ref: 'indicator' });
-  const findAvatarList = () => wrapper.find(UserAvatarList);
-  const findRuleControls = () => wrapper.find('td.js-controls').find(RuleControls);
+  const findRuleIndicator = () => wrapper.findComponent({ ref: 'indicator' });
+  const findAvatarList = () => wrapper.findComponent(UserAvatarList);
+  const findRuleControls = () => wrapper.find('td.js-controls').findComponent(RuleControls);
   const callTargetBranchHandler = (MutationObserverSpy) => {
     const onTargetBranchMutationHandler = MutationObserverSpy.mock.calls[0][0];
     return onTargetBranchMutationHandler();
