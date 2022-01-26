@@ -100,19 +100,6 @@ RSpec.describe 'Update an external audit event destination' do
 
       it_behaves_like 'a mutation that does not update a destination'
     end
-
-    context 'when feature is disabled' do
-      before do
-        stub_feature_flags(ff_external_audit_events_namespace: false)
-      end
-
-      it_behaves_like 'a mutation on an unauthorized resource'
-
-      it 'does not update the destination' do
-        expect { post_graphql_mutation(mutation, current_user: owner) }
-          .not_to change { destination.reload.destination_url }
-      end
-    end
   end
 
   context 'when feature is unlicensed' do

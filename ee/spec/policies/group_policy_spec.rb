@@ -1789,15 +1789,6 @@ RSpec.describe GroupPolicy do
   context 'external audit events' do
     let(:current_user) { owner }
 
-    context 'when feature is disabled' do
-      before do
-        stub_feature_flags(ff_external_audit_events_namespace: false)
-        stub_licensed_features(external_audit_events: true)
-      end
-
-      it { is_expected.to(be_disallowed(:admin_external_audit_events)) }
-    end
-
     context 'when license is disabled' do
       before do
         stub_licensed_features(external_audit_events: false)
