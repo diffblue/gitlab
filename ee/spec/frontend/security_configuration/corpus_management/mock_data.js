@@ -5,6 +5,7 @@ const pipelines = {
       ref: 'farias-gl/go-fuzzing-example',
       path: 'gitlab-examples/security/security-reports/-/jobs/1107103952',
       createdAt: new Date(2020, 4, 3).toString(),
+      updatedAt: new Date(2020, 4, 5).toString(),
     },
   ],
 };

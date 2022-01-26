@@ -10,6 +10,7 @@ export default {
   directives: {
     GlModalDirective,
   },
+  inject: ['canReadCorpus', 'canDestroyCorpus'],
   props: {
     corpus: {
       type: Object,
@@ -43,12 +44,22 @@ export default {
 </script>
 <template>
   <span>
-    <gl-button class="gl-mr-2" icon="download" :href="downloadPath" />
     <gl-button
+      v-if="canReadCorpus"
+      class="gl-mr-2"
+      icon="download"
+      :href="downloadPath"
+      :aria-label="__('Download')"
+      data-testid="download-corpus"
+    />
+    <gl-button
+      v-if="canDestroyCorpus"
       v-gl-modal-directive="directiveName"
       icon="remove"
       category="secondary"
       variant="danger"
+      :aria-label="__('Delete')"
+      data-testid="destroy-corpus"
     />
 
     <gl-modal

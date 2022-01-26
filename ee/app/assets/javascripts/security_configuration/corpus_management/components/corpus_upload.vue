@@ -6,6 +6,8 @@ import addCorpusMutation from '../graphql/mutations/add_corpus.mutation.graphql'
 import resetCorpus from '../graphql/mutations/reset_corpus.mutation.graphql';
 import uploadCorpus from '../graphql/mutations/upload_corpus.mutation.graphql';
 import getUploadState from '../graphql/queries/get_upload_state.query.graphql';
+import uploadError from '../graphql/mutations/upload_error.mutation.graphql';
+import { I18N, MAX_FILE_SIZE } from '../constants';
 import CorpusUploadForm from './corpus_upload_form.vue';
 
 export default {
@@ -23,7 +25,7 @@ export default {
     newUpload: s__('CorpusManagement|New upload'),
     newCorpus: s__('CorpusMnagement|New corpus'),
   },
-  inject: ['projectFullPath'],
+  inject: ['projectFullPath', 'canUploadCorpus'],
   apollo: {
     states: {
       query: getUploadState,
@@ -93,10 +95,17 @@ export default {
       });
     },
     beginFileUpload({ name, files }) {
-      this.$apollo.mutate({
-        mutation: uploadCorpus,
-        variables: { name, projectPath: this.projectFullPath, files },
-      });
+      if (files[0].size >= MAX_FILE_SIZE) {
+        this.$apollo.mutate({
+          mutation: uploadError,
+          variables: { projectPath: this.projectFullPath, error: I18N.fileTooLarge },
+        });
+      } else {
+        this.$apollo.mutate({
+          mutation: uploadCorpus,
+          variables: { name, projectPath: this.projectFullPath, files },
+        });
+      }
     },
   },
 };
@@ -114,7 +123,9 @@ export default {
     </div>
 
     <gl-button
+      v-if="canUploadCorpus"
       v-gl-modal-directive="$options.modal.modalId"
+      data-testid="new-corpus"
       class="gl-mr-5 gl-ml-auto"
       variant="confirm"
     >

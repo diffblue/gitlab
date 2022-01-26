@@ -27,7 +27,7 @@ export default {
       return this.corpus.package.pipelines.nodes[0]?.ref;
     },
     latestJob() {
-      return `${this.jobURL} (${this.ref})`;
+      return `${this.jobUrl} (${this.ref})`;
     },
     name() {
       return this.corpus.package.name;

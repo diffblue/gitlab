@@ -1,5 +1,6 @@
 <script>
 import { GlLoadingIcon, GlLink, GlKeysetPagination } from '@gitlab/ui';
+import { fetchPolicies } from '~/lib/graphql';
 import CorpusTable from 'ee/security_configuration/corpus_management/components/corpus_table.vue';
 import CorpusUpload from 'ee/security_configuration/corpus_management/components/corpus_upload.vue';
 import { s__, __ } from '~/locale';
@@ -78,7 +79,8 @@ export default {
         beforeCursor: null,
         firstPageSize: this.$options.pageSize,
       };
-      this.$apollo.queries.states.refetch();
+      this.$apollo.queries.states.setOptions({ fetchPolicy: fetchPolicies.NETWORK_ONLY });
+      this.$apollo.queries.states.setOptions({ fetchPolicy: fetchPolicies.CACHE_FIRST });
     },
     onDelete(id) {
       return this.$apollo

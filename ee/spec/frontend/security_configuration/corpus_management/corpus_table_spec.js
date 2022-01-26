@@ -24,6 +24,8 @@ describe('Corpus table', () => {
       propsData: defaultProps,
       provide: {
         projectFullPath: TEST_PROJECT_FULL_PATH,
+        canReadCorpus: true,
+        canDestroyCorpus: true,
       },
       ...options,
     });
