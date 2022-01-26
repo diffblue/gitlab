@@ -1,7 +1,7 @@
-import * as types from 'ee/seat_usage/store/mutation_types';
-import mutations from 'ee/seat_usage/store/mutations';
-import createState from 'ee/seat_usage/store/state';
-import { mockDataSeats, mockMemberDetails } from 'ee_jest/seat_usage/mock_data';
+import * as types from 'ee/usage_quotas/seats/store/mutation_types';
+import mutations from 'ee/usage_quotas/seats/store/mutations';
+import createState from 'ee/usage_quotas/seats/store/state';
+import { mockDataSeats, mockMemberDetails } from 'ee_jest/usage_quotas/seats/mock_data';
 
 describe('EE seats module mutations', () => {
   let state;

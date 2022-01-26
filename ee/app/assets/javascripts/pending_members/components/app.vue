@@ -12,7 +12,7 @@ import {
   GlLoadingIcon,
 } from '@gitlab/ui';
 import { sprintf } from '~/locale';
-import { AVATAR_SIZE } from 'ee/seat_usage/constants';
+import { AVATAR_SIZE } from 'ee/usage_quotas/seats/constants';
 import {
   AWAITING_MEMBER_SIGNUP_TEXT,
   LABEL_APPROVE,

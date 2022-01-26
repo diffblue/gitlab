@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import SeatUsageApp from 'ee/seat_usage';
+import SeatUsageApp from 'ee/usage_quotas/seats';
 import initNamespaceStorage from 'ee/usage_quotas/storage/init_namespace_storage';
 import LinkedTabs from '~/lib/utils/bootstrap_linked_tabs';
 
