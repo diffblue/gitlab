@@ -34,7 +34,7 @@ module QA
       end
 
       shared_examples 'group membership actions' do
-        it 'creates a new account automatically and allows to leave group and join again', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347675' do
+        it 'creates a new account automatically and allows to leave group and join again' do
           # When the user signs in via IDP for the first time
 
           visit_group_sso_url
@@ -87,7 +87,7 @@ module QA
         end
       end
 
-      context 'with Snowplow tracking enabled' do
+      context 'with Snowplow tracking enabled', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347675' do
         before do
           Flow::Settings.enable_snowplow
         end
@@ -99,7 +99,7 @@ module QA
         end
       end
 
-      context 'with Snowplow tracking disabled' do
+      context 'with Snowplow tracking disabled', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/351257' do
         before do
           Flow::Settings.disable_snowplow
         end
