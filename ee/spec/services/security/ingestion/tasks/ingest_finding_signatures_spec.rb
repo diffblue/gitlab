@@ -24,5 +24,7 @@ RSpec.describe Security::Ingestion::Tasks::IngestFindingSignatures do
       expect { ingest_finding_signatures }.to change { Vulnerabilities::FindingSignature.count }.by(1)
                                           .and change { finding_2.signatures.count }.by(1)
     end
+
+    it_behaves_like 'bulk insertable task'
   end
 end

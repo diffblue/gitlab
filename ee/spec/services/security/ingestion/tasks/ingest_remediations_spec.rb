@@ -32,5 +32,7 @@ RSpec.describe Security::Ingestion::Tasks::IngestRemediations do
                                             .and change { finding_2.reload.association(:remediations).scope.count }.from(0).to(2)
                                             .and not_change { finding_1.reload.association(:remediations).scope.count }.from(2)
     end
+
+    it_behaves_like 'bulk insertable task'
   end
 end

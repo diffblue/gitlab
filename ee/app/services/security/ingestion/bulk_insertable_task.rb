@@ -39,6 +39,8 @@ module Security
         def klass
           @klass ||= Class.new(model).tap do |klass|
             remove_validations(klass)
+
+            model.const_set("BulkInsertableProxy", klass)
           end.include(BulkInsertSafe)
         end
 

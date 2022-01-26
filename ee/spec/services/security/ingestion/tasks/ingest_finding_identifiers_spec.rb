@@ -22,5 +22,7 @@ RSpec.describe Security::Ingestion::Tasks::IngestFindingIdentifiers do
       expect { ingest_finding_identifiers }.to change { Vulnerabilities::FindingIdentifier.count }.by(1)
                                            .and change { finding_2.reload.identifiers }.from([]).to([identifier])
     end
+
+    it_behaves_like 'bulk insertable task'
   end
 end
