@@ -1,13 +1,19 @@
 <script>
 import { GlDrawer } from '@gitlab/ui';
+import RoadmapDaterange from './roadmap_daterange.vue';
 
 export default {
   components: {
     GlDrawer,
+    RoadmapDaterange,
   },
   props: {
     isOpen: {
       type: Boolean,
+      required: true,
+    },
+    timeframeRangeType: {
+      type: String,
       required: true,
     },
   },
@@ -35,6 +41,9 @@ export default {
   >
     <template #title>
       <h2 class="gl-my-0 gl-font-size-h2 gl-line-height-24">{{ __('Roadmap settings') }}</h2>
+    </template>
+    <template #default>
+      <roadmap-daterange :timeframe-range-type="timeframeRangeType" />
     </template>
   </gl-drawer>
 </template>

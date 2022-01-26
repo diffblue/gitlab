@@ -115,6 +115,7 @@ export default {
       <roadmap-settings
         v-if="glFeatures.roadmapSettings"
         :is-open="isSettingsSidebarOpen"
+        :timeframe-range-type="timeframeRangeType"
         data-testid="roadmap-settings"
         @toggleSettings="toggleSettings"
       />

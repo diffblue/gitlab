@@ -36,8 +36,16 @@ module Iterations
         .where("DATE ((COALESCE(iterations_cadences.last_run_date, DATE('01-01-1970')) + iterations_cadences.duration_in_weeks * INTERVAL '1 week')) <= CURRENT_DATE")
     end
 
-    def self.search_title(query)
-      fuzzy_search(query, [:title])
+    class << self
+      def search_title(query)
+        fuzzy_search(query, [::Resolvers::IterationsResolver::DEFAULT_IN_FIELD], use_minimum_char_limit: contains_digit?(query))
+      end
+
+      private
+
+      def contains_digit?(query)
+        !(query =~ / \d+ /).nil?
+      end
     end
 
     def next_open_iteration(date)
