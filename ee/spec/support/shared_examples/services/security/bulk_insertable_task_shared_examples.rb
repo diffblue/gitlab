@@ -9,7 +9,7 @@ RSpec.shared_examples 'bulk insertable task' do
     end
 
     it 'can generate error messages correctly' do
-      expect(proxy_class_instance.errors.full_messages).to eq(['Attribute is invalid'])
+      expect(proxy_class_instance.errors.full_messages).to contain_exactly 'Attribute is invalid'
     end
   end
 end
