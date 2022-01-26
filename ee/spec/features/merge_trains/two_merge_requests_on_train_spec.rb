@@ -6,7 +6,7 @@ RSpec.describe 'Two merge requests on a merge train' do
   include RepoHelpers
 
   let(:project) { create(:project, :repository) }
-  let(:key) { create(:key, user: project.owner) }
+  let(:key) { create(:key, user: project.first_owner) }
   let_it_be(:maintainer_1) { create(:user) }
   let_it_be(:maintainer_2) { create(:user) }
 

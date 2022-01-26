@@ -38,7 +38,7 @@ RSpec.describe 'Project', :js do
 
   describe 'immediately deleting a project marked for deletion' do
     let(:project) { create(:project, marked_for_deletion_at: Date.current) }
-    let(:user) { project.owner }
+    let(:user) { project.first_owner }
 
     before do
       stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)

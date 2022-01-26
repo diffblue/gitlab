@@ -9,7 +9,7 @@ RSpec.describe 'EE user opens IDE', :js do
   let_it_be(:unsigned_commits_warning) { 'This project does not accept unsigned commits.' }
 
   let(:project) { create(:project, :repository) }
-  let(:user) { project.owner }
+  let(:user) { project.first_owner }
 
   before do
     stub_licensed_features(push_rules: true)

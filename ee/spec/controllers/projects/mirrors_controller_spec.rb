@@ -7,14 +7,16 @@ RSpec.describe Projects::MirrorsController do
 
   describe 'setting up a remote mirror' do
     let_it_be(:project) { create(:project, :repository) }
+    let_it_be(:first_owner) { project.first_owner }
 
     let(:url) { 'http://foo.com' }
 
     context 'when the current project is a mirror' do
       let(:project) { create(:project, :repository, :mirror) }
+      let(:first_owner) { project.first_owner }
 
       before do
-        sign_in(project.owner)
+        sign_in(first_owner)
       end
 
       it 'allows to create a remote mirror' do
@@ -28,7 +30,7 @@ RSpec.describe Projects::MirrorsController do
       let(:remote_mirror) { project.remote_mirrors.create!(enabled: 1, url: 'http://local.dev') }
 
       before do
-        sign_in(project.owner)
+        sign_in(first_owner)
       end
 
       context 'mirror_user is unset' do
@@ -40,7 +42,7 @@ RSpec.describe Projects::MirrorsController do
 
           expect(project.mirror).to eq(true)
           expect(project.import_url).to eq('http://local.dev')
-          expect(project.mirror_user).to eq(project.owner)
+          expect(project.mirror_user).to eq(first_owner)
         end
       end
 
@@ -53,7 +55,7 @@ RSpec.describe Projects::MirrorsController do
 
           expect(project.mirror).to eq(true)
           expect(project.import_url).to eq('http://local.dev')
-          expect(project.mirror_user).to eq(project.owner)
+          expect(project.mirror_user).to eq(first_owner)
         end
       end
     end
@@ -62,6 +64,7 @@ RSpec.describe Projects::MirrorsController do
   describe 'setting up a mirror' do
     let(:url) { 'http://foo.com' }
     let(:project) { create(:project, :repository) }
+    let(:first_owner) { project.first_owner }
 
     context 'when mirrors are disabled' do
       before do
@@ -82,7 +85,7 @@ RSpec.describe Projects::MirrorsController do
 
       context 'when user is not an admin' do
         it 'does not create a new mirror' do
-          sign_in(project.owner)
+          sign_in(first_owner)
 
           expect do
             do_put(project, mirror: true, import_url: url)
@@ -93,13 +96,13 @@ RSpec.describe Projects::MirrorsController do
 
     context 'when mirrors are enabled' do
       before do
-        sign_in(project.owner)
+        sign_in(first_owner)
       end
 
       context 'when project does not have a mirror' do
         it 'allows to create a mirror' do
           expect do
-            do_put(project, mirror: true, mirror_user_id: project.owner.id, import_url: url)
+            do_put(project, mirror: true, mirror_user_id: first_owner.id, import_url: url)
           end.to change { Project.mirror.count }.to(1)
         end
       end
@@ -117,7 +120,7 @@ RSpec.describe Projects::MirrorsController do
   describe 'forcing an update on a pull mirror' do
     it 'forces update' do
       project = create(:project, :mirror)
-      sign_in(project.owner)
+      sign_in(project.first_owner)
 
       Sidekiq::Testing.fake! do
         expect { put :update_now, params: { namespace_id: project.namespace.to_param, project_id: project.to_param } }
@@ -129,10 +132,11 @@ RSpec.describe Projects::MirrorsController do
 
   describe '#update' do
     let(:project) { create(:project, :repository, :mirror, :remote_mirror) }
-    let(:attributes) { { project: { mirror_user_id: project.owner.id, mirror_trigger_builds: 0 }, namespace_id: project.namespace.to_param, project_id: project.to_param } }
+    let(:first_owner) { project.first_owner }
+    let(:attributes) { { project: { mirror_user_id: first_owner.id, mirror_trigger_builds: 0 }, namespace_id: project.namespace.to_param, project_id: project.to_param } }
 
     before do
-      sign_in(project.owner)
+      sign_in(first_owner)
     end
 
     around do |example|
@@ -170,7 +174,7 @@ RSpec.describe Projects::MirrorsController do
 
         import_data = project.reload_import_data
         expect(import_data.ssh_known_hosts_verified_at).to be_within(1.minute).of(Time.current)
-        expect(import_data.ssh_known_hosts_verified_by).to eq(project.owner)
+        expect(import_data.ssh_known_hosts_verified_by).to eq(first_owner)
       end
 
       it 'unsets ssh_known_hosts_verified_at and verified_by when the update unsets known hosts' do
@@ -191,7 +195,7 @@ RSpec.describe Projects::MirrorsController do
 
         do_put(project, { mirror_user_id: other_user.id }, format: :json)
 
-        expect(project.reload.mirror_user).to eq(project.owner)
+        expect(project.reload.mirror_user).to eq(first_owner)
       end
     end
 
