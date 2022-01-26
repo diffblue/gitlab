@@ -68,7 +68,7 @@ RSpec.describe 'New project', :js do
       end
 
       it '"Import project" tab creates projects with features enabled' do
-        stub_request(:get, "http://foo.git/info/refs?service=git-upload-pack").to_return(status: 200, body: "001e# servdice=git-upload-pack")
+        stub_request(:get, "http://foo.git/info/refs?service=git-upload-pack").to_return(status: 200, body: "001e# service=git-upload-pack", headers: { 'Content-Type': 'application/x-git-upload-pack-advertisement' })
 
         visit new_project_path
         click_link 'Import project'
@@ -84,6 +84,7 @@ RSpec.describe 'New project', :js do
           fill_in 'project_path', with: 'import-project-with-features1'
           choose 'project_visibility_level_20'
           click_button 'Create project'
+          wait_for_requests
 
           created_project = Project.last
 
