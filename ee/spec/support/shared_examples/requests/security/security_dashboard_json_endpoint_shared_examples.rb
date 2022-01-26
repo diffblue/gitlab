@@ -25,16 +25,6 @@ RSpec.shared_examples 'security dashboard JSON endpoint' do
         expect(response).to have_gitlab_http_status(:not_found)
       end
     end
-
-    context 'and the security dashboard feature is disabled' do
-      it '404s' do
-        stub_feature_flags(instance_security_dashboard: false)
-
-        security_dashboard_request
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
   end
 
   context 'when the user is not authenticated' do

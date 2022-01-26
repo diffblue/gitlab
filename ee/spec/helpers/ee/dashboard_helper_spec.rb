@@ -79,41 +79,24 @@ RSpec.describe DashboardHelper, type: :helper do
     end
 
     describe 'security dashboard link' do
-      context 'when the feature is enabled' do
+      context 'and the feature is available on the license' do
         before do
-          stub_feature_flags(instance_security_dashboard: true)
+          stub_licensed_features(security_dashboard: true)
         end
 
-        context 'and the feature is available on the license' do
+        context 'and the user is authenticated' do
           before do
-            stub_licensed_features(security_dashboard: true)
-          end
-
-          context 'and the user is authenticated' do
-            before do
-              stub_user_permissions_for(:security, true)
-            end
-
-            it 'is included in the nav' do
-              expect(helper.dashboard_nav_links).to include(:security)
-            end
-          end
-
-          context 'and the user is not authenticated' do
-            before do
-              stub_user_permissions_for(:security, false)
-            end
-
-            it 'is not included in the nav' do
-              expect(helper.dashboard_nav_links).not_to include(:security)
-            end
-          end
-        end
-
-        context 'when the feature is not available on the license' do
-          before do
-            stub_licensed_features(security_dashboard: false)
             stub_user_permissions_for(:security, true)
+          end
+
+          it 'is included in the nav' do
+            expect(helper.dashboard_nav_links).to include(:security)
+          end
+        end
+
+        context 'and the user is not authenticated' do
+          before do
+            stub_user_permissions_for(:security, false)
           end
 
           it 'is not included in the nav' do
@@ -122,10 +105,9 @@ RSpec.describe DashboardHelper, type: :helper do
         end
       end
 
-      context 'when the feature is not enabled' do
+      context 'when the feature is not available on the license' do
         before do
-          stub_feature_flags(instance_security_dashboard: false)
-          stub_licensed_features(security_dashboard: true)
+          stub_licensed_features(security_dashboard: false)
           stub_user_permissions_for(:security, true)
         end
 

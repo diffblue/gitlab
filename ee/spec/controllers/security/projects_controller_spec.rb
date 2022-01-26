@@ -153,16 +153,6 @@ RSpec.describe Security::ProjectsController do
         end
       end
 
-      context 'and the security dashboard feature is disabled' do
-        it '404s' do
-          stub_feature_flags(instance_security_dashboard: false)
-
-          subject
-
-          expect(response).to have_gitlab_http_status(:not_found)
-        end
-      end
-
       it "removes the project from the current user's security dashboard" do
         subject
 
