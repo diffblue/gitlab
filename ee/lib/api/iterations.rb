@@ -23,11 +23,23 @@ module API
       end
 
       def iterations_finder_params(parent)
-        {
+        finder_params = {
           parent: parent,
           include_ancestors: params[:include_ancestors],
           state: params[:state],
-          search_title: params[:search]
+          search: nil,
+          in: nil
+        }
+
+        finder_params.merge!(search_params) if params[:search]
+
+        finder_params
+      end
+
+      def search_params
+        {
+          search: params[:search],
+          in: [::Resolvers::IterationsResolver::DEFAULT_IN_FIELD]
         }
       end
     end

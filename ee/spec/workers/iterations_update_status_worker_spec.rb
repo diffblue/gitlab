@@ -12,8 +12,8 @@ RSpec.describe IterationsUpdateStatusWorker do
 
   describe '#perform' do
     before do
-      current_iteration1.update_column(:state_enum, 2)
-      closed_iteration1.update_column(:state_enum, 1)
+      current_iteration1.update_column(:state_enum, Iteration::STATE_ENUM_MAP[:current])
+      closed_iteration1.update_column(:state_enum, Iteration::STATE_ENUM_MAP[:upcoming])
     end
 
     it 'schedules an issues roll-over job' do
