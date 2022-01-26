@@ -4,7 +4,8 @@ require 'spec_helper'
 
 RSpec.describe IncidentManagement::TimelineEvent do
   let_it_be(:project) { create(:project) }
-  let_it_be(:timeline_event) { create(:incident_management_timeline_event, project: project) }
+  let_it_be(:incident) { create(:incident, project: project) }
+  let_it_be(:timeline_event) { create(:incident_management_timeline_event, project: project, incident: incident) }
 
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
@@ -36,6 +37,37 @@ RSpec.describe IncidentManagement::TimelineEvent do
 
     it 'sorts timeline events by occurred_at' do
       is_expected.to eq([occurred_3mins_ago, occurred_2mins_ago, timeline_event])
+    end
+  end
+
+  describe '#cache_markdown_field' do
+    let(:note) { '<p>some html</p>' }
+    let(:expected_note_html) { '<p dir="auto">some html</p>' }
+
+    before do
+      allow(Banzai::Renderer).to receive(:cacheless_render_field).and_call_original
+    end
+
+    context 'on create' do
+      let(:timeline_event) { build(:incident_management_timeline_event, project: project, incident: incident, note: note) }
+
+      it 'updates note_html', :aggregate_failures do
+        expect(Banzai::Renderer).to receive(:cacheless_render_field)
+          .with(timeline_event, :note, { skip_project_check: false })
+
+        expect { timeline_event.save! }.to change { timeline_event.note_html }.to(expected_note_html)
+      end
+    end
+
+    context 'on update' do
+      let(:timeline_event) { create(:incident_management_timeline_event, project: project, incident: incident) }
+
+      it 'updates note_html', :aggregate_failures do
+        expect(Banzai::Renderer).to receive(:cacheless_render_field)
+          .with(timeline_event, :note, { skip_project_check: false })
+
+        expect { timeline_event.update!(note: note) }.to change { timeline_event.note_html }.to(expected_note_html)
+      end
     end
   end
 end
