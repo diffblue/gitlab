@@ -46,6 +46,57 @@ RSpec.describe 'group epic roadmap', :js do
     sign_in(user)
   end
 
+  context 'with roadmap_settings feature flag off' do
+    let!(:epic_with_bug) { create(:labeled_epic, group: group, start_date: 10.days.ago, end_date: 1.day.ago, labels: [bug_label]) }
+    let!(:epic_with_critical) { create(:labeled_epic, group: group, start_date: 20.days.ago, end_date: 2.days.ago, labels: [critical_label]) }
+    let!(:closed_epic) { create(:epic, :closed, group: group, start_date: 20.days.ago, end_date: 2.days.ago) }
+
+    before do
+      stub_feature_flags(roadmap_settings: false)
+
+      visit group_roadmap_path(group)
+      wait_for_requests
+    end
+
+    context 'roadmap daterange filtering' do
+      def select_date_range(range_type)
+        page.within('.epics-roadmap-filters') do
+          page.find('[data-testid="daterange-dropdown"] button.dropdown-toggle').click
+          click_button(range_type)
+        end
+      end
+
+      it 'renders daterange filtering dropdown with "This quarter" selected by default no layout presets available', :aggregate_failures do
+        page.within('.epics-roadmap-filters') do
+          expect(page).to have_selector('[data-testid="daterange-dropdown"]')
+          expect(page).not_to have_selector('.gl-segmented-control')
+          expect(page.find('[data-testid="daterange-dropdown"] button.dropdown-toggle')).to have_content('This quarter')
+        end
+      end
+
+      it 'selecting "This year" as daterange shows `Months` and `Weeks` layout presets', :aggregate_failures do
+        select_date_range('This year')
+
+        page.within('.epics-roadmap-filters') do
+          expect(page).to have_selector('.gl-segmented-control')
+          expect(page).to have_selector('input[value="MONTHS"]')
+          expect(page).to have_selector('input[value="WEEKS"]')
+        end
+      end
+
+      it 'selecting "Within 3 years" as daterange shows `Quarters`, `Months` and `Weeks` layout presets', :aggregate_failures do
+        select_date_range('Within 3 years')
+
+        page.within('.epics-roadmap-filters') do
+          expect(page).to have_selector('.gl-segmented-control')
+          expect(page).to have_selector('input[value="QUARTERS"]')
+          expect(page).to have_selector('input[value="MONTHS"]')
+          expect(page).to have_selector('input[value="WEEKS"]')
+        end
+      end
+    end
+  end
+
   context 'when epics exist for the group' do
     available_tokens = %w[Author Label Milestone Epic My-Reaction]
 
@@ -60,17 +111,28 @@ RSpec.describe 'group epic roadmap', :js do
 
     describe 'roadmap page' do
       context 'roadmap daterange filtering' do
+        def open_settings_sidebar
+          click_button 'Settings'
+          expect(page).to have_selector('[data-testid="roadmap-settings"]')
+        end
+
         def select_date_range(range_type)
-          page.within('.epics-roadmap-filters') do
+          open_settings_sidebar
+
+          page.within('[data-testid="roadmap-settings"]') do
             page.find('[data-testid="daterange-dropdown"] button.dropdown-toggle').click
             click_button(range_type)
           end
+
+          open_settings_sidebar
         end
 
         it 'renders daterange filtering dropdown with "This quarter" selected by default no layout presets available', :aggregate_failures do
-          page.within('.epics-roadmap-filters') do
+          open_settings_sidebar
+
+          page.within('[data-testid="roadmap-settings"]') do
             expect(page).to have_selector('[data-testid="daterange-dropdown"]')
-            expect(page).not_to have_selector('.gl-segmented-control')
+            expect(page).not_to have_selector('.gl-form-checkbox-group')
             expect(page.find('[data-testid="daterange-dropdown"] button.dropdown-toggle')).to have_content('This quarter')
           end
         end
@@ -78,8 +140,8 @@ RSpec.describe 'group epic roadmap', :js do
         it 'selecting "This year" as daterange shows `Months` and `Weeks` layout presets', :aggregate_failures do
           select_date_range('This year')
 
-          page.within('.epics-roadmap-filters') do
-            expect(page).to have_selector('.gl-segmented-control')
+          page.within('[data-testid="roadmap-settings"]') do
+            expect(page).to have_selector('.gl-form-checkbox-group')
             expect(page).to have_selector('input[value="MONTHS"]')
             expect(page).to have_selector('input[value="WEEKS"]')
           end
@@ -88,8 +150,8 @@ RSpec.describe 'group epic roadmap', :js do
         it 'selecting "Within 3 years" as daterange shows `Quarters`, `Months` and `Weeks` layout presets', :aggregate_failures do
           select_date_range('Within 3 years')
 
-          page.within('.epics-roadmap-filters') do
-            expect(page).to have_selector('.gl-segmented-control')
+          page.within('[data-testid="roadmap-settings"]') do
+            expect(page).to have_selector('.gl-form-checkbox-group')
             expect(page).to have_selector('input[value="QUARTERS"]')
             expect(page).to have_selector('input[value="MONTHS"]')
             expect(page).to have_selector('input[value="WEEKS"]')
