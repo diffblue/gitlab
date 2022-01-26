@@ -54,13 +54,6 @@ module EE
       class_methods do
         extend ::Gitlab::Utils::Override
 
-        override :uncached_data
-        def uncached_data
-          with_finished_at(:recording_ee_finished_at) do
-            super
-          end
-        end
-
         override :features_usage_data
         def features_usage_data
           super.merge(features_usage_data_ee)
@@ -408,6 +401,13 @@ module EE
         # rubocop:enable CodeReuse/ActiveRecord
 
         private
+
+        override :uncached_data
+        def uncached_data
+          with_finished_at(:recording_ee_finished_at) do
+            super
+          end
+        end
 
         # rubocop:disable CodeReuse/ActiveRecord
         # rubocop: disable UsageData/LargeTable
