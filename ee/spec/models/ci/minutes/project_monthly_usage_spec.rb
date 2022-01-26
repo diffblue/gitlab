@@ -111,4 +111,11 @@ RSpec.describe Ci::Minutes::ProjectMonthlyUsage do
       it_behaves_like 'namespace monthly usage'
     end
   end
+
+  context 'loose foreign key on ci_project_monthly_usages.project_id' do
+    it_behaves_like 'cleanup by a loose foreign key' do
+      let!(:parent) { create(:project) }
+      let!(:model) { create(:ci_project_monthly_usage, project: parent) }
+    end
+  end
 end
