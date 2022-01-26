@@ -3,7 +3,7 @@ import {
   HEADER_TOTAL_ENTRIES,
   HEADER_PAGE_NUMBER,
   HEADER_ITEMS_PER_PAGE,
-} from 'ee/seat_usage/constants';
+} from 'ee/usage_quotas/seats/constants';
 import * as types from './mutation_types';
 
 export default {

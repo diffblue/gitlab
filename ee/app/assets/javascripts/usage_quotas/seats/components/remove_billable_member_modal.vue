@@ -10,7 +10,7 @@ import { mapActions, mapState } from 'vuex';
 import {
   REMOVE_BILLABLE_MEMBER_MODAL_ID,
   REMOVE_BILLABLE_MEMBER_MODAL_CONTENT_TEXT_TEMPLATE,
-} from 'ee/seat_usage/constants';
+} from 'ee/usage_quotas/seats/constants';
 import csrf from '~/lib/utils/csrf';
 import { __, s__, sprintf } from '~/locale';
 

@@ -22,7 +22,7 @@ import {
   CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_TITLE,
   CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT,
   SORT_OPTIONS,
-} from 'ee/seat_usage/constants';
+} from 'ee/usage_quotas/seats/constants';
 import { s__, __, sprintf, n__ } from '~/locale';
 import FilterSortContainerRoot from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import RemoveBillableMemberModal from './remove_billable_member_modal.vue';
