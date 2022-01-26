@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Ci::PipelineProcessing::AtomicProcessingService do
   describe 'Pipeline Processing Service' do
     let(:project) { create(:project, :repository) }
-    let(:user)    { project.owner }
+    let(:user)    { project.first_owner }
 
     let(:pipeline) do
       create(:ci_empty_pipeline, ref: 'master', project: project)

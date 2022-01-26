@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService do
   describe '#execute' do
     let_it_be(:project) { create(:project) }
-    let_it_be(:current_user) { project.owner }
+    let_it_be(:current_user) { project.first_owner }
 
     subject(:service) { described_class.new(project: project, current_user: current_user) }
 
@@ -33,7 +33,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService do
 
     context 'when adding users to security policy project fails' do
       let_it_be(:project) { create(:project) }
-      let_it_be(:current_user) { project.owner }
+      let_it_be(:current_user) { project.first_owner }
       let_it_be(:maintainer) { create(:user) }
 
       before do

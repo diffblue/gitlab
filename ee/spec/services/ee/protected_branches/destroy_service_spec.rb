@@ -6,7 +6,7 @@ RSpec.describe ProtectedBranches::DestroyService do
   let(:protected_branch) { create(:protected_branch) }
   let(:branch_name) { protected_branch.name }
   let(:project) { protected_branch.project }
-  let(:user) { project.owner }
+  let(:user) { project.first_owner }
 
   describe '#execute' do
     subject(:service) { described_class.new(project, user) }

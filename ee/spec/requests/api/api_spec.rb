@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe API::API do
   describe 'logging', :aggregate_failures do
     let_it_be(:project) { create(:project, :public) }
-    let_it_be(:user) { project.owner }
+    let_it_be(:user) { project.first_owner }
 
     context 'when the method is not allowed' do
       it 'logs the route and context metadata for the client' do

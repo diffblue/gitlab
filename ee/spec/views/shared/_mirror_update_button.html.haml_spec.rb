@@ -9,7 +9,7 @@ RSpec.describe 'shared/mirror_update_button' do
 
   let(:import_state) { project.import_state }
 
-  let(:owner) { project.owner }
+  let(:owner) { project.first_owner }
   let(:developer) { create(:user).tap { |user| project.team.add_developer(user) } }
   let(:reporter) { create(:user).tap { |user| project.team.add_reporter(user) } }
 

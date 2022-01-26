@@ -115,7 +115,7 @@ RSpec.describe EE::NotificationService, :mailer do
       let!(:project_member) { create(:project_member, :invited, project: project) }
 
       it 'sends email' do
-        expect(Notify).to receive(:mirror_was_hard_failed_email).with(project.id, project.owner.id).and_call_original
+        expect(Notify).to receive(:mirror_was_hard_failed_email).with(project.id, project.first_owner.id).and_call_original
 
         subject.mirror_was_hard_failed(project)
       end
@@ -134,7 +134,7 @@ RSpec.describe EE::NotificationService, :mailer do
       let(:project) { create(:project, :mirror, :import_hard_failed) }
 
       it 'sends email' do
-        expect(Notify).to receive(:mirror_was_hard_failed_email).with(project.id, project.owner.id).and_call_original
+        expect(Notify).to receive(:mirror_was_hard_failed_email).with(project.id, project.first_owner.id).and_call_original
 
         subject.mirror_was_hard_failed(project)
       end
@@ -181,7 +181,7 @@ RSpec.describe EE::NotificationService, :mailer do
         project = create(:project, :mirror, :import_hard_failed)
         project.add_maintainer(user)
 
-        expect(Notify).to receive(:mirror_was_hard_failed_email).with(project.id, project.owner.id).and_call_original
+        expect(Notify).to receive(:mirror_was_hard_failed_email).with(project.id, project.first_owner.id).and_call_original
         expect(Notify).to receive(:mirror_was_hard_failed_email).with(project.id, user.id).and_call_original
 
         subject.mirror_was_hard_failed(project)
@@ -239,7 +239,7 @@ RSpec.describe EE::NotificationService, :mailer do
       let!(:project_member) { create(:project_member, :invited, project: project) }
 
       it 'sends email' do
-        expect(Notify).to receive(:mirror_was_disabled_email).with(project.id, project.owner.id, deleted_username).and_call_original
+        expect(Notify).to receive(:mirror_was_disabled_email).with(project.id, project.first_owner.id, deleted_username).and_call_original
 
         subject.mirror_was_disabled(project, deleted_username)
       end
@@ -256,7 +256,7 @@ RSpec.describe EE::NotificationService, :mailer do
 
     context 'when user is owner' do
       it 'sends email' do
-        expect(Notify).to receive(:mirror_was_disabled_email).with(project.id, project.owner.id, deleted_username).and_call_original
+        expect(Notify).to receive(:mirror_was_disabled_email).with(project.id, project.first_owner.id, deleted_username).and_call_original
 
         subject.mirror_was_disabled(project, deleted_username)
       end
@@ -302,7 +302,7 @@ RSpec.describe EE::NotificationService, :mailer do
       it 'sends email' do
         project.add_maintainer(user)
 
-        expect(Notify).to receive(:mirror_was_disabled_email).with(project.id, project.owner.id, deleted_username).and_call_original
+        expect(Notify).to receive(:mirror_was_disabled_email).with(project.id, project.first_owner.id, deleted_username).and_call_original
         expect(Notify).to receive(:mirror_was_disabled_email).with(project.id, user.id, deleted_username).and_call_original
 
         subject.mirror_was_disabled(project, deleted_username)
@@ -930,7 +930,7 @@ RSpec.describe EE::NotificationService, :mailer do
       let_it_be(:participant) { create(:incident_management_oncall_participant, rotation: rotation) }
 
       it 'sends an email to the owner and participants' do
-        expect(Notify).to receive(:user_removed_from_rotation_email).with(user, rotation, [schedule.project.owner]).once.and_call_original
+        expect(Notify).to receive(:user_removed_from_rotation_email).with(user, rotation, [schedule.project.first_owner]).once.and_call_original
         expect(Notify).to receive(:user_removed_from_rotation_email).with(user, rotation, [participant.user]).once.and_call_original
 
         subject.oncall_user_removed(rotation, user)
@@ -949,14 +949,14 @@ RSpec.describe EE::NotificationService, :mailer do
       let!(:rule_2) { create(:incident_management_escalation_rule, :with_user, :resolved, project: project, user: user) }
 
       it 'immediately sends an email to the project owner' do
-        expect(Notify).to receive(:user_escalation_rule_deleted_email).with(user, project, rules, project.owner).once.and_call_original
+        expect(Notify).to receive(:user_escalation_rule_deleted_email).with(user, project, rules, project.first_owner).once.and_call_original
         expect(Notify).not_to receive(:user_escalation_rule_deleted_email).with(user, project, rules, user)
 
         expect { subject.user_escalation_rule_deleted(project, user, rules) }.to change(ActionMailer::Base.deliveries, :size).by(1)
       end
 
       context 'when project owner is the removed user' do
-        let(:user) { project.owner }
+        let(:user) { project.first_owner }
 
         it 'does not send an email' do
           expect(Notify).not_to receive(:user_escalation_rule_deleted_email)

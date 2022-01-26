@@ -134,7 +134,7 @@ RSpec.describe API::StatusChecks do
 
     it 'deletes the specified rule' do
       expect do
-        delete api(single_object_url, project.owner)
+        delete api(single_object_url, project.first_owner)
       end.to change { MergeRequests::ExternalStatusCheck.count }.by(-1)
     end
 
@@ -152,7 +152,7 @@ RSpec.describe API::StatusChecks do
         end
 
         it 'returns the correct status code' do
-          delete api(single_object_url, (project_owner ? project.owner : build(:user)))
+          delete api(single_object_url, (project_owner ? project.first_owner : build(:user)))
 
           expect(response).to have_gitlab_http_status(status)
         end
@@ -167,7 +167,7 @@ RSpec.describe API::StatusChecks do
       end
 
       subject do
-        post api("/projects/#{project.id}/external_status_checks", project.owner), params: attributes_for(:external_status_check)
+        post api("/projects/#{project.id}/external_status_checks", project.first_owner), params: attributes_for(:external_status_check)
       end
 
       it 'creates a new external approval rule' do
@@ -182,7 +182,7 @@ RSpec.describe API::StatusChecks do
         end
 
         subject do
-          post api("/projects/#{project.id}/external_status_checks", project.owner), params: params
+          post api("/projects/#{project.id}/external_status_checks", project.first_owner), params: params
         end
 
         it 'returns expected status code' do
@@ -242,14 +242,14 @@ RSpec.describe API::StatusChecks do
     end
 
     it 'responds with expected JSON', :aggregate_failures do
-      get api(collection_url, project.owner)
+      get api(collection_url, project.first_owner)
 
       expect(json_response.size).to eq(2)
       expect(json_response.map { |r| r['name'] }).to contain_exactly('rule 1', 'rule 2')
     end
 
     it 'paginates correctly' do
-      get api(collection_url, project.owner), params: { per_page: 1 }
+      get api(collection_url, project.first_owner), params: { per_page: 1 }
 
       expect_paginated_array_response([rule.id])
     end
@@ -268,7 +268,7 @@ RSpec.describe API::StatusChecks do
         end
 
         it 'returns the correct status code' do
-          get api(collection_url, (project_owner ? project.owner : build(:user)))
+          get api(collection_url, (project_owner ? project.first_owner : build(:user)))
 
           expect(response).to have_gitlab_http_status(status)
         end
@@ -285,7 +285,7 @@ RSpec.describe API::StatusChecks do
       end
 
       subject do
-        put api(single_object_url, project.owner), params: params
+        put api(single_object_url, project.first_owner), params: params
       end
 
       it 'updates an approval rule' do
@@ -306,7 +306,7 @@ RSpec.describe API::StatusChecks do
         end
 
         subject do
-          put api(single_object_url, project.owner), params: params
+          put api(single_object_url, project.first_owner), params: params
         end
 
         it 'is invalid' do
@@ -324,7 +324,7 @@ RSpec.describe API::StatusChecks do
         end
 
         subject do
-          put api(single_object_url, project.owner), params: params
+          put api(single_object_url, project.first_owner), params: params
         end
 
         it 'returns expected status code' do
@@ -362,7 +362,7 @@ RSpec.describe API::StatusChecks do
         end
 
         it 'returns the correct status code' do
-          put api(single_object_url, (project_owner ? project.owner : build(:user))), params: attributes_for(:external_status_check)
+          put api(single_object_url, (project_owner ? project.first_owner : build(:user))), params: attributes_for(:external_status_check)
 
           expect(response).to have_gitlab_http_status(status)
         end

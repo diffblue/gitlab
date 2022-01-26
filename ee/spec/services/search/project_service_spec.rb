@@ -15,7 +15,7 @@ RSpec.describe Search::ProjectService do
     it_behaves_like 'EE search service shared examples', ::Gitlab::ProjectSearchResults, ::Gitlab::Elastic::ProjectSearchResults do
       let_it_be(:scope) { create(:project) }
 
-      let(:user) { scope.owner }
+      let(:user) { scope.first_owner }
       let(:service) { described_class.new(scope, user, params) }
     end
   end

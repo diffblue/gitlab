@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe "projects/security/policies/index", type: :view do
-  let(:user) { project.owner }
+  let(:user) { project.first_owner }
   let(:project) { create(:project) }
 
   before do

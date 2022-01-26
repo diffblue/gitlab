@@ -4,7 +4,7 @@ RSpec.shared_examples 'status page quick actions' do
   describe '/publish' do
     let_it_be(:status_page_setting) { create(:status_page_setting, :enabled, project: project) }
 
-    let(:user) { project.owner }
+    let(:user) { project.first_owner }
 
     before do
       stub_licensed_features(status_page: true)
