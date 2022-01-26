@@ -1,9 +1,9 @@
 import MockAdapter from 'axios-mock-adapter';
 import * as GroupsApi from 'ee/api/groups_api';
-import * as actions from 'ee/seat_usage/store/actions';
-import * as types from 'ee/seat_usage/store/mutation_types';
-import State from 'ee/seat_usage/store/state';
-import { mockDataSeats, mockMemberDetails } from 'ee_jest/seat_usage/mock_data';
+import * as actions from 'ee/usage_quotas/seats/store/actions';
+import * as types from 'ee/usage_quotas/seats/store/mutation_types';
+import State from 'ee/usage_quotas/seats/store/state';
+import { mockDataSeats, mockMemberDetails } from 'ee_jest/usage_quotas/seats/mock_data';
 import testAction from 'helpers/vuex_action_helper';
 import createFlash, { FLASH_TYPES } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
