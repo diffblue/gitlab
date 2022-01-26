@@ -50,8 +50,7 @@ module EE
     def security_dashboard_available?
       security_dashboard = InstanceSecurityDashboard.new(current_user)
 
-      ::Feature.enabled?(:instance_security_dashboard, default_enabled: true) &&
-        security_dashboard.feature_available?(:security_dashboard) &&
+      security_dashboard.feature_available?(:security_dashboard) &&
         can?(current_user, :read_instance_security_dashboard, security_dashboard)
     end
   end
