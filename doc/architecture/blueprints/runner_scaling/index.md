@@ -204,6 +204,33 @@ document, define requirements and score the solution accordingly. This will
 allow us to choose a solution that will work best for us and the wider
 community.
 
+### Plugin system design principles
+
+We want to design a new plugin system interface that will be simple for the
+wider community team members to consume. Because we can not build plugins for
+all the cloud platforms, we want the barrier for building one as low as
+possible for everyone. We want to allow everyone to contribute.
+
+In order to achieve this goal we want to follow a few design principles, that
+are here to guide our development process for the new plugin system
+abstraction:
+
+General high-level principles:
+
+1. Make the entry barrier for writing a new plugin low.
+1. Find a proper balance between the plugin system simplicity and flexibility.
+   These are not mutually exclusive.
+1. Abstract away as many technical details as possible but do not hide them completely.
+1. Build an abstraction that serves our community well but allows us to ship it quickly.
+1. Invest in a flexible solution, avoid one-way-door decisions, foster iteration.
+1. When in doubts err on the side of making things more simple for the wider community.
+
+A few most important technical details:
+
+1. Favor gRPC communication between a plugin and GitLab Runner.
+1. Make it possible to version communication interface and support many versions.
+1. Make Go a primary language for writing plugins but accept other languages too.
+
 ## Status
 
 Status: RFC.
