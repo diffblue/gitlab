@@ -7,12 +7,19 @@ import { corpuses } from '../../mock_data';
 describe('Action buttons', () => {
   let wrapper;
 
+  const findCorpusDownloadButton = () => wrapper.find('[data-testid="download-corpus"]');
+  const findCorpusDestroyButton = () => wrapper.find('[data-testid="destroy-corpus"]');
+
   const createComponentFactory = (mountFn = shallowMount) => (options = {}) => {
     const defaultProps = {
       corpus: corpuses[0],
     };
     wrapper = mountFn(Actions, {
       propsData: defaultProps,
+      provide: {
+        canReadCorpus: true,
+        canDestroyCorpus: true,
+      },
       ...options,
     });
   };
@@ -23,7 +30,7 @@ describe('Action buttons', () => {
     wrapper.destroy();
   });
 
-  describe('corpus management', () => {
+  describe('corpus management with read and destroy enabled', () => {
     it('renders the action buttons', () => {
       createComponent();
       expect(wrapper.findAllComponents(GlButton)).toHaveLength(2);
@@ -40,6 +47,47 @@ describe('Action buttons', () => {
 
         expect(wrapper.emitted().delete).toBeTruthy();
       });
+    });
+  });
+
+  describe('corpus management with read disabled', () => {
+    it('renders the destroy button only', () => {
+      createComponent({
+        provide: {
+          canReadCorpus: false,
+          canDestroyCorpus: true,
+        },
+      });
+      expect(wrapper.findAllComponents(GlButton)).toHaveLength(1);
+      expect(findCorpusDownloadButton().exists()).toBe(false);
+      expect(findCorpusDestroyButton().exists()).toBe(true);
+    });
+
+    describe('delete confirmation modal', () => {
+      beforeEach(() => {
+        createComponent({ stubs: { GlModal } });
+      });
+
+      it('calls the deleteCorpus method', async () => {
+        wrapper.findComponent(GlModal).vm.$emit('primary');
+        await nextTick();
+
+        expect(wrapper.emitted().delete).toBeTruthy();
+      });
+    });
+  });
+
+  describe('corpus management with destroy disabled', () => {
+    it('renders the download button only', () => {
+      createComponent({
+        provide: {
+          canReadCorpus: true,
+          canDestroyCorpus: false,
+        },
+      });
+      expect(wrapper.findAllComponents(GlButton)).toHaveLength(1);
+      expect(findCorpusDownloadButton().exists()).toBe(true);
+      expect(findCorpusDestroyButton().exists()).toBe(false);
     });
   });
 });

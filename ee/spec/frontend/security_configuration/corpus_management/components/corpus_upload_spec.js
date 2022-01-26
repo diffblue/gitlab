@@ -1,4 +1,4 @@
-import { GlButton, GlModal } from '@gitlab/ui';
+import { GlModal } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import CorpusUpload from 'ee/security_configuration/corpus_management/components/corpus_upload.vue';
 import CorpusUploadForm from 'ee/security_configuration/corpus_management/components/corpus_upload_form.vue';
@@ -10,6 +10,7 @@ describe('Corpus Upload', () => {
 
   const findModal = () => wrapper.findComponent(GlModal);
   const findCorpusUploadForm = () => wrapper.findComponent(CorpusUploadForm);
+  const findNewCorpusButton = () => wrapper.find('[data-testid="new-corpus"]');
 
   const createComponentFactory = (mountFn = shallowMount) => (options = {}) => {
     const defaultProps = { totalSize: 4e8 };
@@ -24,6 +25,7 @@ describe('Corpus Upload', () => {
       },
       provide: {
         projectFullPath: TEST_PROJECT_FULL_PATH,
+        canUploadCorpus: true,
       },
       ...options,
     });
@@ -38,7 +40,7 @@ describe('Corpus Upload', () => {
   describe('component', () => {
     it('renders header', () => {
       createComponent();
-      expect(wrapper.findComponent(GlButton).exists()).toBe(true);
+      expect(findNewCorpusButton().exists()).toBe(true);
       expect(wrapper.element).toMatchSnapshot();
     });
 
@@ -77,6 +79,19 @@ describe('Corpus Upload', () => {
         await wrapper.vm.$forceUpdate();
         findCorpusUploadForm().vm.$emit('beginFileUpload');
         expect(wrapper.vm.beginFileUpload).toHaveBeenCalled();
+      });
+    });
+
+    describe('with new uploading disabled', () => {
+      it('does not render the upload button', () => {
+        createComponent({
+          provide: {
+            projectFullPath: TEST_PROJECT_FULL_PATH,
+            canUploadCorpus: false,
+          },
+        });
+
+        expect(findNewCorpusButton().exists()).toBe(false);
       });
     });
   });

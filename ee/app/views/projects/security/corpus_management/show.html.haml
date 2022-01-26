@@ -2,4 +2,7 @@
 - breadcrumb_title s_('CorpusManagement|Fuzz testing corpus management')
 - page_title s_('CorpusManagement|Fuzz testing corpus management')
 
-.js-corpus-management{ data: { project_full_path: @project.full_path } }
+.js-corpus-management{ data: {project_full_path: @project.full_path,
+            can_upload_corpus: can?(current_user, :create_package, @project).to_s,
+            can_read_corpus: can?(current_user, :read_package, @project).to_s,
+            can_destroy_corpus: can?(current_user, :destroy_package, @project).to_s } }

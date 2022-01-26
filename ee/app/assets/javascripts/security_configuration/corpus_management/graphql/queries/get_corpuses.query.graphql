@@ -34,6 +34,8 @@ query getCorpuses(
               id
               createdAt
               ref
+              path
+              updatedAt
             }
           }
         }

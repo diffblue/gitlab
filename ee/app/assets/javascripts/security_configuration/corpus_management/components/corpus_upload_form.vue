@@ -28,10 +28,9 @@ export default {
   },
   i18n: {
     corpusName: s__('CorpusManagement|Corpus name'),
+    corpusFile: s__('CorpusManagement|Corpus file'),
     uploadButtonText: __('Choose File...'),
-    uploadMessage: s__(
-      'CorpusManagement|New corpus needs to be a upload in *.zip format. Maximum 5GB',
-    ),
+    uploadMessage: s__('CorpusManagement|Corpus files must be in *.zip format. Maximum 5 GB'),
   },
   data() {
     return {
@@ -44,6 +43,15 @@ export default {
     hasAttachment() {
       return Boolean(this.attachmentName);
     },
+    hasValidName() {
+      return !this.nameError;
+    },
+    hasValidFile() {
+      return !this.fileError;
+    },
+    isShowingUploadText() {
+      return this.hasValidFile && !this.isUploaded;
+    },
     isShowingAttachmentName() {
       return this.hasAttachment && !this.isLoading;
     },
@@ -51,10 +59,13 @@ export default {
       return !this.isUploaded && !this.isUploading;
     },
     isUploading() {
-      return this.states?.uploadState.isUploading;
+      return this.states?.uploadState?.isUploading;
     },
     isUploaded() {
       return this.progress === 100;
+    },
+    isUploadButtonEnabled() {
+      return !this.corpusName;
     },
     showUploadButton() {
       return this.hasAttachment && !this.isUploading && !this.isUploaded;
@@ -63,10 +74,16 @@ export default {
       return !this.isUploaded;
     },
     progress() {
-      return this.states?.uploadState.progress;
+      return this.states?.uploadState?.progress;
     },
     progressText() {
       return sprintf(__('Attaching File - %{progress}'), { progress: `${this.progress}%` });
+    },
+    nameError() {
+      return this.states?.uploadState?.errors.name;
+    },
+    fileError() {
+      return this.states?.uploadState?.errors.file;
     },
   },
   beforeDestroy() {
@@ -81,6 +98,7 @@ export default {
       this.$refs.fileUpload.value = null;
       this.attachmentName = '';
       this.files = [];
+      this.$emit('resetCorpus');
     },
     cancelUpload() {
       this.$emit('resetCorpus');
@@ -94,6 +112,7 @@ export default {
     onFileUploadChange(e) {
       this.attachmentName = e.target.files[0].name;
       this.files = e.target.files;
+      this.$emit('resetCorpus');
     },
   },
   VALID_CORPUS_MIMETYPE,
@@ -101,13 +120,21 @@ export default {
 </script>
 <template>
   <gl-form>
-    <gl-form-group :label="$options.i18n.corpusName" label-size="sm" label-for="corpus-name">
+    <gl-form-group
+      :label="$options.i18n.corpusName"
+      label-size="sm"
+      label-for="corpus-name"
+      data-testid="corpus-name-group"
+      :invalid-feedback="nameError"
+      :state="hasValidName"
+    >
       <gl-form-input-group>
         <gl-form-input
           id="corpus-name"
           ref="input"
           v-model="corpusName"
           data-testid="corpus-name"
+          :state="hasValidName"
         />
 
         <gl-button
@@ -124,7 +151,14 @@ export default {
       </gl-form-input-group>
     </gl-form-group>
 
-    <gl-form-group :label="$options.i18n.corpusName" label-size="sm" label-for="corpus-file">
+    <gl-form-group
+      :label="$options.i18n.corpusFile"
+      label-size="sm"
+      label-for="corpus-file"
+      data-testid="corpus-file-group"
+      :invalid-feedback="fileError"
+      :state="hasValidFile"
+    >
       <gl-button
         v-if="showFilePickerButton"
         data-testid="upload-attachment-button"
@@ -155,17 +189,23 @@ export default {
       />
     </gl-form-group>
 
-    <span>{{ $options.i18n.uploadMessage }}</span>
+    <span v-if="isShowingUploadText" class="gl-text-gray-500">{{
+      $options.i18n.uploadMessage
+    }}</span>
 
-    <gl-button
-      v-if="showUploadButton"
-      data-testid="upload-corpus"
-      class="gl-mt-2"
-      variant="success"
-      @click="beginFileUpload"
-    >
-      {{ __('Upload file') }}
-    </gl-button>
+    <gl-form-group>
+      <gl-button
+        v-if="showUploadButton"
+        data-testid="upload-corpus"
+        class="gl-mt-2"
+        :disabled="isUploadButtonEnabled"
+        category="primary"
+        variant="confirm"
+        @click="beginFileUpload"
+      >
+        {{ __('Upload file') }}
+      </gl-button>
+    </gl-form-group>
 
     <div v-if="isUploading" data-testid="upload-status" class="gl-mt-2">
       <gl-loading-icon inline size="sm" />

@@ -23,7 +23,7 @@ export default () => {
   });
 
   const {
-    dataset: { projectFullPath },
+    dataset: { projectFullPath, canUploadCorpus, canReadCorpus, canDestroyCorpus },
   } = el;
 
   let {
@@ -36,6 +36,9 @@ export default () => {
   const provide = {
     projectFullPath,
     corpusHelpPath,
+    canUploadCorpus: Boolean(canUploadCorpus),
+    canReadCorpus: Boolean(canReadCorpus),
+    canDestroyCorpus: Boolean(canDestroyCorpus),
   };
 
   return new Vue({
