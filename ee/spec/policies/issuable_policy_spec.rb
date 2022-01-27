@@ -30,19 +30,19 @@ RSpec.describe IssuablePolicy, models: true do
 
       it 'disallows non-members from creating and deleting metric images' do
         expect(permissions(non_member, issue)).to be_allowed(:read_issuable_metric_image)
-        expect(permissions(non_member, issue)).to be_disallowed(:upload_issuable_metric_image, :destroy_issuable_metric_image)
+        expect(permissions(non_member, issue)).to be_disallowed(:upload_issuable_metric_image, :update_issuable_metric_image, :destroy_issuable_metric_image)
       end
 
       it 'allows guests to read, create metric images, and delete them in their own issues' do
         expect(permissions(guest, issue)).to be_allowed(:read_issuable_metric_image)
         expect(permissions(guest, issue)).to be_disallowed(:upload_issuable_metric_image, :destroy_issuable_metric_image)
 
-        expect(permissions(guest, guest_issue)).to be_allowed(:read_issuable_metric_image, :upload_issuable_metric_image, :destroy_issuable_metric_image)
+        expect(permissions(guest, guest_issue)).to be_allowed(:read_issuable_metric_image, :upload_issuable_metric_image, :update_issuable_metric_image, :destroy_issuable_metric_image)
       end
 
       it 'allows reporters to create and delete metric images' do
-        expect(permissions(reporter, issue)).to be_allowed(:read_issuable_metric_image, :upload_issuable_metric_image, :destroy_issuable_metric_image)
-        expect(permissions(reporter, reporter_issue)).to be_allowed(:read_issuable_metric_image, :upload_issuable_metric_image, :destroy_issuable_metric_image)
+        expect(permissions(reporter, issue)).to be_allowed(:read_issuable_metric_image, :upload_issuable_metric_image, :update_issuable_metric_image, :destroy_issuable_metric_image)
+        expect(permissions(reporter, reporter_issue)).to be_allowed(:read_issuable_metric_image, :upload_issuable_metric_image, :update_issuable_metric_image, :destroy_issuable_metric_image)
       end
 
       context 'Timeline events' do
@@ -79,19 +79,19 @@ RSpec.describe IssuablePolicy, models: true do
       let_it_be(:issue) { create(:issue, project: project) }
 
       it 'disallows non-members from creating and deleting metric images' do
-        expect(permissions(non_member, issue)).to be_disallowed(:read_issuable_metric_image, :upload_issuable_metric_image, :destroy_issuable_metric_image)
+        expect(permissions(non_member, issue)).to be_disallowed(:read_issuable_metric_image, :upload_issuable_metric_image, :update_issuable_metric_image, :destroy_issuable_metric_image)
       end
 
       it 'allows guests to read metric images, and create + delete in their own issues' do
         expect(permissions(guest, issue)).to be_allowed(:read_issuable_metric_image)
-        expect(permissions(guest, issue)).to be_disallowed(:upload_issuable_metric_image, :destroy_issuable_metric_image)
+        expect(permissions(guest, issue)).to be_disallowed(:upload_issuable_metric_image, :update_issuable_metric_image, :destroy_issuable_metric_image)
 
-        expect(permissions(guest, guest_issue)).to be_allowed(:read_issuable_metric_image, :upload_issuable_metric_image, :destroy_issuable_metric_image)
+        expect(permissions(guest, guest_issue)).to be_allowed(:read_issuable_metric_image, :upload_issuable_metric_image, :update_issuable_metric_image, :destroy_issuable_metric_image)
       end
 
       it 'allows reporters to create and delete metric images' do
-        expect(permissions(reporter, issue)).to be_allowed(:read_issuable_metric_image, :upload_issuable_metric_image, :destroy_issuable_metric_image)
-        expect(permissions(reporter, reporter_issue)).to be_allowed(:read_issuable_metric_image, :upload_issuable_metric_image, :destroy_issuable_metric_image)
+        expect(permissions(reporter, issue)).to be_allowed(:read_issuable_metric_image, :upload_issuable_metric_image, :update_issuable_metric_image, :destroy_issuable_metric_image)
+        expect(permissions(reporter, reporter_issue)).to be_allowed(:read_issuable_metric_image, :upload_issuable_metric_image, :update_issuable_metric_image, :destroy_issuable_metric_image)
       end
 
       context 'Timeline events' do
