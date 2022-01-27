@@ -167,14 +167,13 @@ export const MR_APPROVALS_PROMO_TRACKING_EVENTS = {
 };
 export const MR_APPROVALS_PROMO_I18N = {
   accordionTitle: s__('ApprovalRule|Approval rules'),
-  learnMore: s__('ApprovalRule|Learn more about merge request approval.'),
-  promoTitle: s__('ApprovalRule|Add required approvers to improve your code review process'),
+  learnMore: s__('ApprovalRule|Learn more about merge request approval rules.'),
+  promoTitle: s__("ApprovalRule|Improve your organization's code review with required approvals."),
   summary: __('Approvals are optional.'),
-  tryNow: s__('ApprovalRule|Try it for free'),
+  tryNow: s__('ApprovalRule|Try for free'),
   valueStatements: [
-    s__('ApprovalRule|Assign approvers by area of expertise.'),
-    s__('ApprovalRule|Increase your organization’s code quality.'),
-    s__('ApprovalRule|Reduce the overall time to merge.'),
-    s__('ApprovalRule|Let GitLab designate eligible approvers based on the files changed.'),
+    s__('ApprovalRule|Select eligible approvers by expertise or files changed.'),
+    s__('ApprovalRule|Increase quality and maintain standards.'),
+    s__('ApprovalRule|Reduce your time to merge.'),
   ],
 };

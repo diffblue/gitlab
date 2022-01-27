@@ -6,6 +6,7 @@ RSpec.describe 'user sees MR approvals promo', :js do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, :repository, group: group) }
+  let_it_be(:promo_title) { s_("ApprovalRule|Improve your organization's code review with required approvals.") }
 
   before do
     group.add_owner(user)
@@ -25,7 +26,7 @@ RSpec.describe 'user sees MR approvals promo', :js do
     end
 
     it 'shows the promo text' do
-      expect(page).to have_text('Add required approvers to improve your code review process')
+      expect(page).to have_text(promo_title)
     end
   end
 
@@ -37,7 +38,7 @@ RSpec.describe 'user sees MR approvals promo', :js do
     end
 
     it 'shows the promo text' do
-      expect(page).to have_text('Add required approvers to improve your code review process')
+      expect(page).to have_text(promo_title)
     end
   end
 end
