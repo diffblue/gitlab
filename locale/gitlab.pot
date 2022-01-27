@@ -33024,9 +33024,6 @@ msgstr ""
 msgid "Show comments only"
 msgstr ""
 
-msgid "Show commit description"
-msgstr ""
-
 msgid "Show complete raw log"
 msgstr ""
 
