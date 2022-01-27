@@ -18,12 +18,14 @@ module Gitlab
         end
       end
 
-      attr_reader :project, :index_status, :wiki
+      attr_reader :project, :index_status, :wiki, :force
       alias_method :index_wiki?, :wiki
+      alias_method :force_reindexing?, :force
 
-      def initialize(project, wiki: false)
+      def initialize(project, wiki: false, force: false)
         @project = project
         @wiki = wiki
+        @force = force
 
         # Use the eager-loaded association if available.
         @index_status = project.index_status
@@ -45,7 +47,17 @@ module Gitlab
                                from_sha: from_sha,
                                to_sha: commit.sha,
                                index_wiki: index_wiki?)
-          run_indexer!(commit.sha, target)
+
+          # This might happen when default branch has been reset or rebased.
+          base_sha = if purge_unreachable_commits_from_index?(commit.sha)
+                       purge_unreachable_commits_from_index!(target)
+
+                       Gitlab::Git::EMPTY_TREE_ID
+                     else
+                       from_sha
+                     end
+
+          run_indexer!(base_sha, commit.sha, target)
         end
 
         # update the index status only if all writes were successful
@@ -58,20 +70,17 @@ module Gitlab
         !repository.empty? && repository.commit(ref)
       end
 
+      def purge_unreachable_commits_from_index?(to_sha)
+        force_reindexing? || !last_commit_ancestor_of?(to_sha)
+      end
+
       private
 
       def repository
         index_wiki? ? project.wiki.repository : project.repository
       end
 
-      def run_indexer!(to_sha, target)
-        # This might happen when default branch has been reset or rebased.
-        base_sha = if purge_unreachable_commits_from_index!(to_sha, target)
-                     Gitlab::Git::EMPTY_TREE_ID
-                   else
-                     from_sha
-                   end
-
+      def run_indexer!(base_sha, to_sha, target)
         vars = build_envvars(base_sha, to_sha, target)
         path_to_indexer = Gitlab.config.elasticsearch.indexer_path
 
@@ -81,7 +90,15 @@ module Gitlab
           if index_wiki?
             [path_to_indexer, timeout_argument, "--blob-type=wiki_blob", "--skip-commits", "--project-path=#{project.full_path}", project.id.to_s, repository_path]
           else
-            [path_to_indexer, timeout_argument, "--project-path=#{project.full_path}", project.id.to_s, repository_path]
+            [
+              path_to_indexer,
+              timeout_argument,
+              "--project-path=#{project.full_path}",
+              "--visibility-level=#{project.visibility_level}",
+              "--repository-access-level=#{project.repository_access_level}",
+              project.id.to_s,
+              repository_path
+            ]
           end
 
         output, status = Gitlab::Popen.popen(command, nil, vars)
@@ -92,11 +109,8 @@ module Gitlab
       # Remove all indexed data for commits and blobs for a project.
       #
       # @return: whether the index has been purged
-      def purge_unreachable_commits_from_index!(to_sha, target)
-        return false if last_commit_ancestor_of?(to_sha)
-
+      def purge_unreachable_commits_from_index!(target)
         target.delete_index_for_commits_and_blobs(wiki: index_wiki?)
-        true
       rescue ::Elasticsearch::Transport::Transport::Errors::BadRequest => e
         Gitlab::ErrorTracking.track_exception(e, project_id: project.id)
       end

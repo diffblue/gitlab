@@ -14,6 +14,10 @@ RSpec.describe Elastic::ProjectsSearch do
       def es_id
         1
       end
+
+      def pending_delete?
+        false
+      end
     end.new
   end
 
@@ -22,6 +26,15 @@ RSpec.describe Elastic::ProjectsSearch do
       expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!).and_return(true)
 
       subject.maintain_elasticsearch_create
+    end
+  end
+
+  describe '#maintain_elasticsearch_update' do
+    it 'initiates repository reindexing when permissions change' do
+      expect(::Elastic::ProcessBookkeepingService).to receive(:track!).and_return(true)
+      expect(::Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).and_return(true)
+
+      subject.maintain_elasticsearch_update(updated_attributes: %i[visibility_level repository_access_level])
     end
   end
 
