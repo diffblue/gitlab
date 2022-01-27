@@ -5,12 +5,14 @@ import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutati
 import createFlash from '~/flash';
 import { redirectTo } from '~/lib/utils/url_utility';
 import { sprintf, s__ } from '~/locale';
+import { trackCheckout } from '~/google_tag_manager';
 import defaultClient from '../graphql';
 import * as types from './mutation_types';
 
 export const updateSelectedPlan = ({ commit, getters }, selectedPlan) => {
   commit(types.UPDATE_SELECTED_PLAN, selectedPlan);
   commit(types.UPDATE_NUMBER_OF_USERS, getters.selectedGroupUsers);
+  trackCheckout(selectedPlan, getters.selectedGroupUsers);
 };
 
 export const updateSelectedGroup = ({ commit, getters }, selectedGroup) => {
@@ -23,8 +25,9 @@ export const toggleIsSetupForCompany = ({ state, commit }) => {
   commit(types.UPDATE_IS_SETUP_FOR_COMPANY, !state.isSetupForCompany);
 };
 
-export const updateNumberOfUsers = ({ commit }, numberOfUsers) => {
+export const updateNumberOfUsers = ({ commit, getters }, numberOfUsers) => {
   commit(types.UPDATE_NUMBER_OF_USERS, numberOfUsers || 0);
+  trackCheckout(getters.selectedPlanDetails?.value, numberOfUsers);
 };
 
 export const updateOrganizationName = ({ commit }, organizationName) => {
