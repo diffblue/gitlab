@@ -52,7 +52,7 @@ Pipelines can be configured in many different ways:
   between jobs and can run more quickly than basic pipelines.
 - [Merge request pipelines](../pipelines/merge_request_pipelines.md) run for merge
   requests only (rather than for every commit).
-- [Merged results pipelines](../pipelines/pipelines_for_merged_results.md)
+- [Merged results pipelines](../pipelines/merged_results_pipelines.md)
   are merge request pipelines that act as though the changes from the source branch have
   already been merged into the target branch.
 - [Merge trains](../pipelines/merge_trains.md)
