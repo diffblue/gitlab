@@ -27995,10 +27995,13 @@ msgstr ""
 msgid "ProjectSettings|Checkbox is visible and unselected by default."
 msgstr ""
 
+msgid "ProjectSettings|Choose the method, options, checks, and squash options for merge requests. You can also set up merge request templates for different actions."
+msgstr ""
+
 msgid "ProjectSettings|Choose your merge method, merge options, merge checks, and merge suggestions."
 msgstr ""
 
-msgid "ProjectSettings|Choose your merge method, merge options, merge checks, merge suggestions, and set up a default description template for merge requests."
+msgid "ProjectSettings|Choose your merge method, options, checks, and squash options."
 msgstr ""
 
 msgid "ProjectSettings|Configure your project resources and monitor their health."
