@@ -1,7 +1,8 @@
 <script>
 import { GlIcon } from '@gitlab/ui';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 import { sprintf, s__ } from '~/locale';
+import { trackCheckout } from '~/google_tag_manager';
 import formattingMixins from '../formatting_mixins';
 import SummaryDetails from './order_summary/summary_details.vue';
 
@@ -17,7 +18,9 @@ export default {
     };
   },
   computed: {
+    ...mapState(['numberOfUsers', 'selectedPlan']),
     ...mapGetters([
+      'selectedPlanText',
       'totalAmount',
       'name',
       'usersPresent',
@@ -27,6 +30,9 @@ export default {
     titleWithName() {
       return sprintf(this.$options.i18n.title, { name: this.name });
     },
+  },
+  mounted() {
+    trackCheckout(this.selectedPlan, this.numberOfUsers);
   },
   methods: {
     toggleCollapse() {
