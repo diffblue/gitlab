@@ -99,6 +99,16 @@ RSpec.describe 'Admin Dashboard' do
     end
   end
 
+  describe 'Version check', :js do
+    it 'shows badge on EE' do
+      visit admin_root_path
+
+      page.within('.admin-dashboard') do
+        expect(find('.badge')).to have_content('Up to date')
+      end
+    end
+  end
+
   include_examples 'manual renewal banner', path_to_visit: :admin_subscription_path
   include_examples 'manual quarterly co-term banner', path_to_visit: :admin_subscription_path
 end
