@@ -60,22 +60,18 @@ module EE
       !params[:purchased_product].blank?
     end
 
-    override :require_verification_for_group_creation_enabled?
-    def require_verification_for_group_creation_enabled?
+    override :require_verification_for_namespace_creation_enabled?
+    def require_verification_for_namespace_creation_enabled?
       # Experiment should only run when creating top-level groups
       return false if params[:parent_id]
 
-      experiment(:require_verification_for_group_creation, user: current_user) do |e|
-        e.candidate { true }
-        e.control { false }
-        e.run
-      end
+      experiment(:require_verification_for_namespace_creation, user: current_user).run
     end
 
     override :verification_for_group_creation_data
     def verification_for_group_creation_data
       {
-        verification_required: require_verification_for_group_creation_enabled?.to_s,
+        verification_required: require_verification_for_namespace_creation_enabled?.to_s,
         verification_form_url: ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_URL,
         subscriptions_url: ::Gitlab::SubscriptionPortal::SUBSCRIPTIONS_URL
       }
