@@ -31828,7 +31828,7 @@ msgstr ""
 msgid "SecurityOrchestration|Status"
 msgstr ""
 
-msgid "SecurityOrchestration|The %{scanners} %{severities} in an open merge request targeting the %{branches}."
+msgid "SecurityOrchestration|The %{scanners} %{severities} in an open merge request targeting %{branches}."
 msgstr ""
 
 msgid "SecurityOrchestration|There was a problem creating the new security policy"
@@ -31850,6 +31850,9 @@ msgid "SecurityOrchestration|Update scan policies"
 msgstr ""
 
 msgid "SecurityOrchestration|a"
+msgstr ""
+
+msgid "SecurityOrchestration|all branches"
 msgstr ""
 
 msgid "SecurityOrchestration|an"
@@ -31877,6 +31880,9 @@ msgid "SecurityOrchestration|scanner finds"
 msgstr ""
 
 msgid "SecurityOrchestration|scanners find"
+msgstr ""
+
+msgid "SecurityOrchestration|the %{branches}"
 msgstr ""
 
 msgid "SecurityOrchestration|user with id"
