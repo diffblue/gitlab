@@ -126,7 +126,7 @@ A --> C
 B --> C
 
 A --> E["E2E tests"]
-C --> D["Pipeline for merged results"]
+C --> D["Merged results pipeline"]
  ```
 
 ##### Running custom tests
