@@ -7584,7 +7584,7 @@ msgstr ""
 msgid "ClusterAgents|All"
 msgstr ""
 
-msgid "ClusterAgents|An error occurred while loading your GitLab Agents"
+msgid "ClusterAgents|An error occurred while loading your Agents"
 msgstr ""
 
 msgid "ClusterAgents|An error occurred while loading your agent"
@@ -7671,6 +7671,9 @@ msgstr ""
 msgid "ClusterAgents|GitLab Agent for Kubernetes"
 msgstr ""
 
+msgid "ClusterAgents|Give feedback"
+msgstr ""
+
 msgid "ClusterAgents|Go to the repository files"
 msgstr ""
 
@@ -7755,7 +7758,7 @@ msgstr ""
 msgid "ClusterAgents|Select an agent to register with GitLab"
 msgstr ""
 
-msgid "ClusterAgents|Tell us your experience with the GitLab Agent %{linkStart}in this feedback issue%{linkEnd}."
+msgid "ClusterAgents|Tell us what you think"
 msgstr ""
 
 msgid "ClusterAgents|The GitLab Agent provides an increased level of security when connecting Kubernetes clusters to GitLab. %{linkStart}Learn more about the GitLab Agent.%{linkEnd}"
@@ -7797,6 +7800,9 @@ msgid "ClusterAgents|View all %{number} agents"
 msgstr ""
 
 msgid "ClusterAgents|View all %{number} clusters"
+msgstr ""
+
+msgid "ClusterAgents|We would love to learn more about your experience with the GitLab Agent."
 msgstr ""
 
 msgid "ClusterAgents|What is GitLab Agent activity?"

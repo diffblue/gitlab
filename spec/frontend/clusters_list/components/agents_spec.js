@@ -1,13 +1,18 @@
-import { GlAlert, GlKeysetPagination, GlLoadingIcon, GlSprintf, GlLink } from '@gitlab/ui';
+import { GlAlert, GlKeysetPagination, GlLoadingIcon, GlBanner } from '@gitlab/ui';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import { nextTick } from 'vue';
 import AgentEmptyState from '~/clusters_list/components/agent_empty_state.vue';
 import AgentTable from '~/clusters_list/components/agent_table.vue';
 import Agents from '~/clusters_list/components/agents.vue';
-import { ACTIVE_CONNECTION_TIME, AGENT_FEEDBACK_ISSUE } from '~/clusters_list/constants';
+import {
+  ACTIVE_CONNECTION_TIME,
+  AGENT_FEEDBACK_KEY,
+  AGENT_FEEDBACK_ISSUE,
+} from '~/clusters_list/constants';
 import getAgentsQuery from '~/clusters_list/graphql/queries/get_agents.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 
 const localVue = createLocalVue();
 localVue.use(VueApollo);
@@ -57,7 +62,8 @@ describe('Agents', () => {
         glFeatures,
       },
       stubs: {
-        GlSprintf,
+        GlBanner,
+        LocalStorageSync,
       },
     });
 
@@ -68,12 +74,12 @@ describe('Agents', () => {
   const findEmptyState = () => wrapper.findComponent(AgentEmptyState);
   const findPaginationButtons = () => wrapper.findComponent(GlKeysetPagination);
   const findAlert = () => wrapper.findComponent(GlAlert);
-  const findLink = () => wrapper.findComponent(GlLink);
+  const findBanner = () => wrapper.findComponent(GlBanner);
 
   afterEach(() => {
-    if (wrapper) {
-      wrapper.destroy();
-    }
+    wrapper.destroy();
+
+    localStorage.removeItem(AGENT_FEEDBACK_KEY);
   });
 
   describe('when there is a list of agents', () => {
@@ -159,7 +165,33 @@ describe('Agents', () => {
       expect(wrapper.emitted().onAgentsLoad).toEqual([[count]]);
     });
 
-    describe('when the agent feedback feature flag is enabled', () => {
+    describe.each`
+      featureFlagEnabled | localStorageItemExists | bannerShown
+      ${true}            | ${false}               | ${true}
+      ${true}            | ${true}                | ${false}
+      ${false}           | ${true}                | ${false}
+      ${false}           | ${false}               | ${false}
+    `(
+      'when the feature flag enabled is $featureFlagEnabled and dismissed localStorage item exists is $localStorageItemExists',
+      ({ featureFlagEnabled, localStorageItemExists, bannerShown }) => {
+        const glFeatures = {
+          showGitlabAgentFeedback: featureFlagEnabled,
+        };
+        beforeEach(() => {
+          if (localStorageItemExists) {
+            localStorage.setItem(AGENT_FEEDBACK_KEY, true);
+          }
+
+          return createWrapper({ glFeatures, agents, count, trees });
+        });
+
+        it(`should ${bannerShown ? 'show' : 'hide'} the feedback banner`, () => {
+          expect(findBanner().exists()).toBe(bannerShown);
+        });
+      },
+    );
+
+    describe('when the agent feedback banner is present', () => {
       const glFeatures = {
         showGitlabAgentFeedback: true,
       };
@@ -167,18 +199,12 @@ describe('Agents', () => {
         return createWrapper({ glFeatures, agents, count, trees });
       });
 
-      it('should show agent feedback alert', () => {
-        expect(findAlert().exists()).toBe(true);
+      it('should render the correct title', () => {
+        expect(findBanner().props('title')).toBe('Tell us what you think');
       });
 
       it('should render the correct issue link', () => {
-        expect(findLink().attributes('href')).toBe(AGENT_FEEDBACK_ISSUE);
-      });
-    });
-
-    describe('when the agent feedback feature flag is disabled', () => {
-      it('should not show agent feedback alert', () => {
-        expect(findAlert().exists()).toBe(false);
+        expect(findBanner().props('buttonLink')).toBe(AGENT_FEEDBACK_ISSUE);
       });
     });
 
@@ -267,7 +293,7 @@ describe('Agents', () => {
     });
 
     it('displays an alert message', () => {
-      expect(findAlert().text()).toBe('An error occurred while loading your GitLab Agents');
+      expect(findAlert().text()).toBe('An error occurred while loading your Agents');
     });
   });
 
