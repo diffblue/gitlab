@@ -11,7 +11,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 For more information about why you might want to use merge trains, read [How merge trains keep your master green](https://about.gitlab.com/blog/2020/01/30/all-aboard-merge-trains/).
 
-When [merged results pipelines](pipelines_for_merged_results.md) are
+When [merged results pipelines](merged_results_pipelines.md) are
 enabled, the pipeline jobs run as if the changes from your source branch have already
 been merged into the target branch.
 
@@ -193,8 +193,8 @@ for more information.
 
 ### Merge train pipeline cannot be retried
 
-When a pipeline for merge trains fails the merge request is dropped from the train and the pipeline can't be retried.
-Pipelines for merge trains run on the merged result of the changes in the merge request and
+When a merge train pipeline fails, the merge request is dropped from the train and the pipeline can't be retried.
+Merge train pipelines run on the merged result of the changes in the merge request and
 the changes from other merge requests already on the train. If the merge request is dropped from the train,
 the merged result is out of date and the pipeline can't be retried.
 
@@ -211,11 +211,16 @@ is enabled in **Settings > General > Merge requests**. This option requires that
 run a new successful pipeline before you can re-add a merge request to a merge train.
 
 Merge trains ensure that each pipeline has succeeded before a merge happens, so
-you can clear the **Pipelines must succeed** checkbox and keep
-**Enable merge trains and pipelines for merged results** (merge trains) selected.
+you can:
+
+- Clear the **Pipelines must succeed** checkbox.
+- Select the **Enable merged results pipelines** and **Enable merge trains** checkboxes.
+
+  In GitLab 13.5 and earlier, there is only one checkbox, named
+  **Enable merge trains and pipelines for merged results**.
 
 If you want to keep the **Pipelines must succeed** option selected along with merge
-trains, create a new pipeline for merged results when this error occurs:
+trains, create a new merged results pipeline when this error occurs:
 
 1. On the **Pipelines** tab, select **Run pipeline**.
 1. Select **Start/Add to merge train when pipeline succeeds**.
@@ -229,7 +234,7 @@ In [GitLab 13.6 and later](https://gitlab.com/gitlab-org/gitlab/-/issues/244831)
 you can [enable or disable merge trains in the project settings](#enable-merge-trains).
 
 In GitLab 13.5 and earlier, merge trains are automatically enabled when
-[merged results pipelines](pipelines_for_merged_results.md) are enabled.
+[merged results pipelines](merged_results_pipelines.md) are enabled.
 To use merged results pipelines without using merge trains, you can enable a
 [feature flag](../../user/feature_flags.md) that blocks the merge trains feature.
 

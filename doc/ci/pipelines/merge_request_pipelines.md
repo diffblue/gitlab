@@ -7,6 +7,8 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 # Merge request pipelines **(FREE)**
 
+> [Renamed](https://gitlab.com/gitlab-org/gitlab/-/issues/351192) from `pipelines for merge requests` to `merge request pipelines` in GitLab 14.8.
+
 You can configure your [pipeline](index.md) to run every time you commit changes to a branch.
 This type of pipeline is called a *branch pipeline*.
 
@@ -41,7 +43,7 @@ The three types of merge request pipelines are:
 - Merge request pipelines, which run on the changes in the merge request's
   source branch. These pipelines display a `detached` label to indicate that the
   pipeline ran only on the contents of the source branch, ignoring the target branch.
-- [Merged results pipelines](pipelines_for_merged_results.md), which run on
+- [Merged results pipelines](merged_results_pipelines.md), which run on
   the result of combining the source branch's changes with the target branch.
 - [Merge trains](merge_trains.md), which run when merging multiple merge requests
   at the same time. The changes from each merge request are combined into the
@@ -191,7 +193,7 @@ If both types of pipelines are in one merge request, the merge request's pipelin
 is not considered successful if:
 
 - The branch pipeline succeeds.
-- The pipeline for merge request fails.
+- The merge request pipeline fails.
 
 When using the [merge when pipeline succeeds](../../user/project/merge_requests/merge_when_pipeline_succeeds.md)
 feature and both pipelines types are present, the merge request pipelines are checked,
