@@ -77,38 +77,24 @@ RSpec.describe Ci::Minutes::ProjectMonthlyUsage do
   end
 
   describe '.for_namespace_monthly_usage' do
-    shared_examples 'namespace monthly usage' do
-      let(:date_for_usage) { Date.new(2021, 5, 1) }
-      let(:namespace_usage) { create(:ci_namespace_monthly_usage, namespace: project.namespace, amount_used: 50, date: date_for_usage) }
+    let(:date_for_usage) { Date.new(2021, 5, 1) }
+    let(:namespace_usage) { create(:ci_namespace_monthly_usage, namespace: project.namespace, amount_used: 50, date: date_for_usage) }
 
-      it "fetches project monthly usages matching the namespace monthly usage's date and namespace" do
-        date_not_for_usage = date_for_usage + 1.month
-        matching_project_usage = create(:ci_project_monthly_usage, project: project, amount_used: 50, date: date_for_usage)
-        create(:ci_project_monthly_usage, project: project, amount_used: 50, date: date_not_for_usage)
-        create(:ci_project_monthly_usage, project: create(:project), amount_used: 50, date: date_for_usage)
+    it "fetches project monthly usages matching the namespace monthly usage's date and namespace" do
+      date_not_for_usage = date_for_usage + 1.month
+      matching_project_usage = create(:ci_project_monthly_usage, project: project, amount_used: 50, date: date_for_usage)
+      create(:ci_project_monthly_usage, project: project, amount_used: 50, date: date_not_for_usage)
+      create(:ci_project_monthly_usage, project: create(:project), amount_used: 50, date: date_for_usage)
 
-        project_usages = described_class.for_namespace_monthly_usage(namespace_usage)
+      project_usages = described_class.for_namespace_monthly_usage(namespace_usage)
 
-        expect(project_usages).to contain_exactly(matching_project_usage)
-      end
-
-      it 'does not join across databases' do
-        with_cross_joins_prevented do
-          described_class.for_namespace_monthly_usage(namespace_usage)
-        end
-      end
+      expect(project_usages).to contain_exactly(matching_project_usage)
     end
 
-    context 'when ci_decompose_for_namespace_monthly_usage_query is enabled' do
-      it_behaves_like 'namespace monthly usage'
-    end
-
-    context 'when ci_decompose_for_namespace_monthly_usage_query is disabled' do
-      before do
-        stub_feature_flags(ci_decompose_for_namespace_monthly_usage_query: false)
+    it 'does not join across databases' do
+      with_cross_joins_prevented do
+        described_class.for_namespace_monthly_usage(namespace_usage)
       end
-
-      it_behaves_like 'namespace monthly usage'
     end
   end
 

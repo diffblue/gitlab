@@ -104,7 +104,7 @@ RSpec.describe Groups::SecurityFeaturesHelper do
           main: new_trial_registration_path(glm_source: 'gitlab.com', glm_content: content),
           secondary: group_billings_path(group.root_ancestor, source: content)
         }
-      }.merge(helper.hand_raise_props(group.root_ancestor))
+      }.merge(helper.hand_raise_props(group.root_ancestor, glm_content: content))
     end
 
     subject(:group_security_discover_data) do

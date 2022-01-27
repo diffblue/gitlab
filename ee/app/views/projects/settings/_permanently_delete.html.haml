@@ -1,5 +1,6 @@
 - merge_requests_count = Projects::AllMergeRequestsCountService.new(project).count
 - issues_count = Projects::AllIssuesCountService.new(project).count
+- forks_count = Projects::ForksCountService.new(project).count
 
 .sub-section
   %h4.danger-title= _('Permanently delete project')
@@ -8,4 +9,4 @@
   %p= permanent_delete_message(project)
   %p
     %strong= _('Are you ABSOLUTELY SURE you wish to delete this project?')
-  #js-project-delete-button{ data: { form_path: project_path(project, permanently_delete: true), confirm_phrase: delete_confirm_phrase(project), is_fork: project.forked?.to_s, issues_count: number_with_delimiter(issues_count), merge_requests_count: number_with_delimiter(merge_requests_count), forks_count: number_with_delimiter(project.forks_count), stars_count: number_with_delimiter(project.star_count) } }
+  #js-project-delete-button{ data: { form_path: project_path(project, permanently_delete: true), confirm_phrase: delete_confirm_phrase(project), is_fork: project.forked?.to_s, issues_count: number_with_delimiter(issues_count), merge_requests_count: number_with_delimiter(merge_requests_count), forks_count: number_with_delimiter(forks_count), stars_count: number_with_delimiter(project.star_count) } }

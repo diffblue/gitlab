@@ -261,7 +261,6 @@ RSpec.describe TrialsController, :saas do
         uid: user.id,
         provider: 'gitlab',
         setup_for_company: user.setup_for_company,
-        glm_content: 'group-billing',
         glm_source: 'gitlab.com'
       }
     end
@@ -276,7 +275,8 @@ RSpec.describe TrialsController, :saas do
         phone_number: '+1-192-10-10',
         country: 'US',
         state: 'CA',
-        comment: 'I want to talk to sales.'
+        comment: 'I want to talk to sales.',
+        glm_content: 'group-billing'
       }
     end
 

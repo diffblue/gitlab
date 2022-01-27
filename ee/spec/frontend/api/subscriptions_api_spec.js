@@ -27,6 +27,7 @@ describe('SubscriptionsApi', () => {
         country: 'US',
         state: 'CA',
         comment: 'A comment',
+        glmContent: 'some-content',
       };
       const formParams = {
         namespace_id: 1000,
@@ -38,6 +39,7 @@ describe('SubscriptionsApi', () => {
         country: 'US',
         state: 'CA',
         comment: 'A comment',
+        glm_content: 'some-content',
       };
 
       it('sends hand raise lead parameters', async () => {

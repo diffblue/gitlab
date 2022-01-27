@@ -13,8 +13,6 @@ RSpec.describe 'Issue promotion', :js do
   let(:user) { create(:user) }
 
   before do
-    stub_feature_flags(tribute_autocomplete: false)
-
     sign_in(user)
   end
 

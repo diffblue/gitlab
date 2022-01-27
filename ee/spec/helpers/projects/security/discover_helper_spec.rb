@@ -19,7 +19,7 @@ RSpec.describe Projects::Security::DiscoverHelper do
           main: new_trial_registration_path(glm_source: 'gitlab.com', glm_content: content),
           secondary: profile_billings_path(project.group, source: content)
         }
-      }.merge(helper.hand_raise_props(project.root_ancestor))
+      }.merge(helper.hand_raise_props(project.root_ancestor, glm_content: content))
     end
 
     subject(:project_security_discover_data) do

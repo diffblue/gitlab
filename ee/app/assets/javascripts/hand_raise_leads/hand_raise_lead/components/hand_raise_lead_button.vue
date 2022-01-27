@@ -166,6 +166,7 @@ export default {
         country: this.country,
         state: this.mustEnterState ? this.state : null,
         comment: this.comment,
+        glmContent: this.user.glmContent,
       };
     },
   },
