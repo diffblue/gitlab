@@ -49,16 +49,17 @@ exports[`Project remove modal initialized matches the snapshot 1`] = `
         primarybuttontext=""
         secondarybuttonlink=""
         secondarybuttontext=""
-        title="You are about to permanently delete this project"
+        title=""
         variant="danger"
       >
-        <p>
-          This project is 
-          <strong>
-            NOT
-          </strong>
-           a fork, and has the following:
-        </p>
+        <h4
+          class="gl-alert-title"
+          data-testid="delete-alert-title"
+        >
+          
+          You are about to delete this project containing:
+        
+        </h4>
          
         <ul>
           <li>
@@ -77,21 +78,17 @@ exports[`Project remove modal initialized matches the snapshot 1`] = `
             4 stars
           </li>
         </ul>
-         After a project is permanently deleted, it 
+         This project is 
         <strong>
-          cannot be recovered
+          NOT
         </strong>
-        . You will lose this project's repository and 
-        <strong>
-          all related resources
-        </strong>
-        , including issues and merge requests.
+         a fork. This process deletes the project repository and all related resources.
       </gl-alert-stub>
        
       <p
         class="gl-mb-1"
       >
-        Please type the following to confirm:
+        Enter the following to confirm:
       </p>
        
       <p>
@@ -111,18 +108,14 @@ exports[`Project remove modal initialized matches the snapshot 1`] = `
       <p
         class="gl-display-flex gl-display-flex gl-align-items-center gl-mt-3 gl-mb-0 gl-text-gray-500"
       >
-        You can recover this project until 
-          2020-12-12
-         
+        This project can be restored until 2020-12-12. 
         <gl-link-stub
-          aria-label="Recovering projects"
-          class="gl-display-flex gl-ml-2 gl-text-gray-500"
+          aria-label="Restoring projects"
+          class="gl-display-flex gl-ml-2"
           href="recovery/help/path"
         >
-          <gl-icon-stub
-            name="question"
-            size="16"
-          />
+          Learn More.
+      
         </gl-link-stub>
       </p>
     </div>

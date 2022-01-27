@@ -103,13 +103,13 @@ module EE
     end
 
     def permanent_delete_message(project)
-      message = _('This action will %{strongOpen}permanently delete%{strongClose} %{codeOpen}%{project}%{codeClose} %{strongOpen}immediately%{strongClose}, including its repositories and all related resources, including issues and merge requests.')
+      message = _('This action deletes %{codeOpen}%{project_path_with_namespace}%{codeClose} and everything this project contains. %{strongOpen}There is no going back%{strongClose}')
       html_escape(message) % remove_message_data(project)
     end
 
     def marked_for_removal_message(project)
       date = permanent_deletion_date(Time.now.utc)
-      message = _('This action will %{strongOpen}permanently delete%{strongClose} %{codeOpen}%{project}%{codeClose} %{strongOpen}on %{date}%{strongClose}, including its repositories and all related resources, including issues and merge requests.')
+      message = _("This action deletes %{codeOpen}%{project_path_with_namespace}%{codeClose} on %{date} and everything this project contains.")
       html_escape(message) % remove_message_data(project).merge(date: date)
     end
 
@@ -260,6 +260,7 @@ module EE
 
     def remove_message_data(project)
       {
+        project_path_with_namespace: project.path_with_namespace,
         project: project.path,
         strongOpen: '<strong>'.html_safe,
         strongClose: '</strong>'.html_safe,
