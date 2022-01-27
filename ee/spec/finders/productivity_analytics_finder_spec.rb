@@ -6,7 +6,7 @@ RSpec.describe ProductivityAnalyticsFinder do
   subject { described_class.new(current_user, search_params.merge(state: :merged)) }
 
   let(:project) { create(:project) }
-  let(:current_user) { project.owner }
+  let(:current_user) { project.first_owner }
   let(:search_params) { {} }
 
   describe '.array_params' do

@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'EE > Projects > Settings > User manages approval rule settings' do
   let(:project) { create(:project) }
-  let(:user) { project.owner }
+  let(:user) { project.first_owner }
   let(:path) { edit_project_path(project) }
   let(:licensed_features) { {} }
   let(:project_features) { {} }

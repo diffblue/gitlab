@@ -5,7 +5,7 @@ RSpec.describe 'Kerberos clone instructions', :js do
   include MobileHelpers
 
   let(:project) { create(:project, :empty_repo) }
-  let(:user) { project.owner }
+  let(:user) { project.first_owner }
 
   before do
     sign_in(user)

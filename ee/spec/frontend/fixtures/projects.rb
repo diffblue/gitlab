@@ -10,7 +10,7 @@ RSpec.describe 'Projects (JavaScript fixtures)', type: :controller do
 
   let(:namespace) { create(:namespace, name: 'frontend-fixtures' )}
   let(:project) { create(:project, namespace: namespace, path: 'builds-project', runners_token: runners_token, avatar: fixture_file_upload('spec/fixtures/dk.png', 'image/png')) }
-  let(:user) { project.owner }
+  let(:user) { project.first_owner }
 
   describe GraphQL::Query, type: :request do
     include GraphqlHelpers

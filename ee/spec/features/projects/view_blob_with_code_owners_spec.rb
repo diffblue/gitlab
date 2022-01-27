@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'File blob > Code owners', :js do
   let(:project) { create(:project, :private, :repository) }
-  let(:user) { project.owner }
+  let(:user) { project.first_owner }
   let(:code_owner) { create(:user, username: 'documentation-owner') }
 
   before do

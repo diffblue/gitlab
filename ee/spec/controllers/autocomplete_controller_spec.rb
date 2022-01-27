@@ -142,7 +142,7 @@ RSpec.describe AutocompleteController do
     end
 
     context 'as project owner' do
-      let(:user) { project.owner }
+      let(:user) { project.first_owner }
       let!(:expected_results) { [[project.id, 'Project']] }
 
       context "while searching for a project by namespace" do

@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Projects::PathLocksController do
   let_it_be(:project) { create(:project, :repository, :public) }
-  let_it_be(:user)    { project.owner }
+  let_it_be(:user)    { project.first_owner }
 
   let(:file_path) { 'files/lfs/lfs_object.iso' }
   let(:lfs_enabled) { true }
