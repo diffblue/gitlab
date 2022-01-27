@@ -163,16 +163,16 @@ RSpec.describe Groups::CreateService, '#execute' do
     end
   end
 
-  describe 'require_verification_for_group_creation experiment conversion tracking', :experiment do
+  describe 'require_verification_for_namespace_creation experiment conversion tracking', :experiment do
     subject(:execute) { create_group(user, group_params) }
 
     before do
-      stub_experiments(require_verification_for_group_creation: :control)
+      stub_experiments(require_verification_for_namespace_creation: :control)
     end
 
-    it 'tracks a "converted" event with the correct context and payload' do
-      expect(experiment(:require_verification_for_group_creation)).to track(
-        :converted,
+    it 'tracks a "finish_create_group" event with the correct context and payload' do
+      expect(experiment(:require_verification_for_namespace_creation)).to track(
+        :finish_create_group,
         namespace: an_instance_of(Group)
       ).on_next_instance.with_context(user: user)
 
@@ -180,8 +180,8 @@ RSpec.describe Groups::CreateService, '#execute' do
     end
 
     shared_examples 'does not track' do
-      it 'does not track a "converted" event' do
-        expect(experiment(:require_verification_for_group_creation)).not_to track(:converted)
+      it 'does not track a "finish_create_group" event' do
+        expect(experiment(:require_verification_for_namespace_creation)).not_to track(:finish_create_group)
 
         execute
       end

@@ -70,7 +70,7 @@ module EE
         return unless group.persisted?
         return unless group.root?
 
-        experiment(:require_verification_for_group_creation, user: current_user).track(:converted, namespace: group)
+        experiment(:require_verification_for_namespace_creation, user: current_user).track(:finish_create_group, namespace: group)
       end
     end
   end

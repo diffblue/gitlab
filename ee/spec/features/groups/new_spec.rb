@@ -33,7 +33,7 @@ RSpec.describe 'New Group page' do
     end
 
     before do
-      stub_experiments(require_verification_for_group_creation: variant)
+      stub_experiments(require_verification_for_namespace_creation: variant)
     end
 
     context 'when creating a top-level group' do
