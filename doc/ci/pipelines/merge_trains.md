@@ -11,7 +11,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 For more information about why you might want to use merge trains, read [How merge trains keep your master green](https://about.gitlab.com/blog/2020/01/30/all-aboard-merge-trains/).
 
-When [pipelines for merged results](pipelines_for_merged_results.md) are
+When [merged results pipelines](pipelines_for_merged_results.md) are
 enabled, the pipeline jobs run as if the changes from your source branch have already
 been merged into the target branch.
 
@@ -93,7 +93,7 @@ In GitLab 13.5 and earlier, there is only one checkbox, named
 
 WARNING:
 If you select the check box but don't configure your CI/CD to use
-pipelines for merge requests, your merge requests may become stuck in an
+merge request pipelines, your merge requests may become stuck in an
 unresolved state or your pipelines may be dropped.
 
 ## Start a merge train
@@ -229,8 +229,8 @@ In [GitLab 13.6 and later](https://gitlab.com/gitlab-org/gitlab/-/issues/244831)
 you can [enable or disable merge trains in the project settings](#enable-merge-trains).
 
 In GitLab 13.5 and earlier, merge trains are automatically enabled when
-[pipelines for merged results](pipelines_for_merged_results.md) are enabled.
-To use pipelines for merged results without using merge trains, you can enable a
+[merged results pipelines](pipelines_for_merged_results.md) are enabled.
+To use merged results pipelines without using merge trains, you can enable a
 [feature flag](../../user/feature_flags.md) that blocks the merge trains feature.
 
 [GitLab administrators with access to the GitLab Rails console](../../administration/feature_flags.md)
