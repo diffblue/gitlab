@@ -27,6 +27,11 @@ export const GEO_REPLICATION_TYPES_URL = helpPagePath(
   'administration/geo/replication/datatypes.html',
 );
 
+export const GEO_REPLICATION_SUPPORTED_TYPES_URL = helpPagePath(
+  'administration/geo/replication/datatypes.html',
+  { anchor: 'data-types' },
+);
+
 export const HEALTH_STATUS_UI = {
   healthy: {
     icon: 'status_success',
