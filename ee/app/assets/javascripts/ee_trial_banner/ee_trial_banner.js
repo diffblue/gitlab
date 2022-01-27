@@ -1,5 +1,4 @@
-import Cookies from 'js-cookie';
-import { parseBoolean } from '~/lib/utils/common_utils';
+import { getCookie, setCookie, parseBoolean } from '~/lib/utils/common_utils';
 
 export default class EETrialBanner {
   constructor($trialBanner) {
@@ -55,23 +54,23 @@ export default class EETrialBanner {
     const today = new Date();
 
     // Check if Cookie is defined
-    if (!Cookies.get(this.COOKIE_KEY)) {
+    if (!getCookie(this.COOKIE_KEY)) {
       // Cookie was not defined, let's define with default value
 
       // Check if License is yet to expire
       if (today < this.licenseExpiresOn) {
         // License has not expired yet, we show initial banner of 7 days
         // with cookie set to validity same as license expiry
-        Cookies.set(this.COOKIE_KEY, 'true', { expires: this.licenseExpiresOn });
+        setCookie(this.COOKIE_KEY, 'true', { expires: this.licenseExpiresOn });
       } else {
         // License is already expired so we show final Banner with cookie set to 20 years validity.
-        Cookies.set(this.COOKIE_KEY, 'true', { expires: 7300 });
+        setCookie(this.COOKIE_KEY, 'true', { expires: 7300 });
       }
 
       this.toggleBanner(true);
     } else {
       // Cookie was defined, let's read value and show/hide banner
-      this.toggleBanner(parseBoolean(Cookies.get(this.COOKIE_KEY)));
+      this.toggleBanner(parseBoolean(getCookie(this.COOKIE_KEY)));
     }
   }
 
@@ -103,8 +102,8 @@ export default class EETrialBanner {
     this.toggleBanner(false);
     this.toggleMainNavbarMargin(false);
     this.toggleSecondaryNavbarMargin(false);
-    if (Cookies.get(this.COOKIE_KEY)) {
-      Cookies.set(this.COOKIE_KEY, 'false');
+    if (getCookie(this.COOKIE_KEY)) {
+      setCookie(this.COOKIE_KEY, 'false');
     }
   }
 }

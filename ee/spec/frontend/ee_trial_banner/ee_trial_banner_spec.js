@@ -55,7 +55,10 @@ describe('EE gitlab license banner dismiss', () => {
     jest.spyOn(Cookies, 'set');
     dismiss();
 
-    expect(Cookies.set).toHaveBeenCalledWith('show_ee_trial_banner', 'false');
+    expect(Cookies.set).toHaveBeenCalledWith('show_ee_trial_banner', 'false', {
+      expires: 365,
+      secure: false,
+    });
   });
 
   it('should not call Cookies.set for `show_ee_trial_banner` when a non close button is clicked', () => {

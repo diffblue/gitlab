@@ -1,10 +1,9 @@
 import $ from 'jquery';
-import Cookies from 'js-cookie';
+import { getCookie, setCookie, parseBoolean } from '~/lib/utils/common_utils';
 
 import { sanitize } from '~/lib/dompurify';
 import createGqClient, { fetchPolicies } from '~/lib/graphql';
 
-import { parseBoolean } from '~/lib/utils/common_utils';
 import { dateInWords, parsePikadayDate } from '~/lib/utils/datetime_utility';
 import { __, s__, sprintf } from '~/locale';
 
@@ -33,9 +32,9 @@ const toggleContainerClass = (className) => {
   }
 };
 
-const getCollapsedGutter = () => parseBoolean(Cookies.get('collapsed_gutter'));
+const getCollapsedGutter = () => parseBoolean(getCookie('collapsed_gutter'));
 
-const setCollapsedGutter = (value) => Cookies.set('collapsed_gutter', value);
+const setCollapsedGutter = (value) => setCookie('collapsed_gutter', value);
 
 const getDateValidity = (startDateTime, dueDateTime) => {
   // If both dates are defined
