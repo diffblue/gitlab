@@ -210,33 +210,8 @@ RSpec.describe 'Query.vulnerabilities.location' do
       expect(location['kubernetesResource']['name']).to eq('nginx-deployment')
       expect(location['kubernetesResource']['containerName']).to eq('nginx')
       expect(location['kubernetesResource']['clusterId']).to eq('gid://gitlab/Clusters::Cluster/1')
-    end
-
-    context 'when user is not authorized to administrate clusters' do
-      before do
-        project.add_developer(user)
-        post_graphql(query, current_user: user)
-      end
-
-      it 'does not return agent data' do
-        location = subject.first['location']
-
-        expect(location['kubernetesResource']['agent']).to be_nil
-      end
-    end
-
-    context 'when user is authorized to administrate clusters' do
-      before do
-        project.add_maintainer(user)
-        post_graphql(query, current_user: user)
-      end
-
-      it 'returns agent data' do
-        location = subject.first['location']
-
-        expect(location['kubernetesResource']['agent']['id']).to eq("gid://gitlab/Clusters::Agent/#{agent.id}")
-        expect(location['kubernetesResource']['agent']['name']).to eq(agent.name)
-      end
+      expect(location['kubernetesResource']['agent']['id']).to eq("gid://gitlab/Clusters::Agent/#{agent.id}")
+      expect(location['kubernetesResource']['agent']['name']).to eq(agent.name)
     end
   end
 
