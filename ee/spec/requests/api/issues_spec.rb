@@ -583,8 +583,9 @@ RSpec.describe API::Issues, :mailer do
     let(:file) { fixture_file_upload('spec/fixtures/rails_sample.jpg', 'image/jpg') }
     let(:file_name) { 'rails_sample.jpg' }
     let(:url) { 'http://gitlab.com' }
+    let(:url_text) { 'GitLab' }
 
-    let(:params) { { url: url } }
+    let(:params) { { url: url, url_text: url_text } }
 
     subject do
       workhorse_finalize(
@@ -604,6 +605,7 @@ RSpec.describe API::Issues, :mailer do
         expect(response).to have_gitlab_http_status(:created)
         expect(json_response['filename']).to eq(file_name)
         expect(json_response['url']).to eq(url)
+        expect(json_response['url_text']).to eq(url_text)
         expect(json_response['file_path']).to match(%r{/uploads/-/system/issuable_metric_image/file/[\d+]/#{file_name}})
         expect(json_response['created_at']).not_to be_nil
         expect(json_response['id']).not_to be_nil
@@ -701,7 +703,8 @@ RSpec.describe API::Issues, :mailer do
             created_at: image.created_at.strftime('%Y-%m-%dT%H:%M:%S.%LZ'),
             filename: image.filename,
             file_path: image.file_path,
-            url: image.url
+            url: image.url,
+            url_text: nil
           }.with_indifferent_access
         )
       end
@@ -733,6 +736,104 @@ RSpec.describe API::Issues, :mailer do
       end
 
       it_behaves_like "#{params[:expected_status]}"
+    end
+  end
+
+  describe 'PUT /projects/:id/issues/:issue_iid/metric_images/:metric_image_id' do
+    using RSpec::Parameterized::TableSyntax
+
+    let_it_be(:project) do
+      create(:project, :public, creator_id: user.id, namespace: user.namespace)
+    end
+
+    let!(:image) { create(:issuable_metric_image, issue: issue) }
+    let(:params) { { url: 'http://test.example.com', url_text: 'Example website 123' } }
+
+    subject { put api("/projects/#{project.id}/issues/#{issue.iid}/metric_images/#{image.id}", user2), params: params }
+
+    shared_examples 'can_update_metric_image' do
+      it 'can update the metric images' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:success)
+        expect(json_response['url']).to eq(params[:url])
+        expect(json_response['url_text']).to eq(params[:url_text])
+      end
+    end
+
+    shared_examples 'unauthorized_update' do
+      it 'cannot delete the metric image' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+        expect(image.reload).to eq(image)
+      end
+    end
+
+    shared_examples 'not_found' do
+      it 'cannot delete the metric image' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:not_found)
+        expect(image.reload).to eq(image)
+      end
+    end
+
+    where(:user_role, :own_issue, :issue_confidential, :expected_status) do
+      :not_member | false | false | :unauthorized_update
+      :not_member | true  | false | :unauthorized_update
+      :not_member | true  | true  | :unauthorized_update
+      :guest      | false | true  | :not_found
+      :guest      | false | false | :unauthorized_update
+      :guest      | true  | false | :can_update_metric_image
+      :reporter   | true  | false | :can_update_metric_image
+      :reporter   | false | false | :can_update_metric_image
+    end
+
+    with_them do
+      before do
+        stub_licensed_features(incident_metric_upload: true)
+        project.send("add_#{user_role}", user2) unless user_role == :not_member
+      end
+
+      let!(:issue) do
+        author = own_issue ? user2 : user
+        confidential = issue_confidential
+
+        create(:incident, project: project, confidential: confidential, author: author)
+      end
+
+      it_behaves_like "#{params[:expected_status]}"
+    end
+
+    context 'user has access' do
+      let(:issue) { create(:incident, project: project) }
+
+      before do
+        project.add_reporter(user2)
+      end
+
+      context 'metric image not found' do
+        subject { delete api("/projects/#{project.id}/issues/#{issue.iid}/metric_images/#{non_existing_record_id}", user2) }
+
+        it 'returns an error' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:not_found)
+          expect(json_response['message']).to eq('Metric image not found')
+        end
+      end
+
+      context 'metric image cannot be updated' do
+        let(:params) { { url_text: 'something_long' * 100 } }
+
+        it 'returns an error' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+          expect(json_response['message']).to eq('Metric image could not be updated')
+        end
+      end
     end
   end
 

@@ -10,6 +10,7 @@ module IncidentManagement
         @project = issuable&.project
         @file = params.fetch(:file)
         @url = params.fetch(:url, nil)
+        @url_text = params.fetch(:url_text, nil)
       end
 
       def execute
@@ -22,7 +23,7 @@ module IncidentManagement
         ServiceResponse.error(message: e.message)
       end
 
-      attr_reader :issuable, :project, :file, :url, :metric
+      attr_reader :issuable, :project, :file, :url, :url_text, :metric
 
       private
 
@@ -30,7 +31,8 @@ module IncidentManagement
         @metric = IssuableMetricImage.create!(
           issue: issuable,
           file: file,
-          url: url
+          url: url,
+          url_text: url_text
         )
       end
 
