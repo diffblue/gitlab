@@ -1,15 +1,3 @@
 .threat-monitoring-alert-drawer .gl-drawer-header {
   align-items: flex-start;
 }
-
-.gl-md-max-w-15p {
-  @media (min-width: $breakpoint-md) {
-    max-width: $gl-spacing-scale-15;
-  }
-}
-
-.gl-lg-max-w-80p {
-  @media (min-width: $breakpoint-lg) {
-    max-width: 80%;
-  }
-}
