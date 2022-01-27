@@ -146,12 +146,10 @@ module Epics
     end
 
     def epic_board_id
-      params[positioning_scope_key]
+      params[:board_id]
     end
 
-    def positioning_scope_key
-      :board_id
-    end
+    alias_method :positioning_scope, :epic_board_id
 
     def saved_change_to_epic_dates?(epic)
       (epic.saved_changes.keys.map(&:to_sym) & EPIC_DATE_FIELDS).present?
