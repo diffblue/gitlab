@@ -1,3 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`ee gfm_autocomplete/utils epics config shows the iid and title in the menu item 1`] = `"<small>123456</small> Epic title &lt;script&gt;alert(&#39;hi&#39;)&lt;/script&gt;"`;
