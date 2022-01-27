@@ -20,6 +20,7 @@ module Projects
           flash[:alert] = result[:message]
         end
 
+        session[:slack_install_success] = true
         redirect_to_service_page
       end
 
