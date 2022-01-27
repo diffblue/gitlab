@@ -7,7 +7,7 @@ RSpec.describe ProductivityAnalytics do
     subject(:analytics) { described_class.new(merge_requests: finder_mrs, sort: custom_sort) }
 
     let(:project) { create(:project) }
-    let(:user) { project.owner }
+    let(:user) { project.first_owner }
 
     let(:finder_mrs) { ProductivityAnalyticsFinder.new(user, finder_options).execute }
     let(:finder_options) { { state: 'merged' } }

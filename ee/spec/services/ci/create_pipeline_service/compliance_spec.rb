@@ -8,7 +8,7 @@ RSpec.describe Ci::CreatePipelineService do
   subject(:execute) { service.execute(:push) }
 
   let(:project) { create(:project, :repository, name: 'website') }
-  let(:user) { project.owner }
+  let(:user) { project.first_owner }
   let(:compliance_group) { create(:group, :private, name: "compliance") }
   let(:compliance_project) { create(:project, :repository, namespace: compliance_group, name: "hippa") }
   let(:framework) { create(:compliance_framework, namespace_id: compliance_group.id, pipeline_configuration_full_path: ".compliance-gitlab-ci.yml@compliance/hippa") }
@@ -37,7 +37,7 @@ RSpec.describe Ci::CreatePipelineService do
 
   context 'when user has access to compliance project' do
     before do
-      compliance_project.add_maintainer(project.owner)
+      compliance_project.add_maintainer(project.first_owner)
     end
 
     it 'responds with success' do

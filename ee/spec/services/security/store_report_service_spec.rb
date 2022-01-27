@@ -766,7 +766,7 @@ RSpec.describe Security::StoreReportService, '#execute', :snowplow do
     before do
       stub_licensed_features(container_scanning: true, security_dashboard: true)
 
-      allow(pipeline).to receive(:user).and_return(project.owner)
+      allow(pipeline).to receive(:user).and_return(project.first_owner)
     end
 
     it 'populates finding location' do

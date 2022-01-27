@@ -17,7 +17,7 @@ RSpec.describe API::Ci::Pipelines do
 
   describe 'DELETE /projects/:id/pipelines/:pipeline_id' do
     context 'authorized user' do
-      let(:owner) { project.owner }
+      let(:owner) { project.first_owner }
 
       context 'when audit events is enabled' do
         before do

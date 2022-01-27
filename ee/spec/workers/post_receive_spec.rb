@@ -11,7 +11,7 @@ RSpec.describe PostReceive do
   let(:base64_changes) { Base64.encode64(wrongly_encoded_changes) }
   let(:base64_changes_with_master) { Base64.encode64(changes_with_master) }
   let(:gl_repository) { "project-#{project.id}" }
-  let(:key) { create(:key, user: project.owner) }
+  let(:key) { create(:key, user: project.first_owner) }
   let(:key_id) { key.shell_id }
   let(:project) { create(:project, :repository) }
 
@@ -55,7 +55,7 @@ RSpec.describe PostReceive do
           ]
 
           expect(::RepositoryPushAuditEventWorker).to receive(:perform_async)
-            .with(expected_changes, project.id, project.owner.id)
+            .with(expected_changes, project.id, project.first_owner.id)
 
           described_class.new.perform(gl_repository, key_id, base64_changes)
         end

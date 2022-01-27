@@ -7,7 +7,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService do
 
   describe '#execute' do
     let_it_be(:project) { create(:project) }
-    let_it_be(:current_user) { project.owner }
+    let_it_be(:current_user) { project.first_owner }
     let_it_be(:policy_management_project) { create(:project, :repository, creator: current_user) }
     let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, security_policy_management_project: policy_management_project, project: project) }
 

@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Repository index', :elastic, :clean_gitlab_redis_shared_state do
   context 'when fresh master branch is first pushed, followed by another update, then indexed' do
     let(:project) { create(:project_empty_repo) }
-    let(:user) { project.owner }
+    let(:user) { project.first_owner }
 
     before do
       stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)

@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'User creates a merge request with blocking MRs', :js do
   let(:project) { create(:project, :repository) }
-  let(:user) { project.owner }
+  let(:user) { project.first_owner }
 
   let(:mr_params) { { title: 'Some feature', source_branch: 'fix', target_branch: 'feature' } }
 

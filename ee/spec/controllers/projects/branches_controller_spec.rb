@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Projects::BranchesController do
   let_it_be(:project) { create(:project, :repository) }
 
-  let(:user) { project.owner }
+  let(:user) { project.first_owner }
 
   before do
     allow(project).to receive(:branches).and_return(['master'])

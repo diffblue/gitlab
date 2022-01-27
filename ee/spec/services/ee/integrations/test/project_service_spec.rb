@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe ::Integrations::Test::ProjectService do
   describe '#execute' do
     let(:project) { create(:project) }
-    let(:user) { project.owner }
+    let(:user) { project.first_owner }
     let(:event) { nil }
     let(:sample_data) { { data: 'sample' } }
     let(:success_result) { { success: true, result: {} } }

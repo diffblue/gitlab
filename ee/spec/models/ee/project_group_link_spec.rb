@@ -25,7 +25,7 @@ RSpec.describe ProjectGroupLink do
       let!(:protected_tag) do
         ProtectedTags::CreateService.new(
           project,
-          project.owner,
+          project.first_owner,
           attributes_for(
             :protected_tag,
             create_access_levels_attributes: [{ group_id: group.id }, { user_id: user.id }]
@@ -42,7 +42,7 @@ RSpec.describe ProjectGroupLink do
       let!(:protected_environment) do
         ProtectedEnvironments::CreateService.new(
           container: project,
-          current_user: project.owner,
+          current_user: project.first_owner,
           params: attributes_for(
             :protected_environment,
             deploy_access_levels_attributes: [{ group_id: group.id }, { user_id: user.id }]

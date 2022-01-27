@@ -26,7 +26,7 @@ RSpec.describe MergeRequests::UpdateBlocksService do
 
   describe '#execute' do
     let(:merge_request) { create(:merge_request) }
-    let(:user) { merge_request.target_project.owner }
+    let(:user) { merge_request.target_project.first_owner }
 
     let(:mr_to_ignore) { create(:merge_request) }
     let(:mr_to_add) { create(:merge_request) }

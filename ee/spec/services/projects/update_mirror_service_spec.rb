@@ -7,7 +7,7 @@ RSpec.describe Projects::UpdateMirrorService do
     create(:project, :repository, :mirror, import_url: Project::UNKNOWN_IMPORT_URL, only_mirror_protected_branches: false)
   end
 
-  subject(:service) { described_class.new(project, project.owner) }
+  subject(:service) { described_class.new(project, project.first_owner) }
 
   describe "#execute" do
     context 'unlicensed' do
@@ -121,7 +121,7 @@ RSpec.describe Projects::UpdateMirrorService do
         stub_fetch_mirror(project)
 
         expect(Git::TagPushService).to receive(:new)
-          .with(project, project.owner, change: hash_including(ref: 'refs/tags/new-tag'), mirror_update: true)
+          .with(project, project.first_owner, change: hash_including(ref: 'refs/tags/new-tag'), mirror_update: true)
           .and_return(double(execute: true))
 
         service.execute
@@ -326,7 +326,7 @@ RSpec.describe Projects::UpdateMirrorService do
 
       def create_file(repository)
         repository.create_file(
-          project.owner,
+          project.first_owner,
           '/newfile.txt',
           'hello',
           message: 'Add newfile.txt',

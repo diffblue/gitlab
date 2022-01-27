@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'view audit events' do
   describe 'GET /:namespace/:project/-/audit_events' do
     let_it_be(:project) { create(:project, :repository) }
-    let_it_be(:user) { project.owner }
+    let_it_be(:user) { project.first_owner }
     let_it_be(:audit_event) { create(:project_audit_event, entity_id: project.id) }
 
     before do

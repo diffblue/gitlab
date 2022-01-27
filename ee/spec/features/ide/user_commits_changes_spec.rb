@@ -7,7 +7,7 @@ RSpec.describe 'EE IDE user commits changes', :js do
 
   let(:project) { create(:project, :custom_repo, files: { 'docs/CODEOWNERS' => "[Backend]\n*.rb @ruby-owner" }) }
   let(:ruby_owner) { create(:user, username: 'ruby-owner') }
-  let(:user) { project.owner }
+  let(:user) { project.first_owner }
 
   before do
     stub_licensed_features(code_owners: true, code_owner_approval_required: true)

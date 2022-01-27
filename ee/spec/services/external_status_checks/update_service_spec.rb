@@ -7,7 +7,7 @@ RSpec.describe ExternalStatusChecks::UpdateService do
   let_it_be(:check) { create(:external_status_check, project: project) }
   let_it_be(:protected_branch) { create(:protected_branch, project: project) }
 
-  let(:current_user) { project.owner }
+  let(:current_user) { project.first_owner }
   let(:params) { { id: project.id, check_id: check.id, external_url: 'http://newvalue.com', name: 'new name', protected_branch_ids: [protected_branch.id] } }
 
   subject { described_class.new(container: project, current_user: current_user, params: params).execute }

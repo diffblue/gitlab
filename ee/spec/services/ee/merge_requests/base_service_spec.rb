@@ -17,7 +17,7 @@ RSpec.describe MergeRequests::BaseService do
     }
   end
 
-  subject { MergeRequests::CreateService.new(project: project, current_user: project.owner, params: params) }
+  subject { MergeRequests::CreateService.new(project: project, current_user: project.first_owner, params: params) }
 
   let_it_be(:status_checks) { create_list(:external_status_check, 3, project: project) }
 
@@ -38,7 +38,7 @@ RSpec.describe MergeRequests::BaseService do
       it 'calls ParamsFilteringService' do
         expect(ApprovalRules::ParamsFilteringService).to receive(:new).with(
           an_instance_of(MergeRequest),
-          project.owner,
+          project.first_owner,
           params
         ).and_return(params_filtering_service)
         expect(params_filtering_service).to receive(:execute).and_return(params)

@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe "User edits merge request with blocking MRs", :js do
   let(:merge_request) { create(:merge_request) }
   let(:project) { merge_request.target_project }
-  let(:user) { merge_request.target_project.owner }
+  let(:user) { merge_request.target_project.first_owner }
 
   let(:other_mr) { create(:merge_request) }
 

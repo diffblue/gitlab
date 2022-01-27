@@ -24,7 +24,7 @@ RSpec.describe Projects::DestroyService do
     let(:max_capacity) { Gitlab::CurrentSettings.mirror_max_capacity }
     let_it_be(:project_mirror) { create(:project, :mirror, :repository, :import_scheduled) }
 
-    let(:result) { described_class.new(project_mirror, project_mirror.owner, {}).execute }
+    let(:result) { described_class.new(project_mirror, project_mirror.first_owner, {}).execute }
 
     before do
       Gitlab::Mirror.increment_capacity(project_mirror.id)

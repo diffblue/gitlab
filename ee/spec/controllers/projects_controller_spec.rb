@@ -561,7 +561,7 @@ RSpec.describe ProjectsController do
 
         context 'current_user is a project owner' do
           before do
-            sign_in(project.owner)
+            sign_in(project.first_owner)
           end
 
           it 'sets the compliance framework' do
