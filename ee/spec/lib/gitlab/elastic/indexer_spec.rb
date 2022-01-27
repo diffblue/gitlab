@@ -19,7 +19,9 @@ RSpec.describe Gitlab::Elastic::Indexer do
   let(:popen_success) { [[''], 0] }
   let(:popen_failure) { [['error'], 1] }
 
-  subject(:indexer) { described_class.new(project) }
+  let(:force_reindexing) { false }
+
+  subject(:indexer) { described_class.new(project, force: force_reindexing) }
 
   context 'empty project', :elastic, :clean_gitlab_redis_shared_state do
     let(:project) { create(:project) }
@@ -52,6 +54,25 @@ RSpec.describe Gitlab::Elastic::Indexer do
     it 'is falsey for unreachable commits', :aggregate_failures do
       expect(indexer.find_indexable_commit(Gitlab::Git::BLANK_SHA)).to be_nil
       expect(indexer.find_indexable_commit(Gitlab::Git::EMPTY_TREE_ID)).to be_nil
+    end
+  end
+
+  describe '#purge_unreachable_commits_from_index?' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:force_reindexing, :ancestor_of, :result) do
+      true      | false      | true
+      false     | false      | true
+      false     | true       | false
+      true      | true       | true
+    end
+
+    with_them do
+      it 'returns correct result' do
+        allow(indexer).to receive(:last_commit_ancestor_of?).and_return(ancestor_of)
+
+        expect(indexer.purge_unreachable_commits_from_index?('sha')).to eq(result)
+      end
     end
   end
 
@@ -94,6 +115,8 @@ RSpec.describe Gitlab::Elastic::Indexer do
             TestEnv.indexer_bin_path,
             "--timeout=#{Gitlab::Elastic::Indexer::TIMEOUT}s",
             "--project-path=#{project.full_path}",
+            "--visibility-level=#{project.visibility_level}",
+            "--repository-access-level=#{project.repository_access_level}",
             project.id.to_s,
             "#{project.repository.disk_path}.git"
           ],
@@ -403,6 +426,7 @@ RSpec.describe Gitlab::Elastic::Indexer do
     before do
       allow(Gitlab::Elasticsearch::Logger).to receive(:build).and_return(logger_double)
       allow(indexer).to receive(:run_indexer!) { Project.where(id: project.id).delete_all }
+      allow(indexer).to receive(:purge_unreachable_commits_from_index?).and_return(false)
       allow(logger_double).to receive(:debug)
     end
 

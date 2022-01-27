@@ -23,6 +23,11 @@ module Elastic
         # avoid race condition if project is deleted before Elasticsearch update completes
         return if pending_delete?
 
+        updated_attributes = updated_attributes.map(&:to_sym)
+        if updated_attributes.include?(:visibility_level) || updated_attributes.include?(:repository_access_level)
+          maintain_elasticsearch_permissions
+        end
+
         super
       end
 
@@ -33,6 +38,12 @@ module Elastic
 
       def invalidate_elasticsearch_indexes_cache!
         ::Gitlab::CurrentSettings.invalidate_elasticsearch_indexes_cache_for_project!(self.id)
+      end
+
+      private
+
+      def maintain_elasticsearch_permissions
+        ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(self)
       end
     end
   end
