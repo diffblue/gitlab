@@ -124,7 +124,7 @@ RSpec.describe 'Project settings > [EE] Merge Requests', :js do
       it "does not mention the merge request template in the section's description text" do
         visit edit_project_path(project)
 
-        expect(page).to have_content('Choose your merge method, merge options, merge checks, and merge suggestions.')
+        expect(page).to have_content('Choose your merge method, options, checks, and squash options.')
       end
     end
 
@@ -142,7 +142,7 @@ RSpec.describe 'Project settings > [EE] Merge Requests', :js do
       it "mentions the merge request template in the section's description text" do
         visit edit_project_path(project)
 
-        expect(page).to have_content('Choose your merge method, merge options, merge checks, merge suggestions, and set up a default description template for merge requests.')
+        expect(page).to have_content('Choose the method, options, checks, and squash options for merge requests. You can also set up merge request templates for different actions.')
       end
     end
   end
