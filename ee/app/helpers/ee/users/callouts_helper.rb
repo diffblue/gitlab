@@ -164,7 +164,7 @@ module EE
       def current_settings
       end
 
-      def trials_link_url
+      def callouts_trials_link_url
         new_trial_registration_path(glm_source: 'gitlab.com', glm_content: 'gold-callout')
       end
     end
