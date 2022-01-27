@@ -13,6 +13,7 @@ module Projects
       end
 
       feature_category :security_orchestration
+      urgency :medium
 
       def index
         render :index, locals: { project: project }
