@@ -49,6 +49,10 @@ describe('SubscriptionActivationModal', () => {
       expect(findGlModal().attributes('modalid')).toBe(modalId);
     });
 
+    it('is size small', () => {
+      expect(findGlModal().props('size')).toBe('sm');
+    });
+
     it('shows a description text', () => {
       expect(wrapper.text()).toContain(subscriptionActivationInsertCode);
     });

@@ -34786,9 +34786,6 @@ msgstr ""
 msgid "Sunday"
 msgstr ""
 
-msgid "SuperSonics|Activate cloud license"
-msgstr ""
-
 msgid "SuperSonics|Activate subscription"
 msgstr ""
 
@@ -34811,6 +34808,9 @@ msgid "SuperSonics|Cloud licensing"
 msgstr ""
 
 msgid "SuperSonics|Cloud licensing is now available. It's an easier way to activate instances and manage subscriptions. Read more about it in our %{blogPostLinkStart}blog post%{blogPostLinkEnd}. Activation codes are available in the %{portalLinkStart}Customers Portal%{portalLinkEnd}."
+msgstr ""
+
+msgid "SuperSonics|Enter activation code"
 msgstr ""
 
 msgid "SuperSonics|Export license usage file"
