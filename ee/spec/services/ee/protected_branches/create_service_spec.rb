@@ -8,7 +8,7 @@ RSpec.describe ProtectedBranches::CreateService do
   let(:source_project) { create(:project) }
   let(:target_project) { fork_project(source_project, user, repository: true) }
 
-  let(:user) { source_project.owner }
+  let(:user) { source_project.first_owner }
 
   let(:params) do
     {

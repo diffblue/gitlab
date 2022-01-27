@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe ::Ci::DestroyPipelineService do
   let(:project) { create(:project) }
   let!(:pipeline) { create(:ci_pipeline, project: project) }
-  let(:user) { project.owner }
+  let(:user) { project.first_owner }
 
   subject { described_class.new(project, user).execute(pipeline) }
 

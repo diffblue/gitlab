@@ -2839,7 +2839,7 @@ RSpec.describe Project do
 
       expect(project).to receive(:create_import_state)
 
-      project.update!(mirror: true, mirror_user: project.owner, import_url: 'http://foo.com')
+      project.update!(mirror: true, mirror_user: project.first_owner, import_url: 'http://foo.com')
     end
   end
 

@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Ci::CreatePipelineService, :sidekiq_inline do
   let_it_be(:namespace) { create(:namespace, :with_used_build_minutes_limit) }
   let_it_be(:project) { create(:project, :repository, namespace: namespace) }
-  let_it_be(:user) { project.owner }
+  let_it_be(:user) { project.first_owner }
   let_it_be(:instance_runner) { create(:ci_runner, :instance, :online) }
 
   let(:service) do

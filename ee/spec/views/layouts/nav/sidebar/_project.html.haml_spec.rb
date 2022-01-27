@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'layouts/nav/sidebar/_project' do
   let_it_be_with_refind(:project) { create(:project, :repository) }
-  let_it_be(:user) { project.owner }
+  let_it_be(:user) { project.first_owner }
 
   before do
     assign(:project, project)
@@ -63,7 +63,7 @@ RSpec.describe 'layouts/nav/sidebar/_project' do
     describe 'Jira' do
       let_it_be_with_refind(:project) { create(:project, has_external_issue_tracker: true) }
 
-      let(:user) { project.owner }
+      let(:user) { project.first_owner }
 
       before do
         allow(view).to receive(:current_user).and_return(user)
@@ -100,7 +100,7 @@ RSpec.describe 'layouts/nav/sidebar/_project' do
   end
 
   describe 'Requirements' do
-    let(:user) { project.owner }
+    let(:user) { project.first_owner }
 
     before do
       stub_licensed_features(requirements: true)

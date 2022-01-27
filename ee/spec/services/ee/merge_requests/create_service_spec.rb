@@ -56,7 +56,7 @@ RSpec.describe MergeRequests::CreateService do
 
   describe '#execute with blocking merge requests', :clean_gitlab_redis_shared_state do
     let(:opts) { { title: 'Blocked MR', source_branch: 'feature', target_branch: 'master' } }
-    let(:user) { project.owner }
+    let(:user) { project.first_owner }
 
     it 'delegates to MergeRequests::UpdateBlocksService' do
       expect(MergeRequests::UpdateBlocksService)

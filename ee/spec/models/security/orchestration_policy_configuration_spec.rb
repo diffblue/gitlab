@@ -291,7 +291,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
   end
 
   describe '#policy_last_updated_by' do
-    let(:commit) { create(:commit, author: security_policy_management_project.owner) }
+    let(:commit) { create(:commit, author: security_policy_management_project.first_owner) }
 
     subject(:policy_last_updated_by) { security_orchestration_policy_configuration.policy_last_updated_by }
 
@@ -301,7 +301,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     end
 
     context 'when last commit to policy file exists' do
-      it { is_expected.to eq(security_policy_management_project.owner) }
+      it { is_expected.to eq(security_policy_management_project.first_owner) }
     end
 
     context 'when last commit to policy file does not exist' do

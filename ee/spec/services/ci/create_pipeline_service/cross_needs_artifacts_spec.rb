@@ -6,7 +6,7 @@ RSpec.describe Ci::CreatePipelineService do
   subject(:execute) { service.execute(:push) }
 
   let_it_be(:project) { create(:project, :repository) }
-  let_it_be(:user) { project.owner }
+  let_it_be(:user) { project.first_owner }
 
   let(:service) do
     described_class.new(project, user, { ref: 'refs/heads/master' })

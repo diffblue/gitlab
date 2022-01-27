@@ -83,7 +83,7 @@ RSpec.describe Users::DestroyService do
 
       context 'when user has escalation rules' do
         let(:project) { create(:project) }
-        let(:user) { project.owner }
+        let(:user) { project.first_owner }
         let(:project_policy) { create(:incident_management_escalation_policy, project: project) }
         let!(:project_rule) { create(:incident_management_escalation_rule, :with_user, policy: project_policy, user: user) }
 

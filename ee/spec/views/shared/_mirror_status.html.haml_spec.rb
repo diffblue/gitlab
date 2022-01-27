@@ -10,7 +10,7 @@ RSpec.describe 'shared/_mirror_status.html.haml' do
   before do
     @project = project # for the view
 
-    sign_in(project.owner)
+    sign_in(project.first_owner)
   end
 
   context 'when mirror has not updated yet' do

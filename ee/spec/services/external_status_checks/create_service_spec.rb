@@ -6,7 +6,7 @@ RSpec.describe ExternalStatusChecks::CreateService do
   let_it_be(:project) { create(:project) }
   let_it_be(:protected_branch) { create(:protected_branch, project: project) }
 
-  let(:user) { project.owner }
+  let(:user) { project.first_owner }
   let(:params) do
     {
       name: 'Test',

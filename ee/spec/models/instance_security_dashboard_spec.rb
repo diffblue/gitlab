@@ -113,7 +113,7 @@ RSpec.describe InstanceSecurityDashboard do
 
     context 'when the user is not an auditor' do
       context 'when the user is project owner' do
-        let(:user) { project1.owner }
+        let(:user) { project1.first_owner }
 
         it_behaves_like 'project permissions' do
           let(:expected_projects) { project1 }

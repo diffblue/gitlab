@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService do
   describe '#execute' do
     let_it_be_with_reload(:project) { create(:project, :repository) }
-    let_it_be(:current_user) { project.owner }
+    let_it_be(:current_user) { project.first_owner }
     let_it_be(:branch) { project.default_branch }
 
     let(:action) { { scan: 'secret_detection' } }

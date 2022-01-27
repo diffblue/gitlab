@@ -6,7 +6,7 @@ RSpec.describe ProtectedBranches::UpdateService do
   let(:branch_name) { 'feature' }
   let(:protected_branch) { create(:protected_branch, name: branch_name) }
   let(:project) { protected_branch.project }
-  let(:user) { project.owner }
+  let(:user) { project.first_owner }
 
   subject(:service) { described_class.new(project, user, params) }
 
