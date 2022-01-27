@@ -39,6 +39,7 @@ RSpec.describe Projects::Settings::SlacksController do
         expect(response).to have_gitlab_http_status(:found)
         expect(response).to redirect_to(redirect_url(project))
         expect(flash[:alert]).to be_nil
+        expect(session[:slack_install_success]).to be(true)
       end
 
       it 'calls service and redirects with the alert if there is error' do
