@@ -200,6 +200,10 @@ class GeoNode < ApplicationRecord
     api_url("geo_nodes/#{node.id}")
   end
 
+  def graphql_url
+    geo_api_url('graphql')
+  end
+
   def snapshot_url(repository)
     url = api_url("projects/#{repository.project.id}/snapshot")
     url += "?wiki=1" if repository.repo_type.wiki?

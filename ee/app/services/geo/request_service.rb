@@ -4,7 +4,7 @@ module Geo
   class RequestService
     private
 
-    def execute(url, body, method: Net::HTTP::Post)
+    def execute(url, body, method: Net::HTTP::Post, with_response: false)
       return false if url.nil?
 
       response = Gitlab::HTTP.perform_request(method, url, body: body, allow_local_requests: true, headers: headers, timeout: timeout)
@@ -13,6 +13,8 @@ module Geo
         handle_failure_for(response)
         return false
       end
+
+      return response.parsed_response if with_response
 
       true
     rescue Gitlab::HTTP::Error, Timeout::Error, SocketError, SystemCallError, OpenSSL::SSL::SSLError => e

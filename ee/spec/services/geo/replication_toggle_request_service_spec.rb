@@ -19,7 +19,8 @@ RSpec.describe Geo::ReplicationToggleRequestService, :geo do
 
   it 'expires the geo cache on success' do
     response = double(success?: true,
-                      code: 200 )
+                      code: 200,
+                      parsed_response: { 'message' => 'Test' } )
     allow(Gitlab::HTTP).to receive(:perform_request).and_return(response)
     expect(Gitlab::Geo).to receive(:expire_cache!)
 

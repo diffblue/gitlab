@@ -55,7 +55,13 @@ module EE
           #
           # @return [Boolean] true whether current route is in allow list.
           def allowlisted_routes
-            allowed = super || geo_node_update_route? || geo_resync_designs_route? || geo_sign_out_route? || admin_settings_update? || geo_node_status_update_route?
+            allowed = super ||
+                      geo_node_update_route? ||
+                      geo_resync_designs_route? ||
+                      geo_sign_out_route? ||
+                      admin_settings_update? ||
+                      geo_node_status_update_route? ||
+                      geo_graphql_query?
 
             return true if allowed
             return sign_in_route? if ::Gitlab.maintenance_mode?
@@ -116,6 +122,12 @@ module EE
           def geo_node_status_update_route?
             ::Gitlab::Middleware::ReadOnly::API_VERSIONS.any? do |version|
               request.path.include?("/api/v#{version}/geo/status")
+            end
+          end
+
+          def geo_graphql_query?
+            request.post? && ::Gitlab::Middleware::ReadOnly::API_VERSIONS.any? do |version|
+              request.path.include?("/api/v#{version}/geo/graphql")
             end
           end
 
