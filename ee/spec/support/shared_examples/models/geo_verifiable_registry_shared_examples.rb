@@ -9,12 +9,44 @@ RSpec.shared_examples 'a Geo verifiable registry' do
 
   context 'state machine' do
     context 'when transitioning to synced' do
+      let(:registry) { create(registry_class_factory, :started, :verification_succeeded) }
+
       it 'marks verification as pending' do
-        registry = create(registry_class_factory, :started, :verification_succeeded)
+        # It's likely we will remove will_never_be_checksummed_on_the_primary?
+        # so using `expect` will remind us to remove it here too.
+        expect(registry).to receive(:will_never_be_checksummed_on_the_primary?).and_return(false)
 
         registry.synced!
 
         expect(registry.reload).to be_verification_pending
+      end
+
+      context 'band-aid for GitLab managed object storage replication verification loop' do
+        context 'when the model_record will never be checksummed on the primary' do
+          before do
+            allow(registry).to receive(:will_never_be_checksummed_on_the_primary?).and_return(true)
+          end
+
+          context 'when the registry is already verification_succeeded' do
+            let(:registry) { create(registry_class_factory, :started, :verification_succeeded) }
+
+            it 'leaves verification as succeeded' do
+              registry.synced!
+
+              expect(registry.reload).to be_verification_succeeded
+            end
+          end
+
+          context 'when the registry is verification_pending' do
+            let(:registry) { create(registry_class_factory, :started) }
+
+            it 'changes verification to succeeded' do
+              registry.synced!
+
+              expect(registry.reload).to be_verification_succeeded
+            end
+          end
+        end
       end
     end
   end
@@ -249,6 +281,28 @@ RSpec.shared_examples 'a Geo verifiable registry' do
         end
 
         expect(subject.reload.verification_failed?).to be_truthy
+      end
+    end
+  end
+
+  describe '#will_never_be_checksummed_on_the_primary?' do
+    context 'when the model record is not in available_verifiables' do
+      it 'returns true' do
+        model_record = double('model_record', in_available_verifiables?: false)
+        replicator = double('replicator', model_record: model_record)
+        allow(subject).to receive(:replicator).and_return(replicator)
+
+        expect(subject.will_never_be_checksummed_on_the_primary?).to be_truthy
+      end
+    end
+
+    context 'when the model record is in available_verifiables' do
+      it 'returns false' do
+        model_record = double('model_record', in_available_verifiables?: true)
+        replicator = double('replicator', model_record: model_record)
+        allow(subject).to receive(:replicator).and_return(replicator)
+
+        expect(subject.will_never_be_checksummed_on_the_primary?).to be_falsey
       end
     end
   end
