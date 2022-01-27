@@ -75,13 +75,13 @@ RSpec.describe UpdateAllMirrorsWorker do
         worker.perform
       end
 
-      it 'cleans up finished ProjectImportSchduleWorker jobs' do
+      it 'cleans up finished ProjectImportScheduleWorker jobs' do
         worker.perform
 
         expect(job_tracker_instance).to have_received(:clean_up).once
       end
 
-      it 'waits until all ProjectImportSchduleWorker jobs to complete' do
+      it 'waits until all ProjectImportScheduleWorker jobs to complete' do
         worker.perform
 
         expect(job_tracker_instance).to have_received(:count).exactly(3).times
@@ -124,7 +124,7 @@ RSpec.describe UpdateAllMirrorsWorker do
         worker.perform
       end
 
-      it 'does not poll for ProjectImportSchduleWorker jobs to complete' do
+      it 'does not poll for ProjectImportScheduleWorker jobs to complete' do
         expect_next_instance_of(LimitedCapacity::JobTracker) do |instance|
           expect(instance).not_to receive(:count)
         end
