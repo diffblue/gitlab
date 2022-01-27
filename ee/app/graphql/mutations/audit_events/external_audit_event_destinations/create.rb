@@ -16,7 +16,7 @@ module Mutations
                  required: true,
                  description: 'Group path.'
 
-        field :external_audit_event_destination, EE::Types::AuditEvents::ExternalAuditEventDestinationType,
+        field :external_audit_event_destination, ::Types::AuditEvents::ExternalAuditEventDestinationType,
               null: true,
               description: 'Destination created.'
 
