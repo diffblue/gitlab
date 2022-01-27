@@ -373,8 +373,8 @@ RSpec.describe BillingPlansHelper, :saas do
     end
 
     it 'builds correct hash' do
-      props = helper.hand_raise_props(namespace)
-      expect(props).to eq(namespace_id: namespace.id, user_name: 'Joe', first_name: 'Joe', last_name: 'Doe', company_name: 'ACME')
+      props = helper.hand_raise_props(namespace, glm_content: 'some-content')
+      expect(props).to eq(namespace_id: namespace.id, user_name: 'Joe', first_name: 'Joe', last_name: 'Doe', company_name: 'ACME', glm_content: 'some-content')
     end
   end
 

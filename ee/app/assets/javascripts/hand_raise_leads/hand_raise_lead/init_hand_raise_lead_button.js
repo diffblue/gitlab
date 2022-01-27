@@ -3,7 +3,7 @@ import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/
 import apolloProvider from 'ee/subscriptions/buy_addons_shared/graphql';
 
 export const initHandRaiseLeadButton = (el) => {
-  const { namespaceId, userName, firstName, lastName, companyName } = el.dataset;
+  const { namespaceId, userName, firstName, lastName, companyName, glmContent } = el.dataset;
 
   return new Vue({
     el,
@@ -15,6 +15,7 @@ export const initHandRaiseLeadButton = (el) => {
         firstName,
         lastName,
         companyName,
+        glmContent,
       },
     },
     render(createElement) {

@@ -1,5 +1,5 @@
 - if show_contact_sales_button?(purchase_link.action, plan_offer_type)
-  .js-hand-raise-lead-button{ data: hand_raise_props(namespace) }
+  .js-hand-raise-lead-button{ data: hand_raise_props(namespace, glm_content: 'billing-group') }
 - if show_upgrade_button
   = link_to upgrade_button_text(plan_offer_type),
     plan_purchase_or_upgrade_url(namespace, plan),

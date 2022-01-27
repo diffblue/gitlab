@@ -140,13 +140,14 @@ module BillingPlansHelper
     end
   end
 
-  def hand_raise_props(namespace)
+  def hand_raise_props(namespace, glm_content: )
     {
       namespace_id: namespace.id,
       user_name: current_user.username,
       first_name: current_user.first_name,
       last_name: current_user.last_name,
-      company_name: current_user.organization
+      company_name: current_user.organization,
+      glm_content: glm_content
     }
   end
 

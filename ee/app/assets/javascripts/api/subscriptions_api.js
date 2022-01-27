@@ -55,6 +55,7 @@ export const sendHandRaiseLead = async (params) => {
     country: params.country,
     state: params.state,
     comment: params.comment,
+    glm_content: params.glmContent,
   };
 
   return axios.post(url, formParams);

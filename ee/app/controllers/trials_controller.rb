@@ -116,7 +116,7 @@ class TrialsController < ApplicationController
 
   def hand_raise_lead_params
     params.permit(:first_name, :last_name, :company_name, :company_size, :phone_number, :country,
-                  :state, :namespace_id, :comment)
+                  :state, :namespace_id, :comment, :glm_content)
           .merge(hand_raise_lead_extra_params)
   end
 
@@ -126,7 +126,6 @@ class TrialsController < ApplicationController
       uid: current_user.id,
       provider: 'gitlab',
       setup_for_company: current_user.setup_for_company,
-      glm_content: 'group-billing',
       glm_source: 'gitlab.com'
     }
   end

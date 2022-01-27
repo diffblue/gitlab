@@ -50,6 +50,6 @@ module Groups::SecurityFeaturesHelper
       }
     }
 
-    data.merge(hand_raise_props(group.root_ancestor))
+    data.merge(hand_raise_props(group.root_ancestor, glm_content: content))
   end
 end
