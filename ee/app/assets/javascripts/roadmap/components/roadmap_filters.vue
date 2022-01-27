@@ -206,6 +206,7 @@ export default {
         />
       </gl-form-group>
       <gl-dropdown
+        v-if="!glFeatures.roadmapSettings"
         :text="selectedEpicStateTitle"
         class="gl-mr-0 gl-lg-mr-3 mb-sm-2 dropdown-epics-state"
         toggle-class="gl-rounded-base!"

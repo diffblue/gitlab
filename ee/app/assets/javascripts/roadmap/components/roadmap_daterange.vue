@@ -115,12 +115,13 @@ export default {
         {{ dateRange.text }}
       </gl-dropdown-item>
     </gl-dropdown>
-    <gl-form-group v-if="availablePresets.length">
+    <gl-form-group v-if="availablePresets.length" class="gl-mb-0">
       <gl-form-radio-group
+        data-testid="daterange-presets"
         :checked="presetType"
         stacked
         :options="availablePresets"
-        @change="handleRoadmapLayoutChange"
+        @input="handleRoadmapLayoutChange"
       />
     </gl-form-group>
   </div>
