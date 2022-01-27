@@ -206,19 +206,21 @@ community.
 
 ### Plugin system design principles
 
-We want to design a new plugin system interface that will be simple for the
-wider community team members to consume. Because we can not build plugins for
-all the cloud platforms, we want the barrier for building one as low as
-possible for everyone. We want to allow everyone to contribute.
+Our goal is to design a GitLab Runner plugin system interface that is flexible
+and simple for the wider community to consume. As we cannot build plugins for
+all cloud platforms, we want to ensure a low entry barrier for anyone who needs
+to develop a plugin. We want to allow everyone to contribute.
 
-In order to achieve this goal we want to follow a few design principles, that
-are here to guide our development process for the new plugin system
-abstraction:
+To achieve this goal, we will follow a few critical design principles. These
+principles will guide our development process for the new plugin system
+abstraction.
 
 General high-level principles:
 
 1. Make the entry barrier for writing a new plugin low.
-1. Find a proper balance between the plugin system simplicity and flexibility.
+1. Developing a new plugin should be simple and require only basic knowledge of
+   a programming language and a cloud provider's API.
+1. Strive for a balance between the plugin system's simplicity and flexibility.
    These are not mutually exclusive.
 1. Abstract away as many technical details as possible but do not hide them completely.
 1. Build an abstraction that serves our community well but allows us to ship it quickly.
