@@ -311,25 +311,25 @@ RSpec.describe ApplicationSetting do
     it 'presents a single URL as a one-element array' do
       setting.elasticsearch_url = 'http://example.com'
 
-      expect(setting.elasticsearch_url).to eq(%w[http://example.com])
+      expect(setting.elasticsearch_url).to match_array([URI.parse('http://example.com')])
     end
 
     it 'presents multiple URLs as a many-element array' do
       setting.elasticsearch_url = 'http://example.com,https://invalid.invalid:9200'
 
-      expect(setting.elasticsearch_url).to eq(%w[http://example.com https://invalid.invalid:9200])
+      expect(setting.elasticsearch_url).to match_array([URI.parse('http://example.com'), URI.parse('https://invalid.invalid:9200')])
     end
 
     it 'strips whitespace from around URLs' do
       setting.elasticsearch_url = ' http://example.com, https://invalid.invalid:9200 '
 
-      expect(setting.elasticsearch_url).to eq(%w[http://example.com https://invalid.invalid:9200])
+      expect(setting.elasticsearch_url).to match_array([URI.parse('http://example.com'), URI.parse('https://invalid.invalid:9200')])
     end
 
     it 'strips trailing slashes from URLs' do
       setting.elasticsearch_url = 'http://example.com/, https://example.com:9200/, https://example.com:9200/prefix//'
 
-      expect(setting.elasticsearch_url).to eq(%w[http://example.com https://example.com:9200 https://example.com:9200/prefix])
+      expect(setting.elasticsearch_url).to match_array([URI.parse('http://example.com'), URI.parse('https://example.com:9200'), URI.parse('https://example.com:9200/prefix')])
     end
   end
 
@@ -339,7 +339,7 @@ RSpec.describe ApplicationSetting do
       setting.elasticsearch_username = 'foo'
       setting.elasticsearch_password = 'bar'
 
-      expect(setting.elasticsearch_url_with_credentials).to eq(%w[http://foo:bar@example.com https://foo:bar@example.org:9200])
+      expect(setting.elasticsearch_url_with_credentials).to match_array([URI.parse('http://foo:bar@example.com'), URI.parse('https://foo:bar@example.org:9200')])
     end
 
     it 'embeds username only' do
@@ -347,7 +347,7 @@ RSpec.describe ApplicationSetting do
       setting.elasticsearch_username = 'foo'
       setting.elasticsearch_password = ''
 
-      expect(setting.elasticsearch_url_with_credentials).to eq(%w[http://foo:@example.com https://foo:@example.org:9200])
+      expect(setting.elasticsearch_url_with_credentials).to match_array([URI.parse('http://foo:@example.com'), URI.parse('https://foo:@example.org:9200')])
     end
 
     it 'overrides existing embedded credentials' do
@@ -355,7 +355,7 @@ RSpec.describe ApplicationSetting do
       setting.elasticsearch_username = 'foo'
       setting.elasticsearch_password = 'bar'
 
-      expect(setting.elasticsearch_url_with_credentials).to eq(%w[http://foo:bar@example.com https://foo:bar@example.org:9200])
+      expect(setting.elasticsearch_url_with_credentials).to match_array([URI.parse('http://foo:bar@example.com'), URI.parse('https://foo:bar@example.org:9200')])
     end
 
     it 'returns original url if credentials blank' do
@@ -363,7 +363,7 @@ RSpec.describe ApplicationSetting do
       setting.elasticsearch_username = ''
       setting.elasticsearch_password = ''
 
-      expect(setting.elasticsearch_url_with_credentials).to eq(%w[http://username:password@example.com https://test:test@example.org:9200])
+      expect(setting.elasticsearch_url_with_credentials).to match_array([URI.parse('http://username:password@example.com'), URI.parse('https://test:test@example.org:9200')])
     end
 
     it 'encodes the credentials' do
@@ -371,9 +371,9 @@ RSpec.describe ApplicationSetting do
       setting.elasticsearch_username = 'foo/admin'
       setting.elasticsearch_password = 'b@r'
 
-      expect(setting.elasticsearch_url_with_credentials).to eq(%w[
-        http://foo%2Fadmin:b%40r@example.com
-        https://foo%2Fadmin:b%40r@example.org:9200
+      expect(setting.elasticsearch_url_with_credentials).to match_array([
+        URI.parse('http://foo%2Fadmin:b%40r@example.com'),
+        URI.parse('https://foo%2Fadmin:b%40r@example.org:9200')
       ])
     end
   end
@@ -404,7 +404,7 @@ RSpec.describe ApplicationSetting do
       )
 
       expect(setting.elasticsearch_config).to eq(
-        url: ['http://foo:bar@example.com:9200'],
+        url: [URI.parse('http://foo:bar@example.com:9200')],
         aws: false,
         aws_region:     'test-region',
         aws_access_key: 'test-access-key',
