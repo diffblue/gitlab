@@ -86,4 +86,12 @@ RSpec.describe Geo::ReplicableModel do
       subject.in_replicables_for_current_secondary?
     end
   end
+
+  describe '#in_available_verifiables?' do
+    it 'reuses available_verifiables' do
+      expect(DummyModel).to receive(:available_verifiables).once.and_call_original
+
+      subject.in_available_verifiables?
+    end
+  end
 end
