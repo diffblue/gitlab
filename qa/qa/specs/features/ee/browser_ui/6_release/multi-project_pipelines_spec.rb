@@ -23,7 +23,7 @@ module QA
 
       let!(:runner) do
         Resource::Runner.fabricate_via_api! do |runner|
-          runner.token = group.sandbox.runners_token
+          runner.token = group.reload!.runners_token
           runner.name = executor
           runner.tags = [executor]
         end
