@@ -87,7 +87,12 @@ module BadgesHelper
     if options[:icon]
       icon_classes = GL_ICON_CLASSES.dup
       icon_classes << "gl-mr-2" unless icon_only
-      icon = sprite_icon(options[:icon], css_class: icon_classes.join(' '))
+
+      icon = if options[:icon_size]
+               sprite_icon(options[:icon], size: options[:icon_size], css_class: icon_classes.join(' '))
+             else
+               sprite_icon(options[:icon], css_class: icon_classes.join(' '))
+             end
 
       content = icon_only ? icon : icon + content
     end
