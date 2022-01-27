@@ -223,13 +223,13 @@ RSpec.describe GroupsHelper do
     end
   end
 
-  describe '#require_verification_for_namespace_creation_enabled?' do
+  describe '#require_verification_for_group_creation_enabled?' do
     let(:variant) { :control }
 
-    subject { helper.require_verification_for_namespace_creation_enabled? }
+    subject { helper.require_verification_for_group_creation_enabled? }
 
     before do
-      stub_experiments(require_verification_for_namespace_creation: variant)
+      stub_experiments(require_verification_for_group_creation: variant)
     end
 
     context 'when in candidate path' do
