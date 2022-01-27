@@ -18,22 +18,13 @@ export default {
       required: false,
       default: '',
     },
-    contentClass: {
-      type: String,
-      required: false,
-      default: 'gl-bg-gray-10 gl-py-3 gl-px-4',
-    },
   },
   safeHtmlConfig: { ALLOWED_TAGS: ['strong', 'br'] },
 };
 </script>
 
 <template>
-  <div
-    v-if="policyDescription"
-    v-safe-html:[$options.safeHtmlConfig]="policyDescription"
-    :class="contentClass"
-  ></div>
+  <div v-if="policyDescription" v-safe-html:[$options.safeHtmlConfig]="policyDescription"></div>
   <div v-else>
     <gl-alert variant="info" :dismissible="false">
       {{ $options.i18n.PARSING_ERROR_MESSAGE }}

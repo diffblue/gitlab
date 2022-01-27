@@ -60,7 +60,7 @@ export default {
 
     <template #default="{ statusLabel }">
       <policy-info-row :label="$options.i18n.summary">
-        <policy-preview-human :policy-description="humanizedPolicy" content-class="" />
+        <policy-preview-human :policy-description="humanizedPolicy" />
       </policy-info-row>
 
       <div v-if="parsedYaml">

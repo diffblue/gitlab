@@ -50,10 +50,7 @@ describe('CiliumNetworkPolicy component', () => {
     });
 
     it('does render the policy preview', () => {
-      expect(findPolicyPreview().props()).toStrictEqual({
-        contentClass: '',
-        policyDescription: 'Deny all traffic',
-      });
+      expect(findPolicyPreview().props('policyDescription')).toBe('Deny all traffic');
     });
   });
 
@@ -72,10 +69,7 @@ describe('CiliumNetworkPolicy component', () => {
 
     it('does render the policy preview', () => {
       expect(findPolicyPreview().exists()).toBe(true);
-      expect(findPolicyPreview().props()).toStrictEqual({
-        contentClass: '',
-        policyDescription: null,
-      });
+      expect(findPolicyPreview().props('policyDescription')).toBe(null);
     });
   });
 
