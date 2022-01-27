@@ -45,6 +45,7 @@ describe('HandRaiseLeadButton', () => {
           firstName: 'Joe',
           lastName: 'Doe',
           companyName: 'ACME',
+          glmContent: 'some-content',
         },
       },
     });
@@ -191,6 +192,7 @@ describe('HandRaiseLeadButton', () => {
         expect(SubscriptionsApi.sendHandRaiseLead).toHaveBeenCalledWith({
           namespaceId: 1,
           comment: 'comment',
+          glmContent: 'some-content',
           ...formData,
         });
       });

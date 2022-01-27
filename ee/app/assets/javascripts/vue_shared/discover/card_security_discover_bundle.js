@@ -16,6 +16,7 @@ export default () => {
     firstName,
     lastName,
     companyName,
+    glmContent,
   } = securityTab.dataset;
 
   const props = {
@@ -44,6 +45,7 @@ export default () => {
         firstName,
         lastName,
         companyName,
+        glmContent,
       },
     },
     render(createElement) {

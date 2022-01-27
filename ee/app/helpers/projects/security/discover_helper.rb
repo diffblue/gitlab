@@ -23,6 +23,6 @@ module Projects::Security::DiscoverHelper
       }
     }
 
-    data.merge(hand_raise_props(project.root_ancestor))
+    data.merge(hand_raise_props(project.root_ancestor, glm_content: content))
   end
 end
