@@ -23,7 +23,7 @@ module QA
       let!(:runner) do
         Resource::Runner.fabricate! do |runner|
           runner.project = upstream_project
-          runner.token = upstream_project.group.sandbox.runners_token
+          runner.token = upstream_project.group.reload!.runners_token
           runner.name = executor
           runner.tags = [executor]
         end
