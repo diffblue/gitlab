@@ -18,8 +18,6 @@ module QA
       end
 
       before do
-        Runtime::Feature.enable(:vue_epics_list, group: project.group)
-
         Flow::Login.sign_in
       end
 
