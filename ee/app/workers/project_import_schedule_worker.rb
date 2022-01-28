@@ -4,6 +4,10 @@ class ProjectImportScheduleWorker
   ImportStateNotFound = Class.new(StandardError)
 
   include ApplicationWorker
+  # At the moment, this inclusion is to enable job tracking ability. In the
+  # future, the capacity management should be moved to this worker instead of
+  # UpdateAllMirrorsWorker
+  include LimitedCapacity::Worker
 
   data_consistency :always
   prepend WaitableWorker
@@ -21,6 +25,8 @@ class ProjectImportScheduleWorker
   tags :needs_own_queue
 
   def perform(project_id)
+    job_tracker.register(jid, capacity) if job_tracking?
+
     return if Gitlab::Database.read_only?
 
     project = Project.with_route.with_import_state.with_namespace.find_by_id(project_id)
@@ -29,5 +35,17 @@ class ProjectImportScheduleWorker
     with_context(project: project) do
       project.import_state.schedule
     end
+  ensure
+    job_tracker.remove(jid) if job_tracking?
+  end
+
+  private
+
+  def capacity
+    Gitlab::Mirror.available_capacity
+  end
+
+  def job_tracking?
+    Feature.enabled?(:project_import_schedule_worker_job_tracker, default_enabled: :yaml)
   end
 end

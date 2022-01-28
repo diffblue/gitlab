@@ -56,14 +56,67 @@ RSpec.describe UpdateAllMirrorsWorker do
     end
 
     context 'when updates were scheduled' do
+      let(:job_tracker_instance) { double(LimitedCapacity::JobTracker) }
+
       before do
         allow(worker).to receive(:schedule_mirrors!).and_return(1)
       end
 
-      it 'sleeps a bit after scheduling mirrors' do
-        expect(Kernel).to receive(:sleep).with(described_class::RESCHEDULE_WAIT)
+      context 'job tracker flags are on' do
+        before do
+          stub_feature_flags(
+            project_import_schedule_worker_job_tracker: true,
+            update_all_mirrors_job_tracker: true
+          )
+          allow(LimitedCapacity::JobTracker).to receive(:new).with('ProjectImportScheduleWorker').and_return(job_tracker_instance)
 
-        worker.perform
+          count = 3
+          allow(job_tracker_instance).to receive(:clean_up)
+          allow(job_tracker_instance).to receive(:register)
+          allow(job_tracker_instance).to receive(:remove)
+          allow(job_tracker_instance).to receive(:count) { |_| count -= 1 }
+        end
+
+        it 'waits until ProjectImportScheduleWorker job tracker returns 0' do
+          worker.perform
+
+          expect(job_tracker_instance).to have_received(:count).exactly(3).times
+        end
+
+        it 'cleans up finished ProjectImportScheduleWorker jobs' do
+          worker.perform
+
+          expect(job_tracker_instance).to have_received(:clean_up).once
+        end
+
+        it 'sleeps a bit after scheduling mirrors' do
+          expect(worker).to receive(:sleep).with(described_class::RESCHEDULE_WAIT).exactly(3).times
+
+          worker.perform
+        end
+      end
+
+      context 'any of job tracker flags is off' do
+        before do
+          stub_feature_flags(
+            project_import_schedule_worker_job_tracker: true,
+            update_all_mirrors_job_tracker: false
+          )
+          count = 3
+          allow(ProjectImportScheduleWorker).to receive(:queue_size) { |_| count -= 1 }
+        end
+
+        it 'waits until ProjectImportScheduleWorker jobs to complete' do
+          worker.perform
+
+          expect(ProjectImportScheduleWorker).to have_received(:queue_size).exactly(3).times
+        end
+
+        it 'sleeps a bit after scheduling mirrors' do
+          expect(worker).to receive(:sleep).with(described_class::RESCHEDULE_WAIT).exactly(3).times
+
+          worker.perform
+        end
       end
 
       context 'if capacity is available' do
@@ -99,6 +152,20 @@ RSpec.describe UpdateAllMirrorsWorker do
 
       it 'does not reschedule the job' do
         expect(described_class).not_to receive(:perform_async)
+
+        worker.perform
+      end
+
+      it 'does not poll for ProjectImportScheduleWorker jobs to complete' do
+        expect_next_instance_of(LimitedCapacity::JobTracker) do |instance|
+          expect(instance).not_to receive(:count)
+        end
+
+        worker.perform
+      end
+
+      it 'does not wait' do
+        expect(worker).not_to receive(:sleep)
 
         worker.perform
       end
