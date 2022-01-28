@@ -88,7 +88,7 @@ and higher reference architectures.
 The [Quality Engineering - Enablement team](https://about.gitlab.com/handbook/engineering/quality/quality-engineering/) does regular smoke and performance tests for the reference architectures to ensure they remain compliant.
 
 - Testing occurs against all reference architectures and cloud providers in an automated and ad-hoc fashion. This is done by two tools:
-  - The [GitLab Environment Toolkit](https://gitlab.com/gitlab-org/quality/gitlab-environment-toolkit) for building the environments.
+  - The [GitLab Environment Toolkit](https://gitlab.com/gitlab-org/gitlab-environment-toolkit) for building the environments.
   - The [GitLab Performance Tool](https://gitlab.com/gitlab-org/quality/performance) for performance testing.
 - Network latency on the test environments between components on all Cloud Providers were measured at <5ms. Note that this is shared as an observation and not as an implicit recommendation.
 - We aim to have a "test smart" approach where architectures tested have a good range that can also apply to others. Testing focuses on 10k Omnibus on GCP as the testing has shown this is a good bellwether for the other architectures and cloud providers as well as Cloud Native Hybrids.
