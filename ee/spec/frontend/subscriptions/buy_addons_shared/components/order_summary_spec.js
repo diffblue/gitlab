@@ -32,6 +32,10 @@ describe('Order Summary', () => {
   const findAmount = () => wrapper.findByTestId('amount');
   const findTitle = () => wrapper.findByTestId('title');
 
+  const orderPreviewHandlerMock = jest
+    .fn()
+    .mockResolvedValue({ data: { orderPreview: mockOrderPreview } });
+
   const createMockApolloProvider = (stateData = {}, mockRequest = {}) => {
     const mockApollo = createMockApollo([], resolvers);
     const data = merge({}, mockStateData, initialStateData, stateData);
@@ -96,12 +100,9 @@ describe('Order Summary', () => {
   describe('when subscription has expiration date', () => {
     describe('calls api that returns prorated amount', () => {
       beforeEach(async () => {
-        const orderPreviewQueryMock = jest
-          .fn()
-          .mockResolvedValue({ data: { orderPreview: mockOrderPreview } });
         const apolloProvider = createMockApolloProvider(
           { subscription: { quantity: 1 } },
-          orderPreviewQueryMock,
+          orderPreviewHandlerMock,
         );
         createComponent(apolloProvider, { purchaseHasExpiration: true });
         await waitForPromises();
@@ -180,6 +181,20 @@ describe('Order Summary', () => {
 
       it('does not render amount when api is loading', () => {
         expect(findAmount().text()).toBe('-');
+      });
+    });
+
+    describe('when subscription quantity is 0', () => {
+      beforeEach(() => {
+        const apolloProvider = createMockApolloProvider(
+          { subscription: { quantity: 0 } },
+          orderPreviewHandlerMock,
+        );
+        createComponent(apolloProvider, { purchaseHasExpiration: true });
+      });
+
+      it('doesn not call api', () => {
+        expect(orderPreviewHandlerMock).not.toHaveBeenCalled();
       });
     });
   });

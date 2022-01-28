@@ -75,7 +75,7 @@ export default {
         logError(error);
       },
       skip() {
-        return !this.purchaseHasExpiration;
+        return !this.purchaseHasExpiration || !this.quantity;
       },
     },
   },
