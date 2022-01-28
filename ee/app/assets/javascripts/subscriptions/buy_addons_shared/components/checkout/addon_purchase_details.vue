@@ -47,7 +47,7 @@ export default {
         return this.quantity || 0;
       },
       set(quantity) {
-        this.updateQuantity(quantity);
+        this.updateQuantity(quantity || 0);
       },
     },
     isValid() {
