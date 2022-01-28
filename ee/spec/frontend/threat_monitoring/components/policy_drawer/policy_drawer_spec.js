@@ -31,7 +31,8 @@ describe('PolicyDrawer component', () => {
   const findAllTabs = () => wrapper.findAllComponents(GlTab);
   const findCiliumNetworkPolicy = () => wrapper.findComponent(CiliumNetworkPolicy);
   const findScanExecutionPolicy = () => wrapper.findComponent(ScanExecutionPolicy);
-  const findDefaultPolicyEditor = () => wrapper.findByTestId('default-policy-yaml-editor');
+  const findDefaultComponentPolicyEditor = () =>
+    wrapper.findByTestId('policy-yaml-editor-default-component');
   const findTabPolicyEditor = () => wrapper.findByTestId('policy-yaml-editor-tab-content');
 
   // Shared assertions
@@ -69,7 +70,7 @@ describe('PolicyDrawer component', () => {
     });
 
     it('renders network policy editor with manifest', () => {
-      expect(findDefaultPolicyEditor().attributes('value')).toBe(mockGenericPolicy.yaml);
+      expect(findDefaultComponentPolicyEditor().attributes('value')).toBe(mockGenericPolicy.yaml);
     });
 
     itRendersEditButton();

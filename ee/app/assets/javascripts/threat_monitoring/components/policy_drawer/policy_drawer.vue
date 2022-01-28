@@ -72,7 +72,7 @@ export default {
     v-on="$listeners"
   >
     <template v-if="policy" #title>
-      <h3 class="gl-my-0 gl-mr-3">{{ policy.name }}</h3>
+      <h4 class="gl-my-0 gl-mr-3">{{ policy.name }}</h4>
     </template>
     <template v-if="policy" #header>
       <gl-button
@@ -92,7 +92,10 @@ export default {
           <p>
             {{ s__("NetworkPolicies|Define this policy's location, conditions and actions.") }}
           </p>
-          <policy-yaml-editor :value="policyYaml" data-testid="default-policy-yaml-editor" />
+          <policy-yaml-editor
+            :value="policyYaml"
+            data-testid="policy-yaml-editor-default-component"
+          />
         </div>
       </gl-tab>
       <gl-tab v-if="policyComponent" title="Yaml">
