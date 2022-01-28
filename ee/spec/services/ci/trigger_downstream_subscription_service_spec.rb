@@ -14,17 +14,21 @@ RSpec.describe Ci::TriggerDownstreamSubscriptionService do
     end
 
     context 'when pipeline project has downstream projects' do
+      let(:downstream_project) { create(:project, :repository, upstream_projects: [upstream_project]) }
+
       before do
-        downstream_project = create(:project, :repository, upstream_projects: [upstream_project])
         downstream_project.add_developer(pipeline.user)
       end
 
-      it 'creates a pipeline' do
-        expect { execute }.to change { ::Ci::Pipeline.count }.from(1).to(2)
-      end
-
       it 'associates the downstream pipeline with the upstream project' do
-        expect { execute }.to change { pipeline.project.sourced_pipelines.count }.from(0).to(1)
+        expect { execute }
+          .to change { Ci::Sources::Project.count }.from(0).to(1)
+          .and change { Ci::Pipeline.count }.from(1).to(2)
+
+        project_source = Ci::Sources::Project.last
+        new_pipeline = Ci::Pipeline.last
+        expect(project_source.pipeline).to eq(new_pipeline)
+        expect(project_source.source_project_id).to eq(pipeline.project_id)
       end
     end
 
