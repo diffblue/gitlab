@@ -70,6 +70,7 @@ export default {
       :initial-height="$options.iframeHeight"
       :iframe-url="iframeUrl"
       :allowed-origin="allowedOrigin"
+      @success="$emit('success')"
     />
   </gl-modal>
 </template>

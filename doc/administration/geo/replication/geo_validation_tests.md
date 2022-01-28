@@ -118,7 +118,7 @@ The following are PostgreSQL upgrade validation tests we performed.
 [Verify Geo installation with PostgreSQL 13](https://gitlab.com/gitlab-org/omnibus-gitlab/-/issues/6131):
 
 - Description: With PostgreSQL 13 available as an opt-in version in GitLab 14.1, we tested fresh installations of GitLab with Geo when PostgreSQL 13 is enabled.
-- Outcome: Successfully built an environment with Geo and PostgreSQL 13 using [GitLab Environment Toolkit](https://gitlab.com/gitlab-org/quality/gitlab-environment-toolkit) and performed Geo QA tests against the environment without failures.
+- Outcome: Successfully built an environment with Geo and PostgreSQL 13 using [GitLab Environment Toolkit](https://gitlab.com/gitlab-org/gitlab-environment-toolkit) and performed Geo QA tests against the environment without failures.
 
 ### September 2020
 

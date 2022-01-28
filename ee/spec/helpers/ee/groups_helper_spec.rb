@@ -244,6 +244,14 @@ RSpec.describe GroupsHelper do
 
         it { is_expected.to eq(false) }
       end
+
+      context 'when user is admin or auditor' do
+        before do
+          allow(current_user).to receive(:can_read_all_resources?).and_return(true)
+        end
+
+        it { is_expected.to eq(false) }
+      end
     end
 
     context 'when in control path' do

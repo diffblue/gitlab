@@ -254,40 +254,28 @@ RSpec.describe UpdateAllMirrorsWorker do
       let(:unlicensed_projects) { [unlicensed_project1, unlicensed_project2, unlicensed_project3, unlicensed_project4] }
 
       context 'when using SQL to filter projects' do
-        shared_examples 'examples checking namespace plans' do
-          before do
-            allow(subject).to receive(:check_mirror_plans_in_query?).and_return(true)
-          end
+        before do
+          allow(subject).to receive(:check_mirror_plans_in_query?).and_return(true)
+        end
 
-          context 'when capacity is in excess' do
-            it 'schedules all available mirrors' do
-              schedule_mirrors!(capacity: 4)
+        context 'when capacity is in excess' do
+          it 'schedules all available mirrors' do
+            schedule_mirrors!(capacity: 4)
 
-              expect_import_scheduled(licensed_project1, licensed_project2, public_project)
-              expect_import_not_scheduled(*unlicensed_projects)
-            end
-          end
-
-          context 'when capacity is exactly sufficient' do
-            it 'does not include unlicensed non-public projects in batches' do
-              # We expect that all three eligible projects will be
-              # included in the first batch because the query will only
-              # return eligible projects.
-              expect(subject).to receive(:pull_mirrors_batch).with(hash_including(batch_size: 6)).and_call_original.once
-
-              schedule_mirrors!(capacity: 3)
-            end
+            expect_import_scheduled(licensed_project1, licensed_project2, public_project)
+            expect_import_not_scheduled(*unlicensed_projects)
           end
         end
 
-        it_behaves_like 'examples checking namespace plans'
+        context 'when capacity is exactly sufficient' do
+          it 'does not include unlicensed non-public projects in batches' do
+            # We expect that all three eligible projects will be
+            # included in the first batch because the query will only
+            # return eligible projects.
+            expect(subject).to receive(:pull_mirrors_batch).with(hash_including(batch_size: 6)).and_call_original.once
 
-        context 'when feature flag ' do
-          before do
-            stub_feature_flags(linear_mirrors_worker_roots: false)
+            schedule_mirrors!(capacity: 3)
           end
-
-          it_behaves_like 'examples checking namespace plans'
         end
       end
 
