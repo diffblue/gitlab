@@ -65,6 +65,27 @@ const humanizeItems = ({
 };
 
 /**
+ * Create a human-readable version of the branches
+ * @param {Array} branches
+ * @returns {String}
+ */
+const humanizeBranches = (branches) => {
+  const hasNoBranch = branches.length === 0;
+
+  if (hasNoBranch) {
+    return s__('SecurityOrchestration|all branches');
+  }
+
+  return sprintf(s__('SecurityOrchestration|the %{branches}'), {
+    branches: humanizeItems({
+      items: branches,
+      singular: s__('SecurityOrchestration|branch'),
+      plural: s__('SecurityOrchestration|branches'),
+    }),
+  });
+};
+
+/**
  * Create a human-readable string, adding the necessary punctuation and conjunctions
  * @param {Object} action containing or not arrays of string and integers representing approvers
  * @returns {String}
@@ -146,7 +167,7 @@ export const humanizeAction = (action) => {
 const humanizeRule = (rule) => {
   return sprintf(
     s__(
-      'SecurityOrchestration|The %{scanners} %{severities} in an open merge request targeting the %{branches}.',
+      'SecurityOrchestration|The %{scanners} %{severities} in an open merge request targeting %{branches}.',
     ),
     {
       scanners: humanizeItems({
@@ -160,11 +181,7 @@ const humanizeRule = (rule) => {
         plural: s__('SecurityOrchestration|vulnerabilities'),
         hasArticle: true,
       }),
-      branches: humanizeItems({
-        items: rule.branches,
-        singular: s__('SecurityOrchestration|branch'),
-        plural: s__('SecurityOrchestration|branches'),
-      }),
+      branches: humanizeBranches(rule.branches),
     },
   );
 };
