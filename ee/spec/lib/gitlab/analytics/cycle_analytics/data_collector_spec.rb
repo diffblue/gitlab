@@ -121,6 +121,11 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
 
         iids = data_collector.serialized_records.map { |record| record[:iid].to_i }
         expect(iids).to eq(expected_ordered_iids)
+
+        if aggregated_data_collector_enabled
+          iids = aggregated_data_collector.serialized_records.map { |record| record[:iid].to_i }
+          expect(iids).to eq(expected_ordered_iids)
+        end
       end
     end
 
