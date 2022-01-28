@@ -2,6 +2,8 @@
 
 module Epics
   class UpdateService < Epics::BaseService
+    include Gitlab::Utils::StrongMemoize
+
     EPIC_DATE_FIELDS = %I[
       start_date_fixed
       start_date_is_fixed
@@ -109,7 +111,7 @@ module Epics
 
       fill_missing_positions_before
 
-      epic_board_position = issuable_for_positioning(epic.id, epic_board_id, create_missing: true)
+      epic_board_position = issuable_for_positioning(epic.id, positioning_scope, create_missing: true)
       handle_move_between_ids(epic_board_position)
 
       epic_board_position.save!
@@ -117,14 +119,14 @@ module Epics
 
     # we want to create missing only for the epic being moved
     # other records are handled by PositionCreateService
-    def issuable_for_positioning(id, board_id, create_missing: false)
+    def issuable_for_positioning(id, positioning_scope, create_missing: false)
       return unless id
 
-      position = Boards::EpicBoardPosition.find_by_epic_id_and_epic_board_id(id, board_id)
+      position = positioning_scope.find_by_epic_id(id)
 
       return position if position
 
-      Boards::EpicBoardPosition.create!(epic_id: id, epic_board_id: board_id) if create_missing
+      positioning_scope.create!(epic_id: id) if create_missing
     end
 
     def fill_missing_positions_before
@@ -134,7 +136,7 @@ module Epics
 
       return unless before_id
       # if position for the epic above exists we don't need to create positioning records
-      return if issuable_for_positioning(before_id, epic_board_id)
+      return if issuable_for_positioning(before_id, positioning_scope)
 
       service_params = {
         board_id: epic_board_id,
@@ -145,11 +147,15 @@ module Epics
       Boards::Epics::PositionCreateService.new(board_group, current_user, service_params).execute
     end
 
-    def epic_board_id
-      params[:board_id]
+    def positioning_scope
+      Boards::EpicBoardPosition.where(epic_board_id: epic_board_id) # rubocop: disable CodeReuse/ActiveRecord
     end
 
-    alias_method :positioning_scope, :epic_board_id
+    def epic_board_id
+      strong_memoize(:epic_board_id) do
+        params.delete(:board_id)
+      end
+    end
 
     def saved_change_to_epic_dates?(epic)
       (epic.saved_changes.keys.map(&:to_sym) & EPIC_DATE_FIELDS).present?
