@@ -5631,6 +5631,9 @@ msgstr ""
 msgid "Blame"
 msgstr ""
 
+msgid "BlobViewer|View on %{environmentName}"
+msgstr ""
+
 msgid "Block user"
 msgstr ""
 
