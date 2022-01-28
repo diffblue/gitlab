@@ -232,10 +232,22 @@ RSpec.describe Member, type: :model do
           expect(user.project_members.last).to be_awaiting
         end
 
-        context 'when the user is already an active group member' do
+        context 'when the user is already an active root group member' do
           it 'sets the group member to active' do
             create(:group_member, :active, group: group, user: user)
+
             subgroup.add_owner(user)
+
+            expect(user.group_members.last).to be_active
+          end
+        end
+
+        context 'when the user is already an active subgroup member' do
+          it 'sets the group member to active' do
+            other_subgroup = create(:group, parent: group)
+            create(:group_member, :active, group: other_subgroup, user: user)
+
+            subgroup.add_developer(user)
 
             expect(user.group_members.last).to be_active
           end
