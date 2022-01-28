@@ -11,6 +11,7 @@ import {
   MT_MERGE_STRATEGY,
   MTWPS_MERGE_STRATEGY,
 } from '~/vue_merge_request_widget/constants';
+import { MERGE_TRAIN_BUTTON_TEXT } from '~/vue_merge_request_widget/i18n';
 import {
   MERGE_DISABLED_TEXT,
   MERGE_DISABLED_SKIPPED_PIPELINE_TEXT,
@@ -405,31 +406,45 @@ describe('ReadyToMerge', () => {
     });
   });
 
-  describe('Merge button variant', () => {
-    it('danger variant and failed text should show if pipeline failed', () => {
-      factory({
-        isPipelineFailed: true,
-        preferredAutoMergeStrategy: MT_MERGE_STRATEGY,
-        availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
-        hasCI: true,
-        onlyAllowMergeIfPipelineSucceeds: false,
+  describe('Merge train text', () => {
+    describe('pipeline failed', () => {
+      beforeEach(() => {
+        factory({
+          isPipelineFailed: true,
+          preferredAutoMergeStrategy: MT_MERGE_STRATEGY,
+          availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
+          hasCI: true,
+          onlyAllowMergeIfPipelineSucceeds: false,
+        });
       });
 
-      expect(findMergeButton().attributes('variant')).toBe('danger');
-      expect(findFailedPipelineMergeTrainText().exists()).toBe(true);
+      it('failed merge train text should show if pipeline failed', () => {
+        expect(findFailedPipelineMergeTrainText().exists()).toBe(true);
+      });
+
+      it('merge button text should contain ellipsis', () => {
+        expect(findMergeButton().text()).toBe(MERGE_TRAIN_BUTTON_TEXT.failed);
+      });
     });
 
-    it('confirm variant and failed text should not show if pipeline passed', () => {
-      factory({
-        preferredAutoMergeStrategy: MT_MERGE_STRATEGY,
-        availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
-        hasCI: true,
-        onlyAllowMergeIfPipelineSucceeds: false,
-        ciStatus: 'success',
+    describe('pipeline passed', () => {
+      beforeEach(() => {
+        factory({
+          preferredAutoMergeStrategy: MT_MERGE_STRATEGY,
+          availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
+          hasCI: true,
+          onlyAllowMergeIfPipelineSucceeds: false,
+          ciStatus: 'success',
+        });
       });
 
-      expect(findMergeButton().attributes('variant')).toBe('confirm');
-      expect(findFailedPipelineMergeTrainText().exists()).toBe(false);
+      it('merge button text should not contain ellipsis', () => {
+        expect(findMergeButton().text()).toBe(MERGE_TRAIN_BUTTON_TEXT.passed);
+      });
+
+      it('failed merge train text should not show if pipeline passed', () => {
+        expect(findFailedPipelineMergeTrainText().exists()).toBe(false);
+      });
     });
   });
 });
