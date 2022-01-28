@@ -31,7 +31,7 @@ module Gitlab
         def with_shared_model_connections(shared_model, &blk)
           Gitlab::Database.database_base_models.each_pair do |connection_name, connection_model|
             if shared_model.limit_connection_names
-              next unless shared_model.limit_connection_names.include?(connection_name)
+              next unless shared_model.limit_connection_names.include?(connection_name.to_sym)
             end
 
             with_shared_connection(connection_model.connection, connection_name) do
