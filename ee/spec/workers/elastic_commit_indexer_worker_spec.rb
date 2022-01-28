@@ -30,7 +30,7 @@ RSpec.describe ElasticCommitIndexerWorker do
       indexer = double
 
       expect(indexer).to receive(:run)
-      expect(Gitlab::Elastic::Indexer).to receive(:new).with(project, wiki: true).and_return(indexer)
+      expect(Gitlab::Elastic::Indexer).to receive(:new).with(project, wiki: true, force: false).and_return(indexer)
 
       subject.perform(project.id, true)
     end

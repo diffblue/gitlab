@@ -17,16 +17,17 @@ class ElasticCommitIndexerWorker
   #
   # project_id - The ID of the project to index
   # wiki - Treat this project as a Wiki
+  # options - Options hash { force: bool } forces to reindex the repository
   #
   # The indexation will cover all commits within INDEXED_SHA..HEAD
-  def perform(project_id, wiki = false)
+  def perform(project_id, wiki = false, options = {})
     return true unless Gitlab::CurrentSettings.elasticsearch_indexing?
 
     project = Project.find(project_id)
     return true unless project.use_elasticsearch?
 
     in_lock("#{self.class.name}/#{project_id}/#{wiki}", ttl: (Gitlab::Elastic::Indexer::TIMEOUT + 1.minute), retries: 0) do
-      Gitlab::Elastic::Indexer.new(project, wiki: wiki).run
+      Gitlab::Elastic::Indexer.new(project, wiki: wiki, force: !!options['force']).run
     end
   end
 end
