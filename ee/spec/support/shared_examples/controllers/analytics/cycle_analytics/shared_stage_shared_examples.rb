@@ -228,15 +228,32 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
 
         it 'accepts sort params' do
           if Feature.enabled?(:use_vsa_aggregated_tables)
-            event_1 = create(:cycle_analytics_merge_request_stage_event, merge_request_id: 1, start_event_timestamp: 4.months.ago, end_event_timestamp: Date.today)
-            event_2 = create(:cycle_analytics_merge_request_stage_event, merge_request_id: 2, start_event_timestamp: 2.months.ago, end_event_timestamp: Date.today)
-            event_3 = create(:cycle_analytics_merge_request_stage_event, merge_request_id: 3, start_event_timestamp: 3.months.ago, end_event_timestamp: Date.today)
+            travel_to DateTime.new(2019, 1, 5) do
+              event_1 = create(:cycle_analytics_merge_request_stage_event,
+                               stage_event_hash_id: stage.stage_event_hash_id,
+                               group_id: stage.group.id,
+                               merge_request_id: 1,
+                               start_event_timestamp: Time.current,
+                               end_event_timestamp: 20.days.from_now)
 
-            allow_any_instance_of(Gitlab::Analytics::CycleAnalytics::Aggregated::RecordsFetcher).to receive(:query).and_return(Analytics::CycleAnalytics::MergeRequestStageEvent.all)
+              event_2 = create(:cycle_analytics_merge_request_stage_event,
+                               stage_event_hash_id: stage.stage_event_hash_id,
+                               group_id: stage.group.id,
+                               merge_request_id: 2,
+                               start_event_timestamp: Time.current,
+                               end_event_timestamp: 1.day.from_now)
 
-            expect_next_instance_of(Gitlab::Analytics::CycleAnalytics::Aggregated::RecordsFetcher) do |records_fetcher|
-              records_fetcher.serialized_records do |raw_active_record_scope|
-                expect(raw_active_record_scope.pluck(:merge_request_id)).to eq([event_2.merge_request_id, event_3.merge_request_id, event_1.merge_request_id])
+              event_3 = create(:cycle_analytics_merge_request_stage_event,
+                               stage_event_hash_id: stage.stage_event_hash_id,
+                               group_id: stage.group.id,
+                               merge_request_id: 3,
+                               start_event_timestamp: Time.current,
+                               end_event_timestamp: 3.days.from_now)
+
+              expect_next_instance_of(Gitlab::Analytics::CycleAnalytics::Aggregated::RecordsFetcher) do |records_fetcher|
+                records_fetcher.serialized_records do |raw_active_record_scope|
+                  expect(raw_active_record_scope.pluck(:merge_request_id)).to eq([event_2.merge_request_id, event_3.merge_request_id, event_1.merge_request_id])
+                end
               end
             end
           else
