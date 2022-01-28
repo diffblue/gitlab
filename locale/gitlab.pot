@@ -116,6 +116,26 @@ msgid_plural "%d URLs scanned"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%d additional approver"
+msgid_plural "%d additional approvers"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%d additional assignee"
+msgid_plural "%d additional assignees"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%d additional commenter"
+msgid_plural "%d additional commenters"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%d additional committer"
+msgid_plural "%d additional committers"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%d approver"
 msgid_plural "%d approvers"
 msgstr[0] ""
@@ -41765,18 +41785,6 @@ msgid "added %{emails}"
 msgstr ""
 
 msgid "added a Zoom call to this issue"
-msgstr ""
-
-msgid "additional approvers"
-msgstr ""
-
-msgid "additional assignees"
-msgstr ""
-
-msgid "additional commenters"
-msgstr ""
-
-msgid "additional committers"
 msgstr ""
 
 msgid "ago"
