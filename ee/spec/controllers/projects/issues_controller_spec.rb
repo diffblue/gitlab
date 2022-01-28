@@ -26,7 +26,7 @@ RSpec.describe Projects::IssuesController do
 
     context 'licensed' do
       before do
-        stub_licensed_features(issue_weights: true, epics: true, security_dashboard: true)
+        stub_licensed_features(issue_weights: true, epics: true, security_dashboard: true, issuable_default_templates: true)
       end
 
       describe '#index' do
@@ -80,6 +80,33 @@ RSpec.describe Projects::IssuesController do
             subject
 
             expect(assigns(:issue).confidential).to eq(true)
+          end
+        end
+
+        context 'default templates' do
+          let(:selected_field) { 'data-selected="Default"' }
+          let(:files) { { '.gitlab/issue_templates/Default.md' => '' } }
+
+          subject { get :new, params: { namespace_id: project.namespace, project_id: project } }
+
+          context 'when a template has been set via project settings' do
+            let(:project) { create(:project, :custom_repo, namespace: namespace, issues_template: 'Content', files: files ) }
+
+            it 'does not select a default template' do
+              subject
+
+              expect(response.body).not_to include(selected_field)
+            end
+          end
+
+          context 'when a template has not been set via project settings' do
+            let(:project) { create(:project, :custom_repo, namespace: namespace, files: files ) }
+
+            it 'selects a default template' do
+              subject
+
+              expect(response.body).to include(selected_field)
+            end
           end
         end
       end
