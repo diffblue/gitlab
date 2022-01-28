@@ -211,6 +211,7 @@ module EE
                 merged_merge_requests_using_approval_rules: count(::MergeRequest.merged.joins(:approval_rules), # rubocop: disable CodeReuse/ActiveRecord
                                                                   start: minimum_id(::MergeRequest),
                                                                   finish: maximum_id(::MergeRequest)),
+                merged_merge_requests_using_approval_rules_distinct: add_metric('CountDistinctMergedMergeRequestsUsingApprovalRulesMetric', time_frame: 'all'),
                 projects_mirrored_with_pipelines_enabled: count(::Project.mirrored_with_enabled_pipelines),
                 projects_reporting_ci_cd_back_to_github: count(::Integrations::Github.active),
                 status_page_projects: count(::StatusPage::ProjectSetting.enabled),
