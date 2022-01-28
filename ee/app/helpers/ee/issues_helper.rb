@@ -63,7 +63,7 @@ module EE
     end
 
     override :group_issues_list_data
-    def group_issues_list_data(group, current_user, issues, projects)
+    def group_issues_list_data(group, current_user)
       super.tap do |data|
         data[:can_bulk_update] = (can?(current_user, :admin_issue, group) && group.feature_available?(:group_bulk_edit)).to_s
 
