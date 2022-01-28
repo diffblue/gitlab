@@ -1,11 +1,20 @@
 <script>
-import { GlTable, GlEmptyState, GlLoadingIcon, GlIcon, GlLink, GlSprintf } from '@gitlab/ui';
+import {
+  GlBadge,
+  GlTable,
+  GlEmptyState,
+  GlLoadingIcon,
+  GlIcon,
+  GlLink,
+  GlSprintf,
+} from '@gitlab/ui';
 import { __ } from '~/locale';
 import deploymentInstance from '~/vue_shared/components/deployment_instance.vue';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 
 export default {
   components: {
+    GlBadge,
     GlEmptyState,
     GlTable,
     GlIcon,
@@ -120,7 +129,7 @@ export default {
 
       <!-- column: Pods in use -->
       <template #head(rolloutStatus)="data">
-        {{ data.label }} <span class="badge badge-pill bold">{{ podsInUseCount }}</span>
+        {{ data.label }} <gl-badge>{{ podsInUseCount }}</gl-badge>
       </template>
 
       <template #cell(rolloutStatus)="row">
