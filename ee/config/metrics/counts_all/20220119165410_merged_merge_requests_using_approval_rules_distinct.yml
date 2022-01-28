@@ -1,0 +1,22 @@
+---
+key_path: counts.merged_merge_requests_using_approval_rules_distinct
+name: count_distinct_merge_requests_using_approval_rules
+description: Count of distinct merge requests merged using approval rules
+product_section: dev
+product_stage: manage
+product_group: group::compliance
+product_category: compliance_management
+value_type: number
+status: active
+milestone: "14.8"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/78664
+time_frame: all
+data_source: database
+data_category: optional
+instrumentation_class: CountDistinctMergedMergeRequestsUsingApprovalRulesMetric
+performance_indicator_type: []
+distribution:
+- ee
+tier:
+- premium
+- ultimate
