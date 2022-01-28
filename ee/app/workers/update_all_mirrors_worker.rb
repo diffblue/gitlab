@@ -18,15 +18,14 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
 
     scheduled = 0
     with_lease do
-      # Clean-up completed jobs with stale status
-      job_tracker.clean_up
+      clean_project_import_jobs_tracking
 
       scheduled = schedule_mirrors!
 
       if scheduled > 0
         # Wait for all ProjectImportScheduleWorker jobs to complete
         deadline = Time.current + SCHEDULE_WAIT_TIMEOUT
-        sleep 1 while job_tracker.count > 0 && Time.current < deadline
+        sleep 1 while pending_project_import_jobs? && Time.current < deadline
       end
     end
 
@@ -34,7 +33,7 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
     return unless scheduled > 0
 
     # Wait to give some jobs a chance to complete
-    Kernel.sleep(RESCHEDULE_WAIT)
+    sleep(RESCHEDULE_WAIT)
 
     # If there's capacity left now (some jobs completed),
     # reschedule this job to enqueue more work.
@@ -162,5 +161,23 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
 
   def job_tracker
     @job_tracker ||= LimitedCapacity::JobTracker.new(ProjectImportScheduleWorker.name)
+  end
+
+  def pending_project_import_jobs?
+    if job_tracker_enabled?
+      job_tracker.count > 0
+    else
+      ProjectImportScheduleWorker.queue_size > 0
+    end
+  end
+
+  def clean_project_import_jobs_tracking
+    # Clean-up completed jobs with stale status
+    job_tracker.clean_up if job_tracker_enabled?
+  end
+
+  def job_tracker_enabled?
+    Feature.enabled?(:project_import_schedule_worker_job_tracker, default_enabled: :yaml) &&
+      Feature.enabled?(:update_all_mirrors_job_tracker, default_enabled: :yaml)
   end
 end

@@ -25,7 +25,7 @@ class ProjectImportScheduleWorker
   tags :needs_own_queue
 
   def perform(project_id)
-    job_tracker.register(jid, capacity)
+    job_tracker.register(jid, capacity) if job_tracking?
 
     return if Gitlab::Database.read_only?
 
@@ -36,7 +36,7 @@ class ProjectImportScheduleWorker
       project.import_state.schedule
     end
   ensure
-    job_tracker.remove(jid)
+    job_tracker.remove(jid) if job_tracking?
   end
 
   private
@@ -45,7 +45,7 @@ class ProjectImportScheduleWorker
     Gitlab::Mirror.available_capacity
   end
 
-  def job_tracker
-    @job_tracker ||= LimitedCapacity::JobTracker.new(self.class.name)
+  def job_tracking?
+    Feature.enabled?(:project_import_schedule_worker_job_tracker, default_enabled: :yaml)
   end
 end

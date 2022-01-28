@@ -39,11 +39,30 @@ RSpec.describe ProjectImportScheduleWorker do
         expect(import_state).to be_scheduled
       end
 
-      it 'tracks the status of the worker' do
-        subject
+      context 'project_import_schedule_worker_job_tracker flag is enabled' do
+        before do
+          stub_feature_flags(project_import_schedule_worker_job_tracker: true)
+        end
 
-        expect(job_tracker_instance).to have_received(:register).with(any_args, 5).at_least(:once)
-        expect(job_tracker_instance).to have_received(:remove).with(any_args).at_least(:once)
+        it 'tracks the status of the worker' do
+          subject
+
+          expect(job_tracker_instance).to have_received(:register).with(any_args, 5).at_least(:once)
+          expect(job_tracker_instance).to have_received(:remove).with(any_args).at_least(:once)
+        end
+      end
+
+      context 'project_import_schedule_worker_job_tracker flag is disabled' do
+        before do
+          stub_feature_flags(project_import_schedule_worker_job_tracker: false)
+        end
+
+        it 'does not track the status of the worker' do
+          subject
+
+          expect(job_tracker_instance).not_to have_received(:register)
+          expect(job_tracker_instance).not_to have_received(:remove)
+        end
       end
     end
 
