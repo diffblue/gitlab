@@ -1,11 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging }, quarantine: {
-    only: { subdomain: %i[staging] },
-    issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/350856",
-    type: :broken
-  } do
+  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging } do
     describe 'Purchase' do
       let(:api_client) { Runtime::API::Client.as_admin }
       let(:user) do
@@ -102,7 +98,8 @@ module QA
           company_name: 'QA Test Company',
           number_of_employees: '500 - 1,999',
           telephone_number: '555-555-5555',
-          country: 'United States of America'
+          country: 'United States of America',
+          state: 'CA'
         }
       end
 
@@ -111,8 +108,9 @@ module QA
           # setter
           new.company_name = customer_trial_info[:company_name]
           new.number_of_employees = customer_trial_info[:number_of_employees]
-          new.telephone_number = customer_trial_info[:telephone_number]
           new.country = customer_trial_info[:country]
+          new.telephone_number = customer_trial_info[:telephone_number]
+          new.state = customer_trial_info[:state]
 
           new.continue
         end
