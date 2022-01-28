@@ -13794,6 +13794,9 @@ msgstr ""
 msgid "Environments|protected"
 msgstr ""
 
+msgid "Environment|Auto stop %{time}"
+msgstr ""
+
 msgid "Epic"
 msgstr ""
 
