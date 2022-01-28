@@ -122,19 +122,6 @@ RSpec.describe 'group epic roadmap', :js do
           expect(page).to have_selector('.epics-list-item .epic-title', count: 1)
         end
       end
-
-      it 'saves last selected epic state', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/341827' do
-        state_dropdown.find('button', text: 'Open epics').click
-
-        wait_for_all_requests
-        visit group_roadmap_path(group)
-        wait_for_requests
-
-        expect(state_dropdown.find('.dropdown-toggle')).to have_text("Open epics")
-        page.within('.roadmap-container .epics-list-section') do
-          expect(page).to have_selector('.epics-list-item .epic-title', count: 2)
-        end
-      end
     end
 
     describe 'roadmap page with filter applied' do
@@ -315,16 +302,6 @@ RSpec.describe 'group epic roadmap', :js do
           expect(page).to have_content(epic_with_bug.title)
         end
       end
-
-      # it 'keeps label filter when filtering by state' do
-      #   state_dropdown.find('.dropdown-toggle').click
-      #   state_dropdown.find('button', text: 'Open epics').click
-
-      #   page.within('.roadmap-container .epics-list-section') do
-      #     expect(page).to have_selector('.epics-list-item .epic-title', count: 1)
-      #     expect(page).to have_content(epic_with_bug.title)
-      #   end
-      # end
     end
 
     describe 'roadmap page with sort order applied' do

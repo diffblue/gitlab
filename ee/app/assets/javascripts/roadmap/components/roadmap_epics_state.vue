@@ -36,14 +36,14 @@ export default {
 </script>
 
 <template>
-  <gl-form-group class="gl-mb-0" data-testid="roadmap-epics-state">
-    <label for="roadmap-epics-state" class="gl-display-block">{{ $options.i18n.header }}</label>
-    <gl-form-radio-group
-      id="roadmap-epics-state"
-      :checked="epicsState"
-      stacked
-      :options="availableStates"
-      @change="handleEpicStateChange"
-    />
-  </gl-form-group>
+  <div>
+    <gl-form-group class="gl-mb-0" :label="$options.i18n.header" data-testid="roadmap-epics-state">
+      <gl-form-radio-group
+        :checked="epicsState"
+        stacked
+        :options="availableStates"
+        @change="handleEpicStateChange"
+      />
+    </gl-form-group>
+  </div>
 </template>

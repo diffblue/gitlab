@@ -39,13 +39,9 @@ describe('RoadmapEpicsState', () => {
   });
 
   describe('template', () => {
-    it('renders field label', () => {
-      expect(wrapper.find('label').exists()).toBe(true);
-      expect(wrapper.find('label').text()).toContain('Epics');
-    });
-
     it('renders form group', () => {
       expect(findFormGroup().exists()).toBe(true);
+      expect(findFormGroup().attributes('label')).toBe('Epics');
     });
 
     it('renders radio form group', () => {
