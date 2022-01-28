@@ -30846,9 +30846,6 @@ msgstr ""
 msgid "Runners|Group"
 msgstr ""
 
-msgid "Runners|Group Runners"
-msgstr ""
-
 msgid "Runners|IP Address"
 msgstr ""
 
@@ -30979,9 +30976,6 @@ msgid "Runners|Runner unassigned from project."
 msgstr ""
 
 msgid "Runners|Runners"
-msgstr ""
-
-msgid "Runners|Runners in this group: %{groupRunnersCount}"
 msgstr ""
 
 msgid "Runners|Runs untagged jobs"
