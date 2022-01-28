@@ -137,14 +137,13 @@ The breakdown of spent time is limited to a maximum of 100 entries.
 
 The following time units are available:
 
-| Time unit | What to type                | Conversion rate      |
-| --------- | --------------------------- | -------------------- |
-| Year      | `y`, `year`, or `years`     | 8766h (365.25 × 24h) |
-| Month     | `mo`, `month`, or `months`  | 160h (4w)            |
-| Week      | `w`, `week`, or `weeks`     | 40h (5d)             |
-| Day       | `d`, `day`, or `days`       | 8h                   |
-| Hour      | `h`, `hour`, or `hours`     | 60m                  |
-| Minute    | `m`, `minute`, or `minutes` |                      |
+| Time unit | What to type                | Conversion rate |
+| --------- | --------------------------- | --------------- |
+| Month     | `mo`, `month`, or `months`  | 4w (160h)       |
+| Week      | `w`, `week`, or `weeks`     | 5d (40h)        |
+| Day       | `d`, `day`, or `days`       | 8h              |
+| Hour      | `h`, `hour`, or `hours`     | 60m             |
+| Minute    | `m`, `minute`, or `minutes` |                 |
 
 ### Limit displayed units to hours **(FREE SELF)**
 
