@@ -2,7 +2,7 @@ import { GlButton } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import WelcomePage from '~/vue_shared/new_namespace/components/welcome.vue';
 import NewNamespacePage from '~/vue_shared/new_namespace/new_namespace_page.vue';
-import VerificationPage from 'ee_component/pages/groups/new/components/credit_card_verification.vue';
+import VerificationPage from 'ee_component/namespaces/verification/components/credit_card_verification.vue';
 import Zuora from 'ee/billings/components/zuora.vue';
 
 describe('Experimental new project creation app', () => {

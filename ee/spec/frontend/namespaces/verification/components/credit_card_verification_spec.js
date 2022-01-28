@@ -1,7 +1,7 @@
 import { GlButton } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
-import CreditCardVerification from 'ee/pages/groups/new/components/credit_card_verification.vue';
-import { I18N_FORM_TITLE, I18N_FORM_EXPLANATION } from 'ee/pages/groups/new/constants';
+import CreditCardVerification from 'ee/namespaces/verification/components/credit_card_verification.vue';
+import { I18N_FORM_TITLE, I18N_FORM_EXPLANATION } from 'ee/namespaces/verification/constants';
 
 describe('Verification page', () => {
   let wrapper;
