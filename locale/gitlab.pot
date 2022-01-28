@@ -33115,7 +33115,7 @@ msgstr ""
 msgid "Showing data for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019"
 msgstr ""
 
-msgid "Showing data for workflow items created in this date range. Date range cannot exceed %{maxDateRange} days."
+msgid "Showing data for workflow items created in this date range. Date range limited to %{maxDateRange} days."
 msgstr ""
 
 msgid "Showing graphs based on events of the last %{timerange} days."
