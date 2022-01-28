@@ -24,6 +24,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder d
            stage_event_hash_id: stage.stage_event_hash_id,
            group_id: sub_group.id,
            project_id: project_1.id,
+           start_event_timestamp: 4.weeks.ago,
+           end_event_timestamp: 1.week.ago,
            issue_id: 1
           )
   end
@@ -33,6 +35,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder d
            stage_event_hash_id: stage.stage_event_hash_id,
            group_id: sub_group.id,
            project_id: project_2.id,
+           start_event_timestamp: 2.weeks.ago,
+           end_event_timestamp: 1.week.ago,
            issue_id: 2
           )
   end
@@ -49,11 +53,15 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder d
   let(:params) do
     {
       from: 1.year.ago.to_date,
-      to: Date.today
+      to: Date.today,
+      sort: :end_event_timestamp,
+      direction: :desc
     }
   end
 
-  subject(:issue_ids) { described_class.new(stage: stage, params: params).build.pluck(:issue_id) }
+  let(:query_builder) { described_class.new(stage: stage, params: params) }
+
+  subject(:issue_ids) { query_builder.build.pluck(:issue_id) }
 
   it 'looks up items within the group hierarchy' do
     expect(issue_ids).to eq([stage_event_1.issue_id, stage_event_2.issue_id])
@@ -64,5 +72,25 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder d
     params[:project_ids] = [project_1.id, other_project.id]
 
     expect(issue_ids).to eq([stage_event_1.issue_id])
+  end
+
+  describe '#build_sorted_query' do
+    subject(:issue_ids) { query_builder.build_sorted_query.pluck(:issue_id) }
+
+    it 'returns the items in order (by end_event)' do
+      expect(issue_ids).to eq([stage_event_2.issue_id, stage_event_1.issue_id])
+    end
+
+    it 'returns the items in order (by duration)' do
+      params[:sort] = :duration
+
+      expect(issue_ids).to eq([stage_event_1.issue_id, stage_event_2.issue_id])
+    end
+
+    it 'handles the project_ids filter' do
+      params[:project_ids] = [project_1.id]
+
+      expect(issue_ids).to eq([stage_event_1.issue_id])
+    end
   end
 end

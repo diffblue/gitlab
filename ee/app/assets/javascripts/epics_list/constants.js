@@ -22,8 +22,8 @@ export const EpicsSortOptions = [
     id: AvailableSortOptions.length + 30,
     title: __('Title'),
     sortDirection: {
-      descending: 'title_desc',
-      ascending: 'title_asc',
+      descending: 'TITLE_DESC',
+      ascending: 'TITLE_ASC',
     },
   },
 ];
