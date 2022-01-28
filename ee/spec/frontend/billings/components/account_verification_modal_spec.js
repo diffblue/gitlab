@@ -1,6 +1,7 @@
 import { GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import AccountVerificationModal from 'ee/billings/components/account_verification_modal.vue';
+import Zuora from 'ee/billings/components/zuora.vue';
 
 describe('Account verification modal', () => {
   let wrapper;
@@ -36,6 +37,18 @@ describe('Account verification modal', () => {
 
     it('renders the description', () => {
       expect(wrapper.find('p').text()).toContain('To use free CI/CD minutes');
+    });
+  });
+
+  describe('when zuora emits success', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
+    it('forwards the success event up', () => {
+      wrapper.findComponent(Zuora).vm.$emit('success');
+
+      expect(wrapper.emitted('success')).toHaveLength(1);
     });
   });
 
