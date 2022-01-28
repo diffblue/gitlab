@@ -47,8 +47,8 @@ RSpec.describe 'Trial Capture Lead', :js do
         trial_user: ActionController::Parameters.new(trial_user_params).permit!
       }
 
-      expect_any_instance_of(GitlabSubscriptions::CreateLeadService).to receive(:execute).with(lead_params) do
-        { success: true }
+      expect_next_instance_of(GitlabSubscriptions::CreateLeadService) do |service|
+        expect(service).to receive(:execute).with(lead_params).and_return({ success: true })
       end
     end
 

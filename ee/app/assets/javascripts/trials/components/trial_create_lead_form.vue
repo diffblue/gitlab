@@ -123,7 +123,7 @@ export default {
         required
       />
     </gl-form-group>
-    <country-or-region-selector />
+    <country-or-region-selector :country="country" :state="state" required />
     <gl-form-group
       :label="$options.i18n.phoneNumberLabel"
       label-size="sm"

@@ -19,9 +19,23 @@ export default {
   directives: {
     autofocusonshow,
   },
-  inject: ['user'],
+  props: {
+    country: {
+      type: String,
+      required: true,
+    },
+    state: {
+      type: String,
+      required: true,
+    },
+    required: {
+      type: Boolean,
+      default: false,
+      required: false,
+    },
+  },
   data() {
-    return { ...this.user, countries: [], states: [] };
+    return { selectedCountry: this.country, selectedState: this.state, countries: [], states: [] };
   },
   i18n: {
     countryLabel: LEADS_COUNTRY_LABEL,
@@ -34,25 +48,43 @@ export default {
       return [
         {
           name: this.$options.i18n.countrySelectPrompt,
-          id: null,
+          id: '',
         },
         ...this.countries,
       ];
     },
-    mustEnterState() {
-      return COUNTRIES_WITH_STATES_ALLOWED.includes(this.country);
+    stateRequired() {
+      return COUNTRIES_WITH_STATES_ALLOWED.includes(this.selectedCountry);
     },
     showState() {
-      return !this.$apollo.loading.states && this.states && this.country && this.mustEnterState;
+      return (
+        !this.$apollo.loading.states && this.states && this.selectedCountry && this.stateRequired
+      );
     },
     stateOptionsWithDefault() {
       return [
         {
           name: this.$options.i18n.stateSelectPrompt,
-          id: null,
+          id: '',
         },
         ...this.states,
       ];
+    },
+  },
+  methods: {
+    selected() {
+      this.setSelectedState();
+
+      this.$emit('change', {
+        country: this.selectedCountry,
+        state: this.selectedState,
+        stateRequired: this.stateRequired,
+      });
+    },
+    setSelectedState() {
+      if (!this.showState) {
+        this.selectedState = '';
+      }
     },
   },
   apollo: {
@@ -62,11 +94,11 @@ export default {
     states: {
       query: statesQuery,
       skip() {
-        return !this.country;
+        return !this.selectedCountry;
       },
       variables() {
         return {
-          countryId: this.country,
+          countryId: this.selectedCountry,
         };
       },
     },
@@ -84,14 +116,15 @@ export default {
     >
       <gl-form-select
         id="country"
-        v-model="country"
+        v-model="selectedCountry"
         name="country"
         :options="countryOptionsWithDefault"
         value-field="id"
         text-field="name"
         data-qa-selector="country"
         data-testid="country"
-        required
+        :required="required"
+        @change="selected"
       />
     </gl-form-group>
     <gl-form-group
@@ -102,14 +135,15 @@ export default {
     >
       <gl-form-select
         id="state"
+        v-model="selectedState"
         v-autofocusonshow
-        :value="state"
         name="state"
         :options="stateOptionsWithDefault"
         value-field="id"
         text-field="name"
         data-testid="state"
-        required
+        :required="required"
+        @change="selected"
       />
     </gl-form-group>
   </div>
