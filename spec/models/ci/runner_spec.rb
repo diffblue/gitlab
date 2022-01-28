@@ -280,8 +280,20 @@ RSpec.describe Ci::Runner do
     describe '.owned_or_instance_wide' do
       subject { described_class.owned_or_instance_wide(project.id) }
 
-      it 'returns a globally shared, a project specific and a group specific runner' do
-        is_expected.to contain_exactly(group_runner, project_runner, shared_runner)
+      context 'with instance runners sharing enabled' do
+        let(:shared_runners_enabled) { true }
+
+        it 'returns a globally shared, a project specific and a group specific runner' do
+          is_expected.to contain_exactly(group_runner, project_runner, shared_runner)
+        end
+      end
+
+      context 'with instance runners sharing disabled' do
+        let(:shared_runners_enabled) { false }
+
+        it 'returns a project specific and a group specific runner' do
+          is_expected.to contain_exactly(group_runner, project_runner)
+        end
       end
     end
 
@@ -293,8 +305,20 @@ RSpec.describe Ci::Runner do
         project_runner
       end
 
-      it 'returns a globally shared and a group specific runner' do
-        is_expected.to contain_exactly(group_runner, shared_runner)
+      context 'with instance runners sharing enabled' do
+        let(:shared_runners_enabled) { true }
+
+        it 'returns a globally shared and a group specific runner' do
+          is_expected.to contain_exactly(group_runner, shared_runner)
+        end
+      end
+
+      context 'with instance runners sharing disabled' do
+        let(:shared_runners_enabled) { false }
+
+        it 'returns a group specific runner' do
+          is_expected.to contain_exactly(group_runner)
+        end
       end
     end
   end
