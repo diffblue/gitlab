@@ -41056,6 +41056,9 @@ msgstr ""
 msgid "You do not have permission to leave this %{namespaceType}."
 msgstr ""
 
+msgid "You do not have permission to run a pipeline on this branch."
+msgstr ""
+
 msgid "You do not have permission to run the Web Terminal. Please contact a project administrator."
 msgstr ""
 
