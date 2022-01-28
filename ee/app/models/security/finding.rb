@@ -10,6 +10,7 @@
 module Security
   class Finding < ApplicationRecord
     include IgnorableColumns
+    include EachBatch
 
     self.table_name = 'security_findings'
 

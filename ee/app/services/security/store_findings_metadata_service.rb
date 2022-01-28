@@ -3,15 +3,18 @@
 module Security
   # This service class stores the findings metadata for all pipelines.
   class StoreFindingsMetadataService < ::BaseService
-    attr_reader :security_scan, :report
+    BATCH_SIZE = 50
 
-    def self.execute(security_scan, report)
-      new(security_scan, report).execute
+    attr_reader :security_scan, :report, :deduplicated_finding_uuids
+
+    def self.execute(security_scan, report, deduplicated_finding_uuids)
+      new(security_scan, report, deduplicated_finding_uuids).execute
     end
 
-    def initialize(security_scan, report)
+    def initialize(security_scan, report, deduplicated_finding_uuids)
       @security_scan = security_scan
       @report = report
+      @deduplicated_finding_uuids = deduplicated_finding_uuids
     end
 
     def execute
@@ -30,26 +33,37 @@ module Security
     end
 
     def store_findings
-      report_findings.each { |report_finding| store_finding!(report_finding) }
+      report_findings.each_slice(BATCH_SIZE) { |batch| store_finding_batch(batch) }
     end
 
     def report_findings
       report.findings.select(&:valid?)
     end
 
-    def store_finding!(report_finding)
-      security_scan.findings.create!(finding_data(report_finding))
+    def store_finding_batch(batch)
+      batch.map(&method(:finding_data))
+           .then(&method(:import_batch))
+    end
+
+    def import_batch(report_finding_data)
+      Security::Finding.insert_all(report_finding_data)
     end
 
     def finding_data(report_finding)
       {
+        scan_id: security_scan.id,
         severity: report_finding.severity,
         confidence: report_finding.confidence,
         uuid: report_finding.uuid,
         overridden_uuid: report_finding.overridden_uuid,
         project_fingerprint: report_finding.project_fingerprint,
-        scanner: persisted_scanner_for(report_finding.scanner)
+        scanner_id: persisted_scanner_for(report_finding.scanner).id,
+        deduplicated: deduplicated?(report_finding)
       }
+    end
+
+    def deduplicated?(report_finding)
+      deduplicated_finding_uuids.include?(report_finding.uuid)
     end
 
     def persisted_scanner_for(report_scanner)
