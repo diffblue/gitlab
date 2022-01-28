@@ -65,9 +65,52 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
     end
   end
 
+  shared_examples 'a http post error is raised' do
+    subject { worker.perform(event.id) }
+
+    context 'when any of Gitlab::HTTP::HTTP_ERRORS is raised' do
+      Gitlab::HTTP::HTTP_ERRORS.each do |error_klass|
+        let(:error) { error_klass.new('error') }
+
+        before do
+          allow(Gitlab::HTTP).to receive(:post).and_raise(error)
+        end
+
+        it 'does not logs the error' do
+          expect(Gitlab::ErrorTracking).not_to receive(:log_exception).with(
+            an_instance_of(error_klass)
+          )
+          subject
+        end
+      end
+    end
+
+    context 'when URI::InvalidURIError exception is raised' do
+      let(:error) { URI::InvalidURIError.new('invalid uri') }
+
+      before do
+        group.external_audit_event_destinations.create!(destination_url: 'http://example.com')
+        allow(Gitlab::HTTP).to receive(:post).and_raise(error)
+      end
+
+      it 'logs the error' do
+        expect(Gitlab::ErrorTracking).to receive(:log_exception).with(
+          an_instance_of(URI::InvalidURIError)
+        ).once
+        subject
+      end
+    end
+  end
+
   describe "#perform" do
     context 'when the entity type is a group' do
       it_behaves_like 'a successful audit event stream' do
+        let_it_be(:event) { create(:audit_event, :group_event) }
+
+        let(:group) { event.entity }
+      end
+
+      it_behaves_like 'a http post error is raised' do
         let_it_be(:event) { create(:audit_event, :group_event) }
 
         let(:group) { event.entity }
@@ -76,6 +119,12 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
 
     context 'when the entity type is a project that belongs to a group' do
       it_behaves_like 'a successful audit event stream' do
+        let_it_be(:group) { create(:group) }
+        let_it_be(:project) { create(:project, group: group) }
+        let_it_be(:event) { create(:audit_event, :project_event, target_project: project) }
+      end
+
+      it_behaves_like 'a http post error is raised' do
         let_it_be(:group) { create(:group) }
         let_it_be(:project) { create(:project, group: group) }
         let_it_be(:event) { create(:audit_event, :project_event, target_project: project) }

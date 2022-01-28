@@ -29,6 +29,9 @@ module AuditEvents
                           body: Gitlab::Json::LimitedEncoder.encode(audit_event.as_json, limit: REQUEST_BODY_SIZE_LIMIT),
                           use_read_total_timeout: true,
                           headers: { HEADER_KEY => destination.verification_token })
+      rescue URI::InvalidURIError => e
+        Gitlab::ErrorTracking.log_exception(e)
+      rescue *Gitlab::HTTP::HTTP_ERRORS
       end
     end
 
