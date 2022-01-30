@@ -2055,6 +2055,9 @@ msgstr ""
 msgid "Add a %{type}"
 msgstr ""
 
+msgid "Add a GCP region"
+msgstr ""
+
 msgid "Add a GPG key"
 msgstr ""
 
@@ -9194,6 +9197,15 @@ msgstr ""
 msgid "Configure pipelines to deploy web apps, backend services, APIs and static resources to Google Cloud"
 msgstr ""
 
+msgid "Configure region"
+msgstr ""
+
+msgid "Configure region for environment"
+msgstr ""
+
+msgid "Configure regions"
+msgstr ""
+
 msgid "Configure repository mirroring."
 msgstr ""
 
@@ -9225,6 +9237,9 @@ msgid "Configure via Merge Request"
 msgstr ""
 
 msgid "Configure which lists are shown for anyone who visits this board"
+msgstr ""
+
+msgid "Configure your environments to be deployed to specific geographical regions"
 msgstr ""
 
 msgid "Confirm"
@@ -15895,6 +15910,9 @@ msgstr ""
 msgid "Full name"
 msgstr ""
 
+msgid "GCP region configured"
+msgstr ""
+
 msgid "GPG Key ID:"
 msgstr ""
 
@@ -21984,6 +22002,12 @@ msgstr ""
 msgid "List of all merge commits"
 msgstr ""
 
+msgid "List of environments for this project"
+msgstr ""
+
+msgid "List of suitable GCP locations"
+msgstr ""
+
 msgid "List of users allowed to exceed the rate limit."
 msgstr ""
 
@@ -24745,6 +24769,9 @@ msgid "No public groups"
 msgstr ""
 
 msgid "No ref selected"
+msgstr ""
+
+msgid "No regions configured"
 msgstr ""
 
 msgid "No related merge requests found."
@@ -30077,6 +30104,12 @@ msgid "Regenerating the instance ID can break integration depending on the clien
 msgstr ""
 
 msgid "Regex pattern"
+msgstr ""
+
+msgid "Region"
+msgstr ""
+
+msgid "Regions"
 msgstr ""
 
 msgid "Register"
