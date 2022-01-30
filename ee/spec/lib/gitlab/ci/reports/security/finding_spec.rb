@@ -357,11 +357,14 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding do
     let(:identifier_1) { build(:ci_reports_security_identifier) }
     let(:identifier_2) { build(:ci_reports_security_identifier) }
     let(:location) { build(:ci_reports_security_locations_sast) }
-    let(:finding) { build(:ci_reports_security_finding, identifiers: [identifier_1, identifier_2], location: location) }
+    let(:signature) { build(:ci_reports_security_finding_signature, signature_value: 'value') }
+    let(:finding) { build(:ci_reports_security_finding, identifiers: [identifier_1, identifier_2], location: location, vulnerability_finding_signatures_enabled: true, signatures: [signature]) }
     let(:expected_keys) do
       [
         build(:ci_reports_security_finding_key, location_fingerprint: location.fingerprint, identifier_fingerprint: identifier_1.fingerprint),
-        build(:ci_reports_security_finding_key, location_fingerprint: location.fingerprint, identifier_fingerprint: identifier_2.fingerprint)
+        build(:ci_reports_security_finding_key, location_fingerprint: location.fingerprint, identifier_fingerprint: identifier_2.fingerprint),
+        build(:ci_reports_security_finding_key, location_fingerprint: signature.signature_hex, identifier_fingerprint: identifier_1.fingerprint),
+        build(:ci_reports_security_finding_key, location_fingerprint: signature.signature_hex, identifier_fingerprint: identifier_2.fingerprint)
       ]
     end
 
