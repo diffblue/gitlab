@@ -320,7 +320,7 @@ experiment(:pill_color, actor: current_user).track(:clicked)
 When you run an experiment with any of the examples so far, an `:assigned` event
 is tracked automatically by default. All events that are tracked from an
 experiment have a special
-[experiment context](https://gitlab.com/gitlab-org/iglu/-/blob/master/public/schemas/com.gitlab/gitlab_experiment/jsonschema/1-0-0)
+[experiment context](https://gitlab.com/gitlab-org/iglu/-/blob/master/public/schemas/com.gitlab/gitlab_experiment/jsonschema/1-0-3)
 added to the event. This can be used - typically by the data team - to create a connection
 between the events on a given experiment.
 
@@ -438,26 +438,34 @@ experiment(:example, :variant_name, foo: :bar).track(:my_event, value: 1, proper
 
 ## Experiments in the client layer
 
-Any experiment that's been run in the request lifecycle surfaces in and `window.gl.experiments`,
+Any experiment that's been run in the request lifecycle surfaces in `window.gl.experiments`,
 and matches [this schema](https://gitlab.com/gitlab-org/iglu/-/blob/master/public/schemas/com.gitlab/gitlab_experiment/jsonschema/1-0-3)
 so it can be used when resolving experimentation in the client layer.
 
-### Use experiments in Vue
+Given that we've defined a class for our experiment, and have defined the variants for it, we can publish that experiment in a couple ways.
 
-With the `gitlab-experiment` component, you can define slots that match the name of the
-variants pushed to `window.gl.experiments`. For example, if we alter the `pill_color`
-experiment to just use the default variants of `control` and `candidate` like so:
+The first way is simply by running the experiment. Assuming the experiment has been run, it will surface in the client layer without having to do anything special.
+
+The second way doesn't run the experiment and is intended to be used if the experiment only needs to surface in the client layer. To accomplish this we can simply `.publish` the experiment. This won't run any logic, but does surface the experiment details in the client layer so they can be utilized there.
+
+An example might be to publish an experiment in a `before_action` in a controller. Assuming we've defined the `PillColorExperiment` class, like we have above, we can surface it to the client by publishing it instead of running it: 
 
 ```ruby
-def show
-  experiment(:pill_color) do |e|
-    e.use { } # control
-    e.try { } # candidate
-  end.run
-end
+before_action -> { experiment(:pill_color).publish }, only: [:show]
 ```
 
-We can make use of the named slots `control` and `candidate` in the Vue component:
+You can then see this surface in the JavaScript console:
+
+```javascript
+window.gl.experiments // => { pill_color: { excluded: false, experiment: "pill_color", key: "ca63ac02", variant: "candidate" } } 
+```
+
+### Using experiments in Vue
+
+With the `gitlab-experiment` component, you can define slots that match the name of the
+variants pushed to `window.gl.experiments`.
+
+We can make use of the named slots in the Vue component, that match the behaviors defined in :
 
 ```vue
 <script>
@@ -468,23 +476,6 @@ export default {
 }
 </script>
 
-<template>
-  <gitlab-experiment name="pill_color">
-    <template #control>
-      <button class="bg-default">Click default button</button>
-    </template>
-
-    <template #candidate>
-      <button class="bg-red">Click red button</button>
-    </template>
-  </gitlab-experiment>
-</template>
-```
-
-When you're coding for an experiment with multiple variants, you can use the variant names.
-For example, the Vue component for the previously-defined `pill_color` experiment with `red` and `blue` variants would look like this:
-
-```vue
 <template>
   <gitlab-experiment name="pill_color">
     <template #control>

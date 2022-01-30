@@ -20,7 +20,6 @@ RSpec.configure do |config|
         deprecator.silenced = true
       end
     end
-
   end
 
   config.before(:each, :experiment) do
