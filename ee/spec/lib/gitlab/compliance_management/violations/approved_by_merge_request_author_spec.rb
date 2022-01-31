@@ -23,7 +23,7 @@ RSpec.describe Gitlab::ComplianceManagement::Violations::ApprovedByMergeRequestA
 
     context 'when merge request is approved by someone other than the author' do
       before do
-        merge_request.approver_users << create(:user)
+        create(:approval, merge_request: merge_request)
       end
 
       it 'does not create a ComplianceViolation' do
@@ -32,7 +32,7 @@ RSpec.describe Gitlab::ComplianceManagement::Violations::ApprovedByMergeRequestA
 
       context 'when merge request is also approved by the author' do
         before do
-          merge_request.approver_users << author
+          create(:approval, merge_request: merge_request, user: author)
         end
 
         it_behaves_like 'violation'
@@ -41,7 +41,7 @@ RSpec.describe Gitlab::ComplianceManagement::Violations::ApprovedByMergeRequestA
 
     context 'when merge request is approved by its author' do
       before do
-        merge_request.approver_users << author
+        create(:approval, merge_request: merge_request, user: author)
       end
 
       it_behaves_like 'violation'

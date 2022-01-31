@@ -28,6 +28,7 @@ module MergeRequests
               }
     validates :reason, presence: true
 
+    # The below violations need to either ignore or handle their errors to help prevent the merge process failing
     VIOLATIONS = [
       ::Gitlab::ComplianceManagement::Violations::ApprovedByMergeRequestAuthor,
       ::Gitlab::ComplianceManagement::Violations::ApprovedByCommitter,

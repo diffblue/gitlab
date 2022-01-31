@@ -2,6 +2,8 @@
 
 module IncidentManagement
   class EscalationPolicy < ApplicationRecord
+    include Gitlab::SQL::Pattern
+
     self.table_name = 'incident_management_escalation_policies'
 
     belongs_to :project
@@ -13,6 +15,7 @@ module IncidentManagement
     validates :description, length: { maximum: 160 }
 
     scope :for_project, -> (project) { where(project: project) }
+    scope :search_by_name, -> (query) { fuzzy_search(query, [:name]) }
 
     accepts_nested_attributes_for :rules
 
