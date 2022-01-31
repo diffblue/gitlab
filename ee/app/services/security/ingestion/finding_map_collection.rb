@@ -35,8 +35,14 @@ module Security
         @report_findings_map ||= report_findings.index_by(&:uuid)
       end
 
+      # Sorting will make sure the findings with `overridden_uuid` values will be
+      # processed before the others.
+      # We are also sorting by `uuid` to prevent having deadlock errors while
+      # ingesting the findings.
       def deduplicated_findings
-        @deduplicated_findings ||= findings.deduplicated
+        @deduplicated_findings ||= findings.deduplicated.sort do |a, b|
+          [b.overridden_uuid.to_s, b.uuid] <=> [a.overridden_uuid.to_s, a.uuid]
+        end
       end
     end
   end

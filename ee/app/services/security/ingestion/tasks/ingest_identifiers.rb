@@ -22,10 +22,13 @@ module Security
           end
         end
 
+        # Important Note:
+        #   Sorting identifiers is important to prevent having deadlock
+        #   errors which can happen if other threads try to import the same
+        #   identifiers in different order.
         def attributes
-          report_identifiers.map do |identifier|
-            identifier.to_hash.merge!(project_id: project.id)
-          end
+          report_identifiers.map { |identifier| identifier.to_hash.merge!(project_id: project.id) }
+                            .sort_by { |identifier_data| identifier_data[:fingerprint] }
         end
 
         def report_identifiers
