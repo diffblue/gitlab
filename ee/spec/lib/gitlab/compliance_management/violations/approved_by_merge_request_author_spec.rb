@@ -16,6 +16,7 @@ RSpec.describe Gitlab::ComplianceManagement::Violations::ApprovedByMergeRequestA
         violations = merge_request.compliance_violations.where(reason: described_class::REASON)
 
         expect(violations.map(&:violating_user)).to contain_exactly(author)
+        expect(violations.map(&:severity_level)).to contain_exactly('high')
       end
     end
 

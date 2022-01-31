@@ -5,6 +5,7 @@ module Gitlab
     module Violations
       class ApprovedByCommitter
         REASON = :approved_by_committer
+        SEVERITY_LEVEL = :high
 
         def initialize(merge_request)
           @merge_request = merge_request
@@ -24,7 +25,8 @@ module Gitlab
           violating_user_ids.map do |user_id|
             @merge_request.compliance_violations.new(
               violating_user_id: user_id,
-              reason: REASON
+              reason: REASON,
+              severity_level: SEVERITY_LEVEL
             )
           end
         end

@@ -5,6 +5,7 @@ module Gitlab
     module Violations
       class ApprovedByMergeRequestAuthor
         REASON = :approved_by_merge_request_author
+        SEVERITY_LEVEL = :high
 
         def initialize(merge_request)
           @merge_request = merge_request
@@ -14,7 +15,8 @@ module Gitlab
           if violation?
             @merge_request.compliance_violations.create(
               violating_user: @merge_request.author,
-              reason: REASON
+              reason: REASON,
+              severity_level: SEVERITY_LEVEL
             )
           end
         end
