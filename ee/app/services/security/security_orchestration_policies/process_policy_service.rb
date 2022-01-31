@@ -3,6 +3,8 @@
 module Security
   module SecurityOrchestrationPolicies
     class ProcessPolicyService
+      include BaseServiceUtility
+
       def initialize(policy_configuration:, params:)
         @policy_configuration = policy_configuration
         @params = params
@@ -14,8 +16,8 @@ module Security
         name = params[:name]
         operation = params[:operation]
 
-        raise StandardError, "Invalid policy type" unless Security::OrchestrationPolicyConfiguration::AVAILABLE_POLICY_TYPES.include?(type)
-        raise StandardError, "Name should be same as the policy name" if name && operation != :replace && policy[:name] != name
+        return error("Invalid policy type", :bad_request) unless Security::OrchestrationPolicyConfiguration::AVAILABLE_POLICY_TYPES.include?(type)
+        return error("Name should be same as the policy name", :bad_request) if name && operation != :replace && policy[:name] != name
 
         policy_hash = policy_configuration.policy_hash.dup || {}
 
@@ -25,12 +27,16 @@ module Security
         when :remove then remove_from_policy_hash(policy_hash, policy, type)
         end
 
-        raise StandardError, "Invalid policy yaml" unless policy_configuration.policy_configuration_valid?(policy_hash)
+        return error('Invalid policy YAML', :bad_request, pass_back: { details: policy_configuration_validation_errors(policy_hash) }) unless policy_configuration_valid?(policy_hash)
 
-        policy_hash
+        success(policy_hash: policy_hash)
+      rescue StandardError => e
+        error(e.message)
       end
 
       private
+
+      delegate :policy_configuration_validation_errors, :policy_configuration_valid?, to: :policy_configuration
 
       def append_to_policy_hash(policy_hash, policy, type)
         if policy_hash[type].blank?

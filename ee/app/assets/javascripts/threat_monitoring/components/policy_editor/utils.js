@@ -10,7 +10,7 @@ import { DEFAULT_MR_TITLE, SECURITY_POLICY_ACTIONS } from './constants';
  */
 const checkForErrors = ({ errors }) => {
   if (errors?.length) {
-    throw new Error(errors);
+    throw new Error(errors.join('\n'));
   }
 };
 

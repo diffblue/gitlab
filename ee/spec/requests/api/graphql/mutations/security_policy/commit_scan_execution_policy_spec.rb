@@ -46,5 +46,15 @@ RSpec.describe 'Create scan execution policy for a project' do
       expect(branch).not_to be_nil
       expect(commit.message).to eq('Add a new policy to .gitlab/security-policies/policy.yml')
     end
+
+    context 'when provided policy is invalid' do
+      let_it_be(:policy_yaml) { build(:scan_execution_policy, name: policy_name).merge(type: 'scan_execution_policy', rules: [{ type: 'invalid_type' }]).to_yaml }
+
+      it 'returns error with detailed information' do
+        post_graphql_mutation(mutation, current_user: current_user)
+
+        expect(mutation_response['errors']).to eq(['Invalid policy YAML', "property '/scan_execution_policy/0/rules/0/type' is not one of: [\"pipeline\", \"schedule\"]"])
+      end
+    end
   end
 end

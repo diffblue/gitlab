@@ -41,7 +41,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService do
         response = service.execute
 
         expect(response[:status]).to eq(:error)
-        expect(response[:message]).to eq("Invalid policy yaml")
+        expect(response[:message]).to eq("Invalid policy YAML")
+        expect(response[:details]).to eq(["property '/scan_execution_policy/0' is missing required keys: name, enabled, rules, actions"])
       end
     end
 
