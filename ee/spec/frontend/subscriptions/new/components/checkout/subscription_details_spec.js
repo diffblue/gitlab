@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
+import { mockTracking } from 'helpers/tracking_helper';
 import { STEPS } from 'ee/subscriptions/constants';
 import Component from 'ee/subscriptions/new/components/checkout/subscription_details.vue';
 import { NEW_GROUP } from 'ee/subscriptions/new/constants';
@@ -337,6 +338,58 @@ describe('Subscription Details', () => {
 
     it('should not show a link to change to setting up for a company', () => {
       expect(companyLink().exists()).toBe(false);
+    });
+  });
+
+  describe('tracking', () => {
+    let store;
+
+    beforeEach(() => {
+      const mockApollo = createMockApolloProvider(STEPS);
+      store = createStore(
+        createDefaultInitialStoreData({
+          isNewUser: 'false',
+          namespaceId: '132',
+          setupForCompany: 'false',
+        }),
+      );
+      store.commit(types.UPDATE_NUMBER_OF_USERS, 13);
+      wrapper = createComponent({ apolloProvider: mockApollo, store });
+    });
+
+    it('tracks completion details', async () => {
+      const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+
+      wrapper.findComponent(Step).vm.$emit('nextStep');
+      await nextTick();
+
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_button', {
+        label: 'update_plan_type',
+        property: 'silver',
+      });
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_button', {
+        label: 'update_seat_count',
+        property: 13,
+      });
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_button', {
+        label: 'update_group',
+        property: 132,
+      });
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_button', {
+        label: 'continue_billing',
+      });
+    });
+
+    it('tracks step edits', async () => {
+      const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+
+      wrapper.findComponent(Step).vm.$emit('stepEdit', 'stepID');
+      await nextTick();
+
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_button', {
+        label: 'edit',
+        property: 'subscriptionDetails',
+      });
     });
   });
 

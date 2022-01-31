@@ -16,12 +16,18 @@ export const ERROR_LOADING_PAYMENT_FORM = s__(
   'Checkout|Failed to load the payment form. Please try again.',
 );
 
-// The order of the steps in this array determines the flow of the application
 /* eslint-disable @gitlab/require-i18n-strings */
+export const STEP_SUBSCRIPTION_DETAILS = 'subscriptionDetails';
+export const STEP_BILLING_ADDRESS = 'billingAddress';
+export const STEP_PAYMENT_METHOD = 'paymentMethod';
+export const STEP_CONFIRM_ORDER = 'confirmOrder';
+
+// The order of the steps in this array determines the flow of the application
 export const STEPS = [
-  { id: 'subscriptionDetails', __typename: 'Step' },
-  { id: 'billingAddress', __typename: 'Step' },
-  { id: 'paymentMethod', __typename: 'Step' },
-  { id: 'confirmOrder', __typename: 'Step' },
+  { id: STEP_SUBSCRIPTION_DETAILS, __typename: 'Step' },
+  { id: STEP_BILLING_ADDRESS, __typename: 'Step' },
+  { id: STEP_PAYMENT_METHOD, __typename: 'Step' },
+  { id: STEP_CONFIRM_ORDER, __typename: 'Step' },
 ];
+export const TRACK_SUCCESS_MESSAGE = 'Success';
 /* eslint-enable @gitlab/require-i18n-strings */
