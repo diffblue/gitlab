@@ -9,6 +9,7 @@ import { useMockLocationHelper } from 'helpers/mock_window_location_helper';
 import testAction from 'helpers/vuex_action_helper';
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
+import * as googleTagManager from '~/google_tag_manager';
 
 const {
   countriesPath,
@@ -551,6 +552,22 @@ describe('Subscriptions Actions', () => {
         [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
         [{ type: 'confirmOrderSuccess', payload: response }],
       );
+    });
+
+    it('calls trackTransaction on success', async () => {
+      const spy = jest.spyOn(googleTagManager, 'trackTransaction');
+      const response = { location: 'x' };
+      mock.onPost(confirmOrderPath).replyOnce(200, response);
+
+      await testAction(
+        actions.confirmOrder,
+        null,
+        {},
+        [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
+        [{ type: 'confirmOrderSuccess', payload: response }],
+      );
+
+      expect(spy).toHaveBeenCalled();
     });
 
     it('calls confirmOrderError with the errors on error', async () => {
