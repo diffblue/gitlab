@@ -79,6 +79,7 @@ module Integrations
         return {} unless user.present?
 
         {
+          "id": user['id'],
           "name": sanitize(user['realname'].presence || user['account']),
           "web_url": user['url'],
           "avatar_url": user['avatar']
