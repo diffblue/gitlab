@@ -26495,6 +26495,9 @@ msgstr ""
 msgid "Pipelines|Visualize"
 msgstr ""
 
+msgid "Pipelines|Your changes have been successfully committed. Now redirecting to the new merge request page."
+msgstr ""
+
 msgid "Pipelines|detached"
 msgstr ""
 

@@ -3,7 +3,6 @@ import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { sprintf } from '~/locale';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import createMockApollo from 'helpers/mock_apollo_helper';
 import { mockTracking } from 'helpers/tracking_helper';
 import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
 import {
@@ -14,30 +13,16 @@ import {
   PQL_MODAL_FOOTER_TEXT,
 } from 'ee/hand_raise_leads/hand_raise_lead/constants';
 import * as SubscriptionsApi from 'ee/api/subscriptions_api';
-import { formData, states, countries } from './mock_data';
+import { FORM_DATA } from './mock_data';
 
 Vue.use(VueApollo);
 
 describe('HandRaiseLeadButton', () => {
   let wrapper;
-  let fakeApollo;
   let trackingSpy;
 
   const createComponent = (small = false) => {
-    const mockResolvers = {
-      Query: {
-        countries() {
-          return [{ id: 'US', name: 'United States' }];
-        },
-        states() {
-          return [{ countryId: 'US', id: 'CA', name: 'California' }];
-        },
-      },
-    };
-    fakeApollo = createMockApollo([], mockResolvers);
-
     return shallowMountExtended(HandRaiseLeadButton, {
-      apolloProvider: fakeApollo,
       provide: {
         small,
         user: {
@@ -59,7 +44,6 @@ describe('HandRaiseLeadButton', () => {
   afterEach(() => {
     wrapper.destroy();
     wrapper = null;
-    fakeApollo = null;
   });
 
   describe('rendering', () => {
@@ -87,7 +71,6 @@ describe('HandRaiseLeadButton', () => {
         { id: 'company-name', value: 'ACME' },
         { id: 'phone-number', value: '' },
         { id: 'company-size', value: undefined },
-        { id: 'country', value: undefined },
       ];
 
       formInputValues.forEach(({ id, value }) => {
@@ -104,7 +87,6 @@ describe('HandRaiseLeadButton', () => {
         'company-name',
         'company-size',
         'phone-number',
-        'country',
       ];
 
       visibleFields.forEach((f) => expect(wrapper.findByTestId(f).exists()).toBe(true));
@@ -155,7 +137,7 @@ describe('HandRaiseLeadButton', () => {
     it('becomes enabled when required info is there', async () => {
       // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
       // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({ countries, states, ...formData });
+      wrapper.setData({ ...FORM_DATA });
 
       await nextTick();
 
@@ -166,27 +148,6 @@ describe('HandRaiseLeadButton', () => {
     });
   });
 
-  describe('country & state handling', () => {
-    beforeEach(() => {
-      wrapper = createComponent();
-    });
-
-    it.each`
-      state   | display
-      ${'US'} | ${true}
-      ${'CA'} | ${true}
-      ${'NL'} | ${false}
-    `('displayed $display', async ({ state, display }) => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({ countries, states, country: state });
-
-      await nextTick();
-
-      expect(wrapper.findByTestId('state').exists()).toBe(display);
-    });
-  });
-
   describe('form', () => {
     beforeEach(async () => {
       wrapper = createComponent();
@@ -194,7 +155,7 @@ describe('HandRaiseLeadButton', () => {
 
       // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
       // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({ countries, states, country: 'US', ...formData, comment: 'comment' });
+      wrapper.setData({ ...FORM_DATA, stateRequired: true, comment: 'comment' });
     });
 
     describe('successful submission', () => {
@@ -209,7 +170,7 @@ describe('HandRaiseLeadButton', () => {
           namespaceId: 1,
           comment: 'comment',
           glmContent: 'some-content',
-          ...formData,
+          ...FORM_DATA,
         });
       });
 
@@ -218,11 +179,10 @@ describe('HandRaiseLeadButton', () => {
           expect(wrapper.findByTestId(f).attributes('value')).toBe(''),
         );
 
-        ['company-size', 'country'].forEach((f) =>
-          expect(wrapper.findByTestId(f).attributes('value')).toBe(undefined),
-        );
-
-        expect(wrapper.findByTestId('state').exists()).toBe(false);
+        expect(wrapper.findByTestId('company-size').attributes('value')).toBe(undefined);
+        expect(wrapper.vm.country).toBe('');
+        expect(wrapper.vm.state).toBe('');
+        expect(wrapper.vm.stateRequired).toBe(false);
       });
 
       it('tracks successful submission', async () => {

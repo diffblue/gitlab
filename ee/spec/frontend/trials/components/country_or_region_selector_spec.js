@@ -3,30 +3,36 @@ import VueApollo from 'vue-apollo';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import CountryOrRegionSelector from 'ee/trials/components/country_or_region_selector.vue';
-import { countries, states } from '../../hand_raise_leads/components/mock_data';
-import { formData } from './mock_data';
+import {
+  COUNTRIES,
+  STATES,
+  COUNTRY_WITH_STATES,
+  STATE,
+} from '../../hand_raise_leads/components/mock_data';
 
 Vue.use(VueApollo);
 
 describe('CountryOrRegionSelector', () => {
   let wrapper;
 
-  const createComponent = ({ mountFunction = shallowMountExtended } = {}) => {
+  const createComponent = (props = {}) => {
     const mockResolvers = {
       Query: {
         countries() {
-          return [{ id: 'US', name: 'United States' }];
+          return COUNTRIES;
         },
         states() {
-          return [{ countryId: 'US', id: 'CA', name: 'California' }];
+          return STATES;
         },
       },
     };
 
-    return mountFunction(CountryOrRegionSelector, {
+    return shallowMountExtended(CountryOrRegionSelector, {
       apolloProvider: createMockApollo([], mockResolvers),
-      provide: {
-        user: formData,
+      propsData: {
+        country: COUNTRY_WITH_STATES,
+        state: STATE,
+        ...props,
       },
     });
   };
@@ -49,12 +55,6 @@ describe('CountryOrRegionSelector', () => {
     `('has the default injected value for $testid', ({ testid, value }) => {
       expect(findFormInput(testid).attributes('value')).toBe(value);
     });
-
-    it('has the correct form input in the form content', () => {
-      const visibleFields = ['country', 'state'];
-
-      visibleFields.forEach((f) => expect(wrapper.findByTestId(f).exists()).toBe(true));
-    });
   });
 
   describe.each`
@@ -65,18 +65,66 @@ describe('CountryOrRegionSelector', () => {
   `('Country & State handling', ({ country, display }) => {
     describe(`when provided country is set to ${country}`, () => {
       beforeEach(() => {
-        wrapper = createComponent();
+        wrapper = createComponent({ country });
       });
 
       it(`should${display ? '' : ' not'} render the state`, async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({ countries, states, country });
-
         await nextTick();
 
         expect(findFormInput('state').exists()).toBe(display);
       });
+    });
+  });
+
+  describe('selection change', () => {
+    it('emits the change event properly when country is changed', async () => {
+      wrapper = createComponent();
+
+      await findFormInput('country').vm.$emit('change', true);
+
+      expect(wrapper.emitted('change')[0]).toStrictEqual([
+        { country: 'US', state: 'CA', stateRequired: true },
+      ]);
+    });
+
+    it('emits the change event properly when country is changed with no state required', async () => {
+      wrapper = createComponent({ country: 'NL' });
+
+      await findFormInput('country').vm.$emit('change', true);
+
+      expect(wrapper.emitted('change')[0]).toStrictEqual([
+        { country: 'NL', state: '', stateRequired: false },
+      ]);
+    });
+
+    it('emits the change event properly when country is changed with state required', async () => {
+      wrapper = createComponent({ country: 'US', state: '' });
+
+      await findFormInput('country').vm.$emit('change', true);
+
+      expect(wrapper.emitted('change')[0]).toStrictEqual([
+        { country: 'US', state: '', stateRequired: true },
+      ]);
+    });
+
+    it('emits the change event properly when state is not required but has value', async () => {
+      wrapper = createComponent({ country: 'NL', state: 'CA' });
+
+      await findFormInput('country').vm.$emit('change', true);
+
+      expect(wrapper.emitted('change')[0]).toStrictEqual([
+        { country: 'NL', state: '', stateRequired: false },
+      ]);
+    });
+
+    it('emits the change event properly when state is changed', async () => {
+      wrapper = createComponent();
+
+      await findFormInput('state').vm.$emit('change', true);
+
+      expect(wrapper.emitted('change')[0]).toStrictEqual([
+        { country: 'US', state: 'CA', stateRequired: true },
+      ]);
     });
   });
 });

@@ -14,9 +14,8 @@ import { sprintf } from '~/locale';
 import Tracking from '~/tracking';
 import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.graphql';
 import statesQuery from 'ee/subscriptions/graphql/queries/states.query.graphql';
-import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
+import CountryOrRegionSelector from 'ee/trials/components/country_or_region_selector.vue';
 import {
-  COUNTRIES_WITH_STATES_ALLOWED,
   LEADS_COMPANY_NAME_LABEL,
   LEADS_COMPANY_SIZE_LABEL,
   LEADS_COUNTRY_LABEL,
@@ -51,10 +50,10 @@ export default {
     GlFormSelect,
     GlFormTextarea,
     GlModal,
+    CountryOrRegionSelector,
   },
   directives: {
     GlModal: GlModalDirective,
-    autofocusonshow,
   },
   mixins: [Tracking.mixin()],
   inject: ['user', 'small'],
@@ -66,11 +65,12 @@ export default {
       companyName: this.user.companyName,
       companySize: null,
       phoneNumber: '',
-      country: null,
-      state: null,
+      country: '',
+      state: '',
       countries: [],
       states: [],
       comment: '',
+      stateRequired: false,
     };
   },
   apollo: {
@@ -95,9 +95,6 @@ export default {
         userName: this.user.userName,
       });
     },
-    mustEnterState() {
-      return COUNTRIES_WITH_STATES_ALLOWED.includes(this.country);
-    },
     canSubmit() {
       return (
         this.firstName &&
@@ -106,7 +103,7 @@ export default {
         this.companySize &&
         this.phoneNumber &&
         this.country &&
-        (this.mustEnterState ? this.state : true)
+        (this.stateRequired ? this.state : true)
       );
     },
     actionPrimary() {
@@ -125,9 +122,6 @@ export default {
         label: 'hand_raise_lead_form',
       };
     },
-    showState() {
-      return !this.$apollo.loading.states && this.states && this.country && this.mustEnterState;
-    },
     companySizeOptionsWithDefault() {
       return [
         {
@@ -135,24 +129,6 @@ export default {
           id: null,
         },
         ...companySizes,
-      ];
-    },
-    countryOptionsWithDefault() {
-      return [
-        {
-          name: this.$options.i18n.countrySelectPrompt,
-          id: null,
-        },
-        ...this.countries,
-      ];
-    },
-    stateOptionsWithDefault() {
-      return [
-        {
-          name: this.$options.i18n.stateSelectPrompt,
-          id: null,
-        },
-        ...this.states,
       ];
     },
     formParams() {
@@ -164,7 +140,7 @@ export default {
         companySize: this.companySize,
         phoneNumber: this.phoneNumber,
         country: this.country,
-        state: this.mustEnterState ? this.state : null,
+        state: this.stateRequired ? this.state : null,
         comment: this.comment,
         glmContent: this.user.glmContent,
       };
@@ -177,9 +153,10 @@ export default {
       this.companyName = '';
       this.companySize = null;
       this.phoneNumber = '';
-      this.country = null;
-      this.state = null;
+      this.country = '';
+      this.state = '';
       this.comment = '';
+      this.stateRequired = false;
     },
     async submit() {
       this.isLoading = true;
@@ -204,6 +181,11 @@ export default {
         .finally(() => {
           this.isLoading = false;
         });
+    },
+    onChange({ country, state, stateRequired }) {
+      this.country = country;
+      this.state = state;
+      this.stateRequired = stateRequired;
     },
   },
   i18n: {
@@ -247,6 +229,7 @@ export default {
     <gl-modal
       ref="modal"
       modal-id="hand-raise-lead"
+      data-testid="hand-raise-lead-modal"
       size="sm"
       :title="$options.i18n.modalTitle"
       :action-primary="actionPrimary"
@@ -309,7 +292,7 @@ export default {
         >
           <gl-form-select
             v-model="companySize"
-            v-autofocusonshow
+            name="company-size"
             :options="companySizeOptionsWithDefault"
             value-field="id"
             text-field="name"
@@ -331,37 +314,7 @@ export default {
           data-testid="phone-number"
         />
       </gl-form-group>
-      <gl-form-group
-        v-if="!$apollo.loading.countries"
-        :label="$options.i18n.countryLabel"
-        label-size="sm"
-        label-for="country"
-      >
-        <gl-form-select
-          v-model="country"
-          v-autofocusonshow
-          :options="countryOptionsWithDefault"
-          value-field="id"
-          text-field="name"
-          data-testid="country"
-        />
-      </gl-form-group>
-      <gl-form-group
-        v-if="showState"
-        :label="$options.i18n.stateLabel"
-        label-size="sm"
-        label-for="state"
-      >
-        <gl-form-select
-          v-model="state"
-          v-autofocusonshow
-          :options="stateOptionsWithDefault"
-          value-field="id"
-          text-field="name"
-          data-testid="state"
-        />
-      </gl-form-group>
-
+      <country-or-region-selector :country="country" :state="state" @change="onChange" />
       <gl-form-group :label="$options.i18n.commentLabel" label-size="sm" label-for="comment">
         <gl-form-textarea v-model="comment" />
       </gl-form-group>
