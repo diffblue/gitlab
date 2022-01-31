@@ -14,7 +14,6 @@ RSpec.describe Namespace do
   let!(:premium_plan) { create(:premium_plan) }
   let!(:ultimate_plan) { create(:ultimate_plan) }
 
-  it { is_expected.to have_one(:namespace_statistics) }
   it { is_expected.to have_one(:namespace_limit) }
   it { is_expected.to have_one(:elasticsearch_indexed_namespace) }
   it { is_expected.to have_one :upcoming_reconciliation }

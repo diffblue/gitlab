@@ -23,7 +23,6 @@ module EE
     prepended do
       include EachBatch
 
-      has_one :namespace_statistics
       has_one :namespace_limit, inverse_of: :namespace
       has_one :gitlab_subscription
       has_one :elasticsearch_indexed_namespace
