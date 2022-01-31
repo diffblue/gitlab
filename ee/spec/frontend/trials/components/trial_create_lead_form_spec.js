@@ -5,7 +5,7 @@ import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_help
 import TrialCreateLeadForm from 'ee/trials/components/trial_create_lead_form.vue';
 import { TRIAL_FORM_SUBMIT_TEXT } from 'ee/trials/constants';
 import { trackSaasTrialSubmit } from '~/google_tag_manager';
-import { formData, submitPath } from './mock_data';
+import { FORM_DATA, SUBMIT_PATH } from './mock_data';
 
 jest.mock('~/google_tag_manager', () => ({
   trackSaasTrialSubmit: jest.fn(),
@@ -21,8 +21,8 @@ describe('TrialCreateLeadForm', () => {
     return mountFunction(TrialCreateLeadForm, {
       localVue,
       provide: {
-        submitPath,
-        user: formData,
+        submitPath: SUBMIT_PATH,
+        user: FORM_DATA,
       },
     });
   };

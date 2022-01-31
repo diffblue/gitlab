@@ -1,5 +1,5 @@
-export const submitPath = '_submit_path_';
-export const formData = {
+export const SUBMIT_PATH = '_submit_path_';
+export const FORM_DATA = {
   firstName: 'Joe',
   lastName: 'Doe',
   companyName: 'ACME',
