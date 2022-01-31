@@ -7,35 +7,23 @@ RSpec.describe API::StatusChecks do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:project) { create(:project, :repository) }
+  let_it_be(:another_project) { create(:project, :repository, :public) }
   let_it_be(:rule) { create(:external_status_check, project: project) }
   let_it_be(:rule_2) { create(:external_status_check, project: project) }
-  let_it_be(:merge_request) { create(:merge_request, source_project: project) }
-  let_it_be(:project_maintainer) { create(:user) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:merge_request) { create(:merge_request, source_project: project, target_project: project, author: user) }
 
   let(:single_object_url) { "/projects/#{project.id}/external_status_checks/#{rule.id}" }
   let(:collection_url) { "/projects/#{project.id}/external_status_checks" }
   let(:sha) { merge_request.source_branch_sha }
-  let(:user) { project_maintainer }
 
-  subject { post api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/status_check_responses", user), params: { external_status_check_id: rule.id, sha: sha } }
-
-  describe 'permissions' do
-    before do
-      stub_licensed_features(external_status_checks: true)
-    end
-
-    it { expect { subject }.to be_allowed_for(:maintainer).of(project) }
-    it { expect { subject }.to be_allowed_for(:developer).of(project) }
-    it { expect { subject }.to be_denied_for(:reporter).of(project) }
-  end
+  subject { get api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/status_checks", user), params: { external_status_check_id: rule.id, sha: sha } }
 
   describe 'GET :id/merge_requests/:merge_request_iid/status_checks' do
-    subject { get api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/status_checks", user), params: { external_status_check_id: rule.id, sha: sha } }
-
     context 'when current_user has access' do
       before do
         stub_licensed_features(external_status_checks: true)
-        project.add_user(project_maintainer, :maintainer)
+        project.add_user(user, :maintainer)
       end
 
       context 'when merge request has received status check responses' do
@@ -69,26 +57,41 @@ RSpec.describe API::StatusChecks do
   describe 'POST :id/:merge_requests/:merge_request_iid/status_check_responses' do
     subject { post api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/status_check_responses", user), params: { external_status_check_id: rule.id, sha: sha } }
 
+    context 'permissions' do
+      using RSpec::Parameterized::TableSyntax
+
+      where(:user_permissions, :applies_to_target_project, :expected_status) do
+        :maintainer | true  | :created
+        :maintainer | false | :not_found
+        :developer  | true  | :created
+        :developer  | false | :not_found
+        :guest      | true  | :forbidden
+        :guest      | false | :not_found
+      end
+
+      with_them do
+        before do
+          stub_licensed_features(external_status_checks: true)
+
+          if applies_to_target_project
+            project.add_user(user, user_permissions)
+          else
+            another_project.add_user(user, user_permissions)
+          end
+        end
+
+        it 'returns the correct status' do
+          subject
+
+          expect(response).to have_gitlab_http_status(expected_status)
+        end
+      end
+    end
+
     context 'when user has access' do
       before do
         stub_licensed_features(external_status_checks: true)
-        project.add_user(project_maintainer, :maintainer)
-      end
-
-      it 'returns a 201' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:created)
-      end
-
-      it 'returns the status checks as JSON' do
-        subject
-
-        expect(json_response.keys).to contain_exactly('id', 'merge_request', 'external_status_check')
-      end
-
-      it 'creates new StatusCheckResponse with correct attributes' do
-        expect { subject }.to change { MergeRequests::StatusCheckResponse.count }.by 1
+        project.add_user(user, :maintainer)
       end
 
       context 'when external status check ID does not belong to the requested project' do
