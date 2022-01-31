@@ -2,6 +2,7 @@ import { GlDrawer } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import RoadmapSettings from 'ee/roadmap/components/roadmap_settings.vue';
 import RoadmapDaterange from 'ee/roadmap/components/roadmap_daterange.vue';
+import RoadmapEpicsState from 'ee/roadmap/components/roadmap_epics_state.vue';
 
 describe('RoadmapSettings', () => {
   let wrapper;
@@ -14,6 +15,7 @@ describe('RoadmapSettings', () => {
 
   const findSettingsDrawer = () => wrapper.findComponent(GlDrawer);
   const findDaterange = () => wrapper.findComponent(RoadmapDaterange);
+  const findEpicsSate = () => wrapper.findComponent(RoadmapEpicsState);
 
   beforeEach(() => {
     createComponent();
@@ -31,6 +33,10 @@ describe('RoadmapSettings', () => {
 
     it('renders roadmap daterange component', () => {
       expect(findDaterange().exists()).toBe(true);
+    });
+
+    it('renders roadmap epics state component', () => {
+      expect(findEpicsSate().exists()).toBe(true);
     });
   });
 });
