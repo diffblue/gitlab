@@ -9,6 +9,9 @@ product_category: static_application_security_testing
 value_type: number
 status: active
 time_frame: all
+instrumentation_class: CountCiBuildsMetric
+options:
+  secure_type: sast
 data_source: database
 distribution:
 - ee

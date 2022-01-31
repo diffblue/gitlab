@@ -19,8 +19,7 @@ module EE
 
       SECURE_PRODUCT_TYPES = {
         container_scanning: {
-          name: :container_scanning_jobs,
-          instrumentation_class_migrated: true
+          name: :container_scanning_jobs
         },
         dast: {
           name: :dast_jobs
@@ -154,7 +153,7 @@ module EE
           results = SECURE_PRODUCT_TYPES.each_with_object({}) do |(secure_type, attribs), response|
             next if secure_type.in?([:license_management, :license_scanning])
 
-            response[attribs[:name]] = count(::Ci::Build.where(name: secure_type)) # rubocop:disable CodeReuse/ActiveRecord
+            response[attribs[:name]] = add_metric('CountCiBuildsMetric', options: { secure_type: secure_type })
           end
 
           results[:license_management_jobs] = add_metric("LicenseManagementJobsMetric")
@@ -383,15 +382,7 @@ module EE
           time_frame = metric_time_period(time_period)
 
           SECURE_PRODUCT_TYPES.each do |secure_type, attribs|
-            results["#{prefix}#{attribs[:name]}".to_sym] =
-              if attribs[:instrumentation_class_migrated]
-                add_metric('CiBuildDistinctCountMetric', time_frame: time_frame, options: { secure_type: secure_type })
-              else
-                distinct_count(::Ci::Build.where(name: secure_type).where(time_period),
-                                                                              :user_id,
-                                                                              start: minimum_id(::User),
-                                                                              finish: maximum_id(::User))
-              end
+            results["#{prefix}#{attribs[:name]}".to_sym] = add_metric('CountUsersCreatingCiBuildsMetric', time_frame: time_frame, options: { secure_type: secure_type })
           end
 
           results.merge!(count_secure_pipelines(time_period))

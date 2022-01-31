@@ -4,11 +4,11 @@ module Gitlab
   module Usage
     module Metrics
       module Instrumentations
-        class CiBuildDistinctCountMetric < DatabaseMetric
-          operation :distinct_count, column: :user_id
-          cache_start_and_finish_as :ci_build_distinct_count_user
-
+        class CountUsersCreatingCiBuildsMetric < DatabaseMetric
           relation { ::Ci::Build }
+
+          operation :distinct_count, column: :user_id
+          cache_start_and_finish_as :count_users_creating_ci_builds
 
           start { ::User.minimum(:id) }
           finish { ::User.maximum(:id) }
