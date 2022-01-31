@@ -53,7 +53,7 @@ describe('Environments', () => {
     });
 
     it('renders the correct table headers', () => {
-      const tableHeaders = ['Project', 'Environment', 'Job', `Pods in use 2`, 'Last updated'];
+      const tableHeaders = ['Project', 'Environment', 'Job', `Pods in use  2`, 'Last updated'];
       const headers = table.findAll('th');
 
       expect(headers).toHaveLength(tableHeaders.length);
