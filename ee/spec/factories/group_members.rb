@@ -7,5 +7,11 @@ FactoryBot.modify do
         member.wait
       end
     end
+
+    trait :active do
+      after(:create) do |member|
+        member.activate
+      end
+    end
   end
 end
