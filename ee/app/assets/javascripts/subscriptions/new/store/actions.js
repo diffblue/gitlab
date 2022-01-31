@@ -5,7 +5,7 @@ import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutati
 import createFlash from '~/flash';
 import { redirectTo } from '~/lib/utils/url_utility';
 import { sprintf, s__ } from '~/locale';
-import { trackCheckout } from '~/google_tag_manager';
+import { trackCheckout, trackTransaction } from '~/google_tag_manager';
 import defaultClient from '../graphql';
 import * as types from './mutation_types';
 
@@ -195,6 +195,16 @@ export const confirmOrder = ({ getters, dispatch, commit }) => {
   Api.confirmOrder(getters.confirmOrderParams)
     .then(({ data }) => {
       if (data.location) {
+        const transactionDetails = {
+          paymentOption: getters.confirmOrderParams?.subscription?.payment_method_id,
+          revenue: getters.totalExVat,
+          tax: getters.vat,
+          selectedPlan: getters.selectedPlanDetails?.value,
+          quantity: getters.selectedGroupUsers,
+        };
+
+        trackTransaction(transactionDetails);
+
         dispatch('confirmOrderSuccess', {
           location: data.location,
         });
