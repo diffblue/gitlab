@@ -113,13 +113,9 @@ RSpec.describe BadgesHelper do
         it 'adds aria-label to element' do
           expect(subject).to match(%r{<span .*aria-label="#{label}".*>})
         end
-      end
 
-      describe 'icon size' do
-        subject { helper.gl_badge_tag(label, icon: 'question-o', icon_size: 8) }
-
-        it 'adds an img role to element' do
-          expect(subject).to match(%r{<svg .*class="s8.*".*>})
+        it 'does not add a spacing class to the icon' do
+          expect(subject).not_to match(spacing_class_regex)
         end
       end
     end
