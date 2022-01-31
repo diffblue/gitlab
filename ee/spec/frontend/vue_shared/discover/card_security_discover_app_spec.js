@@ -27,6 +27,7 @@ describe('Card security discover app', () => {
       propsData,
       apolloProvider: createMockApollo([], {}),
       provide: {
+        small: false,
         user: {
           namespaceId: '1',
           userName: 'joe',
