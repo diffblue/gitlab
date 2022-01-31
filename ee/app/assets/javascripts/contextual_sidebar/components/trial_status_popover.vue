@@ -52,7 +52,6 @@ export default {
     return {
       disabled: false,
       forciblyShowing: false,
-      showCloseButton: false,
       show: false,
     };
   },
@@ -85,7 +84,6 @@ export default {
 
     if (this.startInitiallyShown) {
       this.forciblyShowing = true;
-      this.showCloseButton = true;
       this.show = true;
       this.onForciblyShown();
     }
@@ -103,7 +101,6 @@ export default {
     },
     onClose() {
       this.forciblyShowing = false;
-      this.show = false;
       this.trackPageAction('closeBtnClick');
     },
     onForciblyShown() {
@@ -141,21 +138,13 @@ export default {
     placement="rightbottom"
     boundary="viewport"
     :delay="{ hide: 400 }"
-    :show.sync="show"
+    :show="show"
     :triggers="forciblyShowing ? '' : 'hover focus'"
+    :show-close-button="startInitiallyShown"
     @shown="onShown"
+    @close-button-clicked.prevent="onClose"
   >
     <template #title>
-      <gl-button
-        v-if="showCloseButton"
-        category="tertiary"
-        class="close"
-        data-testid="closeBtn"
-        :aria-label="$options.i18n.close"
-        @click.prevent="onClose"
-      >
-        <span class="gl-display-inline-block" aria-hidden="true">&times;</span>
-      </gl-button>
       {{ $options.i18n.popoverTitle }}
       <gl-emoji class="gl-vertical-align-baseline gl-font-size-inherit gl-ml-1" data-name="wave" />
     </template>
