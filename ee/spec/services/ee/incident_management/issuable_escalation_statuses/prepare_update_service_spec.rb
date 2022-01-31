@@ -67,7 +67,7 @@ RSpec.describe IncidentManagement::IssuableEscalationStatuses::PrepareUpdateServ
 
     it 'returns an error response' do
       expect(result).to be_error
-      expect(result.message).to eq('Invalid value was provided for a parameter.')
+      expect(result.message).to eq('Invalid value was provided for parameters: policy')
     end
   end
 
@@ -77,6 +77,12 @@ RSpec.describe IncidentManagement::IssuableEscalationStatuses::PrepareUpdateServ
     end
 
     context 'when policy is unchanged' do
+      it_behaves_like 'successful response without policy params'
+    end
+
+    context 'when policy is excluded' do
+      let(:params) { { status: status } }
+
       it_behaves_like 'successful response without policy params'
     end
 
