@@ -19,24 +19,32 @@ RSpec.describe 'Filter issues by iteration', :js do
   let_it_be(:iteration_2_issue) { create(:issue, project: project, iteration: iteration_2) }
   let_it_be(:no_iteration_issue) { create(:issue, project: project) }
 
+  let(:filter_input) { find('.gl-filtered-search-term-input')}
+  let(:filter_first_suggestion) { find('.gl-filtered-search-suggestion-list').first('.gl-filtered-search-suggestion') }
+  let(:filter_submit) { find('.gl-search-box-by-click-search-button') }
+
   shared_examples 'filters by iteration' do
     context 'when iterations are not available' do
       before do
         stub_licensed_features(iterations: false)
+        stub_feature_flags(vue_issues_list: true)
 
         visit page_path
       end
 
       it 'does not show the iteration filter option' do
-        find('.filtered-search').set('iter')
+        filter_input.click
 
-        expect(find('#js-dropdown-hint')).not_to have_selector('.filter-dropdown .filter-dropdown-item', text: 'Iteration')
+        page.within('.gl-filtered-search-suggestion-list') do
+          expect(page).not_to have_content('Iteration')
+        end
       end
     end
 
     context 'when iterations are available' do
       before do
         stub_licensed_features(iterations: true)
+        stub_feature_flags(vue_issues_list: true)
 
         visit page_path
 
@@ -67,7 +75,7 @@ RSpec.describe 'Filter issues by iteration', :js do
 
       context 'when passing specific iteration by title' do
         before do
-          input_filtered_search("iteration:=\"#{iteration_1.title}\"")
+          set_filter('iteration', iteration_1.title)
         end
 
         it_behaves_like 'filters issues by iteration'
@@ -75,7 +83,7 @@ RSpec.describe 'Filter issues by iteration', :js do
 
       context 'when passing Current iteration' do
         before do
-          input_filtered_search("iteration:=Current", extra_space: false)
+          set_filter('iteration', 'Current')
         end
 
         it_behaves_like 'filters issues by iteration'
@@ -85,15 +93,7 @@ RSpec.describe 'Filter issues by iteration', :js do
         before do
           visit page_path
 
-          page.within('.filtered-search-wrapper') do
-            find('.filtered-search').set('iter')
-            click_button('Iteration')
-
-            find('.btn-helptext', text: 'is not').click
-            click_button(iteration_title)
-
-            find('.filtered-search').send_keys(:enter)
-          end
+          set_negated_filter('iteration', iteration_title)
         end
 
         context 'with specific iteration' do
@@ -185,5 +185,21 @@ RSpec.describe 'Filter issues by iteration', :js do
     end
 
     it_behaves_like 'filters by iteration'
+  end
+
+  def set_filter(type, filter_value)
+    filter_input.click
+    filter_input.set("#{type}:")
+    filter_first_suggestion.click # Select `=` operator
+    click_on filter_value
+    filter_submit.click
+  end
+
+  def set_negated_filter(type, filter_value)
+    filter_input.click
+    filter_input.set("#{type}:")
+    click_on '!='
+    click_on filter_value
+    filter_submit.click
   end
 end

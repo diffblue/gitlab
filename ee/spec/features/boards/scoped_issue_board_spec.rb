@@ -3,7 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe 'Scoped issue boards', :js do
-  include FilteredSearchHelpers
   include MobileHelpers
 
   let_it_be(:user) { create(:user) }
@@ -23,6 +22,10 @@ RSpec.describe 'Scoped issue boards', :js do
   let(:edit_board) { find('.btn', text: 'Edit board') }
   let(:view_scope) { find('.btn', text: 'View scope') }
   let(:board_title) { find('.boards-selector-wrapper .dropdown-menu-toggle') }
+  let(:filtered_search) { find('[data-testid="issue-board-filtered-search"]') }
+  let(:filter_input) { find('.gl-filtered-search-last-item')}
+  let(:filter_first_suggestion) { find('.gl-filtered-search-suggestion-list').first('.gl-filtered-search-suggestion') }
+  let(:filter_submit) { find('.gl-search-box-by-click-search-button') }
 
   before do
     allow_next_instance_of(ApplicationHelper) do |helper|
@@ -53,22 +56,22 @@ RSpec.describe 'Scoped issue boards', :js do
         it 'creates board filtering by milestone' do
           create_board_milestone(milestone.title)
 
-          expect(page).to have_css('.js-visual-token')
-          expect(find('.tokens-container')).to have_content(:all, milestone.title)
+          expect(page).to have_css('.gl-filtered-search-token')
+          expect(find('.gl-filtered-search-scrollable')).to have_content(:all, milestone.title)
           expect(page).to have_selector('.board-card', count: 1)
         end
 
         it 'creates board filtering by No milestone' do
           create_board_milestone('No milestone')
 
-          expect(find('.tokens-container')).to have_content("")
+          expect(find('.gl-filtered-search-scrollable')).to have_content("")
           expect(page).to have_selector('.board-card', count: 2)
         end
 
         it 'creates board filtering by Any Milestone' do
           create_board_milestone('Any Milestone')
 
-          expect(find('.tokens-container')).to have_content("")
+          expect(find('.gl-filtered-search-scrollable')).to have_content("")
           expect(page).to have_selector('.board-card', count: 3)
         end
 
@@ -89,17 +92,17 @@ RSpec.describe 'Scoped issue boards', :js do
         it 'creates board filtering by one label' do
           create_board_label(label_1.title)
 
-          expect(page).to have_css('.js-visual-token')
-          expect(find('.tokens-container')).to have_content(:all, label_1.title)
+          expect(page).to have_css('.gl-filtered-search-token')
+          expect(find('.gl-filtered-search-scrollable')).to have_content(:all, label_1.title)
           expect(page).to have_selector('.board-card', count: 2)
         end
 
         it 'creates board filtering by multiple labels' do
           create_board_label([label_1.title, label_2.title])
 
-          expect(page).to have_css('.js-visual-token')
-          expect(find('.tokens-container')).to have_content(:all, label_1.title)
-          expect(find('.tokens-container')).to have_content(:all, label_2.title)
+          expect(page).to have_css('.gl-filtered-search-token')
+          expect(find('.gl-filtered-search-scrollable')).to have_content(:all, label_1.title)
+          expect(find('.gl-filtered-search-scrollable')).to have_content(:all, label_2.title)
           expect(page).to have_selector('.board-card', count: 1)
         end
 
@@ -134,14 +137,14 @@ RSpec.describe 'Scoped issue boards', :js do
         it 'creates board filtering by assignee' do
           create_board_assignee(user.name)
 
-          expect(page).to have_css('.js-visual-token')
-          expect(find('.tokens-container')).to have_content(:all, user.name)
+          expect(page).to have_css('.gl-filtered-search-token')
+          expect(find('.gl-filtered-search-scrollable')).to have_content(:all, user.name)
           expect(page).to have_selector('.board-card', count: 1)
 
           # Does not display assignee in search hint
           filtered_search.click
 
-          page.within('#js-dropdown-hint') do
+          page.within('.gl-filtered-search-suggestion-list') do
             expect(page).to have_content('Label')
             expect(page).not_to have_content('Assignee')
           end
@@ -150,7 +153,7 @@ RSpec.describe 'Scoped issue boards', :js do
         it 'creates board filtering by "Any assignee"' do
           create_board_assignee('Any assignee')
 
-          expect(page).not_to have_css('.js-visual-token')
+          expect(page).not_to have_css('.gl-filtered-search-token')
           expect(page).to have_selector('.board-card', count: 3)
         end
 
@@ -175,7 +178,7 @@ RSpec.describe 'Scoped issue boards', :js do
           # Does not display assignee in search hint
           filtered_search.click
 
-          page.within('#js-dropdown-hint') do
+          page.within('.gl-filtered-search-suggestion-list') do
             expect(page).to have_content('Label')
             expect(page).not_to have_content('Weight')
           end
@@ -238,14 +241,14 @@ RSpec.describe 'Scoped issue boards', :js do
         it 'sets board milestone' do
           update_board_milestone(milestone.title)
 
-          expect(find('.tokens-container')).to have_content(:all, milestone.title)
+          expect(find('.gl-filtered-search-scrollable')).to have_content(:all, milestone.title)
           expect(page).to have_selector('.board-card', count: 1)
         end
 
         it 'sets board to any milestone' do
           update_board_milestone('Any Milestone')
 
-          expect(find('.tokens-container')).not_to have_content(milestone.title)
+          expect(find('.gl-filtered-search-scrollable')).not_to have_content(milestone.title)
 
           find('.board-card', match: :first)
 
@@ -257,7 +260,7 @@ RSpec.describe 'Scoped issue boards', :js do
         it 'sets board to upcoming milestone' do
           update_board_milestone('Upcoming')
 
-          expect(find('.tokens-container')).not_to have_content(milestone.title)
+          expect(find('.gl-filtered-search-scrollable')).not_to have_content(milestone.title)
 
           find('.board', match: :first)
 
@@ -268,7 +271,7 @@ RSpec.describe 'Scoped issue boards', :js do
           update_board_milestone(milestone.title)
           filtered_search.click
 
-          page.within('#js-dropdown-hint') do
+          page.within('.gl-filtered-search-suggestion-list') do
             expect(page).to have_content('Label')
             expect(page).not_to have_content('Milestone')
           end
@@ -360,8 +363,8 @@ RSpec.describe 'Scoped issue boards', :js do
 
           update_board_label(label_title)
 
-          expect(page).to have_css('.js-visual-token')
-          expect(find('.tokens-container')).to have_content(:all, label_title)
+          expect(page).to have_css('.gl-filtered-search-token')
+          expect(find('.gl-filtered-search-scrollable')).to have_content(:all, label_title)
 
           expect(page).to have_selector('.board-card', count: 2)
         end
@@ -379,9 +382,9 @@ RSpec.describe 'Scoped issue boards', :js do
 
           update_board_label(label_2_title)
 
-          expect(page).to have_css('.js-visual-token')
-          expect(find('.tokens-container')).to have_content(:all, label_title)
-          expect(find('.tokens-container')).to have_content(:all, label_2_title)
+          expect(page).to have_css('.gl-filtered-search-token')
+          expect(find('.gl-filtered-search-scrollable')).to have_content(:all, label_title)
+          expect(find('.gl-filtered-search-scrollable')).to have_content(:all, label_2_title)
 
           expect(page).to have_selector('.board-card', count: 1)
         end
@@ -395,7 +398,7 @@ RSpec.describe 'Scoped issue boards', :js do
 
           update_board_label(label_title)
 
-          input_filtered_search("label=~#{label_2_title}")
+          set_filter('label', label_2_title)
 
           expect(page).to have_selector('.board-card', count: 0)
         end
@@ -423,8 +426,8 @@ RSpec.describe 'Scoped issue boards', :js do
         it 'sets board assignee' do
           update_board_assignee(user.name)
 
-          expect(page).to have_css('.js-visual-token')
-          expect(find('.tokens-container')).to have_content(:all, user.name)
+          expect(page).to have_css('.gl-filtered-search-token')
+          expect(find('.gl-filtered-search-scrollable')).to have_content(:all, user.name)
 
           expect(page).to have_selector('.board-card', count: 1)
         end
@@ -432,7 +435,7 @@ RSpec.describe 'Scoped issue boards', :js do
         it 'sets board to Any assignee' do
           update_board_assignee('Any assignee')
 
-          expect(page).not_to have_css('.js-visual-token')
+          expect(page).not_to have_css('.gl-filtered-search-token')
           expect(page).to have_selector('.board-card', count: 3)
         end
 
@@ -440,7 +443,7 @@ RSpec.describe 'Scoped issue boards', :js do
           update_board_assignee(user.name)
           filtered_search.click
 
-          page.within('#js-dropdown-hint') do
+          page.within('.gl-filtered-search-suggestion-list') do
             expect(page).to have_content('Label')
             expect(page).not_to have_content('Assignee')
           end
@@ -467,7 +470,7 @@ RSpec.describe 'Scoped issue boards', :js do
           update_board_weight(1)
           filtered_search.click
 
-          page.within('#js-dropdown-hint') do
+          page.within('.gl-filtered-search-suggestion-list') do
             expect(page).to have_content('Label')
             expect(page).not_to have_content('Weight')
           end
@@ -649,5 +652,13 @@ RSpec.describe 'Scoped issue boards', :js do
   #
   def click_on_board_modal
     find('.board-config-modal .modal-content').click
+  end
+
+  def set_filter(type, filter_value)
+    filter_input.click
+    filter_input.set("#{type}:")
+    filter_first_suggestion.click # Select `=` operator
+    click_on filter_value
+    filter_submit.click
   end
 end

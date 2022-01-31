@@ -20,7 +20,6 @@ RSpec.describe 'Issue board filters', :js do
   let(:filter_submit) { find('.gl-search-box-by-click-search-button') }
 
   before do
-    stub_feature_flags(issue_boards_filtered_search: true)
     stub_licensed_features(epics: true, iterations: true)
 
     project.add_maintainer(user)
