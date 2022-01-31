@@ -2,38 +2,37 @@
 
 module TrialRegistrations
   module ReassurancesHelper
-    LOGO_IMAGE_PATH = "marketing/logos/logo_%<filename>s.svg"
-    DEFAULT_OPACITY_CSS_CLASS_LEVEL = 5
+    def reassurance_logo_data
+      # Create the basic data structure for the logos we want to showcase
+      data = [
+        { name: 'Siemens', css_classes: reassurance_logo_css_classes(opacity: 6, size: 9) },
+        { name: 'Chorus', css_classes: reassurance_logo_css_classes(opacity: 5, size: 9) },
+        { name: 'KnowBe4', css_classes: reassurance_logo_css_classes(opacity: 7, size: 9) },
+        { name: 'Wish', css_classes: reassurance_logo_css_classes(opacity: 5, size: 8) },
+        { name: 'Hotjar', css_classes: reassurance_logo_css_classes(opacity: 5, size: 8) }
+      ]
 
-    class ReassuranceOrg
-      attr_reader :name
-
-      def initialize(name:, opacity_level: DEFAULT_OPACITY_CSS_CLASS_LEVEL)
-        @name = name
-        @opacity_level = opacity_level
+      # Update each entry with a logo image path and alt text derived from the org's name
+      data.each do |hash|
+        hash[:image_path] = reassurance_logo_image_path(hash[:name])
+        hash[:image_alt_text] = reassurance_logo_image_alt_text(hash[:name])
       end
 
-      def image_alt_text
-        s_('InProductMarketing|%{organization_name} logo') % { organization_name: name }
-      end
-
-      def logo_image_path
-        LOGO_IMAGE_PATH % { filename: name.parameterize }
-      end
-
-      def opacity_css_class
-        "gl-opacity-#{@opacity_level}"
-      end
+      data
     end
 
-    def reassurance_orgs
-      [
-        ReassuranceOrg.new(name: 'Siemens', opacity_level: 6),
-        ReassuranceOrg.new(name: 'Chorus'),
-        ReassuranceOrg.new(name: 'KnowBe4', opacity_level: 7),
-        ReassuranceOrg.new(name: 'Wish'),
-        ReassuranceOrg.new(name: 'Hotjar')
-      ]
+    private
+
+    def reassurance_logo_css_classes(size:, opacity:)
+      "gl-w-#{size} gl-h-#{size} gl-mr-#{15 - size} gl-opacity-#{opacity}"
+    end
+
+    def reassurance_logo_image_path(org_name)
+      'marketing/logos/logo_%s.svg' % org_name.parameterize
+    end
+
+    def reassurance_logo_image_alt_text(org_name)
+      s_('InProductMarketing|%{organization_name} logo') % { organization_name: org_name }
     end
   end
 end
