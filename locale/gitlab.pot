@@ -28337,7 +28337,7 @@ msgstr ""
 msgid "ProjectSettings|View and edit files in this project."
 msgstr ""
 
-msgid "ProjectSettings|View and edit files in this project. Non-project members will only have read access."
+msgid "ProjectSettings|View and edit files in this project. Non-project members have only read access."
 msgstr ""
 
 msgid "ProjectSettings|View project analytics."
