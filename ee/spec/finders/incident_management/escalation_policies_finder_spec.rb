@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe IncidentManagement::EscalationPoliciesFinder do
   let_it_be(:current_user) { create(:user) }
   let_it_be_with_refind(:project) { create(:project) }
-  let_it_be(:escalation_policy) { create(:incident_management_escalation_policy, project: project) }
+  let_it_be(:escalation_policy) { create(:incident_management_escalation_policy, project: project, name: 'unique identifier') }
   let_it_be(:escalation_policy_from_another_project) { create(:incident_management_escalation_policy) }
 
   let(:params) { {} }
@@ -31,6 +31,18 @@ RSpec.describe IncidentManagement::EscalationPoliciesFinder do
           let(:params) { { id: escalation_policy.id } }
 
           it { is_expected.to contain_exactly(escalation_policy) }
+        end
+
+        context 'when search_name is given' do
+          let(:params) { { name_search: 'ique iden' } }
+
+          it { is_expected.to contain_exactly(escalation_policy) }
+
+          context 'when the name does not match' do
+            let(:params) { { name_search: 'not a matching search' } }
+
+            it { is_expected.to eq(IncidentManagement::EscalationPolicy.none) }
+          end
         end
       end
 

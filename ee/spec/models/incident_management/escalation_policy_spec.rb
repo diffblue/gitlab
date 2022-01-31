@@ -38,12 +38,18 @@ RSpec.describe IncidentManagement::EscalationPolicy do
   describe 'scopes' do
     let_it_be(:project) { create(:project) }
     let_it_be(:policy) { create(:incident_management_escalation_policy, project: project) }
-    let_it_be(:other_policy) { create(:incident_management_escalation_policy) }
+    let_it_be(:other_policy) { create(:incident_management_escalation_policy, name: 'Other policy') }
 
     describe '.for_project' do
       subject { described_class.for_project(project) }
 
       it { is_expected.to contain_exactly(policy) }
+    end
+
+    describe '.search_by_name' do
+      subject { described_class.search_by_name('other') }
+
+      it { is_expected.to contain_exactly(other_policy) }
     end
   end
 end

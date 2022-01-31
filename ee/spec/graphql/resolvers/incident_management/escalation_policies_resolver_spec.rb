@@ -7,7 +7,8 @@ RSpec.describe Resolvers::IncidentManagement::EscalationPoliciesResolver do
 
   let_it_be(:current_user) { create(:user) }
   let_it_be(:project) { create(:project) }
-  let_it_be(:policy) { create(:incident_management_escalation_policy, project: project) }
+  let_it_be(:policy) { create(:incident_management_escalation_policy, project: project, name: 'Target policy') }
+  let_it_be(:other_policy) { create(:incident_management_escalation_policy) }
 
   let(:args) { {} }
   let(:resolver) { described_class }
@@ -27,6 +28,16 @@ RSpec.describe Resolvers::IncidentManagement::EscalationPoliciesResolver do
     expect(resolved_policies.length).to eq(1)
     expect(resolved_policies.first).to be_a(::IncidentManagement::EscalationPolicy)
     expect(resolved_policies.first).to have_attributes(id: policy.id)
+  end
+
+  context 'with name param provided' do
+    let(:args) { { name: 'target' } }
+
+    it 'returns escalation policies matching the name search' do
+      expect(resolved_policies.length).to eq(1)
+      expect(resolved_policies.first).to be_a(::IncidentManagement::EscalationPolicy)
+      expect(resolved_policies.first).to have_attributes(id: policy.id)
+    end
   end
 
   context 'when resolving a single item' do

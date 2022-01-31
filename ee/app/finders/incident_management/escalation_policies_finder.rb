@@ -12,6 +12,7 @@ module IncidentManagement
       return IncidentManagement::EscalationPolicy.none unless allowed?
 
       collection = project.incident_management_escalation_policies
+      collection = by_name_search(collection)
       by_id(collection)
     end
 
@@ -27,6 +28,12 @@ module IncidentManagement
       return collection unless params[:id]
 
       collection.id_in(params[:id])
+    end
+
+    def by_name_search(collection)
+      return collection unless params[:name_search].present?
+
+      collection.search_by_name(params[:name_search])
     end
   end
 end

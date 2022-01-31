@@ -9,6 +9,11 @@ module Resolvers
 
       type Types::IncidentManagement::EscalationPolicyType.connection_type, null: true
 
+      argument :name,
+               GraphQL::Types::String,
+               required: false,
+               description: 'Fuzzy search by escalation policy name.'
+
       when_single do
         argument :id,
                  ::Types::GlobalIDType[::IncidentManagement::EscalationPolicy],
@@ -17,10 +22,16 @@ module Resolvers
                  prepare: ->(id, ctx) { id.model_id }
       end
 
-      def resolve_with_lookahead(**args)
+      def resolve_with_lookahead(name: nil, **args)
         context[:execution_time] = Time.current
 
-        apply_lookahead(::IncidentManagement::EscalationPoliciesFinder.new(current_user, project, args).execute)
+        apply_lookahead(
+          ::IncidentManagement::EscalationPoliciesFinder.new(
+            current_user,
+            project,
+            { name_search: name, **args }
+          ).execute
+        )
       end
 
       private
