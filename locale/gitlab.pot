@@ -33069,6 +33069,9 @@ msgstr ""
 msgid "Show all breadcrumbs"
 msgstr ""
 
+msgid "Show all epics"
+msgstr ""
+
 msgid "Show all issues."
 msgstr ""
 
@@ -33079,6 +33082,9 @@ msgid "Show archived projects"
 msgstr ""
 
 msgid "Show archived projects only"
+msgstr ""
+
+msgid "Show closed epics"
 msgstr ""
 
 msgid "Show command"
@@ -33115,6 +33121,9 @@ msgid "Show list"
 msgstr ""
 
 msgid "Show one file at a time"
+msgstr ""
+
+msgid "Show open epics"
 msgstr ""
 
 msgid "Show the Closed list"

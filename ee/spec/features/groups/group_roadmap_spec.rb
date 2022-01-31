@@ -10,7 +10,6 @@ RSpec.describe 'group epic roadmap', :js do
   let(:user_dev) { create(:user) }
   let(:group) { create(:group) }
   let(:milestone) { create(:milestone, group: group) }
-  let(:state_dropdown) { find('.dropdown-epics-state') }
 
   let!(:bug_label) { create(:group_label, group: group, title: 'Bug') }
   let!(:critical_label) { create(:group_label, group: group, title: 'Critical') }
@@ -50,6 +49,7 @@ RSpec.describe 'group epic roadmap', :js do
     let!(:epic_with_bug) { create(:labeled_epic, group: group, start_date: 10.days.ago, end_date: 1.day.ago, labels: [bug_label]) }
     let!(:epic_with_critical) { create(:labeled_epic, group: group, start_date: 20.days.ago, end_date: 2.days.ago, labels: [critical_label]) }
     let!(:closed_epic) { create(:epic, :closed, group: group, start_date: 20.days.ago, end_date: 2.days.ago) }
+    let(:state_dropdown) { find('.dropdown-epics-state') }
 
     before do
       stub_feature_flags(roadmap_settings: false)
@@ -95,6 +95,50 @@ RSpec.describe 'group epic roadmap', :js do
         end
       end
     end
+
+    it 'renders the epics state dropdown' do
+      page.within('.content-wrapper .content .epics-filters') do
+        expect(page).to have_css('.dropdown-epics-state')
+      end
+    end
+
+    describe 'roadmap page with epics state filter' do
+      before do
+        state_dropdown.find('.dropdown-toggle').click
+      end
+
+      it 'renders open epics only' do
+        state_dropdown.find('button', text: 'Open epics').click
+
+        page.within('.roadmap-container .epics-list-section') do
+          expect(page).to have_selector('.epics-list-item .epic-title', count: 2)
+        end
+      end
+
+      it 'renders closed epics only' do
+        state_dropdown.find('button', text: 'Closed epics').click
+
+        page.within('.roadmap-container .epics-list-section') do
+          expect(page).to have_selector('.epics-list-item .epic-title', count: 1)
+        end
+      end
+    end
+
+    describe 'roadmap page with filter applied' do
+      before do
+        search_for_label(bug_label)
+      end
+
+      it 'keeps label filter when filtering by state' do
+        state_dropdown.find('.dropdown-toggle').click
+        state_dropdown.find('button', text: 'Open epics').click
+
+        page.within('.roadmap-container .epics-list-section') do
+          expect(page).to have_selector('.epics-list-item .epic-title', count: 1)
+          expect(page).to have_content(epic_with_bug.title)
+        end
+      end
+    end
   end
 
   context 'when epics exist for the group' do
@@ -110,12 +154,12 @@ RSpec.describe 'group epic roadmap', :js do
     end
 
     describe 'roadmap page' do
-      context 'roadmap daterange filtering' do
-        def open_settings_sidebar
-          click_button 'Settings'
-          expect(page).to have_selector('[data-testid="roadmap-settings"]')
-        end
+      def open_settings_sidebar
+        click_button 'Settings'
+        expect(page).to have_selector('[data-testid="roadmap-settings"]')
+      end
 
+      context 'roadmap daterange filtering' do
         def select_date_range(range_type)
           open_settings_sidebar
 
@@ -132,7 +176,7 @@ RSpec.describe 'group epic roadmap', :js do
 
           page.within('[data-testid="roadmap-settings"]') do
             expect(page).to have_selector('[data-testid="daterange-dropdown"]')
-            expect(page).not_to have_selector('.gl-form-checkbox-group')
+            expect(page).not_to have_selector('[data-testid="daterange-presets"]')
             expect(page.find('[data-testid="daterange-dropdown"] button.dropdown-toggle')).to have_content('This quarter')
           end
         end
@@ -141,7 +185,7 @@ RSpec.describe 'group epic roadmap', :js do
           select_date_range('This year')
 
           page.within('[data-testid="roadmap-settings"]') do
-            expect(page).to have_selector('.gl-form-checkbox-group')
+            expect(page).to have_selector('[data-testid="daterange-presets"]')
             expect(page).to have_selector('input[value="MONTHS"]')
             expect(page).to have_selector('input[value="WEEKS"]')
           end
@@ -151,7 +195,7 @@ RSpec.describe 'group epic roadmap', :js do
           select_date_range('Within 3 years')
 
           page.within('[data-testid="roadmap-settings"]') do
-            expect(page).to have_selector('.gl-form-checkbox-group')
+            expect(page).to have_selector('[data-testid="daterange-presets"]')
             expect(page).to have_selector('input[value="QUARTERS"]')
             expect(page).to have_selector('input[value="MONTHS"]')
             expect(page).to have_selector('input[value="WEEKS"]')
@@ -159,9 +203,43 @@ RSpec.describe 'group epic roadmap', :js do
         end
       end
 
-      it 'renders the epics state dropdown' do
-        page.within('.content-wrapper .content .epics-filters') do
-          expect(page).to have_css('.dropdown-epics-state')
+      describe 'roadmap page with epics state filter' do
+        def select_state(state)
+          page.within('[data-testid="roadmap-epics-state"]') do
+            choose state
+          end
+        end
+
+        before do
+          open_settings_sidebar
+        end
+
+        it 'renders open epics only' do
+          select_state('Show open epics')
+
+          page.within('.roadmap-container .epics-list-section') do
+            expect(page).to have_selector('.epics-list-item .epic-title', count: 2)
+          end
+        end
+
+        it 'renders closed epics only' do
+          select_state('Show closed epics')
+
+          page.within('.roadmap-container .epics-list-section') do
+            expect(page).to have_selector('.epics-list-item .epic-title', count: 1)
+          end
+        end
+
+        it 'saves last selected epic state', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/341827' do
+          select_state('Show open epics')
+
+          wait_for_all_requests
+          visit group_roadmap_path(group)
+          wait_for_requests
+
+          page.within('.roadmap-container .epics-list-section') do
+            expect(page).to have_selector('.epics-list-item .epic-title', count: 2)
+          end
         end
       end
 
@@ -209,41 +287,6 @@ RSpec.describe 'group epic roadmap', :js do
       end
     end
 
-    describe 'roadmap page with epics state filter' do
-      before do
-        state_dropdown.find('.dropdown-toggle').click
-      end
-
-      it 'renders open epics only' do
-        state_dropdown.find('button', text: 'Open epics').click
-
-        page.within('.roadmap-container .epics-list-section') do
-          expect(page).to have_selector('.epics-list-item .epic-title', count: 2)
-        end
-      end
-
-      it 'renders closed epics only' do
-        state_dropdown.find('button', text: 'Closed epics').click
-
-        page.within('.roadmap-container .epics-list-section') do
-          expect(page).to have_selector('.epics-list-item .epic-title', count: 1)
-        end
-      end
-
-      it 'saves last selected epic state', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/341827' do
-        state_dropdown.find('button', text: 'Open epics').click
-
-        wait_for_all_requests
-        visit group_roadmap_path(group)
-        wait_for_requests
-
-        expect(state_dropdown.find('.dropdown-toggle')).to have_text("Open epics")
-        page.within('.roadmap-container .epics-list-section') do
-          expect(page).to have_selector('.epics-list-item .epic-title', count: 2)
-        end
-      end
-    end
-
     describe 'roadmap page with filter applied' do
       before do
         search_for_label(bug_label)
@@ -254,16 +297,6 @@ RSpec.describe 'group epic roadmap', :js do
       end
 
       it 'renders roadmap view with matching epic' do
-        page.within('.roadmap-container .epics-list-section') do
-          expect(page).to have_selector('.epics-list-item .epic-title', count: 1)
-          expect(page).to have_content(epic_with_bug.title)
-        end
-      end
-
-      it 'keeps label filter when filtering by state' do
-        state_dropdown.find('.dropdown-toggle').click
-        state_dropdown.find('button', text: 'Open epics').click
-
         page.within('.roadmap-container .epics-list-section') do
           expect(page).to have_selector('.epics-list-item .epic-title', count: 1)
           expect(page).to have_content(epic_with_bug.title)

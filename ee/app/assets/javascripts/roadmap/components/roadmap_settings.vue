@@ -1,11 +1,13 @@
 <script>
 import { GlDrawer } from '@gitlab/ui';
 import RoadmapDaterange from './roadmap_daterange.vue';
+import RoadmapEpicsState from './roadmap_epics_state.vue';
 
 export default {
   components: {
     GlDrawer,
     RoadmapDaterange,
+    RoadmapEpicsState,
   },
   props: {
     isOpen: {
@@ -44,6 +46,7 @@ export default {
     </template>
     <template #default>
       <roadmap-daterange :timeframe-range-type="timeframeRangeType" />
+      <roadmap-epics-state />
     </template>
   </gl-drawer>
 </template>
