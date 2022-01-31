@@ -44,6 +44,7 @@ export const POPOVER = {
   trackingEvents: {
     popoverShown: { action: 'popover_shown', label: 'trial_status_popover' },
     closeBtnClick: { action: CLICK_BUTTON_ACTION, label: 'close_popover' },
+    contactSalesBtnClick: { action: CLICK_BUTTON_ACTION, label: 'contact_sales' },
     upgradeBtnClick: { action: CLICK_BUTTON_ACTION, label: 'upgrade_to_ultimate' },
     compareBtnClick: { action: CLICK_BUTTON_ACTION, label: 'compare_all_plans' },
   },

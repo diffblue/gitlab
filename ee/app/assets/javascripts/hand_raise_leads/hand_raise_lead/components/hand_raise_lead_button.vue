@@ -57,7 +57,7 @@ export default {
     autofocusonshow,
   },
   mixins: [Tracking.mixin()],
-  inject: ['user'],
+  inject: ['user', 'small'],
   data() {
     return {
       isLoading: false,
@@ -233,9 +233,17 @@ export default {
 
 <template>
   <div>
-    <gl-button v-gl-modal.hand-raise-lead :loading="isLoading">
-      {{ $options.i18n.buttonText }}
+    <gl-button
+      v-gl-modal.hand-raise-lead
+      :loading="isLoading"
+      :href="small ? '#' : ''"
+      :variant="small ? 'confirm' : 'default'"
+      :size="small ? 'small' : 'medium'"
+      :class="{ 'gl-mb-3 gl-w-full': small }"
+    >
+      <span :class="{ 'gl-font-sm': small }">{{ $options.i18n.buttonText }}</span>
     </gl-button>
+
     <gl-modal
       ref="modal"
       modal-id="hand-raise-lead"

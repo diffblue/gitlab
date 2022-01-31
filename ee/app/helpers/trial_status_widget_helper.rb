@@ -12,7 +12,13 @@ module TrialStatusWidgetHelper
   D3_CALLOUT_ID = 'trial_status_reminder_d3'
 
   def trial_status_popover_data_attrs(group)
-    base_attrs = trial_status_common_data_attrs(group)
+    hand_raise_attrs = experiment(:group_contact_sales, namespace: group.root_ancestor, user: current_user, sticky_to: current_user) do |e|
+      e.control { {} }
+      e.candidate { hand_raise_props(group, glm_content: 'trial-status-show-group') }
+    end.run
+
+    base_attrs = trial_status_common_data_attrs(group).merge(hand_raise_attrs)
+
     base_attrs.merge(
       days_remaining: group.trial_days_remaining, # for experiment tracking
       group_name: group.name,

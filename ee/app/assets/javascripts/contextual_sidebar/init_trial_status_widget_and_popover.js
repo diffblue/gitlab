@@ -47,6 +47,12 @@ export const initTrialStatusPopover = () => {
     trialEndDate,
     userCalloutsPath,
     userCalloutsFeatureId,
+    namespaceId,
+    userName,
+    firstName,
+    lastName,
+    companyName,
+    glmContent,
   } = el.dataset;
 
   return new Vue({
@@ -63,6 +69,14 @@ export const initTrialStatusPopover = () => {
       trialEndDate: new Date(trialEndDate),
       userCalloutsPath,
       userCalloutsFeatureId,
+      user: {
+        namespaceId,
+        userName,
+        firstName,
+        lastName,
+        companyName,
+        glmContent,
+      },
     },
     render: (createElement) => createElement(TrialStatusPopover),
   });
