@@ -11,6 +11,7 @@ class TrialRegistrationsController < RegistrationsController
 
   before_action :check_if_gl_com_or_dev
   before_action :set_redirect_url, only: [:new]
+  before_action :add_onboarding_parameter_to_redirect_url, only: :create
   before_action only: [:new] do
     push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
   end
@@ -40,6 +41,16 @@ class TrialRegistrationsController < RegistrationsController
     else
       store_location_for(:user, target_url)
     end
+  end
+
+  def add_onboarding_parameter_to_redirect_url
+    stored_url = stored_location_for(:user)
+    return unless stored_url.present?
+
+    redirect_uri = URI.parse(stored_url)
+    new_query = URI.decode_www_form(String(redirect_uri.query)) << ['onboarding', true]
+    redirect_uri.query = URI.encode_www_form(new_query)
+    store_location_for(:user, redirect_uri.to_s)
   end
 
   def sign_up_params

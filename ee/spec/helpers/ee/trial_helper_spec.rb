@@ -32,7 +32,7 @@ RSpec.describe EE::TrialHelper do
     end
 
     it 'provides expected form data' do
-      keys = extra_params.keys + [:submit_path]
+      keys = extra_params.keys + [:submit_path, :onboarding]
 
       expect(helper.create_lead_form_data.keys.map(&:to_sym)).to match_array(keys)
     end

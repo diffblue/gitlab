@@ -25,7 +25,7 @@ module Registrations::CreateProject
     end
 
     def learn_gitlab_project_name
-      helpers.in_trial_onboarding_flow? ? s_('Learn GitLab - Ultimate trial') : s_('Learn GitLab')
+      helpers.in_trial_onboarding_flow? ? LearnGitlab::Project::PROJECT_NAME_ULTIMATE_TRIAL : LearnGitlab::Project::PROJECT_NAME
     end
 
     def project_params

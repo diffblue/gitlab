@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Registrations::GroupsProjectsController, :experiment do
+  include AfterNextHelpers
+
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 
@@ -141,6 +143,12 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
         it { is_expected.to render_template(:new) }
       end
 
+      context 'with signup onboarding not enabled' do
+        let(:dev_env_or_com) { false }
+
+        it { is_expected.to have_gitlab_http_status(:not_found) }
+      end
+
       context "when group can be created but the project can't" do
         let(:project_params) { { name: '', path: '', visibility_level: Gitlab::VisibilityLevel::PRIVATE } }
 
@@ -187,55 +195,130 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
 
           post_create
         end
+      end
 
-        context 'it redirects' do
-          let_it_be(:project) { create(:project) }
+      context 'it redirects' do
+        let_it_be(:project) { create(:project) }
 
+        let(:success_path) { continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: project.id) }
+
+        before do
+          allow_next_instance_of(::Projects::CreateService) do |service|
+            allow(service).to receive(:execute).and_return(project)
+          end
+        end
+
+        it { is_expected.to redirect_to(success_path) }
+
+        context 'when the `registration_verification` experiment is enabled' do
           before do
-            allow_next_instance_of(::Projects::CreateService) do |service|
-              allow(service).to receive(:execute).and_return(project)
-            end
+            stub_experiments(registration_verification: :candidate)
           end
 
-          it { is_expected.to redirect_to(continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: project.id)) }
+          it 'is expected to store the success path and redirect to the verification page' do
+            expect(subject).to redirect_to(new_users_sign_up_verification_path(project_id: project.id))
+            expect(controller.stored_location_for(:user)).to eq(success_path)
+          end
+        end
+
+        context 'when setup_for_company is true' do
+          let_it_be(:user) { create(:user, setup_for_company: true) }
+
+          it 'is expected to store the success path and redirect to the new trial page' do
+            expect(subject).to redirect_to(new_trial_path)
+            expect(controller.stored_location_for(:user)).to eq(success_path)
+          end
+
+          context 'when the skip_trial param is set' do
+            let(:extra_params) { { skip_trial: true } }
+
+            it { is_expected.to redirect_to(success_path) }
+          end
+
+          context 'when the trial_onboarding_flow param is set' do
+            let(:extra_params) { { trial_onboarding_flow: true } }
+
+            before do
+              allow_next_instance_of(GitlabSubscriptions::ApplyTrialService) do |service|
+                allow(service).to receive(:execute).and_return({ success: true })
+              end
+            end
+
+            it { is_expected.to redirect_to(success_path) }
+          end
         end
       end
-    end
 
-    shared_context 'groups_projects projects concern' do
-      let_it_be(:project) { create(:project) }
-      let_it_be(:namespace) { create(:group) }
+      context 'when in the trial onboarding flow' do
+        let(:success) { true }
+        let(:extra_params) do
+          { trial_onboarding_flow: true, glm_source: 'about.gitlab.com', glm_content: 'content' }
+        end
 
-      let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: "#{Gitlab::VisibilityLevel::PRIVATE}", setup_for_company: setup_for_company } }
-      let(:extra_params) { { group: group_params } }
-      let(:params) { { name: 'New project', path: 'project-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE } }
-      let(:create_service) { double(:create_service) }
+        let(:apply_trial_params) do
+          {
+            uid: user.id,
+            trial_user: ActionController::Parameters.new(
+              {
+                glm_source: 'about.gitlab.com',
+                glm_content: 'content',
+                namespace_id: group.id,
+                gitlab_com_trial: true,
+                sync_to_gl: true
+              }
+            ).permit!
+          }
+        end
 
-      before do
-        allow(controller).to receive(:record_experiment_user).and_call_original
-        allow(controller).to receive(:record_experiment_conversion_event).and_call_original
+        before do
+          allow_next_instance_of(::Groups::CreateService) do |service|
+            allow(service).to receive(:execute).and_return(group)
+          end
 
-        allow(Groups::CreateService).to receive(:new).and_call_original
-        allow(Groups::CreateService).to receive(:new).with(user, ActionController::Parameters.new(group_params.merge(create_event: true)).permit!).and_return(create_service)
-        allow(create_service).to receive(:execute).and_return(namespace)
+          expect_next_instance_of(GitlabSubscriptions::ApplyTrialService) do |service|
+            expect(service).to receive(:execute).with(apply_trial_params).and_return({ success: success })
+          end
+        end
+
+        it 'applies a trial' do
+          post_create
+        end
+
+        context 'when failing to apply trial' do
+          let(:success) { false }
+
+          it { is_expected.to render_template(:new) }
+        end
       end
-    end
 
-    it_behaves_like "Registrations::ProjectsController POST #create" do
-      include_context 'groups_projects projects concern'
-    end
+      context 'learn gitlab project' do
+        using RSpec::Parameterized::TableSyntax
 
-    context 'when the user is setup_for_company: true it redirects to the new_trial_path' do
-      let(:setup_for_company) { true }
+        where(:trial, :project_name, :template) do
+          false | 'Learn GitLab' | described_class::LEARN_GITLAB_ULTIMATE_TEMPLATE
+          true  | 'Learn GitLab - Ultimate trial' | described_class::LEARN_GITLAB_ULTIMATE_TEMPLATE
+        end
 
-      it_behaves_like "Registrations::ProjectsController POST #create" do
-        let_it_be(:first_project) { create(:project) }
+        with_them do
+          let(:path) { Rails.root.join('vendor', 'project_templates', template) }
+          let(:expected_arguments) { { namespace_id: group.id, file: handle, name: project_name } }
+          let(:handle) { double }
+          let(:group_params) { { id: group.id } }
+          let(:extra_params) { { trial_onboarding_flow: trial } }
 
-        let(:user) { create(:user, setup_for_company: setup_for_company) }
-        let(:success_path) { new_trial_path }
-        let(:stored_location_for) { continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: first_project.id) }
+          before do
+            group.add_owner(user)
+            allow(File).to receive(:open).and_call_original
+            expect(File).to receive(:open).with(path).and_yield(handle)
+          end
 
-        include_context 'groups_projects projects concern'
+          specify do
+            expect_next(::Projects::GitlabProjectsImportService, user, expected_arguments)
+              .to receive(:execute)
+
+            subject
+          end
+        end
       end
     end
   end

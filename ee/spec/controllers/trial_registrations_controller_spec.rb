@@ -103,5 +103,14 @@ RSpec.describe TrialRegistrationsController do
         expect(User.last.name).to eq("#{user_params[:first_name]} #{user_params[:last_name]}")
       end
     end
+
+    context 'applying the onboarding=true parameter' do
+      it 'adds the parameter' do
+        redirect_path = new_trial_path(glm_source: 'about.gitlab.com', glm_content: 'default-saas-trial')
+        controller.store_location_for(:user, redirect_path)
+        post_create
+        expect(controller.stored_location_for(:user)).to eq(redirect_path + '&onboarding=true')
+      end
+    end
   end
 end

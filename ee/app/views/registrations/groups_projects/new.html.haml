@@ -1,19 +1,13 @@
 - @html_class = "subscriptions-layout-html"
+- @hide_flash = true
 - page_title _('Your GitLab group')
-- form_params = { trial_onboarding_flow: params[:trial_onboarding_flow], glm_source: params[:glm_source], glm_content: params[:glm_content] }
+- form_params = { trial_onboarding_flow: params[:trial_onboarding_flow], glm_source: params[:glm_source], glm_content: params[:glm_content], skip_trial: params[:skip_trial] }
 - content_for :page_specific_javascripts do
   = render "layouts/one_trust"
-
-- if in_trial_onboarding_flow?
-  .row
-    .gl-display-flex.gl-flex-direction-column.gl-align-items-center.gl-w-full.gl-mt-3
-      = render 'registrations/trial_is_activated_banner'
 
 .row.gl-flex-grow-1
   .gl-display-flex.gl-flex-direction-column.gl-align-items-center.gl-w-full.gl-px-5.gl-pb-5
     .new-project.gl-display-flex.gl-flex-direction-column.gl-align-items-center.gl-xs-w-full
-      - unless in_trial_onboarding_flow?
-        #progress-bar
       %h2.gl-text-center= _('Create or import your first project')
 
       %p.gl-text-center= _('Projects help you organize your work. They contain your file repository, issues, merge requests, and so much more.')
