@@ -299,7 +299,9 @@ module EE
     end
 
     def elasticsearch_url
-      read_attribute(:elasticsearch_url).split(',').map(&:strip)
+      read_attribute(:elasticsearch_url).split(',').map do |s|
+        URI.parse(s.strip)
+      end
     end
 
     def elasticsearch_url=(values)
@@ -317,12 +319,10 @@ module EE
     def elasticsearch_url_with_credentials
       return elasticsearch_url if elasticsearch_username.blank?
 
-      elasticsearch_url.map do |url|
-        uri = URI.parse(url)
-
+      elasticsearch_url.map do |uri|
         uri.user = URI.encode_www_form_component(elasticsearch_username)
         uri.password = URI.encode_www_form_component(elasticsearch_password)
-        uri.to_s
+        uri
       end
     end
 
