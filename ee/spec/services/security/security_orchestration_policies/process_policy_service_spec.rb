@@ -29,24 +29,34 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService do
       let(:policy_name) { 'invalid' }
       let(:policy) { { name: 'invalid', invalid_field: 'invalid' } }
 
-      it 'raises StandardError' do
-        expect { service.execute }.to raise_error(StandardError, 'Invalid policy yaml')
+      it 'returns error' do
+        result = service.execute
+
+        expect(result[:status]).to eq(:error)
+        expect(result[:message]).to eq('Invalid policy YAML')
+        expect(result[:details]).to eq(["property '/scan_execution_policy/0' is missing required keys: enabled, rules, actions"])
       end
     end
 
     context 'when policy name is not same as in policy' do
       let(:policy_name) { 'invalid' }
 
-      it 'raises StandardError' do
-        expect { service.execute }.to raise_error(StandardError, 'Name should be same as the policy name')
+      it 'returns error' do
+        result = service.execute
+
+        expect(result[:status]).to eq(:error)
+        expect(result[:message]).to eq('Name should be same as the policy name')
       end
     end
 
     context 'when type is invalid' do
       let(:type) { :invalid_type }
 
-      it 'raises StandardError' do
-        expect { service.execute }.to raise_error(StandardError, 'Invalid policy type')
+      it 'returns error' do
+        result = service.execute
+
+        expect(result[:status]).to eq(:error)
+        expect(result[:message]).to eq('Invalid policy type')
       end
     end
 
@@ -59,7 +69,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService do
         it 'appends the new policy' do
           result = service.execute
 
-          expect(result[:scan_execution_policy].count).to eq(3)
+          expect(result[:status]).to eq(:success)
+          expect(result.dig(:policy_hash, :scan_execution_policy).count).to eq(3)
         end
       end
 
@@ -68,8 +79,11 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService do
           allow(policy_configuration).to receive(:policy_hash).and_return(Gitlab::Config::Loader::Yaml.new(repository_with_existing_policy_yaml).load!)
         end
 
-        it 'raises StandardError' do
-          expect { service.execute }.to raise_error(StandardError, 'Policy already exists with same name')
+        it 'returns error' do
+          result = service.execute
+
+          expect(result[:status]).to eq(:error)
+          expect(result[:message]).to eq('Policy already exists with same name')
         end
       end
 
@@ -81,7 +95,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService do
         it 'appends the new policy' do
           result = service.execute
 
-          expect(result[:scan_execution_policy].count).to eq(1)
+          expect(result[:status]).to eq(:success)
+          expect(result.dig(:policy_hash, :scan_execution_policy).count).to eq(1)
         end
       end
     end
@@ -98,8 +113,11 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService do
           allow(policy_configuration).to receive(:policy_hash).and_return(Gitlab::Config::Loader::Yaml.new(repository_policy_yaml).load!)
         end
 
-        it 'raises StandardError' do
-          expect { service.execute }.to raise_error(StandardError, 'Policy does not exist')
+        it 'returns error' do
+          result = service.execute
+
+          expect(result[:status]).to eq(:error)
+          expect(result[:message]).to eq('Policy does not exist')
         end
       end
 
@@ -109,7 +127,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService do
         it 'does not modify the policy name' do
           result = service.execute
 
-          expect(result[:scan_execution_policy].first).to eq(policy_yaml)
+          expect(result.dig(:policy_hash, :scan_execution_policy).first).to eq(policy_yaml)
         end
       end
 
@@ -117,7 +135,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService do
         it 'replaces the policy' do
           result = service.execute
 
-          expect(result[:scan_execution_policy].first[:enabled]).to be_falsey
+          expect(result.dig(:policy_hash, :scan_execution_policy).first[:enabled]).to be_falsey
         end
       end
 
@@ -129,7 +147,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService do
         it 'updates the policy name' do
           result = service.execute
 
-          expect(result[:scan_execution_policy].first[:name]).to eq('Updated Policy')
+          expect(result.dig(:policy_hash, :scan_execution_policy).first[:name]).to eq('Updated Policy')
         end
       end
 
@@ -138,8 +156,11 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService do
           Gitlab::Config::Loader::Yaml.new(build(:scan_execution_policy, name: 'Scheduled DAST', enabled: false).to_yaml).load!
         end
 
-        it 'raises StandardError' do
-          expect { service.execute }.to raise_error(StandardError, 'Policy already exists with same name')
+        it 'returns error' do
+          result = service.execute
+
+          expect(result[:status]).to eq(:error)
+          expect(result[:message]).to eq('Policy already exists with same name')
         end
       end
     end
@@ -152,8 +173,11 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService do
           allow(policy_configuration).to receive(:policy_hash).and_return(Gitlab::Config::Loader::Yaml.new(repository_policy_yaml).load!)
         end
 
-        it 'raises StandardError' do
-          expect { service.execute }.to raise_error(StandardError, 'Policy does not exist')
+        it 'returns error' do
+          result = service.execute
+
+          expect(result[:status]).to eq(:error)
+          expect(result[:message]).to eq('Policy does not exist')
         end
       end
 
@@ -165,7 +189,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService do
         it 'removes the policy' do
           result = service.execute
 
-          expect(result[:scan_execution_policy].count).to eq(1)
+          expect(result[:status]).to eq(:success)
+          expect(result.dig(:policy_hash, :scan_execution_policy).count).to eq(1)
         end
       end
     end

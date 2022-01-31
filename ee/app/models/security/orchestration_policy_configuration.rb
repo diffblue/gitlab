@@ -11,6 +11,7 @@ module Security
 
     POLICY_PATH = '.gitlab/security-policies/policy.yml'
     POLICY_SCHEMA_PATH = 'ee/app/validators/json_schemas/security_orchestration_policy.json'
+    POLICY_SCHEMA = JSONSchemer.schema(Rails.root.join(POLICY_SCHEMA_PATH))
     AVAILABLE_POLICY_TYPES = %i{scan_execution_policy scan_result_policy}.freeze
 
     belongs_to :project, inverse_of: :security_orchestration_policy_configuration
@@ -44,9 +45,13 @@ module Security
     end
 
     def policy_configuration_valid?(policy = policy_hash)
-      JSONSchemer
-        .schema(Rails.root.join(POLICY_SCHEMA_PATH))
-        .valid?(policy.to_h.deep_stringify_keys)
+      POLICY_SCHEMA.valid?(policy.to_h.deep_stringify_keys)
+    end
+
+    def policy_configuration_validation_errors(policy = policy_hash)
+      POLICY_SCHEMA
+        .validate(policy.to_h.deep_stringify_keys)
+        .map { |error| JSONSchemer::Errors.pretty(error) }
     end
 
     def policy_last_updated_by

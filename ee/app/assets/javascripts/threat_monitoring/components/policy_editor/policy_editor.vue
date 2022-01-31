@@ -34,6 +34,7 @@ export default {
   data() {
     return {
       error: '',
+      errorMessages: [],
       newPolicyType: POLICY_TYPE_COMPONENT_OPTIONS.container.value,
     };
   },
@@ -77,8 +78,8 @@ export default {
     },
   },
   methods: {
-    setError(error) {
-      this.error = error;
+    setError(errors) {
+      [this.error, ...this.errorMessages] = errors.split('\n');
     },
     handleNewPolicyType(type) {
       this.newPolicyType = type;
@@ -92,8 +93,18 @@ export default {
 
 <template>
   <section class="policy-editor">
-    <gl-alert v-if="error" dissmissable="true" variant="danger" @dismiss="setError('')">
-      {{ error }}
+    <gl-alert
+      v-if="error"
+      :title="error"
+      dissmissable="true"
+      variant="danger"
+      @dismiss="setError('')"
+    >
+      <ul v-if="errorMessages.length" class="gl-mb-0! gl-ml-5">
+        <li v-for="errorMessage in errorMessages" :key="errorMessage">
+          {{ errorMessage }}
+        </li>
+      </ul>
     </gl-alert>
     <header class="gl-pb-5">
       <h3>{{ $options.i18n.title }}</h3>
