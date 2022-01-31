@@ -44,7 +44,6 @@ describe('TrialStatusPopover component', () => {
           planName: 'Ultimate',
           plansHref: 'billing/path-for/group',
           purchaseHref: 'transactions/new',
-          startInitiallyShown: undefined,
           targetId: 'target-element-identifier',
           trialEndDate: new Date('2021-02-28'),
           userCalloutsPath: undefined,
@@ -207,14 +206,22 @@ describe('TrialStatusPopover component', () => {
         wrapper = createComponent({ providers: { startInitiallyShown: true }, mountFn: mount });
       });
 
-      it('is rendered', () => {
-        expect(wrapper.findByTestId('closeBtn').exists()).toBeTruthy();
+      it('is enabled', () => {
+        expect(findGlPopover().props('showCloseButton')).toBe(true);
       });
 
       describe('when clicked', () => {
+        const preventDefault = jest.fn();
+
         beforeEach(async () => {
-          wrapper.findByTestId('closeBtn').trigger('click');
+          findGlPopover().vm.$emit('close-button-clicked', {
+            preventDefault,
+          });
           await nextTick();
+        });
+
+        it("calls `preventDefault` so user doesn't trigger the anchor tag", () => {
+          expect(preventDefault).toHaveBeenCalled();
         });
 
         it('closes the popover component', () => {
@@ -226,14 +233,14 @@ describe('TrialStatusPopover component', () => {
         });
 
         it('continues to be shown in the popover', () => {
-          expect(wrapper.findByTestId('closeBtn').exists()).toBeTruthy();
+          expect(findGlPopover().props('showCloseButton')).toBe(true);
         });
       });
     });
 
     describe('when the popover does not start off forcibly shown', () => {
       it('is not rendered', () => {
-        expect(wrapper.findByTestId('closeBtn').exists()).toBeFalsy();
+        expect(findGlPopover().props('showCloseButton')).toBe(false);
       });
     });
   });
