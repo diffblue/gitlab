@@ -38,9 +38,10 @@ RSpec.describe Security::Ingestion::IngestReportSliceService do
     context 'when an exception happens' do
       let(:mock_task_1) { double(:task) }
       let(:mock_task_2) { double(:task) }
+      let(:security_finding) { finding_maps.first.security_finding }
 
       before do
-        allow(mock_task_1).to receive(:execute) { |pipeline, *| pipeline.update_column(:updated_at, 3.months.from_now) }
+        allow(mock_task_1).to receive(:execute) { |pipeline, *| security_finding.update_column(:uuid, SecureRandom.uuid) }
         allow(mock_task_2).to receive(:execute) { raise 'foo' }
 
         allow(Security::Ingestion::Tasks).to receive(:const_get).with(:IngestIdentifiers, false).and_return(mock_task_1)
@@ -49,7 +50,7 @@ RSpec.describe Security::Ingestion::IngestReportSliceService do
 
       it 'rollsback the recent changes to not to leave the database in an inconsistent state' do
         expect { ingest_report_slice }.to raise_error('foo')
-                                      .and not_change { pipeline.reload.updated_at }
+                                      .and not_change { security_finding.reload.uuid }
       end
     end
   end
