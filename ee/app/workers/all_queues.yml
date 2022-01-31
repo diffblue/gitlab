@@ -1020,6 +1020,15 @@
   :weight: 1
   :idempotent:
   :tags: []
+- :name: gitlab_subscriptions_notify_seats_exceeded
+  :worker_name: GitlabSubscriptions::NotifySeatsExceededWorker
+  :feature_category: :purchase
+  :has_external_dependencies: true
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: group_saml_group_sync
   :worker_name: GroupSamlGroupSyncWorker
   :feature_category: :authentication_and_authorization
