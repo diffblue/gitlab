@@ -93,6 +93,7 @@ export default {
 
 <template>
   <gl-modal
+    size="sm"
     :visible="visible"
     :modal-id="modalId"
     :title="$options.title"

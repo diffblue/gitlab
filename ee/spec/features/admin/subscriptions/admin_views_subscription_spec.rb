@@ -85,7 +85,7 @@ RSpec.describe 'Admin views Subscription', :js do
     context 'when activating another subscription' do
       before do
         page.within(find('[data-testid="subscription-details"]', match: :first)) do
-          click_button('Activate cloud license')
+          click_button('Enter activation code')
         end
       end
 
