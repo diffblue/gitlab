@@ -9,6 +9,7 @@ export const initHandRaiseLeadButton = (el) => {
     el,
     apolloProvider,
     provide: {
+      small: Boolean(el.hasAttribute('small')),
       user: {
         namespaceId,
         userName,

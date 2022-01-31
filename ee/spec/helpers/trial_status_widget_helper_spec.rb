@@ -27,6 +27,7 @@ RSpec.describe TrialStatusWidgetHelper, :saas do
         trial_starts_on: trial_start_date,
         trial_ends_on: trial_end_date
       )
+      stub_experiments(group_contact_sales: :control)
       stub_experiments(forcibly_show_trial_status_popover: :candidate)
       allow_next_instance_of(GitlabSubscriptions::FetchSubscriptionPlansService, plan: :free) do |instance|
         allow(instance).to receive(:execute).and_return([
@@ -127,6 +128,32 @@ RSpec.describe TrialStatusWidgetHelper, :saas do
 
       it 'records the experiment subject' do
         expect { data_attrs }.to change { ExperimentSubject.count }
+      end
+
+      context 'when group_contact_sales is enabled' do
+        before do
+          stub_experiments(group_contact_sales: :candidate)
+        end
+
+        it 'returns the needed data attributes for mounting the popover Vue component' do
+          expect(data_attrs).to match(
+            shared_expected_attrs.merge(
+              namespace_id: group.id,
+              user_name: user.username,
+              first_name: user.first_name,
+              last_name: user.last_name,
+              company_name: user.organization,
+              glm_content: 'trial-status-show-group',
+              group_name: group.name,
+              purchase_href: new_subscriptions_path(namespace_id: group.id, plan_id: 'ultimate-plan-id'),
+              target_id: shared_expected_attrs[:container_id],
+              start_initially_shown: false,
+              trial_end_date: trial_end_date,
+              user_callouts_path: callouts_path,
+              user_callouts_feature_id: user_callouts_feature_id
+            )
+          )
+        end
       end
     end
 

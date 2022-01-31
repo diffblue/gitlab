@@ -10,6 +10,8 @@ import {
 import TrialStatusPopover from 'ee/contextual_sidebar/components/trial_status_popover.vue';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { stubExperiments } from 'helpers/experimentation_helper';
+import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
 import axios from '~/lib/utils/axios_utils';
 
 Vue.config.ignoredElements = ['gl-emoji'];
@@ -22,6 +24,7 @@ describe('TrialStatusPopover component', () => {
   const defaultDaysRemaining = 20;
 
   const findGlPopover = () => wrapper.findComponent(GlPopover);
+  const findByRef = (ref) => wrapper.find({ ref });
 
   const expectTracking = ({ action, ...options } = {}) => {
     return expect(trackingSpy).toHaveBeenCalledWith(undefined, action, {
@@ -31,7 +34,7 @@ describe('TrialStatusPopover component', () => {
     });
   };
 
-  const createComponent = (providers = {}, mountFn = shallowMount) => {
+  const createComponent = ({ providers = {}, mountFn = shallowMount, stubs = {} } = {}) => {
     return extendedWrapper(
       mountFn(TrialStatusPopover, {
         provide: {
@@ -46,8 +49,17 @@ describe('TrialStatusPopover component', () => {
           trialEndDate: new Date('2021-02-28'),
           userCalloutsPath: undefined,
           userCalloutsFeatureId: undefined,
+          user: {
+            namespaceId: 'namespaceId',
+            userName: 'userName',
+            firstName: 'firstName',
+            lastName: 'lastName',
+            companyName: 'companyName',
+            glmContent: 'glmContent',
+          },
           ...providers,
         },
+        stubs,
       }),
     );
   };
@@ -64,20 +76,10 @@ describe('TrialStatusPopover component', () => {
 
   describe('interpolated strings', () => {
     it('correctly interpolates them all', () => {
-      wrapper = createComponent(undefined, mount);
+      wrapper = createComponent({ providers: undefined, mountFn: mount });
 
       expect(wrapper.text()).not.toMatch(/%{\w+}/);
     });
-  });
-
-  it('matches the snapshot', () => {
-    expect(wrapper.element).toMatchSnapshot();
-  });
-
-  it('tracks when the upgrade button is clicked', () => {
-    wrapper.findByTestId('upgradeBtn').vm.$emit('click');
-
-    expectTracking(trackingEvents.upgradeBtnClick);
   });
 
   it('tracks when the compare button is clicked', () => {
@@ -87,12 +89,50 @@ describe('TrialStatusPopover component', () => {
   });
 
   it('does not include the word "Trial" if the plan name includes it', () => {
-    wrapper = createComponent({ planName: 'Ultimate Trial' }, mount);
+    wrapper = createComponent({ providers: { planName: 'Ultimate Trial' }, mountFn: mount });
 
     const popoverText = wrapper.text();
 
     expect(popoverText).toContain('We hope you’re enjoying the features of GitLab Ultimate.');
     expect(popoverText).toMatch(/Upgrade Some Test Group to Ultimate(?! Trial)/);
+  });
+
+  describe('group_contact_sales experiment', () => {
+    describe('control', () => {
+      beforeEach(() => {
+        stubExperiments({ group_contact_sales: 'control' });
+        wrapper = createComponent({ stubs: { GitlabExperiment } });
+        trackingSpy = mockTracking('_category_', wrapper.element, jest.spyOn);
+      });
+
+      it('matches the snapshot', () => {
+        expect(wrapper.element).toMatchSnapshot();
+      });
+
+      it('tracks when the upgrade button is clicked', () => {
+        findByRef('upgradeBtn').vm.$emit('click');
+
+        expectTracking(trackingEvents.upgradeBtnClick);
+      });
+    });
+
+    describe('candidate', () => {
+      beforeEach(() => {
+        stubExperiments({ group_contact_sales: 'candidate' });
+        wrapper = createComponent({ stubs: { GitlabExperiment } });
+        trackingSpy = mockTracking('_category_', wrapper.element, jest.spyOn);
+      });
+
+      it('matches the snapshot', () => {
+        expect(wrapper.element).toMatchSnapshot();
+      });
+
+      it('tracks when the contact sales button is clicked', () => {
+        wrapper.findByTestId('contactSalesBtn').trigger('click');
+
+        expectTracking(trackingEvents.contactSalesBtnClick);
+      });
+    });
   });
 
   describe('startInitiallyShown', () => {
@@ -107,7 +147,7 @@ describe('TrialStatusPopover component', () => {
 
     describe('when set to true', () => {
       beforeEach(() => {
-        wrapper = createComponent({ startInitiallyShown: true });
+        wrapper = createComponent({ providers: { startInitiallyShown: true } });
       });
 
       it('causes the popover to be shown by default', () => {
@@ -121,8 +161,10 @@ describe('TrialStatusPopover component', () => {
       describe('and the user callout values are provided', () => {
         beforeEach(() => {
           wrapper = createComponent({
-            startInitiallyShown: true,
-            ...userCalloutProviders,
+            providers: {
+              startInitiallyShown: true,
+              ...userCalloutProviders,
+            },
           });
         });
 
@@ -142,7 +184,7 @@ describe('TrialStatusPopover component', () => {
 
     describe('when set to false', () => {
       beforeEach(() => {
-        wrapper = createComponent({ ...userCalloutProviders });
+        wrapper = createComponent({ providers: { ...userCalloutProviders } });
       });
 
       it('does not cause the popover to be shown by default', () => {
@@ -162,7 +204,7 @@ describe('TrialStatusPopover component', () => {
   describe('close button', () => {
     describe('when the popover starts off forcibly shown', () => {
       beforeEach(() => {
-        wrapper = createComponent({ startInitiallyShown: true }, mount);
+        wrapper = createComponent({ providers: { startInitiallyShown: true }, mountFn: mount });
       });
 
       it('is rendered', () => {
@@ -235,7 +277,7 @@ describe('TrialStatusPopover component', () => {
     `(
       'sets the expected values for `property` & `value`',
       ({ daysRemaining, startInitiallyShown, property }) => {
-        wrapper = createComponent({ daysRemaining, startInitiallyShown });
+        wrapper = createComponent({ providers: { daysRemaining, startInitiallyShown } });
 
         // We'll use the "onShown" method to exercise trackingPropertyAndValue
         findGlPopover().vm.$emit('shown');

@@ -39,6 +39,7 @@ export default () => {
       SecurityDiscoverApp,
     },
     provide: {
+      small: false,
       user: {
         namespaceId,
         userName,

@@ -23,7 +23,7 @@ describe('HandRaiseLeadButton', () => {
   let fakeApollo;
   let trackingSpy;
 
-  const createComponent = () => {
+  const createComponent = (small = false) => {
     const mockResolvers = {
       Query: {
         countries() {
@@ -39,6 +39,7 @@ describe('HandRaiseLeadButton', () => {
     return shallowMountExtended(HandRaiseLeadButton, {
       apolloProvider: fakeApollo,
       provide: {
+        small,
         user: {
           namespaceId: '1',
           userName: 'joe',
@@ -71,8 +72,12 @@ describe('HandRaiseLeadButton', () => {
       expect(findButton().props('loading')).toBe(false);
     });
 
-    it('has the "Contact sales" text on the button', () => {
-      expect(findButton().text()).toBe(PQL_BUTTON_TEXT);
+    it('has default medium button and the "Contact sales" text on the button', () => {
+      const button = findButton();
+
+      expect(button.props('variant')).toBe('default');
+      expect(button.props('size')).toBe('medium');
+      expect(button.text()).toBe(PQL_BUTTON_TEXT);
     });
 
     it('has the default injected values', async () => {
@@ -127,6 +132,17 @@ describe('HandRaiseLeadButton', () => {
 
       expect(trackingSpy).toHaveBeenCalledWith(undefined, 'hand_raise_form_viewed', {
         label: 'hand_raise_lead_form',
+      });
+    });
+
+    describe('small button', () => {
+      it('has small confirm button and the "Contact sales" text on the button', () => {
+        wrapper = createComponent(true);
+        const button = findButton();
+
+        expect(button.props('variant')).toBe('confirm');
+        expect(button.props('size')).toBe('small');
+        expect(button.text()).toBe(PQL_BUTTON_TEXT);
       });
     });
   });
