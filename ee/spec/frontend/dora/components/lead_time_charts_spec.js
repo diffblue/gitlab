@@ -59,7 +59,7 @@ describe('lead_time_charts.vue', () => {
     mock.restore();
   });
 
-  const getTooltipValue = () => wrapper.find('[data-testid="tooltip-value"]').text();
+  const getTooltipValues = () => wrapper.findAll('[data-testid="tooltip-value"]');
   const findCiCdAnalyticsCharts = () => wrapper.findComponent(CiCdAnalyticsCharts);
 
   describe('when there are no network errors', () => {
@@ -103,7 +103,7 @@ describe('lead_time_charts.vue', () => {
 
           await axios.waitForAll();
 
-          const params = { seriesData: [{}, { data: ['Apr 7', 5328] }] };
+          const params = { seriesData: [{ data: ['Apr 7', 5328] }, { data: ['Apr 7', 4000] }, {}] };
 
           // Simulate the child CiCdAnalyticsCharts component calling the
           // function bound to the `format-tooltip-text`.
@@ -112,7 +112,10 @@ describe('lead_time_charts.vue', () => {
 
           await nextTick();
 
-          expect(getTooltipValue()).toBe('1.5 hours');
+          const toolTipValues = getTooltipValues();
+
+          expect(toolTipValues.at(0).text()).toBe('1.5 hours');
+          expect(toolTipValues.at(1).text()).toBe('1.1 hours');
         });
       });
     });

@@ -2,6 +2,7 @@ import { defaultDataIdFromObject } from 'apollo-cache-inmemory';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
+import { parseBoolean } from '~/lib/utils/common_utils';
 import CorpusManagement from './components/corpus_management.vue';
 import resolvers from './graphql/resolvers/resolvers';
 
@@ -36,9 +37,9 @@ export default () => {
   const provide = {
     projectFullPath,
     corpusHelpPath,
-    canUploadCorpus: Boolean(canUploadCorpus),
-    canReadCorpus: Boolean(canReadCorpus),
-    canDestroyCorpus: Boolean(canDestroyCorpus),
+    canUploadCorpus: parseBoolean(canUploadCorpus),
+    canReadCorpus: parseBoolean(canReadCorpus),
+    canDestroyCorpus: parseBoolean(canDestroyCorpus),
   };
 
   return new Vue({
