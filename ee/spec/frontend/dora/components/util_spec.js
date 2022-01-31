@@ -3,6 +3,7 @@ import {
   apiDataToChartSeries,
   buildNullSeriesForLeadTimeChart,
   seriesToAverageSeries,
+  seriesToMedianSeries,
 } from 'ee/dora/components/util';
 
 describe('ee/dora/components/util.js', () => {
@@ -76,6 +77,7 @@ describe('ee/dora/components/util.js', () => {
           },
           areaStyle: {
             color: expect.any(String),
+            opacity: 0,
           },
           itemStyle: {
             color: expect.any(String),
@@ -235,6 +237,42 @@ describe('ee/dora/components/util.js', () => {
           ['Jul 1', 2],
           ['Jul 2', 3],
           ['Jul 3', 4],
+        ],
+        seriesName,
+      );
+
+      expect(data).toStrictEqual({
+        name: seriesName,
+        data: [
+          ['Jul 1', 3],
+          ['Jul 2', 3],
+          ['Jul 3', 3],
+        ],
+      });
+    });
+  });
+
+  describe('seriesToMedianSeries', () => {
+    const seriesName = 'Median';
+
+    it('returns an empty object if chart data is undefined', () => {
+      const data = seriesToMedianSeries(undefined, seriesName);
+
+      expect(data).toStrictEqual({});
+    });
+
+    it('returns an empty object if chart data is blank', () => {
+      const data = seriesToMedianSeries(null, seriesName);
+
+      expect(data).toStrictEqual({});
+    });
+
+    it('returns the correct median values', () => {
+      const data = seriesToMedianSeries(
+        [
+          ['Jul 1', 1],
+          ['Jul 2', 3],
+          ['Jul 3', 10],
         ],
         seriesName,
       );

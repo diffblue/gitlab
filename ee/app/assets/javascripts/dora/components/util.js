@@ -1,7 +1,8 @@
-import { dataVizBlue500, dataVizOrange600 } from '@gitlab/ui/scss_to_js/scss_variables';
+import { dataVizBlue500, gray300 } from '@gitlab/ui/scss_to_js/scss_variables';
 import dateFormat from 'dateformat';
 import { merge, cloneDeep } from 'lodash';
 import { getDatesInRange, nDaysBefore, getStartOfDay } from '~/lib/utils/datetime_utility';
+import { median } from '~/lib/utils/number_utils';
 import { s__ } from '~/locale';
 
 /**
@@ -124,6 +125,7 @@ export const buildNullSeriesForLeadTimeChart = (seriesData) => {
     },
     areaStyle: {
       color: dataVizBlue500,
+      opacity: 0,
     },
     itemStyle: {
       color: dataVizBlue500,
@@ -135,13 +137,13 @@ export const buildNullSeriesForLeadTimeChart = (seriesData) => {
     data: nullSeriesData,
     lineStyle: {
       type: 'dashed',
-      color: dataVizOrange600,
+      color: gray300,
     },
     areaStyle: {
       color: 'none',
     },
     itemStyle: {
-      color: dataVizOrange600,
+      color: gray300,
     },
   };
 
@@ -166,5 +168,23 @@ export const seriesToAverageSeries = (chartSeriesData, seriesName) => {
   return {
     name: seriesName,
     data: chartSeriesData.map((day) => [day[0], average]),
+  };
+};
+
+/**
+ * Converts a data series into a formatted median series
+ *
+ * @param {Array} chartSeriesData Correctly formatted chart series data
+ *
+ * @returns {Object} An object containing the series name and an array of original data keys with the median of the dataset as each value.
+ */
+export const seriesToMedianSeries = (chartSeriesData, seriesName) => {
+  if (!chartSeriesData) return {};
+
+  const medianValue = median(chartSeriesData.filter((day) => day[1] !== null).map((day) => day[1]));
+
+  return {
+    name: seriesName,
+    data: chartSeriesData.map((day) => [day[0], medianValue]),
   };
 };

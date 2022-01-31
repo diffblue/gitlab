@@ -10856,10 +10856,10 @@ msgstr ""
 msgid "DORA4Metrics|Deployment frequency"
 msgstr ""
 
-msgid "DORA4Metrics|Lead time"
+msgid "DORA4Metrics|Lead time for changes"
 msgstr ""
 
-msgid "DORA4Metrics|Median lead time"
+msgid "DORA4Metrics|Median (last %{days}d)"
 msgstr ""
 
 msgid "DORA4Metrics|No merge requests were deployed during this period"

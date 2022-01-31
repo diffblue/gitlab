@@ -37,10 +37,10 @@ Array [
       ],
     ],
     "itemStyle": Object {
-      "color": "#b24800",
+      "color": "#999",
     },
     "lineStyle": Object {
-      "color": "#b24800",
+      "color": "#999",
       "type": "dashed",
     },
     "name": "No merge requests were deployed during this period",
@@ -48,6 +48,7 @@ Array [
   Object {
     "areaStyle": Object {
       "color": "#5772ff",
+      "opacity": 0,
     },
     "data": Array [
       Array [

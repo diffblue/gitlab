@@ -3,7 +3,9 @@ import { s__ } from '~/locale';
 
 export * from './shared';
 
-export const CHART_TITLE = s__('DORA4Metrics|Lead time');
+export const CHART_TITLE = s__('DORA4Metrics|Lead time for changes');
+
+export const medianSeriesTitle = s__('DORA4Metrics|Median (last %{days}d)');
 
 export const areaChartOptions = {
   xAxis: {
