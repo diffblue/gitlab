@@ -13,7 +13,8 @@ RSpec.describe Projects::ProtectedEnvironmentsController do
   describe '#POST create' do
     let(:params) do
       attributes_for(:protected_environment,
-                     deploy_access_levels_attributes: [{ access_level: maintainer_access }])
+                     deploy_access_levels_attributes: [{ access_level: maintainer_access }],
+                     required_approval_count: 1)
     end
 
     subject do
@@ -93,7 +94,8 @@ RSpec.describe Projects::ProtectedEnvironmentsController do
         deploy_access_levels_attributes: [
           { id: deploy_access_level.id, access_level: Gitlab::Access::DEVELOPER },
           { access_level: maintainer_access }
-        ]
+        ],
+        required_approval_count: 3
       }
     end
 
@@ -118,8 +120,9 @@ RSpec.describe Projects::ProtectedEnvironmentsController do
         expect(assigns(:protected_environment)).to eq(protected_environment)
       end
 
-      it 'updates the protected environment' do
+      it 'updates the protected environment', :aggregate_failures do
         expect(protected_environment.deploy_access_levels.count).to eq(2)
+        expect(protected_environment.reload.required_approval_count).to eq(3)
       end
 
       it 'is successful' do
