@@ -535,6 +535,3 @@ gem 'ipaddress', '~> 0.8.3'
 gem 'parslet', '~> 1.8'
 
 gem 'ipynbdiff', '0.3.8'
-
-# Unicode utilities
-gem 'unicode-confusable', '~> 1.8.0'

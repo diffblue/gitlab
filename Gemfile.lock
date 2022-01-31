@@ -1318,7 +1318,6 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.7)
-    unicode-confusable (1.8.0)
     unicode-display_width (1.7.0)
     unicode_utils (1.4.0)
     uniform_notifier (1.13.0)
@@ -1652,7 +1651,6 @@ DEPENDENCIES
   u2f (~> 0.2.1)
   undercover (~> 0.4.4)
   unf (~> 0.1.4)
-  unicode-confusable (~> 1.8.0)
   unleash (~> 3.2.2)
   valid_email (~> 0.1)
   validates_hostname (~> 1.0.11)
