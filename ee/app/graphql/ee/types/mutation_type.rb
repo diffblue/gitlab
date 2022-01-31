@@ -89,6 +89,7 @@ module EE
         mount_mutation ::Mutations::SecurityPolicy::UnassignSecurityPolicyProject
         mount_mutation ::Mutations::SecurityPolicy::CreateSecurityPolicyProject
         mount_mutation ::Mutations::Security::CiConfiguration::ConfigureDependencyScanning
+        mount_mutation ::Mutations::Security::CiConfiguration::ConfigureContainerScanning
         mount_mutation ::Mutations::AuditEvents::ExternalAuditEventDestinations::Create
         mount_mutation ::Mutations::AuditEvents::ExternalAuditEventDestinations::Destroy
         mount_mutation ::Mutations::AuditEvents::ExternalAuditEventDestinations::Update
