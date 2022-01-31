@@ -1,10 +1,11 @@
 import $ from 'jquery';
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
+import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
 import { sprintf, __ } from '~/locale';
 
 export default function initPathLocks(url, path) {
-  $('a.path-lock').on('click', (e) => {
+  $('a.path-lock').on('click', async (e) => {
     e.preventDefault();
 
     const { dataset } = e.target;
@@ -13,8 +14,8 @@ export default function initPathLocks(url, path) {
         ? __('Are you sure you want to lock %{path}?')
         : __('Are you sure you want to unlock %{path}?');
 
-    // eslint-disable-next-line no-alert
-    if (!window.confirm(sprintf(message, { path }))) {
+    const confirmed = await confirmAction(sprintf(message, { path }));
+    if (!confirmed) {
       return;
     }
 
