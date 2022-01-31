@@ -24,10 +24,12 @@ RSpec.describe Gitlab::ComplianceManagement::Violations::ApprovedByCommitter do
     end
 
     context 'when merge request is approved by someone who also added a commit' do
+      let_it_be(:merge_request) { create(:merge_request, state: :merged) }
+
       before do
-        merge_request.approver_users << user
-        merge_request.approver_users << user2
-        merge_request.approver_users << user3
+        create(:approval, merge_request: merge_request, user: user)
+        create(:approval, merge_request: merge_request, user: user2)
+        create(:approval, merge_request: merge_request, user: user3)
       end
 
       it 'creates a ComplianceViolation for each violation', :aggregate_failures do
