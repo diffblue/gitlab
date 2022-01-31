@@ -16,7 +16,7 @@ module Mutations
                  required: false,
                  description: 'Destination URL to change.'
 
-        field :external_audit_event_destination, EE::Types::AuditEvents::ExternalAuditEventDestinationType,
+        field :external_audit_event_destination, ::Types::AuditEvents::ExternalAuditEventDestinationType,
               null: true,
               description: 'Updated destination.'
 

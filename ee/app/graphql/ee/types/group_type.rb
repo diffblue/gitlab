@@ -94,7 +94,7 @@ module EE
               description: "Group's DORA metrics."
 
         field :external_audit_event_destinations,
-              EE::Types::AuditEvents::ExternalAuditEventDestinationType.connection_type,
+              ::Types::AuditEvents::ExternalAuditEventDestinationType.connection_type,
               null: true,
               description: 'External locations that receive audit events belonging to the group.',
               authorize: :admin_external_audit_events
