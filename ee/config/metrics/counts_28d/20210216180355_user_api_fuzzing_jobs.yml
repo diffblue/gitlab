@@ -9,6 +9,9 @@ product_category: fuzz-testing
 value_type: number
 status: active
 time_frame: 28d
+instrumentation_class: CountUsersCreatingCiBuildsMetric
+options:
+  secure_type: apifuzzer_fuzz
 data_source: database
 distribution:
 - ee

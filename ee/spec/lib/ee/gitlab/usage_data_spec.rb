@@ -131,7 +131,7 @@ RSpec.describe Gitlab::UsageData do
       expect(count_data[:epic_issues]).to eq(2)
     end
 
-    it 'gathers security products usage data' do
+    it 'gathers security products usage data', :aggregate_failures do
       expect(count_data[:container_scanning_jobs]).to eq(1)
       expect(count_data[:dast_jobs]).to eq(1)
       expect(count_data[:dependency_scanning_jobs]).to eq(1)

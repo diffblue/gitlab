@@ -9,6 +9,9 @@ product_category: license_compliance
 value_type: number
 status: active
 time_frame: all
+instrumentation_class: CountUsersCreatingCiBuildsMetric
+options:
+  secure_type: license_management
 data_source: database
 distribution:
 - ee
