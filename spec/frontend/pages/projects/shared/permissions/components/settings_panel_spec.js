@@ -28,7 +28,7 @@ const defaultProps = {
     emailsDisabled: false,
     packagesEnabled: true,
     showDefaultAwardEmojis: true,
-    hideDiffsInEmail: false,
+    showDiffPreviewInEmail: true,
     warnAboutPotentiallyUnwantedCharacters: true,
   },
   isGitlabCom: true,
@@ -103,8 +103,8 @@ describe('Settings Panel', () => {
   const findShowDefaultAwardEmojis = () =>
     wrapper.find('input[name="project[project_setting_attributes][show_default_award_emojis]"]');
 
-  const findHideDiffsInEmail = () =>
-    wrapper.find('input[name="project[project_setting_attributes][hide_diffs_in_email]"]');
+  const findShowDiffPreviewInEmail = () =>
+    wrapper.find('input[name="project[project_setting_attributes][show_diff_preview_in_email]"]');
   const findWarnAboutPuc = () =>
     wrapper.find(
       'input[name="project[project_setting_attributes][warn_about_potentially_unwanted_characters]"]',
@@ -593,7 +593,7 @@ describe('Settings Panel', () => {
     it('should show the "Hide Diffs in email" input', () => {
       wrapper = mountComponent();
 
-      expect(findHideDiffsInEmail().exists()).toBe(true);
+      expect(findShowDiffPreviewInEmail().exists()).toBe(true);
     });
   });
 

@@ -199,7 +199,7 @@ export default {
       requestAccessEnabled: true,
       highlightChangesClass: false,
       emailsDisabled: false,
-      hideDiffsInEmail: false,
+      showDiffPreviewInEmail: true,
       cveIdRequestEnabled: true,
       featureAccessLevelEveryone,
       featureAccessLevelMembers,
@@ -763,17 +763,19 @@ export default {
     </project-setting-row>
     <project-setting-row class="mb-3">
       <input
-        :value="hideDiffsInEmail"
+        :value="showDiffPreviewInEmail"
         type="hidden"
-        name="project[project_setting_attributes][hide_diffs_in_email]"
+        name="project[project_setting_attributes][show_diff_preview_in_email]"
       />
       <gl-form-checkbox
-        v-model="hideDiffsInEmail"
-        name="project[project_setting_attributes][hide_diffs_in_email]"
+        v-model="showDiffPreviewInEmail"
+        name="project[project_setting_attributes][show_diff_preview_in_email]"
       >
-        {{ s__('ProjectSettings|Stop displaying diffs in MR emails') }}
+        {{ s__('ProjectSettings|Include diff preview in merge request notification emails') }}
         <template #help>{{
-          s__('ProjectSettings|Disable the inclusion of code diffs in an MR review .')
+          s__(
+            'ProjectSettings|Include the code diff preview on comment threads in merge request notification emails.',
+          )
         }}</template>
       </gl-form-checkbox>
     </project-setting-row>
