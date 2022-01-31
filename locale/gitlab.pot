@@ -40927,6 +40927,9 @@ msgstr ""
 msgid "You are not authorized to perform this action"
 msgstr ""
 
+msgid "You are not authorized to run this manual job"
+msgstr ""
+
 msgid "You are not authorized to update this profile"
 msgstr ""
 
