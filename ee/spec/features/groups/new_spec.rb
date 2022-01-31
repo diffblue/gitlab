@@ -3,9 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe 'New Group page' do
-  let_it_be(:user) { create(:user) }
-
   describe 'toggling the invite members section', :js do
+    let_it_be(:user) { create(:user) }
+
     before do
       sign_in(user)
       visit new_group_path
@@ -27,13 +27,16 @@ RSpec.describe 'New Group page' do
     let(:variant) { :control }
     let(:query_params) { {} }
 
+    let_it_be(:user_created_at) { RequireVerificationForNamespaceCreationExperiment::EXPERIMENT_START_DATE + 1.hour }
+    let_it_be(:user) { create(:user, created_at: user_created_at) }
+
     subject(:visit_new_group_page) do
       sign_in(user)
       visit new_group_path(query_params)
     end
 
     before do
-      stub_experiments(require_verification_for_group_creation: variant)
+      stub_experiments(require_verification_for_namespace_creation: variant)
     end
 
     context 'when creating a top-level group' do

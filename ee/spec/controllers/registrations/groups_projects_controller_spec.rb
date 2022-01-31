@@ -40,6 +40,8 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
   end
 
   shared_context 'records a conversion event' do
+    let_it_be(:user_created_at) { RequireVerificationForNamespaceCreationExperiment::EXPERIMENT_START_DATE + 1.hour }
+    let_it_be(:user) { create(:user, created_at: user_created_at) }
     let_it_be(:experiment) { create(:experiment, name: :require_verification_for_namespace_creation) }
     let_it_be(:experiment_subject) { create(:experiment_subject, experiment: experiment, user: user) }
 
