@@ -21,23 +21,35 @@ module EE
         end
 
         def filter_policy
+          return unless params.include?(:policy)
+
           policy = params.delete(:policy)
+          return unless policies_permitted?
 
-          return unless ::Gitlab::IncidentManagement.escalation_policies_available?(project)
-          return if issuable.alert_management_alert # Cannot change the policy for an alert
+          policy ? set_policy(policy) : unset_policy
+        end
 
-          if policy
-            return if policy.id == escalation_status.policy_id
-            if policy.project_id != issuable.project_id
-              raise ::IncidentManagement::IssuableEscalationStatuses::PrepareUpdateService::InvalidParamError
-            end
+        def policies_permitted?
+          ::Gitlab::IncidentManagement.escalation_policies_available?(project) &&
+            issuable.alert_management_alert.nil? # Cannot change the policy for an alert
+        end
 
-            # Override any provided status if setting new policy
-            params[:status_event] = :trigger
+        def set_policy(policy)
+          return if policy.id == escalation_status.policy_id
+
+          unless policy.project_id == issuable.project_id
+            add_param_error(:policy)
+            return
           end
 
           params[:policy] = policy
-          params[:escalations_started_at] = policy ? Time.current : nil
+          params[:escalations_started_at] = Time.current
+          params[:status_event] = :trigger # Override any provided status if setting new policy
+        end
+
+        def unset_policy
+          params[:policy] = nil
+          params[:escalations_started_at] = nil
         end
 
         override :current_params
