@@ -52,12 +52,14 @@ exports[`ExternalIssuesSidebarAssignee with no assignee template renders templat
       numberofassignees="0"
     />
      
-    <span
-      class="gl-text-gray-500"
+    <div
+      class="gl-text-gray-500 gl-line-height-14"
       data-testid="no-assignee-text"
     >
+      
       None
-    </span>
+    
+    </div>
   </div>
    
   <div

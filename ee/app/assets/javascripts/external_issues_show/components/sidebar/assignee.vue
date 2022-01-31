@@ -68,7 +68,9 @@ export default {
           :sub-label="avatarSubLabel"
         />
       </gl-avatar-link>
-      <span v-else class="gl-text-gray-500" data-testid="no-assignee-text">{{ __('None') }}</span>
+      <div v-else class="gl-text-gray-500 gl-line-height-14" data-testid="no-assignee-text">
+        {{ __('None') }}
+      </div>
     </div>
 
     <div
