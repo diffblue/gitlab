@@ -2,12 +2,14 @@
 import * as DoraApi from 'ee/api/dora_api';
 import createFlash from '~/flash';
 import { humanizeTimeInterval } from '~/lib/utils/datetime_utility';
-import { s__ } from '~/locale';
+import { s__, sprintf } from '~/locale';
 import CiCdAnalyticsCharts from '~/vue_shared/components/ci_cd_analytics/ci_cd_analytics_charts.vue';
 import DoraChartHeader from './dora_chart_header.vue';
 import {
   allChartDefinitions,
   areaChartOptions,
+  averageSeriesOptions,
+  medianSeriesTitle,
   chartDescriptionText,
   chartDocumentationHref,
   LAST_WEEK,
@@ -15,7 +17,11 @@ import {
   LAST_90_DAYS,
   CHART_TITLE,
 } from './static_data/lead_time';
-import { buildNullSeriesForLeadTimeChart, apiDataToChartSeries } from './util';
+import {
+  buildNullSeriesForLeadTimeChart,
+  apiDataToChartSeries,
+  seriesToMedianSeries,
+} from './util';
 
 export default {
   name: 'LeadTimeCharts',
@@ -32,6 +38,11 @@ export default {
       type: String,
       default: '',
     },
+  },
+  chartInDays: {
+    [LAST_WEEK]: 7,
+    [LAST_MONTH]: 30,
+    [LAST_90_DAYS]: 90,
   },
   data() {
     return {
@@ -71,9 +82,21 @@ export default {
               requestParams,
             );
 
-        this.chartData[id] = buildNullSeriesForLeadTimeChart(
-          apiDataToChartSeries(apiData, startDate, endDate, CHART_TITLE, null),
-        );
+        const seriesData = apiDataToChartSeries(apiData, startDate, endDate, CHART_TITLE, null);
+        const nullSeries = buildNullSeriesForLeadTimeChart(seriesData);
+
+        const { data } = seriesData[0];
+        const medianSeries = {
+          ...averageSeriesOptions,
+          ...seriesToMedianSeries(
+            data,
+            sprintf(medianSeriesTitle, { days: this.$options.chartInDays[id] }),
+          ),
+        };
+
+        // TODO: Refactor buildNullSeriesForLeadTimeChart into 2 separate utils to clean this up
+        // https://gitlab.com/gitlab-org/gitlab/-/issues/351318
+        this.chartData[id] = [nullSeries[1], medianSeries, nullSeries[0]];
       }),
     );
 
@@ -92,9 +115,29 @@ export default {
   methods: {
     formatTooltipText(params) {
       this.tooltipTitle = params.value;
-      const seconds = params.seriesData[1].data[1];
 
-      this.tooltipValue = seconds != null ? humanizeTimeInterval(seconds) : null;
+      const leadTimeSeries = params.seriesData[0];
+
+      if (leadTimeSeries.data?.length) {
+        const leadTimeValue = leadTimeSeries.data[1];
+        const medianSeries = params.seriesData[1];
+
+        const { seriesName: medianSeriesName } = medianSeries;
+        const medianSeriesValue = medianSeries.data[1];
+
+        this.tooltipValue = [
+          {
+            title: this.$options.i18n.medianLeadTime,
+            value: humanizeTimeInterval(leadTimeValue),
+          },
+          {
+            title: medianSeriesName,
+            value: humanizeTimeInterval(medianSeriesValue),
+          },
+        ];
+      } else {
+        this.tooltipValue = null;
+      }
     },
     /**
      * Validates that exactly one of [this.projectPath, this.groupPath] has been
@@ -132,8 +175,8 @@ export default {
   chartDocumentationHref,
   i18n: {
     flashMessage: s__('DORA4Metrics|Something went wrong while getting lead time data.'),
-    chartHeaderText: s__('DORA4Metrics|Lead time'),
-    medianLeadTime: s__('DORA4Metrics|Median lead time'),
+    chartHeaderText: CHART_TITLE,
+    medianLeadTime: CHART_TITLE,
     noMergeRequestsDeployed: s__('DORA4Metrics|No merge requests were deployed during this period'),
   },
 };
@@ -160,9 +203,15 @@ export default {
         <template v-if="tooltipValue === null">
           {{ $options.i18n.noMergeRequestsDeployed }}
         </template>
-        <div v-else class="gl-display-flex gl-align-items-flex-end">
-          <div class="gl-mr-5">{{ $options.i18n.medianLeadTime }}</div>
-          <div class="gl-font-weight-bold" data-testid="tooltip-value">{{ tooltipValue }}</div>
+        <div v-else class="gl-display-flex gl-flex-direction-column">
+          <div
+            v-for="metric in tooltipValue"
+            :key="metric.title"
+            class="gl-display-flex gl-justify-content-space-between"
+          >
+            <div class="gl-mr-5">{{ metric.title }}</div>
+            <div class="gl-font-weight-bold" data-testid="tooltip-value">{{ metric.value }}</div>
+          </div>
         </div>
       </template>
     </ci-cd-analytics-charts>
