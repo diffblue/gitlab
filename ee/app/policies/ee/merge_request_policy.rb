@@ -10,6 +10,11 @@ module EE
         @subject.target_project&.can_override_approvers?
       end
 
+      condition(:external_status_checks_enabled) do
+        @subject.target_project&.licensed_feature_available?(:external_status_checks) &&
+          can?(:developer_access, @subject.target_project)
+      end
+
       condition(:over_storage_limit, scope: :subject) { @subject.target_project&.namespace&.over_storage_limit? }
 
       condition(:merge_request_group_approver, score: 140) do
@@ -33,6 +38,8 @@ module EE
       rule { merge_request_group_approver }.policy do
         enable :approve_merge_request
       end
+
+      rule { external_status_checks_enabled }.enable :provide_status_check_response
 
       rule { over_storage_limit }.policy do
         prevent :approve_merge_request

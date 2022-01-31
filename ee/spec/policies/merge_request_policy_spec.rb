@@ -4,16 +4,20 @@ require 'spec_helper'
 
 RSpec.describe MergeRequestPolicy do
   include ProjectForksHelper
+  include AdminModeHelper
 
   let_it_be(:guest) { create(:user) }
   let_it_be(:developer) { create(:user) }
   let_it_be(:maintainer) { create(:user) }
+  let_it_be(:reporter) { create(:user) }
+  let_it_be(:admin) { create(:admin) }
 
   let_it_be(:fork_guest) { create(:user) }
   let_it_be(:fork_developer) { create(:user) }
   let_it_be(:fork_maintainer) { create(:user) }
 
   let(:project) { create(:project, :public) }
+  let(:owner) { project.owner }
   let(:forked_project) { fork_project(project) }
 
   let(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
@@ -23,6 +27,7 @@ RSpec.describe MergeRequestPolicy do
     project.add_guest(guest)
     project.add_developer(developer)
     project.add_maintainer(maintainer)
+    project.add_reporter(reporter)
 
     forked_project.add_guest(fork_guest)
     forked_project.add_developer(fork_guest)
@@ -249,6 +254,40 @@ RSpec.describe MergeRequestPolicy do
                                                       :create_note,
                                                       :resolve_note)
       end
+    end
+  end
+
+  describe 'provide_status_check_response' do
+    using RSpec::Parameterized::TableSyntax
+
+    let(:policy) { :provide_status_check_response }
+
+    subject { policy_for(current_user) }
+
+    where(:role, :licensed, :allowed) do
+      :guest      | false  | false
+      :reporter   | false  | false
+      :developer  | false  | false
+      :maintainer | false  | false
+      :owner      | false  | false
+      :admin      | false  | false
+      :guest      | true   | false
+      :reporter   | true   | false
+      :developer  | true   | true
+      :maintainer | true   | true
+      :owner      | true   | true
+      :admin      | true   | true
+    end
+
+    with_them do
+      let(:current_user) { public_send(role) }
+
+      before do
+        stub_licensed_features(external_status_checks: licensed)
+        enable_admin_mode!(current_user) if role.eql?(:admin)
+      end
+
+      it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
     end
   end
 end
