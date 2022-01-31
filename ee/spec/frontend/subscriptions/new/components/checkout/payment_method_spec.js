@@ -2,6 +2,8 @@ import { mount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
+import Zuora from 'ee/subscriptions/new/components/checkout/zuora.vue';
+import { mockTracking } from 'helpers/tracking_helper';
 import { STEPS } from 'ee/subscriptions/constants';
 import PaymentMethod from 'ee/subscriptions/new/components/checkout/payment_method.vue';
 import createStore from 'ee/subscriptions/new/store';
@@ -66,6 +68,44 @@ describe('Payment Method', () => {
 
     it('should show the entered credit card expiration date', () => {
       expect(wrapper.find('.js-summary-line-2').text()).toEqual('Exp 12/09');
+    });
+  });
+
+  describe('tracking', () => {
+    it('tracks step completion details', async () => {
+      const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+
+      wrapper.findComponent(Zuora).vm.$emit('success');
+      await nextTick();
+
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_button', {
+        label: 'review_order',
+        property: 'Success',
+      });
+    });
+
+    it('tracks zuora errors on step transition', async () => {
+      const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+
+      wrapper.findComponent(Zuora).vm.$emit('error', 'This was a mistake.');
+      await nextTick();
+
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_button', {
+        label: 'review_order',
+        property: 'This was a mistake.',
+      });
+    });
+
+    it('tracks step edits', async () => {
+      const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+
+      wrapper.findComponent(Step).vm.$emit('stepEdit', 'stepID');
+      await nextTick();
+
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_button', {
+        label: 'edit',
+        property: 'paymentMethod',
+      });
     });
   });
 });

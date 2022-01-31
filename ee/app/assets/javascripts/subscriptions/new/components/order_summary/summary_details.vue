@@ -2,6 +2,7 @@
 import { GlLink, GlSprintf } from '@gitlab/ui';
 import { mapState, mapGetters } from 'vuex';
 import { s__ } from '~/locale';
+import Tracking from '~/tracking';
 import formattingMixins from '../../formatting_mixins';
 
 export default {
@@ -9,7 +10,7 @@ export default {
     GlLink,
     GlSprintf,
   },
-  mixins: [formattingMixins],
+  mixins: [formattingMixins, Tracking.mixin()],
   computed: {
     ...mapState(['startDate', 'taxRate', 'numberOfUsers']),
     ...mapGetters([
@@ -81,6 +82,7 @@ export default {
                 href="https://about.gitlab.com/handbook/tax/#indirect-taxes-management"
                 target="_blank"
                 data-testid="tax-help-link"
+                @click="track('click_button', { label: 'tax_link' })"
                 >{{ content }}</gl-link
               >
             </template>

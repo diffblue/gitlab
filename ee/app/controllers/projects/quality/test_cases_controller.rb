@@ -8,6 +8,7 @@ class Projects::Quality::TestCasesController < Projects::ApplicationController
   before_action :authorize_create_test_case!, only: [:new]
 
   feature_category :quality_management
+  urgency :medium
 
   def index
     respond_to do |format|

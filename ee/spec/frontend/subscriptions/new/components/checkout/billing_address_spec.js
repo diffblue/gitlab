@@ -3,6 +3,7 @@ import Vue, { nextTick } from 'vue';
 
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
+import { mockTracking } from 'helpers/tracking_helper';
 import { STEPS } from 'ee/subscriptions/constants';
 import BillingAddress from 'ee/subscriptions/new/components/checkout/billing_address.vue';
 import { getStoreConfig } from 'ee/subscriptions/new/store';
@@ -80,6 +81,48 @@ describe('Billing Address', () => {
       await nextTick();
 
       expect(actionMocks.fetchStates).toHaveBeenCalled();
+    });
+  });
+
+  describe('tracking', () => {
+    beforeEach(() => {
+      store.commit(types.UPDATE_COUNTRY, 'US');
+      store.commit(types.UPDATE_ZIP_CODE, '10467');
+      store.commit(types.UPDATE_COUNTRY_STATE, 'NY');
+    });
+
+    it('tracks completion details', () => {
+      const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+
+      wrapper.findComponent(Step).vm.$emit('nextStep');
+
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_button', {
+        label: 'select_country',
+        property: 'US',
+      });
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_button', {
+        label: 'state',
+        property: 'NY',
+      });
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_button', {
+        label: 'saas_checkout_postal_code',
+        property: '10467',
+      });
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_button', {
+        label: 'continue_payment',
+      });
+    });
+
+    it('tracks step edits', async () => {
+      const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+
+      wrapper.findComponent(Step).vm.$emit('stepEdit', 'stepID');
+      await nextTick();
+
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_button', {
+        label: 'edit',
+        property: 'billingAddress',
+      });
     });
   });
 

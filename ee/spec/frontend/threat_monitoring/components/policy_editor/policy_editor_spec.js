@@ -70,7 +70,17 @@ describe('PolicyEditor component', () => {
       await nextTick();
       const alert = findAlert();
       expect(alert.exists()).toBe(true);
-      expect(alert.text()).toBe(errorMessage);
+      expect(alert.props('title')).toBe(errorMessage);
+    });
+
+    it('shows an alert with details when multiline "error" is emitted from the component', async () => {
+      const errorMessages = 'title\ndetail1';
+      findNeworkPolicyEditor().vm.$emit('error', errorMessages);
+      await nextTick();
+      const alert = findAlert();
+      expect(alert.exists()).toBe(true);
+      expect(alert.props('title')).toBe('title');
+      expect(alert.text()).toBe('detail1');
     });
 
     it.each`

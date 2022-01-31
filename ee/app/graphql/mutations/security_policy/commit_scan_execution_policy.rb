@@ -38,10 +38,11 @@ module Mutations
 
         result = commit_policy(project, args)
         error_message = result[:status] == :error ? result[:message] : nil
+        error_details = result[:status] == :error ? result[:details] : nil
 
         {
           branch: result[:branch],
-          errors: [error_message].compact
+          errors: [error_message, *error_details].compact
         }
       end
 

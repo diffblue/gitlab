@@ -117,7 +117,25 @@ describe('Zuora', () => {
 
       return nextTick().then(() => {
         expect(actionMocks.zuoraIframeRendered).toHaveBeenCalled();
+        wrapper.vm.handleZuoraCallback();
+        expect(actionMocks.paymentFormSubmitted).toHaveBeenCalled();
       });
+    });
+  });
+
+  describe('tracking', () => {
+    it('emits success event on correct response', async () => {
+      wrapper.vm.handleZuoraCallback({ success: 'true' });
+      await nextTick();
+      expect(wrapper.emitted().success.length).toEqual(1);
+    });
+
+    it('emits error with message', async () => {
+      createComponent();
+      wrapper.vm.handleZuoraCallback({ errorMessage: '1337' });
+      await nextTick();
+      expect(wrapper.emitted().error.length).toEqual(1);
+      expect(wrapper.emitted().error[0]).toEqual(['1337']);
     });
   });
 });

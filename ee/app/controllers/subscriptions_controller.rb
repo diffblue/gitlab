@@ -83,7 +83,11 @@ class SubscriptionsController < ApplicationController
     group = params[:selected_group] ? current_group : create_group
 
     return not_found if group.nil?
-    return render json: group.errors.to_json unless group.persisted?
+
+    unless group.persisted?
+      track_purchase message: group.errors.full_messages.to_s
+      return render json: group.errors.to_json
+    end
 
     response = Subscriptions::CreateService.new(
       current_user,
@@ -93,13 +97,25 @@ class SubscriptionsController < ApplicationController
     ).execute
 
     if response[:success]
+      track_purchase message: 'Success', namespace: group
       response[:data] = { location: redirect_location(group) }
+    else
+      track_purchase message: response.dig(:data, :errors), namespace: group
     end
 
     render json: response[:data]
   end
 
   private
+
+  def track_purchase(message:, namespace: nil)
+    Gitlab::Tracking.event(self.class.name, 'click_button',
+                           label: 'confirm_purchase',
+                           property: message,
+                           user: current_user,
+                           namespace: namespace
+    )
+  end
 
   def redirect_location(group)
     return safe_redirect_path(params[:redirect_after_success]) if params[:redirect_after_success]

@@ -180,6 +180,46 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     end
   end
 
+  describe '#policy_configuration_validation_errors' do
+    subject { security_orchestration_policy_configuration.policy_configuration_validation_errors }
+
+    context 'when file is invalid' do
+      let(:policy_yaml) do
+        build(:orchestration_policy_yaml, scan_execution_policy:
+        [build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: 'production' }])])
+      end
+
+      it { is_expected.to eq(["property '/scan_execution_policy/0/rules/0/branches' is not of type: array"]) }
+    end
+
+    context 'when file is valid' do
+      it { is_expected.to eq([]) }
+    end
+
+    context 'when policy is passed as argument' do
+      let_it_be(:policy_yaml) { nil }
+      let_it_be(:policy) { { scan_execution_policy: [build(:scan_execution_policy)] } }
+
+      context 'when scan type is secret_detection' do
+        it 'returns false if extra fields are present' do
+          invalid_policy = policy.deep_dup
+          invalid_policy[:scan_execution_policy][0][:actions][0][:scan] = 'secret_detection'
+
+          expect(security_orchestration_policy_configuration.policy_configuration_validation_errors(invalid_policy)).to eq(
+            ["property '/scan_execution_policy/0/actions/0' is invalid: error_type=maxProperties"]
+          )
+        end
+
+        it 'returns true if extra fields are not present' do
+          valid_policy = policy.deep_dup
+          valid_policy[:scan_execution_policy][0][:actions][0] = { scan: 'secret_detection' }
+
+          expect(security_orchestration_policy_configuration.policy_configuration_validation_errors(valid_policy)).to eq([])
+        end
+      end
+    end
+  end
+
   describe '#active_scan_execution_policies' do
     let(:enforce_dast_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [build(:scan_execution_policy)]) }
     let(:policy_yaml) { fixture_file('security_orchestration.yml', dir: 'ee') }

@@ -8,8 +8,10 @@ module Security
 
         return error('Security Policy Project does not exist') unless policy_configuration.present?
 
-        result = commit_policy(process_policy_yaml)
+        process_policy_result = process_policy
+        return process_policy_result if process_policy_result[:status] != :success
 
+        result = commit_policy(process_policy_result[:policy_hash])
         return error(result[:message], :bad_request) if result[:status] != :success
 
         success({ branch: branch_name })
@@ -19,9 +21,8 @@ module Security
 
       private
 
-      def process_policy_yaml
-        policy = Gitlab::Config::Loader::Yaml.new(params[:policy_yaml]).load!
-        updated_policy = ProcessPolicyService.new(
+      def process_policy
+        ProcessPolicyService.new(
           policy_configuration: policy_configuration,
           params: {
             operation: params[:operation],
@@ -30,11 +31,11 @@ module Security
             type: policy.delete(:type)&.to_sym
           }
         ).execute
-
-        YAML.dump(updated_policy.deep_stringify_keys)
       end
 
-      def commit_policy(policy_yaml)
+      def commit_policy(policy_hash)
+        policy_yaml = YAML.dump(policy_hash.deep_stringify_keys)
+
         return create_commit(::Files::UpdateService, policy_yaml) if policy_configuration.policy_configuration_exists?
 
         create_commit(::Files::CreateService, policy_yaml)
@@ -66,6 +67,10 @@ module Security
 
       def branch_name
         @branch_name ||= "update-policy-#{Time.now.to_i}"
+      end
+
+      def policy
+        @policy ||= Gitlab::Config::Loader::Yaml.new(params[:policy_yaml]).load!
       end
 
       attr_reader :project, :policy_configuration

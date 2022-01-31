@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import { triggerEvent, mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import Component from 'ee/subscriptions/new/components/order_summary.vue';
 import createStore from 'ee/subscriptions/new/store';
 import * as types from 'ee/subscriptions/new/store/mutation_types';
@@ -9,6 +10,7 @@ describe('Order Summary', () => {
   Vue.use(Vuex);
 
   let wrapper;
+  let trackingSpy;
 
   const availablePlans = [
     { id: 'firstPlanId', code: 'bronze', price_per_year: 48, name: 'bronze plan' },
@@ -36,9 +38,11 @@ describe('Order Summary', () => {
 
   beforeEach(() => {
     createComponent();
+    trackingSpy = mockTracking(undefined, undefined, jest.spyOn);
   });
 
   afterEach(() => {
+    unmockTracking();
     wrapper.destroy();
   });
 
@@ -188,6 +192,17 @@ describe('Order Summary', () => {
     });
 
     describe('tax rate', () => {
+      describe('tracking', () => {
+        it('track click on tax_link', () => {
+          trackingSpy = mockTracking(undefined, findTaxHelpLink().element, jest.spyOn);
+          triggerEvent(findTaxHelpLink().element);
+
+          expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_button', {
+            label: 'tax_link',
+          });
+        });
+      });
+
       describe('with a tax rate of 0', () => {
         it('displays the total amount excluding vat', () => {
           expect(wrapper.find('.js-total-ex-vat').exists()).toBe(true);

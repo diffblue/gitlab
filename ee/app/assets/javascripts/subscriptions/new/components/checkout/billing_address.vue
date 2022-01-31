@@ -2,10 +2,11 @@
 import { GlFormGroup, GlFormInput, GlFormSelect } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import { mapState, mapActions } from 'vuex';
-import { STEPS } from 'ee/subscriptions/constants';
+import { STEP_BILLING_ADDRESS } from 'ee/subscriptions/constants';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import { s__ } from '~/locale';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
+import Tracking from '~/tracking';
 
 export default {
   components: {
@@ -17,6 +18,7 @@ export default {
   directives: {
     autofocusonshow,
   },
+  mixins: [Tracking.mixin()],
   computed: {
     ...mapState([
       'country',
@@ -117,6 +119,21 @@ export default {
       'updateCountryState',
       'updateZipCode',
     ]),
+    trackStepTransition() {
+      this.track('click_button', { label: 'select_country', property: this.country });
+      this.track('click_button', { label: 'state', property: this.countryState });
+      this.track('click_button', {
+        label: 'saas_checkout_postal_code',
+        property: this.zipCode,
+      });
+      this.track('click_button', { label: 'continue_payment' });
+    },
+    trackStepEdit() {
+      this.track('click_button', {
+        label: 'edit',
+        property: STEP_BILLING_ADDRESS,
+      });
+    },
   },
   i18n: {
     stepTitle: s__('Checkout|Billing address'),
@@ -129,7 +146,7 @@ export default {
     stateSelectPrompt: s__('Checkout|Please select a state'),
     zipCodeLabel: s__('Checkout|Zip code'),
   },
-  stepId: STEPS[1].id,
+  stepId: STEP_BILLING_ADDRESS,
 };
 </script>
 <template>
@@ -138,6 +155,8 @@ export default {
     :title="$options.i18n.stepTitle"
     :is-valid="isValid"
     :next-step-button-text="$options.i18n.nextStepButtonText"
+    @nextStep="trackStepTransition"
+    @stepEdit="trackStepEdit"
   >
     <template #body>
       <gl-form-group :label="$options.i18n.countryLabel" label-size="sm" class="mb-3">

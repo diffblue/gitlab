@@ -41,6 +41,7 @@ export default {
       default: '',
     },
   },
+  emits: ['nextStep', 'stepEdit'],
   data() {
     return {
       activeStep: {},
@@ -71,7 +72,7 @@ export default {
       const activeIndex = this.stepList.findIndex(({ id }) => id === this.activeStep.id);
       return this.isFinished && index < activeIndex;
     },
-    snakeCasedStep() {
+    dasherizedStep() {
       return dasherize(convertToSnakeCase(this.stepId));
     },
   },
@@ -93,10 +94,12 @@ export default {
         })
         .finally(() => {
           this.loading = false;
+          this.$emit('nextStep');
         });
     },
     async edit() {
       this.loading = true;
+      this.$emit('stepEdit', this.stepId);
       await this.$apollo
         .mutate({
           mutation: updateStepMutation,
@@ -115,7 +118,7 @@ export default {
 <template>
   <div class="mb-3 mb-lg-5 gl-w-full">
     <step-header :title="title" :is-finished="isFinished" />
-    <div :class="['card', snakeCasedStep]">
+    <div class="card" :class="dasherizedStep">
       <div v-show="isActive" @keyup.enter="nextStep">
         <slot name="body" :active="isActive"></slot>
         <gl-form-group

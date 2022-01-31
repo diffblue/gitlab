@@ -351,7 +351,7 @@ RSpec.describe Admin::ApplicationSettingsController do
     context 'advanced search settings' do
       it 'updates the advanced search settings' do
         settings = {
-            elasticsearch_url: 'http://my-elastic.search:9200',
+            elasticsearch_url: URI.parse('http://my-elastic.search:9200'),
             elasticsearch_indexing: false,
             elasticsearch_aws: true,
             elasticsearch_aws_access_key: 'elasticsearch_aws_access_key',
