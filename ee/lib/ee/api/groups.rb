@@ -157,6 +157,34 @@ module EE
               render_api_error!(result[:message], 400)
             end
           end
+
+          desc 'Get a list of users provisioned by the group' do
+            success Entities::UserPublic
+          end
+          # rubocop: disable CodeReuse/ActiveRecord
+          get ':provisioning_group_id/provisioned_users' do
+            params do
+              requires :provisioning_group_id, type: String, desc: 'The ID of the group'
+
+              optional :username, type: String, desc: 'Get a single user with a specific username'
+              optional :search, type: String, desc: 'Search for a user name, email or username'
+              optional :active, type: Boolean, default: false, desc: 'Filters only active users'
+              optional :blocked, type: Boolean, default: false, desc: 'Filters only blocked users'
+              optional :created_after, type: DateTime, desc: 'Return users created after the specified time'
+              optional :created_before, type: DateTime, desc: 'Return users created before the specified time'
+
+              use :sort_params
+              use :pagination
+            end
+
+            group = find_group!(params[:provisioning_group_id])
+            authorize! :maintainer_access, group
+
+            users = ::Auth::ProvisionedUsersFinder.new(current_user, params).execute.preload(:identities)
+
+            present paginate(users), with: ::API::Entities::UserPublic
+          end
+          # rubocop: enable CodeReuse/ActiveRecord
         end
       end
     end
