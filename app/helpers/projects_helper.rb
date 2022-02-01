@@ -72,7 +72,7 @@ module ProjectsHelper
       inject_classes.append( "has-tooltip" )
     end
 
-    inject_classes = inject_classes.compact.join( " " )
+    inject_classes = inject_classes.compact.join(" ")
 
     author_html = []
     # Build avatar image tag
