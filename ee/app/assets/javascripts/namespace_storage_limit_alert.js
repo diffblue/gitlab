@@ -1,11 +1,11 @@
-import Cookies from 'js-cookie';
+import { setCookie } from '~/lib/utils/common_utils';
 
 const handleOnDismiss = ({ currentTarget }) => {
   const {
     dataset: { id, level },
   } = currentTarget;
 
-  Cookies.set(`hide_storage_limit_alert_${id}_${level}`, true, { expires: 30 });
+  setCookie(`hide_storage_limit_alert_${id}_${level}`, true, { expires: 30 });
 
   const notification = document.querySelector('.js-namespace-storage-alert');
   notification.parentNode.removeChild(notification);

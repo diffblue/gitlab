@@ -1,6 +1,6 @@
 <script>
 import { GlTabs, GlTab } from '@gitlab/ui';
-import Cookies from 'js-cookie';
+import { getCookie } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { COMPLIANCE_TAB_COOKIE_KEY } from '../constants';
@@ -60,7 +60,7 @@ export default {
   },
   methods: {
     showTabs() {
-      return Cookies.get(COMPLIANCE_TAB_COOKIE_KEY) === 'true';
+      return getCookie(COMPLIANCE_TAB_COOKIE_KEY) === 'true';
     },
     toggleDrawer(mergeRequest) {
       if (this.showDrawer && mergeRequest.id === this.drawerMergeRequest.id) {

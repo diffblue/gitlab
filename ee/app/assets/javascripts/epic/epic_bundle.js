@@ -1,10 +1,10 @@
 import { GlBreakpointInstance as bp } from '@gitlab/ui/dist/utils';
-import Cookies from 'js-cookie';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { mapActions } from 'vuex';
+import { setCookie, convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_utils';
 import { parseIssuableData } from '~/issues/show/utils/parse_data';
-import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_utils';
+
 import { defaultClient } from '~/sidebar/graphql';
 import labelsSelectModule from '~/vue_shared/components/sidebar/labels_select_vue/store';
 
@@ -35,7 +35,7 @@ export default () => {
   // Collapse the sidebar on mobile screens by default
   const bpBreakpoint = bp.getBreakpointSize();
   if (bpBreakpoint === 'xs' || bpBreakpoint === 'sm' || bpBreakpoint === 'md') {
-    Cookies.set('collapsed_gutter', true);
+    setCookie('collapsed_gutter', true);
   }
 
   return new Vue({

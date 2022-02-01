@@ -1,7 +1,7 @@
 import $ from 'jquery';
-import Cookies from 'js-cookie';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import { setCookie } from '~/lib/utils/common_utils';
 import createDefaultClient from '~/lib/graphql';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import BurnCharts from './components/burn_charts.vue';
@@ -17,7 +17,7 @@ export default () => {
   const hint = $('.burndown-hint');
   hint.on('click', '.dismiss-icon', () => {
     hint.hide();
-    Cookies.set('hide_burndown_message', 'true');
+    setCookie('hide_burndown_message', 'true');
   });
 
   // generate burndown chart (if data available)
