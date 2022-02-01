@@ -78,3 +78,5 @@ export const REPOSITORY = 'repository';
 export const BLOB = 'blob';
 
 export const REMOVE_NODE_MODAL_ID = 'remove-node-modal';
+
+export const STATUS_FILTER_QUERY_PARAM = 'status';

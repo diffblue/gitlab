@@ -15797,6 +15797,9 @@ msgstr ""
 msgid "Geo|Adjust your filters/search criteria above. If you believe this may be an error, please refer to the %{linkStart}Geo Troubleshooting%{linkEnd} documentation for more information."
 msgstr ""
 
+msgid "Geo|All"
+msgstr ""
+
 msgid "Geo|All %{replicable_name}"
 msgstr ""
 
@@ -19343,9 +19346,6 @@ msgstr ""
 msgid "Integrations|No linked namespaces"
 msgstr ""
 
-msgid "Integrations|Note: this integration only works with accounts on GitLab.com (SaaS)."
-msgstr ""
-
 msgid "Integrations|Projects using custom settings"
 msgstr ""
 
@@ -19383,6 +19383,9 @@ msgid "Integrations|Send notifications about project events to Unify Circuit."
 msgstr ""
 
 msgid "Integrations|Send notifications about project events to a Unify Circuit conversation. %{docs_link}"
+msgstr ""
+
+msgid "Integrations|Sign in to GitLab"
 msgstr ""
 
 msgid "Integrations|Sign in to add namespaces"
@@ -23625,9 +23628,6 @@ msgstr ""
 msgid "NetworkPolicies|%{strongOpen}any%{strongClose} port"
 msgstr ""
 
-msgid "NetworkPolicies|.yaml"
-msgstr ""
-
 msgid "NetworkPolicies|.yaml mode"
 msgstr ""
 
@@ -23704,9 +23704,6 @@ msgid "NetworkPolicies|Policy %{policyName} was successfully changed"
 msgstr ""
 
 msgid "NetworkPolicies|Policy definition"
-msgstr ""
-
-msgid "NetworkPolicies|Rule"
 msgstr ""
 
 msgid "NetworkPolicies|Rule mode"
@@ -31951,6 +31948,9 @@ msgid "SecurityOrchestration|Sorry, your filter produced no results."
 msgstr ""
 
 msgid "SecurityOrchestration|Status"
+msgstr ""
+
+msgid "SecurityOrchestration|Summary"
 msgstr ""
 
 msgid "SecurityOrchestration|The %{scanners} %{severities} in an open merge request targeting %{branches}."

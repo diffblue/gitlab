@@ -328,7 +328,10 @@ export default {
           :id="$options.policyPreviewHumanCollapseId"
           v-model="isPolicyPreviewHumanVisible"
         >
-          <policy-preview-human :policy-description="humanizedPolicy" />
+          <policy-preview-human
+            class="gl-bg-gray-10 gl-py-3 gl-px-4"
+            :policy-description="humanizedPolicy"
+          />
         </gl-collapse>
       </div>
     </template>

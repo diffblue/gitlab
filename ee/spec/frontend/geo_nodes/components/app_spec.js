@@ -1,12 +1,11 @@
 import { GlLink, GlButton, GlLoadingIcon, GlModal, GlSprintf } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import GeoNodesApp from 'ee/geo_nodes/components/app.vue';
 import GeoNodes from 'ee/geo_nodes/components/geo_nodes.vue';
 import GeoNodesEmptyState from 'ee/geo_nodes/components/geo_nodes_empty_state.vue';
 import { GEO_INFO_URL } from 'ee/geo_nodes/constants';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { MOCK_NODES, MOCK_NEW_NODE_URL, MOCK_EMPTY_STATE_SVG } from '../mock_data';
 
 Vue.use(Vuex);
@@ -25,24 +24,26 @@ describe('GeoNodesApp', () => {
     geoNodesEmptyStateSvg: MOCK_EMPTY_STATE_SVG,
   };
 
-  const createComponent = (initialState, props) => {
+  const createComponent = (initialState, props, getters) => {
     const store = new Vuex.Store({
       state: {
         ...initialState,
       },
       actions: actionSpies,
+      getters: {
+        filteredNodes: () => [],
+        ...getters,
+      },
     });
 
-    wrapper = extendedWrapper(
-      shallowMount(GeoNodesApp, {
-        store,
-        propsData: {
-          ...defaultProps,
-          ...props,
-        },
-        stubs: { GlSprintf },
-      }),
-    );
+    wrapper = shallowMountExtended(GeoNodesApp, {
+      store,
+      propsData: {
+        ...defaultProps,
+        ...props,
+      },
+      stubs: { GlSprintf },
+    });
   };
 
   afterEach(() => {
@@ -58,6 +59,8 @@ describe('GeoNodesApp', () => {
   const findPrimaryGeoNodes = () => wrapper.findAllByTestId('primary-nodes');
   const findSecondaryGeoNodes = () => wrapper.findAllByTestId('secondary-nodes');
   const findGlModal = () => wrapper.findComponent(GlModal);
+  const findPrimarySiteTitle = () => wrapper.findByText('Primary site');
+  const findSecondarySiteTitle = () => wrapper.findByText('Secondary site');
 
   describe('template', () => {
     describe('always', () => {
@@ -89,7 +92,7 @@ describe('GeoNodesApp', () => {
       `conditionally`,
       ({ isLoading, nodes, showLoadingIcon, showNodes, showEmptyState, showAddButton }) => {
         beforeEach(() => {
-          createComponent({ isLoading, nodes });
+          createComponent({ isLoading, nodes }, null, { filteredNodes: () => nodes });
         });
 
         describe(`when isLoading is ${isLoading} & nodes length ${nodes.length}`, () => {
@@ -117,12 +120,34 @@ describe('GeoNodesApp', () => {
       const secondaryNodes = MOCK_NODES.filter((n) => !n.primary);
 
       beforeEach(() => {
-        createComponent({ nodes: MOCK_NODES });
+        createComponent({ nodes: MOCK_NODES }, null, { filteredNodes: () => MOCK_NODES });
       });
 
       it('renders the correct Geo Node component for each node', () => {
         expect(findPrimaryGeoNodes()).toHaveLength(primaryNodes.length);
         expect(findSecondaryGeoNodes()).toHaveLength(secondaryNodes.length);
+      });
+    });
+
+    describe.each`
+      description                                | nodes                                   | primaryTitle | secondaryTitle
+      ${'with both primary and secondary nodes'} | ${MOCK_NODES}                           | ${true}      | ${true}
+      ${'with only primary nodes'}               | ${MOCK_NODES.filter((n) => n.primary)}  | ${true}      | ${false}
+      ${'with only secondary nodes'}             | ${MOCK_NODES.filter((n) => !n.primary)} | ${false}     | ${true}
+      ${'with no nodes'}                         | ${[]}                                   | ${false}     | ${false}
+    `('Site Titles', ({ description, nodes, primaryTitle, secondaryTitle }) => {
+      describe(`${description}`, () => {
+        beforeEach(() => {
+          createComponent({ nodes }, null, { filteredNodes: () => nodes });
+        });
+
+        it(`should ${primaryTitle ? '' : 'not '}render the Primary Site Title`, () => {
+          expect(findPrimarySiteTitle().exists()).toBe(primaryTitle);
+        });
+
+        it(`should ${secondaryTitle ? '' : 'not '}render the Secondary Site Title`, () => {
+          expect(findSecondarySiteTitle().exists()).toBe(secondaryTitle);
+        });
       });
     });
   });

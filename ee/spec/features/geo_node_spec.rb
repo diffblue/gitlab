@@ -58,6 +58,47 @@ RSpec.describe 'GEO Nodes', :geo do
 
         expect(all('.geo-node-details-grid-columns').last).to have_link('Open replications', href: expected_url)
       end
+
+      context 'Status Filters', :js do
+        it 'defaults to the All tab when a status query is not already set' do
+          visit admin_geo_nodes_path
+          tab_count = find('[data-testid="geo-sites-filter"] .active .badge').text.to_i
+          results_count = page.all('[data-testid="primary-nodes"]').length + page.all('[data-testid="secondary-nodes"]').length
+
+          expect(find('[data-testid="geo-sites-filter"] .active')).to have_content('All')
+          expect(results_count).to be(tab_count)
+        end
+
+        it 'sets the correct tab when a status query is already set' do
+          visit admin_geo_nodes_path(status: 'unknown')
+          tab_count = find('[data-testid="geo-sites-filter"] .active .badge').text.to_i
+          results_count = page.all('[data-testid="primary-nodes"]').length + page.all('[data-testid="secondary-nodes"]').length
+
+          expect(find('[data-testid="geo-sites-filter"] .active')).not_to have_content('All')
+          expect(find('[data-testid="geo-sites-filter"] .active')).to have_content('Unknown')
+          expect(results_count).to be(tab_count)
+        end
+
+        it 'properly updates the query and sets the tab when a new one is clicked' do
+          visit admin_geo_nodes_path
+          tab_count = find('[data-testid="geo-sites-filter"] .active .badge').text.to_i
+          results_count = page.all('[data-testid="primary-nodes"]').length + page.all('[data-testid="secondary-nodes"]').length
+
+          expect(find('[data-testid="geo-sites-filter"] .active')).to have_content('All')
+          expect(results_count).to be(tab_count)
+
+          click_link 'Unknown'
+
+          wait_for_requests
+          tab_count = find('[data-testid="geo-sites-filter"] .active .badge').text.to_i
+          results_count = page.all('[data-testid="primary-nodes"]').length + page.all('[data-testid="secondary-nodes"]').length
+
+          expect(find('[data-testid="geo-sites-filter"] .active')).not_to have_content('All')
+          expect(find('[data-testid="geo-sites-filter"] .active')).to have_content('Unknown')
+          expect(page).to have_current_path(admin_geo_nodes_path(status: 'unknown'))
+          expect(results_count).to be(tab_count)
+        end
+      end
     end
   end
 end

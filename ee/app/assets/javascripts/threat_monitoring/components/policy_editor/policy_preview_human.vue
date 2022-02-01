@@ -24,11 +24,7 @@ export default {
 </script>
 
 <template>
-  <div
-    v-if="policyDescription"
-    v-safe-html:[$options.safeHtmlConfig]="policyDescription"
-    class="gl-bg-gray-10 gl-py-3 gl-px-4"
-  ></div>
+  <div v-if="policyDescription" v-safe-html:[$options.safeHtmlConfig]="policyDescription"></div>
   <div v-else>
     <gl-alert variant="info" :dismissible="false">
       {{ $options.i18n.PARSING_ERROR_MESSAGE }}
