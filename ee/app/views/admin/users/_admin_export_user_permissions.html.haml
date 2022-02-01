@@ -1,5 +1,4 @@
 - return unless current_user&.can?(:export_user_permissions)
 
 = link_to admin_user_permission_exports_path(format: :csv), { class: 'gl-button btn btn-default btn-icon', data: { toggle: "tooltip", placement: "top", container: "body" }, title: s_("AdminUsers|Export permissions as CSV (max 100,000 users)") } do
-  .gl-button-icon
-    = sprite_icon('upload')
+  = sprite_icon('upload')
