@@ -20947,9 +20947,6 @@ msgstr ""
 msgid "Job Failed #%{build_id}"
 msgstr ""
 
-msgid "Job ID"
-msgstr ""
-
 msgid "Job artifact"
 msgstr ""
 
