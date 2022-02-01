@@ -14778,9 +14778,6 @@ msgstr ""
 msgid "Failed to create import label for jira import."
 msgstr ""
 
-msgid "Failed to create merge request. Please try again."
-msgstr ""
-
 msgid "Failed to create new access token: %{token_response_message}"
 msgstr ""
 
