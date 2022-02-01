@@ -22,14 +22,14 @@ query getCorpuses(
           id
           name
           updatedAt
-          packageFiles(last: 1) {
+          packageFiles(first: 1) {
             nodes {
               id
               size
               downloadPath
             }
           }
-          pipelines(last: 1) {
+          pipelines(first: 1) {
             nodes {
               id
               createdAt
