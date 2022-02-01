@@ -120,6 +120,7 @@ module EE
 
                   if result.success?
                     status result.http_status
+                    { uuid: result.payload[:vulnerability].finding_uuid }
                   else
                     render_api_error!(result.message, result.http_status)
                   end
