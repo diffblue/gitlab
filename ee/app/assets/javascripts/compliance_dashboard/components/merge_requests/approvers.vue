@@ -1,6 +1,6 @@
 <script>
 import { GlAvatarLink, GlAvatar, GlAvatarsInline, GlTooltipDirective } from '@gitlab/ui';
-import { sprintf, __ } from '~/locale';
+import { sprintf, __, n__ } from '~/locale';
 import { PRESENTABLE_APPROVERS_LIMIT } from '../../constants';
 
 export default {
@@ -36,6 +36,13 @@ export default {
         approvers: this.amountOfApproversOverLimit,
       });
     },
+    approversBadgeSrOnlyText() {
+      return n__(
+        '%d additional approver',
+        '%d additional approvers',
+        this.amountOfApproversOverLimit,
+      );
+    },
   },
   PRESENTABLE_APPROVERS_LIMIT,
   strings: {
@@ -61,6 +68,7 @@ export default {
       :collapsed="true"
       :max-visible="$options.PRESENTABLE_APPROVERS_LIMIT"
       :avatar-size="24"
+      :badge-sr-only-text="approversBadgeSrOnlyText"
       class="gl-display-inline-flex gl-lg-display-none! gl-ml-3"
       badge-tooltip-prop="name"
     >

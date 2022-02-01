@@ -17,7 +17,10 @@ describe('DrawerAvatarsList component', () => {
 
   const createComponent = (mountFn = shallowMount, propsData = {}) => {
     return mountFn(DrawerAvatarsList, {
-      propsData,
+      propsData: {
+        badgeSrOnlyText: 'additional approvers',
+        ...propsData,
+      },
     });
   };
 

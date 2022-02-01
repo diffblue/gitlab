@@ -5,6 +5,7 @@ exports[`ApproversColumn component when a list with more than three approvers is
   <gl-avatars-inline-stub
     avatars="[object Object],[object Object],[object Object],[object Object]"
     avatarsize="24"
+    badgesronlytext="2 additional approvers"
     badgetooltipmaxchars="50"
     badgetooltipprop="name"
     collapsed="true"
@@ -37,6 +38,7 @@ exports[`ApproversColumn component when a list with three approvers is passed ma
   <gl-avatars-inline-stub
     avatars="[object Object],[object Object],[object Object]"
     avatarsize="24"
+    badgesronlytext="0 additional approvers"
     badgetooltipmaxchars="50"
     badgetooltipprop="name"
     collapsed="true"
@@ -50,6 +52,7 @@ exports[`ApproversColumn component when a list with two approvers is passed matc
   <gl-avatars-inline-stub
     avatars="[object Object],[object Object]"
     avatarsize="24"
+    badgesronlytext="-1 additional approvers"
     badgetooltipmaxchars="50"
     badgetooltipprop="name"
     collapsed="true"
