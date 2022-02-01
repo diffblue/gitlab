@@ -36578,6 +36578,9 @@ msgstr ""
 msgid "This content could not be displayed because %{reason}. You can %{options} instead."
 msgstr ""
 
+msgid "This content could not be displayed because it is stored in LFS. You can %{linkStart}download it%{linkEnd} instead."
+msgstr ""
+
 msgid "This credential has expired"
 msgstr ""
 
