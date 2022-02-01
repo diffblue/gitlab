@@ -1,19 +1,5 @@
 @import 'page_bundles/mixins_and_variables_and_functions';
 
-@include media-breakpoint-down(sm) {
-  .epics-other-filters {
-    .epics-sort-btn i {
-      position: absolute;
-      top: 11px;
-      right: 6px;
-    }
-
-    .btn-sort-direction {
-      flex: 0 1 auto;
-    }
-  }
-}
-
 .is-ghost {
   opacity: 0.3;
   pointer-events: none;

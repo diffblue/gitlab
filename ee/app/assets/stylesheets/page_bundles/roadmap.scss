@@ -71,14 +71,6 @@ html.group-epics-roadmap-html {
       border-bottom-right-radius: 0;
     }
 
-    .btn-sort-direction {
-      border-left: 0;
-
-      &:hover {
-        border-color: var(--gray-darkest, $gray-darkest);
-      }
-    }
-
     @include media-breakpoint-down(xs) {
       display: flex;
 
