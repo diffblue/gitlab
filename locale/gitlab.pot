@@ -17944,6 +17944,9 @@ msgstr ""
 msgid "INFO: Your SSH key is expiring soon. Please generate a new key."
 msgstr ""
 
+msgid "IP"
+msgstr ""
+
 msgid "IP Address"
 msgstr ""
 
@@ -30982,9 +30985,6 @@ msgid "Runners|Runner #%{runner_id}"
 msgstr ""
 
 msgid "Runners|Runner %{name} was deleted"
-msgstr ""
-
-msgid "Runners|Runner ID"
 msgstr ""
 
 msgid "Runners|Runner assigned to project."
