@@ -1,4 +1,4 @@
-import { GlPagination, GlIcon } from '@gitlab/ui';
+import { GlPagination, GlBadge } from '@gitlab/ui';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import { defaultDataIdFromObject } from 'apollo-cache-inmemory';
 import VueApollo from 'vue-apollo';
@@ -131,7 +131,7 @@ const createComponentWithApollo = ({ props = {}, requestHandlers = [] } = {}) =>
       stubs: {
         RequirementItem,
         RequirementStatusBadge,
-        GlIcon,
+        GlBadge,
       },
     }),
   );
@@ -142,7 +142,7 @@ describe('RequirementsRoot', () => {
   let trackingSpy;
 
   const findRequirementEditForm = () => wrapper.findByTestId('edit-form');
-  const findFailedStatusIcon = () => wrapper.findByTestId('status_failed-icon');
+  const findBadge = () => wrapper.findComponent(GlBadge);
 
   beforeEach(() => {
     wrapper = createComponent();
@@ -1106,12 +1106,13 @@ describe('RequirementsRoot', () => {
         });
 
         it('renders a failed badge after the update', async () => {
-          expect(findFailedStatusIcon().exists()).toBe(false);
+          await nextTick();
+          expect(findBadge().props('icon')).toBe('status_success');
 
           editRequirementToFailed();
           await waitForPromises();
 
-          expect(findFailedStatusIcon().exists()).toBe(true);
+          expect(findBadge().props('icon')).toBe('status_failed');
         });
       });
 
