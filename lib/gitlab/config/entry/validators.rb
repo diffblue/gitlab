@@ -217,12 +217,6 @@ module Gitlab
             end
           end
 
-          protected
-
-          def fallback
-            false
-          end
-
           private
 
           def matches_syntax?(value)
@@ -231,7 +225,7 @@ module Gitlab
 
           def validate_regexp(value)
             matches_syntax?(value) &&
-              Gitlab::UntrustedRegexp::RubySyntax.valid?(value, fallback: fallback)
+              Gitlab::UntrustedRegexp::RubySyntax.valid?(value)
           end
         end
 
@@ -256,27 +250,6 @@ module Gitlab
             return false unless value.is_a?(String)
             return validate_regexp(value) if matches_syntax?(value)
 
-            true
-          end
-        end
-
-        class ArrayOfStringsOrRegexpsWithFallbackValidator < ArrayOfStringsOrRegexpsValidator
-          protected
-
-          # TODO
-          #
-          # Remove ArrayOfStringsOrRegexpsWithFallbackValidator class too when
-          # you are removing the `:allow_unsafe_ruby_regexp` feature flag.
-          #
-          def validation_message
-            if ::Feature.enabled?(:allow_unsafe_ruby_regexp, default_enabled: :yaml)
-              'should be an array of strings or regular expressions'
-            else
-              super
-            end
-          end
-
-          def fallback
             true
           end
         end
