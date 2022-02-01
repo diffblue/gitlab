@@ -276,6 +276,12 @@ RSpec.describe API::Internal::Kubernetes do
         expect(Vulnerability.all.first.finding.name).to eq(payload[:vulnerability][:name])
       end
 
+      it "responds with the created vulnerability's UUID" do
+        send_request(params: payload)
+
+        expect(json_response).to match("uuid" => Vulnerability.last.finding.uuid)
+      end
+
       context 'when payload is invalid' do
         let(:payload) { { vulnerability: 'invalid' } }
 
