@@ -1,5 +1,4 @@
 - return unless send_emails_from_admin_area_feature_available?
 
 = link_to admin_email_path, { class: 'gl-button btn btn-default btn-icon', data: { toggle: "tooltip", placement: "top", container: "body" }, title: s_("AdminUsers|Send email to users") } do
-  .gl-button-icon
-    = sprite_icon('mail')
+  = sprite_icon('mail')

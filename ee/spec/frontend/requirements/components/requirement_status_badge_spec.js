@@ -1,4 +1,4 @@
-import { GlBadge, GlIcon, GlTooltip } from '@gitlab/ui';
+import { GlBadge, GlTooltip } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
 import { nextTick } from 'vue';
@@ -94,9 +94,8 @@ describe('RequirementStatusBadge', () => {
 
           expect(badgeEl.exists()).toBe(true);
           expect(badgeEl.props('variant')).toBe(badgeProps.variant);
+          expect(badgeEl.props('icon')).toBe(badgeProps.icon);
           expect(badgeEl.text()).toBe(badgeProps.text);
-          expect(badgeEl.findComponent(GlIcon).exists()).toBe(true);
-          expect(badgeEl.findComponent(GlIcon).props('name')).toBe(badgeProps.icon);
         });
 
         it('renders GlTooltip component', () => {
