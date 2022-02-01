@@ -85,6 +85,13 @@ RSpec.describe 'Namespace user cap reached alert', :feature, :js, :use_clean_rai
       expect_banner_to_be_absent
     end
 
+    it 'does not display on pending members page' do
+      sign_in(owner)
+      visit pending_members_group_usage_quotas_path(group)
+
+      expect_banner_to_be_absent
+    end
+
     it 'can be dismissed' do
       sign_in(owner)
       visit group_path(group)
