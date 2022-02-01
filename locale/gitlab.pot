@@ -116,6 +116,26 @@ msgid_plural "%d URLs scanned"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%d additional approver"
+msgid_plural "%d additional approvers"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%d additional assignee"
+msgid_plural "%d additional assignees"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%d additional commenter"
+msgid_plural "%d additional commenters"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%d additional committer"
+msgid_plural "%d additional committers"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%d approver"
 msgid_plural "%d approvers"
 msgstr[0] ""
@@ -16630,6 +16650,9 @@ msgid "Go to page %{page}"
 msgstr ""
 
 msgid "Go to parent"
+msgstr ""
+
+msgid "Go to parent directory"
 msgstr ""
 
 msgid "Go to previous page"
@@ -34951,7 +34974,10 @@ msgstr ""
 msgid "SuperSonics|current subscription"
 msgstr ""
 
-msgid "SuperSonics|history subscriptions"
+msgid "SuperSonics|future subscriptions"
+msgstr ""
+
+msgid "SuperSonics|past subscriptions"
 msgstr ""
 
 msgid "Support"

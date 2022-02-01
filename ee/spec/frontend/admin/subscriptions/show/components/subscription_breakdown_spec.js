@@ -27,7 +27,7 @@ import { makeMockUserCalloutDismisser } from 'helpers/mock_user_callout_dismisse
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
-import { license, subscriptionHistory } from '../mock_data';
+import { license, subscriptionPastHistory, subscriptionFutureHistory } from '../mock_data';
 
 describe('Subscription Breakdown', () => {
   let axiosMock;
@@ -35,7 +35,7 @@ describe('Subscription Breakdown', () => {
   let glModalDirective;
   let userCalloutDismissSpy;
 
-  const [, licenseFile] = subscriptionHistory;
+  const [, licenseFile] = subscriptionPastHistory;
   const congratulationSvgPath = '/path/to/svg';
   const connectivityHelpURL = 'connectivity/help/url';
   const customersPortalUrl = 'customers.dot';
@@ -88,7 +88,7 @@ describe('Subscription Breakdown', () => {
         },
         propsData: {
           subscription: license.ULTIMATE,
-          subscriptionList: subscriptionHistory,
+          subscriptionList: [...subscriptionFutureHistory, ...subscriptionPastHistory],
           ...props,
         },
         stubs: {
@@ -398,7 +398,10 @@ describe('Subscription Breakdown', () => {
 
     it('provides the correct props to the subscription history component', () => {
       expect(findDetailsHistory().props('currentSubscriptionId')).toBe(license.ULTIMATE.id);
-      expect(findDetailsHistory().props('subscriptionList')).toBe(subscriptionHistory);
+      expect(findDetailsHistory().props('subscriptionList')).toMatchObject([
+        ...subscriptionFutureHistory,
+        ...subscriptionPastHistory,
+      ]);
     });
   });
 

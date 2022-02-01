@@ -24,6 +24,7 @@ const SYMBOL = {
   ISSUE: '#',
   EPIC: '&',
 };
+const MAX_VISIBLE_ASSIGNEES = 2;
 
 const TH_TEST_ID = { 'data-testid': 'header' };
 
@@ -141,8 +142,16 @@ export default {
     labelTarget(name) {
       return mergeUrlParams({ 'label_name[]': name }, this.endpoints.issuesPage);
     },
+    assigneesBadgeSrOnlyText(assignees) {
+      return n__(
+        '%d additional assignee',
+        '%d additional assignees',
+        assignees.length - MAX_VISIBLE_ASSIGNEES,
+      );
+    },
   },
   avatarSize: 24,
+  MAX_VISIBLE_ASSIGNEES,
 };
 </script>
 <template>
@@ -213,7 +222,8 @@ export default {
       <gl-avatars-inline
         :avatars="value"
         :avatar-size="$options.avatarSize"
-        :max-visible="2"
+        :max-visible="$options.MAX_VISIBLE_ASSIGNEES"
+        :badge-sr-only-text="assigneesBadgeSrOnlyText(value)"
         collapsed
       >
         <template #avatar="{ avatar }">

@@ -1,15 +1,24 @@
 import { GlBadge, GlIcon, GlTooltip } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
+import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import SubscriptionDetailsHistory from 'ee/admin/subscriptions/show/components/subscription_details_history.vue';
-import { detailsLabels, cloudLicenseText } from 'ee/admin/subscriptions/show/constants';
+import {
+  detailsLabels,
+  cloudLicenseText,
+  licenseFileText,
+  subscriptionTypes,
+} from 'ee/admin/subscriptions/show/constants';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import { license, subscriptionHistory } from '../mock_data';
+import { license, subscriptionFutureHistory, subscriptionPastHistory } from '../mock_data';
+
+const subscriptionList = [...subscriptionFutureHistory, ...subscriptionPastHistory];
+const currentSubscriptionIndex = subscriptionFutureHistory.length;
 
 describe('Subscription Details History', () => {
   let wrapper;
 
-  const findCurrentRow = () => wrapper.findByTestId('subscription-current');
   const findTableRows = () => wrapper.findAllByTestId('subscription-history-row');
+  const findCurrentRow = () => findTableRows().at(currentSubscriptionIndex);
   const cellFinder = (row) => (testId) => extendedWrapper(row).findByTestId(testId);
   const containsABadge = (row) => row.findComponent(GlBadge).exists();
   const containsATooltip = (row) => row.findComponent(GlTooltip).exists();
@@ -20,7 +29,7 @@ describe('Subscription Details History', () => {
       mount(SubscriptionDetailsHistory, {
         propsData: {
           currentSubscriptionId: license.ULTIMATE.id,
-          subscriptionList: subscriptionHistory,
+          subscriptionList,
           ...props,
         },
       }),
@@ -41,12 +50,12 @@ describe('Subscription Details History', () => {
     });
 
     it('has the correct number of subscription rows', () => {
-      expect(findTableRows()).toHaveLength(1);
+      expect(findTableRows()).toHaveLength(subscriptionList.length);
     });
 
     it('has the correct license type', () => {
       expect(findCurrentRow().text()).toContain(cloudLicenseText);
-      expect(findTableRows().at(0).text()).toContain('License file');
+      expect(findTableRows().at(-1).text()).toContain('License file');
     });
 
     it('has a badge for the license type', () => {
@@ -73,49 +82,53 @@ describe('Subscription Details History', () => {
       expect(findTableRows().at(0).classes('gl-text-blue-500')).toBe(false);
     });
 
-    describe('cell data', () => {
+    describe.each(Object.entries(subscriptionList))('cell data index=%#', (index, subscription) => {
       let findCellByTestid;
 
       beforeEach(() => {
         createComponent();
-        findCellByTestid = cellFinder(findCurrentRow());
+        findCellByTestid = cellFinder(findTableRows().at(index));
       });
 
       it.each`
         testId                      | key
         ${'starts-at'}              | ${'startsAt'}
-        ${'starts-at'}              | ${'startsAt'}
         ${'expires-at'}             | ${'expiresAt'}
         ${'users-in-license-count'} | ${'usersInLicenseCount'}
       `('displays the correct value for the $testId cell', ({ testId, key }) => {
         const cellTestId = `subscription-cell-${testId}`;
-        expect(findCellByTestid(cellTestId).text()).toBe(subscriptionHistory[0][key]);
+        const value = subscription[key] || '-';
+        expect(findCellByTestid(cellTestId).text()).toBe(value);
       });
 
       it('displays the name field with tooltip', () => {
         const cellTestId = 'subscription-cell-name';
         const text = findCellByTestid(cellTestId).text();
-        expect(text).toContain(subscriptionHistory[0].name);
-        expect(text).toContain(`(${subscriptionHistory[0].company})`);
-        expect(text).toContain(subscriptionHistory[0].email);
+        expect(text).toContain(subscription.name);
+        expect(text).toContain(`(${subscription.company})`);
+        expect(text).toContain(subscription.email);
       });
 
       it('displays sr-only element for screen readers', () => {
         const testId = 'subscription-history-sr-only';
         const text = findCellByTestid(testId).text();
-        expect(text).not.toContain(subscriptionHistory[0].name);
-        expect(text).toContain(`(${detailsLabels.company}: ${subscriptionHistory[0].company})`);
-        expect(text).toContain(`${detailsLabels.email}: ${subscriptionHistory[0].email}`);
+        expect(text).not.toContain(subscription.name);
+        expect(text).toContain(`(${detailsLabels.company}: ${subscription.company})`);
+        expect(text).toContain(`${detailsLabels.email}: ${subscription.email}`);
       });
 
       it('displays the correct value for the type cell', () => {
         const cellTestId = `subscription-cell-type`;
-        expect(findCellByTestid(cellTestId).text()).toBe(cloudLicenseText);
+        const type =
+          subscription.type === subscriptionTypes.LICENSE_FILE ? licenseFileText : cloudLicenseText;
+        expect(findCellByTestid(cellTestId).text()).toBe(type);
       });
 
       it('displays the correct value for the plan cell', () => {
         const cellTestId = `subscription-cell-plan`;
-        expect(findCellByTestid(cellTestId).text()).toBe('Ultimate');
+        expect(findCellByTestid(cellTestId).text()).toBe(
+          capitalizeFirstCharacter(subscription.plan),
+        );
       });
     });
   });

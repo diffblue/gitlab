@@ -255,6 +255,13 @@ export default {
     hasPipelineNodes(item) {
       return item.pipelines?.nodes;
     },
+    assigneesBadgeSrOnlyText(item) {
+      return n__(
+        '%d additional assignee',
+        '%d additional assignees',
+        item.assignees.nodes.length - this.$options.assigneesVisible,
+      );
+    },
   },
   assigneesVisible: ASSIGNEES_VISIBLE,
   avatarSize: AVATAR_SIZE,
@@ -361,6 +368,7 @@ export default {
             :avatars="item.assignees.nodes"
             :avatar-size="$options.avatarSize"
             :max-visible="$options.assigneesVisible"
+            :badge-sr-only-text="assigneesBadgeSrOnlyText(item)"
             collapsed
           >
             <template #avatar="{ avatar }">

@@ -11,13 +11,15 @@ import {
   subscriptionHistoryFailedTitle,
   subscriptionHistoryFailedMessage,
   currentSubscriptionsEntryName,
-  historySubscriptionsEntryName,
+  pastSubscriptionsEntryName,
+  futureSubscriptionsEntryName,
   subscriptionMainTitle,
   exportLicenseUsageBtnText,
   SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
 } from '../constants';
 import getCurrentLicense from '../graphql/queries/get_current_license.query.graphql';
-import getLicenseHistory from '../graphql/queries/get_license_history.query.graphql';
+import getPastLicenseHistory from '../graphql/queries/get_past_license_history.query.graphql';
+import getFutureLicenseHistory from '../graphql/queries/get_future_license_history.query.graphql';
 import SubscriptionActivationCard from './subscription_activation_card.vue';
 import SubscriptionBreakdown from './subscription_breakdown.vue';
 import SubscriptionPurchaseCard from './subscription_purchase_card.vue';
@@ -63,21 +65,31 @@ export default {
         this.subscriptionFetchError = currentSubscriptionsEntryName;
       },
     },
-    subscriptionHistory: {
-      query: getLicenseHistory,
+    pastLicenseHistoryEntries: {
+      query: getPastLicenseHistory,
       update({ licenseHistoryEntries }) {
         return licenseHistoryEntries?.nodes || [];
       },
       error() {
-        this.subscriptionFetchError = historySubscriptionsEntryName;
+        this.subscriptionFetchError = pastSubscriptionsEntryName;
+      },
+    },
+    futureLicenseHistoryEntries: {
+      query: getFutureLicenseHistory,
+      update({ subscriptionFutureEntries }) {
+        return subscriptionFutureEntries?.nodes || [];
+      },
+      error() {
+        this.subscriptionFetchError = futureSubscriptionsEntryName;
       },
     },
   },
   data() {
     return {
       currentSubscription: {},
+      pastLicenseHistoryEntries: [],
+      futureLicenseHistoryEntries: [],
       activationNotification: null,
-      subscriptionHistory: [],
       subscriptionFetchError: null,
     };
   },
@@ -87,6 +99,9 @@ export default {
     },
     canShowSubscriptionDetails() {
       return this.hasActiveLicense || this.hasValidSubscriptionData;
+    },
+    subscriptionHistory() {
+      return [...this.futureLicenseHistoryEntries, ...this.pastLicenseHistoryEntries];
     },
   },
   created() {

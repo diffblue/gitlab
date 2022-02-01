@@ -26,6 +26,10 @@ export default {
       required: false,
       default: '',
     },
+    badgeSrOnlyText: {
+      type: String,
+      required: true,
+    },
   },
   computed: {
     isEmpty() {
@@ -53,6 +57,7 @@ export default {
       :avatars="avatars"
       :max-visible="$options.DRAWER_MAXIMUM_AVATARS"
       :avatar-size="$options.DRAWER_AVATAR_SIZE"
+      :badge-sr-only-text="badgeSrOnlyText"
       class="gl-flex-wrap gl-w-full!"
       badge-tooltip-prop="name"
     >

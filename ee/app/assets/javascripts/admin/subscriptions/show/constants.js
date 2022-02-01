@@ -22,7 +22,8 @@ export const subscriptionHistoryFailedMessage = s__(
   'SuperSonics|Your %{subscriptionEntryName} cannot be displayed at the moment. Please refresh the page to try again.',
 );
 export const currentSubscriptionsEntryName = s__('SuperSonics|current subscription');
-export const historySubscriptionsEntryName = s__('SuperSonics|history subscriptions');
+export const pastSubscriptionsEntryName = s__('SuperSonics|past subscriptions');
+export const futureSubscriptionsEntryName = s__('SuperSonics|future subscriptions');
 
 export const cancelLabel = __('Cancel');
 export const activateLabel = s__('AdminUsers|Activate');

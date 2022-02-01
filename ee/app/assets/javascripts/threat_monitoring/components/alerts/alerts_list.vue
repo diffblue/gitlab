@@ -13,6 +13,7 @@ import {
   GlTooltipDirective,
 } from '@gitlab/ui';
 import produce from 'immer';
+import { n__ } from '~/locale';
 import getAlertsQuery from '~/graphql_shared/queries/get_alerts.query.graphql';
 import { convertToSnakeCase } from '~/lib/utils/text_utility';
 import { joinPaths } from '~/lib/utils/url_utility';
@@ -23,6 +24,8 @@ import AlertFilters from './alert_filters.vue';
 import AlertStatus from './alert_status.vue';
 import { DEFAULT_FILTERS, FIELDS, MESSAGES, STATUSES, DOMAIN, CLOSED } from './constants';
 
+const MAX_VISIBLE_ASSIGNEES = 4;
+
 export default {
   PAGE_SIZE,
   DOMAIN,
@@ -32,6 +35,7 @@ export default {
     STATUSES,
     CLOSED,
   },
+  MAX_VISIBLE_ASSIGNEES,
   components: {
     AlertDrawer,
     AlertStatus,
@@ -166,6 +170,13 @@ export default {
       this.isAlertDrawerOpen = true;
       this.selectedAlert = data;
     },
+    assigneesBadgeSrOnlyText(assignees) {
+      return n__(
+        '%d additional assignee',
+        '%d additional assignees',
+        assignees.length - MAX_VISIBLE_ASSIGNEES,
+      );
+    },
   },
 };
 </script>
@@ -255,10 +266,11 @@ export default {
             data-testid="assigneesField"
             :avatars="item.assignees.nodes"
             :collapsed="true"
-            :max-visible="4"
+            :max-visible="$options.MAX_VISIBLE_ASSIGNEES"
             :avatar-size="24"
             badge-tooltip-prop="name"
             :badge-tooltip-max-chars="100"
+            :badge-sr-only-text="assigneesBadgeSrOnlyText(item.assignees.nodes)"
           >
             <template #avatar="{ avatar }">
               <gl-avatar-link

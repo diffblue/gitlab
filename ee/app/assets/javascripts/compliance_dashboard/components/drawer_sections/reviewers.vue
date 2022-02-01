@@ -1,6 +1,6 @@
 <script>
 import { __, n__ } from '~/locale';
-import { DRAWER_AVATAR_SIZE } from '../../constants';
+import { DRAWER_AVATAR_SIZE, DRAWER_MAXIMUM_AVATARS } from '../../constants';
 import DrawerAvatarsList from '../shared/drawer_avatars_list.vue';
 import DrawerSectionHeader from '../shared/drawer_section_header.vue';
 
@@ -28,6 +28,20 @@ export default {
     approversHeaderText() {
       return n__('%d approver', '%d approvers', this.approvers.length);
     },
+    commentersBadgeSrOnlyText() {
+      return n__(
+        '%d additional commenter',
+        '%d additional commenters',
+        this.commenters.length - DRAWER_MAXIMUM_AVATARS,
+      );
+    },
+    approversBadgeSrOnlyText() {
+      return n__(
+        '%d additional approver',
+        '%d additional approvers',
+        this.approvers.length - DRAWER_MAXIMUM_AVATARS,
+      );
+    },
     hasCommenters() {
       return this.commenters.length > 0;
     },
@@ -50,6 +64,7 @@ export default {
       :header="commentersHeaderText"
       :empty-header="$options.i18n.commentersEmptyHeader"
       :avatars="commenters"
+      :badge-sr-only-text="commentersBadgeSrOnlyText"
       data-testid="commenters-avatar-list"
     />
     <drawer-avatars-list
@@ -57,6 +72,7 @@ export default {
       :header="approversHeaderText"
       :empty-header="$options.i18n.approversEmptyHeader"
       :avatars="approvers"
+      :badge-sr-only-text="approversBadgeSrOnlyText"
       data-testid="approvers-avatar-list"
     />
   </div>

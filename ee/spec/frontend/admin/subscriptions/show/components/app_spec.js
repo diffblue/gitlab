@@ -12,18 +12,20 @@ import {
   subscriptionHistoryFailedTitle,
   subscriptionHistoryFailedMessage,
   currentSubscriptionsEntryName,
-  historySubscriptionsEntryName,
+  pastSubscriptionsEntryName,
+  futureSubscriptionsEntryName,
   subscriptionMainTitle,
   SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
 } from 'ee/admin/subscriptions/show/constants';
 import getCurrentLicense from 'ee/admin/subscriptions/show/graphql/queries/get_current_license.query.graphql';
-import getLicenseHistory from 'ee/admin/subscriptions/show/graphql/queries/get_license_history.query.graphql';
+import getPastLicenseHistory from 'ee/admin/subscriptions/show/graphql/queries/get_past_license_history.query.graphql';
+import getFutureLicenseHistory from 'ee/admin/subscriptions/show/graphql/queries/get_future_license_history.query.graphql';
 import waitForPromises from 'helpers/wait_for_promises';
 import { useFakeDate } from 'helpers/fake_date';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { sprintf } from '~/locale';
-import { license, subscriptionHistory } from '../mock_data';
+import { license, subscriptionPastHistory, subscriptionFutureHistory } from '../mock_data';
 
 Vue.use(VueApollo);
 
@@ -45,12 +47,14 @@ describe('SubscriptionManagementApp', () => {
   const findExportLicenseUsageFileLink = () => wrapper.findComponent(GlButton);
 
   let currentSubscriptionResolver;
-  let subscriptionHistoryResolver;
-  const createMockApolloProvider = ([subscriptionResolver, historyResolver]) => {
+  let pastSubscriptionsResolver;
+  let futureSubscriptionsResolver;
+  const createMockApolloProvider = ([currentResolver, pastResolver, futureResolver]) => {
     Vue.use(VueApollo);
     return createMockApollo([
-      [getCurrentLicense, subscriptionResolver],
-      [getLicenseHistory, historyResolver],
+      [getCurrentLicense, currentResolver],
+      [getPastLicenseHistory, pastResolver],
+      [getFutureLicenseHistory, futureResolver],
     ]);
   };
 
@@ -76,34 +80,54 @@ describe('SubscriptionManagementApp', () => {
   describe('when failing to fetch subcriptions', () => {
     describe('when failing to fetch history subcriptions', () => {
       describe.each`
-        currentFails | historyFails
-        ${true}      | ${false}
-        ${false}     | ${true}
-        ${true}      | ${true}
+        currentFails | pastFails | futureFails
+        ${true}      | ${false}  | ${false}
+        ${false}     | ${true}   | ${false}
+        ${false}     | ${false}  | ${true}
+        ${true}      | ${true}   | ${false}
+        ${false}     | ${true}   | ${true}
+        ${true}      | ${false}  | ${true}
+        ${true}      | ${true}   | ${true}
       `(
-        'with current subscription failing to fetch=$currentFails and history subscriptions failing to fetch=$historyFails',
-        ({ currentFails, historyFails }) => {
+        'with current subscription fetch failing: currentFails=$currentFails, pastFails=$pastFails, and futureFails=$futureFails',
+        ({ currentFails, pastFails, futureFails }) => {
           const error = new Error('Network error!');
 
           beforeEach(async () => {
             currentSubscriptionResolver = currentFails
               ? jest.fn().mockRejectedValue({ error })
               : jest.fn().mockResolvedValue({ data: { currentLicense: license.ULTIMATE } });
-            subscriptionHistoryResolver = historyFails
+            pastSubscriptionsResolver = pastFails
               ? jest.fn().mockRejectedValue({ error })
               : jest.fn().mockResolvedValue({
-                  data: { licenseHistoryEntries: { nodes: subscriptionHistory } },
+                  data: { licenseHistoryEntries: { nodes: subscriptionPastHistory } },
+                });
+            futureSubscriptionsResolver = futureFails
+              ? jest.fn().mockRejectedValue({ error })
+              : jest.fn().mockResolvedValue({
+                  data: { subscriptionFutureEntries: { nodes: subscriptionFutureHistory } },
                 });
 
-            createComponent({}, [currentSubscriptionResolver, subscriptionHistoryResolver]);
+            createComponent({}, [
+              currentSubscriptionResolver,
+              pastSubscriptionsResolver,
+              futureSubscriptionsResolver,
+            ]);
             await waitForPromises();
           });
 
           it('renders the error alert', () => {
             const alert = findSubscriptionFetchErrorAlert();
-            const subscriptionEntryName = historyFails
-              ? historySubscriptionsEntryName
-              : currentSubscriptionsEntryName;
+            let subscriptionEntryName;
+            if (currentFails) {
+              subscriptionEntryName = currentSubscriptionsEntryName;
+            }
+            if (pastFails) {
+              subscriptionEntryName = pastSubscriptionsEntryName;
+            }
+            if (futureFails) {
+              subscriptionEntryName = futureSubscriptionsEntryName;
+            }
             expect(alert.exists()).toBe(true);
             expect(alert.props('title')).toBe(subscriptionHistoryFailedTitle);
             expect(alert.text().replace(/\s+/g, ' ')).toBe(
@@ -120,10 +144,17 @@ describe('SubscriptionManagementApp', () => {
       currentSubscriptionResolver = jest
         .fn()
         .mockResolvedValue({ data: { currentLicense: license.ULTIMATE } });
-      subscriptionHistoryResolver = jest
-        .fn()
-        .mockResolvedValue({ data: { licenseHistoryEntries: { nodes: subscriptionHistory } } });
-      createComponent({}, [currentSubscriptionResolver, subscriptionHistoryResolver]);
+      pastSubscriptionsResolver = jest.fn().mockResolvedValue({
+        data: { licenseHistoryEntries: { nodes: subscriptionPastHistory } },
+      });
+      futureSubscriptionsResolver = jest.fn().mockResolvedValue({
+        data: { subscriptionFutureEntries: { nodes: subscriptionFutureHistory } },
+      });
+      createComponent({}, [
+        currentSubscriptionResolver,
+        pastSubscriptionsResolver,
+        futureSubscriptionsResolver,
+      ]);
       expect(findSubscriptionMainTitle().text()).toBe(subscriptionMainTitle);
     });
 
@@ -132,17 +163,29 @@ describe('SubscriptionManagementApp', () => {
         currentSubscriptionResolver = jest
           .fn()
           .mockResolvedValue({ data: { currentLicense: null } });
-        subscriptionHistoryResolver = jest
+        pastSubscriptionsResolver = jest
           .fn()
           .mockResolvedValue({ data: { licenseHistoryEntries: { nodes: [] } } });
-        createComponent({}, [currentSubscriptionResolver, subscriptionHistoryResolver]);
+        futureSubscriptionsResolver = jest
+          .fn()
+          .mockResolvedValue({ data: { subscriptionFutureEntries: { nodes: [] } } });
+        createComponent({}, [
+          currentSubscriptionResolver,
+          pastSubscriptionsResolver,
+          futureSubscriptionsResolver,
+        ]);
       });
+
       it('shows a title saying there is no active subscription', () => {
         expect(findSubscriptionActivationTitle().text()).toBe(noActiveSubscription);
       });
 
-      it('queries for the current history', () => {
-        expect(subscriptionHistoryResolver).toHaveBeenCalledTimes(1);
+      it('queries for the past history', () => {
+        expect(pastSubscriptionsResolver).toHaveBeenCalledTimes(1);
+      });
+
+      it('queries for the future history', () => {
+        expect(futureSubscriptionsResolver).toHaveBeenCalledTimes(1);
       });
 
       it('shows the subscription activation form', () => {
@@ -185,12 +228,16 @@ describe('SubscriptionManagementApp', () => {
         currentSubscriptionResolver = jest
           .fn()
           .mockResolvedValue({ data: { currentLicense: license.ULTIMATE } });
-        subscriptionHistoryResolver = jest
-          .fn()
-          .mockResolvedValue({ data: { licenseHistoryEntries: { nodes: subscriptionHistory } } });
+        pastSubscriptionsResolver = jest.fn().mockResolvedValue({
+          data: { licenseHistoryEntries: { nodes: subscriptionPastHistory } },
+        });
+        futureSubscriptionsResolver = jest.fn().mockResolvedValue({
+          data: { subscriptionFutureEntries: { nodes: subscriptionFutureHistory } },
+        });
         createComponent({ hasActiveLicense: false }, [
           currentSubscriptionResolver,
-          subscriptionHistoryResolver,
+          pastSubscriptionsResolver,
+          futureSubscriptionsResolver,
         ]);
         await waitForPromises();
       });
@@ -198,7 +245,7 @@ describe('SubscriptionManagementApp', () => {
       it('passes the correct data to the subscription breakdown', () => {
         expect(findSubscriptionBreakdown().props()).toMatchObject({
           subscription: license.ULTIMATE,
-          subscriptionList: subscriptionHistory,
+          subscriptionList: [...subscriptionFutureHistory, ...subscriptionPastHistory],
         });
       });
 
@@ -228,12 +275,16 @@ describe('SubscriptionManagementApp', () => {
         currentSubscriptionResolver = jest
           .fn()
           .mockResolvedValue({ data: { currentLicense: license.ULTIMATE } });
-        subscriptionHistoryResolver = jest
-          .fn()
-          .mockResolvedValue({ data: { licenseHistoryEntries: { nodes: subscriptionHistory } } });
+        pastSubscriptionsResolver = jest.fn().mockResolvedValue({
+          data: { licenseHistoryEntries: { nodes: subscriptionPastHistory } },
+        });
+        futureSubscriptionsResolver = jest.fn().mockResolvedValue({
+          data: { subscriptionFutureEntries: { nodes: subscriptionFutureHistory } },
+        });
         createComponent({ hasActiveLicense: true }, [
           currentSubscriptionResolver,
-          subscriptionHistoryResolver,
+          pastSubscriptionsResolver,
+          futureSubscriptionsResolver,
         ]);
         await waitForPromises();
       });
@@ -242,14 +293,18 @@ describe('SubscriptionManagementApp', () => {
         expect(currentSubscriptionResolver).toHaveBeenCalledTimes(1);
       });
 
-      it('queries for the current history', () => {
-        expect(subscriptionHistoryResolver).toHaveBeenCalledTimes(1);
+      it('queries for the past history', () => {
+        expect(pastSubscriptionsResolver).toHaveBeenCalledTimes(1);
+      });
+
+      it('queries for the future history', () => {
+        expect(futureSubscriptionsResolver).toHaveBeenCalledTimes(1);
       });
 
       it('passes the correct data to the subscription breakdown', () => {
         expect(findSubscriptionBreakdown().props()).toMatchObject({
           subscription: license.ULTIMATE,
-          subscriptionList: subscriptionHistory,
+          subscriptionList: [...subscriptionFutureHistory, ...subscriptionPastHistory],
         });
       });
 
