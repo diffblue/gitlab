@@ -2,6 +2,7 @@
 
 class SubscriptionPresenter < Gitlab::View::Presenter::Delegated
   GRACE_PERIOD_EXTENSION_DAYS = 14.days
+  RENEWAL_ALLOWED_PERIOD_DAYS = 15
 
   presents ::Subscription, as: :subscription
 
@@ -14,7 +15,7 @@ class SubscriptionPresenter < Gitlab::View::Presenter::Delegated
   end
 
   def notify_admins?
-    remaining_days && remaining_days < 30
+    remaining_days.present? && remaining_days <= RENEWAL_ALLOWED_PERIOD_DAYS
   end
 
   def notify_users?
