@@ -262,6 +262,12 @@ module Geo
       Gitlab::Geo.secondary? ? registry : model_record
     end
 
+    # For example, remote stored files are filtered from available_verifiables
+    # because we don't support verification of remote stored files.
+    def will_never_be_checksummed_on_the_primary?
+      !model_record.in_available_verifiables?
+    end
+
     # @abstract
     # @return [String] a checksum representing the data
     def calculate_checksum
