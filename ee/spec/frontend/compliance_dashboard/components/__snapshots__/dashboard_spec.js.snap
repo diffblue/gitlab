@@ -26,7 +26,6 @@ exports[`ComplianceDashboard component when there are merge requests and the sho
    
   <gl-tabs-stub
     queryparamname="tab"
-    theme="indigo"
     value="0"
   >
     <b-tab-stub
