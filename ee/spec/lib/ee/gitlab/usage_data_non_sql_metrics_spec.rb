@@ -10,10 +10,10 @@ RSpec.describe Gitlab::UsageDataNonSqlMetrics do
     stub_database_flavor_check
   end
 
-  describe '.uncached_data' do
+  describe '.data' do
     it 'does make instrumentations_class DB calls' do
       recorder = ActiveRecord::QueryRecorder.new do
-        described_class.uncached_data
+        described_class.data(force_refresh: true)
       end
 
       expect(recorder.count).to eq(65)

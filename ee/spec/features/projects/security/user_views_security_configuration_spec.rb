@@ -132,7 +132,7 @@ RSpec.describe 'User sees Security Configuration table', :js do
         within_container_scanning_card do
           expect(page).to have_text('Container Scanning')
           expect(page).to have_text('Not enabled')
-          expect(page).to have_link('Configuration guide')
+          expect(page).to have_button('Configure with a merge request')
         end
       end
     end
