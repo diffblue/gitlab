@@ -1,5 +1,5 @@
 <script>
-import { GlBadge, GlIcon, GlTooltip } from '@gitlab/ui';
+import { GlBadge, GlTooltip } from '@gitlab/ui';
 import { __ } from '~/locale';
 import timeagoMixin from '~/vue_shared/mixins/timeago';
 
@@ -8,7 +8,6 @@ import { TestReportStatus } from '../constants';
 export default {
   components: {
     GlBadge,
-    GlIcon,
     GlTooltip,
   },
   mixins: [timeagoMixin],
@@ -58,8 +57,7 @@ export default {
 
 <template>
   <component :is="elementType" class="requirement-status-badge">
-    <gl-badge ref="testReportBadge" :variant="testReportBadge.variant">
-      <gl-icon :name="testReportBadge.icon" class="mr-1" />
+    <gl-badge ref="testReportBadge" :variant="testReportBadge.variant" :icon="testReportBadge.icon">
       {{ testReportBadge.text }}
     </gl-badge>
     <gl-tooltip
