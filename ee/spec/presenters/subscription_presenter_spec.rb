@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe SubscriptionPresenter, :saas do
+  using RSpec::Parameterized::TableSyntax
+
   let(:subscription) { create(:gitlab_subscription) }
   let(:presenter) { described_class.new(subscription) }
 
@@ -15,26 +17,20 @@ RSpec.describe SubscriptionPresenter, :saas do
   describe '#notify_admins?' do
     subject { presenter.notify_admins? }
 
-    let(:today) { Time.utc(2020, 3, 7, 10) }
-
-    it 'is false when remaining days is nil' do
-      expect(subject).to be false
+    where(:remaining_days_count, :expected_result) do
+      nil  | false
+      0    | true
+      described_class::RENEWAL_ALLOWED_PERIOD_DAYS - 1.day   | true
+      described_class::RENEWAL_ALLOWED_PERIOD_DAYS           | true
+      described_class::RENEWAL_ALLOWED_PERIOD_DAYS + 1.day   | false
     end
 
-    it 'remaining days more than 30 is false' do
-      allow(subscription).to receive(:end_date).and_return(Time.utc(2020, 4, 9, 10).to_date)
-
-      travel_to(today) do
-        expect(subject).to be false
+    with_them do
+      before do
+        allow(presenter).to receive(:remaining_days).and_return(remaining_days_count)
       end
-    end
 
-    it 'remaining days less than 30 is true' do
-      allow(subscription).to receive(:end_date).and_return(Time.utc(2020, 3, 9, 10).to_date)
-
-      travel_to(today) do
-        expect(subject).to be true
-      end
+      it { expect(subject).to be(expected_result) }
     end
   end
 
