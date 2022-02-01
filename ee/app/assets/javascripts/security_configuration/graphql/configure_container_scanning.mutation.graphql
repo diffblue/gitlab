@@ -1,0 +1,6 @@
+mutation configureContainerScanning($input: ConfigureContainerScanningInput!) {
+  configureContainerScanning(input: $input) {
+    successPath
+    errors
+  }
+}
