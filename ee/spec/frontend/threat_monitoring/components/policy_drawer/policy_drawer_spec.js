@@ -1,8 +1,9 @@
+import { GlButton, GlDrawer, GlTabs, GlTab } from '@gitlab/ui';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/threat_monitoring/components/constants';
 import CiliumNetworkPolicy from 'ee/threat_monitoring/components/policy_drawer/cilium_network_policy.vue';
 import PolicyDrawer from 'ee/threat_monitoring/components/policy_drawer/policy_drawer.vue';
 import ScanExecutionPolicy from 'ee/threat_monitoring/components/policy_drawer/scan_execution_policy.vue';
-import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
   mockNetworkPoliciesResponse,
   mockCiliumPolicy,
@@ -14,22 +15,25 @@ const [mockGenericPolicy] = mockNetworkPoliciesResponse;
 describe('PolicyDrawer component', () => {
   let wrapper;
 
-  const factory = ({ propsData } = {}) => {
-    wrapper = mountExtended(PolicyDrawer, {
+  const factory = ({ mountFn = shallowMountExtended, propsData, stubs = {} } = {}) => {
+    wrapper = mountFn(PolicyDrawer, {
       propsData: {
         editPolicyPath: '/policies/policy/edit?environment_id=-1',
         open: true,
         ...propsData,
       },
-      stubs: { PolicyYamlEditor: true },
+      stubs: { PolicyYamlEditor: true, ...stubs },
     });
   };
 
   // Finders
   const findEditButton = () => wrapper.findByTestId('edit-button');
-  const findPolicyEditor = () => wrapper.findByTestId('policy-yaml-editor');
+  const findAllTabs = () => wrapper.findAllComponents(GlTab);
   const findCiliumNetworkPolicy = () => wrapper.findComponent(CiliumNetworkPolicy);
   const findScanExecutionPolicy = () => wrapper.findComponent(ScanExecutionPolicy);
+  const findDefaultComponentPolicyEditor = () =>
+    wrapper.findByTestId('policy-yaml-editor-default-component');
+  const findTabPolicyEditor = () => wrapper.findByTestId('policy-yaml-editor-tab-content');
 
   // Shared assertions
   const itRendersEditButton = () => {
@@ -47,7 +51,7 @@ describe('PolicyDrawer component', () => {
 
   describe('by default', () => {
     beforeEach(() => {
-      factory();
+      factory({ stubs: { GlDrawer } });
     });
 
     it('does not render edit button', () => {
@@ -58,6 +62,7 @@ describe('PolicyDrawer component', () => {
   describe('given a generic network policy', () => {
     beforeEach(() => {
       factory({
+        mountFn: mountExtended,
         propsData: {
           policy: mockGenericPolicy,
         },
@@ -65,9 +70,7 @@ describe('PolicyDrawer component', () => {
     });
 
     it('renders network policy editor with manifest', () => {
-      const policyEditor = findPolicyEditor();
-      expect(policyEditor.exists()).toBe(true);
-      expect(policyEditor.attributes('value')).toBe(mockGenericPolicy.yaml);
+      expect(findDefaultComponentPolicyEditor().attributes('value')).toBe(mockGenericPolicy.yaml);
     });
 
     itRendersEditButton();
@@ -84,11 +87,24 @@ describe('PolicyDrawer component', () => {
           policy: mock,
           policyType,
         },
+        stubs: {
+          GlButton,
+          GlDrawer,
+          GlTabs,
+        },
       });
     });
 
     it(`renders the ${policyType} component`, () => {
       expect(finder().exists()).toBe(true);
+    });
+
+    it('renders the tabs', () => {
+      expect(findAllTabs()).toHaveLength(2);
+    });
+
+    it('renders the policy editor', () => {
+      expect(findTabPolicyEditor().attributes('value')).toBe(mock.yaml);
     });
 
     itRendersEditButton();
