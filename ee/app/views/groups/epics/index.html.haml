@@ -3,40 +3,21 @@
 - page_title _("Epics")
 - is_signed_in = current_user.present?.to_s
 
-- if Feature.enabled?(:vue_epics_list, @group, default_enabled: :yaml)
-  #js-epics-list{ data: { can_create_epic: can?(current_user, :create_epic, @group).to_s,
-    can_bulk_edit_epics: @can_bulk_update.to_s,
-    page: params[:page],
-    prev: params[:prev],
-    next: params[:next],
-    initial_state: params[:state],
-    initial_sort_by: params[:sort],
-    epics_count: { opened: issuables_count_for_state(:epic, :opened),
-      closed: issuables_count_for_state(:epic, :closed),
-      all: issuables_count_for_state(:epic, :all) },
-    epic_new_path: new_group_epic_url(@group),
-    list_epics_path: group_epics_path(@group),
-    group_full_path: @group.full_path,
-    labels_manage_path: group_labels_path(@group),
-    labels_fetch_path: group_labels_path(@group, format: :json),
-    group_milestones_path: group_milestones_path(@group, format: :json),
-    empty_state_path: image_path('illustrations/epics/list.svg'),
-    is_signed_in: is_signed_in } }
-- else
-  .top-area
-    = render 'shared/issuable/epic_nav', type: :epics
-    .nav-controls
-      - if @can_bulk_update
-        = render_if_exists 'shared/issuable/bulk_update_button', type: :epics
-      - if can?(current_user, :create_epic, @group)
-        = link_to _('New epic'), new_group_epic_path(@group), class: 'btn btn-confirm gl-button', data: { qa_selector: 'new_epic_button' }
-
-  = render 'shared/epic/search_bar', type: :epics
-
-  - if @can_bulk_update
-    = render_if_exists 'shared/issuable/group_bulk_update_sidebar', group: @group, type: :epics
-
-  - if @epics.to_a.any?
-    = render 'shared/epics'
-  - else
-    = render 'shared/empty_states/epics'
+#js-epics-list{ data: { can_create_epic: can?(current_user, :create_epic, @group).to_s,
+  can_bulk_edit_epics: @can_bulk_update.to_s,
+  page: params[:page],
+  prev: params[:prev],
+  next: params[:next],
+  initial_state: params[:state],
+  initial_sort_by: params[:sort],
+  epics_count: { opened: issuables_count_for_state(:epic, :opened),
+    closed: issuables_count_for_state(:epic, :closed),
+    all: issuables_count_for_state(:epic, :all) },
+  epic_new_path: new_group_epic_url(@group),
+  list_epics_path: group_epics_path(@group),
+  group_full_path: @group.full_path,
+  labels_manage_path: group_labels_path(@group),
+  labels_fetch_path: group_labels_path(@group, format: :json),
+  group_milestones_path: group_milestones_path(@group, format: :json),
+  empty_state_path: image_path('illustrations/epics/list.svg'),
+  is_signed_in: is_signed_in } }
