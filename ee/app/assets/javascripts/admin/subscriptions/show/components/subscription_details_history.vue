@@ -64,6 +64,13 @@ export default {
         },
         {
           key: 'activatedAt',
+          formatter: (v, k, { activatedAt }) => {
+            if (!activatedAt) {
+              return '-';
+            }
+
+            return activatedAt;
+          },
           label: subscriptionTable.activatedAt,
           tdAttr,
           tdClass: this.cellClass,
@@ -109,11 +116,9 @@ export default {
     isCurrentSubscription({ id }) {
       return id === this.currentSubscriptionId;
     },
-    rowAttr(item) {
+    rowAttr() {
       return {
-        'data-testid': this.isCurrentSubscription(item)
-          ? 'subscription-current'
-          : 'subscription-history-row',
+        'data-testid': 'subscription-history-row',
       };
     },
     rowClass(item) {

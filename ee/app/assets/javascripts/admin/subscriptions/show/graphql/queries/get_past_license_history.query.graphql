@@ -1,4 +1,4 @@
-query getLicenseHistory {
+query getPastLicenseHistory {
   licenseHistoryEntries {
     nodes {
       id

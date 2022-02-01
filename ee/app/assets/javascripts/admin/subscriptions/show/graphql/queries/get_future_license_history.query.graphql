@@ -1,0 +1,14 @@
+query getFutureLicenseHistory {
+  subscriptionFutureEntries {
+    nodes {
+      type
+      plan
+      name
+      email
+      company
+      usersInLicenseCount
+      startsAt
+      expiresAt
+    }
+  }
+}

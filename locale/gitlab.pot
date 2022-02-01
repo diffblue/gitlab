@@ -34942,7 +34942,10 @@ msgstr ""
 msgid "SuperSonics|current subscription"
 msgstr ""
 
-msgid "SuperSonics|history subscriptions"
+msgid "SuperSonics|future subscriptions"
+msgstr ""
+
+msgid "SuperSonics|past subscriptions"
 msgstr ""
 
 msgid "Support"
