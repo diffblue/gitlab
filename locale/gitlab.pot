@@ -19340,9 +19340,6 @@ msgstr ""
 msgid "Integrations|No linked namespaces"
 msgstr ""
 
-msgid "Integrations|Note: this integration only works with accounts on GitLab.com (SaaS)."
-msgstr ""
-
 msgid "Integrations|Projects using custom settings"
 msgstr ""
 
@@ -19377,6 +19374,9 @@ msgid "Integrations|Send notifications about project events to Unify Circuit."
 msgstr ""
 
 msgid "Integrations|Send notifications about project events to a Unify Circuit conversation. %{docs_link}"
+msgstr ""
+
+msgid "Integrations|Sign in to GitLab"
 msgstr ""
 
 msgid "Integrations|Sign in to add namespaces"
