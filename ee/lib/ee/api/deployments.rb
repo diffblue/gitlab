@@ -11,7 +11,7 @@ module EE
         end
         resource :projects, requirements: ::API::API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
           desc 'Approve or reject a blocked deployment' do
-            detail 'This feature is gated behind the :deployment_approvals feature flag.'
+            detail 'This feature was introduced in GitLab 14.8.'
             success ::API::Entities::Deployments::Approval
           end
           params do

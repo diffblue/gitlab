@@ -80,8 +80,6 @@ module EE
     end
 
     def needs_approval?
-      return false unless ::Feature.enabled?(:deployment_approvals, project, default_enabled: :yaml)
-
       required_approval_count > 0
     end
 
