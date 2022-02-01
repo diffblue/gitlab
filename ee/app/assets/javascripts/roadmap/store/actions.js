@@ -326,3 +326,6 @@ export const setFilterParams = ({ commit }, filterParams) =>
   commit(types.SET_FILTER_PARAMS, filterParams);
 
 export const setSortedBy = ({ commit }, sortedBy) => commit(types.SET_SORTED_BY, sortedBy);
+
+export const setProgressTracking = ({ commit }, progressTracking) =>
+  commit(types.SET_PROGRESS_TRACKING, progressTracking);

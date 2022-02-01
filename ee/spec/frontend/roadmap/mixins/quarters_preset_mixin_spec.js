@@ -1,9 +1,14 @@
+import Vue from 'vue';
+import Vuex from 'vuex';
 import { shallowMount } from '@vue/test-utils';
 import EpicItemTimelineComponent from 'ee/roadmap/components/epic_item_timeline.vue';
-import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
+import { DATE_RANGES, PRESET_TYPES, PROGRESS_TRACKING_OPTIONS } from 'ee/roadmap/constants';
+import createStore from 'ee/roadmap/store';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
 import { mockTimeframeInitialDate, mockEpic } from 'ee_jest/roadmap/mock_data';
+
+Vue.use(Vuex);
 
 const mockTimeframeQuarters = getTimeframeForRangeType({
   timeframeRangeType: DATE_RANGES.THREE_YEARS,
@@ -20,7 +25,14 @@ describe('QuartersPresetMixin', () => {
     timeframeItem = mockTimeframeQuarters[0],
     epic = mockEpic,
   } = {}) => {
+    const store = createStore();
+
+    store.dispatch('setInitialData', {
+      progressTracking: PROGRESS_TRACKING_OPTIONS.WEIGHT,
+    });
+
     return shallowMount(EpicItemTimelineComponent, {
+      store,
       propsData: {
         presetType,
         timeframe,

@@ -61,3 +61,8 @@ export const EPIC_LEVEL_MARGIN = {
 };
 
 export const ROADMAP_PAGE_SIZE = 50;
+
+export const PROGRESS_TRACKING_OPTIONS = {
+  WEIGHT: 'WEIGHT',
+  COUNT: 'COUNT',
+};

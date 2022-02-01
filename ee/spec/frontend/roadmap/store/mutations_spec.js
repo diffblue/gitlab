@@ -342,4 +342,17 @@ describe('Roadmap Store Mutations', () => {
       });
     });
   });
+
+  describe('SET_PROGRESS_TRACKING', () => {
+    it('Should set `progressTracking` to the state', () => {
+      const progressTracking = 'COUNT';
+      setEpicMockData(state);
+
+      mutations[types.SET_PROGRESS_TRACKING](state, progressTracking);
+
+      expect(state).toMatchObject({
+        progressTracking,
+      });
+    });
+  });
 });

@@ -71,7 +71,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(['presetType', 'epicsState', 'sortedBy', 'filterParams']),
+    ...mapState(['presetType', 'epicsState', 'sortedBy', 'filterParams', 'progressTracking']),
     selectedEpicStateTitle() {
       if (this.epicsState === EPICS_STATES.ALL) {
         return __('All epics');

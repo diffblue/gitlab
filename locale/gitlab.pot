@@ -510,6 +510,9 @@ msgstr[1] ""
 msgid "%{completedWeight} of %{totalWeight} weight completed"
 msgstr ""
 
+msgid "%{completed} of %{total} %{trackingOption}"
+msgstr ""
+
 msgid "%{cores} cores"
 msgstr ""
 
@@ -858,7 +861,7 @@ msgstr ""
 msgid "%{openedIssues} open, %{closedIssues} closed"
 msgstr ""
 
-msgid "%{percentage}%% weight completed"
+msgid "%{percentage}%% %{trackingOption}"
 msgstr ""
 
 msgid "%{percent}%% complete"
@@ -1287,7 +1290,7 @@ msgid_plural "- Users"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "- of - weight completed"
+msgid "- of - %{trackingOption}"
 msgstr ""
 
 msgid "- show less"
@@ -27709,6 +27712,9 @@ msgstr ""
 msgid "Progress"
 msgstr ""
 
+msgid "Progress tracking"
+msgstr ""
+
 msgid "Project"
 msgstr ""
 
@@ -38998,6 +39004,12 @@ msgstr ""
 msgid "Use hashed storage paths for newly created and renamed repositories. Always enabled since 13.0."
 msgstr ""
 
+msgid "Use issue count"
+msgstr ""
+
+msgid "Use issue weight"
+msgstr ""
+
 msgid "Use one line per URI"
 msgstr ""
 
@@ -42833,6 +42845,9 @@ msgstr ""
 msgid "issues at risk"
 msgstr ""
 
+msgid "issues closed"
+msgstr ""
+
 msgid "issues need attention"
 msgstr ""
 
@@ -43785,6 +43800,9 @@ msgid "vulnerability|dismissed"
 msgstr ""
 
 msgid "was scheduled to merge after pipeline succeeds by"
+msgstr ""
+
+msgid "weight completed"
 msgstr ""
 
 msgid "wiki page"

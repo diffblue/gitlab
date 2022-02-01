@@ -74,7 +74,15 @@ export default () => {
       });
       const filterParams = {
         ...convertObjectPropsToCamelCase(rawFilterParams, {
-          dropKeys: ['scope', 'utf8', 'state', 'sort', 'timeframe_range_type', 'layout'], // These keys are unsupported/unnecessary
+          dropKeys: [
+            'scope',
+            'utf8',
+            'state',
+            'sort',
+            'timeframe_range_type',
+            'layout',
+            'progress',
+          ], // These keys are unsupported/unnecessary
         }),
         // We shall put parsed value of `confidential` only
         // when it is defined.
@@ -103,6 +111,7 @@ export default () => {
         timeframeRangeType,
         presetType,
         timeframe,
+        progressTracking: rawFilterParams.progress,
       };
     },
     created() {
@@ -121,6 +130,7 @@ export default () => {
         isChildEpics: this.isChildEpics,
         hasFiltersApplied: this.hasFiltersApplied,
         allowSubEpics: this.allowSubEpics,
+        progressTracking: this.progressTracking,
       });
     },
     methods: {

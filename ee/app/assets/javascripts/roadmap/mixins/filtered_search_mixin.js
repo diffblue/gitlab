@@ -51,6 +51,7 @@ export default {
         'not[author_username]': notAuthorUsername,
         'not[my_reaction_emoji]': notMyReactionEmoji,
         'not[label_name][]': notLabelName,
+        progress: this.progressTracking,
       };
     },
   },
