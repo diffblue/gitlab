@@ -361,6 +361,7 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding do
     let(:finding) { build(:ci_reports_security_finding, identifiers: [identifier_1, identifier_2], location: location, vulnerability_finding_signatures_enabled: true, signatures: [signature]) }
     let(:expected_keys) do
       [
+        finding.uuid,
         build(:ci_reports_security_finding_key, location_fingerprint: location.fingerprint, identifier_fingerprint: identifier_1.fingerprint),
         build(:ci_reports_security_finding_key, location_fingerprint: location.fingerprint, identifier_fingerprint: identifier_2.fingerprint),
         build(:ci_reports_security_finding_key, location_fingerprint: signature.signature_hex, identifier_fingerprint: identifier_1.fingerprint),
