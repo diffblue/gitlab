@@ -22,6 +22,9 @@ describe('dismissing the alert', () => {
 
     clickDismissButton();
 
-    expect(Cookies.set).toHaveBeenCalledWith('hide_user_cap_alert_1', true, { expires: 30 });
+    expect(Cookies.set).toHaveBeenCalledWith('hide_user_cap_alert_1', true, {
+      expires: 30,
+      secure: false,
+    });
   });
 });

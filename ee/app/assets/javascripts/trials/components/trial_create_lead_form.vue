@@ -32,7 +32,7 @@ export default {
   directives: {
     autofocusonshow,
   },
-  inject: ['user', 'submitPath'],
+  inject: ['user', 'submitPath', 'onboarding'],
   data() {
     return this.user;
   },
@@ -68,6 +68,7 @@ export default {
 <template>
   <gl-form :action="submitPath" method="post" @submit="onSubmit">
     <input :value="$options.csrf.token" type="hidden" name="authenticity_token" />
+    <input :value="onboarding" type="hidden" name="onboarding" />
     <div class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-mt-5">
       <gl-form-group
         :label="$options.i18n.firstNameLabel"

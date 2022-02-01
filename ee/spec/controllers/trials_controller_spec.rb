@@ -94,27 +94,11 @@ RSpec.describe TrialsController, :saas do
 
       it { is_expected.to redirect_to(select_trials_url) }
 
-      context 'coming from about.gitlab.com' do
-        let(:post_params) { { glm_source: 'about.gitlab.com' } }
+      context 'when the onboarding=true parameter is set' do
+        let(:post_params) { { glm_source: 'about.gitlab.com', onboarding: true } }
 
-        it 'redirects to trial onboarding' do
-          is_expected.to redirect_to(new_users_sign_up_group_path(glm_source: 'about.gitlab.com', trial_onboarding_flow: true))
-        end
-      end
-
-      context 'coming from docs.gitlab.com' do
-        let(:post_params) { { glm_source: 'docs.gitlab.com' } }
-
-        it 'redirects to trial onboarding' do
-          is_expected.to redirect_to(new_users_sign_up_group_path(glm_source: 'docs.gitlab.com', trial_onboarding_flow: true))
-        end
-      end
-
-      context 'coming from learn.gitlab.com' do
-        let(:post_params) { { glm_source: 'learn.gitlab.com' } }
-
-        it 'redirects to trial onboarding' do
-          is_expected.to redirect_to(new_users_sign_up_group_path(glm_source: 'learn.gitlab.com', trial_onboarding_flow: true))
+        it 'redirects to the combined registration path' do
+          is_expected.to redirect_to(new_users_sign_up_groups_project_path(glm_source: 'about.gitlab.com', trial_onboarding_flow: true))
         end
       end
 
@@ -611,7 +595,15 @@ RSpec.describe TrialsController, :saas do
   end
 
   describe '#skip' do
-    subject(:get_skip) { get :skip }
+    subject(:get_skip) { get :skip, params: params }
+
+    let(:params) { {} }
+
+    context 'when the onboarding=true parameter is set' do
+      let(:params) { { onboarding: true } }
+
+      it { is_expected.to redirect_to(new_users_sign_up_groups_project_path(skip_trial: true)) }
+    end
 
     context 'when the user is `setup_for_company: true`' do
       let(:user) { create(:user, setup_for_company: true) }

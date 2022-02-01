@@ -21,7 +21,7 @@ module EE
     def registration_verification_data
       url = if params[:learn_gitlab_project_id].present?
               trial_getting_started_users_sign_up_welcome_path(params.slice(:learn_gitlab_project_id).permit!)
-            elsif params[:combined].present? && current_user.setup_for_company
+            elsif params[:offer_trial] == 'true'
               new_trial_path
             elsif params[:project_id].present?
               continuous_onboarding_getting_started_users_sign_up_welcome_path(params.slice(:project_id).permit!)

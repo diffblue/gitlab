@@ -4,6 +4,7 @@ module Registrations
   class GroupsProjectsController < ApplicationController
     include Registrations::CreateProject
     include Registrations::CreateGroup
+    include Registrations::ApplyTrial
     include OneTrustCSP
 
     skip_before_action :require_verification, only: :new
@@ -35,30 +36,30 @@ module Registrations
       if @group.persisted?
         if @group.previously_new_record?
           combined_registration_experiment.track(:create_group, namespace: @group)
+          helpers.require_verification_experiment.record_conversion(@group)
+
+          unless apply_trial_when_in_trial_flow
+            @project = Project.new(project_params) # #new requires a Project
+            return render :new
+          end
         end
 
         @project = ::Projects::CreateService.new(current_user, project_params).execute
         if @project.saved?
           combined_registration_experiment.track(:create_project, namespace: @project.namespace)
 
-          @learn_gitlab_project = create_learn_gitlab_project
+          create_learn_gitlab_project
 
-          store_location
+          redirect_path = continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: @project.id)
 
           if helpers.registration_verification_enabled?
-            redirect_to new_users_sign_up_verification_path(url_params.merge(combined: true))
-          elsif helpers.in_trial_onboarding_flow?
-
-            redirect_to trial_getting_started_users_sign_up_welcome_path(url_params)
+            store_location_for(:user, redirect_path)
+            redirect_to new_users_sign_up_verification_path(project_id: @project.id, offer_trial: offer_trial?)
+          elsif offer_trial?
+            store_location_for(:user, redirect_path)
+            redirect_to new_trial_path
           else
-            success_url = continuous_onboarding_getting_started_users_sign_up_welcome_path(url_params)
-
-            if current_user.setup_for_company
-              success_url = new_trial_path
-            end
-
-            helpers.require_verification_experiment.record_conversion(@group)
-            redirect_to success_url
+            redirect_to redirect_path
           end
         else
           render :new
@@ -71,7 +72,7 @@ module Registrations
 
     def import
       @group = Groups::CreateService.new(current_user, modified_group_params).execute
-      if @group.persisted?
+      if @group.persisted? && apply_trial_when_in_trial_flow
         combined_registration_experiment.track(:create_group, namespace: @group)
         helpers.require_verification_experiment.record_conversion(@group)
 
@@ -103,19 +104,12 @@ module Registrations
       modifed_group_params
     end
 
-    def store_location
-      if current_user.setup_for_company && !helpers.in_trial_onboarding_flow?
-        success_url = continuous_onboarding_getting_started_users_sign_up_welcome_path(url_params)
-        store_location_for(:user, success_url)
-      end
+    def offer_trial?
+      current_user.setup_for_company && !helpers.in_trial_onboarding_flow? && !params[:skip_trial].present?
     end
 
-    def url_params
-      if helpers.in_trial_onboarding_flow?
-        { learn_gitlab_project_id: @learn_gitlab_project.id }
-      else
-        { project_id: @project.id }
-      end
+    def apply_trial_when_in_trial_flow
+      !helpers.in_trial_onboarding_flow? || apply_trial
     end
   end
 end

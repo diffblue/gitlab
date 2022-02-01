@@ -1,11 +1,11 @@
-import Cookies from 'js-cookie';
+import { setCookie } from '~/lib/utils/common_utils';
 
 const handleOnDismiss = ({ currentTarget }) => {
   const {
     dataset: { cookieId },
   } = currentTarget;
 
-  Cookies.set(cookieId, true, { expires: 30 });
+  setCookie(cookieId, true, { expires: 30 });
 };
 
 export default () => {
