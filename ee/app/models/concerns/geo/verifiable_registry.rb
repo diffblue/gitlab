@@ -55,6 +55,29 @@ module Geo
         self.verification_failed!
       end
 
+      override :track_checksum_attempt!
+      def track_checksum_attempt!(&block)
+        # If this resource will never become checksummed on the primary (because
+        # e.g. it is a remote stored file), then as a bandaid, mark it as
+        # verification succeeded. This will stop the cycle of:
+        # Sync succeeded => Verification failed => Sync failed => Sync succeeded
+        #
+        # A better fix is proposed in
+        # https://gitlab.com/gitlab-org/gitlab/-/issues/299819
+        if will_never_be_checksummed_on_the_primary?
+          # To ensure we avoid transition errors
+          self.verification_started unless self.verification_started?
+
+          # A checksum value is required by a state machine validation rule, so
+          # set it to zeroes
+          self.verification_checksum = '0000000000000000000000000000000000000000'
+          self.verification_succeeded!
+          return
+        end
+
+        super
+      end
+
       private
 
       override :track_checksum_result!
@@ -90,10 +113,8 @@ module Geo
       self.verification_pending!
     end
 
-    # For example, remote stored files are filtered from available_verifiables
-    # because we don't support verification of remote stored files.
     def will_never_be_checksummed_on_the_primary?
-      !replicator.model_record.in_available_verifiables?
+      replicator.will_never_be_checksummed_on_the_primary?
     end
 
     override :before_verification_failed

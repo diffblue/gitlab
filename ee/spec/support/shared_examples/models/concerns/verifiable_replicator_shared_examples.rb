@@ -565,6 +565,24 @@ RSpec.shared_examples 'a verifiable replicator' do
     end
   end
 
+  describe '#will_never_be_checksummed_on_the_primary?' do
+    context 'when the model record is not in available_verifiables' do
+      it 'returns true' do
+        allow(model_record).to receive(:in_available_verifiables?).and_return(false)
+
+        expect(replicator.will_never_be_checksummed_on_the_primary?).to be_truthy
+      end
+    end
+
+    context 'when the model record is in available_verifiables' do
+      it 'returns false' do
+        allow(model_record).to receive(:in_available_verifiables?).and_return(true)
+
+        expect(replicator.will_never_be_checksummed_on_the_primary?).to be_falsey
+      end
+    end
+  end
+
   context 'integration tests' do
     before do
       model_record.save!
