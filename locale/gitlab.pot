@@ -12740,6 +12740,9 @@ msgid_plural "Dismiss %d selected vulnerabilities as"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Dismiss Alert"
+msgstr ""
+
 msgid "Dismiss merge request promotion"
 msgstr ""
 
@@ -31976,6 +31979,9 @@ msgstr ""
 msgid "SecurityOrchestration|Add rule"
 msgstr ""
 
+msgid "SecurityOrchestration|After dismissing the alert, the information will never be shown again."
+msgstr ""
+
 msgid "SecurityOrchestration|All policies"
 msgstr ""
 
@@ -31989,6 +31995,9 @@ msgid "SecurityOrchestration|Choose a project"
 msgstr ""
 
 msgid "SecurityOrchestration|Description"
+msgstr ""
+
+msgid "SecurityOrchestration|Don't show the alert anymore"
 msgstr ""
 
 msgid "SecurityOrchestration|Edit policy"
@@ -32013,6 +32022,9 @@ msgid "SecurityOrchestration|Invalid policy type"
 msgstr ""
 
 msgid "SecurityOrchestration|Latest scan"
+msgstr ""
+
+msgid "SecurityOrchestration|Latest scan run against %{agent}"
 msgstr ""
 
 msgid "SecurityOrchestration|Network"
@@ -32118,6 +32130,9 @@ msgid "SecurityOrchestration|There was a problem creating the new security polic
 msgstr ""
 
 msgid "SecurityOrchestration|This project does not contain any security policies."
+msgstr ""
+
+msgid "SecurityOrchestration|This view only shows scan results for the agent %{agent}. You can view scan results for all agents in the %{linkStart}Operational Vulnerabilities tab of the vulnerability report%{linkEnd}."
 msgstr ""
 
 msgid "SecurityOrchestration|To widen your search, change filters above or select a different security policy project."
