@@ -1056,6 +1056,115 @@ RSpec.describe API::Groups do
     end
   end
 
+  describe 'GET /groups/:provisioning_group_id/provisioned_users' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:regular_user) { create(:user) }
+    let_it_be(:saml_provider) { create(:saml_provider, group: group) }
+    let_it_be(:scim_identity) { create(:scim_identity, group: group) }
+    let_it_be(:developer) { create(:user).tap { |u| group.add_developer(u) } }
+    let_it_be(:maintainer) { create(:user).tap { |u| group.add_maintainer(u) } }
+
+    let_it_be(:provisioned_user) { create(:user, provisioned_by_group_id: group.id, created_at: 2.years.ago) }
+    let_it_be(:blocked_provisioned_user) { create(:user, :blocked, provisioned_by_group_id: group.id) }
+    let_it_be(:non_provisioned_user) { create(:user) { |u| group.add_maintainer(u) } }
+
+    let(:params) { { provisioning_group_id: group.id } }
+
+    subject(:get_provisioned_users) { get api("/groups/#{params[:provisioning_group_id]}/provisioned_users", current_user), params: params }
+
+    context 'when current_user is not a group maintainer' do
+      let_it_be(:current_user) { developer }
+
+      it 'returns 403' do
+        get_provisioned_users
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+
+    context 'when current_user is a group maintainer' do
+      let_it_be(:current_user) { maintainer }
+
+      context 'requires group id' do
+        let(:params) { { provisioning_group_id: nil } }
+
+        it 'group not found' do
+          get_provisioned_users
+
+          expect(response).to have_gitlab_http_status(:not_found)
+        end
+      end
+
+      it 'returns a list of users provisioned by the group' do
+        get_provisioned_users
+
+        expect(json_response.pluck('id')).to eq([blocked_provisioned_user.id, provisioned_user.id])
+      end
+
+      context 'optional params' do
+        context 'search param' do
+          let(:params) { { provisioning_group_id: group.id, search: provisioned_user.email } }
+
+          it 'filters by search' do
+            get_provisioned_users
+
+            expect(json_response.pluck('id')).to eq([provisioned_user.id])
+          end
+        end
+
+        context 'username param' do
+          let(:params) { { provisioning_group_id: group.id, username: provisioned_user.username } }
+
+          it 'filters by username' do
+            get_provisioned_users
+
+            expect(json_response.pluck('id')).to eq([provisioned_user.id])
+          end
+        end
+
+        context 'blocked param' do
+          let(:params) { { provisioning_group_id: group.id, blocked: true } }
+
+          it 'filters by blocked' do
+            get_provisioned_users
+
+            expect(json_response.pluck('id')).to eq([blocked_provisioned_user.id])
+          end
+        end
+
+        context 'active param' do
+          let(:params) { { provisioning_group_id: group.id, active: true } }
+
+          it 'filters by active status' do
+            get_provisioned_users
+
+            expect(json_response.pluck('id')).to eq([provisioned_user.id])
+          end
+        end
+
+        context 'created_after' do
+          let(:params) { { provisioning_group_id: group.id, created_after: 1.year.ago } }
+
+          it 'filters by created_at' do
+            get_provisioned_users
+
+            expect(json_response.pluck('id')).to eq([blocked_provisioned_user.id])
+          end
+        end
+
+        context 'created_before' do
+          let(:params) { { provisioning_group_id: group.id, created_before: 1.year.ago } }
+
+          it 'filters by created_at' do
+            get_provisioned_users
+
+            expect(json_response.pluck('id')).to eq([provisioned_user.id])
+          end
+        end
+      end
+    end
+  end
+
   def ldap_sync(group_id, user, sidekiq_testing_method)
     Sidekiq::Testing.send(sidekiq_testing_method) do
       post api("/groups/#{group_id}/ldap_sync", user)
