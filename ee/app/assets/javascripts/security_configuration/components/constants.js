@@ -1,7 +1,11 @@
 import { s__ } from '~/locale';
 import { featureToMutationMap as featureToMutationMapCE } from '~/security_configuration/components/constants';
-import { REPORT_TYPE_DEPENDENCY_SCANNING } from '~/vue_shared/security_reports/constants';
+import {
+  REPORT_TYPE_DEPENDENCY_SCANNING,
+  REPORT_TYPE_CONTAINER_SCANNING,
+} from '~/vue_shared/security_reports/constants';
 import configureDependencyScanningMutation from '../graphql/configure_dependency_scanning.mutation.graphql';
+import configureContainerScanningMutation from '../graphql/configure_container_scanning.mutation.graphql';
 
 export const SMALL = 'SMALL';
 export const MEDIUM = 'MEDIUM';
@@ -25,6 +29,17 @@ export const featureToMutationMap = {
     mutationId: 'configureDependencyScanning',
     getMutationPayload: (projectPath) => ({
       mutation: configureDependencyScanningMutation,
+      variables: {
+        input: {
+          projectPath,
+        },
+      },
+    }),
+  },
+  [REPORT_TYPE_CONTAINER_SCANNING]: {
+    mutationId: 'configureContainerScanning',
+    getMutationPayload: (projectPath) => ({
+      mutation: configureContainerScanningMutation,
       variables: {
         input: {
           projectPath,
