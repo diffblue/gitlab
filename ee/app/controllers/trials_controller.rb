@@ -36,8 +36,8 @@ class TrialsController < ApplicationController
 
     render(:new) && return unless @result[:success]
 
-    if EE::TrialHelper::TRIAL_ONBOARDING_SOURCE_URLS.include?(params[:glm_source])
-      redirect_to(new_users_sign_up_group_path(url_params.merge(trial_onboarding_flow: true)))
+    if params[:onboarding] == 'true'
+      redirect_to(new_users_sign_up_groups_project_path(url_params.merge(trial_onboarding_flow: true)))
     elsif @namespace = helpers.only_trialable_group_namespace
       params[:namespace_id] = @namespace.id
       apply_trial_and_redirect
@@ -73,7 +73,11 @@ class TrialsController < ApplicationController
   end
 
   def skip
-    redirect_to stored_location_or_provided_path(dashboard_projects_path)
+    if params[:onboarding] == 'true'
+      redirect_to new_users_sign_up_groups_project_path(skip_trial: true)
+    else
+      redirect_to stored_location_or_provided_path(dashboard_projects_path)
+    end
   end
 
   protected

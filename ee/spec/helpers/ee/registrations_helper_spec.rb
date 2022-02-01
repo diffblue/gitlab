@@ -63,10 +63,8 @@ RSpec.describe EE::RegistrationsHelper do
   describe '#registration_verification_data' do
     before do
       allow(helper).to receive(:params).and_return(ActionController::Parameters.new(params))
-      allow(helper).to receive(:current_user).and_return(build(:user, setup_for_company: setup_for_company))
+      allow(helper).to receive(:current_user).and_return(build(:user))
     end
-
-    let(:setup_for_company) { false }
 
     context 'with `learn_gitlab_project_id` parameter present' do
       let(:params) { { learn_gitlab_project_id: 1 } }
@@ -86,23 +84,12 @@ RSpec.describe EE::RegistrationsHelper do
       end
     end
 
-    context 'with `combined` parameter present' do
-      let(:params) { { combined: true } }
+    context 'with `offer_trial` parameter present' do
+      let(:params) { { offer_trial: 'true' } }
 
-      context 'when user is setting up for a company' do
-        let(:setup_for_company) { true }
-
-        it 'return expected data' do
-          expect(helper.registration_verification_data)
-            .to eq(next_step_url: helper.new_trial_path)
-        end
-      end
-
-      context 'when user is not setting up for a company' do
-        it 'return expected data' do
-          expect(helper.registration_verification_data)
-            .to eq(next_step_url: helper.root_path)
-        end
+      it 'return expected data' do
+        expect(helper.registration_verification_data)
+          .to eq(next_step_url: helper.new_trial_path)
       end
     end
 

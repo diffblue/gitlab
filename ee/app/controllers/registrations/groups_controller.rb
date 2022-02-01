@@ -3,6 +3,7 @@
 module Registrations
   class GroupsController < ApplicationController
     include Registrations::CreateGroup
+    include Registrations::ApplyTrial
     include ::Gitlab::Utils::StrongMemoize
     include OneTrustCSP
 
@@ -91,22 +92,6 @@ module Registrations
         )
       }
       result = GitlabSubscriptions::CreateLeadService.new.execute(trial_params)
-      flash[:alert] = result&.dig(:errors) unless result&.dig(:success)
-
-      result&.dig(:success)
-    end
-
-    def apply_trial
-      apply_trial_params = {
-        uid: current_user.id,
-        trial_user: params.permit(:glm_source, :glm_content).merge({
-                                                                     namespace_id: @group.id,
-                                                                     gitlab_com_trial: true,
-                                                                     sync_to_gl: true
-                                                                   })
-      }
-
-      result = GitlabSubscriptions::ApplyTrialService.new.execute(apply_trial_params)
       flash[:alert] = result&.dig(:errors) unless result&.dig(:success)
 
       result&.dig(:success)
