@@ -4,9 +4,7 @@ module Groups
   class CreateEventWorker
     include ApplicationWorker
 
-    deduplicate :until_executing, including_scheduled: true
     data_consistency :delayed
-
     idempotent!
     feature_category :onboarding
     urgency :throttled
