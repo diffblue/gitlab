@@ -46,3 +46,7 @@ export const removeNode = ({ commit, state }) => {
       commit(types.RECEIVE_NODE_REMOVAL_ERROR);
     });
 };
+
+export const setStatusFilter = ({ commit }, status) => {
+  commit(types.SET_STATUS_FILTER, status);
+};

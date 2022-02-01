@@ -15797,6 +15797,9 @@ msgstr ""
 msgid "Geo|Adjust your filters/search criteria above. If you believe this may be an error, please refer to the %{linkStart}Geo Troubleshooting%{linkEnd} documentation for more information."
 msgstr ""
 
+msgid "Geo|All"
+msgstr ""
+
 msgid "Geo|All %{replicable_name}"
 msgstr ""
 

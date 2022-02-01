@@ -135,4 +135,15 @@ describe('GeoNodes Store Actions', () => {
       });
     });
   });
+
+  describe('setStatusFilter', () => {
+    it('should dispatch the correct mutations', () => {
+      return testAction({
+        action: actions.setStatusFilter,
+        payload: 'healthy',
+        state,
+        expectedMutations: [{ type: types.SET_STATUS_FILTER, payload: 'healthy' }],
+      });
+    });
+  });
 });
