@@ -15,10 +15,6 @@ module QA
             base.class_eval do
               prepend Page::Component::LicenseManagement
 
-              view 'app/assets/javascripts/vue_merge_request_widget/components/states/sha_mismatch.vue' do
-                element :head_mismatch_content
-              end
-
               view 'ee/app/views/projects/merge_requests/_code_owner_approval_rules.html.haml' do
                 element :approver_content
                 element :approver_list_content
@@ -225,12 +221,7 @@ module QA
           end
 
           def merge_via_merge_train
-            # Revisit after merge page re-architect is done https://gitlab.com/gitlab-org/gitlab/-/issues/300042
-            # To remove page refresh logic if possible
-            wait_until_ready_to_merge
-            wait_until { !find_element(:merge_button).has_text?("when pipeline succeeds") }
-
-            click_element(:merge_button)
+            try_to_merge!
 
             finished_loading?
           end
