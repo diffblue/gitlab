@@ -12,7 +12,11 @@ module EE
         end
 
         def geo?
-          ::Gitlab::Geo::JwtRequestDecoder.geo_auth_attempt?(env['HTTP_AUTHORIZATION']) if env['HTTP_AUTHORIZATION']
+          if env['HTTP_AUTHORIZATION']
+            ::Gitlab::Geo::JwtRequestDecoder.geo_auth_attempt?(env['HTTP_AUTHORIZATION'])
+          else
+            false
+          end
         end
       end
     end
