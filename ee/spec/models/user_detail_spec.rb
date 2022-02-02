@@ -10,11 +10,11 @@ RSpec.describe UserDetail do
 
     subject { user.user_detail.provisioned_by_group? }
 
-    it 'returns true when user is provisoned by group' do
+    it 'returns true when user is provisioned by group' do
       expect(subject).to eq(true)
     end
 
-    it 'returns true when user is provisoned by group' do
+    it 'returns true when user is provisioned by group' do
       user.user_detail.update!(provisioned_by_group: nil)
 
       expect(subject).to eq(false)

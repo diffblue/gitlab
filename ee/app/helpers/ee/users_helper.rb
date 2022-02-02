@@ -2,6 +2,16 @@
 
 module EE
   module UsersHelper
+    extend ::Gitlab::Utils::Override
+
+    override :display_public_email?
+    def display_public_email?(user)
+      return false if user.public_email.blank?
+      return true unless user.provisioned_by_group
+
+      !::Feature.enabled?(:hide_public_email_on_profile, user.provisioned_by_group)
+    end
+
     def users_sentence(users, link_class: nil)
       users.map { |user| link_to(user.name, user, class: link_class) }.to_sentence.html_safe
     end
