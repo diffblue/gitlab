@@ -801,6 +801,7 @@ export const mockAuthorTokenConfig = {
   recentSuggestionsStorageKey: 'gitlab-org-epics-recent-tokens-author_username',
   fetchAuthors: expect.any(Function),
   preloadedAuthors: [],
+  defaultAuthors: [],
 };
 
 export const mockLabelTokenConfig = {
@@ -824,6 +825,7 @@ export const mockMilestoneTokenConfig = {
   token: MilestoneToken,
   operators: OPERATOR_IS_ONLY,
   fetchMilestones: expect.any(Function),
+  defaultMilestones: expect.any(Array),
 };
 
 export const mockConfidentialTokenConfig = {
