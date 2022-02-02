@@ -9,50 +9,11 @@
   border-color: var(--gray-100, $gray-100);
 }
 
-.epic-sidebar {
-  .help-icon,
-  .date-warning-icon {
-    &:hover {
-      cursor: pointer;
-    }
-  }
-
-  .help-icon {
-    color: var(--gray-500, $gray-500);
-  }
-
-  .btn-sidebar-action.btn-link {
-    line-height: $gl-font-size;
-  }
-
-  .btn-sidebar-date-remove {
-    height: $gl-font-size;
-    line-height: $gl-btn-horz-padding;
-  }
-
-  .date-warning-icon {
-    color: var(--orange-500, $orange-500);
-    margin-top: -1px;
-  }
-
-  .is-option-selected {
-    > span {
-      color: var(--gray-500, $gray-500);
-      font-weight: $gl-font-weight-bold;
-    }
-  }
-}
-
 .epic-tabs-content {
   overflow: visible;
 
   .roadmap-container {
     min-height: 600px;
-
-    .roadmap-shell {
-      border: 1px solid var(--border-color, $border-color);
-      border-top: 0;
-    }
 
     .empty-state {
       margin-top: 0;
