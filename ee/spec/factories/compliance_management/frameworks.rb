@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :compliance_framework, class: 'ComplianceManagement::Framework' do
-    namespace
+    association :namespace, factory: :group
 
     name { 'GDPR' }
     description { 'The General Data Protection Regulation (GDPR) is a regulation in EU law on data protection and privacy in the European Union (EU) and the European Economic Area (EEA).' }
