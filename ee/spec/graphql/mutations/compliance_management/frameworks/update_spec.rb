@@ -5,9 +5,10 @@ require 'spec_helper'
 RSpec.describe Mutations::ComplianceManagement::Frameworks::Update do
   include GraphqlHelpers
 
-  let_it_be(:framework) { create(:compliance_framework) }
+  let_it_be(:namespace) { create(:group) }
+  let_it_be(:framework) { create(:compliance_framework, namespace: namespace) }
 
-  let(:user) { framework.namespace.owner }
+  let(:user) { create(:user) }
   let(:mutation) { described_class.new(object: nil, context: { current_user: user }, field: nil) }
   let(:params) do
     {
@@ -15,6 +16,10 @@ RSpec.describe Mutations::ComplianceManagement::Frameworks::Update do
       description: 'New Description',
       color: '#AAAAA1'
     }
+  end
+
+  before do
+    namespace.add_owner(user)
   end
 
   subject { mutation.resolve(id: global_id_of(framework), params: params) }
@@ -38,7 +43,9 @@ RSpec.describe Mutations::ComplianceManagement::Frameworks::Update do
       end
 
       context 'current_user is not authorized to update framework' do
-        let_it_be(:user) { create(:user) }
+        before do
+          namespace.update!(owners: [])
+        end
 
         it 'raises an error' do
           expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
