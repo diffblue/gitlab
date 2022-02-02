@@ -5,12 +5,22 @@ import lastWeekData from 'test_fixtures/api/dora/metrics/daily_deployment_freque
 import lastMonthData from 'test_fixtures/api/dora/metrics/daily_deployment_frequency_for_last_month.json';
 import last90DaysData from 'test_fixtures/api/dora/metrics/daily_deployment_frequency_for_last_90_days.json';
 import { useFixturesFakeDate } from 'helpers/fake_date';
+import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import ValueStreamMetrics from '~/cycle_analytics/components/value_stream_metrics.vue';
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import httpStatus from '~/lib/utils/http_status';
 import CiCdAnalyticsCharts from '~/vue_shared/components/ci_cd_analytics/ci_cd_analytics_charts.vue';
 
 jest.mock('~/flash');
+
+const makeMockCiCdAnalyticsCharts = ({ selectedChart = 0 } = {}) => ({
+  render() {
+    return this.$scopedSlots.metrics({
+      selectedChart,
+    });
+  },
+});
 
 describe('deployment_frequency_charts.vue', () => {
   useFixturesFakeDate();
@@ -36,7 +46,7 @@ describe('deployment_frequency_charts.vue', () => {
   };
 
   const createComponent = (mountOptions = defaultMountOptions) => {
-    wrapper = shallowMount(DeploymentFrequencyCharts, mountOptions);
+    wrapper = extendedWrapper(shallowMount(DeploymentFrequencyCharts, mountOptions));
   };
 
   // Initializes the mock endpoint to return a specific set of deployment
@@ -54,6 +64,8 @@ describe('deployment_frequency_charts.vue', () => {
       })
       .replyOnce(httpStatus.OK, data);
   };
+
+  const findValueStreamMetrics = () => wrapper.findComponent(ValueStreamMetrics);
 
   afterEach(() => {
     wrapper.destroy();
@@ -98,6 +110,31 @@ describe('deployment_frequency_charts.vue', () => {
 
     it('renders a header', () => {
       expect(wrapper.findComponent(DoraChartHeader).exists()).toBe(true);
+    });
+
+    describe('value stream metrics', () => {
+      beforeEach(() => {
+        createComponent({
+          ...defaultMountOptions,
+          stubs: {
+            CiCdAnalyticsCharts: makeMockCiCdAnalyticsCharts({
+              selectedChart: 1,
+            }),
+          },
+        });
+      });
+
+      it('renders the value stream metrics component', () => {
+        const metricsComponent = findValueStreamMetrics();
+        expect(metricsComponent.exists()).toBe(true);
+      });
+
+      it('passes the selectedChart correctly and computes the requestParams', () => {
+        const metricsComponent = findValueStreamMetrics();
+        expect(metricsComponent.props('requestParams')).toMatchObject({
+          created_after: '2015-06-04',
+        });
+      });
     });
   });
 

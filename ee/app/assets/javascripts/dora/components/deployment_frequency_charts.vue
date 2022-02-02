@@ -1,8 +1,11 @@
 <script>
 import * as Sentry from '@sentry/browser';
 import * as DoraApi from 'ee/api/dora_api';
+import { toYmd } from '~/analytics/shared/utils';
 import createFlash from '~/flash';
 import { s__, sprintf } from '~/locale';
+import ValueStreamMetrics from '~/cycle_analytics/components/value_stream_metrics.vue';
+import { SUMMARY_METRICS_REQUEST } from '~/cycle_analytics/constants';
 import CiCdAnalyticsCharts from '~/vue_shared/components/ci_cd_analytics/ci_cd_analytics_charts.vue';
 import DoraChartHeader from './dora_chart_header.vue';
 import {
@@ -19,11 +22,16 @@ import {
 } from './static_data/deployment_frequency';
 import { apiDataToChartSeries, seriesToAverageSeries } from './util';
 
+const VISIBLE_METRICS = ['deploys', 'deployment-frequency', 'deployment_frequency'];
+const filterFn = (data) =>
+  data.filter((d) => VISIBLE_METRICS.includes(d.identifier)).map(({ links, ...rest }) => rest);
+
 export default {
   name: 'DeploymentFrequencyCharts',
   components: {
     CiCdAnalyticsCharts,
     DoraChartHeader,
+    ValueStreamMetrics,
   },
   inject: {
     projectPath: {
@@ -55,6 +63,9 @@ export default {
         ...chart,
         data: this.chartData[chart.id],
       }));
+    },
+    metricsRequestPath() {
+      return this.projectPath ? this.projectPath : `groups/${this.groupPath}`;
     },
   },
   async mounted() {
@@ -114,9 +125,23 @@ export default {
       );
     }
   },
+  methods: {
+    getMetricsRequestParams(selectedChart) {
+      const {
+        requestParams: { start_date },
+      } = allChartDefinitions[selectedChart];
+
+      return {
+        created_after: toYmd(start_date),
+      };
+    },
+  },
+
   areaChartOptions,
   chartDescriptionText,
   chartDocumentationHref,
+  metricsRequest: SUMMARY_METRICS_REQUEST,
+  filterFn,
 };
 </script>
 <template>
@@ -126,6 +151,15 @@ export default {
       :chart-description-text="$options.chartDescriptionText"
       :chart-documentation-href="$options.chartDocumentationHref"
     />
-    <ci-cd-analytics-charts :charts="charts" :chart-options="$options.areaChartOptions" />
+    <ci-cd-analytics-charts :charts="charts" :chart-options="$options.areaChartOptions">
+      <template #metrics="{ selectedChart }">
+        <value-stream-metrics
+          :request-path="metricsRequestPath"
+          :requests="$options.metricsRequest"
+          :request-params="getMetricsRequestParams(selectedChart)"
+          :filter-fn="$options.filterFn"
+        />
+      </template>
+    </ci-cd-analytics-charts>
   </div>
 </template>
