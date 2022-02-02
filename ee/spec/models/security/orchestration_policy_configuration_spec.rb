@@ -226,7 +226,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
 
     let(:expected_active_policies) do
       [
-        build(:scan_execution_policy, name: 'Run DAST in every pipeline'),
+        build(:scan_execution_policy, name: 'Run DAST in every pipeline', rules: [{ type: 'pipeline', branches: %w[production] }]),
         build(:scan_execution_policy, name: 'Run DAST in every pipeline_v1', rules: [{ type: 'pipeline', branches: %w[master] }]),
         build(:scan_execution_policy, name: 'Run DAST in every pipeline_v3', rules: [{ type: 'pipeline', branches: %w[master] }]),
         build(:scan_execution_policy, name: 'Run DAST in every pipeline_v4', rules: [{ type: 'pipeline', branches: %w[master] }]),
@@ -291,7 +291,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     end
 
     subject(:pipeline_scan_actions) do
-      security_orchestration_policy_configuration.pipeline_scan_actions('refs/heads/production')
+      security_orchestration_policy_configuration.pipeline_scan_actions('refs/heads/master')
     end
 
     it 'returns only actions for pipeline scans applicable for branch' do

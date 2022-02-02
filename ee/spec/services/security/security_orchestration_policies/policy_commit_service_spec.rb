@@ -6,7 +6,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService do
   include RepoHelpers
 
   describe '#execute' do
-    let_it_be(:project) { create(:project) }
+    let_it_be(:project) { create(:project, :repository) }
     let_it_be(:current_user) { project.first_owner }
     let_it_be(:policy_management_project) { create(:project, :repository, creator: current_user) }
     let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, security_policy_management_project: policy_management_project, project: project) }
@@ -46,8 +46,21 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService do
       end
     end
 
+    context 'when defined branch is missing' do
+      let(:policy_hash) { build(:scan_execution_policy, name: 'Test Policy', rules: [{ type: 'pipeline' }]) }
+
+      let(:params) { { policy_yaml: input_policy_yaml, operation: operation } }
+
+      it 'returns error' do
+        response = service.execute
+
+        expect(response[:status]).to eq(:error)
+        expect(response[:message]).to eq('Policy cannot be enabled without branch information')
+      end
+    end
+
     context 'when security_orchestration_policies_configuration does not exist for project' do
-      let_it_be(:project) { create(:project) }
+      let_it_be(:project) { create(:project, :repository) }
 
       it 'does not create new project' do
         response = service.execute

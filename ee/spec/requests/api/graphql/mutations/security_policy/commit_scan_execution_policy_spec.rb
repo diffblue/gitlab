@@ -48,7 +48,7 @@ RSpec.describe 'Create scan execution policy for a project' do
     end
 
     context 'when provided policy is invalid' do
-      let_it_be(:policy_yaml) { build(:scan_execution_policy, name: policy_name).merge(type: 'scan_execution_policy', rules: [{ type: 'invalid_type' }]).to_yaml }
+      let_it_be(:policy_yaml) { build(:scan_execution_policy, name: policy_name).merge(type: 'scan_execution_policy', rules: [{ type: 'invalid_type', branches: ['master'] }]).to_yaml }
 
       it 'returns error with detailed information' do
         post_graphql_mutation(mutation, current_user: current_user)
