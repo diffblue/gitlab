@@ -51,7 +51,7 @@ export default {
     ccRequiredError() {
       return this.errorMessage === CC_VALIDATION_REQUIRED_ERROR && !this.ccAlertDismissed;
     },
-    otherError() {
+    genericError() {
       return (
         this.errorMessage &&
         this.errorMessage !== CC_VALIDATION_REQUIRED_ERROR &&
@@ -94,7 +94,7 @@ export default {
         @dismiss="ccAlertDismissed = true"
       />
 
-      <gl-alert v-if="otherError" class="gl-mb-3" variant="danger" :dismissible="false">
+      <gl-alert v-if="genericError" class="gl-mb-3" variant="danger" :dismissible="false">
         {{ errorMessage }}
       </gl-alert>
 

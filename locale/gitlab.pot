@@ -10447,6 +10447,9 @@ msgstr ""
 msgid "CredentialsInventory|SSH Keys"
 msgstr ""
 
+msgid "Credit card required to be on file in order to create a pipeline"
+msgstr ""
+
 msgid "Credit card:"
 msgstr ""
 
@@ -33043,6 +33046,9 @@ msgid "Shared runners are disabled on group level"
 msgstr ""
 
 msgid "Shared runners details"
+msgstr ""
+
+msgid "Shared runners enabled cannot be enabled until a valid credit card is on file"
 msgstr ""
 
 msgid "Shared runners help link"
