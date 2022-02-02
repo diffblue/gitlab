@@ -42,7 +42,7 @@ module Registrations
           end
         end
 
-        @project = ::Projects::CreateService.new(current_user, project_params).execute
+        @project = ::Projects::CreateService.new(current_user, create_project_params).execute
         if @project.saved?
           combined_registration_experiment.track(:create_project, namespace: @project.namespace)
 
@@ -98,8 +98,12 @@ module Registrations
       @combined_registration_experiment ||= experiment(:combined_registration, user: current_user)
     end
 
-    def project_params
-      params.require(:project).permit(project_params_attributes).merge(namespace_id: @group.id)
+    def create_project_params
+      project_params(:initialize_with_readme)
+    end
+
+    def project_params(*extra)
+      params.require(:project).permit(project_params_attributes + extra).merge(namespace_id: @group.id)
     end
 
     def modified_group_params
