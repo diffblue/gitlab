@@ -1,6 +1,6 @@
 # TODO: Add the correct filter type once it has been added in https://gitlab.com/gitlab-org/gitlab/-/issues/347325
-query getComplianceViolations($fullPath: ID!, $filter: Object) {
-  group(fullPath: $fullPath, filter: $filter) @client {
+query getComplianceViolations($fullPath: ID!, $filter: Object, $sort: String) {
+  group(fullPath: $fullPath, filter: $filter, sort: $sort) @client {
     id
     mergeRequestViolations {
       nodes {

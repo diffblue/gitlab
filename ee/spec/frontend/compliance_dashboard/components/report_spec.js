@@ -18,7 +18,9 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { stubComponent } from 'helpers/stub_component';
+import { sortObjectToString } from '~/lib/utils/table_utility';
 import { parseViolationsQueryFilter } from 'ee/compliance_dashboard/utils';
+import { DEFAULT_SORT } from 'ee/compliance_dashboard/constants';
 
 Vue.use(VueApollo);
 
@@ -34,6 +36,7 @@ describe('ComplianceReport component', () => {
     projectIds: ['20'],
     createdAfter,
     createdBefore,
+    sort: DEFAULT_SORT,
   };
   const mockGraphQlError = new Error('GraphQL networkError');
 
@@ -49,7 +52,7 @@ describe('ComplianceReport component', () => {
   const findViolationFilter = () => wrapper.findComponent(ViolationFilter);
   const findUrlSync = () => wrapper.findComponent(UrlSync);
 
-  const findTableHeaders = () => findViolationsTable().findAll('th');
+  const findTableHeaders = () => findViolationsTable().findAll('th div');
   const findTablesFirstRowData = () =>
     findViolationsTable().findAll('tbody > tr').at(0).findAll('td');
   const findSelectedRows = () => findViolationsTable().findAll('tr.b-table-row-selected');
@@ -131,12 +134,33 @@ describe('ComplianceReport component', () => {
       expect(findTableLoadingIcon().exists()).toBe(true);
     });
 
-    it('fetches the list of merge request violations with the filter query', async () => {
+    it('fetches the list of merge request violations with the default filter and sort params', async () => {
       expect(mockResolver).toHaveBeenCalledTimes(1);
       expect(mockResolver).toHaveBeenCalledWith(
         ...expectApolloVariables({
           fullPath: groupPath,
           filter: parseViolationsQueryFilter(defaultQuery),
+          sort: DEFAULT_SORT,
+        }),
+      );
+    });
+  });
+
+  describe('when the defaultQuery has a sort param', () => {
+    const sort = 'SEVERITY_ASC';
+
+    beforeEach(() => {
+      mockResolver = jest.fn();
+      wrapper = createComponent(mount, { defaultQuery: { ...defaultQuery, sort } });
+    });
+
+    it('fetches the list of merge request violations with sort params', async () => {
+      expect(mockResolver).toHaveBeenCalledTimes(1);
+      expect(mockResolver).toHaveBeenCalledWith(
+        ...expectApolloVariables({
+          fullPath: groupPath,
+          filter: parseViolationsQueryFilter(defaultQuery),
+          sort,
         }),
       );
     });
@@ -313,9 +337,44 @@ describe('ComplianceReport component', () => {
             ...expectApolloVariables({
               fullPath: groupPath,
               filter: parseViolationsQueryFilter(query),
+              sort: DEFAULT_SORT,
             }),
           );
         });
+      });
+    });
+
+    describe('when the table sort changes', () => {
+      const sortState = { sortBy: 'mergedAt', sortDesc: true };
+
+      beforeEach(async () => {
+        mockResolver = jest.fn().mockReturnValue(resolvers.Query.group());
+        wrapper = createComponent(mount);
+
+        await waitForPromises();
+        await findViolationsTable().vm.$emit('sort-changed', sortState);
+      });
+
+      it('updates the URL query', () => {
+        expect(findUrlSync().props('query')).toMatchObject({
+          sort: sortObjectToString(sortState),
+        });
+      });
+
+      it('shows the table loading icon', () => {
+        expect(findTableLoadingIcon().exists()).toBe(true);
+      });
+
+      it('fetches the sorted violations', async () => {
+        expect(mockResolver).toHaveBeenCalledTimes(2);
+        expect(mockResolver).toHaveBeenNthCalledWith(
+          2,
+          ...expectApolloVariables({
+            fullPath: groupPath,
+            filter: parseViolationsQueryFilter(defaultQuery),
+            sort: sortObjectToString(sortState),
+          }),
+        );
       });
     });
   });
