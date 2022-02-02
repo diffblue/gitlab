@@ -162,10 +162,10 @@ module EE
             success Entities::UserPublic
           end
           params do
-            optional :username, type: String, desc: 'Get a single user with a specific username'
-            optional :search, type: String, desc: 'Search for a user name, email or username'
-            optional :active, type: Grape::API::Boolean, default: false, desc: 'Filters only active users'
-            optional :blocked, type: Grape::API::Boolean, default: false, desc: 'Filters only blocked users'
+            optional :username, type: String, desc: 'Return a single user with a specific username'
+            optional :search, type: String, desc: 'Search users by name, email or username'
+            optional :active, type: Grape::API::Boolean, default: false, desc: 'Return only active users'
+            optional :blocked, type: Grape::API::Boolean, default: false, desc: 'Return only blocked users'
             optional :created_after, type: DateTime, desc: 'Return users created after the specified time'
             optional :created_before, type: DateTime, desc: 'Return users created before the specified time'
 
