@@ -1,0 +1,7 @@
+- @content_class = "limit-container-width"
+
+- page_title s_('Pipelines|Secure Files')
+- content_for :prefetch_asset_tags do
+  - webpack_preload_asset_tag('monaco')
+
+#js-ci-secure-files{ data: { project_id: @project.id } }
