@@ -36,3 +36,5 @@ export const MERGE_REQUEST_VIOLATION_SEVERITY_LEVELS = {
   3: 'low',
   4: 'info',
 };
+
+export const DEFAULT_SORT = 'SEVERITY_DESC';

@@ -2,7 +2,7 @@
 import { GlAlert, GlLoadingIcon, GlTable, GlLink } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { s__, __ } from '~/locale';
-import { thWidthClass } from '~/lib/utils/table_utility';
+import { thWidthClass, sortObjectToString, sortStringToObject } from '~/lib/utils/table_utility';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
@@ -10,6 +10,7 @@ import { helpPagePath } from '~/helpers/help_page_helper';
 import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
 import complianceViolationsQuery from '../graphql/compliance_violations.query.graphql';
 import { mapViolations } from '../graphql/mappers';
+import { DEFAULT_SORT } from '../constants';
 import { parseViolationsQueryFilter } from '../utils';
 import MergeCommitsExportButton from './merge_requests/merge_commits_export_button.vue';
 import MergeRequestDrawer from './drawer.vue';
@@ -47,6 +48,9 @@ export default {
     },
   },
   data() {
+    const sortParam = this.defaultQuery.sort || DEFAULT_SORT;
+    const { sortBy, sortDesc } = sortStringToObject(sortParam);
+
     return {
       urlQuery: { ...this.defaultQuery },
       queryError: false,
@@ -54,6 +58,9 @@ export default {
       showDrawer: false,
       drawerMergeRequest: {},
       drawerProject: {},
+      sortBy,
+      sortDesc,
+      sortParam,
     };
   },
   apollo: {
@@ -63,6 +70,7 @@ export default {
         return {
           fullPath: this.groupPath,
           filter: parseViolationsQueryFilter(this.urlQuery),
+          sort: this.sortParam,
         };
       },
       update(data) {
@@ -83,6 +91,10 @@ export default {
     },
   },
   methods: {
+    handleSortChanged(sortState) {
+      this.sortParam = sortObjectToString(sortState);
+      this.updateUrlQuery({ ...this.urlQuery, sort: this.sortParam });
+    },
     toggleDrawer(rows) {
       const { id, mergeRequest, project } = rows[0] || {};
 
@@ -108,7 +120,7 @@ export default {
     updateUrlQuery({ projectIds = [], ...rest }) {
       this.urlQuery = {
         // Clear the URL param when the id array is empty
-        projectIds: projectIds.length > 0 ? projectIds : null,
+        projectIds: projectIds?.length > 0 ? projectIds : null,
         ...rest,
       };
     },
@@ -118,21 +130,25 @@ export default {
       key: 'severity',
       label: __('Severity'),
       thClass: thWidthClass(10),
+      sortable: true,
     },
     {
-      key: 'reason',
+      key: 'violationReason',
       label: __('Violation'),
       thClass: thWidthClass(15),
+      sortable: true,
     },
     {
-      key: 'mergeRequest',
+      key: 'mergeRequestTitle',
       label: __('Merge request'),
       thClass: thWidthClass(40),
+      sortable: true,
     },
     {
       key: 'mergedAt',
       label: __('Date merged'),
       thClass: thWidthClass(20),
+      sortable: true,
     },
   ],
   i18n: {
@@ -185,6 +201,10 @@ export default {
       :busy="isLoading"
       :empty-text="$options.i18n.noViolationsFound"
       :selectable="true"
+      :sort-by="sortBy"
+      :sort-desc="sortDesc"
+      no-local-sorting
+      sort-icon-left
       show-empty
       head-variant="white"
       stacked="lg"
@@ -193,14 +213,15 @@ export default {
       selected-variant="primary"
       thead-class="gl-border-b-solid gl-border-b-1 gl-border-b-gray-100"
       @row-selected="toggleDrawer"
+      @sort-changed="handleSortChanged"
     >
       <template #cell(severity)="{ item: { severity } }">
         <severity-badge class="gl-reset-text-align!" :severity="severity" />
       </template>
-      <template #cell(reason)="{ item: { reason, violatingUser } }">
+      <template #cell(violationReason)="{ item: { reason, violatingUser } }">
         <violation-reason :reason="reason" :user="violatingUser" />
       </template>
-      <template #cell(mergeRequest)="{ item: { mergeRequest } }">
+      <template #cell(mergeRequestTitle)="{ item: { mergeRequest } }">
         {{ mergeRequest.title }}
       </template>
       <template #cell(mergedAt)="{ item: { mergeRequest } }">
