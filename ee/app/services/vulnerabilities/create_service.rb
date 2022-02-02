@@ -25,7 +25,6 @@ module Vulnerabilities
 
       if vulnerability.persisted?
         Statistics::UpdateService.update_for(vulnerability)
-        HistoricalStatistics::UpdateService.update_for(@project)
       end
 
       vulnerability

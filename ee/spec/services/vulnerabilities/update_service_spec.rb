@@ -26,7 +26,6 @@ RSpec.describe Vulnerabilities::UpdateService do
     end
 
     it_behaves_like 'calls Vulnerabilities::Statistics::UpdateService'
-    it_behaves_like 'calls Vulnerabilities::HistoricalStatistics::UpdateService'
 
     context 'when finding name is longer than 255 characters' do
       let(:finding_name) { 'a' * 256 }
