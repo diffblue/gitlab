@@ -186,25 +186,11 @@ RSpec.describe 'Groups > Usage Quotas' do
     end
   end
 
-  describe 'new_route_ci_minutes_purchase feature flag' do
-    context 'when is disabled' do
-      before do
-        stub_feature_flags(new_route_ci_minutes_purchase: false)
-      end
+  context 'when purchasing CI minutes' do
+    it 'points to GitLab CI minutes purchase flow' do
+      visit_pipeline_quota_page
 
-      it 'points to Customers Portal purchase flow' do
-        visit_pipeline_quota_page
-
-        expect(page).to have_link('Buy additional minutes', href: EE::SUBSCRIPTIONS_MORE_MINUTES_URL)
-      end
-    end
-
-    context 'when is enabled' do
-      it 'points to GitLab purchase flow' do
-        visit_pipeline_quota_page
-
-        expect(page).to have_link('Buy additional minutes', href: buy_minutes_subscriptions_path(selected_group: group.id))
-      end
+      expect(page).to have_link('Buy additional minutes', href: buy_minutes_subscriptions_path(selected_group: group.id))
     end
   end
 
