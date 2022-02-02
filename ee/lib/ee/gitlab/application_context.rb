@@ -4,6 +4,20 @@ module EE
   module Gitlab
     module ApplicationContext
       extend ::Gitlab::Utils::Override
+      extend ActiveSupport::Concern
+
+      EE_KNOWN_KEYS = [
+        :subscription_plan
+      ].freeze
+
+      class_methods do
+        extend ::Gitlab::Utils::Override
+
+        override :known_keys
+        def known_keys
+          super + EE_KNOWN_KEYS
+        end
+      end
 
       override :to_lazy_hash
       def to_lazy_hash
