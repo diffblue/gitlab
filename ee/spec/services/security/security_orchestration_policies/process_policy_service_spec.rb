@@ -49,17 +49,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService do
       end
     end
 
-    context 'when type is invalid' do
-      let(:type) { :invalid_type }
-
-      it 'returns error' do
-        result = service.execute
-
-        expect(result[:status]).to eq(:error)
-        expect(result[:message]).to eq('Invalid policy type')
-      end
-    end
-
     context 'append policy' do
       context 'when policy is present in repository' do
         before do
