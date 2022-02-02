@@ -186,8 +186,6 @@ RSpec.describe EE::IssuesHelper do
 
   describe '#group_issues_list_data' do
     let(:current_user) { double.as_null_object }
-    let(:issues) { [] }
-    let(:projects) { [] }
 
     before do
       allow(helper).to receive(:current_user).and_return(current_user)
@@ -211,7 +209,7 @@ RSpec.describe EE::IssuesHelper do
           group_path: project.group.full_path
         }
 
-        expect(helper.group_issues_list_data(group, current_user, issues, projects)).to include(expected)
+        expect(helper.group_issues_list_data(group, current_user)).to include(expected)
       end
     end
 
@@ -230,7 +228,7 @@ RSpec.describe EE::IssuesHelper do
           has_multiple_issue_assignees_feature: 'false'
         }
 
-        result = helper.group_issues_list_data(group, current_user, issues, projects)
+        result = helper.group_issues_list_data(group, current_user)
 
         expect(result).to include(expected)
         expect(result).not_to include(:group_path)
