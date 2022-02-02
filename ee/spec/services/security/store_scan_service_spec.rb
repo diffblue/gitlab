@@ -56,7 +56,7 @@ RSpec.describe Security::StoreScanService do
     subject(:store_scan) { service_object.execute }
 
     before do
-      allow(Security::StoreFindingsMetadataService).to receive(:execute)
+      allow(Security::StoreFindingsMetadataService).to receive(:execute).and_return(status: :success)
 
       known_keys.add(finding_key)
     end
@@ -170,12 +170,24 @@ RSpec.describe Security::StoreScanService do
         context 'when the `deduplicate` param is set as true' do
           let(:deduplicate) { true }
 
-          it 'does not change the deduplicated flag of duplicated finding false' do
-            expect { store_scan }.not_to change { duplicated_security_finding.reload.deduplicated }.from(false)
+          context 'when the `StoreFindingsMetadataService` returns success' do
+            it 'does not run the re-deduplicate logic' do
+              expect { store_scan }.not_to change { unique_security_finding.reload.deduplicated }.from(false)
+            end
           end
 
-          it 'sets the deduplicated flag of unique finding as true' do
-            expect { store_scan }.to change { unique_security_finding.reload.deduplicated }.to(true)
+          context 'when the `StoreFindingsMetadataService` returns error' do
+            before do
+              allow(Security::StoreFindingsMetadataService).to receive(:execute).and_return({ status: :error })
+            end
+
+            it 'does not change the deduplicated flag of duplicated finding from false' do
+              expect { store_scan }.not_to change { duplicated_security_finding.reload.deduplicated }.from(false)
+            end
+
+            it 'sets the deduplicated flag of unique finding as true' do
+              expect { store_scan }.to change { unique_security_finding.reload.deduplicated }.to(true)
+            end
           end
         end
       end

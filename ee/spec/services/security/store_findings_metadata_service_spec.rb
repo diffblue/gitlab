@@ -7,24 +7,30 @@ RSpec.describe Security::StoreFindingsMetadataService do
   let_it_be(:project) { security_scan.project }
   let_it_be(:security_finding_1) { build(:ci_reports_security_finding) }
   let_it_be(:security_finding_2) { build(:ci_reports_security_finding) }
-  let_it_be(:security_finding_3) { build(:ci_reports_security_finding, uuid: nil) }
+  let_it_be(:security_finding_3) { build(:ci_reports_security_finding) }
+  let_it_be(:security_finding_4) { build(:ci_reports_security_finding, uuid: nil) }
+  let_it_be(:deduplicated_finding_uuids) { [security_finding_1.uuid, security_finding_3.uuid] }
   let_it_be(:security_scanner) { build(:ci_reports_security_scanner) }
   let_it_be(:report) do
     build(
       :ci_reports_security_report,
-      findings: [security_finding_1, security_finding_2, security_finding_3],
+      findings: [security_finding_1, security_finding_2, security_finding_3, security_finding_4],
       scanners: [security_scanner]
     )
   end
 
   describe '#execute' do
-    let(:service_object) { described_class.new(security_scan, report) }
+    let(:service_object) { described_class.new(security_scan, report, deduplicated_finding_uuids) }
 
     subject(:store_findings) { service_object.execute }
 
     context 'when the given security scan already has findings' do
       before do
         create(:security_finding, scan: security_scan)
+      end
+
+      it 'returns error message' do
+        expect(store_findings).to eq({ status: :error, message: "Findings are already stored!" })
       end
 
       it 'does not create new findings in database' do
@@ -38,11 +44,14 @@ RSpec.describe Security::StoreFindingsMetadataService do
       end
 
       it 'creates the security finding entries in database' do
-        expect { store_findings }.to change { security_scan.findings.count }.by(2)
-                                 .and change { security_scan.findings.first&.severity }.to(security_finding_1.severity.to_s)
-                                 .and change { security_scan.findings.first&.confidence }.to(security_finding_1.confidence.to_s)
-                                 .and change { security_scan.findings.first&.uuid }.to(security_finding_1.uuid)
-                                 .and change { security_scan.findings.last&.uuid }.to(security_finding_2.uuid)
+        store_findings
+
+        expect(security_scan.findings.reload.as_json(only: [:uuid, :deduplicated]))
+          .to match_array([
+            { "uuid" => security_finding_1.uuid, "deduplicated" => true },
+            { "uuid" => security_finding_2.uuid, "deduplicated" => false },
+            { "uuid" => security_finding_3.uuid, "deduplicated" => true }
+          ])
       end
 
       context 'when the scanners already exist in the database' do
