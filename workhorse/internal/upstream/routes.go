@@ -397,6 +397,16 @@ func configureRoutes(u *upstream) {
 		// Internal API routes
 		u.route("", "^/api/v4/internal", defaultUpstream),
 
+		u.route(
+			"", `^/assets/`,
+			static.ServeExisting(
+				u.URLPrefix,
+				staticpages.CacheExpireMax,
+				assetsNotFoundHandler,
+			),
+			withoutTracing(), // Tracing on assets is very noisy
+		),
+
 		// Don't define a catch-all route. If a route does not match, then we know
 		// the request should be proxied.
 	}
