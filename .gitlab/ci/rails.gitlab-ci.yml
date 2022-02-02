@@ -312,6 +312,8 @@ rspec system pg12:
     - .rspec-base-pg12
     - .rails:rules:ee-and-foss-system
     - .rspec-system-parallel
+  variables:
+    DEBUG_GITLAB_TRANSACTION_STACK: "true"
 
 rspec system pg12 minimal:
   extends:
