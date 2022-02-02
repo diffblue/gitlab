@@ -8,6 +8,8 @@
 # @param deduplicate [Boolean] attribute to force running deduplication logic.
 module Security
   class StoreScanService
+    DEDUPLICATE_BATCH_SIZE = 50
+
     def self.execute(artifact, known_keys, deduplicate)
       new(artifact, known_keys, deduplicate).execute
     end
@@ -49,8 +51,11 @@ module Security
     end
 
     def store_findings
-      StoreFindingsMetadataService.execute(security_scan, security_report)
-      deduplicate_findings? ? update_deduplicated_findings : register_finding_keys
+      StoreFindingsMetadataService.execute(security_scan, security_report, register_finding_keys).then do |result|
+        # If `StoreFindingsMetadataService` returns error, it means the findings
+        # have already been stored before so we may re-run the deduplication logic.
+        update_deduplicated_findings if result[:status] == :error && deduplicate_findings?
+      end
 
       deduplicate_findings?
     end
@@ -65,10 +70,19 @@ module Security
 
     def update_deduplicated_findings
       Security::Scan.transaction do
-        security_scan.findings.update_all(deduplicated: false)
+        mark_all_findings_as_duplicate
+        mark_unique_findings
+      end
+    end
 
+    def mark_all_findings_as_duplicate
+      security_scan.findings.deduplicated.each_batch(of: DEDUPLICATE_BATCH_SIZE) { |batch| batch.update_all(deduplicated: false) }
+    end
+
+    def mark_unique_findings
+      register_finding_keys.each_slice(DEDUPLICATE_BATCH_SIZE) do |batch|
         security_scan.findings
-                     .by_uuid(register_finding_keys)
+                     .by_uuid(batch)
                      .update_all(deduplicated: true)
       end
     end
