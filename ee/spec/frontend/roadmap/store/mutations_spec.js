@@ -2,6 +2,7 @@ import * as types from 'ee/roadmap/store/mutation_types';
 import mutations from 'ee/roadmap/store/mutations';
 
 import defaultState from 'ee/roadmap/store/state';
+import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
 import {
   mockGroupId,
@@ -296,6 +297,28 @@ describe('Roadmap Store Mutations', () => {
 
       expect(state).toMatchObject({
         epicsState,
+        epics: [],
+        childrenFlags: {},
+        epicIds: [],
+      });
+    });
+  });
+
+  describe('SET_DATERANGE', () => {
+    it('Should set `timeframeRangeType`, `presetType` and `timeframe` to the state and reset existing epics', () => {
+      const timeframeRangeType = 'CURRENT_YEAR';
+      const presetType = 'MONTHS';
+      setEpicMockData(state);
+
+      mutations[types.SET_DATERANGE](state, { timeframeRangeType, presetType });
+
+      expect(state).toMatchObject({
+        timeframeRangeType,
+        presetType,
+        timeframe: getTimeframeForRangeType({
+          timeframeRangeType,
+          presetType,
+        }),
         epics: [],
         childrenFlags: {},
         epicIds: [],

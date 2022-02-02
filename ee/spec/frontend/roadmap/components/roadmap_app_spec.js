@@ -30,6 +30,7 @@ describe('RoadmapApp', () => {
   const epics = [mockFormattedEpic];
   const hasFiltersApplied = true;
   const presetType = PRESET_TYPES.MONTHS;
+  const timeframeRangeType = DATE_RANGES.CURRENT_YEAR;
   const timeframe = getTimeframeForRangeType({
     timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
     presetType: PRESET_TYPES.MONTHS,
@@ -40,7 +41,6 @@ describe('RoadmapApp', () => {
     return shallowMountExtended(RoadmapApp, {
       propsData: {
         emptyStateIllustrationPath,
-        presetType,
       },
       provide: {
         groupFullPath: 'gitlab-org',
@@ -64,6 +64,7 @@ describe('RoadmapApp', () => {
       hasFiltersApplied,
       filterQueryString: '',
       basePath,
+      timeframeRangeType,
     });
   });
 

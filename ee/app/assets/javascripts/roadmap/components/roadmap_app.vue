@@ -4,7 +4,6 @@ import { mapState, mapActions } from 'vuex';
 
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
-import { DATE_RANGES } from '../constants';
 import EpicsListEmpty from './epics_list_empty.vue';
 import RoadmapFilters from './roadmap_filters.vue';
 import RoadmapSettings from './roadmap_settings.vue';
@@ -20,15 +19,6 @@ export default {
   },
   mixins: [glFeatureFlagMixin()],
   props: {
-    timeframeRangeType: {
-      type: String,
-      required: false,
-      default: DATE_RANGES.CURRENT_QUARTER,
-    },
-    presetType: {
-      type: String,
-      required: true,
-    },
     emptyStateIllustrationPath: {
       type: String,
       required: true,
@@ -52,6 +42,8 @@ export default {
       'isChildEpics',
       'hasFiltersApplied',
       'filterParams',
+      'presetType',
+      'timeframeRangeType',
     ]),
     showFilteredSearchbar() {
       if (this.epicsFetchResultEmpty) {

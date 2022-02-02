@@ -487,14 +487,14 @@ describe('Roadmap Vuex Actions', () => {
     beforeEach(() => {
       mockState = {
         fullPath: 'gitlab-org',
-        milestonessState: 'active',
+        milestonesState: 'active',
         presetType: PRESET_TYPES.MONTHS,
         timeframe: mockTimeframeMonths,
       };
 
       expectedVariables = {
         fullPath: 'gitlab-org',
-        state: mockState.milestonessState,
+        state: mockState.milestonesState,
         timeframe: {
           start: '2018-01-01',
           end: '2018-12-31',
@@ -640,6 +640,23 @@ describe('Roadmap Vuex Actions', () => {
         {},
         { ...state, timeframe: mockTimeframeMonths.concat(mockTimeframeMonthsAppend), milestones },
         [{ type: types.SET_MILESTONES, payload: milestones }],
+        [],
+      );
+    });
+  });
+
+  describe('setDaterange', () => {
+    it('should set epicsState in store state', () => {
+      return testAction(
+        actions.setDaterange,
+        { timeframeRangeType: 'CURRENT_YEAR', presetType: 'MONTHS' },
+        state,
+        [
+          {
+            type: types.SET_DATERANGE,
+            payload: { timeframeRangeType: 'CURRENT_YEAR', presetType: 'MONTHS' },
+          },
+        ],
         [],
       );
     });

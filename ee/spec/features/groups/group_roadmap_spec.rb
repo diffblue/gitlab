@@ -167,8 +167,6 @@ RSpec.describe 'group epic roadmap', :js do
             page.find('[data-testid="daterange-dropdown"] button.dropdown-toggle').click
             click_button(range_type)
           end
-
-          open_settings_sidebar
         end
 
         it 'renders daterange filtering dropdown with "This quarter" selected by default no layout presets available', :aggregate_failures do
