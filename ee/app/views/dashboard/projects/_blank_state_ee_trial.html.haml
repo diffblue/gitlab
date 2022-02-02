@@ -1,17 +1,11 @@
 -# EE:Self Managed
-.blank-state
+.blank-state.gl-display-flex.gl-align-items-center.gl-border-1.gl-border-solid.gl-border-gray-100.gl-rounded-base.gl-mb-5
   .blank-state-icon
     = image_tag("illustrations/lock_promotion.svg", { lazy: false })
-  .blank-state-body
-    %h3.blank-state-title
-      Unlock more features with GitLab Ultimate
-    %p.blank-state-text
-      GitLab is free to use.
-      Many features for larger teams are part of
-      our
-      = succeed "." do
-        = link_to "paid products", "https://about.gitlab.com/pricing/", target: "_blank", rel: "noopener noreferrer nofollow"
-      You can try Ultimate for free without
-      any obligation or payment details.
+  .blank-state-body.gl-sm-pl-0.gl-pl-6
+    %h3.gl-font-size-h2.gl-mt-0
+      = _('Unlock more features with GitLab Ultimate')
+    %p
+      = _('GitLab is free to use. Many features for larger teams are part of our %{link_start}paid products%{link_end}. You can try Ultimate for free without any obligation or payment details.').html_safe % { link_start: '<a href="https://about.gitlab.com/pricing/">'.html_safe, link_end: '</a>'.html_safe }
     = link_to new_trial_url, class: "gl-button btn btn-success" do
-      Start free trial
+      = _('Start free trial')
