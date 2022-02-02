@@ -104,4 +104,43 @@ RSpec.describe UsersHelper do
       end
     end
   end
+
+  describe '#display_public_email?' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:scim_identity) { create(:scim_identity, group: group) }
+
+    let(:user) { create(:user, :public_email, provisioned_by_group: scim_identity.group) }
+
+    subject { helper.display_public_email?(user) }
+
+    before do
+      stub_feature_flags hide_public_email_on_profile: false
+    end
+
+    it { is_expected.to be true }
+
+    context 'when public_email is blank' do
+      before do
+        user.update!(public_email: '')
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context 'when provisioned_by_group is nil' do
+      before do
+        user.update!(provisioned_by_group: nil)
+      end
+
+      it { is_expected.to be true }
+    end
+
+    context 'when hide_public_email_on_profile is true' do
+      before do
+        stub_feature_flags hide_public_email_on_profile: true
+      end
+
+      it { is_expected.to be false }
+    end
+  end
 end
