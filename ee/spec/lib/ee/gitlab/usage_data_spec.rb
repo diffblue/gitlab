@@ -801,7 +801,7 @@ RSpec.describe Gitlab::UsageData do
   it 'clears memoized values' do
     allow(described_class).to receive(:clear_memoization)
 
-    described_class.data(force_refresh: true)
+    described_class.data
 
     described_class::EE_MEMOIZED_VALUES.each do |key|
       expect(described_class).to have_received(:clear_memoization).with(key)

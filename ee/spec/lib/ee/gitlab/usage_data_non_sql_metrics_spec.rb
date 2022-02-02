@@ -13,7 +13,7 @@ RSpec.describe Gitlab::UsageDataNonSqlMetrics do
   describe '.data' do
     it 'does make instrumentations_class DB calls' do
       recorder = ActiveRecord::QueryRecorder.new do
-        described_class.data(force_refresh: true)
+        described_class.data
       end
 
       expect(recorder.count).to eq(65)
