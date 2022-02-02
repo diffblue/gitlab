@@ -40,7 +40,7 @@ RSpec.describe Gitlab::Ci::Config do
   describe 'with security orchestration policy' do
     let(:source) { 'push' }
 
-    let_it_be(:ref) { 'master' }
+    let(:ref) { 'master' }
     let_it_be_with_refind(:project) { create(:project, :repository) }
 
     let_it_be(:policies_repository) { create(:project, :repository) }
@@ -70,13 +70,15 @@ RSpec.describe Gitlab::Ci::Config do
       end
 
       context 'when policy is not applicable on branch from the pipeline' do
+        let(:ref) { 'another-branch' }
+
         it 'does not modify the config' do
           expect(config.to_hash).to eq(sample_job: { script: ["echo 'test'"] })
         end
       end
 
-      context 'when policy is not applicable on branch from the pipeline' do
-        let_it_be(:ref) { 'production' }
+      context 'when policy is applicable on branch from the pipeline' do
+        let(:ref) { 'master' }
 
         context 'when DAST profiles are not found' do
           it 'adds a job with error message' do

@@ -69,21 +69,23 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
     end
 
     context 'when policy is not applicable on branch from the pipeline' do
+      let(:ref) { 'refs/head/another-branch' }
+
       it 'does not modify the config' do
         expect(subject).to eq(config)
       end
     end
 
     context 'when ref is a tag' do
-      let_it_be(:ref) { 'refs/tags/v1.1.0' }
+      let(:ref) { 'refs/tags/v1.1.0' }
 
       it 'does not modify the config' do
         expect(subject).to eq(config)
       end
     end
 
-    context 'when policy is not applicable on branch from the pipeline' do
-      let_it_be(:ref) { 'refs/heads/production' }
+    context 'when policy is applicable on branch from the pipeline' do
+      let(:ref) { 'refs/heads/master' }
 
       context 'when DAST profiles are not found' do
         it 'does not modify the config' do

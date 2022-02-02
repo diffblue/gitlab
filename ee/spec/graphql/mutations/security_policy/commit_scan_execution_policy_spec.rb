@@ -6,7 +6,7 @@ RSpec.describe Mutations::SecurityPolicy::CommitScanExecutionPolicy do
 
   describe '#resolve' do
     let_it_be(:user) { create(:user) }
-    let_it_be(:project) { create(:project, namespace: user.namespace) }
+    let_it_be(:project) { create(:project, :repository, namespace: user.namespace) }
     let_it_be(:policy_management_project) { create(:project, :repository, namespace: user.namespace) }
     let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, security_policy_management_project: policy_management_project, project: project) }
     let_it_be(:operation_mode) { Types::MutationOperationModeEnum.enum[:append] }

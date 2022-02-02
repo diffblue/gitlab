@@ -16,7 +16,6 @@ module Security
         name = params[:name]
         operation = params[:operation]
 
-        return error("Invalid policy type", :bad_request) unless Security::OrchestrationPolicyConfiguration::AVAILABLE_POLICY_TYPES.include?(type)
         return error("Name should be same as the policy name", :bad_request) if name && operation != :replace && policy[:name] != name
 
         policy_hash = policy_configuration.policy_hash.dup || {}

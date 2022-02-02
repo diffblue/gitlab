@@ -17,11 +17,11 @@ FactoryBot.define do
     sequence(:name) { |n| "test-policy-#{n}" }
     description { 'This policy enforces to run DAST for every pipeline within the project' }
     enabled { true }
-    rules { [{ type: 'pipeline', branches: %w[production] }] }
+    rules { [{ type: 'pipeline', branches: %w[master] }] }
     actions { [{ scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' }] }
 
     trait :with_schedule do
-      rules { [{ type: 'schedule', branches: %w[production], cadence: '*/15 * * * *' }] }
+      rules { [{ type: 'schedule', branches: %w[master], cadence: '*/15 * * * *' }] }
     end
   end
 
