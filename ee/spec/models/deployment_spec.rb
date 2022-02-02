@@ -28,7 +28,7 @@ RSpec.describe Deployment do
     let_it_be(:project) { create(:project, :repository) }
 
     let(:environment) { create(:environment, project: project) }
-    let(:deployment) { create(:deployment, project: project, environment: environment) }
+    let(:deployment) { create(:deployment, :blocked, project: project, environment: environment) }
 
     context 'when Protected Environments feature is available' do
       before do
@@ -56,6 +56,14 @@ RSpec.describe Deployment do
         before do
           create_list(:deployment_approval, 3, deployment: deployment)
         end
+
+        it 'returns zero' do
+          expect(deployment.pending_approval_count).to eq(0)
+        end
+      end
+
+      context 'with a deployment that is not blocked' do
+        let(:deployment) { create(:deployment, :success, project: project, environment: environment) }
 
         it 'returns zero' do
           expect(deployment.pending_approval_count).to eq(0)

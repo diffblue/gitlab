@@ -11,7 +11,41 @@ RSpec.describe API::Deployments do
     stub_licensed_features(protected_environments: true)
   end
 
+  describe 'GET /projects/:id/deployments/:id' do
+    let(:deployment) { create(:deployment, :blocked, project: project) }
+
+    before do
+      create(:deployment_approval, :approved, deployment: deployment)
+      project.add_developer(user)
+    end
+
+    it 'matches the response schema' do
+      get api("/projects/#{project.id}/deployments/#{deployment.id}", user)
+
+      expect(response).to have_gitlab_http_status(:success)
+      expect(response).to match_response_schema('public_api/v4/deployment_extended', dir: 'ee')
+    end
+  end
+
   describe 'POST /projects/:id/deployments' do
+    it 'matches the response schema' do
+      project.add_developer(user)
+
+      post(
+        api("/projects/#{project.id}/deployments", user),
+        params: {
+          environment: environment.name,
+          sha: 'b83d6e391c22777fca1ed3012fce84f633d7fed0',
+          ref: 'master',
+          tag: false,
+          status: 'success'
+        }
+      )
+
+      expect(response).to have_gitlab_http_status(:success)
+      expect(response).to match_response_schema('public_api/v4/deployment_extended', dir: 'ee')
+    end
+
     context 'when deploying to a protected environment that requires maintainer access' do
       before do
         create(
@@ -112,6 +146,18 @@ RSpec.describe API::Deployments do
         deployable: nil,
         environment: environment
       )
+    end
+
+    it 'matches the response schema' do
+      project.add_developer(user)
+
+      put(
+        api("/projects/#{project.id}/deployments/#{deploy.id}", user),
+        params: { status: 'success' }
+      )
+
+      expect(response).to have_gitlab_http_status(:success)
+      expect(response).to match_response_schema('public_api/v4/deployment_extended', dir: 'ee')
     end
 
     context 'when updating a deployment for a protected environment that requires maintainer access' do
