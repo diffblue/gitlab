@@ -18,7 +18,7 @@ module Security
     belongs_to :scan, inverse_of: :findings, optional: false
     belongs_to :scanner, class_name: 'Vulnerabilities::Scanner', inverse_of: :security_findings, optional: false
 
-    has_one :build, through: :scan, disable_joins: -> { ::Feature.enabled?(:security_finding_build_disable_joins, default_enabled: :yaml) }
+    has_one :build, through: :scan, disable_joins: true
 
     enum confidence: ::Enums::Vulnerability.confidence_levels, _prefix: :confidence
     enum severity: ::Enums::Vulnerability.severity_levels, _prefix: :severity
