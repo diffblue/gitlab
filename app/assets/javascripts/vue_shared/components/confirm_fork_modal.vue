@@ -2,6 +2,14 @@
 import { GlModal } from '@gitlab/ui';
 import { __ } from '~/locale';
 
+export const i18n = {
+  btnText: __('Fork project'),
+  title: __('Fork project?'),
+  message: __(
+    'You can’t edit files directly in this project. Fork this project and submit a merge request with your changes.',
+  ),
+};
+
 export default {
   name: 'ConfirmForkModal',
   components: {
@@ -27,7 +35,7 @@ export default {
       return {
         cancel: { text: __('Cancel') },
         primary: {
-          text: __('Fork project'),
+          text: this.$options.i18n.btnText,
           attributes: {
             href: this.forkPath,
             variant: 'confirm',
@@ -43,12 +51,7 @@ export default {
       this.$emit('hide');
     },
   },
-  i18n: {
-    title: __('Fork project?'),
-    message: __(
-      'You can’t edit files directly in this project. Fork this project and submit a merge request with your changes.',
-    ),
-  },
+  i18n,
 };
 </script>
 <template>

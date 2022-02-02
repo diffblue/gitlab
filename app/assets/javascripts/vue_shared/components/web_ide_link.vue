@@ -265,6 +265,7 @@ export default {
   },
 };
 </script>
+
 <template>
   <div class="gl-sm-ml-3">
     <actions-button
