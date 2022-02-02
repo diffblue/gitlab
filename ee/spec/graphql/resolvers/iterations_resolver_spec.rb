@@ -66,6 +66,8 @@ RSpec.describe Resolvers::IterationsResolver do
           context 'with search and in parameters' do
             where(:search, :fields_to_search, :expected_iterations) do
               ''          | []                       | lazy { all_iterations }
+              ''          | [:title]                 | lazy { all_iterations }
+              ''          | [:title, :cadence_title] | lazy { all_iterations }
               'iteration' | nil                      | lazy { plan_cadence.iterations }
               'iteration' | []                       | lazy { plan_cadence.iterations }
               'iteration' | [:title]                 | lazy { plan_cadence.iterations }
@@ -92,12 +94,6 @@ RSpec.describe Resolvers::IterationsResolver do
                   resolve_group_iterations({ title: "foo", **params })
                 end.to raise_error(Gitlab::Graphql::Errors::ArgumentError, "'title' is deprecated in favor of 'search'. Please use 'search'.")
               end
-            end
-
-            it "raises an error when 'in' is specified but 'search' is not" do
-              expect do
-                resolve_group_iterations({ in: [:title] })
-              end.to raise_error(Gitlab::Graphql::Errors::ArgumentError, "'search' must be specified when using 'in' argument.")
             end
 
             it "uses 'search' and 'in' arguments to search title" do

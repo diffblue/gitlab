@@ -17,7 +17,7 @@ module Resolvers
 
     argument :search, GraphQL::Types::String,
              required: false,
-             description: 'Query used for fuzzy-searching in the fields selected in the argument `in`.'
+             description: 'Query used for fuzzy-searching in the fields selected in the argument `in`. Returns all iterations if empty.'
 
     argument :in, [Types::IterationSearchableFieldEnum],
              required: false,
@@ -71,10 +71,6 @@ module Resolvers
     def validate_search_params!(args)
       if args[:title].present? && (args[:search].present? || args[:in].present?)
         raise Gitlab::Graphql::Errors::ArgumentError, "'title' is deprecated in favor of 'search'. Please use 'search'."
-      end
-
-      if !args[:search].present? && args[:in].present?
-        raise Gitlab::Graphql::Errors::ArgumentError, "'search' must be specified when using 'in' argument."
       end
     end
 
