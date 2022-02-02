@@ -40283,6 +40283,9 @@ msgstr ""
 msgid "Webhooks|An issue is created, updated, closed, or reopened."
 msgstr ""
 
+msgid "Webhooks|Are you sure you want to delete this webhook?"
+msgstr ""
+
 msgid "Webhooks|Comments"
 msgstr ""
 
@@ -40290,6 +40293,9 @@ msgid "Webhooks|Confidential comments"
 msgstr ""
 
 msgid "Webhooks|Confidential issues events"
+msgstr ""
+
+msgid "Webhooks|Delete webhook"
 msgstr ""
 
 msgid "Webhooks|Deployment events"
