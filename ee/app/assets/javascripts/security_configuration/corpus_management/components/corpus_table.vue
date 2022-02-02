@@ -6,6 +6,7 @@ import Target from 'ee/security_configuration/corpus_management/components/colum
 import { s__ } from '~/locale';
 import UserDate from '~/vue_shared/components/user_date.vue';
 import { ISO_SHORT_FORMAT } from '~/vue_shared/constants';
+import { thWidthClass } from '~/lib/utils/table_utility';
 
 const thClass = 'gl-bg-transparent! gl-border-gray-100! gl-border-b-solid! gl-border-b-1!';
 
@@ -28,27 +29,29 @@ export default {
     {
       key: 'name',
       label: s__('CorpusManagement|Corpus name'),
-      thClass,
+      thClass: `${thClass} ${thWidthClass(40)}`,
+      tdClass: 'gl-text-truncate gl-max-w-15',
     },
     {
       key: 'target',
       label: s__('CorpusManagement|Target'),
-      thClass,
+      thClass: `${thClass} ${thWidthClass(20)}`,
+      tdClass: 'gl-word-break-word',
     },
     {
       key: 'lastUpdated',
       label: s__('CorpusManagement|Last updated'),
-      thClass,
+      thClass: `${thClass} ${thWidthClass(15)}`,
     },
     {
       key: 'lastUsed',
       label: s__('CorpusManagement|Last used'),
-      thClass,
+      thClass: `${thClass} ${thWidthClass(15)}`,
     },
     {
       key: 'actions',
       label: s__('CorpusManagement|Actions'),
-      thClass,
+      thClass: `${thClass} ${thWidthClass(10)}`,
     },
   ],
   i18n: {

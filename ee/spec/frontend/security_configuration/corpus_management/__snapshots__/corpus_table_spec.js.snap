@@ -7,7 +7,7 @@ exports[`Corpus table corpus management renders with the correct columns 1`] = `
 >
   <th
     aria-colindex="1"
-    class="gl-bg-transparent! gl-border-gray-100! gl-border-b-solid! gl-border-b-1!"
+    class="gl-bg-transparent! gl-border-gray-100! gl-border-b-solid! gl-border-b-1! gl-w-40p gl-bg-transparent! gl-border-b-solid! gl-border-b-gray-100! gl-p-5! gl-border-b-1!"
     role="columnheader"
     scope="col"
   >
@@ -17,7 +17,7 @@ exports[`Corpus table corpus management renders with the correct columns 1`] = `
   </th>
   <th
     aria-colindex="2"
-    class="gl-bg-transparent! gl-border-gray-100! gl-border-b-solid! gl-border-b-1!"
+    class="gl-bg-transparent! gl-border-gray-100! gl-border-b-solid! gl-border-b-1! gl-w-20p gl-bg-transparent! gl-border-b-solid! gl-border-b-gray-100! gl-p-5! gl-border-b-1!"
     role="columnheader"
     scope="col"
   >
@@ -27,7 +27,7 @@ exports[`Corpus table corpus management renders with the correct columns 1`] = `
   </th>
   <th
     aria-colindex="3"
-    class="gl-bg-transparent! gl-border-gray-100! gl-border-b-solid! gl-border-b-1!"
+    class="gl-bg-transparent! gl-border-gray-100! gl-border-b-solid! gl-border-b-1! gl-w-15p gl-bg-transparent! gl-border-b-solid! gl-border-b-gray-100! gl-p-5! gl-border-b-1!"
     role="columnheader"
     scope="col"
   >
@@ -37,7 +37,7 @@ exports[`Corpus table corpus management renders with the correct columns 1`] = `
   </th>
   <th
     aria-colindex="4"
-    class="gl-bg-transparent! gl-border-gray-100! gl-border-b-solid! gl-border-b-1!"
+    class="gl-bg-transparent! gl-border-gray-100! gl-border-b-solid! gl-border-b-1! gl-w-15p gl-bg-transparent! gl-border-b-solid! gl-border-b-gray-100! gl-p-5! gl-border-b-1!"
     role="columnheader"
     scope="col"
   >
@@ -47,7 +47,7 @@ exports[`Corpus table corpus management renders with the correct columns 1`] = `
   </th>
   <th
     aria-colindex="5"
-    class="gl-bg-transparent! gl-border-gray-100! gl-border-b-solid! gl-border-b-1!"
+    class="gl-bg-transparent! gl-border-gray-100! gl-border-b-solid! gl-border-b-1! gl-w-10p gl-bg-transparent! gl-border-b-solid! gl-border-b-gray-100! gl-p-5! gl-border-b-1!"
     role="columnheader"
     scope="col"
   >
