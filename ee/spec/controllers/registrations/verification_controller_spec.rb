@@ -28,7 +28,7 @@ RSpec.describe Registrations::VerificationController do
 
         it 'publishes the experiment' do
           expect_next_instance_of(ApplicationExperiment) do |instance|
-            expect(instance).to receive(:publish_to_client)
+            expect(instance).to receive(:publish)
           end
 
           subject

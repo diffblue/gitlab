@@ -15,7 +15,7 @@ module Registrations
     private
 
     def publish_experiment
-      experiment(:registration_verification, user: current_user).publish_to_client
+      experiment(:registration_verification, user: current_user).publish
     end
   end
 end

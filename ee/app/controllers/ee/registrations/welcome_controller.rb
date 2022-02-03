@@ -85,7 +85,7 @@ module EE
       end
 
       def publish_combined_registration_experiment
-        combined_registration_experiment.publish_to_client if show_signup_onboarding?
+        combined_registration_experiment.publish if show_signup_onboarding?
       end
 
       def combined_registration_experiment
