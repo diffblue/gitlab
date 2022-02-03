@@ -52,7 +52,11 @@ class Projects::ProtectedEnvironmentsController < Projects::ApplicationControlle
   end
 
   def protected_environment_params
-    params.require(:protected_environment).permit(:name, deploy_access_levels_attributes: deploy_access_level_attributes)
+    params.require(:protected_environment).permit(
+      :name,
+      :required_approval_count,
+      deploy_access_levels_attributes: deploy_access_level_attributes
+    )
   end
 
   def deploy_access_level_attributes
