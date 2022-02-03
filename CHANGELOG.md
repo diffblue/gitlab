@@ -443,6 +443,10 @@ No changes.
 - [Fix Gitlab/DelegatePredicateMethods offenses](gitlab-org/gitlab@518700a11025b0000ff3ce011638417a882612b0) by @edith007 ([merge request](gitlab-org/gitlab!76001))
 - [Fix Rails/SaveBang offenses](gitlab-org/gitlab@513b0e1dbdf95ea595e7548ff26929e0be30ce29) by @edith007 ([merge request](gitlab-org/gitlab!75894)) **GitLab Enterprise Edition**
 
+## 14.6.4 (2022-02-03)
+
+No changes.
+
 ## 14.6.3 (2022-01-18)
 
 ### Fixed (4 changes)
