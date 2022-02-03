@@ -1947,6 +1947,15 @@
   :weight: 1
   :idempotent:
   :tags: []
+- :name: background_migration_ci_database
+  :worker_name: BackgroundMigration::CiDatabaseWorker
+  :feature_category: :database
+  :has_external_dependencies:
+  :urgency: :throttled
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent:
+  :tags: []
 - :name: bulk_import
   :worker_name: BulkImportWorker
   :feature_category: :importers
