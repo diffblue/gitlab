@@ -13,6 +13,8 @@ export const PIPELINE_TABS_KEYS = ['all', 'running', 'finished', 'scheduled', 's
 export const PIPELINES_PER_PAGE = 20;
 export const PIPELINES_POLL_INTERVAL = 3000;
 export const PIPELINES_COUNT_POLL_INTERVAL = 3000;
+export const MAX_PIPELINES_COUNT = 1000;
+export const MAX_DAST_PROFILES_COUNT = 100;
 
 // Pipeline scopes
 export const PIPELINES_SCOPE_RUNNING = 'RUNNING';

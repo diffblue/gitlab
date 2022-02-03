@@ -1,6 +1,6 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import { merge } from 'lodash';
+import { merge, cloneDeep } from 'lodash';
 import dastProfilesMock from 'test_fixtures/graphql/on_demand_scans/graphql/dast_profiles.query.graphql.json';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import SavedTab from 'ee/on_demand_scans/components/tabs/saved.vue';
@@ -11,7 +11,11 @@ import dastProfilesQuery from 'ee/on_demand_scans/graphql/dast_profiles.query.gr
 import dastProfileRunMutation from 'ee/on_demand_scans/graphql/dast_profile_run.mutation.graphql';
 import dastProfileDeleteMutation from 'ee/on_demand_scans/graphql/dast_profile_delete.mutation.graphql';
 import { createRouter } from 'ee/on_demand_scans/router';
-import { SAVED_TAB_TABLE_FIELDS, LEARN_MORE_TEXT } from 'ee/on_demand_scans/constants';
+import {
+  SAVED_TAB_TABLE_FIELDS,
+  LEARN_MORE_TEXT,
+  MAX_DAST_PROFILES_COUNT,
+} from 'ee/on_demand_scans/constants';
 import { s__ } from '~/locale';
 import ScanTypeBadge from 'ee/security_configuration/dast_profiles/components/dast_scan_type_badge.vue';
 import flushPromises from 'helpers/flush_promises';
@@ -119,14 +123,17 @@ describe('Saved tab', () => {
   it('renders the base tab with the correct props', () => {
     createComponent();
 
-    expect(findBaseTab().props('title')).toBe(s__('OnDemandScans|Scan library'));
-    expect(findBaseTab().props('itemsCount')).toBe(itemsCount);
-    expect(findBaseTab().props('query')).toBe(dastProfilesQuery);
-    expect(findBaseTab().props('emptyStateTitle')).toBe(
-      s__('OnDemandScans|There are no saved scans.'),
-    );
-    expect(findBaseTab().props('emptyStateText')).toBe(LEARN_MORE_TEXT);
-    expect(findBaseTab().props('fields')).toBe(SAVED_TAB_TABLE_FIELDS);
+    expect(cloneDeep(findBaseTab().props())).toEqual({
+      isActive: true,
+      title: s__('OnDemandScans|Scan library'),
+      itemsCount,
+      maxItemsCount: MAX_DAST_PROFILES_COUNT,
+      query: dastProfilesQuery,
+      queryVariables: {},
+      emptyStateTitle: s__('OnDemandScans|There are no saved scans.'),
+      emptyStateText: LEARN_MORE_TEXT,
+      fields: SAVED_TAB_TABLE_FIELDS,
+    });
   });
 
   it('fetches the profiles', () => {

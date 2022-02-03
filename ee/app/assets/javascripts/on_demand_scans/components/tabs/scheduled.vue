@@ -3,7 +3,11 @@ import { GlIcon } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 import DastScanSchedule from 'ee/security_configuration/dast_profiles/components/dast_scan_schedule.vue';
 import scheduledDastProfilesQuery from '../../graphql/scheduled_dast_profiles.query.graphql';
-import { SCHEDULED_TAB_TABLE_FIELDS, LEARN_MORE_TEXT } from '../../constants';
+import {
+  SCHEDULED_TAB_TABLE_FIELDS,
+  LEARN_MORE_TEXT,
+  MAX_DAST_PROFILES_COUNT,
+} from '../../constants';
 import BaseTab from './base_tab.vue';
 
 export default {
@@ -14,6 +18,7 @@ export default {
     DastScanSchedule,
   },
   inject: ['timezones'],
+  maxItemsCount: MAX_DAST_PROFILES_COUNT,
   tableFields: SCHEDULED_TAB_TABLE_FIELDS,
   i18n: {
     title: __('Scheduled'),
@@ -30,6 +35,7 @@ export default {
 
 <template>
   <base-tab
+    :max-items-count="$options.maxItemsCount"
     :query="$options.query"
     :title="$options.i18n.title"
     :fields="$options.tableFields"
