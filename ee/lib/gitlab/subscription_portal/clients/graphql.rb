@@ -7,6 +7,14 @@ module Gitlab
         extend ActiveSupport::Concern
 
         CONNECTIVITY_ERROR = 'CONNECTIVITY_ERROR'
+        RESCUABLE_HTTP_ERRORS = [
+          Gitlab::HTTP::BlockedUrlError,
+          HTTParty::Error,
+          Errno::ECONNREFUSED,
+          Errno::ECONNRESET,
+          SocketError,
+          Timeout::Error
+        ].freeze
 
         class_methods do
           def activate(activation_code)
@@ -44,7 +52,7 @@ module Gitlab
             else
               error(response['errors'])
             end
-          rescue Gitlab::HTTP::BlockedUrlError, HTTParty::Error, Errno::ECONNREFUSED, Errno::ECONNRESET, SocketError, Timeout::Error => e
+          rescue *RESCUABLE_HTTP_ERRORS => e
             Gitlab::ErrorTracking.log_exception(e)
             error(CONNECTIVITY_ERROR)
           end
@@ -183,14 +191,41 @@ module Gitlab
               { query: query, variables: variables }
             )
 
-            return error(CONNECTIVITY_ERROR) unless response[:success]
-
-            errors = response.dig(:data, 'errors') ||
-              response.dig(:data, 'data', 'orderNamespaceNameUpdate', 'errors')
-
-            errors.blank? ? { success: true } : error(errors)
-          rescue Gitlab::HTTP::BlockedUrlError, HTTParty::Error, Errno::ECONNREFUSED, Errno::ECONNRESET, SocketError, Timeout::Error => e
+            parse_errors(response, query_name: 'orderNamespaceNameUpdate').presence || { success: true }
+          rescue *RESCUABLE_HTTP_ERRORS => e
             Gitlab::ErrorTracking.log_exception(e)
+
+            error(CONNECTIVITY_ERROR)
+          end
+
+          def send_seat_overage_notification(group:, max_seats_used:)
+            query = <<~GQL
+              mutation($namespaceId: Int!, $maxSeatsUsed: Int!, $groupOwners: [GitlabEmailsUserInput!]!) {
+                sendSeatOverageNotificationEmail(input: {
+                  glNamespaceId: $namespaceId,
+                  maxSeatsUsed: $maxSeatsUsed,
+                  groupOwners: $groupOwners
+                }) {
+                  errors
+                }
+              }
+            GQL
+
+            owners_data = group.owners.map do |owner|
+              { id: owner.id, email: owner.notification_email_for(group), fullName: owner.name }
+            end
+
+            response = execute_graphql_query(
+              {
+                query: query,
+                variables: { namespaceId: group.id, maxSeatsUsed: max_seats_used, groupOwners: owners_data }
+              }
+            )
+
+            parse_errors(response, query_name: 'sendSeatOverageNotificationEmail').presence || { success: true }
+          rescue *RESCUABLE_HTTP_ERRORS => e
+            Gitlab::ErrorTracking.log_exception(e)
+
             error(CONNECTIVITY_ERROR)
           end
 
@@ -216,6 +251,19 @@ module Gitlab
               query: query,
               response: response
             )
+          end
+
+          def parse_errors(response, query_name: nil)
+            return error(CONNECTIVITY_ERROR) unless response[:success]
+
+            errors = [
+              response.dig(:data, 'errors'),
+              response.dig(:data, 'data', query_name, 'errors')
+            ]
+
+            errors = errors.flat_map(&:presence).compact
+
+            error(errors) if errors.any?
           end
 
           def error(errors = nil)
