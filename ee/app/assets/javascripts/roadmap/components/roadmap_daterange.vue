@@ -1,8 +1,7 @@
 <script>
 import { GlFormGroup, GlFormRadioGroup, GlDropdown, GlDropdownItem } from '@gitlab/ui';
-import { mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 
-import { visitUrl, mergeUrlParams } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 
 import { PRESET_TYPES, DATE_RANGES } from '../constants';
@@ -59,6 +58,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['setDaterange', 'fetchEpics', 'fetchMilestones']),
     handleDaterangeSelect(value) {
       this.selectedDaterange = value;
     },
@@ -67,24 +67,19 @@ export default {
     },
     handleDaterangeDropdownClose() {
       if (this.initialSelectedDaterange !== this.selectedDaterange) {
-        visitUrl(
-          mergeUrlParams(
-            {
-              timeframe_range_type: this.selectedDaterange,
-              layout: getPresetTypeForTimeframeRangeType(this.selectedDaterange),
-            },
-            window.location.href,
-          ),
-        );
+        this.setDaterange({
+          timeframeRangeType: this.selectedDaterange,
+          presetType: getPresetTypeForTimeframeRangeType(this.selectedDaterange),
+        });
+        this.fetchEpics();
+        this.fetchMilestones();
       }
     },
     handleRoadmapLayoutChange(presetType) {
-      visitUrl(
-        mergeUrlParams(
-          { timeframe_range_type: this.selectedDaterange, layout: presetType },
-          window.location.href,
-        ),
-      );
+      if (presetType !== this.presetType) {
+        this.setDaterange({ timeframeRangeType: this.selectedDaterange, presetType });
+        this.fetchEpics();
+      }
     },
   },
   i18n: {

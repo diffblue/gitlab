@@ -21,6 +21,11 @@ export default {
       required: false,
       default: () => [],
     },
+    selectedBranchesNames: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
     isInvalid: {
       type: Boolean,
       required: false,
@@ -33,8 +38,19 @@ export default {
       initialLoading: false,
       searching: false,
       searchTerm: '',
-      selected: this.selectedBranches[0] || ALL_BRANCHES,
+      selected: null,
     };
+  },
+  computed: {
+    selectedBranch() {
+      const idsOnly = this.selectedBranches.map((branch) => branch.id);
+      const selectedById = this.branches.find((branch) => idsOnly.includes(branch.id));
+      const selectedByName = this.branches.find((branch) =>
+        this.selectedBranchesNames.includes(branch.name),
+      );
+
+      return selectedById || selectedByName || this.selected || ALL_BRANCHES;
+    },
   },
   mounted() {
     this.initialLoading = true;
@@ -67,7 +83,7 @@ export default {
       this.fetchBranches(this.searchTerm);
     }, BRANCH_FETCH_DELAY),
     isSelectedBranch(id) {
-      return this.selected.id === id;
+      return this.selectedBranch.id === id;
     },
     onSelect(branch) {
       this.selected = branch;
@@ -89,7 +105,7 @@ export default {
   <gl-dropdown
     :class="{ 'is-invalid': isInvalid }"
     class="gl-w-full gl-dropdown-menu-full-width"
-    :text="selected.name"
+    :text="selectedBranch.name"
     :loading="initialLoading"
     :header-text="$options.i18n.header"
   >

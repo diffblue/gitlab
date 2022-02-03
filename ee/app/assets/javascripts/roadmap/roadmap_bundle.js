@@ -129,8 +129,6 @@ export default () => {
     render(createElement) {
       return createElement('roadmap-app', {
         props: {
-          timeframeRangeType: this.timeframeRangeType,
-          presetType: this.presetType,
           emptyStateIllustrationPath: this.emptyStateIllustrationPath,
         },
       });
