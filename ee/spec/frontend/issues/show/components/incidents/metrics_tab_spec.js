@@ -131,7 +131,7 @@ describe('Metrics tab', () => {
 
       await waitForPromises();
 
-      expect(dispatchSpy).toHaveBeenCalledWith('uploadImage', { files: fileList, url: testUrl });
+      expect(dispatchSpy).toHaveBeenCalledWith('uploadImage', { files: fileList, url: testUrl, urlText: "" });
     });
 
     describe('url field', () => {
@@ -144,7 +144,11 @@ describe('Metrics tab', () => {
       });
 
       it('should display the url field', () => {
-        expect(wrapper.findComponent(GlFormInput).attributes('value')).toBe(testUrl);
+        expect(wrapper.find('#upload-url-input').attributes('value')).toBe(testUrl);
+      });
+
+      it('should display the url text field', () => {
+        expect(wrapper.find('#upload-text-input').attributes('value')).toBe('');
       });
 
       it('should clear url when cancelled', async () => {

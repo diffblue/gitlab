@@ -47,6 +47,7 @@ describe('Metrics upload item', () => {
   });
 
   const findImageLink = () => wrapper.findComponent(GlLink);
+  const findSpan = () => wrapper.findAll('span').at(-1);
   const findCollapseButton = () => wrapper.find('[data-testid="collapse-button"]');
   const findMetricImageBody = () => wrapper.find('[data-testid="metric-image-body"]');
   const findModal = () => wrapper.findComponent(GlModal);
@@ -68,6 +69,22 @@ describe('Metrics upload item', () => {
 
     expect(findImageLink().attributes('href')).toBe(testUrl);
     expect(findImageLink().text()).toBe(defaultProps.filename);
+  });
+
+  it('shows a link with the url text, if url text is present', () => {
+    const testUrl = 'test_url';
+    const testUrlText = 'test_url_text';
+    mountComponent({ propsData: { url: testUrl, urlText: testUrlText } });
+
+    expect(findImageLink().attributes('href')).toBe(testUrl);
+    expect(findImageLink().text()).toBe(testUrlText);
+  });
+
+  it('shows the url text with no url, if no url is present', () => {
+    const testUrlText = 'test_url_text';
+    mountComponent({ propsData: { urlText: testUrlText } });
+
+    expect(findSpan().text()).toBe(testUrlText);
   });
 
   describe('expand and collapse', () => {

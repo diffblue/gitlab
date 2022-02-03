@@ -17,13 +17,19 @@ export const fetchMetricImages = async ({ state, commit }) => {
   }
 };
 
-export const uploadImage = async ({ state, commit }, { files, url }) => {
+export const uploadImage = async ({ state, commit }, { files, url, urlText }) => {
   commit(types.REQUEST_METRIC_UPLOAD);
 
   const { issueIid, projectId } = state;
 
   try {
-    const response = await uploadMetricImage({ file: files.item(0), id: projectId, issueIid, url });
+    const response = await uploadMetricImage({
+      file: files.item(0),
+      id: projectId,
+      issueIid,
+      url,
+      urlText,
+    });
     commit(types.RECEIVE_METRIC_UPLOAD_SUCCESS, response);
   } catch (error) {
     commit(types.RECEIVE_METRIC_UPLOAD_ERROR);

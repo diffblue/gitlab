@@ -732,12 +732,13 @@ describe('Api', () => {
     describe('uploadIssueMetricImage', () => {
       const file = 'mock file';
       const url = 'mock url';
+      const urlText = 'mock urlText';
 
       it('uploads an image', async () => {
         jest.spyOn(axios, 'post');
         mock.onPost(expectedUrl).replyOnce(httpStatus.OK, {});
 
-        await Api.uploadIssueMetricImage({ issueIid, id: projectId, file, url }).then(
+        await Api.uploadIssueMetricImage({ issueIid, id: projectId, file, url, urlText }).then(
           ({ data }) => {
             expect(data).toEqual({});
             expect(axios.post.mock.calls[0][2]).toEqual({

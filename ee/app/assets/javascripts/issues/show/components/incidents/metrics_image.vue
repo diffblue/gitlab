@@ -37,6 +37,11 @@ export default {
       required: false,
       default: null,
     },
+    urlText: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   data() {
     return {
@@ -126,9 +131,9 @@ export default {
             <gl-icon class="gl-mr-2" :name="arrowIconName" />
           </gl-button>
           <gl-link v-if="url" :href="url">
-            {{ filename }}
+            {{ urlText != null ? urlText : filename }}
           </gl-link>
-          <span v-else>{{ filename }}</span>
+          <span v-else>{{ urlText != null ? urlText : filename }}</span>
           <gl-button
             v-if="canUpdate"
             class="gl-ml-auto"

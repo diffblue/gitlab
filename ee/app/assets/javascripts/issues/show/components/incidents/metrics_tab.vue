@@ -22,6 +22,7 @@ export default {
       currentFiles: [],
       modalVisible: false,
       modalUrl: '',
+      modalUrlText: '',
     };
   },
   store: createStore(),
@@ -48,6 +49,7 @@ export default {
     clearInputs() {
       this.modalVisible = false;
       this.modalUrl = '';
+      this.modalUrlText = '';
       this.currentFile = false;
     },
     openMetricDialog(files) {
@@ -56,7 +58,11 @@ export default {
     },
     async onUpload() {
       try {
-        await this.uploadImage({ files: this.currentFiles, url: this.modalUrl });
+        await this.uploadImage({
+          files: this.currentFiles,
+          url: this.modalUrl,
+          urlText: this.modalUrlText,
+        });
         // Error case handled within action
       } finally {
         this.clearInputs();
@@ -67,9 +73,7 @@ export default {
     modalUpload: __('Upload'),
     modalCancel: __('Cancel'),
     modalTitle: s__('Incidents|Add a URL'),
-    modalDescription: s__(
-      'Incidents|You can optionally add a URL to link users to the original graph.',
-    ),
+    modalDescription: s__('Incidents|Add a link to the uploaded image.'),
     dropDescription: s__(
       'Incidents|Drop or %{linkStart}upload%{linkEnd} a metric screenshot to attach it to the incident',
     ),
@@ -93,8 +97,12 @@ export default {
       @primary.prevent="onUpload"
     >
       <p>{{ $options.i18n.modalDescription }}</p>
+      <gl-form-group :label="__('Text (optional)')" label-for="upload-text-input">
+        <gl-form-input id="upload-text-input" v-model="modalUrlText" />
+      </gl-form-group>
+
       <gl-form-group
-        :label="__('URL')"
+        :label="__('Link (optional)')"
         label-for="upload-url-input"
         :description="s__('Incidents|Must start with http or https')"
       >

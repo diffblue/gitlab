@@ -18957,6 +18957,9 @@ msgstr ""
 msgid "Incidents|Add a URL"
 msgstr ""
 
+msgid "Incidents|Add a link to the uploaded image."
+msgstr ""
+
 msgid "Incidents|Drop or %{linkStart}upload%{linkEnd} a metric screenshot to attach it to the incident"
 msgstr ""
 
@@ -18970,9 +18973,6 @@ msgid "Incidents|There was an issue loading metric images."
 msgstr ""
 
 msgid "Incidents|There was an issue uploading your image."
-msgstr ""
-
-msgid "Incidents|You can optionally add a URL to link users to the original graph."
 msgstr ""
 
 msgid "Incident|Alert details"
@@ -21481,6 +21481,9 @@ msgid "Line changes"
 msgstr ""
 
 msgid "Link"
+msgstr ""
+
+msgid "Link (optional)"
 msgstr ""
 
 msgid "Link Prometheus monitoring to GitLab."
@@ -35617,6 +35620,9 @@ msgid "TestReports|You can configure your job to use unit test reports, and GitL
 msgstr ""
 
 msgid "Tests"
+msgstr ""
+
+msgid "Text (optional)"
 msgstr ""
 
 msgid "Text added to the body of all email messages. %{character_limit} character limit"

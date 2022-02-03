@@ -328,7 +328,7 @@ export default {
     return axios.get(metricImagesUrl);
   },
 
-  uploadIssueMetricImage({ issueIid, id, file, url = null }) {
+  uploadIssueMetricImage({ issueIid, id, file, url = null, urlText = null }) {
     const options = { headers: { ...ContentTypeMultipartFormData } };
     const metricImagesUrl = Api.buildUrl(this.issueMetricImagesPath)
       .replace(':id', encodeURIComponent(id))
@@ -339,6 +339,9 @@ export default {
     formData.append('file', file);
     if (url) {
       formData.append('url', url);
+    }
+    if (urlText) {
+      formData.append('url_text', urlText);
     }
 
     return axios.post(metricImagesUrl, formData, options);
