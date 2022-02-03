@@ -14,8 +14,8 @@ module API
         experiments = []
 
         experiment(:null_hypothesis, canary: true, user: current_user) do |e|
-          e.use { bad_request! 'experimentation may not be working right now' }
-          e.try do
+          e.control { bad_request! 'experimentation may not be working right now' }
+          e.candidate do
             experiments = Feature::Definition.definitions.values.select { |d| d.attributes[:type] == 'experiment' }
           end
         end
