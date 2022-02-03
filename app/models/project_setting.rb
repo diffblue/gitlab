@@ -15,6 +15,10 @@ class ProjectSetting < ApplicationRecord
   validates :merge_commit_template, length: { maximum: 500 }
   validates :squash_commit_template, length: { maximum: 500 }
 
+  default_value_for(:legacy_open_source_license_available) do
+    Feature.enabled?(:legacy_open_source_license_available, default_enabled: :yaml, type: :ops)
+  end
+
   def squash_enabled_by_default?
     %w[always default_on].include?(squash_option)
   end

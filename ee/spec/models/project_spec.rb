@@ -1256,6 +1256,35 @@ RSpec.describe Project do
         subject
       end
     end
+
+    context 'legacy open-source license' do
+      let(:feature) { :sast }
+
+      before do
+        stub_application_setting(check_namespace_plan: true)
+        stub_licensed_features(feature => true)
+      end
+
+      context 'public projects' do
+        let(:project) { build(:project, :public, namespace: namespace) }
+
+        context 'when legacy_open_source_license_available feature flag is enabled' do
+          it 'allows ultimate features' do
+            is_expected.to eq(true)
+          end
+        end
+
+        context 'when legacy_open_source_license_available feature flag is disabled' do
+          before do
+            stub_feature_flags(legacy_open_source_license_available: false)
+          end
+
+          it 'prevent ultimate features' do
+            is_expected.to eq(false)
+          end
+        end
+      end
+    end
   end
 
   describe '#fetch_mirror' do
