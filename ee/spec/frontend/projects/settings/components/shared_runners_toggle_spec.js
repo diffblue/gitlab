@@ -1,4 +1,4 @@
-import { GlToggle } from '@gitlab/ui';
+import { GlToggle, GlAlert } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import MockAxiosAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
@@ -7,6 +7,7 @@ import { TEST_HOST } from 'helpers/test_constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
 import SharedRunnersToggleComponent from '~/projects/settings/components/shared_runners_toggle.vue';
+import { CC_VALIDATION_REQUIRED_ERROR } from '~/projects/settings/constants';
 
 const TEST_UPDATE_PATH = '/test/update_shared_runners';
 
@@ -29,6 +30,7 @@ describe('projects/settings/components/shared_runners', () => {
 
   const findSharedRunnersToggle = () => wrapper.findComponent(GlToggle);
   const findCcValidationRequiredAlert = () => wrapper.findComponent(CcValidationRequiredAlert);
+  const findGenericAlert = () => wrapper.findComponent(GlAlert);
   const getToggleValue = () => findSharedRunnersToggle().props('value');
   const isToggleDisabled = () => findSharedRunnersToggle().props('disabled');
 
@@ -54,36 +56,39 @@ describe('projects/settings/components/shared_runners', () => {
       });
     });
 
-    it('toggle should not be visible', () => {
-      expect(findSharedRunnersToggle().exists()).toBe(false);
+    it('should show the toggle button', () => {
+      expect(findSharedRunnersToggle().exists()).toBe(true);
+      expect(getToggleValue()).toBe(false);
+      expect(isToggleDisabled()).toBe(false);
     });
 
-    it('credit card validation component should exist', () => {
-      expect(findCcValidationRequiredAlert().exists()).toBe(true);
-      expect(findCcValidationRequiredAlert().text()).toBe(
-        SharedRunnersToggleComponent.i18n.REQUIRES_VALIDATION_TEXT,
-      );
-    });
+    describe('when credit card is unvalidated', () => {
+      beforeEach(() => {
+        mockAxios.onPost(TEST_UPDATE_PATH).reply(401, { error: CC_VALIDATION_REQUIRED_ERROR });
+      });
 
-    it('credit card alert should be hidden after dismiss', async () => {
-      findCcValidationRequiredAlert().vm.$emit('dismiss');
+      it('should show credit card validation error on toggle', async () => {
+        findSharedRunnersToggle().vm.$emit('change', true);
+        await waitForPromises();
 
-      await nextTick();
+        expect(findCcValidationRequiredAlert().exists()).toBe(true);
+        expect(findCcValidationRequiredAlert().text()).toBe(
+          SharedRunnersToggleComponent.i18n.REQUIRES_VALIDATION_TEXT,
+        );
+      });
 
-      expect(findCcValidationRequiredAlert().exists()).toBe(false);
+      it('should hide credit card alert on dismiss', async () => {
+        findSharedRunnersToggle().vm.$emit('change', true);
+        await waitForPromises();
+
+        findCcValidationRequiredAlert().vm.$emit('dismiss');
+        await nextTick();
+
+        expect(findCcValidationRequiredAlert().exists()).toBe(false);
+      });
     });
 
     describe('when credit card is validated', () => {
-      beforeEach(() => {
-        findCcValidationRequiredAlert().vm.$emit('verifiedCreditCard');
-      });
-
-      it('should show the toggle button', () => {
-        expect(findSharedRunnersToggle().exists()).toBe(true);
-        expect(getToggleValue()).toBe(false);
-        expect(isToggleDisabled()).toBe(false);
-      });
-
       it('should not show credit card alert after toggling on and off', async () => {
         findSharedRunnersToggle().vm.$emit('change', true);
         await waitForPromises();
@@ -98,6 +103,23 @@ describe('projects/settings/components/shared_runners', () => {
         expect(mockAxios.history.post[1].data).toBeUndefined();
         expect(mockAxios.history.post).toHaveLength(2);
         expect(findCcValidationRequiredAlert().exists()).toBe(false);
+      });
+    });
+
+    describe('when toggling fails for some other reason', () => {
+      beforeEach(() => {
+        mockAxios.onPost(TEST_UPDATE_PATH).reply(500);
+      });
+
+      it('should show a generic alert instead', async () => {
+        findSharedRunnersToggle().vm.$emit('change', true);
+        await waitForPromises();
+
+        expect(findCcValidationRequiredAlert().exists()).toBe(false);
+        expect(findGenericAlert().exists()).toBe(true);
+        expect(findGenericAlert().text()).toBe(
+          'An error occurred while updating the configuration.',
+        );
       });
     });
   });
