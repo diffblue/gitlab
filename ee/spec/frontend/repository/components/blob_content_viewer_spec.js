@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import VueApollo from 'vue-apollo';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import BlobButtonGroup from '~/repository/components/blob_button_group.vue';
@@ -19,6 +21,7 @@ import {
 jest.mock('~/lib/utils/common_utils');
 Vue.use(VueRouter);
 const router = new VueRouter();
+const mockAxios = new MockAdapter(axios);
 
 let wrapper;
 let mockResolver;
@@ -79,6 +82,7 @@ describe('Blob content viewer component', () => {
 
   afterEach(() => {
     wrapper.destroy();
+    mockAxios.reset();
   });
 
   describe('BlobHeader action slot', () => {
