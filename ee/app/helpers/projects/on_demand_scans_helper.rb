@@ -6,8 +6,8 @@ module Projects::OnDemandScansHelper
     pipelines_counter = Gitlab::PipelineScopeCounts.new(current_user, project, {
       source: "ondemand_dast_scan"
     })
-    saved_scans = ::Dast::ProfilesFinder.new({ project_id: project.id }).execute
-    scheduled_scans_count = saved_scans.count { |scan| scan.dast_profile_schedule }
+    scheduled_scans_count = ::Dast::ProfilesFinder.new({ project_id: project.id, has_dast_profile_schedule: true }).execute.count
+    saved_scans_count = ::Dast::ProfilesFinder.new({ project_id: project.id }).execute.count
 
     common_data(project).merge({
       'project-on-demand-scan-counts-etag' => graphql_etag_project_on_demand_scan_counts_path(project),
@@ -16,7 +16,7 @@ module Projects::OnDemandScansHelper
         running: pipelines_counter.running,
         finished: pipelines_counter.finished,
         scheduled: scheduled_scans_count,
-        saved: saved_scans.count
+        saved: saved_scans_count
       }.to_json,
       'new-dast-scan-path' => new_project_on_demand_scan_path(project),
       'empty-state-svg-path' => image_path('illustrations/empty-state/ondemand-scan-empty.svg'),
