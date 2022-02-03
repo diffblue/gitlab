@@ -27,7 +27,9 @@ module EE
         end
 
         def insert_geo_event_records(artifacts)
-          ::Geo::JobArtifactDeletedEventStore.bulk_create(artifacts)
+          ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.allow_cross_database_modification_within_transaction(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/351849') do
+            ::Geo::JobArtifactDeletedEventStore.bulk_create(artifacts)
+          end
         end
       end
     end
