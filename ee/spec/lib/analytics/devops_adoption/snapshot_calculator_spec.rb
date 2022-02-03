@@ -61,7 +61,7 @@ RSpec.describe Analytics::DevopsAdoption::SnapshotCalculator do
     it { is_expected.to eq false }
   end
 
-  shared_examples 'runner_configured' do
+  describe 'runner_configured' do
     subject { data[:runner_configured] }
 
     let!(:inactive_runner) { create(:ci_runner, :project, active: false) }
@@ -75,16 +75,6 @@ RSpec.describe Analytics::DevopsAdoption::SnapshotCalculator do
     end
 
     it { is_expected.to eq false }
-  end
-
-  it_behaves_like 'runner_configured'
-
-  context 'when the FF ci_find_runners_by_ci_mirrors is disabled' do
-    before do
-      stub_feature_flags(ci_find_runners_by_ci_mirrors: false)
-    end
-
-    it_behaves_like 'runner_configured'
   end
 
   describe 'pipeline_succeeded' do
