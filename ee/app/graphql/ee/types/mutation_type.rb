@@ -80,6 +80,7 @@ module EE
         mount_mutation ::Mutations::IncidentManagement::EscalationPolicy::Update
         mount_mutation ::Mutations::IncidentManagement::EscalationPolicy::Destroy
         mount_mutation ::Mutations::IncidentManagement::TimelineEvent::Update
+        mount_mutation ::Mutations::IncidentManagement::TimelineEvent::Create
         mount_mutation ::Mutations::IncidentManagement::TimelineEvent::Destroy
         mount_mutation ::Mutations::AppSec::Fuzzing::API::CiConfiguration::Create
         mount_mutation ::Mutations::AppSec::Fuzzing::Coverage::Corpus::Create, feature_flag: :corpus_management
