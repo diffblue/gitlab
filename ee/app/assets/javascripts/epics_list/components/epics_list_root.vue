@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlIcon } from '@gitlab/ui';
+import { GlButton, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import axios from '~/lib/utils/axios_utils';
 
 import EpicsFilteredSearchMixin from 'ee/roadmap/mixins/filtered_search_mixin';
@@ -29,6 +29,9 @@ export default {
     IssuableList,
     EpicsListEmptyState,
     EpicsListBulkEditSidebar,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   mixins: [EpicsFilteredSearchMixin],
   inject: [
@@ -298,6 +301,28 @@ export default {
     <template #timeframe="{ issuable }">
       <gl-icon name="calendar" />
       {{ epicTimeframe(issuable) }}
+    </template>
+    <template #statistics="{ issuable = {} }">
+      <li
+        v-if="issuable.upvotes"
+        v-gl-tooltip
+        class="issuable-upvotes gl-display-none gl-sm-display-block"
+        :title="__('Upvotes')"
+        data-testid="issuable-upvotes"
+      >
+        <gl-icon name="thumb-up" />
+        {{ issuable.upvotes }}
+      </li>
+      <li
+        v-if="issuable.downvotes"
+        v-gl-tooltip
+        class="issuable-downvotes gl-display-none gl-sm-display-block"
+        :title="__('Downvotes')"
+        data-testid="issuable-downvotes"
+      >
+        <gl-icon name="thumb-down" />
+        {{ issuable.downvotes }}
+      </li>
     </template>
     <template #empty-state>
       <epics-list-empty-state :current-state="currentState" :epics-count="epicsCount" />
