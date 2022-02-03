@@ -58,7 +58,7 @@ module EE
     private
 
     def use_customers_dot_for_minutes_path?(namespace)
-      namespace.user_namespace? || ::Feature.disabled?(:new_route_ci_minutes_purchase, namespace, default_enabled: :yaml)
+      namespace.user_namespace?
     end
 
     def use_customers_dot_for_storage_path?(namespace)
