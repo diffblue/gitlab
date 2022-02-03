@@ -56,25 +56,29 @@ describe('Protected Branches Selector', () => {
       expect(findDropdown().classes('is-invalid')).toBe(true);
     });
 
-    it('sets the initially selected item', async () => {
-      createComponent({
-        selectedBranches: [
-          {
-            id: 1,
-            name: 'main',
-          },
-        ],
-      });
-      await waitForPromises();
+    it.each`
+      selectedBranches             | selectedBranchesNames | branchName
+      ${[]}                        | ${['development']}    | ${'development'}
+      ${[{ id: 1, name: 'main' }]} | ${[]}                 | ${'main'}
+      ${[{ id: 1, name: 'main' }]} | ${['development']}    | ${'main'}
+    `(
+      'with selectedBranches and selectedBranchesNames set to $selectedBranches and $selectedBranchesNames the item checked is: $branchName',
+      async ({ selectedBranches, selectedBranchesNames, branchName }) => {
+        createComponent({
+          selectedBranches,
+          selectedBranchesNames,
+        });
+        await waitForPromises();
 
-      expect(findDropdown().props('text')).toBe('main');
-      expect(
-        findDropdownItems()
-          .filter((item) => item.text() === 'main')
-          .at(0)
-          .props('isChecked'),
-      ).toBe(true);
-    });
+        expect(findDropdown().props('text')).toBe(branchName);
+        expect(
+          findDropdownItems()
+            .filter((item) => item.text() === branchName)
+            .at(0)
+            .props('isChecked'),
+        ).toBe(true);
+      },
+    );
 
     it('displays all the protected branches and all branches', async () => {
       createComponent();
