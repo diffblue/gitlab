@@ -41,8 +41,10 @@ RSpec.describe IncidentManagement::TimelineEvent do
   end
 
   describe '#cache_markdown_field' do
-    let(:note) { '<p>some html</p>' }
-    let(:expected_note_html) { '<p dir="auto">some html</p>' }
+    let(:note) { 'note **bold** _italic_ `code` ![image](/path/img.png) :+1:👍' }
+    let(:expected_note_html) do
+      '<p>note <strong>bold</strong> <em>italic</em> <code>code</code> <a class="with-attachment-icon" href="/path/img.png" target="_blank">image</a> 👍👍</p>'
+    end
 
     before do
       allow(Banzai::Renderer).to receive(:cacheless_render_field).and_call_original
