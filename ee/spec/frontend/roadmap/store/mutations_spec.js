@@ -1,6 +1,7 @@
 import * as types from 'ee/roadmap/store/mutation_types';
 import mutations from 'ee/roadmap/store/mutations';
 
+import { PROGRESS_COUNT } from 'ee/roadmap/constants';
 import defaultState from 'ee/roadmap/store/state';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
@@ -345,7 +346,7 @@ describe('Roadmap Store Mutations', () => {
 
   describe('SET_PROGRESS_TRACKING', () => {
     it('Should set `progressTracking` to the state', () => {
-      const progressTracking = 'COUNT';
+      const progressTracking = PROGRESS_COUNT;
       setEpicMockData(state);
 
       mutations[types.SET_PROGRESS_TRACKING](state, progressTracking);

@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import { shallowMount } from '@vue/test-utils';
 import EpicItemTimelineComponent from 'ee/roadmap/components/epic_item_timeline.vue';
-import { DATE_RANGES, PRESET_TYPES, PROGRESS_TRACKING_OPTIONS } from 'ee/roadmap/constants';
+import { DATE_RANGES, PRESET_TYPES, PROGRESS_WEIGHT } from 'ee/roadmap/constants';
 import createStore from 'ee/roadmap/store';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
@@ -28,7 +28,7 @@ describe('WeeksPresetMixin', () => {
     const store = createStore();
 
     store.dispatch('setInitialData', {
-      progressTracking: PROGRESS_TRACKING_OPTIONS.WEIGHT,
+      progressTracking: PROGRESS_WEIGHT,
     });
 
     return shallowMount(EpicItemTimelineComponent, {

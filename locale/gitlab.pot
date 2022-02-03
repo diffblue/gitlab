@@ -510,7 +510,10 @@ msgstr[1] ""
 msgid "%{completedWeight} of %{totalWeight} weight completed"
 msgstr ""
 
-msgid "%{completed} of %{total} %{trackingOption}"
+msgid "%{completed} of %{total} issues closed"
+msgstr ""
+
+msgid "%{completed} of %{total} weight completed"
 msgstr ""
 
 msgid "%{cores} cores"
@@ -861,7 +864,10 @@ msgstr ""
 msgid "%{openedIssues} open, %{closedIssues} closed"
 msgstr ""
 
-msgid "%{percentage}%% %{trackingOption}"
+msgid "%{percentage}%% issues closed"
+msgstr ""
+
+msgid "%{percentage}%% weight completed"
 msgstr ""
 
 msgid "%{percent}%% complete"
@@ -1290,7 +1296,10 @@ msgid_plural "- Users"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "- of - %{trackingOption}"
+msgid "- of - issues closed"
+msgstr ""
+
+msgid "- of - weight completed"
 msgstr ""
 
 msgid "- show less"
@@ -42845,9 +42854,6 @@ msgstr ""
 msgid "issues at risk"
 msgstr ""
 
-msgid "issues closed"
-msgstr ""
-
 msgid "issues need attention"
 msgstr ""
 
@@ -43800,9 +43806,6 @@ msgid "vulnerability|dismissed"
 msgstr ""
 
 msgid "was scheduled to merge after pipeline succeeds by"
-msgstr ""
-
-msgid "weight completed"
 msgstr ""
 
 msgid "wiki page"

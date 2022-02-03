@@ -1,4 +1,4 @@
-import { s__ } from '~/locale';
+import { s__, __ } from '~/locale';
 
 /*
   Update the counterparts in roadmap.scss when making changes.
@@ -62,7 +62,20 @@ export const EPIC_LEVEL_MARGIN = {
 
 export const ROADMAP_PAGE_SIZE = 50;
 
-export const PROGRESS_TRACKING_OPTIONS = {
-  WEIGHT: 'WEIGHT',
-  COUNT: 'COUNT',
-};
+export const PROGRESS_WEIGHT = 'WEIGHT';
+export const PROGRESS_COUNT = 'COUNT';
+
+export const PROGRESS_TRACKING_OPTIONS = [
+  { text: __('Use issue weight'), value: PROGRESS_WEIGHT },
+  { text: __('Use issue count'), value: PROGRESS_COUNT },
+];
+
+export const UNSUPPORTED_ROADMAP_PARAMS = [
+  'scope',
+  'utf8',
+  'state',
+  'sort',
+  'timeframe_range_type',
+  'layout',
+  'progress',
+];

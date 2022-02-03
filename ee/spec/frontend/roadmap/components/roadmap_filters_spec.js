@@ -3,12 +3,7 @@ import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 import RoadmapFilters from 'ee/roadmap/components/roadmap_filters.vue';
-import {
-  PRESET_TYPES,
-  EPICS_STATES,
-  DATE_RANGES,
-  PROGRESS_TRACKING_OPTIONS,
-} from 'ee/roadmap/constants';
+import { PRESET_TYPES, EPICS_STATES, DATE_RANGES, PROGRESS_WEIGHT } from 'ee/roadmap/constants';
 import createStore from 'ee/roadmap/store';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 import {
@@ -60,7 +55,7 @@ const createComponent = ({
     sortedBy,
     filterParams,
     timeframe,
-    progressTracking: PROGRESS_TRACKING_OPTIONS.WEIGHT,
+    progressTracking: PROGRESS_WEIGHT,
   });
 
   return shallowMountExtended(RoadmapFilters, {

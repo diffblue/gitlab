@@ -12,12 +12,6 @@ export default {
   },
   computed: {
     ...mapState(['progressTracking']),
-    availableOptions() {
-      const weight = { text: __('Use issue weight'), value: PROGRESS_TRACKING_OPTIONS.WEIGHT };
-      const count = { text: __('Use issue count'), value: PROGRESS_TRACKING_OPTIONS.COUNT };
-
-      return [weight, count];
-    },
   },
   methods: {
     ...mapActions(['setProgressTracking']),
@@ -30,6 +24,7 @@ export default {
   i18n: {
     header: __('Progress tracking'),
   },
+  PROGRESS_TRACKING_OPTIONS,
 };
 </script>
 
@@ -43,7 +38,7 @@ export default {
       <gl-form-radio-group
         :checked="progressTracking"
         stacked
-        :options="availableOptions"
+        :options="$options.PROGRESS_TRACKING_OPTIONS"
         @change="handleProgressTrackingChange"
       />
     </gl-form-group>

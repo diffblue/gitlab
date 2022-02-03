@@ -3,7 +3,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import { shallowMount } from '@vue/test-utils';
 import EpicItemTimeline from 'ee/roadmap/components/epic_item_timeline.vue';
-import { DATE_RANGES, PRESET_TYPES, PROGRESS_TRACKING_OPTIONS } from 'ee/roadmap/constants';
+import { DATE_RANGES, PRESET_TYPES, PROGRESS_COUNT, PROGRESS_WEIGHT } from 'ee/roadmap/constants';
 import createStore from 'ee/roadmap/store';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 import { mockTimeframeInitialDate, mockFormattedEpic } from 'ee_jest/roadmap/mock_data';
@@ -22,7 +22,7 @@ const createComponent = ({
   timeframe = mockTimeframeMonths,
   timeframeItem = mockTimeframeMonths[0],
   timeframeString = '',
-  progressTracking = PROGRESS_TRACKING_OPTIONS.WEIGHT,
+  progressTracking = PROGRESS_WEIGHT,
 } = {}) => {
   const store = createStore();
 
@@ -76,9 +76,9 @@ describe('EpicItemTimelineComponent', () => {
     });
 
     it.each`
-      progressTracking | icon
-      ${'WEIGHT'}      | ${'weight'}
-      ${'COUNT'}       | ${'issue-closed'}
+      progressTracking   | icon
+      ${PROGRESS_WEIGHT} | ${'weight'}
+      ${PROGRESS_COUNT}  | ${'issue-closed'}
     `(
       'displays icon $icon when progressTracking equals $progressTracking',
       ({ progressTracking, icon }) => {
@@ -97,9 +97,9 @@ describe('EpicItemTimelineComponent', () => {
     });
 
     it.each`
-      progressTracking | option      | text
-      ${'WEIGHT'}      | ${'weight'} | ${'3 of 5 weight completed'}
-      ${'COUNT'}       | ${'issues'} | ${'3 of 5 issues closed'}
+      progressTracking   | option      | text
+      ${PROGRESS_WEIGHT} | ${'weight'} | ${'3 of 5 weight completed'}
+      ${PROGRESS_COUNT}  | ${'issues'} | ${'3 of 5 issues closed'}
     `(
       'shows $option completed when progressTracking equals $progressTracking',
       ({ progressTracking, text }) => {
@@ -110,9 +110,9 @@ describe('EpicItemTimelineComponent', () => {
     );
 
     it.each`
-      progressTracking | option      | text
-      ${'WEIGHT'}      | ${'weight'} | ${'- of - weight completed'}
-      ${'COUNT'}       | ${'issues'} | ${'- of - issues closed'}
+      progressTracking   | option      | text
+      ${PROGRESS_WEIGHT} | ${'weight'} | ${'- of - weight completed'}
+      ${PROGRESS_COUNT}  | ${'issues'} | ${'- of - issues closed'}
     `(
       'shows $option completed with no numbers when there is no $option information and progressTracking equals $progressTracking',
       ({ progressTracking, text }) => {

@@ -8,7 +8,7 @@ import {
   PRESET_TYPES,
   SMALL_TIMELINE_BAR,
   TIMELINE_CELL_MIN_WIDTH,
-  PROGRESS_TRACKING_OPTIONS,
+  PROGRESS_COUNT,
 } from '../constants';
 import CommonMixin from '../mixins/common_mixin';
 
@@ -79,7 +79,7 @@ export default {
       return this.isTimelineBarSmall ? '...' : this.epic.title;
     },
     progressTrackingIsCount() {
-      return this.progressTracking === PROGRESS_TRACKING_OPTIONS.COUNT;
+      return this.progressTracking === PROGRESS_COUNT;
     },
     epicDescendants() {
       return this.progressTrackingIsCount
@@ -99,25 +99,25 @@ export default {
         : 0;
     },
     epicPercentageText() {
-      return sprintf(__(`%{percentage}%% %{trackingOption}`), {
-        percentage: this.epicPercentage,
-        trackingOption: this.trackingOptionText,
-      });
+      const str = this.progressTrackingIsCount
+        ? __('%{percentage}%% issues closed')
+        : __('%{percentage}%% weight completed');
+      return sprintf(str, { percentage: this.epicPercentage });
     },
+
     popoverText() {
       if (this.epicDescendants) {
-        return sprintf(__('%{completed} of %{total} %{trackingOption}'), {
+        const str = this.progressTrackingIsCount
+          ? __('%{completed} of %{total} issues closed')
+          : __('%{completed} of %{total} weight completed');
+        return sprintf(str, {
           completed: this.epicDescendants.closedIssues,
           total: this.epicTotal,
-          trackingOption: this.trackingOptionText,
         });
       }
-      return sprintf(__('- of - %{trackingOption}'), {
-        trackingOption: this.trackingOptionText,
-      });
-    },
-    trackingOptionText() {
-      return this.progressTrackingIsCount ? __('issues closed') : __('weight completed');
+      return this.progressTrackingIsCount
+        ? __('- of - issues closed')
+        : __('- of - weight completed');
     },
     progressIcon() {
       return this.progressTrackingIsCount ? 'issue-closed' : 'weight';

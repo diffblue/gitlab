@@ -1,24 +1,18 @@
 import { GlFormGroup, GlFormRadioGroup } from '@gitlab/ui';
 
-import { __ } from '~/locale';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createStore from 'ee/roadmap/store';
 import RoadmapProgressTracking from 'ee/roadmap/components/roadmap_progress_tracking.vue';
-import { PROGRESS_TRACKING_OPTIONS } from 'ee/roadmap/constants';
+import { PROGRESS_WEIGHT, PROGRESS_TRACKING_OPTIONS } from 'ee/roadmap/constants';
 
 describe('RoadmapProgressTracking', () => {
   let wrapper;
-
-  const availableOptions = [
-    { text: __('Use issue weight'), value: PROGRESS_TRACKING_OPTIONS.WEIGHT },
-    { text: __('Use issue count'), value: PROGRESS_TRACKING_OPTIONS.COUNT },
-  ];
 
   const createComponent = () => {
     const store = createStore();
 
     store.dispatch('setInitialData', {
-      progressTracking: PROGRESS_TRACKING_OPTIONS.WEIGHT,
+      progressTracking: PROGRESS_WEIGHT,
     });
 
     wrapper = shallowMountExtended(RoadmapProgressTracking, {
@@ -45,7 +39,7 @@ describe('RoadmapProgressTracking', () => {
 
     it('renders radio form group', () => {
       expect(findFormRadioGroup().exists()).toBe(true);
-      expect(findFormRadioGroup().props('options')).toEqual(availableOptions);
+      expect(findFormRadioGroup().props('options')).toEqual(PROGRESS_TRACKING_OPTIONS);
     });
   });
 });
