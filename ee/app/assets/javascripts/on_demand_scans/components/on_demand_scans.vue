@@ -7,13 +7,7 @@ import {
   toggleQueryPollingByVisibility,
 } from '~/pipelines/components/graph/utils';
 import onDemandScanCounts from '../graphql/on_demand_scan_counts.query.graphql';
-import {
-  HELP_PAGE_PATH,
-  PIPELINE_TABS_KEYS,
-  PIPELINES_COUNT_POLL_INTERVAL,
-  PIPELINES_SCOPE_RUNNING,
-  PIPELINES_SCOPE_FINISHED,
-} from '../constants';
+import { HELP_PAGE_PATH, PIPELINE_TABS_KEYS, PIPELINES_COUNT_POLL_INTERVAL } from '../constants';
 import AllTab from './tabs/all.vue';
 import RunningTab from './tabs/running.vue';
 import FinishedTab from './tabs/finished.vue';
@@ -42,8 +36,6 @@ export default {
       variables() {
         return {
           fullPath: this.projectPath,
-          runningScope: PIPELINES_SCOPE_RUNNING,
-          finishedScope: PIPELINES_SCOPE_FINISHED,
         };
       },
       context() {
@@ -52,7 +44,7 @@ export default {
       update(data) {
         return Object.fromEntries(
           PIPELINE_TABS_KEYS.map((key) => {
-            const { count } = data[key].pipelines;
+            const count = data?.project?.pipelineCounts?.[key] ?? data[key]?.pipelines?.count ?? 0;
             return [key, count];
           }),
         );

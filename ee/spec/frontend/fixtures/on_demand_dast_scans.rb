@@ -39,9 +39,9 @@ RSpec.describe 'On-demand DAST scans (GraphQL fixtures)' do
         })
 
         expect_graphql_errors_to_be_empty
-        expect(graphql_data_at(:all, :pipelines, :count)).to be(4)
-        expect(graphql_data_at(:running, :pipelines, :count)).to be(2)
-        expect(graphql_data_at(:finished, :pipelines, :count)).to be(2)
+        expect(graphql_data_at(:project, :pipelineCounts, :all)).to be(4)
+        expect(graphql_data_at(:project, :pipelineCounts, :running)).to be(2)
+        expect(graphql_data_at(:project, :pipelineCounts, :finished)).to be(2)
       end
     end
 
