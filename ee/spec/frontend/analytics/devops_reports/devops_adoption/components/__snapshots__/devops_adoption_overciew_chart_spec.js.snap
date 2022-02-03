@@ -12,6 +12,7 @@ exports[`DevopsAdoptionOverviewChart chart tooltip displays the tooltip informat
     group-by="January"
     option="[object Object]"
     presentation="tiled"
+    responsive="true"
     x-axis-title=""
     x-axis-type="category"
     y-axis-title="Total number of features adopted"
