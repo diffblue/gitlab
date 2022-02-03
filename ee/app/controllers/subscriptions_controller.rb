@@ -48,8 +48,6 @@ class SubscriptionsController < ApplicationController
     @active_subscription = result[:active_subscription]
 
     return render_404 if @group.nil?
-
-    render_404 unless Feature.enabled?(:new_route_ci_minutes_purchase, @group, default_enabled: :yaml)
   end
 
   def buy_storage
