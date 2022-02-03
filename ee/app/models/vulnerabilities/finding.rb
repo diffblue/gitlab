@@ -291,7 +291,7 @@ module Vulnerabilities
     end
 
     def evidence
-      evidence_data = finding_evidence.present? ? finding_evidence.data : metadata.dig('evidence')
+      evidence_data = finding_evidence.present? && Feature.enabled?(:vulnerability_finding_replace_metadata) ? finding_evidence.data : metadata.dig('evidence')
 
       {
         summary: evidence_data&.dig('summary'),
