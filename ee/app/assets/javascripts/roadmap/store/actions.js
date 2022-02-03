@@ -319,6 +319,9 @@ export const setBufferSize = ({ commit }, bufferSize) => commit(types.SET_BUFFER
 
 export const setEpicsState = ({ commit }, epicsState) => commit(types.SET_EPICS_STATE, epicsState);
 
+export const setDaterange = ({ commit }, { timeframeRangeType, presetType }) =>
+  commit(types.SET_DATERANGE, { timeframeRangeType, presetType });
+
 export const setFilterParams = ({ commit }, filterParams) =>
   commit(types.SET_FILTER_PARAMS, filterParams);
 

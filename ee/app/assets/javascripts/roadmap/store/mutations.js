@@ -1,5 +1,6 @@
 import Vue from 'vue';
 
+import { getTimeframeForRangeType } from '../utils/roadmap_utils';
 import * as types from './mutation_types';
 
 const resetEpics = (state) => {
@@ -93,6 +94,8 @@ export default {
   },
   [types.REQUEST_MILESTONES](state) {
     state.milestonesFetchInProgress = true;
+    state.milestones = [];
+    state.milestoneIds = [];
   },
   [types.RECEIVE_MILESTONES_SUCCESS](state, milestones) {
     state.milestonesFetchInProgress = false;
@@ -119,6 +122,16 @@ export default {
 
   [types.SET_EPICS_STATE](state, epicsState) {
     state.epicsState = epicsState;
+    resetEpics(state);
+  },
+
+  [types.SET_DATERANGE](state, { timeframeRangeType, presetType }) {
+    state.timeframeRangeType = timeframeRangeType;
+    state.presetType = presetType;
+    state.timeframe = getTimeframeForRangeType({
+      timeframeRangeType,
+      presetType,
+    });
     resetEpics(state);
   },
 
