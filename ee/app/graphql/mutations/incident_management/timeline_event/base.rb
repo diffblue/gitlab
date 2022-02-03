@@ -34,8 +34,8 @@ module Mutations
           raise_resource_not_available_error! 'Timeline events are not supported for this project'
         end
 
-        def timeline_events_available?(timeline_event)
-          ::Gitlab::IncidentManagement.timeline_events_available?(timeline_event.project)
+        def timeline_events_available?(object)
+          ::Gitlab::IncidentManagement.timeline_events_available?(object.project)
         end
       end
     end
