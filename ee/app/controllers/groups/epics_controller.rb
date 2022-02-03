@@ -11,7 +11,6 @@ class Groups::EpicsController < Groups::ApplicationController
 
   before_action :check_epics_available!
   before_action :epic, except: [:index, :create, :new, :bulk_update]
-  before_action :set_issuables_index, only: :index
   before_action :authorize_update_issuable!, only: :update
   before_action :authorize_create_epic!, only: [:create, :new]
   before_action :verify_group_bulk_edit_enabled!, only: [:bulk_update]
@@ -33,12 +32,12 @@ class Groups::EpicsController < Groups::ApplicationController
   end
 
   def index
-    @epics = @issuables
-
     respond_to do |format|
       format.html
       format.json do
-        render json: serializer.represent(@epics)
+        set_issuables_index
+
+        render json: serializer.represent(@issuables)
       end
     end
   end
