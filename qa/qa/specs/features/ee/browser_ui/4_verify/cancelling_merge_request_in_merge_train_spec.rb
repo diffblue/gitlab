@@ -121,7 +121,7 @@ module QA
         end
       end
 
-      context 'when user cancels the merge request' do
+      context 'when user cancels the merge request', quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/340885', type: :flaky } do
         it 'does not create a TODO task', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347665' do
           # Manually removes merge request from the train
           Page::MergeRequest::Show.perform do |show|
