@@ -33,6 +33,7 @@ RSpec.describe Gitlab::ComplianceManagement::Violations::ApprovedByInsufficientU
         violations = merge_request.compliance_violations.where(reason: described_class::REASON)
 
         expect(violations.map(&:violating_user)).to contain_exactly(user)
+        expect(violations.map(&:severity_level)).to contain_exactly('high')
       end
 
       context 'when the merge requests merge user is within metrics' do
@@ -44,6 +45,7 @@ RSpec.describe Gitlab::ComplianceManagement::Violations::ApprovedByInsufficientU
           violations = merge_request.compliance_violations.where(reason: described_class::REASON)
 
           expect(violations.map(&:violating_user)).to contain_exactly(user)
+          expect(violations.map(&:severity_level)).to contain_exactly('high')
         end
       end
 

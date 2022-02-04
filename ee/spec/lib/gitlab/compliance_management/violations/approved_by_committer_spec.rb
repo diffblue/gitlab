@@ -38,6 +38,7 @@ RSpec.describe Gitlab::ComplianceManagement::Violations::ApprovedByCommitter do
         violations = merge_request.compliance_violations.where(reason: described_class::REASON)
 
         expect(violations.map(&:violating_user)).to contain_exactly(user, user2)
+        expect(violations.map(&:severity_level)).to contain_exactly('high', 'high')
       end
 
       context 'when called more than once with the same violations' do
@@ -54,6 +55,7 @@ RSpec.describe Gitlab::ComplianceManagement::Violations::ApprovedByCommitter do
           violations = merge_request.compliance_violations.where(reason: described_class::REASON)
 
           expect(violations.map(&:violating_user)).to contain_exactly(user, user2, user3)
+          expect(violations.map(&:severity_level)).to contain_exactly('high', 'high', 'high')
         end
       end
     end

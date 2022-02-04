@@ -14,6 +14,7 @@ RSpec.describe MergeRequests::ComplianceViolation, type: :model do
     it { is_expected.to validate_presence_of(:violating_user) }
     it { is_expected.to validate_presence_of(:merge_request) }
     it { is_expected.to validate_presence_of(:reason) }
+    it { is_expected.to validate_presence_of(:severity_level) }
 
     context "when a violation exists with the same reason and user for a merge request" do
       let_it_be(:user) { create(:user) }
@@ -35,15 +36,9 @@ RSpec.describe MergeRequests::ComplianceViolation, type: :model do
   end
 
   describe "Enums" do
-    it {
-      is_expected.to define_enum_for(:reason).with_values(
-        [
-          ::Gitlab::ComplianceManagement::Violations::ApprovedByMergeRequestAuthor::REASON,
-          ::Gitlab::ComplianceManagement::Violations::ApprovedByCommitter::REASON,
-          ::Gitlab::ComplianceManagement::Violations::ApprovedByInsufficientUsers::REASON
-        ]
-      )
-    }
+    it { is_expected.to define_enum_for(:reason).with_values(::Enums::MergeRequests::ComplianceViolation.reasons) }
+
+    it { is_expected.to define_enum_for(:severity_level).with_values(::Enums::MergeRequests::ComplianceViolation.severity_levels) }
   end
 
   describe '#approved_by_committer' do

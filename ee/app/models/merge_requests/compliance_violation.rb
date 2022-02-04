@@ -6,13 +6,8 @@ module MergeRequests
 
     self.table_name = 'merge_requests_compliance_violations'
 
-    # Reasons are defined by GitLab in our public documentation.
-    # https://docs.gitlab.com/ee/user/compliance/compliance_dashboard/#approval-status-and-separation-of-duties
-    enum reason: {
-      ::Gitlab::ComplianceManagement::Violations::ApprovedByMergeRequestAuthor::REASON => 0,
-      ::Gitlab::ComplianceManagement::Violations::ApprovedByCommitter::REASON => 1,
-      ::Gitlab::ComplianceManagement::Violations::ApprovedByInsufficientUsers::REASON => 2
-    }
+    enum reason: ::Enums::MergeRequests::ComplianceViolation.reasons
+    enum severity_level: ::Enums::MergeRequests::ComplianceViolation.severity_levels
 
     scope :approved_by_committer, -> { where(reason: ::Gitlab::ComplianceManagement::Violations::ApprovedByCommitter::REASON) }
 
@@ -27,6 +22,7 @@ module MergeRequests
                 message: -> (_object, _data) { _('compliance violation has already been recorded') }
               }
     validates :reason, presence: true
+    validates :severity_level, presence: true
 
     # The below violations need to either ignore or handle their errors to help prevent the merge process failing
     VIOLATIONS = [

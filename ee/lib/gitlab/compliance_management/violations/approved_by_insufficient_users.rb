@@ -5,6 +5,7 @@ module Gitlab
     module Violations
       class ApprovedByInsufficientUsers
         REASON = :approved_by_insufficient_users
+        SEVERITY_LEVEL = :high
 
         # The minimum number of approvers is defined by GitLab in our public documentation.
         # https://docs.gitlab.com/ee/user/compliance/compliance_dashboard/#approval-status-and-separation-of-duties
@@ -18,7 +19,8 @@ module Gitlab
           if violation?
             @merge_request.compliance_violations.create(
               violating_user: @merge_request.metrics&.merged_by || @merge_request.merge_user,
-              reason: REASON
+              reason: REASON,
+              severity_level: SEVERITY_LEVEL
             )
           end
         end
