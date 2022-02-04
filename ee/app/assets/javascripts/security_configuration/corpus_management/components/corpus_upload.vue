@@ -57,7 +57,7 @@ export default {
       return decimalBytes(this.totalSize);
     },
     isUploaded() {
-      return this.states?.uploadState.progress === 100;
+      return Boolean(this.states?.uploadState.uploadedPackageId);
     },
     variant() {
       return this.isUploaded ? 'confirm' : 'default';

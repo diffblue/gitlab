@@ -160,6 +160,7 @@ export default {
         uploadState.isUploading = false;
         uploadState.progress = 0;
         uploadState.cancelToken = null;
+        uploadState.uploadedPackageId = null;
         uploadState.errors.name = '';
         uploadState.errors.file = '';
       });

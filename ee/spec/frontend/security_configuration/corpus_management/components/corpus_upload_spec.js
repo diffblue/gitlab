@@ -94,5 +94,73 @@ describe('Corpus Upload', () => {
         expect(findNewCorpusButton().exists()).toBe(false);
       });
     });
+
+    describe('add button', () => {
+      it('is disabled when corpus has not been uploaded', () => {
+        createComponent({
+          mocks: {
+            states: {
+              uploadState: {
+                progress: 0,
+                uploadedPackageId: null,
+              },
+            },
+          },
+        });
+
+        expect(findModal().props('actionPrimary')).toEqual({
+          attributes: {
+            'data-testid': 'modal-confirm',
+            disabled: true,
+            variant: 'default',
+          },
+          text: 'Add',
+        });
+      });
+
+      it('is disabled when corpus has 100 percent completion, but is still waiting on the server response', () => {
+        createComponent({
+          mocks: {
+            states: {
+              uploadState: {
+                progress: 100,
+                uploadedPackageId: null,
+              },
+            },
+          },
+        });
+
+        expect(findModal().props('actionPrimary')).toEqual({
+          attributes: {
+            'data-testid': 'modal-confirm',
+            disabled: true,
+            variant: 'default',
+          },
+          text: 'Add',
+        });
+      });
+
+      it('is enabled when corpus has been uploaded', () => {
+        createComponent({
+          mocks: {
+            states: {
+              uploadState: {
+                progress: 100,
+                uploadedPackageId: 1,
+              },
+            },
+          },
+        });
+
+        expect(findModal().props('actionPrimary')).toEqual({
+          attributes: {
+            'data-testid': 'modal-confirm',
+            disabled: false,
+            variant: 'confirm',
+          },
+          text: 'Add',
+        });
+      });
+    });
   });
 });
