@@ -4,6 +4,7 @@ import { n__ } from '~/locale';
 import DependencyPathViewer from './dependency_path_viewer.vue';
 
 export const VISIBLE_DEPENDENCY_COUNT = 2;
+export const CONTAINER_IMAGE_PREFIX = 'container-image:';
 
 export default {
   name: 'DependencyLocation',
@@ -32,7 +33,14 @@ export default {
       return this.ancestors.length > 0;
     },
     isContainerImageDependency() {
-      return this.location.path.includes('container-image:');
+      return this.location.path.startsWith(CONTAINER_IMAGE_PREFIX);
+    },
+    locationPath() {
+      if (this.isContainerImageDependency) {
+        return this.location.path.slice(CONTAINER_IMAGE_PREFIX.length);
+      }
+
+      return this.location.path;
     },
     isTopLevelDependency() {
       return this.location.top_level;
@@ -63,13 +71,14 @@ export default {
         class="gl-display-inline-block gl-lg-display-block!"
         :href="location.blob_path"
       >
-        <gl-icon v-if="!isContainerImageDependency" name="doc-text" />
+        <gl-icon v-if="isContainerImageDependency" name="container-image" />
+        <gl-icon v-else name="doc-text" />
         <gl-truncate
           class="gl-lg-max-w-80p gl-display-none gl-lg-display-inline-flex"
-          :text="location.path"
+          :text="locationPath"
           with-tooltip
         />
-        <span class="gl-lg-display-none">{{ location.path }}</span>
+        <span class="gl-lg-display-none">{{ locationPath }}</span>
       </component>
       <span v-if="isTopLevelDependency">{{ s__('Dependencies|(top level)') }}</span>
     </span>

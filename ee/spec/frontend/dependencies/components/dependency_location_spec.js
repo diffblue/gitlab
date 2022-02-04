@@ -27,7 +27,7 @@ describe('Dependency Location component', () => {
 
   it.each`
     name                      | location                    | path
-    ${'container image path'} | ${Paths.containerImagePath} | ${Paths.containerImagePath.path}
+    ${'container image path'} | ${Paths.containerImagePath} | ${Paths.containerImagePath.image}
     ${'no path'}              | ${Paths.noPath}             | ${Paths.noPath.path}
     ${'top level path'}       | ${Paths.topLevelPath}       | ${'package.json (top level)'}
     ${'short path'}           | ${Paths.shortPath}          | ${'package.json / swell 1.2 / emmajsq 10.11'}
@@ -100,13 +100,16 @@ describe('Dependency Location component', () => {
       });
     });
 
-    it('should render the dependency name not as a link', () => {
+    it('should render the dependency name not as a link without container-image: prefix', () => {
       expect(findPathLink().exists()).toBe(false);
-      expect(findPath().text()).toBe(Paths.containerImagePath.path);
+      expect(findPath().text()).toBe(Paths.containerImagePath.image);
+      expect(findPath().text()).not.toContain('container-image:');
     });
 
-    it('should not render the icon', () => {
-      expect(findIcon().exists()).toBe(false);
+    it('should render the container-image icon', () => {
+      const icon = findIcon();
+      expect(icon.exists()).toBe(true);
+      expect(icon.props('name')).toBe('container-image');
     });
   });
 });
