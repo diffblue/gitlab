@@ -24,6 +24,8 @@ RSpec.describe 'epics list', :js do
       let!(:epic2) { create(:epic, group: group, start_date: '2020-12-15') }
       let!(:epic3) { create(:epic, group: group, end_date: '2021-1-15') }
       let!(:award_emoji_star) { create(:award_emoji, name: 'star', user: user, awardable: epic1) }
+      let!(:award_emoji_upvote) { create(:award_emoji, :upvote, user: user, awardable: epic1) }
+      let!(:award_emoji_downvote) { create(:award_emoji, :downvote, user: user, awardable: epic2) }
 
       shared_examples 'epic list' do
         it 'renders epics list', :aggregate_failures do
@@ -35,10 +37,15 @@ RSpec.describe 'epics list', :js do
         end
 
         it 'renders epics item with metadata', :aggregate_failures do
-          page.within('.issuable-list .issue:first-of-type') do
+          page.within(".issuable-list #issuable_#{epic2.id}.issue") do
             expect(page).to have_link(epic2.title)
             expect(page).to have_text("&#{epic2.iid}")
+            expect(page).to have_selector('.issuable-meta [data-testid="issuable-downvotes"]')
             expect(page).to have_text("created just now by #{epic2.author.name}")
+          end
+
+          page.within(".issuable-list #issuable_#{epic1.id}.issue") do
+            expect(page).to have_selector('.issuable-meta [data-testid="issuable-upvotes"]')
           end
         end
 

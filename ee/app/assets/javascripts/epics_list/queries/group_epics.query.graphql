@@ -45,6 +45,8 @@ query groupEpics(
         webUrl
         userDiscussionsCount @include(if: $isSignedIn)
         confidential
+        upvotes
+        downvotes
         group {
           id
           fullPath
