@@ -39806,6 +39806,9 @@ msgstr ""
 msgid "View group labels"
 msgstr ""
 
+msgid "View group pipeline usage quota"
+msgstr ""
+
 msgid "View incident details at"
 msgstr ""
 
