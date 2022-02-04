@@ -213,7 +213,7 @@ describe('WeeksPresetMixin', () => {
              approximately 154px                                ^
                                                         ~ approximately 154px
         */
-        const expectedTimelineBarWidth = 488; // in px;
+        const expectedTimelineBarWidth = 462; // in px;
 
         expect(Math.floor(wrapper.vm.getTimelineBarWidthForWeeks())).toBe(expectedTimelineBarWidth);
       });

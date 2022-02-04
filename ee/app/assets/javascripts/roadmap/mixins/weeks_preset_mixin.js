@@ -115,7 +115,7 @@ export default {
             timelineBarWidth += this.getBarWidthForSingleWeek(cellWidth, date);
           }
         } else if (this.isTimeframeUnderEndDateForWeek(this.timeframe[i])) {
-          timelineBarWidth += this.getBarWidthForSingleWeek(cellWidth, itemEndDate.day + 1);
+          timelineBarWidth += this.getBarWidthForSingleWeek(cellWidth, itemEndDate.day);
           break;
         } else {
           timelineBarWidth += this.getBarWidthForSingleWeek(cellWidth, 7);
