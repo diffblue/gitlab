@@ -17041,12 +17041,16 @@ Roadmap sort values.
 
 | Value | Description |
 | ----- | ----------- |
+| <a id="epicsortcreated_at_asc"></a>`CREATED_AT_ASC` | Sort by created_at by ascending order. |
+| <a id="epicsortcreated_at_desc"></a>`CREATED_AT_DESC` | Sort by created_at by descending order. |
 | <a id="epicsortend_date_asc"></a>`END_DATE_ASC` | Sort by end date in ascending order. |
 | <a id="epicsortend_date_desc"></a>`END_DATE_DESC` | Sort by end date in descending order. |
 | <a id="epicsortstart_date_asc"></a>`START_DATE_ASC` | Sort by start date in ascending order. |
 | <a id="epicsortstart_date_desc"></a>`START_DATE_DESC` | Sort by start date in descending order. |
 | <a id="epicsorttitle_asc"></a>`TITLE_ASC` | Sort by title in ascending order. |
 | <a id="epicsorttitle_desc"></a>`TITLE_DESC` | Sort by title in descending order. |
+| <a id="epicsortupdated_at_asc"></a>`UPDATED_AT_ASC` | Sort by updated_at by ascending order. |
+| <a id="epicsortupdated_at_desc"></a>`UPDATED_AT_DESC` | Sort by updated_at by descending order. |
 | <a id="epicsortend_date_asc"></a>`end_date_asc` **{warning-solid}** | **Deprecated** in 13.11. Use END_DATE_ASC. |
 | <a id="epicsortend_date_desc"></a>`end_date_desc` **{warning-solid}** | **Deprecated** in 13.11. Use END_DATE_DESC. |
 | <a id="epicsortstart_date_asc"></a>`start_date_asc` **{warning-solid}** | **Deprecated** in 13.11. Use START_DATE_ASC. |

@@ -18,5 +18,9 @@ module Types
     value 'END_DATE_ASC', 'Sort by end date in ascending order.', value: :end_date_asc
     value 'TITLE_DESC', 'Sort by title in descending order.', value: :title_desc
     value 'TITLE_ASC', 'Sort by title in ascending order.', value: :title_asc
+    value 'CREATED_AT_ASC', 'Sort by created_at by ascending order.', value: :created_at_asc
+    value 'CREATED_AT_DESC', 'Sort by created_at by descending order.', value: :created_at_desc
+    value 'UPDATED_AT_ASC', 'Sort by updated_at by ascending order.', value: :updated_at_asc
+    value 'UPDATED_AT_DESC', 'Sort by updated_at by descending order.', value: :updated_at_desc
   end
 end
