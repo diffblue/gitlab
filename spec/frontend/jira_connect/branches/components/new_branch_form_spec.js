@@ -1,4 +1,4 @@
-import { GlAlert, GlForm, GlFormInput, GlButton } from '@gitlab/ui';
+import { GlAlert, GlForm, GlFormInput, GlButton, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
@@ -10,17 +10,12 @@ import SourceBranchDropdown from '~/jira_connect/branches/components/source_bran
 import {
   CREATE_BRANCH_ERROR_GENERIC,
   CREATE_BRANCH_ERROR_WITH_CONTEXT,
+  I18N_NEW_BRANCH_PERMISSION_ALERT,
 } from '~/jira_connect/branches/constants';
 import createBranchMutation from '~/jira_connect/branches/graphql/mutations/create_branch.mutation.graphql';
+import { mockProjects } from '../mock_data';
 
-const mockProject = {
-  id: 'test',
-  fullPath: 'test-path',
-  repository: {
-    branchNames: ['main', 'f-test', 'release'],
-    rootRef: 'main',
-  },
-};
+const mockProject = mockProjects[0];
 const mockCreateBranchMutationResponse = {
   data: {
     createBranch: {
@@ -52,13 +47,14 @@ describe('NewBranchForm', () => {
   const findSourceBranchDropdown = () => wrapper.findComponent(SourceBranchDropdown);
   const findProjectDropdown = () => wrapper.findComponent(ProjectDropdown);
   const findAlert = () => wrapper.findComponent(GlAlert);
+  const findAlertSprintf = () => findAlert().findComponent(GlSprintf);
   const findForm = () => wrapper.findComponent(GlForm);
   const findInput = () => wrapper.findComponent(GlFormInput);
   const findButton = () => wrapper.findComponent(GlButton);
 
   const completeForm = async () => {
-    await findInput().vm.$emit('input', 'cool-branch-name');
     await findProjectDropdown().vm.$emit('change', mockProject);
+    await findInput().vm.$emit('input', 'cool-branch-name');
     await findSourceBranchDropdown().vm.$emit('change', 'source-branch');
   };
 
@@ -87,7 +83,16 @@ describe('NewBranchForm', () => {
   });
 
   describe('when selecting items from dropdowns', () => {
-    describe('when a project is selected', () => {
+    describe('when no project selected', () => {
+      it('hides source branch selection and branch name input', () => {
+        createComponent();
+
+        expect(findSourceBranchDropdown().exists()).toBe(false);
+        expect(findInput().exists()).toBe(false);
+      });
+    });
+
+    describe('when a valid project is selected', () => {
       it('sets the `selectedProject` prop for ProjectDropdown and SourceBranchDropdown', async () => {
         createComponent();
 
@@ -97,17 +102,55 @@ describe('NewBranchForm', () => {
         expect(projectDropdown.props('selectedProject')).toEqual(mockProject);
         expect(findSourceBranchDropdown().props('selectedProject')).toEqual(mockProject);
       });
+
+      describe('when `initialBranchName` is provided', () => {
+        it('sets value of branch name input to `initialBranchName` by default', async () => {
+          const mockInitialBranchName = 'ap1-test-branch-name';
+
+          createComponent({ provide: { initialBranchName: mockInitialBranchName } });
+          await findProjectDropdown().vm.$emit('change', mockProject);
+
+          expect(findInput().attributes('value')).toBe(mockInitialBranchName);
+        });
+      });
+
+      describe('when a source branch is selected', () => {
+        it('sets the `selectedBranchName` prop for SourceBranchDropdown', async () => {
+          createComponent();
+          await completeForm();
+
+          const mockBranchName = 'main';
+          const sourceBranchDropdown = findSourceBranchDropdown();
+          await sourceBranchDropdown.vm.$emit('change', mockBranchName);
+
+          expect(sourceBranchDropdown.props('selectedBranchName')).toBe(mockBranchName);
+        });
+      });
     });
 
-    describe('when a source branch is selected', () => {
-      it('sets the `selectedBranchName` prop for SourceBranchDropdown', async () => {
+    describe("when user doesn't have push permissions for the selected project", () => {
+      beforeEach(async () => {
         createComponent();
 
-        const mockBranchName = 'main';
-        const sourceBranchDropdown = findSourceBranchDropdown();
-        await sourceBranchDropdown.vm.$emit('change', mockBranchName);
+        const projectDropdown = findProjectDropdown();
+        await projectDropdown.vm.$emit('change', {
+          ...mockProject,
+          userPermissions: { pushCode: false },
+        });
+      });
 
-        expect(sourceBranchDropdown.props('selectedBranchName')).toBe(mockBranchName);
+      it('displays an alert', () => {
+        const alert = findAlert();
+
+        expect(alert.exists()).toBe(true);
+        expect(findAlertSprintf().attributes('message')).toBe(I18N_NEW_BRANCH_PERMISSION_ALERT);
+        expect(alert.props('variant')).toBe('warning');
+        expect(alert.props('dismissible')).toBe(false);
+      });
+
+      it('hides source branch selection and branch name input', () => {
+        expect(findSourceBranchDropdown().exists()).toBe(false);
+        expect(findInput().exists()).toBe(false);
       });
     });
   });
@@ -179,7 +222,7 @@ describe('NewBranchForm', () => {
         it('displays an alert', () => {
           const alert = findAlert();
           expect(alert.exists()).toBe(true);
-          expect(alert.text()).toBe(alertText);
+          expect(findAlertSprintf().attributes('message')).toBe(alertText);
           expect(alert.props()).toMatchObject({ title: alertTitle, variant: 'danger' });
         });
 
@@ -187,15 +230,6 @@ describe('NewBranchForm', () => {
           expect(findButton().props('loading')).toBe(false);
         });
       });
-    });
-  });
-
-  describe('when `initialBranchName` is specified', () => {
-    it('sets value of branch name input to `initialBranchName` by default', () => {
-      const mockInitialBranchName = 'ap1-test-branch-name';
-
-      createComponent({ provide: { initialBranchName: mockInitialBranchName } });
-      expect(findInput().attributes('value')).toBe(mockInitialBranchName);
     });
   });
 
@@ -209,13 +243,15 @@ describe('NewBranchForm', () => {
 
       beforeEach(async () => {
         createComponent();
+        await completeForm();
         await wrapper.findComponent(component).vm.$emit('error', { message: mockErrorMessage });
       });
 
       it('displays an alert', () => {
         const alert = findAlert();
+
         expect(alert.exists()).toBe(true);
-        expect(alert.text()).toBe(mockErrorMessage);
+        expect(findAlertSprintf().attributes('message')).toBe(mockErrorMessage);
         expect(alert.props('variant')).toBe('danger');
       });
 
