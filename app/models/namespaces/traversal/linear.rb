@@ -43,8 +43,11 @@ module Namespaces
 
       included do
         before_update :lock_both_roots, if: -> { sync_traversal_ids? && parent_id_changed? }
-        after_create :sync_traversal_ids, if: -> { sync_traversal_ids? }
         after_update :sync_traversal_ids, if: -> { sync_traversal_ids? && saved_change_to_parent_id? }
+        # hack: This uses rails internal API before_commit to sync traversal ids on namespace create, right before transaction commit.
+        # This is to be move to after_commit callback once projects and namespaces(groups) are consolidated and users will only be
+        # creating namespaces.
+        before_commit :sync_traversal_ids, on: [:create], if: -> { sync_traversal_ids? }
       end
 
       def sync_traversal_ids?
