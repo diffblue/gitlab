@@ -215,9 +215,16 @@ class EpicsFinder < IssuableFinder
   def groups_with_confidential_access(groups)
     return ::Group.none unless current_user
 
-    # groups is an array, not a relation here so we have to use `map`
-    group_ids = groups.map(&:id)
-    GroupMember.by_group_ids(group_ids).by_user_id(current_user).non_guests.select(:source_id)
+    # `same_root` should be set only if we are sure that all groups
+    # have the same ancestor root group. This is safe since it can only be the
+    # single group sent in params, or permissioned_related_groups that can
+    # include ancestors and descendants, so all have the same ancestor root group.
+    # See https://gitlab.com/gitlab-org/gitlab/issues/11539
+    Group.preset_root_ancestor_for(groups)
+
+    DeclarativePolicy.user_scope do
+      groups.select { |group| Ability.allowed?(current_user, :read_confidential_epic, group) }
+    end
   end
 
   # @param include_confidential [Boolean] if this method should factor in
