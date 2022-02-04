@@ -9,6 +9,8 @@ import {
   OPERATOR_IS_NOT,
   OPERATOR_IS,
   OPERATOR_IS_AND_IS_NOT,
+  DEFAULT_MILESTONE_UPCOMING,
+  DEFAULT_MILESTONE_STARTED,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
 import EmojiToken from '~/vue_shared/components/filtered_search_bar/tokens/emoji_token.vue';
@@ -81,6 +83,7 @@ export default {
           operators: OPERATOR_IS_AND_IS_NOT,
           recentSuggestionsStorageKey: `${this.groupFullPath}-epics-recent-tokens-author_username`,
           fetchAuthors: Api.users.bind(Api),
+          defaultAuthors: [],
           preloadedAuthors,
         },
         {
@@ -116,6 +119,7 @@ export default {
           symbol: '%',
           token: MilestoneToken,
           operators: OPERATOR_IS_ONLY,
+          defaultMilestones: [DEFAULT_MILESTONE_UPCOMING, DEFAULT_MILESTONE_STARTED],
           fetchMilestones: (search = '') => {
             return axios.get(this.groupMilestonesPath).then(({ data }) => {
               // TODO: Remove below condition check once either of the following is supported.

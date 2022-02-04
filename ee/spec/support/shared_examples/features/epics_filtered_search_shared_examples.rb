@@ -4,14 +4,14 @@ require 'spec_helper'
 
 RSpec.shared_examples 'filtered search bar' do |tokens|
   minimum_values_for_token = {
-    # Count must be at least 3 as `Any` & current user are available by default
-    "Author" => 3,
+    # Count must be at least 2 as current user are available by default
+    "Author" => 2,
 
     # Count must be at least 3 as `None` & `Any` are available by default
     "Label" => 3,
 
-    # Count must be at least 5 as `None`, `Any`, `Upcoming` & `Started` are available by default
-    "Milestone" => 5,
+    # Count must be at least 3 as `Upcoming` & `Started` are available by default
+    "Milestone" => 3,
 
     # Count must be at least 1
     "Epic" => 1,
