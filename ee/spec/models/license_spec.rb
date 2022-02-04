@@ -1516,6 +1516,36 @@ RSpec.describe License do
     end
   end
 
+  describe '#online_cloud_license?' do
+    subject { license.online_cloud_license? }
+
+    context 'when no license provided' do
+      before do
+        license.data = nil
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context 'when the license has cloud licensing and offline cloud licensing enabled' do
+      let(:gl_license) { build(:gitlab_license, :cloud, :offline_enabled) }
+
+      it { is_expected.to be false }
+    end
+
+    context 'when the license has cloud licensing enabled and offline cloud licensing disabled' do
+      let(:gl_license) { build(:gitlab_license, :cloud, :offline_disabled) }
+
+      it { is_expected.to be true }
+    end
+
+    context 'when the license has cloud licensing and offline cloud licensing disabled' do
+      let(:gl_license) { build(:gitlab_license) }
+
+      it { is_expected.to be false }
+    end
+  end
+
   describe '#customer_service_enabled?' do
     subject { license.customer_service_enabled? }
 
