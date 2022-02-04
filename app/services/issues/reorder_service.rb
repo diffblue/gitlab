@@ -2,13 +2,13 @@
 
 module Issues
   class ReorderService < Issues::BaseService
+    include Gitlab::Utils::StrongMemoize
+
     def execute(issue)
       return false unless can?(current_user, :update_issue, issue)
+      return false unless move_between_ids
 
-      attrs = issue_params
-      return false if attrs.empty?
-
-      update(issue, attrs)
+      update(issue, { move_between_ids: move_between_ids })
     end
 
     private
@@ -19,22 +19,14 @@ module Issues
       false
     end
 
-    def issue_params
-      attrs = {}
-
-      if move_between_ids
-        attrs[:move_between_ids] = move_between_ids
-      end
-
-      attrs
-    end
-
     def move_between_ids
-      ids = [params[:move_after_id], params[:move_before_id]]
-              .map(&:to_i)
-              .map { |m| m > 0 ? m : nil }
+      strong_memoize(:move_between_ids) do
+        ids = [params[:move_after_id], params[:move_before_id]]
+                .map(&:to_i)
+                .map { |m| m > 0 ? m : nil }
 
-      ids.any? ? ids : nil
+        ids.any? ? ids : nil
+      end
     end
   end
 end

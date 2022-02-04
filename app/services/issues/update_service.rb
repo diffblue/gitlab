@@ -13,8 +13,6 @@ module Issues
     end
 
     def execute(issue)
-      @issue = issue
-
       handle_move_between_ids(issue)
 
       change_issue_duplicate(issue)
@@ -225,10 +223,6 @@ module Issues
       issue = positioning_scope.find(id)
 
       issue if can?(current_user, :update_issue, issue)
-    end
-
-    def positioning_scope
-      Issue.relative_positioning_query_base(@issue)
     end
 
     def create_confidentiality_note(issue)
