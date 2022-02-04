@@ -11,7 +11,7 @@ review:
   script:
     - auto-deploy check_kube_domain
     - auto-deploy download_chart
-    - auto-deploy use_kube_context || true
+    - auto-deploy use_kube_context
     - auto-deploy ensure_namespace
     - auto-deploy initialize_tiller
     - auto-deploy create_secret
@@ -39,7 +39,7 @@ stop_review:
   variables:
     GIT_STRATEGY: none
   script:
-    - auto-deploy use_kube_context || true
+    - auto-deploy use_kube_context
     - auto-deploy initialize_tiller
     - auto-deploy delete
   environment:
@@ -68,7 +68,7 @@ staging:
   script:
     - auto-deploy check_kube_domain
     - auto-deploy download_chart
-    - auto-deploy use_kube_context || true
+    - auto-deploy use_kube_context
     - auto-deploy ensure_namespace
     - auto-deploy initialize_tiller
     - auto-deploy create_secret
@@ -94,7 +94,7 @@ canary:
   script:
     - auto-deploy check_kube_domain
     - auto-deploy download_chart
-    - auto-deploy use_kube_context || true
+    - auto-deploy use_kube_context
     - auto-deploy ensure_namespace
     - auto-deploy initialize_tiller
     - auto-deploy create_secret
@@ -118,7 +118,7 @@ canary:
   script:
     - auto-deploy check_kube_domain
     - auto-deploy download_chart
-    - auto-deploy use_kube_context || true
+    - auto-deploy use_kube_context
     - auto-deploy ensure_namespace
     - auto-deploy initialize_tiller
     - auto-deploy create_secret
@@ -173,7 +173,7 @@ production_manual:
   script:
     - auto-deploy check_kube_domain
     - auto-deploy download_chart
-    - auto-deploy use_kube_context || true
+    - auto-deploy use_kube_context
     - auto-deploy ensure_namespace
     - auto-deploy initialize_tiller
     - auto-deploy create_secret
