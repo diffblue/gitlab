@@ -14386,6 +14386,9 @@ msgstr ""
 msgid "Errors:"
 msgstr ""
 
+msgid "Escalate this incident"
+msgstr ""
+
 msgid "Escalation Policies"
 msgstr ""
 
@@ -27342,6 +27345,9 @@ msgstr ""
 msgid "Policies"
 msgstr ""
 
+msgid "Policy '%{escalation_policy_name}' does not exist."
+msgstr ""
+
 msgid "Policy management project does have any policies in %{policy_path}"
 msgstr ""
 
@@ -34649,6 +34655,9 @@ msgstr ""
 msgid "Started asynchronous removal of all repository check states."
 msgstr ""
 
+msgid "Started escalation for this incident."
+msgstr ""
+
 msgid "Starting..."
 msgstr ""
 
@@ -34659,6 +34668,9 @@ msgid "Starts %{startsIn}"
 msgstr ""
 
 msgid "Starts at (UTC)"
+msgstr ""
+
+msgid "Starts escalations for this incident"
 msgstr ""
 
 msgid "Starts on"
@@ -37222,6 +37234,9 @@ msgid "This group, its subgroups and projects has been scheduled for removal on 
 msgstr ""
 
 msgid "This group, its subgroups and projects will be removed on %{date} since its parent group '%{parent_group_name}' has been scheduled for removal."
+msgstr ""
+
+msgid "This incident is already escalated with '%{escalation_policy_name}'."
 msgstr ""
 
 msgid "This invitation was sent to %{mail_to_invite_email}, but you are signed in as %{link_to_current_user} with email %{mail_to_current_user}."

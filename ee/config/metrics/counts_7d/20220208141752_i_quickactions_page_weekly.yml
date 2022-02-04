@@ -1,0 +1,25 @@
+---
+key_path: redis_hll_counters.quickactions.i_quickactions_page_weekly
+name: count_i_quickactions_page_weekly
+description: Count of WAU using the `/page <escalation_policy>` quick action
+product_section: ops
+product_stage: monitor
+product_group: group::respond
+product_category: incident_management
+value_type: number
+status: active
+milestone: "14.9"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/79977
+time_frame: 7d
+data_source: redis_hll
+data_category: optional
+instrumentation_class: RedisHLLMetric
+options:
+  events:
+    - i_quickactions_page
+performance_indicator_type: []
+distribution:
+- ee
+tier:
+- premium
+- ultimate
