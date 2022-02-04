@@ -10,25 +10,29 @@ module QA
           file_name: 'Dockerfile',
           template: 'custom_dockerfile',
           file_path: 'Dockerfile/custom_dockerfile.dockerfile',
-          content: 'dockerfile template test'
+          content: 'dockerfile template test',
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347656'
         },
         {
           file_name: '.gitignore',
           template: 'custom_gitignore',
           file_path: 'gitignore/custom_gitignore.gitignore',
-          content: 'gitignore template test'
+          content: 'gitignore template test',
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347655'
         },
         {
           file_name: '.gitlab-ci.yml',
           template: 'custom_gitlab-ci',
           file_path: 'gitlab-ci/custom_gitlab-ci.yml',
-          content: 'gitlab-ci.yml template test'
+          content: 'gitlab-ci.yml template test',
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347653'
         },
         {
           file_name: 'LICENSE',
           template: 'custom_license',
           file_path: 'LICENSE/custom_license.txt',
-          content: 'license template test'
+          content: 'license template test',
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347654'
         }
       ]
 
@@ -78,7 +82,7 @@ module QA
       end
 
       templates.each do |template|
-        it "creates file via custom #{template[:file_name]} file template" do
+        it "creates file via custom #{template[:file_name]} file template", testcase: template[:testcase] do
           Flow::Login.sign_in_as_admin
 
           set_file_template_if_not_already_set
