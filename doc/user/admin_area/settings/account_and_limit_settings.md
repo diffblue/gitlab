@@ -283,10 +283,14 @@ Once a lifetime for personal access tokens is set, GitLab:
   allowed lifetime. Three hours is given to allow administrators to change the allowed lifetime,
   or remove it, before revocation takes place.
 
-## Allow expired Personal Access Tokens to be used **(ULTIMATE SELF)**
+## Allow expired Personal Access Tokens to be used (DEPRECATED) **(ULTIMATE SELF)**
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/214723) in GitLab 13.1.
 > - [Feature flag removed](https://gitlab.com/gitlab-org/gitlab/-/issues/296881) in GitLab 13.9.
+> - [Deprecated](https://gitlab.com/gitlab-org/gitlab/-/issues/351962) in GitLab 14.8.
+
+WARNING:
+This feature was [deprecated](https://gitlab.com/gitlab-org/gitlab/-/issues/351962) in GitLab 14.8.
 
 By default, expired personal access tokens (PATs) **are not usable**.
 
