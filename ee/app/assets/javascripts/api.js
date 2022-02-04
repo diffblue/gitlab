@@ -347,6 +347,25 @@ export default {
     return axios.post(metricImagesUrl, formData, options);
   },
 
+  updateIssueMetricImage({ issueIid, id, imageId, url = null, urlText = null }) {
+    const metricImagesUrl = Api.buildUrl(this.issueMetricSingleImagePath)
+      .replace(':id', encodeURIComponent(id))
+      .replace(':issue_iid', encodeURIComponent(issueIid))
+      .replace(':image_id', encodeURIComponent(imageId));
+
+
+    // Construct multipart form data
+    const formData = new FormData();
+    if (url) {
+      formData.append('url', url);
+    }
+    if (urlText) {
+      formData.append('url_text', urlText);
+    }
+
+    return axios.put(metricImagesUrl, formData);
+  },
+
   deleteMetricImage({ issueIid, id, imageId }) {
     const individualMetricImageUrl = Api.buildUrl(this.issueMetricSingleImagePath)
       .replace(':id', encodeURIComponent(id))
