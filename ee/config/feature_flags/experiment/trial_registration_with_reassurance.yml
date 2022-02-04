@@ -1,8 +1,0 @@
----
-name: trial_registration_with_reassurance
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/61639
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/281028
-milestone: '14.1'
-type: experiment
-group: group::conversion
-default_enabled: false

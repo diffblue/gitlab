@@ -50,22 +50,6 @@ RSpec.shared_examples "Registrations::GroupsController GET #new" do
         expect(assigns(:group).visibility_level).to eq(Gitlab::CurrentSettings.default_group_visibility)
       end
 
-      context 'when the trial_registration_with_reassurance experiment is active', :experiment do
-        before do
-          stub_experiments(trial_registration_with_reassurance: :control)
-        end
-
-        it 'tracks a "render" event' do
-          expect(experiment(:trial_registration_with_reassurance)).to track(
-            :render,
-            user: user,
-            label: 'registrations:groups:new'
-          ).with_context(actor: user).on_next_instance
-
-          get :new
-        end
-      end
-
       context 'user without the ability to create a group' do
         let(:user) { create(:user, can_create_group: false) }
 

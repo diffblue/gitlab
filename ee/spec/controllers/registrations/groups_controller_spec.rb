@@ -92,19 +92,6 @@ RSpec.describe Registrations::GroupsController do
               context 'with redirection to projects page' do
                 it { is_expected.to redirect_to(new_users_sign_up_project_path(namespace_id: group.id, trial: false, trial_onboarding_flow: true)) }
               end
-
-              it 'tracks an event for the trial_registration_with_reassurance experiment', :experiment do
-                stub_experiments(trial_registration_with_reassurance: :control)
-
-                expect(experiment(:trial_registration_with_reassurance)).to track(
-                  :apply_trial,
-                  user: user,
-                  namespace: group,
-                  label: 'registrations:groups:create'
-                ).with_context(actor: user).on_next_instance
-
-                post_create
-              end
             end
 
             context 'when failing to apply trial' do

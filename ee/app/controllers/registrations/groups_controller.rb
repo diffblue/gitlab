@@ -12,8 +12,6 @@ module Registrations
     feature_category :onboarding
 
     def new
-      experiment(:trial_registration_with_reassurance, actor: current_user)
-        .track(:render, label: 'registrations:groups:new', user: current_user)
       @group = Group.new(visibility_level: helpers.default_group_visibility)
       experiment(:combined_registration, user: current_user).track(:view_new_group_action)
       push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
@@ -43,13 +41,6 @@ module Registrations
 
     def apply_trial_for_trial_onboarding_flow
       if apply_trial
-        experiment(:trial_registration_with_reassurance, actor: current_user).track(
-          :apply_trial,
-          label: 'registrations:groups:create',
-          namespace: @group,
-          user: current_user
-        )
-
         redirect_to new_users_sign_up_project_path(namespace_id: @group.id, trial: helpers.in_trial_during_signup_flow?, trial_onboarding_flow: true)
       else
         render action: :new

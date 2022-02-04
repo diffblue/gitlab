@@ -21,18 +21,6 @@ class TrialRegistrationsController < RegistrationsController
 
   private
 
-  # This is called from within the RegistrationsController#create action and is
-  # given the newly created user.
-  def after_request_hook(user)
-    super
-
-    return unless user.persisted?
-
-    e = experiment(:trial_registration_with_reassurance, actor: user)
-    e.track(:create_user, label: 'trial_registrations:create', user: user)
-    e.publish_to_database
-  end
-
   def set_redirect_url
     target_url = new_trial_url(params: request.query_parameters)
 

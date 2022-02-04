@@ -20,8 +20,6 @@ module EE
 
         before_action only: :show do
           publish_combined_registration_experiment
-          experiment(:trial_registration_with_reassurance, actor: current_user)
-            .track(:render, label: 'registrations:welcome:show', user: current_user)
         end
 
         before_action only: [:trial_getting_started] do

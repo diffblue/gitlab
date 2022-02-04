@@ -80,22 +80,6 @@ RSpec.describe TrialRegistrationsController do
       expect(User.last).not_to be_confirmed
     end
 
-    context 'when the trial_registration_with_reassurance experiment is active', :experiment do
-      before do
-        stub_experiments(trial_registration_with_reassurance: :control)
-      end
-
-      it 'tracks a "create_user" event & records the actor to the database', :aggregate_failures do
-        expect(experiment(:trial_registration_with_reassurance)).to track(
-          :create_user,
-          user: an_instance_of(User),
-          label: 'trial_registrations:create'
-        ).with_context(actor: an_instance_of(User)).on_next_instance
-
-        expect { post_create }.to change { ExperimentSubject.count }
-      end
-    end
-
     context 'derivation of name' do
       it 'sets name from first and last name' do
         post_create

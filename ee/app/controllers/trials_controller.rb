@@ -21,13 +21,9 @@ class TrialsController < ApplicationController
   feature_category :purchase
 
   def new
-    experiment(:trial_registration_with_reassurance, actor: current_user)
-      .track(:render, label: 'trials:new', user: current_user)
   end
 
   def select
-    experiment(:trial_registration_with_reassurance, actor: current_user)
-      .track(:render, label: 'trials:select', user: current_user)
   end
 
   def create_lead
@@ -227,9 +223,6 @@ class TrialsController < ApplicationController
     @result = GitlabSubscriptions::ApplyTrialService.new.execute(apply_trial_params)
 
     if @result&.dig(:success)
-      experiment(:trial_registration_with_reassurance, actor: current_user)
-        .track(:apply_trial, label: 'trials:apply', namespace: @namespace, user: current_user)
-
       experiment(:combined_registration, user: current_user).track(:create_trial)
 
       if discover_group_security_flow?
