@@ -4,8 +4,7 @@ query DastSiteProfiles($fullPath: ID!, $after: String, $before: String, $first: 
   project(fullPath: $fullPath) {
     __typename
     id
-    siteProfiles: dastSiteProfiles(after: $after, before: $before, first: $first, last: $last)
-      @connection(key: "dastSiteProfiles") {
+    siteProfiles: dastSiteProfiles(after: $after, before: $before, first: $first, last: $last) {
       __typename
       pageInfo {
         __typename

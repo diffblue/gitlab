@@ -1,43 +1,13 @@
 import { gql } from '@apollo/client/core';
-import { produce } from 'immer';
 import dastSiteProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql';
 
 /**
- * Appends paginated results to existing ones
- * - to be used with $apollo.queries.x.fetchMore
+ * Evicts a profile from the cache
  *
- * @param {*} profileType
- * @returns {function(*, {fetchMoreResult: *}): *}
- */
-export const appendToPreviousResult = (profileType) => (previousResult, { fetchMoreResult }) => {
-  const newResult = { ...fetchMoreResult };
-  const previousNodes = previousResult.project[profileType].nodes;
-  const newNodes = newResult.project[profileType].nodes;
-
-  newResult.project[profileType].nodes = [...previousNodes, ...newNodes];
-
-  return newResult;
-};
-
-/**
- * Removes profile with given id from the cache and writes the result to it
- *
- * @param profileId
- * @param profileType
+ * @param profile
  * @param store
- * @param queryBody
  */
-export const removeProfile = ({ profileId, profileType, store, queryBody }) => {
-  const sourceData = store.readQuery(queryBody);
-
-  const data = produce(sourceData, (draftState) => {
-    draftState.project[profileType].nodes = draftState.project[profileType].nodes.filter((node) => {
-      return node.id !== profileId;
-    });
-  });
-
-  store.writeQuery({ ...queryBody, data });
-};
+export const removeProfile = ({ profile, store }) => store.evict({ id: store.identify(profile) });
 
 /**
  * Returns an object representing a optimistic response for site-profile deletion

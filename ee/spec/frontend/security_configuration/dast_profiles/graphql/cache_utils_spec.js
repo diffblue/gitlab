@@ -1,6 +1,5 @@
 import { gql } from '@apollo/client/core';
 import {
-  appendToPreviousResult,
   removeProfile,
   dastProfilesDeleteResponse,
   updateSiteProfilesStatuses,
@@ -8,58 +7,22 @@ import {
 import { siteProfiles } from '../mocks/mock_data';
 
 describe('EE - DastProfiles GraphQL CacheUtils', () => {
-  describe('appendToPreviousResult', () => {
-    it.each(['siteProfiles', 'scannerProfiles'])(
-      'appends new results to previous',
-      (profileType) => {
-        const previousResult = { project: { [profileType]: { nodes: ['foo'] } } };
-        const fetchMoreResult = { project: { [profileType]: { nodes: ['bar'] } } };
-
-        const expected = { project: { [profileType]: { nodes: ['foo', 'bar'] } } };
-        const result = appendToPreviousResult(profileType)(previousResult, { fetchMoreResult });
-
-        expect(result).toEqual(expected);
-      },
-    );
-  });
-
   describe('removeProfile', () => {
-    it.each(['foo', 'bar'])(
-      'removes the profile with the given id from the cache',
-      (profileType) => {
-        const mockQueryBody = { query: 'foo', variables: { foo: 'bar' } };
-        const mockProfiles = [{ id: 0 }, { id: 1 }];
-        const mockData = {
-          project: {
-            [profileType]: {
-              nodes: [mockProfiles[0], mockProfiles[1]],
-            },
-          },
-        };
-        const mockStore = {
-          readQuery: () => mockData,
-          writeQuery: jest.fn(),
-        };
+    it('removes the profile from the cache', () => {
+      const [profileToBeRemoved] = siteProfiles;
+      const mockStore = {
+        identify: jest.fn().mockReturnValue(profileToBeRemoved.id),
+        evict: jest.fn(),
+      };
 
-        removeProfile({
-          store: mockStore,
-          queryBody: mockQueryBody,
-          profileId: mockProfiles[0].id,
-          profileType,
-        });
+      removeProfile({
+        profile: profileToBeRemoved,
+        store: mockStore,
+      });
 
-        expect(mockStore.writeQuery).toHaveBeenCalledWith({
-          ...mockQueryBody,
-          data: {
-            project: {
-              [profileType]: {
-                nodes: [mockProfiles[1]],
-              },
-            },
-          },
-        });
-      },
-    );
+      expect(mockStore.identify).toHaveBeenCalledWith(profileToBeRemoved);
+      expect(mockStore.evict).toHaveBeenCalledWith({ id: profileToBeRemoved.id });
+    });
   });
 
   describe('dastProfilesDeleteResponse', () => {

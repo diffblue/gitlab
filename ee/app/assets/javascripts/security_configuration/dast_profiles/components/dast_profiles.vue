@@ -138,7 +138,6 @@ export default {
       $apollo.queries[profileType]
         .fetchMore({
           variables: { after: pageInfo.endCursor },
-          updateQuery: cacheUtils.appendToPreviousResult(profileType),
         })
         .catch((error) => {
           this.handleError({
@@ -157,12 +156,8 @@ export default {
             graphQL: { deletion },
           },
         },
-        $apollo: {
-          queries: {
-            [profileType]: { options: queryOptions },
-          },
-        },
       } = this;
+      const profile = this.profileTypes[profileType].profiles.find(({ id }) => id === profileId);
 
       this.resetErrors(profileType);
 
@@ -179,13 +174,8 @@ export default {
 
             if (errors.length === 0) {
               cacheUtils.removeProfile({
-                profileId,
-                profileType,
+                profile,
                 store,
-                queryBody: {
-                  query: queryOptions.query,
-                  variables: queryOptions.variables,
-                },
               });
             } else {
               handleError({
