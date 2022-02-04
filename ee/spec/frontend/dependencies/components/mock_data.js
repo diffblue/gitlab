@@ -3,6 +3,7 @@ export const containerImagePath = {
   top_level: null,
   blob_path: 'test.link',
   path: 'container-image:nginx:1.17',
+  image: 'nginx:1.17',
 };
 
 export const longPath = {
