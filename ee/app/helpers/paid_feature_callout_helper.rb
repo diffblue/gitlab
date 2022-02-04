@@ -8,8 +8,8 @@ module PaidFeatureCalloutHelper
     experiment(:highlight_paid_features_during_active_trial, group: group) do |e|
       e.exclude! unless billing_plans_and_trials_available?
       e.exclude! unless group && eligible_for_trial_upgrade_callout?(group)
-      e.use { nil } # control gets nothing new added to the existing UI
-      e.try(&block)
+      e.control { nil } # control gets nothing new added to the existing UI
+      e.candidate(&block)
       e.publish_to_database
     end
   end

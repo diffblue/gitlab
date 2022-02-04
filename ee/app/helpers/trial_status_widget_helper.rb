@@ -53,7 +53,7 @@ module TrialStatusWidgetHelper
     force_popover = false
 
     experiment(:forcibly_show_trial_status_popover, group: group) do |e|
-      e.try do
+      e.candidate do
         force_popover = !dismissed_feature_callout?(
           current_user_callout_feature_id(group.trial_days_remaining)
         )
