@@ -10,7 +10,7 @@ import {
 import { debounce } from 'lodash';
 import { mapGetters } from 'vuex';
 import Api from 'ee/api';
-import { removeFlash } from '~/cycle_analytics/utils';
+import { removeFlash } from '~/analytics/shared/utils';
 import createFlash from '~/flash';
 import { __ } from '~/locale';
 import { DATA_REFETCH_DELAY } from '../../shared/constants';
