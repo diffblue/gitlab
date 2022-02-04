@@ -10,6 +10,7 @@ import { getIssuesCountsQueryResponse, getIssuesQueryResponse } from 'jest/issue
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 import {
+  CREATED_DESC,
   TOKEN_TYPE_ASSIGNEE,
   TOKEN_TYPE_AUTHOR,
   TOKEN_TYPE_CONFIDENTIAL,
@@ -29,6 +30,35 @@ describe('EE IssuesListApp component', () => {
   let wrapper;
 
   Vue.use(VueApollo);
+
+  const defaultProvide = {
+    autocompleteAwardEmojisPath: 'autocomplete/award/emojis/path',
+    calendarPath: 'calendar/path',
+    canBulkUpdate: false,
+    emptyStateSvgPath: 'empty-state.svg',
+    exportCsvPath: 'export/csv/path',
+    fullPath: 'path/to/project',
+    groupPath: 'group/path',
+    hasAnyIssues: true,
+    hasAnyProjects: true,
+    hasBlockedIssuesFeature: true,
+    hasIssuableHealthStatusFeature: true,
+    hasIssueWeightsFeature: true,
+    hasIterationsFeature: true,
+    hasMultipleIssueAssigneesFeature: true,
+    initialEmail: 'email@example.com',
+    initialSort: CREATED_DESC,
+    isAnonymousSearchDisabled: false,
+    isIssueRepositioningDisabled: false,
+    isProject: true,
+    isSignedIn: true,
+    jiraIntegrationPath: 'jira/integration/path',
+    newIssuePath: 'new/issue/path',
+    releasesPath: 'releases/path',
+    rssPath: 'rss/path',
+    showNewIssueLink: true,
+    signInPath: 'sign/in/path',
+  };
 
   const defaultQueryResponse = cloneDeep(getIssuesQueryResponse);
   defaultQueryResponse.data.project.issues.nodes[0].blockingCount = 1;
@@ -51,9 +81,7 @@ describe('EE IssuesListApp component', () => {
     return mount(IssuesListApp, {
       apolloProvider,
       provide: {
-        hasAnyIssues: true,
-        hasIssuableHealthStatusFeature: true,
-        isProject: true,
+        ...defaultProvide,
         ...provide,
       },
     });
