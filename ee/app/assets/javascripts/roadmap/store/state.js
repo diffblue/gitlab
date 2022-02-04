@@ -2,6 +2,7 @@ export default () => ({
   // API Calls
   basePath: '',
   epicsState: '',
+  progressTracking: '',
   filterParams: null,
 
   // Data

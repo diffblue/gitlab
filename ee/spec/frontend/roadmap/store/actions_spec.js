@@ -657,6 +657,17 @@ describe('Roadmap Vuex Actions', () => {
             payload: { timeframeRangeType: 'CURRENT_YEAR', presetType: 'MONTHS' },
           },
         ],
+      );
+    });
+  });
+
+  describe('setProgressTracking', () => {
+    it('should set progressTracking in store state', () => {
+      return testAction(
+        actions.setProgressTracking,
+        'COUNT',
+        state,
+        [{ type: types.SET_PROGRESS_TRACKING, payload: 'COUNT' }],
         [],
       );
     });

@@ -222,6 +222,8 @@ export const mockRawEpic = {
   descendantCounts: {
     openedEpics: 3,
     closedEpics: 2,
+    closedIssues: 3,
+    openedIssues: 2,
     __typename: 'EpicDescendantCount',
   },
   group: mockGroup1,

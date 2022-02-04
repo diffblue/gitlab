@@ -11,7 +11,7 @@ import EpicItem from './components/epic_item.vue';
 import EpicItemContainer from './components/epic_item_container.vue';
 
 import roadmapApp from './components/roadmap_app.vue';
-import { DATE_RANGES } from './constants';
+import { DATE_RANGES, PROGRESS_WEIGHT, UNSUPPORTED_ROADMAP_PARAMS } from './constants';
 
 import createStore from './store';
 import {
@@ -74,7 +74,7 @@ export default () => {
       });
       const filterParams = {
         ...convertObjectPropsToCamelCase(rawFilterParams, {
-          dropKeys: ['scope', 'utf8', 'state', 'sort', 'timeframe_range_type', 'layout'], // These keys are unsupported/unnecessary
+          dropKeys: UNSUPPORTED_ROADMAP_PARAMS,
         }),
         // We shall put parsed value of `confidential` only
         // when it is defined.
@@ -103,6 +103,7 @@ export default () => {
         timeframeRangeType,
         presetType,
         timeframe,
+        progressTracking: rawFilterParams.progress || PROGRESS_WEIGHT,
       };
     },
     created() {
@@ -121,6 +122,7 @@ export default () => {
         isChildEpics: this.isChildEpics,
         hasFiltersApplied: this.hasFiltersApplied,
         allowSubEpics: this.allowSubEpics,
+        progressTracking: this.progressTracking,
       });
     },
     methods: {

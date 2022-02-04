@@ -17,6 +17,8 @@ fragment BaseEpic on Epic {
   descendantCounts {
     openedEpics
     closedEpics
+    closedIssues
+    openedIssues
   }
   group {
     id

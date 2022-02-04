@@ -140,4 +140,8 @@ export default {
     state.sortedBy = sortedBy;
     resetEpics(state);
   },
+
+  [types.SET_PROGRESS_TRACKING](state, progressTracking) {
+    state.progressTracking = progressTracking;
+  },
 };

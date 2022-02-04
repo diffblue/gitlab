@@ -3,7 +3,7 @@ import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 import RoadmapFilters from 'ee/roadmap/components/roadmap_filters.vue';
-import { PRESET_TYPES, EPICS_STATES, DATE_RANGES } from 'ee/roadmap/constants';
+import { PRESET_TYPES, EPICS_STATES, DATE_RANGES, PROGRESS_WEIGHT } from 'ee/roadmap/constants';
 import createStore from 'ee/roadmap/store';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 import {
@@ -55,6 +55,7 @@ const createComponent = ({
     sortedBy,
     filterParams,
     timeframe,
+    progressTracking: PROGRESS_WEIGHT,
   });
 
   return shallowMountExtended(RoadmapFilters, {
@@ -116,7 +117,7 @@ describe('RoadmapFilters', () => {
         await nextTick();
 
         expect(global.window.location.href).toBe(
-          `${TEST_HOST}/?state=${EPICS_STATES.CLOSED}&sort=end_date_asc&layout=MONTHS&author_username=root&label_name%5B%5D=Bug&milestone_title=4.0&confidential=true`,
+          `${TEST_HOST}/?state=${EPICS_STATES.CLOSED}&sort=end_date_asc&layout=MONTHS&author_username=root&label_name%5B%5D=Bug&milestone_title=4.0&confidential=true&progress=WEIGHT`,
         );
       });
     });
@@ -148,10 +149,10 @@ describe('RoadmapFilters', () => {
     });
 
     it('renders epics state toggling dropdown', () => {
-      const epicsStateDropdown = wrapper.find(GlDropdown);
+      const epicsStateDropdown = wrapper.findComponent(GlDropdown);
 
       expect(epicsStateDropdown.exists()).toBe(true);
-      expect(epicsStateDropdown.findAll(GlDropdownItem)).toHaveLength(3);
+      expect(epicsStateDropdown.findAllComponents(GlDropdownItem)).toHaveLength(3);
     });
 
     it('does not render settings button', () => {

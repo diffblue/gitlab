@@ -1,5 +1,6 @@
 <script>
 import { GlPopover, GlProgressBar, GlIcon } from '@gitlab/ui';
+import { mapState } from 'vuex';
 import { __, sprintf } from '~/locale';
 import {
   EPIC_DETAILS_CELL_WIDTH,
@@ -7,6 +8,7 @@ import {
   PRESET_TYPES,
   SMALL_TIMELINE_BAR,
   TIMELINE_CELL_MIN_WIDTH,
+  PROGRESS_COUNT,
 } from '../constants';
 import CommonMixin from '../mixins/common_mixin';
 
@@ -55,6 +57,7 @@ export default {
     },
   },
   computed: {
+    ...mapState(['progressTracking']),
     timelineBarInnerStyle() {
       return {
         maxWidth: `${this.clientWidth - EPIC_DETAILS_CELL_WIDTH}px`,
@@ -75,33 +78,49 @@ export default {
     timelineBarTitle() {
       return this.isTimelineBarSmall ? '...' : this.epic.title;
     },
-    epicTotalWeight() {
-      if (this.epic.descendantWeightSum) {
-        const { openedIssues, closedIssues } = this.epic.descendantWeightSum;
+    progressTrackingIsCount() {
+      return this.progressTracking === PROGRESS_COUNT;
+    },
+    epicDescendants() {
+      return this.progressTrackingIsCount
+        ? this.epic.descendantCounts
+        : this.epic.descendantWeightSum;
+    },
+    epicTotal() {
+      if (this.epicDescendants) {
+        const { openedIssues, closedIssues } = this.epicDescendants;
         return openedIssues + closedIssues;
       }
       return undefined;
     },
-    epicWeightPercentage() {
-      return this.epicTotalWeight
-        ? Math.round(
-            (this.epic.descendantWeightSum.closedIssues / this.epicTotalWeight) * PERCENTAGE,
-          )
+    epicPercentage() {
+      return this.epicTotal
+        ? Math.round((this.epicDescendants.closedIssues / this.epicTotal) * PERCENTAGE)
         : 0;
     },
-    epicWeightPercentageText() {
-      return sprintf(__(`%{percentage}%% weight completed`), {
-        percentage: this.epicWeightPercentage,
-      });
+    epicPercentageText() {
+      const str = this.progressTrackingIsCount
+        ? __('%{percentage}%% issues closed')
+        : __('%{percentage}%% weight completed');
+      return sprintf(str, { percentage: this.epicPercentage });
     },
-    popoverWeightText() {
-      if (this.epic.descendantWeightSum) {
-        return sprintf(__('%{completedWeight} of %{totalWeight} weight completed'), {
-          completedWeight: this.epic.descendantWeightSum.closedIssues,
-          totalWeight: this.epicTotalWeight,
+
+    popoverText() {
+      if (this.epicDescendants) {
+        const str = this.progressTrackingIsCount
+          ? __('%{completed} of %{total} issues closed')
+          : __('%{completed} of %{total} weight completed');
+        return sprintf(str, {
+          completed: this.epicDescendants.closedIssues,
+          total: this.epicTotal,
         });
       }
-      return __('- of - weight completed');
+      return this.progressTrackingIsCount
+        ? __('- of - issues closed')
+        : __('- of - weight completed');
+    },
+    progressIcon() {
+      return this.progressTrackingIsCount ? 'issue-closed' : 'weight';
     },
   },
   methods: {
@@ -125,19 +144,19 @@ export default {
         <div v-if="!isTimelineBarSmall" class="gl-display-flex gl-align-items-center">
           <gl-progress-bar
             class="epic-bar-progress gl-flex-grow-1 gl-mr-2"
-            :value="epicWeightPercentage"
+            :value="epicPercentage"
             aria-hidden="true"
           />
           <div class="gl-font-sm gl-display-flex gl-align-items-center gl-white-space-nowrap">
-            <gl-icon class="gl-mr-1" :size="12" name="weight" />
-            <p class="gl-m-0" :aria-label="epicWeightPercentageText">{{ epicWeightPercentage }}%</p>
+            <gl-icon class="gl-mr-1" :size="12" :name="progressIcon" />
+            <p class="gl-m-0" :aria-label="epicPercentageText">{{ epicPercentage }}%</p>
           </div>
         </div>
       </div>
     </a>
     <gl-popover :target="generateKey(epic)" :title="epic.title" placement="left">
       <p class="gl-text-gray-500 gl-m-0">{{ timeframeString(epic) }}</p>
-      <p class="gl-m-0">{{ popoverWeightText }}</p>
+      <p class="gl-m-0">{{ popoverText }}</p>
     </gl-popover>
   </div>
 </template>
