@@ -1,8 +1,10 @@
 - return unless show_seats_count_alert?
 .container.container-limited.pt-3
-  .gl-alert.gl-alert-info{ role: 'alert' }
+  .gl-alert.gl-alert-info.js-approaching-seats-count-threshold{ role: 'alert', data: { dismiss_endpoint: group_callouts_path,
+      feature_id: Users::GroupCalloutsHelper::APPROACHING_SEAT_COUNT_THRESHOLD,
+      group_id: root_namespace.id } }
     = sprite_icon('information-o', size: 16, css_class: 'gl-icon gl-alert-icon')
-    %button.js-close.gl-alert-dismiss{ type: 'button', 'aria-label' => _('Dismiss') }
+    %button.js-close.gl-alert-dismiss{ type: 'button', 'aria-label' => _('Dismiss'), data: { testid: 'approaching-seats-count-threshold-alert-dismiss' } }
       = sprite_icon('close', size: 16, css_class: 'gl-icon')
     .gl-alert-body
       %h4.gl-alert-title= _('%{group_name} is approaching the limit of available seats') % { group_name: group_name }

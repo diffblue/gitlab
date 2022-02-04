@@ -462,6 +462,10 @@ module EE
       levels.merge(::Gitlab::Access::MINIMAL_ACCESS_HASH)
     end
 
+    def last_billed_user_created_at
+      billed_group_and_projects_members.reverse_order.limit(1).pluck(:created_at).first
+    end
+
     override :users_count
     def users_count
       return all_group_members.count if minimal_access_role_allowed?
@@ -608,6 +612,15 @@ module EE
           shared_project_user_ids: shared_project_user_ids.to_set
         }
       end
+    end
+
+    def billed_group_and_projects_members
+      ::Member
+        .in_hierarchy(self)
+        .active
+        .non_guests
+        .non_invite
+        .order(:created_at)
     end
 
     # Members belonging directly to Group or its subgroups

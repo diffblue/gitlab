@@ -823,6 +823,39 @@ RSpec.describe Group do
     end
   end
 
+  describe '#last_billed_user_created_at' do
+    subject(:last_billed) { group.last_billed_user_created_at }
+
+    let(:group) { create(:group) }
+    let(:user) { create(:user) }
+
+    context 'without billed users' do
+      it { is_expected.to be nil }
+    end
+
+    context 'with guest users' do
+      before do
+        create(:group_member, :guest, user: user, source: group)
+      end
+
+      it { is_expected.to be nil }
+    end
+
+    context 'with billed users' do
+      let_it_be(:expected_time) { Time.new(2022, 4, 19, 00, 00, 00, '+00:00') }
+
+      before do
+        create(:group_member, user: create(:user), source: group, created_at: expected_time)
+        create(:group_member, :guest, user: user, source: group, created_at: '2022-07-02')
+        create(:group_member, user: create(:user), source: group, created_at: '2022-03-16')
+      end
+
+      it 'returns the last added billed member' do
+        expect(last_billed).to be_like_time(expected_time)
+      end
+    end
+  end
+
   describe '#saml_discovery_token' do
     it 'returns existing tokens' do
       group = create(:group, saml_discovery_token: 'existing')
