@@ -1,6 +1,6 @@
 <script>
 import { GlDropdownDivider, GlSegmentedControl, GlIcon, GlSprintf } from '@gitlab/ui';
-import { removeFlash } from '~/cycle_analytics/utils';
+import { removeFlash } from '~/analytics/shared/utils';
 import createFlash from '~/flash';
 import { s__, sprintf } from '~/locale';
 import {

@@ -1,10 +1,10 @@
 <script>
 import { GlEmptyState } from '@gitlab/ui';
 import { mapActions, mapState, mapGetters } from 'vuex';
+import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
 import PathNavigation from '~/cycle_analytics/components/path_navigation.vue';
 import StageTable from '~/cycle_analytics/components/stage_table.vue';
 import ValueStreamFilters from '~/cycle_analytics/components/value_stream_filters.vue';
-import ValueStreamMetrics from '~/cycle_analytics/components/value_stream_metrics.vue';
 import { OVERVIEW_STAGE_ID } from '~/cycle_analytics/constants';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { METRICS_REQUESTS } from '../constants';

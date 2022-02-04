@@ -1,10 +1,10 @@
 <script>
 import * as Sentry from '@sentry/browser';
 import * as DoraApi from 'ee/api/dora_api';
+import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
 import { toYmd } from '~/analytics/shared/utils';
 import createFlash from '~/flash';
 import { s__, sprintf } from '~/locale';
-import ValueStreamMetrics from '~/cycle_analytics/components/value_stream_metrics.vue';
 import { SUMMARY_METRICS_REQUEST } from '~/cycle_analytics/constants';
 import CiCdAnalyticsCharts from '~/vue_shared/components/ci_cd_analytics/ci_cd_analytics_charts.vue';
 import DoraChartHeader from './dora_chart_header.vue';
