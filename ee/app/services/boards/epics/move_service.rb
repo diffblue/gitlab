@@ -22,11 +22,7 @@ module Boards
 
       override :reposition_params
       def reposition_params(reposition_ids)
-        super.merge(list_id: params[:to_list_id], board_group: parent)
-      end
-
-      def reposition_parent
-        { board_id: board.id }
+        super.merge(list_id: params[:to_list_id], board_id: board.id, board_group: parent)
       end
     end
   end

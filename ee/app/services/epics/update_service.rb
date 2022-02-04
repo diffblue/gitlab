@@ -2,12 +2,16 @@
 
 module Epics
   class UpdateService < Epics::BaseService
+    include Gitlab::Utils::StrongMemoize
+
     EPIC_DATE_FIELDS = %I[
       start_date_fixed
       start_date_is_fixed
       due_date_fixed
       due_date_is_fixed
     ].freeze
+
+    attr_reader :epic_board_id
 
     def execute(epic)
       reposition_on_board(epic)
@@ -104,27 +108,25 @@ module Epics
     end
 
     def reposition_on_board(epic)
+      @epic_board_id = params.delete(:board_id)
+
       return unless params[:move_between_ids]
       return unless epic_board_id
 
       fill_missing_positions_before
 
-      epic_board_position = issuable_for_positioning(epic.id, epic_board_id, create_missing: true)
+      # we want to create missing only for the epic being moved
+      # other records are handled by PositionCreateService
+      epic_board_position = Boards::EpicBoardPosition.find_or_create_by!(epic_board_id: epic_board_id, epic_id: epic.id) # rubocop: disable CodeReuse/ActiveRecord
       handle_move_between_ids(epic_board_position)
 
       epic_board_position.save!
     end
 
-    # we want to create missing only for the epic being moved
-    # other records are handled by PositionCreateService
-    def issuable_for_positioning(id, board_id, create_missing: false)
+    def issuable_for_positioning(id, positioning_scope)
       return unless id
 
-      position = Boards::EpicBoardPosition.find_by_epic_id_and_epic_board_id(id, board_id)
-
-      return position if position
-
-      Boards::EpicBoardPosition.create!(epic_id: id, epic_board_id: board_id) if create_missing
+      positioning_scope.find_by_epic_id(id)
     end
 
     def fill_missing_positions_before
@@ -134,7 +136,7 @@ module Epics
 
       return unless before_id
       # if position for the epic above exists we don't need to create positioning records
-      return if issuable_for_positioning(before_id, epic_board_id)
+      return if Boards::EpicBoardPosition.exists?(epic_board_id: epic_board_id, epic_id: before_id) # rubocop: disable CodeReuse/ActiveRecord
 
       service_params = {
         board_id: epic_board_id,
@@ -143,14 +145,6 @@ module Epics
       }
 
       Boards::Epics::PositionCreateService.new(board_group, current_user, service_params).execute
-    end
-
-    def epic_board_id
-      params[positioning_scope_key]
-    end
-
-    def positioning_scope_key
-      :board_id
     end
 
     def saved_change_to_epic_dates?(epic)
