@@ -53,7 +53,7 @@ RSpec.describe TrialRegistrationsController do
     end
   end
 
-  describe '#create' do
+  describe '#create', :clean_gitlab_redis_rate_limiting do
     let(:user_params) do
       {
         first_name: 'John',
