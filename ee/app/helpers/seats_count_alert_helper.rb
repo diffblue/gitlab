@@ -26,9 +26,8 @@ module SeatsCountAlertHelper
   end
 
   def show_seats_count_alert?
-    return false unless root_namespace&.group_namespace?
-    return false unless root_namespace&.has_owner?(current_user)
-    return false unless current_subscription
+    return false unless ::Gitlab.dev_env_or_com? && group_with_owner? && current_subscription
+    return false if user_dismissed_alert?
 
     !!@display_seats_count_alert
   end
@@ -38,6 +37,22 @@ module SeatsCountAlertHelper
   end
 
   private
+
+  def user_dismissed_alert?
+    current_user.dismissed_callout_for_group?(
+      feature_name: Users::GroupCalloutsHelper::APPROACHING_SEAT_COUNT_THRESHOLD,
+      group: root_namespace,
+      ignore_dismissal_earlier_than: last_member_added_at
+    )
+  end
+
+  def last_member_added_at
+    root_namespace&.last_billed_user_created_at
+  end
+
+  def group_with_owner?
+    root_namespace&.group_namespace? && root_namespace&.has_owner?(current_user)
+  end
 
   def root_namespace
     @project&.root_ancestor || @group&.root_ancestor
