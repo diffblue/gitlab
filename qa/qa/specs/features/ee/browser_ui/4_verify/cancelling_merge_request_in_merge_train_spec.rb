@@ -2,7 +2,8 @@
 
 module QA
   RSpec.describe 'Verify' do
-    describe 'Cancelling merge request in merge train', :runner, :requires_admin do
+    # Quarantine at top level due to multiple failures, specified in examples
+    describe 'Cancelling merge request in merge train', :runner, :requires_admin, quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/340885' } do
       before(:all) do
         executor = "qa-runner-#{Faker::Alphanumeric.alphanumeric(8)}"
         @file_name = Faker::File.unique.file_name
@@ -88,8 +89,12 @@ module QA
         @user.remove_via_api!
       end
 
-      context 'when system cancels the merge request', quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/324122', type: :bug } do
-        it 'creates a TODO task', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347666' do
+      context 'when system cancels the merge request' do
+        it(
+          'creates a TODO task',
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347666',
+          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/324122' # type: :bug
+        ) do
           # Create a merge conflict
           Resource::Repository::Commit.fabricate_via_api! do |commit|
             commit.api_client = @user_api_client
@@ -121,8 +126,12 @@ module QA
         end
       end
 
-      context 'when user cancels the merge request', quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/340885', type: :flaky } do
-        it 'does not create a TODO task', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347665' do
+      context 'when user cancels the merge request' do
+        it(
+          'does not create a TODO task',
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347665',
+          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/340885' # type: :flaky
+        ) do
           # Manually removes merge request from the train
           Page::MergeRequest::Show.perform do |show|
             show.wait_until(reload: false) do
