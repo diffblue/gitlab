@@ -146,6 +146,11 @@ msgid_plural "%d approvers (you've approved)"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%d assigned issue"
+msgid_plural "%d assigned issues"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%d changed file"
 msgid_plural "%d changed files"
 msgstr[0] ""
@@ -37794,6 +37799,9 @@ msgid "To-do item successfully marked as done."
 msgstr ""
 
 msgid "Today"
+msgstr ""
+
+msgid "Todos count"
 msgstr ""
 
 msgid "Todos|Are you looking for things to do? Take a look at %{strongStart}%{openIssuesLinkStart}open issues%{openIssuesLinkEnd}%{strongEnd}, contribute to %{strongStart}%{mergeRequestLinkStart}a merge request%{mergeRequestLinkEnd}%{mergeRequestLinkEnd}%{strongEnd}, or mention someone in a comment to automatically assign them a new to-do item."
