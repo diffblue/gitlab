@@ -18,19 +18,17 @@ query DastScannerProfiles(
       pageInfo {
         ...PageInfo
       }
-      edges {
-        cursor
-        node {
-          id
-          profileName
-          spiderTimeout
-          targetTimeout
-          scanType
-          useAjaxSpider
-          showDebugMessages
-          editPath
-          referencedInSecurityPolicies
-        }
+      nodes {
+        __typename
+        id
+        profileName
+        spiderTimeout
+        targetTimeout
+        scanType
+        useAjaxSpider
+        showDebugMessages
+        editPath
+        referencedInSecurityPolicies
       }
     }
   }

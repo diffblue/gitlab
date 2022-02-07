@@ -100,11 +100,9 @@ export default {
         result({ data, error }) {
           if (!error) {
             const { project } = data;
-            const profileEdges = project?.[profileType]?.edges ?? [];
-            const profiles = profileEdges.map(({ node }) => node);
             const pageInfo = project?.[profileType].pageInfo;
 
-            this.profileTypes[profileType].profiles = profiles;
+            this.profileTypes[profileType].profiles = project?.[profileType]?.nodes;
             this.profileTypes[profileType].pageInfo = pageInfo;
           }
         },

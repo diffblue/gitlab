@@ -52,11 +52,11 @@ const createProfilesApolloOptions = (name, field, { fetchQuery, fetchError }) =>
     };
   },
   update(data) {
-    const edges = data?.project?.[name]?.edges ?? [];
-    if (edges.length === 1) {
-      this[field] = edges[0].node.id;
+    const nodes = data?.project?.[name]?.nodes ?? [];
+    if (nodes.length === 1) {
+      this[field] = nodes[0].id;
     }
-    return edges.map(({ node }) => node);
+    return nodes;
   },
   error(e) {
     Sentry.captureException(e);

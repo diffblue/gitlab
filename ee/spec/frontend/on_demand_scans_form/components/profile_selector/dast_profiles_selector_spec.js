@@ -3,6 +3,8 @@ import { createLocalVue } from '@vue/test-utils';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
 import { nextTick } from 'vue';
+import siteProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql.basic.json';
+import scannerProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql.basic.json';
 import DastProfilesSelector from 'ee/on_demand_scans_form/components/profile_selector/dast_profiles_selector.vue';
 import ScannerProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/scanner_profile_selector.vue';
 import SiteProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/site_profile_selector.vue';
@@ -11,7 +13,6 @@ import dastSiteProfilesQuery from 'ee/security_configuration/dast_profiles/graph
 import createApolloProvider from 'helpers/mock_apollo_helper';
 import setWindowLocation from 'helpers/set_window_location_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import waitForPromises from 'helpers/wait_for_promises';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import {
   siteProfiles,
@@ -19,7 +20,7 @@ import {
   nonValidatedSiteProfile,
   validatedSiteProfile,
 } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
-import * as responses from '../../mocks/apollo_mocks';
+import { itSelectsOnlyAvailableProfile } from '../shared_assertions';
 
 const URL_HOST = 'https://localhost/';
 
@@ -43,8 +44,8 @@ describe('EE - DAST Profiles Selector', () => {
   const createMockApolloProvider = (handlers) => {
     localVue.use(VueApollo);
     requestHandlers = {
-      dastScannerProfiles: jest.fn().mockResolvedValue(responses.dastScannerProfiles()),
-      dastSiteProfiles: jest.fn().mockResolvedValue(responses.dastSiteProfiles()),
+      dastScannerProfiles: jest.fn().mockResolvedValue(scannerProfilesFixtures),
+      dastSiteProfiles: jest.fn().mockResolvedValue(siteProfilesFixtures),
       ...handlers,
     };
     return createApolloProvider([
@@ -98,6 +99,7 @@ describe('EE - DAST Profiles Selector', () => {
         },
       ),
     );
+    return wrapper;
   };
 
   const createComponent = createComponentFactory();
@@ -105,6 +107,8 @@ describe('EE - DAST Profiles Selector', () => {
   afterEach(() => {
     wrapper.destroy();
   });
+
+  itSelectsOnlyAvailableProfile(createComponent);
 
   describe('loading state', () => {
     it.each`
@@ -160,29 +164,6 @@ describe('EE - DAST Profiles Selector', () => {
       );
     },
   );
-
-  describe.each`
-    profileType  | query                    | selector                  | profiles
-    ${'scanner'} | ${'dastScannerProfiles'} | ${ScannerProfileSelector} | ${scannerProfiles}
-    ${'site'}    | ${'dastSiteProfiles'}    | ${SiteProfileSelector}    | ${siteProfiles}
-  `('when there is a single $profileType profile', ({ query, selector, profiles }) => {
-    const [profile] = profiles;
-
-    beforeEach(async () => {
-      createComponent(
-        {},
-        {
-          [query]: jest.fn().mockResolvedValue(responses[query]([profile])),
-        },
-      );
-
-      await waitForPromises();
-    });
-
-    it('automatically selects the only available profile', () => {
-      expect(wrapper.findComponent(selector).attributes('value')).toBe(profile.id);
-    });
-  });
 
   describe('populate profiles from query params', () => {
     const [siteProfile] = siteProfiles;
