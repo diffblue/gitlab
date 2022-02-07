@@ -1,5 +1,5 @@
 <script>
-import { s__ } from '~/locale';
+import { ENABLED_LABEL, NOT_ENABLED_LABEL } from './constants';
 
 export default {
   props: {
@@ -11,9 +11,7 @@ export default {
   },
   computed: {
     statusLabel() {
-      return this.policy?.enabled
-        ? s__('SecurityOrchestration|Enabled')
-        : s__('SecurityOrchestration|Disabled');
+      return this.policy?.enabled ? ENABLED_LABEL : NOT_ENABLED_LABEL;
     },
   },
 };

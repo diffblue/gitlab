@@ -13,6 +13,8 @@ describe('ScanExecutionPolicy component', () => {
   const findDescription = () => wrapper.findByTestId('policy-description');
   const findLatestScan = () => wrapper.findByTestId('policy-latest-scan');
   const findRules = () => wrapper.findByTestId('policy-rules');
+  const findEnabledText = () => wrapper.findByTestId('enabled-status-text');
+  const findNotEnabledText = () => wrapper.findByTestId('not-enabled-status-text');
 
   const factory = ({ propsData } = {}) => {
     wrapper = shallowMountExtended(ScanExecutionPolicy, {
@@ -33,17 +35,28 @@ describe('ScanExecutionPolicy component', () => {
     });
 
     it.each`
-      component        | finder             | text
-      ${'actions'}     | ${findActions}     | ${''}
-      ${'rules'}       | ${findRules}       | ${''}
-      ${'description'} | ${findDescription} | ${'This policy enforces pipeline configuration to have a job with DAST scan'}
-      ${'latest scan'} | ${findLatestScan}  | ${''}
+      component         | finder             | text
+      ${'actions'}      | ${findActions}     | ${''}
+      ${'rules'}        | ${findRules}       | ${''}
+      ${'description'}  | ${findDescription} | ${'This policy enforces pipeline configuration to have a job with DAST scan'}
+      ${'latest scan'}  | ${findLatestScan}  | ${''}
+      ${'enabled text'} | ${findEnabledText} | ${''}
     `('does render the policy $component', ({ finder, text }) => {
       const component = finder();
       expect(component.exists()).toBe(true);
       if (text) {
         expect(component.text()).toBe(text);
       }
+    });
+  });
+
+  describe('not enabled policy', () => {
+    beforeEach(() => {
+      factory({ propsData: { policy: { ...mockScanExecutionPolicy, enabled: false } } });
+    });
+
+    it('does render the policy not enabled text', () => {
+      expect(findNotEnabledText().exists()).toBe(true);
     });
   });
 
