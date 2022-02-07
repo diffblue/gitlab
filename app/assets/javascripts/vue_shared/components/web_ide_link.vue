@@ -293,10 +293,9 @@ export default {
     </gl-modal>
     <confirm-fork-modal
       v-if="showWebIdeButton || showEditButton"
-      :is-visible="showForkModal"
+      v-model="showForkModal"
       :modal-id="forkModalId"
       :fork-path="forkPath"
-      @hide="showForkModal = false"
     />
   </div>
 </template>

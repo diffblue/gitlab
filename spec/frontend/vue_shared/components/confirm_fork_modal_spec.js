@@ -25,7 +25,7 @@ describe('vue_shared/components/confirm_fork_modal', () => {
     wrapper.destroy();
   });
 
-  describe('isVisible = false', () => {
+  describe('visible = false', () => {
     beforeEach(() => {
       wrapper = createComponent();
     });
@@ -60,21 +60,21 @@ describe('vue_shared/components/confirm_fork_modal', () => {
     });
   });
 
-  describe('isVisible = true', () => {
+  describe('visible = true', () => {
     beforeEach(() => {
-      wrapper = createComponent({ isVisible: true });
+      wrapper = createComponent({ visible: true });
     });
 
     it('sets the visible prop to `true`', () => {
       expect(findModalProp('visible')).toBe(true);
     });
 
-    it('emits the `hide` event if the modal is hidden', () => {
-      expect(wrapper.emitted('hide')).toBeUndefined();
+    it('emits the `change` event if the modal is hidden', () => {
+      expect(wrapper.emitted('change')).toBeUndefined();
 
-      findModal().vm.$emit('hide');
+      findModal().vm.$emit('change', false);
 
-      expect(wrapper.emitted('hide')).toHaveLength(1);
+      expect(wrapper.emitted('change')).toEqual([[false]]);
     });
   });
 });

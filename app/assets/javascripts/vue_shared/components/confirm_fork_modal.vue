@@ -15,8 +15,12 @@ export default {
   components: {
     GlModal,
   },
+  model: {
+    prop: 'visible',
+    event: 'change',
+  },
   props: {
-    isVisible: {
+    visible: {
       type: Boolean,
       required: false,
       default: false,
@@ -46,23 +50,18 @@ export default {
       };
     },
   },
-  methods: {
-    handleHide() {
-      this.$emit('hide');
-    },
-  },
   i18n,
 };
 </script>
 <template>
   <gl-modal
+    :visible="visible"
     data-qa-selector="confirm_fork_modal"
-    :visible="isVisible"
     :modal-id="modalId"
     :title="$options.i18n.title"
     :action-primary="btnActions.primary"
     :action-cancel="btnActions.cancel"
-    @hide="handleHide"
+    @change="$emit('change', $event)"
   >
     <p>{{ $options.i18n.message }}</p>
   </gl-modal>

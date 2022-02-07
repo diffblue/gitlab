@@ -272,7 +272,7 @@ describe('Web IDE link component', () => {
 
       expect(findForkConfirmModal().exists()).toBe(true);
       expect(findForkConfirmModal().props()).toEqual({
-        isVisible: false,
+        visible: false,
         forkPath,
         modalId: props.forkModalId,
       });
@@ -284,7 +284,7 @@ describe('Web IDE link component', () => {
       await findActionsButton().trigger('click');
 
       expect(findForkConfirmModal().props()).toEqual({
-        isVisible: true,
+        visible: true,
         forkPath,
         modalId: props.forkModalId,
       });
