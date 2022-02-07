@@ -13,7 +13,7 @@ module Ci
     include TaggableQueries
     include Presentable
 
-    add_authentication_token_field :token, encrypted: :optional
+    add_authentication_token_field :token, encrypted: :optional, expires_at: :compute_token_expiration, expiration_enforced?: :token_expiration_enforced?
 
     enum access_level: {
       not_protected: 0,
@@ -479,6 +479,21 @@ module Ci
       end
     end
 
+    def compute_token_expiration
+      case runner_type
+      when 'instance_type'
+        compute_token_expiration_instance
+      when 'group_type'
+        compute_token_expiration_group
+      when 'project_type'
+        compute_token_expiration_project
+      end
+    end
+
+    def self.token_expiration_enforced?
+      Feature.enabled?(:enforce_runner_token_expires_at, default_enabled: :yaml)
+    end
+
     private
 
     EXECUTOR_NAME_TO_TYPES = {
@@ -497,6 +512,20 @@ module Ci
     }.freeze
 
     EXECUTOR_TYPE_TO_NAMES = EXECUTOR_NAME_TO_TYPES.invert.freeze
+
+    def compute_token_expiration_instance
+      return unless expiration_interval = Gitlab::CurrentSettings.runner_token_expiration_interval
+
+      expiration_interval.seconds.from_now
+    end
+
+    def compute_token_expiration_group
+      ::Group.where(id: runner_namespaces.map(&:namespace_id)).map(&:effective_runner_token_expiration_interval).compact.min&.from_now
+    end
+
+    def compute_token_expiration_project
+      Project.where(id: runner_projects.map(&:project_id)).map(&:effective_runner_token_expiration_interval).compact.min&.from_now
+    end
 
     def cleanup_runner_queue
       Gitlab::Redis::SharedState.with do |redis|
