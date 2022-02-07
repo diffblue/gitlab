@@ -1,5 +1,5 @@
 <script>
-import { GlLink } from '@gitlab/ui';
+import { GlIcon, GlLink } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import {
   fromYaml,
@@ -20,6 +20,7 @@ export default {
     viewResults: s__('SecurityOrchestration|view results'),
   },
   components: {
+    GlIcon,
     GlLink,
     BasePolicy,
     PolicyInfoRow,
@@ -71,7 +72,12 @@ export default {
         </policy-info-row>
 
         <policy-info-row :label="$options.i18n.status">
-          {{ statusLabel }}
+          <div v-if="policy.enabled" class="gl-text-green-500" data-testid="enabled-status-text">
+            <gl-icon name="check-circle-filled" class="gl-mr-3" />{{ statusLabel }}
+          </div>
+          <div v-else class="gl-text-gray-500" data-testid="not-enabled-status-text">
+            {{ statusLabel }}
+          </div>
         </policy-info-row>
 
         <policy-info-row
