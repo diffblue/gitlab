@@ -194,6 +194,15 @@ RSpec.describe QuickActions::InterpretService do
 
           expect(updates[:reviewer_ids]).to match_array([user3.id])
         end
+
+        it 'does not unassign reviewers if the content cannot be parsed' do
+          merge_request.update!(reviewer_ids: [user.id, user2.id, user3.id])
+
+          _, updates, msg = service.execute("/unassign_reviewer nobody", merge_request)
+
+          expect(updates[:reviewer_ids]).to be_nil
+          expect(msg).to eq "Could not apply unassign_reviewer command. Failed to find users for 'nobody'."
+        end
       end
     end
 
@@ -224,9 +233,18 @@ RSpec.describe QuickActions::InterpretService do
 
           expect(updates[:assignee_ids]).to be_empty
         end
+
+        it 'does not apply command if the argument cannot be parsed' do
+          issue.update!(assignee_ids: [user.id, user2.id])
+
+          _, updates, msg = service.execute("/assign nobody", issue)
+
+          expect(updates[:assignee_ids]).to be_nil
+          expect(msg).to eq "Could not apply assign command. Failed to find users for 'nobody'."
+        end
       end
 
-      context 'Merge Request' do
+      context 'with a Merge Request' do
         let(:merge_request) { create(:merge_request, source_project: project) }
 
         it 'unassigns user if content contains /unassign @user' do
@@ -237,7 +255,7 @@ RSpec.describe QuickActions::InterpretService do
           expect(updates[:assignee_ids]).to match_array([user.id])
         end
 
-        context 'unassign command with multiple assignees' do
+        describe 'applying unassign command with multiple assignees' do
           it 'unassigns both users if content contains /unassign @user @user1' do
             merge_request.update!(assignee_ids: [user.id, user2.id, user3.id])
 
@@ -246,7 +264,7 @@ RSpec.describe QuickActions::InterpretService do
             expect(updates[:assignee_ids]).to match_array([user3.id])
           end
 
-          context 'unlicensed' do
+          context 'when unlicensed' do
             before do
               stub_licensed_features(multiple_merge_request_assignees: false)
             end
