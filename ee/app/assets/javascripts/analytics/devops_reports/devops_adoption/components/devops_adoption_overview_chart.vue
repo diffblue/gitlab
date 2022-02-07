@@ -1,7 +1,5 @@
 <script>
 import dateFormat from 'dateformat';
-import { isFunction } from 'lodash';
-import { GlResizeObserverDirective } from '@gitlab/ui';
 import { GlStackedColumnChart } from '@gitlab/ui/dist/charts';
 import { dateFormats } from '~/analytics/shared/constants';
 import { formatNumber } from '~/locale';
@@ -25,9 +23,6 @@ export default {
     ChartSkeletonLoader,
     GlStackedColumnChart,
     DevopsAdoptionTableCellFlag,
-  },
-  directives: {
-    GlResizeObserverDirective,
   },
   i18n: {
     chartTitle: I18N_OVERVIEW_CHART_TITLE,
@@ -110,11 +105,6 @@ export default {
 
       return dateFormat(date.setDate(1), dateFormats.isoDate);
     },
-    onResize() {
-      if (isFunction(this.chartInstance?.resize)) {
-        this.chartInstance.resize();
-      }
-    },
     formatTooltipText(params) {
       const { value, seriesData } = params;
       const { dataIndex } = seriesData[0];
@@ -148,7 +138,7 @@ export default {
 
     <gl-stacked-column-chart
       v-if="!$apollo.queries.devopsAdoptionEnabledNamespaces.loading"
-      v-gl-resize-observer-directive="onResize"
+      :responsive="true"
       :bars="chartData"
       :presentation="$options.presentation"
       :option="chartOptions"
