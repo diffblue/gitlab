@@ -5,12 +5,14 @@ require 'spec_helper'
 RSpec.describe Notes::BuildService do
   include AdminModeHelper
 
-  let(:note) { create(:discussion_note_on_issue) }
+  let_it_be(:note) { create(:discussion_note_on_issue) }
+
   let(:project) { note.project }
   let(:author) { note.author }
   let(:user) { author }
   let(:merge_request) { create(:merge_request, source_project: project) }
   let(:mr_note) { create(:discussion_note_on_merge_request, noteable: merge_request, project: project, author: note.author) }
+
   let(:base_params) { { note: 'Test' } }
   let(:params) { {} }
 
@@ -155,26 +157,91 @@ RSpec.describe Notes::BuildService do
     end
 
     context 'confidential comments' do
+      let_it_be(:assignee) { create(:user) }
+      let_it_be(:guest) { create(:user) }
+      let_it_be(:external) { create(:user) }
+      let_it_be(:admin) { create(:admin) }
+
       before do
-        project.add_reporter(author)
+        project.update_attribute(:visibility_level, Project::PUBLIC)
       end
 
       context 'when replying to a confidential comment' do
         let(:note) { create(:note_on_issue, confidential: true) }
         let(:params) { { in_reply_to_discussion_id: note.discussion_id, confidential: false } }
 
-        context 'when the user can read confidential comments' do
-          it '`confidential` param is ignored and set to `true`' do
+        shared_examples 'returns `Discussion to reply to cannot be found` error' do
+          it 'returns `Discussion to reply to cannot be found` error' do
+            expect(new_note.errors.added?(:base, "Discussion to reply to cannot be found")).to be true
+          end
+        end
+
+        shared_examples 'confidential set to `true`' do
+          it '`confidential` param is ignored' do
             expect(new_note.confidential).to be_truthy
           end
         end
 
-        context 'when the user cannot read confidential comments' do
-          let(:user) { create(:user) }
-
-          it 'returns `Discussion to reply to cannot be found` error' do
-            expect(new_note.errors.added?(:base, "Discussion to reply to cannot be found")).to be true
+        context 'with reporter access' do
+          before do
+            project.add_reporter(author)
           end
+
+          it_behaves_like 'confidential set to `true`'
+        end
+
+        context 'with admin access' do
+          let(:user) { admin }
+
+          before do
+            enable_admin_mode!(admin)
+          end
+
+          it_behaves_like 'confidential set to `true`'
+        end
+
+        context 'with noteable author' do
+          let(:user) { note.noteable.author }
+
+          it_behaves_like 'confidential set to `true`'
+        end
+
+        context 'with noteable assignee' do
+          let(:user) { assignee }
+
+          before do
+            project
+            note.noteable.assignees = [assignee]
+          end
+
+          it_behaves_like 'confidential set to `true`'
+        end
+
+        context 'with noteable assignee' do
+          let(:user) { assignee }
+
+          before do
+            project
+            note.noteable.assignees = [assignee]
+          end
+
+          it_behaves_like 'confidential set to `true`'
+        end
+
+        context 'with guest access' do
+          let(:user) { guest }
+
+          before do
+            project.add_guest(guest)
+          end
+
+          it_behaves_like 'returns `Discussion to reply to cannot be found` error'
+        end
+
+        context 'with external user' do
+          let(:user) { external }
+
+          it_behaves_like 'returns `Discussion to reply to cannot be found` error'
         end
       end
 
@@ -189,22 +256,37 @@ RSpec.describe Notes::BuildService do
 
       context 'when creating a new comment' do
         context 'when the `confidential` note flag is set to `true`' do
+          shared_examples 'sets confidentiality as `true`' do
+            it { expect(new_note.confidential).to be_truthy }
+          end
+
+          shared_examples 'sets confidentiality as `false`' do
+            it { expect(new_note.confidential).to be_falsey }
+          end
+
           context 'when the user is allowed (reporter)' do
             let(:params) { { confidential: true, noteable: merge_request } }
 
-            it 'note `confidential` flag is set to `true`' do
-              expect(new_note.confidential).to be_truthy
-            end
+            it_behaves_like 'sets confidentiality as `true`'
           end
 
           context 'when the user is allowed (issuable author)' do
-            let(:user) { create(:user) }
+            let(:user) { external }
             let(:issue) { create(:issue, author: user) }
             let(:params) { { confidential: true, noteable: issue } }
 
-            it 'note `confidential` flag is set to `true`' do
-              expect(new_note.confidential).to be_truthy
+            it_behaves_like 'sets confidentiality as `true`'
+          end
+
+          context 'when the user is allowed (issuable assignee)' do
+            let(:user) { assignee }
+            let(:params) { { confidential: true, noteable: merge_request } }
+
+            before do
+              merge_request.assignees = [assignee]
             end
+
+            it_behaves_like 'sets confidentiality as `true`'
           end
 
           context 'when the user is allowed (admin)' do
@@ -212,21 +294,28 @@ RSpec.describe Notes::BuildService do
               enable_admin_mode!(admin)
             end
 
-            let(:admin) { create(:admin) }
+            let(:user) { admin }
             let(:params) { { confidential: true, noteable: merge_request } }
 
-            it 'note `confidential` flag is set to `true`' do
-              expect(new_note.confidential).to be_truthy
-            end
+            it_behaves_like 'sets confidentiality as `true`'
           end
 
-          context 'when the user is not allowed' do
-            let(:user) { create(:user) }
+          context 'when the user is not allowed (external)' do
+            let(:user) { external }
             let(:params) { { confidential: true, noteable: merge_request } }
 
-            it 'note `confidential` flag is set to `false`' do
-              expect(new_note.confidential).to be_falsey
+            it_behaves_like 'sets confidentiality as `false`'
+          end
+
+          context 'when the user is not allowed (guest)' do
+            let(:user) { guest }
+            let(:params) { { confidential: true, noteable: merge_request } }
+
+            before do
+              project.add_guest(guest)
             end
+
+            it_behaves_like 'sets confidentiality as `false`'
           end
         end
 
