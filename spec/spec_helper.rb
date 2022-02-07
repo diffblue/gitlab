@@ -184,7 +184,6 @@ RSpec.configure do |config|
   config.include RedisHelpers
   config.include Rails.application.routes.url_helpers, type: :routing
   config.include PolicyHelpers, type: :policy
-  config.include MemoryUsageHelper
   config.include ExpectRequestWithStatus, type: :request
   config.include IdempotentWorkerHelper, type: :worker
   config.include RailsHelpers
@@ -242,10 +241,6 @@ RSpec.configure do |config|
   config.prepend_before do
     ApplicationRecord.set_open_transactions_baseline
     ::Ci::ApplicationRecord.set_open_transactions_baseline
-  end
-
-  config.append_before do
-    Thread.current[:current_example_group] = ::RSpec.current_example.metadata[:example_group]
   end
 
   config.append_after do
