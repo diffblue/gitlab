@@ -161,26 +161,25 @@ module EE
           desc 'Get a list of users provisioned by the group' do
             success Entities::UserPublic
           end
+          params do
+            optional :username, type: String, desc: 'Get a single user with a specific username'
+            optional :search, type: String, desc: 'Search for a user name, email or username'
+            optional :active, type: Grape::API::Boolean, default: false, desc: 'Filters only active users'
+            optional :blocked, type: Grape::API::Boolean, default: false, desc: 'Filters only blocked users'
+            optional :created_after, type: DateTime, desc: 'Return users created after the specified time'
+            optional :created_before, type: DateTime, desc: 'Return users created before the specified time'
+
+            use :pagination
+          end
           # rubocop: disable CodeReuse/ActiveRecord
-          get ':provisioning_group_id/provisioned_users' do
-            params do
-              requires :provisioning_group_id, type: String, desc: 'The ID of the group'
+          get ':id/provisioned_users' do
+            authorize! :maintainer_access, user_group
 
-              optional :username, type: String, desc: 'Get a single user with a specific username'
-              optional :search, type: String, desc: 'Search for a user name, email or username'
-              optional :active, type: Boolean, default: false, desc: 'Filters only active users'
-              optional :blocked, type: Boolean, default: false, desc: 'Filters only blocked users'
-              optional :created_after, type: DateTime, desc: 'Return users created after the specified time'
-              optional :created_before, type: DateTime, desc: 'Return users created before the specified time'
+            finder = ::Auth::ProvisionedUsersFinder.new(
+              current_user,
+              declared_params.merge(provisioning_group: user_group))
 
-              use :sort_params
-              use :pagination
-            end
-
-            group = find_group!(params[:provisioning_group_id])
-            authorize! :maintainer_access, group
-
-            users = ::Auth::ProvisionedUsersFinder.new(current_user, params).execute.preload(:identities)
+            users = finder.execute.preload(:identities)
 
             present paginate(users), with: ::API::Entities::UserPublic
           end

@@ -23,16 +23,16 @@ RSpec.describe Auth::ProvisionedUsersFinder do
     subject(:finder) { described_class.new(user, params).execute }
 
     describe '#base_scope' do
-      context 'when provisioning_group_id param is not passed' do
-        let(:params) { { provisioning_group_id: nil } }
+      context 'when provisioning_group param is not passed' do
+        let(:params) { { provisioning_group: nil } }
 
         it 'raises provisioning group error' do
-          expect { finder }.to raise_error RuntimeError, 'Provisioning group is required for ProvisionedUsersFinder'
+          expect { finder }.to raise_error ArgumentError, 'Provisioning group is required for ProvisionedUsersFinder'
         end
       end
 
-      context 'when provisioning_group_id param is passed' do
-        let(:params) { { provisioning_group_id: group.id } }
+      context 'when provisioning_group param is passed' do
+        let(:params) { { provisioning_group: group } }
 
         it 'returns provisioned_user' do
           users = finder
@@ -42,7 +42,7 @@ RSpec.describe Auth::ProvisionedUsersFinder do
     end
 
     describe '#by_search' do
-      let(:params) { { provisioning_group_id: group.id, search: provisioned_user.email } }
+      let(:params) { { provisioning_group: group, search: provisioned_user.email } }
 
       it 'filters by search' do
         users = finder

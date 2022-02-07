@@ -1535,20 +1535,20 @@ Get a list of users provisioned by a given group. Does not include users provisi
 Requires at least the Maintainer role on the group.
 
 ```plaintext
-GET /groups/:provisioned_group_id/provisioned_users
+GET /groups/:id/provisioned_users
 ```
 
 Parameters:
 
-| Attribute              | Type     | Required | Description                                   |
-|------------------------|----------|----------|-----------------------------------------------|
-| `provisioned_group_id` | integer  | yes      | The ID or [URL-encoded path of the group](index.md#namespaced-path-encoding)                               |
-| `username`             | string   | no       | Get a single user with a specific username    |
-| `search`               | string   | no       | Filter list by name, email or username        |
-| `active`               | boolean  | no       | Filters only active users |
-| `blocked`              | boolean  | no       | Filters only blocked users |
-| `created_after`               | datetime | no       | Return users created after the specified time |
-| `created_before`               | datetime | no       | Return users created before the specified time |
+| Attribute        | Type           | Required | Description                                   |
+|------------------|----------------|----------|-----------------------------------------------|
+| `id`             | integer/string | yes      | The ID or [URL-encoded path of the group](index.md#namespaced-path-encoding)                               |
+| `username`       | string         | no       | Get a single user with a specific username    |
+| `search`         | string         | no       | Filter list by name, email or username        |
+| `active`         | boolean        | no       | Filters only active users |
+| `blocked`        | boolean        | no       | Filters only blocked users |
+| `created_after`  | datetime       | no       | Return users created after the specified time |
+| `created_before` | datetime       | no       | Return users created before the specified time |
 
 ```json
 [

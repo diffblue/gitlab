@@ -104,18 +104,6 @@ RSpec.describe User do
         expect(described_class.managed_by(group)).to match_array(managed_users)
       end
     end
-
-    describe '.provisioned_by_group' do
-      let_it_be(:group) { create(:group) }
-      let_it_be(:scim_identity) { create(:scim_identity, group: group) }
-      let_it_be(:provisioned_user) { create(:user, provisioned_by_group_id: scim_identity.group.id) }
-      let_it_be(:non_provisioned_user) { create(:user).tap { |u| group.add_developer(u) } }
-      let_it_be(:user) { create(:user) }
-
-      it 'returns users provisioned or managed by the specified group' do
-        expect(described_class.provisioned_by_group(group.id)).to match_array([provisioned_user])
-      end
-    end
   end
 
   describe 'after_create' do
