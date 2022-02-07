@@ -13,10 +13,24 @@ RSpec.describe Ci::JobArtifacts::DestroyBatchService do
     let_it_be(:artifact) { create(:ci_job_artifact) }
     let_it_be(:security_scan) { create(:security_scan, build: artifact.job) }
     let_it_be(:security_finding) { create(:security_finding, scan: security_scan) }
+    let_it_be(:event_data) { { job_ids: [artifact.job_id] } }
 
-    it 'destroys all expired artifacts' do
+    it 'destroys all expired artifacts', :sidekiq_inline do
       expect { subject }.to change { Ci::JobArtifact.count }.by(-1)
                         .and change { Security::Finding.count }.from(1).to(0)
+    end
+
+    it 'publishes Ci::JobArtifactsDeletedEvent' do
+      event = double(:event)
+
+      expect(Ci::JobArtifactsDeletedEvent)
+        .to receive(:new)
+        .with(data: event_data)
+        .and_return(event)
+
+      expect(Gitlab::EventStore).to receive(:publish).with(event)
+
+      subject
     end
 
     context 'with Geo replication' do

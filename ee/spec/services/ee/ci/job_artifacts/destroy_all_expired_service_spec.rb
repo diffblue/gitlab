@@ -20,10 +20,24 @@ RSpec.describe Ci::JobArtifacts::DestroyAllExpiredService, :clean_gitlab_redis_s
     context 'when artifact is expired' do
       context 'when artifact is not locked' do
         let!(:artifact) { create(:ci_job_artifact, :expired, job: job, locked: job.pipeline.locked) }
+        let(:event_data) { { job_ids: [artifact.job_id] } }
 
-        it 'destroys job artifact and the security finding' do
+        it 'destroys job artifact and the security finding', :sidekiq_inline do
           expect { subject }.to change { Ci::JobArtifact.count }.by(-1)
                             .and change { Security::Finding.count }.by(-1)
+        end
+
+        it 'publishes Ci::JobArtifactsDeletedEvent' do
+          event = double(:event)
+
+          expect(Ci::JobArtifactsDeletedEvent)
+            .to receive(:new)
+            .with(data: event_data)
+            .and_return(event)
+
+          expect(Gitlab::EventStore).to receive(:publish).with(event)
+
+          subject
         end
       end
 
@@ -55,23 +69,6 @@ RSpec.describe Ci::JobArtifacts::DestroyAllExpiredService, :clean_gitlab_redis_s
       end
     end
 
-    context 'when failed to destroy artifact' do
-      before do
-        stub_const('Ci::JobArtifacts::DestroyAllExpiredService::LOOP_LIMIT', 10)
-        expect(Ci::DeletedObject)
-          .to receive(:bulk_import)
-          .once
-          .and_raise(ActiveRecord::RecordNotDestroyed)
-      end
-
-      let!(:artifact) { create(:ci_job_artifact, :expired, job: job, locked: job.pipeline.locked) }
-
-      it 'raises an exception but destroys the security_finding object regardless' do
-        expect { subject }.to raise_error(ActiveRecord::RecordNotDestroyed)
-          .and change { Security::Finding.count }.by(-1)
-      end
-    end
-
     context 'when there are artifacts more than batch sizes' do
       before do
         stub_const('Ci::JobArtifacts::DestroyAllExpiredService::BATCH_SIZE', 1)
@@ -83,13 +80,13 @@ RSpec.describe Ci::JobArtifacts::DestroyAllExpiredService, :clean_gitlab_redis_s
       let!(:second_security_scan) { create(:security_scan, build: second_job) }
       let!(:second_security_finding) { create(:security_finding, scan: second_security_scan) }
 
-      it 'destroys all expired artifacts' do
+      it 'destroys all expired artifacts', :sidekiq_inline do
         expect { subject }.to change { Ci::JobArtifact.count }.by(-2)
                           .and change { Security::Finding.count }.by(-2)
       end
     end
 
-    context 'when some artifacts are locked' do
+    context 'when some artifacts are locked', :sidekiq_inline do
       let!(:artifact) { create(:ci_job_artifact, :expired, job: job, locked: job.pipeline.locked) }
       let!(:second_artifact) { create(:ci_job_artifact, :expired, job: locked_job, locked: locked_job.pipeline.locked) }
 

@@ -8,22 +8,18 @@ module EE
 
         private
 
-        override :destroy_related_records
-        def destroy_related_records(artifacts)
-          ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.allow_cross_database_modification_within_transaction(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/346236') do
-            destroy_security_findings(artifacts)
-          end
-        end
-
         override :after_batch_destroy_hook
         def after_batch_destroy_hook(artifacts)
+          # This DestroyBatchService is used from different services.
+          # One of them is when pipeline is destroyed, and then eventually call DestroyBatchService via DestroyAssociationsService.
+          # So in this case even if it is invoked after a transaction but it is still under Ci::Pipeline.transaction.
+          Sidekiq::Worker.skipping_transaction_check do
+            ::Gitlab::EventStore.publish(
+              ::Ci::JobArtifactsDeletedEvent.new(data: { job_ids: artifacts.map(&:job_id) })
+            )
+          end
+
           insert_geo_event_records(artifacts)
-        end
-
-        def destroy_security_findings(artifacts)
-          job_ids = artifacts.map(&:job_id)
-
-          ::Security::Finding.by_build_ids(job_ids).delete_all
         end
 
         def insert_geo_event_records(artifacts)

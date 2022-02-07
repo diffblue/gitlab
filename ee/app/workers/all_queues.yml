@@ -1282,6 +1282,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: security_findings_delete_by_job_id
+  :worker_name: Security::Findings::DeleteByJobIdWorker
+  :feature_category: :vulnerability_management
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :cpu
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: set_user_status_based_on_user_cap_setting
   :worker_name: SetUserStatusBasedOnUserCapSettingWorker
   :feature_category: :users
