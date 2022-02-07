@@ -1,7 +1,10 @@
 package git
 
 import (
+	"context"
+	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net"
 	"net/http/httptest"
@@ -10,9 +13,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
+	"gitlab.com/gitlab-org/gitaly/v14/client"
 	"gitlab.com/gitlab-org/gitaly/v14/proto/go/gitalypb"
 
 	"gitlab.com/gitlab-org/gitlab/workhorse/internal/api"
@@ -23,22 +29,22 @@ var (
 	originalUploadPackTimeout = uploadPackTimeout
 )
 
-type fakeReader struct {
-	n   int
-	err error
+type waitReader struct {
+	t time.Duration
 }
 
-func (f *fakeReader) Read(b []byte) (int, error) {
-	return f.n, f.err
+func (f *waitReader) Read(b []byte) (int, error) {
+	time.Sleep(f.t)
+	return 0, io.EOF
 }
 
 type smartHTTPServiceServer struct {
 	gitalypb.UnimplementedSmartHTTPServiceServer
-	PostUploadPackFunc func(gitalypb.SmartHTTPService_PostUploadPackServer) error
+	handler func(context.Context, *gitalypb.PostUploadPackWithSidechannelRequest) (*gitalypb.PostUploadPackWithSidechannelResponse, error)
 }
 
-func (srv *smartHTTPServiceServer) PostUploadPack(s gitalypb.SmartHTTPService_PostUploadPackServer) error {
-	return srv.PostUploadPackFunc(s)
+func (srv *smartHTTPServiceServer) PostUploadPackWithSidechannel(ctx context.Context, req *gitalypb.PostUploadPackWithSidechannelRequest) (*gitalypb.PostUploadPackWithSidechannelResponse, error) {
+	return srv.handler(ctx, req)
 }
 
 func TestUploadPackTimesOut(t *testing.T) {
@@ -46,21 +52,26 @@ func TestUploadPackTimesOut(t *testing.T) {
 	defer func() { uploadPackTimeout = originalUploadPackTimeout }()
 
 	addr := startSmartHTTPServer(t, &smartHTTPServiceServer{
-		PostUploadPackFunc: func(stream gitalypb.SmartHTTPService_PostUploadPackServer) error {
-			_, err := stream.Recv() // trigger a read on the client request body
-			require.NoError(t, err)
-			return nil
+		handler: func(ctx context.Context, req *gitalypb.PostUploadPackWithSidechannelRequest) (*gitalypb.PostUploadPackWithSidechannelResponse, error) {
+			conn, err := client.OpenServerSidechannel(ctx)
+			if err != nil {
+				return nil, err
+			}
+			defer conn.Close()
+
+			_, _ = io.Copy(ioutil.Discard, conn)
+			return &gitalypb.PostUploadPackWithSidechannelResponse{}, nil
 		},
 	})
 
-	body := &fakeReader{n: 0, err: nil}
+	body := &waitReader{t: 10 * time.Millisecond}
 
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest("GET", "/", body)
-	a := &api.Response{GitalyServer: gitaly.Server{Address: addr}}
+	a := &api.Response{GitalyServer: gitaly.Server{Address: addr, Sidechannel: true}}
 
 	err := handleUploadPack(NewHttpResponseWriter(w), r, a)
-	require.EqualError(t, err, "smarthttp.UploadPack: busyReader: context deadline exceeded")
+	require.True(t, errors.Is(err, context.DeadlineExceeded))
 }
 
 func startSmartHTTPServer(t testing.TB, s gitalypb.SmartHTTPServiceServer) string {
@@ -73,7 +84,7 @@ func startSmartHTTPServer(t testing.TB, s gitalypb.SmartHTTPServiceServer) strin
 	ln, err := net.Listen("unix", socket)
 	require.NoError(t, err)
 
-	srv := grpc.NewServer()
+	srv := grpc.NewServer(client.SidechannelServer(logrus.NewEntry(logrus.StandardLogger()), insecure.NewCredentials()))
 	gitalypb.RegisterSmartHTTPServiceServer(srv, s)
 	go func() {
 		require.NoError(t, srv.Serve(ln))
