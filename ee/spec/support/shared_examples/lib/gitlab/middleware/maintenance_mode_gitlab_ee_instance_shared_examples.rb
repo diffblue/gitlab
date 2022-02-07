@@ -176,6 +176,13 @@ RSpec.shared_examples 'write access for a read-only GitLab (EE) instance in main
         expect(response).to be_redirect
         expect(subject).to disallow_request
       end
+
+      it "allows Geo POST GraphQL requests" do
+        response = request.post("/api/#{API::API.version}/geo/graphql")
+
+        expect(response).not_to be_redirect
+        expect(subject).not_to disallow_request
+      end
     end
   end
 end

@@ -577,6 +577,12 @@ RSpec.describe GeoNode, :request_store, :geo, type: :model do
     end
   end
 
+  describe '#graphql_url' do
+    it 'returns an api url to the graphql endpoint' do
+      expect(new_primary_node.graphql_url).to eq("https://localhost:3000/gitlab/api/#{api_version}/geo/graphql")
+    end
+  end
+
   describe '#snapshot_url' do
     let(:project) { create(:project) }
     let(:snapshot_url) { "https://localhost:3000/gitlab/api/#{api_version}/projects/#{project.id}/snapshot" }

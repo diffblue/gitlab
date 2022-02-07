@@ -35,9 +35,9 @@ RSpec.describe Geo::NodeStatusRequestService, :geo do
                                   Net::HTTP::Post,
                                   primary.status_url,
                                   hash_including(body: hash_not_including('id')))
-                                .and_return(double(success?: true))
+                                .and_return(double(success?: true, parsed_response: { 'message' => 'Test' }))
 
-      described_class.new(args).execute
+      expect(described_class.new(args).execute).to be_truthy
     end
 
     it 'sends geo_node_id in the request' do
@@ -53,9 +53,9 @@ RSpec.describe Geo::NodeStatusRequestService, :geo do
                                   Net::HTTP::Post,
                                   primary.status_url,
                                   hash_including(body: hash_including('geo_node_id' => secondary.id)))
-                                .and_return(double(success?: true))
+                                .and_return(double(success?: true, parsed_response: { 'message' => 'Test' }))
 
-      described_class.new(args).execute
+      expect(described_class.new(args).execute).to be_truthy
     end
 
     it 'sends all of the data in the status JSONB field in the request' do
@@ -69,9 +69,9 @@ RSpec.describe Geo::NodeStatusRequestService, :geo do
                                     body: hash_including(
                                       'status' => hash_including(
                                         *GeoNodeStatus::RESOURCE_STATUS_FIELDS))))
-                                .and_return(double(success?: true))
+                                .and_return(double(success?: true, parsed_response: { 'message' => 'Test' }))
 
-      described_class.new(args).execute
+      expect(described_class.new(args).execute).to be_truthy
     end
   end
 end

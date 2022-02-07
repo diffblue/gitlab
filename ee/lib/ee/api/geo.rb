@@ -202,6 +202,34 @@ module EE
               response.body
             end
           end
+
+          resource 'node_proxy' do
+            before do
+              authenticated_as_admin!
+            end
+
+            route_param :id, type: Integer, desc: 'The ID of the Geo node' do
+              helpers do
+                def geo_node
+                  strong_memoize(:geo_node) { GeoNode.find(params[:id]) }
+                end
+              end
+
+              # Query the graphql endpoint of an existing Geo node
+              #
+              # Example request:
+              #   POST /geo/node_proxy/:id/graphql
+              desc 'Query the graphql endpoint of a specific Geo node'
+              post 'graphql' do
+                not_found!('GeoNode') unless geo_node
+
+                body = env['api.request.input']
+
+                status 200
+                ::Geo::GraphqlRequestService.new(geo_node, current_user).execute(body) || {}
+              end
+            end
+          end
         end
       end
     end
