@@ -1,5 +1,4 @@
 import { GlTab } from '@gitlab/ui';
-import { mount } from '@vue/test-utils';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import EpicTabs from 'ee/epic/components/epic_tabs.vue';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -13,8 +12,8 @@ const containerClass = 'container-limited';
 describe('EpicTabs', () => {
   let wrapper;
 
-  const createComponent = ({ provide = {}, mountType = shallowMountExtended } = {}) => {
-    return mountType(EpicTabs, {
+  const createComponent = ({ provide = {} } = {}) => {
+    return shallowMountExtended(EpicTabs, {
       provide: {
         treeElementSelector: `#${treeTabpaneID}`,
         roadmapElementSelector: `#${roadmapTabpaneID}`,
@@ -98,13 +97,13 @@ describe('EpicTabs', () => {
     ];
 
     describe.each`
-      targetTab           | tabSelector               | fixture           | examples
-      ${treeTabpaneID}    | ${'.js-epic-tree-tab'}    | ${treeTabFixture} | ${treeExamples}
-      ${roadmapTabpaneID} | ${'.js-epic-roadmap-tab'} | ${roadmapFixture} | ${roadmapExamples}
-    `('on $targetTab tab click', ({ tabSelector, fixture, examples }) => {
+      targetTab           | tabTestId             | fixture           | examples
+      ${treeTabpaneID}    | ${'epic-tree-tab'}    | ${treeTabFixture} | ${treeExamples}
+      ${roadmapTabpaneID} | ${'epic-roadmap-tab'} | ${roadmapFixture} | ${roadmapExamples}
+    `('on $targetTab tab click', ({ tabTestId, fixture, examples }) => {
       beforeEach(() => {
         setFixtures(fixture);
-        wrapper = createComponent({ provide: { allowSubEpics: true }, mountType: mount });
+        wrapper = createComponent({ provide: { allowSubEpics: true } });
       });
 
       it.each(examples)('%s', async (description, tabPaneSelector, hasClassName, className) => {
@@ -112,7 +111,7 @@ describe('EpicTabs', () => {
 
         expect(element.classList.contains(className)).toBe(hasClassName);
 
-        wrapper.find(tabSelector).trigger('click');
+        wrapper.findByTestId(tabTestId).vm.$emit('click');
 
         await waitForPromises();
 
