@@ -16,11 +16,30 @@ module EE
 
         override :extra_accessors
         def extra_accessors
+          return %i[secrets].freeze if ::Feature.enabled?(:dast_sharded_cloned_ci_builds, default_enabled: :yaml)
+
           %i[dast_site_profile dast_scanner_profile secrets].freeze
         end
       end
 
       private
+
+      override :clone_build
+      def clone_build(build)
+        super do |new_build|
+          if ::Feature.enabled?(:dast_sharded_cloned_ci_builds, default_enabled: :yaml)
+            new_build.run_after_commit do
+              response = AppSec::Dast::Builds::AssociateService.new(
+                ci_build_id: new_build.id,
+                dast_site_profile_id: build.dast_site_profile&.id,
+                dast_scanner_profile_id: build.dast_scanner_profile&.id
+              ).execute
+
+              new_build.reset.drop! if response.error?
+            end
+          end
+        end
+      end
 
       override :check_access!
       def check_access!(build)

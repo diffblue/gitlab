@@ -20,27 +20,48 @@ RSpec.describe Ci::RetryBuildService do
   describe '#clone!' do
     context 'when user has ability to execute build' do
       let_it_be(:namespace) { create(:namespace) }
+      let_it_be(:project) { create(:project, namespace: namespace, creator: user) }
 
-      let(:project) { create(:project, namespace: namespace, creator: user) }
-
-      let(:new_build) do
-        travel_to(1.second.from_now) do
-          service.clone!(build)
-        end
-      end
+      let(:new_build) { service.clone!(build)}
 
       context 'dast' do
-        let(:dast_site_profile) { create(:dast_site_profile, project: project) }
-        let(:dast_scanner_profile) { create(:dast_scanner_profile, project: project) }
+        let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }
+        let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project) }
 
         before do
           build.update!(dast_site_profile: dast_site_profile, dast_scanner_profile: dast_scanner_profile)
         end
 
-        it 'clones the profile associations', :aggregate_failures do
-          ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.allow_cross_database_modification_within_transaction(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/350051') do
+        context 'failure' do
+          it 'drops the build' do
+            allow_next_instance_of(AppSec::Dast::Builds::AssociateService) do |instance|
+              allow(instance).to receive(:execute).and_return(ServiceResponse.error(message: 'oops'))
+            end
+
+            expect(new_build.reload).to be_failed
+          end
+        end
+
+        context 'success' do
+          it 'clones the profile associations', :aggregate_failures do
+            new_build.reload
+
             expect(new_build.dast_site_profile).to eq(dast_site_profile)
             expect(new_build.dast_scanner_profile).to eq(dast_scanner_profile)
+            expect(new_build).not_to be_failed
+          end
+        end
+
+        context 'when dast_sharded_cloned_ci_builds is disabled' do
+          before do
+            stub_feature_flags(dast_sharded_cloned_ci_builds: false)
+          end
+
+          it 'clones the profile associations', :aggregate_failures do
+            ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.allow_cross_database_modification_within_transaction(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/350051') do
+              expect(new_build.dast_site_profile).to eq(dast_site_profile)
+              expect(new_build.dast_scanner_profile).to eq(dast_scanner_profile)
+            end
           end
         end
       end
@@ -127,11 +148,7 @@ RSpec.describe Ci::RetryBuildService do
   end
 
   describe '#execute' do
-    let(:new_build) do
-      travel_to(1.second.from_now) do
-        service.execute(build)
-      end
-    end
+    let(:new_build) { service.execute(build) }
 
     context 'when the CI quota is exceeded' do
       let_it_be(:namespace) { create(:namespace, :with_used_build_minutes_limit) }
