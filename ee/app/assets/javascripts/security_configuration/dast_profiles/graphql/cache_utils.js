@@ -11,10 +11,10 @@ import dastSiteProfilesQuery from 'ee/security_configuration/dast_profiles/graph
  */
 export const appendToPreviousResult = (profileType) => (previousResult, { fetchMoreResult }) => {
   const newResult = { ...fetchMoreResult };
-  const previousEdges = previousResult.project[profileType].edges;
-  const newEdges = newResult.project[profileType].edges;
+  const previousNodes = previousResult.project[profileType].nodes;
+  const newNodes = newResult.project[profileType].nodes;
 
-  newResult.project[profileType].edges = [...previousEdges, ...newEdges];
+  newResult.project[profileType].nodes = [...previousNodes, ...newNodes];
 
   return newResult;
 };
@@ -31,11 +31,9 @@ export const removeProfile = ({ profileId, profileType, store, queryBody }) => {
   const sourceData = store.readQuery(queryBody);
 
   const data = produce(sourceData, (draftState) => {
-    draftState.project[profileType].edges = draftState.project[profileType].edges.filter(
-      ({ node }) => {
-        return node.id !== profileId;
-      },
-    );
+    draftState.project[profileType].nodes = draftState.project[profileType].nodes.filter((node) => {
+      return node.id !== profileId;
+    });
   });
 
   store.writeQuery({ ...queryBody, data });
@@ -67,8 +65,8 @@ export const updateSiteProfilesStatuses = ({ fullPath, normalizedTargetUrl, stat
 
   const sourceData = store.readQuery(queryBody);
 
-  const profilesWithNormalizedTargetUrl = sourceData.project.siteProfiles.edges.flatMap(
-    ({ node }) => (node.normalizedTargetUrl === normalizedTargetUrl ? node : []),
+  const profilesWithNormalizedTargetUrl = sourceData.project.siteProfiles.nodes.map((node) =>
+    node.normalizedTargetUrl === normalizedTargetUrl ? node : [],
   );
 
   profilesWithNormalizedTargetUrl.forEach(({ id }) => {

@@ -3,6 +3,8 @@ import { shallowMount, mount, createLocalVue } from '@vue/test-utils';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
 import { nextTick } from 'vue';
+import siteProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql.basic.json';
+import scannerProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql.basic.json';
 import OnDemandScansForm from 'ee/on_demand_scans_form/components/on_demand_scans_form.vue';
 import ScannerProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/scanner_profile_selector.vue';
 import SiteProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/site_profile_selector.vue';
@@ -15,7 +17,6 @@ import { useLocalStorageSpy } from 'helpers/local_storage_helper';
 import createApolloProvider from 'helpers/mock_apollo_helper';
 import setWindowLocation from 'helpers/set_window_location_helper';
 import { stubComponent } from 'helpers/stub_component';
-import waitForPromises from 'helpers/wait_for_promises';
 import { redirectTo } from '~/lib/utils/url_utility';
 import RefSelector from '~/ref/components/ref_selector.vue';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
@@ -26,7 +27,7 @@ import {
   nonValidatedSiteProfile,
   validatedSiteProfile,
 } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
-import * as responses from '../mocks/apollo_mocks';
+import { itSelectsOnlyAvailableProfile } from './shared_assertions';
 
 const dastSiteValidationDocsPath = '/application_security/dast/index#dast-site-validation';
 const projectPath = 'group/project';
@@ -125,10 +126,11 @@ describe('OnDemandScansForm', () => {
     localVue.use(VueApollo);
 
     requestHandlers = {
-      dastScannerProfiles: jest.fn().mockResolvedValue(responses.dastScannerProfiles()),
-      dastSiteProfiles: jest.fn().mockResolvedValue(responses.dastSiteProfiles()),
+      dastScannerProfiles: jest.fn().mockResolvedValue(scannerProfilesFixtures),
+      dastSiteProfiles: jest.fn().mockResolvedValue(siteProfilesFixtures),
       ...handlers,
     };
+
     return createApolloProvider([
       [dastScannerProfilesQuery, requestHandlers.dastScannerProfiles],
       [dastSiteProfilesQuery, requestHandlers.dastSiteProfiles],
@@ -189,6 +191,7 @@ describe('OnDemandScansForm', () => {
         },
       ),
     );
+    return wrapper;
   };
   const createComponent = createComponentFactory(mount);
   const createShallowComponent = createComponentFactory();
@@ -204,6 +207,8 @@ describe('OnDemandScansForm', () => {
     wrapper = null;
     localStorage.clear();
   });
+
+  itSelectsOnlyAvailableProfile(createShallowComponent);
 
   describe('when creating a new scan', () => {
     it('renders properly', () => {
@@ -558,29 +563,6 @@ describe('OnDemandScansForm', () => {
       );
     },
   );
-
-  describe.each`
-    profileType  | query                    | selector                  | profiles
-    ${'scanner'} | ${'dastScannerProfiles'} | ${ScannerProfileSelector} | ${scannerProfiles}
-    ${'site'}    | ${'dastSiteProfiles'}    | ${SiteProfileSelector}    | ${siteProfiles}
-  `('when there is a single $profileType profile', ({ query, selector, profiles }) => {
-    const [profile] = profiles;
-
-    beforeEach(async () => {
-      createShallowComponent(
-        {},
-        {
-          [query]: jest.fn().mockResolvedValue(responses[query]([profile])),
-        },
-      );
-
-      await waitForPromises();
-    });
-
-    it('automatically selects the only available profile', () => {
-      expect(wrapper.findComponent(selector).attributes('value')).toBe(profile.id);
-    });
-  });
 
   describe('scanner profile summary', () => {
     const [{ id }] = scannerProfiles;

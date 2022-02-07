@@ -12,10 +12,10 @@ describe('EE - DastProfiles GraphQL CacheUtils', () => {
     it.each(['siteProfiles', 'scannerProfiles'])(
       'appends new results to previous',
       (profileType) => {
-        const previousResult = { project: { [profileType]: { edges: ['foo'] } } };
-        const fetchMoreResult = { project: { [profileType]: { edges: ['bar'] } } };
+        const previousResult = { project: { [profileType]: { nodes: ['foo'] } } };
+        const fetchMoreResult = { project: { [profileType]: { nodes: ['bar'] } } };
 
-        const expected = { project: { [profileType]: { edges: ['foo', 'bar'] } } };
+        const expected = { project: { [profileType]: { nodes: ['foo', 'bar'] } } };
         const result = appendToPreviousResult(profileType)(previousResult, { fetchMoreResult });
 
         expect(result).toEqual(expected);
@@ -32,7 +32,7 @@ describe('EE - DastProfiles GraphQL CacheUtils', () => {
         const mockData = {
           project: {
             [profileType]: {
-              edges: [{ node: mockProfiles[0] }, { node: mockProfiles[1] }],
+              nodes: [mockProfiles[0], mockProfiles[1]],
             },
           },
         };
@@ -53,7 +53,7 @@ describe('EE - DastProfiles GraphQL CacheUtils', () => {
           data: {
             project: {
               [profileType]: {
-                edges: [{ node: mockProfiles[1] }],
+                nodes: [mockProfiles[1]],
               },
             },
           },
@@ -91,7 +91,7 @@ describe('EE - DastProfiles GraphQL CacheUtils', () => {
       const mockData = {
         project: {
           siteProfiles: {
-            edges: [{ node: siteProfile }],
+            nodes: [siteProfile],
           },
         },
       };

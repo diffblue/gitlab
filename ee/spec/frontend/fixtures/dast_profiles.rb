@@ -22,7 +22,7 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
         })
 
         expect_graphql_errors_to_be_empty
-        expect(graphql_data_at(:project, :siteProfiles, :edges)).to have_attributes(size: dast_site_profiles.length)
+        expect(graphql_data_at(:project, :siteProfiles, :nodes)).to have_attributes(size: dast_site_profiles.length)
       end
     end
 
@@ -38,7 +38,7 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
         })
 
         expect_graphql_errors_to_be_empty
-        expect(graphql_data_at(:project, :scannerProfiles, :edges)).to have_attributes(size: dast_scanner_profiles.length)
+        expect(graphql_data_at(:project, :scannerProfiles, :nodes)).to have_attributes(size: dast_scanner_profiles.length)
       end
     end
 

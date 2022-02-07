@@ -8,27 +8,25 @@ query DastSiteProfiles($fullPath: ID!, $after: String, $before: String, $first: 
       pageInfo {
         ...PageInfo
       }
-      edges {
-        cursor
-        node {
-          id
-          profileName
-          normalizedTargetUrl
-          targetUrl
-          targetType
-          editPath
-          validationStatus
-          referencedInSecurityPolicies
-          auth {
-            enabled
-            url
-            usernameField
-            passwordField
-            username
-          }
-          excludedUrls
-          requestHeaders
+      nodes {
+        __typename
+        id
+        profileName
+        normalizedTargetUrl
+        targetUrl
+        targetType
+        editPath
+        validationStatus
+        referencedInSecurityPolicies
+        auth {
+          enabled
+          url
+          usernameField
+          passwordField
+          username
         }
+        excludedUrls
+        requestHeaders
       }
     }
   }
