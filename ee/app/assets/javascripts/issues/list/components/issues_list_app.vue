@@ -22,23 +22,7 @@ export default {
     BlockingIssuesCount,
     IssuesListApp,
   },
-  inject: {
-    fullPath: {
-      default: '',
-    },
-    groupPath: {
-      default: '',
-    },
-    hasIssueWeightsFeature: {
-      default: false,
-    },
-    hasIterationsFeature: {
-      default: false,
-    },
-    isProject: {
-      default: false,
-    },
-  },
+  inject: ['fullPath', 'groupPath', 'hasIssueWeightsFeature', 'hasIterationsFeature', 'isProject'],
   computed: {
     namespace() {
       return this.isProject ? ITEM_TYPE.PROJECT : ITEM_TYPE.GROUP;
