@@ -22680,13 +22680,13 @@ msgstr ""
 msgid "MergeRequests|Create issue to resolve thread"
 msgstr ""
 
-msgid "MergeRequests|Failed to squash. Should be done manually."
-msgstr ""
-
 msgid "MergeRequests|Saving the comment failed"
 msgstr ""
 
-msgid "MergeRequests|This project does not allow squashing commits when merge requests are accepted."
+msgid "MergeRequests|Squashing failed: Squash the commits locally, resolve any conflicts, then push the branch."
+msgstr ""
+
+msgid "MergeRequests|Squashing not allowed: This project doesn't allow you to squash commits when merging."
 msgstr ""
 
 msgid "MergeRequests|Thread stays resolved"
