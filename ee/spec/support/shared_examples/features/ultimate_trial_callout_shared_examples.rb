@@ -27,8 +27,17 @@ RSpec.shared_examples 'dashboard ultimate trial callout' do
       visit page_path
 
       expect(page).to have_selector '.promotion-callout'
+      expect(page).to have_selector('[data-track-action=render]')
+      expect(page).to have_selector('[data-track-label=ultimate_banner]')
 
-      find('.promotion-callout .js-close').click
+      page.within('.promotion-callout') do
+        expect(page).to have_selector('[data-track-action=click_button]')
+        expect(page).to have_selector('[data-track-label=start_your_trial]')
+
+        expect(page).to have_selector('[data-track-action=dismiss_banner]')
+        expect(page).to have_selector('[data-track-label=ultimate_banner]')
+        find('.js-close').click
+      end
 
       expect(page).not_to have_selector '.promotion-callout'
     end
