@@ -83,8 +83,10 @@ RSpec.describe 'Issue Sidebar' do
       visit_issue(project, issue)
     end
 
-    it 'does not have a option to edit weight' do
-      expect(page).not_to have_selector('.block.weight .js-weight-edit-link')
+    it 'does not have a option to edit weight', :js do
+      within '.block.weight' do
+        expect(page).not_to have_button('Edit')
+      end
     end
   end
 

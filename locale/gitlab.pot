@@ -11382,9 +11382,6 @@ msgstr ""
 msgid "Date merged"
 msgstr ""
 
-msgid "Date picker"
-msgstr ""
-
 msgid "Date range"
 msgstr ""
 
@@ -14121,9 +14118,6 @@ msgid "Error occurred while updating the %{issuableType} status"
 msgstr ""
 
 msgid "Error occurred while updating the issue status"
-msgstr ""
-
-msgid "Error occurred while updating the issue weight"
 msgstr ""
 
 msgid "Error occurred. A blocked user cannot be deactivated"
@@ -33412,12 +33406,6 @@ msgid "Sidebar|No status"
 msgstr ""
 
 msgid "Sidebar|None"
-msgstr ""
-
-msgid "Sidebar|Only numeral characters allowed"
-msgstr ""
-
-msgid "Sidebar|Weight"
 msgstr ""
 
 msgid "Sidekiq job compression threshold (bytes)"

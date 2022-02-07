@@ -24,12 +24,8 @@ module QA
                   element :iteration_container
                 end
 
-                view 'ee/app/assets/javascripts/sidebar/components/weight/weight.vue' do
-                  element :edit_weight_link
-                  element :remove_weight_link
-                  element :weight_input_field
+                view 'ee/app/assets/javascripts/sidebar/components/weight/sidebar_weight_widget.vue' do
                   element :weight_label_value
-                  element :weight_no_value_content
                 end
               end
             end
@@ -47,10 +43,6 @@ module QA
               refresh
             end
 
-            def click_remove_weight_link
-              click_element(:remove_weight_link)
-            end
-
             def has_iteration?(iteration_title)
               wait_until_iteration_container_loaded
 
@@ -59,12 +51,6 @@ module QA
                   has_element?(:iteration_link, text: iteration_title, wait: 0)
                 end
               end
-            end
-
-            def set_weight(weight)
-              click_element(:edit_weight_link)
-              fill_element(:weight_input_field, weight)
-              send_keys_to_element(:weight_input_field, :enter)
             end
 
             def wait_for_attachment_replication(image_url, max_wait: Runtime::Geo.max_file_replication_time)
@@ -76,10 +62,6 @@ module QA
 
             def weight_label_value
               find_element(:weight_label_value)
-            end
-
-            def weight_no_value_content
-              find_element(:weight_no_value_content)
             end
 
             private

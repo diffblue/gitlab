@@ -83,19 +83,6 @@ export const mockGroupEpicsResponse = {
   },
 };
 
-export const emptyGroupIterationsResponse = {
-  data: {
-    workspace: {
-      id: '1',
-      iterations: {
-        nodes: [],
-      },
-      __typename: 'IterationConnection',
-    },
-    __typename: 'Group',
-  },
-};
-
 export const emptyGroupEpicsResponse = {
   data: {
     workspace: {
@@ -139,41 +126,12 @@ export const mockCurrentIterationResponse2 = {
   },
 };
 
-export const noCurrentIterationResponse = {
-  data: {
-    workspace: {
-      id: '1',
-      issuable: { id: mockIssueId, iteration: null, __typename: 'Issue' },
-      __typename: 'Project',
-    },
-  },
-};
-
 export const noCurrentEpicResponse = {
   data: {
     workspace: {
       id: '1',
       issuable: { id: mockIssueId, attribute: null, __typename: 'Issue' },
       __typename: 'Project',
-    },
-  },
-};
-
-export const mockIterationMutationResponse = {
-  data: {
-    issuableSetIteration: {
-      errors: [],
-      issuable: {
-        id: 'gid://gitlab/Issue/1',
-        iteration: {
-          id: 'gid://gitlab/Iteration/2',
-          title: 'Awesome Iteration',
-          state: 'opened',
-          __typename: 'Iteration',
-        },
-        __typename: 'Issue',
-      },
-      __typename: 'IssueSetIterationPayload',
     },
   },
 };
