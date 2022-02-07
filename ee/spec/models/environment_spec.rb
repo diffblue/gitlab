@@ -259,14 +259,6 @@ RSpec.describe Environment, :use_clean_rails_memory_store_caching do
         let(:required_approval_count) { 1 }
 
         it { is_expected.to be_truthy }
-
-        context 'and deployment_approvals feature flag turned off' do
-          before do
-            stub_feature_flags(deployment_approvals: false)
-          end
-
-          it { is_expected.to be_falsey }
-        end
       end
 
       context 'with no approvals required' do
