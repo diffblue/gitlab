@@ -876,8 +876,26 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: app_sec_dast_scanner_profiles_builds_consistency
+  :worker_name: AppSec::Dast::ScannerProfilesBuilds::ConsistencyWorker
+  :feature_category: :dynamic_application_security_testing
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: app_sec_dast_scans_consistency
   :worker_name: AppSec::Dast::Scans::ConsistencyWorker
+  :feature_category: :dynamic_application_security_testing
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: app_sec_dast_site_profiles_builds_consistency
+  :worker_name: AppSec::Dast::SiteProfilesBuilds::ConsistencyWorker
   :feature_category: :dynamic_application_security_testing
   :has_external_dependencies:
   :urgency: :low
