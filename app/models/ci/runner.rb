@@ -119,30 +119,6 @@ module Ci
         .where(ci_runner_namespaces: { namespace_id: group_self_and_ancestors_ids })
     }
 
-    # deprecated
-    # split this into: belonging_to_group & belonging_to_group_and_ancestors
-    scope :legacy_belonging_to_group, -> (group_id, include_ancestors: false) {
-      groups = ::Group.where(id: group_id)
-      groups = groups.self_and_ancestors if include_ancestors
-
-      joins(:runner_namespaces)
-        .where(ci_runner_namespaces: { namespace_id: groups })
-        .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/336433')
-    }
-
-    # deprecated
-    scope :legacy_belonging_to_group_or_project, -> (group_id, project_id) {
-      groups = ::Group.where(id: group_id)
-
-      group_runners = joins(:runner_namespaces).where(ci_runner_namespaces: { namespace_id: groups })
-      project_runners = joins(:runner_projects).where(ci_runner_projects: { project_id: project_id })
-
-      union_sql = ::Gitlab::SQL::Union.new([group_runners, project_runners]).to_sql
-
-      from("(#{union_sql}) #{table_name}")
-        .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/336433')
-    }
-
     scope :belonging_to_parent_group_of_project, -> (project_id) {
       raise ArgumentError, "only 1 project_id allowed for performance reasons" unless project_id.is_a?(Integer)
 
@@ -165,16 +141,9 @@ module Ci
     end
 
     scope :group_or_instance_wide, -> (group) do
-      group_and_ancestor_runners =
-        if ::Feature.enabled?(:ci_find_runners_by_ci_mirrors, group, default_enabled: :yaml)
-          belonging_to_group_and_ancestors(group.id)
-        else
-          legacy_belonging_to_group(group.id, include_ancestors: true)
-        end
-
       from_union(
         [
-          group_and_ancestor_runners,
+          belonging_to_group_and_ancestors(group.id),
           group.shared_runners
         ],
         remove_duplicates: false

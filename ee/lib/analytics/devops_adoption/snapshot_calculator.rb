@@ -61,13 +61,7 @@ module Analytics
       # rubocop: enable CodeReuse/ActiveRecord
 
       def runner_configured
-        if ::Feature.enabled?(:ci_find_runners_by_ci_mirrors, enabled_namespace.namespace, default_enabled: :yaml)
-          Ci::Runner.active.belonging_to_group_or_project_descendants(enabled_namespace.namespace.id).exists?
-        else
-          ::Gitlab::Database.allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/337541') do
-            Ci::Runner.active.legacy_belonging_to_group_or_project(snapshot_groups, snapshot_project_ids).exists?
-          end
-        end
+        Ci::Runner.active.belonging_to_group_or_project_descendants(enabled_namespace.namespace.id).exists?
       end
 
       def pipeline_succeeded
