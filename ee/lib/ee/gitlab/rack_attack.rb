@@ -13,9 +13,7 @@ module EE
           super
 
           throttle_or_track(rack_attack, 'throttle_incident_management_notification_web', EE::Gitlab::Throttle.incident_management_options) do |req|
-            if req.web_request? &&
-               req.path.include?('alerts/notify') &&
-               EE::Gitlab::Throttle.settings.throttle_incident_management_notification_enabled
+            if req.alerts_notify? && EE::Gitlab::Throttle.settings.throttle_incident_management_notification_enabled
               req.path
             end
           end
