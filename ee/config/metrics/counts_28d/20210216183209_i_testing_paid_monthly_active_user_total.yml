@@ -5,7 +5,7 @@ description: Aggregated count of users who have engaged with a Premium or Ultima
   tier testing feature per month.
 product_section: ops
 product_stage: verify
-product_group: group::testing
+product_group: group::pipeline insights
 product_category: code_testing
 value_type: number
 status: active

@@ -5,7 +5,7 @@ description: Count of unique users per month who expanded the browser performanc
   report MR widget
 product_section: ops
 product_stage: verify
-product_group: group::testing
+product_group: group::pipeline insights
 product_category: web_performance
 value_type: number
 status: active
