@@ -358,6 +358,7 @@ RSpec.describe Namespace do
   end
 
   describe 'after_commit :sync_name_with_customers_dot' do
+    let(:owner) { create(:user) }
     let(:namespace) { create(:group) }
     let(:privatized_by_abuse_automation) { false }
 
@@ -365,7 +366,7 @@ RSpec.describe Namespace do
 
     before do
       allow(Gitlab).to receive(:com?).and_return(true)
-      allow(namespace.owner).to receive(:privatized_by_abuse_automation?)
+      allow(owner).to receive(:privatized_by_abuse_automation?)
         .and_return(privatized_by_abuse_automation)
     end
 
@@ -389,6 +390,10 @@ RSpec.describe Namespace do
     context 'when the name is not updated' do
       let(:attributes) { { path: 'Foo' } }
 
+      before do
+        namespace.add_owner(owner)
+      end
+
       include_examples 'no sync'
     end
 
@@ -404,7 +409,7 @@ RSpec.describe Namespace do
       end
 
       context 'when project namespace' do
-        let(:namespace) { create(:project_namespace) }
+        let(:namespace) { create(:project_namespace, owner: owner) }
 
         context 'when the owner is privatized by abuse automation' do
           let(:privatized_by_abuse_automation) { true }
@@ -418,6 +423,10 @@ RSpec.describe Namespace do
       end
 
       context 'when group namespace' do
+        before do
+          namespace.add_owner(owner)
+        end
+
         context 'when the owner is privatized by abuse automation' do
           let(:privatized_by_abuse_automation) { true }
 
@@ -430,7 +439,7 @@ RSpec.describe Namespace do
       end
 
       context 'when user namespace' do
-        let(:namespace) { create(:namespace) }
+        let(:namespace) { create(:namespace, owner: owner) }
 
         context 'when the owner is privatized by abuse automation' do
           let(:privatized_by_abuse_automation) { true }
