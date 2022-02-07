@@ -1,11 +1,18 @@
 <script>
+import { GlLink, GlLoadingIcon, GlPagination, GlTable } from '@gitlab/ui';
 import Api, { DEFAULT_PER_PAGE } from '~/api';
-import { GlButton, GlIcon, GlLink, GlLoadingIcon, GlPagination, GlTable } from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { s__, __ } from '~/locale';
 import TimeagoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 
 export default {
+  components: {
+    GlLink,
+    GlLoadingIcon,
+    GlPagination,
+    GlTable,
+    TimeagoTooltip,
+  },
   inject: ['projectId'],
   docsLink: helpPagePath('ci/secure_files/index'),
   DEFAULT_PER_PAGE,
@@ -26,41 +33,31 @@ export default {
   fields: [
     {
       key: 'name',
-      label: s__('Filename'),
+      label: __('Filename'),
     },
     {
       key: 'permissions',
-      label: s__('Permissions'),
+      label: __('Permissions'),
       tdClass: 'text-plain',
     },
     {
       key: 'created_at',
-      label: s__('Created'),
+      label: __('Created'),
     },
   ],
-  components: {
-    GlButton,
-    GlIcon,
-    GlLink,
-    GlLoadingIcon,
-    GlPagination,
-    GlTable,
-    helpPagePath,
-    TimeagoTooltip,
-  },
   computed: {
     fields() {
       return this.$options.fields;
     },
   },
-  created() {
-    this.getProjectSecureFiles();
-  },
   watch: {
     page(newPage) {
       this.getProjectSecureFiles(newPage);
     },
-  },  
+  },    
+  created() {
+    this.getProjectSecureFiles();
+  },
   methods: {
     async getProjectSecureFiles(page){
       this.loading = true;
@@ -92,7 +89,7 @@ export default {
     <gl-table
       :busy="loading"
       :fields="fields"
-      :items="this.projectSecureFiles"
+      :items="projectSecureFiles"
       tbody-tr-class="js-ci-secure-files-row"
       data-qa-selector="ci_secure_files_table_content"
       sort-by="key"

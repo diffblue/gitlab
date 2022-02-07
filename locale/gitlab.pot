@@ -43302,15 +43302,6 @@ msgstr ""
 msgid "ciReport|is loading, errors when loading results"
 msgstr ""
 
-msgid "ciSecureFiles|Filename"
-msgstr ""
-
-msgid "ciSecureFiles|Permissions"
-msgstr ""
-
-msgid "ciSecureFiles|Created"
-msgstr ""
-
 msgid "closed"
 msgstr ""
 
