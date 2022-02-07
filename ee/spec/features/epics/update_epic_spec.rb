@@ -99,7 +99,7 @@ RSpec.describe 'Update Epic', :js do
 
         visit dashboard_todos_path
 
-        page.within '.header-content .todos-count' do
+        page.within ".header-content span[aria-label='#{_('Todos count')}']" do
           expect(page).to have_content '1'
         end
         expect(page).to have_selector('.todos-list .todo', count: 1)

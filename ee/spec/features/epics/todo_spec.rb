@@ -21,7 +21,7 @@ RSpec.describe 'Manually create a todo item from epic', :js do
       expect(page).to have_content 'Mark as done'
     end
 
-    page.within '.header-content .todos-count' do
+    page.within ".header-content span[aria-label='#{_('Todos count')}']" do
       expect(page).to have_content '1'
     end
   end
@@ -31,8 +31,8 @@ RSpec.describe 'Manually create a todo item from epic', :js do
       click_button 'Add a to do'
     end
 
-    expect(page).to have_selector('.todos-count', visible: true)
-    page.within '.header-content .todos-count' do
+    expect(page).to have_selector(".header-content span[aria-label='#{_('Todos count')}']", visible: true)
+    page.within ".header-content span[aria-label='#{_('Todos count')}']" do
       expect(page).to have_content '1'
     end
 
@@ -40,6 +40,6 @@ RSpec.describe 'Manually create a todo item from epic', :js do
       click_button 'Mark as done'
     end
 
-    expect(page).to have_selector('.todos-count', visible: false)
+    expect(page).to have_selector(".header-content span[aria-label='#{_('Todos count')}']", visible: false)
   end
 end
