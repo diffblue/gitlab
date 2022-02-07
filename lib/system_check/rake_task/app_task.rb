@@ -12,7 +12,6 @@ module SystemCheck
 
       def self.checks
         [
-          SystemCheck::App::GitConfigCheck,
           SystemCheck::App::DatabaseConfigExistsCheck,
           SystemCheck::App::MigrationsAreUpCheck,
           SystemCheck::App::OrphanedGroupMembersCheck,
