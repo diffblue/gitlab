@@ -58,15 +58,6 @@ RSpec.describe 'getting epics information' do
     let_it_be(:epic3) { create(:epic, group: group, created_at: 2.hours.ago, updated_at: 9.minutes.ago) }
     let_it_be(:epic4) { create(:epic, group: group, created_at: 15.minutes.ago, updated_at: 14.minutes.ago) }
 
-    # before(:all) do
-    #   epic1.update_column(:updated_at, 10.seconds.ago)
-    #   epic2.update_column(:updated_at, 2.minutes.ago)
-    #   epic3.update_column(:updated_at, 9.minutes.ago)
-    #   epic4.update_column(:updated_at, 14.minutes.ago)
-    #   pp Time.now.strftime("%Y-%m-%d")
-    #   pp epic4.updated_at
-    # end
-
     it 'filters by createdBefore' do
       post_graphql(epics_query(group, 'createdBefore', 5.days.ago), current_user: user)
 
