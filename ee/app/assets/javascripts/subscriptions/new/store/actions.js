@@ -12,7 +12,7 @@ import * as types from './mutation_types';
 export const updateSelectedPlan = ({ commit, getters }, selectedPlan) => {
   commit(types.UPDATE_SELECTED_PLAN, selectedPlan);
   commit(types.UPDATE_NUMBER_OF_USERS, getters.selectedGroupUsers);
-  trackCheckout(selectedPlan, getters.selectedGroupUsers);
+  trackCheckout(selectedPlan, getters.confirmOrderParams?.subscription?.quantity);
 };
 
 export const updateSelectedGroup = ({ commit, getters }, selectedGroup) => {
@@ -200,7 +200,7 @@ export const confirmOrder = ({ getters, dispatch, commit }) => {
           revenue: getters.totalExVat,
           tax: getters.vat,
           selectedPlan: getters.selectedPlanDetails?.value,
-          quantity: getters.selectedGroupUsers,
+          quantity: getters.confirmOrderParams?.subscription?.quantity,
         };
 
         trackTransaction(transactionDetails);
