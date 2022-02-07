@@ -3,6 +3,8 @@
 module Analytics
   module CycleAnalytics
     class DataLoaderService
+      include Validations
+
       MAX_UPSERT_COUNT = 10_000
       UPSERT_LIMIT = 1000
       BATCH_LIMIT = 500
@@ -24,19 +26,10 @@ module Analytics
       end
 
       def execute
-        unless model == Issue || model == MergeRequest
-          return error(:invalid_model)
-        end
+        error_response = validate
+        return error_response if error_response
 
-        unless group.licensed_feature_available?(:cycle_analytics_for_groups)
-          return error(:missing_license)
-        end
-
-        unless group.root_ancestor == group
-          return error(:requires_top_level_group)
-        end
-
-        response = success(:model_processed)
+        response = success(:model_processed, cursor: {})
 
         iterator.each_batch(of: BATCH_LIMIT) do |records|
           loaded_records = records.to_a
@@ -57,17 +50,6 @@ module Analytics
       private
 
       attr_reader :group, :model, :cursor, :updated_at_before, :upsert_count, :stages
-
-      def error(error_reason)
-        ServiceResponse.error(
-          message: "DataLoader error for group: #{group.id} (#{error_reason})",
-          payload: { reason: error_reason }
-        )
-      end
-
-      def success(success_reason, cursor: {})
-        ServiceResponse.success(payload: { reason: success_reason, cursor: cursor })
-      end
 
       # rubocop: disable CodeReuse/ActiveRecord
       def iterator_base_scope
