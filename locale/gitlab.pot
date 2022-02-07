@@ -27082,6 +27082,18 @@ msgstr ""
 msgid "Policy project doesn't exist"
 msgstr ""
 
+msgid "PolicyRuleMultiSelect|%{firstLabel} +%{numberOfAdditionalLabels} more"
+msgstr ""
+
+msgid "PolicyRuleMultiSelect|All %{itemTypeName}"
+msgstr ""
+
+msgid "PolicyRuleMultiSelect|Select %{itemTypeName}"
+msgstr ""
+
+msgid "PolicyRuleMultiSelect|Select all"
+msgstr ""
+
 msgid "Polling interval multiplier"
 msgstr ""
 
