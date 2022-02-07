@@ -60,6 +60,19 @@ module Resolvers
              required: false,
              description: 'Filter by reaction emoji applied by the current user.'
 
+    argument :created_after, Types::TimeType,
+             required: false,
+             description: 'Epics created after this date.'
+    argument :created_before, Types::TimeType,
+             required: false,
+             description: 'Epics created before this date.'
+    argument :updated_after, Types::TimeType,
+             required: false,
+             description: 'Epics updated after this date.'
+    argument :updated_before, Types::TimeType,
+             required: false,
+             description: 'Epics updated before this date.'
+
     argument :not, ::Types::Epics::NegatedEpicFilterInputType,
              required: false,
              description: 'Negated epic arguments.'

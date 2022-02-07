@@ -66,14 +66,14 @@ RSpec.describe 'Epics through GroupQuery' do
 
     context 'with multiple epics' do
       let_it_be(:user2) { create(:user) }
-      let_it_be(:epic2) { create(:epic, author: user2, group: group, title: 'foo', description: 'bar', created_at: 2.days.ago, updated_at: 3.days.ago, start_date: 3.days.ago, end_date: 3.days.ago ) }
+      let_it_be(:epic2) { create(:epic, author: user2, group: group, title: 'foo', description: 'bar', created_at: 5.days.ago, updated_at: 3.days.ago, start_date: 3.days.ago, end_date: 3.days.ago ) }
 
       before do
         stub_licensed_features(epics: true)
       end
 
       context 'with sort and pagination' do
-        let_it_be(:epic3) { create(:epic, group: group, start_date: 4.days.ago, end_date: 7.days.ago ) }
+        let_it_be(:epic3) { create(:epic, group: group, start_date: 4.days.ago, end_date: 7.days.ago, created_at: 4.days.ago, updated_at: 1.day.ago ) }
         let_it_be(:epic4) { create(:epic, group: group, start_date: 5.days.ago, end_date: 6.days.ago ) }
 
         let(:current_user) { user }
@@ -124,6 +124,38 @@ RSpec.describe 'Epics through GroupQuery' do
             let(:sort_param) { :end_date_desc }
             let(:first_param) { 2 }
             let(:all_records) { global_ids(epic2, epic, epic4, epic3) }
+          end
+        end
+
+        context 'with created_at_asc' do
+          it_behaves_like 'sorted paginated query', is_reversible: true do
+            let(:sort_param) { :CREATED_AT_ASC }
+            let(:first_param) { 2 }
+            let(:all_records) { global_ids(epic2, epic3, epic, epic4) }
+          end
+        end
+
+        context 'with created_at_desc' do
+          it_behaves_like 'sorted paginated query', is_reversible: true do
+            let(:sort_param) { :CREATED_AT_DESC }
+            let(:first_param) { 2 }
+            let(:all_records) { global_ids(epic4, epic, epic3, epic2) }
+          end
+        end
+
+        context 'with updated_at_asc' do
+          it_behaves_like 'sorted paginated query', is_reversible: true do
+            let(:sort_param) { :UPDATED_AT_ASC }
+            let(:first_param) { 2 }
+            let(:all_records) { global_ids(epic2, epic, epic3, epic4) }
+          end
+        end
+
+        context 'with updated_at_desc' do
+          it_behaves_like 'sorted paginated query', is_reversible: true do
+            let(:sort_param) { :UPDATED_AT_DESC }
+            let(:first_param) { 2 }
+            let(:all_records) { global_ids(epic4, epic3, epic, epic2) }
           end
         end
       end
@@ -212,14 +244,16 @@ RSpec.describe 'Epics through GroupQuery' do
         end
       end
 
-      context 'with search params' do
-        it 'returns only matching epics' do
-          filter_params = { search: 'bar', in: [:DESCRIPTION] }
-          graphql_query = query(filter_params)
+      context 'filter' do
+        context 'with search params' do
+          it 'returns only matching epics' do
+            filter_params = { search: 'bar', in: [:DESCRIPTION] }
+            graphql_query = query(filter_params)
 
-          post_graphql(graphql_query, current_user: user)
+            post_graphql(graphql_query, current_user: user)
 
-          expect_array_response([epic2.to_global_id.to_s])
+            expect_array_response([epic2.to_global_id.to_s])
+          end
         end
       end
     end

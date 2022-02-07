@@ -52,6 +52,55 @@ RSpec.describe 'getting epics information' do
     end
   end
 
+  describe 'query for epics by created_at and updated_at' do
+    let_it_be(:epic1) { create(:epic, group: group, created_at: 2.weeks.ago, updated_at: 10.seconds.ago) }
+    let_it_be(:epic2) { create(:epic, group: group, created_at: 8.days.ago, updated_at: 2.minutes.ago) }
+    let_it_be(:epic3) { create(:epic, group: group, created_at: 2.hours.ago, updated_at: 9.minutes.ago) }
+    let_it_be(:epic4) { create(:epic, group: group, created_at: 15.minutes.ago, updated_at: 14.minutes.ago) }
+
+    it 'filters by createdBefore' do
+      post_graphql(epics_query(group, 'createdBefore', 5.days.ago), current_user: user)
+
+      expect_epics_response(epic1, epic2)
+    end
+
+    it 'filters by createdAfter' do
+      post_graphql(epics_query(group, 'createdAfter', 5.days.ago), current_user: user)
+
+      expect_epics_response(epic3, epic4)
+    end
+
+    it 'filters by updatedBefore' do
+      post_graphql(epics_query(group, 'updatedBefore', 7.minutes.ago), current_user: user)
+
+      expect_epics_response(epic3, epic4)
+    end
+
+    it 'filters by updatedAfter' do
+      post_graphql(epics_query(group, 'updatedAfter', 7.minutes.ago), current_user: user)
+
+      expect_epics_response(epic1, epic2)
+    end
+
+    it 'filters by a combination of created parameters provided' do
+      post_graphql(epics_query_by_hash(group, { 'createdBefore' => Time.zone.now, 'createdAfter' => 20.minutes.ago }), current_user: user)
+
+      expect_epics_response(epic4)
+    end
+
+    it 'filters by a combination of created/updated parameters provided' do
+      post_graphql(epics_query_by_hash(group, { 'updatedBefore' => 3.minutes.ago, 'createdAfter' => 20.minutes.ago }), current_user: user)
+
+      expect_epics_response(epic4)
+    end
+
+    it 'returns nothing for impossible parameters' do
+      post_graphql(epics_query_by_hash(group, { 'createdBefore' => 7.minutes.ago, 'createdAfter' => Time.zone.now }), current_user: user)
+
+      expect_epics_response # empty set
+    end
+  end
+
   describe 'query for epics by time frame' do
     let_it_be(:epic1) { create(:epic, group: group, state: :opened, start_date: "2019-08-13", end_date: "2019-08-20") }
     let_it_be(:epic2) { create(:epic, group: group, state: :closed, start_date: "2019-08-13", end_date: "2019-08-21") }
@@ -213,6 +262,7 @@ RSpec.describe 'getting epics information' do
   end
 
   def expect_epics_response(*epics)
+    epics ||= []
     actual_epics = graphql_data['group']['epics']['nodes'].map { |epic| epic['id'] }
     expected_epics = epics.map { |epic| epic.to_global_id.to_s }
 
