@@ -18,6 +18,10 @@ module EE
             false
           end
         end
+
+        def alerts_notify?
+          web_request? && logical_path.include?('alerts/notify')
+        end
       end
     end
   end
