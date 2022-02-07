@@ -7,10 +7,11 @@ export const initCiSecureFiles = ( selector = '#js-ci-secure-files') => {
 
   return new Vue({
     el: containerEl,
+    provide: {
+      projectId
+    },
     render(createElement) {
-      return createElement(SecureFilesList, {
-        props: { projectId: projectId },
-      });
+      return createElement(SecureFilesList);
     },
   });
 };

@@ -1,40 +1,51 @@
 <script>
-import { GlTable, GlButton, GlIcon } from '@gitlab/ui';
-import Api from '~/api';
+import Api, { DEFAULT_PER_PAGE } from '~/api';
+import { GlButton, GlIcon, GlLink, GlLoadingIcon, GlPagination, GlTable } from '@gitlab/ui';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import { s__, __ } from '~/locale';
 import TimeagoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 
 export default {
-  props: {
-    projectId: {
-      type: String,
-      required: true,
+  inject: ['projectId'],
+  docsLink: helpPagePath('ci/secure_files/index'),
+  DEFAULT_PER_PAGE,
+  i18n: {
+    pagination: {
+      next: __('Next'),
+      prev: __('Prev'),
     },
-  }, 
+  },
   data() {
     return {
+      page: 1,
+      totalItems: 0,
+      loading: false,
       projectSecureFiles: [],
     };
   }, 
   fields: [
     {
       key: 'name',
-      label: s__('ciSecureFiles|Filename'),
+      label: s__('Filename'),
     },
     {
       key: 'permissions',
-      label: s__('ciSecureFiles|Permissions'),
+      label: s__('Permissions'),
       tdClass: 'text-plain',
     },
     {
       key: 'created_at',
-      label: s__('ciSecureFiles|Created'),
+      label: s__('Created'),
     },
   ],
   components: {
-    GlTable,
     GlButton,
     GlIcon,
+    GlLink,
+    GlLoadingIcon,
+    GlPagination,
+    GlTable,
+    helpPagePath,
     TimeagoTooltip,
   },
   computed: {
@@ -45,10 +56,23 @@ export default {
   created() {
     this.getProjectSecureFiles();
   },
+  watch: {
+    page(newPage) {
+      this.getProjectSecureFiles(newPage);
+    },
+  },  
   methods: {
-    async getProjectSecureFiles(){
-      const response = await Api.projectSecureFiles(this.projectId)
+    async getProjectSecureFiles(page){
+      this.loading = true;
+      const response = await Api.projectSecureFiles(this.projectId, {page: page})
+
+      if (this.totalItems === 0) {
+        this.totalItems = parseInt(response.headers?.['x-total'], 10) || 0;
+      }
+
       this.projectSecureFiles = response.data
+
+      this.loading = false;
     }
   }
 };
@@ -57,15 +81,16 @@ export default {
 <template>
   <div>
 
-    <h2 data-testid="title" class="gl-font-size-h1 gl-mt-3 gl-mb-0">Secure Files</h2>
+    <h1 data-testid="title" class="gl-font-size-h1 gl-mt-3 gl-mb-0">Secure Files</h1>
 
     <p>
       <span data-testid="info-message" class="gl-mr-2">
-        Use Secure Files to store files used by your pipelines such as Android keystores, or Apple provisioning profiles and signing certificates. <a href="" rel="noopener" target="_blank" class="gl-link">More information</a>
+        Use Secure Files to store files used by your pipelines such as Android keystores, or Apple provisioning profiles and signing certificates. <gl-link :href="$options.docsLink" target="_blank">More information</gl-link>
       </span>
     </p>
 
     <gl-table
+      :busy="loading"
       :fields="fields"
       :items="this.projectSecureFiles"
       tbody-tr-class="js-ci-secure-files-row"
@@ -78,6 +103,10 @@ export default {
       sort-icon-left
       no-sort-reset
     >
+      <template #table-busy>
+        <gl-loading-icon size="lg" class="gl-my-5" />
+      </template>
+
       <template #cell(name)="{ item }">
         {{item.name}}
       </template>
@@ -91,5 +120,14 @@ export default {
       </template>
 
     </gl-table>
+    <gl-pagination
+      v-if="!loading"
+      v-model="page"
+      :per-page="$options.DEFAULT_PER_PAGE"
+      :total-items="totalItems"
+      :next-text="$options.i18n.pagination.next"
+      :prev-text="$options.i18n.pagination.prev"
+      align="center"
+    />
   </div>
 </template>

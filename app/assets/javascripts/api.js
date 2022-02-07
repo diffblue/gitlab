@@ -958,10 +958,10 @@ const Api = {
     return axios.get(url, { params: { per_page: DEFAULT_PER_PAGE, ...params } });
   },
 
-  projectSecureFiles(projectId){
+  projectSecureFiles(projectId, options = {}){
     const url = Api.buildUrl(this.secureFilesPath).replace(':project_id', projectId);
     
-    return axios.get(url);
+    return axios.get(url, { params: { per_page: DEFAULT_PER_PAGE, ...options } });
   },
 
   async updateNotificationSettings(projectId, groupId, data = {}) {
