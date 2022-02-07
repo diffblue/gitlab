@@ -101,6 +101,30 @@ RSpec.describe 'SAST.gitlab-ci.yml' do
           end
         end
       end
+
+      context 'when setting image tag dynamically' do
+        using RSpec::Parameterized::TableSyntax
+
+        where(:case_name, :files, :gitlab_version, :image_tag) do
+          'security-code-scan-sast' | { 'app.csproj' => '' } | 14 | '2'
+          'security-code-scan-sast' | { 'app.csproj' => '' } | 15 | '3'
+        end
+
+        with_them do
+          before do
+            allow(Gitlab::VersionInfo).to receive(:parse).and_return(
+              Gitlab::VersionInfo.new(gitlab_version)
+            )
+          end
+
+          it 'creates a build with the expected tag' do
+            expect(build_names).to include(case_name)
+
+            image_tags = pipeline.builds.map { |build| build.variables["SAST_ANALYZER_IMAGE_TAG"].value }
+            expect(image_tags).to match_array([image_tag])
+          end
+        end
+      end
     end
   end
 end
