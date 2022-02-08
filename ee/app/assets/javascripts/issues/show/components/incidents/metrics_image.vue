@@ -210,8 +210,9 @@ export default {
           >
             <gl-icon class="gl-mr-2" :name="arrowIconName" />
           </gl-button>
-          <gl-link v-if="url" :href="url">
+          <gl-link v-if="url" :href="url" target="_blank">
             {{ urlText == null || urlText == '' ? filename : urlText }}
+            <gl-icon name="external-link" class="gl-vertical-align-middle" />
           </gl-link>
           <span v-else>{{ urlText == null || urlText == '' ? filename : urlText }}</span>
           <div class="gl-ml-auto">

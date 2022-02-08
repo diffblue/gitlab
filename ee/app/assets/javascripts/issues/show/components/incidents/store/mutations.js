@@ -23,7 +23,7 @@ export default {
   },
   [types.RECEIVE_METRIC_UPDATE_SUCCESS](state, image) {
     state.isUploadingImage = false;
-    const metricIndex = state.metricImages.findIndex((img) => image.id === image.id);
+    const metricIndex = state.metricImages.findIndex((img) => img.id === image.id);
     if (metricIndex >= 0) {
       state.metricImages.splice(metricIndex, 1, image)
     }
