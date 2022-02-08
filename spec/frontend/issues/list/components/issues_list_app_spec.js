@@ -747,7 +747,6 @@ describe('CE IssuesListApp component', () => {
                   data: JSON.stringify({
                     move_before_id: getIdFromGraphQLId(moveBeforeId),
                     move_after_id: getIdFromGraphQLId(moveAfterId),
-                    group_full_path: isProject ? undefined : defaultProvide.fullPath,
                   }),
                 });
               });
