@@ -9,11 +9,12 @@ RSpec.describe Gitlab::Email::Handler::CreateNoteHandler do
     stub_incoming_email_setting(enabled: true, address: "reply+%{key}@appmail.adventuretime.ooo")
     stub_config_setting(host: 'localhost')
     stub_licensed_features(epics: true)
+    group.add_developer(user)
   end
 
   let(:email_raw) { fixture_file('emails/valid_reply.eml') }
-  let(:group) { create(:group_with_members) }
-  let(:user) { group.users.first }
+  let(:group) { create(:group) }
+  let(:user) { create(:user, email: 'jake@adventuretime.ooo') }
   let(:noteable) { create(:epic, group: group) }
   let(:note) { create(:note, project: nil, noteable: noteable)}
 
