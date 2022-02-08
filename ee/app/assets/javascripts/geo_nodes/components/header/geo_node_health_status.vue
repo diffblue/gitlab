@@ -1,10 +1,9 @@
 <script>
-import { GlIcon, GlBadge } from '@gitlab/ui';
+import { GlBadge } from '@gitlab/ui';
 import { HEALTH_STATUS_UI } from 'ee/geo_nodes/constants';
 
 export default {
   components: {
-    GlIcon,
     GlBadge,
   },
   props: {
@@ -23,8 +22,7 @@ export default {
 </script>
 
 <template>
-  <gl-badge :variant="statusUi.variant">
-    <gl-icon :name="statusUi.icon" />
-    <span class="gl-ml-2 gl-font-weight-bold">{{ statusUi.text }}</span>
+  <gl-badge :variant="statusUi.variant" :icon="statusUi.icon" class="gl-font-weight-bold!">
+    {{ statusUi.text }}
   </gl-badge>
 </template>

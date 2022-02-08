@@ -1,4 +1,4 @@
-import { GlIcon, GlBadge } from '@gitlab/ui';
+import { GlBadge } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import GeoNodeHealthStatus from 'ee/geo_nodes/components/header/geo_node_health_status.vue';
 import { HEALTH_STATUS_UI } from 'ee/geo_nodes/constants';
@@ -24,8 +24,6 @@ describe('GeoNodeHealthStatus', () => {
   });
 
   const findGeoStatusBadge = () => wrapper.findComponent(GlBadge);
-  const findGeoStatusIcon = () => wrapper.findComponent(GlIcon);
-  const findGeoStatusText = () => wrapper.find('span');
 
   describe.each`
     status         | uiData
@@ -46,11 +44,11 @@ describe('GeoNodeHealthStatus', () => {
       });
 
       it(`renders icon to ${uiData.icon}`, () => {
-        expect(findGeoStatusIcon().attributes('name')).toBe(uiData.icon);
+        expect(findGeoStatusBadge().props('icon')).toBe(uiData.icon);
       });
 
       it(`renders status text to ${uiData.text}`, () => {
-        expect(findGeoStatusText().text()).toBe(uiData.text);
+        expect(findGeoStatusBadge().text()).toBe(uiData.text);
       });
     });
   });
