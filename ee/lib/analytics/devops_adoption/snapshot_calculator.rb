@@ -118,17 +118,8 @@ module Analytics
 
       # rubocop: disable CodeReuse/ActiveRecord
       def projects_count_with_artifact(artifacts_scope)
-        subquery = artifacts_scope.created_in_time_range(from: range_start, to: range_end)
-          .where(Ci::JobArtifact.arel_table[:project_id].eq(Arel.sql('project_ids.id'))).arel.exists
-
         snapshot_project_ids.each_slice(1000).sum do |project_ids|
-          ids = project_ids.map { |id| [id] }
-          # To avoid cross-database join, we swap out the FROM part with just the project_ids we need
-          Project
-            .select(:id)
-            .from("(#{Arel::Nodes::ValuesList.new(ids).to_sql}) project_ids (id)")
-            .where(subquery)
-            .count
+          artifacts_scope.created_in_time_range(from: range_start, to: range_end).where(project_id: project_ids).count
         end
       end
       # rubocop: enable CodeReuse/ActiveRecord
