@@ -1879,15 +1879,34 @@ RSpec.describe Project do
   end
 
   describe '#with_slack_application_disabled' do
-    it 'returns projects where Slack application is disabled' do
-      project1 = create(:project)
-      project2 = create(:project)
+    let(:project1) { create(:project) }
+    let(:project2) { create(:project) }
+    let(:project3) { create(:project) }
+
+    before do
       create(:gitlab_slack_application_integration, project: project2)
+      create(:gitlab_slack_application_integration, project: project3, active: false)
+    end
 
-      projects = described_class.with_slack_application_disabled
+    context 'when slack applications are available' do
+      it 'returns projects where Slack application is disabled or absent' do
+        projects = described_class.with_slack_application_disabled
 
-      expect(projects).to include(project1)
-      expect(projects).not_to include(project2)
+        expect(projects).to include(project1, project3)
+        expect(projects).not_to include(project2)
+      end
+    end
+
+    context 'when slack applications are not available' do
+      before do
+        allow(::Gitlab).to receive(:dev_or_test_env?).and_return(false)
+      end
+
+      it 'returns projects where Slack application is disabled or absent' do
+        projects = described_class.with_slack_application_disabled
+
+        expect(projects).to include(project1, project2, project3)
+      end
     end
   end
 
