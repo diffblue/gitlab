@@ -139,9 +139,19 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
           let(:expected_configuration) do
             {
               'secret-detection-0': hash_including(
-                rules: [{ if: '$SECRET_DETECTION_DISABLED', when: 'never' }, { if: '$CI_COMMIT_BRANCH' }],
+                rules: [
+                  { if: '$SECRET_DETECTION_DISABLED', when: 'never' },
+                  {
+                    if: '$CI_COMMIT_BRANCH && $SECURE_ANALYZERS_PREFIX == $DEFAULT_SECURE_ANALYZERS_PREFIX',
+                    variables: { SECURE_ANALYZERS_PREFIX: "$DEFAULT_SECURE_ANALYZERS_PREFIX" }
+                  },
+                  {
+                    if: "$CI_COMMIT_BRANCH",
+                    variables: { SECURE_ANALYZERS_PREFIX: "$DEPRECATED_SECURE_ANALYZERS_PREFIX" }
+                  }
+                ],
                 stage: 'test',
-                image: '$SECURE_ANALYZERS_PREFIX/secrets:$SECRETS_ANALYZER_VERSION',
+                image: '$SECURE_ANALYZERS_PREFIX/secret-detection:$SECRETS_ANALYZER_VERSION',
                 services: [],
                 allow_failure: true,
                 artifacts: {
@@ -151,7 +161,9 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
                 },
                 variables: {
                   GIT_DEPTH: '50',
-                  SECURE_ANALYZERS_PREFIX: 'registry.gitlab.com/gitlab-org/security-products/analyzers',
+                  SECURE_ANALYZERS_PREFIX: secure_analyzers_prefix,
+                  DEFAULT_SECURE_ANALYZERS_PREFIX: secure_analyzers_prefix,
+                  DEPRECATED_SECURE_ANALYZERS_PREFIX: 'registry.gitlab.com/gitlab-org/security-products/analyzers',
                   SECRETS_ANALYZER_VERSION: '3',
                   SECRET_DETECTION_EXCLUDED_PATHS: '',
                   SECRET_DETECTION_HISTORIC_SCAN: 'false'
