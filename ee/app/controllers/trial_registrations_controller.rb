@@ -35,10 +35,8 @@ class TrialRegistrationsController < RegistrationsController
     stored_url = stored_location_for(:user)
     return unless stored_url.present?
 
-    redirect_uri = URI.parse(stored_url)
-    new_query = URI.decode_www_form(String(redirect_uri.query)) << ['onboarding', true]
-    redirect_uri.query = URI.encode_www_form(new_query)
-    store_location_for(:user, redirect_uri.to_s)
+    redirect_uri = Gitlab::Utils.add_url_parameters(stored_url, onboarding: true)
+    store_location_for(:user, redirect_uri)
   end
 
   def sign_up_params
