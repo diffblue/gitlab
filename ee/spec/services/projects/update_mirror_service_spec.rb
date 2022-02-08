@@ -98,13 +98,13 @@ RSpec.describe Projects::UpdateMirrorService do
       end
     end
 
-    context "updating tags" do
-      it "creates new tags, expiring cache if there are tag changes" do
+    context 'updating tags', :aggregate_failures do
+      it 'creates new tags, expiring cache if there are tag changes' do
         stub_fetch_mirror(project)
 
         expect(project.repository).to receive(:expire_tags_cache).and_call_original
 
-        service.execute
+        expect(service.execute).to eq(status: :success)
 
         expect(project.repository.tag_names).to include('new-tag')
       end
@@ -114,17 +114,69 @@ RSpec.describe Projects::UpdateMirrorService do
 
         expect(project.repository).not_to receive(:expire_tags_cache)
 
-        service.execute
+        expect(service.execute).to eq(status: :success)
       end
 
-      it "only invokes Git::TagPushService for tags pointing to commits" do
+      it 'only invokes Git::TagPushService for tags pointing to commits' do
         stub_fetch_mirror(project)
 
+        allow(Git::TagPushService).to receive(:new).and_call_original
         expect(Git::TagPushService).to receive(:new)
           .with(project, project.first_owner, change: hash_including(ref: 'refs/tags/new-tag'), mirror_update: true)
           .and_return(double(execute: true))
 
-        service.execute
+        expect(service.execute).to eq(status: :success)
+      end
+
+      describe 'Protected tags mirroring' do
+        context 'when user has permissions to create a protected tag' do
+          let!(:protected_tag) { create(:protected_tag, project: project, name: 'protected-tag') }
+
+          it 'creates the protected tag' do
+            stub_fetch_mirror(project)
+
+            expect(project.repository).to receive(:expire_tags_cache).and_call_original
+            expect(Git::TagPushService).to receive(:new).and_call_original.twice
+
+            expect(service.execute).to eq(status: :success)
+
+            expect(project.repository.tag_names).to include('new-tag', 'protected-tag')
+          end
+        end
+
+        context 'when user cannot create a protected tag' do
+          let!(:protected_tag) { create(:protected_tag, :no_one_can_create, project: project, name: 'protected-tag') }
+
+          it 'creates only tags that user can create' do
+            stub_fetch_mirror(project)
+
+            expect(Git::TagPushService).to receive(:new).and_call_original.once
+
+            expect(service.execute).to eq(
+              message: "You are not allowed to create tags: 'protected-tag' as they are protected.",
+              status: :error
+            )
+            expect(project.repository.tag_names).not_to include('protected-tag')
+            expect(project.repository.tag_names).to include('new-tag')
+          end
+
+          context 'when feature flag is disabled' do
+            before do
+              stub_feature_flags(verify_protected_tags_for_pull_mirror: false)
+            end
+
+            it 'creates the protected tag' do
+              stub_fetch_mirror(project)
+
+              expect(project.repository).to receive(:expire_tags_cache).and_call_original
+              expect(Git::TagPushService).to receive(:new).and_call_original.twice
+
+              expect(service.execute).to eq(status: :success)
+
+              expect(project.repository.tag_names).to include('new-tag', 'protected-tag')
+            end
+          end
+        end
       end
     end
 
@@ -463,6 +515,9 @@ RSpec.describe Projects::UpdateMirrorService do
 
     # New tag
     rugged.references.create('refs/tags/new-tag', masterrev)
+
+    # Protected tag
+    rugged.references.create('refs/tags/protected-tag', masterrev)
 
     # New tag that point to a blob
     rugged.references.create('refs/tags/new-tag-on-blob', 'c74175afd117781cbc983664339a0f599b5bb34e')
