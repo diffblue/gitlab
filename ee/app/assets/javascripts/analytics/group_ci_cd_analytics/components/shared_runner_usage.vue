@@ -64,7 +64,7 @@ export default {
         .sort((a, b) => {
           return new Date(a.monthIso8601) - new Date(b.monthIso8601);
         })
-        .map((cur) => [formatDate(cur.monthIso8601, 'mmm yyyy'), cur.minutes]);
+        .map((cur) => [formatDate(cur.monthIso8601, 'mmm yyyy'), cur.sharedRunnersDuration]);
     },
     isDataEmpty() {
       return this.minutesUsageDataByMonth.length === 0;

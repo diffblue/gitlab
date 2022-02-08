@@ -3,13 +3,7 @@ query getCiMinutesUsageByNamespace($namespaceId: NamespaceID) {
     nodes {
       month
       monthIso8601
-      minutes
-      projects {
-        nodes {
-          name
-          minutes
-        }
-      }
+      sharedRunnersDuration
     }
   }
 }
