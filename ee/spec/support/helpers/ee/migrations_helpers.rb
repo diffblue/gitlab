@@ -22,7 +22,7 @@ module EE
     override :migrations_paths
     def migrations_paths
       if geo_migration?
-        ::Gitlab::Geo::DatabaseTasks.geo_migrations_paths
+        geo_db_config.configuration_hash[:migrations_paths]
       else
         super
       end
@@ -53,6 +53,10 @@ module EE
 
     def geo_migration?
       self.class.metadata[:geo]
+    end
+
+    def geo_db_config
+      Geo::TrackingBase.connection_db_config
     end
   end
 end
