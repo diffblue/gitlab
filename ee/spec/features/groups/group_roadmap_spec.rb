@@ -143,6 +143,7 @@ RSpec.describe 'group epic roadmap', :js do
 
   context 'when epics exist for the group' do
     available_tokens = %w[Author Label Milestone Epic My-Reaction]
+    available_sort_options = ['Start date', 'Due date']
 
     let!(:epic_with_bug) { create(:labeled_epic, group: group, start_date: 10.days.ago, end_date: 1.day.ago, labels: [bug_label]) }
     let!(:epic_with_critical) { create(:labeled_epic, group: group, start_date: 20.days.ago, end_date: 2.days.ago, labels: [critical_label]) }
@@ -244,18 +245,6 @@ RSpec.describe 'group epic roadmap', :js do
       it 'renders the filtered search bar correctly' do
         page.within('.content-wrapper .content .epics-filters') do
           expect(page).to have_css('.vue-filtered-search-bar-container')
-        end
-      end
-
-      it 'renders the sort dropdown correctly' do
-        page.within('.vue-filtered-search-bar-container') do
-          expect(page).to have_css('.sort-dropdown-container')
-          find('.sort-dropdown-container .dropdown-toggle').click
-          page.within('.sort-dropdown-container .dropdown-menu') do
-            expect(page).to have_selector('li button', count: 2)
-            expect(page).to have_content('Start date')
-            expect(page).to have_content('Due date')
-          end
         end
       end
 
@@ -377,7 +366,7 @@ RSpec.describe 'group epic roadmap', :js do
       end
     end
 
-    describe 'filtered search tokens' do
+    describe 'filtered search' do
       let!(:epic1) { create(:epic, group: group, end_date: 10.days.ago) }
       let!(:epic2) { create(:epic, group: group, start_date: 2.days.ago) }
       let!(:award_emoji_star) { create(:award_emoji, name: 'star', user: user, awardable: epic1) }
@@ -388,7 +377,7 @@ RSpec.describe 'group epic roadmap', :js do
         wait_for_requests
       end
 
-      it_behaves_like 'filtered search bar', available_tokens
+      it_behaves_like 'filtered search bar', available_tokens, available_sort_options
     end
 
     describe 'that is a sub-group' do
@@ -403,7 +392,7 @@ RSpec.describe 'group epic roadmap', :js do
         wait_for_requests
       end
 
-      it_behaves_like 'filtered search bar', available_tokens
+      it_behaves_like 'filtered search bar', available_tokens, available_sort_options
     end
   end
 
