@@ -7,6 +7,7 @@ module EE
 
       return false unless root_namespace.user_cap_available?
       return false if alert_has_been_dismissed?(root_namespace)
+      return false if current_page?(pending_members_group_usage_quotas_path(root_namespace))
 
       can?(current_user, :admin_namespace, root_namespace) && root_namespace.user_cap_reached?(use_cache: true)
     end
