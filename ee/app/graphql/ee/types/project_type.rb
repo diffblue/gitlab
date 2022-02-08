@@ -74,6 +74,8 @@ module EE
         field :dast_profiles,
               ::Types::Dast::ProfileType.connection_type,
               null: true,
+              extras: [:lookahead],
+              late_extensions: [::Gitlab::Graphql::Project::DastProfileConnectionExtension],
               resolver: ::Resolvers::AppSec::Dast::ProfileResolver,
               description: 'DAST Profiles associated with the project.'
 

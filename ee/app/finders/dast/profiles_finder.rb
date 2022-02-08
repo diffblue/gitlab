@@ -21,11 +21,9 @@ module Dast
 
     attr_reader :params
 
-    # rubocop: disable CodeReuse/ActiveRecord
     def default_relation
-      Dast::Profile.limit(100)
+      Dast::Profile.limit(100).with_schedule_owner
     end
-    # rubocop: enable CodeReuse/ActiveRecord
 
     def by_id(relation)
       return relation if params[:id].nil?

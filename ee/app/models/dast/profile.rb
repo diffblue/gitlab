@@ -31,6 +31,10 @@ module Dast
       has_dast_profile_schedule ? joins(:dast_profile_schedule) : where.missing(:dast_profile_schedule)
     end
 
+    scope :with_schedule_owner, -> do
+      eager_load(dast_profile_schedule: [:owner])
+    end
+
     delegate :secret_ci_variables, to: :dast_site_profile
 
     sanitizes! :name, :description

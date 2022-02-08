@@ -254,4 +254,34 @@ RSpec.describe Dast::ProfileSchedule, type: :model do
       is_expected.not_to include(inactive_dast_profile_schedule)
     end
   end
+
+  describe '#owner_valid?' do
+    let_it_be(:owner) { create(:user) }
+
+    let(:dast_profile_schedule_with_owner) { create(:dast_profile_schedule, project: project, user_id: owner.id) }
+
+    subject { dast_profile_schedule_with_owner }
+
+    context 'when the feature is enabled' do
+      before do
+        stub_licensed_features(security_on_demand_scans: true)
+      end
+
+      context 'when the scheduler owner is not null and has the ability to create_on_demand_dast_scan' do
+        before do
+          project.add_developer(owner)
+        end
+
+        it { is_expected.to be_owner_valid }
+      end
+
+      context 'when the user_id is nil' do
+        let(:dast_profile_schedule_nil_owner) { create(:dast_profile_schedule, project: project, user_id: nil) }
+
+        subject { dast_profile_schedule_nil_owner }
+
+        it { is_expected.not_to be_owner_valid }
+      end
+    end
+  end
 end

@@ -26,6 +26,9 @@ module Types
       field :next_run_at, Types::TimeType, null: true,
             description: 'Next run time of the DAST profile schedule in the given timezone.'
 
+      field :owner_valid, GraphQL::Types::Boolean, null: true,
+            description: 'Status of the current owner of the DAST profile schedule.', method: :owner_valid?
+
       def starts_at
         return unless object.starts_at && object.timezone
 
