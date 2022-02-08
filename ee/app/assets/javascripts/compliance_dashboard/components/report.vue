@@ -1,5 +1,5 @@
 <script>
-import { GlAlert, GlLoadingIcon, GlTable, GlLink } from '@gitlab/ui';
+import { GlAlert, GlLoadingIcon, GlTable, GlLink, GlKeysetPagination } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { s__, __ } from '~/locale';
 import { thWidthClass, sortObjectToString, sortStringToObject } from '~/lib/utils/table_utility';
@@ -10,7 +10,7 @@ import { helpPagePath } from '~/helpers/help_page_helper';
 import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
 import complianceViolationsQuery from '../graphql/compliance_violations.query.graphql';
 import { mapViolations } from '../graphql/mappers';
-import { DEFAULT_SORT } from '../constants';
+import { DEFAULT_SORT, GRAPHQL_PAGE_SIZE } from '../constants';
 import { parseViolationsQueryFilter } from '../utils';
 import MergeCommitsExportButton from './merge_requests/merge_commits_export_button.vue';
 import MergeRequestDrawer from './drawer.vue';
@@ -24,6 +24,7 @@ export default {
     GlLoadingIcon,
     GlTable,
     GlLink,
+    GlKeysetPagination,
     MergeCommitsExportButton,
     MergeRequestDrawer,
     ViolationReason,
@@ -54,13 +55,20 @@ export default {
     return {
       urlQuery: { ...this.defaultQuery },
       queryError: false,
-      violations: [],
+      violations: {
+        list: [],
+        pageInfo: {},
+      },
       showDrawer: false,
       drawerMergeRequest: {},
       drawerProject: {},
       sortBy,
       sortDesc,
       sortParam,
+      paginationCursors: {
+        before: null,
+        after: null,
+      },
     };
   },
   apollo: {
@@ -71,10 +79,16 @@ export default {
           fullPath: this.groupPath,
           filter: parseViolationsQueryFilter(this.urlQuery),
           sort: this.sortParam,
+          first: GRAPHQL_PAGE_SIZE,
+          ...this.paginationCursors,
         };
       },
       update(data) {
-        return mapViolations(data?.group?.mergeRequestViolations?.nodes);
+        const { nodes, pageInfo } = data?.group?.mergeRequestViolations || {};
+        return {
+          list: mapViolations(nodes),
+          pageInfo,
+        };
       },
       error(e) {
         Sentry.captureException(e);
@@ -88,6 +102,10 @@ export default {
     },
     hasMergeCommitsCsvExportPath() {
       return this.mergeCommitsCsvExportPath !== '';
+    },
+    showPagination() {
+      const { hasPreviousPage, hasNextPage } = this.violations.pageInfo || {};
+      return hasPreviousPage || hasNextPage;
     },
   },
   methods: {
@@ -122,6 +140,18 @@ export default {
         // Clear the URL param when the id array is empty
         projectIds: projectIds?.length > 0 ? projectIds : null,
         ...rest,
+      };
+    },
+    loadPrevPage(startCursor) {
+      this.paginationCursors = {
+        before: startCursor,
+        after: null,
+      };
+    },
+    loadNextPage(endCursor) {
+      this.paginationCursors = {
+        before: null,
+        after: endCursor,
       };
     },
   },
@@ -159,6 +189,8 @@ export default {
     queryError: __('Retrieving the compliance report failed. Refresh the page and try again.'),
     noViolationsFound: s__('ComplianceReport|No violations found'),
     learnMore: __('Learn more.'),
+    prev: __('Prev'),
+    next: __('Next'),
   },
   documentationPath: helpPagePath('user/compliance/compliance_report/index.md', {
     anchor: 'approval-status-and-separation-of-duties',
@@ -197,7 +229,7 @@ export default {
     <gl-table
       ref="table"
       :fields="$options.fields"
-      :items="violations"
+      :items="violations.list"
       :busy="isLoading"
       :empty-text="$options.i18n.noViolationsFound"
       :selectable="true"
@@ -228,9 +260,19 @@ export default {
         <time-ago-tooltip :time="mergeRequest.mergedAt" />
       </template>
       <template #table-busy>
-        <gl-loading-icon size="lg" color="dark" class="mt-3" />
+        <gl-loading-icon size="lg" color="dark" class="gl-my-5" />
       </template>
     </gl-table>
+    <div v-if="showPagination" class="gl-display-flex gl-justify-content-center">
+      <gl-keyset-pagination
+        v-bind="violations.pageInfo"
+        :disabled="isLoading"
+        :prev-text="$options.i18n.prev"
+        :next-text="$options.i18n.next"
+        @prev="loadPrevPage"
+        @next="loadNextPage"
+      />
+    </div>
     <merge-request-drawer
       :show-drawer="showDrawer"
       :merge-request="drawerMergeRequest"

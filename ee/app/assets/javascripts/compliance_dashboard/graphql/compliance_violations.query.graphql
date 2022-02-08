@@ -1,6 +1,22 @@
+#import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
+
 # TODO: Add the correct filter type once it has been added in https://gitlab.com/gitlab-org/gitlab/-/issues/347325
-query getComplianceViolations($fullPath: ID!, $filter: Object, $sort: String) {
-  group(fullPath: $fullPath, filter: $filter, sort: $sort) @client {
+query getComplianceViolations(
+  $fullPath: ID!
+  $filter: Object
+  $sort: String
+  $after: String
+  $before: String
+  $first: Int
+) {
+  group(
+    fullPath: $fullPath
+    filter: $filter
+    sort: $sort
+    after: $after
+    before: $before
+    first: $first
+  ) @client {
     id
     mergeRequestViolations {
       nodes {
@@ -81,6 +97,9 @@ query getComplianceViolations($fullPath: ID!, $filter: Object, $sort: String) {
             }
           }
         }
+      }
+      pageInfo {
+        ...PageInfo
       }
     }
   }

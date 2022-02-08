@@ -1,4 +1,4 @@
-import { GlAlert, GlLoadingIcon, GlTable, GlLink } from '@gitlab/ui';
+import { GlAlert, GlLoadingIcon, GlTable, GlLink, GlKeysetPagination } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
@@ -20,7 +20,7 @@ import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { stubComponent } from 'helpers/stub_component';
 import { sortObjectToString } from '~/lib/utils/table_utility';
 import { parseViolationsQueryFilter } from 'ee/compliance_dashboard/utils';
-import { DEFAULT_SORT } from 'ee/compliance_dashboard/constants';
+import { DEFAULT_SORT, GRAPHQL_PAGE_SIZE } from 'ee/compliance_dashboard/constants';
 
 Vue.use(VueApollo);
 
@@ -44,6 +44,7 @@ describe('ComplianceReport component', () => {
   const findErrorMessage = () => wrapper.findComponent(GlAlert);
   const findViolationsTable = () => wrapper.findComponent(GlTable);
   const findTableLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findPagination = () => wrapper.findComponent(GlKeysetPagination);
   const findMergeRequestDrawer = () => wrapper.findComponent(MergeRequestDrawer);
   const findMergeCommitsExportButton = () => wrapper.findComponent(MergeCommitsExportButton);
   const findViolationReason = () => wrapper.findComponent(ViolationReason);
@@ -141,6 +142,9 @@ describe('ComplianceReport component', () => {
           fullPath: groupPath,
           filter: parseViolationsQueryFilter(defaultQuery),
           sort: DEFAULT_SORT,
+          first: GRAPHQL_PAGE_SIZE,
+          after: null,
+          before: null,
         }),
       );
     });
@@ -161,6 +165,9 @@ describe('ComplianceReport component', () => {
           fullPath: groupPath,
           filter: parseViolationsQueryFilter(defaultQuery),
           sort,
+          first: GRAPHQL_PAGE_SIZE,
+          after: null,
+          before: null,
         }),
       );
     });
@@ -324,6 +331,10 @@ describe('ComplianceReport component', () => {
           expect(findTableLoadingIcon().exists()).toBe(true);
         });
 
+        it('sets the pagination component to disabled', () => {
+          expect(findPagination().props('disabled')).toBe(true);
+        });
+
         it('clears the project URL query param if the project array is empty', async () => {
           await findViolationFilter().vm.$emit('filters-changed', { ...query, projectIds: [] });
 
@@ -338,6 +349,9 @@ describe('ComplianceReport component', () => {
               fullPath: groupPath,
               filter: parseViolationsQueryFilter(query),
               sort: DEFAULT_SORT,
+              first: GRAPHQL_PAGE_SIZE,
+              after: null,
+              before: null,
             }),
           );
         });
@@ -373,8 +387,71 @@ describe('ComplianceReport component', () => {
             fullPath: groupPath,
             filter: parseViolationsQueryFilter(defaultQuery),
             sort: sortObjectToString(sortState),
+            first: GRAPHQL_PAGE_SIZE,
+            after: null,
+            before: null,
           }),
         );
+      });
+    });
+
+    describe('pagination', () => {
+      beforeEach(() => {
+        mockResolver = jest.fn().mockReturnValue(resolvers.Query.group());
+        wrapper = createComponent(mount);
+
+        return waitForPromises();
+      });
+
+      it('renders and configures the pagination', () => {
+        const pageInfo = stripTypenames(resolvers.Query.group().mergeRequestViolations.pageInfo);
+
+        expect(findPagination().props()).toMatchObject({
+          ...pageInfo,
+          disabled: false,
+        });
+      });
+
+      it.each`
+        event     | after    | before
+        ${'next'} | ${'foo'} | ${null}
+        ${'prev'} | ${null}  | ${'foo'}
+      `(
+        'fetches the $event page when the pagination emits "$event"',
+        async ({ event, after, before }) => {
+          await findPagination().vm.$emit(event, after ?? before);
+          await waitForPromises();
+
+          expect(mockResolver).toHaveBeenCalledTimes(2);
+          expect(mockResolver).toHaveBeenNthCalledWith(
+            2,
+            ...expectApolloVariables({
+              fullPath: groupPath,
+              filter: parseViolationsQueryFilter(defaultQuery),
+              first: GRAPHQL_PAGE_SIZE,
+              sort: DEFAULT_SORT,
+              after,
+              before,
+            }),
+          );
+        },
+      );
+
+      describe('when there are no next or previous pages', () => {
+        beforeEach(() => {
+          const group = resolvers.Query.group();
+          group.mergeRequestViolations.pageInfo.hasNextPage = false;
+          group.mergeRequestViolations.pageInfo.hasPreviousPage = false;
+
+          mockResolver = () => jest.fn().mockReturnValue(group);
+          wrapper = createComponent(mount);
+
+          return waitForPromises();
+        });
+
+        it('does not render the pagination component', () => {
+          expect(findPagination().exists()).toBe(false);
+        });
       });
     });
   });

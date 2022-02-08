@@ -12,6 +12,8 @@ export const DRAWER_AVATAR_SIZE = 24;
 
 export const DRAWER_MAXIMUM_AVATARS = 20;
 
+export const GRAPHQL_PAGE_SIZE = 20;
+
 export const COMPLIANCE_DRAWER_CONTAINER_CLASS = '.content-wrapper';
 
 const VIOLATION_TYPE_APPROVED_BY_AUTHOR = 'approved_by_author';
