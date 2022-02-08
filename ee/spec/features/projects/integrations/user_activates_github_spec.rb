@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User activates GitHub Service' do
-  include_context 'project service activation'
+RSpec.describe 'User activates GitHub integration' do
+  include_context 'project integration activation'
 
   context 'without a license' do
     it "is excluded from the integrations index" do
@@ -12,7 +12,7 @@ RSpec.describe 'User activates GitHub Service' do
       expect(page).not_to have_link('GitHub')
     end
 
-    it 'renders 404 when trying to access service settings directly' do
+    it 'renders 404 when trying to access integration settings directly' do
       visit edit_project_integration_path(project, :github)
 
       expect(page).to have_gitlab_http_status(:not_found)
@@ -33,7 +33,7 @@ RSpec.describe 'User activates GitHub Service' do
       fill_in "Repository URL", with: 'https://github.com/h5bp/html5-boilerplate'
     end
 
-    it 'activates service' do
+    it 'activates integration' do
       click_button('Save')
 
       expect(page).to have_content('GitHub settings saved and active.')
@@ -47,7 +47,7 @@ RSpec.describe 'User activates GitHub Service' do
       let(:pipeline) { create(:ci_pipeline) }
       let(:project) { create(:project, ci_pipelines: [pipeline])}
 
-      it 'tests service before save' do
+      it 'tests integration before save' do
         stub_request(:post, "https://api.github.com/repos/h5bp/html5-boilerplate/statuses/#{pipeline.sha}").to_return(
           body: { context: {} }.to_json,
           headers: { 'Content-Type' => 'application/json' }
