@@ -72,6 +72,8 @@ class DastSiteValidation < ApplicationRecord
     uri = URI(url)
 
     "%{scheme}://%{host}:%{port}" % { scheme: uri.scheme, host: uri.host, port: uri.port }
+  rescue URI::InvalidURIError
+    nil
   end
 
   private
