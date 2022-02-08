@@ -9,17 +9,6 @@ import ProfileSelectorSummaryCell from './summary_cell.vue';
 
 export default {
   name: 'DastSiteProfileSummary',
-  i18n: {
-    targetUrl: s__('DastProfiles|Target URL'),
-    targetType: s__('DastProfiles|Site type'),
-    authUrl: s__('DastProfiles|Authentication URL'),
-    username: s__('DastProfiles|Username'),
-    password: s__('DastProfiles|Password'),
-    usernameField: s__('DastProfiles|Username form field'),
-    passwordField: s__('DastProfiles|Password form field'),
-    excludedUrls: s__('DastProfiles|Excluded URLs'),
-    requestHeaders: s__('DastProfiles|Request headers'),
-  },
   components: {
     ProfileSelectorSummaryCell,
   },
@@ -35,6 +24,23 @@ export default {
     },
   },
   computed: {
+    i18n() {
+      return {
+        targetUrl: this.isTargetAPI
+          ? s__('DastProfiles|API endpoint URL')
+          : s__('DastProfiles|Target URL'),
+        targetType: s__('DastProfiles|Site type'),
+        authUrl: s__('DastProfiles|Authentication URL'),
+        username: s__('DastProfiles|Username'),
+        password: s__('DastProfiles|Password'),
+        usernameField: s__('DastProfiles|Username form field'),
+        passwordField: s__('DastProfiles|Password form field'),
+        excludedUrls: this.isTargetAPI
+          ? s__('DastProfiles|Excluded paths')
+          : s__('DastProfiles|Excluded URLs'),
+        requestHeaders: s__('DastProfiles|Request headers'),
+      };
+    },
     hasExcludedUrls() {
       return this.profile.excludedUrls?.length > 0;
     },
@@ -45,6 +51,9 @@ export default {
     },
     targetTypeValue() {
       return TARGET_TYPES[this.profile.targetType].text;
+    },
+    isTargetAPI() {
+      return this.profile.targetType === TARGET_TYPES.API.value;
     },
     isProfileValidated() {
       return this.profile.validationStatus === DAST_SITE_VALIDATION_STATUS.PASSED
@@ -61,40 +70,34 @@ export default {
     <div class="row">
       <profile-selector-summary-cell
         :class="{ 'gl-text-red-500': hasConflict }"
-        :label="$options.i18n.targetUrl"
+        :label="i18n.targetUrl"
         :value="profile.targetUrl"
       />
-      <profile-selector-summary-cell :label="$options.i18n.targetType" :value="targetTypeValue" />
+      <profile-selector-summary-cell :label="i18n.targetType" :value="targetTypeValue" />
     </div>
     <template v-if="profile.auth.enabled">
       <div class="row">
-        <profile-selector-summary-cell :label="$options.i18n.authUrl" :value="profile.auth.url" />
+        <profile-selector-summary-cell :label="i18n.authUrl" :value="profile.auth.url" />
+      </div>
+      <div class="row">
+        <profile-selector-summary-cell :label="i18n.username" :value="profile.auth.username" />
+        <profile-selector-summary-cell :label="i18n.password" value="••••••••" />
       </div>
       <div class="row">
         <profile-selector-summary-cell
-          :label="$options.i18n.username"
-          :value="profile.auth.username"
-        />
-        <profile-selector-summary-cell :label="$options.i18n.password" value="••••••••" />
-      </div>
-      <div class="row">
-        <profile-selector-summary-cell
-          :label="$options.i18n.usernameField"
+          :label="i18n.usernameField"
           :value="profile.auth.usernameField"
         />
         <profile-selector-summary-cell
-          :label="$options.i18n.passwordField"
+          :label="i18n.passwordField"
           :value="profile.auth.passwordField"
         />
       </div>
     </template>
     <div class="row">
+      <profile-selector-summary-cell :label="i18n.excludedUrls" :value="displayExcludedUrls" />
       <profile-selector-summary-cell
-        :label="$options.i18n.excludedUrls"
-        :value="displayExcludedUrls"
-      />
-      <profile-selector-summary-cell
-        :label="$options.i18n.requestHeaders"
+        :label="i18n.requestHeaders"
         :value="profile.requestHeaders ? __('[Redacted]') : undefined"
       />
     </div>

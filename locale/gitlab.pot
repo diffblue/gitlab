@@ -11019,10 +11019,16 @@ msgstr ""
 msgid "DastProfiles|AJAX spider"
 msgstr ""
 
+msgid "DastProfiles|API"
+msgstr ""
+
+msgid "DastProfiles|API endpoint URL"
+msgstr ""
+
 msgid "DastProfiles|Active"
 msgstr ""
 
-msgid "DastProfiles|Additional request headers (Optional)"
+msgid "DastProfiles|Additional request headers (optional)"
 msgstr ""
 
 msgid "DastProfiles|Are you sure you want to delete this profile?"
@@ -11106,7 +11112,13 @@ msgstr ""
 msgid "DastProfiles|Excluded URLs"
 msgstr ""
 
-msgid "DastProfiles|Excluded URLs (Optional)"
+msgid "DastProfiles|Excluded URLs (optional)"
+msgstr ""
+
+msgid "DastProfiles|Excluded paths"
+msgstr ""
+
+msgid "DastProfiles|Excluded paths (optional)"
 msgstr ""
 
 msgid "DastProfiles|Hide debug messages"
@@ -11161,9 +11173,6 @@ msgid "DastProfiles|Request header names and values. Headers are added to every 
 msgstr ""
 
 msgid "DastProfiles|Request headers"
-msgstr ""
-
-msgid "DastProfiles|Rest API"
 msgstr ""
 
 msgid "DastProfiles|Run the AJAX spider, in addition to the traditional spider, to crawl the target site."

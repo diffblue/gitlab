@@ -8,5 +8,5 @@ export const REDACTED_REQUEST_HEADERS = '••••••••';
 
 export const TARGET_TYPES = {
   WEBSITE: { value: 'WEBSITE', text: s__('DastProfiles|Website') },
-  API: { value: 'API', text: s__('DastProfiles|Rest API') },
+  API: { value: 'API', text: s__('DastProfiles|API') },
 };

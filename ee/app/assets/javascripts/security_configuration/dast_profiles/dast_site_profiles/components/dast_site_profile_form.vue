@@ -93,19 +93,26 @@ export default {
           cancelTitle: __('Cancel'),
         },
         excludedUrls: {
-          label: s__('DastProfiles|Excluded URLs (Optional)'),
+          label: this.isTargetAPI
+            ? s__('DastProfiles|Excluded paths (optional)')
+            : s__('DastProfiles|Excluded URLs (optional)'),
           description: s__('DastProfiles|Enter URLs in a comma-separated list.'),
           tooltip: s__('DastProfiles|URLs to skip during the authenticated scan.'),
           placeholder: 'https://example.com/logout, https://example.com/send_mail',
         },
         requestHeaders: {
-          label: s__('DastProfiles|Additional request headers (Optional)'),
+          label: s__('DastProfiles|Additional request headers (optional)'),
           description: s__('DastProfiles|Enter headers in a comma-separated list.'),
           tooltip: s__(
             'DastProfiles|Request header names and values. Headers are added to every request made by DAST.',
           ),
           // eslint-disable-next-line @gitlab/require-i18n-strings
           placeholder: 'Cache-control: no-cache, User-Agent: DAST/1.0',
+        },
+        targetUrl: {
+          label: this.isTargetAPI
+            ? s__('DastProfiles|API endpoint URL')
+            : s__('DastProfiles|Target URL'),
         },
       };
     },
@@ -233,7 +240,7 @@ export default {
       <gl-form-group
         data-testid="target-url-input-group"
         :invalid-feedback="form.fields.targetUrl.feedback"
-        :label="s__('DastProfiles|Target URL')"
+        :label="i18n.targetUrl.label"
       >
         <gl-form-input
           v-model="form.fields.targetUrl.value"
@@ -249,7 +256,7 @@ export default {
 
       <div class="row">
         <gl-form-group
-          :label="s__('DastProfiles|Excluded URLs (Optional)')"
+          :label="i18n.excludedUrls.label"
           :invalid-feedback="form.fields.excludedUrls.feedback"
           class="col-md-6"
         >
