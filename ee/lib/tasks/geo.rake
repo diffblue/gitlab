@@ -2,147 +2,193 @@
 
 task spec: ['db:test:prepare:geo']
 
+databases = ActiveRecord::Tasks::DatabaseTasks.setup_initial_database_yaml
+
+# These db:* tasks are taken from Rails 7.0 since Rails 6.1 does not have
+# built-in support for multiple databases for them. To be removed when we
+# migrate to Rails 7.0:
+# https://gitlab.com/gitlab-org/gitlab/-/issues/352190
+#
+# https://github.com/rails/rails/blob/main/activerecord/lib/active_record/railties/databases.rake
+db_namespace = namespace :db do
+  namespace :reset do
+    task all: ["db:drop", "db:setup"]
+
+    ActiveRecord::Tasks::DatabaseTasks.for_each(databases) do |name|
+      desc "Drops and recreates the #{name} database from its schema for the current environment and loads the seeds."
+      task name => ["db:drop:#{name}", "db:setup:#{name}"]
+    end
+  end
+
+  namespace :setup do
+    task all: ["db:create", :environment, "db:schema:load", :seed]
+
+    ActiveRecord::Tasks::DatabaseTasks.for_each(databases) do |name|
+      desc "Creates the #{name} database, loads the schema, and initializes with the seed data (use db:reset:#{name} to also drop the database first)"
+      task name => ["db:create:#{name}", :environment, "db:schema:load:#{name}", "db:seed"]
+    end
+  end
+
+  namespace :version do
+    ActiveRecord::Tasks::DatabaseTasks.for_each(databases) do |name|
+      desc "Retrieves the current #{name} database schema version number"
+      task name => :load_config do
+        original_db_config = ActiveRecord::Base.connection_db_config
+        db_config = ActiveRecord::Base.configurations.configs_for(env_name: ActiveRecord::Tasks::DatabaseTasks.env, name: name)
+        ActiveRecord::Base.establish_connection(db_config) # rubocop: disable Database/EstablishConnection
+        puts "Current version: #{ActiveRecord::Base.connection.migration_context.current_version}"
+      ensure
+        ActiveRecord::Base.establish_connection(original_db_config) if original_db_config # rubocop: disable Database/EstablishConnection
+      end
+    end
+  end
+
+  namespace :seed do
+    seed_loader = Class.new do
+      def self.load_seed
+        load('ee/db/geo/seeds.rb')
+      end
+    end
+
+    desc "Loads the seed data from ee/db/geo/seeds.rb"
+    task geo: :load_config do
+      db_namespace["abort_if_pending_migrations"].invoke
+      ActiveRecord::Tasks::DatabaseTasks.seed_loader = seed_loader
+      ActiveRecord::Tasks::DatabaseTasks.load_seed
+    end
+  end
+end
+
 namespace :geo do
   GEO_LICENSE_ERROR_TEXT = 'GitLab Geo is not supported with this license. Please contact the sales team: https://about.gitlab.com/sales.'
+
+  def log_deprecated_message(deprecated_task, task_to_invoke)
+    puts "DEPRECATION WARNING: Using `bin/rails #{deprecated_task}` is deprecated and will be removed in Gitlab 15.0. Please run `bin/rails #{task_to_invoke}` instead.".color(:red)
+  end
 
   namespace :db do |ns|
     desc 'GitLab | Geo | DB | Drops the Geo tracking database from config/database_geo.yml for the current RAILS_ENV.'
     task drop: [:environment] do
-      Gitlab::Geo::DatabaseTasks.drop_current
+      Rake::Task['db:drop:geo'].invoke
+
+      log_deprecated_message('geo:db:drop', 'db:drop:geo')
     end
 
     desc 'GitLab | Geo | DB | Creates the Geo tracking database from config/database_geo.yml for the current RAILS_ENV.'
     task create: [:environment] do
-      Gitlab::Geo::DatabaseTasks.create_current
+      Rake::Task['db:create:geo'].invoke
+
+      log_deprecated_message('geo:db:create', 'db:create:geo')
     end
 
     desc 'GitLab | Geo | DB | Create the Geo tracking database, load the schema, and initialize with the seed data.'
-    task setup: ['geo:db:schema:load', 'geo:db:seed']
+    task setup: [:environment] do
+      Rake::Task['db:setup:geo'].invoke
+
+      log_deprecated_message('geo:db:setup', 'db:setup:geo')
+    end
 
     desc 'GitLab | Geo | DB | Migrate the Geo tracking database (options: VERSION=x, VERBOSE=false, SCOPE=blog).'
     task migrate: [:environment] do
-      Gitlab::Geo::DatabaseTasks.migrate
+      Rake::Task['db:migrate:geo'].invoke
 
-      ns['_dump'].invoke
+      log_deprecated_message('geo:db:migrate', 'db:migrate:geo')
     end
 
     desc 'GitLab | Geo | DB | Rolls the schema back to the previous version (specify steps w/ STEP=n).'
     task rollback: [:environment] do
-      Gitlab::Geo::DatabaseTasks.rollback
+      Rake::Task['db:rollback:geo'].invoke
 
-      ns['_dump'].invoke
+      log_deprecated_message('geo:db:rollback', 'db:rollback:geo')
     end
 
     desc 'GitLab | Geo | DB | Retrieves the current schema version number.'
     task version: [:environment] do
-      puts "Current version: #{Gitlab::Geo::DatabaseTasks.version}"
+      Rake::Task['db:version:geo'].invoke
+
+      log_deprecated_message('geo:db:version', 'db:version:geo')
     end
 
     desc 'GitLab | Geo | DB | Drops and recreates the database from ee/db/geo/structure.sql for the current environment and loads the seeds.'
     task reset: [:environment] do
-      ns['drop'].invoke
-      ns['create'].invoke
-      ns['setup'].invoke
+      Rake::Task['db:reset:geo'].invoke
+
+      log_deprecated_message('geo:db:reset', 'db:reset:geo')
     end
 
     desc 'GitLab | Geo | DB | Load the seed data from ee/db/geo/seeds.rb'
     task seed: [:environment] do
-      ns['abort_if_pending_migrations'].invoke
+      Rake::Task['db:seed:geo'].invoke
 
-      Gitlab::Geo::DatabaseTasks.load_seed
-    end
-
-    # IMPORTANT: This task won't dump the schema if ActiveRecord::Base.dump_schema_after_migration is set to false
-    task _dump: [:environment] do
-      if Gitlab::Geo::DatabaseTasks.dump_schema_after_migration?
-        ns["schema:dump"].invoke
-      end
-
-      # Allow this task to be called as many times as required. An example is the
-      # migrate:redo task, which calls other two internally that depend on this one.
-      ns['_dump'].reenable
-    end
-
-    # desc "Raises an error if there are pending migrations"
-    task abort_if_pending_migrations: [:environment] do
-      pending_migrations = Gitlab::Geo::DatabaseTasks.pending_migrations
-
-      if pending_migrations.any?
-        puts "You have #{pending_migrations.size} pending #{pending_migrations.size > 1 ? 'migrations:' : 'migration:'}"
-        pending_migrations.each do |pending_migration|
-          puts '  %4d %s' % [pending_migration.version, pending_migration.name]
-        end
-        abort %{Run `rake geo:db:migrate` to update your database then try again.}
-      end
+      log_deprecated_message('geo:db:seed', 'db:seed:geo')
     end
 
     namespace :schema do
       desc 'GitLab | Geo | DB | Schema | Load a structure.sql file into the database'
       task load: [:environment] do
-        Gitlab::Geo::DatabaseTasks.load_schema_current(ActiveRecord::Base.schema_format, ENV['SCHEMA'])
+        Rake::Task['db:schema:load:geo'].invoke
+
+        log_deprecated_message('geo:db:schema:load', 'db:schema:load:geo')
       end
 
       desc 'GitLab | Geo | DB | Schema | Create a ee/db/geo/structure.sql file that is portable against any DB supported by AR'
       task dump: [:environment] do
-        Gitlab::Geo::DatabaseTasks::Schema.dump
+        Rake::Task['db:schema:dump:geo'].invoke
 
-        ns['schema:dump'].reenable
-      end
-    end
-
-    # Inform Rake that custom tasks should be run every time rake db:schema:dump is run
-    Rake::Task['geo:db:schema:dump'].enhance do
-      Gitlab::Geo::DatabaseTasks.with_geo_db do
-        Rake::Task['gitlab:db:clean_structure_sql'].invoke
+        log_deprecated_message('geo:db:schema:dump', 'db:schema:dump:geo')
       end
     end
 
     namespace :migrate do
       desc 'GitLab | Geo | DB | Migrate | Runs the "up" for a given migration VERSION.'
       task up: [:environment] do
-        Gitlab::Geo::DatabaseTasks::Migrate.up
+        Rake::Task['db:migrate:up:geo'].invoke
 
-        ns['_dump'].invoke
+        log_deprecated_message('geo:db:migrate:up', 'db:migrate:up:geo')
       end
 
       desc 'GitLab | Geo | DB | Migrate | Runs the "down" for a given migration VERSION.'
       task down: [:environment] do
-        Gitlab::Geo::DatabaseTasks::Migrate.down
+        Rake::Task['db:migrate:down:geo'].invoke
 
-        ns['_dump'].invoke
+        log_deprecated_message('geo:db:migrate:down', 'db:migrate:down:geo')
       end
 
       desc 'GitLab | Geo | DB | Migrate | Rollbacks the database one migration and re migrate up (options: STEP=x, VERSION=x).'
       task redo: [:environment] do
-        if ENV['VERSION']
-          ns['migrate:down'].invoke
-          ns['migrate:up'].invoke
-        else
-          ns['rollback'].invoke
-          ns['migrate'].invoke
-        end
+        Rake::Task['db:migrate:redo:geo'].invoke
+
+        log_deprecated_message('geo:db:migrate:redo', 'db:migrate:redo:geo')
       end
 
       desc 'GitLab | Geo | DB | Migrate | Display status of migrations'
       task status: [:environment] do
-        Gitlab::Geo::DatabaseTasks::Migrate.status
+        Rake::Task['db:migrate:status:geo'].invoke
+
+        log_deprecated_message('geo:db:migrate:status', 'db:migrate:status:geo')
       end
     end
 
     namespace :test do
       desc 'GitLab | Geo | DB | Test | Check for pending migrations and load the test schema'
       task prepare: [:environment] do
-        ns['test:load'].invoke
+        Rake::Task['db:test:prepare:geo'].invoke
+
+        log_deprecated_message('geo:db:test:prepare', 'db:test:prepare:geo')
       end
 
-      # desc "Recreate the test database from the current schema"
-      task load: [:environment, 'geo:db:test:purge'] do
-        Gitlab::Geo::DatabaseTasks::Test.load
+      desc "GitLab | Geo | DB | Test | Recreate the test database from the current schema"
+      task load: [:environment] do
+        Rake::Task['db:test:load:geo'].invoke
+
+        log_deprecated_message('geo:db:test:load', 'db:test:load:geo')
       end
 
-      # desc "Empty the test database"
+      desc "GitLab | Geo | DB | Test | Empty the test database"
       task purge: [:environment] do
-        Gitlab::Geo::DatabaseTasks::Test.purge
+        Rake::Task['db:test:purge:geo'].invoke
+
+        log_deprecated_message('geo:db:test:purge', 'db:test:purge:geo')
       end
     end
   end

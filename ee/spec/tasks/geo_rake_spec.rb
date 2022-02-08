@@ -16,213 +16,37 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout do
     stub_licensed_features(geo: true)
   end
 
-  it 'Gitlab:Geo::DatabaseTasks responds to all methods used in Geo rake tasks' do
-    %i[
-      drop_current
-      create_current
-      migrate
-      rollback
-      version
-      load_schema_current
-      load_seed
-      dump_schema_after_migration?
-      pending_migrations
-    ].each do |method|
-      expect(Gitlab::Geo::DatabaseTasks).to respond_to(method)
+  context 'custom geo:db:* rake tasks' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:deprecated_task, :task_to_invoke) do
+      'geo:db:create'         | 'db:create:geo'
+      'geo:db:drop'           | 'db:drop:geo'
+      'geo:db:migrate'        | 'db:migrate:geo'
+      'geo:db:migrate:down'   | 'db:migrate:down:geo'
+      'geo:db:migrate:redo'   | 'db:migrate:redo:geo'
+      'geo:db:migrate:status' | 'db:migrate:status:geo'
+      'geo:db:migrate:up'     | 'db:migrate:up:geo'
+      'geo:db:reset'          | 'db:reset:geo'
+      'geo:db:rollback'       | 'db:rollback:geo'
+      'geo:db:schema:dump'    | 'db:schema:dump:geo'
+      'geo:db:schema:load'    | 'db:schema:load:geo'
+      'geo:db:seed'           | 'db:seed:geo'
+      'geo:db:setup'          | 'db:setup:geo'
+      'geo:db:test:load'      | 'db:test:load:geo'
+      'geo:db:test:prepare'   | 'db:test:prepare:geo'
+      'geo:db:test:purge'     | 'db:test:purge:geo'
+      'geo:db:version'        | 'db:version:geo'
     end
-  end
 
-  it 'Gitlab::Geo::GeoTasks responds to all methods used in Geo rake tasks' do
-    %i[
-      set_primary_geo_node
-      update_primary_geo_node_url
-    ].each do |method|
-      expect(Gitlab::Geo::GeoTasks).to respond_to(method)
-    end
-  end
+    with_them do
+      it "logs a deprecated message and invokes the Rails built-in task" do
+        expect(Rake::Task[task_to_invoke]).to receive(:invoke).and_return(true)
 
-  it 'Gitlab::Geo::DatabaseTasks::Migrate responds to all methods used in Geo rake tasks' do
-    %i[up down status].each do |method|
-      expect(Gitlab::Geo::DatabaseTasks::Migrate).to respond_to(method)
-    end
-  end
-
-  it 'Gitlab::Geo::DatabaseTasks::Test responds to all methods used in Geo rake tasks' do
-    %i[load purge].each do |method|
-      expect(Gitlab::Geo::DatabaseTasks::Test).to respond_to(method)
-    end
-  end
-
-  it 'Gitlab::Geo::DatabaseTasks::Schema responds to .dump method used in Geo rake tasks' do
-    expect(Gitlab::Geo::DatabaseTasks::Schema).to respond_to(:dump)
-  end
-
-  describe 'geo:db:drop' do
-    it 'drops the current database' do
-      expect(Gitlab::Geo::DatabaseTasks).to receive(:drop_current)
-
-      run_rake_task('geo:db:drop')
-    end
-  end
-
-  describe 'geo:db:create' do
-    it 'creates a Geo tracking database' do
-      expect(Gitlab::Geo::DatabaseTasks).to receive(:create_current)
-
-      run_rake_task('geo:db:create')
-    end
-  end
-
-  describe 'geo:db:migrate' do
-    it 'migrates a Geo tracking database' do
-      expect(Gitlab::Geo::DatabaseTasks).to receive(:migrate)
-      expect(Rake::Task['geo:db:_dump']).to receive(:invoke)
-
-      run_rake_task('geo:db:migrate')
-    end
-  end
-
-  describe 'geo:db:rollback' do
-    it 'rolls back a Geo tracking database' do
-      expect(Gitlab::Geo::DatabaseTasks).to receive(:rollback)
-      expect(Rake::Task['geo:db:_dump']).to receive(:invoke)
-
-      run_rake_task('geo:db:rollback')
-    end
-  end
-
-  describe 'geo:db:version' do
-    it 'retrieves current schema version number' do
-      expect(Gitlab::Geo::DatabaseTasks).to receive(:version)
-
-      run_rake_task('geo:db:version')
-    end
-  end
-
-  describe 'geo:db:reset' do
-    it 'drops, recreates database, and loads seeds' do
-      expect(Rake::Task['geo:db:drop']).to receive(:invoke)
-      expect(Rake::Task['geo:db:create']).to receive(:invoke)
-      expect(Rake::Task['geo:db:setup']).to receive(:invoke)
-
-      run_rake_task('geo:db:reset')
-    end
-  end
-
-  describe 'geo:db:seed' do
-    it 'loads seed data' do
-      allow(Rake::Task['geo:db:abort_if_pending_migrations']).to receive(:invoke).and_return(false)
-      expect(Gitlab::Geo::DatabaseTasks).to receive(:load_seed)
-
-      run_rake_task('geo:db:seed')
-    end
-  end
-
-  describe 'geo:db:_dump' do
-    it 'dumps the schema' do
-      allow(Gitlab::Geo::DatabaseTasks).to receive(:dump_schema_after_migration?).and_return(true)
-      expect(Rake::Task['geo:db:schema:dump']).to receive(:invoke)
-
-      run_rake_task('geo:db:_dump')
-    end
-  end
-
-  describe 'geo:db:abort_if_pending_migrations' do
-    it 'raises an error if there are pending migrations' do
-      pending_migration = double('pending migration', version: 12, name: 'Test')
-      allow(Gitlab::Geo::DatabaseTasks).to receive(:pending_migrations).and_return([pending_migration])
-
-      expect { run_rake_task('geo:db:abort_if_pending_migrations') }.to raise_error(%{Run `rake geo:db:migrate` to update your database then try again.})
-    end
-  end
-
-  describe 'geo:db:schema_load' do
-    it 'loads schema file into database' do
-      allow(ENV).to receive(:[]).with('SCHEMA')
-      expect(Gitlab::Geo::DatabaseTasks).to receive(:load_schema_current).with(:sql, ENV['SCHEMA'])
-
-      run_rake_task('geo:db:schema:load')
-    end
-  end
-
-  describe 'geo:db:schema_dump' do
-    it 'creates a clean structure.sql file', :reestablished_active_record_base do
-      expect(Gitlab::Geo::DatabaseTasks::Schema).to receive(:dump)
-      expect(Rake::Task['gitlab:db:clean_structure_sql']).to receive(:invoke)
-
-      run_rake_task('geo:db:schema:dump')
-    end
-  end
-
-  describe 'geo:db:migrate:up' do
-    it 'runs up method for given migration' do
-      expect(Gitlab::Geo::DatabaseTasks::Migrate).to receive(:up)
-      expect(Rake::Task['geo:db:_dump']).to receive(:invoke)
-
-      run_rake_task('geo:db:migrate:up')
-    end
-  end
-
-  describe 'geo:db:migrate:down' do
-    it 'runs down method for given migration' do
-      expect(Gitlab::Geo::DatabaseTasks::Migrate).to receive(:down)
-      expect(Rake::Task['geo:db:_dump']).to receive(:invoke)
-
-      run_rake_task('geo:db:migrate:down')
-    end
-  end
-
-  describe 'geo:db:migrate:redo' do
-    context 'without env var set' do
-      it 'does not run migrations' do
-        expect(Rake::Task['geo:db:migrate:down']).not_to receive(:invoke)
-        expect(Rake::Task['geo:db:rollback']).to receive(:invoke)
-
-        run_rake_task('geo:db:migrate:redo')
+        expect { run_rake_task(deprecated_task) }
+          .to output("DEPRECATION WARNING: Using `bin/rails #{deprecated_task}` is deprecated and will be removed in Gitlab 15.0. Please run `bin/rails #{task_to_invoke}` instead.\n")
+          .to_stdout
       end
-    end
-
-    context 'with env var set' do
-      it 'does run migrations' do
-        allow(ENV).to receive(:[]).with('VERSION').and_return(1)
-        expect(Rake::Task['geo:db:migrate:down']).to receive(:invoke)
-        expect(Rake::Task['geo:db:rollback']).not_to receive(:invoke)
-
-        run_rake_task('geo:db:migrate:redo')
-      end
-    end
-  end
-
-  describe 'geo:db:migrate:status' do
-    it 'displays migration status' do
-      expect(Gitlab::Geo::DatabaseTasks::Migrate).to receive(:status)
-
-      run_rake_task('geo:db:migrate:status')
-    end
-  end
-
-  describe 'geo:db:test:prepare' do
-    it 'check for pending migrations and load schema in test environment' do
-      expect(Rake::Task['geo:db:test:load']).to receive(:invoke)
-
-      run_rake_task('geo:db:test:prepare')
-    end
-  end
-
-  describe 'geo:db:test:load' do
-    it 'recreates database in test environment' do
-      expect(Gitlab::Geo::DatabaseTasks::Test).to receive(:load)
-      expect(Gitlab::Geo::DatabaseTasks::Test).to receive(:purge)
-
-      run_rake_task('geo:db:test:load')
-    end
-  end
-
-  describe 'geo:db:test:purge' do
-    it 'empties database in test environment' do
-      expect(Gitlab::Geo::DatabaseTasks::Test).to receive(:purge)
-
-      run_rake_task('geo:db:test:purge')
     end
   end
 
