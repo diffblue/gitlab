@@ -353,13 +353,12 @@ export default {
       .replace(':issue_iid', encodeURIComponent(issueIid))
       .replace(':image_id', encodeURIComponent(imageId));
 
-
     // Construct multipart form data
     const formData = new FormData();
-    if (url) {
+    if (url != null) {
       formData.append('url', url);
     }
-    if (urlText) {
+    if (urlText != null) {
       formData.append('url_text', urlText);
     }
 

@@ -21,6 +21,13 @@ export default {
   [types.RECEIVE_METRIC_UPLOAD_ERROR](state) {
     state.isUploadingImage = false;
   },
+  [types.RECEIVE_METRIC_UPDATE_SUCCESS](state, image) {
+    state.isUploadingImage = false;
+    const metricIndex = state.metricImages.findIndex((img) => image.id === image.id);
+    if (metricIndex >= 0) {
+      state.metricImages.splice(metricIndex, 1, image)
+    }
+  },
   [types.RECEIVE_METRIC_DELETE_SUCCESS](state, imageId) {
     const metricIndex = state.metricImages.findIndex((image) => image.id === imageId);
     state.metricImages.splice(metricIndex, 1);

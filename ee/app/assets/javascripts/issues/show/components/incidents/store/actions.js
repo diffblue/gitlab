@@ -1,6 +1,11 @@
 import createFlash from '~/flash';
 import { s__ } from '~/locale';
-import { deleteMetricImage, getMetricImages, uploadMetricImage, updateMetricImage } from '../service';
+import {
+  deleteMetricImage,
+  getMetricImages,
+  uploadMetricImage,
+  updateMetricImage,
+} from '../service';
 import * as types from './mutation_types';
 
 export const fetchMetricImages = async ({ state, commit }) => {
@@ -50,7 +55,7 @@ export const updateImage = async ({ state, commit }, { imageId, url, urlText }) 
       url,
       urlText,
     });
-    commit(types.RECEIVE_METRIC_UPLOAD_SUCCESS, response);
+    commit(types.RECEIVE_METRIC_UPDATE_SUCCESS, response);
   } catch (error) {
     commit(types.RECEIVE_METRIC_UPLOAD_ERROR);
     createFlash({ message: s__('Incidents|There was an issue updating your image.') });

@@ -1,5 +1,14 @@
 <script>
-import { GlButton, GlFormGroup, GlFormInput, GlCard, GlIcon, GlLink, GlModal, GlSprintf } from '@gitlab/ui';
+import {
+  GlButton,
+  GlFormGroup,
+  GlFormInput,
+  GlCard,
+  GlIcon,
+  GlLink,
+  GlModal,
+  GlSprintf,
+} from '@gitlab/ui';
 import { mapActions } from 'vuex';
 import { __, s__ } from '~/locale';
 
@@ -51,6 +60,7 @@ export default {
     return {
       isCollapsed: false,
       isDeleting: false,
+      isUpdating: false,
       modalVisible: false,
       editModalVisible: false,
       modalUrl: this.url,
@@ -73,8 +83,8 @@ export default {
       return {
         text: this.$options.i18n.editModalUpdate,
         attributes: {
-          loading: this.isDeleting,
-          disabled: this.isDeleting,
+          loading: this.isUpdating,
+          disabled: this.isUpdating,
           category: 'primary',
           variant: 'confirm',
         },
@@ -101,6 +111,7 @@ export default {
       this.modalUrl = this.url;
       this.modalUrlText = this.urlText;
       this.editModalVisible = false;
+      this.modalVisible = false;
     },
     async onDelete() {
       try {
@@ -113,14 +124,14 @@ export default {
     },
     async onUpdate() {
       try {
-        this.isDeleting = true;
+        this.isUpdating = true;
         await this.updateImage({
           imageId: this.id,
           url: this.modalUrl,
-          urlText: this.modalUrlText
+          urlText: this.modalUrlText,
         });
       } finally {
-        this.isDeleting = false;
+        this.isUpdating = false;
         this.modalUrl = '';
         this.modalUrlText = '';
         this.editModalVisible = false;
@@ -200,14 +211,14 @@ export default {
             <gl-icon class="gl-mr-2" :name="arrowIconName" />
           </gl-button>
           <gl-link v-if="url" :href="url">
-            {{ urlText != null ? urlText : filename }}
+            {{ urlText == null || urlText == '' ? filename : urlText }}
           </gl-link>
-          <span v-else>{{ urlText != null ? urlText : filename }}</span>
-          <div class='gl-ml-auto'>
+          <span v-else>{{ urlText == null || urlText == '' ? filename : urlText }}</span>
+          <div class="gl-ml-auto">
             <gl-button
               v-if="canUpdate"
               class="gl-mr-2"
-              icon="pencil"
+              icon="link"
               :aria-label="__('Edit')"
               data-testid="edit-button"
               @click="editModalVisible = true"

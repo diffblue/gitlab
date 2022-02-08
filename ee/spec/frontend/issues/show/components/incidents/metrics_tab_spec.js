@@ -131,7 +131,11 @@ describe('Metrics tab', () => {
 
       await waitForPromises();
 
-      expect(dispatchSpy).toHaveBeenCalledWith('uploadImage', { files: fileList, url: testUrl, urlText: "" });
+      expect(dispatchSpy).toHaveBeenCalledWith('uploadImage', {
+        files: fileList,
+        url: testUrl,
+        urlText: '',
+      });
     });
 
     describe('url field', () => {

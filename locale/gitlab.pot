@@ -18972,6 +18972,9 @@ msgstr ""
 msgid "Incidents|There was an issue loading metric images."
 msgstr ""
 
+msgid "Incidents|There was an issue updating your image."
+msgstr ""
+
 msgid "Incidents|There was an issue uploading your image."
 msgstr ""
 
@@ -18982,6 +18985,9 @@ msgid "Incident|Are you sure you wish to delete this image?"
 msgstr ""
 
 msgid "Incident|Deleting %{filename}"
+msgstr ""
+
+msgid "Incident|Editing %{filename}"
 msgstr ""
 
 msgid "Incident|Metrics"
