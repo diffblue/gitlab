@@ -218,6 +218,13 @@ export default {
               },
             },
           ],
+          pageInfo: {
+            __typename: 'PageInfo',
+            hasNextPage: true,
+            hasPreviousPage: false,
+            startCursor: 'eyJpZCI6IjMzMjkwNjMzIn0',
+            endCursor: 'eyJpZCI6IjMzMjkwNjI5In0',
+          },
         },
       };
     },
