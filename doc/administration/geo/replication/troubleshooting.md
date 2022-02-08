@@ -699,6 +699,8 @@ determine the actual replication status of Design repositories.
 
 ### Sync failure message: "Verification failed with: Error during verification: File is not checksummable"
 
+#### Missing files on the Geo primary site
+
 In GitLab 14.5 and earlier, certain data types which were missing on the Geo primary site were marked as "synced" on Geo secondary sites. This was because from the perspective of Geo secondary sites, the state matched the primary site and nothing more could be done on secondary sites.
 
 Secondaries would regularly try to sync these files again by using the "verification" feature:
@@ -751,6 +753,32 @@ This behavior affects only the following data types through GitLab 14.6:
 [Since GitLab 14.7, files that are missing on the primary site are now treated as sync failures](https://gitlab.com/gitlab-org/gitlab/-/issues/348745)
 to make Geo visibly surface data loss risks. The sync/verification loop is
 therefore short-circuited. `last_sync_failure` is now set to `The file is missing on the Geo primary site`.
+
+#### Failed syncs with GitLab-managed object storage replication
+
+There is [an issue in GitLab 14.2 through 14.7](https://gitlab.com/gitlab-org/gitlab/-/issues/299819#note_822629467)
+that affects Geo when the GitLab-managed object storage replication is used, causing blob object types to fail synchronization.
+
+Since GitLab 14.2, verification failures result in synchronization failures and cause
+a re-synchronization of these objects.
+
+As verification is not implemented for files stored in object storage (see
+[issue 13845](https://gitlab.com/gitlab-org/gitlab/-/issues/13845) for more details), this
+results in a loop that consistently fails for all objects stored in object storage.
+
+You can work around this by marking the objects as synced and succeeded verification, however
+be aware that can also mark objects that may be
+[missing from the primary](#missing-files-on-the-geo-primary-site).
+
+To do that, enter the [Rails console](../../troubleshooting/navigating_gitlab_via_rails_console.md)
+and run:
+
+```ruby
+Gitlab::Geo.verification_enabled_replicator_classes.each do |klass|
+  updated = klass.registry_class.failed.where(last_sync_failure: "Verification failed with: Error during verification: File is not checksummable").update_all(verification_checksum: '0000000000000000000000000000000000000000', verification_state: 2, verification_failure: nil, verification_retry_at: nil, state: 2, last_sync_failure: nil, retry_at: nil, verification_retry_count: 0, retry_count: 0)
+  pp "Updated #{updated} #{klass.replicable_name_plural}"
+end
+```
 
 ## Fixing errors during a failover or when promoting a secondary to a primary node
 
