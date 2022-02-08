@@ -114,10 +114,9 @@ RSpec.describe 'Dependency-Scanning.gitlab-ci.yml' do
 
           with_them do
             let(:project) { create(:project, :custom_repo, files: files_at_depth_x) }
+            let(:files_at_depth_x) { files }
 
             context 'with file at root' do
-              let(:files_at_depth_x) { files }
-
               it 'creates a pipeline with the expected jobs' do
                 expect(build_names).to include(*include_build_names)
               end
@@ -148,6 +147,8 @@ RSpec.describe 'Dependency-Scanning.gitlab-ci.yml' do
                 expect { pipeline }.to raise_error(Ci::CreatePipelineService::CreateError)
               end
             end
+
+            it_behaves_like 'setting sec analyzer prefix dynamically', builds: params[:include_build_names], files: params[:files], namespace: 'dependency-scanning'
           end
         end
 

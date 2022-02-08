@@ -98,6 +98,8 @@ RSpec.describe 'SAST.gitlab-ci.yml' do
             it 'creates a pipeline with the expected jobs' do
               expect(build_names).to include(*include_build_names)
             end
+
+            include_examples 'setting sec analyzer prefix dynamically', builds: params[:include_build_names], files: params[:files], namespace: 'sast'
           end
         end
       end
