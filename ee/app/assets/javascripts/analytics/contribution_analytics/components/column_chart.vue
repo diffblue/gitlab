@@ -1,5 +1,4 @@
 <script>
-import { GlResizeObserverDirective } from '@gitlab/ui';
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
 import { getDataZoomOption } from '~/analytics/shared/utils';
 import { getSvgIconPathContent } from '~/lib/utils/icon_utils';
@@ -15,9 +14,6 @@ import {
 export default {
   components: {
     GlColumnChart,
-  },
-  directives: {
-    GlResizeObserverDirective,
   },
   props: {
     chartData: {
@@ -94,12 +90,6 @@ export default {
           console.error('SVG could not be rendered correctly: ', e);
         });
     },
-    onResize() {
-      const { columnChart } = this.$refs;
-      if (!columnChart) return;
-      const { width } = columnChart.$el.getBoundingClientRect();
-      this.width = width;
-    },
     onChartCreated(columnChart) {
       this.setSvg('scroll-handle');
       columnChart.on('datazoom', this.updateAxisNamePadding);
@@ -109,18 +99,17 @@ export default {
 </script>
 
 <template>
-  <div v-gl-resize-observer-directive="onResize">
-    <gl-column-chart
-      ref="columnChart"
-      v-bind="$attrs"
-      :width="width"
-      :height="height"
-      :bars="seriesData"
-      :x-axis-title="xAxisTitle"
-      :y-axis-title="yAxisTitle"
-      x-axis-type="category"
-      :option="chartOptions"
-      @created="onChartCreated"
-    />
-  </div>
+  <gl-column-chart
+    ref="columnChart"
+    v-bind="$attrs"
+    :width="width"
+    :height="height"
+    :bars="seriesData"
+    :responsive="true"
+    :x-axis-title="xAxisTitle"
+    :y-axis-title="yAxisTitle"
+    x-axis-type="category"
+    :option="chartOptions"
+    @created="onChartCreated"
+  />
 </template>
