@@ -35,20 +35,18 @@ export default {
     <gl-form-group
       class="gl-mb-0"
       :label="$options.i18n.header"
+      label-class="gl-pb-2!"
       data-testid="roadmap-progress-tracking"
     >
-      <label for="toggle-progress-tracking" class="gl-font-weight-normal">
-        {{ $options.i18n.toggleLabel }}
-      </label>
       <gl-toggle
-        id="toggle-progress-tracking"
         :value="isProgressTrackingActive"
         :label="$options.i18n.toggleLabel"
-        label-position="hidden"
-        aria-describedby="toggleTrackingProgress"
-        data-testid="toggle-progress-tracking"
         @change="toggleProgressTrackingActive"
-      />
+      >
+        <template #label>
+          <span class="gl-font-weight-normal">{{ $options.i18n.toggleLabel }}</span>
+        </template>
+      </gl-toggle>
       <gl-form-radio-group
         v-if="isProgressTrackingActive"
         :checked="progressTracking"

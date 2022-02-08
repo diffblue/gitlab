@@ -248,9 +248,10 @@ RSpec.describe 'group epic roadmap', :js do
       end
 
       describe 'roadmap with epics progress tracking' do
-        def select_progress_tracking(tracking)
-          page.within('[data-testid="roadmap-progress-tracking"]') do
-            choose tracking
+        def wait_for_epics(count, icon)
+          page.within('.roadmap-container .epics-list-section') do
+            expect(page).to have_selector('.epic-bar-progress', count: count)
+            expect(page).to have_selector("[data-testid='#{icon}']", count: count)
           end
         end
 
@@ -258,27 +259,21 @@ RSpec.describe 'group epic roadmap', :js do
           open_settings_sidebar
         end
 
-        it 'renders progress bar using weight' do
-          select_progress_tracking('Use issue weight')
+        it 'renders progress bar using weight', :aggregate_failures do
+          choose 'Use issue weight'
 
-          page.within('.roadmap-container .epics-list-section') do
-            expect(page).to have_selector('.epic-bar-progress', count: 3)
-            expect(page).to have_selector('[data-testid="weight-icon"]', count: 3)
-          end
+          wait_for_epics(3, "weight-icon")
         end
 
-        it 'renders progress bar issue count' do
-          select_progress_tracking('Use issue count')
+        it 'renders progress bar issue count', :aggregate_failures do
+          choose 'Use issue count'
 
-          page.within('.roadmap-container .epics-list-section') do
-            expect(page).to have_selector('.epic-bar-progress', count: 3)
-            expect(page).to have_selector('[data-testid="issue-closed-icon"]', count: 3)
-          end
+          wait_for_epics(3, "issue-closed-icon")
         end
 
-        it 'turns off progress tracking' do
+        it 'turns off progress tracking', :aggregate_failures do
           page.within('[data-testid="roadmap-progress-tracking"]') do
-            find('[data-testid="toggle-progress-tracking"]').click
+            click_button class: 'gl-toggle'
           end
 
           page.within('.roadmap-container .epics-list-section') do

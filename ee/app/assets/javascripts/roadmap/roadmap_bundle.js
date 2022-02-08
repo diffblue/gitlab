@@ -110,9 +110,9 @@ export default () => {
         timeframe,
         progressTracking: rawFilterParams.progress || PROGRESS_WEIGHT,
         isProgressTrackingActive:
-          rawFilterParams.showProgress === undefined
+          rawFilterParams.show_progress === undefined
             ? true
-            : parseBoolean(rawFilterParams.showProgress),
+            : parseBoolean(rawFilterParams.show_progress),
         isShowingMilestones:
           rawFilterParams.show_milestones === undefined
             ? true

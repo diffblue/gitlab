@@ -23,18 +23,6 @@ export default {
       required: true,
     },
   },
-  methods: {
-    getDrawerHeaderHeight() {
-      const wrapperEl = document.querySelector('.roadmap-container');
-
-      if (wrapperEl) {
-        const topPosition = wrapperEl.getBoundingClientRect().top + window.pageYOffset;
-        return `${topPosition}px`;
-      }
-
-      return '';
-    },
-  },
 };
 </script>
 
@@ -42,7 +30,7 @@ export default {
   <gl-drawer
     v-bind="$attrs"
     :open="isOpen"
-    :header-height="getDrawerHeaderHeight()"
+    class="gl-absolute"
     @close="$emit('toggleSettings', $event)"
   >
     <template #title>

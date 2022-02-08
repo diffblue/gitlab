@@ -94,7 +94,7 @@ export default {
     <gl-dropdown
       id="roadmap-daterange"
       icon="calendar"
-      class="gl-mb-3 roadmap-daterange-dropdown"
+      class="roadmap-daterange-dropdown"
       toggle-class="gl-rounded-base!"
       :text="daterangeDropdownText"
       data-testid="daterange-dropdown"
@@ -110,7 +110,7 @@ export default {
         {{ dateRange.text }}
       </gl-dropdown-item>
     </gl-dropdown>
-    <gl-form-group v-if="availablePresets.length" class="gl-mb-0">
+    <gl-form-group v-if="availablePresets.length" class="gl-mb-0 gl-mt-3">
       <gl-form-radio-group
         data-testid="daterange-presets"
         :checked="presetType"

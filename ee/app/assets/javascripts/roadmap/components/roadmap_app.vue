@@ -82,7 +82,7 @@ export default {
       :timeframe-range-type="timeframeRangeType"
       @toggleSettings="toggleSettings"
     />
-    <div :class="{ 'overflow-reset': epicsFetchResultEmpty }" class="roadmap-container">
+    <div :class="{ 'overflow-reset': epicsFetchResultEmpty }" class="roadmap-container gl-relative">
       <gl-loading-icon v-if="epicsFetchInProgress" class="gl-mt-5" size="md" />
       <epics-list-empty
         v-else-if="epicsFetchResultEmpty"
