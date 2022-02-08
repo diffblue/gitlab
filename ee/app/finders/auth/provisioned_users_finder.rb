@@ -8,10 +8,10 @@ module Auth
 
     override :base_scope
     def base_scope
-      group_id = params[:provisioning_group_id]
-      raise "Provisioning group is required for ProvisionedUsersFinder" unless group_id
+      group = params[:provisioning_group]
+      raise(ArgumentError, "Provisioning group is required for ProvisionedUsersFinder") unless group
 
-      User.provisioned_by_group(group_id).order_id_desc
+      group.provisioned_users.order_id_desc
     end
 
     override :by_search

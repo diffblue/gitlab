@@ -108,10 +108,6 @@ module EE
         where(id: ::PersonalAccessToken.with_invalid_expires_at(expiration_date).select(:user_id))
       end
 
-      scope :provisioned_by_group, -> (group_id) do
-        left_joins(:user_detail).where(user_detail: { provisioned_by_group_id: group_id })
-      end
-
       accepts_nested_attributes_for :namespace
 
       enum roadmap_layout: { weeks: 1, months: 4, quarters: 12 }

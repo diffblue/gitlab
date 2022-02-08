@@ -1056,7 +1056,7 @@ RSpec.describe API::Groups do
     end
   end
 
-  describe 'GET /groups/:provisioning_group_id/provisioned_users' do
+  describe 'GET /groups/:id/provisioned_users' do
     let_it_be(:group) { create(:group) }
     let_it_be(:regular_user) { create(:user) }
     let_it_be(:saml_provider) { create(:saml_provider, group: group) }
@@ -1068,9 +1068,9 @@ RSpec.describe API::Groups do
     let_it_be(:blocked_provisioned_user) { create(:user, :blocked, provisioned_by_group_id: group.id) }
     let_it_be(:non_provisioned_user) { create(:user) { |u| group.add_maintainer(u) } }
 
-    let(:params) { { provisioning_group_id: group.id } }
+    let(:params) { {} }
 
-    subject(:get_provisioned_users) { get api("/groups/#{params[:provisioning_group_id]}/provisioned_users", current_user), params: params }
+    subject(:get_provisioned_users) { get api("/groups/#{group.to_param}/provisioned_users", current_user), params: params }
 
     context 'when current_user is not a group maintainer' do
       let_it_be(:current_user) { developer }
@@ -1085,16 +1085,6 @@ RSpec.describe API::Groups do
     context 'when current_user is a group maintainer' do
       let_it_be(:current_user) { maintainer }
 
-      context 'requires group id' do
-        let(:params) { { provisioning_group_id: nil } }
-
-        it 'group not found' do
-          get_provisioned_users
-
-          expect(response).to have_gitlab_http_status(:not_found)
-        end
-      end
-
       it 'returns a list of users provisioned by the group' do
         get_provisioned_users
 
@@ -1103,7 +1093,7 @@ RSpec.describe API::Groups do
 
       context 'optional params' do
         context 'search param' do
-          let(:params) { { provisioning_group_id: group.id, search: provisioned_user.email } }
+          let(:params) { { search: provisioned_user.email } }
 
           it 'filters by search' do
             get_provisioned_users
@@ -1113,7 +1103,7 @@ RSpec.describe API::Groups do
         end
 
         context 'username param' do
-          let(:params) { { provisioning_group_id: group.id, username: provisioned_user.username } }
+          let(:params) { { username: provisioned_user.username } }
 
           it 'filters by username' do
             get_provisioned_users
@@ -1123,7 +1113,7 @@ RSpec.describe API::Groups do
         end
 
         context 'blocked param' do
-          let(:params) { { provisioning_group_id: group.id, blocked: true } }
+          let(:params) { { blocked: true } }
 
           it 'filters by blocked' do
             get_provisioned_users
@@ -1133,7 +1123,7 @@ RSpec.describe API::Groups do
         end
 
         context 'active param' do
-          let(:params) { { provisioning_group_id: group.id, active: true } }
+          let(:params) { { active: true } }
 
           it 'filters by active status' do
             get_provisioned_users
@@ -1143,7 +1133,7 @@ RSpec.describe API::Groups do
         end
 
         context 'created_after' do
-          let(:params) { { provisioning_group_id: group.id, created_after: 1.year.ago } }
+          let(:params) { { created_after: 1.year.ago } }
 
           it 'filters by created_at' do
             get_provisioned_users
@@ -1153,7 +1143,7 @@ RSpec.describe API::Groups do
         end
 
         context 'created_before' do
-          let(:params) { { provisioning_group_id: group.id, created_before: 1.year.ago } }
+          let(:params) { { created_before: 1.year.ago } }
 
           it 'filters by created_at' do
             get_provisioned_users
