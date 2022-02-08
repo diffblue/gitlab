@@ -115,35 +115,39 @@ http://secondary.example.com/
 
 To check if PostgreSQL replication is working, check if:
 
-- [Nodes are pointing to the correct database instance](#are-nodes-pointing-to-the-correct-database-instance).
-- [Geo can detect the current node correctly](#can-geo-detect-the-current-node-correctly).
+- [Sites are pointing to the correct database node](#are-sites-pointing-to-the-correct-database-node).
+- [Geo can detect the current site correctly](#can-geo-detect-the-current-site-correctly).
 
-#### Are nodes pointing to the correct database instance?
+#### Are sites pointing to the correct database node?
 
-You should make sure your **primary** Geo node points to the instance with
-writing permissions.
+You should make sure your **primary** Geo [site](../glossary.md) points to
+the database node that has write permissions.
 
-Any **secondary** nodes should point only to read-only instances.
+Any **secondary** sites should point only to read-only database nodes.
 
-#### Can Geo detect the current node correctly?
+#### Can Geo detect the current site correctly?
 
-Geo finds the current machine's Geo node name in `/etc/gitlab/gitlab.rb` by:
+Geo finds the current Puma or Sidekiq node's Geo [site](../glossary.md) name in
+`/etc/gitlab/gitlab.rb` with the following logic:
 
-- Using the `gitlab_rails['geo_node_name']` setting.
-- If that is not defined, using the `external_url` setting.
+1. Get the "Geo node name" (there is
+   [an issue to rename the settings to "Geo site name"](https://gitlab.com/gitlab-org/gitlab/-/issues/335944)):
+   - Omnibus GitLab: Get the `gitlab_rails['geo_node_name']` setting.
+   - GitLab Helm Charts: Get the `global.geo.nodeName` setting (see [Charts with GitLab Geo](https://docs.gitlab.com/charts/advanced/geo/index.html)).
+1. If that is not defined, then get the `external_url` setting.
 
-This name is used to look up the node with the same **Name** in the **Geo Nodes**
+This name is used to look up the Geo site with the same **Name** in the **Geo Sites**
 dashboard.
 
-To check if the current machine has a node name that matches a node in the
+To check if the current machine has a site name that matches a site in the
 database, run the check task:
 
 ```shell
 sudo gitlab-rake gitlab:geo:check
 ```
 
-It displays the current machine's node name and whether the matching database
-record is a **primary** or **secondary** node.
+It displays the current machine's site name and whether the matching database
+record is a **primary** or **secondary** site.
 
 ```plaintext
 This machine's Geo node name matches a database record ... yes, found a secondary node named "Shanghai"
@@ -157,6 +161,9 @@ This machine's Geo node name matches a database record ... no
   For more information see:
   doc/administration/geo/replication/troubleshooting.md#can-geo-detect-the-current-node-correctly
 ```
+
+Learn more about recommended site names in the description of the Name field in
+[Geo Admin Area Common Settings](../../../user/admin_area/geo_nodes.md#common-settings).
 
 ### Message: `WARNING: oldest xmin is far in the past` and `pg_wal` size growing
 
