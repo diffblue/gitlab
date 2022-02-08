@@ -21,19 +21,35 @@ module Resolvers
         end
 
         def resolve_with_lookahead(**args)
-          apply_lookahead(find_dast_profiles(args))
-        end
+          profiles = apply_lookahead(find_dast_profiles(args)).to_a
+          profiles.each do |profile|
+            profile.project = project
 
-        DAST_PROFILE_PRELOAD = {
-          dast_site_profile: [{ dast_site_profile: [:dast_site, :secret_variables] }],
-          dast_scanner_profile: [:dast_scanner_profile],
-          dast_profile_schedule: [:dast_profile_schedule]
-        }.freeze
+            if node_selection&.selects?(:dast_profile_schedule) && profile.dast_profile_schedule
+              profile.dast_profile_schedule.project = project
+            end
+          end
+          context[:project_dast_profiles] ||= []
+          context[:project_dast_profiles] += profiles
+
+          # If we are querying a single profile, we should return the profile
+          # because the late_extensions won't be called
+          return profiles if single?
+
+          # We want to avoid resolving any fields on these profiles until all
+          # leaves at the name level have been resolved.
+          # See: DastProfileConnectionExtension for where this batch is consumed.
+          ::Gitlab::Graphql::Lazy.new { profiles }
+        end
 
         private
 
         def preloads
-          DAST_PROFILE_PRELOAD
+          {
+            dast_site_profile: [{ dast_site_profile: [:dast_site, :secret_variables] }],
+            dast_scanner_profile: [:dast_scanner_profile],
+            dast_profile_schedule: [{ dast_profile_schedule: [:owner] }]
+          }
         end
 
         def find_dast_profiles(args)

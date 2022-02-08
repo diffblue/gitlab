@@ -84,6 +84,7 @@ module EE
       has_many :dast_site_profiles
       has_many :dast_site_tokens
       has_many :dast_sites
+      has_many :dast_profiles, class_name: 'Dast::Profile'
 
       has_many :protected_environments
       has_many :software_license_policies, inverse_of: :project, class_name: 'SoftwareLicensePolicy'
