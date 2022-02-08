@@ -1,5 +1,5 @@
 <script>
-import { GlTabs, GlTab } from '@gitlab/ui';
+import { GlTabs, GlTab, GlLink } from '@gitlab/ui';
 import DeploymentFrequencyCharts from 'ee/dora/components/deployment_frequency_charts.vue';
 import LeadTimeCharts from 'ee/dora/components/lead_time_charts.vue';
 import { mergeUrlParams, updateHistory, getParameterValues } from '~/lib/utils/url_utility';
@@ -12,6 +12,7 @@ export default {
     ReleaseStatsCard,
     GlTabs,
     GlTab,
+    GlLink,
     DeploymentFrequencyCharts,
     LeadTimeCharts,
     SharedRunnersUsage,
@@ -20,6 +21,10 @@ export default {
     shouldRenderDoraCharts: {
       type: Boolean,
       default: false,
+    },
+    pipelineGroupUsageQuotaPath: {
+      type: String,
+      default: '',
     },
   },
   data() {
@@ -80,6 +85,11 @@ export default {
       <gl-tab :title="s__('CICDAnalytics|Shared runner usage')">
         <shared-runners-usage />
       </gl-tab>
+      <template #tabs-end>
+        <gl-link :href="pipelineGroupUsageQuotaPath" class="gl-align-self-center gl-ml-auto">{{
+          __('View group pipeline usage quota')
+        }}</gl-link>
+      </template>
     </gl-tabs>
     <release-stats-card v-else :class="releaseStatsCardClasses" />
   </div>

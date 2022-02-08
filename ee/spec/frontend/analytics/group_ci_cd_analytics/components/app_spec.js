@@ -1,4 +1,4 @@
-import { GlTabs, GlTab } from '@gitlab/ui';
+import { GlTabs, GlTab, GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { merge } from 'lodash';
 import CiCdAnalyticsApp from 'ee/analytics/group_ci_cd_analytics/components/app.vue';
@@ -19,6 +19,8 @@ describe('ee/analytics/group_ci_cd_analytics/components/app.vue', () => {
     getParameterValues.mockReturnValue([]);
   });
 
+  const quotaPath = '/groups/my-awesome-group/-/usage_quotas#pipelines-quota-tab';
+
   const createComponent = (mountOptions = {}) => {
     wrapper = shallowMount(
       CiCdAnalyticsApp,
@@ -26,6 +28,7 @@ describe('ee/analytics/group_ci_cd_analytics/components/app.vue', () => {
         {
           provide: {
             shouldRenderDoraCharts: true,
+            pipelineGroupUsageQuotaPath: quotaPath,
           },
         },
         mountOptions,
@@ -34,6 +37,7 @@ describe('ee/analytics/group_ci_cd_analytics/components/app.vue', () => {
   };
 
   const findGlTabs = () => wrapper.findComponent(GlTabs);
+  const findUsageQuotaLink = () => wrapper.findComponent(GlLink);
   const findAllGlTabs = () => wrapper.findAllComponents(GlTab);
   const findGlTabAtIndex = (index) => findAllGlTabs().at(index);
 
@@ -115,5 +119,18 @@ describe('ee/analytics/group_ci_cd_analytics/components/app.vue', () => {
       createComponent();
       expect(findGlTabs().attributes('value')).toBe(index);
     });
+  });
+
+  it('displays link to group pipeline usage quota page', () => {
+    createComponent({
+      stubs: {
+        GlTabs: {
+          template: '<div><slot></slot><slot name="tabs-end"></slot></div>',
+        },
+      },
+    });
+
+    expect(findUsageQuotaLink().attributes('href')).toBe(quotaPath);
+    expect(findUsageQuotaLink().text()).toBe('View group pipeline usage quota');
   });
 });

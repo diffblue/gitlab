@@ -15,7 +15,7 @@ export default () => {
 
   if (!el) return false;
 
-  const { fullPath, groupId } = el.dataset;
+  const { fullPath, groupId, pipelineGroupUsageQuotaPath } = el.dataset;
 
   const shouldRenderDoraCharts = parseBoolean(el.dataset.shouldRenderDoraCharts);
 
@@ -26,6 +26,7 @@ export default () => {
       groupPath: fullPath,
       shouldRenderDoraCharts,
       groupId,
+      pipelineGroupUsageQuotaPath,
     },
     render: (createElement) => createElement(CiCdAnalyticsApp),
   });
