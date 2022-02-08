@@ -1,9 +1,24 @@
-import { AvailableSortOptions } from '~/vue_shared/issuable/list/constants';
 import { __ } from '~/locale';
 
 export const EpicsSortOptions = [
   {
-    id: AvailableSortOptions.length + 10,
+    id: 1,
+    title: __('Created date'),
+    sortDirection: {
+      descending: 'CREATED_AT_DESC',
+      ascending: 'CREATED_AT_ASC',
+    },
+  },
+  {
+    id: 2,
+    title: __('Updated date'),
+    sortDirection: {
+      descending: 'UPDATED_AT_DESC',
+      ascending: 'UPDATED_AT_ASC',
+    },
+  },
+  {
+    id: 3,
     title: __('Start date'),
     sortDirection: {
       descending: 'start_date_desc',
@@ -11,7 +26,7 @@ export const EpicsSortOptions = [
     },
   },
   {
-    id: AvailableSortOptions.length + 20,
+    id: 4,
     title: __('Due date'),
     sortDirection: {
       descending: 'end_date_desc',
@@ -19,7 +34,7 @@ export const EpicsSortOptions = [
     },
   },
   {
-    id: AvailableSortOptions.length + 30,
+    id: 5,
     title: __('Title'),
     sortDirection: {
       descending: 'TITLE_DESC',

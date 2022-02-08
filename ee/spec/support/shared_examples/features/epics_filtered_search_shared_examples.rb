@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.shared_examples 'filtered search bar' do |tokens|
+RSpec.shared_examples 'filtered search bar' do |tokens, sort_options|
   minimum_values_for_token = {
     # Count must be at least 2 as current user are available by default
     "Author" => 2,
@@ -26,14 +26,34 @@ RSpec.shared_examples 'filtered search bar' do |tokens|
     page.first('.gl-filtered-search-suggestion').click
   end
 
-  tokens.each do |token|
-    it "renders values for token '#{token}' correctly" do
-      page.within('.vue-filtered-search-bar-container .gl-search-box-by-click') do
-        select_token(token)
+  def open_sort_dropdown
+    page.within('.vue-filtered-search-bar-container .sort-dropdown-container .gl-dropdown-toggle') do
+      page.find('.gl-dropdown-toggle').click
+    end
+  end
 
-        wait_for_requests
+  describe 'filtered search bar tokens list' do
+    tokens.each do |token|
+      it "renders values for token '#{token}' correctly" do
+        page.within('.vue-filtered-search-bar-container .gl-search-box-by-click') do
+          select_token(token)
 
-        expect(page.find('.gl-filtered-search-suggestion-list')).to have_selector('li.gl-filtered-search-suggestion', minimum: minimum_values_for_token[token])
+          wait_for_requests
+
+          expect(page.find('.gl-filtered-search-suggestion-list')).to have_selector('li.gl-filtered-search-suggestion', minimum: minimum_values_for_token[token])
+        end
+      end
+    end
+  end
+
+  describe 'filtered search bar sort dropdown' do
+    sort_options.each do |sort_option|
+      it "renders sort option '#{sort_option}' correctly" do
+        page.within('.vue-filtered-search-bar-container .sort-dropdown-container') do
+          page.find('.gl-dropdown-toggle').click
+
+          expect(page.find('.dropdown-menu')).to have_selector('li', text: sort_option)
+        end
       end
     end
   end

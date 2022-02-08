@@ -18,6 +18,7 @@ RSpec.describe 'epics list', :js do
 
   context 'epics list' do
     available_tokens = %w[Author Label My-Reaction]
+    available_sort_options = ['Created date', 'Updated date', 'Start date', 'Due date', 'Title']
 
     describe 'within a group' do
       let!(:epic1) { create(:epic, group: group, start_date: '2020-12-15', end_date: '2021-1-15') }
@@ -75,7 +76,7 @@ RSpec.describe 'epics list', :js do
 
         it_behaves_like 'epic list'
 
-        it_behaves_like 'filtered search bar', available_tokens
+        it_behaves_like 'filtered search bar', available_tokens, available_sort_options
 
         it 'shows bulk editing sidebar with actions and labels select dropdown', :aggregate_failures do
           click_button 'Edit epics'
@@ -151,7 +152,7 @@ RSpec.describe 'epics list', :js do
         wait_for_requests
       end
 
-      it_behaves_like 'filtered search bar', available_tokens
+      it_behaves_like 'filtered search bar', available_tokens, available_sort_options
     end
   end
 end
