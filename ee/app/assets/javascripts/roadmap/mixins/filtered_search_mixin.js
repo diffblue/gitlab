@@ -220,12 +220,19 @@ export default {
       }
 
       if (labelName?.length) {
-        filteredSearchValue.push(
-          ...labelName.map((label) => ({
-            type: 'label_name',
-            value: { data: label, operator: OPERATOR_IS },
-          })),
-        );
+        if (Array.isArray(labelName)) {
+          filteredSearchValue.push(
+            ...labelName.map((label) => ({
+              type: 'label_name',
+              value: { data: label, operator: OPERATOR_IS },
+            })),
+          );
+        }
+      } else {
+        filteredSearchValue.push({
+          type: 'label_name',
+          value: { data: labelName, operator: OPERATOR_IS },
+        });
       }
       if (notLabelName?.length) {
         filteredSearchValue.push(
