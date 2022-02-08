@@ -43,18 +43,16 @@ RSpec.describe 'Project' do
         new_path = 'example-custom-project-template'
         new_name = 'Example Custom Project Template'
 
-        click_link 'Create from template'
-        find('.project-template .custom-instance-project-templates-tab').click
-        find("label[for='#{projects.first.name}']").click
+        create_from_template(:instance, projects.first.name)
 
         page.within '.project-fields-form' do
-          fill_in("project_name", with: new_name)
+          fill_in('project_name', with: new_name)
           # Have to reset it to '' so it overwrites rather than appends
           fill_in('project_path', with: '')
-          fill_in("project_path", with: new_path)
+          fill_in('project_path', with: new_path)
 
           Sidekiq::Testing.inline! do
-            click_button "Create project"
+            click_button 'Create project'
           end
         end
 
@@ -68,15 +66,13 @@ RSpec.describe 'Project' do
         new_path = 'example-custom-project-template'
         new_name = 'Example Custom Project Template'
 
-        click_link 'Create from template'
-        find('.project-template .custom-instance-project-templates-tab').click
-        find("label[for='#{projects.first.name}']").click
+        create_from_template(:instance, projects.first.name)
 
         page.within '.project-fields-form' do
-          fill_in("project_name", with: new_name)
+          fill_in('project_name', with: new_name)
 
           Sidekiq::Testing.inline! do
-            click_button "Create project"
+            click_button 'Create project'
           end
         end
 
@@ -90,15 +86,13 @@ RSpec.describe 'Project' do
         new_path = 'example-custom-project-template'
         new_name = 'Example Custom Project Template'
 
-        click_link 'Create from template'
-        find('.project-template .custom-instance-project-templates-tab').click
-        find("label[for='#{projects.first.name}']").click
+        create_from_template(:instance, projects.first.name)
 
         page.within '.project-fields-form' do
-          fill_in("project_path", with: new_path)
+          fill_in('project_path', with: new_path)
 
           Sidekiq::Testing.inline! do
-            click_button "Create project"
+            click_button 'Create project'
           end
         end
 
@@ -128,5 +122,53 @@ RSpec.describe 'Project' do
         expect(page).not_to have_css('.project-template .nav-tabs')
       end
     end
+  end
+
+  describe 'Custom group-level project templates', :js, quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/348710' do
+    let!(:user) { create(:user) }
+    let!(:group) { create(:group, name: 'parent-group') }
+    let!(:template_subgroup) { create(:group, parent: group, name: 'template-subgroup') }
+    let!(:template) { create(:project, namespace: template_subgroup) }
+
+    before do
+      stub_licensed_features(custom_project_templates: true)
+      group.add_owner(user)
+      group.update!(custom_project_templates_group_id: template_subgroup.id)
+      sign_in user
+    end
+
+    context 'from default new project path' do
+      it 'displays user namespace for default project URL' do
+        visit new_project_path
+        create_from_template(:group, template.name)
+
+        expect(page).to have_button(user.username, exact: true)
+      end
+    end
+
+    context 'from subgroup new project path' do
+      let!(:other_subgroup) { create(:group, parent: group, name: 'other-subgroup') }
+
+      it 'displays subgroup namespace for default project URL' do
+        visit new_project_path(namespace_id: other_subgroup.id)
+        create_from_template(:group, template.name)
+
+        expect(page).to have_button("#{group.name}/#{other_subgroup.name}", exact: true)
+      end
+    end
+  end
+
+  def create_from_template(type, template_name)
+    tab = if type == :instance
+            '.custom-instance-project-templates-tab'
+          elsif type == :group
+            '.custom-group-project-templates-tab'
+          else
+            raise ArgumentError, "#{type} is not a valid template type"
+          end
+
+    click_link 'Create from template'
+    find(tab).click
+    find("label[for=#{template_name}]").click
   end
 end
