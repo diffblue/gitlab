@@ -76,6 +76,7 @@ export default {
       'epicsState',
       'sortedBy',
       'filterParams',
+      'isProgressTrackingActive',
       'progressTracking',
       'isShowingMilestones',
       'milestonesType',

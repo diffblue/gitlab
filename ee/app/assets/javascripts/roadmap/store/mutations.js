@@ -145,6 +145,10 @@ export default {
     state.progressTracking = progressTracking;
   },
 
+  [types.TOGGLE_PROGRESS_TRACKING_ACTIVE](state) {
+    state.isProgressTrackingActive = !state.isProgressTrackingActive;
+  },
+
   [types.SET_MILESTONES_TYPE](state, milestonesType) {
     state.milestonesType = milestonesType;
   },

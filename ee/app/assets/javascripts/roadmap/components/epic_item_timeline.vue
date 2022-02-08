@@ -57,7 +57,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(['progressTracking']),
+    ...mapState(['progressTracking', 'isProgressTrackingActive']),
     timelineBarInnerStyle() {
       return {
         maxWidth: `${this.clientWidth - EPIC_DETAILS_CELL_WIDTH}px`,
@@ -141,7 +141,10 @@ export default {
       <div class="epic-bar-inner gl-px-3 gl-py-2" :style="timelineBarInnerStyle">
         <p class="epic-bar-title gl-text-truncate gl-m-0">{{ timelineBarTitle }}</p>
 
-        <div v-if="!isTimelineBarSmall" class="gl-display-flex gl-align-items-center">
+        <div
+          v-if="!isTimelineBarSmall && isProgressTrackingActive"
+          class="gl-display-flex gl-align-items-center"
+        >
           <gl-progress-bar
             class="epic-bar-progress gl-flex-grow-1 gl-mr-2"
             :value="epicPercentage"
