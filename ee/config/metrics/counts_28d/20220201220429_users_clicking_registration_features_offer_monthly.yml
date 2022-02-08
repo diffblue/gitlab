@@ -1,0 +1,24 @@
+---
+key_path: redis_hll_counters.growth.users_clicking_registration_features_offer_monthly
+description: The number of unique users who clicked the settings link in the Registration Features offer CTA
+product_section: growth
+product_stage: growth
+product_group: group::product intelligence
+product_category:
+value_type: number
+status: active
+milestone: "14.8"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/79559
+time_frame: 28d
+data_source: redis_hll
+data_category: optional
+instrumentation_class: RedisHLLMetric
+performance_indicator_type: []
+options:
+  events:
+  - users_clicking_registration_features_offer
+distribution:
+- ee
+tier:
+- premium
+- ultimate
