@@ -4,8 +4,6 @@ class Groups::UploadsController < Groups::ApplicationController
   include UploadsActions
   include WorkhorseRequest
 
-  skip_before_action :group, if: -> { action_name == 'show' && embeddable? }
-
   before_action :authorize_upload_file!, only: [:create, :authorize]
   before_action :verify_workhorse_api!, only: [:authorize]
 
