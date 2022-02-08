@@ -6,7 +6,7 @@ class Admin::CredentialsController < Admin::ApplicationController
   include RedisTracking
 
   helper_method :credentials_inventory_path, :user_detail_path, :personal_access_token_revoke_path,
-                :ssh_key_delete_path, :gpg_keys_available?
+                :project_access_token_revoke_path, :ssh_key_delete_path, :gpg_keys_available?
 
   before_action :check_license_credentials_inventory_available!, only: [:index, :revoke, :destroy]
 

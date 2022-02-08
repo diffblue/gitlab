@@ -8,6 +8,9 @@ RSpec.describe Admin::CredentialsController, type: :request do
   let_it_be(:admin) { create(:admin) }
   let_it_be(:user) { create(:user) }
   let_it_be(:personal_access_token) { create(:personal_access_token, user: user) }
+  let_it_be(:project_bot) { create(:user, :project_bot, created_by_id: user.id) }
+  let_it_be(:project_member) { create(:project_member, user: project_bot) }
+  let_it_be(:project_access_token) { create(:personal_access_token, user: project_member.user) }
 
   describe 'GET #index' do
     context 'admin user' do
@@ -34,7 +37,7 @@ RSpec.describe Admin::CredentialsController, type: :request do
             specify do
               get admin_credentials_path(filter: filter)
 
-              expect(assigns(:credentials)).to match_array(user.personal_access_tokens)
+              expect(assigns(:credentials)).to match_array([user.personal_access_tokens, project_access_token].flatten)
             end
           end
 
@@ -63,6 +66,14 @@ RSpec.describe Admin::CredentialsController, type: :request do
               get admin_credentials_path(filter: 'ssh_keys')
 
               expect(assigns(:credentials)).to match_array(ssh_keys)
+            end
+          end
+
+          context 'credential type specified as `project_access_tokens`' do
+            it 'filters by project access tokens' do
+              get admin_credentials_path(filter: 'project_access_tokens')
+
+              expect(assigns(:credentials)).to contain_exactly(project_access_token)
             end
           end
 
@@ -134,9 +145,20 @@ RSpec.describe Admin::CredentialsController, type: :request do
   end
 
   describe 'PUT #revoke' do
+    let_it_be(:project_member) { create(:project_member) }
+    let_it_be(:project_access_token) { create(:personal_access_token, user: project_member.user) }
+
+    let(:project) { project_member.project }
+
     shared_examples_for 'responds with 404' do
       it do
         put revoke_admin_credential_path(id: token_id)
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+
+      it do
+        put admin_credential_project_revoke_path(credential_id: token_id, project_id: project.id)
 
         expect(response).to have_gitlab_http_status(:not_found)
       end
@@ -148,6 +170,13 @@ RSpec.describe Admin::CredentialsController, type: :request do
 
         expect(response).to redirect_to(admin_credentials_path)
         expect(flash[:notice]).to start_with 'Revoked personal access token '
+      end
+
+      it :aggregate_failures do
+        put admin_credential_project_revoke_path(credential_id: project_access_token.id, project_id: project.id)
+
+        expect(response).to redirect_to(admin_credentials_path)
+        expect(flash[:notice]).to eq "Access token #{project_access_token.name} has been revoked and the bot user has been scheduled for deletion."
       end
     end
 
