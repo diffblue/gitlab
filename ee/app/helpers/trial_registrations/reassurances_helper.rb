@@ -5,9 +5,9 @@ module TrialRegistrations
     def reassurance_logo_data
       # Create the basic data structure for the logos we want to showcase
       data = [
-        { name: 'Siemens', css_classes: reassurance_logo_css_classes(opacity: 6, size: 9) },
+        { name: 'Siemens', css_classes: reassurance_logo_css_classes(opacity: 5, size: 9) },
         { name: 'Chorus', css_classes: reassurance_logo_css_classes(opacity: 5, size: 9) },
-        { name: 'KnowBe4', css_classes: reassurance_logo_css_classes(opacity: 7, size: 9) },
+        { name: 'KnowBe4', css_classes: reassurance_logo_css_classes(opacity: 6, size: 9) },
         { name: 'Wish', css_classes: reassurance_logo_css_classes(opacity: 5, size: 8) },
         { name: 'Hotjar', css_classes: reassurance_logo_css_classes(opacity: 5, size: 8) }
       ]
@@ -28,7 +28,7 @@ module TrialRegistrations
     end
 
     def reassurance_logo_image_path(org_name)
-      'marketing/logos/logo_%s.svg' % org_name.parameterize
+      'illustrations/third-party-logos/%s.svg' % org_name.parameterize
     end
 
     def reassurance_logo_image_alt_text(org_name)
