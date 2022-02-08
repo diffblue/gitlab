@@ -51,7 +51,7 @@ export default {
       const hasFailures = this.hasPipelineFailed || this.downstreamPipelinesHaveFailed;
       return {
         'dashboard-card-footer-failed': hasFailures,
-        'bg-light': !hasFailures,
+        'bg-white': hasFailures,
       };
     },
     hasDownstreamPipelines() {
@@ -116,7 +116,7 @@ export default {
 
     <ci-badge-link
       ref="status"
-      class="bg-white d-inline-block align-middle py-0"
+      class="d-inline-block align-middle py-0"
       :status="lastPipeline.details.status"
       :show-text="true"
     />
