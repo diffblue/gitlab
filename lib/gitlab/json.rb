@@ -16,6 +16,9 @@ module Gitlab
       # @return [Boolean, String, Array, Hash]
       # @raise [JSON::ParserError] raised if parsing fails
       def parse(string, opts = {})
+        # Parse nil as nil
+        return if string.nil?
+
         # First we should ensure this really is a string, not some other
         # type which purports to be a string. This handles some legacy
         # usage of the JSON class.
