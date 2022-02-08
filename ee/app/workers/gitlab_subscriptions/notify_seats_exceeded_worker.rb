@@ -2,7 +2,6 @@
 
 module GitlabSubscriptions
   class NotifySeatsExceededWorker
-    include ApplicationWorker
     include Gitlab::EventStore::Subscriber
 
     feature_category :purchase
