@@ -106,12 +106,14 @@ module GitalySetup
     Gitlab.config.repositories.storages[REPOS_STORAGE].legacy_disk_path
   end
 
-  def service_binary(service)
+  def service_cmd(service, toml = nil)
+    toml ||= config_path(service)
+
     case service
     when :gitaly, :gitaly2
-      'gitaly'
+      [File.join(tmp_tests_gitaly_bin_dir, 'gitaly'), toml]
     when :praefect
-      'praefect'
+      [File.join(tmp_tests_gitaly_bin_dir, 'praefect'), '-config', toml]
     end
   end
 
@@ -141,9 +143,7 @@ module GitalySetup
 
   def start(service, toml = nil)
     toml ||= config_path(service)
-    args = ["#{tmp_tests_gitaly_bin_dir}/#{service_binary(service)}"]
-    args.push("-config") if service == :praefect
-    args.push(toml)
+    args = service_cmd(service, toml)
 
     # Ensure user configuration does not affect Git
     # Context: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/58776#note_547613780
