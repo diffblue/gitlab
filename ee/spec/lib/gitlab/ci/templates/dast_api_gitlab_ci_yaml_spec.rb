@@ -10,8 +10,8 @@ RSpec.describe 'DAST-API.gitlab-ci.yml' do
   describe 'the template file' do
     let(:template_filename) { Rails.root.join("lib/gitlab/ci/templates/" + template.full_name) }
     let(:contents) { File.read(template_filename) }
-    let(:production_registry) { 'DAST_API_IMAGE: "api-security"' }
-    let(:staging_registry) { 'DAST_API_IMAGE: "api-security-src"' }
+    let(:production_registry) { '$SECURE_ANALYZERS_PREFIX/api-fuzzing:$DAST_API_VERSION' }
+    let(:staging_registry) { '$SECURE_ANALYZERS_PREFIX/api-fuzzing-src:$DAST_API_VERSION' }
 
     # Make sure future changes to the template use the production container registry.
     #
