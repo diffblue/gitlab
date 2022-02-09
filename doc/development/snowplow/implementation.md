@@ -18,21 +18,27 @@ to track custom events.
 
 For the recommended frontend tracking implementation, see [Usage recommendations](#usage-recommendations).
 
+Structured events and page views include the [`gitlab_standard`](schemas.md#gitlab_standard)
+context, using the `window.gl.snowplowStandardContext` object which includes
+[default data](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/views/layouts/_snowplow.html.haml)
+as base. This object can be modified for any subsequent structured event fired,
+although it's not recommended.
+
 Tracking implementations must have an `action` and a `category`. You can provide additional
-categories from the [structured event taxonomy](index.md#structured-event-taxonomy) with an `extra` object
-that accepts key-value pairs.
+properties from the [structured event taxonomy](index.md#structured-event-taxonomy), alongside
+an `extra` object that accepts key-value pairs.
 
 | Field      | Type   | Default value              | Description                                                                                                                                                                                                    |
 |:-----------|:-------|:---------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `category` | string | `document.body.dataset.page` | Page or subsection of a page in which events are captured.                                                                                                                                            |
 | `action`   | string | generic                  | Action the user is taking. Clicks must be `click` and activations must be `activate`. For example, focusing a form field is `activate_form_input`, and clicking a button is `click_button`. |
-| `data`     | object | `{}`                         | Additional data such as `label`, `property`, `value`, `context` as described in [Structured event taxonomy](index.md#structured-event-taxonomy), and `extra` (key-value pairs object). |
+| `data`     | object | `{}`                         | Additional data such as `label`, `property`, `value` as described in [Structured event taxonomy](index.md#structured-event-taxonomy), `context` for custom contexts, and `extra` (key-value pairs object). |
 
 ### Usage recommendations
 
 - Use [data attributes](#implement-data-attribute-tracking) on HTML elements that emit `click`, `show.bs.dropdown`, or `hide.bs.dropdown` events.
-- Use the [Vue mixin](#implement-vue-component-tracking) for tracking custom events, or if the supported events for data attributes are not propagating.
-- Use the [tracking class](#implement-raw-javascript-tracking) when tracking raw JavaScript files.
+- Use the [Vue mixin](#implement-vue-component-tracking) for tracking custom events, or if the supported events for data attributes are not propagating (i.e. clickable components that don't emit `click`).
+- Use the [tracking class](#implement-raw-javascript-tracking) when tracking in vanilla JavaScript files.
 
 ### Implement data attribute tracking
 
@@ -41,7 +47,10 @@ To implement tracking for HAML or Vue templates, add a [`data-track` attribute](
 The following example shows `data-track-*` attributes assigned to a button:
 
 ```haml
-%button.btn{ data: { track_action: "click_button", track_label: "template_preview", track_property: "my-template" } }
+%button.btn{ data: { track: { action: "click_button", label: "template_preview", property: "my-template" } } }
+
+// or
+// %button.btn{ data: { track_action: "click_button", track_label: "template_preview", track_property: "my-template" } }
 ```
 
 ```html
@@ -62,7 +71,7 @@ The following example shows `data-track-*` attributes assigned to a button:
 | `data-track-property` | false    | Any additional property of the element, or object being acted on. |
 | `data-track-value`    | false    | Describes a numeric value (decimal) directly related to the event. This could be the value of an input. For example, `10` when clicking `internal` visibility. If omitted, this is the element's `value` property or `undefined`. For checkboxes, the default value is the element's checked attribute or `0` when unchecked. |
 | `data-track-extra` | false    | A key-value pair object passed as a valid JSON string. This attribute is added to the `extra` property in our [`gitlab_standard`](schemas.md#gitlab_standard) schema. |
-| `data-track-context`  | false    | The `context` as described in our [Structured event taxonomy](index.md#structured-event-taxonomy). |
+| `data-track-context`  | false    | To append a custom context object, passed as a valid JSON string. |
 
 #### Event listeners
 
@@ -74,12 +83,19 @@ If click events stop propagating, you must implement listeners and [Vue componen
 
 #### Helper methods
 
-Use the following Ruby helper:
+You can use the following Ruby helper:
 
 ```ruby
 tracking_attrs(label, action, property) # { data: { track_label... } }
+```
 
+You can also use it on HAML templates:
+
+```haml
 %button{ **tracking_attrs('main_navigation', 'click_button', 'navigation') }
+
+// When adding additional data
+// %button{ data: { platform: "...", **tracking_attrs('main_navigation', 'click_button', 'navigation') } }
 ```
 
 If you use the GitLab helper method [`nav_link`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/helpers/tab_helper.rb#L76), you must wrap `html_options` under the `html_options` keyword argument. If you
@@ -91,7 +107,7 @@ use the `ActionView` helper method [`link_to`](https://api.rubyonrails.org/v5.2.
 track_action: "click_button" })
 
 # Good
-= nav_link(controller: ['dashboard/groups', 'explore/groups'], html_options: { data: { track_label: 
+= nav_link(controller: ['dashboard/groups', 'explore/groups'], html_options: { data: { track_label:
 "explore_groups", track_action: "click_button" } })
 
 # Good (other helpers)
