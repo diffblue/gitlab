@@ -231,4 +231,29 @@ RSpec.shared_examples 'a blob replicator' do
       end
     end
   end
+
+  describe '#file_exists?' do
+    let(:file) { double(exists?: true) }
+    let(:uploader) { double(file: file) }
+
+    subject { replicator.file_exists? }
+
+    before do
+      allow(replicator).to receive(:carrierwave_uploader).and_return(uploader)
+    end
+
+    it { is_expected.to be_truthy }
+
+    context 'when the file does not exist' do
+      let(:file) { double(exists?: false) }
+
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when the file is nil' do
+      let(:file) { nil }
+
+      it { is_expected.to be_falsey }
+    end
+  end
 end

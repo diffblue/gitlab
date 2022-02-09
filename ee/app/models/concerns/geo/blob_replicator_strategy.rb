@@ -95,7 +95,7 @@ module Geo
     #
     # @return [Boolean] whether the file exists on disk or in remote storage
     def file_exists?
-      carrierwave_uploader.file.exists?
+      carrierwave_uploader.file&.exists?
     end
 
     def deleted_params
