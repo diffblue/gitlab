@@ -8,8 +8,9 @@ RSpec.describe 'group epic roadmap', :js do
 
   let(:user) { create(:user) }
   let(:user_dev) { create(:user) }
-  let(:group) { create(:group) }
-  let(:milestone) { create(:milestone, group: group) }
+  let(:group) { create(:group, :public) }
+  let(:subgroup) { create(:group, :public, parent: group) }
+  let(:project) { create(:project, :public, group: group) }
 
   let!(:bug_label) { create(:group_label, group: group, title: 'Bug') }
   let!(:critical_label) { create(:group_label, group: group, title: 'Critical') }
@@ -148,6 +149,10 @@ RSpec.describe 'group epic roadmap', :js do
     let!(:epic_with_bug) { create(:labeled_epic, group: group, start_date: 10.days.ago, end_date: 1.day.ago, labels: [bug_label]) }
     let!(:epic_with_critical) { create(:labeled_epic, group: group, start_date: 20.days.ago, end_date: 2.days.ago, labels: [critical_label]) }
     let!(:closed_epic) { create(:epic, :closed, group: group, start_date: 20.days.ago, end_date: 2.days.ago) }
+    let!(:milestone) { create(:milestone, :with_dates, group: group, start_date: 10.days.ago, due_date: 1.day.ago) }
+    let!(:milestone_subgroup) { create(:milestone, :with_dates, group: subgroup, start_date: 10.days.ago, due_date: 1.day.ago) }
+    let!(:milestone_project) { create(:milestone, :with_dates, project: project, start_date: 10.days.ago, due_date: 1.day.ago) }
+    let!(:milestone_project_2) { create(:milestone, :with_dates, project: project, start_date: 10.days.ago, due_date: 1.day.ago) }
 
     before do
       visit group_roadmap_path(group)
@@ -238,6 +243,64 @@ RSpec.describe 'group epic roadmap', :js do
 
           page.within('.roadmap-container .epics-list-section') do
             expect(page).to have_selector('.epics-list-item .epic-title', count: 2)
+          end
+        end
+      end
+
+      describe 'roadmap milestones settings' do
+        def select_milestones(milestones)
+          page.within('[data-testid="roadmap-milestones-settings"]') do
+            choose milestones
+          end
+        end
+
+        def wait_for_milestones(count)
+          page.within('.roadmap-container .milestones-list-section') do
+            expect(page).to have_selector('.milestone-item-details', count: count)
+          end
+        end
+
+        before do
+          open_settings_sidebar
+        end
+
+        it 'renders milestones section' do
+          page.within('.roadmap-container') do
+            expect(page).to have_selector('.milestones-list-section')
+          end
+        end
+
+        it 'renders all milestones' do
+          select_milestones('Show all milestones')
+
+          wait_for_milestones(4)
+        end
+
+        it 'renders group milestones' do
+          select_milestones('Show group milestones')
+
+          wait_for_milestones(1)
+        end
+
+        it 'renders subgroup milestones' do
+          select_milestones('Show sub-group milestones')
+
+          wait_for_milestones(1)
+        end
+
+        it 'renders project milestones' do
+          select_milestones('Show project milestones')
+
+          wait_for_milestones(2)
+        end
+
+        it 'turns off milestones' do
+          page.within('[data-testid="roadmap-milestones-settings"]') do
+            click_button class: 'gl-toggle'
+          end
+
+          page.within('.roadmap-container') do
+            expect(page).not_to have_selector('.milestones-list-section')
           end
         end
       end

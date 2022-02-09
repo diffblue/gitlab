@@ -54,6 +54,8 @@ export default {
         'not[my_reaction_emoji]': notMyReactionEmoji,
         'not[label_name][]': notLabelName,
         progress: this.progressTracking,
+        show_milestones: this.isShowingMilestones,
+        milestones_type: this.milestonesType,
       };
     },
   },

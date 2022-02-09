@@ -12833,6 +12833,9 @@ msgstr ""
 msgid "Display alerts from all configured monitoring tools."
 msgstr ""
 
+msgid "Display milestones"
+msgstr ""
+
 msgid "Display name"
 msgstr ""
 
@@ -33406,6 +33409,9 @@ msgstr ""
 msgid "Show all issues."
 msgstr ""
 
+msgid "Show all milestones"
+msgstr ""
+
 msgid "Show all test cases."
 msgstr ""
 
@@ -33442,6 +33448,9 @@ msgstr ""
 msgid "Show file contents"
 msgstr ""
 
+msgid "Show group milestones"
+msgstr ""
+
 msgid "Show labels"
 msgstr ""
 
@@ -33455,6 +33464,12 @@ msgid "Show one file at a time"
 msgstr ""
 
 msgid "Show open epics"
+msgstr ""
+
+msgid "Show project milestones"
+msgstr ""
+
+msgid "Show sub-group milestones"
 msgstr ""
 
 msgid "Show the Closed list"

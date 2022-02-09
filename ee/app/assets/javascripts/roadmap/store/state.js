@@ -4,6 +4,8 @@ export default () => ({
   epicsState: '',
   progressTracking: '',
   filterParams: null,
+  isShowingMilestones: true,
+  milestonesType: '',
 
   // Data
   epicIid: '',

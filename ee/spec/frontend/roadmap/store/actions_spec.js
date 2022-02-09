@@ -1,5 +1,5 @@
 import MockAdapter from 'axios-mock-adapter';
-import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
+import { DATE_RANGES, PRESET_TYPES, MILESTONES_GROUP } from 'ee/roadmap/constants';
 import groupMilestones from 'ee/roadmap/queries/groupMilestones.query.graphql';
 import epicChildEpics from 'ee/roadmap/queries/epicChildEpics.query.graphql';
 import * as actions from 'ee/roadmap/store/actions';
@@ -668,6 +668,30 @@ describe('Roadmap Vuex Actions', () => {
         'COUNT',
         state,
         [{ type: types.SET_PROGRESS_TRACKING, payload: 'COUNT' }],
+        [],
+      );
+    });
+  });
+
+  describe('setMilestonesType', () => {
+    it('should set milestonesType in store state', () => {
+      return testAction(
+        actions.setMilestonesType,
+        MILESTONES_GROUP,
+        state,
+        [{ type: types.SET_MILESTONES_TYPE, payload: MILESTONES_GROUP }],
+        [],
+      );
+    });
+  });
+
+  describe('toggleMilestones', () => {
+    it('commit TOGGLE_MILESTONES mutation', () => {
+      return testAction(
+        actions.toggleMilestones,
+        undefined,
+        state,
+        [{ type: types.TOGGLE_MILESTONES }],
         [],
       );
     });
