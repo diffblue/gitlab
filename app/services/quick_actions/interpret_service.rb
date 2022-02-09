@@ -85,7 +85,7 @@ module QuickActions
           end
       end
 
-      failed_parse(format(_("Failed to find users for '%{params}'"), params: params)) unless users.size == args.size
+      failed_parse(format(_("Failed to find users for '%{params}'"), params: params)) if users.size < args.size
 
       users
     end
