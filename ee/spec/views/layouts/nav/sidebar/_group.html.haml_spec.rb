@@ -592,28 +592,4 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
       expect(rendered).to have_link('Billing', href: group_billings_path(group))
     end
   end
-
-  describe 'Billing Menu' do
-    before do
-      group.add_owner(user)
-      allow(::Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(true)
-      allow(view).to receive(:current_user).and_return(user)
-    end
-
-    it 'has a link to the billing page' do
-      stub_experiments(billing_in_side_nav: :candidate)
-
-      render
-
-      expect(rendered).to have_link('Billing', href: group_billings_path(group, from: :side_nav))
-    end
-
-    it 'does not have a link to the billing page' do
-      stub_experiments(billing_in_side_nav: :control)
-
-      render
-
-      expect(rendered).not_to have_link('Billing', href: group_billings_path(group, from: :side_nav))
-    end
-  end
 end

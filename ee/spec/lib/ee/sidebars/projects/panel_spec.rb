@@ -37,32 +37,6 @@ RSpec.describe Sidebars::Projects::Panel do
     end
   end
 
-  describe 'BillingMenu' do
-    context 'with candidate experience' do
-      before do
-        stub_experiments(billing_in_side_nav: :candidate)
-      end
-
-      it 'assigns the candidate experience and tracks the event' do
-        expect(contains_billing_menu?).to be(true)
-      end
-    end
-
-    context 'with control experience' do
-      before do
-        stub_experiments(billing_in_side_nav: :control)
-      end
-
-      it 'assigns the candidate experience and tracks the event' do
-        expect(contains_billing_menu?).to be(false)
-      end
-    end
-
-    def contains_billing_menu?
-      contains_menu?(Sidebars::Projects::Menus::BillingMenu)
-    end
-  end
-
   def contains_menu?(menu)
     panel.instance_variable_get(:@menus).any? { |i| i.is_a?(menu) }
   end
