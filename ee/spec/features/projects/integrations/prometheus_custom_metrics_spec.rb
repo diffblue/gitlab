@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Prometheus custom metrics', :js do
   include PrometheusHelpers
 
-  include_context 'project service activation'
+  include_context 'project integration activation'
 
   let!(:prometheus_metric) { create(:prometheus_metric, project: project) }
 
