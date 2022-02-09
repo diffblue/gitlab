@@ -41183,6 +41183,9 @@ msgstr ""
 msgid "You are attempting to update a file that has changed since you started editing it."
 msgstr ""
 
+msgid "You are billed if you exceed this number. %{qsrOverageLinkStart}How does billing work?%{qsrOverageLinkEnd}"
+msgstr ""
+
 msgid "You are connected to the Prometheus server, but there is currently no data to display."
 msgstr ""
 

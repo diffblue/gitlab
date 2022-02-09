@@ -1,16 +1,18 @@
 <script>
-import { GlFormGroup, GlFormSelect, GlFormInput, GlSprintf, GlLink } from '@gitlab/ui';
+import { GlAlert, GlFormGroup, GlFormSelect, GlFormInput, GlSprintf, GlLink } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import { mapState, mapGetters, mapActions } from 'vuex';
-import { STEP_SUBSCRIPTION_DETAILS } from 'ee/subscriptions/constants';
+import { QSR_RECONCILIATION_PATH, STEP_SUBSCRIPTION_DETAILS } from 'ee/subscriptions/constants';
 import { NEW_GROUP } from 'ee/subscriptions/new/constants';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
-import { sprintf, s__ } from '~/locale';
+import { sprintf, s__, __ } from '~/locale';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
 import Tracking from '~/tracking';
+import { helpPagePath } from '~/helpers/help_page_helper';
 
 export default {
   components: {
+    GlAlert,
     GlFormGroup,
     GlFormSelect,
     GlFormInput,
@@ -170,8 +172,12 @@ export default {
     selectedPlan: s__('Checkout|%{selectedPlanText} plan'),
     group: s__('Checkout|Group'),
     users: s__('Checkout|Users'),
+    qsrOverageMessage: __(
+      'You are billed if you exceed this number. %{qsrOverageLinkStart}How does billing work?%{qsrOverageLinkEnd}',
+    ),
   },
   stepId: STEP_SUBSCRIPTION_DETAILS,
+  qsrReconciliationLink: helpPagePath(QSR_RECONCILIATION_PATH),
 };
 </script>
 <template>
@@ -215,7 +221,11 @@ export default {
         <gl-form-input ref="organization-name" v-model="organizationNameModel" type="text" />
       </gl-form-group>
       <div class="combined d-flex">
-        <gl-form-group :label="$options.i18n.numberOfUsersLabel" label-size="sm" class="number">
+        <gl-form-group
+          :label="$options.i18n.numberOfUsersLabel"
+          label-size="sm"
+          class="number gl-mb-0"
+        >
           <gl-form-input
             ref="number-of-users"
             v-model.number="numberOfUsersModel"
@@ -237,6 +247,18 @@ export default {
           </gl-sprintf>
         </gl-form-group>
       </div>
+      <gl-alert
+        class="gl-mt-5 gl-mb-6"
+        :dismissible="false"
+        variant="info"
+        data-testid="qsr-overage-message"
+      >
+        <gl-sprintf :message="$options.i18n.qsrOverageMessage">
+          <template #qsrOverageLink="{ content }">
+            <gl-link :href="$options.qsrReconciliationLink" target="_blank">{{ content }}</gl-link>
+          </template>
+        </gl-sprintf>
+      </gl-alert>
     </template>
     <template #summary>
       <strong ref="summary-line-1">

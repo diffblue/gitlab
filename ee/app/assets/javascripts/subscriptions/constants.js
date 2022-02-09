@@ -31,3 +31,5 @@ export const STEPS = [
 ];
 export const TRACK_SUCCESS_MESSAGE = 'Success';
 /* eslint-enable @gitlab/require-i18n-strings */
+
+export const QSR_RECONCILIATION_PATH = 'subscriptions/quarterly_reconciliation.html';
