@@ -6,6 +6,7 @@ import { bindHowToImport } from '~/projects/project_new';
 import { displayGroupPath, displayProjectPath } from './path_display';
 import showTooltip from './show_tooltip';
 import CreditCardVerification from './components/credit_card_verification.vue';
+import ExitLink from './components/exit_link.vue';
 
 const importButtonsSubmit = () => {
   const buttons = document.querySelectorAll('.js-import-project-buttons a');
@@ -58,6 +59,26 @@ const mountVerification = () => {
   });
 };
 
+const mountExitLink = () => {
+  const el = document.querySelector('.js-exit-registration-verification');
+
+  if (!el) {
+    return null;
+  }
+
+  const { exitPath } = el.dataset;
+
+  return new Vue({
+    el,
+    provide: {
+      exitPath,
+    },
+    render(createElement) {
+      return createElement(ExitLink);
+    },
+  });
+};
+
 export default () => {
   displayGroupPath('.js-group-path-source', '.js-group-path-display');
   displayGroupPath('.js-import-group-path-source', '.js-import-group-path-display');
@@ -67,4 +88,5 @@ export default () => {
   bindHowToImport();
   setAutofocus();
   mountVerification();
+  mountExitLink();
 };
