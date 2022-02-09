@@ -12140,7 +12140,7 @@ msgstr ""
 msgid "DeploymentTarget|Mobile app store"
 msgstr ""
 
-msgid "DeploymentTarget|None"
+msgid "DeploymentTarget|No deployment planned"
 msgstr ""
 
 msgid "DeploymentTarget|Other hosting service"
