@@ -205,7 +205,7 @@ RSpec.shared_examples 'handle uploads' do
               allow_any_instance_of(FileUploader).to receive(:image?).and_return(true)
             end
 
-            context "extract_mr_diff_commit_deletions feature flag" do
+            context "enforce_auth_checks_on_uploads feature flag" do
               context "with flag enabled" do
                 before do
                   stub_feature_flags(enforce_auth_checks_on_uploads: true)
@@ -296,7 +296,7 @@ RSpec.shared_examples 'handle uploads' do
                 allow_any_instance_of(FileUploader).to receive(:image?).and_return(true)
               end
 
-              context "extract_mr_diff_commit_deletions feature flag" do
+              context "enforce_auth_checks_on_uploads feature flag" do
                 context "with flag enabled" do
                   before do
                     stub_feature_flags(enforce_auth_checks_on_uploads: true)
