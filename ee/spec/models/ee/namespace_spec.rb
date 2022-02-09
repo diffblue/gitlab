@@ -978,11 +978,7 @@ RSpec.describe Namespace do
           ])
         end
 
-        context 'with a ultimate plan' do
-          before do
-            create(:gitlab_subscription, namespace: group, hosted_plan: ultimate_plan)
-          end
-
+        shared_examples 'ultimate plan' do
           it 'does not include guest users and only active users' do
             expect(billed_user_ids[:user_ids]).to match_array([developer.id])
           end
@@ -1116,6 +1112,22 @@ RSpec.describe Namespace do
               end
             end
           end
+        end
+
+        context 'with a ultimate plan' do
+          before do
+            create(:gitlab_subscription, :ultimate, namespace: group)
+          end
+
+          it_behaves_like 'ultimate plan'
+        end
+
+        context 'with an ultimate trial plan' do
+          before do
+            create(:gitlab_subscription, :ultimate_trial, namespace: group)
+          end
+
+          it_behaves_like 'ultimate plan'
         end
 
         context 'with other plans' do
