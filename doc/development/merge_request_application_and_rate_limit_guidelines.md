@@ -15,16 +15,12 @@ Every new feature should have safe usage limits included in its implementation.
 Limits are applicable for system level resource pools (e.g. API requests,  sshd
 connections, db connections, storage, etc.) and domain level objects (e.g. CI
 minutes, groups, sign in attempts, etc.)
-Limits are required if the absence of the limit matches severity 1 - 3 in the [Severity
+
+### Requirements
+
+1. Limits are required if the absence of the limit matches severity 1 - 3 in the [Severity
 Definitions for Limit Related
 Bugs](https://about.gitlab.com/handbook/engineering/quality/issue-triage/#limit-related-bugs).
-
-### Documentation requirements
-
-* Any additions, removals, or updates to limits must be reflected in the [GitLab application limits](https://docs.gitlab.com/ee/administration/instance_limits.html) documentation.
-
-### Additional Documentation about Implementing Limits
-
-* [Overview of Rate Limits for GitLab.com](https://gitlab.com/gitlab-com/runbooks/-/tree/master/docs/rate-limiting)
+1. Any additions, removals, or updates to limits must be reflected in the [GitLab application limits](https://docs.gitlab.com/ee/administration/instance_limits.html) documentation.
 
 
