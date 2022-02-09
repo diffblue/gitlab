@@ -28,10 +28,10 @@ Tracking implementations must have an `action` and a `category`. You can provide
 properties from the [structured event taxonomy](index.md#structured-event-taxonomy), alongside
 an `extra` object that accepts key-value pairs.
 
-| Field      | Type   | Default value              | Description                                                                                                                                                                                                    |
+| Property      | Type   | Default value              | Description                                                                                                                                                                                                    |
 |:-----------|:-------|:---------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `category` | string | `document.body.dataset.page` | Page or subsection of a page in which events are captured.                                                                                                                                            |
-| `action`   | string | generic                  | Action the user is taking. Clicks must be `click` and activations must be `activate`. For example, focusing a form field is `activate_form_input`, and clicking a button is `click_button`. |
+| `action`   | string | `'generic'`                  | Action the user is taking. Clicks must be `click` and activations must be `activate`. For example, focusing a form field is `activate_form_input`, and clicking a button is `click_button`. |
 | `data`     | object | `{}`                         | Additional data such as `label`, `property`, `value` as described in [Structured event taxonomy](index.md#structured-event-taxonomy), `context` for custom contexts, and `extra` (key-value pairs object). |
 
 ### Usage recommendations
@@ -117,63 +117,64 @@ track_action: "click_button" })
 
 ### Implement Vue component tracking
 
-For custom event tracking, use a Vue `mixin` in components. Vue `mixin` exposes the `Tracking.event`
-static method and the `track` method. You can specify tracking options in `data` or `computed`.
-These options override any defaults and allow the values to be dynamic from props or based on state.
+For custom event tracking, use the [Vue mixin](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/assets/javascripts/tracking/tracking.js#L207). It exposes `Tracking.event` as the `track` method.
+You can specify tracking options in by creating a `tracking` data object
+or computed property, and as a second parameter: `this.track('click_button', opts)`.
+These options override any defaults and allow the values to be dynamic from props or based on state:
 
-Several default options are passed when an event is tracked from the component:
-
-- `category`: If you don't specify, by default `document.body.dataset.page` is used.
-- `label`
-- `property`
-- `value`
+| Property | Type | Default | Example |
+| -- | -- | -- | -- |
+| `category` | string | `document.body.dataset.page` | `'code_quality_walkthrough'` |
+| `label` | string | `''` | `'process_start_button'` |
+| `property` | string | `''` | `'asc'` or `'desc'` |
+| `value` | integer | `undefined` | `0`, `1`, `500` |
+| `extra` | object | `{}` | `{ selectedVariant: this.variant }` |
 
 To implement Vue component tracking:
 
-1. Import the `Tracking` library and request a `mixin`:
+1. Import the `Tracking` library and call the `mixin` method:
 
     ```javascript
     import Tracking from '~/tracking';
-    const trackingMixin = Tracking.mixin;
+
+    const trackingMixin = Tracking.mixin();
+
+    // Optionally provide default properties
+    // const trackingMixin = Tracking.mixin({ label: 'right_sidebar' });
     ```
 
-1. Provide categories to track the event from the component. For example, to track all events in a
-component with a label, use the `label` category:
-
-    ```javascript
-    import Tracking from '~/tracking';
-    const trackingMixin = Tracking.mixin({ label: 'right_sidebar' });
-    ```
-
-1. In the component, declare the Vue `mixin`:
+1. Use the mixin in the component:
 
     ```javascript
     export default {
       mixins: [trackingMixin],
-      // ...[component implementation]...
+      // Or
+      // mixins: [Tracking.mixin()],
+      // mixins: [Tracking.mixin({ label: 'right_sidebar' })],
+
       data() {
         return {
           expanded: false,
-          tracking: {
-            label: 'left_sidebar',
-          },
         };
       },
     };
     ```
 
-1. To receive event data as a tracking object or computed property:
-   - Declare it in the `data` function. Use a `tracking` object when default event properties are dynamic or provided at runtime:
+1. You can specify tracking options in by creating a `tracking` data object
+or computed property:
 
       ```javascript
       export default {
         name: 'RightSidebar',
+
         mixins: [Tracking.mixin()],
+
         data() {
           return {
+            expanded: false,
+            variant: '',
             tracking: {
               label: 'right_sidebar',
-              // category: '',
               // property: '',
               // value: '',
               // experiment: '',
@@ -181,18 +182,28 @@ component with a label, use the `label` category:
             },
           };
         },
+
+        // Or
+        // computed: {
+        //   tracking() {
+        //     return {
+        //       property: this.variant,
+        //       extra: { expanded: this.expanded },
+        //     };
+        //   },
+        // },
       };
       ```
 
-   - Declare it in the event data in the `track` function. This object merges with any previously provided options:
+1. Call the `track` method. Tracking options can be passed as the second parameter:
 
-      ```javascript
-      this.track('click_button', {
-        label: 'right_sidebar',
-      });
-      ```
+    ```javascript
+    this.track('click_button', {
+      label: 'right_sidebar',
+    });
+    ```
 
-1. Optional. Use the `track` method in a template:
+    Or use the `track` method in the template:
 
     ```html
     <template>
@@ -201,55 +212,67 @@ component with a label, use the `label` category:
 
         <div v-if="expanded">
           <p>Hello world!</p>
-          <button @click="track('click_action')">Track another event</button>
+          <button @click="track('click_button')">Track another event</button>
         </div>
       </div>
     </template>
     ```
 
-The following example shows an implementation of Vue component tracking:
+#### Testing example
 
 ```javascript
 export default {
-  name: 'RightSidebar',
-  mixins: [Tracking.mixin({ label: 'right_sidebar' })],
+  name: 'CountDropdown',
+
+  mixins: [Tracking.mixin({ label: 'count_dropdown' })],
+
   data() {
     return {
-      expanded: false,
+      variant: 'counter',
+      count: 0,
     };
   },
+
   methods: {
-    toggle() {
-      this.expanded = !this.expanded;
-      // Additional data will be merged, like `value` below
-      this.track('click_toggle', { value: Number(this.expanded) });
-    }
-  }
+    handleChange({ target }) {
+      const { variant } = this;
+
+      this.count = Number(target.value);
+
+      this.track('change_value', {
+        value: this.count,
+        extra: { variant }
+      });
+    },
+  },
 };
 ```
-
-#### Testing example
 
 ```javascript
 import { mockTracking } from 'helpers/tracking_helper';
 // mockTracking(category, documentOverride, spyMethod)
 
-describe('RightSidebar.vue', () => {
+describe('CountDropdown.vue', () => {
   let trackingSpy;
   let wrapper;
+
+  ...
 
   beforeEach(() => {
     trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
   });
 
-  const findToggle = () => wrapper.find('[data-testid="toggle"]');
+  const findDropdown = () => wrapper.find('[data-testid="dropdown"]');
 
-  it('tracks turning off toggle', () => {
-    findToggle().trigger('click');
+  it('tracks change event', () => {
+    const dropdown = findDropdown();
+    dropdown.element.value = 30;
+    dropdown.trigger('change');
 
-    expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_toggle', {
-      label: 'right_sidebar',
-      value: 0,
+    expect(trackingSpy).toHaveBeenCalledWith(undefined, 'change_value', {
+      value: 30,
+      label: 'count_dropdown',
+      extra: { variant: 'counter' },
     });
   });
 });
@@ -257,7 +280,8 @@ describe('RightSidebar.vue', () => {
 
 ### Implement raw JavaScript tracking
 
-To call custom event tracking and instrumentation directly from the JavaScript file, call the `Tracking.event` static function.
+To track from a vanilla JavaScript file, use the `Tracking.event` static function
+(calls [`dispatchSnowplowEvent`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/assets/javascripts/tracking/dispatch_snowplow_event.js)).
 
 The following example demonstrates tracking a click on a button by manually calling `Tracking.event`.
 
@@ -267,7 +291,7 @@ import Tracking from '~/tracking';
 const button = document.getElementById('create_from_template_button');
 
 button.addEventListener('click', () => {
-  Tracking.event('dashboard:projects:index', 'click_button', {
+  Tracking.event(undefined, 'click_button', {
     label: 'create_from_template',
     property: 'template_preview',
     extra: {
