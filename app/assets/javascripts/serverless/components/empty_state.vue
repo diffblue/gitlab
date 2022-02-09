@@ -28,7 +28,7 @@ export default {
     <template #description>
       <gl-sprintf :message="$options.i18n.description">
         <template #postLink="{ content }">
-          <gl-link :href="$options.deprecationPostLink">{{ content }}</gl-link>
+          <gl-link :href="$options.deprecationPostLink" target="_blank">{{ content }}</gl-link>
         </template>
         <template #link="{ content }">
           <gl-link :href="helpPath">{{ content }}</gl-link>
