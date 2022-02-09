@@ -11,7 +11,7 @@ module AppSec
         end
 
         def execute
-          AppSec::Fuzzing::Coverage::Corpus.by_project_id(project)
+          AppSec::Fuzzing::Coverage::Corpus.by_project_id_and_status_hidden(project)
         end
       end
     end
