@@ -271,16 +271,16 @@ module EE
       return unless epic
 
       if !confidential? && epic.confidential?
-        errors.add :issue, confidentiality_error
+        errors.add :base, confidentiality_error
       end
     end
 
     def confidentiality_error
       if changed_attribute_names_to_save.include?('confidential')
-        return _('this issue cannot be made public since it belongs to a confidential epic')
+        return _('This issue cannot be made public because it belongs to a confidential epic.')
       end
 
-      _('this issue cannot be assigned to a confidential epic since it is public')
+      _('This issue cannot be assigned to a confidential epic because it is public.')
     end
   end
 end

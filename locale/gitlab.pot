@@ -36990,6 +36990,12 @@ msgstr ""
 msgid "This is your current session"
 msgstr ""
 
+msgid "This issue cannot be assigned to a confidential epic because it is public."
+msgstr ""
+
+msgid "This issue cannot be made public because it belongs to a confidential epic."
+msgstr ""
+
 msgid "This issue is confidential and should only be visible to team members with at least Reporter access."
 msgstr ""
 
@@ -43866,12 +43872,6 @@ msgid "then"
 msgstr ""
 
 msgid "this document"
-msgstr ""
-
-msgid "this issue cannot be assigned to a confidential epic since it is public"
-msgstr ""
-
-msgid "this issue cannot be made public since it belongs to a confidential epic"
 msgstr ""
 
 msgid "time summary"
