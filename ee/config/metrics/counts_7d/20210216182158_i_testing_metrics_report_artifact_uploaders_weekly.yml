@@ -5,7 +5,7 @@ description: Count of unique users per week who trigger a pipeline that uploads 
   metrics report.
 product_section: ops
 product_stage: verify
-product_group: group::testing
+product_group: group::pipeline insights
 product_category: code_testing
 value_type: number
 status: active

@@ -4,7 +4,7 @@ key_path: redis_hll_counters.testing.i_testing_metrics_report_widget_total_weekl
 description: Count of unique users per week who expanded the metrics report MR widget
 product_section: ops
 product_stage: verify
-product_group: group::testing
+product_group: group::pipeline insights
 product_category: code_testing
 value_type: number
 status: active

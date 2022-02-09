@@ -5,7 +5,7 @@ description: Aggregated count of unique users who have clicked from group code c
   page to an individual project page each month.
 product_section: ops
 product_stage: verify
-product_group: group::testing
+product_group: group::pipeline insights
 product_category: code_testing
 value_type: number
 status: active
