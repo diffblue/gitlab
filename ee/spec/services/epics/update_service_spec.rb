@@ -116,7 +116,7 @@ RSpec.describe Epics::UpdateService do
 
       shared_examples 'board repositioning' do
         context 'when moving between 2 epics on the board' do
-          subject { update_epic(move_between_ids: [epic1.id, epic2.id], board_id: board.id, list_id: list.id, board_group: group) }
+          subject { update_epic(move_between_ids: [epic2.id, epic1.id], board_id: board.id, list_id: list.id, board_group: group) }
 
           it 'moves the epic correctly' do
             subject
@@ -130,7 +130,7 @@ RSpec.describe Epics::UpdateService do
 
         context 'when moving the epic to the end' do
           it 'moves the epic correctly' do
-            update_epic(move_between_ids: [nil, epic2.id], board_id: board.id, list_id: list.id, board_group: group)
+            update_epic(move_between_ids: [epic2.id, nil], board_id: board.id, list_id: list.id, board_group: group)
 
             expect(position(epic)).to be > position(epic2)
           end
@@ -147,7 +147,7 @@ RSpec.describe Epics::UpdateService do
 
         context 'when moving beetween 2 epics on the board' do
           it 'keeps epic3 on top of the board' do
-            update_epic(move_between_ids: [epic1.id, epic2.id], board_id: board.id, list_id: list.id, board_group: group)
+            update_epic(move_between_ids: [epic2.id, epic1.id], board_id: board.id, list_id: list.id, board_group: group)
 
             expect(position(epic3)).to be < position(epic2)
             expect(position(epic3)).to be < position(epic1)
@@ -160,7 +160,7 @@ RSpec.describe Epics::UpdateService do
           end
 
           it 'moves the epic correctly' do
-            update_epic(move_between_ids: [epic3.id, nil], board_id: board.id, list_id: list.id, board_group: group)
+            update_epic(move_between_ids: [nil, epic3.id], board_id: board.id, list_id: list.id, board_group: group)
 
             expect(epic_position.reload.relative_position).to be < epic3_position.relative_position
           end
@@ -168,7 +168,7 @@ RSpec.describe Epics::UpdateService do
 
         context 'when moving the epic to the end' do
           it 'keeps epic3 on top of the board' do
-            update_epic(move_between_ids: [epic1.id, epic2.id], board_id: board.id, list_id: list.id, board_group: group)
+            update_epic(move_between_ids: [epic1.id, nil], board_id: board.id, list_id: list.id, board_group: group)
 
             expect(position(epic3)).to be < position(epic2)
             expect(position(epic3)).to be < position(epic1)
@@ -211,7 +211,7 @@ RSpec.describe Epics::UpdateService do
           let_it_be_with_reload(:epic2_position) { create(:epic_board_position, epic: epic2, epic_board: board, relative_position: 30) }
           let_it_be_with_reload(:epic_position) { create(:epic_board_position, epic: epic, epic_board: board, relative_position: 10) }
 
-          subject { update_epic(move_between_ids: [epic1.id, epic2.id], board_id: board.id, list_id: list.id, board_group: group) }
+          subject { update_epic(move_between_ids: [epic2.id, epic1.id], board_id: board.id, list_id: list.id, board_group: group) }
 
           it 'moves the epic correctly' do
             subject
