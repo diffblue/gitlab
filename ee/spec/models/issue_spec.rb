@@ -290,7 +290,7 @@ RSpec.describe Issue do
             issue.epic = epic
 
             expect(issue).not_to be_valid
-            expect(issue.errors.messages[:issue]).to include(/this issue cannot be assigned to a confidential epic since it is public/)
+            expect(issue.errors.messages[:base]).to include(/This issue cannot be assigned to a confidential epic because it is public./)
           end
         end
 
@@ -319,7 +319,7 @@ RSpec.describe Issue do
               issue.confidential = false
 
               expect(issue).not_to be_valid
-              expect(issue.errors.messages[:issue]).to include(/this issue cannot be made public since it belongs to a confidential epic/)
+              expect(issue.errors.messages[:base]).to include(/This issue cannot be made public because it belongs to a confidential epic./)
             end
           end
         end
@@ -339,7 +339,7 @@ RSpec.describe Issue do
             issue.epic = epic
 
             expect(issue).not_to be_valid
-            expect(issue.errors.messages[:issue]).to include(/this issue cannot be assigned to a confidential epic since it is public/)
+            expect(issue.errors.messages[:base]).to include(/This issue cannot be assigned to a confidential epic because it is public./)
           end
         end
       end
