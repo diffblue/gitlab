@@ -1743,10 +1743,8 @@ RSpec.describe User do
       :saas | false | :enabled | 0 | :trial | %i[]                     | 0  | true  | 'missing CC on trial plan - FF off'
       :saas | true  | :enabled | 0 | :trial | %i[free trial]           | 0  | true  | 'present CC on trial plan'
 
-      :saas | false | :enabled | 100 | :free  | %i[free]               | 0  | false | 'missing CC on free plan with purchased minutes - FF off'
-      :saas | false | :enabled | 100 | :free  | %i[free skip_addon]    | 0  | true  | 'missing CC on free plan with purchased minutes'
-      :saas | false | :enabled | 100 | :trial | %i[free trial]         | 0  | false | 'missing CC on trial plan with purchased minutes - FF off'
-      :saas | false | :enabled | 100 | :trial | %i[trial skip_addon]   | 0  | true  | 'missing CC on trial plan with purchased minutes'
+      :saas | false | :enabled | 100 | :free  | %i[free]               | 0  | true  | 'missing CC on free plan with purchased minutes'
+      :saas | false | :enabled | 100 | :trial | %i[trial]              | 0  | true  | 'missing CC on trial plan with purchased minutes'
     end
 
     let(:shared_runners_enabled) { shared_runners == :enabled }
@@ -1765,8 +1763,7 @@ RSpec.describe User do
         stub_feature_flags(
           ci_require_credit_card_on_free_plan: feature_flags.include?(:free),
           ci_require_credit_card_on_trial_plan: feature_flags.include?(:trial),
-          ci_require_credit_card_for_old_users: feature_flags.include?(:old_users),
-          ci_skip_require_credit_card_for_addon_ci_minutes: feature_flags.include?(:skip_addon))
+          ci_require_credit_card_for_old_users: feature_flags.include?(:old_users))
       end
 
       it description do
@@ -1802,10 +1799,8 @@ RSpec.describe User do
       :saas | false | 0 | :trial | %i[]                     | 0  | true  | 'missing CC on trial plan - FF off'
       :saas | true  | 0 | :trial | %i[free trial]           | 0  | true  | 'present CC on trial plan'
 
-      :saas | false | 100 | :free  | %i[free]               | 0  | false | 'missing CC on free plan with purchased minutes - FF off'
-      :saas | false | 100 | :free  | %i[free skip_addon]    | 0  | true  | 'missing CC on free plan with purchased minutes'
-      :saas | false | 100 | :trial | %i[free trial]         | 0  | false | 'missing CC on trial plan with purchased minutes - FF off'
-      :saas | false | 100 | :trial | %i[trial skip_addon]   | 0  | true  | 'missing CC on trial plan with purchased minutes'
+      :saas | false | 100 | :free  | %i[free]               | 0  | true  | 'missing CC on free plan with purchased minutes'
+      :saas | false | 100 | :trial | %i[trial]              | 0  | true  | 'missing CC on trial plan with purchased minutes'
     end
 
     with_them do
@@ -1820,8 +1815,7 @@ RSpec.describe User do
         stub_feature_flags(
           ci_require_credit_card_on_free_plan: feature_flags.include?(:free),
           ci_require_credit_card_on_trial_plan: feature_flags.include?(:trial),
-          ci_require_credit_card_for_old_users: feature_flags.include?(:old_users),
-          ci_skip_require_credit_card_for_addon_ci_minutes: feature_flags.include?(:skip_addon))
+          ci_require_credit_card_for_old_users: feature_flags.include?(:old_users))
       end
 
       it description do
