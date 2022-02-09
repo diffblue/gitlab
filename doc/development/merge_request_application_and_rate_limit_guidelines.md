@@ -24,3 +24,8 @@ Bugs](https://about.gitlab.com/handbook/engineering/quality/issue-triage/#limit-
 1. Any additions, removals, or updates to limits must be reflected in the [GitLab application limits](https://docs.gitlab.com/ee/administration/instance_limits.html) documentation.
 
 
+
+### Additional Reading
+
+1. [Product Processes: Introducing application limits](/handbook/product/product-processes/#introducing-application-limits)
+1. [Development Docs: Guide for adding application limits](https://docs.gitlab.com/ee/development/application_limits.html)
