@@ -19,9 +19,9 @@ RSpec.describe GeoInstrumentation do
   end
 
   describe '.track_geo_proxy_event' do
-    context 'when the track_geo_proxy feature flag is disabled' do
+    context 'when the request is not proxied' do
       before do
-        stub_feature_flags(track_geo_proxy_events: false)
+        allow(::Gitlab::Geo).to receive(:proxied_request?).and_return(false)
       end
 
       it 'does not track an event' do
@@ -30,38 +30,25 @@ RSpec.describe GeoInstrumentation do
       end
     end
 
-    context 'when the track_geo_proxy feature flag is enabled' do
-      context 'when the request is not proxied' do
-        before do
-          allow(::Gitlab::Geo).to receive(:proxied_request?).and_return(false)
-        end
+    context 'when the request is proxied' do
+      before do
+        allow(::Gitlab::Geo).to receive(:proxied_request?).and_return(true)
+      end
 
-        it 'does not track an event' do
-          expect(Gitlab::UsageDataCounters::HLLRedisCounter).not_to receive(:track_event)
+      context 'when logged in' do
+        it 'tracks a HLL event for unique geo proxied requests' do
+          expect(Gitlab::UsageDataCounters::HLLRedisCounter)
+            .to receive(:track_event).with('g_geo_proxied_requests', values: user.id)
           get :show
         end
       end
 
-      context 'when the request is proxied' do
-        before do
-          allow(::Gitlab::Geo).to receive(:proxied_request?).and_return(true)
-        end
+      context 'when not logged in' do
+        let(:user) { nil }
 
-        context 'when logged in' do
-          it 'tracks a HLL event for unique geo proxied requests' do
-            expect(Gitlab::UsageDataCounters::HLLRedisCounter)
-              .to receive(:track_event).with('g_geo_proxied_requests', values: user.id)
-            get :show
-          end
-        end
-
-        context 'when not logged in' do
-          let(:user) { nil }
-
-          it 'does not track an event' do
-            expect(Gitlab::UsageDataCounters::HLLRedisCounter).not_to receive(:track_event)
-            get :show
-          end
+        it 'does not track an event' do
+          expect(Gitlab::UsageDataCounters::HLLRedisCounter).not_to receive(:track_event)
+          get :show
         end
       end
     end
