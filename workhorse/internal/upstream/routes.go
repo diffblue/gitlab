@@ -232,7 +232,7 @@ func configureRoutes(u *upstream) {
 	ciAPIProxyQueue := queueing.QueueRequests("ci_api_job_requests", tempfileMultipartProxy, u.APILimit, u.APIQueueLimit, u.APIQueueTimeout)
 	ciAPILongPolling := builds.RegisterHandler(ciAPIProxyQueue, redis.WatchKey, u.APICILongPollingDuration)
 
-	dependencyProxyInjector.SetUploadHandler(upload.BodyUploader(api, signingProxy, preparers.packages))
+	dependencyProxyInjector.SetUploadHandler(upload.RequestBody(api, signingProxy, preparers.packages))
 
 	// Serve static files or forward the requests
 	defaultUpstream := static.ServeExisting(
@@ -248,7 +248,7 @@ func configureRoutes(u *upstream) {
 		u.route("GET", gitProjectPattern+`info/refs\z`, git.GetInfoRefsHandler(api)),
 		u.route("POST", gitProjectPattern+`git-upload-pack\z`, contentEncodingHandler(git.UploadPack(api)), withMatcher(isContentType("application/x-git-upload-pack-request"))),
 		u.route("POST", gitProjectPattern+`git-receive-pack\z`, contentEncodingHandler(git.ReceivePack(api)), withMatcher(isContentType("application/x-git-receive-pack-request"))),
-		u.route("PUT", gitProjectPattern+`gitlab-lfs/objects/([0-9a-f]{64})/([0-9]+)\z`, lfs.PutStore(api, signingProxy, preparers.lfs), withMatcher(isContentType("application/octet-stream"))),
+		u.route("PUT", gitProjectPattern+`gitlab-lfs/objects/([0-9a-f]{64})/([0-9]+)\z`, upload.RequestBody(api, signingProxy, preparers.lfs), withMatcher(isContentType("application/octet-stream"))),
 
 		// CI Artifacts
 		u.route("POST", apiPattern+`v4/jobs/[0-9]+/artifacts\z`, contentEncodingHandler(artifacts.UploadArtifacts(api, signingProxy, preparers.artifacts))),
@@ -276,14 +276,14 @@ func configureRoutes(u *upstream) {
 		// https://gitlab.com/gitlab-org/gitlab/-/merge_requests/56731.
 
 		// Maven Artifact Repository
-		u.route("PUT", apiProjectPattern+`packages/maven/`, upload.BodyUploader(api, signingProxy, preparers.packages)),
+		u.route("PUT", apiProjectPattern+`packages/maven/`, upload.RequestBody(api, signingProxy, preparers.packages)),
 
 		// Conan Artifact Repository
-		u.route("PUT", apiPattern+`v4/packages/conan/`, upload.BodyUploader(api, signingProxy, preparers.packages)),
-		u.route("PUT", apiProjectPattern+`packages/conan/`, upload.BodyUploader(api, signingProxy, preparers.packages)),
+		u.route("PUT", apiPattern+`v4/packages/conan/`, upload.RequestBody(api, signingProxy, preparers.packages)),
+		u.route("PUT", apiProjectPattern+`packages/conan/`, upload.RequestBody(api, signingProxy, preparers.packages)),
 
 		// Generic Packages Repository
-		u.route("PUT", apiProjectPattern+`packages/generic/`, upload.BodyUploader(api, signingProxy, preparers.packages)),
+		u.route("PUT", apiProjectPattern+`packages/generic/`, upload.RequestBody(api, signingProxy, preparers.packages)),
 
 		// NuGet Artifact Repository
 		u.route("PUT", apiProjectPattern+`packages/nuget/`, upload.Multipart(api, signingProxy, preparers.packages)),
@@ -292,13 +292,13 @@ func configureRoutes(u *upstream) {
 		u.route("POST", apiProjectPattern+`packages/pypi`, upload.Multipart(api, signingProxy, preparers.packages)),
 
 		// Debian Artifact Repository
-		u.route("PUT", apiProjectPattern+`packages/debian/`, upload.BodyUploader(api, signingProxy, preparers.packages)),
+		u.route("PUT", apiProjectPattern+`packages/debian/`, upload.RequestBody(api, signingProxy, preparers.packages)),
 
 		// Gem Artifact Repository
-		u.route("POST", apiProjectPattern+`packages/rubygems/`, upload.BodyUploader(api, signingProxy, preparers.packages)),
+		u.route("POST", apiProjectPattern+`packages/rubygems/`, upload.RequestBody(api, signingProxy, preparers.packages)),
 
 		// Terraform Module Package Repository
-		u.route("PUT", apiProjectPattern+`packages/terraform/modules/`, upload.BodyUploader(api, signingProxy, preparers.packages)),
+		u.route("PUT", apiProjectPattern+`packages/terraform/modules/`, upload.RequestBody(api, signingProxy, preparers.packages)),
 
 		// Helm Artifact Repository
 		u.route("POST", apiProjectPattern+`packages/helm/api/[^/]+/charts\z`, upload.Multipart(api, signingProxy, preparers.packages)),
