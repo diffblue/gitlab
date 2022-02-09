@@ -1213,6 +1213,49 @@ RSpec.describe QuickActions::InterpretService do
         end
       end
     end
+
+    describe 'attention command' do
+      let(:issuable) { create(:merge_request, reviewers: [developer, developer2], source_project: project) }
+      let(:reviewer) { issuable.merge_request_reviewers.find_by(user_id: developer.id) }
+      let(:reviewer2) { issuable.merge_request_reviewers.find_by(user_id: developer2.id) }
+      let(:content) { "/attention @#{developer.username} @#{developer2.username}" }
+
+      context 'with multiple users' do
+        before do
+          reviewer.update!(state: :reviewed)
+          reviewer2.update!(state: :reviewed)
+        end
+
+        it 'updates reviewers attention status' do
+          _, _, message = service.execute(content, issuable)
+
+          expect(message).to eq("Requested attention from #{developer.to_reference} and #{developer2.to_reference}.")
+
+          reviewer.reload
+          reviewer2.reload
+
+          expect(reviewer).to be_attention_requested
+          expect(reviewer2).to be_attention_requested
+        end
+      end
+    end
+
+    describe 'remove attention command' do
+      let(:issuable) { create(:merge_request, reviewers: [developer, developer2], source_project: project) }
+      let(:reviewer) { issuable.merge_request_reviewers.find_by(user_id: developer.id) }
+      let(:reviewer2) { issuable.merge_request_reviewers.find_by(user_id: developer2.id) }
+      let(:content) { "/remove_attention @#{developer.username} @#{developer2.username}" }
+
+      context 'with multiple users' do
+        it 'updates reviewers attention status' do
+          _, _, message = service.execute(content, issuable)
+
+          expect(message).to eq("Removed attention from #{developer.to_reference} and #{developer2.to_reference}.")
+          expect(reviewer).not_to be_attention_requested
+          expect(reviewer2).not_to be_attention_requested
+        end
+      end
+    end
   end
 
   describe '#explain' do

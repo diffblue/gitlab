@@ -14875,6 +14875,9 @@ msgstr ""
 msgid "Failed to remove a to-do item for the design."
 msgstr ""
 
+msgid "Failed to remove attention because no user was found."
+msgstr ""
+
 msgid "Failed to remove mirror."
 msgstr ""
 
@@ -14885,6 +14888,9 @@ msgid "Failed to remove user identity."
 msgstr ""
 
 msgid "Failed to remove user key."
+msgstr ""
+
+msgid "Failed to request attention because no user was found."
 msgstr ""
 
 msgid "Failed to reset key. Please try again."
@@ -29754,6 +29760,9 @@ msgstr ""
 msgid "Remove attention request"
 msgstr ""
 
+msgid "Remove attention request(s)"
+msgstr ""
+
 msgid "Remove avatar"
 msgstr ""
 
@@ -29892,6 +29901,9 @@ msgstr ""
 msgid "Removed an issue from an epic."
 msgstr ""
 
+msgid "Removed attention from %{users_sentence}."
+msgstr ""
+
 msgid "Removed attention request from @%{username}"
 msgstr ""
 
@@ -29941,6 +29953,9 @@ msgid "Removes all labels."
 msgstr ""
 
 msgid "Removes an issue from an epic."
+msgstr ""
+
+msgid "Removes attention from %{users_sentence}."
 msgstr ""
 
 msgid "Removes parent epic %{epic_ref}."
@@ -30343,6 +30358,15 @@ msgstr ""
 msgid "Request attention"
 msgstr ""
 
+msgid "Request attention from %{users_sentence}."
+msgstr ""
+
+msgid "Request attention from assignee or reviewer"
+msgstr ""
+
+msgid "Request attention from assignee(s) or reviewer(s)"
+msgstr ""
+
 msgid "Request attention to review"
 msgstr ""
 
@@ -30365,6 +30389,9 @@ msgid "Requested"
 msgstr ""
 
 msgid "Requested %{time_ago}"
+msgstr ""
+
+msgid "Requested attention from %{users_sentence}."
 msgstr ""
 
 msgid "Requested attention from @%{username}"
