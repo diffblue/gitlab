@@ -1,27 +1,19 @@
 - return unless can?(current_user, :remove_project, project)
 - adjourned_deletion = project.adjourned_deletion?
 - adjourned_date = adjourned_deletion ? permanent_deletion_date(Time.now.utc).to_s : nil
-- admin_help_path = help_page_path('user/admin_area/settings/visibility_and_access_controls', anchor: 'default-deletion-delay')
-- recovery_help_path = help_page_path('user/project/settings/index', anchor: 'delete-a-project')
+- restore_help_path = help_page_path('user/project/settings/index', anchor: 'restore-a-project')
 - merge_requests_count = Projects::AllMergeRequestsCountService.new(project).count
 - issues_count = Projects::AllIssuesCountService.new(project).count
 - forks_count = Projects::ForksCountService.new(project).count
 
 - unless project.marked_for_deletion?
   .sub-section
-    %h4.danger-title= _('Delete project')
-    %p
-      %strong= s_('Delayed Project Deletion (%{adjourned_deletion})') % { adjourned_deletion: adjourned_deletion ? 'Enabled' : 'Disabled' }
+    %h4.danger-title= _('Delete this project')
     - if adjourned_deletion
       = render 'projects/settings/marked_for_removal'
-      #js-project-adjourned-delete-button{ data: { recovery_help_path: recovery_help_path, adjourned_removal_date: adjourned_date, form_path: project_path(project), confirm_phrase: delete_confirm_phrase(project), is_fork: project.forked?.to_s, issues_count: number_with_delimiter(issues_count), merge_requests_count: number_with_delimiter(merge_requests_count), forks_count: number_with_delimiter(forks_count), stars_count: number_with_delimiter(project.star_count) } }
+      #js-project-adjourned-delete-button{ data: { restore_help_path: restore_help_path, adjourned_removal_date: adjourned_date, form_path: project_path(project), confirm_phrase: delete_confirm_phrase(project), is_fork: project.forked?.to_s, issues_count: number_with_delimiter(issues_count), merge_requests_count: number_with_delimiter(merge_requests_count), forks_count: number_with_delimiter(forks_count), stars_count: number_with_delimiter(project.star_count) } }
     - else
-      %p
-        %span.gl-text-gray-500= _('Projects will be permanently deleted immediately.')
-        = link_to(_('Customizable by an administrator.'), admin_help_path)
       %p= permanent_delete_message(project)
-      %p
-        %strong= _('Are you ABSOLUTELY SURE you wish to delete this project?')
       #js-project-delete-button{ data: { form_path: project_path(project), confirm_phrase: delete_confirm_phrase(project), is_fork: project.forked?.to_s, issues_count: number_with_delimiter(issues_count), merge_requests_count: number_with_delimiter(merge_requests_count), forks_count: number_with_delimiter(forks_count), stars_count: number_with_delimiter(project.star_count) } }
 - else
   = render 'projects/settings/restore', project: project

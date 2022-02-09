@@ -14,7 +14,7 @@ describe('Project remove modal', () => {
     adjournedRemovalDate: '2020-12-12',
     confirmPhrase: 'foo',
     formPath: 'some/path',
-    recoveryHelpPath: 'recovery/help/path',
+    restoreHelpPath: 'recovery/help/path',
     isFork: false,
     issuesCount: 1,
     mergeRequestsCount: 2,
@@ -52,7 +52,12 @@ describe('Project remove modal', () => {
     it('passes confirmPhrase and formPath props to the shared delete button', () => {
       expect(findSharedDeleteButton().props()).toEqual({
         confirmPhrase: defaultProps.confirmPhrase,
+        forksCount: defaultProps.forksCount,
         formPath: defaultProps.formPath,
+        isFork: defaultProps.isFork,
+        issuesCount: defaultProps.issuesCount,
+        mergeRequestsCount: defaultProps.mergeRequestsCount,
+        starsCount: defaultProps.starsCount,
       });
     });
   });

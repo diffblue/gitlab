@@ -327,6 +327,23 @@ RSpec.describe ProjectsHelper do
     end
   end
 
+  describe '#marked_for_removal_message' do
+    subject { helper.marked_for_removal_message(project) }
+
+    before do
+      allow(project).to receive(:adjourned_deletion?).and_return(enabled)
+    end
+
+    context 'when project has delayed deletion enabled' do
+      let(:enabled) { true }
+
+      specify do
+        deletion_date = helper.permanent_deletion_date(Time.now.utc)
+        expect(subject).to eq "This action deletes <code>#{project.path_with_namespace}</code> on #{deletion_date} and everything this project contains."
+      end
+    end
+  end
+
   describe '#scheduled_for_deletion?' do
     context 'when project is NOT scheduled for deletion' do
       it { expect(helper.scheduled_for_deletion?(project)).to be false }
