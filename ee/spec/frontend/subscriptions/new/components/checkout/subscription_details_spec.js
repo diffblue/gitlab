@@ -1,15 +1,16 @@
-import { mount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
+import { GlLink } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import { mockTracking } from 'helpers/tracking_helper';
-import { STEPS } from 'ee/subscriptions/constants';
+import { QSR_RECONCILIATION_PATH, STEPS } from 'ee/subscriptions/constants';
 import Component from 'ee/subscriptions/new/components/checkout/subscription_details.vue';
 import { NEW_GROUP } from 'ee/subscriptions/new/constants';
 import createStore from 'ee/subscriptions/new/store';
 import * as types from 'ee/subscriptions/new/store/mutation_types';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 
 const availablePlans = [
   { id: 'firstPlanId', code: 'bronze', price_per_year: 48, name: 'bronze' },
@@ -38,7 +39,7 @@ describe('Subscription Details', () => {
 
   function createComponent(options = {}) {
     const { apolloProvider, store } = options;
-    return mount(Component, {
+    return mountExtended(Component, {
       store,
       apolloProvider,
       stubs: {
@@ -51,9 +52,32 @@ describe('Subscription Details', () => {
   const groupSelect = () => wrapper.findComponent({ ref: 'group-select' });
   const numberOfUsersInput = () => wrapper.findComponent({ ref: 'number-of-users' });
   const companyLink = () => wrapper.findComponent({ ref: 'company-link' });
+  const findQsrOverageMessage = () => wrapper.findByTestId('qsr-overage-message');
 
   afterEach(() => {
     wrapper.destroy();
+  });
+
+  describe('when rendering', () => {
+    beforeEach(() => {
+      const mockApollo = createMockApolloProvider(STEPS);
+      const store = createStore(
+        createDefaultInitialStoreData({ newUser: 'true', setupForCompany: '' }),
+      );
+      wrapper = createComponent({ apolloProvider: mockApollo, store });
+    });
+
+    it('has an alert displaying a message related to QSR process', () => {
+      expect(findQsrOverageMessage().text()).toMatchInterpolatedText(
+        'You are billed if you exceed this number. How does billing work?',
+      );
+    });
+
+    it('has a link to QSR process help page', () => {
+      expect(findQsrOverageMessage().findComponent(GlLink).attributes('href')).toMatch(
+        QSR_RECONCILIATION_PATH,
+      );
+    });
   });
 
   describe('A new user for which we do not have setupForCompany info', () => {
