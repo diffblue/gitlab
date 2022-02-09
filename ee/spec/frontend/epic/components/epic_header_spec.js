@@ -5,6 +5,7 @@ import { nextTick } from 'vue';
 import EpicHeader from 'ee/epic/components/epic_header.vue';
 import { statusType } from 'ee/epic/constants';
 import createStore from 'ee/epic/store';
+import waitForPromises from 'helpers/wait_for_promises';
 import TimeagoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import UserAvatarLink from '~/vue_shared/components/user_avatar/user_avatar_link.vue';
 
@@ -157,7 +158,7 @@ describe('EpicHeaderComponent', () => {
       store.state.author.isGitlabEmployee = true;
 
       // Wait for dynamic imports to resolve
-      await new Promise(setImmediate);
+      await waitForPromises();
       expect(wrapper.vm.$refs.gitlabTeamMemberBadge).not.toBeUndefined();
     });
 

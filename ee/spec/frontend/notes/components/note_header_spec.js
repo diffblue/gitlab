@@ -1,6 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
+import waitForPromises from 'helpers/wait_for_promises';
 import GitlabTeamMemberBadge from 'ee/vue_shared/components/user_avatar/badges/gitlab_team_member_badge.vue';
 import NoteHeader from '~/notes/components/note_header.vue';
 
@@ -37,13 +38,13 @@ describe('NoteHeader component', () => {
     ${{ author }}                                           | ${false} | ${"doesn't render"} | ${'undefined'}
   `(
     '$message1 GitLab team member badge when `is_gitlab_employee` is $message2',
-    ({ props, expected }) => {
+    async ({ props, expected }) => {
       createComponent(props);
 
       // Wait for dynamic imports to resolve
-      return new Promise(setImmediate).then(() => {
-        expect(wrapper.findComponent(GitlabTeamMemberBadge).exists()).toBe(expected);
-      });
+      await waitForPromises();
+
+      expect(wrapper.findComponent(GitlabTeamMemberBadge).exists()).toBe(expected);
     },
   );
 });
