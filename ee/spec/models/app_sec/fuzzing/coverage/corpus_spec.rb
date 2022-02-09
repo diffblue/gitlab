@@ -3,9 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe AppSec::Fuzzing::Coverage::Corpus, type: :model do
-  let(:corpus) { create(:corpus) }
-
-  subject { corpus }
+  subject(:corpus) { create(:corpus) }
 
   describe 'associations' do
     it { is_expected.to belong_to(:package).class_name('Packages::Package') }
@@ -75,15 +73,27 @@ RSpec.describe AppSec::Fuzzing::Coverage::Corpus, type: :model do
   end
 
   describe 'scopes' do
-    describe 'by_project_id' do
-      it 'includes the correct records' do
-        another_corpus_profile = create(:corpus)
+    describe '.by_project_id_and_status_hidden' do
+      subject(:find_corpuses) { described_class.by_project_id_and_status_hidden(corpus.package.project_id) }
 
-        result = described_class.by_project_id(subject.package.project_id)
+      context 'with another_corpus having different project_id' do
+        it 'includes the correct records' do
+          another_corpus = create(:corpus)
 
-        aggregate_failures do
-          expect(result).to include(subject)
-          expect(result).not_to include(another_corpus_profile)
+          aggregate_failures do
+            expect(find_corpuses).to include(corpus)
+            expect(find_corpuses).not_to include(another_corpus)
+          end
+        end
+      end
+
+      context "with another_corpus having same project with different status apart from hidden" do
+        before do
+          corpus.package.update!(status: :pending_destruction)
+        end
+
+        it 'includes the correct records' do
+          expect(find_corpuses).not_to include(corpus)
         end
       end
     end
