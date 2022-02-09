@@ -24,7 +24,7 @@ type MultipartFormProcessor interface {
 	Count() int
 }
 
-func HandleFileUploads(w http.ResponseWriter, r *http.Request, h http.Handler, preauth *api.Response, filter MultipartFormProcessor, opts *filestore.SaveFileOpts) {
+func InterceptMultipartFiles(w http.ResponseWriter, r *http.Request, h http.Handler, preauth *api.Response, filter MultipartFormProcessor, opts *filestore.SaveFileOpts) {
 	var body bytes.Buffer
 	writer := multipart.NewWriter(&body)
 	defer writer.Close()

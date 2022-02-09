@@ -27,6 +27,6 @@ func Accelerate(rails PreAuthorizer, h http.Handler, p Preparer) http.Handler {
 			return
 		}
 
-		HandleFileUploads(w, r, h, a, s, opts)
+		InterceptMultipartFiles(w, r, h, a, s, opts)
 	}, "/authorize")
 }
