@@ -13,6 +13,11 @@ RSpec.describe Resolvers::DastSiteProfileResolver do
   let_it_be(:developer) { create(:user, developer_projects: [project]) }
   let_it_be(:dast_site_profile1) { create(:dast_site_profile, project: project) }
   let_it_be(:dast_site_profile2) { create(:dast_site_profile, project: project) }
+  let_it_be(:dast_site_profile3) do
+    create(:dast_site_profile, project: project,
+                                          dast_site: create(:dast_site, project: project,
+                                                            url: 'https://site1.com/, https://site2.com/'))
+  end
 
   let(:current_user) { developer }
 
@@ -29,7 +34,7 @@ RSpec.describe Resolvers::DastSiteProfileResolver do
   context 'when resolving multiple DAST site profiles' do
     subject { sync(dast_site_profiles) }
 
-    it { is_expected.to contain_exactly(dast_site_profile1, dast_site_profile2) }
+    it { is_expected.to contain_exactly(dast_site_profile1, dast_site_profile2, dast_site_profile3) }
 
     context 'when the feature is disabled' do
       before do
