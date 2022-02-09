@@ -17,13 +17,13 @@ type MultipartClaims struct {
 	jwt.StandardClaims
 }
 
-func Accelerate(rails PreAuthorizer, h http.Handler, p Preparer) http.Handler {
+func Multipart(rails PreAuthorizer, h http.Handler, p Preparer) http.Handler {
 	return rails.PreAuthorizeHandler(func(w http.ResponseWriter, r *http.Request, a *api.Response) {
 		s := &SavedFileTracker{Request: r}
 
 		opts, _, err := p.Prepare(a)
 		if err != nil {
-			helper.Fail500(w, r, fmt.Errorf("Accelerate: error preparing file storage options"))
+			helper.Fail500(w, r, fmt.Errorf("Multipart: error preparing file storage options"))
 			return
 		}
 
