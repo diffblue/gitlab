@@ -11630,6 +11630,9 @@ msgstr ""
 msgid "Delete pipeline"
 msgstr ""
 
+msgid "Delete pipeline schedule"
+msgstr ""
+
 msgid "Delete project"
 msgstr ""
 
