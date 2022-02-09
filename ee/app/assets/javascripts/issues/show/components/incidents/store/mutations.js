@@ -25,7 +25,7 @@ export default {
     state.isUploadingImage = false;
     const metricIndex = state.metricImages.findIndex((img) => img.id === image.id);
     if (metricIndex >= 0) {
-      state.metricImages.splice(metricIndex, 1, image)
+      state.metricImages.splice(metricIndex, 1, image);
     }
   },
   [types.RECEIVE_METRIC_DELETE_SUCCESS](state, imageId) {
