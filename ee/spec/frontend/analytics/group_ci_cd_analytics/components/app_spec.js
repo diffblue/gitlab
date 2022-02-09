@@ -21,7 +21,7 @@ describe('ee/analytics/group_ci_cd_analytics/components/app.vue', () => {
 
   const quotaPath = '/groups/my-awesome-group/-/usage_quotas#pipelines-quota-tab';
 
-  const createComponent = (mountOptions = {}) => {
+  const createComponent = (mountOptions = {}, canView = true) => {
     wrapper = shallowMount(
       CiCdAnalyticsApp,
       merge(
@@ -29,6 +29,7 @@ describe('ee/analytics/group_ci_cd_analytics/components/app.vue', () => {
           provide: {
             shouldRenderDoraCharts: true,
             pipelineGroupUsageQuotaPath: quotaPath,
+            canViewGroupUsageQuotaBoolean: canView,
           },
         },
         mountOptions,
@@ -132,5 +133,20 @@ describe('ee/analytics/group_ci_cd_analytics/components/app.vue', () => {
 
     expect(findUsageQuotaLink().attributes('href')).toBe(quotaPath);
     expect(findUsageQuotaLink().text()).toBe('View group pipeline usage quota');
+  });
+
+  it('hides link to group pipelines usage quota page based on permissions', () => {
+    createComponent(
+      {
+        stubs: {
+          GlTabs: {
+            template: '<div><slot></slot><slot name="tabs-end"></slot></div>',
+          },
+        },
+      },
+      false,
+    );
+
+    expect(findUsageQuotaLink().exists()).toBe(false);
   });
 });

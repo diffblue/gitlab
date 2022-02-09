@@ -2,4 +2,5 @@
 
 #js-group-ci-cd-analytics-app{ data: { full_path: @group.full_path,
   should_render_dora_charts: should_render_dora_charts.to_s, group_id: @group.id,
-  pipeline_group_usage_quota_path: group_usage_quotas_path(@group, anchor: 'pipelines-quota-tab') } }
+  pipeline_group_usage_quota_path: group_usage_quotas_path(@group, anchor: 'pipelines-quota-tab'),
+  can_view_group_usage_quota: can?(current_user, :admin_group, @group).to_s } }

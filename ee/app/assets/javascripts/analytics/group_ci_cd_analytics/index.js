@@ -15,9 +15,10 @@ export default () => {
 
   if (!el) return false;
 
-  const { fullPath, groupId, pipelineGroupUsageQuotaPath } = el.dataset;
+  const { fullPath, groupId, pipelineGroupUsageQuotaPath, canViewGroupUsageQuota } = el.dataset;
 
   const shouldRenderDoraCharts = parseBoolean(el.dataset.shouldRenderDoraCharts);
+  const canViewGroupUsageQuotaBoolean = parseBoolean(canViewGroupUsageQuota);
 
   return new Vue({
     el,
@@ -27,6 +28,7 @@ export default () => {
       shouldRenderDoraCharts,
       groupId,
       pipelineGroupUsageQuotaPath,
+      canViewGroupUsageQuotaBoolean,
     },
     render: (createElement) => createElement(CiCdAnalyticsApp),
   });

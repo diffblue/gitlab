@@ -26,6 +26,10 @@ export default {
       type: String,
       default: '',
     },
+    canViewGroupUsageQuotaBoolean: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -85,7 +89,7 @@ export default {
       <gl-tab :title="s__('CICDAnalytics|Shared runner usage')">
         <shared-runners-usage />
       </gl-tab>
-      <template #tabs-end>
+      <template v-if="canViewGroupUsageQuotaBoolean" #tabs-end>
         <gl-link :href="pipelineGroupUsageQuotaPath" class="gl-align-self-center gl-ml-auto">{{
           __('View group pipeline usage quota')
         }}</gl-link>
