@@ -21685,6 +21685,12 @@ msgstr ""
 msgid "Learn more about groups."
 msgstr ""
 
+msgid "Learn more about max seats used"
+msgstr ""
+
+msgid "Learn more about seats owed"
+msgstr ""
+
 msgid "Learn more about shards and replicas in the %{configuration_link_start}Advanced Search configuration%{configuration_link_end} documentation. Changes don't take place until you %{recreated_link_start}recreate%{recreated_link_end} the index."
 msgstr ""
 
@@ -22595,6 +22601,9 @@ msgid "Max file size is 200 KB."
 msgstr ""
 
 msgid "Max role"
+msgstr ""
+
+msgid "Max seats used"
 msgstr ""
 
 msgid "Max session time"
@@ -32421,6 +32430,9 @@ msgid "Searching by both author and message is currently not supported."
 msgstr ""
 
 msgid "Seats"
+msgstr ""
+
+msgid "Seats owed"
 msgstr ""
 
 msgid "Seats usage data as of %{last_enqueue_time} (Updated daily)"
