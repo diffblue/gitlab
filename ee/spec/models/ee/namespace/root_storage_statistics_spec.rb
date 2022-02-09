@@ -22,7 +22,7 @@ RSpec.describe EE::Namespace::RootStorageStatistics do
 
       let(:namespace) { root_group }
 
-      it 'aggregates namespace statistics' do
+      it 'aggregates namespace wiki statistics' do
         # This group is not a descendant of the root_group so it shouldn't be included in the final stats.
         other_group = create(:group)
         create(:namespace_statistics, namespace: other_group, storage_size: 500, wiki_size: 500)
@@ -31,23 +31,9 @@ RSpec.describe EE::Namespace::RootStorageStatistics do
 
         root_storage_statistics.reload
 
-        total_repository_size = project_stat1.repository_size + project_stat2.repository_size
-        total_lfs_objects_size = project_stat1.lfs_objects_size + project_stat2.lfs_objects_size
-        total_build_artifacts_size = project_stat1.build_artifacts_size + project_stat2.build_artifacts_size
-        total_packages_size = project_stat1.packages_size + project_stat2.packages_size
-        total_snippets_size = project_stat1.snippets_size + project_stat2.snippets_size
-        total_pipeline_artifacts_size = project_stat1.pipeline_artifacts_size + project_stat2.pipeline_artifacts_size
-        total_uploads_size = project_stat1.uploads_size + project_stat2.uploads_size
         total_wiki_size = project_stat1.wiki_size + project_stat2.wiki_size + root_namespace_stat.wiki_size + group1_namespace_stat.wiki_size + group2_namespace_stat.wiki_size + subgroup1_namespace_stat.wiki_size
         total_storage_size = project_stat1.storage_size + project_stat2.storage_size + root_namespace_stat.storage_size + group1_namespace_stat.storage_size + group2_namespace_stat.storage_size + subgroup1_namespace_stat.storage_size
 
-        expect(root_storage_statistics.repository_size).to eq(total_repository_size)
-        expect(root_storage_statistics.lfs_objects_size).to eq(total_lfs_objects_size)
-        expect(root_storage_statistics.build_artifacts_size).to eq(total_build_artifacts_size)
-        expect(root_storage_statistics.packages_size).to eq(total_packages_size)
-        expect(root_storage_statistics.snippets_size).to eq(total_snippets_size)
-        expect(root_storage_statistics.pipeline_artifacts_size).to eq(total_pipeline_artifacts_size)
-        expect(root_storage_statistics.uploads_size).to eq(total_uploads_size)
         expect(root_storage_statistics.storage_size).to eq(total_storage_size)
         expect(root_storage_statistics.wiki_size).to eq(total_wiki_size)
       end

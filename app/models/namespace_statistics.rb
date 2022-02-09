@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class NamespaceStatistics < ApplicationRecord
+class NamespaceStatistics < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   include AfterCommitQueue
 
   belongs_to :namespace
@@ -15,13 +15,11 @@ class NamespaceStatistics < ApplicationRecord
 
   delegate :group_namespace?, to: :namespace
 
-  COLUMNS_TO_REFRESH = [:wiki_size].freeze
-
   def refresh!(only: [])
     return if Gitlab::Database.read_only?
     return unless group_namespace?
 
-    COLUMNS_TO_REFRESH.each do |column|
+    self.class.columns_to_refresh.each do |column|
       if only.empty? || only.include?(column)
         public_send("update_#{column}") # rubocop:disable GitlabSecurity/PublicSend
       end
@@ -31,20 +29,20 @@ class NamespaceStatistics < ApplicationRecord
   end
 
   def update_storage_size
-    self.storage_size = wiki_size
+    self.storage_size = dependency_proxy_size
   end
 
-  def update_wiki_size
-    return unless group_wiki_available?
+  def update_dependency_proxy_size
+    return unless group_namespace?
 
-    self.wiki_size = namespace.wiki.repository.size.megabytes
+    self.dependency_proxy_size = namespace.dependency_proxy_manifests.sum(:size) + namespace.dependency_proxy_blobs.sum(:size)
+  end
+
+  def self.columns_to_refresh
+    [:dependency_proxy_size]
   end
 
   private
-
-  def group_wiki_available?
-    group_namespace? && namespace.feature_available?(:group_wikis)
-  end
 
   def update_root_storage_statistics
     return unless group_namespace?
@@ -54,3 +52,5 @@ class NamespaceStatistics < ApplicationRecord
     end
   end
 end
+
+NamespaceStatistics.prepend_mod_with('NamespaceStatistics')
