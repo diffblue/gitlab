@@ -45,8 +45,20 @@ module EE
 
     def with_db_config(&block)
       if geo_migration?
-        ::Geo::TrackingBase.connected_to(database: :geo) { yield }
+        with_added_geo_connection { yield }
       else
+        yield
+      end
+    end
+
+    def with_added_geo_connection
+      with_reestablished_active_record_base(reconnect: true) do
+        reconfigure_db_connection(
+          name: :geo,
+          config_model: Geo::TrackingBase,
+          model: ActiveRecord::Base
+        )
+
         yield
       end
     end

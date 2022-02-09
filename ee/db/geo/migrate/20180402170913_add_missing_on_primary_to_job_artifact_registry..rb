@@ -12,6 +12,6 @@ class AddMissingOnPrimaryToJobArtifactRegistry < ActiveRecord::Migration[4.2]
   end
 
   def down
-    remove_column :job_artifact_registry, :missing_on_primary
+    remove_column :job_artifact_registry, :missing_on_primary if column_exists?(:job_artifact_registry, :missing_on_primary)
   end
 end
