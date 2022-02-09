@@ -273,8 +273,8 @@ RSpec.describe Notes::QuickActionsService do
 
     let(:multiline_assign_reviewer_text) do
       <<~HEREDOC
-      /assign_reviewer @#{user.username}
-      /assign_reviewer @#{reviewer.username})
+      /assign_reviewer #{user.to_reference}
+      /assign_reviewer #{reviewer.to_reference}
       HEREDOC
     end
 

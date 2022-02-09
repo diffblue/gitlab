@@ -71,21 +71,19 @@ module QuickActions
 
     # rubocop: disable CodeReuse/ActiveRecord
     def extract_users(params)
-      return [] if params.nil?
+      return [] if params.blank?
 
-      args = params.split(' ').uniq
-      users = extract_references(params, :user)
+      args = params.split(/\s|,/).select(&:present?).uniq - ['and']
+      users = extract_references(args.reject { _1 == 'me' }.join(' '), :user)
+      users << current_user if args.include?('me')
+      users = User.where(username: args).to_a if users.empty?
 
-      if users.empty?
-        users =
-          if params.strip == 'me'
-            [current_user]
-          else
-            User.where(username: args)
-          end
-      end
+      users.select! { can?(:read_user_profile, _1) }
 
-      failed_parse(format(_("Failed to find users for '%{params}'"), params: params)) if users.size < args.size
+      usernames = users.map(&:username).to_set
+      missing = args.reject { |arg| arg == 'me' || usernames.include?(arg.delete_prefix('@')) }.map { "'#{_1}'" }
+
+      failed_parse(format(_("Failed to find users for %{missing}"), missing: missing.to_sentence)) if missing.present?
 
       users
     end
@@ -193,6 +191,10 @@ module QuickActions
         args: arg&.strip,
         user: current_user
       )
+    end
+
+    def can?(ability, object)
+      Ability.allowed?(current_user, ability, object)
     end
   end
 end

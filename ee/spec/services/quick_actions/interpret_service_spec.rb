@@ -142,12 +142,12 @@ RSpec.describe QuickActions::InterpretService do
             group_members.each { group.add_developer(_1) }
           end
 
-          it 'asssigns all group members' do
+          it 'ignores group members' do
             merge_request.update!(assignee_ids: [user.id])
 
             _, updates = service.execute(command, merge_request)
 
-            expect(updates[:assignee_ids]).to match_array([user.id] + group_members.map(&:id))
+            expect(updates[:assignee_ids]).to be_nil
           end
         end
 
