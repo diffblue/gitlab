@@ -69,25 +69,24 @@ module QuickActions
       Gitlab::QuickActions::Extractor.new(self.class.command_definitions)
     end
 
-    # rubocop: disable CodeReuse/ActiveRecord
     def extract_users(params)
       return [] if params.blank?
 
-      args = params.split(/\s|,/).select(&:present?).uniq - ['and']
-      users = extract_references(args.reject { _1 == 'me' }.join(' '), :user)
-      users << current_user if args.include?('me')
-      users = User.where(username: args).to_a if users.empty?
-
-      users.select! { can?(:read_user_profile, _1) }
-
-      usernames = users.map(&:username).to_set
-      missing = args.reject { |arg| arg == 'me' || usernames.include?(arg.delete_prefix('@')) }.map { "'#{_1}'" }
+      # We are using the a simple User.by_username query here rather than a ReferenceExtractor
+      # because the needs here are much simpler: we only deal in usernames, and
+      # want to also handle bare usernames. The ReferenceExtractor also has
+      # different behaviour, and will return all group members for groups named
+      # using a user-style reference, which is not in scope here.
+      args        = params.split(/\s|,/).select(&:present?).uniq - ['and']
+      usernames   = (args - ['me']).map { _1.delete_prefix('@') }
+      found       = User.by_username(usernames).to_a.select { can?(:read_user_profile, _1) }
+      found_names = found.map(&:username).to_set
+      missing     = args.reject { |arg| arg == 'me' || found_names.include?(arg.delete_prefix('@')) }.map { "'#{_1}'" }
 
       failed_parse(format(_("Failed to find users for %{missing}"), missing: missing.to_sentence)) if missing.present?
 
-      users
+      found + [current_user].select { args.include?('me') }
     end
-    # rubocop: enable CodeReuse/ActiveRecord
 
     def find_milestones(project, params = {})
       group_ids = project.group.self_and_ancestors.select(:id) if project.group
