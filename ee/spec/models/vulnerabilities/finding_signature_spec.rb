@@ -31,4 +31,47 @@ RSpec.describe Vulnerabilities::FindingSignature do
 
     it { is_expected.to eq([expected_signature]) }
   end
+
+  describe '#eql?' do
+    context 'when the other is also a FindingSignature' do
+      context 'when algorithm_type and signature_sha are the same' do
+        let(:other) do
+          build(
+            :vulnerabilities_finding_signature,
+            signature_sha: signature.signature_sha,
+            algorithm_type: signature.algorithm_type)
+        end
+
+        it 'returns true' do
+          expect(signature.eql?(other)).to eq(true)
+        end
+      end
+
+      context 'when algorithm_type is different' do
+        let(:other) { build(:vulnerabilities_finding_signature, :location) }
+
+        it 'returns false' do
+          expect(signature.eql?(other)).to eq(false)
+        end
+      end
+
+      context 'when signature_sha is different' do
+        let(:other) { build(:vulnerabilities_finding_signature) }
+
+        before do
+          other.signature_sha = other.signature_sha.reverse
+        end
+
+        it 'returns false' do
+          expect(signature.eql?(other)).to eq(false)
+        end
+      end
+    end
+
+    context 'when the other is not a FindingSignature' do
+      it 'returns false' do
+        expect(signature.eql?('something else')).to eq(false)
+      end
+    end
+  end
 end

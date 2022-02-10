@@ -20,8 +20,9 @@ module Vulnerabilities
     end
 
     def eql?(other)
-      other.algorithm_type == algorithm_type &&
-        other.signature_sha == signature_sha
+      other.is_a?(self.class) &&
+        other.algorithm_type == algorithm_type &&
+          other.signature_sha == signature_sha
     end
 
     alias_method :==, :eql?
