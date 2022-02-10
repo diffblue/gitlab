@@ -9896,10 +9896,10 @@ msgstr ""
 msgid "CorpusManagement|Actions"
 msgstr ""
 
-msgid "CorpusManagement|Corpus are used in fuzz testing as mutation source to Improve future testing."
+msgid "CorpusManagement|Corpus file"
 msgstr ""
 
-msgid "CorpusManagement|Corpus file"
+msgid "CorpusManagement|Corpus files are used in coverage-guided fuzz testing as seed inputs to improve testing."
 msgstr ""
 
 msgid "CorpusManagement|Corpus files must be in *.zip format. Maximum 5 GB"
@@ -31973,7 +31973,7 @@ msgstr ""
 msgid "SecurityConfiguration|Manage corpus"
 msgstr ""
 
-msgid "SecurityConfiguration|Manage corpus files used as mutation sources in coverage fuzzing."
+msgid "SecurityConfiguration|Manage corpus files used as seed inputs with coverage-guided fuzzing."
 msgstr ""
 
 msgid "SecurityConfiguration|Manage profiles for use by DAST scans."
