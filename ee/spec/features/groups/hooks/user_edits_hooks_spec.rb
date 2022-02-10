@@ -28,6 +28,6 @@ RSpec.describe 'User edits hooks' do
 
     expect(hook.reload.url).to eq(url)
     expect(current_path).to eq(group_hooks_path(group))
-    expect(page).to have_selector('.flash-notice', text: 'Hook was successfully updated.')
+    expect(page).to have_selector('[data-testid="alert-info"]', text: 'Hook was successfully updated.')
   end
 end

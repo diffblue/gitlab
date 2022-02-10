@@ -1,6 +1,6 @@
 - if show_trial_errors?(@namespace, @result)
   .flash-container.trial-errors
-    .flash-alert.text-center
+    .flash-alert.text-center{ data: { testid: "alert-danger" } }
       = _('We have found the following errors:')
       .flash-text
         = trial_errors(@namespace, @result)
