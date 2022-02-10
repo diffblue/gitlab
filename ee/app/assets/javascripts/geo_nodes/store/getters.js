@@ -60,20 +60,31 @@ export const canRemoveNode = (state) => (id) => {
   return !node.primary || state.nodes.length === 1;
 };
 
-export const filteredNodes = (state) => {
-  if (!state.statusFilter) {
-    return state.nodes;
+const filterByStatus = (status) => {
+  if (!status) {
+    return () => true;
   }
 
-  return state.nodes.filter((n) =>
-    n.healthStatus
-      ? n.healthStatus.toLowerCase() === state.statusFilter
-      : state.statusFilter === 'unknown',
-  );
+  // If the healthStatus is not falsey, we group that as status "unknown"
+  return (n) => (n.healthStatus ? n.healthStatus.toLowerCase() === status : status === 'unknown');
+};
+
+const filterBySearch = (search) => {
+  if (!search) {
+    return () => true;
+  }
+
+  return (n) =>
+    n.name?.toLowerCase().includes(search.toLowerCase()) ||
+    n.url?.toLowerCase().includes(search.toLowerCase());
+};
+
+export const filteredNodes = (state) => {
+  return state.nodes
+    .filter(filterByStatus(state.statusFilter))
+    .filter(filterBySearch(state.searchFilter));
 };
 
 export const countNodesForStatus = (state) => (status) => {
-  return state.nodes.filter((n) =>
-    n.healthStatus ? n.healthStatus.toLowerCase() === status : status === 'unknown',
-  ).length;
+  return state.nodes.filter(filterByStatus(status)).length;
 };

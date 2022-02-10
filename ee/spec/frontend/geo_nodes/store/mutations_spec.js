@@ -113,4 +113,12 @@ describe('GeoNodes Store Mutations', () => {
       expect(state.statusFilter).toBe('healthy');
     });
   });
+
+  describe('SET_SEARCH_FILTER', () => {
+    it('sets searchFilter', () => {
+      mutations[types.SET_SEARCH_FILTER](state, 'search');
+
+      expect(state.searchFilter).toBe('search');
+    });
+  });
 });

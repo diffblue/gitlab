@@ -146,4 +146,15 @@ describe('GeoNodes Store Actions', () => {
       });
     });
   });
+
+  describe('setSearchFilter', () => {
+    it('should dispatch the correct mutations', () => {
+      return testAction({
+        action: actions.setSearchFilter,
+        payload: 'search',
+        state,
+        expectedMutations: [{ type: types.SET_SEARCH_FILTER, payload: 'search' }],
+      });
+    });
+  });
 });

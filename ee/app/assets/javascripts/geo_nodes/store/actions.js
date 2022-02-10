@@ -50,3 +50,7 @@ export const removeNode = ({ commit, state }) => {
 export const setStatusFilter = ({ commit }, status) => {
   commit(types.SET_STATUS_FILTER, status);
 };
+
+export const setSearchFilter = ({ commit }, search) => {
+  commit(types.SET_SEARCH_FILTER, search);
+};

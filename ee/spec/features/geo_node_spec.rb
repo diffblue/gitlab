@@ -59,7 +59,7 @@ RSpec.describe 'GEO Nodes', :geo do
         expect(all('.geo-node-details-grid-columns').last).to have_link('Open replications', href: expected_url)
       end
 
-      context 'Status Filters', :js do
+      context 'Node Filters', :js do
         it 'defaults to the All tab when a status query is not already set' do
           visit admin_geo_nodes_path
           tab_count = find('[data-testid="geo-sites-filter"] .active .badge').text.to_i
@@ -97,6 +97,39 @@ RSpec.describe 'GEO Nodes', :geo do
           expect(find('[data-testid="geo-sites-filter"] .active')).to have_content('Unknown')
           expect(page).to have_current_path(admin_geo_nodes_path(status: 'unknown'))
           expect(results_count).to be(tab_count)
+        end
+
+        it 'properly updates the query and filters the nodes when a search is inputed' do
+          visit admin_geo_nodes_path
+
+          fill_in 'Filter Geo sites', with: geo_secondary.name
+          wait_for_requests
+
+          results_count = page.all('[data-testid="primary-nodes"]').length + page.all('[data-testid="secondary-nodes"]').length
+
+          expect(results_count).to be(1)
+          expect(page).to have_current_path(admin_geo_nodes_path(search: geo_secondary.name))
+        end
+
+        it 'properly sets the search when a search query is already set' do
+          visit admin_geo_nodes_path(search: geo_secondary.name)
+
+          results_count = page.all('[data-testid="primary-nodes"]').length + page.all('[data-testid="secondary-nodes"]').length
+
+          expect(find('input[placeholder="Filter Geo sites"]').value).to eq(geo_secondary.name)
+          expect(results_count).to be(1)
+        end
+
+        it 'properly handles both a status and search query' do
+          visit admin_geo_nodes_path(status: 'unknown', search: geo_secondary.name)
+
+          results = page.all(:xpath, '//div[@data-testid="primary-nodes"] | //div[@data-testid="secondary-nodes"]')
+
+          expect(find('[data-testid="geo-sites-filter"] .active')).to have_content('Unknown')
+          expect(find("input[placeholder='Filter Geo sites']").value).to eq(geo_secondary.name)
+          expect(results.length).to be(1)
+          expect(results[0]).to have_content(geo_secondary.name)
+          expect(results[0]).to have_content('Unknown')
         end
       end
     end

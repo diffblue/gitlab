@@ -15985,6 +15985,9 @@ msgstr ""
 msgid "Geo|Failed"
 msgstr ""
 
+msgid "Geo|Filter Geo sites"
+msgstr ""
+
 msgid "Geo|Filter by name"
 msgstr ""
 

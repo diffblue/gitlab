@@ -1,6 +1,7 @@
 <script>
-import { GlTabs, GlTab, GlBadge } from '@gitlab/ui';
-import { mapGetters, mapActions } from 'vuex';
+import { GlTabs, GlTab, GlBadge, GlSearchBoxByType } from '@gitlab/ui';
+import { mapGetters, mapActions, mapState } from 'vuex';
+import { setUrlParams, updateHistory } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 import { HEALTH_STATUS_UI, STATUS_FILTER_QUERY_PARAM } from 'ee/geo_nodes/constants';
 
@@ -8,11 +9,13 @@ export default {
   name: 'GeoNodesFilters',
   i18n: {
     allTab: s__('Geo|All'),
+    searchPlaceholder: s__('Geo|Filter Geo sites'),
   },
   components: {
     GlTabs,
     GlTab,
     GlBadge,
+    GlSearchBoxByType,
   },
   props: {
     totalNodes: {
@@ -23,6 +26,15 @@ export default {
   },
   computed: {
     ...mapGetters(['countNodesForStatus']),
+    ...mapState(['searchFilter']),
+    search: {
+      get() {
+        return this.searchFilter;
+      },
+      set(search) {
+        this.setSearchFilter(search);
+      },
+    },
     tabs() {
       const ALL_TAB = { text: this.$options.i18n.allTab, count: this.totalNodes, status: null };
       const tabs = [ALL_TAB];
@@ -38,8 +50,13 @@ export default {
       return tabs;
     },
   },
+  watch: {
+    searchFilter(search) {
+      updateHistory({ url: setUrlParams({ search: search || null }), replace: true });
+    },
+  },
   methods: {
-    ...mapActions(['setStatusFilter']),
+    ...mapActions(['setStatusFilter', 'setSearchFilter']),
     tabChange(tabIndex) {
       this.setStatusFilter(this.tabs[tabIndex]?.status);
     },
@@ -50,6 +67,7 @@ export default {
 
 <template>
   <gl-tabs
+    class="gl-display-grid geo-node-filter-grid-columns"
     sync-active-tab-with-query-params
     :query-param-name="$options.STATUS_FILTER_QUERY_PARAM"
     data-testid="geo-sites-filter"
@@ -61,5 +79,8 @@ export default {
         <gl-badge size="sm" class="gl-tab-counter-badge">{{ tab.count }}</gl-badge>
       </template>
     </gl-tab>
+    <div class="gl-pb-3 gl-border-b-1 gl-border-b-solid gl-border-gray-100">
+      <gl-search-box-by-type v-model="search" :placeholder="$options.i18n.searchPlaceholder" />
+    </div>
   </gl-tabs>
 </template>

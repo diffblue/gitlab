@@ -36,4 +36,7 @@ export default {
   [types.SET_STATUS_FILTER](state, status) {
     state.statusFilter = status;
   },
+  [types.SET_SEARCH_FILTER](state, search) {
+    state.searchFilter = search;
+  },
 };

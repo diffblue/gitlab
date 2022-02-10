@@ -1,13 +1,16 @@
-import { GlTabs, GlTab } from '@gitlab/ui';
+import { GlTabs, GlTab, GlSearchBoxByType } from '@gitlab/ui';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { TEST_HOST } from 'helpers/test_constants';
 import GeoNodesFilters from 'ee/geo_nodes/components/geo_nodes_filters.vue';
 import { HEALTH_STATUS_UI, STATUS_FILTER_QUERY_PARAM } from 'ee/geo_nodes/constants';
+import * as urlUtils from '~/lib/utils/url_utility';
 
 Vue.use(Vuex);
 
 const MOCK_TAB_COUNT = 5;
+const MOCK_SEARCH = 'test search';
 
 describe('GeoNodesFilters', () => {
   let wrapper;
@@ -18,6 +21,7 @@ describe('GeoNodesFilters', () => {
 
   const actionSpies = {
     setStatusFilter: jest.fn(),
+    setSearchFilter: jest.fn(),
   };
 
   const createComponent = (initialState, props, getters) => {
@@ -50,6 +54,7 @@ describe('GeoNodesFilters', () => {
   const findAllGlTabs = () => wrapper.findAllComponents(GlTab);
   const findAllGlTabTitles = () => wrapper.findAllComponents(GlTab).wrappers.map((w) => w.text());
   const findAllTab = () => findAllGlTabs().at(0);
+  const findGlSearchBox = () => wrapper.findComponent(GlSearchBoxByType);
 
   describe('template', () => {
     describe('always', () => {
@@ -69,6 +74,10 @@ describe('GeoNodesFilters', () => {
       it('renders the All tab with the totalNodes count', () => {
         expect(findAllTab().exists()).toBe(true);
         expect(findAllTab().text()).toBe(`All ${MOCK_TAB_COUNT}`);
+      });
+
+      it('renders the GlSearchBox', () => {
+        expect(findGlSearchBox().exists()).toBe(true);
       });
     });
 
@@ -148,6 +157,36 @@ describe('GeoNodesFilters', () => {
             expectedTabs[i].status,
           );
         }
+      });
+    });
+
+    describe('when searching in searchbox', () => {
+      beforeEach(() => {
+        createComponent();
+        findGlSearchBox().vm.$emit('input', MOCK_SEARCH);
+      });
+
+      it('calls setSearchFilter', () => {
+        expect(actionSpies.setSearchFilter).toHaveBeenCalledWith(expect.any(Object), MOCK_SEARCH);
+      });
+    });
+  });
+
+  describe('watchers', () => {
+    describe('searchFilter', () => {
+      beforeEach(() => {
+        createComponent({ searchFilter: null });
+
+        jest.spyOn(urlUtils, 'updateHistory');
+
+        wrapper.vm.$store.state.searchFilter = MOCK_SEARCH;
+      });
+
+      it('calls urlUtils.updateHistory when updated', () => {
+        expect(urlUtils.updateHistory).toHaveBeenCalledWith({
+          replace: true,
+          url: `${TEST_HOST}/?search=test+search`,
+        });
       });
     });
   });
