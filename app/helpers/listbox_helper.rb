@@ -47,7 +47,7 @@ module ListboxHelper
     end
 
     classes = [*DROPDOWN_CONTAINER_CLASSES, *html_options[:class]]
-    data = { items: items, selected: selected }.merge(html_options[:data] || {})
+    data = html_options.fetch(:data, {}).merge(items: items, selected: selected)
 
     content_tag(:div, button, html_options.merge({
       class: classes,
