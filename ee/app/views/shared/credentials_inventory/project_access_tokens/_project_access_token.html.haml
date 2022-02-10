@@ -6,7 +6,7 @@
       = _('Name')
     .table-mobile-content.gl-white-space-normal.gl-word-break-word.gl-pr-5
       = project_access_token.name
-  .table-section.section-10
+  .table-section.section-15
     .table-mobile-header{ role: 'rowheader' }
       = _('Scopes')
     .table-mobile-content.gl-white-space-normal
@@ -21,7 +21,7 @@
       = _('Creator')
     .table-mobile-content
       = render 'shared/credentials_inventory/users/user_detail', user: project_access_token.user.created_by
-  .table-section.section-15
+  .table-section.section-10
     .table-mobile-header{ role: 'rowheader' }
       = _('Created on')
     .table-mobile-content
@@ -38,6 +38,5 @@
       = project_access_token.expires_at&.to_date || _('Never')
   .table-section.section-10
     .table-mobile-header{ role: 'rowheader' }
-      = _('Revoke')
     .table-mobile-content
       = link_to _('Revoke'), admin_credential_project_revoke_path(credential_id: project_access_token, project_id: project.id), method: :put, data: { confirm: _('Are you sure you want to revoke this project access token? This action cannot be undone.') }, class: 'btn btn-danger btn-danger-secondary btn-md btn-secondary gl-button'

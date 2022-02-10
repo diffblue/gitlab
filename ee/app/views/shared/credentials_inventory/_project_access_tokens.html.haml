@@ -1,12 +1,11 @@
 .table-holder
   .thead-white.gl-white-space-nowrap.gl-responsive-table-row.table-row-header{ role: 'row' }
     .table-section.section-10{ role: 'rowheader' }= _('Name')
-    .table-section.section-10{ role: 'rowheader' }= _('Scopes')
+    .table-section.section-15{ role: 'rowheader' }= _('Scopes')
     .table-section.section-15{ role: 'rowheader' }= _('Project')
     .table-section.section-20{ role: 'rowheader' }= _('Creator')
-    .table-section.section-15{ role: 'rowheader' }= _('Created on')
+    .table-section.section-10{ role: 'rowheader' }= _('Created on')
     .table-section.section-10{ role: 'rowheader' }= _('Last used')
     .table-section.section-10{ role: 'rowheader' }= _('Expires')
-    .table-section.section-10{ role: 'rowheader' }= _('Revoke')
 
   = render partial: 'shared/credentials_inventory/project_access_tokens/project_access_token', collection: credentials
