@@ -129,12 +129,6 @@ $subscriptions-full-width-lg: 541px;
 
   .btn {
     line-height: $gl-line-height-14;
-    padding: $gl-padding-8 $gl-padding-12;
-    width: 100%;
-
-    @media(min-width: map-get($grid-breakpoints, lg)) {
-      width: initial;
-    }
   }
 
   .overview {

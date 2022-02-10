@@ -48,11 +48,14 @@ export default ({
   newUser,
   groupData = '[]',
   source,
+  trial,
+  newTrialRegistrationPath,
 }) => {
   const availablePlans = parsePlanData(plansData);
   const isNewUser = parseBoolean(newUser);
   const groupId = parseInt(namespaceId, 10) || null;
   const groups = parseGroupData(groupData);
+  const isTrial = parseBoolean(trial);
 
   return {
     isSetupForCompany: setupForCompany === '' ? !isNewUser : parseBoolean(setupForCompany),
@@ -80,5 +83,7 @@ export default ({
     taxRate: TAX_RATE,
     startDate: new Date(Date.now()),
     source,
+    isTrial,
+    newTrialRegistrationPath,
   };
 };

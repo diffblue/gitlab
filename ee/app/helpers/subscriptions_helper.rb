@@ -12,7 +12,9 @@ module SubscriptionsHelper
       namespace_id: params[:namespace_id],
       new_user: new_user?.to_s,
       group_data: present_groups(eligible_groups).to_json,
-      source: params[:source]
+      source: params[:source],
+      trial: current_user.namespace.trial?.to_s,
+      new_trial_registration_path: new_trial_registration_path
     }
   end
 

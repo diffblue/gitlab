@@ -33,7 +33,15 @@ class SubscriptionsController < ApplicationController
   end
 
   def new
-    redirect_unauthenticated_user('checkout')
+    if current_user
+      experiment(:cart_abandonment_modal,
+        namespace: current_user.namespace,
+        user: current_user,
+        sticky_to: current_user
+      ).run
+    else
+      redirect_unauthenticated_user
+    end
   end
 
   def buy_minutes
@@ -159,11 +167,9 @@ class SubscriptionsController < ApplicationController
     Gitlab::SubscriptionPortal::Client
   end
 
-  def redirect_unauthenticated_user(from = action_name)
-    return if current_user
-
+  def redirect_unauthenticated_user
     store_location_for :user, request.fullpath
-    redirect_to new_user_registration_path(redirect_from: from)
+    redirect_to new_user_registration_path(redirect_from: 'checkout')
   end
 
   def ci_minutes_plan_data
