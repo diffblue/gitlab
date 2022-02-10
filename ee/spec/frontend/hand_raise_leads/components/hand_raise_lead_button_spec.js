@@ -21,10 +21,10 @@ describe('HandRaiseLeadButton', () => {
   let wrapper;
   let trackingSpy;
 
-  const createComponent = (small = false) => {
+  const createComponent = (providers = {}) => {
     return shallowMountExtended(HandRaiseLeadButton, {
       provide: {
-        small,
+        small: false,
         user: {
           namespaceId: '1',
           userName: 'joe',
@@ -33,6 +33,8 @@ describe('HandRaiseLeadButton', () => {
           companyName: 'ACME',
           glmContent: 'some-content',
         },
+        ctaTracking: {},
+        ...providers,
       },
     });
   };
@@ -119,12 +121,86 @@ describe('HandRaiseLeadButton', () => {
 
     describe('small button', () => {
       it('has small confirm button and the "Contact sales" text on the button', () => {
-        wrapper = createComponent(true);
+        wrapper = createComponent({ small: true });
         const button = findButton();
 
         expect(button.props('variant')).toBe('confirm');
         expect(button.props('size')).toBe('small');
         expect(button.text()).toBe(PQL_BUTTON_TEXT);
+      });
+    });
+  });
+
+  describe('when provided with CTA tracking options', () => {
+    const action = 'click_button';
+    const label = 'contact sales';
+    const experiment = 'some_experiment';
+
+    describe('when provided with all of the CTA tracking options', () => {
+      const property = 'a thing';
+      const value = '123';
+
+      beforeEach(() => {
+        wrapper = createComponent({
+          ctaTracking: { action, label, property, value, experiment },
+        });
+        trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+      });
+
+      it('sets up tracking on the CTA button', () => {
+        const button = findButton();
+
+        expect(button.attributes()).toMatchObject({
+          'data-track-action': action,
+          'data-track-label': label,
+          'data-track-property': property,
+          'data-track-value': value,
+          'data-track-experiment': experiment,
+        });
+
+        button.trigger('click');
+
+        expect(trackingSpy).toHaveBeenCalledWith('_category_', action, { label, property, value });
+      });
+    });
+
+    describe('when provided with some of the CTA tracking options', () => {
+      beforeEach(() => {
+        wrapper = createComponent({
+          ctaTracking: { action, label, experiment },
+        });
+        trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+      });
+
+      it('sets up tracking on the CTA button', () => {
+        const button = findButton();
+
+        expect(button.attributes()).toMatchObject({
+          'data-track-action': action,
+          'data-track-label': label,
+          'data-track-experiment': experiment,
+        });
+
+        button.trigger('click');
+
+        expect(trackingSpy).toHaveBeenCalledWith('_category_', action, { label });
+      });
+    });
+
+    describe('when provided with none of the CTA tracking options', () => {
+      beforeEach(() => {
+        wrapper = createComponent();
+        trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+      });
+
+      it('does not set up tracking on the CTA button', () => {
+        const button = findButton();
+
+        expect(button.attributes()).not.toMatchObject({ 'data-track-action': action });
+
+        button.trigger('click');
+
+        expect(trackingSpy).not.toHaveBeenCalled();
       });
     });
   });

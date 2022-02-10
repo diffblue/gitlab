@@ -56,7 +56,7 @@ export default {
     GlModal: GlModalDirective,
   },
   mixins: [Tracking.mixin()],
-  inject: ['user', 'small'],
+  inject: ['user', 'small', 'ctaTracking'],
   data() {
     return {
       isLoading: false,
@@ -222,6 +222,11 @@ export default {
       :variant="small ? 'confirm' : 'default'"
       :size="small ? 'small' : 'medium'"
       :class="{ 'gl-mb-3 gl-w-full': small }"
+      :data-track-action="ctaTracking.action"
+      :data-track-label="ctaTracking.label"
+      :data-track-property="ctaTracking.property"
+      :data-track-value="ctaTracking.value"
+      :data-track-experiment="ctaTracking.experiment"
     >
       <span :class="{ 'gl-font-sm': small }">{{ $options.i18n.buttonText }}</span>
     </gl-button>
