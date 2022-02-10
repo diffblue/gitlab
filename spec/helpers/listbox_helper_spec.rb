@@ -67,8 +67,8 @@ RSpec.describe ListboxHelper do
     context 'when selected does not match any item' do
       let(:selected) { 'qux' }
 
-      it 'sets button text to empty string' do
-        expect(subject.at_css('button').content).to eq('')
+      it 'raises an error' do
+        expect { subject }.to raise_error(ArgumentError, /cannot find qux/)
       end
     end
   end

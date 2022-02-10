@@ -16,7 +16,8 @@ module ListboxHelper
   # the sort key), `text` is the user-facing string for the item, and `href` is
   # the path to redirect to when that item is selected.
   #
-  # The `selected` parameter is the currently selected `value`.
+  # The `selected` parameter is the currently selected `value`, and must
+  # correspond to one of the `items`.
   #
   # The final parameter `html_options` applies arbitrary attributes to the
   # returned tag. Some of these are passed to the underlying Vue component as
@@ -38,10 +39,10 @@ module ListboxHelper
 
     selected ||= items.first[:value]
     selected_option = items.find { |opt| opt[:value] == selected }
-    selected_text = selected_option[:text] if selected_option
+    raise ArgumentError, "cannot find #{selected} in #{items}" unless selected_option
 
     button = button_tag(type: :button, class: DROPDOWN_BUTTON_CLASSES) do
-      content_tag(:span, selected_text, class: DROPDOWN_INNER_CLASS) +
+      content_tag(:span, selected_option[:text], class: DROPDOWN_INNER_CLASS) +
         sprite_icon('chevron-down', css_class: DROPDOWN_ICON_CLASS)
     end
 
