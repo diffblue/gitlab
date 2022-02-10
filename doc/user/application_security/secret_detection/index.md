@@ -395,3 +395,12 @@ secret_detection:
   variables:
     GIT_DEPTH: 100
 ```
+
+### `secret-detection` job fails with `ERR fatal: ambiguous argument` message
+
+Your `secret-detection` job can fail with `ERR fatal: ambiguous argument` error if your 
+repository's default branch is unrelated to the branch the job was triggered for. 
+See issue [!352014](https://gitlab.com/gitlab-org/gitlab/-/issues/352014) for more details.
+
+To resolve the issue, make sure to correctly [set your default branch](../../project/repository/branches/default.md#change-the-default-branch-name-for-a-project) on your repository. You should set it to a branch 
+that has related history with the branch you run the `secret-detection` job on. 
