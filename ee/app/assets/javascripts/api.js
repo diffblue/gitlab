@@ -43,6 +43,7 @@ export default {
   issueMetricImagesPath: '/api/:version/projects/:id/issues/:issue_iid/metric_images',
   issueMetricSingleImagePath:
     '/api/:version/projects/:id/issues/:issue_iid/metric_images/:image_id',
+  environmentApprovalPath: '/api/:version/projects/:id/deployments/:deployment_id/approval',
 
   userSubscription(namespaceId) {
     const url = Api.buildUrl(this.subscriptionPath).replace(':id', encodeURIComponent(namespaceId));
@@ -386,5 +387,20 @@ export default {
       .then(({ data }) => {
         return data;
       });
+  },
+
+  deploymentApproval(id, deploymentId, approve) {
+    const url = Api.buildUrl(this.environmentApprovalPath)
+      .replace(':id', encodeURIComponent(id))
+      .replace(':deployment_id', encodeURIComponent(deploymentId));
+
+    return axios.post(url, { status: approve ? 'approved' : 'rejected' });
+  },
+
+  approveDeployment(id, deploymentId) {
+    return this.deploymentApproval(id, deploymentId, true);
+  },
+  rejectDeployment(id, deploymentId) {
+    return this.deploymentApproval(id, deploymentId, false);
   },
 };
