@@ -35,7 +35,7 @@ export default {
           loading: this.isUploadingImage,
           disabled: this.isUploadingImage,
           category: 'primary',
-          variant: 'success',
+          variant: 'confirm',
         },
       };
     },
@@ -72,8 +72,10 @@ export default {
   i18n: {
     modalUpload: __('Upload'),
     modalCancel: __('Cancel'),
-    modalTitle: s__('Incidents|Add a URL'),
-    modalDescription: s__('Incidents|Add a link to the uploaded image.'),
+    modalTitle: s__('Incidents|Add image details'),
+    modalDescription: s__(
+      "Incidents|Add text or a URL that will display with your image. If you don't add either, the file name will display instead.",
+    ),
     dropDescription: s__(
       'Incidents|Drop or %{linkStart}upload%{linkEnd} a metric screenshot to attach it to the incident',
     ),

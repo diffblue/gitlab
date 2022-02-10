@@ -8,6 +8,7 @@ import {
   GlLink,
   GlModal,
   GlSprintf,
+  GlTooltipDirective,
 } from '@gitlab/ui';
 import { mapActions } from 'vuex';
 import { __, s__ } from '~/locale';
@@ -20,6 +21,8 @@ export default {
     modalTitle: s__('Incident|Deleting %{filename}'),
     editModalUpdate: __('Update'),
     editModalTitle: s__('Incident|Editing %{filename}'),
+    editIconTitle: s__('Incident|Edit image text or URL'),
+    deleteIconTitle: s__('Incident|Delete image'),
   },
   components: {
     GlButton,
@@ -32,6 +35,9 @@ export default {
     GlSprintf,
   },
   inject: ['canUpdate'],
+  directives: {
+    GlTooltip: GlTooltipDirective,
+  },
   props: {
     id: {
       type: Number,
@@ -215,19 +221,22 @@ export default {
             <gl-icon name="external-link" class="gl-vertical-align-middle" />
           </gl-link>
           <span v-else>{{ urlText == null || urlText == '' ? filename : urlText }}</span>
-          <div class="gl-ml-auto">
+          <div class="gl-ml-auto btn-group">
             <gl-button
               v-if="canUpdate"
-              class="gl-mr-2"
-              icon="link"
+              v-gl-tooltip.bottom
+              icon="pencil"
               :aria-label="__('Edit')"
+              :title="$options.i18n.editIconTitle"
               data-testid="edit-button"
               @click="editModalVisible = true"
             />
             <gl-button
               v-if="canUpdate"
+              v-gl-tooltip.bottom
               icon="remove"
               :aria-label="__('Delete')"
+              :title="$options.i18n.deleteIconTitle"
               data-testid="delete-button"
               @click="modalVisible = true"
             />
