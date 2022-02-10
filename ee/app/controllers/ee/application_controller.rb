@@ -38,8 +38,7 @@ module EE
     end
 
     def log_audit_event
-      AuditEvents::ImpersonationAuditEventService.new(impersonator, request.remote_ip, 'Stopped Impersonation')
-        .for_user(full_path: current_user.username, entity_id: current_user.id).security_event
+      ::AuditEvents::UserImpersonationEventCreateWorker.perform_async(impersonator.id, current_user.id, request.remote_ip, 'stopped')
     end
 
     def set_current_ip_address(&block)
