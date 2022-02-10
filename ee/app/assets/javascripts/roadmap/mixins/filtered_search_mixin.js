@@ -219,7 +219,7 @@ export default {
         });
       }
 
-      if (labelName?.length) {
+      if (labelName?.length && Array.isArray(labelName)) {
         filteredSearchValue.push(
           ...labelName.map((label) => ({
             type: 'label_name',
