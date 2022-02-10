@@ -1,46 +1,35 @@
-import { GlDropdown, GlLoadingIcon, GlDropdownSectionHeader } from '@gitlab/ui';
+import { GlDropdown } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
-import MockAdapter from 'axios-mock-adapter';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import BoardsSelector from 'ee/boards/components/boards_selector.vue';
 import { BoardType } from '~/boards/constants';
 import epicBoardQuery from 'ee/boards/graphql/epic_board.query.graphql';
+import epicBoardsQuery from 'ee/boards/graphql/epic_boards.query.graphql';
 import groupBoardQuery from '~/boards/graphql/group_board.query.graphql';
 import projectBoardQuery from '~/boards/graphql/project_board.query.graphql';
+import groupBoardsQuery from '~/boards/graphql/group_boards.query.graphql';
+import projectBoardsQuery from '~/boards/graphql/project_boards.query.graphql';
 import defaultStore from '~/boards/stores';
 import { TEST_HOST } from 'spec/test_constants';
-import axios from '~/lib/utils/axios_utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import { mockGroupBoardResponse, mockProjectBoardResponse } from 'jest/boards/mock_data';
-import { mockEpicBoardResponse } from '../mock_data';
+import {
+  mockGroupBoardResponse,
+  mockProjectBoardResponse,
+  mockGroupAllBoardsResponse,
+  mockProjectAllBoardsResponse,
+} from 'jest/boards/mock_data';
+import { mockEpicBoardResponse, mockEpicBoardsResponse } from '../mock_data';
 
 const throttleDuration = 1;
 
 Vue.use(VueApollo);
 
-function boardGenerator(n) {
-  return new Array(n).fill().map((board, index) => {
-    const id = `${index}`;
-    const name = `board${id}`;
-
-    return {
-      id,
-      name,
-    };
-  });
-}
-
 describe('BoardsSelector', () => {
   let wrapper;
-  let allBoardsResponse;
-  let recentBoardsResponse;
-  let mock;
   let fakeApollo;
   let store;
-  const boards = boardGenerator(20);
-  const recentBoards = boardGenerator(5);
 
   const createStore = ({
     isGroupBoard = false,
@@ -63,20 +52,26 @@ describe('BoardsSelector', () => {
     });
   };
 
-  const getDropdownItems = () => wrapper.findAll('.js-dropdown-item');
-  const getDropdownHeaders = () => wrapper.findAllComponents(GlDropdownSectionHeader);
-  const getLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
-  const findDropdown = () => wrapper.findComponent(GlDropdown);
+  const findDropdown = () => wrapper.find(GlDropdown);
 
   const projectBoardQueryHandlerSuccess = jest.fn().mockResolvedValue(mockProjectBoardResponse);
   const groupBoardQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupBoardResponse);
   const epicBoardQueryHandlerSuccess = jest.fn().mockResolvedValue(mockEpicBoardResponse);
+
+  const projectBoardsQueryHandlerSuccess = jest
+    .fn()
+    .mockResolvedValue(mockProjectAllBoardsResponse);
+  const groupBoardsQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupAllBoardsResponse);
+  const epicBoardsQueryHandlerSuccess = jest.fn().mockResolvedValue(mockEpicBoardsResponse);
 
   const createComponent = () => {
     fakeApollo = createMockApollo([
       [projectBoardQuery, projectBoardQueryHandlerSuccess],
       [groupBoardQuery, groupBoardQueryHandlerSuccess],
       [epicBoardQuery, epicBoardQueryHandlerSuccess],
+      [projectBoardsQuery, projectBoardsQueryHandlerSuccess],
+      [groupBoardsQuery, groupBoardsQueryHandlerSuccess],
+      [epicBoardsQuery, epicBoardsQueryHandlerSuccess],
     ]);
 
     wrapper = mount(BoardsSelector, {
@@ -94,92 +89,44 @@ describe('BoardsSelector', () => {
       attachTo: document.body,
       provide: {
         fullPath: '',
-        recentBoardsEndpoint: `${TEST_HOST}/recent`,
       },
-    });
-
-    wrapper.vm.$apollo.addSmartQuery = jest.fn((_, options) => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        [options.loadingKey]: true,
-      });
     });
   };
 
   afterEach(() => {
     wrapper.destroy();
-    wrapper = null;
     fakeApollo = null;
     store = null;
-    mock.restore();
   });
 
-  describe('fetching all board', () => {
+  describe('fetching all boards', () => {
     beforeEach(() => {
-      mock = new MockAdapter(axios);
+      it.each`
+        boardType            | isEpicBoard | queryHandler                        | notCalledHandler
+        ${BoardType.group}   | ${false}    | ${groupBoardsQueryHandlerSuccess}   | ${projectBoardsQueryHandlerSuccess}
+        ${BoardType.project} | ${false}    | ${projectBoardsQueryHandlerSuccess} | ${groupBoardsQueryHandlerSuccess}
+        ${BoardType.group}   | ${true}     | ${epicBoardsQueryHandlerSuccess}    | ${groupBoardsQueryHandlerSuccess}
+      `(
+        'fetches $boardType boards when isEpicBoard is $isEpicBoard',
+        async ({ boardType, isEpicBoard, queryHandler, notCalledHandler }) => {
+          createStore({
+            isProjectBoard: boardType === BoardType.project,
+            isGroupBoard: boardType === BoardType.group,
+            isEpicBoard,
+          });
+          createComponent();
 
-      allBoardsResponse = Promise.resolve({
-        data: {
-          group: {
-            boards: {
-              edges: boards.map((board) => ({ node: board })),
-            },
-          },
+          await nextTick();
+
+          // Emits gl-dropdown show event to simulate the dropdown is opened at initialization time
+          findDropdown().vm.$emit('show');
+
+          await nextTick();
+
+          expect(queryHandler).toHaveBeenCalled();
+          expect(notCalledHandler).not.toHaveBeenCalled();
         },
-      });
-      recentBoardsResponse = Promise.resolve({
-        data: recentBoards,
-      });
-
-      createStore();
-      createComponent();
-
-      mock.onGet(`${TEST_HOST}/recent`).replyOnce(200, recentBoards);
-    });
-
-    describe('loading', () => {
-      beforeEach(async () => {
-        // Wait for current board to be loaded
-        await nextTick();
-
-        // Emits gl-dropdown show event to simulate the dropdown is opened at initialization time
-        findDropdown().vm.$emit('show');
-      });
-
-      // we are testing loading state, so don't resolve responses until after the tests
-      afterEach(async () => {
-        await Promise.all([allBoardsResponse, recentBoardsResponse]);
-        await nextTick();
-      });
-
-      it('shows loading spinner', () => {
-        expect(getDropdownHeaders()).toHaveLength(0);
-        expect(getDropdownItems()).toHaveLength(0);
-        expect(getLoadingIcon().exists()).toBe(true);
-      });
-    });
-
-    describe('loaded', () => {
-      beforeEach(async () => {
-        // Wait for current board to be loaded
-        await nextTick();
-
-        // Emits gl-dropdown show event to simulate the dropdown is opened at initialization time
-        findDropdown().vm.$emit('show');
-
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        await wrapper.setData({
-          loadingBoards: false,
-          loadingRecentBoards: false,
-        });
-      });
-
-      it('hides loading spinner', async () => {
-        await nextTick();
-        expect(getLoadingIcon().exists()).toBe(false);
-      });
+      );
     });
   });
 

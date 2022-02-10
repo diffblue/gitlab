@@ -21,6 +21,27 @@ export const mockEpicBoardResponse = {
   },
 };
 
+export const mockEpicBoardsResponse = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/114',
+      epicBoards: {
+        nodes: [
+          {
+            id: 'gid://gitlab/Boards::EpicBoard/1',
+            name: 'Development',
+          },
+          {
+            id: 'gid://gitlab/Boards::EpicBoard/2',
+            name: 'Marketing',
+          },
+        ],
+      },
+      __typename: 'Group',
+    },
+  },
+};
+
 export const mockLabel = {
   id: 'gid://gitlab/GroupLabel/121',
   title: 'To Do',

@@ -29,6 +29,84 @@ export const listObj = {
   },
 };
 
+function boardGenerator(n) {
+  return new Array(n).fill().map((board, index) => {
+    const id = `${index}`;
+    const name = `board${id}`;
+
+    return {
+      node: {
+        id,
+        name,
+        weight: 0,
+      },
+    };
+  });
+}
+
+export const boards = boardGenerator(20);
+export const recentIssueBoards = boardGenerator(5);
+
+export const mockSmallGroupAllBoardsResponse = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/114',
+      boards: { edges: boardGenerator(3) },
+      __typename: 'Group',
+    },
+  },
+};
+
+export const mockEmptyGroupRecentBoardsResponse = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/114',
+      recentIssueBoards: { edges: [] },
+      __typename: 'Group',
+    },
+  },
+};
+
+export const mockGroupAllBoardsResponse = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/114',
+      boards: { edges: boards },
+      __typename: 'Group',
+    },
+  },
+};
+
+export const mockProjectAllBoardsResponse = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/1',
+      boards: { edges: boards },
+      __typename: 'Project',
+    },
+  },
+};
+
+export const mockGroupRecentBoardsResponse = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/114',
+      recentIssueBoards: { edges: recentIssueBoards },
+      __typename: 'Group',
+    },
+  },
+};
+
+export const mockProjectRecentBoardsResponse = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/1',
+      recentIssueBoards: { edges: recentIssueBoards },
+      __typename: 'Project',
+    },
+  },
+};
+
 export const mockGroupBoardResponse = {
   data: {
     workspace: {

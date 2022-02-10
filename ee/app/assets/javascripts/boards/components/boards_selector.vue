@@ -52,7 +52,8 @@ export default {
         },
         query: this.isEpicBoard ? this.epicBoardQuery : this.boardQuery,
         loadingKey: 'loadingBoards',
-        update: this.isEpicBoard ? this.epicBoardUpdate : this.boardUpdate,
+        update: (data) =>
+          this.isEpicBoard ? this.epicBoardUpdate(data) : this.boardUpdate(data, 'boards'),
       });
 
       if (!this.isEpicBoard) {
