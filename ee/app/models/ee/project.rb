@@ -631,7 +631,7 @@ module EE
       unless ::Gitlab::UrlSanitizer.valid?(value)
         self.import_url = value
         self.import_data&.user = nil
-        value
+        return
       end
 
       url = ::Gitlab::UrlSanitizer.new(value)
