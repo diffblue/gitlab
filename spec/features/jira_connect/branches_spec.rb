@@ -26,7 +26,7 @@ RSpec.describe 'Create GitLab branches from Jira', :js do
     visit new_jira_connect_branch_path(issue_key: 'ACME-123', issue_summary: 'My issue !@#$% title')
 
     expect(page).to have_button('Create branch', disabled: true)
-    # intiially, branch field should be hidden.
+    # initially, branch field should be hidden.
     expect(page).not_to have_field('Branch name')
 
     # Select project1

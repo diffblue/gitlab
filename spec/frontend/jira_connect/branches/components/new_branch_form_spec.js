@@ -54,8 +54,8 @@ describe('NewBranchForm', () => {
 
   const completeForm = async () => {
     await findProjectDropdown().vm.$emit('change', mockProject);
-    await findInput().vm.$emit('input', 'cool-branch-name');
     await findSourceBranchDropdown().vm.$emit('change', 'source-branch');
+    await findInput().vm.$emit('input', 'cool-branch-name');
   };
 
   function createMockApolloProvider({
@@ -84,23 +84,40 @@ describe('NewBranchForm', () => {
 
   describe('when selecting items from dropdowns', () => {
     describe('when no project selected', () => {
-      it('hides source branch selection and branch name input', () => {
+      beforeEach(() => {
         createComponent();
+      });
 
+      it('hides source branch selection and branch name input', () => {
         expect(findSourceBranchDropdown().exists()).toBe(false);
         expect(findInput().exists()).toBe(false);
+      });
+
+      it('disables the submit button', () => {
+        expect(findButton().props('disabled')).toBe(true);
       });
     });
 
     describe('when a valid project is selected', () => {
-      it('sets the `selectedProject` prop for ProjectDropdown and SourceBranchDropdown', async () => {
-        createComponent();
+      describe("when a source branch isn't selected", () => {
+        beforeEach(async () => {
+          createComponent();
+          await findProjectDropdown().vm.$emit('change', mockProject);
+        });
 
-        const projectDropdown = findProjectDropdown();
-        await projectDropdown.vm.$emit('change', mockProject);
+        it('sets the `selectedProject` prop for ProjectDropdown and SourceBranchDropdown', () => {
+          expect(findProjectDropdown().props('selectedProject')).toEqual(mockProject);
+          expect(findSourceBranchDropdown().exists()).toBe(true);
+          expect(findSourceBranchDropdown().props('selectedProject')).toEqual(mockProject);
+        });
 
-        expect(projectDropdown.props('selectedProject')).toEqual(mockProject);
-        expect(findSourceBranchDropdown().props('selectedProject')).toEqual(mockProject);
+        it('disables the submit button', () => {
+          expect(findButton().props('disabled')).toBe(true);
+        });
+
+        it('renders branch input field', () => {
+          expect(findInput().exists()).toBe(true);
+        });
       });
 
       describe('when `initialBranchName` is provided', () => {
@@ -124,6 +141,22 @@ describe('NewBranchForm', () => {
           await sourceBranchDropdown.vm.$emit('change', mockBranchName);
 
           expect(sourceBranchDropdown.props('selectedBranchName')).toBe(mockBranchName);
+        });
+
+        describe.each`
+          branchName       | submitButtonDisabled
+          ${undefined}     | ${true}
+          ${''}            | ${true}
+          ${' '}           | ${true}
+          ${'test-branch'} | ${false}
+        `('when branch name is $branchName', ({ branchName, submitButtonDisabled }) => {
+          it(`sets submit button 'disabled' prop to ${submitButtonDisabled}`, async () => {
+            createComponent();
+            await completeForm();
+            await findInput().vm.$emit('input', branchName);
+
+            expect(findButton().props('disabled')).toBe(submitButtonDisabled);
+          });
         });
       });
     });

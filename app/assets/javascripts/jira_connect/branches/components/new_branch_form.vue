@@ -36,7 +36,11 @@ export default {
     ProjectDropdown,
     SourceBranchDropdown,
   },
-  inject: ['initialBranchName'],
+  inject: {
+    initialBranchName: {
+      default: '',
+    },
+  },
   data() {
     return {
       selectedProject: null,
@@ -56,8 +60,11 @@ export default {
     showAlert() {
       return Boolean(this.alertParams?.message);
     },
+    isBranchNameValid() {
+      return (this.branchName ?? '').trim().length > 0;
+    },
     disableSubmitButton() {
-      return !(this.selectedProject && this.selectedSourceBranchName && this.branchName);
+      return !(this.selectedProject && this.selectedSourceBranchName && this.isBranchNameValid);
     },
   },
   methods: {
