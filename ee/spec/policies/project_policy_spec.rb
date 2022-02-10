@@ -1961,4 +1961,58 @@ RSpec.describe ProjectPolicy do
       it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
     end
   end
+
+  describe 'pending member permissions' do
+    let_it_be(:current_user) { create(:user) }
+    let_it_be(:group) { create(:group, :public) }
+
+    context 'with a group invited to a project' do
+      let_it_be(:project) { create(:project, :private, public_builds: false) }
+
+      before_all do
+        create(:project_group_link, project: project, group: group)
+      end
+
+      it 'a pending developer in the group has permissions to the project as if the user is not a member' do
+        create(:group_member, :awaiting, :developer, source: group, user: current_user)
+
+        expect_private_project_permissions_as_if_non_member
+      end
+    end
+
+    context 'with a group invited to another group' do
+      let_it_be(:other_group) { create(:group, :public) }
+      let_it_be(:project) { create(:project, :private, public_builds: false, namespace: other_group) }
+
+      before_all do
+        create(:group_group_link, shared_with_group: group, shared_group: other_group)
+      end
+
+      it "a pending developer in the group has permissions to the other group's project as if the user is not a member" do
+        create(:group_member, :awaiting, :developer, source: group, user: current_user)
+
+        expect_private_project_permissions_as_if_non_member
+      end
+    end
+
+    context 'with a subgroup' do
+      let_it_be(:subgroup) { create(:group, :private, parent: group) }
+      let_it_be(:project) { create(:project, :private, public_builds: false, namespace: subgroup) }
+
+      it 'a pending developer in the group has permissions to the subgroup project as if the user is not a member' do
+        create(:group_member, :awaiting, :developer, source: group, user: current_user)
+
+        expect_private_project_permissions_as_if_non_member
+      end
+    end
+
+    def expect_private_project_permissions_as_if_non_member
+      expect_disallowed(*guest_permissions)
+      expect_disallowed(*reporter_permissions)
+      expect_disallowed(*team_member_reporter_permissions)
+      expect_disallowed(*developer_permissions)
+      expect_disallowed(*maintainer_permissions)
+      expect_disallowed(*owner_permissions)
+    end
+  end
 end

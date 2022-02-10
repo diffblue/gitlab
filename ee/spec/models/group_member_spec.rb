@@ -140,6 +140,36 @@ RSpec.describe GroupMember do
     end
   end
 
+  describe '#state' do
+    let!(:group) { create(:group) }
+    let!(:project) { create(:project, group: group) }
+    let!(:user) { create(:user) }
+
+    describe '#activate!' do
+      it "refreshes the user's authorized projects" do
+        membership = create(:group_member, :awaiting, source: group, user: user)
+
+        expect(user.authorized_projects).not_to include(project)
+
+        membership.activate!
+
+        expect(user.authorized_projects.reload).to include(project)
+      end
+    end
+
+    describe '#wait!' do
+      it "refreshes the user's authorized projects" do
+        membership = create(:group_member, source: group, user: user)
+
+        expect(user.authorized_projects).to include(project)
+
+        membership.wait!
+
+        expect(user.authorized_projects.reload).not_to include(project)
+      end
+    end
+  end
+
   context 'group member webhooks', :sidekiq_inline, :saas do
     let_it_be_with_refind(:group) { create(:group_with_plan, plan: :ultimate_plan) }
     let_it_be(:group_hook) { create(:group_hook, group: group, member_events: true) }
