@@ -18,8 +18,10 @@ RSpec.describe Admin::ImpersonationsController do
           stub_licensed_features(extended_audit_events: true)
         end
 
-        it 'creates an AuditEvent record' do
-          expect { delete :destroy }.to change { AuditEvent.count }.by(1)
+        it 'enqueues a new worker' do
+          expect(AuditEvents::UserImpersonationEventCreateWorker).to receive(:perform_async).with(impersonator.id, user.id, anything, 'stopped').once
+
+          delete :destroy
         end
       end
     end

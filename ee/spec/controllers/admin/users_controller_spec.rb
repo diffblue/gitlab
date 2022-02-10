@@ -108,8 +108,10 @@ RSpec.describe Admin::UsersController do
       stub_licensed_features(extended_audit_events: true)
     end
 
-    it 'creates an AuditEvent record' do
-      expect { post :impersonate, params: { id: user.username } }.to change { AuditEvent.count }.by(1)
+    it 'enqueues a new worker' do
+      expect(AuditEvents::UserImpersonationEventCreateWorker).to receive(:perform_async).with(admin.id, user.id, anything, 'started').once
+
+      post :impersonate, params: { id: user.username }
     end
   end
 end
