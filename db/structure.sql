@@ -20272,6 +20272,7 @@ CREATE TABLE topics (
     avatar text,
     description text,
     total_projects_count bigint DEFAULT 0 NOT NULL,
+    non_private_projects_count bigint DEFAULT 0 NOT NULL,
     CONSTRAINT check_26753fb43a CHECK ((char_length(avatar) <= 255)),
     CONSTRAINT check_5d1a07c8c8 CHECK ((char_length(description) <= 1024)),
     CONSTRAINT check_7a90d4c757 CHECK ((char_length(name) <= 255))
@@ -27928,6 +27929,8 @@ CREATE INDEX index_todos_on_user_id_and_id_pending ON todos USING btree (user_id
 CREATE UNIQUE INDEX index_token_with_ivs_on_hashed_plaintext_token ON token_with_ivs USING btree (hashed_plaintext_token);
 
 CREATE UNIQUE INDEX index_token_with_ivs_on_hashed_token ON token_with_ivs USING btree (hashed_token);
+
+CREATE INDEX index_topics_non_private_projects_count ON topics USING btree (non_private_projects_count DESC, id);
 
 CREATE UNIQUE INDEX index_topics_on_name ON topics USING btree (name);
 
