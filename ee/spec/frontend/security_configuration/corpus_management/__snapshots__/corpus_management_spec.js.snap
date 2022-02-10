@@ -12,7 +12,7 @@ exports[`EE - CorpusManagement corpus management when loaded renders the correct
    
   <p>
     
-      Corpus are used in fuzz testing as mutation source to Improve future testing.
+      Corpus files are used in coverage-guided fuzz testing as seed inputs to improve testing.
       
     <gl-link-stub
       href="/docs/corpus-management"

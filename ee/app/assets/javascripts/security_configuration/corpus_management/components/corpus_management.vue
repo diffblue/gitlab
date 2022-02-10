@@ -46,7 +46,7 @@ export default {
   i18n: {
     header: s__('CorpusManagement|Fuzz testing corpus management'),
     subHeader: s__(
-      'CorpusManagement|Corpus are used in fuzz testing as mutation source to Improve future testing.',
+      'CorpusManagement|Corpus files are used in coverage-guided fuzz testing as seed inputs to improve testing.',
     ),
     learnMore: __('Learn More'),
     previousPage: __('Prev'),
