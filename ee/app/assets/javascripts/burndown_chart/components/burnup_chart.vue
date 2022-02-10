@@ -1,5 +1,4 @@
 <script>
-import { GlResizeObserverDirective as GlResizeObserver } from '@gitlab/ui';
 import { GlLineChart } from '@gitlab/ui/dist/charts';
 import dateFormat from 'dateformat';
 import { merge } from 'lodash';
@@ -7,9 +6,6 @@ import { __, n__, sprintf } from '~/locale';
 import commonChartOptions from './common_chart_options';
 
 export default {
-  directives: {
-    GlResizeObserver,
-  },
   components: {
     GlLineChart,
   },
@@ -90,9 +86,6 @@ export default {
     setChart(chart) {
       this.chart = chart;
     },
-    onResize() {
-      this.chart?.resize();
-    },
     // transform the object to a chart-friendly array of date + value
     transform(key) {
       return this.burnupData.map((val) => [val.date, val[key]]);
@@ -130,7 +123,7 @@ export default {
     </div>
     <gl-line-chart
       v-if="!loading"
-      v-gl-resize-observer="onResize"
+      :responsive="true"
       class="js-burnup-chart"
       :data="dataSeries"
       :option="options"
