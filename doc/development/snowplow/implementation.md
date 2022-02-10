@@ -25,8 +25,8 @@ as base. This object can be modified for any subsequent structured event fired,
 although it's not recommended.
 
 Tracking implementations must have an `action` and a `category`. You can provide additional
-properties from the [structured event taxonomy](index.md#structured-event-taxonomy), alongside
-an `extra` object that accepts key-value pairs.
+properties from the [structured event taxonomy](index.md#structured-event-taxonomy), in
+addition to an `extra` object that accepts key-value pairs.
 
 | Property      | Type   | Default value              | Description                                                                                                                                                                                                    |
 |:-----------|:-------|:---------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -37,7 +37,7 @@ an `extra` object that accepts key-value pairs.
 ### Usage recommendations
 
 - Use [data attributes](#implement-data-attribute-tracking) on HTML elements that emit `click`, `show.bs.dropdown`, or `hide.bs.dropdown` events.
-- Use the [Vue mixin](#implement-vue-component-tracking) for tracking custom events, or if the supported events for data attributes are not propagating (i.e. clickable components that don't emit `click`).
+- Use the [Vue mixin](#implement-vue-component-tracking) for tracking custom events, or if the supported events for data attributes are not propagating. For example, clickable components that don't emit `click`.
 - Use the [tracking class](#implement-raw-javascript-tracking) when tracking in vanilla JavaScript files.
 
 ### Implement data attribute tracking
@@ -118,8 +118,8 @@ track_action: "click_button" })
 ### Implement Vue component tracking
 
 For custom event tracking, use the [Vue mixin](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/assets/javascripts/tracking/tracking.js#L207). It exposes `Tracking.event` as the `track` method.
-You can specify tracking options in by creating a `tracking` data object
-or computed property, and as a second parameter: `this.track('click_button', opts)`.
+You can specify tracking options by creating a `tracking` data object or
+computed property, and as a second parameter: `this.track('click_button', opts)`.
 These options override any defaults and allow the values to be dynamic from props or based on state:
 
 | Property | Type | Default | Example |
