@@ -40167,6 +40167,9 @@ msgstr ""
 msgid "VulnerabilityManagement|An unverified non-confirmed finding"
 msgstr ""
 
+msgid "VulnerabilityManagement|At least one identifier is required"
+msgstr ""
+
 msgid "VulnerabilityManagement|Change status"
 msgstr ""
 
@@ -40182,6 +40185,9 @@ msgstr ""
 msgid "VulnerabilityManagement|Manually add a vulnerability entry into the vulnerability report."
 msgstr ""
 
+msgid "VulnerabilityManagement|Name is a required field"
+msgstr ""
+
 msgid "VulnerabilityManagement|Needs triage"
 msgstr ""
 
@@ -40195,6 +40201,12 @@ msgid "VulnerabilityManagement|Requires assessment"
 msgstr ""
 
 msgid "VulnerabilityManagement|Select a method"
+msgstr ""
+
+msgid "VulnerabilityManagement|Severity is a required field"
+msgstr ""
+
+msgid "VulnerabilityManagement|Something went wrong while creating vulnerability"
 msgstr ""
 
 msgid "VulnerabilityManagement|Something went wrong while trying to delete the comment. Please try again later."
@@ -40219,6 +40231,12 @@ msgid "VulnerabilityManagement|Something went wrong, could not get user."
 msgstr ""
 
 msgid "VulnerabilityManagement|Something went wrong, could not update vulnerability state."
+msgstr ""
+
+msgid "VulnerabilityManagement|Status is a required field"
+msgstr ""
+
+msgid "VulnerabilityManagement|Submit vulnerability"
 msgstr ""
 
 msgid "VulnerabilityManagement|Summary, detailed description, steps to reproduce, etc."
