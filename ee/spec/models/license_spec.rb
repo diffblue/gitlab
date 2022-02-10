@@ -11,7 +11,32 @@ RSpec.describe License do
 
   describe 'validations' do
     describe '#valid_license' do
+      subject(:license) { build(:license, data: gl_license.class.encryptor.encrypt(gl_license.to_json)) }
+
       context 'when the license is provided' do
+        shared_examples 'an invalid license' do
+          it 'adds an error' do
+            expect(license).not_to be_valid
+            expect(license.errors.full_messages.to_sentence).to include error_message
+          end
+        end
+
+        context 'with online cloud license' do
+          let(:gl_license) { build(:gitlab_license, :cloud, starts_at: 'not-a-date') }
+          let(:error_message) { 'The license key is invalid.' }
+
+          it_behaves_like 'an invalid license'
+        end
+
+        context 'with offline cloud license' do
+          let(:gl_license) { build(:gitlab_license, :cloud, :offline_enabled, starts_at: 'not-a-date') }
+          let(:error_message) do
+            'The license key is invalid. Make sure it is exactly as you received it from GitLab Inc.'
+          end
+
+          it_behaves_like 'an invalid license'
+        end
+
         it { is_expected.to be_valid }
       end
 
@@ -20,7 +45,11 @@ RSpec.describe License do
           license.data = nil
         end
 
-        it { is_expected.not_to be_valid }
+        it 'adds an error' do
+          expect(license).not_to be_valid
+          expect(license.errors.full_messages.to_sentence)
+            .to include 'The license key is invalid. Make sure it is exactly as you received it from GitLab Inc.'
+        end
       end
     end
 
