@@ -18,8 +18,7 @@
   .row.gl-mt-3
     = render partial: 'starrer', collection: @starrers, as: :starrer
   = paginate @starrers, theme: 'gitlab'
+- elsif params[:search].present?
+  .nothing-here-block= _('No starrers matched your search')
 - else
-  - if params[:search].present?
-    .nothing-here-block= _('No starrers matched your search')
-  - else
-    .nothing-here-block= _('Nobody has starred this repository yet')
+  .nothing-here-block= _('Nobody has starred this repository yet')
