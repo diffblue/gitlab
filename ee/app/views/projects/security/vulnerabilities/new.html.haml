@@ -4,4 +4,6 @@
 - page_title _("Add vulnerability finding")
 - add_page_specific_style 'page_bundles/security_dashboard'
 
-#js-vulnerability-new{ data: { markdown_docs_path: help_page_path('user/markdown'), markdown_preview_path: preview_markdown_path(@project) } }
+#js-vulnerability-new{ data: { markdown_docs_path: help_page_path('user/markdown'),
+                               markdown_preview_path: preview_markdown_path(@project),
+                               project_id: @project.id } }
