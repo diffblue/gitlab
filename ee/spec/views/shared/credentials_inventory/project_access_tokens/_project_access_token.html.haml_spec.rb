@@ -32,7 +32,7 @@ RSpec.describe('shared/credentials_inventory/personal_access_tokens/_project_acc
   end
 
   it 'shows the created date' do
-    expect(rendered).to have_text(project_access_token.created_at.to_s)
+    expect(rendered).to have_text(project_access_token.created_at.to_date)
   end
 
   context 'last used date' do
@@ -48,7 +48,7 @@ RSpec.describe('shared/credentials_inventory/personal_access_tokens/_project_acc
       let_it_be(:project_access_token) { create(:personal_access_token, user: project_member.user, scopes: %w(read_repository api), last_used_at: DateTime.new(2001, 2, 3, 4, 5, 6)) }
 
       it 'displays the time last used' do
-        expect(rendered).to have_text('2001-02-03 04:05:06 UTC')
+        expect(rendered).to have_text('2001-02-03')
       end
     end
   end
@@ -66,7 +66,7 @@ RSpec.describe('shared/credentials_inventory/personal_access_tokens/_project_acc
       let_it_be(:project_access_token) { create(:personal_access_token, user: project_member.user, scopes: %w(read_repository api), last_used_at: DateTime.new(2004, 2, 3, 4, 5, 6)) }
 
       it 'displays the expiration date' do
-        expect(rendered).to have_text('2004-02-03 04:05:06 UTC')
+        expect(rendered).to have_text('2004-02-03')
       end
     end
   end
