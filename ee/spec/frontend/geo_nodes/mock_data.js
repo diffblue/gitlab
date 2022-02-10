@@ -242,23 +242,35 @@ export const MOCK_NODE_STATUSES_RES = [
   },
 ];
 
-export const MOCK_HEALTH_STATUS_NODES = [
+export const MOCK_FILTER_NODES = [
   {
+    name: 'healthy1',
+    url: 'url/1',
     healthStatus: 'Healthy',
   },
   {
+    name: 'healthy2',
+    url: 'url/2',
     healthStatus: 'Healthy',
   },
   {
+    name: 'unhealthy1',
+    url: 'url/3',
     healthStatus: 'Unhealthy',
   },
   {
+    name: 'disabled1',
+    url: 'url/4',
     healthStatus: 'Disabled',
   },
   {
+    name: 'offline1',
+    url: 'url/5',
     healthStatus: 'Offline',
   },
   {
+    name: 'unknown1',
+    url: 'url/6',
     healthStatus: null,
   },
 ];

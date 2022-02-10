@@ -7,7 +7,7 @@ import {
   MOCK_PRIMARY_VERIFICATION_INFO,
   MOCK_SECONDARY_VERIFICATION_INFO,
   MOCK_SECONDARY_SYNC_INFO,
-  MOCK_HEALTH_STATUS_NODES,
+  MOCK_FILTER_NODES,
 } from '../mock_data';
 
 describe('GeoNodes Store Getters', () => {
@@ -72,18 +72,26 @@ describe('GeoNodes Store Getters', () => {
   });
 
   describe.each`
-    status         | expectedNodes
-    ${null}        | ${MOCK_HEALTH_STATUS_NODES}
-    ${'healthy'}   | ${[{ healthStatus: 'Healthy' }, { healthStatus: 'Healthy' }]}
-    ${'unhealthy'} | ${[{ healthStatus: 'Unhealthy' }]}
-    ${'offline'}   | ${[{ healthStatus: 'Offline' }]}
-    ${'disabled'}  | ${[{ healthStatus: 'Disabled' }]}
-    ${'unknown'}   | ${[{ healthStatus: null }]}
-  `('filteredNodes', ({ status, expectedNodes }) => {
-    describe(`when status is ${status}`, () => {
+    status         | search                                     | expectedNodes
+    ${null}        | ${''}                                      | ${MOCK_FILTER_NODES}
+    ${'healthy'}   | ${''}                                      | ${[MOCK_FILTER_NODES[0], MOCK_FILTER_NODES[1]]}
+    ${'unhealthy'} | ${''}                                      | ${[MOCK_FILTER_NODES[2]]}
+    ${'disabled'}  | ${''}                                      | ${[MOCK_FILTER_NODES[3]]}
+    ${'offline'}   | ${''}                                      | ${[MOCK_FILTER_NODES[4]]}
+    ${'unknown'}   | ${''}                                      | ${[MOCK_FILTER_NODES[5]]}
+    ${null}        | ${MOCK_FILTER_NODES[1].name}               | ${[MOCK_FILTER_NODES[1]]}
+    ${null}        | ${MOCK_FILTER_NODES[3].url}                | ${[MOCK_FILTER_NODES[3]]}
+    ${'healthy'}   | ${MOCK_FILTER_NODES[0].name}               | ${[MOCK_FILTER_NODES[0]]}
+    ${'healthy'}   | ${MOCK_FILTER_NODES[0].name.toUpperCase()} | ${[MOCK_FILTER_NODES[0]]}
+    ${'unhealthy'} | ${MOCK_FILTER_NODES[2].url}                | ${[MOCK_FILTER_NODES[2]]}
+    ${'unhealthy'} | ${MOCK_FILTER_NODES[2].url.toUpperCase()}  | ${[MOCK_FILTER_NODES[2]]}
+    ${'offline'}   | ${'NOT A MATCH'}                           | ${[]}
+  `('filteredNodes', ({ status, search, expectedNodes }) => {
+    describe(`when status is ${status} and search is ${search}`, () => {
       beforeEach(() => {
-        state.nodes = MOCK_HEALTH_STATUS_NODES;
+        state.nodes = MOCK_FILTER_NODES;
         state.statusFilter = status;
+        state.searchFilter = search;
       });
 
       it('should return the correct filtered array', () => {
@@ -102,7 +110,7 @@ describe('GeoNodes Store Getters', () => {
   `('countNodesForStatus', ({ status, expectedCount }) => {
     describe(`when status is ${status}`, () => {
       beforeEach(() => {
-        state.nodes = MOCK_HEALTH_STATUS_NODES;
+        state.nodes = MOCK_FILTER_NODES;
       });
 
       it(`should return ${expectedCount}`, () => {
