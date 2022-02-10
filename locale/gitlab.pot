@@ -7405,6 +7405,9 @@ msgstr ""
 msgid "Clear recent searches"
 msgstr ""
 
+msgid "Clear repository checks"
+msgstr ""
+
 msgid "Clear search"
 msgstr ""
 
