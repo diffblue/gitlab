@@ -13,25 +13,30 @@ module EE
 
         override :configuration_path
         def configuration_path
-          super if available? || always_available?
+          configurable_scans[type] if can_configure_scan_in_ui?
         end
 
         private
 
-        override :configurable_scans
+        def can_configure_scan_in_ui?
+          project.licensed_feature_available?(:security_configuration_in_ui)
+        end
+
         def configurable_scans
           strong_memoize(:configurable_scans) do
             {
+              sast: project_security_configuration_sast_path(project),
               dast: project_security_configuration_dast_path(project),
               dast_profiles: project_security_configuration_dast_scans_path(project),
               api_fuzzing: project_security_configuration_api_fuzzing_path(project),
               corpus_management: (project_security_configuration_corpus_management_path(project) if ::Feature.enabled?(:corpus_management_ui, project, default_enabled: :yaml))
-            }.merge(super)
+            }
           end
         end
 
-        def always_available?
-          [:corpus_management, :dast_profiles].include?(type)
+        override :scans_configurable_in_merge_request
+        def scans_configurable_in_merge_request
+          super.concat(%i[dependency_scanning container_scanning])
         end
       end
     end

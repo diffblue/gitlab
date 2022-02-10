@@ -193,6 +193,7 @@ class License < ApplicationRecord
     sast_custom_rulesets
     sast_fp_reduction
     secret_detection
+    security_configuration_in_ui
     security_dashboard
     security_on_demand_scans
     security_orchestration_policies

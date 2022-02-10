@@ -3,14 +3,14 @@
 require 'spec_helper'
 
 RSpec.describe ::Gitlab::Security::ScanConfiguration do
+  using RSpec::Parameterized::TableSyntax
+
   let_it_be(:project) { create(:project, :repository) }
 
-  let(:scan) { described_class.new(project: project, type: type, configured: configured) }
+  let(:scan) { described_class.new(project: project, type: type) }
 
   describe '#available?' do
     subject { scan.available? }
-
-    let(:configured) { true }
 
     context 'with a core scanner' do
       let(:type) { :sast }
@@ -54,39 +54,65 @@ RSpec.describe ::Gitlab::Security::ScanConfiguration do
   describe '#configuration_path' do
     subject { scan.configuration_path }
 
-    let(:configured) { true }
-
-    context 'with licensed scanner' do
-      let(:type) { :dast }
-      let(:configuration_path) { "/#{project.namespace.path}/#{project.name}/-/security/configuration/dast" }
-
+    context 'when configuration in UI is available' do
       before do
-        stub_licensed_features(dast: true)
+        stub_licensed_features(security_configuration_in_ui: true)
       end
 
-      it { is_expected.to eq(configuration_path) }
-    end
+      context 'with licensed scanner' do
+        let(:path) { "/#{project.namespace.path}/#{project.name}/-/security/configuration" }
 
-    context 'with always available scanner' do
-      let(:type) { :dast_profiles }
-      let(:configuration_path) { "/#{project.namespace.path}/#{project.name}/-/security/configuration/dast_scans" }
-
-      it { is_expected.to eq(configuration_path) }
-    end
-
-    context 'with a scanner under feature flag' do
-      let(:type) { :corpus_management }
-      let(:configuration_path) { "/#{project.namespace.path}/#{project.name}/-/security/configuration/corpus_management" }
-
-      it { is_expected.to eq(configuration_path) }
-
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(corpus_management_ui: false)
+        where(:type, :configuration_path) do
+          :sast | lazy { "#{path}/sast" }
+          :dast | lazy { "#{path}/dast" }
+          :dast_profiles | lazy { "#{path}/dast_scans" }
+          :api_fuzzing | lazy { "#{path}/api_fuzzing" }
+          :corpus_management | lazy { "#{path}/corpus_management" }
         end
 
-        it { is_expected.to be_nil }
+        with_them do
+          it { is_expected.to eq(configuration_path) }
+        end
       end
+
+      context 'with a scanner under feature flag' do
+        let(:type) { :corpus_management }
+        let(:configuration_path) { "/#{project.namespace.path}/#{project.name}/-/security/configuration/corpus_management" }
+
+        it { is_expected.to eq(configuration_path) }
+
+        context 'when feature flag is disabled' do
+          before do
+            stub_feature_flags(corpus_management_ui: false)
+          end
+
+          it { is_expected.to be_nil }
+        end
+      end
+    end
+
+    context 'when configuration in UI is not available' do
+      let(:type) { :sast }
+
+      it { is_expected.to be_nil }
+    end
+  end
+
+  describe '#can_enable_in_merge_request?' do
+    subject { scan.can_enable_in_merge_request? }
+
+    context 'with a scanner that can be enabled in merge request' do
+      where(type: %i(sast sast_iac secret_detection dependency_scanning container_scanning))
+
+      with_them do
+        it { is_expected.to be_truthy }
+      end
+    end
+
+    context 'with a scanner that can not be enabled in merge request' do
+      let(:type) { :dast }
+
+      it { is_expected.to be_falsey }
     end
   end
 end
