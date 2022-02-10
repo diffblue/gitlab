@@ -14,7 +14,7 @@ export default {
   expandEvent: 'i_testing_metrics_report_widget_total',
   computed: {
     statusIcon() {
-      return this.numberOfChanges === 0 ? EXTENSION_ICONS.success : EXTENSION_ICONS.warning;
+      return this.numberOfChanges() === 0 ? EXTENSION_ICONS.success : EXTENSION_ICONS.warning;
     },
     numberOfChanges() {
       const changedMetrics =
@@ -44,16 +44,30 @@ export default {
     fetchFullData() {
       return Promise.resolve(this.prepareReports());
     },
+    formatMetricDelta(metric) {
+      // calculate metric delta for sorting if numeric
+      const delta = Math.abs(parseFloat(metric.value) - parseFloat(metric.previous_value));
+
+      // give non-numeric metrics high delta so they appear first
+      return Number.isNaN(delta) ? Infinity : delta;
+    },
     prepareReports() {
       const { new_metrics = [], existing_metrics = [], removed_metrics = [] } = this.collapsedData;
       const changedMetrics = existing_metrics
         .filter((metric) => metric?.previous_value)
-        .map((metric, index) => {
+        .map((metric) => {
           return {
-            header: index === 0 && __('Changed'),
             id: uniqueId('changed-metric-'),
             text: `${metric.name}: ${metric.value} (${metric.previous_value})`,
             icon: { name: EXTENSION_ICONS.neutral },
+            delta: this.formatMetricDelta(metric),
+          };
+        })
+        .sort((a, b) => b.delta - a.delta)
+        .map((metric, index) => {
+          return {
+            header: index === 0 && __('Changed'),
+            ...metric,
           };
         });
       const newMetrics = new_metrics.map((metric, index) => {

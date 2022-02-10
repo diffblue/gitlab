@@ -7,16 +7,7 @@ import extensionsContainer from '~/vue_merge_request_widget/components/extension
 import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
 import metricsExtension from 'ee/vue_merge_request_widget/extensions/metrics';
 import httpStatusCodes from '~/lib/utils/http_status';
-
-const changedMetric = {
-  name: 'name',
-  value: 'value',
-  previous_value: 'prev',
-};
-const unchangedMetric = {
-  name: 'name',
-  value: 'value',
-};
+import { metricsResponse, changedMetric, unchangedMetric } from './mock_data';
 
 describe('Metrics extension', () => {
   let wrapper;
@@ -41,6 +32,17 @@ describe('Metrics extension', () => {
         },
       },
     });
+  };
+
+  const createExpandedWidgetWithData = async (data = metricsResponse) => {
+    mockApi(httpStatusCodes.OK, data);
+    createComponent();
+
+    await waitForPromises();
+
+    findToggleCollapsedButton().trigger('click');
+
+    await waitForPromises();
   };
 
   beforeEach(() => {
@@ -91,20 +93,10 @@ describe('Metrics extension', () => {
       expect(wrapper.text()).toBe('Metrics report scanning did not detect any changes');
     });
   });
+
   describe('expanded data', () => {
     beforeEach(async () => {
-      mockApi(httpStatusCodes.OK, {
-        new_metrics: [unchangedMetric, unchangedMetric],
-        existing_metrics: [changedMetric, changedMetric, unchangedMetric, unchangedMetric],
-        removed_metrics: [unchangedMetric, unchangedMetric],
-      });
-      createComponent();
-
-      await waitForPromises();
-
-      findToggleCollapsedButton().trigger('click');
-
-      await waitForPromises();
+      await createExpandedWidgetWithData();
     });
 
     it('displays all metrics', async () => {
@@ -113,16 +105,50 @@ describe('Metrics extension', () => {
 
     it.each`
       index | ordinal     | type           | expectedText
-      ${0}  | ${'first'}  | ${'changed'}   | ${'Changed name: value (prev)'}
-      ${1}  | ${'second'} | ${'changed'}   | ${'name: value (prev)'}
-      ${2}  | ${'first'}  | ${'new'}       | ${'New name: value'}
-      ${3}  | ${'second'} | ${'new'}       | ${'name: value'}
-      ${4}  | ${'first'}  | ${'removed'}   | ${'Removed name: value'}
-      ${5}  | ${'second'} | ${'removed'}   | ${'name: value'}
-      ${6}  | ${'first'}  | ${'unchanged'} | ${'Unchanged name: value (No changes)'}
-      ${7}  | ${'second'} | ${'unchanged'} | ${'name: value (No changes)'}
+      ${0}  | ${'first'}  | ${'changed'}   | ${'Changed memory_static_objects_allocated_items: 1 (1552382)'}
+      ${1}  | ${'second'} | ${'changed'}   | ${'memory_static_objects_retained_mb: 30.6 (30.5)'}
+      ${2}  | ${'first'}  | ${'new'}       | ${'New gem_size_mb{name=pg}: 3.0'}
+      ${3}  | ${'second'} | ${'new'}       | ${'memory_static_objects_retained_items: 258835'}
+      ${4}  | ${'first'}  | ${'removed'}   | ${'Removed gem_size_mb{name=charlock_holmes}: 2.7'}
+      ${5}  | ${'second'} | ${'removed'}   | ${'gem_size_mb{name=omniauth-auth0}: 0.5'}
+      ${6}  | ${'first'}  | ${'unchanged'} | ${'Unchanged gem_total_size_mb: 194.8 (No changes)'}
+      ${7}  | ${'second'} | ${'unchanged'} | ${'memory_static_objects_allocated_mb: 163.7 (No changes)'}
     `('formats $ordinal $type metric correctly', ({ index, expectedText }) => {
       expect(trimText(findAllExtensionListItems().at(index).text())).toBe(expectedText);
+    });
+  });
+
+  describe('changed metrics sorting', () => {
+    it('sorts changed metrics by delta', async () => {
+      await createExpandedWidgetWithData({
+        existing_metrics: [
+          { name: 'small_change', value: '1', previous_value: '0' },
+          { name: 'medium_change', value: '-10', previous_value: '0' },
+          { name: 'large_change', value: '100.1', previous_value: '0' },
+        ],
+      });
+
+      expect(findAllExtensionListItems().at(0).text()).toContain('large_change');
+      expect(findAllExtensionListItems().at(1).text()).toContain('medium_change');
+      expect(findAllExtensionListItems().at(2).text()).toContain('small_change');
+    });
+
+    it('sorts non-numeric metrics before numeric metrics', async () => {
+      await createExpandedWidgetWithData({
+        existing_metrics: [
+          { name: 'medium_change', value: '-10', previous_value: '0' },
+          { name: 'large_change', value: '100.1', previous_value: '0' },
+          {
+            name: 'non-numeric_change',
+            value: 'group::pipeline insights',
+            previous_value: 'group::testing',
+          },
+        ],
+      });
+
+      expect(findAllExtensionListItems().at(0).text()).toContain('non-numeric_change');
+      expect(findAllExtensionListItems().at(1).text()).toContain('large_change');
+      expect(findAllExtensionListItems().at(2).text()).toContain('medium_change');
     });
   });
 });
