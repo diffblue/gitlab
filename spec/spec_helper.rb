@@ -114,6 +114,15 @@ RSpec.configure do |config|
     config.run_all_when_everything_filtered = true
   end
 
+  # Attempt to troubleshoot  https://gitlab.com/gitlab-org/gitlab/-/issues/351531
+  config.after do |example|
+    if example.exception.is_a?(Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification::CrossDatabaseModificationAcrossUnsupportedTablesError)
+      ::CrossDatabaseModification::TransactionStackTrackRecord.log_gitlab_transactions_stack(action: :after_failure, example: example.description)
+    else
+      ::CrossDatabaseModification::TransactionStackTrackRecord.log_gitlab_transactions_stack(action: :after_example, example: example.description)
+    end
+  end
+
   # Re-run failures locally with `--only-failures`
   config.example_status_persistence_file_path = ENV.fetch('RSPEC_LAST_RUN_RESULTS_FILE', './spec/examples.txt')
 
