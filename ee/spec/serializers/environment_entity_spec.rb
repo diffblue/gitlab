@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe EnvironmentEntity do
   let(:user) { create(:user) }
-  let(:environment) { create(:environment) }
+  let(:environment) { create(:environment, project: project) }
   let(:project) { create(:project) }
 
   let(:entity) do
@@ -74,6 +74,17 @@ RSpec.describe EnvironmentEntity do
         subject { entity.as_json.include?(:terminal_path) }
 
         it_behaves_like 'protected environments access', developer_access: false
+      end
+    end
+
+    context 'required_approval_count' do
+      before do
+        stub_licensed_features(protected_environments: true)
+        create(:protected_environment, name: environment.name, project: project, required_approval_count: 2)
+      end
+
+      it 'exposes required_approval_count' do
+        expect(subject[:required_approval_count]).to eq(2)
       end
     end
   end
