@@ -20515,6 +20515,9 @@ msgstr ""
 msgid "JiraConnect|You can now close this window and return to Jira."
 msgstr ""
 
+msgid "JiraConnect|You don't have permission to create branches for this project. Select a different project or contact the project owner for access. %{linkStart}Learn more.%{linkEnd}"
+msgstr ""
+
 msgid "JiraRequest|A connection error occurred while connecting to Jira. Try your request again."
 msgstr ""
 
