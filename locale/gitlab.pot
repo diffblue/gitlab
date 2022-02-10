@@ -6834,6 +6834,9 @@ msgstr ""
 msgid "ChangeTypeAction|Your changes will be committed to %{branchName} because a merge request is open."
 msgstr ""
 
+msgid "Changed"
+msgstr ""
+
 msgid "Changed assignee(s)."
 msgstr ""
 
@@ -30853,6 +30856,12 @@ msgstr ""
 msgid "Reports|Identifier"
 msgstr ""
 
+msgid "Reports|Metrics report scanning detected %{numberOfChanges} %{changes}"
+msgstr ""
+
+msgid "Reports|Metrics report scanning did not detect any changes"
+msgstr ""
+
 msgid "Reports|Metrics reports are loading"
 msgstr ""
 
@@ -39121,6 +39130,9 @@ msgstr ""
 msgid "Unauthenticated web rate limit period in seconds"
 msgstr ""
 
+msgid "Unchanged"
+msgstr ""
+
 msgid "Uncommitted changes will be lost if you change branches. Do you want to continue?"
 msgstr ""
 
@@ -42945,6 +42957,11 @@ msgstr ""
 
 msgid "cannot merge"
 msgstr ""
+
+msgid "change"
+msgid_plural "changes"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "ciReport|%{danger_start}%{degradedNum} degraded%{danger_end}, %{same_start}%{sameNum} same%{same_end}, and %{success_start}%{improvedNum} improved%{success_end}"
 msgstr ""

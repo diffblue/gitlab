@@ -12,6 +12,7 @@ import MrWidgetGeoSecondaryNode from './components/states/mr_widget_secondary_ge
 import loadPerformanceExtension from './extensions/load_performance';
 import browserPerformanceExtension from './extensions/browser_performance';
 import statusChecksExtension from './extensions/status_checks';
+import metricsExtension from './extensions/metrics';
 
 export default {
   components: {
@@ -115,6 +116,9 @@ export default {
     shouldRenderStatusReport() {
       return this.mr?.apiStatusChecksPath && !this.mr?.isNothingToMergeState;
     },
+    shouldRenderMetricsReport() {
+      return Boolean(this.mr?.metricsReportsPath);
+    },
 
     browserPerformanceText() {
       const { improved, degraded, same } = this.mr.browserPerformanceMetrics;
@@ -202,6 +206,11 @@ export default {
         this.registerStatusCheck();
       }
     },
+    shouldRenderMetricsReport(newVal) {
+      if (newVal) {
+        this.registerMetrics();
+      }
+    },
   },
   methods: {
     registerLoadPerformance() {
@@ -217,6 +226,11 @@ export default {
     registerStatusCheck() {
       if (this.shouldShowExtension) {
         registerExtension(statusChecksExtension);
+      }
+    },
+    registerMetrics() {
+      if (this.shouldShowExtension) {
+        registerExtension(metricsExtension);
       }
     },
     getServiceEndpoints(store) {
