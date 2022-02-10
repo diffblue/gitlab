@@ -18,9 +18,9 @@ export default {
       metrics: {
         mergeRequests: {
           value: null,
-          label: s__('GroupActivityMetrics|Merge Requests opened'),
+          label: s__('GroupActivityMetrics|Merge Requests created'),
         },
-        issues: { value: null, label: s__('GroupActivityMetrics|Issues opened') },
+        issues: { value: null, label: s__('GroupActivityMetrics|Issues created') },
         newMembers: { value: null, label: s__('GroupActivityMetrics|Members added') },
       },
     };
