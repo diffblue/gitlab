@@ -17,7 +17,7 @@ export default {
     sharedRunnersUsage: s__('CICDAnalytics|Shared Runners Usage'),
     xAxisLabel: __('Month'),
     yAxisLabel: __('Minutes'),
-    seriesName: s__('UsageQuota|CI minutes usage by month'),
+    seriesName: s__('CICDAnalytics|Shared runner pipeline minute duration by month'),
   },
   popoverOptions: {
     triggers: 'hover',
