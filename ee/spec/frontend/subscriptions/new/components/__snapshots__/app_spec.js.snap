@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`App component cart_abandonment_modal experiment candidate matches the snapshot 1`] = `
+<div
+  class="gl-h-full"
+>
+  <gl-modal-stub
+    dismisslabel="Close"
+    modalclass=""
+    modalid="subscription-modal"
+    size="sm"
+    titletag="h4"
+  >
+    
+
+  We understand. Maybe you have some questions for our sales team, or maybe you'd like to try some of the paid features first. What would you like to do?
+
+  
+  </gl-modal-stub>
+   
+  <step-order-app-stub
+    class="gl-h-full"
+  />
+</div>
+`;
+
+exports[`App component cart_abandonment_modal experiment control matches the snapshot 1`] = `
+<div
+  class="gl-h-full"
+>
+  <!---->
+   
+  <step-order-app-stub
+    class="gl-h-full"
+  />
+</div>
+`;

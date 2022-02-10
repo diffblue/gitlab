@@ -1,0 +1,79 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Modal component matches the snapshot 1`] = `
+<b-modal-stub
+  canceltitle="Cancel"
+  cancelvariant="secondary"
+  headerclosecontent="&times;"
+  headercloselabel="Close"
+  id="subscription-modal"
+  ignoreenforcefocusselector=""
+  lazy="true"
+  modalclass="gl-modal,"
+  oktitle="OK"
+  okvariant="primary"
+  size="sm"
+  title=""
+  titletag="h4"
+>
+  
+
+  We understand. Maybe you have some questions for our sales team, or maybe you'd like to try some of the paid features first. What would you like to do?
+
+  
+  <h4
+    class="modal-title"
+  >
+    
+    Not ready to buy yet?
+    
+    <gl-emoji
+      data-name="thinking"
+    />
+  </h4>
+   
+  <close-button-stub
+    label="Close"
+  />
+  <gl-button-stub
+    buttontextclasses=""
+    category="primary"
+    data-testid="modal-close-btn"
+    icon=""
+    size="medium"
+    variant="default"
+  >
+    
+      Close
+    
+  </gl-button-stub>
+   
+  <gl-button-stub
+    buttontextclasses=""
+    category="secondary"
+    data-testid="talk-to-sales-btn"
+    href="https://about.gitlab.com/sales"
+    icon=""
+    size="medium"
+    variant="confirm"
+  >
+    
+      Chat with sales
+    
+  </gl-button-stub>
+   
+  <gl-button-stub
+    buttontextclasses=""
+    category="primary"
+    data-testid="start-free-trial-btn"
+    href="newTrialRegistrationPath"
+    icon=""
+    size="medium"
+    variant="confirm"
+  >
+    
+      Start a free trial
+    
+  </gl-button-stub>
+</b-modal-stub>
+`;

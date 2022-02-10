@@ -52,6 +52,16 @@ RSpec.describe SubscriptionsHelper do
     it { is_expected.to include(namespace_id: group.id.to_s) }
     it { is_expected.to include(source: 'some_source') }
     it { is_expected.to include(group_data: %Q{[{"id":#{group.id},"account_id":null,"name":"My Namespace","users":2,"guests":1}]}) }
+    it { is_expected.to include(trial: 'false') }
+    it { is_expected.to include(new_trial_registration_path: '/-/trial_registrations/new') }
+
+    context 'when user is on trial' do
+      before do
+        user.namespace.build_gitlab_subscription(trial: true)
+      end
+
+      it { is_expected.to include(trial: 'true') }
+    end
 
     describe 'new_user' do
       where(:referer, :expected_result) do

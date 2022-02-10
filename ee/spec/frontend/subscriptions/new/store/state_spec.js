@@ -23,6 +23,8 @@ describe('projectsSelector default state', () => {
     fullName: 'Full Name',
     newUser: 'true',
     source: 'some_source',
+    isTrial: false,
+    newTrialRegistrationPath: 'newTrialRegistrationPath',
   };
 
   const currentDate = new Date('2020-01-07T12:44:08.135Z');
@@ -182,5 +184,13 @@ describe('projectsSelector default state', () => {
 
   it('sets isConfirmingOrder to false', () => {
     expect(state.isConfirmingOrder).toBe(false);
+  });
+
+  it('sets trial to the initial value', () => {
+    expect(state.isTrial).toBe(false);
+  });
+
+  it('sets newTrialRegistrationPath to the initial value', () => {
+    expect(state.newTrialRegistrationPath).toBe('newTrialRegistrationPath');
   });
 });
