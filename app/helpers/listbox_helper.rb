@@ -17,7 +17,7 @@ module ListboxHelper
   # the path to redirect to when that item is selected.
   #
   # The `selected` parameter is the currently selected `value`, and must
-  # correspond to one of the `items`.
+  # correspond to one of the `items`, or be `nil`. When `selected.nil?`, the first item is selected.
   #
   # The final parameter `html_options` applies arbitrary attributes to the
   # returned tag. Some of these are passed to the underlying Vue component as
