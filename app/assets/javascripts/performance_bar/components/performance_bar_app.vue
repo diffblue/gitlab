@@ -124,6 +124,9 @@ export default {
       const fileName = this.requests[0].truncatedUrl;
       return `${fileName}_perf_bar_${Date.now()}.json`;
     },
+    memoryReportPath() {
+      return mergeUrlParams({ performance_bar: 'memory' }, window.location.href);
+    },
   },
   mounted() {
     this.currentRequest = this.requestId;
@@ -137,9 +140,6 @@ export default {
         { performance_bar: 'flamegraph', stackprof_mode: mode },
         window.location.href,
       );
-    },
-    memoryReportPath() {
-      return mergeUrlParams({ performance_bar: 'memory' }, window.location.href);
     },
   },
   safeHtmlConfig: { ADD_TAGS: ['gl-emoji'] },
@@ -190,7 +190,7 @@ export default {
         id="peek-memory-report"
         class="view"
       >
-        <a class="gl-text-blue-200" :href="memoryReportPath()">{{
+        <a class="gl-text-blue-200" :href="memoryReportPath">{{
           s__('PerformanceBar|Memory report')
         }}</a>
       </div>
