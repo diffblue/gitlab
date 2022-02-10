@@ -26199,6 +26199,9 @@ msgstr ""
 msgid "PerformanceBar|Memory"
 msgstr ""
 
+msgid "PerformanceBar|Memory report"
+msgstr ""
+
 msgid "PerformanceBar|Redis calls"
 msgstr ""
 
