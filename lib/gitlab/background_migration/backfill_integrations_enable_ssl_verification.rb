@@ -33,7 +33,7 @@ module Gitlab
 
         serialize :properties, JSON
 
-        scope :affected, -> { where(type: INTEGRATIONS.keys) }
+        scope :affected, -> { where(type: INTEGRATIONS.keys).where.not(properties: nil) }
       end
 
       def perform(start_id, stop_id)
