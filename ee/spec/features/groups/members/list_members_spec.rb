@@ -66,7 +66,7 @@ RSpec.describe 'Groups > Members > List members' do
 
       click_on 'Invite members'
 
-      page.within '[data-testid="invite-members-modal"]' do
+      page.within '[data-testid="invite-modal"]' do
         field = find('[data-testid="members-token-select-input"]')
         field.native.send_keys :tab
         field.click
