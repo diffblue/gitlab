@@ -224,12 +224,6 @@ RSpec.describe Geo::WikiSyncService, :geo do
                                               last_wiki_sync_failure: 'Error syncing wiki repository: shell error'
                                              )
         end
-
-        it 'calls repository cleanup' do
-          expect(repository).to receive(:clean_stale_repository_files)
-
-          subject.execute
-        end
       end
 
       context 'no Wiki repository' do
