@@ -13,7 +13,7 @@ exhaust the allocated resources for the application.
 Every new feature should have safe usage limits included in its implementation.
 Limits are applicable for:
 
-- System-level resource pools such as  API requests, SSHD connections, database connections, storage, and so on.
+- System-level resource pools such as API requests, SSHD connections, database connections, storage, and so on.
 - Domain-level objects such as CI minutes, groups, sign-in attempts, and so on.
 
 ## Requirements
