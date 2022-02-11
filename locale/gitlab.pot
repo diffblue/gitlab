@@ -29334,6 +29334,9 @@ msgstr ""
 msgid "ProtectedEnvironment|Your environment has been unprotected"
 msgstr ""
 
+msgid "ProtectedTags|Unprotect tag"
+msgstr ""
+
 msgid "ProtectedTags|default"
 msgstr ""
 
