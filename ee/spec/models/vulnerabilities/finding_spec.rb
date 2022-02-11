@@ -909,7 +909,7 @@ RSpec.describe Vulnerabilities::Finding do
           let(:evidence) { finding.metadata['evidence'] }
 
           before do
-            stub_feature_flags(vulnerability_finding_replace_metadata: false)
+            stub_feature_flags(read_from_vulnerability_finding_evidence: false)
           end
 
           include_examples 'evidence schema'
@@ -919,7 +919,7 @@ RSpec.describe Vulnerabilities::Finding do
           let(:evidence) { finding_evidence.data }
 
           before do
-            stub_feature_flags(vulnerability_finding_replace_metadata: true)
+            stub_feature_flags(read_from_vulnerability_finding_evidence: true)
           end
 
           include_examples 'evidence schema'
