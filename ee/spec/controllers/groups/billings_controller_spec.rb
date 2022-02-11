@@ -63,49 +63,6 @@ RSpec.describe Groups::BillingsController, :saas do
           expect(response).to render_template('shared/billings/customers_dot_unavailable')
         end
       end
-
-      context 'when from billing link in side nav', :aggregate_failures, :experiment do
-        context 'when user comes from side nav billing link' do
-          before do
-            stub_experiments(billing_in_side_nav: :candidate)
-          end
-
-          it 'assigns the candidate experience and tracks the event' do
-            expect(experiment(:billing_in_side_nav)).to track(:view, label: 'view_billing')
-                                                                .for(:candidate)
-                                                                .with_context(actor: user, namespace: group)
-                                                                .on_next_instance
-
-            get :index, params: { group_id: group, from: :side_nav }
-
-            expect(response).not_to render_template('shared/billings/customers_dot_unavailable')
-          end
-
-          context 'when CustomersDot is unavailable' do
-            before do
-              allow_next_instance_of(GitlabSubscriptions::FetchSubscriptionPlansService) do |instance|
-                allow(instance).to receive(:execute).and_return(nil)
-              end
-            end
-
-            it 'renders a different partial' do
-              expect(experiment(:billing_in_side_nav)).not_to track(:view, label: 'view_billing')
-
-              get :index, params: { group_id: group, from: :side_nav }
-
-              expect(response).to render_template('shared/billings/customers_dot_unavailable')
-            end
-          end
-        end
-
-        context 'when user does not come from side nav link' do
-          it 'does not track the event' do
-            expect(experiment(:billing_in_side_nav)).not_to track(:view, label: 'view_billing')
-
-            get_index
-          end
-        end
-      end
     end
 
     context 'unauthorized' do

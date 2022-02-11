@@ -572,15 +572,7 @@ RSpec.describe BillingPlansHelper, :saas do
       }
     end
 
-    it 'has experiment attribute' do
-      allow(helper).to receive(:params).and_return({ from: 'side_nav' })
-
-      expect(helper.billing_upgrade_button_data(plan)).to eq data.merge(track_experiment: :billing_in_side_nav)
-    end
-
-    it 'does not have experiment attribute' do
-      allow(helper).to receive(:params).and_return({})
-
+    it 'has expected data' do
       expect(helper.billing_upgrade_button_data(plan)).to eq data
     end
   end
@@ -594,30 +586,8 @@ RSpec.describe BillingPlansHelper, :saas do
       }
     end
 
-    it 'has experiment attribute' do
-      allow(helper).to receive(:params).and_return({ from: 'side_nav' })
-
-      expect(helper.start_free_trial_data).to eq data.merge(track_experiment: :billing_in_side_nav)
-    end
-
-    it 'does not have experiment attribute' do
-      allow(helper).to receive(:params).and_return({})
-
+    it 'has expected data' do
       expect(helper.start_free_trial_data).to eq data
-    end
-  end
-
-  describe '#accessed_billing_from_side_nav?' do
-    it 'comes from billing side nav link click' do
-      allow(helper).to receive(:params).and_return({ from: 'side_nav' })
-
-      expect(helper.accessed_billing_from_side_nav?).to eq(true)
-    end
-
-    it 'does not come from side nav link click' do
-      allow(helper).to receive(:params).and_return({})
-
-      expect(helper.accessed_billing_from_side_nav?).to eq(false)
     end
   end
 end

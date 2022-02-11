@@ -50,7 +50,7 @@ RSpec.describe Sidebars::Groups::Menus::AdministrationMenu do
   end
 
   describe 'Menu items' do
-    subject(:menu_item) { menu.renderable_items.find { |e| e.item_id == item_id } }
+    subject { menu.renderable_items.find { |e| e.item_id == item_id } }
 
     describe 'SAML SSO menu' do
       let(:item_id) { :saml_sso }
@@ -109,34 +109,6 @@ RSpec.describe Sidebars::Groups::Menus::AdministrationMenu do
         let(:user) { nil }
 
         specify { is_expected.to be_nil }
-      end
-
-      context 'with billing_in_side_nav experiment', :experiment do
-        include Rails.application.routes.url_helpers
-
-        let(:settings_path) { group_billings_path(context.group) }
-
-        context 'with control experience' do
-          before do
-            stub_experiments(billing_in_side_nav: :control)
-          end
-
-          it 'does not modify the `active_routes` attribute' do
-            expect(menu_item.active_routes).to eq(path: 'billings#index')
-          end
-        end
-
-        context 'with candidate experience' do
-          before do
-            stub_experiments(billing_in_side_nav: :candidate)
-          end
-
-          it 'modifies the `active_routes` attribute' do
-            exclude_page = group_billings_path(context.group, from: :side_nav)
-
-            expect(menu_item.active_routes).to eq(page: settings_path, exclude_page: exclude_page)
-          end
-        end
       end
     end
   end

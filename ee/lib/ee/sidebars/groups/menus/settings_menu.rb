@@ -7,7 +7,6 @@ module EE
         module SettingsMenu
           extend ::Gitlab::Utils::Override
           include ::Gitlab::Utils::StrongMemoize
-          include ::Gitlab::Experiment::Dsl
 
           override :configure_menu_items
           def configure_menu_items
@@ -116,22 +115,10 @@ module EE
               return ::Sidebars::NilMenuItem.new(item_id: :billing)
             end
 
-            local_active_routes = { path: 'billings#index' }
-
-            experiment(:billing_in_side_nav, actor: context.current_user, namespace: context.group.root_ancestor, sticky_to: context.current_user) do |e|
-              e.control {}
-              e.candidate do
-                local_active_routes = {
-                  page: group_billings_path(context.group),
-                  exclude_page: group_billings_path(context.group, from: :side_nav)
-                }
-              end
-            end
-
             ::Sidebars::MenuItem.new(
               title: _('Billing'),
               link: group_billings_path(context.group),
-              active_routes: local_active_routes,
+              active_routes: { path: 'billings#index' },
               item_id: :billing
             )
           end

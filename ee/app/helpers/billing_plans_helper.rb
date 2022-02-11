@@ -152,37 +152,23 @@ module BillingPlansHelper
   end
 
   def billing_upgrade_button_data(plan)
-    data = {
+    {
       track_action: 'click_button',
       track_label: 'upgrade',
       track_property: plan.code,
       qa_selector: "upgrade_to_#{plan.code}"
     }
-
-    add_billing_in_side_nav_attribute(data)
   end
 
   def start_free_trial_data
-    data = {
+    {
       track_action: 'click_button',
       track_label: 'start_trial',
       qa_selector: 'start_your_free_trial'
     }
-
-    add_billing_in_side_nav_attribute(data)
-  end
-
-  def accessed_billing_from_side_nav?
-    params[:from] == 'side_nav'
   end
 
   private
-
-  def add_billing_in_side_nav_attribute(data)
-    return data unless accessed_billing_from_side_nav?
-
-    data.merge!(track_experiment: :billing_in_side_nav)
-  end
 
   def add_seats_url(group)
     return unless group

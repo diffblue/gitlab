@@ -1,8 +1,0 @@
----
-name: billing_in_side_nav
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/74934
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/344598
-milestone: '14.6'
-type: experiment
-group: group::conversion
-default_enabled: false
