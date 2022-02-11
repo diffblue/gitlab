@@ -71,7 +71,7 @@ class DastSiteValidation < ApplicationRecord
   def self.get_normalized_url_base(url)
     uri = Addressable::URI.parse(url)
 
-    "%{scheme}://%{host}:%{port}" % { scheme: uri.scheme, host: uri.host, port: uri.port }
+    "%{scheme}://%{host}:%{port}" % { scheme: uri.scheme, host: uri.host, port: uri.port || Addressable::URI::PORT_MAPPING[uri.scheme] }
   rescue Addressable::URI::InvalidURIError
     url
   end
