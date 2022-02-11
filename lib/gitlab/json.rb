@@ -33,6 +33,7 @@ module Gitlab
       end
 
       alias_method :parse!, :parse
+      alias_method :load, :parse
 
       # Restricted method for converting a Ruby object to JSON. If you
       # need to pass options to this, you should use `.generate` instead,
@@ -68,6 +69,14 @@ module Gitlab
       # @return [String]
       def pretty_generate(object, opts = {})
         ::JSON.pretty_generate(object, opts)
+      end
+
+      # The standard parser error we should be returning. Defined in a method
+      # so we can potentially override it later.
+      #
+      # @return [JSON::ParserError]
+      def parser_error
+        ::JSON::ParserError
       end
 
       private
@@ -135,14 +144,6 @@ module Gitlab
         opts[:symbol_keys] = opts[:symbolize_keys] || opts[:symbolize_names]
 
         opts
-      end
-
-      # The standard parser error we should be returning. Defined in a method
-      # so we can potentially override it later.
-      #
-      # @return [JSON::ParserError]
-      def parser_error
-        ::JSON::ParserError
       end
 
       # @param [Nil, Boolean] an extracted :legacy_mode key from the opts hash
