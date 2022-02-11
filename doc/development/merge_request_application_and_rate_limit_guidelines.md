@@ -18,16 +18,12 @@ Limits are applicable for:
 
 ### Requirements
 
-1. Limits are required if the absence of the limit matches severity 1 - 3 in the [Severity
-Definitions for Limit Related
-1. Limits are required if the absence of the limit matches severity 1 - 3 in the severity
-definitions for [limit-related
-bugs](https://about.gitlab.com/handbook/engineering/quality/issue-triage/#limit-related-bugs).
-1. Any additions, removals, or updates to limits must be reflected in the [GitLab application limits](https://docs.gitlab.com/ee/administration/instance_limits.html) documentation.
+1. Limits are required if the absence of the limit matches severity 1 - 3 in the severity definitions for [limit-related bugs](https://about.gitlab.com/handbook/engineering/quality/issue-triage/#limit-related-bugs).
+1. [GitLab application limits](https://docs.gitlab.com/ee/administration/instance_limits.html) documentation must be updated anytime limits are added, removed, or updated.
 
 
 
 ### Additional reading
 
 - Product processes: [introducing application limits](https://about.gitlab.com/handbook/product/product-processes/#introducing-application-limits)
-- [Development docs: guide for adding application limits](application_limits.md)
+- Development docs: [guide for adding application limits](application_limits.md)
