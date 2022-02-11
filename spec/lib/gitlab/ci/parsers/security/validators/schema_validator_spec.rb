@@ -3,6 +3,38 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
+  describe 'SUPPORTED_VERSIONS' do
+    let(:schema_path) { Rails.root.join("lib", "gitlab", "ci", "parsers", "security", "validators", "schemas") }
+    let(:file_paths) do
+      described_class::SUPPORTED_VERSIONS.flat_map do |report_type, supported_versions|
+        type_name = report_type.to_s.tr("_", "-")
+        file_name = "#{type_name}-report-format.json"
+        supported_versions.map { |version| schema_path.join(version, file_name) }
+      end
+    end
+
+    it 'has a corresponding schema on the disk' do
+      existing_files = file_paths.map { |file_path| File.file?(file_path) }
+      expect(existing_files).to all(be true)
+    end
+  end
+
+  describe 'DEPRECATED_VERSIONS' do
+    let(:schema_path) { Rails.root.join("lib", "gitlab", "ci", "parsers", "security", "validators", "schemas") }
+    let(:file_paths) do
+      described_class::DEPRECATED_VERSIONS.flat_map do |report_type, supported_versions|
+        type_name = report_type.to_s.tr("_", "-")
+        file_name = "#{type_name}-report-format.json"
+        supported_versions.map { |version| schema_path.join(version, file_name) }
+      end
+    end
+
+    it 'has a corresponding schema on the disk' do
+      existing_files = file_paths.map { |file_path| File.file?(file_path) }
+      expect(existing_files).to all(be true)
+    end
+  end
+
   using RSpec::Parameterized::TableSyntax
 
   where(:report_type, :expected_errors, :valid_data) do

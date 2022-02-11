@@ -6,6 +6,24 @@ module Gitlab
       module Security
         module Validators
           class SchemaValidator
+            SUPPORTED_VERSIONS = {
+              container_scanning: %w[14.0.0 14.0.1 14.0.2 14.0.3 14.0.4 14.0.5 14.0.6 14.1.0],
+              coverage_fuzzing: %w[14.0.0 14.0.1 14.0.2 14.0.3 14.0.4 14.0.5 14.0.6 14.1.0],
+              dast: %w[14.0.0 14.0.1 14.0.2 14.0.3 14.0.4 14.0.5 14.0.6 14.1.0],
+              dependency_scanning: %w[14.0.0 14.0.1 14.0.2 14.0.3 14.0.4 14.0.5 14.0.6 14.1.0],
+              sast: %w[14.0.0 14.0.1 14.0.2 14.0.3 14.0.4 14.0.5 14.0.6 14.1.0],
+              secret_detection: %w[14.0.0 14.0.1 14.0.2 14.0.3 14.0.4 14.0.5 14.0.6 14.1.0]
+            }.freeze
+
+            DEPRECATED_VERSIONS = {
+              container_scanning: %w[],
+              coverage_fuzzing: %w[],
+              dast: %w[],
+              dependency_scanning: %w[],
+              sast: %w[],
+              secret_detection: %w[]
+            }.freeze
+
             class Schema
               def root_path
                 File.join(__dir__, 'schemas')
