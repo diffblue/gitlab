@@ -5158,6 +5158,12 @@ msgstr ""
 msgid "Authorized applications (%{size})"
 msgstr ""
 
+msgid "AuthorizedApplication|Are you sure you want to revoke this application?"
+msgstr ""
+
+msgid "AuthorizedApplication|Revoke application"
+msgstr ""
+
 msgid "Authors: %{authors}"
 msgstr ""
 
