@@ -254,7 +254,7 @@ RSpec.describe 'group epic roadmap', :js do
           end
         end
 
-        def wait_for_milestones(count)
+        def expect_milestones_count(count)
           page.within('.roadmap-container .milestones-list-section') do
             expect(page).to have_selector('.milestone-item-details', count: count)
           end
@@ -270,28 +270,19 @@ RSpec.describe 'group epic roadmap', :js do
           end
         end
 
-        it 'renders all milestones' do
-          select_milestones('Show all milestones')
+        it 'renders milestones based on filter' do
+          milestones_counts = {
+            'Show all milestones' => 4,
+            'Show group milestones' => 1,
+            'Show sub-group milestones' => 1,
+            'Show project milestones' => 2
+          }
 
-          wait_for_milestones(4)
-        end
+          milestones_counts.each do |filter, count|
+            select_milestones(filter)
 
-        it 'renders group milestones' do
-          select_milestones('Show group milestones')
-
-          wait_for_milestones(1)
-        end
-
-        it 'renders subgroup milestones' do
-          select_milestones('Show sub-group milestones')
-
-          wait_for_milestones(1)
-        end
-
-        it 'renders project milestones' do
-          select_milestones('Show project milestones')
-
-          wait_for_milestones(2)
+            expect_milestones_count(count)
+          end
         end
 
         it 'turns off milestones' do
