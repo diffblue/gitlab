@@ -4,7 +4,7 @@ import createFlash from '~/flash';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __ } from '~/locale';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
-import { DEFAULT_NONE_ANY, FILTER_NONE_ANY, OPERATOR_IS_NOT } from '../constants';
+import { DEFAULT_NONE_ANY } from '../constants';
 import searchEpicsQuery from '../queries/search_epics.query.graphql';
 
 export default {
@@ -47,14 +47,6 @@ export default {
     },
     defaultEpics() {
       return this.config.defaultEpics || DEFAULT_NONE_ANY;
-    },
-    availableDefaultEpics() {
-      if (this.value.operator === OPERATOR_IS_NOT) {
-        return this.defaultEpics.filter(
-          (suggestion) => !FILTER_NONE_ANY.includes(suggestion.value),
-        );
-      }
-      return this.defaultEpics;
     },
   },
   methods: {
@@ -106,7 +98,7 @@ export default {
     :suggestions-loading="loading"
     :suggestions="epics"
     :get-active-token-value="getActiveEpic"
-    :default-suggestions="availableDefaultEpics"
+    :default-suggestions="defaultEpics"
     search-by="title"
     @fetch-suggestions="fetchEpicsBySearchTerm"
     v-on="$listeners"
