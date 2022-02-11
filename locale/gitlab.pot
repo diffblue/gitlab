@@ -6492,6 +6492,9 @@ msgstr ""
 msgid "Can create groups:"
 msgstr ""
 
+msgid "Can not delete primary training"
+msgstr ""
+
 msgid "Can't apply as the source branch was deleted."
 msgstr ""
 
