@@ -8,12 +8,12 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
 
     described_class::SUPPORTED_VERSIONS.each_key do |report_type|
       context "#{report_type}" do
+        let(:filename) { "#{report_type.to_s.tr("_", "-")}-report-format.json" }
+
         described_class::SUPPORTED_VERSIONS[report_type].each do |version|
           context "#{version}" do
             it "has a corresponding schema file present" do
-              type_name = report_type.to_s.tr("_", "-")
-              file_name = "#{type_name}-report-format.json"
-              full_path = schema_path.join(version, file_name)
+              full_path = schema_path.join(version, filename)
               expect(File.file?(full_path)).to be true
             end
           end
