@@ -5,6 +5,8 @@ import eventHub from 'ee/security_dashboard/utils/event_hub';
 import { __, s__, n__ } from '~/locale';
 import toast from '~/vue_shared/plugins/global_toast';
 import StatusDropdown from './status_dropdown.vue';
+import { actions } from 'codesandbox-api';
+import { queryTypes } from '../../../../../../../app/assets/javascripts/custom_metrics/constants';
 
 export default {
   name: 'SelectionSummary',
@@ -82,7 +84,16 @@ export default {
         this.isSubmitting = false;
 
         if (fulfilledCount > 0) {
-          toast(this.$options.i18n.vulnerabilitiesUpdated(fulfilledCount));
+
+          if(this.selectedStatus=="dismiss"){
+            toast(this.$options.i18n.vulnerabilities_set_to_dissmissed(fulfilledCount)); // added
+          }else if(this.selectedStatus=="resolve"){
+            toast(this.$options.i18n.vulnerabilities_set_to_resolved(fulfilledCount)); // added
+          }else if(this.selectedStatus=="confirm"){
+            toast(this.$options.i18n.vulnerabilities_set_to_confirmed(fulfilledCount)); // added
+          }else if(this.selectedStatus=="revert"){
+            toast(this.$options.i18n.vulnerabilities_set_to_needs_triage(fulfilledCount)); // added
+          }
           eventHub.$emit('vulnerabilities-updated', this);
         }
 
@@ -98,6 +109,14 @@ export default {
     cancel: __('Cancel'),
     selected: __('Selected'),
     changeStatus: s__('SecurityReports|Change status'),
+    vulnerabilities_set_to_confirmed: (count) =>
+      n__('%d vulnerability set to confirmed', '%d vulnerabilities set to confirmed', count),
+    vulnerabilities_set_to_needs_triage: (count) =>
+      n__('%d vulnerability set to needs triage', '%d vulnerabilities set to needs triage', count),
+    vulnerabilities_set_to_resolved: (count) =>
+      n__('%d vulnerability set to resolved', '%d vulnerabilities set to resolved', count),
+    vulnerabilities_set_to_dissmissed: (count) =>
+      n__('%d vulnerability set to dissmissed', '%d vulnerabilities set to dissmessed as:[dismissal type]', count),
     vulnerabilitiesUpdated: (count) =>
       n__('%d vulnerability updated', '%d vulnerabilities updated', count),
     vulnerabilitiesUpdateFailed: (vulnIds) =>
@@ -140,3 +159,4 @@ export default {
     </div>
   </gl-collapse>
 </template>
+
