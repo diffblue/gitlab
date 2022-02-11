@@ -329,3 +329,8 @@ export const setSortedBy = ({ commit }, sortedBy) => commit(types.SET_SORTED_BY,
 
 export const setProgressTracking = ({ commit }, progressTracking) =>
   commit(types.SET_PROGRESS_TRACKING, progressTracking);
+
+export const setMilestonesType = ({ commit }, milestonesType) =>
+  commit(types.SET_MILESTONES_TYPE, milestonesType);
+
+export const toggleMilestones = ({ commit }) => commit(types.TOGGLE_MILESTONES);

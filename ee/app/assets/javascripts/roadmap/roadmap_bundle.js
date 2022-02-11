@@ -11,7 +11,12 @@ import EpicItem from './components/epic_item.vue';
 import EpicItemContainer from './components/epic_item_container.vue';
 
 import roadmapApp from './components/roadmap_app.vue';
-import { DATE_RANGES, PROGRESS_WEIGHT, UNSUPPORTED_ROADMAP_PARAMS } from './constants';
+import {
+  DATE_RANGES,
+  PROGRESS_WEIGHT,
+  UNSUPPORTED_ROADMAP_PARAMS,
+  MILESTONES_ALL,
+} from './constants';
 
 import createStore from './store';
 import {
@@ -104,6 +109,11 @@ export default () => {
         presetType,
         timeframe,
         progressTracking: rawFilterParams.progress || PROGRESS_WEIGHT,
+        isShowingMilestones:
+          rawFilterParams.show_milestones === undefined
+            ? true
+            : parseBoolean(rawFilterParams.show_milestones),
+        milestonesType: rawFilterParams.milestones_type || MILESTONES_ALL,
       };
     },
     created() {
@@ -123,6 +133,8 @@ export default () => {
         hasFiltersApplied: this.hasFiltersApplied,
         allowSubEpics: this.allowSubEpics,
         progressTracking: this.progressTracking,
+        isShowingMilestones: this.isShowingMilestones,
+        milestonesType: this.milestonesType,
       });
     },
     methods: {

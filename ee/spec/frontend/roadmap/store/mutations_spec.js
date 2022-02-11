@@ -1,7 +1,7 @@
 import * as types from 'ee/roadmap/store/mutation_types';
 import mutations from 'ee/roadmap/store/mutations';
 
-import { PROGRESS_COUNT } from 'ee/roadmap/constants';
+import { PROGRESS_COUNT, MILESTONES_GROUP } from 'ee/roadmap/constants';
 import defaultState from 'ee/roadmap/store/state';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
@@ -353,6 +353,33 @@ describe('Roadmap Store Mutations', () => {
 
       expect(state).toMatchObject({
         progressTracking,
+      });
+    });
+  });
+
+  describe('SET_MILESTONES_TYPE', () => {
+    it('Should set `milestonesType` to the state', () => {
+      const milestonesType = MILESTONES_GROUP;
+      setEpicMockData(state);
+
+      mutations[types.SET_MILESTONES_TYPE](state, milestonesType);
+
+      expect(state).toMatchObject({
+        milestonesType,
+      });
+    });
+  });
+
+  describe('TOGGLE_MILESTONES', () => {
+    it('Should toggle `isShowingMilestones` on state', () => {
+      expect(state).toMatchObject({
+        isShowingMilestones: true,
+      });
+
+      mutations[types.TOGGLE_MILESTONES](state);
+
+      expect(state).toMatchObject({
+        isShowingMilestones: false,
       });
     });
   });

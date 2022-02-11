@@ -79,3 +79,15 @@ export const UNSUPPORTED_ROADMAP_PARAMS = [
   'layout',
   'progress',
 ];
+
+export const MILESTONES_ALL = 'ALL';
+export const MILESTONES_GROUP = 'GROUP';
+export const MILESTONES_SUBGROUP = 'SUBGROUP';
+export const MILESTONES_PROJECT = 'PROJECT';
+
+export const MILESTONES_OPTIONS = [
+  { text: __('Show all milestones'), value: MILESTONES_ALL },
+  { text: __('Show group milestones'), value: MILESTONES_GROUP },
+  { text: __('Show sub-group milestones'), value: MILESTONES_SUBGROUP },
+  { text: __('Show project milestones'), value: MILESTONES_PROJECT },
+];

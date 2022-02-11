@@ -2,6 +2,7 @@
 import { mapState } from 'vuex';
 
 import eventHub from '../event_hub';
+import { MILESTONES_GROUP, MILESTONES_SUBGROUP, MILESTONES_PROJECT } from '../constants';
 
 import epicsListSection from './epics_list_section.vue';
 import milestonesListSection from './milestones_list_section.vue';
@@ -40,9 +41,21 @@ export default {
     },
   },
   computed: {
-    ...mapState(['defaultInnerHeight']),
+    ...mapState(['defaultInnerHeight', 'isShowingMilestones', 'milestonesType']),
     displayMilestones() {
-      return Boolean(this.milestones.length);
+      return Boolean(this.milestones.length) && this.isShowingMilestones;
+    },
+    milestonesToShow() {
+      switch (this.milestonesType) {
+        case MILESTONES_GROUP:
+          return this.milestones.filter((m) => m.groupMilestone && !m.subgroupMilestone);
+        case MILESTONES_SUBGROUP:
+          return this.milestones.filter((m) => m.subgroupMilestone);
+        case MILESTONES_PROJECT:
+          return this.milestones.filter((m) => m.projectMilestone);
+        default:
+          return this.milestones;
+      }
     },
   },
   methods: {
@@ -70,7 +83,7 @@ export default {
     <milestones-list-section
       v-if="displayMilestones"
       :preset-type="presetType"
-      :milestones="milestones"
+      :milestones="milestonesToShow"
       :timeframe="timeframe"
       :current-group-id="currentGroupId"
     />

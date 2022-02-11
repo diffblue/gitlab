@@ -144,4 +144,12 @@ export default {
   [types.SET_PROGRESS_TRACKING](state, progressTracking) {
     state.progressTracking = progressTracking;
   },
+
+  [types.SET_MILESTONES_TYPE](state, milestonesType) {
+    state.milestonesType = milestonesType;
+  },
+
+  [types.TOGGLE_MILESTONES](state) {
+    state.isShowingMilestones = !state.isShowingMilestones;
+  },
 };
