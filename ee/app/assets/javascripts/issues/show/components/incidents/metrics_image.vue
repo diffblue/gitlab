@@ -34,10 +34,10 @@ export default {
     GlModal,
     GlSprintf,
   },
-  inject: ['canUpdate'],
   directives: {
     GlTooltip: GlTooltipDirective,
   },
+  inject: ['canUpdate'],
   props: {
     id: {
       type: Number,
