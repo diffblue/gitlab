@@ -68,8 +68,8 @@ module EE
       for_epic? ? noteable.group : super
     end
 
-    override :system_note_with_references_visible_for?
-    def system_note_with_references_visible_for?(user)
+    override :system_note_visible_for?
+    def system_note_visible_for?(user)
       return false unless super
 
       return true unless system_note_for_epic? && created_before_noteable?
