@@ -56,7 +56,13 @@ module Gitlab
           next unless parsed_url.scheme == 'https' && parsed_url.hostname =~ known_hostnames
 
           integration.properties['enable_ssl_verification'] = true
-          integration.save!(touch: false)
+
+          begin
+            integration.save!(touch: false)
+          rescue ActiveRecord::RecordInvalid
+            # Don't change the configuration if the record is invalid, in this case
+            # they will just keep having SSL verification disabled.
+          end
         end
 
         mark_job_as_succeeded(start_id, stop_id)
