@@ -748,6 +748,36 @@ For additional context, or to provide feedback regarding this change, please ref
 
 **Planned removal milestone: 15.0 (2022-05-22)**
 
+### Dependency Scanning Python 3.9 and 3.6 image deprecation
+
+WARNING:
+This feature will be changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+For those using Dependency Scanning for Python projects, we are deprecating the default `gemnasium-python:2` image which uses Python 3.6 as well as the custom `gemnasium-python:2-python-3.9` image which uses Python 3.9. The new default image as of GitLab 15.0 will be for Python 3.9 as it is a [supported version](https://endoflife.date/python) and 3.6 [is no longer supported](https://endoflife.date/python).
+
+For users using Python 3.9 or 3.9-compatible projects, you should not need to take action and dependency scanning should begin to work in GitLab 15.0. If you wish to test the new container now please run a test pipeline in your project with this container (which will be removed in 15.0). Use the Python 3.9 image:
+
+```yaml
+gemnasium-python-dependency_scanning:
+  image:
+    name: registry.gitlab.com/gitlab-org/security-products/analyzers/gemnasium-python:2-python-3.9
+```
+
+For users using Python 3.6, as of GitLab 15.0 you will no longer be able to use the default template for dependency scanning. You will need to switch to use the deprecated `gemnasium-python:2` analyzer image. If you are impacted by this please comment in [this issue](https://gitlab.com/gitlab-org/gitlab/-/issues/351503) so we can extend the removal if needed.
+
+For users using the 3.9 special exception image, you must instead use the default value and no longer override your container. To verify if you are using the 3.9 special exception image, check your `.gitlab-ci.yml` file for the following reference: 
+
+```yaml
+gemnasium-python-dependency_scanning:
+  image:
+    name: registry.gitlab.com/gitlab-org/security-products/analyzers/gemnasium-python:2-python-3.9
+```
+
+**Planned removal milestone: 15.0 (2021-05-22)**
+
 ### Deprecate Geo Admin UI Routes
 
 In GitLab 13.0, we introduced new project and design replication details routes in the Geo Admin UI. These routes are `/admin/geo/replication/projects` and `/admin/geo/replication/designs`. We kept the legacy routes and redirected them to the new routes. In GitLab 15.0, we will remove support for the legacy routes `/admin/geo/projects` and `/admin/geo/designs`. Please update any bookmarks or scripts that may use the legacy routes.
