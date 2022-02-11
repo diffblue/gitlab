@@ -6,13 +6,15 @@ module Gitlab
     class BackfillIntegrationsEnableSslVerification
       INTEGRATIONS = {
         # This matches the logic in `Integrations::DroneCi#url_is_saas?`
-        # https://docs.drone.io/pipeline/environment/reference/drone-system-hostname/
+        # - https://gitlab.com/gitlab-org/gitlab/blob/65b7fc1ad1ad33247890324e9a3396993b7718a1/app/models/integrations/drone_ci.rb#L122-127
+        # - https://docs.drone.io/pipeline/environment/reference/drone-system-hostname/
         'DroneCiService' => [
           :drone_url,
           /\Acloud\.drone\.io\z/i.freeze
         ],
         # This matches the logic in `Integrations::Teamcity#url_is_saas?`
-        # https://www.jetbrains.com/help/teamcity/cloud/migrate-from-teamcity-on-premises-to-teamcity-cloud.html#Migration+Process
+        # - https://gitlab.com/gitlab-org/gitlab/blob/65b7fc1ad1ad33247890324e9a3396993b7718a1/app/models/integrations/teamcity.rb#L117-122
+        # - https://www.jetbrains.com/help/teamcity/cloud/migrate-from-teamcity-on-premises-to-teamcity-cloud.html#Migration+Process
         'TeamcityService' => [
           :teamcity_url,
           /\A[^\.]+\.teamcity\.com\z/i.freeze
