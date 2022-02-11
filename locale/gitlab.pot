@@ -6351,6 +6351,9 @@ msgstr ""
 msgid "CICDAnalytics|Shared Runners Usage"
 msgstr ""
 
+msgid "CICDAnalytics|Shared runner pipeline minute duration by month"
+msgstr ""
+
 msgid "CICDAnalytics|Shared runner usage"
 msgstr ""
 
