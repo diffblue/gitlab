@@ -851,6 +851,10 @@ To align with this change, API calls to list external status checks will also re
 
 **Planned removal milestone: 15.0 (2022-05-22)**
 
+### GitLab self-monitoring
+
+GitLab self-monitoring gives administrators of self-hosted GitLab instances the tools to monitor the health of their instances. This feature is deprecated in GitLab 14.8, but is not scheduled for removal.
+
 ### Optional enforcement of PAT expiration
 
 WARNING:
