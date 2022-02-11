@@ -64,6 +64,7 @@ class License < ApplicationRecord
   EEP_FEATURES = EES_FEATURES + EEP_FEATURES_WITH_USAGE_PING + %i[
     adjourned_deletion_for_projects_and_groups
     admin_audit_log
+    alert_metric_upload
     auditor_user
     blocking_merge_requests
     board_assignee_lists
