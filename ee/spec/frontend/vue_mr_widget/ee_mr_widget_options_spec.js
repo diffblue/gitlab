@@ -158,19 +158,17 @@ describe('ee merge request widget options', () => {
         mock.onGet(SAST_DIFF_ENDPOINT).reply(200, sastDiffSuccessMock);
         mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
+        return axios.waitForAll();
       });
 
-      it('should render provided data', (done) => {
-        setImmediate(() => {
-          expect(
-            trimText(
-              findExtendedSecurityWidget()
-                .find(`${SAST_SELECTOR} .report-block-list-issue-description`)
-                .text(),
-            ),
-          ).toEqual('SAST detected 1 potential vulnerability 1 Critical 0 High and 0 Others');
-          done();
-        });
+      it('should render provided data', () => {
+        expect(
+          trimText(
+            findExtendedSecurityWidget()
+              .find(`${SAST_SELECTOR} .report-block-list-issue-description`)
+              .text(),
+          ),
+        ).toEqual('SAST detected 1 potential vulnerability 1 Critical 0 High and 0 Others');
       });
     });
 
@@ -180,19 +178,17 @@ describe('ee merge request widget options', () => {
         mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
+        return axios.waitForAll();
       });
 
-      it('should render provided data', (done) => {
-        setImmediate(() => {
-          expect(
-            trimText(
-              findExtendedSecurityWidget()
-                .find(`${SAST_SELECTOR} .report-block-list-issue-description`)
-                .text(),
-            ),
-          ).toEqual('SAST detected no vulnerabilities.');
-          done();
-        });
+      it('should render provided data', () => {
+        expect(
+          trimText(
+            findExtendedSecurityWidget()
+              .find(`${SAST_SELECTOR} .report-block-list-issue-description`)
+              .text(),
+          ),
+        ).toEqual('SAST detected no vulnerabilities.');
       });
     });
 
@@ -202,15 +198,13 @@ describe('ee merge request widget options', () => {
         mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(500, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
+        return axios.waitForAll();
       });
 
-      it('should render error indicator', (done) => {
-        setImmediate(() => {
-          expect(trimText(findExtendedSecurityWidget().find(SAST_SELECTOR).text())).toContain(
-            'SAST: Loading resulted in an error',
-          );
-          done();
-        });
+      it('should render error indicator', () => {
+        expect(trimText(findExtendedSecurityWidget().find(SAST_SELECTOR).text())).toContain(
+          'SAST: Loading resulted in an error',
+        );
       });
     });
 
@@ -269,21 +263,19 @@ describe('ee merge request widget options', () => {
         mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
+        return axios.waitForAll();
       });
 
-      it('should render provided data', (done) => {
-        setImmediate(() => {
-          expect(
-            trimText(
-              findExtendedSecurityWidget()
-                .find(`${DEPENDENCY_SCANNING_SELECTOR} .report-block-list-issue-description`)
-                .text(),
-            ),
-          ).toEqual(
-            'Dependency scanning detected 2 potential vulnerabilities 1 Critical 1 High and 0 Others',
-          );
-          done();
-        });
+      it('should render provided data', () => {
+        expect(
+          trimText(
+            findExtendedSecurityWidget()
+              .find(`${DEPENDENCY_SCANNING_SELECTOR} .report-block-list-issue-description`)
+              .text(),
+          ),
+        ).toEqual(
+          'Dependency scanning detected 2 potential vulnerabilities 1 Critical 1 High and 0 Others',
+        );
       });
     });
 
@@ -297,19 +289,17 @@ describe('ee merge request widget options', () => {
         mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
+        return axios.waitForAll();
       });
 
-      it('renders no vulnerabilities message', (done) => {
-        setImmediate(() => {
-          expect(
-            trimText(
-              findExtendedSecurityWidget()
-                .find(`${DEPENDENCY_SCANNING_SELECTOR} .report-block-list-issue-description`)
-                .text(),
-            ),
-          ).toEqual('Dependency scanning detected no vulnerabilities.');
-          done();
-        });
+      it('renders no vulnerabilities message', () => {
+        expect(
+          trimText(
+            findExtendedSecurityWidget()
+              .find(`${DEPENDENCY_SCANNING_SELECTOR} .report-block-list-issue-description`)
+              .text(),
+          ),
+        ).toEqual('Dependency scanning detected no vulnerabilities.');
       });
     });
 
@@ -319,19 +309,17 @@ describe('ee merge request widget options', () => {
         mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
+        return axios.waitForAll();
       });
 
-      it('should render provided data', (done) => {
-        setImmediate(() => {
-          expect(
-            trimText(
-              findExtendedSecurityWidget()
-                .find(`${DEPENDENCY_SCANNING_SELECTOR} .report-block-list-issue-description`)
-                .text(),
-            ),
-          ).toEqual('Dependency scanning detected no vulnerabilities.');
-          done();
-        });
+      it('should render provided data', () => {
+        expect(
+          trimText(
+            findExtendedSecurityWidget()
+              .find(`${DEPENDENCY_SCANNING_SELECTOR} .report-block-list-issue-description`)
+              .text(),
+          ),
+        ).toEqual('Dependency scanning detected no vulnerabilities.');
       });
     });
 
@@ -340,15 +328,13 @@ describe('ee merge request widget options', () => {
         mock.onAny().reply(500);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
+        return axios.waitForAll();
       });
 
-      it('should render error indicator', (done) => {
-        setImmediate(() => {
-          expect(
-            trimText(findExtendedSecurityWidget().find(DEPENDENCY_SCANNING_SELECTOR).text()),
-          ).toContain('Dependency scanning: Loading resulted in an error');
-          done();
-        });
+      it('should render error indicator', () => {
+        expect(
+          trimText(findExtendedSecurityWidget().find(DEPENDENCY_SCANNING_SELECTOR).text()),
+        ).toContain('Dependency scanning: Loading resulted in an error');
       });
     });
   });
@@ -362,60 +348,47 @@ describe('ee merge request widget options', () => {
     });
 
     describe('with successful request', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         mock.onGet(DEFAULT_BROWSER_PERFORMANCE.head_path).reply(200, headBrowserPerformance);
         mock.onGet(DEFAULT_BROWSER_PERFORMANCE.base_path).reply(200, baseBrowserPerformance);
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
-
-        await waitForPromises();
       });
 
       describe('default', () => {
         beforeEach(() => {
           setBrowserPerformance();
+          return axios.waitForAll();
         });
 
-        it('should render provided data', (done) => {
-          setImmediate(() => {
-            expect(
-              trimText(wrapper.find('.js-browser-performance-widget .js-code-text').text()),
-            ).toEqual('Browser performance test metrics: 2 degraded, 1 same, 1 improved');
-            done();
-          });
+        it('should render provided data', () => {
+          expect(
+            trimText(wrapper.find('.js-browser-performance-widget .js-code-text').text()),
+          ).toEqual('Browser performance test metrics: 2 degraded, 1 same, 1 improved');
         });
 
-        it('should render performance issue body component', (done) => {
-          setImmediate(() => {
-            expect(wrapper.findComponent(PerformanceIssueBody).exists()).toBe(true);
-            done();
-          });
+        it('should render performance issue body component', () => {
+          expect(wrapper.findComponent(PerformanceIssueBody).exists()).toBe(true);
         });
 
         describe('text connector', () => {
-          it('should only render information about fixed issues', (done) => {
-            setImmediate(async () => {
-              wrapper.vm.mr.browserPerformanceMetrics.degraded = [];
-              wrapper.vm.mr.browserPerformanceMetrics.same = [];
+          it('should only render information about fixed issues', async () => {
+            wrapper.vm.mr.browserPerformanceMetrics.degraded = [];
+            wrapper.vm.mr.browserPerformanceMetrics.same = [];
 
-              await nextTick();
-              expect(
-                trimText(wrapper.find('.js-browser-performance-widget .js-code-text').text()),
-              ).toEqual('Browser performance test metrics: 1 improved');
-              done();
-            });
+            await nextTick();
+            expect(
+              trimText(wrapper.find('.js-browser-performance-widget .js-code-text').text()),
+            ).toEqual('Browser performance test metrics: 1 improved');
           });
 
-          it('should only render information about added issues', (done) => {
-            setImmediate(async () => {
-              wrapper.vm.mr.browserPerformanceMetrics.improved = [];
-              wrapper.vm.mr.browserPerformanceMetrics.same = [];
+          it('should only render information about added issues', async () => {
+            wrapper.vm.mr.browserPerformanceMetrics.improved = [];
+            wrapper.vm.mr.browserPerformanceMetrics.same = [];
 
-              await nextTick();
-              expect(
-                trimText(wrapper.find('.js-browser-performance-widget .js-code-text').text()),
-              ).toEqual('Browser performance test metrics: 2 degraded');
-              done();
-            });
+            await nextTick();
+            expect(
+              trimText(wrapper.find('.js-browser-performance-widget .js-code-text').text()),
+            ).toEqual('Browser performance test metrics: 2 degraded');
           });
         });
       });
@@ -447,7 +420,7 @@ describe('ee merge request widget options', () => {
     });
 
     describe('with empty successful request', () => {
-      beforeEach((done) => {
+      beforeEach(() => {
         mock.onGet(DEFAULT_BROWSER_PERFORMANCE.head_path).reply(200, []);
         mock.onGet(DEFAULT_BROWSER_PERFORMANCE.base_path).reply(200, []);
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
@@ -456,7 +429,7 @@ describe('ee merge request widget options', () => {
         wrapper.vm.mr.browserPerformance = gl.mrWidgetData.browserPerformance;
 
         // wait for network request from component watch update method
-        setImmediate(done);
+        return axios.waitForAll();
       });
 
       it('should render provided data', () => {
@@ -486,15 +459,13 @@ describe('ee merge request widget options', () => {
 
         gl.mrWidgetData.browserPerformance = { ...DEFAULT_BROWSER_PERFORMANCE };
         wrapper.vm.mr.browserPerformance = gl.mrWidgetData.browserPerformance;
+        return axios.waitForAll();
       });
 
-      it('should render error indicator', (done) => {
-        setImmediate(() => {
-          expect(
-            trimText(wrapper.find('.js-browser-performance-widget .js-code-text').text()),
-          ).toContain('Failed to load browser-performance report');
-          done();
-        });
+      it('should render error indicator', () => {
+        expect(
+          trimText(wrapper.find('.js-browser-performance-widget .js-code-text').text()),
+        ).toContain('Failed to load browser-performance report');
       });
     });
   });
@@ -517,11 +488,11 @@ describe('ee merge request widget options', () => {
       });
 
       describe('default', () => {
-        beforeEach((done) => {
+        beforeEach(() => {
           setLoadPerformance();
 
           // wait for network request from component watch update method
-          setImmediate(done);
+          return axios.waitForAll();
         });
 
         it('should render provided data', () => {
@@ -559,7 +530,7 @@ describe('ee merge request widget options', () => {
     });
 
     describe('with empty successful request', () => {
-      beforeEach((done) => {
+      beforeEach(() => {
         mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(200, {});
         mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(200, {});
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
@@ -568,7 +539,7 @@ describe('ee merge request widget options', () => {
         wrapper.vm.mr.loadPerformance = gl.mrWidgetData.loadPerformance;
 
         // wait for network request from component watch update method
-        setImmediate(done);
+        return axios.waitForAll();
       });
 
       it('should render provided data', () => {
@@ -598,15 +569,14 @@ describe('ee merge request widget options', () => {
 
         gl.mrWidgetData.loadPerformance = { ...DEFAULT_LOAD_PERFORMANCE };
         wrapper.vm.mr.loadPerformance = gl.mrWidgetData.loadPerformance;
+
+        return axios.waitForAll();
       });
 
-      it('should render error indicator', (done) => {
-        setImmediate(() => {
-          expect(
-            trimText(wrapper.find('.js-load-performance-widget .js-code-text').text()),
-          ).toContain('Failed to load load-performance report');
-          done();
-        });
+      it('should render error indicator', () => {
+        expect(
+          trimText(wrapper.find('.js-load-performance-widget .js-code-text').text()),
+        ).toContain('Failed to load load-performance report');
       });
     });
   });
@@ -647,21 +617,19 @@ describe('ee merge request widget options', () => {
         mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
+        return axios.waitForAll();
       });
 
-      it('should render provided data', (done) => {
-        setImmediate(() => {
-          expect(
-            trimText(
-              findExtendedSecurityWidget()
-                .find(`${CONTAINER_SCANNING_SELECTOR} .report-block-list-issue-description`)
-                .text(),
-            ),
-          ).toEqual(
-            'Container scanning detected 2 potential vulnerabilities 1 Critical 1 High and 0 Others',
-          );
-          done();
-        });
+      it('should render provided data', () => {
+        expect(
+          trimText(
+            findExtendedSecurityWidget()
+              .find(`${CONTAINER_SCANNING_SELECTOR} .report-block-list-issue-description`)
+              .text(),
+          ),
+        ).toEqual(
+          'Container scanning detected 2 potential vulnerabilities 1 Critical 1 High and 0 Others',
+        );
       });
     });
 
@@ -671,15 +639,13 @@ describe('ee merge request widget options', () => {
         mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(500, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
+        return axios.waitForAll();
       });
 
-      it('should render error indicator', (done) => {
-        setImmediate(() => {
-          expect(findExtendedSecurityWidget().find(CONTAINER_SCANNING_SELECTOR).text()).toContain(
-            'Container scanning: Loading resulted in an error',
-          );
-          done();
-        });
+      it('should render error indicator', () => {
+        expect(findExtendedSecurityWidget().find(CONTAINER_SCANNING_SELECTOR).text()).toContain(
+          'Container scanning: Loading resulted in an error',
+        );
       });
     });
   });
@@ -720,19 +686,17 @@ describe('ee merge request widget options', () => {
         mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
+        return axios.waitForAll();
       });
 
-      it('should render provided data', (done) => {
-        setImmediate(() => {
-          expect(
-            trimText(
-              findExtendedSecurityWidget()
-                .find(`${DAST_SELECTOR} .report-block-list-issue-description`)
-                .text(),
-            ),
-          ).toEqual('DAST detected 1 potential vulnerability 1 Critical 0 High and 0 Others');
-          done();
-        });
+      it('should render provided data', () => {
+        expect(
+          trimText(
+            findExtendedSecurityWidget()
+              .find(`${DAST_SELECTOR} .report-block-list-issue-description`)
+              .text(),
+          ),
+        ).toEqual('DAST detected 1 potential vulnerability 1 Critical 0 High and 0 Others');
       });
     });
 
@@ -742,15 +706,13 @@ describe('ee merge request widget options', () => {
         mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(500, {});
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
+        return axios.waitForAll();
       });
 
-      it('should render error indicator', (done) => {
-        setImmediate(() => {
-          expect(findExtendedSecurityWidget().find(DAST_SELECTOR).text()).toContain(
-            'DAST: Loading resulted in an error',
-          );
-          done();
-        });
+      it('should render error indicator', () => {
+        expect(findExtendedSecurityWidget().find(DAST_SELECTOR).text()).toContain(
+          'DAST: Loading resulted in an error',
+        );
       });
     });
   });
@@ -796,21 +758,19 @@ describe('ee merge request widget options', () => {
         mock.onGet(COVERAGE_FUZZING_ENDPOINT).reply(200, coverageFuzzingDiffSuccessMock);
         mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
         createComponentWithFeatureFlag();
+        return axios.waitForAll();
       });
 
-      it('should render provided data', (done) => {
-        setImmediate(() => {
-          expect(
-            trimText(
-              findExtendedSecurityWidget()
-                .find(`${COVERAGE_FUZZING_SELECTOR} .report-block-list-issue-description`)
-                .text(),
-            ),
-          ).toEqual(
-            'Coverage fuzzing detected 2 potential vulnerabilities 1 Critical 1 High and 0 Others',
-          );
-          done();
-        });
+      it('should render provided data', () => {
+        expect(
+          trimText(
+            findExtendedSecurityWidget()
+              .find(`${COVERAGE_FUZZING_SELECTOR} .report-block-list-issue-description`)
+              .text(),
+          ),
+        ).toEqual(
+          'Coverage fuzzing detected 2 potential vulnerabilities 1 Critical 1 High and 0 Others',
+        );
       });
     });
 
@@ -819,15 +779,13 @@ describe('ee merge request widget options', () => {
         mock.onGet(COVERAGE_FUZZING_ENDPOINT).reply(500, {});
         mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(500, {});
         createComponentWithFeatureFlag();
+        return axios.waitForAll();
       });
 
-      it('should render error indicator', (done) => {
-        setImmediate(() => {
-          expect(findExtendedSecurityWidget().find(COVERAGE_FUZZING_SELECTOR).text()).toContain(
-            'Coverage fuzzing: Loading resulted in an error',
-          );
-          done();
-        });
+      it('should render error indicator', () => {
+        expect(findExtendedSecurityWidget().find(COVERAGE_FUZZING_SELECTOR).text()).toContain(
+          'Coverage fuzzing: Loading resulted in an error',
+        );
       });
     });
   });
@@ -869,21 +827,19 @@ describe('ee merge request widget options', () => {
         mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
+        return axios.waitForAll();
       });
 
-      it('should render provided data', (done) => {
-        setImmediate(() => {
-          expect(
-            trimText(
-              findExtendedSecurityWidget()
-                .find(`${SECRET_DETECTION_SELECTOR} .report-block-list-issue-description`)
-                .text(),
-            ),
-          ).toEqual(
-            'Secret detection detected 2 potential vulnerabilities 1 Critical 1 High and 0 Others',
-          );
-          done();
-        });
+      it('should render provided data', () => {
+        expect(
+          trimText(
+            findExtendedSecurityWidget()
+              .find(`${SECRET_DETECTION_SELECTOR} .report-block-list-issue-description`)
+              .text(),
+          ),
+        ).toEqual(
+          'Secret detection detected 2 potential vulnerabilities 1 Critical 1 High and 0 Others',
+        );
       });
     });
 
@@ -893,15 +849,13 @@ describe('ee merge request widget options', () => {
         mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(500, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
+        return axios.waitForAll();
       });
 
-      it('should render error indicator', (done) => {
-        setImmediate(() => {
-          expect(findExtendedSecurityWidget().find(SECRET_DETECTION_SELECTOR).text()).toContain(
-            'Secret detection: Loading resulted in an error',
-          );
-          done();
-        });
+      it('should render error indicator', () => {
+        expect(findExtendedSecurityWidget().find(SECRET_DETECTION_SELECTOR).text()).toContain(
+          'Secret detection: Loading resulted in an error',
+        );
       });
     });
   });
@@ -940,21 +894,19 @@ describe('ee merge request widget options', () => {
         mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
+        return axios.waitForAll();
       });
 
-      it('should render provided data', (done) => {
-        setImmediate(() => {
-          expect(
-            trimText(
-              findExtendedSecurityWidget()
-                .find(`${API_FUZZING_SELECTOR} .report-block-list-issue-description`)
-                .text(),
-            ),
-          ).toEqual(
-            'API fuzzing detected 2 potential vulnerabilities 1 Critical 1 High and 0 Others',
-          );
-          done();
-        });
+      it('should render provided data', () => {
+        expect(
+          trimText(
+            findExtendedSecurityWidget()
+              .find(`${API_FUZZING_SELECTOR} .report-block-list-issue-description`)
+              .text(),
+          ),
+        ).toEqual(
+          'API fuzzing detected 2 potential vulnerabilities 1 Critical 1 High and 0 Others',
+        );
       });
     });
 
@@ -964,15 +916,13 @@ describe('ee merge request widget options', () => {
         mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(500, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
+        return axios.waitForAll();
       });
 
-      it('should render error indicator', (done) => {
-        setImmediate(() => {
-          expect(findExtendedSecurityWidget().find(API_FUZZING_SELECTOR).text()).toContain(
-            'API fuzzing: Loading resulted in an error',
-          );
-          done();
-        });
+      it('should render error indicator', () => {
+        expect(findExtendedSecurityWidget().find(API_FUZZING_SELECTOR).text()).toContain(
+          'API fuzzing: Loading resulted in an error',
+        );
       });
     });
   });
