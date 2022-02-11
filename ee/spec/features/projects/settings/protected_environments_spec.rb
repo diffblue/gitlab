@@ -52,10 +52,10 @@ RSpec.describe 'Protected Environments' do
     end
 
     it 'allows creating explicit protected environments', :js do
-      set_protected_environment('staging')
-
       within('.js-new-protected-environment') do
+        set_protected_environment('staging')
         set_allowed_to_deploy('Developers + Maintainers')
+        set_required_approvals(1)
         click_on('Protect')
       end
 
@@ -63,6 +63,11 @@ RSpec.describe 'Protected Environments' do
 
       within('.protected-branches-list') do
         expect(page).to have_content('staging')
+
+        within('tr', text: 'staging') do
+          expect(page).to have_content('Developers + Maintainers')
+          expect(page).to have_content('1')
+        end
       end
     end
 
@@ -111,11 +116,9 @@ RSpec.describe 'Protected Environments' do
   end
 
   def set_protected_environment(environment_name)
-    within('.js-new-protected-environment') do
-      find('.js-protected-environment-select').click
-      find('.dropdown-input-field').set(environment_name)
-      find('.is-focused').click
-    end
+    find('.js-protected-environment-select').click
+    find('.dropdown-input-field').set(environment_name)
+    find('.is-focused').click
   end
 
   def set_allowed_to_deploy(option)
@@ -124,5 +127,9 @@ RSpec.describe 'Protected Environments' do
     within '.gl-new-dropdown-contents' do
       Array(option).each { |opt| find('.gl-new-dropdown-item', text: opt).click }
     end
+  end
+
+  def set_required_approvals(number)
+    select(number.to_s, from: 'protected_environment_required_approval_count')
   end
 end

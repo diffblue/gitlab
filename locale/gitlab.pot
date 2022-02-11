@@ -29340,6 +29340,9 @@ msgstr ""
 msgid "ProtectedEnvironment|Protected Environment (%{protected_environments_count})"
 msgstr ""
 
+msgid "ProtectedEnvironment|Required approvals"
+msgstr ""
+
 msgid "ProtectedEnvironment|Select an environment"
 msgstr ""
 
