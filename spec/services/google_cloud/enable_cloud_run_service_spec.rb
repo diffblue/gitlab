@@ -23,7 +23,7 @@ RSpec.describe GoogleCloud::EnableCloudRunService do
       project.save!
     end
 
-    it 'enables cloud run, artifacts registry and cloud build' do
+    it 'enables cloud run, artifacts registry and cloud build', :aggregate_failures do
       expect_next_instance_of(GoogleApi::CloudPlatform::Client) do |instance|
         expect(instance).to receive(:enable_cloud_run).with('prj-prod')
         expect(instance).to receive(:enable_artifacts_registry).with('prj-prod')
