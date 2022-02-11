@@ -106,6 +106,7 @@ module EE
       has_one :security_orchestration_policy_configuration, class_name: 'Security::OrchestrationPolicyConfiguration', foreign_key: :project_id, inverse_of: :project
 
       has_many :security_scans, class_name: 'Security::Scan', inverse_of: :project
+      has_many :security_trainings, class_name: 'Security::Training', inverse_of: :project
 
       elastic_index_dependant_association :issues, on_change: :visibility_level
       elastic_index_dependant_association :merge_requests, on_change: :visibility_level
