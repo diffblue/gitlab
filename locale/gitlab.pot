@@ -29301,6 +29301,9 @@ msgstr ""
 msgid "ProtectedBranch|Unprotect"
 msgstr ""
 
+msgid "ProtectedBranch|Unprotect branch"
+msgstr ""
+
 msgid "ProtectedBranch|What are protected branches?"
 msgstr ""
 
