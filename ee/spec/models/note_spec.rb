@@ -42,12 +42,12 @@ RSpec.describe Note do
         end
 
         it 'returns visible but not readable for a non-member user' do
-          expect(note.system_note_with_references_visible_for?(non_member)).to be_truthy
+          expect(note.system_note_visible_for?(non_member)).to be_truthy
           expect(note.readable_by?(non_member)).to be_falsy
         end
 
         it 'returns visible but not readable for a nil user' do
-          expect(note.system_note_with_references_visible_for?(nil)).to be_truthy
+          expect(note.system_note_visible_for?(nil)).to be_truthy
           expect(note.readable_by?(nil)).to be_falsy
         end
       end
