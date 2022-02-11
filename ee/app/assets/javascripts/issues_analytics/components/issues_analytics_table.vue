@@ -93,7 +93,7 @@ export default {
     },
     {
       key: 'author',
-      label: s__('IssueAnalytics|Opened by'),
+      label: s__('IssueAnalytics|Created by'),
       class: 'gl-text-left',
       thAttr: TH_TEST_ID,
     },

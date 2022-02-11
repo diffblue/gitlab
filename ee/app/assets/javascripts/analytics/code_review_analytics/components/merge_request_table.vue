@@ -31,7 +31,7 @@ export default {
   },
   methods: {
     getTimeAgoString(createdAt) {
-      return sprintf(__('opened %{timeAgo}'), {
+      return sprintf(__('created %{timeAgo}'), {
         timeAgo: escape(getTimeago().format(createdAt)),
       });
     },
