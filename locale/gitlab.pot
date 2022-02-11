@@ -13619,6 +13619,9 @@ msgstr ""
 msgid "Enforce two-factor authentication for all user sign-ins."
 msgstr ""
 
+msgid "Enhance security by storing service account keys in secret managers - learn more about %{docLinkStart}secret management with GitLab%{docLinkEnd}"
+msgstr ""
+
 msgid "Ensure connectivity is available from the GitLab server to the Prometheus server"
 msgstr ""
 
@@ -33032,9 +33035,6 @@ msgstr ""
 msgid "Service Account Key"
 msgstr ""
 
-msgid "Service Accounts"
-msgstr ""
-
 msgid "Service Accounts keys authorize GitLab to deploy your Google Cloud project"
 msgstr ""
 
@@ -33045,6 +33045,9 @@ msgid "Service Desk allows people to create issues in your GitLab instance witho
 msgstr ""
 
 msgid "Service account generated successfully"
+msgstr ""
+
+msgid "Service accounts"
 msgstr ""
 
 msgid "Service ping is disabled in your configuration file, and cannot be enabled through this form."
@@ -44132,4 +44135,7 @@ msgid "{group}"
 msgstr ""
 
 msgid "{project}"
+msgstr ""
+
+msgid "✔"
 msgstr ""
