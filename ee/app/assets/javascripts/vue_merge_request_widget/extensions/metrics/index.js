@@ -90,14 +90,14 @@ export default {
         .filter((metric) => !metric?.previous_value)
         .map((metric, index) => {
           return {
-            header: index === 0 && __('Unchanged'),
+            header: index === 0 && __('No changes'),
             id: uniqueId('unchanged-metric-'),
-            text: `${metric.name}: ${metric.value} (No changes)`,
+            text: `${metric.name}: ${metric.value}`,
             icon: { name: EXTENSION_ICONS.neutral },
           };
         });
 
-      return [...changedMetrics, ...newMetrics, ...removedMetrics, ...unchangedMetrics];
+      return [...newMetrics, ...removedMetrics, ...changedMetrics, ...unchangedMetrics];
     },
   },
 };

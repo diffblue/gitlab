@@ -39130,9 +39130,6 @@ msgstr ""
 msgid "Unauthenticated web rate limit period in seconds"
 msgstr ""
 
-msgid "Unchanged"
-msgstr ""
-
 msgid "Uncommitted changes will be lost if you change branches. Do you want to continue?"
 msgstr ""
 

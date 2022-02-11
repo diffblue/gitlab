@@ -105,14 +105,14 @@ describe('Metrics extension', () => {
 
     it.each`
       index | ordinal     | type           | expectedText
-      ${0}  | ${'first'}  | ${'changed'}   | ${'Changed memory_static_objects_allocated_items: 1 (1552382)'}
-      ${1}  | ${'second'} | ${'changed'}   | ${'memory_static_objects_retained_mb: 30.6 (30.5)'}
-      ${2}  | ${'first'}  | ${'new'}       | ${'New gem_size_mb{name=pg}: 3.0'}
-      ${3}  | ${'second'} | ${'new'}       | ${'memory_static_objects_retained_items: 258835'}
-      ${4}  | ${'first'}  | ${'removed'}   | ${'Removed gem_size_mb{name=charlock_holmes}: 2.7'}
-      ${5}  | ${'second'} | ${'removed'}   | ${'gem_size_mb{name=omniauth-auth0}: 0.5'}
-      ${6}  | ${'first'}  | ${'unchanged'} | ${'Unchanged gem_total_size_mb: 194.8 (No changes)'}
-      ${7}  | ${'second'} | ${'unchanged'} | ${'memory_static_objects_allocated_mb: 163.7 (No changes)'}
+      ${0}  | ${'first'}  | ${'new'}       | ${'New gem_size_mb{name=pg}: 3.0'}
+      ${1}  | ${'second'} | ${'new'}       | ${'memory_static_objects_retained_items: 258835'}
+      ${2}  | ${'first'}  | ${'removed'}   | ${'Removed gem_size_mb{name=charlock_holmes}: 2.7'}
+      ${3}  | ${'second'} | ${'removed'}   | ${'gem_size_mb{name=omniauth-auth0}: 0.5'}
+      ${4}  | ${'first'}  | ${'changed'}   | ${'Changed memory_static_objects_allocated_items: 1 (1552382)'}
+      ${5}  | ${'second'} | ${'changed'}   | ${'memory_static_objects_retained_mb: 30.6 (30.5)'}
+      ${6}  | ${'first'}  | ${'unchanged'} | ${'No changes gem_total_size_mb: 194.8'}
+      ${7}  | ${'second'} | ${'unchanged'} | ${'memory_static_objects_allocated_mb: 163.7'}
     `('formats $ordinal $type metric correctly', ({ index, expectedText }) => {
       expect(trimText(findAllExtensionListItems().at(index).text())).toBe(expectedText);
     });
