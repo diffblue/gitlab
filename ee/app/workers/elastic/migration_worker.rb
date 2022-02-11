@@ -17,6 +17,7 @@ module Elastic
     urgency :throttled
 
     def perform
+      return false if Feature.disabled?(:elastic_migration_worker, type: :ops, default_enabled: :yaml)
       return false unless Gitlab::CurrentSettings.elasticsearch_indexing?
       return false unless helper.alias_exists?
 

@@ -6,6 +6,18 @@ RSpec.describe Elastic::MigrationWorker, :elastic do
   subject { described_class.new }
 
   describe '#perform' do
+    context 'Feature Flag `elastic_migration_worker` is disabled' do
+      before do
+        stub_feature_flags(elastic_migration_worker: false)
+        stub_ee_application_setting(elasticsearch_indexing: true)
+      end
+
+      it 'returns with no execution' do
+        expect(subject).not_to receive(:execute_migration)
+        expect(subject.perform).to be_falsey
+      end
+    end
+
     context 'indexing is disabled' do
       before do
         stub_ee_application_setting(elasticsearch_indexing: false)
