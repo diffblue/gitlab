@@ -15,7 +15,7 @@ import dastProfileDelete from '../../graphql/dast_profile_delete.mutation.graphq
 import handlesErrors from '../../mixins/handles_errors';
 import { removeProfile } from '../../graphql/cache_utils';
 import dastProfilesQuery from '../../graphql/dast_profiles.query.graphql';
-import { SAVED_TAB_TABLE_FIELDS, LEARN_MORE_TEXT } from '../../constants';
+import { SAVED_TAB_TABLE_FIELDS, LEARN_MORE_TEXT, MAX_DAST_PROFILES_COUNT } from '../../constants';
 import BaseTab from './base_tab.vue';
 
 export default {
@@ -34,6 +34,7 @@ export default {
   },
   mixins: [handlesErrors],
   inject: ['projectPath'],
+  maxItemsCount: MAX_DAST_PROFILES_COUNT,
   tableFields: SAVED_TAB_TABLE_FIELDS,
   deleteScanModalId: `delete-scan-modal`,
   i18n: {
@@ -145,6 +146,7 @@ export default {
 
 <template>
   <base-tab
+    :max-items-count="$options.maxItemsCount"
     :query="$options.query"
     :query-variables="$options.queryVariables"
     :title="$options.i18n.title"

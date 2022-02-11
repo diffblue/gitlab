@@ -13,6 +13,7 @@ RSpec.describe Projects::OnDemandScansHelper do
   end
 
   describe '#on_demand_scans_data' do
+    let_it_be(:current_user) { create(:user) }
     let_it_be(:dast_profile) { create(:dast_profile, project: project) }
     let_it_be(:dast_profile_with_schedule) { create(:dast_profile, project: project) }
     let_it_be(:dast_profile_schedule) { create(:dast_profile_schedule, project: project, dast_profile: dast_profile_with_schedule)}
@@ -22,10 +23,11 @@ RSpec.describe Projects::OnDemandScansHelper do
       create_list(:ci_pipeline, 8, :success, project: project, ref: 'master', source: :ondemand_dast_scan)
       create_list(:ci_pipeline, 4, :running, project: project, ref: 'master', source: :ondemand_dast_scan)
       allow(helper).to receive(:graphql_etag_project_on_demand_scan_counts_path).and_return(graphql_etag_project_on_demand_scan_counts_path)
+      project.add_developer(current_user)
     end
 
     it 'returns proper data' do
-      expect(helper.on_demand_scans_data(project)).to match(
+      expect(helper.on_demand_scans_data(current_user, project)).to match(
         'project-path' => "foo/bar",
         'new-dast-scan-path' => "/#{project.full_path}/-/on_demand_scans/new",
         'empty-state-svg-path' => match_asset_path('/assets/illustrations/empty-state/ondemand-scan-empty.svg'),

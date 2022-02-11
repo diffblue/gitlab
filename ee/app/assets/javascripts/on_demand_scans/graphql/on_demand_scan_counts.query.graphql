@@ -1,24 +1,10 @@
-query onDemandScanCounts(
-  $fullPath: ID!
-  $runningScope: PipelineScopeEnum
-  $finishedScope: PipelineScopeEnum
-) {
-  all: project(fullPath: $fullPath) {
+query onDemandScanCounts($fullPath: ID!) {
+  project(fullPath: $fullPath) {
     id
-    pipelines(source: "ondemand_dast_scan") {
-      count
-    }
-  }
-  running: project(fullPath: $fullPath) {
-    id
-    pipelines(source: "ondemand_dast_scan", scope: $runningScope) {
-      count
-    }
-  }
-  finished: project(fullPath: $fullPath) {
-    id
-    pipelines(source: "ondemand_dast_scan", scope: $finishedScope) {
-      count
+    pipelineCounts(source: "ondemand_dast_scan") {
+      all
+      running
+      finished
     }
   }
   scheduled: project(fullPath: $fullPath) {

@@ -2,4 +2,4 @@
 - page_title s_('OnDemandScans|On-demand Scans')
 - add_page_specific_style 'page_bundles/ci_status'
 
-#js-on-demand-scans{ data: on_demand_scans_data(@project) }
+#js-on-demand-scans{ data: on_demand_scans_data(@current_user, @project) }

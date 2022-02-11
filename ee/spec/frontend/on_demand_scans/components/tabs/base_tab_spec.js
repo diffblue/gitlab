@@ -122,6 +122,18 @@ describe('BaseTab', () => {
   });
 
   describe('when the app loads', () => {
+    it('formats the items count if it hit its max value', () => {
+      const itemsCount = 10;
+      createComponent({
+        propsData: {
+          itemsCount,
+          maxItemsCount: itemsCount,
+        },
+      });
+
+      expect(findTitle().text()).toMatchInterpolatedText(`All ${itemsCount}+`);
+    });
+
     it('controls the pipelines query with a visibility check', () => {
       jest.spyOn(graphQlUtils, 'toggleQueryPollingByVisibility');
       createComponent();

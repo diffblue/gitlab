@@ -21,7 +21,12 @@ import {
 import handlesErrors from '../../mixins/handles_errors';
 import Actions from '../actions.vue';
 import EmptyState from '../empty_state.vue';
-import { PIPELINES_PER_PAGE, PIPELINES_POLL_INTERVAL, ACTION_COLUMN } from '../../constants';
+import {
+  PIPELINES_PER_PAGE,
+  MAX_PIPELINES_COUNT,
+  PIPELINES_POLL_INTERVAL,
+  ACTION_COLUMN,
+} from '../../constants';
 
 const defaultCursor = {
   first: PIPELINES_PER_PAGE,
@@ -71,6 +76,11 @@ export default {
     itemsCount: {
       type: Number,
       required: true,
+    },
+    maxItemsCount: {
+      type: Number,
+      required: false,
+      default: MAX_PIPELINES_COUNT,
     },
     emptyStateTitle: {
       type: String,
@@ -137,6 +147,10 @@ export default {
     };
   },
   computed: {
+    formattedCount() {
+      const { itemsCount, maxItemsCount } = this;
+      return itemsCount === maxItemsCount ? `${itemsCount}+` : itemsCount;
+    },
     pipelineNodes() {
       return this.pipelines?.nodes ?? [];
     },
@@ -214,7 +228,7 @@ export default {
     <template #title>
       <span class="gl-white-space-nowrap">
         {{ title }}
-        <gl-badge size="sm" class="gl-tab-counter-badge">{{ itemsCount }}</gl-badge>
+        <gl-badge size="sm" class="gl-tab-counter-badge">{{ formattedCount }}</gl-badge>
       </span>
     </template>
     <template v-if="$apollo.queries.pipelines.loading || hasPipelines">
