@@ -4,11 +4,11 @@ module Mutations
   module Boards
     module EpicBoards
       class Create < ::Mutations::BaseMutation
+        graphql_name 'EpicBoardCreate'
+
         include Mutations::ResolvesGroup
         include Mutations::Boards::CommonMutationArguments
         prepend Mutations::Boards::ScopedBoardMutation
-
-        graphql_name 'EpicBoardCreate'
 
         authorize :admin_epic_board
 

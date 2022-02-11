@@ -4,10 +4,10 @@ module Types
   module Boards
     # rubocop: disable Graphql/AuthorizeTypes
     class EpicListType < BaseObject
-      include Gitlab::Utils::StrongMemoize
-
       graphql_name 'EpicList'
       description 'Represents an epic board list'
+
+      include Gitlab::Utils::StrongMemoize
 
       accepts ::Boards::EpicList
 

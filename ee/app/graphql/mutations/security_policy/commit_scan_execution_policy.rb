@@ -3,11 +3,10 @@
 module Mutations
   module SecurityPolicy
     class CommitScanExecutionPolicy < BaseMutation
-      include FindsProject
-
       graphql_name 'ScanExecutionPolicyCommit'
-
       description 'Commits the `policy_yaml` content to the assigned security policy project for the given project(`project_path`)'
+
+      include FindsProject
 
       authorize :security_orchestration_policies
 

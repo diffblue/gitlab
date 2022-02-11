@@ -3,11 +3,11 @@
 module Mutations
   module DastOnDemandScans
     class Create < BaseMutation
+      graphql_name 'DastOnDemandScanCreate'
+
       include FindsProject
 
       InvalidGlobalID = Class.new(StandardError)
-
-      graphql_name 'DastOnDemandScanCreate'
 
       field :pipeline_url, GraphQL::Types::String,
             null: true,

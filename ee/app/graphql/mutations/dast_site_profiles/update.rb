@@ -3,10 +3,10 @@
 module Mutations
   module DastSiteProfiles
     class Update < BaseMutation
+      graphql_name 'DastSiteProfileUpdate'
+
       include FindsProject
       include Mutations::AppSec::Dast::SiteProfiles::SharedArguments
-
-      graphql_name 'DastSiteProfileUpdate'
 
       field :id, SiteProfileID,
             null: true,

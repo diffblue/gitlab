@@ -4,9 +4,9 @@ module Mutations
   module Dast
     module Profiles
       class Create < BaseMutation
-        include FindsProject
-
         graphql_name 'DastProfileCreate'
+
+        include FindsProject
 
         field :dast_profile, ::Types::Dast::ProfileType,
               null: true,

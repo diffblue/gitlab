@@ -3,9 +3,9 @@
 module Mutations
   module DastScannerProfiles
     class Create < BaseMutation
-      include FindsProject
-
       graphql_name 'DastScannerProfileCreate'
+
+      include FindsProject
 
       field :id, ::Types::GlobalIDType[::DastScannerProfile],
             null: true,

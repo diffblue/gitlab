@@ -3,9 +3,9 @@
 module Mutations
   module Projects
     class SetLocked < BaseMutation
-      include FindsProject
-
       graphql_name 'ProjectSetLocked'
+
+      include FindsProject
 
       authorize :push_code
 

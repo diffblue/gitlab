@@ -3,9 +3,9 @@
 module Mutations
   module Epics
     class Update < Base
-      prepend Mutations::SharedEpicArguments
-
       graphql_name 'UpdateEpic'
+
+      prepend Mutations::SharedEpicArguments
 
       argument :state_event,
                 Types::EpicStateEventEnum,

@@ -5,10 +5,10 @@ module Types
     module CloudLicenses
       # rubocop: disable Graphql/AuthorizeTypes
       class CurrentLicenseType < BaseObject
-        include ::Types::Admin::CloudLicenses::LicenseType
-
         graphql_name 'CurrentLicense'
         description 'Represents the current license'
+
+        include ::Types::Admin::CloudLicenses::LicenseType
 
         field :last_sync, ::Types::TimeType, null: true,
               description: 'Date when the license was last synced.',

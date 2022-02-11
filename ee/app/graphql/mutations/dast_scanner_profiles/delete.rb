@@ -3,9 +3,9 @@
 module Mutations
   module DastScannerProfiles
     class Delete < BaseMutation
-      include FindsProject
-
       graphql_name 'DastScannerProfileDelete'
+
+      include FindsProject
 
       ScannerProfileID = ::Types::GlobalIDType[::DastScannerProfile]
 

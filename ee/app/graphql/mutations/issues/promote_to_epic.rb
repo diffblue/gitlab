@@ -3,9 +3,9 @@
 module Mutations
   module Issues
     class PromoteToEpic < Base
-      include Mutations::ResolvesGroup
-
       graphql_name 'PromoteToEpic'
+
+      include Mutations::ResolvesGroup
 
       argument :group_path, GraphQL::Types::ID,
                required: false,

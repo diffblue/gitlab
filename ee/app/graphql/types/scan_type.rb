@@ -3,10 +3,10 @@
 module Types
   # rubocop: disable Graphql/AuthorizeTypes
   class ScanType < BaseObject
-    present_using ::Security::ScanPresenter
-
     graphql_name 'Scan'
     description 'Represents the security scan information'
+
+    present_using ::Security::ScanPresenter
 
     authorize :read_scan
 

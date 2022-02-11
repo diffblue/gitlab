@@ -4,9 +4,9 @@ module Mutations
   module AppSec::Fuzzing::Coverage
     module Corpus
       class Create < BaseMutation
-        include FindsProject
-
         graphql_name 'CorpusCreate'
+
+        include FindsProject
 
         authorize :create_coverage_fuzzing_corpus
 

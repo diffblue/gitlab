@@ -4,9 +4,9 @@ module Mutations
   module IncidentManagement
     module OncallSchedule
       class Create < OncallScheduleBase
-        include FindsProject
-
         graphql_name 'OncallScheduleCreate'
+
+        include FindsProject
 
         argument :project_path, GraphQL::Types::ID,
                  required: true,

@@ -3,10 +3,10 @@
 module Types
   module IncidentManagement
     class OncallRotationType < BaseObject
-      MAX_SHIFTS_FOR_TIMEFRAME = 350
-
       graphql_name 'IncidentManagementOncallRotation'
       description 'Describes an incident management on-call rotation'
+
+      MAX_SHIFTS_FOR_TIMEFRAME = 350
 
       authorize :read_incident_management_oncall_schedule
 

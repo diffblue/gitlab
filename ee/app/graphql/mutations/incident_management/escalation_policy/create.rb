@@ -4,9 +4,9 @@ module Mutations
   module IncidentManagement
     module EscalationPolicy
       class Create < Base
-        include ResolvesProject
-
         graphql_name 'EscalationPolicyCreate'
+
+        include ResolvesProject
 
         argument :project_path, GraphQL::Types::ID,
                  required: true,

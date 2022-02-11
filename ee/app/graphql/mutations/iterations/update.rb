@@ -3,10 +3,10 @@
 module Mutations
   module Iterations
     class Update < BaseMutation
+      graphql_name 'UpdateIteration'
+
       include Mutations::ResolvesGroup
       include ResolvesProject
-
-      graphql_name 'UpdateIteration'
 
       authorize :admin_iteration
 

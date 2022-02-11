@@ -5,6 +5,9 @@ module Types
     module CloudLicenses
       # rubocop: disable Graphql/AuthorizeTypes
       class SubscriptionFutureEntryType < BaseObject
+        graphql_name 'SubscriptionFutureEntry'
+        description 'Represents an entry from the future subscriptions'
+
         field :type, GraphQL::Types::String, null: false,
           description: 'Type of license the subscription will yield.'
 
@@ -28,9 +31,6 @@ module Types
 
         field :users_in_license_count, GraphQL::Types::Int, null: true,
           description: 'Number of paid user seats.'
-
-        graphql_name 'SubscriptionFutureEntry'
-        description 'Represents an entry from the future subscriptions'
       end
     end
   end

@@ -6,9 +6,9 @@ module Mutations
       module API
         module CiConfiguration
           class Create < BaseMutation
-            include FindsProject
-
             graphql_name 'ApiFuzzingCiConfigurationCreate'
+
+            include FindsProject
 
             argument :project_path, GraphQL::Types::ID,
               required: true,

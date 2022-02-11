@@ -4,9 +4,9 @@ module Mutations
   module IncidentManagement
     module OncallRotation
       class Update < Base
-        include ResolvesProject
-
         graphql_name 'OncallRotationUpdate'
+
+        include ResolvesProject
 
         argument :id, ::Types::GlobalIDType[::IncidentManagement::OncallRotation],
                  required: true,
