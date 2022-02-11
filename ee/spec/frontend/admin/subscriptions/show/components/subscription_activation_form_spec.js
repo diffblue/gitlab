@@ -178,7 +178,6 @@ describe('SubscriptionActivationForm', () => {
       const mutationMock = jest.fn().mockResolvedValue(activateLicenseMutationResponse.SUCCESS);
       beforeEach(async () => {
         createComponentWithApollo({ mutationMock, mountMethod: mount });
-        jest.spyOn(wrapper.vm, 'updateSubscriptionAppCache').mockImplementation();
         await findActivationCodeInput().vm.$emit('input', fakeActivationCode);
         await findAgreementCheckboxInput().trigger('click');
         findActivateSubscriptionForm().vm.$emit('submit', createFakeEvent());
@@ -200,10 +199,6 @@ describe('SubscriptionActivationForm', () => {
         expect(wrapper.emitted(SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT)).toEqual([
           [activateLicenseMutationResponse.SUCCESS.data.gitlabSubscriptionActivate.license],
         ]);
-      });
-
-      it('calls the method to update the cache', () => {
-        expect(wrapper.vm.updateSubscriptionAppCache).toHaveBeenCalledTimes(1);
       });
     });
 

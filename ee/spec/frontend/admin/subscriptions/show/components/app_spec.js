@@ -241,6 +241,15 @@ describe('SubscriptionManagementApp', () => {
           pastSubscriptionsResolver,
           futureSubscriptionsResolver,
         ]);
+        jest
+          .spyOn(wrapper.vm.$apollo.queries.currentSubscription, 'refetch')
+          .mockImplementation(jest.fn());
+        jest
+          .spyOn(wrapper.vm.$apollo.queries.pastLicenseHistoryEntries, 'refetch')
+          .mockImplementation(jest.fn());
+        jest
+          .spyOn(wrapper.vm.$apollo.queries.futureLicenseHistoryEntries, 'refetch')
+          .mockImplementation(jest.fn());
         await waitForPromises();
       });
 
@@ -269,6 +278,20 @@ describe('SubscriptionManagementApp', () => {
         expect(findSubscriptionActivationSuccessAlert().props('title')).toBe(
           subscriptionActivationFutureDatedNotificationTitle,
         );
+      });
+
+      it('calls refetch to update local state', async () => {
+        await findSubscriptionBreakdown().vm.$emit(
+          SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
+          license.ULTIMATE_FUTURE_DATED,
+        );
+        expect(wrapper.vm.$apollo.queries.currentSubscription.refetch).toHaveBeenCalledTimes(1);
+        expect(wrapper.vm.$apollo.queries.pastLicenseHistoryEntries.refetch).toHaveBeenCalledTimes(
+          1,
+        );
+        expect(
+          wrapper.vm.$apollo.queries.futureLicenseHistoryEntries.refetch,
+        ).toHaveBeenCalledTimes(1);
       });
     });
 

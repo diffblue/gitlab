@@ -33,6 +33,14 @@ RSpec.describe 'Admin views Subscription', :js do
     end
   end
 
+  shared_examples 'no active license' do
+    it 'displays a message signaling there is not active subscription' do
+      page.within(find('#content-body', match: :first)) do
+        expect(page).to have_content('You do not have an active subscription')
+      end
+    end
+  end
+
   context 'with a cloud license' do
     let!(:license) { create_current_license(cloud_licensing_enabled: true, plan: License::ULTIMATE_PLAN) }
 
@@ -119,19 +127,15 @@ RSpec.describe 'Admin views Subscription', :js do
   end
 
   context 'with no active subscription' do
-    let_it_be(:license) { nil }
+    let_it_be(:license_to_be_created) { nil }
 
     before do
-      allow(License).to receive(:current).and_return(license)
+      License.current.destroy!
 
       visit(admin_subscription_path)
     end
 
-    it 'displays a message signaling there is not active subscription' do
-      page.within(find('#content-body', match: :first)) do
-        expect(page).to have_content('You do not have an active subscription')
-      end
-    end
+    it_behaves_like 'no active license'
 
     it 'does not display the Export License Usage File button' do
       expect(page).not_to have_link('Export license usage file', href: admin_license_usage_export_path(format: :csv))
@@ -144,8 +148,9 @@ RSpec.describe 'Admin views Subscription', :js do
             "data": {
               "cloudActivationActivate": {
                 "errors": ["invalid activation code"],
-                "license": nil
-              }
+                "license": license_to_be_created
+              },
+              "success": "true"
             }
           }.to_json, headers: { 'Content-Type' => 'application/json' })
 
@@ -160,9 +165,9 @@ RSpec.describe 'Admin views Subscription', :js do
     end
 
     context 'when activating a future-dated subscription' do
-      before do
-        license_to_be_created = create(:license, data: create(:gitlab_license, { starts_at: Date.today + 1.month, cloud_licensing_enabled: true, plan: License::ULTIMATE_PLAN }).export)
+      let_it_be(:license_to_be_created) { build(:license, data: build(:gitlab_license, { starts_at: Date.current + 1.month, cloud_licensing_enabled: true, plan: License::ULTIMATE_PLAN }).export) }
 
+      before do
         stub_request(:post, EE::SUBSCRIPTIONS_GRAPHQL_URL)
           .to_return(status: 200, body: {
             "data": {
@@ -180,12 +185,14 @@ RSpec.describe 'Admin views Subscription', :js do
       it 'shows a successful future-dated activation message' do
         expect(page).to have_content('Your future dated license was successfully added')
       end
+
+      it_behaves_like 'no active license'
     end
 
     context 'when activating a new subscription' do
-      before do
-        license_to_be_created = create(:license, data: create(:gitlab_license, { starts_at: Date.today, cloud_licensing_enabled: true, plan: License::ULTIMATE_PLAN }).export)
+      let_it_be(:license_to_be_created) { build(:license, data: build(:gitlab_license, { starts_at: Date.current, cloud_licensing_enabled: true, plan: License::ULTIMATE_PLAN }).export) }
 
+      before do
         stub_request(:post, EE::SUBSCRIPTIONS_GRAPHQL_URL)
           .to_return(status: 200, body: {
             "data": {

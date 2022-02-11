@@ -121,6 +121,9 @@ export default {
       } else {
         this.activationNotification = { title: subscriptionActivationNotificationText };
       }
+      this.$apollo.queries.currentSubscription.refetch();
+      this.$apollo.queries.pastLicenseHistoryEntries.refetch();
+      this.$apollo.queries.futureLicenseHistoryEntries.refetch();
     },
     dismissActivationNotification() {
       this.activationNotification = null;
