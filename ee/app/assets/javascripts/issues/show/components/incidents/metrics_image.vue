@@ -21,7 +21,7 @@ export default {
     modalTitle: s__('Incident|Deleting %{filename}'),
     editModalUpdate: __('Update'),
     editModalTitle: s__('Incident|Editing %{filename}'),
-    editIconTitle: s__('Incident|Edit image text or URL'),
+    editIconTitle: s__('Incident|Edit image text or link'),
     deleteIconTitle: s__('Incident|Delete image'),
   },
   components: {

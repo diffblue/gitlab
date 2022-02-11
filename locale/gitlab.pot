@@ -18954,10 +18954,10 @@ msgstr ""
 msgid "Incidents"
 msgstr ""
 
-msgid "Incidents|Add a URL"
+msgid "Incidents|Add image details"
 msgstr ""
 
-msgid "Incidents|Add a link to the uploaded image."
+msgid "Incidents|Add text or a link that will display with your image. If you don't add either, the file name will display instead."
 msgstr ""
 
 msgid "Incidents|Drop or %{linkStart}upload%{linkEnd} a metric screenshot to attach it to the incident"
@@ -18984,7 +18984,13 @@ msgstr ""
 msgid "Incident|Are you sure you wish to delete this image?"
 msgstr ""
 
+msgid "Incident|Delete image"
+msgstr ""
+
 msgid "Incident|Deleting %{filename}"
+msgstr ""
+
+msgid "Incident|Edit image text or link"
 msgstr ""
 
 msgid "Incident|Editing %{filename}"

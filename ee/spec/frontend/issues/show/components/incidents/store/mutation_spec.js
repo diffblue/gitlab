@@ -103,7 +103,7 @@ describe('Metric images mutations', () => {
 
   describe('RECEIVE_METRIC_UPDATE_SUCCESS', () => {
     const initialImage = testImages[0];
-    const newImage = Object.assign({}, testImages[0]);
+    const newImage = testImages[0];
     newImage.url = 'https://www.gitlab.com';
 
     beforeEach(() => {
