@@ -17689,7 +17689,7 @@ msgstr ""
 msgid "Groups|Group avatar"
 msgstr ""
 
-msgid "Groups|Group description"
+msgid "Groups|Group description (optional)"
 msgstr ""
 
 msgid "Groups|Group name"
@@ -17705,9 +17705,6 @@ msgid "Groups|Learn more"
 msgstr ""
 
 msgid "Groups|Must start with letter, digit, emoji, or underscore. Can also contain periods, dashes, spaces, and parentheses."
-msgstr ""
-
-msgid "Groups|Optional group description."
 msgstr ""
 
 msgid "Groups|Remove avatar"
