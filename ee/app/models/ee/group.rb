@@ -349,7 +349,7 @@ module EE
     # For the user_ids key, we are plucking the user_ids from the "Members" table in an array and
     # converting the array of user_ids to a Set which will have unique user_ids.
     def billed_user_ids(requested_hosted_plan = nil)
-      exclude_guests = ([actual_plan_name, requested_hosted_plan] & [::Plan::GOLD, ::Plan::ULTIMATE]).any?
+      exclude_guests = ([actual_plan_name, requested_hosted_plan] & [::Plan::GOLD, ::Plan::ULTIMATE, ::Plan::ULTIMATE_TRIAL]).any?
 
       exclude_guests ? billed_user_ids_excluding_guests : billed_user_ids_including_guests
     end
