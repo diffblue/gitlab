@@ -131,7 +131,7 @@ exports[`MergeRequestTable component template matches the snapshot 1`] = `
               </li>
                
               <li>
-                opened 5 months ago
+                created 5 months ago
               </li>
                
               <li>

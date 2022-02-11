@@ -214,13 +214,13 @@ describe('RelatedItemsTree', () => {
       });
 
       describe('stateText', () => {
-        it('returns string `Opened` when `item.state` value is `opened`', async () => {
+        it('returns string `Created` when `item.state` value is `created`', async () => {
           wrapper.setProps({
             item: { ...mockItem, state: ChildState.Open },
           });
 
           await nextTick();
-          expect(findIssueIcon().props('ariaLabel')).toBe('Opened');
+          expect(findIssueIcon().props('ariaLabel')).toBe('Created');
         });
 
         it('returns string `Closed` when `item.state` value is `closed`', async () => {

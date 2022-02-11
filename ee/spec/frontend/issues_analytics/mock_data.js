@@ -34,7 +34,7 @@ export const tableHeaders = [
   'Weight',
   'Due date',
   'Assignees',
-  'Opened by',
+  'Created by',
 ];
 
 export const endpoints = {

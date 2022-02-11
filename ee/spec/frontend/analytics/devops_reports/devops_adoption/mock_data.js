@@ -43,12 +43,12 @@ export const devopsAdoptionTableHeaders = [
   {
     index: 3,
     label: 'Issues',
-    tooltip: 'At least one issue opened',
+    tooltip: 'At least one issue created',
   },
   {
     index: 4,
     label: 'MRs',
-    tooltip: 'At least one merge request opened',
+    tooltip: 'At least one merge request created',
   },
   {
     index: 5,
