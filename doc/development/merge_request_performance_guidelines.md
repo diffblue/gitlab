@@ -446,7 +446,6 @@ that accepts an upper limit of counting rows.
 In some cases it's desired that badge counters are loaded asynchronously.
 This can speed up the initial page load and give a better user experience overall.
 
-
 ## Usage of feature flags
 
 Each feature that has performance critical elements or has a known performance deficiency
