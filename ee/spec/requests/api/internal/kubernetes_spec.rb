@@ -276,6 +276,15 @@ RSpec.describe API::Internal::Kubernetes do
         expect(Vulnerability.all.first.finding.name).to eq(payload[:vulnerability][:name])
       end
 
+      it 'accepts the same payload twice' do
+        send_request(params: payload)
+        send_request(params: payload)
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(Vulnerability.count).to eq(1)
+        expect(json_response).to match("uuid" => Vulnerability.last.finding.uuid)
+      end
+
       it "responds with the created vulnerability's UUID" do
         send_request(params: payload)
 
