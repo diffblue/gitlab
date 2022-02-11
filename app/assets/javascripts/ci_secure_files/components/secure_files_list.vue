@@ -38,7 +38,6 @@ export default {
     {
       key: 'permissions',
       label: __('Permissions'),
-      tdClass: 'text-plain',
     },
     {
       key: 'created_at',
@@ -63,9 +62,7 @@ export default {
       this.loading = true;
       const response = await Api.projectSecureFiles(this.projectId, {page: page})
 
-      if (this.totalItems === 0) {
-        this.totalItems = parseInt(response.headers?.['x-total'], 10) || 0;
-      }
+      this.totalItems = parseInt(response.headers?.['x-total'], 10) || 0;
 
       this.projectSecureFiles = response.data
 
