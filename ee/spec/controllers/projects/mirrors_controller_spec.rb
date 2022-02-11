@@ -216,6 +216,15 @@ RSpec.describe Projects::MirrorsController do
         expect(flash[:alert]).to match(/is blocked/)
       end
     end
+
+    context 'with an invalid port for a pull' do
+      it 'processes an unsuccessful update' do
+        do_put(project, username_only_import_url: 'https://updated.example.com:wrong_port')
+
+        expect(response).to redirect_to(project_settings_repository_path(project, anchor: 'js-push-remote-settings'))
+        expect(flash[:alert]).to match(/is blocked/)
+      end
+    end
   end
 
   def do_put(project, options, extra_attrs = {})
