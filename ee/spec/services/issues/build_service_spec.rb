@@ -27,6 +27,12 @@ RSpec.describe Issues::BuildService do
 
         expect(issue.description).to eq('Work hard, play hard!')
       end
+
+      it 'fills in the template, followed by the query parameter, in the description' do
+        issue = build_issue(description: 'Travailler dur, jouer dur!')
+
+        expect(issue.description).to eq("Work hard, play hard!\nTravailler dur, jouer dur!")
+      end
     end
   end
 
