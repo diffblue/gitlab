@@ -31159,6 +31159,9 @@ msgstr ""
 msgid "Runners|Assigned Group"
 msgstr ""
 
+msgid "Runners|Assigned Projects (%{projectCount})"
+msgstr ""
+
 msgid "Runners|Associated with one or more projects"
 msgstr ""
 
