@@ -15,7 +15,7 @@ module QA
         Gitlab::Page::Admin::Subscription.perform(&:visit)
       end
 
-      it 'activates instance with correct subscription details', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/350294' do
+      it 'activates instance with correct subscription details', quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/350899', type: :investigating }, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/350294' do
         Gitlab::Page::Admin::Subscription.perform do |subscription|
           subscription.activation_code = Runtime::Env.ee_activation_code
           subscription.accept_terms
