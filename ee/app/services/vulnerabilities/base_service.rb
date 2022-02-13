@@ -16,7 +16,6 @@ module Vulnerabilities
       return false unless vulnerability.update(params)
 
       Vulnerabilities::Statistics::UpdateService.update_for(vulnerability)
-      Vulnerabilities::HistoricalStatistics::UpdateService.update_for(vulnerability.project)
       SystemNoteService.change_vulnerability_state(vulnerability, @user) if vulnerability.state_previously_changed?
       true
     end

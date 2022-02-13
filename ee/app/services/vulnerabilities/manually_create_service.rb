@@ -39,7 +39,6 @@ module Vulnerabilities
         finding.save!
 
         Statistics::UpdateService.update_for(vulnerability)
-        HistoricalStatistics::UpdateService.update_for(@project)
 
         ServiceResponse.success(payload: { vulnerability: vulnerability })
       end
