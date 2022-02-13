@@ -18957,7 +18957,7 @@ msgstr ""
 msgid "Incidents|Add image details"
 msgstr ""
 
-msgid "Incidents|Add text or a link that will display with your image. If you don't add either, the file name will display instead."
+msgid "Incidents|Add text or a link to display with your image. If you don't add either, the file name displays instead."
 msgstr ""
 
 msgid "Incidents|Drop or %{linkStart}upload%{linkEnd} a metric screenshot to attach it to the incident"

@@ -74,7 +74,7 @@ export default {
     modalCancel: __('Cancel'),
     modalTitle: s__('Incidents|Add image details'),
     modalDescription: s__(
-      "Incidents|Add text or a link that will display with your image. If you don't add either, the file name will display instead.",
+      "Incidents|Add text or a link to display with your image. If you don't add either, the file name displays instead.",
     ),
     dropDescription: s__(
       'Incidents|Drop or %{linkStart}upload%{linkEnd} a metric screenshot to attach it to the incident',

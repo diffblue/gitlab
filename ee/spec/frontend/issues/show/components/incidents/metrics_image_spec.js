@@ -47,7 +47,7 @@ describe('Metrics upload item', () => {
   });
 
   const findImageLink = () => wrapper.findComponent(GlLink);
-  const findSpan = () => wrapper.findAll('span').at(-1);
+  const findLabelTextSpan = () => wrapper.find('[data-testid="metric-image-label-span"]');
   const findCollapseButton = () => wrapper.find('[data-testid="collapse-button"]');
   const findMetricImageBody = () => wrapper.find('[data-testid="metric-image-body"]');
   const findModal = () => wrapper.findComponent(GlModal);
@@ -84,7 +84,7 @@ describe('Metrics upload item', () => {
     const testUrlText = 'test_url_text';
     mountComponent({ propsData: { urlText: testUrlText } });
 
-    expect(findSpan().text()).toBe(testUrlText);
+    expect(findLabelTextSpan().text()).toBe(testUrlText);
   });
 
   describe('expand and collapse', () => {
