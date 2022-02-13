@@ -1,4 +1,4 @@
-- if project.marked_for_deletion_at? && can?(current_user, :delayed_project_deletion)
+- if project.marked_for_deletion_at? && can?(current_user, :delay_project_deletions)
   = gl_badge_tag _('pending deletion'), variant: :warning
 - elsif project.archived
   = gl_badge_tag _('archived'), variant: :warning

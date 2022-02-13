@@ -4,7 +4,7 @@ module Projects
   class MarkForDeletionService < BaseService
     def execute
       return success if project.marked_for_deletion_at?
-      return error('Cannot mark project for deletion: feature not supported') unless can?(current_user, :delayed_project_deletion)
+      return error('Cannot mark project for deletion: feature not supported') unless can?(current_user, :delay_project_deletions)
 
       result = ::Projects::UpdateService.new(
         project,
