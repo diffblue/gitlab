@@ -242,7 +242,7 @@ total | filesystem | objectstg
  10   |          0 |        10
 ```
 
-Verify that there are no files on disk in the `packages` folder:
+Verify that there are no files on disk in the `dependency_proxy` folder:
 
 ```shell
 sudo find /var/opt/gitlab/gitlab-rails/shared/dependency_proxy -type f | grep -v tmp | wc -l
