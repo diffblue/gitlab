@@ -193,7 +193,7 @@ describe('DevopsAdoptionAddDropdown', () => {
         });
 
         describe('on error', () => {
-          beforeEach(() => {
+          beforeEach(async () => {
             jest.spyOn(Sentry, 'captureException');
 
             createComponent({
@@ -202,6 +202,7 @@ describe('DevopsAdoptionAddDropdown', () => {
             });
 
             clickFirstRow();
+            await waitForPromises();
           });
 
           it('calls sentry', async () => {

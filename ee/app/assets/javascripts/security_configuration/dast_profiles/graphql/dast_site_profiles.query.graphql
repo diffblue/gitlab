@@ -2,10 +2,13 @@
 
 query DastSiteProfiles($fullPath: ID!, $after: String, $before: String, $first: Int, $last: Int) {
   project(fullPath: $fullPath) {
+    __typename
     id
     siteProfiles: dastSiteProfiles(after: $after, before: $before, first: $first, last: $last)
       @connection(key: "dastSiteProfiles") {
+      __typename
       pageInfo {
+        __typename
         ...PageInfo
       }
       nodes {

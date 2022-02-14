@@ -38,6 +38,7 @@ export const mockProjectIterations = {
 };
 
 export const manualIterationCadence = {
+  __typename: 'IterationCadence',
   active: true,
   id: `gid://gitlab/Iterations::Cadence/72`,
   title: 'A manual iteration cadence',
@@ -65,6 +66,7 @@ export const updateMutationSuccess = {
 export const emptyGroupIterationsSuccess = {
   data: {
     workspace: {
+      __typename: 'Group',
       id: 'gid://gitlab/Group/114',
       iterations: {
         nodes: [],

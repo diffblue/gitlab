@@ -4,6 +4,7 @@ import VueApollo from 'vue-apollo';
 import PolicyAlertPicker from 'ee/threat_monitoring/components/policy_editor/policy_alert_picker.vue';
 import getAgentCount from 'ee/threat_monitoring/graphql/queries/get_agent_count.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 Vue.use(VueApollo);
@@ -54,6 +55,7 @@ describe('PolicyAlertPicker component', () => {
     describe('default state', () => {
       beforeEach(async () => {
         createWrapper();
+        await waitForPromises();
       });
 
       it('does render the enabled add alert button ', () => {
@@ -69,6 +71,7 @@ describe('PolicyAlertPicker component', () => {
     describe('alert enabled', () => {
       beforeEach(async () => {
         createWrapper({ propsData: { policyAlert: true } });
+        await waitForPromises();
       });
 
       it('does render the "high volume" alert', () => {

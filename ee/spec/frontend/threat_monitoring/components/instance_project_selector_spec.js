@@ -30,6 +30,7 @@ const defaultQueryVariables = {
 };
 
 const defaultPageInfo = {
+  __typename: 'PageInfo',
   hasNextPage: false,
   hasPreviousPage: false,
   startCursor: null,
@@ -46,7 +47,13 @@ const querySuccess = {
           nameWithNamespace: 'mixed-vulnerabilities-01 / Pages Test Again',
         },
       ],
-      pageInfo: { hasNextPage: true, hasPreviousPage: false, startCursor: 'a', endCursor: 'z' },
+      pageInfo: {
+        __typename: 'PageInfo',
+        hasNextPage: true,
+        hasPreviousPage: false,
+        startCursor: 'a',
+        endCursor: 'z',
+      },
     },
   },
 };

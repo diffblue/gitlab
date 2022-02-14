@@ -62,6 +62,9 @@ export default {
       },
       manual: true,
       result({ data }) {
+        if (!data) {
+          return;
+        }
         if (data.errors) {
           this.hasError = true;
         } else if (data.orderPreview) {

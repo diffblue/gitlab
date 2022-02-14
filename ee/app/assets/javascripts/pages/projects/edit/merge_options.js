@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client/core';
 import createFlash from '~/flash';
 import createDefaultClient from '~/lib/graphql';
 import { s__ } from '~/locale';

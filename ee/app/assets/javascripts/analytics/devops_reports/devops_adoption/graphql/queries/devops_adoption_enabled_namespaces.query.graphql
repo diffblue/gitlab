@@ -9,6 +9,7 @@ query devopsAdoptionEnabledNamespaces($displayNamespaceId: NamespaceID) {
         ...LatestSnapshot
       }
       namespace {
+        __typename
         ...Namespace
       }
     }

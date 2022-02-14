@@ -105,6 +105,9 @@ export default {
         };
       },
       result({ data }) {
+        if (!data) {
+          return;
+        }
         if (this.hasSubgroups === undefined) {
           this.hasSubgroups = data.groups?.nodes?.length > 0;
         }

@@ -172,6 +172,7 @@ describe('Iteration Breadcrumb', () => {
             iterationCadences: {
               nodes: [
                 {
+                  __typename: 'IterationCadence',
                   title: cadenceTitle,
                   id: 'cadenceid',
                   automatic: '',

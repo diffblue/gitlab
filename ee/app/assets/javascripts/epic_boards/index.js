@@ -1,4 +1,3 @@
-import { IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 
@@ -16,23 +15,11 @@ import createDefaultClient from '~/lib/graphql';
 
 import '~/boards/filters/due_date_filters';
 import { NavigationType, parseBoolean } from '~/lib/utils/common_utils';
-import introspectionQueryResultData from '~/sidebar/fragmentTypes.json';
 
 Vue.use(VueApollo);
 
-const fragmentMatcher = new IntrospectionFragmentMatcher({
-  introspectionQueryResultData,
-});
-
 const apolloProvider = new VueApollo({
-  defaultClient: createDefaultClient(
-    {},
-    {
-      cacheConfig: {
-        fragmentMatcher,
-      },
-    },
-  ),
+  defaultClient: createDefaultClient(),
 });
 
 function mountBoardApp(el) {

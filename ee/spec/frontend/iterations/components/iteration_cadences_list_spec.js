@@ -58,6 +58,7 @@ describe('Iteration cadences list', () => {
         iterationCadences: {
           nodes: cadences,
           pageInfo: {
+            __typename: 'PageInfo',
             hasNextPage: true,
             hasPreviousPage: false,
             startCursor,
@@ -83,6 +84,10 @@ describe('Iteration cadences list', () => {
         },
       },
     },
+  };
+
+  const queryErrorResponse = {
+    message: 'Network error',
   };
 
   function createComponent({
@@ -188,7 +193,7 @@ describe('Iteration cadences list', () => {
 
     it('shows alert on query error', async () => {
       await createComponent({
-        resolverMock: jest.fn().mockRejectedValue(queryEmptyResponse),
+        resolverMock: jest.fn().mockRejectedValue(queryErrorResponse),
       });
 
       await waitForPromises();
@@ -203,7 +208,6 @@ describe('Iteration cadences list', () => {
       beforeEach(async () => {
         resolverMock = jest.fn().mockResolvedValue(querySuccessResponse);
         await createComponent({ resolverMock });
-
         await waitForPromises();
 
         resolverMock.mockReset();

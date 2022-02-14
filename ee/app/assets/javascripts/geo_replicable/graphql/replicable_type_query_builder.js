@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import { gql } from '@apollo/client/core';
 import PageInfo from '~/graphql_shared/fragments/pageInfo.fragment.graphql';
 
 export default (graphQlFieldName) => {

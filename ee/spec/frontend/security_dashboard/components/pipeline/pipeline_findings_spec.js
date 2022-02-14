@@ -116,8 +116,8 @@ describe('Pipeline findings', () => {
     beforeEach(async () => {
       createWrapperWithApollo(
         jest.fn().mockResolvedValue(mockPipelineFindingsResponse({ hasNextPage: true })),
-        await waitForPromises(),
       );
+      await waitForPromises();
     });
 
     it('shows the intersection loader', () => {

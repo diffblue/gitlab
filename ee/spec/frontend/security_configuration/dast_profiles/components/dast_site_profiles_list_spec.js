@@ -13,6 +13,7 @@ import {
 } from 'ee/security_configuration/dast_site_validation/constants';
 import dastSiteValidationsQuery from 'ee/security_configuration/dast_site_validation/graphql/dast_site_validations.query.graphql';
 import createApolloProvider from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import * as responses from '../mocks/apollo_mock';
 import { siteProfiles } from '../mocks/mock_data';
 
@@ -201,7 +202,9 @@ describe('EE - DastSiteProfileList', () => {
       });
     });
 
-    it('fetches validation statuses for all profiles that are being validated and updates the cache', () => {
+    it('fetches validation statuses for all profiles that are being validated and updates the cache', async () => {
+      await waitForPromises();
+
       expect(requestHandlers.dastSiteValidations).toHaveBeenCalledWith({
         fullPath: defaultProps.fullPath,
         urls: urlsPendingValidation,
@@ -215,7 +218,9 @@ describe('EE - DastSiteProfileList', () => {
       ${2}    | ${inProgressValidation.normalizedTargetUrl} | ${DAST_SITE_VALIDATION_STATUS.PASSED}
     `(
       'in the local cache, profile with normalized URL $normalizedTargetUrl has its status set to $status',
-      ({ nthCall, normalizedTargetUrl, status }) => {
+      async ({ nthCall, normalizedTargetUrl, status }) => {
+        await waitForPromises();
+
         expect(updateSiteProfilesStatuses).toHaveBeenNthCalledWith(nthCall, {
           fullPath: defaultProps.fullPath,
           normalizedTargetUrl,

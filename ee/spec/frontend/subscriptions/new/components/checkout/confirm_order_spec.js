@@ -7,9 +7,7 @@ import Api from 'ee/api';
 import { STEPS } from 'ee/subscriptions/constants';
 import ConfirmOrder from 'ee/subscriptions/new/components/checkout/confirm_order.vue';
 import createStore from 'ee/subscriptions/new/store';
-import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';
-import flash from '~/flash';
 
 jest.mock('~/flash');
 
@@ -76,26 +74,6 @@ describe('Confirm Order', () => {
 
       it('the loading indicator should be visible', () => {
         expect(findLoadingIcon().exists()).toBe(true);
-      });
-    });
-
-    describe('when failing to receive step data', () => {
-      beforeEach(async () => {
-        const mockApolloProvider = createMockApolloProvider([]);
-        mockApolloProvider.clients.defaultClient.clearStore();
-        wrapper = createComponent({ apolloProvider: mockApolloProvider });
-      });
-
-      afterEach(() => {
-        flash.mockClear();
-      });
-
-      it('displays an error', () => {
-        expect(flash.mock.calls[0][0]).toMatchObject({
-          message: GENERAL_ERROR_MESSAGE,
-          captureError: true,
-          error: expect.any(Error),
-        });
       });
     });
   });

@@ -102,8 +102,7 @@ describe('Checkout', () => {
     it('displays a flash message', () => {
       expect(createFlash).toHaveBeenCalledWith({
         message: GENERAL_ERROR_MESSAGE,
-        // Apollo automatically wraps the resolver's error in a NetworkError
-        error: new Error('Network error: Yikes!'),
+        error: new Error('Yikes!'),
         captureError: true,
       });
     });

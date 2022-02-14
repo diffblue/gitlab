@@ -202,10 +202,12 @@ describe('SubscriptionManagementApp', () => {
 
       describe('activating the license', () => {
         it('shows the activation success notification', async () => {
-          await findActivateSubscriptionCard().vm.$emit(
+          findActivateSubscriptionCard().vm.$emit(
             SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
             license.ULTIMATE,
           );
+          await waitForPromises();
+
           expect(findSubscriptionActivationSuccessAlert().props('title')).toBe(
             subscriptionActivationNotificationText,
           );
@@ -225,9 +227,9 @@ describe('SubscriptionManagementApp', () => {
 
     describe('activating the license', () => {
       beforeEach(async () => {
-        currentSubscriptionResolver = jest
-          .fn()
-          .mockResolvedValue({ data: { currentLicense: license.ULTIMATE } });
+        currentSubscriptionResolver = jest.fn().mockResolvedValue({
+          data: { currentLicense: { __typename: 'CurrentLicense', ...license.ULTIMATE } },
+        });
         pastSubscriptionsResolver = jest.fn().mockResolvedValue({
           data: { licenseHistoryEntries: { nodes: subscriptionPastHistory } },
         });
@@ -272,9 +274,9 @@ describe('SubscriptionManagementApp', () => {
 
     describe('with active license', () => {
       beforeEach(async () => {
-        currentSubscriptionResolver = jest
-          .fn()
-          .mockResolvedValue({ data: { currentLicense: license.ULTIMATE } });
+        currentSubscriptionResolver = jest.fn().mockResolvedValue({
+          data: { currentLicense: { __typename: 'CurrentLicense', ...license.ULTIMATE } },
+        });
         pastSubscriptionsResolver = jest.fn().mockResolvedValue({
           data: { licenseHistoryEntries: { nodes: subscriptionPastHistory } },
         });

@@ -5,6 +5,7 @@ import SidebarStatus from 'ee/sidebar/components/status/sidebar_status.vue';
 import Status from 'ee/sidebar/components/status/status.vue';
 import { healthStatusQueries } from 'ee/sidebar/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import { getHealthStatusMutationResponse, getHealthStatusQueryResponse } from './mock_data';
 
 Vue.use(VueApollo);
@@ -61,8 +62,9 @@ describe('SidebarStatus', () => {
       ${'reopened'} | ${true}
       ${'closed'}   | ${false}
     `('isOpen', ({ state, isOpen }) => {
-      beforeEach(() => {
+      beforeEach(async () => {
         createWrapper({ state });
+        await waitForPromises();
       });
 
       it(`returns ${isOpen} when issue is ${state}`, () => {

@@ -37,7 +37,6 @@ const createComponent = async (mockData = {}) => {
     downloadCode = userPermissionsMock.downloadCode,
     createMergeRequestIn = userPermissionsMock.createMergeRequestIn,
     isBinary,
-    inject = {},
     path = propsMock.projectPath,
   } = mockData;
 
@@ -66,7 +65,7 @@ const createComponent = async (mockData = {}) => {
       path,
     },
     mixins: [{ data: () => ({ ref: refMock }) }],
-    provide: { ...inject },
+    provide: { targetBranch: 'test', originalBranch: 'test' },
   });
 
   await waitForPromises();

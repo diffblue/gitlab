@@ -1,4 +1,5 @@
 fragment OnCallParticipant on OncallParticipantType {
+  __typename
   id
   user {
     id

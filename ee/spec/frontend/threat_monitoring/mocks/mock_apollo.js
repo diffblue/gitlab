@@ -38,6 +38,7 @@ export const networkPolicies = (nodes) =>
     data: {
       project: {
         id: '1',
+        __typename: 'Project',
         networkPolicies: {
           nodes,
         },
@@ -50,6 +51,7 @@ export const scanExecutionPolicies = (nodes) =>
     data: {
       project: {
         id: '3',
+        __typename: 'Project',
         scanExecutionPolicies: {
           nodes,
         },
