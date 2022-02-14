@@ -27,7 +27,7 @@ RSpec.describe 'Test Cases', :js do
       it 'shows status, created date and author' do
         page.within('.test-case-container .detail-page-header-body') do
           expect(page.find('.issuable-status-box')).to have_content('Open')
-          expect(page.find('.issuable-meta')).to have_content('Opened 5 days ago')
+          expect(page.find('.issuable-meta')).to have_content('Created 5 days ago')
           expect(page.find('.issuable-meta')).to have_link(user.name)
         end
       end
