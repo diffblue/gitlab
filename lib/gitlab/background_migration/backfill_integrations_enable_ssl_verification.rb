@@ -39,31 +39,15 @@ module Gitlab
       end
 
       def perform(start_id, stop_id)
-        integrations = Integration.affected.where(id: (start_id..stop_id))
+        integration_ids = Integration
+          .affected
+          .where(id: (start_id..stop_id))
+          .pluck(:id)
 
-        integrations.each do |integration|
-          next unless integration.properties
-
-          url_field, known_hostnames = INTEGRATIONS.fetch(integration.type)
-
-          url = integration.properties[url_field.to_s]
-          next unless url.present?
-
-          begin
-            parsed_url = Addressable::URI.parse(url)
-          rescue Addressable::URI::InvalidURIError
-            next
-          end
-
-          next unless parsed_url.scheme == 'https' && parsed_url.hostname =~ known_hostnames
-
-          integration.properties['enable_ssl_verification'] = true
-
-          begin
-            integration.save!(touch: false)
-          rescue ActiveRecord::RecordInvalid
-            # Don't change the configuration if the record is invalid, in this case
-            # they will just keep having SSL verification disabled.
+        integration_ids.each do |id|
+          Integration.transaction do
+            integration = Integration.lock.find(id)
+            process_integration(integration)
           end
         end
 
@@ -71,6 +55,23 @@ module Gitlab
       end
 
       private
+
+      def process_integration(integration)
+        url_field, known_hostnames = INTEGRATIONS.fetch(integration.type)
+
+        url = integration.properties[url_field.to_s]
+        return unless url.present?
+
+        parsed_url = Addressable::URI.parse(url)
+        return unless parsed_url.scheme == 'https' && parsed_url.hostname =~ known_hostnames
+
+        integration.properties['enable_ssl_verification'] = true
+
+        integration.save!(touch: false)
+      rescue Addressable::URI::InvalidURIError, ActiveRecord::RecordInvalid
+        # Don't change the configuration if the record is invalid, in this case
+        # they will just keep having SSL verification disabled.
+      end
 
       def mark_job_as_succeeded(*arguments)
         Gitlab::Database::BackgroundMigrationJob.mark_all_as_succeeded(
