@@ -222,6 +222,7 @@ export default {
                 class="gl-mr-3"
                 :href="licenseRemovePath"
                 :data-confirm="$options.i18n.removeLicenseConfirm"
+                data-confirm-btn-variant="danger"
                 data-method="delete"
                 data-testid="license-remove-action"
                 data-qa-selector="remove_license_link"
