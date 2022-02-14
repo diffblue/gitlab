@@ -326,4 +326,85 @@ RSpec.describe API::Internal::Kubernetes do
       end
     end
   end
+
+  describe 'POST /internal/kubernetes/modules/starboard_vulnerability/scan_result' do
+    let(:method) { :post }
+    let(:api_url) { '/internal/kubernetes/modules/starboard_vulnerability/scan_result' }
+
+    let_it_be(:agent_token) { create(:cluster_agent_token) }
+    let_it_be(:agent) { agent_token.agent }
+    let_it_be(:project) { agent.project }
+
+    let_it_be(:existing_vulnerabilities) { create_list(:vulnerability, 4, :detected, :with_finding, project: project, report_type: :cluster_image_scanning) }
+    let_it_be(:detected_vulnerabilities) { existing_vulnerabilities.first(2) }
+    let_it_be(:undetected_vulnerabilities) { existing_vulnerabilities - detected_vulnerabilities }
+    let_it_be(:payload) { { uuids: detected_vulnerabilities.map { |vuln| vuln.finding.uuid } } }
+
+    include_examples 'authorization'
+    include_examples 'agent authentication'
+
+    subject { send_request(params: payload) }
+
+    context 'is authenticated for an agent' do
+      before do
+        stub_licensed_features(security_dashboard: true)
+      end
+
+      before_all do
+        project.add_maintainer(agent.created_by_user)
+      end
+
+      it 'returns ok' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+
+      it 'resolves undetected vulnerabilities' do
+        subject
+
+        expect(Vulnerability.resolved).to match_array(undetected_vulnerabilities)
+      end
+
+      it 'marks undetected vulnerabilities as resolved on default branch' do
+        subject
+
+        expect(Vulnerability.with_resolution).to match_array(undetected_vulnerabilities)
+      end
+
+      it 'does not resolve vulnerabilities with other report types' do
+        Vulnerability.where(id: undetected_vulnerabilities).update_all(report_type: :container_scanning)
+
+        expect { subject }.not_to change { Vulnerability.resolved.count }
+      end
+
+      it "does not resolve other projects' vulnerabilities" do
+        Vulnerability.where(id: undetected_vulnerabilities).update_all(project_id: create(:project).id)
+
+        expect { subject }.not_to change { Vulnerability.resolved.count }
+      end
+
+      context 'when payload is invalid' do
+        let(:payload) { { uuids: -1 } }
+
+        it 'returns bad request' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+        end
+      end
+
+      context 'when feature is not available' do
+        before do
+          stub_licensed_features(security_dashboard: false)
+        end
+
+        it 'returns forbidden for non licensed project' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+      end
+    end
+  end
 end
