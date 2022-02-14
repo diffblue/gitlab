@@ -125,6 +125,23 @@ module EE
                     render_api_error!(result.message, result.http_status)
                   end
                 end
+
+                desc 'POST scan_result' do
+                  detail 'Resolves all active Cluster Image Scanning vulnerabilities with finding UUIDs not present in the payload'
+                end
+                params do
+                  requires :uuids, type: Array[String], desc: 'Finding UUIDs collected from a scan'
+                end
+
+                route_setting :authentication, cluster_agent_token_allowed: true
+                post "/scan_result" do
+                  not_found! if agent.project.nil?
+
+                  service = ::Vulnerabilities::StarboardVulnerabilityResolveService.new(agent, params[:uuids])
+                  result = service.execute
+
+                  status result.http_status
+                end
               end
             end
           end
