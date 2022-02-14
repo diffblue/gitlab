@@ -12,6 +12,28 @@ RSpec.describe 'Pending group memberships', :js do
   context 'with a public group' do
     let_it_be(:group) { create(:group, :public) }
 
+    it 'a pending member sees a public group as if not a member' do
+      create(:group_member, :awaiting, :developer, source: group, user: developer)
+
+      visit group_path(group)
+
+      expect(page).to have_content "Group ID: #{group.id}"
+      expect(page).not_to have_content "New project"
+      expect(page).not_to have_content "Recent activity"
+    end
+
+    it 'a pending member sees a public group with a project as if not a member' do
+      project = create(:project, :public, namespace: group)
+      create(:group_member, :awaiting, :developer, source: group, user: developer)
+
+      visit group_path(group)
+
+      expect(page).to have_content "Group ID: #{group.id}"
+      expect(page).to have_content project.name
+      expect(page).not_to have_content "New project"
+      expect(page).not_to have_content "Recent activity"
+    end
+
     it 'a pending group member gets a 404 for a private project in the group' do
       project = create(:project, :private, namespace: group)
       create(:group_member, :awaiting, :developer, source: group, user: developer)
@@ -22,9 +44,37 @@ RSpec.describe 'Pending group memberships', :js do
     end
   end
 
+  context 'with a private group' do
+    let_it_be(:group) { create(:group, :private) }
+
+    it 'a pending member gets a 404 for a private group' do
+      create(:group_member, :awaiting, :developer, source: group, user: developer)
+
+      visit group_path(group)
+
+      expect(page).to have_content 'Page Not Found'
+    end
+  end
+
   context 'with a subgroup' do
     let_it_be(:group) { create(:group, :private) }
     let_it_be(:subgroup) { create(:group, :private, parent: group) }
+
+    it 'a pending member of the root group sees the root group as if not a member' do
+      create(:group_member, :awaiting, :developer, source: group, user: developer)
+
+      visit group_path(group)
+
+      expect(page).to have_content 'Page Not Found'
+    end
+
+    it 'a pending member of the root group sees a subgroup as if not a member' do
+      create(:group_member, :awaiting, :developer, source: group, user: developer)
+
+      visit group_path(subgroup)
+
+      expect(page).to have_content 'Page Not Found'
+    end
 
     it 'a pending member of the root group sees a subgroup project as if not a member' do
       project = create(:project, :private, namespace: subgroup)

@@ -963,6 +963,7 @@ RSpec.describe Namespace do
           group.add_developer(developer)
           group.add_developer(create(:user, :blocked))
           group.add_guest(guest)
+          create(:group_member, :awaiting, :developer, source: group)
         end
 
         subject(:billed_user_ids) { group.billed_user_ids }
@@ -991,6 +992,7 @@ RSpec.describe Namespace do
               project.add_guest(create(:user))
               project.add_developer(developer)
               project.add_developer(create(:user, :blocked))
+              create(:project_member, :awaiting, :developer, source: project)
             end
 
             it 'includes invited active users except guests to the group', :aggregate_failures do
@@ -1024,6 +1026,7 @@ RSpec.describe Namespace do
                 invited_group.add_guest(create(:user))
                 invited_group.add_developer(create(:user, :blocked))
                 invited_group.add_developer(developer)
+                create(:group_member, :awaiting, :developer, source: invited_group)
               end
 
               context 'when group is invited as non guest' do
@@ -1061,6 +1064,7 @@ RSpec.describe Namespace do
               shared_group.add_developer(shared_group_developer)
               shared_group.add_guest(create(:user))
               shared_group.add_developer(create(:user, :blocked))
+              create(:group_member, :awaiting, :developer, source: shared_group)
 
               create(:group_group_link, { shared_with_group: shared_group,
                                           shared_group: group })
@@ -1080,6 +1084,7 @@ RSpec.describe Namespace do
                 another_shared_group.add_developer(another_shared_group_developer)
                 another_shared_group.add_guest(create(:user))
                 another_shared_group.add_developer(create(:user, :blocked))
+                create(:group_member, :awaiting, :developer, source: another_shared_group)
               end
 
               context 'when subgroup invites another group as non guest' do
@@ -1150,6 +1155,7 @@ RSpec.describe Namespace do
                 project.add_guest(project_guest)
                 project.add_developer(create(:user, :blocked))
                 project.add_developer(developer)
+                create(:project_member, :awaiting, :developer, source: project)
               end
 
               it 'includes invited active users to the group', :aggregate_failures do
@@ -1181,6 +1187,7 @@ RSpec.describe Namespace do
                   invited_group.add_developer(developer)
                   invited_group.add_guest(invited_group_guest)
                   invited_group.add_developer(create(:user, :blocked))
+                  create(:group_member, :awaiting, :developer, source: invited_group)
                   create(:project_group_link, project: project, group: invited_group)
                 end
 
@@ -1213,6 +1220,7 @@ RSpec.describe Namespace do
                 shared_group.add_developer(shared_group_developer)
                 shared_group.add_guest(shared_group_guest)
                 shared_group.add_developer(create(:user, :blocked))
+                create(:group_member, :awaiting, :developer, source: shared_group)
 
                 create(:group_group_link, { shared_with_group: shared_group,
                                             shared_group: group })
@@ -1249,6 +1257,7 @@ RSpec.describe Namespace do
         group.add_developer(developer)
         group.add_developer(create(:user, :blocked))
         group.add_guest(create(:user))
+        create(:group_member, :awaiting, :developer, source: group)
       end
 
       context 'with an ultimate plan' do
@@ -1256,7 +1265,7 @@ RSpec.describe Namespace do
           create(:gitlab_subscription, namespace: group, hosted_plan: ultimate_plan)
         end
 
-        it 'counts only active users with an access level higher than guest' do
+        it 'counts only active users with an active membership with an access level higher than guest' do
           expect(group.billable_members_count).to eq(1)
         end
 
@@ -1268,9 +1277,10 @@ RSpec.describe Namespace do
             project.add_guest(create(:user))
             project.add_developer(developer)
             project.add_developer(create(:user, :blocked))
+            create(:project_member, :awaiting, :developer, source: project)
           end
 
-          it 'includes invited active users except guests' do
+          it 'includes invited active users except guests and awaiting members' do
             expect(group.billable_members_count).to eq(2)
           end
 
@@ -1291,6 +1301,7 @@ RSpec.describe Namespace do
               invited_group.add_guest(create(:user))
               invited_group.add_developer(create(:user, :blocked))
               invited_group.add_developer(developer)
+              create(:group_member, :awaiting, :developer, source: invited_group)
               create(:project_group_link, project: project, group: invited_group)
             end
 
@@ -1307,6 +1318,7 @@ RSpec.describe Namespace do
             other_group.add_developer(create(:user))
             other_group.add_guest(create(:user))
             other_group.add_developer(create(:user, :blocked))
+            create(:group_member, :awaiting, :developer, source: other_group)
 
             create(:group_group_link, { shared_with_group: other_group,
                                         shared_group: group })
@@ -1334,6 +1346,7 @@ RSpec.describe Namespace do
               project.add_guest(create(:user))
               project.add_developer(create(:user, :blocked))
               project.add_developer(developer)
+              create(:project_member, :awaiting, :developer, source: project)
             end
 
             it 'includes invited active users to the group' do
@@ -1357,6 +1370,7 @@ RSpec.describe Namespace do
                 invited_group.add_developer(developer)
                 invited_group.add_guest(create(:user))
                 invited_group.add_developer(create(:user, :blocked))
+                create(:group_member, :awaiting, :developer, source: invited_group)
                 create(:project_group_link, project: project, group: invited_group)
               end
 
@@ -1374,6 +1388,7 @@ RSpec.describe Namespace do
               other_group.add_developer(create(:user))
               other_group.add_guest(create(:user))
               other_group.add_developer(create(:user, :blocked))
+              create(:group_member, :awaiting, :developer, source: other_group)
 
               create(:group_group_link, { shared_with_group: other_group,
                                           shared_group: group })
