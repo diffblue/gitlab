@@ -461,7 +461,7 @@ module EE
       root_namespace = project.root_namespace
       ci_quota = root_namespace.ci_minutes_quota
 
-      return false if ci_quota.enabled? && ci_quota.limit.any_purchased? && ::Feature.enabled?(:ci_skip_require_credit_card_for_addon_ci_minutes, project, default_enabled: :yaml)
+      return false if ci_quota.enabled? && ci_quota.limit.any_purchased?
 
       if root_namespace.free_plan?
         ::Feature.enabled?(:ci_require_credit_card_on_free_plan, project, default_enabled: :yaml)
