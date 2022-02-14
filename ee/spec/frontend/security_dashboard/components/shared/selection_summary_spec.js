@@ -95,12 +95,12 @@ describe('Selection Summary component', () => {
   });
 
   describe.each`
-    action       | queryName                          | payload           | expected
-    ${'dismiss'} | ${'vulnerabilityDismiss'}          | ${undefined}      | ${'dismissed'}
-    ${'confirm'} | ${'vulnerabilityConfirm'}          | ${undefined}      | ${'confirmed'}
-    ${'resolve'} | ${'vulnerabilityResolve'}          | ${undefined}      | ${'resolved'}
-    ${'revert'}  | ${'vulnerabilityRevertToDetected'} | ${'Needs triage'} | ${'detected'}
-  `('state dropdown change', ({ action, queryName, payload, expected }) => {
+    action       | queryName                          | payload           | expected       | successMessage
+    ${'dismiss'} | ${'vulnerabilityDismiss'}          | ${undefined}      | ${'dismissed'} | ${'set to dismissed'}
+    ${'confirm'} | ${'vulnerabilityConfirm'}          | ${undefined}      | ${'confirmed'} | ${'set to confirmed'}
+    ${'resolve'} | ${'vulnerabilityResolve'}          | ${undefined}      | ${'resolved'}  | ${'set to resolved'}
+    ${'revert'}  | ${'vulnerabilityRevertToDetected'} | ${'Needs triage'} | ${'detected'}  | ${'set to needs triage'}
+  `('state dropdown change', ({ action, queryName, payload, expected, successMessage }) => {
     const selectedVulnerabilities = [
       { id: 'gid://gitlab/Vulnerability/54' },
       { id: 'gid://gitlab/Vulnerability/56' },
@@ -179,7 +179,7 @@ describe('Selection Summary component', () => {
 
       it(`calls the toaster - ${action}`, async () => {
         await submitForm();
-        expect(toast).toHaveBeenLastCalledWith('3 vulnerabilities updated');
+        expect(toast).toHaveBeenLastCalledWith(`3 vulnerabilities ${successMessage}`);
       });
 
       it(`the submit button is unclickable during form submission - ${action}`, async () => {
