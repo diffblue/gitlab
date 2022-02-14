@@ -975,8 +975,6 @@ module EE
     # If the project is inside a fork network, the mirror URL must
     # also belong to a member of that fork network
     def import_url_inside_fork_network
-      return unless ::Feature.enabled?(:block_external_fork_network_mirrors, self, default_enabled: :yaml)
-
       if forked?
         mirror_project = ::Project.find_by_url(import_url)
 

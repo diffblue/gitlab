@@ -2709,15 +2709,6 @@ RSpec.describe Project do
         stub_config_setting(host: 'gitlab.com')
       end
 
-      context 'feature flag is disabled' do
-        before do
-          stub_feature_flags(block_external_fork_network_mirrors: false)
-          project.import_url = "https://customgitlab.com/foo/bar.git"
-        end
-
-        it { is_expected.to be_valid }
-      end
-
       context 'the project is the root of the fork network' do
         before do
           project.import_url = "https://customgitlab.com/foo/bar.git"
