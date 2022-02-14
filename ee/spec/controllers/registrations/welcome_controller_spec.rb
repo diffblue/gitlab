@@ -42,7 +42,7 @@ RSpec.describe Registrations::WelcomeController do
       it 'sets the correct session key' do
         continuous_onboarding_getting_started
 
-        expect(session[:confetti_post_signup]).to eq(true)
+        expect(cookies[:confetti_post_signup]).to eq('true')
       end
     end
 
