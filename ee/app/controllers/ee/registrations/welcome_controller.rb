@@ -41,7 +41,7 @@ module EE
         project = ::Project.find(params[:project_id])
         return access_denied! unless can?(current_user, :owner_access, project)
 
-        session[:confetti_post_signup] = true
+        cookies[:confetti_post_signup] = true
 
         render locals: { project: project }
       end
