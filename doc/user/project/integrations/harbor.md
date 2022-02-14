@@ -14,7 +14,7 @@ Harbor Container Registry integration will be useful to users who have a need fo
 
 ## Prerequisites
 
-* In the Harbor instance, the project to be integrated has been created, and the logged-in user needs to have permission to pull, push, and edit images in the Harbor project.
+- In the Harbor instance, the project to be integrated has been created, and the logged-in user needs to have permission to pull, push, and edit images in the Harbor project.
 
 ## Configure GitLab
 
@@ -33,6 +33,5 @@ GitLab supports integrating Harbor projects at the group or project level. Compl
 
 After the Harbor integration is activated:
 
-* Global variables '$HARBOR_USER', '$HARBOR_PASSWORD', '$HARBOR_URL' and '$HARBOR_PROJECT' will be created for CI/CD usage.
-
-* Project-level integration settings override group-level integration settings.
+- Global variables '$HARBOR_USER', '$HARBOR_PASSWORD', '$HARBOR_URL' and '$HARBOR_PROJECT' will be created for CI/CD usage.
+- Project-level integration settings override group-level integration settings.
