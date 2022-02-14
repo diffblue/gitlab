@@ -1811,4 +1811,63 @@ RSpec.describe GroupPolicy do
       it { is_expected.to(be_disallowed(:admin_external_audit_events)) }
     end
   end
+
+  describe 'pending memberships' do
+    let_it_be(:user) { create(:user) }
+
+    context 'with a private group' do
+      let_it_be(:private_group) { create(:group, :private) }
+
+      subject { described_class.new(user, private_group) }
+
+      context 'developer' do
+        before do
+          create(:group_member, :awaiting, :developer, source: private_group, user: user)
+        end
+
+        it 'has permission identical to a private group in which the user is not a member' do
+          expect_private_group_permissions_as_if_non_member
+        end
+
+        context 'with a project in the group' do
+          let_it_be(:project) { create(:project, :private, namespace: private_group) }
+
+          it 'has permission identical to a private group in which the user is not a member' do
+            expect_private_group_permissions_as_if_non_member
+          end
+        end
+      end
+    end
+
+    context 'with a public group' do
+      let_it_be(:public_group) { create(:group, :public, :crm_enabled) }
+
+      subject { described_class.new(user, public_group) }
+
+      context 'developer' do
+        before do
+          create(:group_member, :awaiting, :developer, source: public_group, user: user)
+        end
+
+        it 'has permission identical to a public group in which the user is not a member' do
+          expect_allowed(*public_permissions)
+          expect_disallowed(:upload_file)
+          expect_disallowed(*reporter_permissions)
+          expect_disallowed(*developer_permissions)
+          expect_disallowed(*maintainer_permissions)
+          expect_disallowed(*owner_permissions)
+          expect_disallowed(:read_namespace)
+        end
+      end
+    end
+
+    def expect_private_group_permissions_as_if_non_member
+      expect_disallowed(*public_permissions)
+      expect_disallowed(*guest_permissions)
+      expect_disallowed(*reporter_permissions)
+      expect_disallowed(*developer_permissions)
+      expect_disallowed(*maintainer_permissions)
+      expect_disallowed(*owner_permissions)
+    end
+  end
 end
