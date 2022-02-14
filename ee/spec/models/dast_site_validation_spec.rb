@@ -212,4 +212,22 @@ RSpec.describe DastSiteValidation, type: :model do
       end
     end
   end
+
+  describe '.get_normalized_url_base' do
+    let(:url) { 'https://gitlab.com' }
+
+    subject { DastSiteValidation.get_normalized_url_base(url) }
+
+    it 'normalizes the url' do
+      expect(subject).to eq('https://gitlab.com:443')
+    end
+
+    context 'when a error occurs parsing the URL' do
+      let(:url) { 'https://site1.com, https://site2.com' }
+
+      it 'returns the original url it is unparsable' do
+        expect(subject).to eq(url)
+      end
+    end
+  end
 end
