@@ -230,6 +230,7 @@ export const pipelineSecurityReportSummaryWithErrors = merge({}, pipelineSecurit
         id: 'pipeline-1',
         securityReportSummary: {
           dast: {
+            __typename: 'SecurityReportSummarySection',
             scans: {
               nodes: scansWithErrors,
             },

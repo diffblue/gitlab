@@ -9,13 +9,16 @@ query DastScannerProfiles(
 ) {
   project(fullPath: $fullPath) {
     id
+    __typename
     scannerProfiles: dastScannerProfiles(
       after: $after
       before: $before
       first: $first
       last: $last
     ) {
+      __typename
       pageInfo {
+        __typename
         ...PageInfo
       }
       nodes {

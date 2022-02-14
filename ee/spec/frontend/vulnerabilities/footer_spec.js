@@ -19,7 +19,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import createFlash from '~/flash';
 import initUserPopovers from '~/user_popovers';
-import { generateNote } from './mock_data';
+import { addTypenamesToDiscussion, generateNote } from './mock_data';
 
 jest.mock('~/flash');
 jest.mock('~/user_popovers');
@@ -119,9 +119,11 @@ describe('Vulnerability Footer', () => {
     });
 
     it('fetches discussions and notes on mount', async () => {
-      await createWrapperAndFetchDiscussions({ discussions: [discussion1, discussion2] });
+      await createWrapperAndFetchDiscussions({
+        discussions: [addTypenamesToDiscussion(discussion1), addTypenamesToDiscussion(discussion2)],
+      });
 
-      expect(findDiscussions().at(0).props()).toStrictEqual({
+      expect(findDiscussions().at(0).props()).toMatchObject({
         discussion: {
           ...discussion1,
           notes: [normalizeGraphQLNote(discussion1.notes.nodes[0])],
@@ -193,9 +195,17 @@ describe('Vulnerability Footer', () => {
 
     it('emits the vulnerability-state-change event when the system note is new', async () => {
       const eventName = 'vulnerability-state-change';
-      const queryHandler = discussionsHandler({ discussions: [discussion1] }); // first call
-      discussionsHandler({ discussions: [discussion1], handler: queryHandler }); // second call is the same
-      discussionsHandler({ discussions: [discussion1, discussion2], handler: queryHandler }); // for the third call we change the number of discussions
+      const queryHandler = discussionsHandler({
+        discussions: [addTypenamesToDiscussion(discussion1)],
+      }); // first call
+      discussionsHandler({
+        discussions: [addTypenamesToDiscussion(discussion1)],
+        handler: queryHandler,
+      }); // second call is the same
+      discussionsHandler({
+        discussions: [addTypenamesToDiscussion(discussion1), addTypenamesToDiscussion(discussion2)],
+        handler: queryHandler,
+      }); // for the third call we change the number of discussions
 
       createWrapper({
         queryHandler,

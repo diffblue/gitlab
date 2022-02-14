@@ -70,9 +70,6 @@ export default {
       update(data) {
         return data.workspace?.issuable?.weight;
       },
-      result({ data }) {
-        return data.workspace?.issuable?.weight;
-      },
       error() {
         createFlash({
           message: sprintf(__('Something went wrong while setting %{issuableType} weight.'), {

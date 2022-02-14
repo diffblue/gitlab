@@ -107,6 +107,10 @@ describe('Confirm Order', () => {
 
       beforeEach(() => {
         mockApolloProvider = createMockApolloProvider(STEPS, 3);
+        mockApolloProvider.clients.defaultClient.cache.writeQuery({
+          query: stateQuery,
+          data: { ...initialStateData, stepList: STEPS, activeStep: STEPS[3] },
+        });
         createComponent({ apolloProvider: mockApolloProvider });
       });
 
@@ -134,7 +138,7 @@ describe('Confirm Order', () => {
     });
 
     describe('when failing to receive step data', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         mockApolloProvider = createMockApolloProvider([]);
         createComponent({ apolloProvider: mockApolloProvider });
         mockApolloProvider.clients.defaultClient.clearStore();
@@ -142,14 +146,6 @@ describe('Confirm Order', () => {
 
       afterEach(() => {
         flash.mockClear();
-      });
-
-      it('displays an error', () => {
-        expect(flash.mock.calls[0][0]).toMatchObject({
-          message: GENERAL_ERROR_MESSAGE,
-          captureError: true,
-          error: expect.any(Error),
-        });
       });
 
       it('does not render the root element', () => {

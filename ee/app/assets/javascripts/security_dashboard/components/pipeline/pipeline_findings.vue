@@ -74,6 +74,9 @@ export default {
           id: finding.uuid,
         })),
       result({ data }) {
+        if (!data) {
+          return;
+        }
         this.pageInfo = preparePageInfo(data.project?.pipeline?.securityReportFindings?.pageInfo);
       },
       error() {

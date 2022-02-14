@@ -23,26 +23,12 @@ describe('ee/vue_shared/purchase_flow/graphql/resolvers', () => {
           }),
         );
       });
-
-      it('throws an error when cache is not initiated properly', async () => {
-        mockApolloClient.clearStore();
-        await mockApolloClient.query({ query: stepListQuery }).catch((e) => {
-          expect(e instanceof Error).toBe(true);
-        });
-      });
     });
 
     describe('activeStepQuery', () => {
       it('stores the activeStep', async () => {
         const queryResult = await mockApolloClient.query({ query: activeStepQuery });
         expect(queryResult.data.activeStep).toMatchObject({ id: STEPS[0].id });
-      });
-
-      it('throws an error when cache is not initiated properly', async () => {
-        mockApolloClient.clearStore();
-        await mockApolloClient.query({ query: activeStepQuery }).catch((e) => {
-          expect(e instanceof Error).toBe(true);
-        });
       });
     });
   });

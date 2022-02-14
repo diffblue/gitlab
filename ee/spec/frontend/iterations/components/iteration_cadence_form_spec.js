@@ -325,17 +325,20 @@ describe('Iteration cadence form', () => {
     });
 
     it('updates roll over issues checkbox', async () => {
+      await waitForPromises();
       const rollOver = true;
       setRollOver(rollOver);
 
+      const { __typename, ...cadenceWithoutTypename } = iterationCadence;
+
       clickSave();
 
-      await nextTick();
+      await waitForPromises();
 
       expect(findError().exists()).toBe(false);
       expect(mutationMock).toHaveBeenCalledWith({
         input: {
-          ...iterationCadence,
+          ...cadenceWithoutTypename,
           rollOver,
         },
       });

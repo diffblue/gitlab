@@ -67,9 +67,10 @@ describe('IterationDropdown', () => {
     groupIterationsSpy = jest.fn().mockResolvedValue({
       data: {
         group: {
+          __typename: 'Group',
           id: '1',
           iterations: {
-            nodes: TEST_ITERATIONS,
+            nodes: TEST_ITERATIONS.map((iteration) => ({ ...iteration, __typename: 'Iteration' })),
           },
         },
       },
@@ -247,8 +248,6 @@ describe('IterationDropdown', () => {
       createComponent();
 
       await showDropdownAndWait();
-
-      groupIterationsSpy.mockClear();
 
       wrapper.findComponent(GlSearchBoxByType).vm.$emit('input', TEST_SEARCH);
 

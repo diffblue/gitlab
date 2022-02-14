@@ -301,6 +301,7 @@ export const formattedMockNetworkPolicyStatisticsResponse = {
 
 export const mockAlerts = [
   {
+    __typename: 'AlertManagementAlert',
     iid: '01',
     title: 'Issue 01',
     severity: 'HIGH',
@@ -317,6 +318,7 @@ export const mockAlerts = [
     assignees: {
       nodes: [
         {
+          __typename: 'UserCore',
           id: 'Alert:1',
           name: 'Administrator',
           username: 'root',
@@ -327,6 +329,7 @@ export const mockAlerts = [
     },
   },
   {
+    __typename: 'AlertManagementAlert',
     iid: '02',
     title: 'Issue 02',
     severity: 'CRITICAL',
@@ -343,6 +346,7 @@ export const mockAlerts = [
     assignees: { nodes: [] },
   },
   {
+    __typename: 'AlertManagementAlert',
     iid: '03',
     title: 'Issue 03',
     severity: 'MEDIUM',
@@ -353,6 +357,7 @@ export const mockAlerts = [
     assignees: { nodes: [] },
   },
   {
+    __typename: 'AlertManagementAlert',
     iid: '04',
     title: 'Issue 04',
     severity: 'LOW',

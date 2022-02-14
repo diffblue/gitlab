@@ -1,6 +1,6 @@
 import { GlPagination, GlBadge } from '@gitlab/ui';
+import { defaultDataIdFromObject } from '@apollo/client/core';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
-import { defaultDataIdFromObject } from 'apollo-cache-inmemory';
 import VueApollo from 'vue-apollo';
 
 import { nextTick } from 'vue';

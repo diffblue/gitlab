@@ -49,7 +49,7 @@ export default {
       update(data) {
         const summary = {
           reports: data?.project?.pipeline?.securityReportSummary,
-          jobs: data?.project?.pipeline?.jobs.nodes,
+          jobs: data?.project?.pipeline?.jobs?.nodes,
         };
         return summary?.reports && Object.keys(summary.reports).length ? summary : null;
       },

@@ -60,6 +60,7 @@ describe('Iteration cadence list item', () => {
         iterations: {
           nodes: iterations,
           pageInfo: {
+            __typename: 'PageInfo',
             hasNextPage: true,
             hasPreviousPage: false,
             startCursor,

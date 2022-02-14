@@ -152,7 +152,7 @@ export default {
       </template>
       <template #default>
         <gl-skeleton-loader v-if="$apollo.queries.projectQuality.loading" />
-        <div v-else class="row gl-ml-2">
+        <div v-else-if="projectQuality.testReportSummary" class="row gl-ml-2">
           <gl-single-stat
             class="col-sm-6 col-md-4"
             data-testid="test-runs-stat"

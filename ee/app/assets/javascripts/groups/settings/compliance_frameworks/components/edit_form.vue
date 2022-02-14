@@ -58,6 +58,9 @@ export default {
         };
       },
       result({ data }) {
+        if (!data) {
+          return;
+        }
         this.formData = this.extractComplianceFramework(data);
       },
       error(error) {

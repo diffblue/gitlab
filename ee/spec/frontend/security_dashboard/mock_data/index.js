@@ -1,5 +1,6 @@
 export const mockProjectsWithSeverityCounts = () => [
   {
+    __typename: 'Project',
     id: 'gid://gitlab/Project/1',
     name: 'Gitlab Test',
     nameWithNamespace: 'Gitlab Org / Gitlab Test',
@@ -8,6 +9,7 @@ export const mockProjectsWithSeverityCounts = () => [
     avatarUrl: null,
     path: 'gitlab-test',
     vulnerabilitySeveritiesCount: {
+      __typename: 'VulnerabilitySeveritiesCount',
       critical: 2,
       high: 0,
       info: 4,
@@ -17,6 +19,7 @@ export const mockProjectsWithSeverityCounts = () => [
     },
   },
   {
+    __typename: 'Project',
     id: 'gid://gitlab/Project/2',
     name: 'Gitlab Shell',
     nameWithNamespace: 'Gitlab Org / Gitlab Shell',
@@ -25,6 +28,7 @@ export const mockProjectsWithSeverityCounts = () => [
     avatarUrl: null,
     path: 'gitlab-shell',
     vulnerabilitySeveritiesCount: {
+      __typename: 'VulnerabilitySeveritiesCount',
       critical: 0,
       high: 2,
       info: 2,
@@ -34,6 +38,7 @@ export const mockProjectsWithSeverityCounts = () => [
     },
   },
   {
+    __typename: 'Project',
     id: 'gid://gitlab/Project/4',
     name: 'Gitlab Perfectly Secure',
     nameWithNamespace: 'Gitlab Org / Perfectly Secure',
@@ -42,6 +47,7 @@ export const mockProjectsWithSeverityCounts = () => [
     avatarUrl: null,
     path: 'gitlab-perfectly-secure',
     vulnerabilitySeveritiesCount: {
+      __typename: 'VulnerabilitySeveritiesCount',
       critical: 0,
       high: 0,
       info: 0,
@@ -51,6 +57,7 @@ export const mockProjectsWithSeverityCounts = () => [
     },
   },
   {
+    __typename: 'Project',
     id: 'gid://gitlab/Project/5',
     name: 'Gitlab Perfectly Secure 2 ',
     nameWithNamespace: 'Gitlab Org / Perfectly Secure 2',
@@ -59,6 +66,7 @@ export const mockProjectsWithSeverityCounts = () => [
     avatarUrl: null,
     path: 'gitlab-perfectly-secure-2',
     vulnerabilitySeveritiesCount: {
+      __typename: 'VulnerabilitySeveritiesCount',
       critical: 0,
       high: 0,
       info: 0,
@@ -222,12 +230,7 @@ export const mockVulnerableProjectsGroup = () => ({
     group: {
       id: 'group-1',
       projects: {
-        nodes: [
-          {
-            id: 'gid://gitlab/Project/2',
-            name: 'Gitlab Shell',
-          },
-        ],
+        nodes: [{ __typename: 'Project', id: 'gid://gitlab/Project/2', name: 'Gitlab Shell' }],
       },
     },
   },

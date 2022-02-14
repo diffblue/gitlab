@@ -15,6 +15,7 @@ query getCodeQualityViolations($projectPath: ID!, $iid: ID!, $first: Int, $after
           severity
         }
         pageInfo {
+          __typename
           ...PageInfo
         }
       }

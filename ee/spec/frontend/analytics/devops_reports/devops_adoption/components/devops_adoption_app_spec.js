@@ -225,7 +225,6 @@ describe('DevopsAdoptionApp', () => {
           };
           wrapper = createComponent({ mockApollo, provide });
           await waitForPromises();
-          await nextTick();
         });
 
         it('does not attempt to enable a group', () => {

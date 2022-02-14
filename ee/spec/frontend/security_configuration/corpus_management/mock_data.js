@@ -105,6 +105,7 @@ export const getCorpusesQueryResponse = {
       corpuses: {
         nodes: corpuses,
         pageInfo: {
+          __typename: 'PageInfo',
           hasNextPage: true,
           hasPreviousPage: true,
           startCursor: 'start-cursor',

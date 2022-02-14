@@ -15,3 +15,19 @@ export const generateNote = ({ id = 1295 } = {}) => ({
     webPath: '/root',
   },
 });
+
+export const addTypenamesToDiscussion = (discussion) => {
+  return {
+    ...discussion,
+    notes: {
+      nodes: discussion.notes.nodes.map((n) => ({
+        ...n,
+        __typename: 'Note',
+        author: {
+          ...n.author,
+          __typename: 'UserCore',
+        },
+      })),
+    },
+  };
+};
