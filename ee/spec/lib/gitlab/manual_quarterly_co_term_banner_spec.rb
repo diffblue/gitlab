@@ -12,6 +12,11 @@ RSpec.describe Gitlab::ManualQuarterlyCoTermBanner do
   end
 
   let(:next_reconciliation_date) { Date.current + 60.days }
+  let(:offline_license?) { true }
+
+  before do
+    create_current_license({ cloud_licensing_enabled: true, offline_cloud_licensing_enabled: offline_license? })
+  end
 
   describe '#display?' do
     subject(:display?) { manual_quarterly_co_term_banner.display? }
@@ -33,6 +38,12 @@ RSpec.describe Gitlab::ManualQuarterlyCoTermBanner do
 
     context 'when feature flag :automated_email_provision is disabled' do
       let(:feature_flag_enabled) { false }
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when current license is not an offline cloud license' do
+      let(:offline_license?) { false }
 
       it { is_expected.to eq(false) }
     end

@@ -4,6 +4,11 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::ManualBanner do
   let(:manual_banner) { described_class.new(actionable: nil) }
+  let(:offline_license?) { true }
+
+  before do
+    create_current_license({ cloud_licensing_enabled: true, offline_cloud_licensing_enabled: offline_license? })
+  end
 
   describe '#display?' do
     subject(:display?) { manual_banner.display? }
@@ -25,6 +30,12 @@ RSpec.describe Gitlab::ManualBanner do
 
     context 'when feature flag :automated_email_provision is disabled' do
       let(:feature_flag_enabled) { false }
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when current license is not an offline cloud license' do
+      let(:offline_license?) { false }
 
       it { is_expected.to eq(false) }
     end

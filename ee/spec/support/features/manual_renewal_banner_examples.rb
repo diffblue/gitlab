@@ -17,7 +17,11 @@ RSpec.shared_examples 'manual renewal banner' do |path_to_visit:|
     let_it_be(:reminder_days) { Gitlab::ManualRenewalBanner::REMINDER_DAYS }
 
     before do
-      create_current_license(expires_at: expires_at)
+      create_current_license(
+        cloud_licensing_enabled: true,
+        offline_cloud_licensing_enabled: true,
+        expires_at: expires_at
+      )
 
       allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?) { should_check_namespace_plan? }
 
