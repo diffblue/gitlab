@@ -110,7 +110,9 @@ If you want to add more information to your profile page, you can create a READM
 
 To add a README to your profile:
 
-1. Create a new public project with the same project path as your GitLab username.
+1. Create a new public project in the appropriate namespace with the same project slug as your GitLab username.
+  For example, if you are `my-username`, the Project URL and Project slug should each be `my-username`
+  ![Proper project path for an individual on the hosted product](img/personal_readme_setup_v14_5.png)
 1. Create a README file inside this project. The file can be any valid [README or index file](../project/repository/index.md#readme-and-index-files).
 1. Populate the README file with [Markdown](../markdown.md).
 
