@@ -26,6 +26,7 @@ exports[`Metrics upload item render the metrics image component 1`] = `
   <gl-modal-stub
     actioncancel="[object Object]"
     actionprimary="[object Object]"
+    data-testid="metric-image-edit-modal"
     dismisslabel="Close"
     modalclass=""
     modalid="edit-metric-modal"
@@ -40,6 +41,7 @@ exports[`Metrics upload item render the metrics image component 1`] = `
       optionaltext="(optional)"
     >
       <gl-form-input-stub
+        data-testid="metric-image-text-field"
         id="upload-text-input"
       />
     </gl-form-group-stub>
@@ -52,6 +54,7 @@ exports[`Metrics upload item render the metrics image component 1`] = `
       optionaltext="(optional)"
     >
       <gl-form-input-stub
+        data-testid="metric-image-url-field"
         id="upload-url-input"
       />
     </gl-form-group-stub>

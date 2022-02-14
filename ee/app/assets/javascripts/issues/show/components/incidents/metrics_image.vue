@@ -179,6 +179,7 @@ export default {
       :action-primary="updateActionPrimaryProps"
       :action-cancel="{ text: $options.i18n.modalCancel }"
       :visible="editModalVisible"
+      data-testid="metric-image-edit-modal"
       @hidden="resetEditFields"
       @primary.prevent="onUpdate"
     >
@@ -191,7 +192,11 @@ export default {
       </template>
 
       <gl-form-group :label="__('Text (optional)')" label-for="upload-text-input">
-        <gl-form-input id="upload-text-input" v-model="modalUrlText" />
+        <gl-form-input
+          id="upload-text-input"
+          v-model="modalUrlText"
+          data-testid="metric-image-text-field"
+        />
       </gl-form-group>
 
       <gl-form-group
@@ -199,7 +204,11 @@ export default {
         label-for="upload-url-input"
         :description="s__('Incidents|Must start with http or https')"
       >
-        <gl-form-input id="upload-url-input" v-model="modalUrl" />
+        <gl-form-input
+          id="upload-url-input"
+          v-model="modalUrl"
+          data-testid="metric-image-url-field"
+        />
       </gl-form-group>
     </gl-modal>
 

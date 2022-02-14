@@ -51,11 +51,18 @@ describe('Metrics upload item', () => {
   const findCollapseButton = () => wrapper.find('[data-testid="collapse-button"]');
   const findMetricImageBody = () => wrapper.find('[data-testid="metric-image-body"]');
   const findModal = () => wrapper.findComponent(GlModal);
+  const findEditModal = () => wrapper.find('[data-testid="metric-image-edit-modal"]');
   const findDeleteButton = () => wrapper.find('[data-testid="delete-button"]');
+  const findEditButton = () => wrapper.find('[data-testid="edit-button"]');
+  const findImageTextInput = () => wrapper.find('[data-testid="metric-image-text-field"]');
+  const findImageUrlInput = () => wrapper.find('[data-testid="metric-image-url-field"]');
 
   const closeModal = () => findModal().vm.$emit('hidden');
   const submitModal = () => findModal().vm.$emit('primary', mockEvent);
   const deleteImage = () => findDeleteButton().vm.$emit('click');
+  const closeEditModal = () => findEditModal().vm.$emit('hidden');
+  const submitEditModal = () => findEditModal().vm.$emit('primary', mockEvent);
+  const editImage = () => findEditButton().vm.$emit('click');
 
   it('render the metrics image component', () => {
     mountComponent({}, shallowMount);
@@ -106,7 +113,7 @@ describe('Metrics upload item', () => {
   });
 
   describe('delete functionality', () => {
-    it('should open the modal when clicked', async () => {
+    it('should open the delete modal when clicked', async () => {
       mountComponent({ stubs: { GlModal: true } });
 
       deleteImage();
@@ -152,6 +159,71 @@ describe('Metrics upload item', () => {
         mountComponent({ provide: { canUpdate: false } });
 
         expect(findDeleteButton().exists()).toBe(false);
+      });
+    });
+  });
+
+  describe('edit functionality', () => {
+    it('should open the delete modal when clicked', async () => {
+      mountComponent({ stubs: { GlModal: true } });
+
+      editImage();
+
+      await waitForPromises();
+
+      expect(findEditModal().attributes('visible')).toBe('true');
+    });
+
+    describe('when the modal is open', () => {
+      beforeEach(() => {
+        mountComponent({
+          data() {
+            return { editModalVisible: true };
+          },
+          propsData: { urlText: 'test' },
+          stubs: { GlModal: true },
+        });
+      });
+
+      it('should close the modal when cancelled', async () => {
+        closeEditModal();
+
+        await waitForPromises();
+
+        expect(findEditModal().attributes('visible')).toBeFalsy();
+      });
+
+      it('should delete the image when selected', async () => {
+        const dispatchSpy = jest.spyOn(store, 'dispatch').mockImplementation(jest.fn());
+
+        submitEditModal();
+
+        await waitForPromises();
+
+        expect(dispatchSpy).toHaveBeenCalledWith('updateImage', {
+          imageId: defaultProps.id,
+          url: null,
+          urlText: 'test',
+        });
+      });
+
+      it('should clear edits when the modal is closed', async () => {
+        await findImageTextInput().setValue('test value');
+        await findImageUrlInput().setValue('http://www.gitlab.com');
+
+        expect(findImageTextInput().element.value).toBe('test value');
+        expect(findImageUrlInput().element.value).toBe('http://www.gitlab.com');
+
+        closeEditModal();
+
+        await waitForPromises();
+
+        editImage();
+
+        await waitForPromises();
+
+        expect(findImageTextInput().element.value).toBe('test');
+        expect(findImageUrlInput().element.value).toBe('');
       });
     });
   });
