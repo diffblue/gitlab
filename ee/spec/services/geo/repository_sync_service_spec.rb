@@ -285,12 +285,6 @@ RSpec.describe Geo::RepositorySyncService, :geo do
                                               last_repository_sync_failure: 'Error syncing repository: shell error'
                                              )
         end
-
-        it 'calls repository cleanup' do
-          expect(repository).to receive(:clean_stale_repository_files)
-
-          subject.execute
-        end
       end
     end
 

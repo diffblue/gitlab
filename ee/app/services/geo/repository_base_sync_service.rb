@@ -181,8 +181,6 @@ module Geo
       log_error(message, error)
 
       registry.fail_sync!(type, message, error, attrs)
-
-      repository.clean_stale_repository_files
     end
 
     def type
