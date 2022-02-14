@@ -4,7 +4,7 @@ require 'spec_helper'
 
 require_migration!
 
-RSpec.describe FixStateColumnInLfsObjectRegistry do
+RSpec.describe FixStateColumnInLfsObjectRegistry, :geo do
   let(:registry) { table(:lfs_object_registry) }
 
   before do
@@ -19,12 +19,12 @@ RSpec.describe FixStateColumnInLfsObjectRegistry do
     pending_registries = registry.where(state: 0)
     synced_registries  = registry.where(state: 2)
 
-    expect(pending_registries.pluck(:id)).to contain_exactly(1, 2)
-    expect(synced_registries.pluck(:id)).to contain_exactly(4)
+    expect(pending_registries.pluck(:lfs_object_id)).to contain_exactly(1, 2)
+    expect(synced_registries.pluck(:lfs_object_id)).to contain_exactly(4)
 
     migrate!
 
-    expect(pending_registries.pluck(:id)).to contain_exactly(1)
-    expect(synced_registries.pluck(:id)).to contain_exactly(2, 4)
+    expect(pending_registries.pluck(:lfs_object_id)).to contain_exactly(1)
+    expect(synced_registries.pluck(:lfs_object_id)).to contain_exactly(2, 4)
   end
 end
