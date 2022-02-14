@@ -53,7 +53,7 @@ RSpec.describe Mutations::IncidentManagement::TimelineEvent::Create do
         stub_licensed_features(incident_timeline_events: false)
       end
 
-      it 'raises and error' do
+      it 'raises an error' do
         expect { resolve }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
       end
     end
