@@ -28,6 +28,8 @@ exports[`AuditEventsApp when initialized matches the snapshot 1`] = `
           clearbuttontitle="Clear"
           close-button-title="Close"
           placeholder="Search"
+          searchbuttonattributes="[object Object]"
+          searchinputattributes="[object Object]"
           value="[object Object]"
         />
       </div>
