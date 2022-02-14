@@ -867,6 +867,68 @@ To align with this change, API calls to list external status checks will also re
 
 **Planned removal milestone: 15.0 (2022-05-22)**
 
+### GraphQL ID and GlobalID compatibility
+
+WARNING:
+This feature will be changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+We are removing a non-standard extension to our GraphQL processor, which we added for backwards compatibility. This extension modifies the validation of GraphQL queries, allowing the use of the `ID` type for arguments where it would normally be rejected.
+Some arguments originally had the type `ID`. These were changed to specific
+kinds of `ID`. This change may be a breaking change if you:
+
+- Use GraphQL.
+- Use the `ID` type for any argument in your query signatures.
+
+Some field arguments still have the `ID` type. These are typically for
+IID values, or namespace paths. An example is `Query.project(fullPath: ID!)`.
+
+For a list of affected and unaffected field arguments,
+see the [deprecation issue](https://gitlab.com/gitlab-org/gitlab/-/issues/352832).
+
+You can test if this change affects you by validating
+your queries locally, using schema data fetched from a GitLab server.
+You can do this by using the GraphQL explorer tool for the relevant GitLab
+instance. For example: `https://gitlab.com/-/graphql-explorer`.
+
+For example, the following query illustrates the breaking change:
+
+```graphql
+# a query using the deprecated type of Query.issue(id:)
+# WARNING: This will not work after GitLab 15.0
+query($id: ID!) {
+  deprecated: issue(id: $id) {
+    title, description
+  }
+}
+```
+
+The query above will not work after GitLab 15.0 is released, because the type
+of `Query.issue(id:)` is actually `IssueID!`.
+
+Instead, you should use one of the following two forms:
+
+```graphql
+# This will continue to work
+query($id: IssueID!) {
+  a: issue(id: $id) {
+    title, description
+  }
+  b: issue(id: "gid://gitlab/Issue/12345") {
+    title, description
+  }
+}
+```
+
+This query works now, and will continue to work after GitLab 15.0.
+You should convert any queries in the first form (using `ID` as a named type in the signature)
+to one of the other two forms (using the correct appropriate type in the signature, or using
+an inline argument expression).
+
+**Planned removal milestone: 15.0 (2022-04-22)**
+
 ### OAuth tokens without expiration
 
 WARNING:
