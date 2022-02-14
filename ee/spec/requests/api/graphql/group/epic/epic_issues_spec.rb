@@ -124,17 +124,24 @@ RSpec.describe 'Getting issues for an epic' do
         expect(result[epic2.iid]).to match_array [issue2.to_global_id.to_s]
       end
 
-      it 'avoids N+1 queries' do
-        user_1 = create(:user, developer_projects: [project])
-        user_2 = create(:user, developer_projects: [project])
+      it 'does limited number of N+1 queries' do
+        # extra queries:
+        # epic_issues - for each epic issues are loaded ordered by relatve_position
+        # issue_assignees - issue policy checks if user is between issue assignees
+        # when https://gitlab.com/gitlab-org/gitlab/-/issues/353375 is fixed, we can
+        # preload also issue assignees
+        extra_queries_count = 2
+
+        # warm-up query
+        post_graphql(epic_query(iid: epic.iid), current_user: user)
 
         control_count = ActiveRecord::QueryRecorder.new(query_recorder_debug: true) do
-          post_graphql(epic_query(iid: epic.iid), current_user: user_1)
+          post_graphql(epic_query(iid: epic.iid), current_user: user)
         end
 
         expect do
-          post_graphql(epic_query(params), current_user: user_2)
-        end.not_to exceed_query_limit(control_count).ignoring(/FROM "namespaces"/)
+          post_graphql(epic_query(params), current_user: user)
+        end.not_to exceed_query_limit(control_count).with_threshold(extra_queries_count)
 
         expect(graphql_errors).to be_nil
       end

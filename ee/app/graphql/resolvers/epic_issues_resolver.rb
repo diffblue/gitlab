@@ -2,30 +2,16 @@
 
 module Resolvers
   class EpicIssuesResolver < BaseResolver
-    include CachingArrayResolver
-
     type Types::EpicIssueType.connection_type, null: true
 
     alias_method :epic, :object
 
-    def model_class
-      ::Issue
-    end
-
-    def allowed?(issue)
-      DeclarativePolicy.user_scope { issue.visible_to_user?(current_user) }
-    end
-
-    def query_input(**args)
-      epic.id
-    end
-
-    def query_for(id)
-      ::Epic.related_issues(ids: id)
-    end
-
-    def preload
-      { project: [:namespace, :project_feature] }
+    # because epic issues are ordered by EpicIssue's relative position,
+    # we can not use batch loading to load epic issues for multiple epics at once
+    # (assuming we don't load all issues for each epic but only a single page)
+    def resolve
+      issues = Epic.related_issues(ids: epic.id, preload: { project: [:namespace, :project_feature] })
+      offset_pagination(issues)
     end
   end
 end
