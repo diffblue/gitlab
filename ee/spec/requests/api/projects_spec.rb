@@ -691,6 +691,21 @@ RSpec.describe API::Projects do
         end
       end
     end
+
+    context 'with requirements_access_level' do
+      let(:project_params) { { name: 'bar', requirements_access_level: 'disabled' } }
+
+      before do
+        stub_licensed_features(requirements: true)
+      end
+
+      it 'updates project with given value' do
+        post api('/projects', user), params: project_params
+
+        expect(response).to have_gitlab_http_status(:created)
+        expect(json_response['requirements_access_level']).to eq(project_params[:requirements_access_level])
+      end
+    end
   end
 
   describe 'GET projects/:id/audit_events' do
@@ -951,6 +966,21 @@ RSpec.describe API::Projects do
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(json_response['merge_requests_template']).to eq(project_params[:merge_requests_template])
+        end
+      end
+
+      context 'when updating requirements_access_level' do
+        let(:project_params) { { requirements_access_level: 'disabled' } }
+
+        before do
+          stub_licensed_features(requirements: true)
+        end
+
+        it 'updates project with given value' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response['requirements_access_level']).to eq(project_params[:requirements_access_level])
         end
       end
     end

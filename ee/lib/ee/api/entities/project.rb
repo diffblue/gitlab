@@ -28,9 +28,13 @@ module EE
           expose :marked_for_deletion_on, if: ->(project, _) { project.feature_available?(:adjourned_deletion_for_projects_and_groups) } do |project, _|
             project.marked_for_deletion_at
           end
+          # Expose old field names with the new permissions methods to keep API compatible
+          # TODO: remove in API v5, replaced by *_access_level
           expose :requirements_enabled do |project, options|
             project.feature_available?(:requirements, options[:current_user])
           end
+          expose(:requirements_access_level) { |project, _| project.project_feature.string_access_level(:requirements) }
+
           expose :security_and_compliance_enabled do |project, options|
             project.feature_available?(:security_and_compliance, options[:current_user])
           end

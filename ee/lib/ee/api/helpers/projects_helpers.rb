@@ -20,6 +20,7 @@ module EE
             optional :mirror, type: Grape::API::Boolean, desc: 'Enables pull mirroring in a project'
             optional :mirror_trigger_builds, type: Grape::API::Boolean, desc: 'Pull mirroring triggers builds'
             optional :external_authorization_classification_label, type: String, desc: 'The classification label for the project'
+            optional :requirements_access_level, type: String, values: %w(disabled private enabled), desc: 'Requirements feature access level. One of `disabled`, `private` or `enabled`'
           end
 
           params :optional_filter_params_ee do
@@ -57,7 +58,8 @@ module EE
               :issues_template,
               :merge_requests_template,
               :merge_pipelines_enabled,
-              :merge_trains_enabled
+              :merge_trains_enabled,
+              :requirements_access_level
             ]
           end
         end
