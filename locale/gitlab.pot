@@ -40704,6 +40704,9 @@ msgstr ""
 msgid "Webhooks|An issue is created, updated, closed, or reopened."
 msgstr ""
 
+msgid "Webhooks|Are you sure you want to delete this group hook?"
+msgstr ""
+
 msgid "Webhooks|Are you sure you want to delete this project hook?"
 msgstr ""
 
