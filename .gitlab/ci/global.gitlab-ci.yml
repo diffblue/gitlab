@@ -56,7 +56,7 @@
   policy: pull
 
 .go-pkg-cache: &go-pkg-cache
-  key: "go-pkg-v1"
+  key: "go-pkg-v2"
   paths:
     - .go/pkg/mod/
   policy: pull
@@ -66,7 +66,7 @@
   policy: push  # We want to rebuild the cache from scratch to ensure stale dependencies are cleaned up.
 
 .node-modules-cache: &node-modules-cache
-  key: "node-modules-${NODE_ENV}-v1"
+  key: "node-modules-${NODE_ENV}-v2"
   paths:
     - node_modules/
     - tmp/cache/webpack-dlls/
@@ -91,7 +91,7 @@
   policy: push  # We want to rebuild the cache from scratch to ensure stale dependencies are cleaned up.
 
 .storybook-node-modules-cache: &storybook-node-modules-cache
-  key: "storybook-node-modules-${NODE_ENV}-v1"
+  key: "storybook-node-modules-${NODE_ENV}-v2"
   paths:
     - storybook/node_modules/
   policy: pull
@@ -101,7 +101,7 @@
   policy: push  # We want to rebuild the cache from scratch to ensure stale dependencies are cleaned up.
 
 .rubocop-cache: &rubocop-cache
-  key: "rubocop-v1"
+  key: "rubocop-v2"
   paths:
     - tmp/rubocop_cache/
   policy: pull
@@ -113,7 +113,7 @@
   policy: push
 
 .qa-ruby-gems-cache: &qa-ruby-gems-cache
-  key: "qa-ruby-gems-v1"
+  key: "qa-ruby-gems-v2"
   paths:
     - qa/vendor/ruby/
   policy: pull
