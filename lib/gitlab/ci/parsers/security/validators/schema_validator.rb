@@ -7,6 +7,7 @@ module Gitlab
         module Validators
           class SchemaValidator
             SUPPORTED_VERSIONS = {
+              cluster_image_scanning: %w[14.0.4 14.0.5 14.0.6 14.1.0],
               container_scanning: %w[14.0.0 14.0.1 14.0.2 14.0.3 14.0.4 14.0.5 14.0.6 14.1.0],
               coverage_fuzzing: %w[14.0.0 14.0.1 14.0.2 14.0.3 14.0.4 14.0.5 14.0.6 14.1.0],
               dast: %w[14.0.0 14.0.1 14.0.2 14.0.3 14.0.4 14.0.5 14.0.6 14.1.0],
@@ -16,6 +17,7 @@ module Gitlab
             }.freeze
 
             DEPRECATED_VERSIONS = {
+              cluster_image_scanning: %w[],
               container_scanning: %w[],
               coverage_fuzzing: %w[],
               dast: %w[],
