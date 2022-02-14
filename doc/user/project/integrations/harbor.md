@@ -6,10 +6,6 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 # Harbor Container Registry integration **(FREE)**
 
-<!--
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/338178) in GitLab 14.8.
--->
-
 Use Harbor as GitLab group or project's container registry.
 
 [Harbor](https://goharbor.io/) is an open source registry that secures artifacts with policies and role-based access control, ensures images are scanned and free from vulnerabilities, and signs images as trusted. Harbor, a CNCF Graduated project, delivers compliance, performance, and interoperability to help you consistently and securely manage artifacts across cloud native compute platforms like Kubernetes and Docker.
@@ -40,5 +36,3 @@ After the Harbor integration is activated:
 * Global variables '$HARBOR_USER', '$HARBOR_PASSWORD', '$HARBOR_URL' and '$HARBOR_PROJECT' will be created for CI/CD usage.
 
 * Project-level integration settings override group-level integration settings.
-
-
