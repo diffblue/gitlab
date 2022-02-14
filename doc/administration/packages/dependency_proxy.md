@@ -201,6 +201,8 @@ This section describes the earlier configuration format.
 
 #### Migrate local Dependency Proxy blobs and manifests to object storage
 
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/79663) in GitLab 14.8.
+
 After [configuring object storage](#using-object-storage),
 use the following task to migrate existing Dependency Proxy blobs and manifests from local storage
 to remote storage. The processing is done in a background worker and requires no downtime.
