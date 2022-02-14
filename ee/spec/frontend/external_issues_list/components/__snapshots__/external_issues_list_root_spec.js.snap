@@ -13,7 +13,6 @@ Object {
   "currentPage": 1,
   "currentTab": "opened",
   "defaultPageSize": 2,
-  "enableLabelPermalinks": true,
   "error": "",
   "hasNextPage": false,
   "hasPreviousPage": false,
