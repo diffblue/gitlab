@@ -26577,6 +26577,12 @@ msgstr ""
 msgid "PipelineStatusTooltip|Pipeline: %{ci_status}"
 msgstr ""
 
+msgid "PipelineWizardInputValidation|This field is required"
+msgstr ""
+
+msgid "PipelineWizardInputValidation|This value is not valid"
+msgstr ""
+
 msgid "Pipelines"
 msgstr ""
 
