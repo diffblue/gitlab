@@ -113,7 +113,7 @@ RSpec.describe "Admin uploads license", :js do
   private
 
   def attach_and_upload(path)
-    attach_file("license_data_file", path)
+    attach_file("license[data_file]", path, make_visible: true)
     check("accept_eula")
     click_button("Upload License")
   end

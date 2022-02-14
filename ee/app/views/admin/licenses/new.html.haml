@@ -31,9 +31,10 @@
       = label_tag :license_type_file, class: 'form-check-label' do
         .option-title
           = _('Upload %{file_name} file').html_safe % { file_name: '<code>.gitlab-license</code>'.html_safe }
+
     .form-group.license-file.gl-mt-4
-      = f.label :data_file, _('License file'), class: 'gl-sr-only'
-      = f.file_field :data_file, accept: ".gitlab-license,.gitlab_license,.txt", class: "form-control"
+      #js-license-new-app
+
     .form-check.gl-my-4
       = radio_button_tag :license_type, :key, @license.data.present?, class: 'form-check-input', data: { qa_selector: 'license_type_key_radio' }
       = label_tag :license_type_key, class: 'form-check-label' do
