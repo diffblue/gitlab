@@ -5,6 +5,7 @@ import Api from 'ee/api';
 import { renderAvatar } from '~/helpers/avatar_helper';
 import { loadCSSFile } from '~/lib/utils/css_utils';
 import { __ } from '~/locale';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { TYPE_USER, TYPE_GROUP } from '../constants';
 
 function addType(type) {
@@ -54,6 +55,7 @@ function formatResult(result) {
 }
 
 export default {
+  mixins: [glFeatureFlagsMixin()],
   props: {
     value: {
       type: Array,
@@ -78,6 +80,11 @@ export default {
       type: Boolean,
       required: false,
       default: false,
+    },
+  },
+  computed: {
+    isFeatureEnabled() {
+      return this.glFeatures.permitAllSharedGroupsForApproval;
     },
   },
   watch: {
@@ -142,7 +149,7 @@ export default {
         skip_groups: this.skipGroupIds,
         ...(hasTerm ? { search: term } : {}),
         with_shared: true,
-        shared_visible_only: true,
+        shared_visible_only: !this.isFeatureEnabled,
         shared_min_access_level: DEVELOPER_ACCESS_LEVEL,
       });
     },
