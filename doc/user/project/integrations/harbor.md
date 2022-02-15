@@ -6,7 +6,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 # Harbor Container Registry integration **(FREE)**
 
-Use Harbor as GitLab group or project's container registry.
+Use Harbor as GitLab project's container registry.
 
 [Harbor](https://goharbor.io/) is an open source registry that secures artifacts with policies and role-based access control, ensures images are scanned and free from vulnerabilities, and signs images as trusted. Harbor, a CNCF Graduated project, delivers compliance, performance, and interoperability to help you consistently and securely manage artifacts across cloud native compute platforms like Kubernetes and Docker.
 
@@ -24,10 +24,10 @@ GitLab supports integrating Harbor projects at the group or project level. Compl
 1. Select **Harbor**.
 1. Turn on the **Active** toggle under **Enable Integration**.
 1. Provide the Harbor configuration information:
-   - **Harbor URL**: The base URL to the Harbor instance which is being linked to this GitLab project. For example, 'https://harbor.example.net'.
-   - **Project Name**: The Project name to the Harbor instance. For example, 'testproject'.  
-   - **Username**: Username for Harbor instance, which should meet the requirements in  [prerequisites](#prerequisites).
-   - **Password**: User password for Harbor instance.
+   - **Harbor Web URL**: The base URL of Harbor instance which is being linked to this GitLab project. For example, 'https://harbor.example.net'.
+   - **Harbor project name**: The project name on Harbor instance. For example, 'testproject'.  
+   - **Username**: Your username on Harbor instance, which should meet the requirements in  [prerequisites](#prerequisites).
+   - **Password**: Password of your username.
 
 1. Select **Save changes**.
 
