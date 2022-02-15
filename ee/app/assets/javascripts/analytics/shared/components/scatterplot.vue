@@ -43,6 +43,11 @@ export default {
             formatter: (date) => dateFormat(date, dateFormats.defaultDate),
           },
         },
+        yAxis: {
+          axisLabel: {
+            formatter: (value) => value,
+          },
+        },
         dataZoom: [
           {
             type: 'slider',
