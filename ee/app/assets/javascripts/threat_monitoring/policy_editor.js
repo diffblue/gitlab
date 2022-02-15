@@ -17,7 +17,7 @@ export default () => {
   const {
     assignedPolicyProject,
     defaultEnvironmentId,
-    disableScanExecutionUpdate,
+    disableScanPolicyUpdate,
     environmentsEndpoint,
     createAgentHelpPath,
     networkPoliciesEndpoint,
@@ -29,7 +29,8 @@ export default () => {
     projectPath,
     projectId,
     environmentId,
-    scanExecutionDocumentationPath,
+    scanPolicyDocumentationPath,
+    scanResultApprovers,
   } = el.dataset;
 
   // We require the project to have at least one available environment.
@@ -59,19 +60,22 @@ export default () => {
     props.existingPolicy = { type: policyType, ...JSON.parse(policy) };
   }
 
+  const scanResultPolicyApprovers = scanResultApprovers ? JSON.parse(scanResultApprovers) : [];
+
   return new Vue({
     el,
     apolloProvider,
     provide: {
       createAgentHelpPath,
-      disableScanExecutionUpdate: parseBoolean(disableScanExecutionUpdate),
+      disableScanPolicyUpdate: parseBoolean(disableScanPolicyUpdate),
       networkDocumentationPath,
       policyEditorEmptyStateSvgPath,
       policyType,
       projectId,
       projectPath,
       policiesPath,
-      scanExecutionDocumentationPath,
+      scanPolicyDocumentationPath,
+      scanResultPolicyApprovers,
     },
     store,
     render(createElement) {

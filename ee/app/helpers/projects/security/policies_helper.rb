@@ -15,15 +15,15 @@ module Projects::Security::PoliciesHelper
     }
   end
 
-  def orchestration_policy_data(project, policy_type = nil, policy = nil, environment = nil)
+  def orchestration_policy_data(project, policy_type = nil, policy = nil, environment = nil, approvers = nil)
     return unless project
 
-    disable_scan_execution_update = !can_update_security_orchestration_policy_project?(project)
+    disable_scan_policy_update = !can_update_security_orchestration_policy_project?(project)
 
     {
       assigned_policy_project: assigned_policy_project(project).to_json,
       default_environment_id: project.default_environment&.id || -1,
-      disable_scan_execution_update: disable_scan_execution_update.to_s,
+      disable_scan_policy_update: disable_scan_policy_update.to_s,
       network_policies_endpoint: project_security_network_policies_path(project),
       create_agent_help_path: help_page_url('user/clusters/agent/install/index'),
       environments_endpoint: project_environments_path(project),
@@ -35,7 +35,8 @@ module Projects::Security::PoliciesHelper
       project_path: project.full_path,
       project_id: project.id,
       policies_path: project_security_policies_path(project),
-      scan_execution_documentation_path: help_page_path('user/application_security/policies/index', anchor: 'scan-execution-policy-editor')
+      scan_policy_documentation_path: help_page_path('user/application_security/policies/index'),
+      scan_result_approvers: approvers&.to_json
     }
   end
 end
