@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Admin::AuditLogReportsController do
+  using RSpec::Parameterized::TableSyntax
+
   describe 'GET index' do
     let(:csv_data) do
       <<~CSV
@@ -102,6 +104,32 @@ RSpec.describe Admin::AuditLogReportsController do
 
               expect(AuditEvents::ExportCsvService).to have_received(:new)
                 .with(hash_including(expected_date_range_params))
+            end
+          end
+        end
+
+        context 'when invalid date params are provided' do
+          let(:params) do
+            {
+              created_before: created_before,
+              created_after: created_after
+            }
+          end
+
+          where(:created_before, :created_after) do
+            'invalid-date' | nil
+            nil            | true
+            '2021-13-10'   | nil
+            nil            | '2021-02-31'
+            '2021-03-31'   | '2021-02-31'
+          end
+
+          with_them do
+            it 'returns an error' do
+              subject
+
+              expect(response).to have_gitlab_http_status(:bad_request)
+              expect(flash[:alert]).to eq nil
             end
           end
         end

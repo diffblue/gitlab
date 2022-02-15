@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Projects::AuditEventsController do
+  using RSpec::Parameterized::TableSyntax
+
   let_it_be(:user) { create(:user) }
   let_it_be(:maintainer) { create(:user) }
   let_it_be(:project) { create(:project, :private) }
@@ -108,6 +110,25 @@ RSpec.describe Projects::AuditEventsController do
             let(:sort) { 'FOO' }
 
             it_behaves_like 'orders by id descending'
+          end
+        end
+
+        context 'when invalid date' do
+          where(:created_before, :created_after) do
+            'invalid-date' | nil
+            nil            | true
+            '2021-13-10'   | nil
+            nil            | '2021-02-31'
+            '2021-03-31'   | '2021-02-31'
+          end
+
+          with_them do
+            it 'returns an error' do
+              get :index, params: { project_id: project.to_param, namespace_id: project.namespace.to_param, 'created_before': created_before, 'created_after': created_after }
+
+              expect(response).to have_gitlab_http_status(:bad_request)
+              expect(flash[:alert]).to eq 'Invalid date format. Please use UTC format as YYYY-MM-DD'
+            end
           end
         end
       end

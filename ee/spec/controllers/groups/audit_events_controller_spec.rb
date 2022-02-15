@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Groups::AuditEventsController do
+  using RSpec::Parameterized::TableSyntax
+
   let_it_be(:user) { create(:user) }
   let_it_be(:owner) { create(:user) }
   let_it_be(:group) { create(:group, :private) }
@@ -138,6 +140,25 @@ RSpec.describe Groups::AuditEventsController do
               user: owner,
               namespace: group
             )
+          end
+
+          context 'when invalid date' do
+            where(:created_before, :created_after) do
+              'invalid-date' | nil
+              nil            | true
+              '2021-13-10'   | nil
+              nil            | '2021-02-31'
+              '2021-03-31'   | '2021-02-31'
+            end
+
+            with_them do
+              it 'returns an error' do
+                get :index, params: { group_id: group.to_param, 'created_before': created_before, 'created_after': created_after }
+
+                expect(response).to have_gitlab_http_status(:bad_request)
+                expect(flash[:alert]).to eq 'Invalid date format. Please use UTC format as YYYY-MM-DD'
+              end
+            end
           end
         end
       end
