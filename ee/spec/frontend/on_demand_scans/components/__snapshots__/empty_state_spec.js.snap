@@ -29,8 +29,8 @@ exports[`EmptyState renders properly 1`] = `
         class="gl-font-size-h-display gl-line-height-36 h4"
       >
         
-        On-demand scans
-      
+          On-demand scans
+        
       </h1>
        
       <p
