@@ -24,7 +24,7 @@ RSpec.describe Projects::Security::ConfigurationController do
     where(:user_role, :security_dashboard_enabled, :status, :selector) do
       :guest     | false | :forbidden | nil
       :guest     | true  | :forbidden | nil
-      :developer | false | :ok        | '#js-security-configuration-static'
+      :developer | false | :ok        | '#js-security-configuration'
       :developer | true  | :ok        | '#js-security-configuration'
     end
 
