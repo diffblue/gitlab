@@ -22,15 +22,29 @@ RSpec.describe Admin::LicensesController do
     end
 
     context 'when the license is for a cloud license' do
-      it 'redirects back' do
-        license = build_license(cloud_licensing_enabled: true)
+      context 'with offline cloud license' do
+        it 'redirects to the subscription page when a valid license is entered/uploaded' do
+          license = build_license(cloud_licensing_enabled: true, offline_cloud_licensing_enabled: true)
 
-        expect do
-          post :create, params: { license: { data: license.data } }
-        end.not_to change(License, :count)
+          expect do
+            post :create, params: { license: { data: license.data } }
+          end.to change(License, :count).by(1)
 
-        expect(response).to redirect_to new_admin_license_path
-        expect(flash[:alert]).to include 'Please enter or upload a valid license.'
+          expect(response).to redirect_to(admin_subscription_path)
+        end
+      end
+
+      context 'with online cloud license' do
+        it 'redirects back' do
+          license = build_license(cloud_licensing_enabled: true)
+
+          expect do
+            post :create, params: { license: { data: license.data } }
+          end.not_to change(License, :count)
+
+          expect(response).to redirect_to new_admin_license_path
+          expect(flash[:alert]).to include 'Please enter or upload a valid license.'
+        end
       end
     end
 
@@ -69,7 +83,7 @@ RSpec.describe Admin::LicensesController do
       end
     end
 
-    def build_license(cloud_licensing_enabled: false, restrictions: {})
+    def build_license(cloud_licensing_enabled: false, offline_cloud_licensing_enabled: false, restrictions: {})
       license_restrictions = {
         trial: false,
         plan: License::PREMIUM_PLAN,
@@ -80,6 +94,7 @@ RSpec.describe Admin::LicensesController do
       gl_license = build(
         :gitlab_license,
         cloud_licensing_enabled: cloud_licensing_enabled,
+        offline_cloud_licensing_enabled: offline_cloud_licensing_enabled,
         restrictions: license_restrictions
       )
 
