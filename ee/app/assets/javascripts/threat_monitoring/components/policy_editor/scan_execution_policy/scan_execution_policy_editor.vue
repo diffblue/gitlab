@@ -1,6 +1,6 @@
 <script>
 import { GlEmptyState } from '@gitlab/ui';
-import { joinPaths, visitUrl } from '~/lib/utils/url_utility';
+import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import {
   EDITOR_MODES,
@@ -28,11 +28,11 @@ export default {
     PolicyEditorLayout,
   },
   inject: [
-    'disableScanExecutionUpdate',
+    'disableScanPolicyUpdate',
     'policyEditorEmptyStateSvgPath',
     'projectId',
     'projectPath',
-    'scanExecutionDocumentationPath',
+    'scanPolicyDocumentationPath',
   ],
   props: {
     assignedPolicyProject: {
@@ -62,6 +62,10 @@ export default {
       newlyCreatedPolicyProject: null,
       policy: fromYaml(yamlEditorValue),
       yamlEditorValue,
+      documentationPath: setUrlFragment(
+        this.scanPolicyDocumentationPath,
+        'scan-execution-policy-editor',
+      ),
     };
   },
   computed: {
@@ -137,7 +141,7 @@ export default {
 
 <template>
   <policy-editor-layout
-    v-if="!disableScanExecutionUpdate"
+    v-if="!disableScanPolicyUpdate"
     :custom-save-button-text="$options.i18n.createMergeRequest"
     :default-editor-mode="$options.DEFAULT_EDITOR_MODE"
     :editor-modes="$options.EDITOR_MODES"
@@ -153,7 +157,7 @@ export default {
   <gl-empty-state
     v-else
     :description="$options.i18n.notOwnerDescription"
-    :primary-button-link="scanExecutionDocumentationPath"
+    :primary-button-link="documentationPath"
     :primary-button-text="$options.i18n.notOwnerButtonText"
     :svg-path="policyEditorEmptyStateSvgPath"
     title=""

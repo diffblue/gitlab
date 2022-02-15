@@ -35,12 +35,13 @@ RSpec.describe Projects::Security::PoliciesHelper do
   end
 
   describe '#orchestration_policy_data' do
+    let(:approvers) { %w(approver1 approver2) }
     let(:owner) { project.first_owner }
     let(:base_data) do
       {
         assigned_policy_project: "null",
         default_environment_id: -1,
-        disable_scan_execution_update: "false",
+        disable_scan_policy_update: "false",
         network_policies_endpoint: kind_of(String),
         create_agent_help_path: kind_of(String),
         environments_endpoint: kind_of(String),
@@ -52,7 +53,8 @@ RSpec.describe Projects::Security::PoliciesHelper do
         environment_id: environment&.id,
         policy: policy&.to_json,
         policy_type: policy_type,
-        scan_execution_documentation_path: kind_of(String)
+        scan_policy_documentation_path: kind_of(String),
+        scan_result_approvers: approvers&.to_json
       }
     end
 
@@ -61,12 +63,13 @@ RSpec.describe Projects::Security::PoliciesHelper do
       allow(helper).to receive(:can?).with(owner, :update_security_orchestration_policy_project, project) { true }
     end
 
-    subject { helper.orchestration_policy_data(project, policy_type, policy, environment) }
+    subject { helper.orchestration_policy_data(project, policy_type, policy, environment, approvers) }
 
     context 'when a new policy is being created' do
       let(:environment) { nil }
       let(:policy) { nil }
       let(:policy_type) { nil }
+      let(:approvers) { nil }
 
       it { is_expected.to match(base_data) }
     end

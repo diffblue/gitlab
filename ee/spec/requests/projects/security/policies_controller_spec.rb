@@ -11,9 +11,10 @@ RSpec.describe Projects::Security::PoliciesController, type: :request do
   let_it_be(:policy) { build(:scan_execution_policy) }
   let_it_be(:type) { 'scan_execution_policy' }
   let_it_be(:index) { project_security_policies_url(project) }
-  let_it_be(:edit) { edit_project_security_policy_url(project, id: policy[:name], type: type) }
   let_it_be(:new) { new_project_security_policy_url(project) }
   let_it_be(:feature_enabled) { true }
+
+  let(:edit) { edit_project_security_policy_url(project, id: policy[:name], type: type) }
 
   before do
     project.add_developer(user)
@@ -37,6 +38,13 @@ RSpec.describe Projects::Security::PoliciesController, type: :request do
 
           expect(app.attributes['data-policy'].value).to eq(policy.to_json)
           expect(app.attributes['data-policy-type'].value).to eq(type)
+        end
+
+        it 'does not contain any approver data' do
+          get edit
+          app = Nokogiri::HTML.parse(response.body).at_css('div#js-policy-builder-app')
+
+          expect(app['data-scan-result-approvers']).to be_nil
         end
 
         context 'when type is container_runtime' do
@@ -83,6 +91,59 @@ RSpec.describe Projects::Security::PoliciesController, type: :request do
             expect(app.attributes['data-policy'].value).to eq(network_policy.to_json)
             expect(app.attributes['data-policy-type'].value).to eq(type)
             expect(app.attributes['data-environment-id'].value).to eq(environment_id.to_s)
+          end
+
+          it 'does not contain any approver data' do
+            get edit
+            app = Nokogiri::HTML.parse(response.body).at_css('div#js-policy-builder-app')
+
+            expect(app['data-scan-result-approvers']).to be_nil
+          end
+        end
+
+        context 'with scan result policy type' do
+          let_it_be(:type) {'scan_result_policy'}
+          let_it_be(:policy) {build(:scan_result_policy)}
+          let_it_be(:group) { create(:group) }
+          let_it_be(:service_result) { { users: [user], groups: [group], status: :success } }
+
+          let(:service) { instance_double('::Security::SecurityOrchestrationPolicies::FetchPolicyApproversService', execute: service_result) }
+
+          before do
+            stub_feature_flags(scan_result_policy: true)
+            allow_next_instance_of(Repository) do |repository|
+              allow(repository).to receive(:blob_data_at).and_return({ scan_result_policy: [policy] }.to_yaml)
+            end
+            allow(::Security::SecurityOrchestrationPolicies::FetchPolicyApproversService).to receive(:new).with(policy: policy, project: project, current_user: user).and_return(service)
+          end
+
+          it 'renders the edit page with approvers data' do
+            get edit
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(response).to render_template(:edit)
+
+            app = Nokogiri::HTML.parse(response.body).at_css('div#js-policy-builder-app')
+
+            expect(app['data-policy']).to eq(policy.to_json)
+            expect(app['data-policy-type']).to eq(type)
+            expect(app['data-scan-result-approvers']).to include(user.name, user.id.to_s, group.full_path, group.id.to_s)
+          end
+
+          context 'with feature flag disabled' do
+            before do
+              stub_feature_flags(scan_result_policy: false)
+            end
+
+            it 'renders the edit page without approvers data' do
+              get edit
+
+              app = Nokogiri::HTML.parse(response.body).at_css('div#js-policy-builder-app')
+
+              expect(app['data-policy']).to eq(policy.to_json)
+              expect(app['data-policy-type']).to eq(type)
+              expect(app['data-scan-result-approvers']).to be_nil
+            end
           end
         end
 
@@ -143,7 +204,7 @@ RSpec.describe Projects::Security::PoliciesController, type: :request do
         end
 
         context 'when policy yaml is invalid' do
-          let_it_be(:policy) { 'invalid' }
+          let_it_be(:policy) { { name: 'invalid' } }
 
           it 'redirects to policy file' do
             get edit

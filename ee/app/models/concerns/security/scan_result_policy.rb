@@ -4,7 +4,10 @@ module Security
   module ScanResultPolicy
     extend ActiveSupport::Concern
 
+    # Used for both policies and rules
     LIMIT = 5
+
+    APPROVERS_LIMIT = 300
 
     SCAN_FINDING = 'scan_finding'
 

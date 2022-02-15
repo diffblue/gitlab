@@ -1,6 +1,6 @@
 - add_to_breadcrumbs s_("SecurityOrchestration|Policies"), project_security_policies_path(@project)
 - breadcrumb_title s_("SecurityOrchestration|Edit policy")
 - page_title s_("SecurityOrchestration|Edit policy")
-- data = orchestration_policy_data(@project, @policy_type, @policy, @environment)
+- data = orchestration_policy_data(@project, @policy_type, @policy, @environment, @approvers)
 
 #js-policy-builder-app{ data: data }

@@ -21,6 +21,7 @@ import { SECURITY_POLICY_ACTIONS } from 'ee/threat_monitoring/components/policy_
 jest.mock('~/lib/utils/url_utility', () => ({
   joinPaths: jest.requireActual('~/lib/utils/url_utility').joinPaths,
   visitUrl: jest.fn().mockName('visitUrlMock'),
+  setUrlFragment: jest.requireActual('~/lib/utils/url_utility').setUrlFragment,
 }));
 
 const newlyCreatedPolicyProject = {
@@ -39,11 +40,12 @@ describe('ScanResultPolicyEditor', () => {
   let wrapper;
   const defaultProjectPath = 'path/to/project';
   const policyEditorEmptyStateSvgPath = 'path/to/svg';
-  const scanExecutionDocumentationPath = 'path/to/docs';
+  const scanPolicyDocumentationPath = 'path/to/docs';
   const assignedPolicyProject = {
     branch: 'main',
     fullPath: 'path/to/existing-project',
   };
+  const scanResultPolicyApprovers = [];
 
   const factory = ({ propsData = {}, provide = {} } = {}) => {
     wrapper = shallowMount(ScanResultPolicyEditor, {
@@ -52,11 +54,12 @@ describe('ScanResultPolicyEditor', () => {
         ...propsData,
       },
       provide: {
-        disableScanExecutionUpdate: false,
+        disableScanPolicyUpdate: false,
         policyEditorEmptyStateSvgPath,
         projectId: 1,
         projectPath: defaultProjectPath,
-        scanExecutionDocumentationPath,
+        scanPolicyDocumentationPath,
+        scanResultPolicyApprovers,
         ...provide,
       },
     });
@@ -122,11 +125,12 @@ describe('ScanResultPolicyEditor', () => {
 
   describe('when a user is not an owner of the project', () => {
     it('displays the empty state with the appropriate properties', async () => {
-      factory({ provide: { disableScanExecutionUpdate: true } });
-      expect(findEmptyState().props()).toMatchObject({
-        primaryButtonLink: scanExecutionDocumentationPath,
-        svgPath: policyEditorEmptyStateSvgPath,
-      });
+      factory({ provide: { disableScanPolicyUpdate: true } });
+      const emptyState = findEmptyState();
+
+      expect(emptyState.props('primaryButtonLink')).toMatch(scanPolicyDocumentationPath);
+      expect(emptyState.props('primaryButtonLink')).toMatch('scan-result-policy-editor');
+      expect(emptyState.props('svgPath')).toBe(policyEditorEmptyStateSvgPath);
     });
   });
 });

@@ -16,10 +16,9 @@ rules:
     severity_levels:
       - critical
     vulnerability_states:
-      - newly_added
+      - newly_detected
 actions:
   - type: require_approval
     approvals_required: 1
-    user_approvers:
-      - security_user
+    user_approvers: []
 `;
