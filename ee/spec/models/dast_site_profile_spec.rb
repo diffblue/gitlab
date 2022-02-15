@@ -129,7 +129,13 @@ RSpec.describe DastSiteProfile, type: :model do
       { website: 0, api: 1 }
     end
 
+    let(:scan_methods) do
+      { site: 0, openapi: 1, har: 2, postman: 3 }
+    end
+
     it { is_expected.to define_enum_for(:target_type).with_values(**target_types) }
+
+    it { is_expected.to define_enum_for(:scan_method).with_values(**scan_methods).with_prefix }
   end
 
   describe '.names' do
@@ -311,6 +317,27 @@ RSpec.describe DastSiteProfile, type: :model do
           create(:dast_site_profile_secret_variable, dast_site_profile: subject)
 
           expect(subject.secret_ci_variables(user).size).to be_zero
+        end
+      end
+    end
+
+    describe '#ensure_scan_method' do
+      let(:target_type) { 'website' }
+      let(:scan_method) { 'site' }
+
+      subject { create(:dast_site_profile, scan_method: scan_method, target_type: target_type) }
+
+      context 'when the target_type is website' do
+        it 'does not change the scan_method' do
+          expect(subject.scan_method).to eq('site')
+        end
+      end
+
+      context 'when the target type is api' do
+        let(:target_type) { 'api' }
+
+        it 'does set the scan_method to openapi' do
+          expect(subject.scan_method).to eq('openapi')
         end
       end
     end
