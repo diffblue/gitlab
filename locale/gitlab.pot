@@ -20878,6 +20878,9 @@ msgstr ""
 msgid "Job|Erase job log and artifacts"
 msgstr ""
 
+msgid "Job|Finished at"
+msgstr ""
+
 msgid "Job|Job artifacts"
 msgstr ""
 
@@ -20900,6 +20903,9 @@ msgid "Job|Scroll to top"
 msgstr ""
 
 msgid "Job|Show complete raw"
+msgstr ""
+
+msgid "Job|Status"
 msgstr ""
 
 msgid "Job|The artifacts were removed"
@@ -31321,6 +31327,9 @@ msgstr ""
 msgid "Runners|Instance"
 msgstr ""
 
+msgid "Runners|Jobs"
+msgstr ""
+
 msgid "Runners|Last contact"
 msgstr ""
 
@@ -31559,6 +31568,9 @@ msgid "Runners|specific"
 msgstr ""
 
 msgid "Runners|stale"
+msgstr ""
+
+msgid "Runner|This runner has not run any jobs."
 msgstr ""
 
 msgid "Running"
