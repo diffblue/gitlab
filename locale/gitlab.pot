@@ -40308,6 +40308,15 @@ msgstr ""
 msgid "VulnerabilityManagement|Create Jira issue"
 msgstr ""
 
+msgid "VulnerabilityManagement|Enter a name"
+msgstr ""
+
+msgid "VulnerabilityManagement|Enter the CVE or CWE code"
+msgstr ""
+
+msgid "VulnerabilityManagement|Enter the CVE or CWE identifier URL"
+msgstr ""
+
 msgid "VulnerabilityManagement|Fetching linked Jira issues"
 msgstr ""
 
@@ -40330,6 +40339,12 @@ msgid "VulnerabilityManagement|Requires assessment"
 msgstr ""
 
 msgid "VulnerabilityManagement|Select a method"
+msgstr ""
+
+msgid "VulnerabilityManagement|Select a severity level"
+msgstr ""
+
+msgid "VulnerabilityManagement|Select a status"
 msgstr ""
 
 msgid "VulnerabilityManagement|Severity is a required field"
