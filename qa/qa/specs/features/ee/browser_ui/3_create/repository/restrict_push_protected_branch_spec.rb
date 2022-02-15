@@ -8,14 +8,16 @@ module QA
       let(:branch_name) { 'protected-branch' }
       let(:commit_message) { 'Protected push commit message' }
 
-      shared_examples 'only user with access pushes and merges' do
-        it 'unselected maintainer user fails to push' do
+      shared_examples 'unselected maintainer' do |testcase|
+        it 'user fails to push', testcase: testcase do
           expect { push_new_file(branch_name, as_user: user_maintainer) }.to raise_error(
             QA::Support::Run::CommandError,
             /You are not allowed to push code to protected branches on this project\.([\s\S]+)\[remote rejected\] #{branch_name} -> #{branch_name} \(pre-receive hook declined\)/)
         end
+      end
 
-        it 'selected developer user pushes and merges' do
+      shared_examples 'selected developer' do |testcase|
+        it 'user pushes and merges', testcase: testcase do
           push = push_new_file(branch_name, as_user: user_developer)
 
           expect(push.output).to match(/To create a merge request for protected-branch, visit/)
@@ -59,7 +61,8 @@ module QA
           end
         end
 
-        it_behaves_like 'only user with access pushes and merges'
+        it_behaves_like 'unselected maintainer', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347775'
+        it_behaves_like 'selected developer', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347774'
       end
 
       context 'when only one group is allowed to merge and push to a protected branch' do
@@ -96,7 +99,8 @@ module QA
           end
         end
 
-        it_behaves_like 'only user with access pushes and merges'
+        it_behaves_like 'unselected maintainer', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347772'
+        it_behaves_like 'selected developer', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347773'
       end
 
       def login(as_user: Runtime::User)

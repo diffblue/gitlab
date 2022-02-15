@@ -9,8 +9,8 @@ module QA
         get_personal_access_token
       end
 
-      shared_examples 'retrieving configuration about Geo nodes' do
-        it 'GET /geo_nodes' do
+      shared_examples 'retrieving configuration about Geo nodes' do |testcase|
+        it 'GET /geo_nodes', testcase: testcase do
           get api_endpoint('/geo_nodes')
 
           expect_status(200)
@@ -20,8 +20,10 @@ module QA
                                  files_max_capacity: :integer, repos_max_capacity: :integer,
                                  clone_protocol: :string, _links: :object)
         end
+      end
 
-        it 'GET /geo_nodes/:id' do
+      shared_examples 'retrieving configuration about Geo nodes/:id' do |testcase|
+        it 'GET /geo_nodes/:id', testcase: testcase do
           get api_endpoint("/geo_nodes/#{geo_node[:id]}")
 
           expect_status(200)
@@ -29,14 +31,15 @@ module QA
         end
       end
 
-      describe 'Geo Nodes API on primary node', :geo do
+      describe 'on primary node', :geo do
         before(:context) do
           fetch_nodes(:geo_primary)
         end
 
-        include_examples 'retrieving configuration about Geo nodes' do
-          let(:geo_node) { @primary_node }
-        end
+        let(:geo_node) { @primary_node }
+
+        include_examples 'retrieving configuration about Geo nodes', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348042'
+        include_examples 'retrieving configuration about Geo nodes/:id', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348041'
 
         describe 'editing a Geo node' do
           it 'PUT /geo_nodes/:id for secondary node', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348043' do
@@ -58,14 +61,15 @@ module QA
         end
       end
 
-      describe 'Geo Nodes API on secondary node', :geo do
+      describe 'on secondary node', :geo do
         before(:context) do
           fetch_nodes(:geo_secondary)
         end
 
-        include_examples 'retrieving configuration about Geo nodes' do
-          let(:geo_node) { @nodes.first }
-        end
+        let(:geo_node) { @nodes.first }
+
+        include_examples 'retrieving configuration about Geo nodes', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348044'
+        include_examples 'retrieving configuration about Geo nodes/:id', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348045'
       end
 
       def api_endpoint(endpoint)
