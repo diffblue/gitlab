@@ -27,9 +27,13 @@ class DastSiteProfile < ApplicationRecord
 
   enum target_type: { website: 0, api: 1 }
 
+  enum scan_method: { site: 0, openapi: 1, har: 2, postman: 3 }, _prefix: true
+
   delegate :dast_site_validation, to: :dast_site, allow_nil: true
 
   sanitizes! :name
+
+  before_save :ensure_scan_method
 
   def self.names(site_profile_ids)
     find(*site_profile_ids).pluck(:name)
@@ -113,5 +117,15 @@ class DastSiteProfile < ApplicationRecord
     return if invalid.empty?
 
     errors.add(:excluded_urls, message % { urls: invalid.join(', ') })
+  end
+
+  # This callback is necessary to avoid discrepancy between the scan_method and target_type
+  # before we enable the dast_api_scanner feature flag by default.
+  # More context can be found here:
+  # https://gitlab.com/gitlab-org/gitlab/-/merge_requests/78745#note_837953465
+  def ensure_scan_method
+    if api? && scan_method_site?
+      self.scan_method = 'openapi'
+    end
   end
 end
