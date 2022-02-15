@@ -71,4 +71,10 @@ RSpec.describe 'Group routing', "routing" do
       let(:base_params) { { group_id: 'gitlabhq' } }
     end
   end
+
+  describe 'feature discovery moments' do
+    it 'routes to #advanced_features_dashboard' do
+      expect(get("/groups/gitlabhq/-/discover_premium_and_ultimate")).to route_to('groups/feature_discovery_moments#advanced_features_dashboard', group_id: 'gitlabhq')
+    end
+  end
 end

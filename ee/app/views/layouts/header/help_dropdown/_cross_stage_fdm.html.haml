@@ -1,0 +1,7 @@
+- root_ancestor = (@group || @project&.group)&.root_ancestor
+
+- if show_cross_stage_fdm?(root_ancestor)
+  - experiment(:cross_stage_fdm, actor: current_user, namespace: root_ancestor, sticky_to: root_ancestor) do |e|
+    - e.candidate do
+      %li{ data: { track_action: 'click_link', track_label: 'cross_stage_fdm', track_experiment: 'cross_stage_fdm' } }
+        = link_to s_('InProductMarketing|Discover Premium & Ultimate'), group_advanced_features_dashboard_path(group_id: root_ancestor)

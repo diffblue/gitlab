@@ -18608,6 +18608,9 @@ msgstr ""
 msgid "InProductMarketing|3 ways to dive into GitLab CI/CD"
 msgstr ""
 
+msgid "InProductMarketing|Access advanced features, build more efficiently, strengthen security and compliance."
+msgstr ""
+
 msgid "InProductMarketing|Actually, GitLab makes the team work (better)"
 msgstr ""
 
@@ -18641,6 +18644,9 @@ msgstr ""
 msgid "InProductMarketing|Code owners and required merge approvals are part of the paid tiers of GitLab. You can start a free 30-day trial of GitLab Ultimate and enable these features in less than 5 minutes with no credit card required."
 msgstr ""
 
+msgid "InProductMarketing|Collaboration across stages in GitLab"
+msgstr ""
+
 msgid "InProductMarketing|Create a custom CI runner with just a few clicks"
 msgstr ""
 
@@ -18663,6 +18669,12 @@ msgid "InProductMarketing|Difficult"
 msgstr ""
 
 msgid "InProductMarketing|Dig in and create a project and a repo"
+msgstr ""
+
+msgid "InProductMarketing|Discover Premium & Ultimate"
+msgstr ""
+
+msgid "InProductMarketing|Discover Premium & Ultimate."
 msgstr ""
 
 msgid "InProductMarketing|Do you have a minute?"
@@ -18870,6 +18882,9 @@ msgid "InProductMarketing|Start a GitLab Ultimate trial today in less than one m
 msgstr ""
 
 msgid "InProductMarketing|Start a Self-Managed trial"
+msgstr ""
+
+msgid "InProductMarketing|Start a free trial"
 msgstr ""
 
 msgid "InProductMarketing|Start a free trial of GitLab Ultimate – no credit card required"

@@ -1,0 +1,19 @@
+- page_title s_('InProductMarketing|Discover Premium & Ultimate')
+- @hide_breadcrumbs = true
+- @content_class = 'container-limited limit-container-width'
+
+.gl-pt-6.gl-md-pt-11.gl-display-grid.gl-md-grid-template-columns-2.gl-gap-6{ data: { track_action: 'render', track_label: 'cross_stage_fdm', track_experiment: 'cross_stage_fdm' } }
+  %div
+    %h2.gl-mt-0.gl-mb-3= s_('InProductMarketing|Discover Premium & Ultimate.')
+
+    %p.gl-max-w-48.gl-font-lg
+      = s_('InProductMarketing|Access advanced features, build more efficiently, strengthen security and compliance.')
+
+    .gl-display-flex.gl-flex-wrap.gl-mb-5
+      - glm_params = cross_stage_fdm_glm_params
+      = link_to s_('InProductMarketing|Start a free trial'), new_trial_path(glm_params), class: 'gl-button btn btn-confirm gl-mr-3 gl-mb-3', data: { track_action: 'click_button', track_label: 'start_trial', track_experiment: 'cross_stage_fdm' }
+      .js-hand-raise-lead-button{ data: { **hand_raise_props(@group, glm_content: glm_params[:glm_content]), track_action: 'click_button', track_label: 'hand_raise_PQL', track_experiment: 'cross_stage_fdm' } }
+
+  .gl-display-none.gl-md-display-block.gl-max-w-75
+    - image_alt = s_('InProductMarketing|Collaboration across stages in GitLab')
+    = image_tag 'marketing/gitlab-enterprise-header-flow-desktop.png', alt: image_alt, title: image_alt, class: 'gl-w-full'
