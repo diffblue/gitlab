@@ -680,7 +680,13 @@ class License < ApplicationRecord
   def valid_license
     return if license?
 
-    self.errors.add(:base, _('The license key is invalid. Make sure it is exactly as you received it from GitLab Inc.'))
+    error_message = if online_cloud_license?
+                      _('The license key is invalid.')
+                    else
+                      _('The license key is invalid. Make sure it is exactly as you received it from GitLab Inc.')
+                    end
+
+    self.errors.add(:base, error_message)
   end
 
   # This method, `previous_started_at` and `previous_expired_at` are

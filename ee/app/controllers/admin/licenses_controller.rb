@@ -20,7 +20,7 @@ class Admin::LicensesController < Admin::ApplicationController
 
     @license = License.new(license_params)
 
-    return upload_license_error if @license.online_cloud_license?
+    return upload_license_error(cloud_license: true) if @license.online_cloud_license?
 
     respond_with(@license, location: admin_subscription_path) do
       if @license.save
@@ -67,8 +67,20 @@ class Admin::LicensesController < Admin::ApplicationController
     license_params
   end
 
-  def upload_license_error
-    flash[:alert] = _('Please enter or upload a valid license.')
+  def upload_license_error(cloud_license: false)
+    flash[:alert] = if cloud_license
+                      html_escape(
+                        _(
+                          "It looks like you're attempting to activate your subscription. Use " \
+                            "%{a_start}the Subscription page%{a_end} instead."
+                        )
+                      ) % { a_start: "<a href=\"#{admin_subscription_path}\">".html_safe, a_end: '</a>'.html_safe }
+                    else
+                      html_escape(
+                        _('The license you uploaded is invalid. If the issue persists, contact support at %{link}.')
+                      ) % { link: '<a href="https://support.gitlab.com">https://support.gitlab.com</a>'.html_safe }
+                    end
+
     @license = License.new
     redirect_to new_admin_license_path
   end

@@ -20374,6 +20374,9 @@ msgstr ""
 msgid "It looks like you have some draft commits in this branch."
 msgstr ""
 
+msgid "It looks like you're attempting to activate your subscription. Use %{a_start}the Subscription page%{a_end} instead."
+msgstr ""
+
 msgid "It may be several days before you see feature usage data."
 msgstr ""
 
@@ -27142,9 +27145,6 @@ msgid "Please enter a valid number"
 msgstr ""
 
 msgid "Please enter a valid time interval"
-msgstr ""
-
-msgid "Please enter or upload a valid license."
 msgstr ""
 
 msgid "Please enter your current password."
@@ -36348,6 +36348,9 @@ msgstr ""
 msgid "The latest pipeline for this merge request has failed."
 msgstr ""
 
+msgid "The license key is invalid."
+msgstr ""
+
 msgid "The license key is invalid. Make sure it is exactly as you received it from GitLab Inc."
 msgstr ""
 
@@ -36361,6 +36364,9 @@ msgid "The license was successfully uploaded and is now active. You can see the 
 msgstr ""
 
 msgid "The license was successfully uploaded and will be active from %{starts_at}. You can see the details below."
+msgstr ""
+
+msgid "The license you uploaded is invalid. If the issue persists, contact support at %{link}."
 msgstr ""
 
 msgid "The list creation wizard is already open"
