@@ -1,0 +1,8 @@
+---
+name: cross_stage_fdm
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/78497
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/348496
+milestone: '14.8'
+type: experiment
+group: group::conversion
+default_enabled: false

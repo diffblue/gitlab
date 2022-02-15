@@ -187,6 +187,8 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
 
     resource :roadmap, only: [:show], controller: 'roadmap'
 
+    get 'discover_premium_and_ultimate', to: 'feature_discovery_moments#advanced_features_dashboard', as: :advanced_features_dashboard
+
     post '/restore' => '/groups#restore', as: :restore
   end
 end
