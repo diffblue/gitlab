@@ -6,12 +6,14 @@ import {
   IssuableAttributeType,
   IssuableAttributeState,
   issuableAttributesQueries,
+  SIDEBAR_ESCALATION_POLICY_TITLE,
 } from '../constants';
 
 const widgetTitleText = {
   [IssuableAttributeType.Milestone]: __('Milestone'),
   [IssuableAttributeType.Iteration]: __('Iteration'),
   [IssuableAttributeType.Epic]: __('Epic'),
+  [IssuableAttributeType.EscalationPolicy]: SIDEBAR_ESCALATION_POLICY_TITLE,
   none: __('None'),
   expired: __('(expired)'),
 };
@@ -33,6 +35,7 @@ export default {
           IssuableAttributeType.Milestone,
           IssuableAttributeType.Iteration,
           IssuableAttributeType.Epic,
+          IssuableAttributeType.EscalationPolicy,
         ].includes(value);
       },
     },

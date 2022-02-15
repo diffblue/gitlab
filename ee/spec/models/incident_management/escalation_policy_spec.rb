@@ -49,7 +49,9 @@ RSpec.describe IncidentManagement::EscalationPolicy do
     describe '.search_by_name' do
       subject { described_class.search_by_name('other') }
 
-      it { is_expected.to contain_exactly(other_policy) }
+      it 'does a case-insenstive search' do
+        expect(subject).to contain_exactly(other_policy)
+      end
     end
   end
 end

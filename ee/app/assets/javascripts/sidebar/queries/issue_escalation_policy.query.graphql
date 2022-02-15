@@ -1,0 +1,15 @@
+#import "./escalation_policy.fragment.graphql"
+
+query issueEscalationPolicy($fullPath: ID!, $iid: String!) {
+  workspace: project(fullPath: $fullPath) {
+    __typename
+    id
+    issuable: issue(iid: $iid) {
+      __typename
+      id
+      attribute: escalationPolicy {
+        ...EscalationPolicyFragment
+      }
+    }
+  }
+}

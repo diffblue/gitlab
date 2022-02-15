@@ -9,6 +9,7 @@ import IterationSidebarDropdownWidget from './components/iteration_sidebar_dropd
 import SidebarDropdownWidget from './components/sidebar_dropdown_widget.vue';
 import SidebarStatus from './components/status/sidebar_status.vue';
 import SidebarWeightWidget from './components/weight/sidebar_weight_widget.vue';
+import SidebarEscalationPolicy from './components/incidents/sidebar_escalation_policy.vue';
 import { IssuableAttributeType } from './constants';
 
 Vue.use(VueApollo);
@@ -148,6 +149,36 @@ function mountIterationSelect() {
   });
 }
 
+function mountEscalationPoliciesSelect() {
+  const el = document.querySelector('#js-escalation-policy');
+
+  if (!el) {
+    return false;
+  }
+
+  const { canEdit, projectPath, issueIid, hasEscalationPolicies } = el.dataset;
+
+  return new Vue({
+    el,
+    apolloProvider,
+    components: {
+      SidebarEscalationPolicy,
+    },
+    provide: {
+      canUpdate: parseBoolean(canEdit),
+      isClassicSidebar: true,
+    },
+    render: (createElement) =>
+      createElement('sidebar-escalation-policy', {
+        props: {
+          projectPath,
+          iid: issueIid,
+          escalationsPossible: parseBoolean(hasEscalationPolicies),
+        },
+      }),
+  });
+}
+
 export const { getSidebarOptions } = CEMountSidebar;
 
 export function mountSidebar(mediator, store) {
@@ -156,5 +187,6 @@ export function mountSidebar(mediator, store) {
   mountStatusComponent(store);
   mountEpicsSelect();
   mountIterationSelect();
+  mountEscalationPoliciesSelect();
   mountCveIdRequestComponent(store);
 }
