@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Admin::AuditLogsController do
+  using RSpec::Parameterized::TableSyntax
+
   let_it_be(:admin) { create(:admin) }
 
   describe 'GET #index' do
@@ -41,6 +43,25 @@ RSpec.describe Admin::AuditLogsController do
           action: 'search_audit_event',
           user: admin
         )
+      end
+
+      context 'when invalid date' do
+        where(:created_before, :created_after) do
+          'invalid-date' | nil
+          nil            | true
+          '2021-13-10'   | nil
+          nil            | '2021-02-31'
+          '2021-03-31'   | '2021-02-31'
+        end
+
+        with_them do
+          it 'returns an error' do
+            get :index, params: { 'created_before': created_before, 'created_after': created_after }
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(flash[:alert]).to eq 'Invalid date format. Please use UTC format as YYYY-MM-DD'
+          end
+        end
       end
     end
 
