@@ -24,6 +24,7 @@ module EE
           # Add EE only subscriptions here:
 
           store.subscribe ::GitlabSubscriptions::NotifySeatsExceededWorker, to: ::Members::MembersAddedEvent
+          store.subscribe ::Security::Findings::DeleteByJobIdWorker, to: ::Ci::JobArtifactsDeletedEvent
         end
       end
     end
