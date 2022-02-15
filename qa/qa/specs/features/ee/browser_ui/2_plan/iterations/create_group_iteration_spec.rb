@@ -19,20 +19,17 @@ module QA
 
       before do
         Runtime::Feature.enable(:iteration_cadences, group: iteration_group)
+        # TODO: this sleep can be removed when the `Runtime::Feature.enable` method call is removed
+        # Wait for the application settings cache to update with iteration_cadences feature flag setting
+        # as per this issue https://gitlab.com/gitlab-org/gitlab/-/issues/36663
+        # We cannot check the UI for the changes because they are sporadically available at first
+        # as described in this issue https://gitlab.com/gitlab-org/quality/testcases/-/issues/113#note_300647725
+        sleep(60)
 
         Flow::Login.sign_in
       end
 
       it 'creates a group iteration', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347943' do
-        # TODO: Remove this retry when the `Runtime::Feature.enable` method call is removed
-        Support::Retrier.retry_until(max_duration: 60, retry_on_exception: true, sleep_interval: 5) do
-          iteration_group.visit!
-          QA::Page::Group::Menu.perform(&:go_to_group_iterations)
-          QA::EE::Page::Group::Iteration::Cadence::Index.perform do |cadence|
-            cadence.find_element(:create_new_cadence_button)
-          end
-        end
-
         EE::Resource::GroupIteration.fabricate_via_browser_ui! do |iteration|
           iteration.title = title
           iteration.description = description

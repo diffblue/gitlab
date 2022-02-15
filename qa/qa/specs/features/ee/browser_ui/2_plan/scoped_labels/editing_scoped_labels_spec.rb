@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  # TODO: Remove :requires_admin when the `Runtime::Feature.enable` method call is removed
-  RSpec.describe 'Plan', :requires_admin do
+  RSpec.describe 'Plan' do
     describe 'Editing scoped labels on issues' do
       let(:initial_label) { 'animal::fox' }
       let(:new_label_same_scope) { 'animal::dolphin' }
