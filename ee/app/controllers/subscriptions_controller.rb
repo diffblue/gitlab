@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class SubscriptionsController < ApplicationController
+  SUCCESS_SUBSCRIPTION = 'Success: subscription'
+  SUCCESS_ADDON = 'Success: add-on'
   include InternalRedirect
   include OneTrustCSP
 
@@ -103,7 +105,7 @@ class SubscriptionsController < ApplicationController
     ).execute
 
     if response[:success]
-      track_purchase message: 'Success', namespace: group
+      track_purchase message: track_success_message, namespace: group
       response[:data] = { location: redirect_location(group) }
     else
       track_purchase message: response.dig(:data, :errors), namespace: group
@@ -121,6 +123,14 @@ class SubscriptionsController < ApplicationController
                            user: current_user,
                            namespace: namespace
     )
+  end
+
+  def track_success_message
+    addon? ? SUCCESS_ADDON : SUCCESS_SUBSCRIPTION
+  end
+
+  def addon?
+    Gitlab::Utils.to_boolean(subscription_params[:is_addon], default: false)
   end
 
   def redirect_location(group)
