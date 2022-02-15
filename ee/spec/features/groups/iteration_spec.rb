@@ -28,14 +28,14 @@ RSpec.describe 'Group iterations' do
     it 'renders description preview' do
       description = find(description_selector)
       description.native.send_keys('')
-      click_button('Preview')
+      click_link('Preview')
       preview = find('.js-vue-md-preview')
 
       expect(preview).to have_content('Nothing to preview.')
 
-      click_button('Write')
+      click_link('Write')
       description.native.send_keys(':+1: Nice')
-      click_button('Preview')
+      click_link('Preview')
 
       expect(preview).to have_css('gl-emoji')
       expect(find('#iteration-description', visible: false)).not_to be_visible
