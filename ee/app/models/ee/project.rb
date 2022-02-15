@@ -928,10 +928,16 @@ module EE
 
       if ::Gitlab::CurrentSettings.should_check_namespace_plan? && namespace
         globally_available &&
-          (public? && namespace.public? || namespace.feature_available_in_plan?(feature))
+          (open_source_license_granted? || namespace.feature_available_in_plan?(feature))
       else
         globally_available
       end
+    end
+
+    def open_source_license_granted?
+      public? &&
+        namespace.public? &&
+        project_setting.legacy_open_source_license_available?
     end
 
     def user_defined_rules
