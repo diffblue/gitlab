@@ -1,4 +1,4 @@
-import BasePolicy from 'ee/threat_monitoring/components/policy_drawer/base_policy.vue';
+import PolicyDrawerLayout from 'ee/threat_monitoring/components/policy_drawer/policy_drawer_layout.vue';
 import ScanResultPolicy from 'ee/threat_monitoring/components/policy_drawer/scan_result_policy.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { mockScanResultPolicy } from '../../mocks/mock_data';
@@ -13,7 +13,7 @@ describe('ScanResultPolicy component', () => {
     wrapper = shallowMountExtended(ScanResultPolicy, {
       propsData,
       stubs: {
-        BasePolicy,
+        PolicyDrawerLayout,
       },
     });
   };
