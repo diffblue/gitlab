@@ -49,7 +49,7 @@ RSpec.describe 'Update Epic', :js do
         fill_in 'issue-description', with: 'New epic description'
 
         page.within('.detail-page-description') do
-          click_button('Preview')
+          click_link('Preview')
           expect(find('.md-preview-holder')).to have_content('New epic description')
         end
 
@@ -63,7 +63,7 @@ RSpec.describe 'Update Epic', :js do
         fill_in 'issue-description', with: 'New epic description'
 
         page.within('.detail-page-description') do
-          click_button('Preview')
+          click_link('Preview')
           expect(find('.md-preview-holder')).to have_content('New epic description')
         end
 
@@ -76,7 +76,7 @@ RSpec.describe 'Update Epic', :js do
         find('.btn-edit').click
 
         page.within('.detail-page-description') do
-          click_button('Preview')
+          click_link('Preview')
           expect(find('.md-preview-holder')).to have_content('New epic description')
         end
       end
@@ -122,7 +122,7 @@ RSpec.describe 'Update Epic', :js do
         expect(page.find_field("issue-description").value).to have_content('banana_sample')
 
         page.within('.detail-page-description') do
-          click_button('Preview')
+          click_link('Preview')
           wait_for_requests
 
           within('.md-preview-holder') do
