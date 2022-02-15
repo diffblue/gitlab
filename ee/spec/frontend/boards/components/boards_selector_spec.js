@@ -52,7 +52,7 @@ describe('BoardsSelector', () => {
     });
   };
 
-  const findDropdown = () => wrapper.find(GlDropdown);
+  const findDropdown = () => wrapper.findComponent(GlDropdown);
 
   const projectBoardQueryHandlerSuccess = jest.fn().mockResolvedValue(mockProjectBoardResponse);
   const groupBoardQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupBoardResponse);

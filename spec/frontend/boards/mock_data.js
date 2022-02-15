@@ -39,6 +39,7 @@ function boardGenerator(n) {
         id,
         name,
         weight: 0,
+        __typename: 'Board',
       },
     };
   });
@@ -47,22 +48,22 @@ function boardGenerator(n) {
 export const boards = boardGenerator(20);
 export const recentIssueBoards = boardGenerator(5);
 
-export const mockSmallGroupAllBoardsResponse = {
+export const mockSmallProjectAllBoardsResponse = {
   data: {
-    group: {
-      id: 'gid://gitlab/Group/114',
+    project: {
+      id: 'gid://gitlab/Project/114',
       boards: { edges: boardGenerator(3) },
-      __typename: 'Group',
+      __typename: 'Project',
     },
   },
 };
 
-export const mockEmptyGroupRecentBoardsResponse = {
+export const mockEmptyProjectRecentBoardsResponse = {
   data: {
-    group: {
-      id: 'gid://gitlab/Group/114',
+    project: {
+      id: 'gid://gitlab/Project/114',
       recentIssueBoards: { edges: [] },
-      __typename: 'Group',
+      __typename: 'Project',
     },
   },
 };

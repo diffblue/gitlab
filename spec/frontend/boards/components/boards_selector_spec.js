@@ -21,8 +21,8 @@ import {
   mockProjectAllBoardsResponse,
   mockGroupRecentBoardsResponse,
   mockProjectRecentBoardsResponse,
-  mockSmallGroupAllBoardsResponse,
-  mockEmptyGroupRecentBoardsResponse,
+  mockSmallProjectAllBoardsResponse,
+  mockEmptyProjectRecentBoardsResponse,
   boards,
   recentIssueBoards,
 } from '../mock_data';
@@ -60,9 +60,9 @@ describe('BoardsSelector', () => {
   };
 
   const getDropdownItems = () => wrapper.findAll('.js-dropdown-item');
-  const getDropdownHeaders = () => wrapper.findAll(GlDropdownSectionHeader);
-  const getLoadingIcon = () => wrapper.find(GlLoadingIcon);
-  const findDropdown = () => wrapper.find(GlDropdown);
+  const getDropdownHeaders = () => wrapper.findAllComponents(GlDropdownSectionHeader);
+  const getLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findDropdown = () => wrapper.findComponent(GlDropdown);
 
   const projectBoardQueryHandlerSuccess = jest.fn().mockResolvedValue(mockProjectBoardResponse);
   const groupBoardQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupBoardResponse);
@@ -81,22 +81,22 @@ describe('BoardsSelector', () => {
 
   const smallBoardsQueryHandlerSuccess = jest
     .fn()
-    .mockResolvedValue(mockSmallGroupAllBoardsResponse);
+    .mockResolvedValue(mockSmallProjectAllBoardsResponse);
   const emptyRecentBoardsQueryHandlerSuccess = jest
     .fn()
-    .mockResolvedValue(mockEmptyGroupRecentBoardsResponse);
+    .mockResolvedValue(mockEmptyProjectRecentBoardsResponse);
 
   const createComponent = ({
-    groupBoardsQueryHandler = groupBoardsQueryHandlerSuccess,
-    groupRecentBoardsQueryHandler = groupRecentBoardsQueryHandlerSuccess,
+    projectBoardsQueryHandler = projectBoardsQueryHandlerSuccess,
+    projectRecentBoardsQueryHandler = projectRecentBoardsQueryHandlerSuccess,
   } = {}) => {
     fakeApollo = createMockApollo([
       [projectBoardQuery, projectBoardQueryHandlerSuccess],
       [groupBoardQuery, groupBoardQueryHandlerSuccess],
-      [projectBoardsQuery, projectBoardsQueryHandlerSuccess],
-      [groupBoardsQuery, groupBoardsQueryHandler],
-      [projectRecentBoardsQuery, projectRecentBoardsQueryHandlerSuccess],
-      [groupRecentBoardsQuery, groupRecentBoardsQueryHandler],
+      [projectBoardsQuery, projectBoardsQueryHandler],
+      [groupBoardsQuery, groupBoardsQueryHandlerSuccess],
+      [projectRecentBoardsQuery, projectRecentBoardsQueryHandler],
+      [groupRecentBoardsQuery, groupRecentBoardsQueryHandlerSuccess],
     ]);
 
     wrapper = mount(BoardsSelector, {
@@ -120,11 +120,12 @@ describe('BoardsSelector', () => {
 
   afterEach(() => {
     wrapper.destroy();
+    fakeApollo = null;
   });
 
   describe('template', () => {
     beforeEach(() => {
-      createStore({ isGroupBoard: true });
+      createStore({ isProjectBoard: true });
       createComponent();
     });
 
@@ -156,7 +157,7 @@ describe('BoardsSelector', () => {
       });
 
       it('fetches all issue boards', () => {
-        expect(groupBoardsQueryHandlerSuccess).toHaveBeenCalled();
+        expect(projectBoardsQueryHandlerSuccess).toHaveBeenCalled();
       });
 
       it('hides loading spinner', async () => {
@@ -196,19 +197,21 @@ describe('BoardsSelector', () => {
       describe('recent boards section', () => {
         it('shows only when boards are greater than 10', async () => {
           await nextTick();
-          expect(groupRecentBoardsQueryHandlerSuccess).toHaveBeenCalled();
+          expect(projectRecentBoardsQueryHandlerSuccess).toHaveBeenCalled();
           expect(getDropdownHeaders()).toHaveLength(2);
         });
 
         it('does not show when boards are less than 10', async () => {
-          createComponent({ groupBoardsQueryHandler: smallBoardsQueryHandlerSuccess });
+          createComponent({ projectBoardsQueryHandler: smallBoardsQueryHandlerSuccess });
 
           await nextTick();
           expect(getDropdownHeaders()).toHaveLength(0);
         });
 
         it('does not show when recentIssueBoards api returns empty array', async () => {
-          createComponent({ groupRecentBoardsQueryHandler: emptyRecentBoardsQueryHandlerSuccess });
+          createComponent({
+            projectRecentBoardsQueryHandler: emptyRecentBoardsQueryHandlerSuccess,
+          });
 
           await nextTick();
           expect(getDropdownHeaders()).toHaveLength(0);
