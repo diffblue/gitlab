@@ -18,6 +18,7 @@ export function initRelatedFeatureFlags() {
 
   return new Vue({
     el,
+    name: 'RelatedFeatureFlagsRoot',
     provide: { endpoint: el.dataset.endpoint },
     render: (createElement) => createElement(RelatedFeatureFlags),
   });

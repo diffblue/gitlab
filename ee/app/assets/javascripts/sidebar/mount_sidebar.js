@@ -23,6 +23,7 @@ const mountWeightComponent = () => {
 
   return new Vue({
     el,
+    name: 'SidebarWeightRoot',
     apolloProvider,
     components: {
       SidebarWeightWidget,
@@ -53,6 +54,7 @@ const mountStatusComponent = (store) => {
 
   return new Vue({
     el,
+    name: 'SidebarHealthStatusRoot',
     apolloProvider,
     store,
     components: {
@@ -82,6 +84,7 @@ function mountCveIdRequestComponent(store) {
   return new Vue({
     store,
     el,
+    name: 'SidebarCveIdRequestRoot',
     provide: {
       iid: String(iid),
       fullPath,
@@ -99,6 +102,7 @@ function mountEpicsSelect() {
 
   return new Vue({
     el,
+    name: 'SidebarEpicRoot',
     apolloProvider,
     components: {
       SidebarDropdownWidget,
@@ -131,6 +135,7 @@ function mountIterationSelect() {
 
   return new Vue({
     el,
+    name: 'SidebarIterationRoot',
     apolloProvider,
     provide: {
       canUpdate: parseBoolean(canEdit),
