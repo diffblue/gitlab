@@ -50,6 +50,10 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
     push_frontend_feature_flag(:usage_data_diff_searches, @project, default_enabled: :yaml)
   end
 
+  before_action do
+    push_frontend_feature_flag(:permit_all_shared_groups_for_approval, @project, default_enabled: :yaml)
+  end
+
   around_action :allow_gitaly_ref_name_caching, only: [:index, :show, :discussions]
 
   after_action :log_merge_request_show, only: [:show]

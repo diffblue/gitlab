@@ -61,6 +61,9 @@ describe('Approvals ApproversSelect', () => {
       ...options,
       propsData,
       attachTo: document.body,
+      provide: {
+        ...options.provide,
+      },
     });
 
     await waitForPromises();
@@ -135,6 +138,34 @@ describe('Approvals ApproversSelect', () => {
     it('fetches users', () => {
       expect(Api.projectUsers).toHaveBeenCalledWith(TEST_PROJECT_ID, term, {
         skip_users: [],
+      });
+    });
+  });
+
+  describe('with permitAllSharedGroupsForApproval', () => {
+    beforeEach(async () => {
+      await factory({
+        provide: {
+          glFeatures: {
+            permitAllSharedGroupsForApproval: true,
+          },
+        },
+      });
+    });
+
+    it('fetches all available groups including non-visible shared groups', async (done) => {
+      waitForEvent($input, 'select2-loaded')
+        .then(jest.runOnlyPendingTimers)
+        .then(done)
+        .catch(done.fail);
+
+      search();
+
+      expect(Api.projectGroups).toHaveBeenCalledWith(TEST_PROJECT_ID, {
+        skip_groups: [],
+        with_shared: true,
+        shared_visible_only: false,
+        shared_min_access_level: 30,
       });
     });
   });
