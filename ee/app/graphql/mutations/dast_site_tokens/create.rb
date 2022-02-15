@@ -3,9 +3,9 @@
 module Mutations
   module DastSiteTokens
     class Create < BaseMutation
-      include FindsProject
-
       graphql_name 'DastSiteTokenCreate'
+
+      include FindsProject
 
       field :id, ::Types::GlobalIDType[::DastSiteToken],
             null: true,

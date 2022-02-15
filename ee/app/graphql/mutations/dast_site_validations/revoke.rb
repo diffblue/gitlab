@@ -3,9 +3,9 @@
 module Mutations
   module DastSiteValidations
     class Revoke < BaseMutation
-      include FindsProject
-
       graphql_name 'DastSiteValidationRevoke'
+
+      include FindsProject
 
       argument :full_path, GraphQL::Types::ID,
                required: true,

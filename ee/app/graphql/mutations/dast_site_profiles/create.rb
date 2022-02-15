@@ -3,10 +3,10 @@
 module Mutations
   module DastSiteProfiles
     class Create < BaseMutation
+      graphql_name 'DastSiteProfileCreate'
+
       include FindsProject
       include Mutations::AppSec::Dast::SiteProfiles::SharedArguments
-
-      graphql_name 'DastSiteProfileCreate'
 
       field :id, SiteProfileID,
             null: true,

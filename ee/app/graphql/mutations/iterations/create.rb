@@ -3,9 +3,9 @@
 module Mutations
   module Iterations
     class Create < BaseMutation
-      include Mutations::ResolvesResourceParent
-
       graphql_name 'iterationCreate'
+
+      include Mutations::ResolvesResourceParent
 
       authorize :create_iteration
 

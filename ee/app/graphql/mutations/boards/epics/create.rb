@@ -4,9 +4,9 @@ module Mutations
   module Boards
     module Epics
       class Create < ::Mutations::BaseMutation
-        include Mutations::ResolvesGroup
-
         graphql_name 'BoardEpicCreate'
+
+        include Mutations::ResolvesGroup
 
         argument :group_path, GraphQL::Types::ID,
                  required: true,

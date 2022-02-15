@@ -5,11 +5,10 @@ module Mutations
     module DevopsAdoption
       module EnabledNamespaces
         class Enable < BaseMutation
-          include Mixins::CommonMethods
-
           graphql_name 'EnableDevopsAdoptionNamespace'
-
           description '**BETA** This endpoint is subject to change without notice.'
+
+          include Mixins::CommonMethods
 
           argument :namespace_id, ::Types::GlobalIDType[::Namespace],
                    required: true,

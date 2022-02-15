@@ -3,9 +3,9 @@
 module Mutations
   module DastScannerProfiles
     class Update < BaseMutation
-      include FindsProject
-
       graphql_name 'DastScannerProfileUpdate'
+
+      include FindsProject
 
       ScannerProfileID = ::Types::GlobalIDType[::DastScannerProfile]
 

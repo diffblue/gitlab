@@ -2,10 +2,11 @@
 
 module Types
   class EpicType < BaseObject
-    include ::Gitlab::Graphql::Aggregations::Epics::Constants
-
     graphql_name 'Epic'
     description 'Represents an epic'
+
+    include ::Gitlab::Graphql::Aggregations::Epics::Constants
+
     accepts ::Epic
     authorize :read_epic
 

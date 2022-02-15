@@ -3,10 +3,10 @@
 module Mutations
   module Epics
     class Create < BaseMutation
+      graphql_name 'CreateEpic'
+
       include Mutations::ResolvesGroup
       prepend Mutations::SharedEpicArguments
-
-      graphql_name 'CreateEpic'
 
       authorize :create_epic
 

@@ -3,9 +3,9 @@
 module Mutations
   module RequirementsManagement
     class CreateRequirement < BaseRequirement
-      include FindsProject
-
       graphql_name 'CreateRequirement'
+
+      include FindsProject
 
       authorize :create_requirement
 

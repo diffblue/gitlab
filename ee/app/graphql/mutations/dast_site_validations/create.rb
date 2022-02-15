@@ -3,9 +3,9 @@
 module Mutations
   module DastSiteValidations
     class Create < BaseMutation
-      include FindsProject
-
       graphql_name 'DastSiteValidationCreate'
+
+      include FindsProject
 
       field :id, ::Types::GlobalIDType[::DastSiteValidation],
             null: true,

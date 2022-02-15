@@ -4,9 +4,9 @@ module Mutations
   module Iterations
     module Cadences
       class Create < BaseMutation
-        include Mutations::ResolvesGroup
-
         graphql_name 'IterationCadenceCreate'
+
+        include Mutations::ResolvesGroup
 
         authorize :create_iteration_cadence
 

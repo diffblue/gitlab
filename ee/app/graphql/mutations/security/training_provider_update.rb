@@ -3,9 +3,9 @@
 module Mutations
   module Security
     class TrainingProviderUpdate < BaseMutation
-      include FindsProject
-
       graphql_name 'SecurityTrainingUpdate'
+
+      include FindsProject
 
       authorize :access_security_and_compliance
 

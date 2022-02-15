@@ -3,10 +3,10 @@
 module Mutations
   module RequirementsManagement
     class ExportRequirements < BaseMutation
+      graphql_name 'ExportRequirements'
+
       include FindsProject
       include CommonRequirementArguments
-
-      graphql_name 'ExportRequirements'
 
       authorize :export_requirements
 

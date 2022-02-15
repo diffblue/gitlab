@@ -4,10 +4,10 @@ module Mutations
   module Boards
     module EpicBoards
       class Update < ::Mutations::BaseMutation
+        graphql_name 'EpicBoardUpdate'
+
         include Mutations::Boards::CommonMutationArguments
         prepend Mutations::Boards::ScopedBoardMutation
-
-        graphql_name 'EpicBoardUpdate'
 
         authorize :admin_epic_board
 

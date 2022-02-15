@@ -4,9 +4,9 @@ module Mutations
   module IncidentManagement
     module OncallRotation
       class Create < Base
-        include ResolvesProject
-
         graphql_name 'OncallRotationCreate'
+
+        include ResolvesProject
 
         argument :project_path, GraphQL::Types::ID,
                  required: true,

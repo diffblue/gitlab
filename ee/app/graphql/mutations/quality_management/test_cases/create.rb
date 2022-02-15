@@ -4,9 +4,9 @@ module Mutations
   module QualityManagement
     module TestCases
       class Create < BaseMutation
-        include FindsProject
-
         graphql_name 'CreateTestCase'
+
+        include FindsProject
 
         authorize :create_test_case
 

@@ -4,9 +4,9 @@ module Mutations
   module Dast
     module Profiles
       class Run < BaseMutation
-        include FindsProject
-
         graphql_name 'DastProfileRun'
+
+        include FindsProject
 
         ProfileID = ::Types::GlobalIDType[::Dast::Profile]
 

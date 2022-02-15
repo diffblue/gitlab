@@ -3,9 +3,9 @@
 module Mutations
   module Epics
     class AddIssue < Base
-      include Mutations::ResolvesIssuable
-
       graphql_name 'EpicAddIssue'
+
+      include Mutations::ResolvesIssuable
 
       authorize :admin_epic
 

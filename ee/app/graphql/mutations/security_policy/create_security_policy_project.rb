@@ -3,11 +3,10 @@
 module Mutations
   module SecurityPolicy
     class CreateSecurityPolicyProject < BaseMutation
-      include FindsProject
-
       graphql_name 'SecurityPolicyProjectCreate'
-
       description 'Creates and assigns a security policy project for the given project(`project_path`)'
+
+      include FindsProject
 
       authorize :update_security_orchestration_policy_project
 

@@ -2,10 +2,10 @@
 
 module Types
   class DastSiteProfileType < BaseObject
-    REDACTED_REQUEST_HEADERS = '[Redacted]'
-
     graphql_name 'DastSiteProfile'
     description 'Represents a DAST Site Profile'
+
+    REDACTED_REQUEST_HEADERS = '[Redacted]'
 
     present_using ::Dast::SiteProfilePresenter
 
