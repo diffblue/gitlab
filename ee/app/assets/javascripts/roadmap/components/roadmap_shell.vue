@@ -48,7 +48,7 @@ export default {
     milestonesToShow() {
       switch (this.milestonesType) {
         case MILESTONES_GROUP:
-          return this.milestones.filter((m) => m.groupMilestone && !m.subgroupMilestone);
+          return this.milestones.filter((m) => m.groupMilestone);
         case MILESTONES_SUBGROUP:
           return this.milestones.filter((m) => m.subgroupMilestone);
         case MILESTONES_PROJECT:

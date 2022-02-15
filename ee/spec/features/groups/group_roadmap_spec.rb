@@ -273,7 +273,7 @@ RSpec.describe 'group epic roadmap', :js do
         it 'renders milestones based on filter' do
           milestones_counts = {
             'Show all milestones' => 4,
-            'Show group milestones' => 1,
+            'Show group milestones' => 2, # group & subgroup
             'Show sub-group milestones' => 1,
             'Show project milestones' => 2
           }
