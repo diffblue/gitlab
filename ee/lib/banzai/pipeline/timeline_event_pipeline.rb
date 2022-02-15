@@ -12,7 +12,7 @@ module Banzai
           Filter::MarkdownFilter,
           Filter::EmojiFilter,
           Filter::ExternalLinkFilter,
-          Filter::ImageAttachmentLinkFilter,
+          Filter::ImageLinkFilter,
           Filter::SanitizationFilter,
           *reference_filters
         ]
@@ -36,7 +36,8 @@ module Banzai
         Filter::AssetProxyFilter.transform_context(context).merge(
           only_path: true,
           no_sourcepos: true,
-          allowlist: ALLOWLIST
+          allowlist: ALLOWLIST,
+          link_replaces_image: true
         )
       end
     end
