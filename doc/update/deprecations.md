@@ -851,6 +851,26 @@ To align with this change, API calls to list external status checks will also re
 
 **Planned removal milestone: 15.0 (2022-05-22)**
 
+### OAuth tokens without expiration
+
+WARNING:
+This feature will be changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+By default, all new applications expire access tokens after 2 hours. In GitLab 14.2 and earlier, OAuth access tokens
+had no expiration. In GitLab 15.0, an expiry will be automatically generated for any existing token that does not
+already have one.
+
+You should [opt in](https://docs.gitlab.com/ee/integration/oauth_provider.html#expiring-access-tokens) to expiring
+tokens before GitLab 15.0 is released:
+
+1. Edit the application.
+1. Select **Expire access tokens** to enable them. Tokens must be revoked or they don’t expire.
+
+**Planned removal milestone: 15.0 (2022-05-22)**
+
 ### Optional enforcement of PAT expiration
 
 WARNING:
