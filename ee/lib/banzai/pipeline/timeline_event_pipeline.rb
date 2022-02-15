@@ -2,34 +2,24 @@
 
 module Banzai
   module Pipeline
-    class TimelineEventPipeline < BasePipeline
+    class TimelineEventPipeline < PlainMarkdownPipeline
       ALLOWLIST = Banzai::Filter::SanitizationFilter::LIMITED.deep_dup.merge(
         elements: %w(p b i strong em pre code a img)
       )
 
       def self.filters
         @filters ||= FilterArray[
-          Filter::MarkdownFilter,
+          *super,
+          *reference_filters,
           Filter::EmojiFilter,
           Filter::ExternalLinkFilter,
           Filter::ImageLinkFilter,
-          Filter::SanitizationFilter,
-          *reference_filters
+          Filter::SanitizationFilter
         ]
       end
 
       def self.reference_filters
-        [
-          Filter::References::UserReferenceFilter,
-          Filter::References::IssueReferenceFilter,
-          Filter::References::ExternalIssueReferenceFilter,
-          Filter::References::MergeRequestReferenceFilter,
-          Filter::References::SnippetReferenceFilter,
-          Filter::References::CommitRangeReferenceFilter,
-          Filter::References::CommitReferenceFilter,
-          Filter::References::AlertReferenceFilter,
-          Filter::References::FeatureFlagReferenceFilter
-        ]
+        Banzai::Pipeline::GfmPipeline.reference_filters
       end
 
       def self.transform_context(context)

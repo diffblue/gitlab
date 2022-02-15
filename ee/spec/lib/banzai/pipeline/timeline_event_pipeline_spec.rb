@@ -8,15 +8,7 @@ RSpec.describe Banzai::Pipeline::TimelineEventPipeline do
   describe '.reference_filters' do
     it 'contains required reference filters' do
       expect(described_class.reference_filters).to contain_exactly(
-        Banzai::Filter::References::UserReferenceFilter,
-        Banzai::Filter::References::IssueReferenceFilter,
-        Banzai::Filter::References::ExternalIssueReferenceFilter,
-        Banzai::Filter::References::MergeRequestReferenceFilter,
-        Banzai::Filter::References::SnippetReferenceFilter,
-        Banzai::Filter::References::CommitRangeReferenceFilter,
-        Banzai::Filter::References::CommitReferenceFilter,
-        Banzai::Filter::References::AlertReferenceFilter,
-        Banzai::Filter::References::FeatureFlagReferenceFilter
+        *Banzai::Pipeline::GfmPipeline.reference_filters
       )
     end
   end
@@ -30,10 +22,10 @@ RSpec.describe Banzai::Pipeline::TimelineEventPipeline do
       it { is_expected.to eq('<p><strong>bold</strong> <em>italic</em> <code>code</code></p>') }
     end
 
-    context 'when markdown contains not allowed HTML tags' do
+    context 'when markdown contains banned HTML tags' do
       let(:markdown) { '<div>div</div><h1>h1</h1>'}
 
-      it 'filters out not allowed tags' do
+      it 'filters out banned tags' do
         is_expected.to eq(' div  h1 ')
       end
     end
