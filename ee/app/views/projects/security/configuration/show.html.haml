@@ -2,12 +2,6 @@
 - page_title _("Security Configuration")
 - @content_class = "limit-container-width" unless fluid_layout
 
-- if @configuration.nil?
-  = render_ce 'projects/security/configuration/show'
-- else
-  #js-security-configuration{ data: { **@configuration.to_html_data_attribute,
-    project_full_path: @project.full_path,
-    auto_fix_help_path: '/',
-    toggle_autofix_setting_endpoint: 'configuration/auto_fix',
-    container_scanning_help_path: help_page_path('user/application_security/container_scanning/index'),
-    dependency_scanning_help_path: help_page_path('user/application_security/dependency_scanning/index') } }
+#js-security-configuration{ data: { **@configuration.to_html_data_attribute,
+  upgrade_path: security_upgrade_path,
+  project_full_path: @project.full_path } }
