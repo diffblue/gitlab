@@ -83,8 +83,8 @@ describe('GroupActivity component', () => {
 
     it.each`
       index | value | title
-      ${0}  | ${10} | ${'Merge Requests opened'}
-      ${1}  | ${20} | ${'Issues opened'}
+      ${0}  | ${10} | ${'Merge Requests created'}
+      ${1}  | ${20} | ${'Issues created'}
       ${2}  | ${30} | ${'Members added'}
     `('renders a GlSingleStat for "$title"', async ({ index, value, title }) => {
       const singleStat = findAllSingleStats().at(index);

@@ -102,7 +102,7 @@ export default {
       return this.isShowingLabels && this.item.labels?.length > 0;
     },
     stateText() {
-      return this.isOpen ? __('Opened') : __('Closed');
+      return this.isOpen ? __('Created') : __('Closed');
     },
     stateIconName() {
       if (this.item.type === ChildType.Epic) {

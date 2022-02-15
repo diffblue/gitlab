@@ -117,13 +117,13 @@ export const DEVOPS_ADOPTION_TABLE_CONFIGURATION = [
       {
         key: 'issueOpened',
         label: s__('DevopsAdoption|Issues'),
-        tooltip: s__('DevopsAdoption|At least one issue opened'),
+        tooltip: s__('DevopsAdoption|At least one issue created'),
         testId: 'issuesCol',
       },
       {
         key: 'mergeRequestOpened',
         label: s__('DevopsAdoption|MRs'),
-        tooltip: s__('DevopsAdoption|At least one merge request opened'),
+        tooltip: s__('DevopsAdoption|At least one merge request created'),
         testId: 'mrsCol',
       },
     ],
