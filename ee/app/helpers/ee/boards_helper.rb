@@ -84,12 +84,5 @@ module EE
 
       super
     end
-
-    override :recent_boards_path
-    def recent_boards_path
-      return recent_group_boards_path(@group) if current_board_parent.is_a?(Group)
-
-      super
-    end
   end
 end
