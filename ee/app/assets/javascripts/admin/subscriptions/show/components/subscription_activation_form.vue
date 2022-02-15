@@ -19,7 +19,7 @@ import {
   SUBSCRIPTION_ACTIVATION_FINALIZED_EVENT,
   subscriptionActivationForm,
 } from '../constants';
-import { getErrorsAsData, getLicenseFromData, updateSubscriptionAppCache } from '../graphql/utils';
+import { getErrorsAsData, getLicenseFromData } from '../graphql/utils';
 import activateSubscriptionMutation from '../graphql/mutations/activate_subscription.mutation.graphql';
 
 const feedbackMap = {
@@ -124,7 +124,6 @@ export default {
             if (license) {
               this.$emit(SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT, license);
             }
-            this.updateSubscriptionAppCache(cache, res);
           },
         })
         .catch((error) => {
@@ -135,7 +134,6 @@ export default {
           this.isLoading = false;
         });
     },
-    updateSubscriptionAppCache,
   },
 };
 </script>

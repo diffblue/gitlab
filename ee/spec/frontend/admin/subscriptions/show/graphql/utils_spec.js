@@ -1,9 +1,4 @@
-import {
-  getErrorsAsData,
-  getLicenseFromData,
-  updateSubscriptionAppCache,
-} from 'ee/admin/subscriptions/show/graphql/utils';
-import { activateLicenseMutationResponse } from '../mock_data';
+import { getErrorsAsData, getLicenseFromData } from 'ee/admin/subscriptions/show/graphql/utils';
 
 describe('graphQl utils', () => {
   describe('getLicenseFromData', () => {
@@ -61,48 +56,6 @@ describe('graphQl utils', () => {
       const result = getErrorsAsData();
 
       expect(result).toEqual([]);
-    });
-  });
-
-  describe('updateSubscriptionAppCache', () => {
-    const cache = {
-      readQuery: jest.fn(() => ({ licenseHistoryEntries: { nodes: [] } })),
-      writeQuery: jest.fn(),
-    };
-
-    it('calls writeQuery the correct number of times', () => {
-      updateSubscriptionAppCache(cache, activateLicenseMutationResponse.SUCCESS);
-
-      expect(cache.writeQuery).toHaveBeenCalledTimes(2);
-    });
-
-    it('calls writeQuery the first time to update the current subscription', () => {
-      updateSubscriptionAppCache(cache, activateLicenseMutationResponse.SUCCESS);
-
-      expect(cache.writeQuery.mock.calls[0][0]).toEqual(
-        expect.objectContaining({
-          data: {
-            currentLicense:
-              activateLicenseMutationResponse.SUCCESS.data.gitlabSubscriptionActivate.license,
-          },
-        }),
-      );
-    });
-
-    it('calls writeQuery the second time to update the subscription history', () => {
-      updateSubscriptionAppCache(cache, activateLicenseMutationResponse.SUCCESS);
-
-      expect(cache.writeQuery.mock.calls[1][0]).toEqual(
-        expect.objectContaining({
-          data: {
-            licenseHistoryEntries: {
-              nodes: [
-                activateLicenseMutationResponse.SUCCESS.data.gitlabSubscriptionActivate.license,
-              ],
-            },
-          },
-        }),
-      );
     });
   });
 });
