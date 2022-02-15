@@ -16,6 +16,15 @@ export default {
       required: true,
     },
   },
+  additionalOptions: {
+    yAxis: [
+      {
+        axisLabel: {
+          formatter: (value) => value,
+        },
+      },
+    ],
+  },
 };
 </script>
 <template>
@@ -26,5 +35,6 @@ export default {
     y-axis-type="value"
     :x-axis-title="__('Date')"
     :y-axis-title="s__('CycleAnalytics|Number of tasks')"
+    :option="$options.additionalOptions"
   />
 </template>
