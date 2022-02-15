@@ -29,13 +29,13 @@ export default {
     summary() {
       const numberOfChanges = this.numberOfChanges();
       const changesSummary = sprintf(
-        s__('Reports|Metrics report scanning detected %{numberOfChanges} %{changes}'),
+        s__('Reports|Metrics reports: %{numberOfChanges} %{changes}'),
         {
           numberOfChanges,
           changes: n__('change', 'changes', numberOfChanges),
         },
       );
-      const noChangesSummary = s__('Reports|Metrics report scanning did not detect any changes');
+      const noChangesSummary = s__('Reports|Metrics report scanning detected no new changes');
       return numberOfChanges === 0 ? noChangesSummary : changesSummary;
     },
     fetchCollapsedData() {

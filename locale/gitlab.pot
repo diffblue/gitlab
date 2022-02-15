@@ -30856,10 +30856,7 @@ msgstr ""
 msgid "Reports|Identifier"
 msgstr ""
 
-msgid "Reports|Metrics report scanning detected %{numberOfChanges} %{changes}"
-msgstr ""
-
-msgid "Reports|Metrics report scanning did not detect any changes"
+msgid "Reports|Metrics report scanning detected no new changes"
 msgstr ""
 
 msgid "Reports|Metrics reports are loading"
@@ -30872,6 +30869,9 @@ msgid "Reports|Metrics reports did not change"
 msgstr ""
 
 msgid "Reports|Metrics reports failed loading results"
+msgstr ""
+
+msgid "Reports|Metrics reports: %{numberOfChanges} %{changes}"
 msgstr ""
 
 msgid "Reports|Scanner"

@@ -80,7 +80,7 @@ describe('Metrics extension', () => {
 
       await waitForPromises();
 
-      expect(wrapper.text()).toBe('Metrics report scanning detected 2 changes');
+      expect(wrapper.text()).toBe('Metrics reports: 2 changes');
     });
 
     it('displays no detected changes', async () => {
@@ -90,7 +90,7 @@ describe('Metrics extension', () => {
 
       await waitForPromises();
 
-      expect(wrapper.text()).toBe('Metrics report scanning did not detect any changes');
+      expect(wrapper.text()).toBe('Metrics report scanning detected no new changes');
     });
   });
 
