@@ -275,6 +275,12 @@ RSpec.describe 'Issue Sidebar' do
     end
   end
 
+  context 'escalation policy', :js do
+    it 'is not available for default issue type' do
+      expect(page).not_to have_selector('.block.escalation-policy')
+    end
+  end
+
   def find_and_click_edit_iteration
     page.find('[data-testid="iteration-edit"] [data-testid="edit-button"]').click
 

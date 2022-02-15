@@ -20,6 +20,9 @@ import projectIssueEpicQuery from './queries/project_issue_epic.query.graphql';
 import projectIssueIterationMutation from './queries/project_issue_iteration.mutation.graphql';
 import projectIssueIterationQuery from './queries/project_issue_iteration.query.graphql';
 import updateIssueWeightMutation from './queries/update_issue_weight.mutation.graphql';
+import issueEscalationPolicyQuery from './queries/issue_escalation_policy.query.graphql';
+import issueEscalationPolicyMutation from './queries/issue_escalation_policy.mutation.graphql';
+import projectEscalationPoliciesQuery from './queries/project_escalation_policies.query.graphql';
 
 export { Tracking, defaultEpicSort, epicIidPattern };
 
@@ -59,6 +62,8 @@ export const healthStatusForRestApi = {
   [healthStatus.NEEDS_ATTENTION]: 'needs_attention',
   [healthStatus.AT_RISK]: 'at_risk',
 };
+
+export const SIDEBAR_ESCALATION_POLICY_TITLE = __('Escalation policy');
 
 export const MAX_DISPLAY_WEIGHT = 99999;
 
@@ -109,10 +114,24 @@ const epicsQueries = {
   },
 };
 
+const issuableEscalationPolicyQueries = {
+  [IssuableType.Issue]: {
+    query: issueEscalationPolicyQuery,
+    mutation: issueEscalationPolicyMutation,
+  },
+};
+
+const escalationPoliciesQueries = {
+  [IssuableType.Issue]: {
+    query: projectEscalationPoliciesQuery,
+  },
+};
+
 export const IssuableAttributeType = {
   ...IssuableAttributeTypeFoss,
   Iteration: 'iteration',
   Epic: 'epic',
+  EscalationPolicy: 'escalation policy', // eslint-disable-line @gitlab/require-i18n-strings
 };
 
 export const IssuableAttributeState = {
@@ -130,6 +149,10 @@ export const issuableAttributesQueries = {
   [IssuableAttributeType.Epic]: {
     current: issuableEpicQueries,
     list: epicsQueries,
+  },
+  [IssuableAttributeType.EscalationPolicy]: {
+    current: issuableEscalationPolicyQueries,
+    list: escalationPoliciesQueries,
   },
 };
 

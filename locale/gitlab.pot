@@ -14377,6 +14377,9 @@ msgstr ""
 msgid "Escalation policies must have at least one rule"
 msgstr ""
 
+msgid "Escalation policy"
+msgstr ""
+
 msgid "Escalation policy:"
 msgstr ""
 
@@ -19112,6 +19115,12 @@ msgstr ""
 msgid "IncidentManagement|Open"
 msgstr ""
 
+msgid "IncidentManagement|Page your team with escalation policies"
+msgstr ""
+
+msgid "IncidentManagement|Paged"
+msgstr ""
+
 msgid "IncidentManagement|Published"
 msgstr ""
 
@@ -19137,6 +19146,9 @@ msgid "IncidentManagement|Unknown"
 msgstr ""
 
 msgid "IncidentManagement|Unpublished"
+msgstr ""
+
+msgid "IncidentManagement|Use escalation policies to automatically page your team when incidents are created."
 msgstr ""
 
 msgid "IncidentSettings|Activate \"time to SLA\" countdown timer"
