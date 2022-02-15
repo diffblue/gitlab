@@ -809,6 +809,22 @@ The following `geo:db:*` tasks will be replaced with their corresponding `db:*:g
 
 **Planned removal milestone: 15.0 (2022-05-22)**
 
+### Deprecate legacy Gitaly configuration methods
+
+WARNING:
+This feature will be changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+Using environment variables `GIT_CONFIG_SYSTEM` and `GIT_CONFIG_GLOBAL` to configure Gitaly is [deprecated](https://gitlab.com/gitlab-org/gitlab/-/issues/352609).
+These variables are being replaced with standard [`config.toml` Gitaly configuration](https://docs.gitlab.com/ee/administration/gitaly/reference.html).
+
+GitLab instances that use `GIT_CONFIG_SYSTEM` and `GIT_CONFIG_GLOBAL` to configure Gitaly should switch to configuring using
+`config.toml`.
+
+**Planned removal milestone: 15.0 (2022-05-22)**
+
 ### Elasticsearch 6.8
 
 WARNING:
