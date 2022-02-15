@@ -36,10 +36,12 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
 
     context 'every SUPPORTED_VERSION has a corresponding JSON file' do
       described_class::SUPPORTED_VERSIONS.each_key do |report_type|
-        let(:filename) { "#{report_type.to_s.tr("_", "-")}-report-format.json" }
+        # api_fuzzing is covered by DAST schema
+        next if report_type == :api_fuzzing
 
         described_class::SUPPORTED_VERSIONS[report_type].each do |version|
           it "#{report_type} #{version} schema file is present" do
+            filename = "#{report_type.to_s.tr("_", "-")}-report-format.json"
             full_path = SCHEMA_PATH.join(version, filename)
             expect(File.file?(full_path)).to be true
           end
