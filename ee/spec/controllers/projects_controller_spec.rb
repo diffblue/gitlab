@@ -689,7 +689,7 @@ RSpec.describe ProjectsController do
       it do
         delete :destroy, params: { namespace_id: project.namespace, id: project }
 
-        expect(project.reload.marked_for_deletion?).to be_falsey
+        expect(project.reload.marked_for_deletion?).to be_truthy
         expect(project.reload.marked_for_deletion_at).to be_truthy
         expect(project.reload.hidden?).to be_truthy
         expect(response).to have_gitlab_http_status(:found)
@@ -802,7 +802,6 @@ RSpec.describe ProjectsController do
     let(:project) { create(:project, namespace: user.namespace) }
 
     before do
-      controller.instance_variable_set(:@project, project)
       sign_in(user)
     end
 

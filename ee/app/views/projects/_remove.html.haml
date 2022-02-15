@@ -7,7 +7,7 @@
 - issues_count = Projects::AllIssuesCountService.new(project).count
 - forks_count = Projects::ForksCountService.new(project).count
 
-- unless project.marked_for_deletion_at?
+- unless project.marked_for_deletion?
   .sub-section
     %h4.danger-title= _('Delete this project')
     - if adjourned_deletion && can_delay_project_deletions

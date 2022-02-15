@@ -733,7 +733,7 @@ module EE
 
     def marked_for_deletion?
       marked_for_deletion_at.present? &&
-        feature_available?(:adjourned_deletion_for_projects_and_groups)
+        License.feature_available?(:adjourned_deletion_for_projects_and_groups)
     end
 
     def ancestor_marked_for_deletion

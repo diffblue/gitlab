@@ -14,8 +14,11 @@ module EE
       end
 
       condition(:adjourned_project_deletion_available) do
-        License.feature_available?(:adjourned_deletion_for_projects_and_groups) &&
-          (::Feature.enabled?(:project_owners_list_project_pending_deletion, default_enabled: :yaml) || can?(:admin_all_resources))
+        License.feature_available?(:adjourned_deletion_for_projects_and_groups)
+      end
+
+      condition(:project_owners_list_project_pending_deletion) do
+        (::Feature.enabled?(:project_owners_list_project_pending_deletion, default_enabled: :yaml) || can?(:admin_all_resources))
       end
 
       condition(:export_user_permissions_available) do
@@ -58,8 +61,11 @@ module EE
         prevent :create_group_with_default_branch_protection
       end
 
-      rule { adjourned_project_deletion_available }.policy do
+      rule { adjourned_project_deletion_available & project_owners_list_project_pending_deletion }.policy do
         enable :list_removable_projects
+      end
+
+      rule { adjourned_project_deletion_available }.policy do
         enable :delay_project_deletions
       end
 

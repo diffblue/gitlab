@@ -293,6 +293,24 @@ RSpec.describe GlobalPolicy do
     end
   end
 
+  describe 'delay_project_deletions' do
+    before do
+      stub_licensed_features(adjourned_deletion_for_projects_and_groups: licensed?)
+    end
+
+    context 'when licensed feature is enabled' do
+      let(:licensed?) { true }
+
+      it { is_expected.to be_allowed(:delay_project_deletions) }
+    end
+
+    context 'when licensed feature is not enabled' do
+      let(:licensed?) { false }
+
+      it { is_expected.to be_disallowed(:delay_project_deletions) }
+    end
+  end
+
   describe ':export_user_permissions', :enable_admin_mode do
     using RSpec::Parameterized::TableSyntax
 
