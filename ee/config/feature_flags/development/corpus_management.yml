@@ -1,8 +1,8 @@
 ---
 name: corpus_management
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/51589
-rollout_issue_url:
-milestone: '13.9'
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/328418
+milestone: '14.8'
 type: development
 group: group::fuzz testing
-default_enabled: false
+default_enabled: true
