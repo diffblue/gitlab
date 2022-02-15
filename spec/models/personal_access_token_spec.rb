@@ -37,7 +37,7 @@ RSpec.describe PersonalAccessToken do
       let_it_be(:project_member) { create(:project_member, user: user) }
       let_it_be(:project_access_token) { create(:personal_access_token, user: user) }
 
-      subject { described_class.not_project_access_token }
+      subject { described_class.owner_is_human }
 
       it { is_expected.not_to include(project_access_token) }
     end
