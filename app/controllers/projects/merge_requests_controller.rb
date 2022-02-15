@@ -42,7 +42,6 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
     push_frontend_feature_flag(:paginated_notes, @project, default_enabled: :yaml)
     push_frontend_feature_flag(:confidential_notes, @project, default_enabled: :yaml)
     push_frontend_feature_flag(:improved_emoji_picker, project, default_enabled: :yaml)
-    push_frontend_feature_flag(:diffs_virtual_scrolling, project, default_enabled: :yaml)
     push_frontend_feature_flag(:restructured_mr_widget, project, default_enabled: :yaml)
     push_frontend_feature_flag(:refactor_mr_widgets_extensions, @project, default_enabled: :yaml)
     push_frontend_feature_flag(:rebase_without_ci_ui, @project, default_enabled: :yaml)
