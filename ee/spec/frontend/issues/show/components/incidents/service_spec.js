@@ -1,10 +1,15 @@
 import Api from 'ee/api';
-import { getMetricImages, uploadMetricImage } from 'ee/issues/show/components/incidents/service';
+import {
+  getMetricImages,
+  uploadMetricImage,
+  updateMetricImage,
+} from 'ee/issues/show/components/incidents/service';
 import { fileList, fileListRaw } from './mock_data';
 
 jest.mock('ee/api', () => ({
   fetchIssueMetricImages: jest.fn(),
   uploadIssueMetricImage: jest.fn(),
+  updateIssueMetricImage: jest.fn(),
 }));
 
 describe('Incidents service', () => {
@@ -21,6 +26,14 @@ describe('Incidents service', () => {
     const result = await uploadMetricImage();
 
     expect(Api.uploadIssueMetricImage).toHaveBeenCalled();
+    expect(result).toEqual(fileList[0]);
+  });
+
+  it('updates a metric image', async () => {
+    Api.updateIssueMetricImage.mockResolvedValue({ data: fileListRaw[0] });
+    const result = await updateMetricImage();
+
+    expect(Api.updateIssueMetricImage).toHaveBeenCalled();
     expect(result).toEqual(fileList[0]);
   });
 });

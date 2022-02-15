@@ -1,6 +1,11 @@
 import createFlash from '~/flash';
 import { s__ } from '~/locale';
-import { deleteMetricImage, getMetricImages, uploadMetricImage } from '../service';
+import {
+  deleteMetricImage,
+  getMetricImages,
+  uploadMetricImage,
+  updateMetricImage,
+} from '../service';
 import * as types from './mutation_types';
 
 export const fetchMetricImages = async ({ state, commit }) => {
@@ -17,17 +22,43 @@ export const fetchMetricImages = async ({ state, commit }) => {
   }
 };
 
-export const uploadImage = async ({ state, commit }, { files, url }) => {
+export const uploadImage = async ({ state, commit }, { files, url, urlText }) => {
   commit(types.REQUEST_METRIC_UPLOAD);
 
   const { issueIid, projectId } = state;
 
   try {
-    const response = await uploadMetricImage({ file: files.item(0), id: projectId, issueIid, url });
+    const response = await uploadMetricImage({
+      file: files.item(0),
+      id: projectId,
+      issueIid,
+      url,
+      urlText,
+    });
     commit(types.RECEIVE_METRIC_UPLOAD_SUCCESS, response);
   } catch (error) {
     commit(types.RECEIVE_METRIC_UPLOAD_ERROR);
     createFlash({ message: s__('Incidents|There was an issue uploading your image.') });
+  }
+};
+
+export const updateImage = async ({ state, commit }, { imageId, url, urlText }) => {
+  commit(types.REQUEST_METRIC_UPLOAD);
+
+  const { issueIid, projectId } = state;
+
+  try {
+    const response = await updateMetricImage({
+      issueIid,
+      id: projectId,
+      imageId,
+      url,
+      urlText,
+    });
+    commit(types.RECEIVE_METRIC_UPDATE_SUCCESS, response);
+  } catch (error) {
+    commit(types.RECEIVE_METRIC_UPLOAD_ERROR);
+    createFlash({ message: s__('Incidents|There was an issue updating your image.') });
   }
 };
 

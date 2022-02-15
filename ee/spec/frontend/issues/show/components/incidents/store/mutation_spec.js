@@ -101,6 +101,25 @@ describe('Metric images mutations', () => {
     });
   });
 
+  describe('RECEIVE_METRIC_UPDATE_SUCCESS', () => {
+    const initialImage = testImages[0];
+    const newImage = testImages[0];
+    newImage.url = 'https://www.gitlab.com';
+
+    beforeEach(() => {
+      createState({ metricImages: [initialImage] });
+      mutations[types.RECEIVE_METRIC_UPDATE_SUCCESS](state, newImage);
+    });
+
+    it('should unset the loading state', () => {
+      expect(state.isUploadingImage).toBe(false);
+    });
+
+    it('should replace the existing image with the new one', () => {
+      expect(state.metricImages).toMatchObject([newImage]);
+    });
+  });
+
   describe('RECEIVE_METRIC_DELETE_SUCCESS', () => {
     const deletedImageId = testImages[1].id;
     const expectedResult = [testImages[0], testImages[2]];

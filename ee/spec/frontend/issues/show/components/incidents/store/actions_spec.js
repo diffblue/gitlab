@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 import {
   getMetricImages,
   uploadMetricImage,
+  updateMetricImage,
   deleteMetricImage,
 } from 'ee/issues/show/components/incidents/service';
 import createStore from 'ee/issues/show/components/incidents/store';
@@ -17,6 +18,7 @@ jest.mock('~/flash');
 jest.mock('ee/issues/show/components/incidents/service', () => ({
   getMetricImages: jest.fn(),
   uploadMetricImage: jest.fn(),
+  updateMetricImage: jest.fn(),
   deleteMetricImage: jest.fn(),
 }));
 
@@ -95,6 +97,37 @@ describe('Metrics tab store actions', () => {
 
       await testAction(
         actions.uploadImage,
+        payload,
+        state,
+        [{ type: types.REQUEST_METRIC_UPLOAD }, { type: types.RECEIVE_METRIC_UPLOAD_ERROR }],
+        [],
+      );
+      expect(createFlash).toHaveBeenCalled();
+    });
+  });
+
+  describe('updating metric images', () => {
+    const payload = {
+      url: 'test_url',
+      urlText: 'url text',
+    };
+
+    it('should call success action when updating an image', () => {
+      updateMetricImage.mockImplementation(() => Promise.resolve());
+
+      testAction(actions.updateImage, payload, state, [
+        { type: types.REQUEST_METRIC_UPLOAD },
+        {
+          type: types.RECEIVE_METRIC_UPDATE_SUCCESS,
+        },
+      ]);
+    });
+
+    it('should call error action when failing to update an image', async () => {
+      updateMetricImage.mockImplementation(() => Promise.reject());
+
+      await testAction(
+        actions.updateImage,
         payload,
         state,
         [{ type: types.REQUEST_METRIC_UPLOAD }, { type: types.RECEIVE_METRIC_UPLOAD_ERROR }],
