@@ -42,4 +42,45 @@ RSpec.describe 'User sees new onboarding flow', :js do
     expect(page).to have_content('Learn GitLab')
     expect(page).to have_content('GitLab is better with colleagues!')
   end
+
+  context 'with confetti_post_signup experiment candidate experience', :experiment do
+    before do
+      stub_experiments(combined_registration: :control,
+                       confetti_post_signup: :candidate)
+    end
+
+    it 'shows continuous onboarding flow pages with celebration invite modal' do
+      sign_in(create(:user))
+      visit users_sign_up_welcome_path
+
+      expect(page).to have_content('Welcome to GitLab')
+
+      choose 'Just me'
+      click_on 'Continue'
+
+      expect(page).to have_content('Create your group')
+
+      fill_in 'group_name', with: 'test'
+
+      expect(page).to have_field('group_path', with: 'test')
+
+      click_on 'Create group'
+
+      expect(page).to have_content('Create/import your first project')
+
+      fill_in 'project_name', with: 'test'
+
+      expect(page).to have_field('project_path', with: 'test')
+
+      click_on 'Create project'
+
+      expect(page).to have_content('Get started with GitLab')
+
+      Sidekiq::Worker.drain_all
+      click_on "Ok, let's go"
+
+      expect(page).to have_content('Learn GitLab')
+      expect(page).to have_content('GitLab is better with colleagues!')
+    end
+  end
 end
