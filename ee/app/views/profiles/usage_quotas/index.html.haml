@@ -6,6 +6,7 @@
 - page_title s_("UsageQuota|Usage")
 - @content_class = "limit-container-width" unless fluid_layout
 - url_to_purchase_storage = purchase_storage_url if purchase_storage_link_enabled?(@namespace)
+- buy_addon_target_attr = buy_addon_target_attr(@namespace) if purchase_storage_link_enabled?(@namespace)
 
 %h3.page-title
   = s_('UsageQuota|Usage Quotas')
@@ -27,4 +28,4 @@
     = render "namespaces/pipelines_quota/list",
       locals: { namespace: @namespace, projects: @projects }
   .tab-pane#storage-quota-tab
-    #js-storage-counter-app{ data: { namespace_path: @namespace.full_path, purchase_storage_url: url_to_purchase_storage, is_temporary_storage_increase_visible: temporary_storage_increase_visible?(@namespace).to_s } }
+    #js-storage-counter-app{ data: { namespace_path: @namespace.full_path, purchase_storage_url: url_to_purchase_storage, buy_addon_target_attr: buy_addon_target_attr, is_temporary_storage_increase_visible: temporary_storage_increase_visible?(@namespace).to_s } }

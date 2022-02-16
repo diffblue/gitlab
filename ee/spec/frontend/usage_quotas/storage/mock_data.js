@@ -156,6 +156,7 @@ export const defaultProjectProvideValues = {
 export const defaultNamespaceProvideValues = {
   namespacePath: 'h5bp',
   purchaseStorageUrl: '',
+  buyAddonTargetAttr: '_blank',
   isTemporaryStorageIncreaseVisible: false,
   helpLinks: projectHelpLinks,
 };

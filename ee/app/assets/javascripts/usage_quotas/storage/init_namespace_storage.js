@@ -8,7 +8,12 @@ Vue.use(VueApollo);
 
 export default () => {
   const el = document.getElementById('js-storage-counter-app');
-  const { namespacePath, purchaseStorageUrl, isTemporaryStorageIncreaseVisible } = el.dataset;
+  const {
+    namespacePath,
+    purchaseStorageUrl,
+    buyAddonTargetAttr,
+    isTemporaryStorageIncreaseVisible,
+  } = el.dataset;
 
   const apolloProvider = new VueApollo({
     defaultClient: createDefaultClient(),
@@ -20,6 +25,7 @@ export default () => {
     provide: {
       namespacePath,
       purchaseStorageUrl,
+      buyAddonTargetAttr,
       isTemporaryStorageIncreaseVisible,
       helpLinks,
     },

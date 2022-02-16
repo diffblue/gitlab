@@ -146,7 +146,6 @@ RSpec.describe SubscriptionsController do
     context 'with authenticated user' do
       before do
         group.add_owner(user)
-        stub_feature_flags(new_route_storage_purchase: group)
         sign_in(user)
       end
 
@@ -194,14 +193,6 @@ RSpec.describe SubscriptionsController do
 
           expect(assigns(:group)).to eq group
           expect(assigns(:account_id)).to eq nil
-        end
-
-        context 'with :new_route_storage_purchase disabled' do
-          before do
-            stub_feature_flags(new_route_storage_purchase: false)
-          end
-
-          it { is_expected.to have_gitlab_http_status(:not_found) }
         end
       end
     end

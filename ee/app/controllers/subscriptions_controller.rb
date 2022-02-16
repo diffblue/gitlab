@@ -55,7 +55,7 @@ class SubscriptionsController < ApplicationController
     @account_id = result[:account_id]
     @active_subscription = result[:active_subscription]
 
-    return render_404 if @group.nil?
+    render_404 if @group.nil?
   end
 
   def buy_storage
@@ -69,9 +69,7 @@ class SubscriptionsController < ApplicationController
     @account_id = result[:account_id]
     @active_subscription = result[:active_subscription]
 
-    return render_404 if @group.nil?
-
-    render_404 unless Feature.enabled?(:new_route_storage_purchase, @group, default_enabled: :yaml)
+    render_404 if @group.nil?
   end
 
   def payment_form
