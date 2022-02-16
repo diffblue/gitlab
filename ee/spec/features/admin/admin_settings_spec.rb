@@ -400,7 +400,7 @@ RSpec.describe 'Admin updates EE-only settings' do
           case button_effect
           when :shows_confirmation_modal
             expect(page).to have_selector('.modal')
-            expect(page).to have_css('.modal .modal-body', text: 'By making this change, you will automatically approve 1 user with the pending approval status.')
+            expect(page).to have_css('.modal .modal-body', text: 'By making this change, you will automatically approve 1 user who is pending approval.')
           when :submits_form
             expect(page).to have_content 'Application settings saved successfully'
           end

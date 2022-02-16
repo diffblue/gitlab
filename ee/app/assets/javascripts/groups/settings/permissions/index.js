@@ -18,7 +18,7 @@ const showConfirmModal = () => {
             modalId: 'confirm-general-permissions-changes',
             title: s__('ApplicationSettings|Approve users in the pending approval status?'),
             text: s__(
-              'ApplicationSettings|By making this change, you will automatically approve all users in pending approval status.',
+              'ApplicationSettings|By making this change, you will automatically approve all users who are pending approval.',
             ),
             actionPrimary: {
               text: s__('ApplicationSettings|Approve users'),

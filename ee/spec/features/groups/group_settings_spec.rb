@@ -508,7 +508,7 @@ RSpec.describe 'Edit group settings' do
           fill_in_new_user_signups_cap(new_user_signups_cap_value)
 
           expect(page).to have_selector('#confirm-general-permissions-changes')
-          expect(page).to have_css('#confirm-general-permissions-changes .modal-body', text: 'By making this change, you will automatically approve all users in pending approval status.')
+          expect(page).to have_css('#confirm-general-permissions-changes .modal-body', text: 'By making this change, you will automatically approve all users who are pending approval.')
         end
       end
 
