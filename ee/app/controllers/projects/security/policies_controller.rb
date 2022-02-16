@@ -92,7 +92,7 @@ module Projects
       end
 
       def approvers
-        return unless Feature.enabled?(:scan_result_policy, project) && @policy_type == :scan_result_policy
+        return unless Feature.enabled?(:scan_result_policy, project, default_enabled: :yaml) && @policy_type == :scan_result_policy
 
         result = ::Security::SecurityOrchestrationPolicies::FetchPolicyApproversService.new(
           policy: @policy,

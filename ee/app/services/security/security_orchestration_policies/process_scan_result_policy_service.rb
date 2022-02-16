@@ -14,7 +14,7 @@ module Security
       end
 
       def execute
-        return if ::Feature.disabled?(:scan_result_policy, project)
+        return if ::Feature.disabled?(:scan_result_policy, project, default_enabled: :yaml)
 
         create_new_approval_rules
       end
