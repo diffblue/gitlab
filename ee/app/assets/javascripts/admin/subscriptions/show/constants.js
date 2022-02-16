@@ -52,6 +52,7 @@ export const detailsLabels = {
 
 export const removeLicense = __('Remove license');
 export const removeLicenseConfirm = __('Are you sure you want to remove the license?');
+export const removeLicenseButtonLabel = __('Remove license');
 export const uploadLicense = __('Upload license');
 export const uploadLicenseFile = s__('SuperSonics|Upload a license file');
 export const billableUsersTitle = s__('SuperSonics|Billable users');
