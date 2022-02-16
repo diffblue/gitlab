@@ -11,6 +11,7 @@ RSpec.describe Geo::FileDownloadService do
 
   before do
     stub_current_geo_node(secondary)
+    stub_feature_flags(geo_job_artifact_replication: false)
   end
 
   describe '#downloader' do
@@ -28,7 +29,7 @@ RSpec.describe Geo::FileDownloadService do
 
     context 'with job_artifacts' do
       let!(:geo_job_artifact_registry) do
-        create(:geo_job_artifact_registry, success: false, retry_count: 31, artifact_id: file.id)
+        create(:geo_job_artifact_registry_legacy, success: false, retry_count: 31, artifact_id: file.id)
       end
 
       let(:file) { create(:ci_job_artifact) }
@@ -181,7 +182,7 @@ RSpec.describe Geo::FileDownloadService do
 
       context 'for a registered file that failed to sync' do
         let!(:geo_job_artifact_registry) do
-          create(:geo_job_artifact_registry, success: false, artifact_id: file.id, retry_count: 3, retry_at: 1.hour.ago)
+          create(:geo_job_artifact_registry_legacy, success: false, artifact_id: file.id, retry_count: 3, retry_at: 1.hour.ago)
         end
 
         context 'when the file is successfully downloaded' do

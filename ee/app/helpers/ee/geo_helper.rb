@@ -200,14 +200,6 @@ module EE
         {
           data_type: 'blob',
           data_type_title: _('File'),
-          title: _('Job artifact'),
-          title_plural: _('Job artifacts'),
-          name: 'job_artifact',
-          name_plural: 'job_artifacts'
-        },
-        {
-          data_type: 'blob',
-          data_type_title: _('File'),
           title: _('Container repository'),
           title_plural: _('Container repositories'),
           name: 'container_repository',
@@ -223,6 +215,17 @@ module EE
           secondary_view: true
         }
       ]
+
+      if ::Geo::JobArtifactReplicator.disabled?
+        replicable_types.insert(2, {
+          data_type: 'blob',
+          data_type_title: _('File'),
+          title: _('Job artifact'),
+          title_plural: _('Job artifacts'),
+          name: 'job_artifact',
+          name_plural: 'job_artifacts'
+        })
+      end
 
       # Adds all the SSF Data Types automatically
       enabled_replicator_classes.each do |replicator_class|

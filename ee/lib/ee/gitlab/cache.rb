@@ -17,7 +17,7 @@ module EE
         end
 
         def delete_on_geo_secondaries(key)
-          Geo::CacheInvalidationEventStore.new(key).create!
+          ::Geo::CacheInvalidationEventStore.new(key).create!
         end
       end
     end

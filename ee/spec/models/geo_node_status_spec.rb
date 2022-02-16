@@ -164,9 +164,9 @@ RSpec.describe GeoNodeStatus, :geo do
     it 'counts synced job artifacts' do
       # These should be ignored
       create(:geo_upload_registry)
-      create(:geo_job_artifact_registry, :with_artifact, success: false)
+      create(:geo_job_artifact_registry_legacy, :with_artifact, success: false)
 
-      create(:geo_job_artifact_registry, :with_artifact, success: true)
+      create(:geo_job_artifact_registry_legacy, :with_artifact, success: true)
 
       expect(subject.job_artifacts_synced_count).to eq(1)
     end
@@ -174,11 +174,13 @@ RSpec.describe GeoNodeStatus, :geo do
 
   describe '#job_artifacts_synced_missing_on_primary_count' do
     it 'counts job artifacts marked as synced due to file missing on the primary' do
+      stub_feature_flags(geo_job_artifact_replication: false)
+
       # These should be ignored
       create(:geo_upload_registry, missing_on_primary: true)
-      create(:geo_job_artifact_registry, :with_artifact, success: true)
+      create(:geo_job_artifact_registry_legacy, :with_artifact, success: true)
 
-      create(:geo_job_artifact_registry, :with_artifact, success: true, missing_on_primary: true)
+      create(:geo_job_artifact_registry_legacy, :with_artifact, success: true, missing_on_primary: true)
 
       expect(subject.job_artifacts_synced_missing_on_primary_count).to eq(1)
     end
@@ -186,10 +188,12 @@ RSpec.describe GeoNodeStatus, :geo do
 
   describe '#job_artifacts_failed_count' do
     it 'counts failed job artifacts' do
+      stub_feature_flags(geo_job_artifact_replication: false)
+
       # These should be ignored
       create(:geo_upload_registry, :failed)
-      create(:geo_job_artifact_registry, :with_artifact, success: true)
-      create(:geo_job_artifact_registry, :with_artifact, :failed)
+      create(:geo_job_artifact_registry_legacy, :with_artifact, success: true)
+      create(:geo_job_artifact_registry_legacy, :with_artifact, :failed)
 
       expect(subject.job_artifacts_failed_count).to eq(1)
     end
@@ -202,7 +206,7 @@ RSpec.describe GeoNodeStatus, :geo do
           build = create(:ci_build, project: project)
           job_artifact = create(:ci_job_artifact, job: build)
 
-          create(:geo_job_artifact_registry, success: index.even?, artifact_id: job_artifact.id)
+          create(:geo_job_artifact_registry_legacy, success: index.even?, artifact_id: job_artifact.id)
         end
       end
 
@@ -1080,6 +1084,7 @@ RSpec.describe GeoNodeStatus, :geo do
       Geo::GroupWikiRepositoryReplicator   | :group_wiki_repository       | :geo_group_wiki_repository_registry
       Geo::PagesDeploymentReplicator       | :pages_deployment            | :geo_pages_deployment_registry
       Geo::UploadReplicator                | :upload                      | :geo_upload_registry
+      Geo::JobArtifactReplicator           | :ci_job_artifact             | :geo_job_artifact_registry
     end
 
     with_them do

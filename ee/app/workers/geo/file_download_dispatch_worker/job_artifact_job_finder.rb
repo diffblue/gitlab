@@ -8,7 +8,7 @@ module Geo
       FILE_SERVICE_OBJECT_TYPE = :job_artifact
 
       def registry_finder
-        @registry_finder ||= Geo::JobArtifactRegistryFinder.new
+        @registry_finder ||= Geo::JobArtifactLegacyRegistryFinder.new
       end
     end
   end

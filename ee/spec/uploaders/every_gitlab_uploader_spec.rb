@@ -30,6 +30,8 @@ RSpec.describe 'Every GitLab uploader' do
       # When this test starts failing means that we have migrated Geo's handling of uploads to the
       # SSF, and we can remove the tests for the file retriever and downloader classes.
       it 'has some uploads to be migrated' do
+        stub_feature_flags(geo_job_artifact_replication: false)
+
         expect(object_types - replicable_names).not_to be_empty
       end
     end
@@ -84,8 +86,10 @@ RSpec.describe 'Every GitLab uploader' do
     end
 
     def handled_by_ssf?(uploader)
+      return true if uploads?(uploader)
+
       replicable_name = replicable_name_for(uploader)
-      replicable_names.include?(replicable_name) || uploads?(uploader)
+      replicable_names.include?(replicable_name) && ::Gitlab::Geo::Replicator.for_replicable_name(replicable_name).enabled?
     end
 
     def uploads?(uploader)
@@ -108,7 +112,11 @@ RSpec.describe 'Every GitLab uploader' do
     end
 
     def replicable_names
-      @replicable_names ||= replicators.map(&:replicable_name)
+      @replicable_names ||= begin
+        replicators
+          .map(&:replicable_name)
+          .select {|replicable_name| ::Gitlab::Geo::Replicator.for_replicable_name(replicable_name).enabled? }
+      end
     end
 
     def replicable_name_for(uploader)

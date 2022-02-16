@@ -40,8 +40,8 @@ class GeoNodeStatus < ApplicationRecord
       "#{replicable_class.replicable_name_plural}_checksummed_count".to_sym => "Number of #{replicable_class.replicable_title_plural} checksummed on the primary",
       "#{replicable_class.replicable_name_plural}_checksum_failed_count".to_sym => "Number of #{replicable_class.replicable_title_plural} failed to checksum on primary",
       "#{replicable_class.replicable_name_plural}_synced_count".to_sym => "Number of #{replicable_class.replicable_title_plural} in the registry",
-      "#{replicable_class.replicable_name_plural}_failed_count".to_sym => "Number of #{replicable_class.replicable_title_plural} synced on secondary",
-      "#{replicable_class.replicable_name_plural}_registry_count".to_sym => "Number of #{replicable_class.replicable_title_plural} failed to sync on secondary",
+      "#{replicable_class.replicable_name_plural}_failed_count".to_sym => "Number of #{replicable_class.replicable_title_plural} failed on secondary",
+      "#{replicable_class.replicable_name_plural}_registry_count".to_sym => "Number of #{replicable_class.replicable_title_plural} synced to sync on secondary",
       "#{replicable_class.replicable_name_plural}_verification_total_count".to_sym => "Number of #{replicable_class.replicable_title_plural} available to verify on secondary",
       "#{replicable_class.replicable_name_plural}_verified_count".to_sym => "Number of #{replicable_class.replicable_title_plural} verified on the secondary",
       "#{replicable_class.replicable_name_plural}_verification_failed_count".to_sym => "Number of #{replicable_class.replicable_title_plural} failed to verify on secondary"
@@ -67,9 +67,6 @@ class GeoNodeStatus < ApplicationRecord
     wikis_synced_count
     wikis_failed_count
     job_artifacts_replication_enabled
-    job_artifacts_count
-    job_artifacts_synced_count
-    job_artifacts_failed_count
     repositories_verified_count
     repositories_verification_failed_count
     repositories_verification_total_count
@@ -127,10 +124,6 @@ class GeoNodeStatus < ApplicationRecord
     wikis_verification_failed_count: 'Number of wikis failed to verify on secondary',
     wikis_checksum_mismatch_count: 'Number of wikis that checksum mismatch on secondary',
     job_artifacts_replication_enabled: 'Boolean denoting if replication is enabled for Job Artifacts',
-    job_artifacts_count: 'Total number of syncable job artifacts available on primary',
-    job_artifacts_synced_count: 'Number of syncable job artifacts synced on secondary',
-    job_artifacts_failed_count: 'Number of syncable job artifacts failed to sync on secondary',
-    job_artifacts_registry_count: 'Number of job artifacts in the registry',
     job_artifacts_synced_missing_on_primary_count: 'Number of job artifacts marked as synced due to the file missing on the primary',
     replication_slots_count: 'Total number of replication slots on the primary',
     replication_slots_used_count: 'Number of replication slots in use on the primary',
@@ -377,7 +370,6 @@ class GeoNodeStatus < ApplicationRecord
   attr_in_percentage :wikis_synced,                  :wikis_synced_count,                  :wikis_count
   attr_in_percentage :wikis_checksummed,             :wikis_checksummed_count,             :wikis_count
   attr_in_percentage :wikis_verified,                :wikis_verified_count,                :wikis_count
-  attr_in_percentage :job_artifacts_synced,          :job_artifacts_synced_count,          :job_artifacts_count
   attr_in_percentage :replication_slots_used,        :replication_slots_used_count,        :replication_slots_count
   attr_in_percentage :container_repositories_synced, :container_repositories_synced_count, :container_repositories_count
   attr_in_percentage :design_repositories_synced,    :design_repositories_synced_count,    :design_repositories_count
@@ -468,6 +460,7 @@ class GeoNodeStatus < ApplicationRecord
 
   def load_job_artifacts_data
     return unless job_artifacts_replication_enabled
+    return if ::Geo::JobArtifactReplicator.enabled?
 
     self.job_artifacts_count = job_artifacts_finder.registry_count
     self.job_artifacts_synced_count = job_artifacts_finder.synced_count
@@ -576,7 +569,7 @@ class GeoNodeStatus < ApplicationRecord
   end
 
   def job_artifacts_finder
-    @job_artifacts_finder ||= Geo::JobArtifactRegistryFinder.new
+    @job_artifacts_finder ||= Geo::JobArtifactLegacyRegistryFinder.new
   end
 
   def container_registry_finder

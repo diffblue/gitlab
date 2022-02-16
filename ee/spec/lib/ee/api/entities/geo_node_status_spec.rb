@@ -57,7 +57,7 @@ RSpec.describe EE::API::Entities::GeoNodeStatus do
 
   describe '#job_artifacts_synced_in_percentage' do
     it 'formats as percentage' do
-      geo_node_status.assign_attributes(job_artifacts_count: 256,
+      geo_node_status.assign_attributes(job_artifacts_registry_count: 256,
                                         job_artifacts_failed_count: 12,
                                         job_artifacts_synced_count: 123)
 

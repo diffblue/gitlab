@@ -34,7 +34,7 @@ RSpec.describe Gitlab::Cleanup::OrphanJobArtifactFiles do
 
     it 'accumulates the number of cleaned Geo registries' do
       stub_const("#{described_class.name}::BATCH_SIZE", 2)
-      create_list(:geo_job_artifact_registry, 3, :orphan, artifact_type: :archive)
+      create_list(:geo_job_artifact_registry, 3, :orphan)
       create(:ci_job_artifact, :archive).delete
 
       cleanup.run!

@@ -250,6 +250,8 @@ module Gitlab
       end
 
       def print_ci_job_artifacts_status
+        return if ::Geo::JobArtifactReplicator.enabled?
+
         print 'CI job artifacts: '.rjust(GEO_STATUS_COLUMN_WIDTH)
         show_failed_value(current_node_status.job_artifacts_failed_count)
         print "#{current_node_status.job_artifacts_synced_count}/#{current_node_status.job_artifacts_count} "

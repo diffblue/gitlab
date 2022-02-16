@@ -14,8 +14,8 @@ RSpec.describe Gitlab::Cleanup::OrphanJobArtifactFilesBatch do
     let(:max_artifact_id) { Ci::JobArtifact.maximum(:id).to_i }
     let(:orphan_id_1) { max_artifact_id + 1 }
     let(:orphan_id_2) { max_artifact_id + 2 }
-    let!(:orphan_registry_1) { create(:geo_job_artifact_registry, artifact_id: orphan_id_1) }
-    let!(:orphan_registry_2) { create(:geo_job_artifact_registry, artifact_id: orphan_id_2) }
+    let!(:orphan_registry_1) { create(:geo_job_artifact_registry_legacy, artifact_id: orphan_id_1) }
+    let!(:orphan_registry_2) { create(:geo_job_artifact_registry_legacy, artifact_id: orphan_id_2) }
 
     before do
       stub_secondary_node
@@ -35,8 +35,8 @@ RSpec.describe Gitlab::Cleanup::OrphanJobArtifactFilesBatch do
 
     context 'with dry run' do
       it 'does not remove registries' do
-        create(:geo_job_artifact_registry, :with_artifact, artifact_type: :archive)
-        create(:geo_job_artifact_registry, :orphan, artifact_type: :archive)
+        create(:geo_job_artifact_registry_legacy, :with_artifact, artifact_type: :archive)
+        create(:geo_job_artifact_registry_legacy, :orphan, artifact_type: :archive)
 
         expect { batch.clean! }.not_to change { Geo::JobArtifactRegistry.count }
         expect(batch.geo_registries_count).to eq(2)

@@ -12,6 +12,18 @@ FactoryBot.define do
       end
     end
 
+    trait :verification_succeeded do
+      common_security_report # with file
+      verification_checksum { 'abc' }
+      verification_state { Ci::JobArtifact.verification_state_value(:verification_succeeded) }
+    end
+
+    trait :verification_failed do
+      common_security_report # with file
+      verification_failure { 'Could not calculate the checksum' }
+      verification_state { Ci::JobArtifact.verification_state_value(:verification_failed) }
+    end
+
     trait :sast_with_vulnerability_flags do
       file_type { :sast }
       file_format { :raw }

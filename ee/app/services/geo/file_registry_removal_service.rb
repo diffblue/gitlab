@@ -51,7 +51,7 @@ module Geo
     # rubocop: disable CodeReuse/ActiveRecord
     def file_registry
       strong_memoize(:file_registry) do
-        if job_artifact?
+        if job_artifact? && ::Geo::JobArtifactReplicator.disabled?
           ::Geo::JobArtifactRegistry.find_by(artifact_id: object_db_id)
         elsif replicator
           replicator.registry
