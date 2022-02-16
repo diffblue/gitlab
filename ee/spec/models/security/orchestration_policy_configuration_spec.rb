@@ -178,6 +178,35 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
         end
       end
     end
+
+    context 'with scan result policies' do
+      let(:scan_result_policy) { build(:scan_result_policy, name: 'Containe security critical severities') }
+      let(:policy_yaml) { build(:orchestration_policy_yaml, scan_result_policy: [scan_result_policy]) }
+
+      it { is_expected.to eq(true) }
+
+      context 'with various approvers' do
+        using RSpec::Parameterized::TableSyntax
+
+        where(:user_approvers, :user_approvers_ids, :group_approvers, :group_approvers_ids, :is_valid) do
+          []           | nil  | nil            | nil | false
+          ['username'] | nil  | nil            | nil | true
+          nil          | []   | nil            | nil | false
+          nil          | [1]  | nil            | nil | true
+          nil          | nil  | []             | nil | false
+          nil          | nil  | ['group_path'] | nil | true
+          nil          | nil  | nil            | []  | false
+          nil          | nil  | nil            | [2] | true
+        end
+
+        with_them do
+          let(:action) { { type: 'require_approval', approvals_required: 1, user_approvers: user_approvers, user_approvers_ids: user_approvers_ids, group_approvers: group_approvers, group_approvers_ids: group_approvers_ids }.compact }
+          let(:scan_result_policy) { build(:scan_result_policy, name: 'Containe security critical severities', actions: [action]) }
+
+          it { is_expected.to eq(is_valid) }
+        end
+      end
+    end
   end
 
   describe '#policy_configuration_validation_errors' do
@@ -389,7 +418,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     end
   end
 
-  describe '#active_result_execution_policies' do
+  describe '#active_scan_result_policies' do
     let(:scan_result_yaml) { build(:orchestration_policy_yaml, scan_result_policy: [build(:scan_result_policy)]) }
     let(:policy_yaml) { fixture_file('security_orchestration.yml', dir: 'ee') }
 
