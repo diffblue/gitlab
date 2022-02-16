@@ -8,6 +8,7 @@ import {
   manageSubscriptionButtonText,
   subscriptionSyncStatus,
   removeLicense,
+  removeLicenseButtonLabel,
   removeLicenseConfirm,
   subscriptionDetailsHeaderText,
   subscriptionTypes,
@@ -30,6 +31,7 @@ export default {
     manageSubscriptionButtonText,
     removeLicense,
     removeLicenseConfirm,
+    removeLicenseButtonLabel,
     subscriptionDetailsHeaderText,
     syncSubscriptionButtonText,
   },
@@ -218,10 +220,13 @@ export default {
               <gl-button
                 v-if="canRemoveLicense"
                 category="secondary"
+                :title="$options.i18n.removeLicenseButtonLabel"
+                :aria-label="$options.i18n.removeLicenseButtonLabel"
                 variant="danger"
                 class="gl-mr-3"
                 :href="licenseRemovePath"
                 :data-confirm="$options.i18n.removeLicenseConfirm"
+                data-confirm-btn-variant="danger"
                 data-method="delete"
                 data-testid="license-remove-action"
                 data-qa-selector="remove_license_link"
