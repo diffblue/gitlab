@@ -165,6 +165,7 @@ function mountEscalationPoliciesSelect() {
 
   return new Vue({
     el,
+    name: 'SidebarEscalationPolicyRoot',
     apolloProvider,
     components: {
       SidebarEscalationPolicy,

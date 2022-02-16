@@ -34,6 +34,7 @@ export default () => {
 
   return new Vue({
     el: securityTab,
+    name: 'SecurityDiscoverRoot',
     apolloProvider,
     components: {
       SecurityDiscoverApp,
