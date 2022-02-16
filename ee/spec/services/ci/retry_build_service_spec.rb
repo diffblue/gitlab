@@ -32,37 +32,16 @@ RSpec.describe Ci::RetryBuildService do
           build.update!(dast_site_profile: dast_site_profile, dast_scanner_profile: dast_scanner_profile)
         end
 
-        context 'failure' do
-          it 'drops the build' do
-            allow_next_instance_of(AppSec::Dast::Builds::AssociateService) do |instance|
-              allow(instance).to receive(:execute).and_return(ServiceResponse.error(message: 'oops'))
-            end
-
-            expect(new_build.reload).to be_failed
-          end
-        end
-
-        context 'success' do
-          it 'clones the profile associations', :aggregate_failures do
-            new_build.reload
-
-            expect(new_build.dast_site_profile).to eq(dast_site_profile)
-            expect(new_build.dast_scanner_profile).to eq(dast_scanner_profile)
-            expect(new_build).not_to be_failed
-          end
-        end
-
-        context 'when dast_sharded_cloned_ci_builds is disabled' do
-          before do
-            stub_feature_flags(dast_sharded_cloned_ci_builds: false)
+        it 'clones the profile associations', :aggregate_failures do
+          expect_next_instance_of(Ci::CopyCrossDatabaseAssociationsService) do |service|
+            expect(service).to receive(:execute).with(build, Ci::Build).and_call_original
           end
 
-          it 'clones the profile associations', :aggregate_failures do
-            ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.allow_cross_database_modification_within_transaction(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/350051') do
-              expect(new_build.dast_site_profile).to eq(dast_site_profile)
-              expect(new_build.dast_scanner_profile).to eq(dast_scanner_profile)
-            end
-          end
+          new_build.reload
+
+          expect(new_build.dast_site_profile).to eq(dast_site_profile)
+          expect(new_build.dast_scanner_profile).to eq(dast_scanner_profile)
+          expect(new_build).not_to be_failed
         end
       end
 
