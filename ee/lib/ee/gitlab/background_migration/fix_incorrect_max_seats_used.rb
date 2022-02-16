@@ -97,8 +97,14 @@ module EE
 
         BATCH_SIZE = 200
 
-        def perform
-          eligible_gitlab_subscriptions.find_each(batch_size: BATCH_SIZE) do |gs|
+        def perform(batch = nil)
+          gitlab_subscriptions = if batch == 'batch_2_for_start_date_before_02_aug_2021'
+                                   eligible_gitlab_subscriptions_batch_2
+                                 else
+                                   eligible_gitlab_subscriptions
+                                 end
+
+          gitlab_subscriptions.find_each(batch_size: BATCH_SIZE) do |gs|
             gs_histories = gs.gitlab_subscription_histories.to_a.sort_by { |gh| gh.id }
             gs_histories << gs
 
@@ -170,10 +176,10 @@ module EE
         end
 
         def eligible_gitlab_subscriptions
-          # Only search subscriptions with `start_date` in range `['2-Aug-2021', '20-Nov-2021']` because:
-          #   - for subscriptions with `start_date < '2-Aug-2021'`, we do not enable QSR(Quarterly Subscription Reconciliation)
-          #   - for subscriptions with `start_date > '20-Nov-2021'`, they should not have such issue
-          #     because the MR https://gitlab.com/gitlab-org/gitlab/-/merge_requests/73078 was merged on `09-Nov-2021`.
+          # Only search subscriptions with `start_date` in range `['2021-08-02', '2021-11-20']` because:
+          #   - for subscriptions with `start_date < '2021-08-02'`, we do not enable QSR(Quarterly Subscription Reconciliation)
+          #   - for subscriptions with `start_date > '2021-11-20'`, they should not have such issue
+          #     because the MR https://gitlab.com/gitlab-org/gitlab/-/merge_requests/73078 was merged on `2021-11-09`.
           #     All rails nodes should have deployed new merged code within 10 days.
           #
           # Only need to check if max_seats_used is not 0
@@ -181,8 +187,21 @@ module EE
           # Only need to check if max_seats_used > seats (zuora subscription quantity)
 
           GitlabSubscription.preload(:namespace, :hosted_plan, :gitlab_subscription_histories)
-            .where('gitlab_subscriptions.start_date >= ?', Date.parse('2-Aug-2021'))
-            .where('gitlab_subscriptions.start_date <= ?', Date.parse('20-Nov-2021'))
+            .where('gitlab_subscriptions.start_date >= ?', Date.parse('2021-08-02'))
+            .where('gitlab_subscriptions.start_date <= ?', Date.parse('2021-11-20'))
+            .where.not(max_seats_used: 0)
+            .where('gitlab_subscriptions.max_seats_used > gitlab_subscriptions.seats_in_use')
+            .where('gitlab_subscriptions.max_seats_used > gitlab_subscriptions.seats')
+        end
+
+        def eligible_gitlab_subscriptions_batch_2
+          # Only search subscriptions with `start_date < '2021-08-02'`
+          # Only need to check if max_seats_used is not 0
+          # Only need to check if max_seats_used > seats_in_use
+          # Only need to check if max_seats_used > seats (zuora subscription quantity)
+
+          GitlabSubscription.preload(:namespace, :hosted_plan, :gitlab_subscription_histories)
+            .where('gitlab_subscriptions.start_date < ?', Date.parse('2021-08-02'))
             .where.not(max_seats_used: 0)
             .where('gitlab_subscriptions.max_seats_used > gitlab_subscriptions.seats_in_use')
             .where('gitlab_subscriptions.max_seats_used > gitlab_subscriptions.seats')
