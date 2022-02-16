@@ -442,7 +442,26 @@ RSpec.describe SubscriptionsController do
                 category: 'SubscriptionsController',
                 label: 'confirm_purchase',
                 action: 'click_button',
-                property: 'Success',
+                property: 'Success: subscription',
+                namespace: selected_group,
+                user: user
+              )
+            end
+          end
+
+          context 'purchasing an addon' do
+            before do
+              params[:subscription][:is_addon] = true
+            end
+
+            it 'tracks creation with add-on success message' do
+              subject
+
+              expect_snowplow_event(
+                category: 'SubscriptionsController',
+                label: 'confirm_purchase',
+                action: 'click_button',
+                property: 'Success: add-on',
                 namespace: selected_group,
                 user: user
               )
