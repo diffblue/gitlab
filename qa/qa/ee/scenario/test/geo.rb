@@ -41,6 +41,9 @@ module QA
               end
             end
 
+            # Save the scenario class name
+            QA::Runtime::Scenario.define(:klass, self.class.name)
+
             Specs::Runner.perform do |specs|
               specs.tty = true
               specs.tags = self.class.focus
