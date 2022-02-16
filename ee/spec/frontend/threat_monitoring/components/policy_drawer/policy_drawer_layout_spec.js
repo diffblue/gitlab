@@ -12,7 +12,7 @@ describe('PolicyDrawerLayout component', () => {
 
   const DESCRIPTION = 'This policy enforces pipeline configuration to have a job with DAST scan';
   const SUMMARY = 'Summary';
-  const TYPE = 'Policy Type';
+  const TYPE = 'Scan Execution';
 
   const findCustomDescription = () => wrapper.findByTestId('custom-description-text');
   const findDefaultDescription = () => wrapper.findByTestId('default-description-text');

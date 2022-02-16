@@ -6,7 +6,6 @@ import { mockScanResultPolicy } from '../../mocks/mock_data';
 describe('ScanResultPolicy component', () => {
   let wrapper;
 
-  const findDescription = () => wrapper.findByTestId('policy-description');
   const findRules = () => wrapper.findByTestId('policy-rules');
 
   const factory = ({ propsData } = {}) => {
@@ -27,16 +26,8 @@ describe('ScanResultPolicy component', () => {
       factory({ propsData: { policy: mockScanResultPolicy } });
     });
 
-    it.each`
-      component        | finder             | text
-      ${'rules'}       | ${findRules}       | ${''}
-      ${'description'} | ${findDescription} | ${'This policy enforces critical vulnerability CS approvals'}
-    `('does render the policy $component', ({ finder, text }) => {
-      const component = finder();
-      expect(component.exists()).toBe(true);
-      if (text) {
-        expect(component.text()).toBe(text);
-      }
+    it('does render the policy rules', () => {
+      expect(findRules().exists()).toBe(true);
     });
   });
 });

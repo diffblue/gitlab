@@ -47,33 +47,30 @@ export default {
 
 <template>
   <div>
-    <p data-testid="policy-summary">
+    <div data-testid="policy-summary">
       <slot name="summary"></slot>
-    </p>
+    </div>
 
-    <h5 class="gl-mt-3">{{ $options.i18n.policyTypeTitle }}</h5>
-    <p data-testid="policy-type">{{ type }}</p>
+    <policy-info-row data-testid="policy-type" :label="$options.i18n.policyTypeTitle">
+      {{ type }}
+    </policy-info-row>
 
-    <p data-testid="policy-description">
-      <policy-info-row :label="$options.i18n.descriptionTitle">
-        <div v-if="description" data-testid="custom-description-text">
-          {{ description }}
-        </div>
-        <div v-else class="gl-text-gray-500" data-testid="default-description-text">
-          {{ $options.i18n.defaultDescription }}
-        </div>
-      </policy-info-row>
-    </p>
+    <policy-info-row :label="$options.i18n.descriptionTitle">
+      <div v-if="description" data-testid="custom-description-text">
+        {{ description }}
+      </div>
+      <div v-else class="gl-text-gray-500" data-testid="default-description-text">
+        {{ $options.i18n.defaultDescription }}
+      </div>
+    </policy-info-row>
 
-    <p data-testid="policy-status">
-      <policy-info-row :label="$options.i18n.statusTitle">
-        <div v-if="policy.enabled" class="gl-text-green-500" data-testid="enabled-status-text">
-          <gl-icon name="check-circle-filled" class="gl-mr-3" />{{ statusLabel }}
-        </div>
-        <div v-else class="gl-text-gray-500" data-testid="not-enabled-status-text">
-          {{ statusLabel }}
-        </div>
-      </policy-info-row>
-    </p>
+    <policy-info-row :label="$options.i18n.statusTitle">
+      <div v-if="policy.enabled" class="gl-text-green-500" data-testid="enabled-status-text">
+        <gl-icon name="check-circle-filled" class="gl-mr-3" />{{ statusLabel }}
+      </div>
+      <div v-else class="gl-text-gray-500" data-testid="not-enabled-status-text">
+        {{ statusLabel }}
+      </div>
+    </policy-info-row>
   </div>
 </template>
