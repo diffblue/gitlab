@@ -9,9 +9,43 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
     stub_licensed_features(external_audit_events: true)
   end
 
-  shared_examples 'a successful audit event stream' do
-    subject { worker.perform(event.id) }
+  shared_context 'a successful audit event stream' do
+    context 'when audit event id is passed' do
+      subject { worker.perform(event.id) }
 
+      include_context 'audit event stream'
+    end
+
+    context 'when audit event json is passed' do
+      subject { worker.perform(nil, event.to_json) }
+
+      include_context 'audit event stream'
+    end
+  end
+
+  shared_context 'a error is raised' do
+    context 'when audit event id is passed' do
+      subject { worker.perform(event.id) }
+
+      include_context 'http post error'
+    end
+
+    context 'when audit event json is passed' do
+      subject { worker.perform(nil, event.to_json) }
+
+      include_context 'http post error'
+    end
+
+    context 'when both audit event id and audit event json is passed' do
+      subject { worker.perform(event.id, event.to_json) }
+
+      it 'a argument error is raised' do
+        expect { subject }.to raise_error(ArgumentError, 'audit_event_id and audit_event_json cannot be passed together')
+      end
+    end
+  end
+
+  shared_context 'audit event stream' do
     context 'when the group has no destinations' do
       it 'makes no HTTP calls' do
         expect(Gitlab::HTTP).not_to receive(:post)
@@ -65,9 +99,7 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
     end
   end
 
-  shared_examples 'a http post error is raised' do
-    subject { worker.perform(event.id) }
-
+  shared_context 'http post error' do
     context 'when any of Gitlab::HTTP::HTTP_ERRORS is raised' do
       Gitlab::HTTP::HTTP_ERRORS.each do |error_klass|
         let(:error) { error_klass.new('error') }
@@ -102,6 +134,28 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
     end
   end
 
+  shared_examples 'no HTTP calls are made' do
+    context 'when audit event id is passed as param' do
+      subject { worker.perform(event.id) }
+
+      it 'makes no HTTP calls' do
+        expect(Gitlab::HTTP).not_to receive(:post)
+
+        subject
+      end
+    end
+
+    context 'when audit event json is passed as param' do
+      subject { worker.perform(nil, event.to_json) }
+
+      it 'makes no HTTP calls' do
+        expect(Gitlab::HTTP).not_to receive(:post)
+
+        subject
+      end
+    end
+  end
+
   describe "#perform" do
     context 'when the entity type is a group' do
       it_behaves_like 'a successful audit event stream' do
@@ -110,7 +164,7 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
         let(:group) { event.entity }
       end
 
-      it_behaves_like 'a http post error is raised' do
+      it_behaves_like 'a error is raised' do
         let_it_be(:event) { create(:audit_event, :group_event) }
 
         let(:group) { event.entity }
@@ -124,7 +178,7 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
         let_it_be(:event) { create(:audit_event, :project_event, target_project: project) }
       end
 
-      it_behaves_like 'a http post error is raised' do
+      it_behaves_like 'a error is raised' do
         let_it_be(:group) { create(:group) }
         let_it_be(:project) { create(:project, group: group) }
         let_it_be(:event) { create(:audit_event, :project_event, target_project: project) }
@@ -134,11 +188,7 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
     context 'when the entity type is a project at a root namespace level' do
       let_it_be(:event) { create(:audit_event, :project_event) }
 
-      it 'makes no HTTP calls' do
-        expect(Gitlab::HTTP).not_to receive(:post)
-
-        worker.perform(event.id)
-      end
+      it_behaves_like 'no HTTP calls are made'
     end
 
     context 'when the entity is a NullEntity' do
@@ -148,11 +198,7 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
         event.entity_id = non_existing_record_id
       end
 
-      it 'makes no HTTP calls' do
-        expect(Gitlab::HTTP).not_to receive(:post)
-
-        worker.perform(event.id)
-      end
+      it_behaves_like 'no HTTP calls are made'
     end
   end
 end
