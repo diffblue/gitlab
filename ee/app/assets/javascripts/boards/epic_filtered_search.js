@@ -17,6 +17,7 @@ export default (apolloProvider) => {
 
   return new Vue({
     el,
+    name: 'EpicBoardFilteredSearchRoot',
     provide: {
       initialFilterParams,
     },

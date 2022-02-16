@@ -38,6 +38,7 @@ export default () => {
 
   return new Vue({
     el,
+    name: 'RelatedItemsTreeRoot',
     store: createStore(),
     components: { RelatedItemsTreeApp },
     created() {

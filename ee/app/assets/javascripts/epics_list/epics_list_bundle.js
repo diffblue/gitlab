@@ -56,6 +56,7 @@ export default function initEpicsList({ mountPointSelector }) {
 
   return new Vue({
     el: mountPointEl,
+    name: 'EpicsListRoot',
     apolloProvider,
     provide: {
       initialState,

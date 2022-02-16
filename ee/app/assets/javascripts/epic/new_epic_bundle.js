@@ -26,6 +26,7 @@ export function initEpicForm() {
 
   return new Vue({
     el,
+    name: 'EpicCreateRoot',
     apolloProvider,
     provide: {
       groupPath,
