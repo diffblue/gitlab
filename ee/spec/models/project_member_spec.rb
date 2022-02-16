@@ -75,6 +75,36 @@ RSpec.describe ProjectMember do
     it { is_expected.to eq(false) }
   end
 
+  describe '#state' do
+    let!(:group) { create(:group) }
+    let!(:project) { create(:project, group: group) }
+    let!(:user) { create(:user) }
+
+    describe '#activate!' do
+      it "refreshes the user's authorized projects" do
+        membership = create(:project_member, :awaiting, source: project, user: user)
+
+        expect(user.authorized_projects).not_to include(project)
+
+        membership.activate!
+
+        expect(user.authorized_projects.reload).to include(project)
+      end
+    end
+
+    describe '#wait!' do
+      it "refreshes the user's authorized projects" do
+        membership = create(:project_member, source: project, user: user)
+
+        expect(user.authorized_projects).to include(project)
+
+        membership.wait!
+
+        expect(user.authorized_projects.reload).not_to include(project)
+      end
+    end
+  end
+
   describe 'delete protected environment acceses cascadingly' do
     let_it_be(:project) { create(:project) }
     let_it_be(:user) { create(:user) }
