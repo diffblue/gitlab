@@ -1,7 +1,7 @@
 # List of regular expressions to prevent secrets
 # being pushed to repository.
 # This list is checked only if project.push_rule.prevent_secrets is true
-# Any changes to this file should be documented in: doc/push_rules/push_rules.md
+# Any changes to this file should be documented in: doc/user/project/repository/push_rules.md
 
 # AWS CLI credential blobs
 
@@ -23,4 +23,3 @@
 
 # files ending in .history or _history
 - "[._]history$"
-

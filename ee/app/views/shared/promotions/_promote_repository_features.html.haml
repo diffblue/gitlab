@@ -14,7 +14,7 @@
         %ul
           - unless @project.feature_available?(:push_rules)
             %li
-              = link_to s_('Promotions|Push Rules'), help_page_path('push_rules/push_rules.md'), target: '_blank', rel: 'noopener noreferrer'
+              = link_to s_('Promotions|Push Rules'), help_page_path('user/project/repository/push_rules.md'), target: '_blank', rel: 'noopener noreferrer'
               %p
                 = s_('Promotions|Push Rules are defined per project so you can have different rules applied to different projects depends on your needs.')
           - unless @project.feature_available?(:repository_mirrors)

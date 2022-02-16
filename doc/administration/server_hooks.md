@@ -15,7 +15,7 @@ Server hooks run custom logic on the GitLab server. Users can use them to run Gi
 - Enforcing specific commit policies.
 - Performing tasks based on the state of the repository.
 
-Server hooks use `pre-receive`, `post-receive`, and `update` 
+Server hooks use `pre-receive`, `post-receive`, and `update`
 [Git server-side hooks](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks#_server_side_hooks).
 
 GitLab administrators configure server hooks on the file system of the GitLab server. If you don't have file system access,
