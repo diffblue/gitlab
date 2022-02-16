@@ -76,12 +76,21 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService do
         end
 
         context 'when branches are missing' do
+          using RSpec::Parameterized::TableSyntax
+
           let(:branches) { nil }
 
-          it { expect(result[:status]).to eq(:error) }
-          it { expect(result[:message]).to eq('Policy cannot be enabled without branch information') }
+          where(:policy_type, :status, :message) do
+            'scan_result_policy'    | :success | nil
+            'scan_execution_policy' | :error   | 'Policy cannot be enabled without branch information'
+          end
 
-          it_behaves_like 'checks only if policy is enabled'
+          with_them do
+            it { expect(result[:status]).to eq(status) }
+            it { expect(result[:message]).to eq(message) }
+
+            it_behaves_like 'checks only if policy is enabled'
+          end
         end
 
         context 'when branches are provided' do
