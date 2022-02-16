@@ -21,7 +21,7 @@
   = f.check_box :prevent_secrets, class: "form-check-input", data: { qa_selector: 'prevent_secrets_checkbox' }
   = f.label :prevent_secrets, "Prevent pushing secret files", class: "label-bold form-check-label"
   %p.text-muted
-    - secret_files_link_url = help_page_path('push_rules/push_rules', anchor: 'prevent-pushing-secrets-to-the-repository')
+    - secret_files_link_url = help_page_path('user/project/repository/push_rules', anchor: 'prevent-pushing-secrets-to-the-repository')
     - secret_files_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: secret_files_link_url }
     = s_("PushRules|Reject any files likely to contain secrets. %{secret_files_link_start}What secret files are rejected?%{secret_files_link_end}").html_safe % { secret_files_link_start: secret_files_link_start, secret_files_link_end: '</a>'.html_safe }
 
