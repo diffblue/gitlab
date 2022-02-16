@@ -426,8 +426,23 @@ msgid_plural "%d vulnerabilities dismissed"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "%d vulnerability updated"
-msgid_plural "%d vulnerabilities updated"
+msgid "%d vulnerability set to confirmed"
+msgid_plural "%d vulnerabilities set to confirmed"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%d vulnerability set to dismissed"
+msgid_plural "%d vulnerabilities set to dismissed"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%d vulnerability set to needs triage"
+msgid_plural "%d vulnerabilities set to needs triage"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%d vulnerability set to resolved"
+msgid_plural "%d vulnerabilities set to resolved"
 msgstr[0] ""
 msgstr[1] ""
 

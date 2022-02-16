@@ -82,7 +82,7 @@ export default {
         this.isSubmitting = false;
 
         if (fulfilledCount > 0) {
-          toast(this.$options.i18n.vulnerabilitiesUpdated(fulfilledCount));
+          toast(this.$options.i18n.statusChanged(this.selectedStatus, fulfilledCount));
           eventHub.$emit('vulnerabilities-updated', this);
         }
 
@@ -98,8 +98,29 @@ export default {
     cancel: __('Cancel'),
     selected: __('Selected'),
     changeStatus: s__('SecurityReports|Change status'),
-    vulnerabilitiesUpdated: (count) =>
-      n__('%d vulnerability updated', '%d vulnerabilities updated', count),
+    statusChanged: (status, count) =>
+      ({
+        confirm: n__(
+          '%d vulnerability set to confirmed',
+          '%d vulnerabilities set to confirmed',
+          count,
+        ),
+        resolve: n__(
+          '%d vulnerability set to resolved',
+          '%d vulnerabilities set to resolved',
+          count,
+        ),
+        dismiss: n__(
+          '%d vulnerability set to dismissed',
+          '%d vulnerabilities set to dismissed',
+          count,
+        ),
+        revert: n__(
+          '%d vulnerability set to needs triage',
+          '%d vulnerabilities set to needs triage',
+          count,
+        ),
+      }[status]),
     vulnerabilitiesUpdateFailed: (vulnIds) =>
       s__(`SecurityReports|Failed updating vulnerabilities with the following IDs: ${vulnIds}`),
   },
