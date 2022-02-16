@@ -6,8 +6,14 @@ RSpec.describe 'Snippet elastic search', :js, :elastic, :aggregate_failures, :si
   let(:public_project) { create(:project, :public) }
   let(:authorized_user) { create(:user) }
   let(:authorized_project) { create(:project, namespace: authorized_user.namespace) }
+  let(:new_header_search) { false }
 
   before do
+    # This feature is diabled by default in spec_helper.rb.
+    # We missed a feature breaking bug, so to prevent this regression, testing both scenarios for this spec.
+    # This can be removed as part of closing https://gitlab.com/gitlab-org/gitlab/-/issues/339348.
+    stub_feature_flags(new_header_search: new_header_search)
+
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
 
     authorized_project.add_maintainer(authorized_user)
@@ -147,19 +153,41 @@ RSpec.describe 'Snippet elastic search', :js, :elastic, :aggregate_failures, :si
     end
   end
 
-  context 'when searching titles' do
-    before do
-      submit_search('snippet')
+  context 'when :new_header_search is false' do
+    context 'when searching titles' do
+      before do
+        submit_search('snippet')
+      end
+
+      it_behaves_like 'expected snippet search results'
     end
 
-    it_behaves_like 'expected snippet search results'
+    context 'when searching descriptions' do
+      before do
+        submit_search('snippet description')
+      end
+
+      it_behaves_like 'expected snippet search results'
+    end
   end
 
-  context 'when searching descriptions' do
-    before do
-      submit_search('snippet description')
+  context 'when :new_header_search is true' do
+    let(:new_header_search) { true }
+
+    context 'when searching titles' do
+      before do
+        submit_search('snippet')
+      end
+
+      it_behaves_like 'expected snippet search results'
     end
 
-    it_behaves_like 'expected snippet search results'
+    context 'when searching descriptions' do
+      before do
+        submit_search('snippet description')
+      end
+
+      it_behaves_like 'expected snippet search results'
+    end
   end
 end
