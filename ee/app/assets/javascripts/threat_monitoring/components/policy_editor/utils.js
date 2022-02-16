@@ -71,7 +71,7 @@ const updatePolicy = async ({
 };
 
 /**
- * Updates the assigned security policy project's policy file with the new policy yaml or creates one (project or file) if one does not exist
+ * Updates the assigned security policy project's policy file with the new policy yaml or creates one file if one does not exist
  * @param {Object} payload contains the currently assigned security policy project (if one exists), the path to the project, and the policy yaml value
  * @returns {Object} contains the currently assigned security policy project and the created merge request
  */

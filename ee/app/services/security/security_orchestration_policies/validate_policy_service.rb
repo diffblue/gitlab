@@ -22,10 +22,12 @@ module Security
       def invalid_policy_type?
         return true if policy[:type].blank?
 
-        !Security::OrchestrationPolicyConfiguration::AVAILABLE_POLICY_TYPES.include?(policy[:type].to_sym)
+        !Security::OrchestrationPolicyConfiguration::AVAILABLE_POLICY_TYPES.include?(policy_type)
       end
 
       def blank_branch_for_rule?
+        return false if policy_type == :scan_result_policy
+
         policy[:rules].any? { |rule| rule[:clusters].blank? && rule[:branches].blank? }
       end
 
@@ -54,6 +56,10 @@ module Security
         strong_memoize(:branches_for_project) do
           repository.branch_names
         end
+      end
+
+      def policy_type
+        policy[:type].to_sym
       end
     end
   end
