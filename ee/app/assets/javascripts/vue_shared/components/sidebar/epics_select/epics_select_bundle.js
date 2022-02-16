@@ -14,6 +14,7 @@ export default () => {
 
   return new Vue({
     el,
+    name: 'EpicsSelectRoot',
     components: {
       EpicsSelect,
     },

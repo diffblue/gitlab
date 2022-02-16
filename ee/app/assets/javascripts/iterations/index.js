@@ -27,6 +27,7 @@ export function initIterationsList(namespaceType) {
   const el = document.querySelector('.js-iterations-list');
   return new Vue({
     el,
+    name: 'IterationsRoot',
     apolloProvider,
     render(createElement) {
       return createElement(Iterations, {
@@ -46,6 +47,7 @@ export function initIterationForm() {
 
   return new Vue({
     el,
+    name: 'IterationFormRoot',
     apolloProvider,
     render(createElement) {
       return createElement(IterationForm, {
@@ -76,6 +78,7 @@ export function initIterationReport({ namespaceType, initiallyEditing } = {}) {
 
   return new Vue({
     el,
+    name: 'IterationReportRoot',
     apolloProvider,
     provide: {
       fullPath,
@@ -107,6 +110,7 @@ function injectVueRouterIntoBreadcrumbs(router, groupPath) {
   breadCrumbEl.replaceChild(nestedBreadcrumbEl, crumbs[0]);
   return new Vue({
     el: nestedBreadcrumbEl,
+    name: 'IterationBreadcrumbRoot',
     router,
     apolloProvider,
     components: {
@@ -162,6 +166,7 @@ export function initCadenceApp({ namespaceType }) {
 
   return new Vue({
     el,
+    name: 'IterationsRoot',
     router,
     apolloProvider,
     provide: {

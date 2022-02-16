@@ -22,6 +22,7 @@ export default function initIterationsDropdownBundle() {
 
   return new Vue({
     el,
+    name: 'IterationDropdownRoot',
     apolloProvider,
     methods: {
       getIdForIteration(iteration) {

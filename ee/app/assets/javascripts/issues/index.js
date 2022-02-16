@@ -35,6 +35,7 @@ export function initUnableToLinkVulnerabilityError() {
 
   return new Vue({
     el,
+    name: 'UnableToLinkVulnerabilityErrorRoot',
     render: (createElement) =>
       createElement(UnableToLinkVulnerabilityError, { props: { vulnerabilityLink } }),
   });
