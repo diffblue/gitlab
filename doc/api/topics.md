@@ -206,6 +206,8 @@ curl --request PUT \
 
 ## Delete a project topic
 
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/80725) in GitLab 14.9.
+
 You must be an administrator to delete a project.
 When you delete a project topic, you also delete the topic assignment for projects.
 

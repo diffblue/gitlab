@@ -79,7 +79,7 @@ module API
     end
 
     desc 'Delete a topic' do
-      detail 'This feature was introduced in GitLab 14.8.'
+      detail 'This feature was introduced in GitLab 14.9.'
     end
     params do
       requires :id, type: Integer, desc: 'ID of project topic'
