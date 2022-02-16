@@ -33,6 +33,7 @@
   .tab-pane#seats-quota-tab
     #js-seat-usage-app{ data: { namespace_id: @group.id, namespace_name: @group.name, seat_usage_export_path: group_seat_usage_path(@group, format: :csv), pending_members_page_path: pending_members_page_path, pending_members_count: pending_members_count } }
   .tab-pane#pipelines-quota-tab
+    #js-ci-minutes-usage-group{ data: { namespace_id: @group.id } }
     = render "namespaces/pipelines_quota/list",
       locals: { namespace: @group, projects: @projects }
   .tab-pane#storage-quota-tab

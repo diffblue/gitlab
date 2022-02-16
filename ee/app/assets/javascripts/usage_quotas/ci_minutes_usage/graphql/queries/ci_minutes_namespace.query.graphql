@@ -1,0 +1,15 @@
+query getCiMinutesUsageGroup($namespaceId: NamespaceID) {
+  ciMinutesUsage(namespaceId: $namespaceId) {
+    nodes {
+      month
+      monthIso8601
+      minutes
+      projects {
+        nodes {
+          name
+          minutes
+        }
+      }
+    }
+  }
+}

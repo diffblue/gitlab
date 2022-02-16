@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import SeatUsageApp from 'ee/usage_quotas/seats';
 import initNamespaceStorage from 'ee/usage_quotas/storage/init_namespace_storage';
+import initCiMinutesUsageApp from 'ee/usage_quotas/ci_minutes_usage';
 import LinkedTabs from '~/lib/utils/bootstrap_linked_tabs';
 
 const initLinkedTabs = () => {
@@ -23,6 +24,8 @@ const initVueApps = () => {
   if (document.querySelector('#js-storage-counter-app')) {
     initNamespaceStorage();
   }
+
+  initCiMinutesUsageApp();
 };
 
 /**
