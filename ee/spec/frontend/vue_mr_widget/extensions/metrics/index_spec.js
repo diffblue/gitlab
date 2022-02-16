@@ -70,7 +70,7 @@ describe('Metrics extension', () => {
 
       await waitForPromises();
 
-      expect(wrapper.text()).toBe('Metrics reports failed loading results');
+      expect(wrapper.text()).toBe('Metrics reports failed to load results');
     });
 
     it('displays detected changes', async () => {
