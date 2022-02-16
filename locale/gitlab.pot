@@ -30154,9 +30154,6 @@ msgstr ""
 msgid "Remove all or specific reviewer(s)"
 msgstr ""
 
-msgid "Remove approver"
-msgstr ""
-
 msgid "Remove approvers"
 msgstr ""
 
