@@ -4696,6 +4696,9 @@ msgstr ""
 msgid "Are you sure that you want to archive this project?"
 msgstr ""
 
+msgid "Are you sure that you want to destroy %{application}"
+msgstr ""
+
 msgid "Are you sure that you want to unarchive this project?"
 msgstr ""
 
@@ -9279,6 +9282,9 @@ msgid "Confirm"
 msgstr ""
 
 msgid "Confirm approval"
+msgstr ""
+
+msgid "Confirm destroy application"
 msgstr ""
 
 msgid "Confirm new password"
