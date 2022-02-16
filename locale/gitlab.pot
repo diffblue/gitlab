@@ -19738,9 +19738,6 @@ msgstr ""
 msgid "Integrations|can't exceed %{recipients_limit}"
 msgstr ""
 
-msgid "Interactive developer security education."
-msgstr ""
-
 msgid "Interactive mode"
 msgstr ""
 
@@ -21077,9 +21074,6 @@ msgid "Keys"
 msgstr ""
 
 msgid "Ki"
-msgstr ""
-
-msgid "Kontra"
 msgstr ""
 
 msgid "Kroki"
@@ -32066,9 +32060,6 @@ msgstr ""
 msgid "Secure token that identifies an external storage request."
 msgstr ""
 
-msgid "SecureCodeWarrior"
-msgstr ""
-
 msgid "Security"
 msgstr ""
 
@@ -32091,9 +32082,6 @@ msgid "Security report is out of date. Please update your branch with the latest
 msgstr ""
 
 msgid "Security report is out of date. Run %{newPipelineLinkStart}a new pipeline%{newPipelineLinkEnd} for the target branch (%{targetBranchName})"
-msgstr ""
-
-msgid "Security training with guide and learning pathways."
 msgstr ""
 
 msgid "SecurityApprovals|A merge request approval is required when a security report contains a new vulnerability."

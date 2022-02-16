@@ -1,13 +1,10 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
-import tempResolvers from '~/security_configuration/resolver';
 
 Vue.use(VueApollo);
 
-const defaultClient = createDefaultClient({
-  ...tempResolvers,
-});
+const defaultClient = createDefaultClient();
 
 export default new VueApollo({
   defaultClient,
