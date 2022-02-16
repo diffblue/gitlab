@@ -14,7 +14,7 @@ RSpec.describe Gitlab::BackgroundMigration::FixIncorrectMaxSeatsUsed, :saas do
     let(:max_seats_used) { 10 }
     let(:seats_owed) { [0, max_seats_used - seats].max }
 
-    let(:start_date) { Date.parse('10-Nov-2021') }
+    let(:start_date) { Date.parse('2021-11-10') }
     let(:end_date) { start_date + 1.year }
 
     let(:keep_old_seats_attributes_after_renew) { true }
@@ -91,28 +91,56 @@ RSpec.describe Gitlab::BackgroundMigration::FixIncorrectMaxSeatsUsed, :saas do
         include_examples 'does not reset max_seats_used and seats_owed'
       end
 
-      context 'when start_date is before 2-Aug-2021' do
-        let(:start_date) { Date.parse('1-Aug-2021') }
+      context 'when start_date is before 2021-08-02' do
+        let(:start_date) { Date.parse('2021-08-01') }
 
         include_examples 'does not reset max_seats_used and seats_owed'
       end
 
-      context 'when start_date is 2-Aug-2021' do
-        let(:start_date) { Date.parse('2-Aug-2021') }
+      context 'when start_date is 2021-08-02' do
+        let(:start_date) { Date.parse('2021-08-02') }
 
         include_examples 'resets max_seats_used and seats_owed'
       end
 
-      context 'when start_date is 20-Nov-2021' do
-        let(:start_date) { Date.parse('20-Nov-2021') }
+      context 'when start_date is 2021-11-20' do
+        let(:start_date) { Date.parse('2021-11-20') }
 
         include_examples 'resets max_seats_used and seats_owed'
       end
 
-      context 'when start_date is after 20-Nov-2021' do
-        let(:start_date) { Date.parse('21-Nov-2021') }
+      context 'when start_date is after 2021-11-20' do
+        let(:start_date) { Date.parse('2021-11-21') }
 
         include_examples 'does not reset max_seats_used and seats_owed'
+      end
+
+      context 'when batch_2_for_start_date_before_02_aug_2021' do
+        def perform_and_reload
+          migration.perform(batch)
+
+          gitlab_subscription.reload
+        end
+
+        let(:batch) { 'batch_2_for_start_date_before_02_aug_2021' }
+
+        context 'when start_date is before 2021-08-02' do
+          let(:start_date) { Date.parse('2021-08-01') }
+
+          include_examples 'resets max_seats_used and seats_owed'
+        end
+
+        context 'when start_date is 2021-08-02' do
+          let(:start_date) { Date.parse('2021-08-02') }
+
+          include_examples 'does not reset max_seats_used and seats_owed'
+        end
+
+        context 'when start_date is after 2021-08-02' do
+          let(:start_date) { Date.parse('2021-08-03') }
+
+          include_examples 'does not reset max_seats_used and seats_owed'
+        end
       end
 
       context 'when max_seats_used is 0' do
