@@ -72,8 +72,6 @@ class DastSiteValidation < ApplicationRecord
     uri = Addressable::URI.parse(url)
 
     "%{scheme}://%{host}:%{port}" % { scheme: uri.scheme, host: uri.host, port: uri.inferred_port }
-  rescue Addressable::URI::InvalidURIError
-    url
   end
 
   private
