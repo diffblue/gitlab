@@ -12,7 +12,7 @@ module AppSec
           return success_response(existing_validation.dast_site_token, existing_validation.state) if existing_validation
 
           find_or_create_dast_site_token
-        rescue URI::InvalidURIError
+        rescue Addressable::URI::InvalidURIError
           error_response('Invalid target_url')
         end
 

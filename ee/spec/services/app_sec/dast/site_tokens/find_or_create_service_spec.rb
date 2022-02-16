@@ -59,7 +59,7 @@ RSpec.describe AppSec::Dast::SiteTokens::FindOrCreateService do
         let_it_be(:target_url) { 'http://bogus:broken' }
 
         it 'communicates failure' do
-          expect(subject).to have_attributes(status: :error, message: ['Url is blocked: URI is invalid'])
+          expect(subject).to have_attributes(status: :error, message: 'Invalid target_url')
         end
 
         it 'does not create a dast_site_validation' do
