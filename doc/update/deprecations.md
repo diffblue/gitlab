@@ -1028,6 +1028,23 @@ For more information, check the [summary section of the deprecation issue](https
 
 **Planned removal milestone: 15.0 (2022-05-22)**
 
+### Required pipeline configurations in Premium tier
+
+WARNING:
+This feature will be changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+The [required pipeline configuration](https://docs.gitlab.com/ee/user/admin_area/settings/continuous_integration.html#required-pipeline-configuration) feature is deprecated in GitLab 14.8 for Premium customers and is scheduled for removal in GitLab 15.0. This feature is not deprecated for GitLab Ultimate customers.
+
+This change to move the feature to GitLab's Ultimate tier is intended to help our features better align with our [pricing philosophy](https://about.gitlab.com/company/pricing/#three-tiers) as we see demand for this feature originating primarily from executives.
+
+This change will also help GitLab remain consistent in its tiering strategy with the other related Ultimate-tier features of:
+[Security policies](https://docs.gitlab.com/ee/user/application_security/policies/) and [compliance framework pipelines](https://docs.gitlab.com/ee/user/project/settings/index.html#compliance-pipeline-configuration).
+
+**Planned removal milestone: 15.0 (2022-05-22)**
+
 ### Retire-JS Dependency Scanning tool
 
 WARNING:
