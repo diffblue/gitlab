@@ -12,7 +12,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
   the feature and include screenshots, if applicable. Indicate [what editions](documentation/styleguide/index.md#product-tier-badges)
   the feature applies to.
 <!-- markdownlint-disable MD044 -->
-- **Submit a MR to the `[www-gitlab-com](https://gitlab.com/gitlab-com/www-gitlab-com)` project.**: Add the new feature to the
+- **Submit a MR to the [`www-gitlab-com`](https://gitlab.com/gitlab-com/www-gitlab-com) project.**: Add the new feature to the
   [EE features list](https://about.gitlab.com/features/).
 <!-- markdownlint-enable MD044 -->
 
