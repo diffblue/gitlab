@@ -26643,10 +26643,40 @@ msgstr ""
 msgid "PipelineStatusTooltip|Pipeline: %{ci_status}"
 msgstr ""
 
+msgid "PipelineWizardDefaultCommitMessage|Add %{filename}"
+msgstr ""
+
+msgid "PipelineWizardDefaultCommitMessage|Update %{filename}"
+msgstr ""
+
 msgid "PipelineWizardInputValidation|This field is required"
 msgstr ""
 
 msgid "PipelineWizardInputValidation|This value is not valid"
+msgstr ""
+
+msgid "PipelineWizard|Commit"
+msgstr ""
+
+msgid "PipelineWizard|Commit Message"
+msgstr ""
+
+msgid "PipelineWizard|Commit changes to your file"
+msgstr ""
+
+msgid "PipelineWizard|Commit file to Branch"
+msgstr ""
+
+msgid "PipelineWizard|Commit your new file"
+msgstr ""
+
+msgid "PipelineWizard|The file has been committed."
+msgstr ""
+
+msgid "PipelineWizard|There was a problem committing the changes."
+msgstr ""
+
+msgid "PipelineWizard|There was a problem while checking whether your file already exists in the specified branch."
 msgstr ""
 
 msgid "Pipelines"
