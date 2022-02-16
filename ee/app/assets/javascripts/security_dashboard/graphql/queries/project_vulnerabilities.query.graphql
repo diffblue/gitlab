@@ -1,9 +1,12 @@
 #import "../fragments/vulnerability.fragment.graphql"
+#import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
 
 query projectVulnerabilities(
   $fullPath: ID!
+  $before: String
   $after: String
   $first: Int = 20
+  $last: Int
   $severity: [VulnerabilitySeverity!]
   $reportType: [VulnerabilityReportType!]
   $scanner: [String!]
@@ -19,8 +22,10 @@ query projectVulnerabilities(
   project(fullPath: $fullPath) {
     id
     vulnerabilities(
+      before: $before
       after: $after
       first: $first
+      last: $last
       severity: $severity
       reportType: $reportType
       scanner: $scanner
@@ -54,8 +59,7 @@ query projectVulnerabilities(
         }
       }
       pageInfo {
-        endCursor
-        hasNextPage
+        ...PageInfo
       }
     }
   }
