@@ -3,6 +3,14 @@ export const ciMinutesUsageMockData = {
     ciMinutesUsage: {
       nodes: [
         {
+          month: 'July',
+          monthIso8601: '2021-07-01',
+          minutes: 0,
+          projects: {
+            nodes: [],
+          },
+        },
+        {
           month: 'June',
           monthIso8601: '2021-06-01',
           minutes: 5,
@@ -13,14 +21,6 @@ export const ciMinutesUsageMockData = {
                 minutes: 5,
               },
             ],
-          },
-        },
-        {
-          month: 'July',
-          monthIso8601: '2021-07-01',
-          minutes: 0,
-          projects: {
-            nodes: [],
           },
         },
       ],

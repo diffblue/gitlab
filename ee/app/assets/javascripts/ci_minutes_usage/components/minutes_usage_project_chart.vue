@@ -52,7 +52,7 @@ export default {
       ]);
     },
     months() {
-      return this.minutesUsageData.map((cur) => cur.month);
+      return this.minutesUsageData.filter((cur) => cur.minutes > 0).map((cur) => cur.month);
     },
     isDataEmpty() {
       return this.minutesUsageData.length === 0 && !this.selectedMonth;
@@ -83,7 +83,7 @@ export default {
 </script>
 <template>
   <div>
-    <div class="gl-display-flex gl-mt-3" :class="{ 'gl-mb-3': !isDataEmpty }">
+    <div class="gl-display-flex gl-mt-7" :class="{ 'gl-mb-3': !isDataEmpty }">
       <h5 class="gl-flex-grow-1">{{ $options.USAGE_BY_PROJECT }}</h5>
 
       <gl-dropdown v-if="!isDataEmpty" :text="selectedMonth" data-testid="project-month-dropdown">

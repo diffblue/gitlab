@@ -47,10 +47,8 @@ describe('Minutes usage by project chart component', () => {
       expect(findAlert().exists()).toBe(false);
     });
 
-    it('renders the same amount of dropdown components as the backend response', () => {
-      expect(findAllDropdownItems().length).toBe(
-        ciMinutesUsageMockData.data.ciMinutesUsage.nodes.length,
-      );
+    it('renders only the months with available minutes data', () => {
+      expect(findAllDropdownItems().length).toBe(1);
     });
   });
 
