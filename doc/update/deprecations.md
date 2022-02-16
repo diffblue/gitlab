@@ -1293,6 +1293,18 @@ The new security approvals feature is similar to vulnerability check. For exampl
 
 **Planned removal milestone: 15.0 (2022-05-22)**
 
+### `CI_BUILD_*` predefined variables
+
+WARNING:
+This feature will be changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+The predefined CI/CD variables that start with `CI_BUILD_*` were deprecated in GitLab 9.0, and will be removed in GitLab 15.0. If you still use these variables, be sure to change to the current [`CI_JOB_*` predefined variables](https://docs.gitlab.com/ee/ci/variables/predefined_variables.html) which are identical (except for the updated name).
+
+**Planned removal milestone: 15.0 (2022-05-22)**
+
 ### `fixup!` commit messages setting draft status of associated Merge Request
 
 The use of `fixup!` as a commit message to trigger draft status
