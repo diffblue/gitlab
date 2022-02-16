@@ -32,7 +32,6 @@ RSpec.describe 'User visits issue boards', :js do
 
   shared_examples "visiting board path" do
     before do
-      stub_const('GitlabSchema::DEFAULT_MAX_COMPLEXITY', 300)
       visit board_path
 
       wait_for_requests

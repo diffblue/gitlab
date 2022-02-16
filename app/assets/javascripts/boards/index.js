@@ -97,8 +97,14 @@ export default () => {
     }
   });
 
-  const { releasesFetchPath } = $boardApp.dataset;
-  initBoardsFilteredSearch(apolloProvider, isLoggedIn(), releasesFetchPath);
+  const { releasesFetchPath, epicFeatureAvailable, iterationFeatureAvailable } = $boardApp.dataset;
+  initBoardsFilteredSearch(
+    apolloProvider,
+    isLoggedIn(),
+    releasesFetchPath,
+    parseBoolean(epicFeatureAvailable),
+    parseBoolean(iterationFeatureAvailable),
+  );
 
   mountBoardApp($boardApp);
 

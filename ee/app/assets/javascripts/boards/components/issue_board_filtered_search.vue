@@ -22,6 +22,7 @@ export default {
     weight: __('Weight'),
   },
   mixins: [glFeatureFlagMixin()],
+  inject: ['epicFeatureAvailable', 'iterationFeatureAvailable'],
   computed: {
     isGroupBoard() {
       return this.boardType === BoardType.group;
@@ -36,26 +37,34 @@ export default {
 
       const tokens = [
         ...this.tokensCE,
-        {
-          type: 'epic',
-          title: epic,
-          icon: 'epic',
-          token: EpicToken,
-          unique: true,
-          symbol: '&',
-          idProperty: 'id',
-          useIdValue: true,
-          fullPath: this.epicsGroupPath,
-        },
-        {
-          icon: 'iteration',
-          title: iteration,
-          type: 'iteration',
-          operators: OPERATOR_IS_AND_IS_NOT,
-          token: IterationToken,
-          unique: true,
-          fetchIterations: this.fetchIterations,
-        },
+        ...(this.epicFeatureAvailable
+          ? [
+              {
+                type: 'epic',
+                title: epic,
+                icon: 'epic',
+                token: EpicToken,
+                unique: true,
+                symbol: '&',
+                idProperty: 'id',
+                useIdValue: true,
+                fullPath: this.epicsGroupPath,
+              },
+            ]
+          : []),
+        ...(this.iterationFeatureAvailable
+          ? [
+              {
+                icon: 'iteration',
+                title: iteration,
+                type: 'iteration',
+                operators: OPERATOR_IS_AND_IS_NOT,
+                token: IterationToken,
+                unique: true,
+                fetchIterations: this.fetchIterations,
+              },
+            ]
+          : []),
         {
           type: 'weight',
           title: weight,
