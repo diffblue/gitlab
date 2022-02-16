@@ -6,7 +6,7 @@ RSpec.describe Backup::Repositories do
   let(:progress) { spy(:stdout) }
   let(:strategy) { spy(:strategy) }
 
-  subject { described_class.new(progress, strategy: strategy) }
+  subject { described_class.new(progress, max_concurrency: 1, max_storage_concurrency: 1, strategy: strategy) }
 
   describe '#dump' do
     context 'hashed storage' do
@@ -16,7 +16,7 @@ RSpec.describe Backup::Repositories do
       it 'calls enqueue for each repository type', :aggregate_failures do
         create(:wiki_page, container: group)
 
-        subject.dump(max_concurrency: 1, max_storage_concurrency: 1)
+        subject.dump
 
         expect(strategy).to have_received(:start).with(:create)
         expect(strategy).to have_received(:enqueue).with(project, Gitlab::GlRepository::PROJECT)
@@ -37,32 +37,32 @@ RSpec.describe Backup::Repositories do
         end
         expect(strategy).to receive(:finish!)
 
-        subject.dump(max_concurrency: 1, max_storage_concurrency: 1)
+        subject.dump
       end
 
       describe 'command failure' do
         it 'enqueue_group raises an error' do
           allow(strategy).to receive(:enqueue).with(anything, Gitlab::GlRepository::WIKI).and_raise(IOError)
 
-          expect { subject.dump(max_concurrency: 1, max_storage_concurrency: 1) }.to raise_error(IOError)
+          expect { subject.dump }.to raise_error(IOError)
         end
 
         it 'group query raises an error' do
           allow(Group).to receive_message_chain(:includes, :find_each).and_raise(ActiveRecord::StatementTimeout)
 
-          expect { subject.dump(max_concurrency: 1, max_storage_concurrency: 1) }.to raise_error(ActiveRecord::StatementTimeout)
+          expect { subject.dump }.to raise_error(ActiveRecord::StatementTimeout)
         end
       end
 
       it 'avoids N+1 database queries' do
         control_count = ActiveRecord::QueryRecorder.new do
-          subject.dump(max_concurrency: 1, max_storage_concurrency: 1)
+          subject.dump
         end.count
 
         create_list(:group, 2, :wiki_repo)
 
         expect do
-          subject.dump(max_concurrency: 1, max_storage_concurrency: 1)
+          subject.dump
         end.not_to exceed_query_limit(control_count)
       end
     end
