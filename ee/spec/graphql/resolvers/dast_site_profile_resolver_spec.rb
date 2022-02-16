@@ -14,9 +14,9 @@ RSpec.describe Resolvers::DastSiteProfileResolver do
   let_it_be(:dast_site_profile1) { create(:dast_site_profile, project: project) }
   let_it_be(:dast_site_profile2) { create(:dast_site_profile, project: project) }
   let_it_be(:dast_site_profile3) do
-    create(:dast_site_profile, project: project,
-                                          dast_site: create(:dast_site, project: project,
-                                                            url: 'https://site1.com/, https://site2.com/'))
+    dast_site = create(:dast_site, project: project, url: 'https://site1.com/, https://site2.com/')
+
+    create(:dast_site_profile, project: project, dast_site: dast_site)
   end
 
   let(:current_user) { developer }
