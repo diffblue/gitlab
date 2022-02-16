@@ -52,6 +52,7 @@ export default () => {
 
   return new Vue({
     el,
+    name: 'EpicRoot',
     apolloProvider,
     store,
     components: { EpicApp },

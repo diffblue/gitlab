@@ -5,6 +5,7 @@ import ToggleLabels from './components/toggle_labels.vue';
 export default () =>
   new Vue({
     el: document.getElementById('js-board-labels-toggle'),
+    name: 'ToggleLabelsRoot',
     components: {
       ToggleLabels,
     },

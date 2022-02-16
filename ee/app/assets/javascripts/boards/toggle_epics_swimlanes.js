@@ -11,6 +11,7 @@ export default () => {
 
   return new Vue({
     el,
+    name: 'ToggleEpicsSwimlanesRoot',
     components: {
       ToggleEpicsSwimlanes,
     },
