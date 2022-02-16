@@ -1082,6 +1082,37 @@ If you have explicitly excluded retire.js using DS_EXCLUDED_ANALYZERS you will n
 
 **Planned removal milestone: 15.0 (2022-05-22)**
 
+### SAST analyzer consolidation and CI/CD template changes
+
+WARNING:
+This feature will be changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+GitLab SAST uses various [analyzers](https://docs.gitlab.com/ee/user/application_security/sast/analyzers/) to scan code for vulnerabilities.
+
+We are reducing the number of analyzers used in GitLab SAST as part of our long-term strategy to deliver a better and more consistent user experience.
+Streamlining the set of analyzers will also enable faster [iteration](https://about.gitlab.com/handbook/values/#iteration), better [results](https://about.gitlab.com/handbook/values/#results), and greater [efficiency](https://about.gitlab.com/handbook/values/#results) (including a reduction in CI runner usage in most cases).
+
+In GitLab 15.0, GitLab SAST will no longer use the following analyzers:
+
+- [ESLint](https://gitlab.com/gitlab-org/security-products/analyzers/eslint) (JavaScript, TypeScript, React)
+- [Gosec](https://gitlab.com/gitlab-org/security-products/analyzers/gosec) (Go)
+- [Bandit](https://gitlab.com/gitlab-org/security-products/analyzers/bandit) (Python)
+
+These analyzers will be removed from the [GitLab-managed SAST CI/CD template](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Security/SAST.gitlab-ci.yml) and replaced with the [Semgrep-based analyzer](https://gitlab.com/gitlab-org/security-products/analyzers/semgrep).
+They will no longer receive routine updates, except for security issues.
+We will not delete container images previously published for these analyzers; any such change would be announced as a [deprecation, removal, or breaking change announcement](https://about.gitlab.com/handbook/marketing/blog/release-posts/#deprecations-removals-and-breaking-changes).
+
+We will also remove Java from the scope of the [SpotBugs](https://gitlab.com/gitlab-org/security-products/analyzers/spotbugs) analyzer and replace it with the [Semgrep-based analyzer](https://gitlab.com/gitlab-org/security-products/analyzers/semgrep).
+This change will make it simpler to scan Java code; compilation will no longer be required.
+This change will be reflected in the automatic language detection portion of the [GitLab-managed SAST CI/CD template](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Security/SAST.gitlab-ci.yml).
+
+If you applied customizations to any of the affected analyzers, you must take action as detailed in the [deprecation issue for this change](https://gitlab.com/gitlab-org/gitlab/-/issues/352554#breaking-change).
+
+**Planned removal milestone: 15.0 (2022-05-22)**
+
 ### Support for gRPC-aware proxy deployed between Gitaly and rest of GitLab
 
 WARNING:
