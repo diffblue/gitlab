@@ -21,14 +21,14 @@ const findGlTooltip = (wrapper) => wrapper.findComponent(GlTooltip);
 
 const successBadgeProps = {
   variant: 'success',
-  icon: 'status_success',
+  icon: 'status-success',
   text: 'satisfied',
   tooltipTitle: 'Passed on',
 };
 
 const failedBadgeProps = {
   variant: 'danger',
-  icon: 'status_failed',
+  icon: 'status-failed',
   text: 'failed',
   tooltipTitle: 'Failed on',
 };
