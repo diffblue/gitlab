@@ -347,12 +347,25 @@ describe('Roadmap Store Mutations', () => {
   describe('SET_PROGRESS_TRACKING', () => {
     it('Should set `progressTracking` to the state', () => {
       const progressTracking = PROGRESS_COUNT;
-      setEpicMockData(state);
 
       mutations[types.SET_PROGRESS_TRACKING](state, progressTracking);
 
       expect(state).toMatchObject({
         progressTracking,
+      });
+    });
+  });
+
+  describe('TOGGLE_PROGRESS_TRACKING_ACTIVE', () => {
+    it('Should toggle `progressTracking` on state', () => {
+      expect(state).toMatchObject({
+        isProgressTrackingActive: true,
+      });
+
+      mutations[types.TOGGLE_PROGRESS_TRACKING_ACTIVE](state);
+
+      expect(state).toMatchObject({
+        isProgressTrackingActive: false,
       });
     });
   });

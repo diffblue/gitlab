@@ -61,6 +61,7 @@ const createComponent = ({
     sortedBy,
     filterParams,
     timeframe,
+    isProgressTrackingActive: true,
     progressTracking: PROGRESS_WEIGHT,
     milestonesType: MILESTONES_ALL,
   });
@@ -124,7 +125,7 @@ describe('RoadmapFilters', () => {
         await nextTick();
 
         expect(global.window.location.href).toBe(
-          `${TEST_HOST}/?state=${EPICS_STATES.CLOSED}&sort=end_date_asc&layout=MONTHS&author_username=root&label_name%5B%5D=Bug&milestone_title=4.0&confidential=true&progress=WEIGHT&show_milestones=true&milestones_type=ALL`,
+          `${TEST_HOST}/?state=${EPICS_STATES.CLOSED}&sort=end_date_asc&layout=MONTHS&author_username=root&label_name%5B%5D=Bug&milestone_title=4.0&confidential=true&progress=WEIGHT&show_progress=true&show_milestones=true&milestones_type=ALL`,
         );
       });
     });

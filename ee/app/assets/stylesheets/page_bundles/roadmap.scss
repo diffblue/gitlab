@@ -525,11 +525,9 @@ html.group-epics-roadmap-html {
   .sort-dropdown-container {
     // This override is needed to make sort-dropdown have same height
     // as filtered search bar.
-    @include media-breakpoint-up(sm) {
-      .dropdown,
-      > button {
-        margin-bottom: $gl-padding-8;
-      }
+    .dropdown,
+    > button {
+      margin-bottom: $gl-padding-8;
     }
   }
 }

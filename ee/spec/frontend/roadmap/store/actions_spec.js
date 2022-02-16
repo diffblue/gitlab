@@ -673,6 +673,18 @@ describe('Roadmap Vuex Actions', () => {
     });
   });
 
+  describe('toggleProgressTrackingActive', () => {
+    it('commit TOGGLE_PROGRESS_TRACKING_ACTIVE mutation', () => {
+      return testAction(
+        actions.toggleProgressTrackingActive,
+        undefined,
+        state,
+        [{ type: types.TOGGLE_PROGRESS_TRACKING_ACTIVE }],
+        [],
+      );
+    });
+  });
+
   describe('setMilestonesType', () => {
     it('should set milestonesType in store state', () => {
       return testAction(

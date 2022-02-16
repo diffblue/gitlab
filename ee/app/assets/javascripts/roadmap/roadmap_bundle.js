@@ -109,6 +109,10 @@ export default () => {
         presetType,
         timeframe,
         progressTracking: rawFilterParams.progress || PROGRESS_WEIGHT,
+        isProgressTrackingActive:
+          rawFilterParams.show_progress === undefined
+            ? true
+            : parseBoolean(rawFilterParams.show_progress),
         isShowingMilestones:
           rawFilterParams.show_milestones === undefined
             ? true
@@ -132,6 +136,7 @@ export default () => {
         isChildEpics: this.isChildEpics,
         hasFiltersApplied: this.hasFiltersApplied,
         allowSubEpics: this.allowSubEpics,
+        isProgressTrackingActive: this.isProgressTrackingActive,
         progressTracking: this.progressTracking,
         isShowingMilestones: this.isShowingMilestones,
         milestonesType: this.milestonesType,

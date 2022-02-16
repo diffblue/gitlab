@@ -3,6 +3,7 @@ export default () => ({
   basePath: '',
   epicsState: '',
   progressTracking: '',
+  isProgressTrackingActive: true,
   filterParams: null,
   isShowingMilestones: true,
   milestonesType: '',

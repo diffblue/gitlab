@@ -247,6 +247,43 @@ RSpec.describe 'group epic roadmap', :js do
         end
       end
 
+      describe 'roadmap with epics progress tracking' do
+        def wait_for_epics(count, icon)
+          page.within('.roadmap-container .epics-list-section') do
+            expect(page).to have_selector('.epic-bar-progress', count: count)
+            expect(page).to have_selector("[data-testid='#{icon}']", count: count)
+          end
+        end
+
+        before do
+          open_settings_sidebar
+        end
+
+        it 'renders progress bar using weight', :aggregate_failures do
+          choose 'Use issue weight'
+
+          wait_for_epics(3, "weight-icon")
+        end
+
+        it 'renders progress bar issue count', :aggregate_failures do
+          choose 'Use issue count'
+
+          wait_for_epics(3, "issue-closed-icon")
+        end
+
+        it 'turns off progress tracking', :aggregate_failures do
+          page.within('[data-testid="roadmap-progress-tracking"]') do
+            click_button class: 'gl-toggle'
+          end
+
+          page.within('.roadmap-container .epics-list-section') do
+            expect(page).not_to have_selector('.epic-bar-progress')
+            expect(page).not_to have_selector('[data-testid="issue-closed-icon"]')
+            expect(page).not_to have_selector('[data-testid="weight-icon"]')
+          end
+        end
+      end
+
       describe 'roadmap milestones settings' do
         def select_milestones(milestones)
           page.within('[data-testid="roadmap-milestones-settings"]') do

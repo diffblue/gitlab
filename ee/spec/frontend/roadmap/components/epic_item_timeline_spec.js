@@ -23,11 +23,13 @@ const createComponent = ({
   timeframeItem = mockTimeframeMonths[0],
   timeframeString = '',
   progressTracking = PROGRESS_WEIGHT,
+  isProgressTrackingActive = true,
 } = {}) => {
   const store = createStore();
 
   store.dispatch('setInitialData', {
     progressTracking,
+    isProgressTrackingActive,
   });
 
   return shallowMount(EpicItemTimeline, {
@@ -73,6 +75,16 @@ describe('EpicItemTimelineComponent', () => {
 
     it('contains a link to the epic', () => {
       expect(getEpicBar(wrapper).attributes('href')).toBe(mockFormattedEpic.webUrl);
+    });
+
+    it.each`
+      isProgressTrackingActive
+      ${true}
+      ${false}
+    `('displays tracking depending on isProgressTrackingActive', ({ isProgressTrackingActive }) => {
+      wrapper = createComponent({ isProgressTrackingActive });
+
+      expect(wrapper.findComponent(GlProgressBar).exists()).toBe(isProgressTrackingActive);
     });
 
     it.each`
