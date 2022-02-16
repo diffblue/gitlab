@@ -40,29 +40,25 @@ module EE
     end
 
     def buy_additional_minutes_path(namespace)
-      return EE::SUBSCRIPTIONS_MORE_MINUTES_URL if use_customers_dot_for_minutes_path?(namespace)
+      return EE::SUBSCRIPTIONS_MORE_MINUTES_URL if use_customers_dot_for_addon_path?(namespace)
 
       buy_minutes_subscriptions_path(selected_group: namespace.id)
     end
 
-    def buy_additional_minutes_target(namespace)
-      use_customers_dot_for_minutes_path?(namespace) ? '_blank' : '_self'
+    def buy_addon_target_attr(namespace)
+      use_customers_dot_for_addon_path?(namespace) ? '_blank' : '_self'
     end
 
     def buy_storage_path(namespace)
-      return EE::SUBSCRIPTIONS_MORE_STORAGE_URL if use_customers_dot_for_storage_path?(namespace)
+      return EE::SUBSCRIPTIONS_MORE_STORAGE_URL if use_customers_dot_for_addon_path?(namespace)
 
       buy_storage_subscriptions_path(selected_group: namespace.id)
     end
 
     private
 
-    def use_customers_dot_for_minutes_path?(namespace)
+    def use_customers_dot_for_addon_path?(namespace)
       namespace.user_namespace?
-    end
-
-    def use_customers_dot_for_storage_path?(namespace)
-      namespace.user_namespace? || ::Feature.disabled?(:new_route_storage_purchase, namespace, default_enabled: :yaml)
     end
   end
 end

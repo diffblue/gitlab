@@ -7,7 +7,7 @@ import { withRootStorageStatistics } from '../mock_data';
 describe('UsageStatistics', () => {
   let wrapper;
 
-  const createComponent = ({ props = {}, provide = {}, newRouteStoragePurchase = false } = {}) => {
+  const createComponent = ({ props = {}, provide = {} } = {}) => {
     wrapper = shallowMount(UsageStatistics, {
       propsData: {
         rootStorageStatistics: {
@@ -19,9 +19,6 @@ describe('UsageStatistics', () => {
         ...props,
       },
       provide: {
-        glFeatures: {
-          newRouteStoragePurchase,
-        },
         ...provide,
       },
       stubs: {
@@ -45,29 +42,12 @@ describe('UsageStatistics', () => {
   const findPurchasedUsageButton = () =>
     getStatisticsCard('purchased-usage').findComponent(GlButton);
 
-  describe('with purchaseStorageUrl passed and newRouteStoragePurchase flag enabled', () => {
-    beforeEach(() => {
-      createComponent({
-        provide: {
-          purchaseStorageUrl: 'some-fancy-url',
-        },
-        newRouteStoragePurchase: true,
-      });
-    });
-
-    it('renders button in purchased usage card footer with correct link', () => {
-      expect(findPurchasedUsageButton().attributes()).toMatchObject({
-        href: 'some-fancy-url',
-        target: '_self',
-      });
-    });
-  });
-
   describe('with purchaseStorageUrl passed', () => {
     beforeEach(() => {
       createComponent({
         provide: {
           purchaseStorageUrl: 'some-fancy-url',
+          buyAddonTargetAttr: '_self',
         },
       });
     });
@@ -91,6 +71,24 @@ describe('UsageStatistics', () => {
     it('renders button in purchased usage card footer with correct link', () => {
       expect(findPurchasedUsageButton().attributes()).toMatchObject({
         href: 'some-fancy-url',
+        target: '_self',
+      });
+    });
+  });
+
+  describe('with buyAddonTargetAttr passed as _blank', () => {
+    beforeEach(() => {
+      createComponent({
+        provide: {
+          purchaseStorageUrl: 'some-fancy-url',
+          buyAddonTargetAttr: '_blank',
+        },
+      });
+    });
+
+    it('renders button in purchased usage card footer with correct target', () => {
+      expect(findPurchasedUsageButton().attributes()).toMatchObject({
+        href: 'some-fancy-url',
         target: '_blank',
       });
     });
@@ -101,6 +99,7 @@ describe('UsageStatistics', () => {
       createComponent({
         provide: {
           purchaseStorageUrl: null,
+          buyAddonTargetAttr: '_self',
         },
       });
     });

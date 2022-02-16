@@ -1,6 +1,5 @@
 <script>
 import { GlButton } from '@gitlab/ui';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { s__ } from '~/locale';
 import { formatUsageSize } from '../utils';
@@ -11,8 +10,7 @@ export default {
     GlButton,
     UsageStatisticsCard,
   },
-  mixins: [glFeatureFlagsMixin()],
-  inject: ['purchaseStorageUrl'],
+  inject: ['purchaseStorageUrl', 'buyAddonTargetAttr'],
   props: {
     rootStorageStatistics: {
       required: true,
@@ -64,7 +62,7 @@ export default {
             link: {
               text: s__('UsageQuota|Purchase more storage'),
               url: this.purchaseStorageUrl,
-              target: this.glFeatures.newRouteStoragePurchase ? '_self' : '_blank',
+              target: this.buyAddonTargetAttr,
             },
           }
         : null;

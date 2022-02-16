@@ -5,6 +5,7 @@
 
 - page_title s_("UsageQuota|Usage")
 - url_to_purchase_storage = buy_storage_path(@group) if purchase_storage_link_enabled?(@group)
+- buy_addon_target_attr = buy_addon_target_attr(@group) if purchase_storage_link_enabled?(@group)
 - pending_members_page_path = pending_members_group_usage_quotas_path(@group) if @group.user_cap_available?
 - pending_members_count = Member.in_hierarchy(@group).with_state("awaiting").count
 
@@ -37,4 +38,4 @@
     = render "namespaces/pipelines_quota/list",
       locals: { namespace: @group, projects: @projects }
   .tab-pane#storage-quota-tab
-    #js-storage-counter-app{ data: { namespace_path: @group.full_path, purchase_storage_url: url_to_purchase_storage, is_temporary_storage_increase_visible: temporary_storage_increase_visible?(@group).to_s } }
+    #js-storage-counter-app{ data: { namespace_path: @group.full_path, purchase_storage_url: url_to_purchase_storage, buy_addon_target_attr: buy_addon_target_attr, is_temporary_storage_increase_visible: temporary_storage_increase_visible?(@group).to_s } }
