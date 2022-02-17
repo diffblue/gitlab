@@ -2,26 +2,26 @@
 
 exports[`Project Header matches the snapshot 1`] = `
 <div
-  class="gl-display-flex gl-align-items-center page-title-holder text-secondary gl-justify-content-space-between pb-2 mb-3"
+  class="gl-display-flex gl-align-items-center gl-text-gray-500 gl-justify-content-space-between gl-pb-3 gl-mb-5 gl-border-b-solid gl-border-gray-100 gl-border-1"
 >
   <div
     class="gl-display-flex gl-align-items-center"
   >
     <project-avatar-stub
-      class="flex-shrink-0"
-      project="[object Object]"
-      size="20"
+      class="gl-mr-3"
+      projectavatarurl="/namespace-avatar"
+      projectname="hello"
+      size="24"
     />
      
     <gl-link-stub
-      class="js-namespace-link text-secondary"
+      class="gl-text-gray-500 gl-mr-3"
+      data-testid="namespace-link"
       href="/hello"
     >
-      <span
-        class="js-namespace gl-mr-3"
-      >
-         hello 
-      </span>
+      
+      hello
+    
     </gl-link-stub>
      
     <span
@@ -31,24 +31,24 @@ exports[`Project Header matches the snapshot 1`] = `
     </span>
      
     <project-avatar-stub
-      class="flex-shrink-0"
-      project="[object Object]"
-      size="20"
+      class="gl-mr-3"
+      projectavatarurl="/project-avatar"
+      projectname="world"
+      size="24"
     />
      
     <gl-link-stub
-      class="js-project-link text-secondary"
+      class="gl-text-gray-500 gl-mr-3"
+      data-testid="project-link"
     >
-      <span
-        class="js-name gl-mr-3"
-      >
-         world 
-      </span>
+      
+      world
+    
     </gl-link-stub>
   </div>
    
   <div
-    class="gl-display-flex js-more-actions"
+    class="gl-display-flex"
   >
     <gl-dropdown-stub
       category="primary"
@@ -61,13 +61,13 @@ exports[`Project Header matches the snapshot 1`] = `
       right="true"
       size="medium"
       text=""
-      toggleclass="js-more-actions-toggle gl-display-flex gl-align-items-center gl-px-3! gl-bg-transparent gl-shadow-none!"
+      toggleclass="gl-display-flex gl-align-items-center gl-px-3! gl-bg-transparent gl-shadow-none!"
       variant="default"
     >
        
       <gl-dropdown-item-stub
         avatarurl=""
-        class="js-remove-button"
+        data-testid="remove-project-button"
         iconcolor=""
         iconname=""
         iconrightarialabel=""
@@ -76,7 +76,7 @@ exports[`Project Header matches the snapshot 1`] = `
         variant="link"
       >
         <span
-          class="text-danger"
+          class="gl-text-red-500"
         >
            Remove 
         </span>
