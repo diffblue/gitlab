@@ -3,5 +3,5 @@
 - if show_compliance_framework_badge?(project)
   - framework = project.compliance_framework_setting.compliance_management_framework
 
-  %span.badge.compliance-framework-pill.ml-2.has-tooltip{ style: "background-color: #{framework.color}", class: text_color_class_for_bg(framework.color), data: { container: 'body' }, title: framework.description }
+  = gl_badge_tag(nil, { class: "compliance-framework-pill gl-ml-3! has-tooltip", style: "background-color: #{framework.color}; color: #{text_color_for_bg(framework.color)}", data: { container: 'body' }, title: framework.description}) do
     = framework.name
