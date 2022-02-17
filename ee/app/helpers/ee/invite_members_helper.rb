@@ -2,6 +2,9 @@
 
 module EE
   module InviteMembersHelper
+    extend ::Gitlab::Utils::Override
+
+    override :users_filter_data
     def users_filter_data(group)
       root_group = group&.root_ancestor
 

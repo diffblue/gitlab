@@ -22613,6 +22613,19 @@ msgstr ""
 msgid "Members of a group may only view projects they have permission to access"
 msgstr ""
 
+msgid "MembersOverage|If you continue, the %{groupName} group will have %{quantity} seat in use and will be billed for the overage."
+msgid_plural "MembersOverage|If you continue, the %{groupName} group will have %{quantity} seats in use and will be billed for the overage."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "MembersOverage|You are about to incur additional charges"
+msgstr ""
+
+msgid "MembersOverage|Your subscription includes %d seat."
+msgid_plural "MembersOverage|Your subscription includes %d seats."
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "Membership"
 msgstr ""
 
