@@ -11,15 +11,12 @@ describe('PolicyDrawerLayout component', () => {
   let wrapper;
 
   const DESCRIPTION = 'This policy enforces pipeline configuration to have a job with DAST scan';
-  const SUMMARY = 'Summary';
   const TYPE = 'Scan Execution';
 
   const findCustomDescription = () => wrapper.findByTestId('custom-description-text');
   const findDefaultDescription = () => wrapper.findByTestId('default-description-text');
   const findEnabledText = () => wrapper.findByTestId('enabled-status-text');
   const findNotEnabledText = () => wrapper.findByTestId('not-enabled-status-text');
-  const findSummaryText = () => wrapper.findByTestId('summary-text');
-  const findTypeText = () => wrapper.findByTestId('policy-type');
 
   const componentStatusText = (status) => (status ? 'does' : 'does not');
 
@@ -50,8 +47,6 @@ describe('PolicyDrawerLayout component', () => {
 
     it.each`
       component                | status                                  | finder                    | exists             | text
-      ${'type text'}           | ${'does'}                               | ${findTypeText}           | ${true}            | ${TYPE}
-      ${'summary text'}        | ${'does'}                               | ${findSummaryText}        | ${true}            | ${SUMMARY}
       ${'custom description'}  | ${componentStatusText(hasDescription)}  | ${findCustomDescription}  | ${hasDescription}  | ${DESCRIPTION}
       ${'default description'} | ${componentStatusText(!hasDescription)} | ${findDefaultDescription} | ${!hasDescription} | ${DEFAULT_DESCRIPTION_LABEL}
       ${'enabled text'}        | ${componentStatusText(enabled)}         | ${findEnabledText}        | ${enabled}         | ${ENABLED_LABEL}
@@ -62,6 +57,10 @@ describe('PolicyDrawerLayout component', () => {
       if (exists) {
         expect(component.text()).toBe(text);
       }
+    });
+
+    it('matches the snapshots', () => {
+      expect(wrapper.element).toMatchSnapshot();
     });
   });
 });
