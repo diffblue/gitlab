@@ -1409,6 +1409,21 @@ removed in GitLab 15.0.
 
 **Planned removal milestone: 15.0 (2022-06-22)**
 
+### `projectFingerprint` in `PipelineSecurityReportFinding` GraphQL
+
+WARNING:
+This feature will be changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+The `projectFingerprint` field in the [PipelineSecurityReportFinding](https://docs.gitlab.com/ee/api/graphql/reference/index.html#pipelinesecurityreportfinding)
+GraphQL object is being deprecated. This field contains a "fingerprint" of security findings used to determine uniqueness.
+The method for calculating fingerprints has changed, resulting in different values. Going forward, the new values will be
+exposed in the UUID field. Data previously available in the projectFingerprint field will eventually be removed entirely.
+
+**Planned removal milestone: 15.0 (2022-05-22)**
+
 ### `started` iterations API field
 
 WARNING:
