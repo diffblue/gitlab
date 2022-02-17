@@ -19,8 +19,11 @@ module EE
         # This before_action needs to be redefined so we can use the new values
         # from `admin_not_required_endpoints`.
         before_action :authorize_admin_group_member!, except: admin_not_required_endpoints
-
         before_action :authorize_update_group_member!, only: [:update, :override]
+
+        before_action do
+          push_frontend_feature_flag(:overage_members_modal, @group, default_enabled: :yaml) if ::Gitlab::CurrentSettings.should_check_namespace_plan?
+        end
       end
 
       # rubocop:disable Gitlab/ModuleWithInstanceVariables
