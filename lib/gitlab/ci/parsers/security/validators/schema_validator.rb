@@ -28,15 +28,17 @@ module Gitlab
             # These come from https://app.periscopedata.com/app/gitlab/895813/Secure-Scan-metrics?widget=12248944&udv=1385516
             KNOWN_VERSIONS_TO_DEPRECATE = %w[0.1 1.0 1.0.0 1.2 1.3 10.0.0 12.1.0 13.1.0 2.0 2.1 2.1.0 2.3 2.3.0 2.4 3.0 3.0.0 3.0.6 3.13.2 V2.7.0].freeze
 
+            VERSIONS_TO_DEPRECATE_IN_15_0 = (PREVIOUS_RELEASES + KNOWN_VERSIONS_TO_DEPRECATE).freeze
+
             DEPRECATED_VERSIONS = {
-              cluster_image_scanning: PREVIOUS_RELEASES + KNOWN_VERSIONS_TO_DEPRECATE + %w[],
-              container_scanning: PREVIOUS_RELEASES + KNOWN_VERSIONS_TO_DEPRECATE + %w[],
-              coverage_fuzzing: PREVIOUS_RELEASES + KNOWN_VERSIONS_TO_DEPRECATE + %w[],
-              dast: PREVIOUS_RELEASES + KNOWN_VERSIONS_TO_DEPRECATE + %w[],
-              api_fuzzing: PREVIOUS_RELEASES + KNOWN_VERSIONS_TO_DEPRECATE + %w[],
-              dependency_scanning: PREVIOUS_RELEASES + KNOWN_VERSIONS_TO_DEPRECATE + %w[],
-              sast: PREVIOUS_RELEASES + KNOWN_VERSIONS_TO_DEPRECATE + %w[],
-              secret_detection: PREVIOUS_RELEASES + KNOWN_VERSIONS_TO_DEPRECATE + %w[]
+              cluster_image_scanning: VERSIONS_TO_DEPRECATE_IN_15_0,
+              container_scanning: VERSIONS_TO_DEPRECATE_IN_15_0,
+              coverage_fuzzing: VERSIONS_TO_DEPRECATE_IN_15_0,
+              dast: VERSIONS_TO_DEPRECATE_IN_15_0,
+              api_fuzzing: VERSIONS_TO_DEPRECATE_IN_15_0,
+              dependency_scanning: VERSIONS_TO_DEPRECATE_IN_15_0,
+              sast: VERSIONS_TO_DEPRECATE_IN_15_0,
+              secret_detection: VERSIONS_TO_DEPRECATE_IN_15_0
             }.freeze
 
             class Schema

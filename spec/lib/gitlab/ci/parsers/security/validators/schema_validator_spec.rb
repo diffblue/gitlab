@@ -4,24 +4,21 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
   describe 'SUPPORTED_VERSIONS' do
-    # This is not a stub, let is not accessible within context blocks
-    # rubocop:disable RSpec/LeakyConstantDeclaration
-    SCHEMA_PATH = Rails.root.join("lib", "gitlab", "ci", "parsers", "security", "validators", "schemas")
-    # rubocop:enable RSpec/LeakyConstantDeclaration
+    schema_path = Rails.root.join("lib", "gitlab", "ci", "parsers", "security", "validators", "schemas")
 
     it 'matches DEPRECATED_VERSIONS keys' do
       expect(described_class::SUPPORTED_VERSIONS.keys).to eq(described_class::DEPRECATED_VERSIONS.keys)
     end
 
-    context 'files under SCHEMA_PATH are explicitly listed' do
+    context 'files under schema path are explicitly listed' do
       # We only care about the part that comes before report-format.json
       # https://rubular.com/r/N8Juz7r8hYDYgD
       filename_regex = /(?<report_type>[-\w]*)\-report-format.json/
 
-      versions = Dir.glob(File.join(SCHEMA_PATH, "*", File::SEPARATOR)).map { |path| path.split("/").last }
+      versions = Dir.glob(File.join(schema_path, "*", File::SEPARATOR)).map { |path| path.split("/").last }
 
       versions.each do |version|
-        files = Dir[SCHEMA_PATH.join(version, "*.json")]
+        files = Dir[schema_path.join(version, "*.json")]
 
         files.each do |file|
           matches = filename_regex.match(file)
@@ -42,17 +39,11 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
         described_class::SUPPORTED_VERSIONS[report_type].each do |version|
           it "#{report_type} #{version} schema file is present" do
             filename = "#{report_type.to_s.tr("_", "-")}-report-format.json"
-            full_path = SCHEMA_PATH.join(version, filename)
+            full_path = schema_path.join(version, filename)
             expect(File.file?(full_path)).to be true
           end
         end
       end
-    end
-  end
-
-  describe 'DEPRECATED_VERSIONS' do
-    it 'matches SUPPORTED_VERSIONS keys' do
-      expect(described_class::DEPRECATED_VERSIONS.keys).to eq(described_class::SUPPORTED_VERSIONS.keys)
     end
   end
 
