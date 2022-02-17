@@ -265,6 +265,14 @@ RSpec.describe MergeRequest do
 
           it { is_expected.to be_truthy }
 
+          context 'and legacy approval status present' do
+            before do
+              stub_feature_flags(lc_remove_legacy_approval_status: false)
+            end
+
+            it { is_expected.to be_truthy }
+          end
+
           context 'with disabled licensed feature' do
             before do
               stub_licensed_features(license_scanning: false)

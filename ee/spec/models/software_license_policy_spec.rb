@@ -50,17 +50,42 @@ RSpec.describe SoftwareLicensePolicy do
   end
 
   describe "#approval_status" do
-    where(:classification, :approval_status) do
-      [
-        %w[allowed approved],
-        %w[denied blacklisted]
-      ]
+    context 'with legacy approval status feature flag enabled' do
+      before do
+        stub_feature_flags(lc_remove_legacy_approval_status: true)
+      end
+
+      where(:classification, :approval_status) do
+        [
+          %w[allowed allowed],
+          %w[denied denied]
+        ]
+      end
+
+      with_them do
+        subject { build(:software_license_policy, classification: classification) }
+
+        it { expect(subject.approval_status).to eql(approval_status) }
+      end
     end
 
-    with_them do
-      subject { build(:software_license_policy, classification: classification) }
+    context 'with legacy approval status feature flag disabled' do
+      before do
+        stub_feature_flags(lc_remove_legacy_approval_status: false)
+      end
 
-      it { expect(subject.approval_status).to eql(approval_status) }
+      where(:classification, :approval_status) do
+        [
+          %w[allowed approved],
+          %w[denied blacklisted]
+        ]
+      end
+
+      with_them do
+        subject { build(:software_license_policy, classification: classification) }
+
+        it { expect(subject.approval_status).to eql(approval_status) }
+      end
     end
   end
 

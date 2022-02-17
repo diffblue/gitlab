@@ -50,7 +50,15 @@ class SoftwareLicensePolicy < ApplicationRecord
   delegate :name, :spdx_identifier, to: :software_license
 
   def approval_status
-    LEGACY_CLASSIFICATION_STATUS.key(classification) || classification
+    if Feature.enabled?(:lc_remove_legacy_approval_status, project, default_enabled: :yaml)
+      classification
+    else
+      legacy_approval_status
+    end
+  end
+
+  def legacy_approval_status
+    LEGACY_CLASSIFICATION_STATUS.key(classification)
   end
 
   def self.to_classification(approval_status)

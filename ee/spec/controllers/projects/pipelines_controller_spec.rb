@@ -104,11 +104,31 @@ RSpec.describe Projects::PipelinesController do
           expect(payload.first.keys).to match_array(%w(name classification dependencies count url))
         end
 
-        it 'will return mit license approved status' do
+        it 'will return mit license allowed status' do
           payload_mit = payload.find { |l| l['name'] == 'MIT' }
           expect(payload_mit['count']).to eq(pipeline.license_scanning_report.licenses.find { |x| x.name == 'MIT' }.count)
           expect(payload_mit['url']).to eq('http://opensource.org/licenses/mit-license')
-          expect(payload_mit['classification']['approval_status']).to eq('approved')
+          expect(payload_mit['classification']['approval_status']).to eq('allowed')
+        end
+
+        context 'approval_status' do
+          subject(:status) { payload.find { |l| l['name'] == 'MIT' }.dig('classification', 'approval_status') }
+
+          context 'using legacy name' do
+            before do
+              stub_feature_flags(lc_remove_legacy_approval_status: false)
+            end
+
+            it { is_expected.to eq('approved') }
+          end
+
+          context 'using classification' do
+            before do
+              stub_feature_flags(lc_remove_legacy_approval_status: true)
+            end
+
+            it { is_expected.to eq('allowed') }
+          end
         end
 
         it 'will return sorted by name' do
