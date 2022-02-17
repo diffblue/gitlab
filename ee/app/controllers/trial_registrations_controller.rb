@@ -4,6 +4,7 @@
 # TODO: namespace https://gitlab.com/gitlab-org/gitlab/-/issues/338394
 class TrialRegistrationsController < RegistrationsController
   include OneTrustCSP
+  include BizibleCSP
 
   layout 'minimal'
 
