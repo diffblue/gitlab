@@ -60,4 +60,16 @@ RSpec.describe Groups::FeatureDiscoveryMomentsHelper do
 
     it { is_expected.to eq({ glm_source: 'gitlab.com', glm_content: 'cross_stage_fdm' }) }
   end
+
+  describe '#cross_stage_fdm_value_statements' do
+    it 'provides a collection of data in the expected structure' do
+      expect(helper.cross_stage_fdm_value_statements).to all(
+        match(
+          icon_name: an_instance_of(String),
+          title: an_instance_of(String),
+          desc: an_instance_of(String)
+        )
+      )
+    end
+  end
 end
