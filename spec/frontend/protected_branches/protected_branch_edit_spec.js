@@ -12,7 +12,7 @@ const FORCE_PUSH_TOGGLE_TESTID = 'force-push-toggle';
 const CODE_OWNER_TOGGLE_TESTID = 'code-owner-toggle';
 const IS_CHECKED_CLASS = 'is-checked';
 const IS_DISABLED_CLASS = 'is-disabled';
-const IS_LOADING_CLASS = 'toggle-loading';
+const IS_LOADING_SELECTOR = '.toggle-loading';
 
 describe('ProtectedBranchEdit', () => {
   let mock;
@@ -88,7 +88,7 @@ describe('ProtectedBranchEdit', () => {
 
     it('is not changed', () => {
       expect(toggle).not.toHaveClass(IS_CHECKED_CLASS);
-      expect(toggle.querySelector(`.${IS_LOADING_CLASS}`)).toBe(null);
+      expect(toggle.querySelector(IS_LOADING_SELECTOR)).toBe(null);
       expect(toggle).not.toHaveClass(IS_DISABLED_CLASS);
     });
 
@@ -101,7 +101,7 @@ describe('ProtectedBranchEdit', () => {
 
       it('checks and disables button', () => {
         expect(toggle).toHaveClass(IS_CHECKED_CLASS);
-        expect(toggle.querySelector(`.${IS_LOADING_CLASS}`)).not.toBe(null);
+        expect(toggle.querySelector(IS_LOADING_SELECTOR)).not.toBe(null);
         expect(toggle).toHaveClass(IS_DISABLED_CLASS);
       });
 
@@ -111,7 +111,7 @@ describe('ProtectedBranchEdit', () => {
           expect(mock.history.patch).toHaveLength(1);
 
           expect(toggle).not.toHaveClass(IS_DISABLED_CLASS);
-          expect(toggle.querySelector(`.${IS_LOADING_CLASS}`)).toBe(null);
+          expect(toggle.querySelector(IS_LOADING_SELECTOR)).toBe(null);
           expect(createFlash).not.toHaveBeenCalled();
         }));
     });
