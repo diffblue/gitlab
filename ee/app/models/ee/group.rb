@@ -16,6 +16,8 @@ module EE
       include CanMoveRepositoryStorage
       include ReactiveCaching
 
+      ALLOWED_ACTIONS_TO_USE_FILTERING_OPTIMIZATION = [:read_epic, :read_confidential_epic].freeze
+
       self.reactive_cache_work_type = :no_dependency
       self.reactive_cache_refresh_interval = 10.minutes
       self.reactive_cache_lifetime = 1.hour
@@ -186,13 +188,61 @@ module EE
         # https://gitlab.com/gitlab-org/gitlab/issues/11539
         preset_root_ancestor_for(groups) if same_root
 
-        DeclarativePolicy.user_scope do
-          groups.select { |group| Ability.allowed?(user, action, group) }
+        # If :find_epics_performance_improvement, :use_traversal_ids and :sync_traversal_ids
+        # are enabled we can use filter optmization to skip some permission check queries in group descendants.
+        if can_use_filter_optimization?(groups)
+          filter_groups_user_can(groups: groups, user: user, action: action)
+        else
+          DeclarativePolicy.user_scope do
+            groups.select { |group| Ability.allowed?(user, action, group) }
+          end
         end
       end
 
-      def groups_user_can_read_epics(groups, user, same_root: false)
-        groups_user_can(groups, user, :read_epic, same_root: same_root)
+      private
+
+      def can_use_filter_optimization?(groups)
+        return false unless groups.any?
+
+        group = groups.first
+
+        return false unless group.sync_traversal_ids?
+        return false unless group.use_traversal_ids?
+
+        ::Feature.enabled?(:find_epics_performance_improvement, default_enabled: :yaml)
+      end
+
+      # Prevents doing one query to check user access for each group when possible.
+      # When user have access and have permissions in a given group it skips all queries
+      # for its descendants.
+      # More information at https://gitlab.com/gitlab-org/gitlab/-/issues/217937.
+      def filter_groups_user_can(groups:, user:, action:)
+        return [] unless ALLOWED_ACTIONS_TO_USE_FILTERING_OPTIMIZATION.include?(action)
+
+        groups = groups.reorder(nil).to_a unless groups.is_a?(Array) # Make sure hierarchy is ordered from parent to children
+
+        groups.each_with_object([]) do |group, authorized_groups|
+          next if authorized_groups.include?(group)
+
+          authorized = self.fetch_authorized_group_and_descendants_for(user, group, groups, action)
+
+          authorized_groups.push(*authorized)
+        end
+      end
+
+      def fetch_authorized_group_and_descendants_for(user, group, groups, action)
+        return [] unless Ability.allowed?(user, action, group)
+
+        has_access = Ability.allowed?(user, :read_namespace, group)
+
+        if has_access
+          groups.select { |g| g.traversal_ids.include?(group.id) }
+        else
+          # An user can have permissions on group but not be a member, for example, inherit permissions because of membership in a project on a subgroup.
+          # In this case we cannot safely assume that all group children are readable by user, user can only read groups at the same tree branch
+          # where the project belongs to.
+          group
+        end
       end
     end
 
