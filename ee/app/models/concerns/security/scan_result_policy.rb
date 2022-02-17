@@ -17,7 +17,7 @@ module Security
       delegate :approval_rules, to: :project
 
       def active_scan_result_policies
-        return [] unless ::Feature.enabled?(:scan_result_policy, project)
+        return [] unless ::Feature.enabled?(:scan_result_policy, project, default_enabled: :yaml)
 
         scan_result_policies&.select { |config| config[:enabled] }&.first(LIMIT)
       end

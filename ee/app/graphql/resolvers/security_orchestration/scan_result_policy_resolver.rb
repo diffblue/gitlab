@@ -8,7 +8,7 @@ module Resolvers
       type Types::SecurityOrchestration::ScanResultPolicyType, null: true
 
       def resolve(**args)
-        return [] unless valid? && Feature.enabled?(:scan_result_policy, project)
+        return [] unless valid? && Feature.enabled?(:scan_result_policy, project, default_enabled: :yaml)
 
         authorize!
 

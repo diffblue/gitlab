@@ -73,7 +73,7 @@ module Ci
     end
 
     def sync_scan_finding
-      return if ::Feature.disabled?(:scan_result_policy, pipeline.project)
+      return if ::Feature.disabled?(:scan_result_policy, pipeline.project, default_enabled: :yaml)
       return if policy_rule_reports.empty? && !pipeline.complete?
 
       remove_required_approvals_for_scan_finding(pipeline.merge_requests_as_head_pipeline.opened)
