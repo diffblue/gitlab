@@ -1,14 +1,27 @@
 import { mount } from '@vue/test-utils';
+import Vue from 'vue';
+import VueApollo from 'vue-apollo';
 import EnvironmentAlert from 'ee/environments/components/environment_alert.vue';
+import alertQuery from 'ee/environments/graphql/queries/environment.query.graphql';
 import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
+
+Vue.use(VueApollo);
 
 describe('Environment Alert', () => {
   let wrapper;
+  let alertResolver;
   const DEFAULT_PROVIDE = { projectPath: 'test-org/test' };
   const DEFAULT_PROPS = { environment: { name: 'staging' } };
 
-  const factory = (props = {}, provide = {}) => {
+  const createApolloProvider = () => createMockApollo([[alertQuery, alertResolver]]);
+
+  const factory = async (props = {}, provide = {}) => {
+    const apolloProvider = createApolloProvider();
+
     wrapper = mount(EnvironmentAlert, {
+      apolloProvider,
       propsData: {
         ...DEFAULT_PROPS,
         ...props,
@@ -18,12 +31,14 @@ describe('Environment Alert', () => {
         ...provide,
       },
     });
+
+    await waitForPromises();
   };
 
   const findSeverityBadge = () => wrapper.findComponent(SeverityBadge);
 
   beforeEach(() => {
-    factory();
+    alertResolver = jest.fn();
   });
 
   afterEach(() => {
@@ -32,21 +47,29 @@ describe('Environment Alert', () => {
   });
 
   describe('has alert', () => {
-    beforeEach(() => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        alert: {
-          severity: 'CRITICAL',
-          title: 'alert title',
-          prometheusAlert: { humanizedText: '>0.1% jest' },
-          detailsUrl: '/alert/details',
-          startedAt: new Date(),
+    beforeEach(async () => {
+      alertResolver.mockResolvedValue({
+        data: {
+          project: {
+            id: '1',
+            environment: {
+              id: '2',
+              latestOpenedMostSevereAlert: {
+                severity: 'CRITICAL',
+                title: 'alert title',
+                prometheusAlert: { id: '3', humanizedText: '>0.1% jest' },
+                detailsUrl: '/alert/details',
+                startedAt: new Date(),
+              },
+            },
+          },
         },
       });
+
+      await factory();
     });
 
-    it('should display the alert details', () => {
+    it('should display the alert details', async () => {
       const text = wrapper.text();
       expect(text).toContain('Critical');
       expect(text).toContain('alert title >0.1% jest.');
@@ -68,6 +91,21 @@ describe('Environment Alert', () => {
   });
 
   describe('has no alert', () => {
+    beforeEach(async () => {
+      alertResolver.mockResolvedValue({
+        data: {
+          project: {
+            id: '1',
+            environment: {
+              id: '2',
+              latestOpenedMostSevereAlert: null,
+            },
+          },
+        },
+      });
+      await factory();
+    });
+
     it('should display nothing', () => {
       expect(wrapper.find('[data-testid="alert"]').exists()).toBe(false);
       expect(findSeverityBadge().exists()).toBe(false);
