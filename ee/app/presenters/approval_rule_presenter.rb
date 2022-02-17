@@ -3,6 +3,8 @@
 class ApprovalRulePresenter < Gitlab::View::Presenter::Delegated
   include Gitlab::Utils::StrongMemoize
 
+  presents nil, as: :rule
+
   # Hide all approvers if any of them might come from a hidden group. This
   # represents an abundance of caution, but we can't tell which approvers come
   # from a hidden group and which don't, from here, so this is the simplest
@@ -26,6 +28,6 @@ class ApprovalRulePresenter < Gitlab::View::Presenter::Delegated
   private
 
   def group_query_service
-    @group_query_service ||= ApprovalRules::GroupFinder.new(@subject, current_user)
+    @group_query_service ||= ApprovalRules::GroupFinder.new(rule, current_user)
   end
 end
