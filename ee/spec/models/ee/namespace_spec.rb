@@ -937,6 +937,22 @@ RSpec.describe Namespace do
     end
   end
 
+  shared_context 'bot user for invited_group' do
+    let(:group_bot_in_invited_group) { create(:user, :project_bot) }
+
+    before do
+      invited_group.add_maintainer(group_bot_in_invited_group)
+    end
+  end
+
+  shared_context 'bot user for shared_group' do
+    let(:group_bot_in_shared_group) { create(:user, :project_bot) }
+
+    before do
+      add_bot_to_group.add_maintainer(group_bot_in_shared_group)
+    end
+  end
+
   describe '#billed_user_ids', :saas do
     context 'with a user namespace' do
       let(:user) { create(:user) }
@@ -1041,6 +1057,13 @@ RSpec.describe Namespace do
                   expect(billed_user_ids[:group_member_user_ids]).to match_array([developer.id])
                   expect(billed_user_ids[:project_member_user_ids]).to match_array([developer.id, project_developer.id])
                 end
+
+                context 'the invited group contains bot users' do
+                  include_context 'bot user for invited_group'
+
+                  it { expect(billed_user_ids[:user_ids]).not_to include(group_bot_in_invited_group.id) }
+                  it { expect(billed_user_ids[:shared_project_user_ids]).not_to include(group_bot_in_invited_group.id) }
+                end
               end
 
               context 'when group is invited as a guest to the project' do
@@ -1076,6 +1099,15 @@ RSpec.describe Namespace do
               expect(shared_group.billed_user_ids[:user_ids]).not_to include([developer.id])
             end
 
+            context 'the shared group contains bot users' do
+              include_context 'bot user for shared_group' do
+                let(:add_bot_to_group) { shared_group }
+              end
+
+              it { expect(billed_user_ids[:user_ids]).not_to include(group_bot_in_shared_group.id) }
+              it { expect(billed_user_ids[:shared_group_user_ids]).not_to include(group_bot_in_shared_group.id) }
+            end
+
             context 'when subgroup invited another group to collaborate' do
               let(:another_shared_group) { create(:group) }
               let(:another_shared_group_developer) { create(:user) }
@@ -1099,6 +1131,15 @@ RSpec.describe Namespace do
                   expect(billed_user_ids[:shared_group_user_ids]).to match_array([shared_group_developer.id, another_shared_group_developer.id])
                   expect(shared_group.billed_user_ids[:user_ids]).not_to include([developer.id])
                   expect(another_shared_group.billed_user_ids[:user_ids]).not_to include([developer.id, shared_group_developer.id])
+                end
+
+                context 'the shared group contains bot users' do
+                  include_context 'bot user for shared_group' do
+                    let(:add_bot_to_group) { another_shared_group }
+                  end
+
+                  it { expect(billed_user_ids[:user_ids]).not_to include(group_bot_in_shared_group.id) }
+                  it { expect(billed_user_ids[:shared_group_user_ids]).not_to include(group_bot_in_shared_group.id) }
                 end
               end
 
@@ -1207,6 +1248,13 @@ RSpec.describe Namespace do
                     invited_group_guest.id
                   ])
                 end
+
+                context 'the invited group contains bot users' do
+                  include_context 'bot user for invited_group'
+
+                  it { expect(billed_user_ids[:user_ids]).not_to include(group_bot_in_invited_group.id) }
+                  it { expect(billed_user_ids[:shared_project_user_ids]).not_to include(group_bot_in_invited_group.id) }
+                end
               end
             end
 
@@ -1230,6 +1278,15 @@ RSpec.describe Namespace do
                 expect(billed_user_ids[:user_ids]).to match_array([developer.id, guest.id, shared_group_developer.id, shared_group_guest.id])
                 expect(billed_user_ids[:shared_group_user_ids]).to match_array([shared_group_developer.id, shared_group_guest.id])
                 expect(shared_group.billed_user_ids[:user_ids]).to match_array([shared_group_developer.id, shared_group_guest.id])
+              end
+
+              context 'the shared group contains bot users' do
+                include_context 'bot user for shared_group' do
+                  let(:add_bot_to_group) { shared_group }
+                end
+
+                it { expect(billed_user_ids[:user_ids]).not_to include(group_bot_in_shared_group.id) }
+                it { expect(billed_user_ids[:shared_group_user_ids]).not_to include(group_bot_in_shared_group.id) }
               end
             end
           end

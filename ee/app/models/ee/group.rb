@@ -584,8 +584,8 @@ module EE
       strong_memoize(:billed_user_ids_excluding_guests) do
         group_member_user_ids = billed_group_users(non_guests: true).distinct.pluck(:id)
         project_member_user_ids = billed_project_users(non_guests: true).distinct.pluck(:id)
-        shared_group_user_ids = billed_shared_non_guests_group_members.non_guests.distinct.pluck(:user_id)
-        shared_project_user_ids = billed_invited_non_guests_group_to_project_members.non_guests.distinct.pluck(:user_id)
+        shared_group_user_ids = billed_shared_non_guests_group_users.distinct.pluck(:id)
+        shared_project_user_ids = billed_invited_non_guests_group_to_project_users.distinct.pluck(:id)
 
         {
           user_ids: (group_member_user_ids + project_member_user_ids + shared_group_user_ids + shared_project_user_ids).to_set,
@@ -601,8 +601,8 @@ module EE
       strong_memoize(:billed_user_ids_including_guests) do
         group_member_user_ids = billed_group_users.distinct.pluck(:id)
         project_member_user_ids = billed_project_users.distinct.pluck(:id)
-        shared_group_user_ids = billed_shared_group_members.distinct.pluck(:user_id)
-        shared_project_user_ids = billed_invited_group_to_project_members.distinct.pluck(:user_id)
+        shared_group_user_ids = billed_shared_group_users.distinct.pluck(:id)
+        shared_project_user_ids = billed_invited_group_to_project_users.distinct.pluck(:id)
 
         {
           user_ids: (group_member_user_ids + project_member_user_ids + shared_group_user_ids + shared_project_user_ids).to_set,
@@ -631,9 +631,7 @@ module EE
 
       members = members.non_guests if non_guests
 
-      user_ids = members.distinct.select(:user_id)
-
-      ::User.without_project_bot.where(id: user_ids)
+      users_without_project_bots(members)
     end
 
     # Members belonging directly to Projects within Group or Projects within subgroups
@@ -642,22 +640,22 @@ module EE
 
       members = members.non_guests if non_guests
 
-      user_ids = members.where(
+      members = members.where(
         source_id: ::Project.joins(:group).where(namespace: self_and_descendants)
       )
-      .distinct
-      .select(:user_id)
 
-      ::User.with_state(:active).without_project_bot.where(id: user_ids)
+      users_without_project_bots(members).with_state(:active)
     end
 
     # Members belonging to Groups invited to collaborate with Projects
-    def billed_invited_group_to_project_members
-      invited_or_shared_group_members(invited_groups_in_projects)
+    def billed_invited_group_to_project_users
+      members = invited_or_shared_group_members(invited_groups_in_projects)
+      users_without_project_bots(members)
     end
 
-    def billed_invited_non_guests_group_to_project_members
-      invited_or_shared_group_members(invited_group_as_non_guests_in_projects)
+    def billed_invited_non_guests_group_to_project_users
+      members = invited_or_shared_group_members(invited_group_as_non_guests_in_projects).non_guests
+      users_without_project_bots(members)
     end
 
     def invited_group_as_non_guests_in_projects
@@ -670,12 +668,14 @@ module EE
     end
 
     # Members belonging to Groups invited to collaborate with Groups and Subgroups
-    def billed_shared_group_members
-      invited_or_shared_group_members(invited_group_in_groups)
+    def billed_shared_group_users
+      members = invited_or_shared_group_members(invited_group_in_groups)
+      users_without_project_bots(members)
     end
 
-    def billed_shared_non_guests_group_members
-      invited_or_shared_group_members(invited_non_guest_group_in_groups)
+    def billed_shared_non_guests_group_users
+      members = invited_or_shared_group_members(invited_non_guest_group_in_groups).non_guests
+      users_without_project_bots(members)
     end
 
     def invited_non_guest_group_in_groups
@@ -689,6 +689,10 @@ module EE
 
     def invited_or_shared_group_members(groups)
       ::GroupMember.active_without_invites_and_requests.where(source_id: groups.self_and_ancestors)
+    end
+
+    def users_without_project_bots(members)
+      ::User.where(id: members.distinct.select(:user_id)).without_project_bot
     end
 
     override :_safe_read_repository_read_only_column
