@@ -156,10 +156,21 @@ RSpec.describe LooseForeignKeys::CleanupWorker do
 
       before do
         allow(Gitlab::Database).to receive(:database_base_models).and_return(database_base_models)
+
+        if database_base_models.has_key?(:ci)
+          Gitlab::Database::SharedModel.using_connection(database_base_models[:ci].connection) do
+            LooseForeignKeys::DeletedRecord.create!(fully_qualified_table_name: 'public._test_loose_fk_parent_table_1', primary_key_value: 999)
+            LooseForeignKeys::DeletedRecord.create!(fully_qualified_table_name: 'public._test_loose_fk_parent_table_1', primary_key_value: 9991)
+          end
+        end
       end
 
       it 'uses the correct connection' do
-        LooseForeignKeys::DeletedRecord.count.times do
+        record_count = Gitlab::Database::SharedModel.using_connection(expected_connection) do
+          LooseForeignKeys::DeletedRecord.count
+        end
+
+        record_count.times do
           expect_next_found_instance_of(LooseForeignKeys::DeletedRecord) do |instance|
             expect(instance.class.connection).to eq(expected_connection)
           end
