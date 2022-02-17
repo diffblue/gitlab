@@ -16,6 +16,7 @@ RSpec.describe ServicePing::BuildPayloadService do
 
     before do
       allow(User).to receive(:single_user).and_return(double(:user, requires_usage_stats_consent?: false))
+      stub_feature_flags(merge_service_ping_instrumented_metrics: false)
     end
 
     context 'GitLab instance have a license' do
