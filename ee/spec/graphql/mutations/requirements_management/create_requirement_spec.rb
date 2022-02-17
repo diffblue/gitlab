@@ -25,7 +25,7 @@ RSpec.describe Mutations::RequirementsManagement::CreateRequirement do
 
     it_behaves_like 'requirements not available'
 
-    context 'when the user can update the epic' do
+    context 'when the user can create requirements' do
       before do
         project.add_developer(user)
       end

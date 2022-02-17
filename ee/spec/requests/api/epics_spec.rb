@@ -727,6 +727,23 @@ RSpec.describe API::Epics do
         end
       end
 
+      context 'with rate limiter', :freeze_time, :clean_gitlab_redis_rate_limiting do
+        before do
+          stub_application_setting(issues_create_limit: 1)
+        end
+
+        it 'prevents users from creating more epics' do
+          post api(url, user), params: params
+
+          expect(response).to have_gitlab_http_status(:created)
+
+          post api(url, user), params: params
+
+          expect(response).to have_gitlab_http_status(:too_many_requests)
+          expect(json_response['message']['error']).to eq('This endpoint has been requested too many times. Try again later.')
+        end
+      end
+
       context 'setting created_at' do
         let(:creation_time) { 2.weeks.ago }
         let(:params) { { title: 'new epic', created_at: creation_time } }
