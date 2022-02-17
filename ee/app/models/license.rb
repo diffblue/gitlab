@@ -781,7 +781,7 @@ class License < ApplicationRecord
     message << "#{number_with_delimiter(user_count)} active #{"user".pluralize(user_count)},"
     message << "exceeding this license's limit of #{number_with_delimiter(restricted_user_count)} by"
     message << "#{number_with_delimiter(overage_count)} #{"user".pluralize(overage_count)}."
-    message << "Please upload a license for at least"
+    message << "Please add a license for at least"
     message << "#{number_with_delimiter(user_count)} #{"user".pluralize(user_count)} or contact sales at https://about.gitlab.com/sales/"
 
     self.errors.add(:base, message.join(' '))

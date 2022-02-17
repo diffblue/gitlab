@@ -15,24 +15,28 @@ RSpec.describe "Admin uploads license", :js do
       visit(new_admin_license_path)
     end
 
+    it 'has the correct title' do
+      expect(page.title).to have_content("Add License")
+    end
+
     it 'has unselected EULA checkbox by default' do
       expect(page).to have_unchecked_field('accept_eula')
     end
 
-    it 'has disabled button "Upload license" by default' do
-      expect(page).to have_button('Upload License', disabled: true)
+    it 'has disabled button "Add license" by default' do
+      expect(page).to have_button('Add license', disabled: true)
     end
 
     it 'redirects to current Subscription terms' do
       expect(page).to have_link('Terms of Service', href: "https://#{ApplicationHelper.promo_host}/terms/#subscription")
     end
 
-    it 'enables button "Upload license" when EULA checkbox is selected' do
-      expect(page).to have_button('Upload License', disabled: true)
+    it 'enables button "Add license" when EULA checkbox is selected' do
+      expect(page).to have_button('Add license', disabled: true)
 
       check('accept_eula')
 
-      expect(page).to have_button('Upload License', disabled: false)
+      expect(page).to have_button('Add license', disabled: false)
     end
   end
 
@@ -115,6 +119,6 @@ RSpec.describe "Admin uploads license", :js do
   def attach_and_upload(path)
     attach_file("license[data_file]", path, make_visible: true)
     check("accept_eula")
-    click_button("Upload License")
+    click_button("Add license")
   end
 end
