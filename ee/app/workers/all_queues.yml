@@ -23,7 +23,7 @@
   :tags: []
 - :name: cronjob:adjourned_group_deletion
   :worker_name: AdjournedGroupDeletionWorker
-  :feature_category: :authentication_and_authorization
+  :feature_category: :compliance_management
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown
@@ -32,7 +32,7 @@
   :tags: []
 - :name: cronjob:adjourned_projects_deletion_cron
   :worker_name: AdjournedProjectsDeletionCronWorker
-  :feature_category: :authentication_and_authorization
+  :feature_category: :compliance_management
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown
@@ -833,7 +833,7 @@
   :tags: []
 - :name: adjourned_project_deletion
   :worker_name: AdjournedProjectDeletionWorker
-  :feature_category: :authentication_and_authorization
+  :feature_category: :compliance_management
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown
