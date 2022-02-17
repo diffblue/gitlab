@@ -16,7 +16,6 @@ Limits are applicable for:
 - System-level resource pools such as API requests, SSHD connections, database connections, storage, and so on.
 - Domain-level objects such as CI minutes, groups, sign-in attempts, and so on.
 
-
 ## When limits are required
 
 1. Limits are required if the absence of the limit matches severity 1 - 3 in the severity definitions for [limit-related bugs](https://about.gitlab.com/handbook/engineering/quality/issue-triage/#limit-related-bugs).
