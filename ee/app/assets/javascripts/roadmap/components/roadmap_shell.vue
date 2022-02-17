@@ -1,5 +1,5 @@
 <script>
-import { mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 
 import eventHub from '../event_hub';
 import { MILESTONES_GROUP, MILESTONES_SUBGROUP, MILESTONES_PROJECT } from '../constants';
@@ -23,10 +23,6 @@ export default {
       type: Array,
       required: true,
     },
-    milestones: {
-      type: Array,
-      required: true,
-    },
     timeframe: {
       type: Array,
       required: true,
@@ -41,7 +37,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(['defaultInnerHeight', 'isShowingMilestones', 'milestonesType']),
+    ...mapState(['defaultInnerHeight', 'isShowingMilestones', 'milestonesType', 'milestones']),
     displayMilestones() {
       return Boolean(this.milestones.length) && this.isShowingMilestones;
     },
@@ -58,7 +54,13 @@ export default {
       }
     },
   },
+  mounted() {
+    if (this.isShowingMilestones) {
+      this.fetchMilestones();
+    }
+  },
   methods: {
+    ...mapActions(['fetchMilestones']),
     handleScroll() {
       const { scrollTop, scrollLeft, clientHeight, scrollHeight } = this.$el;
 

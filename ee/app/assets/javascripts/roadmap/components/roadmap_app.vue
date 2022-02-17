@@ -34,7 +34,6 @@ export default {
       'currentGroupId',
       'epicIid',
       'epics',
-      'milestones',
       'timeframe',
       'epicsFetchInProgress',
       'epicsFetchResultEmpty',
@@ -62,12 +61,11 @@ export default {
       return !this.isWarningDismissed && this.epics.length > gon?.roadmap_epics_limit;
     },
   },
-  mounted() {
+  created() {
     this.fetchEpics();
-    this.fetchMilestones();
   },
   methods: {
-    ...mapActions(['fetchEpics', 'fetchMilestones']),
+    ...mapActions(['fetchEpics']),
     toggleSettings() {
       this.isSettingsSidebarOpen = !this.isSettingsSidebarOpen;
     },
@@ -98,7 +96,6 @@ export default {
         v-else-if="!epicsFetchFailure"
         :preset-type="presetType"
         :epics="epics"
-        :milestones="milestones"
         :timeframe="timeframe"
         :current-group-id="currentGroupId"
         :has-filters-applied="hasFiltersApplied"

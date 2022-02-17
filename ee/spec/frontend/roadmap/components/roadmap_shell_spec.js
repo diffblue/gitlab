@@ -13,18 +13,15 @@ import eventHub from 'ee/roadmap/event_hub';
 import createStore from 'ee/roadmap/store';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
-import {
-  mockEpic,
-  mockTimeframeInitialDate,
-  mockGroupId,
-  mockMilestone,
-} from 'ee_jest/roadmap/mock_data';
+import { mockEpic, mockTimeframeInitialDate, mockGroupId } from 'ee_jest/roadmap/mock_data';
 
 const mockTimeframeMonths = getTimeframeForRangeType({
   timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
   presetType: PRESET_TYPES.MONTHS,
   initialDate: mockTimeframeInitialDate,
 });
+const presetType = PRESET_TYPES.MONTHS;
+const timeframeRangeType = DATE_RANGES.CURRENT_YEAR;
 
 describe('RoadmapShell', () => {
   Vue.use(Vuex);
@@ -37,13 +34,15 @@ describe('RoadmapShell', () => {
     store.dispatch('setInitialData', {
       defaultInnerHeight,
       childrenFlags: { 1: { itemExpanded: false } },
+      timeframe: mockTimeframeMonths,
+      presetType,
+      timeframeRangeType,
     });
   };
 
   const createComponent = (
     {
       epics = [mockEpic],
-      milestones = [mockMilestone],
       timeframe = mockTimeframeMonths,
       currentGroupId = mockGroupId,
       hasFiltersApplied = false,
@@ -56,7 +55,6 @@ describe('RoadmapShell', () => {
       propsData: {
         presetType: PRESET_TYPES.MONTHS,
         epics,
-        milestones,
         timeframe,
         currentGroupId,
         hasFiltersApplied,

@@ -151,7 +151,6 @@ describe('RoadmapApp', () => {
         hasFiltersApplied,
         presetType,
         timeframe,
-        milestones: [],
       });
     });
 
