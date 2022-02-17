@@ -69,9 +69,9 @@ class DastSiteValidation < ApplicationRecord
   end
 
   def self.get_normalized_url_base(url)
-    uri = URI(url)
+    uri = Addressable::URI.parse(url)
 
-    "%{scheme}://%{host}:%{port}" % { scheme: uri.scheme, host: uri.host, port: uri.port }
+    "%{scheme}://%{host}:%{port}" % { scheme: uri.scheme, host: uri.host, port: uri.inferred_port }
   end
 
   private
