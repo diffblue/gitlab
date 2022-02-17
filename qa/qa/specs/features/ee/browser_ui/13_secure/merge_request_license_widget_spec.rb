@@ -1,17 +1,21 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Secure', :runner do
+  RSpec.describe 'Secure', :runner, :requires_admin do
     describe 'License merge request widget' do
       let(:approved_license_name) { "MIT License" }
       let(:denied_license_name) { "zlib License" }
       let(:executor) { "qa-runner-#{Time.now.to_i}" }
 
       after do
+        Runtime::Feature.enable(:lc_remove_legacy_approval_status) if @feature_was_enabled
+
         @runner.remove_via_api!
       end
 
       before do
+        @feature_was_enabled = Runtime::Feature.enabled?(:lc_remove_legacy_approval_status)
+        Runtime::Feature.disable(:lc_remove_legacy_approval_status)
         Flow::Login.sign_in
 
         @project = Resource::Project.fabricate_via_api! do |project|
