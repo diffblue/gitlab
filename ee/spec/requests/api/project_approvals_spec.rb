@@ -45,6 +45,32 @@ RSpec.describe API::ProjectApprovals do
       expect(response).to match_response_schema('public_api/v4/project_approvers', dir: 'ee')
       expect(json_response["approver_groups"]).to be_empty
     end
+
+    context 'when project is archived' do
+      let_it_be(:archived_project) { create(:project, :archived, creator: user) }
+
+      let(:url) { "/projects/#{archived_project.id}/approvals" }
+
+      context 'when user has normal permissions' do
+        it 'returns 403' do
+          archived_project.add_developer(user2)
+
+          get api(url, user2)
+
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+      end
+
+      context 'when user has project admin permissions' do
+        it 'allows access' do
+          archived_project.add_maintainer(user2)
+
+          get api(url, user2)
+
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+      end
+    end
   end
 
   describe 'POST /projects/:id/approvals' do

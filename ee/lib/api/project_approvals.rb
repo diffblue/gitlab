@@ -5,7 +5,6 @@ module API
     feature_category :source_code_management
 
     before { authenticate! }
-    before { authorize! :update_approvers, user_project }
 
     helpers do
       def filter_forbidden_param(params, permission, param)
@@ -30,6 +29,9 @@ module API
           success EE::API::Entities::ApprovalSettings
         end
         get '/', urgency: :low do
+          # If the project is archived, the project admin should still be able to read the approvers
+          authorize!(:update_approvers, user_project) unless can?(current_user, :admin_project, user_project)
+
           present user_project.present(current_user: current_user), with: EE::API::Entities::ApprovalSettings
         end
 
@@ -47,6 +49,8 @@ module API
           at_least_one_of :approvals_before_merge, :reset_approvals_on_push, :disable_overriding_approvers_per_merge_request, :merge_requests_author_approval, :merge_requests_disable_committers_approval, :require_password_to_approve
         end
         post '/' do
+          authorize! :update_approvers, user_project
+
           declared_params = declared(params, include_missing: false, include_parent_namespaces: false)
           project_params = filter_params(declared_params)
           result = ::Projects::UpdateService.new(user_project, current_user, project_params).execute
