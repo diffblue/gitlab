@@ -142,16 +142,20 @@ RSpec.describe LooseForeignKeys::CleanupWorker do
   end
 
   describe 'multi-database support' do
-    where(:current_minute, :configured_base_models, :expected_connection) do
-      2 | { main: ApplicationRecord, ci: Ci::ApplicationRecord } | ApplicationRecord.connection
-      3 | { main: ApplicationRecord, ci: Ci::ApplicationRecord } | Ci::ApplicationRecord.connection
-      2 | { main: ApplicationRecord } | ApplicationRecord.connection
-      3 | { main: ApplicationRecord } | ApplicationRecord.connection
+    where(:current_minute, :configured_base_models, :expected_connection_model) do
+      2 | { main: 'ApplicationRecord', ci: 'Ci::ApplicationRecord' } | 'ApplicationRecord'
+      3 | { main: 'ApplicationRecord', ci: 'Ci::ApplicationRecord' } | 'Ci::ApplicationRecord'
+      2 | { main: 'ApplicationRecord' } | 'ApplicationRecord'
+      3 | { main: 'ApplicationRecord' } | 'ApplicationRecord'
     end
 
     with_them do
+      let(:database_base_models) { configured_base_models.transform_values(&:constantize) }
+
+      let(:expected_connection) { expected_connection_model.constantize.connection }
+
       before do
-        allow(Gitlab::Database).to receive(:database_base_models).and_return(configured_base_models)
+        allow(Gitlab::Database).to receive(:database_base_models).and_return(database_base_models)
       end
 
       it 'uses the correct connection' do
