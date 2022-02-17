@@ -194,7 +194,7 @@ const bindEvents = () => {
     setProjectNamePathHandlers($activeTabProjectName, $activeTabProjectPath);
   }
 
-  $useTemplateBtn.on('change', chooseTemplate);
+  $useTemplateBtn.on('click', chooseTemplate);
 
   $changeTemplateBtn.on('click', () => {
     $projectTemplateButtons.removeClass('hidden');
