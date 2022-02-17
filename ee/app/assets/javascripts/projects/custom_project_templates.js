@@ -58,7 +58,12 @@ const bindEvents = () => {
 
     if (subgroupId) {
       const subgroupFullPath = $(this).data('subgroup-full-path');
-      eventHub.$emit('select-template', subgroupId, subgroupFullPath);
+      const targetGroupFullPath = $(this).data('target-group-full-path');
+      eventHub.$emit(
+        'select-template',
+        targetGroupFullPath ? groupId : subgroupId,
+        targetGroupFullPath || subgroupFullPath,
+      );
 
       $subgroupWithTemplatesIdInput.val(subgroupId);
       $namespaceSelect.val(groupId).trigger('change');

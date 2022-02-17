@@ -47,6 +47,9 @@ module EE
     def load_group_project_templates
       render_404 unless user == current_user
 
+      @target_group ||= # rubocop:disable Gitlab/ModuleWithInstanceVariables
+        GroupFinder.new(current_user).execute(id: params[:group_id])
+
       @groups_with_project_templates ||= # rubocop:disable Gitlab/ModuleWithInstanceVariables
         user.available_subgroups_with_custom_project_templates(params[:group_id])
             .page(params[:page])
