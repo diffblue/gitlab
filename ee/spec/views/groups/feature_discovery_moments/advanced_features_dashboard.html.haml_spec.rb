@@ -16,6 +16,7 @@ RSpec.describe 'groups/feature_discovery_moments/advanced_features_dashboard.htm
   subject { rendered }
 
   it { is_expected.to have_content(s_('InProductMarketing|Discover Premium & Ultimate.')) }
+  it { is_expected.to have_content(s_('InProductMarketing|Speed. Efficiency. Trust.')) }
 
   it 'renders the start a trial CTA', :aggregate_failures do
     expect(rendered).to have_link(s_('InProductMarketing|Start a free trial'),
