@@ -32,7 +32,7 @@ module Mutations
         end
 
         def authorize!(object)
-          raise_noteable_not_incident! if object && !object.incident?
+          raise_noteable_not_incident! if object && !object.try(:incident?)
 
           super
         end
