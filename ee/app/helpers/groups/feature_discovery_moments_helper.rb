@@ -17,6 +17,61 @@ module Groups
       }
     end
 
+    def cross_stage_fdm_highlighted_features
+      [
+        {
+          icon_name: 'epic',
+          title: s_('InProductMarketing|Epics'),
+          desc: s_('InProductMarketing|Make it easier to collaborate on high-level ideas by grouping related issues in an epic.')
+        },
+        {
+          icon_name: 'agile',
+          title: s_('InProductMarketing|Roadmaps'),
+          desc: s_('InProductMarketing|Visualize your epics and milestones in a timeline.')
+        },
+        {
+          icon_name: 'agile',
+          title: s_('InProductMarketing|Scoped labels'),
+          desc: s_('InProductMarketing|Create well-defined workflows by using scoped labels on issues, merge requests, and epics. Labels with the same scope cannot be used together, which prevents conflicts.')
+        },
+        {
+          icon_name: 'chart-line',
+          title: s_('InProductMarketing|Burn up/down charts'),
+          desc: s_('InProductMarketing|Track completed issues in a chart, so you can see how a milestone is progressing at a glance.')
+        },
+        {
+          icon_name: 'merge-request',
+          title: s_('InProductMarketing|Merge request approval rule'),
+          desc: s_('InProductMarketing|Keep your code quality high by defining who should approve merge requests and how many approvals are required.')
+        },
+        {
+          icon_name: 'user',
+          title: s_('InProductMarketing|Code owners'),
+          desc: s_('InProductMarketing|Define who owns specific files or directories, so the right reviewers are suggested when a merge request introduces changes to those files.')
+        },
+        {
+          icon_name: 'chart-bar',
+          title: s_('InProductMarketing|Code review analytics'),
+          desc: s_('InProductMarketing|Find and fix bottlenecks in your code review process by understanding how long open merge requests have been in review.')
+        },
+        {
+          icon_name: 'magnifying-glass',
+          title: s_('InProductMarketing|Multiple required approvers'),
+          desc: s_("InProductMarketing|Require multiple approvers on a merge request, so you know it's in good shape before it's merged.")
+        },
+        {
+          icon_name: 'shield-check',
+          title: s_('InProductMarketing|Dependency scanning'),
+          desc: s_('InProductMarketing|Find out if your external libraries are safe. Run dependency scanning jobs that check for known vulnerabilities in your external libraries.')
+        },
+        {
+          icon_name: 'cloud-check',
+          title: s_('InProductMarketing|Dynamic application security testing'),
+          desc: s_('InProductMarketing|Protect your web application by using DAST to examine for vulnerabilities in deployed environments.')
+        }
+      ]
+    end
+
     def cross_stage_fdm_value_statements
       [
         {

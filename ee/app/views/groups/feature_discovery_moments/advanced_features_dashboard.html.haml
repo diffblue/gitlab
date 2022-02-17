@@ -19,6 +19,20 @@
     = image_tag 'marketing/gitlab-enterprise-header-flow-desktop.png', alt: image_alt, title: image_alt, class: 'gl-w-full'
 
 .gl-mb-8.gl-md-mb-12
+  %h3.gl-mt-0.gl-mb-5.gl-md-mb-6= s_('InProductMarketing|Access advanced features.')
+
+  .gl-display-grid.gl-sm-grid-template-columns-2.gl-md-grid-template-columns-3.gl-lg-grid-template-columns-4.gl-gap-6
+    - cross_stage_fdm_highlighted_features.each do |value|
+      .gl-card.gl-max-w-50.gl-rounded-lg
+        .gl-card-body
+          .gl-w-7.gl-h-7= image_tag("illustrations/#{value[:icon_name]}.svg", class: 'gl-w-full')
+          %h4.gl-mb-3.gl-font-base.gl-line-height-20= value[:title]
+          %p.gl-font-sm.gl-text-gray-700.gl-line-height-20= value[:desc]
+
+    %p.gl-display-none.gl-md-display-block.gl-align-self-center.gl-mb-0.gl-font-sm.gl-text-gray-700.gl-align-self-center
+      = s_('InProductMarketing|And many more...')
+
+.gl-mb-8.gl-md-mb-12
   %h3.gl-mt-0.gl-mb-5.gl-md-mb-6= s_('InProductMarketing|Speed. Efficiency. Trust.')
 
   .gl-display-grid.gl-sm-grid-template-columns-2.gl-md-grid-template-columns-3.gl-gap-6
