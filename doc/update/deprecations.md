@@ -727,6 +727,18 @@ The `merged_by` field in the [merge request API](https://docs.gitlab.com/ee/api/
 
 ## 14.8
 
+### Changes to the `CI_JOB_JWT`
+
+WARNING:
+This feature will be changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+The `CI_JOB_JWT` will be updated to support a wider variety of cloud providers. It will be changed to match [`CI_JOB_JWT_V2`](https://docs.gitlab.com/ee/ci/variables/predefined_variables.html), but this change may not be backwards compatible for all users, including Hashicorp Vault users. To maintain the current behavior, users can switch to using `CI_JOB_JWT_V1`, or update their configuration in GitLab 15.0 to use the improved `CI_JOB_JWT`.
+
+**Planned removal milestone: 15.0 ()**
+
 ### Configurable Gitaly `per_repository` election strategy
 
 Configuring the `per_repository` Gitaly election strategy is [deprecated](https://gitlab.com/gitlab-org/gitlab/-/issues/352612).
