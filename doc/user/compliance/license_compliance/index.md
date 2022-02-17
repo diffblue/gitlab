@@ -22,6 +22,8 @@ You can take advantage of License Compliance by either:
   [Auto License Compliance](../../../topics/autodevops/stages.md#auto-license-compliance),
   provided by [Auto DevOps](../../../topics/autodevops/index.md).
 
+The current major version of the License Scanning analyzer is 3.
+
 To detect the licenses in use, License Compliance uses the [License Finder](https://github.com/pivotal/LicenseFinder) scan tool that runs as part of the CI/CD pipeline.
 For the job to activate, License Finder needs to find a compatible package definition in the project directory. For details, see the [Activation on License Finder documentation](https://github.com/pivotal/LicenseFinder#activation).
 GitLab checks the License Compliance report, compares the
