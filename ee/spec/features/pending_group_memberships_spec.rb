@@ -124,6 +124,23 @@ RSpec.describe 'Pending group memberships', :js do
       create(:group_group_link, shared_group: other_group, shared_with_group: group)
     end
 
+    it 'a pending member of the invited group sees the shared group as if not a member' do
+      create(:group_member, :awaiting, :developer, source: group, user: developer)
+
+      visit group_path(other_group)
+
+      expect(page).to have_content 'Page Not Found'
+    end
+
+    it 'a pending member of the invited group sees the shared group as if not a member when the shared group has a project' do
+      create(:project, namespace: other_group)
+      create(:group_member, :awaiting, :developer, source: group, user: developer)
+
+      visit group_path(other_group)
+
+      expect(page).to have_content 'Page Not Found'
+    end
+
     it 'a pending member of the invited group sees a project in the shared group as if not a member' do
       project = create(:project, namespace: other_group)
       create(:group_member, :awaiting, :developer, source: group, user: developer)
