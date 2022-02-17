@@ -1,7 +1,7 @@
 <script>
 import { GlDropdown, GlDropdownItem, GlTooltipDirective, GlLink, GlIcon } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import ProjectAvatar from '~/vue_shared/components/deprecated_project_avatar/default.vue';
+import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 
 export default {
   components: {
@@ -28,27 +28,44 @@ export default {
 
   removeProjectText: s__('EnvironmentsDashboard|Remove'),
   moreActionsText: s__('EnvironmentsDashboard|More actions'),
+  avatarSize: 24,
 };
 </script>
 
 <template>
   <div
-    class="gl-display-flex gl-align-items-center page-title-holder text-secondary gl-justify-content-space-between pb-2 mb-3"
+    class="gl-display-flex gl-align-items-center gl-text-gray-500 gl-justify-content-space-between gl-pb-3 gl-mb-5 gl-border-b-solid gl-border-gray-100 gl-border-1"
   >
     <div class="gl-display-flex gl-align-items-center">
-      <project-avatar :project="project.namespace" :size="20" class="flex-shrink-0" />
-      <gl-link class="js-namespace-link text-secondary" :href="`/${project.namespace.full_path}`">
-        <span class="js-namespace gl-mr-3"> {{ project.namespace.name }} </span>
+      <project-avatar
+        :project-name="project.namespace.name"
+        :project-avatar-url="project.namespace.avatar_url"
+        :size="$options.avatarSize"
+        class="gl-mr-3"
+      />
+      <gl-link
+        class="gl-text-gray-500 gl-mr-3"
+        :href="`/${project.namespace.full_path}`"
+        data-testid="namespace-link"
+      >
+        {{ project.namespace.name }}
       </gl-link>
+
       <span class="gl-mr-3">&gt;</span>
-      <project-avatar :project="project" :size="20" class="flex-shrink-0" />
-      <gl-link class="js-project-link text-secondary" :href="project.web_url">
-        <span class="js-name gl-mr-3"> {{ project.name }} </span>
+
+      <project-avatar
+        :project-name="project.name"
+        :project-avatar-url="project.avatar_url"
+        :size="$options.avatarSize"
+        class="gl-mr-3"
+      />
+      <gl-link class="gl-text-gray-500 gl-mr-3" :href="project.web_url" data-testid="project-link">
+        {{ project.name }}
       </gl-link>
     </div>
-    <div class="gl-display-flex js-more-actions">
+    <div class="gl-display-flex">
       <gl-dropdown
-        toggle-class="js-more-actions-toggle gl-display-flex gl-align-items-center gl-px-3! gl-bg-transparent gl-shadow-none!"
+        toggle-class="gl-display-flex gl-align-items-center gl-px-3! gl-bg-transparent gl-shadow-none!"
         right
       >
         <template #button-content>
@@ -56,11 +73,11 @@ export default {
             v-gl-tooltip
             :title="$options.moreActionsText"
             name="ellipsis_v"
-            class="text-secondary"
+            class="gl-text-gray-500"
           />
         </template>
-        <gl-dropdown-item class="js-remove-button" variant="link" @click="onRemove()">
-          <span class="text-danger"> {{ $options.removeProjectText }} </span>
+        <gl-dropdown-item variant="link" data-testid="remove-project-button" @click="onRemove()">
+          <span class="gl-text-red-500"> {{ $options.removeProjectText }} </span>
         </gl-dropdown-item>
       </gl-dropdown>
     </div>

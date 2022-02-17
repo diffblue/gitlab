@@ -1,29 +1,32 @@
 import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import component from 'ee/environments_dashboard/components/dashboard/project_header.vue';
-import ProjectAvatar from '~/vue_shared/components/deprecated_project_avatar/default.vue';
+import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
+
+const mockProject = {
+  namespace: {
+    name: 'hello',
+    full_path: 'hello',
+    avatar_url: '/namespace-avatar',
+  },
+  name: 'world',
+  remove_path: '/hello/world/remove',
+  avatar_url: '/project-avatar',
+};
 
 describe('Project Header', () => {
   let wrapper;
-  let propsData;
+
+  const findRemoveButton = () =>
+    wrapper
+      .findComponent(GlDropdown)
+      .findAllComponents(GlDropdownItem)
+      .filter((w) => w.text() === 'Remove');
 
   beforeEach(() => {
-    propsData = {
-      project: {
-        namespace: {
-          name: 'hello',
-          full_path: 'hello',
-        },
-        name: 'world',
-        remove_path: '/hello/world/remove',
-      },
-    };
-  });
-
-  beforeEach(() => {
-    wrapper = shallowMount(component, {
-      propsData,
+    wrapper = shallowMountExtended(component, {
+      propsData: { project: mockProject },
     });
   });
 
@@ -38,50 +41,46 @@ describe('Project Header', () => {
   describe('renders project namespace, name, and avatars', () => {
     it('shows the project namespace avatar', () => {
       const projectNamespaceAvatar = wrapper.findAllComponents(ProjectAvatar).at(0);
-      expect(projectNamespaceAvatar.props('project')).toEqual(propsData.project.namespace);
-    });
-
-    it('shows the project namespace', () => {
-      expect(wrapper.find('.js-namespace').text()).toBe(propsData.project.namespace.name);
+      expect(projectNamespaceAvatar.props()).toMatchObject({
+        projectName: mockProject.namespace.name,
+        projectAvatarUrl: mockProject.namespace.avatar_url,
+      });
     });
 
     it('links to the project namespace', () => {
-      const expectedUrl = `/${propsData.project.namespace.full_path}`;
-      expect(wrapper.find('.js-namespace-link').attributes('href')).toBe(expectedUrl);
+      const expectedUrl = `/${mockProject.namespace.full_path}`;
+      const namespaceLink = wrapper.findByTestId('namespace-link');
+
+      expect(namespaceLink.attributes('href')).toBe(expectedUrl);
+      expect(namespaceLink.text()).toMatchInterpolatedText(mockProject.namespace.name);
     });
 
     it('shows the project avatar', () => {
       const projectAvatar = wrapper.findAllComponents(ProjectAvatar).at(1);
-      expect(projectAvatar.props('project')).toEqual(propsData.project);
-    });
-
-    it('shows the project name', () => {
-      expect(wrapper.find('.js-name').text()).toBe(propsData.project.name);
+      expect(projectAvatar.props()).toMatchObject({
+        projectName: mockProject.name,
+        projectAvatarUrl: mockProject.avatar_url,
+      });
     });
 
     it('links to the project', () => {
-      expect(wrapper.find('.js-project-link').attributes('href')).toBe(propsData.project.web_url);
+      const projectLink = wrapper.findByTestId('project-link');
+
+      expect(projectLink.attributes('href')).toBe(mockProject.web_url);
+      expect(projectLink.text()).toMatchInterpolatedText(mockProject.name);
     });
   });
 
   describe('more actions', () => {
     it('should list "remove" as an action', () => {
-      const removeLink = wrapper
-        .findComponent(GlDropdown)
-        .findAllComponents(GlDropdownItem)
-        .filter((w) => w.text() === 'Remove');
-      expect(removeLink.exists()).toBe(true);
+      expect(findRemoveButton().exists()).toBe(true);
     });
 
     it('should emit a "remove" event when "remove" is clicked', async () => {
-      const removeLink = wrapper
-        .findComponent(GlDropdown)
-        .findAllComponents(GlDropdownItem)
-        .filter((w) => w.text() === 'Remove');
-      removeLink.at(0).vm.$emit('click');
-
+      findRemoveButton().at(0).vm.$emit('click');
       await nextTick();
-      expect(wrapper.emitted('remove')).toContainEqual([propsData.project.remove_path]);
+
+      expect(wrapper.emitted('remove')).toContainEqual([mockProject.remove_path]);
     });
   });
 });
