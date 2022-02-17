@@ -1107,12 +1107,12 @@ describe('RequirementsRoot', () => {
 
         it('renders a failed badge after the update', async () => {
           await nextTick();
-          expect(findBadge().props('icon')).toBe('status_success');
+          expect(findBadge().props('icon')).toBe('status-success');
 
           editRequirementToFailed();
           await waitForPromises();
 
-          expect(findBadge().props('icon')).toBe('status_failed');
+          expect(findBadge().props('icon')).toBe('status-failed');
         });
       });
 

@@ -9,11 +9,11 @@ import { mockStatusToken } from '../../mock_data';
 const mockStatuses = [
   {
     text: 'Satisfied',
-    icon: 'status_success',
+    icon: 'status-success',
   },
   {
     text: 'Failed',
-    icon: 'status_failed',
+    icon: 'status-failed',
   },
   {
     text: 'Missing',
@@ -62,8 +62,8 @@ describe('StatusToken', () => {
 
     it.each`
       value          | text           | icon
-      ${'satisfied'} | ${'Satisfied'} | ${'status_success'}
-      ${'failed'}    | ${'Failed'}    | ${'status_failed'}
+      ${'satisfied'} | ${'Satisfied'} | ${'status-success'}
+      ${'failed'}    | ${'Failed'}    | ${'status-failed'}
       ${'missing'}   | ${'Missing'}   | ${'status-waiting'}
     `(
       'renders token icon and text representing status "$text" when `value.data` is set to "$value"',

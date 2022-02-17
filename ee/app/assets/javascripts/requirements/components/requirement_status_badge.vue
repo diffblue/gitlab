@@ -27,14 +27,14 @@ export default {
       if (this.testReport.state === TestReportStatus.Passed) {
         return {
           variant: 'success',
-          icon: 'status_success',
+          icon: 'status-success',
           text: __('satisfied'),
           tooltipTitle: __('Passed on'),
         };
       } else if (this.testReport.state === TestReportStatus.Failed) {
         return {
           variant: 'danger',
-          icon: 'status_failed',
+          icon: 'status-failed',
           text: __('failed'),
           tooltipTitle: __('Failed on'),
         };
