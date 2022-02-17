@@ -27547,8 +27547,6 @@ CREATE INDEX index_projects_on_creator_id_import_type_and_created_at_partial ON 
 
 CREATE INDEX index_projects_on_description_trigram ON projects USING gin (description gin_trgm_ops);
 
-CREATE INDEX index_projects_on_hidden ON projects USING btree (hidden);
-
 CREATE INDEX index_projects_on_id_and_archived_and_pending_delete ON projects USING btree (id) WHERE ((archived = false) AND (pending_delete = false));
 
 CREATE UNIQUE INDEX index_projects_on_id_partial_for_visibility ON projects USING btree (id) WHERE (visibility_level = ANY (ARRAY[10, 20]));

@@ -1,3 +1,3 @@
-- return unless can?(current_user, :delay_project_deletions)
+- return unless License.feature_available?(:adjourned_deletion_for_projects_and_groups)
 
 %p= marked_for_removal_message(@project)

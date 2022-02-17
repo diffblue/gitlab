@@ -38,7 +38,7 @@ module EE
 
     override :destroy
     def destroy
-      return super unless can?(current_user, :delay_project_deletions)
+      return super unless License.feature_available?(:adjourned_deletion_for_projects_and_groups)
       return super unless project.adjourned_deletion_configured?
       return super if project.marked_for_deletion_at? && params[:permanently_delete].present?
 

@@ -88,7 +88,7 @@ Projects are permanently deleted after a seven-day delay.
 If you are on:
 
 - Premium tier and above, you can disable this by changing the [group setting](../group/index.md#enable-delayed-project-deletion).
-- Free tier, groups have delayed project deletion enabled by default and you cannot disable this setting.
+- Free tier, you cannot disable this setting or restore projects.
 
 ## Alternative SSH port
 
