@@ -31723,6 +31723,12 @@ msgstr ""
 msgid "Saving project."
 msgstr ""
 
+msgid "ScanResultPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require approval from %{approvalsRequired} of the following approvers: %{approvers}"
+msgstr ""
+
+msgid "ScanResultPolicy|add an approver"
+msgstr ""
+
 msgid "Scanner"
 msgstr ""
 
