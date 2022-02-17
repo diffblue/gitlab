@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import { GlEmptyState } from '@gitlab/ui';
+import { GlEmptyState, GlAlert, GlFormInput, GlFormTextarea, GlToggle } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import PolicyEditorLayout from 'ee/threat_monitoring/components/policy_editor/policy_editor_layout.vue';
@@ -16,7 +16,12 @@ import {
 import { visitUrl } from '~/lib/utils/url_utility';
 
 import { modifyPolicy } from 'ee/threat_monitoring/components/policy_editor/utils';
-import { SECURITY_POLICY_ACTIONS } from 'ee/threat_monitoring/components/policy_editor/constants';
+import {
+  SECURITY_POLICY_ACTIONS,
+  EDITOR_MODE_YAML,
+} from 'ee/threat_monitoring/components/policy_editor/constants';
+import DimDisableContainer from 'ee/threat_monitoring/components/policy_editor/dim_disable_container.vue';
+import PolicyActionBuilder from 'ee/threat_monitoring/components/policy_editor/scan_result_policy/policy_action_builder.vue';
 
 jest.mock('~/lib/utils/url_utility', () => ({
   joinPaths: jest.requireActual('~/lib/utils/url_utility').joinPaths,
@@ -45,7 +50,7 @@ describe('ScanResultPolicyEditor', () => {
     branch: 'main',
     fullPath: 'path/to/existing-project',
   };
-  const scanResultPolicyApprovers = [];
+  const scanResultPolicyApprovers = [{ id: 1, username: 'username', state: 'active' }];
 
   const factory = ({ propsData = {}, provide = {} } = {}) => {
     wrapper = shallowMount(ScanResultPolicyEditor, {
@@ -63,6 +68,7 @@ describe('ScanResultPolicyEditor', () => {
         ...provide,
       },
     });
+    nextTick();
   };
 
   const factoryWithExistingPolicy = () => {
@@ -77,6 +83,15 @@ describe('ScanResultPolicyEditor', () => {
 
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findPolicyEditorLayout = () => wrapper.findComponent(PolicyEditorLayout);
+  const findPolicyActionBuilder = () => wrapper.findComponent(PolicyActionBuilder);
+  const findAllPolicyActionBuilders = () => wrapper.findAllComponents(PolicyActionBuilder);
+  const findAddRuleButton = () => wrapper.find('[data-testid="add-rule"]');
+  const findAlert = () => wrapper.findComponent(GlAlert);
+  const findNameInput = () => wrapper.findComponent(GlFormInput);
+  const findDescriptionTextArea = () => wrapper.findComponent(GlFormTextarea);
+  const findEnableToggle = () => wrapper.findComponent(GlToggle);
+  const findAllDisabledComponents = () => wrapper.findAllComponents(DimDisableContainer);
+  const findYamlPreview = () => wrapper.find('[data-testid="yaml-preview"]');
 
   afterEach(() => {
     wrapper.destroy();
@@ -84,14 +99,74 @@ describe('ScanResultPolicyEditor', () => {
 
   describe('default', () => {
     it('updates the policy yaml when "update-yaml" is emitted', async () => {
-      factory();
-      await nextTick();
       const newManifest = 'new yaml!';
+      await factory();
+
       expect(findPolicyEditorLayout().attributes('yamleditorvalue')).toBe(
         DEFAULT_SCAN_RESULT_POLICY,
       );
+
       await findPolicyEditorLayout().vm.$emit('update-yaml', newManifest);
+
       expect(findPolicyEditorLayout().attributes('yamleditorvalue')).toBe(newManifest);
+    });
+
+    it('disables add rule button until feature is merged', async () => {
+      await factory();
+
+      expect(findAddRuleButton().props('disabled')).toBe(true);
+    });
+
+    it('displays alert for invalid yaml', async () => {
+      await factory();
+
+      expect(findAlert().exists()).toBe(false);
+
+      await findPolicyEditorLayout().vm.$emit('update-yaml', 'invalid manifest');
+
+      expect(findAlert().exists()).toBe(true);
+    });
+
+    it('disables all rule mode related components when the yaml is invalid', async () => {
+      await factory();
+
+      await findPolicyEditorLayout().vm.$emit('update-yaml', 'invalid manifest');
+
+      expect(findNameInput().attributes('disabled')).toBe('true');
+      expect(findDescriptionTextArea().attributes('disabled')).toBe('true');
+      expect(findEnableToggle().props('disabled')).toBe(true);
+      expect(findAllDisabledComponents().at(0).props('disabled')).toBe(true);
+      expect(findAllDisabledComponents().at(1).props('disabled')).toBe(true);
+    });
+
+    it('defaults to YAML mode', async () => {
+      await factory();
+
+      expect(findPolicyEditorLayout().attributes().defaulteditormode).toBe(EDITOR_MODE_YAML);
+    });
+
+    describe.each`
+      currentComponent           | newValue                    | event
+      ${findNameInput}           | ${'new policy name'}        | ${'input'}
+      ${findDescriptionTextArea} | ${'new policy description'} | ${'input'}
+      ${findEnableToggle}        | ${true}                     | ${'change'}
+    `('triggering a change on $currentComponent', ({ currentComponent, newValue, event }) => {
+      it('updates YAML when switching modes', async () => {
+        await factory();
+
+        await currentComponent().vm.$emit(event, newValue);
+        await findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_YAML);
+
+        expect(findPolicyEditorLayout().attributes('yamleditorvalue')).toMatch(newValue.toString());
+      });
+
+      it('updates the yaml preview', async () => {
+        await factory();
+
+        await currentComponent().vm.$emit(event, newValue);
+
+        expect(findYamlPreview().html()).toMatch(newValue.toString());
+      });
     });
 
     it.each`
@@ -102,10 +177,12 @@ describe('ScanResultPolicyEditor', () => {
     `(
       'navigates to the new merge request when "modifyPolicy" is emitted $status',
       async ({ action, event, factoryFn, yamlEditorValue, currentlyAssignedPolicyProject }) => {
-        factoryFn();
-        await nextTick();
+        await factoryFn();
+
         findPolicyEditorLayout().vm.$emit(event);
+
         await waitForPromises();
+
         expect(modifyPolicy).toHaveBeenCalledWith({
           action,
           assignedPolicyProject: currentlyAssignedPolicyProject,
@@ -125,12 +202,36 @@ describe('ScanResultPolicyEditor', () => {
 
   describe('when a user is not an owner of the project', () => {
     it('displays the empty state with the appropriate properties', async () => {
-      factory({ provide: { disableScanPolicyUpdate: true } });
+      await factory({ provide: { disableScanPolicyUpdate: true } });
+
       const emptyState = findEmptyState();
 
       expect(emptyState.props('primaryButtonLink')).toMatch(scanPolicyDocumentationPath);
       expect(emptyState.props('primaryButtonLink')).toMatch('scan-result-policy-editor');
       expect(emptyState.props('svgPath')).toBe(policyEditorEmptyStateSvgPath);
+    });
+  });
+
+  describe('with policy action builder', () => {
+    it('renders a single policy action builder', async () => {
+      factory();
+
+      await nextTick();
+
+      expect(findAllPolicyActionBuilders()).toHaveLength(1);
+      expect(findPolicyActionBuilder().props('existingApprovers')).toEqual(
+        scanResultPolicyApprovers,
+      );
+    });
+
+    it('updates policy action when edited', async () => {
+      const UPDATED_ACTION = { type: 'required_approval', group_approvers_ids: [1] };
+      factory();
+
+      await nextTick();
+      await findPolicyActionBuilder().vm.$emit('changed', UPDATED_ACTION);
+
+      expect(findPolicyActionBuilder().props('initAction')).toEqual(UPDATED_ACTION);
     });
   });
 });

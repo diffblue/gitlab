@@ -210,11 +210,11 @@ rules:
       - main
     scanners:
       - container_scanning
-    vulnerability_allowed: 1
+    vulnerabilities_allowed: 1
     severity_levels:
       - critical
     vulnerability_states:
-      - newly_added
+      - newly_detected
 actions:
   - type: require_approval
     approvals_required: 1
@@ -232,9 +232,9 @@ export const mockScanResultObject = {
       type: 'scan_finding',
       branches: ['main'],
       scanners: ['container_scanning'],
-      vulnerability_allowed: 1,
+      vulnerabilities_allowed: 1,
       severity_levels: ['critical'],
-      vulnerability_states: ['newly_added'],
+      vulnerability_states: ['newly_detected'],
     },
   ],
   actions: [
