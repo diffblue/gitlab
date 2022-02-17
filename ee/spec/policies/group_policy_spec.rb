@@ -1861,6 +1861,31 @@ RSpec.describe GroupPolicy do
       end
     end
 
+    context 'with a group invited to another group' do
+      using RSpec::Parameterized::TableSyntax
+
+      let_it_be(:group) { create(:group, :public) }
+      let_it_be(:other_group) { create(:group, :private) }
+
+      subject { described_class.new(user, other_group) }
+
+      before_all do
+        create(:group_group_link, { shared_with_group: group, shared_group: other_group })
+      end
+
+      where(:role) do
+        %i(owner maintainer developer reporter guest)
+      end
+
+      with_them do
+        it 'a pending member in the group has permissions to the other group as if the user is not a member' do
+          create(:group_member, :awaiting, role, source: group, user: user)
+
+          expect_private_group_permissions_as_if_non_member
+        end
+      end
+    end
+
     def expect_private_group_permissions_as_if_non_member
       expect_disallowed(*public_permissions)
       expect_disallowed(*guest_permissions)
