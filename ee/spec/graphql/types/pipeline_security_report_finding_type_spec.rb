@@ -10,10 +10,14 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'] do
   let(:fields) do
     %i[report_type
        name
+       title
        severity
        confidence
        scanner
        identifiers
+       links
+       assets
+       evidence
        project_fingerprint
        uuid
        project

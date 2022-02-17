@@ -42,7 +42,8 @@
       "evidence": {
         "source": {
           "id": "assert:CORS - Bad 'Origin' value",
-          "name": "CORS - Bad 'Origin' value"
+          "name": "CORS - Bad 'Origin' value",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors/CORSMissingAllowOrigin"
         },
         "summary": "The Origin header was changed to an invalid value of http://peachapisecurity.com and the response contained an Access-Control-Allow-Origin header which included this invalid Origin, indicating that the CORS configuration on the server is overly permissive.\n\n\n",
         "request": {
