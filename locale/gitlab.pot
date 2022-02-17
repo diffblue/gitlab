@@ -11399,6 +11399,9 @@ msgstr ""
 msgid "DatadogIntegration|API URL"
 msgstr ""
 
+msgid "DatadogIntegration|Custom tags in Datadog. Enter one tag per line in the %{codeOpen}key:value%{codeClose} format. %{linkOpen}How do I use tags?%{linkClose}"
+msgstr ""
+
 msgid "DatadogIntegration|Environment"
 msgstr ""
 
@@ -11417,10 +11420,16 @@ msgstr ""
 msgid "DatadogIntegration|Tag all data from this GitLab instance in Datadog. Useful when managing several self-managed deployments."
 msgstr ""
 
+msgid "DatadogIntegration|Tags"
+msgstr ""
+
 msgid "DatadogIntegration|The Datadog site to send data to. To send data to the EU site, use %{codeOpen}datadoghq.eu%{codeClose}."
 msgstr ""
 
 msgid "DatadogIntegration|Trace your GitLab pipelines with Datadog."
+msgstr ""
+
+msgid "DatadogIntegration|have an invalid format"
 msgstr ""
 
 msgid "Datasource name not found"
