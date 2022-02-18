@@ -34,6 +34,19 @@ RSpec.describe 'Pending group memberships', :js do
       expect(page).not_to have_content "Recent activity"
     end
 
+    it 'a pending member sees a public group with a private project as if not a member' do
+      create(:project, :private, namespace: group)
+      create(:group_member, :awaiting, :developer, source: group, user: developer)
+
+      visit group_path(group)
+
+      expect(page).to have_content "Group ID: #{group.id}"
+      expect(page).to have_content "A group is a collection of several projects"
+      expect(page).to have_content "No groups or projects matched your search"
+      expect(page).not_to have_content "New project"
+      expect(page).not_to have_content "Recent activity"
+    end
+
     it 'a pending group member gets a 404 for a private project in the group' do
       project = create(:project, :private, namespace: group)
       create(:group_member, :awaiting, :developer, source: group, user: developer)
@@ -42,12 +55,33 @@ RSpec.describe 'Pending group memberships', :js do
 
       expect(page).to have_content "Page Not Found"
     end
+
+    it 'a group member can see a private project in the group once the pending membership transitions to active' do
+      project = create(:project, :private, namespace: group)
+      membership = create(:group_member, :awaiting, :developer, source: group, user: developer)
+
+      membership.activate!
+
+      visit project_path(project)
+
+      expect(page).to have_content project.name
+      expect(page).to have_content "The repository for this project does not exist."
+    end
   end
 
   context 'with a private group' do
     let_it_be(:group) { create(:group, :private) }
 
     it 'a pending member gets a 404 for a private group' do
+      create(:group_member, :awaiting, :developer, source: group, user: developer)
+
+      visit group_path(group)
+
+      expect(page).to have_content 'Page Not Found'
+    end
+
+    it 'a pending member gets a 404 for a private group with a project' do
+      create(:project, namespace: group)
       create(:group_member, :awaiting, :developer, source: group, user: developer)
 
       visit group_path(group)
