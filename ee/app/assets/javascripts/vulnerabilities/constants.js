@@ -89,3 +89,7 @@ export const SUPPORTING_MESSAGE_TYPES = {
 export const SUPPORTED_IDENTIFIER_TYPES = {
   cwe: 'cwe',
 };
+
+export const VULNERABILITY_TRAINING_HEADING = {
+  title: s__('Vulnerability|Training'),
+};
