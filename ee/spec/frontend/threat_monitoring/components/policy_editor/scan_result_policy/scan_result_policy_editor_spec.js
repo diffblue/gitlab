@@ -22,6 +22,7 @@ import {
 } from 'ee/threat_monitoring/components/policy_editor/constants';
 import DimDisableContainer from 'ee/threat_monitoring/components/policy_editor/dim_disable_container.vue';
 import PolicyActionBuilder from 'ee/threat_monitoring/components/policy_editor/scan_result_policy/policy_action_builder.vue';
+import PolicyRuleBuilder from 'ee/threat_monitoring/components/policy_editor/scan_result_policy/policy_rule_builder.vue';
 
 jest.mock('~/lib/utils/url_utility', () => ({
   joinPaths: jest.requireActual('~/lib/utils/url_utility').joinPaths,
@@ -92,6 +93,7 @@ describe('ScanResultPolicyEditor', () => {
   const findEnableToggle = () => wrapper.findComponent(GlToggle);
   const findAllDisabledComponents = () => wrapper.findAllComponents(DimDisableContainer);
   const findYamlPreview = () => wrapper.find('[data-testid="yaml-preview"]');
+  const findAllRuleBuilders = () => wrapper.findAllComponents(PolicyRuleBuilder);
 
   afterEach(() => {
     wrapper.destroy();
@@ -111,10 +113,11 @@ describe('ScanResultPolicyEditor', () => {
       expect(findPolicyEditorLayout().attributes('yamleditorvalue')).toBe(newManifest);
     });
 
-    it('disables add rule button until feature is merged', async () => {
+    it('displays the inital rule and add rule button', async () => {
       await factory();
 
-      expect(findAddRuleButton().props('disabled')).toBe(true);
+      expect(findAllRuleBuilders().length).toBe(1);
+      expect(findAddRuleButton().exists()).toBe(true);
     });
 
     it('displays alert for invalid yaml', async () => {
@@ -198,6 +201,60 @@ describe('ScanResultPolicyEditor', () => {
         );
       },
     );
+
+    it('adds a new rule', async () => {
+      const rulesCount = 1;
+      factory();
+      await nextTick();
+
+      expect(findAllRuleBuilders().length).toBe(rulesCount);
+
+      await findAddRuleButton().vm.$emit('click');
+
+      expect(findAllRuleBuilders()).toHaveLength(rulesCount + 1);
+    });
+
+    it('hides add button when the limit of five rules has been reached', async () => {
+      const limit = 5;
+      factory();
+      await nextTick();
+      await findAddRuleButton().vm.$emit('click');
+      await findAddRuleButton().vm.$emit('click');
+      await findAddRuleButton().vm.$emit('click');
+      await findAddRuleButton().vm.$emit('click');
+
+      expect(findAllRuleBuilders()).toHaveLength(limit);
+      expect(findAddRuleButton().exists()).toBe(false);
+    });
+
+    it('updates an existing rule', async () => {
+      const newValue = {
+        type: 'scan_finding',
+        branches: [],
+        scanners: [],
+        vulnerabilities_allowed: 1,
+        severity_levels: [],
+        vulnerability_states: [],
+      };
+      factory();
+      await nextTick();
+      await findAllRuleBuilders().at(0).vm.$emit('changed', newValue);
+
+      expect(wrapper.vm.policy.rules[0]).toEqual(newValue);
+      expect(findYamlPreview().html()).toMatch('vulnerabilities_allowed: 1');
+    });
+
+    it('deletes the initial rule', async () => {
+      const initialRuleCount = 1;
+      factory();
+      await nextTick();
+
+      expect(findAllRuleBuilders()).toHaveLength(initialRuleCount);
+
+      await findAllRuleBuilders().at(0).vm.$emit('remove', 0);
+
+      expect(findAllRuleBuilders()).toHaveLength(initialRuleCount - 1);
+    });
   });
 
   describe('when a user is not an owner of the project', () => {
