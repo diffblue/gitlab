@@ -8,9 +8,6 @@ class Epic::RelatedEpicLink < ApplicationRecord
 
   self.table_name = 'related_epic_links'
 
-  scope :for_source_epic, ->(epic) { where(source_id: epic.id) }
-  scope :for_target_epic, ->(epic) { where(target_id: epic.id) }
-
   private
 
   def issuable_type

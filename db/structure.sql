@@ -19201,9 +19201,9 @@ CREATE TABLE related_epic_links (
     id bigint NOT NULL,
     source_id bigint NOT NULL,
     target_id bigint NOT NULL,
-    link_type smallint DEFAULT 0 NOT NULL,
     created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL
+    updated_at timestamp with time zone NOT NULL,
+    link_type smallint DEFAULT 0 NOT NULL
 );
 
 CREATE SEQUENCE related_epic_links_id_seq
