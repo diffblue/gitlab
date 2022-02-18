@@ -48,7 +48,7 @@ RSpec.describe Namespace do
     end
 
     context "for a plan that isn't #{namespace_plan}" do
-      where(plan_name: described_class::PLANS - [namespace_plan])
+      where(plan_name: ::Plan.all_plans - [namespace_plan])
 
       with_them do
         it { is_expected.to eq(false) }
@@ -56,7 +56,7 @@ RSpec.describe Namespace do
     end
   end
 
-  described_class::PLANS.each do |namespace_plan|
+  ::Plan.all_plans.each do |namespace_plan|
     describe "#{namespace_plan}_plan?", :saas do
       it_behaves_like 'plan helper', namespace_plan
     end
@@ -165,20 +165,66 @@ RSpec.describe Namespace do
 
   context 'scopes' do
     describe '.with_feature_available_in_plan', :saas do
-      let!(:namespace) { create(:namespace) }
+      let(:starter_feature) { :audit_events }
+      let(:premium_feature) { :epics }
+      let(:ultimate_feature) { :dast }
 
-      context 'plan is nil' do
-        it 'returns no namespace' do
-          expect(described_class.with_feature_available_in_plan(:group_project_templates)).to be_empty
+      context 'Bronze plan has Starter features' do
+        let!(:bronze_namespace) { create(:namespace_with_plan, plan: :bronze_plan) }
+
+        it 'returns namespaces with plan' do
+          create(:namespace_with_plan, plan: :free_plan)
+
+          expect(described_class.with_feature_available_in_plan(starter_feature)).to match_array([bronze_namespace])
+        end
+
+        it 'includes namespace from higher plans' do
+          ultimate_namespace = create(:namespace_with_plan, plan: :ultimate_plan)
+
+          expect(described_class.with_feature_available_in_plan(starter_feature))
+            .to include(ultimate_namespace)
         end
       end
 
-      context 'plan is set' do
-        it 'returns namespaces with plan' do
-          create(:gitlab_subscription, :bronze, namespace: namespace)
-          create(:namespace_with_plan, plan: :free_plan)
+      context 'Silver, Premium and Premium_trial plans have Premium license features' do
+        let!(:silver_namespace) { create(:namespace_with_plan, plan: :silver_plan) }
+        let!(:premium_namespace) { create(:namespace_with_plan, plan: :premium_plan) }
+        let!(:premium_trial_namespace) { create(:namespace_with_plan, plan: :premium_trial_plan) }
+        let!(:not_included_namespace) { create(:namespace_with_plan, plan: :bronze_plan) }
 
-          expect(described_class.with_feature_available_in_plan(:audit_events)).to eq([namespace])
+        it 'returns namespaces with matching plans' do
+          expect(described_class.with_feature_available_in_plan(premium_feature))
+            .to contain_exactly(silver_namespace, premium_namespace, premium_trial_namespace)
+        end
+
+        it 'includes namespace from higher plans' do
+          ultimate_namespace = create(:namespace_with_plan, plan: :ultimate_plan)
+
+          expect(described_class.with_feature_available_in_plan(premium_feature))
+            .to include(ultimate_namespace)
+        end
+      end
+
+      context 'Gold, Ultimate, Ultimate_trial and OpenSource plans have Ultimate license features' do
+        let!(:gold_namespace) { create(:namespace_with_plan, plan: :gold_plan) }
+        let!(:ultimate_namespace) { create(:namespace_with_plan, plan: :ultimate_plan) }
+        let!(:ultimate_trial_namespace) { create(:namespace_with_plan, plan: :ultimate_trial_plan) }
+        let!(:opensource_namespace) { create(:namespace_with_plan, plan: :opensource_plan) }
+
+        it 'returns namespaces with matching plans' do
+          create(:gitlab_subscription, :bronze, namespace: namespace)
+
+          expect(described_class.with_feature_available_in_plan(ultimate_feature))
+            .to contain_exactly(gold_namespace, ultimate_namespace, ultimate_trial_namespace, opensource_namespace)
+        end
+      end
+
+      context 'when no namespace matches the feature' do
+        let!(:bronze_namespace) { create(:namespace_with_plan, plan: :bronze_plan) }
+        let!(:silver_namespace) { create(:namespace_with_plan, plan: :silver_plan) }
+
+        it 'returns an empty list' do
+          expect(described_class.with_feature_available_in_plan(ultimate_feature)).to be_empty
         end
       end
     end
@@ -761,6 +807,22 @@ RSpec.describe Namespace do
     end
   end
 
+  describe '#paid?', :saas do
+    it 'returns true for a root namespace with a paid plan' do
+      create(:gitlab_subscription, :ultimate, namespace: namespace)
+
+      expect(namespace.paid?).to eq(true)
+    end
+
+    it 'returns false for a subgroup of a group with a paid plan' do
+      group = create(:group)
+      subgroup = create(:group, parent: group)
+      create(:gitlab_subscription, :ultimate, namespace: group)
+
+      expect(subgroup.paid?).to eq(false)
+    end
+  end
+
   describe '#actual_plan' do
     context 'when namespace does not have a subscription associated' do
       it 'generates a subscription and returns default plan' do
@@ -847,22 +909,6 @@ RSpec.describe Namespace do
           end
         end
       end
-    end
-  end
-
-  describe '#paid?', :saas do
-    it 'returns true for a root namespace with a paid plan' do
-      create(:gitlab_subscription, :ultimate, namespace: namespace)
-
-      expect(namespace.paid?).to eq(true)
-    end
-
-    it 'returns false for a subgroup of a group with a paid plan' do
-      group = create(:group)
-      subgroup = create(:group, parent: group)
-      create(:gitlab_subscription, :ultimate, namespace: group)
-
-      expect(subgroup.paid?).to eq(false)
     end
   end
 

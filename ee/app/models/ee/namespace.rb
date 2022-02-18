@@ -13,11 +13,10 @@ module EE
     NAMESPACE_PLANS_TO_LICENSE_PLANS = {
       ::Plan::BRONZE => License::STARTER_PLAN,
       [::Plan::SILVER, ::Plan::PREMIUM, ::Plan::PREMIUM_TRIAL] => License::PREMIUM_PLAN,
-      [::Plan::GOLD, ::Plan::ULTIMATE, ::Plan::ULTIMATE_TRIAL] => License::ULTIMATE_PLAN
+      [::Plan::GOLD, ::Plan::ULTIMATE, ::Plan::ULTIMATE_TRIAL, ::Plan::OPEN_SOURCE] => License::ULTIMATE_PLAN
     }.freeze
 
     LICENSE_PLANS_TO_NAMESPACE_PLANS = NAMESPACE_PLANS_TO_LICENSE_PLANS.invert.freeze
-    PLANS = (NAMESPACE_PLANS_TO_LICENSE_PLANS.keys + [Plan::FREE]).flatten.freeze
     TEMPORARY_STORAGE_INCREASE_DAYS = 30
 
     prepended do
@@ -381,6 +380,10 @@ module EE
       feature_available?(:api_fuzzing)
     end
 
+    def default_plan?
+      actual_plan_name == ::Plan::DEFAULT
+    end
+
     def free_plan?
       actual_plan_name == ::Plan::FREE
     end
@@ -411,6 +414,10 @@ module EE
 
     def ultimate_trial_plan?
       actual_plan_name == ::Plan::ULTIMATE_TRIAL
+    end
+
+    def opensource_plan?
+      actual_plan_name == ::Plan::OPEN_SOURCE
     end
 
     def plan_eligible_for_trial?

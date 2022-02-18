@@ -309,24 +309,56 @@ RSpec.describe GitlabSubscription, :saas do
 
     let(:subscription) { build(:gitlab_subscription) }
 
-    where(:plan_name, :paid_hosted_plan, :expired, :result) do
-      'bronze'   | true | false  | true
-      'bronze'   | true | true   | false
-      'premium'  | true | false  | true
-      'ultimate' | true | false  | false
+    shared_examples 'upgradable lower plan' do |plan_name|
+      where(:has_a_paid_hosted_plan, :expired, :result) do
+        false | false | false
+        true  | false | true
+        true  | true  | false
+        false | true  | false
+      end
+
+      with_them do
+        before do
+          plan = build(:plan, name: plan_name)
+          allow(subscription).to receive(:expired?) { expired }
+          allow(subscription).to receive(:has_a_paid_hosted_plan?) { has_a_paid_hosted_plan }
+          subscription.assign_attributes(hosted_plan: plan)
+        end
+
+        it 'returns true if subscription is upgradable' do
+          expect(subscription.upgradable?).to eq(result)
+        end
+      end
     end
 
-    with_them do
-      before do
-        plan = build(:plan, name: plan_name)
-        allow(subscription).to receive(:expired?) { expired }
-        allow(subscription).to receive(:has_a_paid_hosted_plan?) { paid_hosted_plan }
-        subscription.assign_attributes(hosted_plan: plan)
+    shared_examples 'top plan' do |plan_name|
+      where(:has_a_paid_hosted_plan, :expired) do
+        false | false
+        true  | false
+        true  | true
+        false | true
       end
 
-      it 'returns true if subscription is upgradable' do
-        expect(subscription.upgradable?).to eq(result)
+      with_them do
+        before do
+          plan = build(:plan, name: plan_name)
+          allow(subscription).to receive(:expired?) { expired }
+          allow(subscription).to receive(:has_a_paid_hosted_plan?) { has_a_paid_hosted_plan }
+          subscription.assign_attributes(hosted_plan: plan)
+        end
+
+        it 'returns false' do
+          expect(subscription.upgradable?).to eq(false)
+        end
       end
+    end
+
+    (::Plan.all_plans - ::Plan::TOP_PLANS).each do |plan_name|
+      it_behaves_like 'upgradable lower plan', plan_name
+    end
+
+    ::Plan::TOP_PLANS.each do |plan_name|
+      it_behaves_like 'top plan', plan_name
     end
   end
 

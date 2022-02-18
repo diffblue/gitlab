@@ -90,11 +90,9 @@ class GitlabSubscription < ApplicationRecord
   end
 
   def upgradable?
-    return false if [::Plan::GOLD, ::Plan::ULTIMATE].include?(plan_name)
+    return false if ::Plan::TOP_PLANS.include?(plan_name)
 
-    has_a_paid_hosted_plan? &&
-      !expired? &&
-      plan_name != Plan::PAID_HOSTED_PLANS[-1]
+    has_a_paid_hosted_plan? && !expired?
   end
 
   def plan_code=(code)
