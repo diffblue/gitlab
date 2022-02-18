@@ -37,6 +37,8 @@ class Integration < ApplicationRecord
     Integrations::BaseSlashCommands
   ].freeze
 
+  SECTION_TYPE_CONNECTION = 'connection'
+
   serialize :properties, JSON # rubocop:disable Cop/ActiveRecordSerialize
 
   attribute :type, Gitlab::Integrations::StiType.new
@@ -357,6 +359,10 @@ class Integration < ApplicationRecord
 
   def fields
     # implement inside child
+    []
+  end
+
+  def sections
     []
   end
 
