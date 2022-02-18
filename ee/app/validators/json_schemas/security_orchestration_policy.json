@@ -335,6 +335,7 @@
                 },
                 "user_approvers": {
                   "type": "array",
+                  "minItems": 1,
                   "additionalItems": false,
                   "items": {
                     "minLength": 1,
@@ -343,6 +344,7 @@
                 },
                 "user_approvers_ids": {
                   "type": "array",
+                  "minItems": 1,
                   "additionalItems": false,
                   "items": {
                     "minLength": 1,
@@ -351,6 +353,7 @@
                 },
                 "group_approvers": {
                   "type": "array",
+                  "minItems": 1,
                   "additionalItems": false,
                   "items": {
                     "minLength": 1,
@@ -359,6 +362,7 @@
                 },
                 "group_approvers_ids": {
                   "type": "array",
+                  "minItems": 1,
                   "additionalItems": false,
                   "items": {
                     "minLength": 1,
