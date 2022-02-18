@@ -82,6 +82,16 @@ module Registrations
       end
     end
 
+    def exit
+      return not_found unless Feature.enabled?(:exit_registration_verification)
+
+      if current_user.requires_credit_card_verification
+        ::Users::UpdateService.new(current_user, user: current_user, requires_credit_card_verification: false).execute!
+      end
+
+      redirect_to root_url
+    end
+
     private
 
     def combined_registration_experiment

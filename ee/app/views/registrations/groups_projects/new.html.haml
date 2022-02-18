@@ -108,3 +108,5 @@
               .nothing-here-block
                 %h4= s_('ProjectsNew|No import options available')
                 %p= s_('ProjectsNew|Contact an administrator to enable options for importing your project.')
+      - if verify && Feature.enabled?(:exit_registration_verification, default_enabled: :yaml) && current_user.requires_credit_card_verification
+        .js-exit-registration-verification{ data: { exit_path: exit_users_sign_up_groups_projects_path } }

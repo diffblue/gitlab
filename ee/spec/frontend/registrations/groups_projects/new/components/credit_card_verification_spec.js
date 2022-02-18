@@ -3,10 +3,12 @@ import { GlButton } from '@gitlab/ui';
 import CreditCardVerification from 'ee/registrations/groups_projects/new/components/credit_card_verification.vue';
 import { IFRAME_MINIMUM_HEIGHT } from 'ee/registrations/groups_projects/new/constants';
 import { setHTMLFixture } from 'helpers/fixtures';
+import eventHub from 'ee/registrations/groups_projects/new/event_hub';
 
 describe('CreditCardVerification', () => {
   let wrapper;
   let zuoraSubmitSpy;
+  let eventHubSpy;
 
   const IFRAME_URL = 'https://customers.gitlab.com/payment_forms/cc_registration_validation';
   const ALLOWED_ORIGIN = 'https://customers.gitlab.com';
@@ -95,6 +97,7 @@ describe('CreditCardVerification', () => {
 
   describe('when the Zuora component emits a success event', () => {
     beforeEach(() => {
+      eventHubSpy = jest.spyOn(eventHub, '$emit');
       findZuora().vm.$emit('success');
     });
 
@@ -109,6 +112,10 @@ describe('CreditCardVerification', () => {
 
     it('hides the Zuora component', () => {
       expect(findZuora().exists()).toBe(false);
+    });
+
+    it('emits the verificationCompleted event', () => {
+      expect(eventHubSpy).toHaveBeenCalledWith('verificationCompleted');
     });
   });
 });

@@ -2,6 +2,7 @@
 import { GlButton } from '@gitlab/ui';
 import Zuora from 'ee/billings/components/zuora.vue';
 import { I18N, IFRAME_MINIMUM_HEIGHT } from '../constants';
+import eventHub from '../event_hub';
 import StaticToggle from './static_toggle.vue';
 
 export default {
@@ -18,6 +19,7 @@ export default {
   },
   watch: {
     verificationCompleted() {
+      eventHub.$emit('verificationCompleted');
       this.toggleProjectCreation();
     },
   },

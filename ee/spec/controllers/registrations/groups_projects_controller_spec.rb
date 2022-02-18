@@ -398,4 +398,39 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
       end
     end
   end
+
+  describe 'PUT #exit' do
+    subject(:put_exit) { put :exit }
+
+    context 'with an unauthenticated user' do
+      it { is_expected.to have_gitlab_http_status(:redirect) }
+      it { is_expected.to redirect_to(new_user_session_path) }
+    end
+
+    context 'with an authenticated user' do
+      before do
+        sign_in(user)
+        allow(::Gitlab).to receive(:dev_env_or_com?).and_return(true)
+      end
+
+      it { is_expected.to have_gitlab_http_status(:redirect) }
+      it { is_expected.to redirect_to(root_url) }
+
+      context 'when requires_credit_card_verification is true' do
+        let_it_be(:user) { create(:user, requires_credit_card_verification: true) }
+
+        it 'sets requires_credit_card_verification to false' do
+          expect { put_exit }.to change { user.reload.requires_credit_card_verification }.to(false)
+        end
+      end
+
+      context 'when the `exit_registration_verification` feature flag is disabled' do
+        before do
+          stub_feature_flags(exit_registration_verification: false)
+        end
+
+        it { is_expected.to have_gitlab_http_status(:not_found) }
+      end
+    end
+  end
 end
