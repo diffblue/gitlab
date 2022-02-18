@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../../../../spec/fixtures/api/schemas/deployment.json"
+    },
+    {
+      "properties": {
+        "pending_approval_count": {
+          "type": "integer"
+        }
+      }
+    }
+  ]
+}
