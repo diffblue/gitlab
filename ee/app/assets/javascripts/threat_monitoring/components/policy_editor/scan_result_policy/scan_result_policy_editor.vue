@@ -20,7 +20,8 @@ import PolicyEditorLayout from '../policy_editor_layout.vue';
 import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
 import DimDisableContainer from '../dim_disable_container.vue';
 import PolicyActionBuilder from './policy_action_builder.vue';
-import { DEFAULT_SCAN_RESULT_POLICY, fromYaml, toYaml } from './lib';
+import PolicyRuleBuilder from './policy_rule_builder.vue';
+import { DEFAULT_SCAN_RESULT_POLICY, fromYaml, toYaml, buildRule } from './lib';
 
 export default {
   SECURITY_POLICY_ACTIONS,
@@ -51,6 +52,7 @@ export default {
     GlFormTextarea,
     GlAlert,
     PolicyActionBuilder,
+    PolicyRuleBuilder,
     PolicyEditorLayout,
     DimDisableContainer,
   },
@@ -120,6 +122,15 @@ export default {
   methods: {
     updateAction(actionIndex, values) {
       this.policy.actions.splice(actionIndex, 1, values);
+    },
+    addRule() {
+      this.policy.rules.push(buildRule());
+    },
+    removeRule(ruleIndex) {
+      this.policy.rules.splice(ruleIndex, 1);
+    },
+    updateRule(ruleIndex, values) {
+      this.policy.rules.splice(ruleIndex, 1, values);
     },
     handleError(error) {
       if (error.message.toLowerCase().includes('graphql')) {
@@ -254,8 +265,17 @@ export default {
           <div :class="`${$options.SHARED_FOR_DISABLED} gl-p-6`"></div>
         </template>
 
+        <policy-rule-builder
+          v-for="(rule, index) in policy.rules"
+          :key="index"
+          class="gl-mb-4"
+          :init-rule="rule"
+          @changed="updateRule(index, $event)"
+          @remove="removeRule(index)"
+        />
+
         <div v-if="isWithinLimit" :class="`${$options.SHARED_FOR_DISABLED} gl-p-5 gl-mb-5`">
-          <gl-button variant="link" data-testid="add-rule" icon="plus" disabled>
+          <gl-button variant="link" data-testid="add-rule" icon="plus" @click="addRule">
             {{ $options.i18n.addRule }}
           </gl-button>
         </div>
