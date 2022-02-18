@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Subscriptions Content Security Policy' do
+  include ContentSecurityPolicyHelpers
+
   subject { response_headers['Content-Security-Policy'] }
 
   let_it_be(:default_csp_values) { "'self' https://some-cdn.test" }
@@ -13,9 +15,7 @@ RSpec.describe 'Subscriptions Content Security Policy' do
   before do
     stub_request(:get, /.*gitlab_plans.*/).to_return(status: 200, body: "{}")
 
-    expect_next_instance_of(SubscriptionsController) do |controller|
-      expect(controller).to receive(:current_content_security_policy).and_return(csp).twice
-    end
+    setup_existing_csp_for_controller(SubscriptionsController, csp, 3)
 
     sign_in(create(:user))
 
