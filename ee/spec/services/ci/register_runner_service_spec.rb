@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe ::Ci::RegisterRunnerService, '#execute' do
   let(:registration_token) { 'abcdefg123456' }
   let(:token) { }
-  let(:audit_service) { instance_double(::AuditEvents::RunnerRegistrationAuditEventService) }
+  let(:audit_service) { instance_double(::AuditEvents::RegisterRunnerAuditEventService) }
 
   before do
     stub_feature_flags(runner_registration_control: false)
@@ -27,8 +27,8 @@ RSpec.describe ::Ci::RegisterRunnerService, '#execute' do
 
   shared_examples 'a service logging a runner registration audit event' do
     it 'returns newly-created Runner' do
-      expect(::AuditEvents::RunnerRegistrationAuditEventService).to receive(:new)
-        .with(last_ci_runner, token, token_scope, :register)
+      expect(::AuditEvents::RegisterRunnerAuditEventService).to receive(:new)
+        .with(last_ci_runner, token, token_scope)
         .once.and_return(audit_service)
 
       is_expected.to eq(::Ci::Runner.last)
@@ -37,8 +37,8 @@ RSpec.describe ::Ci::RegisterRunnerService, '#execute' do
 
   shared_examples 'a service logging a failed runner registration audit event' do
     before do
-      expect(::AuditEvents::RunnerRegistrationAuditEventService).to receive(:new)
-        .with(a_ci_runner_with_errors, token, token_scope, :register)
+      expect(::AuditEvents::RegisterRunnerAuditEventService).to receive(:new)
+        .with(a_ci_runner_with_errors, token, token_scope)
         .once.and_return(audit_service)
     end
 

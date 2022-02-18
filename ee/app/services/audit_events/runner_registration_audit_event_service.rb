@@ -2,10 +2,14 @@
 
 module AuditEvents
   class RunnerRegistrationAuditEventService < ::AuditEventService
-    def initialize(runner, registration_token, token_scope, action)
+    # Logs an audit event related to a runner registration event
+    #
+    # @param [Ci::Runner] runner
+    # @param [String, User] author the entity initiating the operation (e.g. a runner registration or authentication token)
+    # @param [Group, Project, nil] token_scope the scopes that the operation applies to (nil represents the instance)
+    def initialize(runner, author, token_scope)
       @token_scope = token_scope
       @runner = runner
-      @action = action
 
       raise ArgumentError, 'Missing token_scope' if token_scope.nil? && !runner.instance_type?
 
@@ -13,12 +17,17 @@ module AuditEvents
         custom_message: message,
         target_id: runner.id,
         target_type: runner.class.name,
-        target_details: runner_path,
-        runner_registration_token: registration_token[0...8]
+        target_details: runner_path
       }
+
+      if author.is_a?(String)
+        author = author[0...8]
+        details[token_field] = author
+      end
+
       details[:errors] = @runner.errors.full_messages unless @runner.errors.empty?
 
-      super(details[:runner_registration_token], token_scope, details)
+      super(author, token_scope, details)
     end
 
     def track_event
@@ -28,22 +37,21 @@ module AuditEvents
       unauth_security_event
     end
 
-    def message
-      runner_type = @runner.runner_type.chomp('_type')
+    private
 
-      case @action
-      when :register
-        if @runner.valid?
-          "Registered #{runner_type} CI runner"
-        else
-          "Failed to register #{runner_type} CI runner"
-        end
-      end
+    def message
+      raise NotImplementedError, "Please implement #{self.class}##{__method__}"
+    end
+
+    def author_class
+      raise NotImplementedError, "Please implement #{self.class}##{__method__}"
+    end
+
+    def runner_type
+      @runner.runner_type.chomp('_type')
     end
 
     def runner_path
-      return unless @runner.persisted?
-
       url_helpers = ::Gitlab::Routing.url_helpers
 
       if @runner.group_type?

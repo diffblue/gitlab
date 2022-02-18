@@ -69,16 +69,9 @@ RSpec.describe AuditEventPresenter do
     end
 
     context 'event authored by a runner registration token user' do
-      let(:audit_event) { build(:audit_event, user: nil, details: details) }
       let(:author_double) { double(:author) }
-      let(:details) do
-        {
-          author_name: nil,
-          ip_address: '127.0.0.1',
-          target_details: 'target name',
-          entity_path: 'path',
-          runner_registration_token: 'abc123'
-        }
+      let(:audit_event) do
+        build(:audit_event, ip_address: '127.0.0.1', target_type: ::Ci::Runner.name, entity_path: 'path', details: { runner_registration_token: 'abc123' })
       end
 
       it "returns author's full_path" do

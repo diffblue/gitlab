@@ -18,7 +18,7 @@ module EE
       private
 
       def audit_log_event(runner, registration_token)
-        ::AuditEvents::RunnerRegistrationAuditEventService.new(runner, registration_token, token_scope, :register)
+        ::AuditEvents::RegisterRunnerAuditEventService.new(runner, registration_token, token_scope)
           .track_event
       end
     end
