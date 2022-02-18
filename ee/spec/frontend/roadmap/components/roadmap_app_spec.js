@@ -37,7 +37,7 @@ describe('RoadmapApp', () => {
     initialDate: mockTimeframeInitialDate,
   });
 
-  const createComponent = ({ roadmapSettings = false } = {}) => {
+  const createComponent = () => {
     return shallowMountExtended(RoadmapApp, {
       propsData: {
         emptyStateIllustrationPath,
@@ -46,7 +46,6 @@ describe('RoadmapApp', () => {
         groupFullPath: 'gitlab-org',
         groupMilestonesPath: '/groups/gitlab-org/-/milestones.json',
         listEpicsPath: '/groups/gitlab-org/-/epics',
-        glFeatures: { roadmapSettings },
       },
       store,
     });
@@ -154,18 +153,8 @@ describe('RoadmapApp', () => {
       });
     });
 
-    it('does not render settings sidebar', () => {
-      expect(findSettingsSidebar().exists()).toBe(false);
-    });
-
-    describe('when roadmapSettings feature flag is on', () => {
-      beforeEach(() => {
-        wrapper = createComponent({ roadmapSettings: true });
-      });
-
-      it('renders settings button', () => {
-        expect(findSettingsSidebar().exists()).toBe(true);
-      });
+    it('renders settings sidebar', () => {
+      expect(findSettingsSidebar().exists()).toBe(true);
     });
   });
 });

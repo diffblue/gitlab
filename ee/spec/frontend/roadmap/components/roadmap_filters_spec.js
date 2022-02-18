@@ -1,4 +1,3 @@
-import { GlSegmentedControl, GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 
@@ -25,12 +24,10 @@ import {
 
 import { TEST_HOST } from 'helpers/test_constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { visitUrl, mergeUrlParams, updateHistory } from '~/lib/utils/url_utility';
+import { updateHistory } from '~/lib/utils/url_utility';
 import FilteredSearchBar from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 
 jest.mock('~/lib/utils/url_utility', () => ({
-  mergeUrlParams: jest.fn(),
-  visitUrl: jest.fn(),
   setUrlParams: jest.requireActual('~/lib/utils/url_utility').setUrlParams,
   updateHistory: jest.requireActual('~/lib/utils/url_utility').updateHistory,
 }));
@@ -42,7 +39,6 @@ const createComponent = ({
   epicsState = EPICS_STATES.ALL,
   sortedBy = mockSortedBy,
   groupFullPath = 'gitlab-org',
-  listEpicsPath = '/groups/gitlab-org/-/epics',
   groupMilestonesPath = '/groups/gitlab-org/-/milestones.json',
   timeframe = getTimeframeForRangeType({
     timeframeRangeType: DATE_RANGES.THREE_YEARS,
@@ -50,8 +46,6 @@ const createComponent = ({
     initialDate: mockTimeframeInitialDate,
   }),
   filterParams = {},
-  timeframeRangeType = DATE_RANGES.THREE_YEARS,
-  roadmapSettings = false,
 } = {}) => {
   const store = createStore();
 
@@ -71,11 +65,6 @@ const createComponent = ({
     provide: {
       groupFullPath,
       groupMilestonesPath,
-      listEpicsPath,
-      glFeatures: { roadmapSettings },
-    },
-    props: {
-      timeframeRangeType,
     },
   });
 };
@@ -90,24 +79,6 @@ describe('RoadmapFilters', () => {
 
   afterEach(() => {
     wrapper.destroy();
-  });
-
-  describe('computed', () => {
-    describe('selectedEpicStateTitle', () => {
-      it.each`
-        returnValue       | epicsState
-        ${'All epics'}    | ${EPICS_STATES.ALL}
-        ${'Open epics'}   | ${EPICS_STATES.OPENED}
-        ${'Closed epics'} | ${EPICS_STATES.CLOSED}
-      `(
-        'returns string "$returnValue" when epicsState represents `$epicsState`',
-        ({ returnValue, epicsState }) => {
-          wrapper.vm.$store.dispatch('setEpicsState', epicsState);
-
-          expect(wrapper.vm.selectedEpicStateTitle).toBe(returnValue);
-        },
-      );
-    });
   });
 
   describe('watch', () => {
@@ -132,39 +103,18 @@ describe('RoadmapFilters', () => {
   });
 
   describe('template', () => {
-    const quarters = { text: 'Quarters', value: PRESET_TYPES.QUARTERS };
-    const months = { text: 'Months', value: PRESET_TYPES.MONTHS };
-    const weeks = { text: 'Weeks', value: PRESET_TYPES.WEEKS };
-
     beforeEach(() => {
       updateHistory({ url: TEST_HOST, title: document.title, replace: true });
     });
 
-    it('switching layout using roadmap layout switching buttons causes page to reload with selected layout', async () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({ selectedDaterange: DATE_RANGES.THREE_YEARS });
-
-      await nextTick();
-
-      wrapper.findComponent(GlSegmentedControl).vm.$emit('input', PRESET_TYPES.OPENED);
-
-      expect(mergeUrlParams).toHaveBeenCalledWith(
-        expect.objectContaining({ layout: PRESET_TYPES.OPENED }),
-        `${TEST_HOST}/`,
-      );
-      expect(visitUrl).toHaveBeenCalled();
+    it('renders settings button', () => {
+      expect(findSettingsButton().exists()).toBe(true);
     });
 
-    it('renders epics state toggling dropdown', () => {
-      const epicsStateDropdown = wrapper.findComponent(GlDropdown);
+    it('emits toggleSettings event on click settings button', () => {
+      findSettingsButton().vm.$emit('click');
 
-      expect(epicsStateDropdown.exists()).toBe(true);
-      expect(epicsStateDropdown.findAllComponents(GlDropdownItem)).toHaveLength(3);
-    });
-
-    it('does not render settings button', () => {
-      expect(findSettingsButton().exists()).toBe(false);
+      expect(wrapper.emitted('toggleSettings')).toBeTruthy();
     });
 
     describe('FilteredSearchBar', () => {
@@ -334,83 +284,6 @@ describe('RoadmapFilters', () => {
           ]);
         });
       });
-    });
-
-    describe('daterange filtering', () => {
-      let wrapperWithDaterangeFilter;
-      const availableRanges = [
-        { text: 'This quarter', value: DATE_RANGES.CURRENT_QUARTER },
-        { text: 'This year', value: DATE_RANGES.CURRENT_YEAR },
-        { text: 'Within 3 years', value: DATE_RANGES.THREE_YEARS },
-      ];
-
-      beforeEach(async () => {
-        wrapperWithDaterangeFilter = createComponent({
-          timeframeRangeType: DATE_RANGES.CURRENT_QUARTER,
-        });
-
-        await nextTick();
-      });
-
-      afterEach(() => {
-        wrapperWithDaterangeFilter.destroy();
-      });
-
-      it('renders daterange dropdown', async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapperWithDaterangeFilter.setData({ selectedDaterange: DATE_RANGES.CURRENT_QUARTER });
-        await nextTick();
-
-        const daterangeDropdown = wrapperWithDaterangeFilter.findByTestId('daterange-dropdown');
-
-        expect(daterangeDropdown.exists()).toBe(true);
-        expect(daterangeDropdown.props('text')).toBe('This quarter');
-        daterangeDropdown.findAllComponents(GlDropdownItem).wrappers.forEach((item, index) => {
-          expect(item.text()).toBe(availableRanges[index].text);
-          expect(item.attributes('value')).toBe(availableRanges[index].value);
-        });
-      });
-
-      it.each`
-        selectedDaterange              | availablePresets
-        ${DATE_RANGES.CURRENT_QUARTER} | ${[]}
-        ${DATE_RANGES.CURRENT_YEAR}    | ${[months, weeks]}
-        ${DATE_RANGES.THREE_YEARS}     | ${[quarters, months, weeks]}
-      `(
-        'renders $availablePresets.length items when selected daterange is "$selectedDaterange"',
-        async ({ selectedDaterange, availablePresets }) => {
-          // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-          // eslint-disable-next-line no-restricted-syntax
-          wrapperWithDaterangeFilter.setData({ selectedDaterange });
-          await nextTick();
-
-          const layoutSwitches = wrapperWithDaterangeFilter.findComponent(GlSegmentedControl);
-
-          if (selectedDaterange === DATE_RANGES.CURRENT_QUARTER) {
-            expect(layoutSwitches.exists()).toBe(false);
-          } else {
-            expect(layoutSwitches.exists()).toBe(true);
-            expect(layoutSwitches.props('options')).toEqual(availablePresets);
-          }
-        },
-      );
-    });
-  });
-
-  describe('when roadmapSettings feature flag is on', () => {
-    beforeEach(() => {
-      wrapper = createComponent({ roadmapSettings: true });
-    });
-
-    it('renders settings button', () => {
-      expect(findSettingsButton().exists()).toBe(true);
-    });
-
-    it('emits toggleSettings event on click settings button', () => {
-      findSettingsButton().vm.$emit('click');
-
-      expect(wrapper.emitted('toggleSettings')).toBeTruthy();
     });
   });
 });
