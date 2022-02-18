@@ -68,6 +68,13 @@
               %p.form-text.text-muted.gl-text-center{ class: 'gl-mb-5!' }
                 = _('You can always change your URL later')
 
+              .form-group
+                .form-check.gl-mb-3
+                  = check_box_tag 'project[initialize_with_readme]', '1', true, class: 'form-check-input'
+                  = label_tag 'project[initialize_with_readme]', s_('ProjectsNew|Include a Getting Started README'), class: 'form-check-label'
+                  .form-text.text-muted
+                    = s_('ProjectsNew|Recommended if you\'re new to GitLab')
+
               = submit_tag _('Create project'), class: 'btn gl-button btn-confirm btn-block', data: { track_label: 'blank_project', track_action: 'click_button', track_property: 'create_project', track_value: '' }
 
           #import-project-pane.tab-pane.import-project-pane.js-toggle-container{ role: 'tabpanel' }

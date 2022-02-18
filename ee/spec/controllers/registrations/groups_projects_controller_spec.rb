@@ -63,7 +63,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
     let(:params) { { group: group_params, project: project_params }.merge(extra_params) }
     let(:extra_params) { {} }
     let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s, setup_for_company: setup_for_company } }
-    let(:project_params) { { name: 'New project', path: 'project-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE } }
+    let(:project_params) { { name: 'New project', path: 'project-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE, initialize_with_readme: 'true' } }
     let(:dev_env_or_com) { true }
     let(:setup_for_company) { nil }
     let(:combined_registration?) { true }
@@ -90,6 +90,17 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
 
         it 'passes create_event: true to the Groups::CreateService' do
           expect(Groups::CreateService).to receive(:new).with(user, ActionController::Parameters.new(group_params.merge(create_event: true)).permit!).and_call_original
+
+          post_create
+        end
+
+        it 'allows for the project to be initialized with a README' do
+          allow(::Projects::CreateService).to receive(:new).and_call_original # a learn gitlab project is created too
+
+          expect(::Projects::CreateService).to receive(:new).with(
+            user,
+            an_object_satisfying { |permitted| permitted.include?(:initialize_with_readme) }
+          )
 
           post_create
         end
