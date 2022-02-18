@@ -46,6 +46,14 @@ module Gitlab
       def minimum_id(model, column = nil)
       end
 
+      def alt_usage_data(value = nil, fallback: FALLBACK, &block)
+        if block_given?
+          { alt_usage_data_block: block.to_s }
+        else
+          { alt_usage_data_value: value }
+        end
+      end
+
       def redis_usage_data(counter = nil, &block)
         if block_given?
           { redis_usage_data_block: block.to_s }
