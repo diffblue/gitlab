@@ -7,6 +7,10 @@ module AlertManagement
 
     belongs_to :alert, class_name: 'AlertManagement::Alert', foreign_key: 'alert_id', inverse_of: :metric_images
 
+    def self.available_for?(project)
+      project&.feature_available?(:alert_metric_upload)
+    end
+
     private
 
     def local_path
