@@ -25,7 +25,13 @@ module QA
         target_project.visit!
       end
 
-      it 'configures and syncs a (pull) mirrored repository', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347736' do
+      it 'configures and syncs a (pull) mirrored repository',
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347736',
+        quarantine: {
+          only: { subdomain: :staging },
+          type: :test_environment,
+          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/352706'
+        } do
         # Configure the target project to pull from the source project
         # And get the public key to be used as a deploy key
         Page::Project::Menu.perform(&:go_to_repository_settings)
@@ -41,7 +47,7 @@ module QA
         end
 
         # Add the public key to the source project as a deploy key
-        Resource::DeployKey.fabricate! do |deploy_key|
+        Resource::DeployKey.fabricate_via_api! do |deploy_key|
           deploy_key.project = source.project
           deploy_key.title = "pull mirror key #{Time.now.to_f}"
           deploy_key.key = public_key
@@ -52,7 +58,19 @@ module QA
         Page::Project::Menu.perform(&:go_to_repository_settings)
         Page::Project::Settings::Repository.perform do |settings|
           settings.expand_mirroring_repositories do |mirror_settings|
-            mirror_settings.update source_project_uri # rubocop:disable Rails/SaveBang
+            mirror_settings.update(source_project_uri) # rubocop:disable Rails/SaveBang
+
+            # Use the API to wait until the update was successful (pull mirroring is treated as an import)
+            mirror_succeeded = mirror_settings.wait_until(reload: false, max_duration: 180, sleep_interval: 1, raise_on_failure: false) do
+              target_project.reload!
+              target_project.api_resource[:import_status] == "finished"
+            end
+
+            unless mirror_succeeded
+              raise "Mirroring failed with error: #{target_project.api_resource[:import_error]}"
+            end
+
+            mirror_settings.verify_update(source_project_uri)
           end
         end
 
