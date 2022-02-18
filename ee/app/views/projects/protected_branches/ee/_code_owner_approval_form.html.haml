@@ -2,6 +2,9 @@
   .form-group.row
     = f.label :code_owner_approval_required, s_("ProtectedBranch|Require approval from code owners:"), class: 'col-md-2 text-left text-md-right'
     .col-md-10
-      = render "shared/buttons/project_feature_toggle", label: s_("ProtectedBranch|Toggle code owner approval"), class_list: "js-code-owner-toggle project-feature-toggle is-checked"
-      .form-text.text-muted
-        = s_("ProtectedBranch|Reject code pushes that change files listed in the CODEOWNERS file.")
+      = render "shared/gl_toggle",
+        classes: 'js-code-owner-toggle',
+        label: s_("ProtectedBranch|Toggle code owner approval"),
+        is_checked: true,
+        help: s_("ProtectedBranch|Reject code pushes that change files listed in the CODEOWNERS file."),
+        label_position: 'hidden'
