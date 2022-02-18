@@ -1,4 +1,5 @@
 import { sprintf, s__, n__ } from '~/locale';
+import { convertToTitleCase, humanize } from '~/lib/utils/text_utility';
 import { NO_RULE_MESSAGE } from '../../constants';
 
 /**
@@ -171,7 +172,7 @@ const humanizeRule = (rule) => {
     ),
     {
       scanners: humanizeItems({
-        items: rule.scanners,
+        items: rule.scanners.map((scanner) => convertToTitleCase(humanize(scanner))),
         singular: s__('SecurityOrchestration|scanner finds'),
         plural: s__('SecurityOrchestration|scanners find'),
       }),

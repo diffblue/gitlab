@@ -35,4 +35,8 @@ export const GRAPHQL_ERROR_MESSAGE = s__(
   'SecurityOrchestration|There was a problem creating the new security policy',
 );
 
+export const NO_ACTION_MESSAGE = s__(
+  'SecurityOrchestration|No actions defined - policy will not run.',
+);
+
 export const NO_RULE_MESSAGE = s__('SecurityOrchestration|No rules defined - policy will not run.');

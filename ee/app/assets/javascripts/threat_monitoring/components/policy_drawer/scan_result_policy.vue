@@ -1,13 +1,13 @@
 <script>
 import { s__ } from '~/locale';
 import { fromYaml, humanizeRules, humanizeAction } from '../policy_editor/scan_result_policy/lib';
+import { SUMMARY_TITLE } from './constants';
 import PolicyDrawerLayout from './policy_drawer_layout.vue';
 import PolicyInfoRow from './policy_info_row.vue';
 
 export default {
   i18n: {
-    action: s__('SecurityOrchestration|Action'),
-    rule: s__('SecurityOrchestration|Rule'),
+    summary: SUMMARY_TITLE,
     scanResult: s__('SecurityOrchestration|Scan result'),
   },
   components: {
@@ -51,7 +51,7 @@ export default {
     :type="$options.i18n.scanResult"
   >
     <template v-if="parsedYaml" #summary>
-      <policy-info-row data-testid="policy-rules" :label="$options.i18n.rule">
+      <policy-info-row data-testid="policy-summary" :label="$options.i18n.summary">
         <p>{{ humanizedAction }}</p>
         <ul>
           <li v-for="(rule, idx) in humanizedRules" :key="idx">

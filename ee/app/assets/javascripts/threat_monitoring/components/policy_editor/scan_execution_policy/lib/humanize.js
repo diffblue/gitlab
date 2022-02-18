@@ -1,12 +1,7 @@
 import cronstrue from 'cronstrue/i18n';
 import { convertToTitleCase, humanize } from '~/lib/utils/text_utility';
 import { getPreferredLocales, sprintf, s__, n__ } from '~/locale';
-import { NO_RULE_MESSAGE } from '../../constants';
-
-const getActionText = (scanType) =>
-  sprintf(s__('SecurityOrchestration|Executes a %{scanType} scan'), {
-    scanType: convertToTitleCase(humanize(scanType)),
-  });
+import { NO_ACTION_MESSAGE, NO_RULE_MESSAGE } from '../../constants';
 
 /**
  * Create a human-readable list of strings, adding the necessary punctuation and conjunctions
@@ -67,10 +62,29 @@ const HUMANIZE_RULES_METHODS = {
 /**
  * Create a human-readable version of the actions
  * @param {Array} actions [{"scan":"dast","scanner_profile":"Scanner Profile","site_profile":"Site Profile"},{"type":"secret_detection"}]
- * @returns {Set}
+ * @returns {String}
  */
-export const humanizeActions = (actions) => {
-  return new Set(actions.map((action) => getActionText(action.scan)));
+export const humanizeActions = (originalActions) => {
+  const actions = [...new Set(originalActions.map((a) => convertToTitleCase(humanize(a.scan))))];
+
+  if (!actions.length) {
+    return NO_ACTION_MESSAGE;
+  } else if (actions.length === 1) {
+    return sprintf(s__('SecurityOrchestration|Runs a <strong>%{actions}</strong> scan'), {
+      actions: actions.join(','),
+    });
+  }
+
+  const lastAction = actions.pop();
+  return sprintf(
+    s__(
+      'SecurityOrchestration|Runs <strong>%{actions}</strong> and <strong>%{lastAction}</strong> scans',
+    ),
+    {
+      actions: actions.join(', '),
+      lastAction,
+    },
+  );
 };
 
 /**

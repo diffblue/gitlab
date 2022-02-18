@@ -1,22 +1,26 @@
 <script>
+import { GlSafeHtmlDirective as SafeHtml } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import {
   fromYaml,
   humanizeActions,
   humanizeRules,
 } from '../policy_editor/scan_execution_policy/lib';
+import { SUMMARY_TITLE } from './constants';
 import PolicyDrawerLayout from './policy_drawer_layout.vue';
 import PolicyInfoRow from './policy_info_row.vue';
 
 export default {
   i18n: {
-    action: s__('SecurityOrchestration|Action'),
-    rule: s__('SecurityOrchestration|Rule'),
+    summary: SUMMARY_TITLE,
     scanExecution: s__('SecurityOrchestration|Scan execution'),
   },
   components: {
     PolicyDrawerLayout,
     PolicyInfoRow,
+  },
+  directives: {
+    SafeHtml,
   },
   props: {
     policy: {
@@ -50,12 +54,13 @@ export default {
     :type="$options.i18n.scanExecution"
   >
     <template v-if="parsedYaml" #summary>
-      <policy-info-row data-testid="policy-rules" :label="$options.i18n.rule">
-        <p v-for="rule in humanizedRules" :key="rule">{{ rule }}</p>
-      </policy-info-row>
-
-      <policy-info-row data-testid="policy-actions" :label="$options.i18n.action">
-        <p v-for="action in humanizedActions" :key="action">{{ action }}</p>
+      <policy-info-row data-testid="policy-summary" :label="$options.i18n.summary">
+        <p v-safe-html="humanizedActions"></p>
+        <ul>
+          <li v-for="(rule, idx) in humanizedRules" :key="idx">
+            {{ rule }}
+          </li>
+        </ul>
       </policy-info-row>
     </template>
   </policy-drawer-layout>
