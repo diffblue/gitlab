@@ -26,7 +26,7 @@ RSpec.describe 'New issue breadcrumb' do
 
     visit project_issue_path(project, issue)
 
-    expect(find('[data-testid="breadcrumb_current_link"] a')[:href]).to end_with(issue_path(issue))
+    expect(find('[data-testid="breadcrumb-current-link"] a')[:href]).to end_with(issue_path(issue))
   end
 
   it 'excludes award_emoji from comment count', :js do
