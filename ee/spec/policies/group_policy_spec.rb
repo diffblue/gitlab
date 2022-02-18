@@ -1812,7 +1812,9 @@ RSpec.describe GroupPolicy do
     end
   end
 
-  describe 'pending memberships' do
+  describe 'a pending membership' do
+    using RSpec::Parameterized::TableSyntax
+
     let_it_be(:user) { create(:user) }
 
     context 'with a private group' do
@@ -1820,19 +1822,29 @@ RSpec.describe GroupPolicy do
 
       subject { described_class.new(user, private_group) }
 
-      context 'developer' do
-        before do
-          create(:group_member, :awaiting, :developer, source: private_group, user: user)
-        end
+      where(:role) do
+        Gitlab::Access.sym_options_with_owner.keys.map(&:to_sym)
+      end
 
+      with_them do
         it 'has permission identical to a private group in which the user is not a member' do
+          create(:group_member, :awaiting, role, source: private_group, user: user)
+
           expect_private_group_permissions_as_if_non_member
         end
+      end
 
-        context 'with a project in the group' do
-          let_it_be(:project) { create(:project, :private, namespace: private_group) }
+      context 'with a project in the group' do
+        let_it_be(:project) { create(:project, :private, namespace: private_group) }
 
+        where(:role) do
+          Gitlab::Access.sym_options_with_owner.keys.map(&:to_sym)
+        end
+
+        with_them do
           it 'has permission identical to a private group in which the user is not a member' do
+            create(:group_member, :awaiting, role, source: private_group, user: user)
+
             expect_private_group_permissions_as_if_non_member
           end
         end
@@ -1844,12 +1856,14 @@ RSpec.describe GroupPolicy do
 
       subject { described_class.new(user, public_group) }
 
-      context 'developer' do
-        before do
-          create(:group_member, :awaiting, :developer, source: public_group, user: user)
-        end
+      where(:role) do
+        Gitlab::Access.sym_options_with_owner.keys.map(&:to_sym)
+      end
 
+      with_them do
         it 'has permission identical to a public group in which the user is not a member' do
+          create(:group_member, :awaiting, role, source: public_group, user: user)
+
           expect_allowed(*public_permissions)
           expect_disallowed(:upload_file)
           expect_disallowed(*reporter_permissions)
@@ -1862,8 +1876,6 @@ RSpec.describe GroupPolicy do
     end
 
     context 'with a group invited to another group' do
-      using RSpec::Parameterized::TableSyntax
-
       let_it_be(:group) { create(:group, :public) }
       let_it_be(:other_group) { create(:group, :private) }
 
@@ -1874,11 +1886,11 @@ RSpec.describe GroupPolicy do
       end
 
       where(:role) do
-        %i(owner maintainer developer reporter guest)
+        Gitlab::Access.sym_options_with_owner.keys.map(&:to_sym)
       end
 
       with_them do
-        it 'a pending member in the group has permissions to the other group as if the user is not a member' do
+        it 'has permission to the other group as if the user is not a member' do
           create(:group_member, :awaiting, role, source: group, user: user)
 
           expect_private_group_permissions_as_if_non_member
