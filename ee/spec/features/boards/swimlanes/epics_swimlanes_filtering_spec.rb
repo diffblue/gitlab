@@ -33,6 +33,10 @@ RSpec.describe 'epics swimlanes filtering', :js do
 
   let(:all_issues) { [confidential_issue, issue1, issue2, issue3, issue4, issue5, issue6, issue7, issue8] }
 
+  let(:filter_input) { find('.gl-filtered-search-term-input')}
+  let(:filter_first_suggestion) { find('.gl-filtered-search-suggestion-list').first('.gl-filtered-search-suggestion') }
+  let(:filter_submit) { find('.gl-search-box-by-click-search-button') }
+
   before_all do
     project.add_maintainer(user)
     project.add_maintainer(user2)
@@ -120,18 +124,20 @@ RSpec.describe 'epics swimlanes filtering', :js do
   end
 
   def set_filter(type, text)
-    find('.filtered-search').native.send_keys("#{type}:=#{text}")
+    filter_input.click
+    filter_input.set("#{type}:")
+    filter_first_suggestion.click # Select `=` operator
   end
 
   def submit_filter
-    find('.filtered-search').native.send_keys(:enter)
+    filter_submit.click
   end
 
   def click_filter_link(link_text)
-    page.within('.filtered-search-box') do
-      expect(page).to have_button(link_text)
+    page.within('.gl-filtered-search-suggestion-list') do
+      expect(page).to have_link(link_text)
 
-      click_button(link_text)
+      click_on link_text
     end
   end
 end

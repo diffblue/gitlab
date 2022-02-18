@@ -2,7 +2,7 @@ import {
   FiltersInfo as FiltersInfoCE,
   formatIssueInput as formatIssueInputCe,
 } from '~/boards/boards_util';
-import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { getIdFromGraphQLId, isGid } from '~/graphql_shared/utils';
 import { objectToQuery, queryToObject } from '~/lib/utils/url_utility';
 import {
   EPIC_LANE_BASE_HEIGHT,
@@ -41,6 +41,10 @@ export function fullMilestoneId(milestoneId) {
 function fullIterationId(id) {
   if (!id) {
     return null;
+  }
+
+  if (isGid(id)) {
+    return id;
   }
 
   if (id === IterationIDs.CURRENT) {
@@ -232,6 +236,7 @@ export const FiltersInfo = {
   },
   iterationId: {
     negatedSupport: true,
+    transform: (iterationId) => fullIterationId(iterationId),
     remap: (k, v) => {
       return v.endsWith(IterationFilterType.any) ||
         v.endsWith(IterationFilterType.none) ||

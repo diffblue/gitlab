@@ -16,6 +16,8 @@ describe('IssueBoardFilter', () => {
       provide: {
         isSignedIn: true,
         releasesFetchPath: '/releases',
+        epicFeatureAvailable: true,
+        iterationFeatureAvailable: true,
       },
     });
   };

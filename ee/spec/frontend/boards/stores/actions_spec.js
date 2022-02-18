@@ -70,7 +70,7 @@ describe('setFilters', () => {
         filterVariables: {
           weight: 3,
           not: {
-            iterationId: '1',
+            iterationId: 'gid://gitlab/Iteration/1',
           },
         },
       },
