@@ -18895,7 +18895,7 @@ CREATE TABLE projects (
     autoclose_referenced_issues boolean,
     suggestion_commit_message character varying(255),
     project_namespace_id bigint,
-    hidden boolean DEFAULT false
+    hidden boolean DEFAULT false NOT NULL
 );
 
 CREATE SEQUENCE projects_id_seq
