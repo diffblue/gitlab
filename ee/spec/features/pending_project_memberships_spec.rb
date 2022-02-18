@@ -35,6 +35,16 @@ RSpec.describe 'Pending project memberships', :js do
       expect(page).to have_content "Group ID: #{group.id}"
       expect(page).to have_content project.name
     end
+
+    context 'when a pending group membership is created with an existing pending project membership' do
+      it "a pending member gets a 404 for the project's private group" do
+        create(:group_member, :awaiting, :developer, source: group, user: developer)
+
+        visit group_path(group)
+
+        expect(page).to have_content "Page Not Found"
+      end
+    end
   end
 
   context 'with a public project in a public group' do
