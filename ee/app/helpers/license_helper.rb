@@ -2,7 +2,6 @@
 
 module LicenseHelper
   include ActionView::Helpers::AssetTagHelper
-  include ActionView::Helpers::UrlHelper
 
   delegate :new_admin_license_path, to: 'Gitlab::Routing.url_helpers'
 

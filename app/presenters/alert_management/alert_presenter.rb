@@ -3,7 +3,6 @@
 module AlertManagement
   class AlertPresenter < Gitlab::View::Presenter::Delegated
     include IncidentManagement::Settings
-    include ActionView::Helpers::UrlHelper
 
     presents ::AlertManagement::Alert
     delegator_override_with Gitlab::Utils::StrongMemoize # TODO: Remove `Gitlab::Utils::StrongMemoize` inclusion as it's duplicate
