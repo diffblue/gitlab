@@ -8,12 +8,13 @@ module EE
       scope :vulnerability_hooks, -> { where(vulnerability_events: true, active: true) }
     end
 
-    EE_COM_PROJECT_SPECIFIC_INTEGRATION_NAMES = %w[
+    EE_PROJECT_SPECIFIC_INTEGRATION_NAMES = %w[
+      github
       gitlab_slack_application
     ].freeze
 
-    EE_PROJECT_SPECIFIC_INTEGRATION_NAMES = %w[
-      github
+    EE_SAAS_ONLY_INTEGRATION_NAMES = %w[
+      gitlab_slack_application
     ].freeze
 
     class_methods do
@@ -21,9 +22,31 @@ module EE
 
       override :project_specific_integration_names
       def project_specific_integration_names
-        integrations = super + EE_PROJECT_SPECIFIC_INTEGRATION_NAMES
-        integrations += EE_COM_PROJECT_SPECIFIC_INTEGRATION_NAMES if ::Gitlab.dev_env_or_com?
-        integrations
+        super + EE_PROJECT_SPECIFIC_INTEGRATION_NAMES
+      end
+
+      def saas_only_integration_names
+        EE_SAAS_ONLY_INTEGRATION_NAMES
+      end
+
+      override :available_integration_names
+      def available_integration_names(*)
+        names = super
+        names -= saas_only_integration_names unless include_saas_only?
+        names
+      end
+
+      # Returns the integration name for the given type.
+      # Example: "AsanaService" => "asana".
+      def integration_type_to_name(type)
+        type.delete_suffix('Service').underscore
+      end
+
+      private
+
+      # Returns true if this instance can show SaaS-only integrations.
+      def include_saas_only?
+        ::Gitlab.dev_or_test_env? || ::Gitlab.com?
       end
     end
   end
