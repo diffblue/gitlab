@@ -1,8 +1,18 @@
 <script>
-import { GlFormGroup, GlFormInput, GlFormRadioGroup, GlFormText, GlFormTextarea } from '@gitlab/ui';
+import {
+  GlFormGroup,
+  GlFormInput,
+  GlFormRadioGroup,
+  GlFormText,
+  GlFormTextarea,
+  GlFormSelect,
+  GlLink,
+} from '@gitlab/ui';
 import { initFormField } from 'ee/security_configuration/utils';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import { serializeFormObject } from '~/lib/utils/forms';
 import { __, s__, n__, sprintf } from '~/locale';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import BaseDastProfileForm from '../../components/base_dast_profile_form.vue';
 import dastProfileFormMixin from '../../dast_profile_form_mixin';
 import tooltipIcon from '../../dast_scanner_profiles/components/tooltip_icon.vue';
@@ -13,6 +23,7 @@ import {
   REDACTED_PASSWORD,
   REDACTED_REQUEST_HEADERS,
   TARGET_TYPES,
+  SCAN_METHODS,
 } from '../constants';
 import dastSiteProfileCreateMutation from '../graphql/dast_site_profile_create.mutation.graphql';
 import dastSiteProfileUpdateMutation from '../graphql/dast_site_profile_update.mutation.graphql';
@@ -31,8 +42,10 @@ export default {
     GlFormText,
     GlFormTextarea,
     tooltipIcon,
+    GlFormSelect,
+    GlLink,
   },
-  mixins: [dastProfileFormMixin()],
+  mixins: [dastProfileFormMixin(), glFeatureFlagMixin()],
   data() {
     const {
       name = '',
@@ -41,6 +54,8 @@ export default {
       requestHeaders = '',
       auth = {},
       targetType = TARGET_TYPES.WEBSITE.value,
+      scanMethod = null,
+      scanFilePath = '',
     } = this.profile;
 
     const form = {
@@ -60,6 +75,8 @@ export default {
           skipValidation: true,
         }),
         targetType: initFormField({ value: targetType, skipValidation: true }),
+        scanMethod: initFormField({ value: scanMethod, skipValidation: true }),
+        scanFilePath: initFormField({ value: scanFilePath, skipValidation: true }),
       },
     };
 
@@ -70,6 +87,9 @@ export default {
       tokenId: null,
       token: null,
       targetTypesOptions: Object.values(TARGET_TYPES),
+      showAPIFilePath: false,
+      scanMethodOptions: Object.values(SCAN_METHODS),
+      SCAN_METHODS,
     };
   },
   computed: {
@@ -114,7 +134,17 @@ export default {
             ? s__('DastProfiles|API endpoint URL')
             : s__('DastProfiles|Target URL'),
         },
+        scanMethod: {
+          label: s__('DastProfiles|Scan method'),
+          helpText: s__('DastProfiles|What does each method do?'),
+          defaultOption: s__('DastProfiles|Choose a scan method'),
+        },
       };
+    },
+    dastApiDocsPath() {
+      return helpPagePath('user/application_security/dast_api/', {
+        anchor: 'enable-dast-api-scanning',
+      });
     },
     parsedExcludedUrls() {
       return this.form.fields.excludedUrls.value
@@ -132,6 +162,12 @@ export default {
     isTargetAPI() {
       return this.form.fields.targetType.value === TARGET_TYPES.API.value;
     },
+    shouldRenderScanMethod() {
+      return this.glFeatures.dastApiScanner && this.isTargetAPI;
+    },
+    selectedScanMethod() {
+      return SCAN_METHODS[this.form.fields.scanMethod.value];
+    },
     isAuthEnabled() {
       return this.authSection.fields.enabled && !this.isTargetAPI;
     },
@@ -145,6 +181,8 @@ export default {
         targetType,
         requestHeaders,
         excludedUrls,
+        scanMethod,
+        scanFilePath,
       } = serializeFormObject(this.form.fields);
 
       return {
@@ -159,6 +197,7 @@ export default {
         ...(requestHeaders !== REDACTED_REQUEST_HEADERS && {
           requestHeaders,
         }),
+        ...(this.shouldRenderScanMethod && { scanMethod, scanFilePath }),
       };
     },
   },
@@ -252,6 +291,52 @@ export default {
           type="url"
           :state="form.fields.targetUrl.state"
         />
+      </gl-form-group>
+
+      <gl-form-group
+        v-if="shouldRenderScanMethod"
+        id="scan-method-popover-container"
+        :label="i18n.scanMethod.label"
+      >
+        <gl-form-select
+          v-model="form.fields.scanMethod.value"
+          v-validation:[form.showValidation]
+          :options="scanMethodOptions"
+          name="scanMethod"
+          class="mw-460"
+          data-testid="scan-method-select-input"
+          :state="form.fields.scanMethod.state"
+          required
+        >
+          <template #first>
+            <option :value="null" disabled>{{ i18n.scanMethod.defaultOption }}</option>
+          </template>
+        </gl-form-select>
+
+        <gl-form-text
+          ><gl-link :href="dastApiDocsPath" target="_blank">{{
+            i18n.scanMethod.helpText
+          }}</gl-link></gl-form-text
+        >
+
+        <gl-form-group
+          v-if="selectedScanMethod"
+          class="gl-mt-5"
+          :label="selectedScanMethod.inputLabel"
+          :invalid-feedback="form.fields.scanFilePath.feedback"
+        >
+          <gl-form-input
+            v-model="form.fields.scanFilePath.value"
+            v-validation:[form.showValidation]
+            name="scanFilePath"
+            class="mw-460"
+            data-testid="scan-file-path-input"
+            type="text"
+            :placeholder="selectedScanMethod.placeholder"
+            required
+            :state="form.fields.scanFilePath.state"
+          />
+        </gl-form-group>
       </gl-form-group>
 
       <div class="row">
