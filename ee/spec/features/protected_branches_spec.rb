@@ -21,7 +21,7 @@ RSpec.describe 'Protected Branches', :js do
       describe 'protect a branch form' do
         let!(:protected_branch) { create(:protected_branch, project: project) }
         let(:container) { page.find('#new_protected_branch') }
-        let(:code_owner_toggle) { container.find('.js-code-owner-toggle') }
+        let(:code_owner_toggle) { container.find('.js-code-owner-toggle').find('button') }
         let(:branch_input) { container.find('.js-protected-branch-select') }
         let(:allowed_to_merge_input) { container.find('.js-allowed-to-merge') }
         let(:allowed_to_push) { container.find('.js-allowed-to-push') }
