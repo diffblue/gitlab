@@ -18,11 +18,7 @@ class StoreSecurityReportsWorker # rubocop:disable Scalability/IdempotentWorker
     Ci::Pipeline.find(pipeline_id).try do |pipeline|
       break unless pipeline.project.can_store_security_reports?
 
-      if Feature.enabled?(:security_report_ingestion_framework, pipeline.project, default_enabled: :yaml)
-        ::Security::Ingestion::IngestReportsService.execute(pipeline)
-      else
-        ::Security::StoreReportsService.new(pipeline).execute
-      end
+      ::Security::Ingestion::IngestReportsService.execute(pipeline)
 
       if revoke_secret_detection_token?(pipeline)
         logger.info "StoreSecurityReportsWorker: token revocation started for pipeline: #{pipeline.id}"
