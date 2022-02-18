@@ -3,7 +3,7 @@ export const approvedChecks = [
     id: 1,
     name: 'Foo',
     external_url: 'http://foo',
-    status: 'approved',
+    status: 'passed',
   },
 ];
 
@@ -28,3 +28,5 @@ export const failedChecks = [
 export const pendingAndFailedChecks = [...pendingChecks, ...failedChecks];
 
 export const approvedAndPendingChecks = [...approvedChecks, ...pendingChecks];
+
+export const approvedFailedAndPending = [...approvedChecks, ...failedChecks, ...pendingChecks];

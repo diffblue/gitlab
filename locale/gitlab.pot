@@ -1279,7 +1279,7 @@ msgstr ""
 msgid "+%{tags} more"
 msgstr ""
 
-msgid ", and "
+msgid ", "
 msgstr ""
 
 msgid ", or "
@@ -35084,6 +35084,9 @@ msgstr ""
 msgid "Status: %{title}"
 msgstr ""
 
+msgid "StatusCheck| %{failed} failed, and %{pending} pending"
+msgstr ""
+
 msgid "StatusCheck|%{failed} failed"
 msgstr ""
 
@@ -35154,9 +35157,6 @@ msgid "StatusCheck|Target branch"
 msgstr ""
 
 msgid "StatusCheck|Update status check"
-msgstr ""
-
-msgid "StatusCheck|When this merge request is updated, a call is sent to the following APIs to confirm their status. %{linkStart}Learn more%{linkEnd}."
 msgstr ""
 
 msgid "StatusCheck|You are about to remove the %{name} status check."
