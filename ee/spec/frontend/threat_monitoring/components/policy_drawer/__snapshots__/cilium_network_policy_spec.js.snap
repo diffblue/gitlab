@@ -11,7 +11,9 @@ exports[`CiliumNetworkPolicy component supported YAML renders policy preview 1`]
   <p
     data-testid="policy-type"
   >
+    
     Network
+  
   </p>
    
   <policy-info-row-stub
@@ -28,8 +30,8 @@ exports[`CiliumNetworkPolicy component supported YAML renders policy preview 1`]
       label="Description"
     >
       
-        test description
-      
+      test description
+    
     </policy-info-row-stub>
      
     <policy-info-row-stub
@@ -54,7 +56,9 @@ exports[`CiliumNetworkPolicy component unsupported YAML renders policy preview 1
   <p
     data-testid="policy-type"
   >
+    
     Network
+  
   </p>
    
   <policy-info-row-stub

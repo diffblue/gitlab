@@ -1,5 +1,4 @@
 import { GlIntersperse } from '@gitlab/ui';
-import BasePolicy from 'ee/threat_monitoring/components/policy_drawer/base_policy.vue';
 import CiliumNetworkPolicy from 'ee/threat_monitoring/components/policy_drawer/cilium_network_policy.vue';
 import { toYaml } from 'ee/threat_monitoring/components/policy_editor/network_policy/lib';
 import PolicyPreviewHuman from 'ee/threat_monitoring/components/policy_editor/policy_preview_human.vue';
@@ -25,7 +24,6 @@ describe('CiliumNetworkPolicy component', () => {
         ...propsData,
       },
       stubs: {
-        BasePolicy,
         GlIntersperse,
       },
     });

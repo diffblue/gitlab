@@ -32418,9 +32418,6 @@ msgstr ""
 msgid "SecurityOrchestration|Invalid policy type"
 msgstr ""
 
-msgid "SecurityOrchestration|Latest scan"
-msgstr ""
-
 msgid "SecurityOrchestration|Latest scan run against %{agent}"
 msgstr ""
 
@@ -32428,6 +32425,9 @@ msgid "SecurityOrchestration|Network"
 msgstr ""
 
 msgid "SecurityOrchestration|New policy"
+msgstr ""
+
+msgid "SecurityOrchestration|No description"
 msgstr ""
 
 msgid "SecurityOrchestration|No rules defined - policy will not run."
@@ -32440,6 +32440,9 @@ msgid "SecurityOrchestration|Only owners can update Security Policy Project"
 msgstr ""
 
 msgid "SecurityOrchestration|Policies"
+msgstr ""
+
+msgid "SecurityOrchestration|Policy Type"
 msgstr ""
 
 msgid "SecurityOrchestration|Policy cannot be enabled for non-existing branches (%{branches})"
@@ -32584,9 +32587,6 @@ msgid "SecurityOrchestration|user with id"
 msgstr ""
 
 msgid "SecurityOrchestration|users with ids"
-msgstr ""
-
-msgid "SecurityOrchestration|view results"
 msgstr ""
 
 msgid "SecurityOrchestration|vulnerabilities"
