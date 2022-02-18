@@ -1963,8 +1963,26 @@ RSpec.describe ProjectPolicy do
   end
 
   describe 'pending member permissions' do
+    using RSpec::Parameterized::TableSyntax
+
     let_it_be(:current_user) { create(:user) }
     let_it_be(:group) { create(:group, :public) }
+
+    context 'with a pending membership in a private project' do
+      let_it_be(:project) { create(:project, :private, public_builds: false) }
+
+      where(:role) do
+        Gitlab::Access.sym_options.keys.map(&:to_sym)
+      end
+
+      with_them do
+        it 'a pending member has permissions to the project as if the user is not a member' do
+          create(:project_member, :awaiting, role, source: project, user: current_user)
+
+          expect_private_project_permissions_as_if_non_member
+        end
+      end
+    end
 
     context 'with a group invited to a project' do
       let_it_be(:project) { create(:project, :private, public_builds: false) }
@@ -1973,10 +1991,16 @@ RSpec.describe ProjectPolicy do
         create(:project_group_link, project: project, group: group)
       end
 
-      it 'a pending developer in the group has permissions to the project as if the user is not a member' do
-        create(:group_member, :awaiting, :developer, source: group, user: current_user)
+      where(:role) do
+        Gitlab::Access.sym_options_with_owner.keys.map(&:to_sym)
+      end
 
-        expect_private_project_permissions_as_if_non_member
+      with_them do
+        it 'a pending member in the group has permissions to the project as if the user is not a member' do
+          create(:group_member, :awaiting, role, source: group, user: current_user)
+
+          expect_private_project_permissions_as_if_non_member
+        end
       end
     end
 
@@ -1988,10 +2012,16 @@ RSpec.describe ProjectPolicy do
         create(:group_group_link, shared_with_group: group, shared_group: other_group)
       end
 
-      it "a pending developer in the group has permissions to the other group's project as if the user is not a member" do
-        create(:group_member, :awaiting, :developer, source: group, user: current_user)
+      where(:role) do
+        Gitlab::Access.sym_options_with_owner.keys.map(&:to_sym)
+      end
 
-        expect_private_project_permissions_as_if_non_member
+      with_them do
+        it "a pending member in the group has permissions to the other group's project as if the user is not a member" do
+          create(:group_member, :awaiting, role, source: group, user: current_user)
+
+          expect_private_project_permissions_as_if_non_member
+        end
       end
     end
 
@@ -1999,10 +2029,16 @@ RSpec.describe ProjectPolicy do
       let_it_be(:subgroup) { create(:group, :private, parent: group) }
       let_it_be(:project) { create(:project, :private, public_builds: false, namespace: subgroup) }
 
-      it 'a pending developer in the group has permissions to the subgroup project as if the user is not a member' do
-        create(:group_member, :awaiting, :developer, source: group, user: current_user)
+      where(:role) do
+        Gitlab::Access.sym_options_with_owner.keys.map(&:to_sym)
+      end
 
-        expect_private_project_permissions_as_if_non_member
+      with_them do
+        it 'a pending member in the group has permissions to the subgroup project as if the user is not a member' do
+          create(:group_member, :awaiting, role, source: group, user: current_user)
+
+          expect_private_project_permissions_as_if_non_member
+        end
       end
     end
 
