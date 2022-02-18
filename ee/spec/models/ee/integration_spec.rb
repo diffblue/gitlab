@@ -4,35 +4,41 @@ require 'spec_helper'
 
 RSpec.describe Integration do
   describe '.available_integration_names' do
-    it { expect(described_class.available_integration_names).to include('github') }
+    let(:include_saas_only) { true }
+
+    subject { described_class.available_integration_names }
+
+    before do
+      allow(described_class).to receive(:integration_names).and_return(%w(foo saas_only))
+      allow(described_class).to receive(:saas_only_integration_names).and_return(['saas_only'])
+      allow(described_class).to receive(:include_saas_only?).and_return(include_saas_only)
+    end
+
+    it { is_expected.to include('foo', 'saas_only') }
+
+    context 'when instance is not SaaS' do
+      let(:include_saas_only) { false }
+
+      it { is_expected.to include('foo') }
+      it { is_expected.not_to include('saas_only') }
+    end
   end
 
   describe '.project_specific_integration_names' do
-    subject { described_class.project_specific_integration_names }
+    specify do
+      stub_const("EE::#{described_class.name}::EE_PROJECT_SPECIFIC_INTEGRATION_NAMES", ['ee_project_specific_name'])
 
-    before do
-      allow(::Gitlab).to receive(:com?).and_return(com)
+      expect(described_class.project_specific_integration_names)
+        .to include('ee_project_specific_name')
     end
+  end
 
-    context 'when not on gitlab.com' do
-      let(:com) { false }
+  describe '.saas_only_integration_names' do
+    specify do
+      stub_const("EE::#{described_class.name}::EE_SAAS_ONLY_INTEGRATION_NAMES", ['ee_sass_only_name'])
 
-      it { is_expected.to include(*described_class::EE_PROJECT_SPECIFIC_INTEGRATION_NAMES) }
-      it { is_expected.not_to include(*described_class::EE_COM_PROJECT_SPECIFIC_INTEGRATION_NAMES) }
-
-      context 'when on dev' do
-        before do
-          allow(Rails.env).to receive(:development?).and_return(true)
-        end
-
-        it { is_expected.to include(*described_class::EE_COM_PROJECT_SPECIFIC_INTEGRATION_NAMES) }
-      end
-    end
-
-    context 'when on gitlab.com' do
-      let(:com) { true }
-
-      it { is_expected.to include(*described_class::EE_PROJECT_SPECIFIC_INTEGRATION_NAMES, *Integration::EE_COM_PROJECT_SPECIFIC_INTEGRATION_NAMES) }
+      expect(described_class.saas_only_integration_names)
+        .to eq(['ee_sass_only_name'])
     end
   end
 
@@ -47,6 +53,12 @@ RSpec.describe Integration do
       create(:integration, active: true, vulnerability_events: false)
 
       expect(described_class.vulnerability_hooks.count).to eq 0
+    end
+  end
+
+  describe '.integration_type_to_name' do
+    it 'transforms the type to a name' do
+      expect(described_class.integration_type_to_name('MyServiceService')).to eq('my_service')
     end
   end
 end
