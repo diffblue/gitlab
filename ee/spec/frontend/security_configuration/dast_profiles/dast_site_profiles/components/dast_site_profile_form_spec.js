@@ -10,6 +10,10 @@ import dastSiteProfileUpdateMutation from 'ee/security_configuration/dast_profil
 import { policySiteProfiles } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
 import { TEST_HOST } from 'helpers/test_constants';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import {
+  SCAN_METHODS,
+  TARGET_TYPES,
+} from 'ee/security_configuration/dast_profiles/dast_site_profiles/constants';
 
 const projectFullPath = 'group/project';
 const profilesLibraryPath = `${TEST_HOST}/${projectFullPath}/-/security/configuration/dast_scans`;
@@ -18,6 +22,7 @@ const profileName = 'My DAST site profile';
 const targetUrl = 'http://example.com';
 const excludedUrls = 'https://foo.com/logout, https://foo.com/send_mail';
 const requestHeaders = 'my-new-header=something';
+const scanFilePath = 'test-path';
 
 const defaultProps = {
   profilesLibraryPath,
@@ -38,6 +43,8 @@ describe('DastSiteProfileForm', () => {
   const findTargetUrlInput = () => wrapper.findByTestId('target-url-input');
   const findExcludedUrlsInput = () => wrapper.findByTestId('excluded-urls-input');
   const findRequestHeadersInput = () => wrapper.findByTestId('request-headers-input');
+  const findScanMethodInput = () => wrapper.findByTestId('scan-method-select-input');
+  const scanFilePathInput = () => wrapper.findByTestId('scan-file-path-input');
   const findAuthCheckbox = () => wrapper.findByTestId('auth-enable-checkbox');
   const findTargetTypeOption = () => wrapper.findByTestId('site-type-option');
 
@@ -68,14 +75,15 @@ describe('DastSiteProfileForm', () => {
       .filter((r) => r.attributes('value') === type)
       .at(0);
     radio.element.selected = true;
-    radio.trigger('change');
+    return radio.trigger('change');
   };
+
   const createComponentFactory = (mountFn = mountExtended) => (options) => {
     const mountOpts = merge(
       {},
       {
         propsData: defaultProps,
-        provide: { projectFullPath },
+        provide: { projectFullPath, glFeatures: { dastApiScanner: true } },
       },
       options,
     );
@@ -179,12 +187,39 @@ describe('DastSiteProfileForm', () => {
     });
 
     describe('when target type is API', () => {
+      const getScanMethodOption = (index) => {
+        return findScanMethodInput().findAll('option').at(index);
+      };
+      const setScanMethodOption = (index) => {
+        getScanMethodOption(index).setSelected();
+        findScanMethodInput().trigger('change');
+      };
+
       beforeEach(() => {
-        setTargetType('API');
+        setTargetType(TARGET_TYPES.API.value);
       });
 
       it('should hide auth section', () => {
         expect(findAuthSection().exists()).toBe(false);
+      });
+
+      describe('scan method option', () => {
+        it('should render all scan method options', () => {
+          expect(findScanMethodInput().exists()).toBe(true);
+          expect(getScanMethodOption(0).attributes('disabled')).toBe('disabled');
+          Object.values(SCAN_METHODS).forEach((method, index) => {
+            expect(getScanMethodOption(index + 1).text()).toBe(method.text);
+          });
+        });
+
+        it('should not show scan file-path input by default', () => {
+          expect(scanFilePathInput().exists()).toBe(false);
+        });
+
+        it('should show scan file-path input upon selection', async () => {
+          await setScanMethodOption(1);
+          expect(scanFilePathInput().exists()).toBe(true);
+        });
       });
 
       describe.each`
@@ -202,7 +237,9 @@ describe('DastSiteProfileForm', () => {
 
         it('passes correct props to base component', async () => {
           await fillForm();
-          await setTargetType('API');
+          await setTargetType(TARGET_TYPES.API.value);
+          await setScanMethodOption(1);
+          await setFieldValue(scanFilePathInput(), scanFilePath);
 
           const baseDastProfileForm = findBaseDastProfileForm();
           expect(baseDastProfileForm.props('mutation')).toBe(mutation);
@@ -213,6 +250,8 @@ describe('DastSiteProfileForm', () => {
             excludedUrls: excludedUrls.split(', '),
             requestHeaders,
             targetType: 'API',
+            scanMethod: 'HAR',
+            scanFilePath,
             ...mutationVars,
           });
         });
@@ -275,6 +314,22 @@ describe('DastSiteProfileForm', () => {
 
     it('should disable all form groups', () => {
       expect(findParentFormGroup().attributes('disabled')).toBe('true');
+    });
+  });
+
+  describe('when dastApiScanner FF is disabled', () => {
+    beforeEach(() => {
+      createShallowComponent({
+        propsData: {
+          profile: policySiteProfiles[0],
+        },
+        provide: { glFeatures: { dastApiScanner: false } },
+      });
+    });
+
+    it('should not show scan method options', () => {
+      expect(findScanMethodInput().exists()).toBe(false);
+      expect(scanFilePathInput().exists()).toBe(false);
     });
   });
 });
