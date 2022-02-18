@@ -30,7 +30,7 @@ module QA
             end
 
             def require_code_owner_approval(branch)
-              toggle = find_element(:code_owner_toggle_button, branch_name: branch)
+              toggle = find_element(:code_owner_toggle_button, branch_name: branch).find_button('button')
               toggle.click unless toggle[:class].include?('is-checked')
             end
 
