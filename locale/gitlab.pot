@@ -17093,6 +17093,12 @@ msgstr ""
 msgid "GoogleCloud|Google Cloud project"
 msgstr ""
 
+msgid "GoogleCloud|Google OAuth2 token revocation request failed"
+msgstr ""
+
+msgid "GoogleCloud|Google OAuth2 token revocation requested"
+msgstr ""
+
 msgid "GoogleCloud|I understand the responsibilities involved with managing service account keys"
 msgstr ""
 
@@ -17100,6 +17106,12 @@ msgid "GoogleCloud|New service account is generated for the selected Google Clou
 msgstr ""
 
 msgid "GoogleCloud|Refs"
+msgstr ""
+
+msgid "GoogleCloud|Revoke authorizations"
+msgstr ""
+
+msgid "GoogleCloud|Revoke authorizations granted to GitLab. This does not invalidate service accounts."
 msgstr ""
 
 msgid "Got it"
