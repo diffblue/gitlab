@@ -102,8 +102,22 @@ RSpec.describe LooseForeignKeys::CleanupWorker do
     loose_fk_parent_table_2.delete_all
   end
 
+  def perform_for(db:)
+    time = Time.current.midnight
+
+    if db == :main
+      time += 2.minutes
+    elsif db == :ci
+      time += 3.minutes
+    end
+
+    travel_to(time) do
+      described_class.new.perform
+    end
+  end
+
   it 'cleans up all rows' do
-    described_class.new.perform
+    perform_for(db: :main)
 
     expect(loose_fk_child_table_1_1.count).to eq(0)
     expect(loose_fk_child_table_1_2.where(parent_id_with_different_column: nil).count).to eq(4)
@@ -118,7 +132,7 @@ RSpec.describe LooseForeignKeys::CleanupWorker do
     it 'cleans up all rows' do
       expect(LooseForeignKeys::BatchCleanerService).to receive(:new).exactly(:twice).and_call_original
 
-      described_class.new.perform
+      perform_for(db: :main)
 
       expect(loose_fk_child_table_1_1.count).to eq(0)
       expect(loose_fk_child_table_1_2.where(parent_id_with_different_column: nil).count).to eq(4)
@@ -137,7 +151,7 @@ RSpec.describe LooseForeignKeys::CleanupWorker do
     end
 
     it 'cleans up 2 rows' do
-      expect { described_class.new.perform }.to change { count_deletable_rows }.by(-2)
+      expect { perform_for(db: :main) }.to change { count_deletable_rows }.by(-2)
     end
   end
 
