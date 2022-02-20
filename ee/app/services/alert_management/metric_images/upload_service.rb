@@ -3,13 +3,12 @@
 module AlertManagement
   module MetricImages
     class UploadService < BaseService
-      attr_reader :alert, :project, :file, :url, :url_text, :metric
+      attr_reader :alert, :file, :url, :url_text, :metric
 
       def initialize(alert, current_user, params = {})
         super
 
         @alert = alert
-        @project = alert&.project
         @file = params.fetch(:file)
         @url = params.fetch(:url, nil)
         @url_text = params.fetch(:url_text, nil)
