@@ -40,7 +40,6 @@ Example response:
 }
 ```
 
-
 ## List metric images
 
 ```plaintext

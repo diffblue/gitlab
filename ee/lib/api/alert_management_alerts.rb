@@ -80,6 +80,8 @@ module API
 
           authorize!(:update_alert_management_metric_image, alert)
 
+          render_api_error!('Not allowed!', 400) unless alert.metric_images_available?
+
           metric_image = alert.metric_images.find_by_id(params[:metric_image_id])
 
           render_api_error!('Metric image not found', 404) unless metric_image

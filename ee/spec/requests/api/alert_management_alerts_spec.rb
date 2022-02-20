@@ -299,25 +299,44 @@ RSpec.describe API::AlertManagementAlerts do
         project.add_developer(user)
       end
 
-      context 'metric image not found' do
-        subject { put api("/projects/#{project.id}/alert_management_alerts/#{alert.iid}/metric_images/#{non_existing_record_id}", user) }
+      context 'feature is enabled' do
+        before do
+          stub_licensed_features(alert_metric_upload: true)
+        end
 
-        it 'returns an error' do
-          subject
+        context 'metric image not found' do
+          subject { put api("/projects/#{project.id}/alert_management_alerts/#{alert.iid}/metric_images/#{non_existing_record_id}", user) }
 
-          expect(response).to have_gitlab_http_status(:not_found)
-          expect(json_response['message']).to eq('Metric image not found')
+          it 'returns an error' do
+            subject
+
+            expect(response).to have_gitlab_http_status(:not_found)
+            expect(json_response['message']).to eq('Metric image not found')
+          end
+        end
+
+        context 'metric image cannot be updated' do
+          let(:params) { { url_text: 'something_long' * 100 } }
+
+          it 'returns an error' do
+            subject
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(json_response['message']).to eq('Metric image could not be updated')
+          end
         end
       end
 
-      context 'metric image cannot be updated' do
-        let(:params) { { url_text: 'something_long' * 100 } }
+      context 'feature not enabled' do
+        before do
+          stub_licensed_features(alert_metric_upload: false)
+        end
 
         it 'returns an error' do
           subject
 
           expect(response).to have_gitlab_http_status(:bad_request)
-          expect(json_response['message']).to eq('Metric image could not be updated')
+          expect(json_response['message']).to eq('Not allowed!')
         end
       end
     end
