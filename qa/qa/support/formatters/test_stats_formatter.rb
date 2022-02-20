@@ -66,7 +66,7 @@ module QA
               file_path: file_path,
               status: example.execution_result.status,
               reliable: example.metadata.key?(:reliable).to_s,
-              quarantined: example.metadata.key?(:quarantine).to_s,
+              quarantined: quarantined(example.metadata),
               retried: ((example.metadata[:retry_attempts] || 0) > 0).to_s,
               job_name: job_name,
               merge_request: merge_request,
@@ -168,6 +168,17 @@ module QA
 
             "#{project_name}-#{test_subset}"
           end
+        end
+
+        # Is spec quarantined
+        #
+        # @param [Hash] metadata
+        # @return [String]
+        def quarantined(metadata)
+          return "false" unless metadata.key?(:quarantine)
+          return "true" unless metadata[:quarantine].is_a?(Hash)
+
+          (!Specs::Helpers::Quarantine.quarantined_different_context?(metadata[:quarantine])).to_s
         end
 
         # Print log message
