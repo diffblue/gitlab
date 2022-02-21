@@ -26948,7 +26948,7 @@ msgstr ""
 msgid "Pipelines|Project cache successfully reset."
 msgstr ""
 
-msgid "Pipelines|Revoke"
+msgid "Pipelines|Revoke trigger"
 msgstr ""
 
 msgid "Pipelines|Something went wrong while cleaning runners cache."
