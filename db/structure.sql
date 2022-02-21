@@ -12376,7 +12376,7 @@ CREATE TABLE ci_runners (
     executor_type smallint,
     maintainer_note text,
     token_expires_at timestamp with time zone,
-    CONSTRAINT check_56f5ea8804 CHECK ((char_length(maintainer_note) <= 255))
+    CONSTRAINT check_ce275cee06 CHECK ((char_length(maintainer_note) <= 1024))
 );
 
 CREATE SEQUENCE ci_runners_id_seq
