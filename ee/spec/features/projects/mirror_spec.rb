@@ -44,7 +44,7 @@ RSpec.describe 'Project mirror', :js do
     end
 
     context 'with Update now button' do
-      let(:timestamp) { Time.now }
+      let(:timestamp) { Time.zone.now }
 
       before do
         import_state.update!(last_update_at: 6.minutes.ago, next_execution_timestamp: timestamp + 10.minutes)
