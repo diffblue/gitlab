@@ -85,7 +85,7 @@ describe('DeleteApplication', () => {
           {},
         );
 
-        expect(formData).toEqual({
+        expect(formData).toStrictEqual({
           _method: 'delete',
           authenticity_token: 'mock-csrf-token',
         });
