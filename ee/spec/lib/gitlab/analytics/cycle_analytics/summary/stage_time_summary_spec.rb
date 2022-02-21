@@ -47,7 +47,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary do
 
         options[:use_aggregated_data_collector] = true
         stub_licensed_features(cycle_analytics_for_groups: true)
-        Analytics::CycleAnalytics::GroupDataLoaderWorker.new.perform(group.id, 'Issue')
+        Analytics::CycleAnalytics::DataLoaderService.new(group: group, model: Issue).execute
       end
 
       it 'loads the lead and cycle time' do

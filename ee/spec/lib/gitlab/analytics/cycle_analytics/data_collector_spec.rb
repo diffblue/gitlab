@@ -24,14 +24,12 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
   def aggregate_vsa_data(group)
     Analytics::CycleAnalytics::DataLoaderService.new(
       group: group,
-      model: Issue,
-      updated_at_before: Time.now
+      model: Issue
     ).execute
 
     Analytics::CycleAnalytics::DataLoaderService.new(
       group: group,
-      model: MergeRequest,
-      updated_at_before: Time.now
+      model: MergeRequest
     ).execute
   end
 
