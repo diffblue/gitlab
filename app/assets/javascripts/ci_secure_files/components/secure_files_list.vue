@@ -2,7 +2,7 @@
 import { GlLink, GlLoadingIcon, GlPagination, GlTable } from '@gitlab/ui';
 import Api, { DEFAULT_PER_PAGE } from '~/api';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import { s__, __ } from '~/locale';
+import { __ } from '~/locale';
 import TimeagoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 
 export default {
@@ -29,7 +29,7 @@ export default {
       loading: false,
       projectSecureFiles: [],
     };
-  }, 
+  },
   fields: [
     {
       key: 'name',
@@ -41,7 +41,7 @@ export default {
     },
     {
       key: 'created_at',
-      label: __('Created'),
+      label: __('Uploaded'),
     },
   ],
   computed: {
@@ -53,33 +53,37 @@ export default {
     page(newPage) {
       this.getProjectSecureFiles(newPage);
     },
-  },    
+  },
   created() {
     this.getProjectSecureFiles();
   },
   methods: {
-    async getProjectSecureFiles(page){
+    async getProjectSecureFiles(page) {
       this.loading = true;
-      const response = await Api.projectSecureFiles(this.projectId, {page: page})
+      const response = await Api.projectSecureFiles(this.projectId, { page });
 
       this.totalItems = parseInt(response.headers?.['x-total'], 10) || 0;
 
-      this.projectSecureFiles = response.data
+      this.projectSecureFiles = response.data;
 
       this.loading = false;
-    }
-  }
+    },
+  },
 };
 </script>
 
 <template>
   <div>
-
-    <h1 data-testid="title" class="gl-font-size-h1 gl-mt-3 gl-mb-0">Secure Files</h1>
+    <h1 data-testid="title" class="gl-font-size-h1 gl-mt-3 gl-mb-0">{{ __('Secure Files') }}</h1>
 
     <p>
       <span data-testid="info-message" class="gl-mr-2">
-        Use Secure Files to store files used by your pipelines such as Android keystores, or Apple provisioning profiles and signing certificates. <gl-link :href="$options.docsLink" target="_blank">More information</gl-link>
+        {{
+          __(
+            'Use Secure Files to store files used by your pipelines such as Android keystores, or Apple provisioning profiles and signing certificates.',
+          )
+        }}
+        <gl-link :href="$options.docsLink" target="_blank">{{ __('More information') }}</gl-link>
       </span>
     </p>
 
@@ -102,17 +106,16 @@ export default {
       </template>
 
       <template #cell(name)="{ item }">
-        {{item.name}}
+        {{ item.name }}
       </template>
 
       <template #cell(permissions)="{ item }">
-        {{item.permissions}}
+        {{ item.permissions }}
       </template>
 
       <template #cell(created_at)="{ item }">
         <timeago-tooltip :time="item.created_at" />
       </template>
-
     </gl-table>
     <gl-pagination
       v-if="!loading"

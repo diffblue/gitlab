@@ -959,9 +959,9 @@ const Api = {
   },
 
   // TODO: replace this when GraphQL support has been added https://gitlab.com/gitlab-org/gitlab/-/issues/352184
-  projectSecureFiles(projectId, options = {}){
+  projectSecureFiles(projectId, options = {}) {
     const url = Api.buildUrl(this.secureFilesPath).replace(':project_id', projectId);
-    
+
     return axios.get(url, { params: { per_page: DEFAULT_PER_PAGE, ...options } });
   },
 
