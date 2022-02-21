@@ -598,6 +598,10 @@ class License < ApplicationRecord
     !!license&.operational_metrics?
   end
 
+  def current?
+    self == License.current
+  end
+
   def license_type
     cloud_license? ? CLOUD_LICENSE_TYPE : LICENSE_FILE_TYPE
   end
