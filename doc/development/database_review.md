@@ -261,3 +261,8 @@ Include in the MR description:
     to queries (changing the query, schema or adding indexes and similar)
   - General guideline is for queries to come in below [100ms execution time](query_performance.md#timing-guidelines-for-queries)
   - Avoid N+1 problems and minimize the [query count](merge_request_performance_guidelines.md#query-counts).
+- Review anticipated data volume and access patterns
+  - If new tables or columns are being added: 
+    - What is the growth for these tables?  What is this assumption based on?
+    - What is the anticipated access pattern for these tables?  Are they read-heavy or write-heavy?
+    - Based on the anticipated data volume and access patterns, does the new table pose an availability risk to GitLab.com or self-managed instances?
