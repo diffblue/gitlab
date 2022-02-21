@@ -8,7 +8,6 @@
   = render 'shared/global_alert',
     variant: :warning,
     title: s_('Admin|Your instance has reached its user cap'),
-    is_contained: true,
     alert_class: 'js-new-user-signups-cap-reached',
     alert_data: { feature_id: ::EE::Users::CalloutsHelper::NEW_USER_SIGNUPS_CAP_REACHED, dismiss_endpoint: callouts_path, defer_links: "true" } do
     .gl-alert-body

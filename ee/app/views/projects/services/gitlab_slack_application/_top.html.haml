@@ -1,7 +1,6 @@
 - if session.delete(:slack_install_success)
   = render 'shared/global_alert',
     title: s_('SlackIntegration|GitLab for Slack was successfully installed.'),
-    variant: :success,
-    is_contained: true do
+    variant: :success do
     .gl-alert-body
       = s_('SlackIntegration|You can now close this window and go to your Slack workspace.')
