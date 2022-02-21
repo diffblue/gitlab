@@ -25,7 +25,7 @@ module QA
         target_project.visit!
       end
 
-      it 'configures and syncs a (pull) mirrored repository',
+      it 'configures and syncs a (pull) mirrored repository', :aggregate_failures,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347736',
         quarantine: {
           only: { subdomain: :staging },
@@ -77,7 +77,7 @@ module QA
         # Check that the target project has the commit from the source
         target_project.visit!
         Page::Project::Show.perform do |project|
-          expect(project).to have_file('README.md')
+          expect { project.has_file?('README.md') }.to eventually_be_truthy.within(max_duration: 60), "Expected a file named README.md but it did not appear."
           expect(project).to have_readme_content('This is a pull mirroring test project')
           expect(project).to have_text("Mirrored from #{masked_url(source_project_uri)}")
         end
