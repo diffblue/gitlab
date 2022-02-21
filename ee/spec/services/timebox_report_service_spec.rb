@@ -311,16 +311,85 @@ RSpec.shared_examples 'timebox chart' do |timebox_type|
         end
       end
     end
+
+    context 'with scoped_projects' do
+      using RSpec::Parameterized::TableSyntax
+
+      let_it_be(:subgroup) { create(:group, parent: group) }
+      let_it_be(:other_project) { create(:project, group: group) }
+      let_it_be(:subgroup_project) { create(:project, group: subgroup) }
+      let_it_be(:other_project_issue) { create(:issue, project: other_project) }
+      let_it_be(:subgroup_project_issue) { create(:issue, project: subgroup_project) }
+
+      before_all do
+        created_at = timebox_start_date - 14.days
+
+        create(:"resource_#{timebox_type}_event", issue: issues[0], "#{timebox_type}" => timebox, action: :add, created_at: created_at)
+        create(:resource_weight_event, issue: issues[0], weight: 1, created_at: created_at)
+
+        create(:"resource_#{timebox_type}_event", issue: issues[1], "#{timebox_type}" => timebox, action: :add, created_at: created_at)
+        create(:resource_weight_event, issue: issues[1], weight: 1, created_at: created_at)
+
+        create(:"resource_#{timebox_type}_event", issue: other_project_issue, "#{timebox_type}" => timebox, action: :add, created_at: created_at)
+        create(:resource_weight_event, issue: other_project_issue, weight: 2, created_at: created_at)
+
+        create(:"resource_#{timebox_type}_event", issue: subgroup_project_issue, "#{timebox_type}" => timebox, action: :add, created_at: created_at)
+        create(:resource_weight_event, issue: subgroup_project_issue, weight: 3, created_at: created_at)
+      end
+
+      context 'scoped_projects is blank' do
+        where(:scoped_projects) do
+          [[[]], [Project.none]]
+        end
+
+        with_them do
+          it 'returns an empty response' do
+            expect(response.success?).to eq(true)
+            expect(response.payload[:stats]).to eq(nil)
+            expect(response.payload[:burnup_time_series]).to eq([])
+          end
+        end
+      end
+
+      where(:scoped_projects, :expected_count, :expected_weight) do
+        lazy { [project] }                                  | 2 | 2
+        lazy { [other_project] }                            | 1 | 2
+        lazy { [subgroup_project] }                         | 1 | 3
+        lazy { [project, other_project, subgroup_project] } | 4 | 7
+      end
+
+      with_them do
+        it "aggregates events scoped to the given projects" do
+          expect(response.success?).to eq(true)
+          expect(response.payload[:stats]).to eq({
+            complete: { count: 0, weight: 0 },
+            incomplete: { count: expected_count, weight: expected_weight },
+            total: { count: expected_count, weight: expected_weight }
+          })
+
+          expect(response.payload[:burnup_time_series]).to eq([
+            {
+              date: timebox_start_date,
+              scope_count: expected_count,
+              scope_weight: expected_weight,
+              completed_count: 0,
+              completed_weight: 0
+            }
+          ])
+        end
+      end
+    end
   end
 end
 
-RSpec.describe TimeboxReportService do
+RSpec.describe TimeboxReportService, :aggregate_failures do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:timebox_start_date) { Date.today }
   let_it_be(:timebox_end_date) { timebox_start_date + 2.weeks }
 
-  let(:response) { described_class.new(timebox).execute }
+  let(:scoped_projects) { group.projects }
+  let(:response) { described_class.new(timebox, scoped_projects).execute }
 
   context 'milestone charts' do
     let_it_be(:timebox, reload: true) { create(:milestone, project: project, start_date: timebox_start_date, due_date: timebox_end_date) }
