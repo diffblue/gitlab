@@ -12,11 +12,19 @@ class Analytics::CycleAnalytics::GroupValueStream < ApplicationRecord
 
   scope :preload_associated_models, -> { includes(:group, stages: [:group, :end_event_label, :start_event_label]) }
 
+  after_save :ensure_aggregation_record_presence
+
   def custom?
     persisted? || name != Analytics::CycleAnalytics::Stages::BaseService::DEFAULT_VALUE_STREAM_NAME
   end
 
   def self.build_default_value_stream(group)
     new(name: Analytics::CycleAnalytics::Stages::BaseService::DEFAULT_VALUE_STREAM_NAME, group: group)
+  end
+
+  private
+
+  def ensure_aggregation_record_presence
+    Analytics::CycleAnalytics::Aggregation.safe_create_for_group(group)
   end
 end
