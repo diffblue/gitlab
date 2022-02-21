@@ -1599,6 +1599,40 @@ RSpec.describe License do
     end
   end
 
+  describe '#current?' do
+    subject { license.current? }
+
+    context 'when the license is not persisted' do
+      it { is_expected.to be false }
+    end
+
+    context 'when the license is persisted' do
+      before do
+        license.save!
+      end
+
+      context 'when the license is the current license' do
+        it { is_expected.to be true }
+      end
+
+      context 'when the license is not the current license' do
+        before do
+          allow(License).to receive(:current).and_return(create(:license))
+        end
+
+        it { is_expected.to be false }
+      end
+
+      context 'when there is no current license' do
+        before do
+          allow(License).to receive(:current).and_return(nil)
+        end
+
+        it { is_expected.to be false }
+      end
+    end
+  end
+
   describe '#license_type' do
     subject { license.license_type }
 
