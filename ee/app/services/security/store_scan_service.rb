@@ -21,6 +21,7 @@ module Security
     end
 
     def execute
+      override_finding_uuids! if override_uuids?
       set_security_scan_non_latest! if job.retried?
 
       return deduplicate if security_scan.has_errors? || !security_scan.latest? || !security_scan.succeeded?
@@ -31,12 +32,11 @@ module Security
     private
 
     attr_reader :artifact, :known_keys, :deduplicate
-    delegate :project, :job, to: :artifact, private: true
 
-    def security_report
-      @security_report ||= artifact.security_report.tap do |report|
-        OverrideUuidsService.execute(report) if override_uuids?
-      end
+    delegate :project, :job, :security_report, to: :artifact, private: true
+
+    def override_finding_uuids!
+      OverrideUuidsService.execute(security_report)
     end
 
     def override_uuids?
