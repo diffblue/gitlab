@@ -70,7 +70,10 @@ RSpec.describe 'Every metric definition' do
   end
 
   before do
-    allow(Gitlab::UsageData).to receive_messages(count: -1, distinct_count: -1, estimate_batch_distinct_count: -1, sum: -1, alt_usage_data: -1)
+    allow(Gitlab::UsageData).to receive_messages(count: -1, distinct_count: -1, estimate_batch_distinct_count: -1, sum: -1)
+    allow(Gitlab::UsageData).to receive(:alt_usage_data).and_wrap_original do |m, *args, **kwargs|
+      kwargs[:fallback] || Gitlab::Utils::UsageData::FALLBACK
+    end
     allow(Gitlab::Geo).to receive(:enabled?).and_return(true)
     stub_licensed_features(requirements: true)
     stub_prometheus_queries
