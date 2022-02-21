@@ -128,7 +128,7 @@ RSpec.describe AppSec::Dast::Scans::RunService do
             masked: false
           }, {
             key: 'DAST_FULL_SCAN_ENABLED',
-            value: String(dast_scanner_profile.full_scan_enabled?),
+            value: String(dast_scanner_profile.active?),
             public: true,
             masked: false
           }, {

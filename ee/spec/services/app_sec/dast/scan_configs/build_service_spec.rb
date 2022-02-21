@@ -16,7 +16,7 @@ RSpec.describe AppSec::Dast::ScanConfigs::BuildService do
   let(:dast_password_field) { dast_site_profile.auth_password_field }
   let(:dast_spider_mins) { dast_scanner_profile.spider_timeout }
   let(:dast_target_availability_timeout) { dast_scanner_profile.target_timeout }
-  let(:dast_full_scan_enabled) { dast_scanner_profile.full_scan_enabled? }
+  let(:dast_full_scan_enabled) { dast_scanner_profile.active? }
   let(:dast_use_ajax_spider) { dast_scanner_profile.use_ajax_spider? }
   let(:dast_debug) { dast_scanner_profile.show_debug_messages? }
   let(:on_demand_scan_template) { 'Security/DAST-On-Demand-Scan.gitlab-ci.yml' }

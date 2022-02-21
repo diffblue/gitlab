@@ -24,7 +24,7 @@ module AppSec
         private
 
         def active_scan_allowed?
-          return true unless dast_scanner_profile&.full_scan_enabled?
+          return true unless dast_scanner_profile&.active?
 
           url_base = DastSiteValidation.get_normalized_url_base(dast_site&.url)
 

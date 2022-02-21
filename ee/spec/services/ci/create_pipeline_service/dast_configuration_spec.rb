@@ -12,7 +12,7 @@ RSpec.describe Ci::CreatePipelineService do
 
   let(:dast_variables) do
     dast_site_profile.ci_variables
-      .concat(dast_scanner_profile.ci_variables)
+      .concat(dast_scanner_profile.ci_variables(dast_site_profile: dast_site_profile))
       .to_runner_variables
   end
 
