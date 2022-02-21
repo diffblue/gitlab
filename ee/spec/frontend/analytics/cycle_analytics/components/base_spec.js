@@ -326,6 +326,10 @@ describe('EE Value Stream Analytics component', () => {
       it('displays the path navigation', () => {
         displaysPathNavigation(true);
       });
+
+      it('displays the duration chart', () => {
+        displaysDurationChart(true);
+      });
     });
   });
 

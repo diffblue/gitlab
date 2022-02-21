@@ -1,9 +1,12 @@
 import { getDurationChartData } from '../../../utils';
 
-export const durationChartPlottableData = (state, _, rootState) => {
-  const { createdAfter, createdBefore } = rootState;
+export const durationChartPlottableData = (state, _, rootState, rootGetters) => {
+  const { createdAfter, createdBefore, selectedStage } = rootState;
   const { durationData } = state;
-  const selectedStagesDurationData = durationData.filter((stage) => stage.selected);
+  const { isOverviewStageSelected } = rootGetters;
+  const selectedStagesDurationData = isOverviewStageSelected
+    ? durationData.filter((stage) => stage.selected)
+    : durationData.filter((stage) => stage.id === selectedStage.id);
   const plottableData = getDurationChartData(
     selectedStagesDurationData,
     createdAfter,

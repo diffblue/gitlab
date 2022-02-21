@@ -10,7 +10,6 @@ import createFlash from '~/flash';
 import httpStatusCodes from '~/lib/utils/http_status';
 import {
   allowedStages as activeStages,
-  rawDurationData,
   transformedDurationData,
   endpoints,
   valueStreams,
@@ -64,7 +63,15 @@ describe('DurationChart actions', () => {
 
   describe('fetchDurationData', () => {
     beforeEach(() => {
-      mock.onGet(endpoints.durationData).reply(200, [...rawDurationData]);
+      // The first 2 stages have different duration values
+      mock
+        .onGet(endpoints.durationData)
+        .replyOnce(200, transformedDurationData[0].data)
+        .onGet(endpoints.durationData)
+        .replyOnce(200, transformedDurationData[1].data);
+
+      // all subsequent requests should get the same data
+      mock.onGet(endpoints.durationData).reply(200, transformedDurationData[2].data);
     });
 
     it("dispatches the 'requestDurationData' and 'receiveDurationDataSuccess' actions on success", () => {

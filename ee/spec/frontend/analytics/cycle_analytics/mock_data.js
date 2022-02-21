@@ -249,46 +249,63 @@ export const taskByTypeFilters = {
   selectedLabelIds: [1, 2, 3],
 };
 
-export const rawDurationData = [
+export const transformedDurationData = [
   {
-    average_duration_in_seconds: 1234000,
-    date: '2019-01-01T00:00:00.000Z',
+    id: issueStage.id,
+    selected: true,
+    data: [
+      {
+        average_duration_in_seconds: 1134000, // ~13 days
+        date: '2019-01-01T00:00:00.000Z',
+      },
+      {
+        average_duration_in_seconds: 2321000, // ~27 days
+        date: '2019-01-02T00:00:00.000Z',
+      },
+    ],
   },
   {
-    average_duration_in_seconds: 4321000,
-    date: '2019-01-02T00:00:00.000Z',
+    id: planStage.id,
+    selected: true,
+    data: [
+      {
+        average_duration_in_seconds: 2142000, // ~25 days
+        date: '2019-01-01T00:00:00.000Z',
+      },
+      {
+        average_duration_in_seconds: 3635000, // ~42 days
+        date: '2019-01-02T00:00:00.000Z',
+      },
+    ],
+  },
+  {
+    id: codeStage.id,
+    selected: true,
+    data: [
+      {
+        average_duration_in_seconds: 1234000, // ~14 days
+        date: '2019-01-01T00:00:00.000Z',
+      },
+      {
+        average_duration_in_seconds: 4321000, // ~50 days
+        date: '2019-01-02T00:00:00.000Z',
+      },
+    ],
   },
 ];
 
-export const transformedDurationData = allowedStages.map(({ id }) => ({
-  id,
-  selected: true,
-  data: rawDurationData,
-}));
-
 export const flattenedDurationData = [
-  { average_duration_in_seconds: 1234000, date: '2019-01-01' },
-  { average_duration_in_seconds: 4321000, date: '2019-01-02' },
-  { average_duration_in_seconds: 1234000, date: '2019-01-01' },
-  { average_duration_in_seconds: 4321000, date: '2019-01-02' },
+  { average_duration_in_seconds: 1134000, date: '2019-01-01' },
+  { average_duration_in_seconds: 2321000, date: '2019-01-02' },
+  { average_duration_in_seconds: 2142000, date: '2019-01-01' },
+  { average_duration_in_seconds: 3635000, date: '2019-01-02' },
   { average_duration_in_seconds: 1234000, date: '2019-01-01' },
   { average_duration_in_seconds: 4321000, date: '2019-01-02' },
 ];
 
 export const durationChartPlottableData = [
-  ['2019-01-01', 14, '2019-01-01'],
-  ['2019-01-02', 50, '2019-01-02'],
-];
-
-export const rawDurationMedianData = [
-  {
-    average_duration_in_seconds: 1234000,
-    date: '2018-12-01T00:00:00.000Z',
-  },
-  {
-    average_duration_in_seconds: 4321000,
-    date: '2018-12-02T00:00:00.000Z',
-  },
+  ['2019-01-01', 17, '2019-01-01'],
+  ['2019-01-02', 40, '2019-01-02'],
 ];
 
 export const pathNavIssueMetric = 172800;
