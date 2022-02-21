@@ -27,6 +27,12 @@ module Types
 
       field :is_primary, GraphQL::Types::Boolean, null: false,
             description: 'Represents whether the provider is set as primary or not.'
+
+      def is_primary # rubocop:disable Naming/PredicateName
+        return false if object.destroyed?
+
+        object.is_primary
+      end
     end
   end
 end
