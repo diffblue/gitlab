@@ -21921,11 +21921,6 @@ msgstr ""
 msgid "Limit the size of Sidekiq jobs stored in Redis."
 msgstr ""
 
-msgid "Limited to showing %d event at most"
-msgid_plural "Limited to showing %d events at most"
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "Limiting mode"
 msgstr ""
 
@@ -33814,11 +33809,6 @@ msgstr ""
 
 msgid "Show whitespace changes"
 msgstr ""
-
-msgid "Showing %d event"
-msgid_plural "Showing %d events"
-msgstr[0] ""
-msgstr[1] ""
 
 msgid "Showing %{conflict} between %{sourceBranch} and %{targetBranch}"
 msgstr ""
