@@ -105,6 +105,8 @@ module Projects
 
       tags = repository_tags_with_target
 
+      tags_to_remove = []
+
       tags.each do |tag|
         old_tag = old_tags[tag.name]
         tag_target = tag.dereferenced_target.sha
@@ -112,19 +114,38 @@ module Projects
 
         next if old_tag_target == tag_target
 
-        Git::TagPushService.new(
-          project,
-          current_user,
-          change: {
-            oldrev: old_tag_target,
-            newrev: tag_target,
-            ref: "#{Gitlab::Git::TAG_REF_PREFIX}#{tag.name}"
-          },
-          mirror_update: true
-        ).execute
+        if Feature.enabled?(:verify_protected_tags_for_pull_mirror, project, default_enabled: :yaml) && !can_create_tag?(tag)
+          tags_to_remove << tag
+          next
+        end
+
+        change = { oldrev: old_tag_target, newrev: tag_target, ref: tag_reference(tag) }
+
+        Git::TagPushService.new(project, current_user, change: change, mirror_update: true).execute
+      end
+
+      if tags_to_remove.present?
+        refs = tags_to_remove.map { |tag| tag_reference(tag) }
+
+        project.repository.delete_refs(*refs)
+        project.repository.expire_tags_cache
+
+        # Only take 10 tags to keep the error message short
+        not_allowed_tags = tags_to_remove.first(10).map { |tag| "'#{tag.name}'" }
+        not_allowed_tags << 'and others' if tags_to_remove.count > 10
+
+        raise UpdateError, "You are not allowed to create tags: #{not_allowed_tags.join(', ')} as they are protected."
       end
 
       fetch_result
+    end
+
+    def can_create_tag?(tag)
+      ::Gitlab::UserAccess.new(current_user, container: project).can_create_tag?(tag.name)
+    end
+
+    def tag_reference(tag)
+      "#{Gitlab::Git::TAG_REF_PREFIX}#{tag.name}"
     end
 
     def update_lfs_objects
