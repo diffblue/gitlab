@@ -40506,6 +40506,9 @@ msgstr ""
 msgid "Vulnerabilities over time"
 msgstr ""
 
+msgid "Vulnerability"
+msgstr ""
+
 msgid "Vulnerability Report"
 msgstr ""
 
