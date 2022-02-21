@@ -3,7 +3,6 @@
 module Integrations
   class Github < Integration
     include Gitlab::Routing
-    include ActionView::Helpers::UrlHelper
 
     prop_accessor :token, :repository_url
     boolean_accessor :static_context
@@ -30,7 +29,7 @@ module Integrations
     def help
       return unless project
 
-      docs_link = link_to _('What is repository mirroring?'), help_page_url('user/project/repository/repository_mirroring')
+      docs_link = ActionController::Base.helpers.link_to _('What is repository mirroring?'), help_page_url('user/project/repository/repository_mirroring')
       s_("GithubIntegration|This requires mirroring your GitHub repository to this project. %{docs_link}" % { docs_link: docs_link }).html_safe
     end
 
