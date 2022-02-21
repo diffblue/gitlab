@@ -128,6 +128,7 @@ RSpec.describe API::Wikis do
   describe 'GET /groups/:id/wikis/:slug' do
     let(:page) { create(:wiki_page, wiki: wiki) }
     let(:url) { "/groups/#{group.id}/wikis/#{page.slug}" }
+    let(:params) { {} }
 
     context 'when wiki is disabled' do
       before do
@@ -178,7 +179,8 @@ RSpec.describe API::Wikis do
       context 'when user is developer' do
         before do
           group.add_developer(user)
-          get api(url, user)
+
+          get api(url, user), params: params
         end
 
         include_examples 'wikis API returns wiki page'
@@ -194,7 +196,7 @@ RSpec.describe API::Wikis do
         before do
           group.add_maintainer(user)
 
-          get api(url, user)
+          get api(url, user), params: params
         end
 
         include_examples 'wikis API returns wiki page'
@@ -220,7 +222,7 @@ RSpec.describe API::Wikis do
         before do
           group.add_developer(user)
 
-          get api(url, user)
+          get api(url, user), params: params
         end
 
         include_examples 'wikis API returns wiki page'
@@ -236,7 +238,7 @@ RSpec.describe API::Wikis do
         before do
           group.add_maintainer(user)
 
-          get api(url, user)
+          get api(url, user), params: params
         end
 
         include_examples 'wikis API returns wiki page'
