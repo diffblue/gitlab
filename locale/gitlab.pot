@@ -26984,16 +26984,10 @@ msgstr ""
 msgid "Pipelines|Install GitLab Runner"
 msgstr ""
 
-msgid "Pipelines|Install GitLab Runners"
-msgstr ""
-
 msgid "Pipelines|It is recommended the code is reviewed thoroughly before running this pipeline with the parent project's CI resource."
 msgstr ""
 
 msgid "Pipelines|Last Used"
-msgstr ""
-
-msgid "Pipelines|Learn about Runners"
 msgstr ""
 
 msgid "Pipelines|Learn the basics of pipelines and .yml files"
