@@ -305,6 +305,8 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
         stage_name = page.find("#{path_nav_selector} .gl-path-active-item-indigo").text
         expect(stage_name).to include(stage[:title])
         expect(stage_name).to include(stage[:time])
+
+        expect(page).to have_selector('[data-testid="vsa-duration-chart"]')
       end
     end
 
@@ -318,7 +320,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
     it 'will have data available' do
       duration_chart_content = page.find('[data-testid="vsa-duration-chart"]')
       expect(duration_chart_content).not_to have_text(_("There is no data available. Please change your selection."))
-      expect(duration_chart_content).to have_text(s_('CycleAnalytics|Average days to completion'))
+      expect(duration_chart_content).to have_text(s_('CycleAnalytics|Average time to completion'))
 
       tasks_by_type_chart_content = page.find('.js-tasks-by-type-chart')
       expect(tasks_by_type_chart_content).not_to have_text(_("There is no data available. Please change your selection."))
@@ -333,8 +335,8 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
 
       it 'will filter the data' do
         duration_chart_content = page.find('[data-testid="vsa-duration-chart"]')
-        expect(duration_chart_content).not_to have_text(s_('CycleAnalytics|Average days to completion'))
-        expect(duration_chart_content).to have_text(_("There is no data available. Please change your selection."))
+        expect(duration_chart_content).not_to have_text(s_('CycleAnalytics|Average time to completion'))
+        expect(duration_chart_content).to have_text(s_("CycleAnalytics|There is no data for 'Total time' available. Adjust the current filters."))
 
         tasks_by_type_chart_content = page.find('.js-tasks-by-type-chart')
         expect(tasks_by_type_chart_content).to have_text(_("There is no data available. Please change your selection."))

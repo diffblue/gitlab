@@ -26,6 +26,11 @@ export default {
       required: false,
       default: () => [],
     },
+    medianLineOptions: {
+      type: Object,
+      required: false,
+      default: () => ({}),
+    },
     tooltipDateFormat: {
       type: String,
       required: false,
@@ -71,6 +76,7 @@ export default {
         result.push({
           data: this.medianLineData,
           ...scatterChartLineProps.default,
+          ...this.medianLineOptions,
         });
       }
 

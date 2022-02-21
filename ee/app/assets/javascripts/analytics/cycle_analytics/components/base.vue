@@ -193,18 +193,18 @@ export default {
         "
       />
       <template v-else>
-        <div class="gl-mt-2">
-          <template v-if="isOverviewStageSelected">
-            <value-stream-metrics
-              :request-path="currentGroupPath"
-              :request-params="cycleAnalyticsRequestParams"
-              :requests="$options.METRICS_REQUESTS"
-            />
-            <duration-chart class="gl-mt-3" :stages="activeStages" />
-            <type-of-work-charts />
-          </template>
+        <div :class="[isOverviewStageSelected ? 'gl-mt-2' : 'gl-mt-6']">
+          <value-stream-metrics
+            v-if="isOverviewStageSelected"
+            :request-path="currentGroupPath"
+            :request-params="cycleAnalyticsRequestParams"
+            :requests="$options.METRICS_REQUESTS"
+          />
+          <duration-chart class="gl-mt-3" :stages="activeStages" :selected-stage="selectedStage" />
+          <type-of-work-charts v-if="isOverviewStageSelected" />
           <stage-table
-            v-else
+            v-if="!isOverviewStageSelected"
+            class="gl-mt-5"
             :is-loading="isLoading || isLoadingStage"
             :stage-events="selectedStageEvents"
             :selected-stage="selectedStage"

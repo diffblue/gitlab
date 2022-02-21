@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DurationChart renders the duration chart 1`] = `
+exports[`DurationChart with the overiew stage selected renders the duration chart 1`] = `
 <div
   class="gl-display-flex gl-flex-direction-column"
   data-testid="vsa-duration-chart"
@@ -8,14 +8,14 @@ exports[`DurationChart renders the duration chart 1`] = `
   <h4
     class="gl-mt-0"
   >
-    Days to completion
-  </h4>
-   
-  <p>
     
-    The average time spent in the selected stage for the items that were completed on each date. Data limited to the last 500 items.
-  
-  </p>
+    Total time 
+    <gl-icon-stub
+      name="information-o"
+      size="16"
+      title="The total time items spent across each value stream stage. Data limited to items completed within this date range."
+    />
+  </h4>
    
   <stagedropdownfilter-stub
     class="gl-ml-auto"
@@ -24,11 +24,12 @@ exports[`DurationChart renders the duration chart 1`] = `
   />
    
   <scatterplot-stub
-    medianlinedata=""
-    scatterdata="2019-01-01,14,2019-01-01,2019-01-02,50,2019-01-02"
+    medianlinedata="2019-01-01,17,2019-01-01,2019-01-02,40,2019-01-02"
+    medianlineoptions="[object Object]"
+    scatterdata="2019-01-01,17,2019-01-01,2019-01-02,40,2019-01-02"
     tooltipdateformat="mmm d, yyyy"
     xaxistitle="Date"
-    yaxistitle="Average days to completion"
+    yaxistitle="Average time to completion"
   />
 </div>
 `;
