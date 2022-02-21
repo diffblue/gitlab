@@ -1,7 +1,7 @@
 ---
 data_category: operational
 key_path: usage_activity_by_stage.secure.dependency_scanning_scans
-description: Total number of users running Dependency Scanning Scans
+description: Total count of Dependency Scanning security scans run
 product_section: sec
 product_stage: secure
 product_group: group::composition analysis
