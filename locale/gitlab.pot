@@ -39279,6 +39279,9 @@ msgstr ""
 msgid "UsageQuota|Storage type"
 msgstr ""
 
+msgid "UsageQuota|Storage used"
+msgstr ""
+
 msgid "UsageQuota|This is the total amount of storage used across your projects within this namespace."
 msgstr ""
 
