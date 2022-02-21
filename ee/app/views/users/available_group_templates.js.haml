@@ -1,5 +1,5 @@
 :plain
   var target = $(".project-templates-buttons#custom-group-project-templates");
   target.empty();
-  target.html("#{escape_javascript(render('custom_project_templates_from_groups', groups_with_project_templates: @groups_with_project_templates, namespace_id: params[:group_id]))}");
+  target.html("#{escape_javascript(render('custom_project_templates_from_groups', groups_with_project_templates: @groups_with_project_templates, target_group: @target_group))}");
   target.trigger("ajax:success");

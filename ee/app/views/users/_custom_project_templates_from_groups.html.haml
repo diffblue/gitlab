@@ -32,7 +32,7 @@
               %a.btn.gl-button.btn-default.gl-mr-3{ href: project_path(project), rel: 'noopener noreferrer', target: '_blank' }
                 = _('Preview')
               %label.btn.gl-button.btn-success.custom-template-button.choose-template.gl-mb-0{ for: project.name }
-                %input{ type: "radio", autocomplete: "off", name: "project[template_project_id]", id: project.name, value: project.id, data: { subgroup_full_path: project.namespace.full_path, subgroup_id: project.namespace_id, template_name: project.name, parent_group_id: namespace_id || group.parent_id } }
+                %input{ type: "radio", autocomplete: "off", name: "project[template_project_id]", id: project.name, value: project.id, data: { subgroup_full_path: project.namespace.full_path, target_group_full_path: target_group&.full_path, subgroup_id: project.namespace_id, template_name: project.name, parent_group_id: target_group&.id || group.parent_id } }
                 %span.qa-use-template-button
                   = _('Use template')
 
