@@ -9,7 +9,7 @@ class AdjournedGroupDeletionWorker # rubocop:disable Scalability/IdempotentWorke
 
   INTERVAL = 10.seconds.to_i
 
-  feature_category :authentication_and_authorization
+  feature_category :compliance_management
 
   def perform
     deletion_cutoff = Gitlab::CurrentSettings.deletion_adjourned_period.days.ago.to_date
