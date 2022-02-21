@@ -23,5 +23,6 @@ RSpec.describe 'Issues > User uses EE quick actions', :js do
     end
 
     it_behaves_like 'status page quick actions'
+    it_behaves_like 'page quick action'
   end
 end

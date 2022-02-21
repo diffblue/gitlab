@@ -171,6 +171,38 @@ module EE
           command :clear_health_status do
             @updates[:health_status] = nil
           end
+
+          desc _('Escalate this incident')
+          explanation _('Starts escalations for this incident')
+          params '<policy name>'
+          types Issue
+          condition do
+            current_user.can?(:update_escalation_status, quick_action_target) &&
+            quick_action_target.persisted? &&
+            quick_action_target.supports_escalation?
+          end
+
+          command :page do |escalation_policy_name|
+            policy = quick_action_target.project.incident_management_escalation_policies.find_by_name(escalation_policy_name)
+            if policy.nil?
+              @execution_message[:page] = _("Policy '%{escalation_policy_name}' does not exist.") % { escalation_policy_name: escalation_policy_name }
+            else
+              issue = ::Issues::UpdateService
+                .new(project: quick_action_target.project,
+                      current_user: current_user,
+                      params: {
+                        escalation_status: { status: :triggered, policy: policy }
+                      }
+                    ).execute(quick_action_target)
+
+              @execution_message[:page] =
+                if issue.escalation_status.saved_change_to_updated_at?
+                  _('Started escalation for this incident.')
+                else
+                  _("This incident is already escalated with '%{escalation_policy_name}'.") % { escalation_policy_name: escalation_policy_name }
+                end
+            end
+          end
         end
 
         private
