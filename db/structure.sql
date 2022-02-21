@@ -18766,7 +18766,6 @@ CREATE TABLE project_settings (
     merge_commit_template text,
     has_shimo boolean DEFAULT false NOT NULL,
     squash_commit_template text,
-    show_diff_preview_in_email boolean DEFAULT true NOT NULL,
     legacy_open_source_license_available boolean DEFAULT true NOT NULL,
     CONSTRAINT check_3a03e7557a CHECK ((char_length(previous_default_branch) <= 4096)),
     CONSTRAINT check_b09644994b CHECK ((char_length(squash_commit_template) <= 500)),
