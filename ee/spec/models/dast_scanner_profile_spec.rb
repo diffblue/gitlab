@@ -55,13 +55,15 @@ RSpec.describe DastScannerProfile, type: :model do
   end
 
   describe '#ci_variables' do
-    let(:collection) { subject.ci_variables }
+    let(:target_type) { 'website' }
+    let(:dast_site_profile) { build(:dast_site_profile, target_type: target_type) }
+    let(:collection) { subject.ci_variables(dast_site_profile: dast_site_profile) }
 
     it 'returns a collection of variables' do
       expected_variables = [
-        { key: 'DAST_FULL_SCAN_ENABLED', value: 'false', public: true, masked: false },
         { key: 'DAST_USE_AJAX_SPIDER', value: 'false', public: true, masked: false },
-        { key: 'DAST_DEBUG', value: 'false', public: true, masked: false }
+        { key: 'DAST_DEBUG', value: 'false', public: true, masked: false },
+        { key: 'DAST_FULL_SCAN_ENABLED', value: 'false', public: true, masked: false }
       ]
 
       expect(collection.to_runner_variables).to eq(expected_variables)
@@ -75,19 +77,36 @@ RSpec.describe DastScannerProfile, type: :model do
         expect(collection).to include(key: 'DAST_TARGET_AVAILABILITY_TIMEOUT', value: String(subject.target_timeout), public: true)
       end
     end
-  end
 
-  describe 'full_scan_enabled?' do
-    describe 'when is active scan' do
-      subject { create(:dast_scanner_profile, scan_type: :active).full_scan_enabled? }
+    context 'when the scan_type is active' do
+      let(:collection) { subject.ci_variables(dast_site_profile: dast_site_profile) }
 
-      it { is_expected.to eq(true) }
+      subject { build(:dast_scanner_profile, scan_type: :active) }
+
+      it 'returns a collection of variables with the passive profile', :aggregate_failures do
+        expect(collection).to include(key: 'DAST_FULL_SCAN_ENABLED', value: 'true')
+      end
     end
 
-    describe 'when is passive scan' do
-      subject { create(:dast_scanner_profile, scan_type: :passive).full_scan_enabled? }
+    context 'when the target_type is api' do
+      let(:target_type) { 'api' }
+      let(:collection) { subject.ci_variables(dast_site_profile: dast_site_profile) }
 
-      it { is_expected.to eq(false) }
+      context 'when the scan_type is active' do
+        subject { build(:dast_scanner_profile, scan_type: :active) }
+
+        it 'returns a collection of variables with the passive profile', :aggregate_failures do
+          expect(collection).to include(key: 'DAST_API_PROFILE', value: 'Quick-Active')
+        end
+      end
+
+      context 'when the scan_type is passive' do
+        subject { build(:dast_scanner_profile, scan_type: :passive) }
+
+        it 'returns a collection of variables with the passive profile', :aggregate_failures do
+          expect(collection).to include(key: 'DAST_API_PROFILE', value: 'Quick')
+        end
+      end
     end
   end
 

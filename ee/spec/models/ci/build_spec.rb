@@ -207,6 +207,20 @@ RSpec.describe Ci::Build, :saas do
 
               subject
             end
+
+            context 'when dast_site_profile target_type is website' do
+              it_behaves_like 'it includes variables' do
+                let(:expected_variables) { dast_scanner_profile.ci_variables(dast_site_profile: dast_site_profile) }
+              end
+            end
+
+            context 'when dast_site_profile target_type is api' do
+              let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project, target_type: 'api') }
+
+              it_behaves_like 'it includes variables' do
+                let(:expected_variables) { dast_scanner_profile.ci_variables(dast_site_profile: dast_site_profile) }
+              end
+            end
           end
         end
       end

@@ -198,13 +198,13 @@ module EE
         ::Gitlab::Ci::Variables::Collection.new.tap do |collection|
           break collection unless (dast_configuration = options[:dast_configuration])
 
-          if dast_configuration[:site_profile] && dast_site_profile
+          if (site_profile = dast_configuration[:site_profile] && dast_site_profile)
             collection.concat(dast_site_profile.ci_variables)
             collection.concat(dast_site_profile.secret_ci_variables(user))
           end
 
           if dast_configuration[:scanner_profile] && dast_scanner_profile
-            collection.concat(dast_scanner_profile.ci_variables)
+            collection.concat(dast_scanner_profile.ci_variables(dast_site_profile: site_profile))
           end
         end
       end
