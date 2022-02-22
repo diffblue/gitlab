@@ -142,12 +142,36 @@ To view an iteration report, go to the iterations list page and select an iterat
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/222750) in GitLab 13.6.
 > - [Feature flag removed](https://gitlab.com/gitlab-org/gitlab/-/issues/269972) in GitLab 13.7.
+> - [Updated](https://gitlab.com/gitlab-org/gitlab/-/issues/326029) to provide scoped burnup and burndown charts in GitLab 14.9.
 
 The iteration report includes [burndown and burnup charts](../../project/milestones/burndown_and_burnup_charts.md),
 similar to how they appear when viewing a [milestone](../../project/milestones/index.md).
 
 Burndown charts help track completion progress of total scope, and burnup charts track the daily
 total count and weight of issues added to and completed in a given timebox.
+
+An iteration created at a Group level may be viewed in any of the group's subgroups or projects.
+When viewing an iteration in a subgroup or project,
+the burndown and burnup charts only counts the issues belonging to the subgroup or project.
+
+To illstrate with an example, suppose a group had two projects respectively named `Project 1` and `Project 2`.
+Each project had a single issue assigned to the same iteration from the group.
+
+An iteration report generated for the group would show the following counts:
+
+- Completed 0 of 2
+- Incomplete 0 of 2
+- Unstarted 2 of 2
+- Burndown chart total issues 2
+- Burnup chart total issues 2
+
+An iteration report generated for `Project 1` would show the following counts:
+
+- Completed 0 of 1
+- Incomplete 0 of 1
+- Unstarted 1 of 1
+- Burndown chart total issues 1
+- Burnup chart total issues 1
 
 ### Group issues by label
 
