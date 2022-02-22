@@ -19,8 +19,8 @@ POST /projects/:id/alert_management_alerts/:alert_iid/metric_images
 
 | Attribute   | Type    | Required | Description                          |
 |-------------|---------|----------|--------------------------------------|
-| `id`        | integer/string | yes      | The ID or [URL-encoded path of the project](index.md#namespaced-path-encoding) owned by the authenticated user  |
-| `alert_iid` | integer | yes      | The internal ID of a project's alert |
+| `id`        | integer/string | yes      | The ID or [URL-encoded path of the project](index.md#namespaced-path-encoding) owned by the authenticated user. |
+| `alert_iid` | integer | yes      | The internal ID of a project's alert. |
 
 ```shell
 curl --request POST --header "PRIVATE-TOKEN: <your_access_token>"  --form 'file=@/path/to/file.png' \
@@ -86,11 +86,11 @@ PUT /projects/:id/alert_management_alerts/:alert_iid/metric_image/:image_id
 
 | Attribute   | Type    | Required | Description                          |
 |-------------|---------|----------|--------------------------------------|
-| `id`        | integer/string | yes      | The ID or [URL-encoded path of the project](index.md#namespaced-path-encoding) owned by the authenticated user  |
-| `alert_iid` | integer | yes      | The internal ID of a project's alert |
-| `image_id` | integer | yes      | The ID of the image |
-| `url` | string | no      | The URL to view more metric information |
-| `url_text` | string | no      | A description of the image or URL |
+| `id`        | integer/string | yes      | The ID or [URL-encoded path of the project](index.md#namespaced-path-encoding) owned by the authenticated user. |
+| `alert_iid` | integer | yes      | The internal ID of a project's alert. |
+| `image_id` | integer | yes      | The ID of the image. |
+| `url` | string | no      | The URL to view more metrics information. |
+| `url_text` | string | no      | A description of the image or URL. |
 
 ```shell
 curl --header "PRIVATE-TOKEN: <your_access_token>" --request PUT  --form 'url=http://example.com' --form 'url_text=Example website' "https://gitlab.example.com/api/v4/projects/5/alert_management_alerts/93/metric_images/1"
