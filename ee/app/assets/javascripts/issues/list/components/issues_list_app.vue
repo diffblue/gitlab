@@ -37,6 +37,7 @@ export default {
           icon: 'iteration',
           token: IterationToken,
           fetchIterations: this.fetchIterations,
+          recentSuggestionsStorageKey: `${this.fullPath}-issues-recent-tokens-iteration`,
         });
       }
 
@@ -50,7 +51,7 @@ export default {
           symbol: '&',
           idProperty: 'id',
           useIdValue: true,
-          recentSuggestionsStorageKey: `${this.fullPath}-issues-recent-tokens-epic_id`,
+          recentSuggestionsStorageKey: `${this.fullPath}-issues-recent-tokens-epic`,
           fullPath: this.groupPath,
         });
       }
