@@ -335,7 +335,7 @@ RSpec.describe API::AlertManagementAlerts do
         it 'returns an error' do
           subject
 
-          expect(response).to have_gitlab_http_status(:bad_request)
+          expect(response).to have_gitlab_http_status(:forbidden)
           expect(json_response['message']).to eq('Feature not available')
         end
       end
