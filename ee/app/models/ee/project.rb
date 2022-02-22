@@ -286,12 +286,17 @@ module EE
       end
 
       def with_slack_application_disabled
-        joins(<<~SQL)
-          LEFT JOIN #{::Integration.table_name} ON #{::Integration.table_name}.project_id = projects.id
-            AND #{::Integration.table_name}.type = 'GitlabSlackApplicationService'
-            AND #{::Integration.table_name}.active IS true
-        SQL
-          .where(integrations: { id: nil })
+        # Using Arel to avoid exposing what the column backing the type: attribute is
+        # rubocop: disable GitlabSecurity/PublicSend
+        with_active_slack = ::Integration.active.by_name(:gitlab_slack_application)
+        join_contraint = arel_table[:id].eq(::Integration.arel_table[:project_id])
+        constraint = with_active_slack.where_clause.send(:predicates).reduce(join_contraint) { |a, b| a.and(b) }
+        join = arel_table.join(::Integration.arel_table, Arel::Nodes::OuterJoin).on(constraint).join_sources
+        # rubocop: enable GitlabSecurity/PublicSend
+
+        joins(join).where(integrations: { id: nil })
+      rescue ::Integration::UnknownType
+        all
       end
 
       override :with_web_entity_associations

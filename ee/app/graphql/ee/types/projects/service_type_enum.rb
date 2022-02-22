@@ -12,14 +12,13 @@ module EE
           private
 
           override :type_description
-          def type_description(type)
+          def type_description(name, type)
             description = super
-            description = [description, ' (Gitlab.com only)'].join if saas_only?(type)
+            description = [description, ' (Gitlab.com only)'].join if saas_only?(name)
             description
           end
 
-          def saas_only?(type)
-            name = ::Integration.integration_type_to_name(type)
+          def saas_only?(name)
             ::Integration.saas_only_integration_names.include?(name)
           end
         end
