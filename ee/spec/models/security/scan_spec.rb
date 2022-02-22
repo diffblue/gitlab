@@ -196,7 +196,7 @@ RSpec.describe Security::Scan do
   describe '.latest_successful' do
     let!(:first_successful_scan) { create(:security_scan, latest: false, status: :succeeded) }
     let!(:second_successful_scan) { create(:security_scan, latest: true, status: :succeeded) }
-    let!(:failed_scan) { create(:security_scan, latest: true, status: :failed) }
+    let!(:failed_scan) { create(:security_scan, latest: true, status: :job_failed) }
 
     subject { described_class.latest_successful }
 

@@ -27,7 +27,7 @@ module Security
       cluster_image_scanning: 8
     }
 
-    enum status: { created: 0, succeeded: 1, failed: 2 }
+    declarative_enum Security::ScanStatusEnum
 
     scope :by_scan_types, -> (scan_types) { where(scan_type: sanitize_scan_types(scan_types)) }
     scope :distinct_scan_types, -> { select(:scan_type).distinct.pluck(:scan_type) }

@@ -27737,6 +27737,9 @@ msgstr ""
 msgid "Preferences|When you type in a description or comment box, selected text is surrounded by the corresponding character after typing one of the following characters: %{supported_characters}."
 msgstr ""
 
+msgid "Preparing the report for the scan."
+msgstr ""
+
 msgid "Prev"
 msgstr ""
 
@@ -30790,6 +30793,12 @@ msgid "Report abuse"
 msgstr ""
 
 msgid "Report abuse to admin"
+msgstr ""
+
+msgid "Report couldn't be prepared."
+msgstr ""
+
+msgid "Report for the scan has been removed from the database."
 msgstr ""
 
 msgid "Reported %{timeAgo} by %{reportedBy}"
@@ -36825,6 +36834,9 @@ msgstr ""
 msgid "The regular expression used to find test coverage output in the job log. For example, use %{regex} for Simplecov (Ruby). Leave blank to disable."
 msgstr ""
 
+msgid "The related CI build failed."
+msgstr ""
+
 msgid "The remote mirror URL is invalid."
 msgstr ""
 
@@ -36832,6 +36844,12 @@ msgid "The remote mirror took to long to complete."
 msgstr ""
 
 msgid "The remote repository is being updated..."
+msgstr ""
+
+msgid "The report artifact provided by the CI build couldn't be parsed."
+msgstr ""
+
+msgid "The report has been successfully prepared."
 msgstr ""
 
 msgid "The repository can be committed to, and issues, comments and other entities can be created."
@@ -36853,6 +36871,9 @@ msgid "The repository must be accessible over %{code_open}http://%{code_close}, 
 msgstr ""
 
 msgid "The same shared runner executes code from multiple projects, unless you configure autoscaling with %{link} set to 1 (which it is on GitLab.com)."
+msgstr ""
+
+msgid "The scan has been created."
 msgstr ""
 
 msgid "The snippet can be accessed without any authentication."
