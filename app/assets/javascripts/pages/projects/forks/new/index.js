@@ -23,21 +23,19 @@ new Vue({
   provide: {
     newGroupPath,
     visibilityHelpPath,
+    endpoint,
+    projectFullPath,
+    projectId,
+    projectName,
+    projectPath,
+    projectDescription,
+    projectVisibility,
+    restrictedVisibilityLevels: JSON.parse(restrictedVisibilityLevels),
   },
   render(h) {
     return h(App, {
       props: {
         forkIllustration,
-        endpoint,
-        newGroupPath,
-        projectFullPath,
-        visibilityHelpPath,
-        projectId,
-        projectName,
-        projectPath,
-        projectDescription,
-        projectVisibility,
-        restrictedVisibilityLevels: JSON.parse(restrictedVisibilityLevels),
       },
     });
   },
