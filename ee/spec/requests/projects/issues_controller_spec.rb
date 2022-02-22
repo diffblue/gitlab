@@ -75,6 +75,12 @@ RSpec.describe Projects::IssuesController do
         get_issues # Warm the cache
       end
 
+      it_behaves_like 'seat count alert' do
+        subject { get_issues }
+
+        let(:namespace) { group }
+      end
+
       it 'does not cause extra queries when there are other subepic issues' do
         create(:epic_issue, issue: issue, epic: epic)
 
