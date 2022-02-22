@@ -213,7 +213,7 @@ describe('Merge request widget rebase component', () => {
           });
         });
 
-        it('does not render the "Rebase without CI" button with rebaseWithoutCiUI flag enabled', () => {
+        it('does not render the "Rebase without pipeline" button with rebaseWithoutCiUI flag enabled', () => {
           createWrapper(
             {
               mr: {
