@@ -4,7 +4,6 @@ module Tooling
   module Danger
     module ProjectHelper
       LOCAL_RULES ||= %w[
-        changelog
         ci_config
         database
         documentation
@@ -194,16 +193,8 @@ module Tooling
         helper.ci? ? LOCAL_RULES | CI_ONLY_RULES : LOCAL_RULES
       end
 
-      def all_ee_changes
-        helper.changes.files.grep(%r{\Aee/})
-      end
-
       def file_lines(filename)
         read_file(filename).lines(chomp: true)
-      end
-
-      def labels_to_add
-        @labels_to_add ||= []
       end
 
       private
