@@ -4,34 +4,38 @@ group: Integrations
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#assignments
 ---
 
-# Harbor Container Registry integration **(FREE)**
+# Harbor container registry integration **(FREE)**
 
-Use Harbor as GitLab project's container registry.
+Use Harbor as the container registry for your GitLab project.
 
-[Harbor](https://goharbor.io/) is an open source registry that secures artifacts with policies and role-based access control, ensures images are scanned and free from vulnerabilities, and signs images as trusted. Harbor, a CNCF Graduated project, delivers compliance, performance, and interoperability to help you consistently and securely manage artifacts across cloud native compute platforms like Kubernetes and Docker.
+[Harbor](https://goharbor.io/) is an open source registry that can help you manage artifacts across cloud native compute platforms, like Kubernetes and Docker.
 
-Harbor Container Registry integration will be useful to users who have a need for GitLab CI and a container image repository.
+This integration can help you if you need GitLab CI/CD and a container image repository.
 
 ## Prerequisites
 
-- In the Harbor instance, the project to be integrated has been created, and the logged-in user needs to have permission to pull, push, and edit images in the Harbor project.
+In the Harbor instance, ensure that:
+
+- The project to be integrated has been created.
+- The signed-in user has permission to pull, push, and edit images in the Harbor project.
 
 ## Configure GitLab
 
 GitLab supports integrating Harbor projects at the group or project level. Complete these steps in GitLab:
 
-1. Go to your group/project and select **Settings > Integrations**.
+1. On the top bar, select **Menu > Projects** and find your project.
+1. On the left sidebar, select **Settings > Integrations**.
 1. Select **Harbor**.
 1. Turn on the **Active** toggle under **Enable Integration**.
 1. Provide the Harbor configuration information:
-   - **Harbor Web URL**: The base URL of Harbor instance which is being linked to this GitLab project. For example, 'https://harbor.example.net'.
-   - **Harbor project name**: The project name on Harbor instance. For example, 'testproject'.  
-   - **Username**: Your username on Harbor instance, which should meet the requirements in  [prerequisites](#prerequisites).
+   - **Harbor URL**: The base URL of Harbor instance which is being linked to this GitLab project. For example, `https://harbor.example.net`.
+   - **Harbor project name**: The project name in the Harbor instance. For example, `testproject`.  
+   - **Username**: Your username in the Harbor instance, which should meet the requirements in [prerequisites](#prerequisites).
    - **Password**: Password of your username.
 
 1. Select **Save changes**.
 
 After the Harbor integration is activated:
 
-- Global variables '$HARBOR_USER', '$HARBOR_PASSWORD', '$HARBOR_URL' and '$HARBOR_PROJECT' will be created for CI/CD usage.
-- Project-level integration settings override group-level integration settings.
+- The global variables `$HARBOR_USER`, `$HARBOR_PASSWORD`, `$HARBOR_URL`, and `$HARBOR_PROJECT` are created for CI/CD use.
+- The project-level integration settings override the group-level integration settings.
