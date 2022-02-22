@@ -1,7 +1,7 @@
 <script>
 import { GlAlert, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { dataVizBlue500 } from '@gitlab/ui/scss_to_js/scss_variables';
-import { mapActions, mapState, mapGetters } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 import { dateFormats } from '~/analytics/shared/constants';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import { sprintf } from '~/locale';
@@ -15,7 +15,6 @@ import {
   DURATION_TOTAL_TIME_NO_DATA,
   DURATION_TOTAL_TIME_LABEL,
 } from '../constants';
-import StageDropdownFilter from './stage_dropdown_filter.vue';
 
 export default {
   name: 'DurationChart',
@@ -23,7 +22,6 @@ export default {
     GlAlert,
     GlIcon,
     Scatterplot,
-    StageDropdownFilter,
     ChartSkeletonLoader,
   },
   directives: {
@@ -64,12 +62,6 @@ export default {
         : DURATION_STAGE_TIME_DESCRIPTION;
     },
   },
-  methods: {
-    ...mapActions('durationChart', ['updateSelectedDurationChartStages']),
-    onDurationStageSelect(stages) {
-      this.updateSelectedDurationChartStages(stages);
-    },
-  },
   durationChartTooltipDateFormat: dateFormats.defaultDate,
   medianAdditionalOptions: {
     lineStyle: {
@@ -85,12 +77,6 @@ export default {
     <h4 class="gl-mt-0">
       {{ title }}&nbsp;<gl-icon v-gl-tooltip.hover name="information-o" :title="tooltipText" />
     </h4>
-    <stage-dropdown-filter
-      v-if="isOverviewStageSelected && stages.length"
-      class="gl-ml-auto"
-      :stages="stages"
-      @selected="onDurationStageSelect"
-    />
     <scatterplot
       v-if="hasData"
       :x-axis-title="s__('CycleAnalytics|Date')"
