@@ -109,9 +109,12 @@ module EE
         def components_usage_data
           usage_data = super
 
-          if ::Gitlab::CurrentSettings.elasticsearch_indexing?
-            usage_data[:advanced_search] = add_metric("AdvancedSearchMetric")
-          end
+          usage_data[:advanced_search] = {
+              distribution:   add_metric("AdvancedSearch::DistributionMetric"),
+              version:        add_metric("AdvancedSearch::VersionMetric"),
+              build_type:     add_metric("AdvancedSearch::BuildTypeMetric"),
+              lucene_version: add_metric("AdvancedSearch::LuceneVersionMetric")
+          }
 
           usage_data
         end
