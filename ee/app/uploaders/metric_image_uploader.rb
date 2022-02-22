@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class IssuableMetricImageUploader < GitlabUploader
+class MetricImageUploader < GitlabUploader # rubocop:disable Gitlab/NamespacedClass
   include RecordsUploads::Concern
   include ObjectStorage::Concern
   prepend ObjectStorage::Extension::RecordsUploads

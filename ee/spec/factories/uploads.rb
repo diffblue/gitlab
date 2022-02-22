@@ -5,7 +5,7 @@ FactoryBot.modify do
     trait :issue_metric_image do
       model { association(:issuable_metric_image) }
       mount_point { :file }
-      uploader { ::IssuableMetricImageUploader.name }
+      uploader { ::MetricImageUploader.name }
     end
 
     trait(:verification_succeeded) do

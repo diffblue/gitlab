@@ -16,8 +16,8 @@ RSpec.describe 'gitlab:uploads:migrate and migrate_to_local rake tasks', :silenc
     allow(ObjectStorage::MigrateUploadsWorker).to receive(:perform_async)
   end
 
-  context 'for IssuableMetricImageUploader' do
-    let(:uploader_class) { IssuableMetricImageUploader }
+  context 'for MetricImageUploader' do
+    let(:uploader_class) { MetricImageUploader }
     let(:model_class) {  IssuableMetricImage }
     let(:mounted_as) { :file }
 

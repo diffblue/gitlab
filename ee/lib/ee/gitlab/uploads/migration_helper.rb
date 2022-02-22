@@ -6,7 +6,7 @@ module EE
       module MigrationHelper
         extend ActiveSupport::Concern
 
-        EE_CATEGORIES = [%w(IssuableMetricImageUploader IssuableMetricImage :file)].freeze
+        EE_CATEGORIES = [%w(MetricImageUploader IssuableMetricImage :file)].freeze
 
         class_methods do
           extend ::Gitlab::Utils::Override
