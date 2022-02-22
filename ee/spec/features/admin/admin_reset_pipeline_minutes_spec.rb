@@ -19,7 +19,7 @@ RSpec.describe 'Reset namespace pipeline minutes', :js do
       end
 
       it 'resets pipeline minutes' do
-        time = Time.now
+        time = Time.zone.now
 
         travel_to(time) do
           click_button 'Reset pipeline minutes'
