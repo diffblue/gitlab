@@ -282,11 +282,7 @@ module EE
     end
 
     def any_project_with_shared_runners_enabled?
-      if ::Feature.enabled?(:cache_shared_runners_enabled, self, default_enabled: :yaml)
-        Rails.cache.fetch([self, :has_project_with_shared_runners_enabled], expires_in: 5.minutes) do
-          any_project_with_shared_runners_enabled_with_cte?
-        end
-      else
+      Rails.cache.fetch([self, :has_project_with_shared_runners_enabled], expires_in: 5.minutes) do
         any_project_with_shared_runners_enabled_with_cte?
       end
     end
