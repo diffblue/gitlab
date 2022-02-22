@@ -43,6 +43,11 @@ module Gitlab
           (@context[:backtraces] ||= []).push(cleaned_backtrace)
         end
 
+        def initialize_external_http_tracking
+          @context[:external_http_count_start] = external_http_requests_count_total
+          @context[:external_http_duration_start] = external_http_requests_duration_total
+        end
+
         def duration
           return unless @context[:start_time].present?
 
@@ -61,6 +66,11 @@ module Gitlab
           return false if logged_already?
 
           savepoints_threshold_exceeded? || duration_threshold_exceeded?
+
+          ## TODO
+          #
+          # External requests duration / count exceeded
+          #
         end
 
         def commit
@@ -108,6 +118,8 @@ module Gitlab
             savepoints_count: @context[:savepoints].to_i,
             rollbacks_count: @context[:rollbacks].to_i,
             releases_count: @context[:releases].to_i,
+            transaction_external_http_requests_count: external_http_requests_count,
+            transaction_external_http_requests_duration: external_http_requests_duration,
             sql: queries,
             savepoint_backtraces: backtraces
           }
@@ -117,6 +129,22 @@ module Gitlab
 
         def application_info(attributes)
           Gitlab::AppJsonLogger.info(attributes)
+        end
+
+        def external_http_requests_count
+          @requests_count ||= external_http_requests_count_total - @context[:external_http_count_start].to_i
+        end
+
+        def external_http_requests_duration
+          @requests_duration ||= external_http_requests_duration_total - @context[:external_http_duration_start].to_f
+        end
+
+        def external_http_requests_count_total
+          ::Gitlab::Metrics::Subscribers::ExternalHttp.request_count.to_i
+        end
+
+        def external_http_requests_duration_total
+          ::Gitlab::Metrics::Subscribers::ExternalHttp.duration.to_f
         end
       end
     end

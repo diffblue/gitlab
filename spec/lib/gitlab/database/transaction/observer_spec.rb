@@ -25,7 +25,7 @@ RSpec.describe Gitlab::Database::Transaction::Observer do
           User.first
 
           expect(transaction_context).to be_a(::Gitlab::Database::Transaction::Context)
-          expect(context.keys).to match_array(%i(start_time depth savepoints queries backtraces))
+          expect(context.keys).to match_array(%i(start_time depth savepoints queries backtraces external_http_count_start external_http_duration_start))
           expect(context[:depth]).to eq(2)
           expect(context[:savepoints]).to eq(1)
           expect(context[:queries].length).to eq(1)
@@ -36,6 +36,18 @@ RSpec.describe Gitlab::Database::Transaction::Observer do
       expect(context[:savepoints]).to eq(1)
       expect(context[:releases]).to eq(1)
       expect(context[:backtraces].length).to eq(1)
+    end
+
+    it 'tracks external requests duration', :request_store do
+      # TODO add tests!
+      ActiveRecord::Base.transaction do
+        ActiveRecord::Base.transaction(requires_new: true) do
+          User.first
+
+          expect(context[:external_http_count_start]).to eq(0)
+          expect(context[:external_http_duration_start]).to eq(0)
+        end
+      end
     end
 
     describe '.extract_sql_command' do
