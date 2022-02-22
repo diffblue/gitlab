@@ -7,9 +7,18 @@ RSpec.describe IncidentManagement::TimelineEvents::CreateService do
   let_it_be(:user_without_permissions) { create(:user) }
   let_it_be(:project) { create(:project) }
   let_it_be_with_refind(:incident) { create(:incident, project: project) }
+  let_it_be(:comment) { create(:note, project: project, noteable: incident) }
+
+  let(:args) do
+    {
+      note: 'note',
+      occurred_at: Time.current,
+      action: 'new comment',
+      promoted_from_note: comment
+    }
+  end
 
   let(:current_user) { user_with_permissions }
-  let(:args) { { 'note': 'note', 'occurred_at': Time.current, 'action': 'new comment' } }
   let(:service) { described_class.new(incident, current_user, args) }
 
   before do
@@ -30,7 +39,7 @@ RSpec.describe IncidentManagement::TimelineEvents::CreateService do
     end
 
     shared_examples 'success response' do
-      it 'has timeline event' do
+      it 'has timeline event', :aggregate_failures do
         expect(execute).to be_success
 
         result = execute.payload[:timeline_event]
@@ -39,6 +48,7 @@ RSpec.describe IncidentManagement::TimelineEvents::CreateService do
         expect(result.incident).to eq(incident)
         expect(result.project).to eq(project)
         expect(result.note).to eq(args[:note])
+        expect(result.promoted_from_note).to eq(comment)
       end
     end
 
@@ -71,7 +81,7 @@ RSpec.describe IncidentManagement::TimelineEvents::CreateService do
     end
 
     context 'with default action' do
-      let(:args) { { 'note': 'note', 'occurred_at': Time.current } }
+      let(:args) { { note: 'note', occurred_at: Time.current, promoted_from_note: comment } }
 
       it_behaves_like 'success response'
 

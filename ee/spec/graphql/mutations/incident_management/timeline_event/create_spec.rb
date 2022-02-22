@@ -19,44 +19,32 @@ RSpec.describe Mutations::IncidentManagement::TimelineEvent::Create do
     subject(:resolve) { mutation_for(project, current_user).resolve(incident_id: incident.to_global_id, **args) }
 
     context 'when a user has permissions to create a timeline event' do
+      let(:expected_timeline_event) do
+        instance_double(
+          'IncidentManagement::TimelineEvent',
+          note: args[:note],
+          occurred_at: args[:occurred_at].to_s,
+          incident: incident,
+          author: current_user,
+          promoted_from_note: nil
+        )
+      end
+
       before do
         project.add_developer(current_user)
       end
 
-      context 'when TimelineEvents::CreateService responds with success' do
-        it 'adds timeline event to database' do
-          expect { resolve }.to change(IncidentManagement::TimelineEvent, :count).by(1)
-        end
-      end
+      it_behaves_like 'creating an incident timeline event'
 
       context 'when TimelineEvents::CreateService responds with an error' do
         let(:args) { {} }
 
-        it 'returns errors' do
-          expect(resolve).to eq(timeline_event: nil, errors: ["Occurred at can't be blank, Note can't be blank, and Note html can't be blank"])
-        end
+        it_behaves_like 'responding with an incident timeline errors',
+          errors: ["Occurred at can't be blank, Note can't be blank, and Note html can't be blank"]
       end
     end
 
-    context 'when a user has no permissions to create timeline event' do
-      before do
-        project.add_guest(current_user)
-      end
-
-      it 'raises an error' do
-        expect { resolve }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
-      end
-    end
-
-    context 'when timeline event feature is not available' do
-      before do
-        stub_licensed_features(incident_timeline_events: false)
-      end
-
-      it 'raises and error' do
-        expect { resolve }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
-      end
-    end
+    it_behaves_like 'failing to create an incident timeline event'
   end
 
   private

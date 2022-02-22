@@ -22,7 +22,8 @@ module IncidentManagement
           note: params[:note],
           action: params.fetch(:action, DEFAULT_ACTION),
           note_html: params[:note_html].presence || params[:note],
-          occurred_at: params[:occurred_at]
+          occurred_at: params[:occurred_at],
+          promoted_from_note: params[:promoted_from_note]
         }
 
         timeline_event = IncidentManagement::TimelineEvent.new(timeline_event_params)
