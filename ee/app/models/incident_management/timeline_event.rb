@@ -6,7 +6,7 @@ module IncidentManagement
 
     self.table_name = 'incident_management_timeline_events'
 
-    cache_markdown_field :note, pipeline: :timeline_event, issuable_reference_expansion_enabled: true
+    cache_markdown_field :note, pipeline: :'incident_management/timeline_event', issuable_reference_expansion_enabled: true
 
     belongs_to :project
     belongs_to :author, class_name: 'User', foreign_key: :author_id

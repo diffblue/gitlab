@@ -9,7 +9,7 @@ module Banzai
       # a new node (a link to the image source), copy the image as a child
       # of the anchor, and then replace the img with the link-wrapped version.
       #
-      # If `link_replaces_image` context parameter provided, the image is going
+      # If `link_replaces_image` context parameter is provided, the image is going
       # to be replaced with a link to an image.
       def call
         doc.xpath('descendant-or-self::img[not(ancestor::a)]').each do |img|

@@ -2,13 +2,20 @@
 
 require 'spec_helper'
 
-RSpec.describe Banzai::Pipeline::TimelineEventPipeline do
+RSpec.describe Banzai::Pipeline::IncidentManagement::TimelineEventPipeline do
   let_it_be(:project) { create(:project) }
 
-  describe '.reference_filters' do
-    it 'contains required reference filters' do
-      expect(described_class.reference_filters).to contain_exactly(
-        *Banzai::Pipeline::GfmPipeline.reference_filters
+  describe '.filters' do
+    it 'contains required filters' do
+      expect(described_class.filters).to eq(
+        [
+          *Banzai::Pipeline::PlainMarkdownPipeline.filters,
+          *Banzai::Pipeline::GfmPipeline.reference_filters,
+          Banzai::Filter::EmojiFilter,
+          Banzai::Filter::ExternalLinkFilter,
+          Banzai::Filter::ImageLinkFilter,
+          Banzai::Filter::SanitizationFilter
+        ]
       )
     end
   end
@@ -17,13 +24,13 @@ RSpec.describe Banzai::Pipeline::TimelineEventPipeline do
     subject(:output) { described_class.to_html(markdown, project: project) }
 
     context 'when markdown contains font style transformations' do
-      let(:markdown) { '**bold** _italic_ `code`'}
+      let(:markdown) { '**bold** _italic_ `code`' }
 
       it { is_expected.to eq('<p><strong>bold</strong> <em>italic</em> <code>code</code></p>') }
     end
 
     context 'when markdown contains banned HTML tags' do
-      let(:markdown) { '<div>div</div><h1>h1</h1>'}
+      let(:markdown) { '<div>div</div><h1>h1</h1>' }
 
       it 'filters out banned tags' do
         is_expected.to eq(' div  h1 ')
@@ -40,12 +47,12 @@ RSpec.describe Banzai::Pipeline::TimelineEventPipeline do
       let(:markdown) { '![Name](/path/to/image.png)' }
 
       it 'replaces image with a link to the image' do
-        is_expected.to eq(%q{<p><a class="with-attachment-icon" href="/path/to/image.png" target="_blank">Name</a></p>})
+        is_expected.to eq(%q(<p><a class="with-attachment-icon" href="/path/to/image.png" target="_blank">Name</a></p>))
       end
     end
 
     context 'when markdown contains emojis' do
-      let(:markdown) { ':+1:👍'}
+      let(:markdown) { ':+1:👍' }
 
       it { is_expected.to eq('<p>👍👍</p>') }
     end
@@ -55,7 +62,7 @@ RSpec.describe Banzai::Pipeline::TimelineEventPipeline do
       let(:markdown) { "issue ##{issue.iid}" }
 
       it 'contains a link to the issue' do
-        is_expected.to match(%r(<p>issue <a\shref="[\w\/]+-\/issues\/#{issue.iid}".*>##{issue.iid}<\/a><\/p>))
+        is_expected.to match(%r(<p>issue <a href="[\w/]+-/issues/#{issue.iid}".*>##{issue.iid}</a></p>))
       end
     end
 
@@ -64,7 +71,7 @@ RSpec.describe Banzai::Pipeline::TimelineEventPipeline do
       let(:markdown) { "MR !#{mr.iid}" }
 
       it 'contains a link to the merge request' do
-        is_expected.to match(%r(<p>MR <a\shref="[\w\/]+-\/merge_requests\/#{mr.iid}".*>!#{mr.iid}<\/a><\/p>))
+        is_expected.to match(%r(<p>MR <a href="[\w/]+-/merge_requests/#{mr.iid}".*>!#{mr.iid}</a></p>))
       end
     end
   end
