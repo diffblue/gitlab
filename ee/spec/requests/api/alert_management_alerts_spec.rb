@@ -161,7 +161,7 @@ RSpec.describe API::AlertManagementAlerts do
         project.add_developer(user)
 
         allow_next_instance_of(::AlertManagement::MetricImages::UploadService) do |service|
-          error = double(success?: false, message: 'some error')
+          error = double(success?: false, message: 'some error', http_status: :bad_request)
           allow(service).to receive(:execute).and_return(error)
         end
       end
@@ -321,7 +321,7 @@ RSpec.describe API::AlertManagementAlerts do
           it 'returns an error' do
             subject
 
-            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(response).to have_gitlab_http_status(:unprocessable_entity)
             expect(json_response['message']).to eq('Metric image could not be updated')
           end
         end
@@ -336,7 +336,7 @@ RSpec.describe API::AlertManagementAlerts do
           subject
 
           expect(response).to have_gitlab_http_status(:bad_request)
-          expect(json_response['message']).to eq('Not allowed!')
+          expect(json_response['message']).to eq('Feature not available')
         end
       end
     end

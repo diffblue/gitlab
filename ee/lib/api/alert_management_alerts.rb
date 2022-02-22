@@ -52,7 +52,7 @@ module API
           if upload.success?
             present upload.payload[:metric], with: Entities::MetricImage, current_user: current_user, project: user_project
           else
-            render_api_error!(upload.message, 400)
+            render_api_error!(upload.message, upload.http_status)
           end
         end
 
@@ -80,7 +80,7 @@ module API
 
           authorize!(:update_alert_management_metric_image, alert)
 
-          render_api_error!('Not allowed!', 400) unless alert.metric_images_available?
+          render_api_error!('Feature not available', 400) unless alert.metric_images_available?
 
           metric_image = alert.metric_images.find_by_id(params[:metric_image_id])
 
@@ -89,7 +89,7 @@ module API
           if metric_image&.update(params.slice(:url, :url_text))
             present metric_image, with: Entities::MetricImage, current_user: current_user, project: user_project
           else
-            render_api_error!('Metric image could not be updated', 400)
+            render_api_error!('Metric image could not be updated', 422)
           end
         end
       end

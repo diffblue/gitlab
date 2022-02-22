@@ -23,9 +23,7 @@ module EE
       end
 
       def metric_images_available?
-        return false unless ::AlertManagement::MetricImage.available_for?(project)
-
-        true
+        ::AlertManagement::MetricImage.available_for?(project)
       end
     end
   end

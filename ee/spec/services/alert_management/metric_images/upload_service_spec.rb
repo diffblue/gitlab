@@ -36,7 +36,7 @@ RSpec.describe AlertManagement::MetricImages::UploadService do
     end
 
     context 'user does not have permissions' do
-      it_behaves_like 'no metric saved, an error given', 'Not allowed!'
+      it_behaves_like 'no metric saved, an error given', 'You are not authorized to upload metric images'
     end
 
     context 'user has permissions' do
@@ -44,7 +44,7 @@ RSpec.describe AlertManagement::MetricImages::UploadService do
         project.add_developer(current_user)
       end
 
-      it_behaves_like 'no metric saved, an error given', 'Not allowed!'
+      it_behaves_like 'no metric saved, an error given', 'You are not authorized to upload metric images'
 
       context 'with license' do
         before do
@@ -79,7 +79,7 @@ RSpec.describe AlertManagement::MetricImages::UploadService do
             project.add_guest(current_user)
           end
 
-          it_behaves_like 'no metric saved, an error given', 'Not allowed!'
+          it_behaves_like 'no metric saved, an error given', 'You are not authorized to upload metric images'
         end
       end
     end
