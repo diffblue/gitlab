@@ -53,7 +53,8 @@ module QA
     "jira_api" => "JiraAPI",
     "registry_tls" => "RegistryTLS",
     "jetbrains" => "JetBrains",
-    "vscode" => "VSCode"
+    "vscode" => "VSCode",
+    "registry_with_cdn" => "RegistryWithCDN"
   )
 
   loader.setup
