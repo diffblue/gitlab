@@ -1,4 +1,5 @@
-import { GlModal, GlSegmentedControl } from '@gitlab/ui';
+import { nextTick } from 'vue';
+import { GlModal, GlButtonGroup } from '@gitlab/ui';
 import { EDITOR_MODE_YAML } from 'ee/threat_monitoring/components/policy_editor/constants';
 import PolicyEditorLayout from 'ee/threat_monitoring/components/policy_editor/policy_editor_layout.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -26,7 +27,7 @@ describe('PolicyEditorLayout component', () => {
 
   const findDeletePolicyButton = () => wrapper.findByTestId('delete-policy');
   const findDeletePolicyModal = () => wrapper.findComponent(GlModal);
-  const findEditorModeToggle = () => wrapper.findComponent(GlSegmentedControl);
+  const findEditorModeToggle = () => wrapper.findComponent(GlButtonGroup);
   const findYamlModeSection = () => wrapper.findByTestId('policy-yaml-editor');
   const findRuleModeSection = () => wrapper.findByTestId('rule-editor');
   const findRuleModePreviewSection = () => wrapper.findByTestId('rule-editor-preview');
@@ -67,7 +68,8 @@ describe('PolicyEditorLayout component', () => {
     it('mode changes appropriately when new mode is selected', async () => {
       expect(findRuleModeSection().exists()).toBe(true);
       expect(findYamlModeSection().exists()).toBe(false);
-      await findEditorModeToggle().vm.$emit('input', EDITOR_MODE_YAML);
+      wrapper.findByTestId('button-yaml').vm.$emit('click');
+      await nextTick();
       expect(findRuleModeSection().exists()).toBe(false);
       expect(findYamlModeSection().exists()).toBe(true);
       expect(wrapper.emitted('update-editor-mode')).toStrictEqual([[EDITOR_MODE_YAML]]);
