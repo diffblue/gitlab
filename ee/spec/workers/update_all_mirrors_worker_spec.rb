@@ -56,37 +56,21 @@ RSpec.describe UpdateAllMirrorsWorker do
     end
 
     context 'when updates were scheduled' do
-      let(:job_tracker_instance) { double(LimitedCapacity::JobTracker) }
-
       before do
         allow(worker).to receive(:schedule_mirrors!).and_return(1)
+        count = 3
+        allow(Gitlab::Mirror).to receive(:current_scheduling) { |_| count -= 1 }
       end
 
-      context 'job tracker flags are on' do
+      context 'mirror_scheduling_tracking flags is on' do
         before do
-          stub_feature_flags(
-            project_import_schedule_worker_job_tracker: true,
-            update_all_mirrors_job_tracker: true
-          )
-          allow(LimitedCapacity::JobTracker).to receive(:new).with('ProjectImportScheduleWorker').and_return(job_tracker_instance)
-
-          count = 3
-          allow(job_tracker_instance).to receive(:clean_up)
-          allow(job_tracker_instance).to receive(:register)
-          allow(job_tracker_instance).to receive(:remove)
-          allow(job_tracker_instance).to receive(:count) { |_| count -= 1 }
+          stub_feature_flags(mirror_scheduling_tracking: true)
         end
 
         it 'waits until ProjectImportScheduleWorker job tracker returns 0' do
           worker.perform
 
-          expect(job_tracker_instance).to have_received(:count).exactly(3).times
-        end
-
-        it 'cleans up finished ProjectImportScheduleWorker jobs' do
-          worker.perform
-
-          expect(job_tracker_instance).to have_received(:clean_up).once
+          expect(Gitlab::Mirror).to have_received(:current_scheduling).exactly(3).times
         end
 
         it 'sleeps a bit after scheduling mirrors' do
@@ -96,12 +80,9 @@ RSpec.describe UpdateAllMirrorsWorker do
         end
       end
 
-      context 'any of job tracker flags is off' do
+      context 'mirror_scheduling_tracking flags is off' do
         before do
-          stub_feature_flags(
-            project_import_schedule_worker_job_tracker: true,
-            update_all_mirrors_job_tracker: false
-          )
+          stub_feature_flags(mirror_scheduling_tracking: false)
           count = 3
           allow(ProjectImportScheduleWorker).to receive(:queue_size) { |_| count -= 1 }
         end
@@ -156,14 +137,6 @@ RSpec.describe UpdateAllMirrorsWorker do
         worker.perform
       end
 
-      it 'does not poll for ProjectImportScheduleWorker jobs to complete' do
-        expect_next_instance_of(LimitedCapacity::JobTracker) do |instance|
-          expect(instance).not_to receive(:count)
-        end
-
-        worker.perform
-      end
-
       it 'does not wait' do
         expect(worker).not_to receive(:sleep)
 
@@ -172,7 +145,18 @@ RSpec.describe UpdateAllMirrorsWorker do
     end
   end
 
-  describe '#schedule_mirrors!' do
+  describe '#schedule_mirrors!', :clean_gitlab_redis_shared_state do
+    before do
+      # This tests the ability of this worker to clean the state before
+      # scheduling mirrors
+      Gitlab::Redis::SharedState.with do |redis|
+        redis.sadd(Gitlab::Mirror::SCHEDULING_TRACKING_KEY, [1, 2, 3])
+      end
+
+      allow(Gitlab::Mirror).to receive(:track_scheduling).and_call_original
+      allow(Gitlab::Mirror).to receive(:untrack_scheduling).and_call_original
+    end
+
     def schedule_mirrors!(capacity:)
       allow(Gitlab::Mirror).to receive_messages(available_capacity: capacity)
 
@@ -193,6 +177,28 @@ RSpec.describe UpdateAllMirrorsWorker do
 
     def expect_import_not_scheduled(*projects)
       projects.each { |project| expect_import_status(project, 'none') }
+    end
+
+    def expect_mirror_scheduling_tracked(*project_batches)
+      # Expect that Gitlab::Mirror tracks the project IDs
+      project_batches.each do |project_batch|
+        expect(Gitlab::Mirror).to have_received(:track_scheduling).ordered.with(
+          match(project_batch.map(&:id))
+        )
+      end
+      # rubocop:disable Style/CombinableLoops
+      # And then each project is untracked individually when the status switched
+      # to scheduled.  We need to loop these batches twice to ensure the
+      # ordering of the `track_scheduling` invocations don't mingle with the
+      # `untrack_scheduling` invocation.
+      project_batches.each do |project_batch|
+        project_batch.each do |project|
+          expect(Gitlab::Mirror).to have_received(:untrack_scheduling).with(project.id).at_least(:once)
+        end
+      end
+      # rubocop:enable Style/CombinableLoops
+
+      expect(::Gitlab::Mirror.current_scheduling).to eq(0)
     end
 
     context 'when the instance is unlicensed' do
@@ -222,6 +228,8 @@ RSpec.describe UpdateAllMirrorsWorker do
           schedule_mirrors!(capacity: 3)
 
           expect_import_scheduled(project1, project2)
+
+          expect_mirror_scheduling_tracked([project1, project2])
         end
       end
     end
@@ -262,8 +270,10 @@ RSpec.describe UpdateAllMirrorsWorker do
           it 'schedules all available mirrors' do
             schedule_mirrors!(capacity: 4)
 
-            expect_import_scheduled(licensed_project1, licensed_project2, public_project)
             expect_import_not_scheduled(*unlicensed_projects)
+            expect_import_scheduled(licensed_project1, licensed_project2, public_project)
+
+            expect_mirror_scheduling_tracked([licensed_project1, licensed_project2, public_project])
           end
         end
 
@@ -290,6 +300,8 @@ RSpec.describe UpdateAllMirrorsWorker do
 
             expect_import_scheduled(licensed_project1, licensed_project2, public_project)
             expect_import_not_scheduled(*unlicensed_projects)
+
+            expect_mirror_scheduling_tracked([licensed_project1, licensed_project2, public_project])
           end
 
           it 'requests as many batches as necessary' do
@@ -308,6 +320,8 @@ RSpec.describe UpdateAllMirrorsWorker do
             expect_import_scheduled(licensed_project2, public_project)
             expect_import_not_scheduled(licensed_project1)
             expect_import_not_scheduled(*unlicensed_projects)
+
+            expect_mirror_scheduling_tracked([licensed_project2, public_project])
           end
 
           it "does not schedule a mirror of an pending_delete project" do
@@ -318,6 +332,8 @@ RSpec.describe UpdateAllMirrorsWorker do
             expect_import_scheduled(licensed_project2, public_project)
             expect_import_not_scheduled(licensed_project1)
             expect_import_not_scheduled(*unlicensed_projects)
+
+            expect_mirror_scheduling_tracked([licensed_project2, public_project])
           end
         end
 
@@ -327,6 +343,8 @@ RSpec.describe UpdateAllMirrorsWorker do
 
             expect_import_scheduled(licensed_project1, licensed_project2, public_project)
             expect_import_not_scheduled(*unlicensed_projects)
+
+            expect_mirror_scheduling_tracked([licensed_project1, licensed_project2], [public_project])
           end
 
           it 'requests as many batches as necessary' do
@@ -344,6 +362,8 @@ RSpec.describe UpdateAllMirrorsWorker do
 
             expect_import_scheduled(licensed_project1, licensed_project2)
             expect_import_not_scheduled(*unlicensed_projects, public_project)
+
+            expect_mirror_scheduling_tracked([licensed_project1], [licensed_project2])
           end
 
           it 'requests as many batches as necessary' do
@@ -361,6 +381,8 @@ RSpec.describe UpdateAllMirrorsWorker do
 
             expect_import_scheduled(licensed_project1)
             expect_import_not_scheduled(*unlicensed_projects, licensed_project2, public_project)
+
+            expect_mirror_scheduling_tracked([licensed_project1])
           end
 
           it 'requests as many batches as necessary' do

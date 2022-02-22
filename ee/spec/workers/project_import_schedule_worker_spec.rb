@@ -11,13 +11,9 @@ RSpec.describe ProjectImportScheduleWorker do
 
       let(:job_args) { [project.id] }
 
-      let(:job_tracker_instance) { double(LimitedCapacity::JobTracker) }
-
       before do
         allow(Gitlab::Mirror).to receive(:available_capacity).and_return(5)
-        allow(LimitedCapacity::JobTracker).to receive(:new).with('ProjectImportScheduleWorker').and_return(job_tracker_instance)
-        allow(job_tracker_instance).to receive(:register)
-        allow(job_tracker_instance).to receive(:remove)
+        allow(Gitlab::Mirror).to receive(:untrack_scheduling).and_call_original
 
         allow(Project).to receive(:find_by_id).with(project.id).and_return(project)
         allow(project).to receive(:add_import_job)
@@ -39,29 +35,27 @@ RSpec.describe ProjectImportScheduleWorker do
         expect(import_state).to be_scheduled
       end
 
-      context 'project_import_schedule_worker_job_tracker flag is enabled' do
+      context 'mirror_scheduling_tracking flag is enabled' do
         before do
-          stub_feature_flags(project_import_schedule_worker_job_tracker: true)
+          stub_feature_flags(mirror_scheduling_tracking: true)
         end
 
         it 'tracks the status of the worker' do
           subject
 
-          expect(job_tracker_instance).to have_received(:register).with(any_args, 5).at_least(:once)
-          expect(job_tracker_instance).to have_received(:remove).with(any_args).at_least(:once)
+          expect(Gitlab::Mirror).to have_received(:untrack_scheduling).with(project.id).at_least(:once)
         end
       end
 
-      context 'project_import_schedule_worker_job_tracker flag is disabled' do
+      context 'mirror_scheduling_tracking flag is disabled' do
         before do
-          stub_feature_flags(project_import_schedule_worker_job_tracker: false)
+          stub_feature_flags(mirror_scheduling_tracking: false)
         end
 
         it 'does not track the status of the worker' do
           subject
 
-          expect(job_tracker_instance).not_to have_received(:register)
-          expect(job_tracker_instance).not_to have_received(:remove)
+          expect(Gitlab::Mirror).not_to have_received(:untrack_scheduling)
         end
       end
     end

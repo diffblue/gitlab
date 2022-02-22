@@ -9,7 +9,7 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
   data_consistency :sticky
 
   LEASE_TIMEOUT = 5.minutes
-  SCHEDULE_WAIT_TIMEOUT = 4.minutes
+  SCHEDULE_WAIT_TIMEOUT = 2.minutes
   LEASE_KEY = 'update_all_mirrors'
   RESCHEDULE_WAIT = 1.second
 
@@ -18,14 +18,12 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
 
     scheduled = 0
     with_lease do
-      clean_project_import_jobs_tracking
-
       scheduled = schedule_mirrors!
 
       if scheduled > 0
-        # Wait for all ProjectImportScheduleWorker jobs to complete
+        # Wait for all ProjectImportScheduleWorker jobs to be picked up
         deadline = Time.current + SCHEDULE_WAIT_TIMEOUT
-        sleep 1 while pending_project_import_jobs? && Time.current < deadline
+        sleep 1 while pending_project_import_scheduling? && Time.current < deadline
       end
     end
 
@@ -44,6 +42,16 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
 
   # rubocop: disable CodeReuse/ActiveRecord
   def schedule_mirrors!
+    # Clean up mirror scheduling counter before schedule mirrors. After this job is executed, there are some cases:
+    # - There are no projects to be scheduled, the job exits early, the counter is not used.
+    # - All projects transition to scheduled states. The counter must be equal to 0.
+    # - The timeout of 4 minutes is exceeded. In this case, another job will be
+    #   rescheduled, regardless of the value of the counter.
+    # Therefore, the scheduling counter should reset the counter before entering
+    # the scheduling phase. In addition, this clean-up task prevents a project
+    # id from being stuck in the list forever.
+    ::Gitlab::Mirror.reset_scheduling if scheduling_tracking_enabled?
+
     capacity = Gitlab::Mirror.available_capacity
 
     # Ignore mirrors that become due for scheduling once work begins, so we
@@ -133,6 +141,11 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
   # rubocop: enable CodeReuse/ActiveRecord
 
   def schedule_projects_in_batch(projects)
+    return if projects.empty?
+
+    # projects were materialized at this stage
+    ::Gitlab::Mirror.track_scheduling(projects.map(&:id)) if scheduling_tracking_enabled?
+
     ProjectImportScheduleWorker.bulk_perform_async_with_contexts(
       projects,
       arguments_proc: -> (project) { project.id },
@@ -154,25 +167,15 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
   end
   # rubocop: enable CodeReuse/ActiveRecord
 
-  def job_tracker
-    @job_tracker ||= LimitedCapacity::JobTracker.new(ProjectImportScheduleWorker.name)
-  end
-
-  def pending_project_import_jobs?
-    if job_tracker_enabled?
-      job_tracker.count > 0
+  def pending_project_import_scheduling?
+    if scheduling_tracking_enabled?
+      ::Gitlab::Mirror.current_scheduling > 0
     else
       ProjectImportScheduleWorker.queue_size > 0
     end
   end
 
-  def clean_project_import_jobs_tracking
-    # Clean-up completed jobs with stale status
-    job_tracker.clean_up if job_tracker_enabled?
-  end
-
-  def job_tracker_enabled?
-    Feature.enabled?(:project_import_schedule_worker_job_tracker, default_enabled: :yaml) &&
-      Feature.enabled?(:update_all_mirrors_job_tracker, default_enabled: :yaml)
+  def scheduling_tracking_enabled?
+    Feature.enabled?(:mirror_scheduling_tracking, default_enabled: :yaml)
   end
 end

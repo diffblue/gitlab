@@ -5,6 +5,7 @@ module Gitlab
     # Runs scheduler every minute
     SCHEDULER_CRON = '* * * * *'
     PULL_CAPACITY_KEY = 'MIRROR_PULL_CAPACITY'
+    SCHEDULING_TRACKING_KEY = 'MIRROR_SCHEDULING_TRACKING'
     JITTER = 1.minute
 
     # TODO: Dynamically determine mirror update interval based on total number
@@ -75,6 +76,22 @@ module Gitlab
 
       def capacity_threshold
         Gitlab::CurrentSettings.mirror_capacity_threshold
+      end
+
+      def track_scheduling(project_ids)
+        Gitlab::Redis::SharedState.with { |redis| redis.sadd(SCHEDULING_TRACKING_KEY, project_ids) }
+      end
+
+      def untrack_scheduling(project_id)
+        Gitlab::Redis::SharedState.with { |redis| redis.srem(SCHEDULING_TRACKING_KEY, project_id) }
+      end
+
+      def reset_scheduling
+        Gitlab::Redis::SharedState.with { |redis| redis.del(SCHEDULING_TRACKING_KEY) }
+      end
+
+      def current_scheduling
+        Gitlab::Redis::SharedState.with { |redis| redis.scard(SCHEDULING_TRACKING_KEY) }.to_i
       end
 
       private
