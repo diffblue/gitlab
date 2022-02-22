@@ -16,7 +16,6 @@ import {
   OVERAGE_MODAL_CONTINUE_BUTTON,
   OVERAGE_MODAL_BACK_BUTTON,
 } from 'ee/invite_members/constants';
-import waitForPromises from 'helpers/wait_for_promises';
 import { propsData } from 'jest/invite_members/mock_data/modal_base';
 
 describe('InviteModalBase', () => {
@@ -63,6 +62,8 @@ describe('InviteModalBase', () => {
   const findInviteButton = () => wrapper.findByTestId('invite-button');
   const findBackButton = () => wrapper.findByTestId('overage-back-button');
   const findOverageInviteButton = () => wrapper.findByTestId('invite-with-overage-button');
+  const findInitialModalContent = () => wrapper.findByTestId('invite-modal-initial-content');
+  const findOverageModalContent = () => wrapper.findByTestId('invite-modal-overage-content');
 
   const clickInviteButton = () => findInviteButton().vm.$emit('click');
   const clickBackButton = () => findBackButton().vm.$emit('click');
@@ -102,25 +103,23 @@ describe('InviteModalBase', () => {
       });
     });
 
-    describe('rendering the help link', () => {
-      it('renders the correct link', () => {
-        expect(findLink().attributes('href')).toBe(propsData.helpLink);
-      });
+    it('renders the correct link', () => {
+      expect(findLink().attributes('href')).toBe(propsData.helpLink);
     });
 
-    describe('rendering the access expiration date field', () => {
-      it('renders the datepicker', () => {
-        expect(findDatepicker().exists()).toBe(true);
-      });
+    it('renders the datepicker', () => {
+      expect(findDatepicker().exists()).toBe(true);
+    });
+
+    it("doesn't show the overage content", () => {
+      expect(findOverageModalContent().isVisible()).toBe(false);
     });
   });
 
   describe('displays overage modal', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       createComponent({}, {}, { glFeatures: { overageMembersModal: true } });
       clickInviteButton();
-
-      await waitForPromises();
     });
 
     it('renders the modal with the correct title', () => {
@@ -141,11 +140,21 @@ describe('InviteModalBase', () => {
       );
     });
 
-    it('switches back to the intial modal', async () => {
-      clickBackButton();
-      await waitForPromises();
+    it('doesn\t show the initial modal content', () => {
+      expect(findInitialModalContent().isVisible()).toBe(false);
+    });
 
-      expect(wrapper.findComponent(GlModal).props('title')).toBe('_modal_title_');
+    describe('when switches back to the initial modal', () => {
+      beforeEach(() => clickBackButton());
+
+      it('shows the initial modal', () => {
+        expect(wrapper.findComponent(GlModal).props('title')).toBe('_modal_title_');
+        expect(findInitialModalContent().isVisible()).toBe(true);
+      });
+
+      it("doesn't show the overage content", () => {
+        expect(findOverageModalContent().isVisible()).toBe(false);
+      });
     });
   });
 });

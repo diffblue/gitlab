@@ -42,3 +42,34 @@
     svg g { fill: $gray-600; }
   }
 }
+
+.invite-modal-content {
+  grid-row: 1;
+  grid-column: 1;
+}
+
+
+$max-invite-modal-height: 600px;
+
+// Custom styles for invite-modal-transition
+// Used by Vue Transition API
+
+.invite-modal-transition-enter-active,
+.invite-modal-transition-leave-active {
+  transition-property: max-height, opacity;
+  transition-timing-function: ease-in-out;
+  @include gl-transition-slow;
+
+  overflow: hidden;
+}
+
+.invite-modal-transition-enter,
+.invite-modal-transition-leave-to {
+  max-height: 0;
+  opacity: 0;
+}
+
+.invite-modal-transition-enter-to,
+.invite-modal-transition-leave {
+  max-height: px-to-rem($max-invite-modal-height);
+}
