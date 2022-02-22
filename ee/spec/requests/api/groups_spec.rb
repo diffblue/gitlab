@@ -654,20 +654,6 @@ RSpec.describe API::Groups do
 
           expect(response).to have_gitlab_http_status(:ok)
         end
-
-        context 'when the feature flag is disabled' do
-          before do
-            stub_feature_flags(group_project_api_preload_plans: false)
-          end
-
-          it 'does not preload plans' do
-            expect(Plan).to receive(:hosted_plans_for_namespaces).at_least(:twice).and_call_original
-
-            get api("/groups/#{group.id}/projects", user), params: { include_subgroups: true }
-
-            expect(response).to have_gitlab_http_status(:ok)
-          end
-        end
       end
 
       context 'when there are no projects' do
