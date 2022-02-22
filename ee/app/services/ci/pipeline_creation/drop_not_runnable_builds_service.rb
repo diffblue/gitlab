@@ -22,6 +22,7 @@ module Ci
 
       attr_reader :pipeline
       attr_reader :runner_minutes
+
       delegate :project, to: :pipeline
 
       def validate_build_matchers
