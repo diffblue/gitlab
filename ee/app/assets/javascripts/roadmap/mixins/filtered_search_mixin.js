@@ -19,7 +19,7 @@ import MilestoneToken from '~/vue_shared/components/filtered_search_bar/tokens/m
 import EpicToken from 'ee/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
 
 export default {
-  inject: ['groupFullPath', 'groupMilestonesPath', 'listEpicsPath'],
+  inject: ['groupFullPath', 'groupMilestonesPath'],
   computed: {
     urlParams() {
       const {

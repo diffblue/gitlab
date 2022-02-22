@@ -2,8 +2,6 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
 
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-
 import EpicsListEmpty from './epics_list_empty.vue';
 import RoadmapFilters from './roadmap_filters.vue';
 import RoadmapSettings from './roadmap_settings.vue';
@@ -17,7 +15,6 @@ export default {
     RoadmapSettings,
     RoadmapShell,
   },
-  mixins: [glFeatureFlagMixin()],
   props: {
     emptyStateIllustrationPath: {
       type: String,
@@ -75,11 +72,7 @@ export default {
 
 <template>
   <div class="roadmap-app-container gl-h-full">
-    <roadmap-filters
-      v-if="showFilteredSearchbar && !epicIid"
-      :timeframe-range-type="timeframeRangeType"
-      @toggleSettings="toggleSettings"
-    />
+    <roadmap-filters v-if="showFilteredSearchbar && !epicIid" @toggleSettings="toggleSettings" />
     <div :class="{ 'overflow-reset': epicsFetchResultEmpty }" class="roadmap-container gl-relative">
       <gl-loading-icon v-if="epicsFetchInProgress" class="gl-mt-5" size="md" />
       <epics-list-empty
@@ -102,7 +95,6 @@ export default {
         :is-settings-sidebar-open="isSettingsSidebarOpen"
       />
       <roadmap-settings
-        v-if="glFeatures.roadmapSettings"
         :is-open="isSettingsSidebarOpen"
         :timeframe-range-type="timeframeRangeType"
         data-testid="roadmap-settings"
