@@ -11,10 +11,10 @@ RSpec.describe ::Ci::AssignRunnerService, '#execute' do
   context 'without user' do
     let(:user) { nil }
 
-    it 'calls assign_to on runner and returns value unchanged' do
-      expect(runner).to receive(:assign_to).with(project, nil).once.and_return('assign_to return value')
+    it 'does not call assign_to on runner and returns false' do
+      expect(runner).not_to receive(:assign_to)
 
-      is_expected.to eq('assign_to return value')
+      is_expected.to eq(false)
     end
   end
 

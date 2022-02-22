@@ -12,7 +12,7 @@ module Ci
     end
 
     def execute
-      return false unless @user.nil? || @user.can?(:assign_runner, @runner)
+      return false unless @user.present? && @user.can?(:assign_runner, @runner)
 
       @runner.assign_to(@project, @user)
     end
