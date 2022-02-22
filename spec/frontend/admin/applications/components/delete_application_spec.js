@@ -69,26 +69,8 @@ describe('DeleteApplication', () => {
     });
 
     describe('form', () => {
-      it('renders with action and method', () => {
-        expect(findForm().attributes()).toEqual({
-          action: path,
-          method: 'post',
-        });
-      });
-
-      it('contains the correct form data', () => {
-        const formData = wrapper.findAll('input').wrappers.reduce(
-          (acc, input) => ({
-            ...acc,
-            [input.element.name]: input.element.value,
-          }),
-          {},
-        );
-
-        expect(formData).toStrictEqual({
-          _method: 'delete',
-          authenticity_token: 'mock-csrf-token',
-        });
+      it('matches the snapshot', () => {
+        expect(findForm().element).toMatchSnapshot();
       });
 
       describe('form submission', () => {
