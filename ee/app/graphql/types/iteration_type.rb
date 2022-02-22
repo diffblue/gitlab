@@ -25,7 +25,6 @@ module Types
 
     field :description, GraphQL::Types::String, null: true,
           description: 'Description of the iteration.'
-    markdown_field :description_html, null: true
 
     field :state, Types::IterationStateEnum, null: false,
           description: 'State of the iteration.'
@@ -56,6 +55,8 @@ module Types
 
     field :iteration_cadence, Types::Iterations::CadenceType, null: false,
           description: 'Cadence of the iteration.'
+
+    markdown_field :description_html, null: true
 
     def iteration_cadence
       ::Gitlab::Graphql::Loaders::BatchModelLoader.new(::Iterations::Cadence, object.iterations_cadence_id).find

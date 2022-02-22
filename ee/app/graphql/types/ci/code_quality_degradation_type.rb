@@ -23,12 +23,12 @@ module Types
       field :path, GraphQL::Types::String, null: false,
         description: 'Relative path to the file containing the code quality degradation.'
 
+      field :line, GraphQL::Types::Int, null: false,
+        description: 'Line on which the code quality degradation occurred.'
+
       def path
         degradation.dig(:location, :path)
       end
-
-      field :line, GraphQL::Types::Int, null: false,
-        description: 'Line on which the code quality degradation occurred.'
 
       def line
         degradation.dig(:location, :lines, :begin) || degradation.dig(:location, :positions, :begin, :line)
