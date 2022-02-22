@@ -131,10 +131,13 @@ export default {
       return this.glFeatures.overageMembersModal;
     },
     modalInfo() {
-      const infoText = this.$options.i18n.infoText(this.subscriptionSeats);
-      const infoWarning = this.$options.i18n.infoWarning(this.totalUserCount, this.name);
+      if (this.totalUserCount) {
+        const infoText = this.$options.i18n.infoText(this.subscriptionSeats);
+        const infoWarning = this.$options.i18n.infoWarning(this.totalUserCount, this.name);
 
-      return `${infoText} ${infoWarning}`;
+        return `${infoText} ${infoWarning}`;
+      }
+      return '';
     },
     modalTitleLabel() {
       return this.showOverageModal ? this.$options.i18n.OVERAGE_MODAL_TITLE : this.modalTitle;
@@ -243,88 +246,102 @@ export default {
     @close="reset"
     @hide="reset"
   >
-    <div v-show="!showOverageModal">
-      <div class="gl-display-flex" data-testid="modal-base-intro-text">
-        <slot name="intro-text-before"></slot>
-        <p>
-          <gl-sprintf :message="introText">
-            <template #strong="{ content }">
-              <strong>{{ content }}</strong>
-            </template>
-          </gl-sprintf>
-        </p>
-        <slot name="intro-text-after"></slot>
-      </div>
-
-      <gl-form-group
-        :invalid-feedback="invalidFeedbackMessage"
-        :state="validationState"
-        :description="formGroupDescription"
-        data-testid="members-form-group"
-      >
-        <label :id="selectLabelId" class="col-form-label">{{ labelSearchField }}</label>
-        <slot
-          name="select"
-          v-bind="{ clearValidation, validationState, labelId: selectLabelId }"
-        ></slot>
-      </gl-form-group>
-
-      <label class="gl-font-weight-bold">{{ $options.i18n.ACCESS_LEVEL }}</label>
-      <div class="gl-mt-2 gl-w-half gl-xs-w-full">
-        <gl-dropdown
-          class="gl-shadow-none gl-w-full"
-          data-qa-selector="access_level_dropdown"
-          v-bind="$attrs"
-          :text="selectedRoleName"
+    <div class="gl-display-grid">
+      <transition name="invite-modal-transition">
+        <div
+          v-show="!showOverageModal"
+          class="invite-modal-content"
+          data-testid="invite-modal-initial-content"
         >
-          <template v-for="(key, item) in accessLevels">
-            <gl-dropdown-item
-              :key="key"
-              active-class="is-active"
-              is-check-item
-              :is-checked="key === selectedAccessLevel"
-              @click="changeSelectedItem(key)"
+          <div class="gl-display-flex" data-testid="modal-base-intro-text">
+            <slot name="intro-text-before"></slot>
+            <p>
+              <gl-sprintf :message="introText">
+                <template #strong="{ content }">
+                  <strong>{{ content }}</strong>
+                </template>
+              </gl-sprintf>
+            </p>
+            <slot name="intro-text-after"></slot>
+          </div>
+
+          <gl-form-group
+            :invalid-feedback="invalidFeedbackMessage"
+            :state="validationState"
+            :description="formGroupDescription"
+            data-testid="members-form-group"
+          >
+            <label :id="selectLabelId" class="col-form-label">{{ labelSearchField }}</label>
+            <slot
+              name="select"
+              v-bind="{ clearValidation, validationState, labelId: selectLabelId }"
+            ></slot>
+          </gl-form-group>
+
+          <label class="gl-font-weight-bold">{{ $options.i18n.ACCESS_LEVEL }}</label>
+          <div class="gl-mt-2 gl-w-half gl-xs-w-full">
+            <gl-dropdown
+              class="gl-shadow-none gl-w-full"
+              data-qa-selector="access_level_dropdown"
+              v-bind="$attrs"
+              :text="selectedRoleName"
             >
-              <div>{{ item }}</div>
-            </gl-dropdown-item>
-          </template>
-        </gl-dropdown>
-      </div>
+              <template v-for="(key, item) in accessLevels">
+                <gl-dropdown-item
+                  :key="key"
+                  active-class="is-active"
+                  is-check-item
+                  :is-checked="key === selectedAccessLevel"
+                  @click="changeSelectedItem(key)"
+                >
+                  <div>{{ item }}</div>
+                </gl-dropdown-item>
+              </template>
+            </gl-dropdown>
+          </div>
 
-      <div class="gl-mt-2 gl-w-half gl-xs-w-full">
-        <gl-sprintf :message="$options.i18n.READ_MORE_TEXT">
-          <template #link="{ content }">
-            <gl-link :href="helpLink" target="_blank">{{ content }}</gl-link>
-          </template>
-        </gl-sprintf>
-      </div>
+          <div class="gl-mt-2 gl-w-half gl-xs-w-full">
+            <gl-sprintf :message="$options.i18n.READ_MORE_TEXT">
+              <template #link="{ content }">
+                <gl-link :href="helpLink" target="_blank">{{ content }}</gl-link>
+              </template>
+            </gl-sprintf>
+          </div>
 
-      <label class="gl-mt-5 gl-display-block" for="expires_at">{{
-        $options.i18n.ACCESS_EXPIRE_DATE
-      }}</label>
-      <div class="gl-mt-2 gl-w-half gl-xs-w-full gl-display-inline-block">
-        <gl-datepicker
-          v-model="selectedDate"
-          class="gl-display-inline!"
-          :min-date="minDate"
-          :target="null"
+          <label class="gl-mt-5 gl-display-block" for="expires_at">{{
+            $options.i18n.ACCESS_EXPIRE_DATE
+          }}</label>
+          <div class="gl-mt-2 gl-w-half gl-xs-w-full gl-display-inline-block">
+            <gl-datepicker
+              v-model="selectedDate"
+              class="gl-display-inline!"
+              :min-date="minDate"
+              :target="null"
+            >
+              <template #default="{ formattedDate }">
+                <gl-form-input
+                  class="gl-w-full"
+                  :value="formattedDate"
+                  :placeholder="__(`YYYY-MM-DD`)"
+                />
+              </template>
+            </gl-datepicker>
+          </div>
+          <slot name="form-after"></slot>
+        </div>
+      </transition>
+      <transition name="invite-modal-transition">
+        <div
+          v-show="showOverageModal"
+          class="invite-modal-content"
+          data-testid="invite-modal-overage-content"
         >
-          <template #default="{ formattedDate }">
-            <gl-form-input
-              class="gl-w-full"
-              :value="formattedDate"
-              :placeholder="__(`YYYY-MM-DD`)"
-            />
-          </template>
-        </gl-datepicker>
-      </div>
-      <slot name="form-after"></slot>
-    </div>
-    <div v-if="showOverageModal">
-      {{ modalInfo }}
-      <gl-link :href="$options.i18n.OVERAGE_MODAL_LINK" target="_blank">{{
-        $options.i18n.OVERAGE_MODAL_LINK_TEXT
-      }}</gl-link>
+          {{ modalInfo }}
+          <gl-link :href="$options.i18n.OVERAGE_MODAL_LINK" target="_blank">{{
+            $options.i18n.OVERAGE_MODAL_LINK_TEXT
+          }}</gl-link>
+        </div>
+      </transition>
     </div>
     <template #modal-footer>
       <template v-if="!showOverageModal">
