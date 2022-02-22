@@ -36,15 +36,19 @@ export default {
   methods: {
     onWidgetClick() {
       const { action, ...options } = trackingEvents.widgetClick;
-      this.track(action, { ...options, value: this.daysRemaining });
+      this.track(action, { ...options });
     },
   },
 };
 </script>
 
 <template>
-  <gl-link :id="containerId" :title="widgetTitle" :href="plansHref" @click="onWidgetClick">
-    <div class="gl-display-flex gl-flex-direction-column gl-align-items-stretch gl-w-full">
+  <gl-link :id="containerId" :title="widgetTitle" :href="plansHref">
+    <div
+      data-testid="widget-menu"
+      class="gl-display-flex gl-flex-direction-column gl-align-items-stretch gl-w-full"
+      @click="onWidgetClick"
+    >
       <span class="gl-display-flex gl-align-items-center">
         <span class="nav-icon-container svg-container">
           <img :src="navIconImagePath" width="16" class="svg" />

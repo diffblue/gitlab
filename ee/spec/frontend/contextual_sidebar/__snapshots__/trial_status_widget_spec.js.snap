@@ -7,6 +7,7 @@ exports[`TrialStatusWidget component without the optional containerId prop match
 >
   <div
     class="gl-display-flex gl-flex-direction-column gl-align-items-stretch gl-w-full"
+    data-testid="widget-menu"
   >
     <span
       class="gl-display-flex gl-align-items-center"

@@ -5,17 +5,10 @@ import { debounce } from 'lodash';
 import { removeTrialSuffix } from 'ee/billings/billings_util';
 import { shouldHandRaiseLeadButtonMount } from 'ee/hand_raise_leads/hand_raise_lead';
 import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
-import axios from '~/lib/utils/axios_utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { sprintf } from '~/locale';
 import Tracking from '~/tracking';
-import {
-  POPOVER,
-  RESIZE_EVENT,
-  EXPERIMENT_KEY,
-  TRACKING_PROPERTY_WHEN_FORCED,
-  TRACKING_PROPERTY_WHEN_VOLUNTARY,
-} from './constants';
+import { POPOVER, RESIZE_EVENT, EXPERIMENT_KEY } from './constants';
 
 const {
   i18n,
@@ -41,18 +34,13 @@ export default {
     planName: {},
     plansHref: {},
     purchaseHref: {},
-    startInitiallyShown: { default: false },
     targetId: {},
     trialEndDate: {},
-    userCalloutsPath: {},
-    userCalloutsFeatureId: {},
     user: {},
   },
   data() {
     return {
       disabled: false,
-      forciblyShowing: false,
-      show: false,
     };
   },
   i18n,
@@ -69,27 +57,13 @@ export default {
         planName: removeTrialSuffix(this.planName),
       });
     },
-    trackingPropertyAndValue() {
-      return {
-        property: this.forciblyShowing
-          ? TRACKING_PROPERTY_WHEN_FORCED
-          : TRACKING_PROPERTY_WHEN_VOLUNTARY,
-        value: this.daysRemaining,
-      };
-    },
   },
   created() {
-    this.debouncedResize = debounce(() => this.onResize(), resizeEventDebounceMS);
+    this.debouncedResize = debounce(() => this.updateDisabledState(), resizeEventDebounceMS);
     window.addEventListener(RESIZE_EVENT, this.debouncedResize);
-
-    if (this.startInitiallyShown) {
-      this.forciblyShowing = true;
-      this.show = true;
-      this.onForciblyShown();
-    }
   },
   mounted() {
-    this.onResize();
+    this.updateDisabledState();
   },
   beforeDestroy() {
     window.removeEventListener(RESIZE_EVENT, this.debouncedResize);
@@ -97,33 +71,14 @@ export default {
   methods: {
     trackPageAction(eventName) {
       const { action, ...options } = trackingEvents[eventName];
-      this.track(action, { ...options, ...this.trackingPropertyAndValue });
+      this.track(action, { ...options });
     },
-    onClose() {
-      this.forciblyShowing = false;
-      this.trackPageAction('closeBtnClick');
-    },
-    onForciblyShown() {
-      if (this.userCalloutsPath && this.userCalloutsFeatureId) {
-        axios
-          .post(this.userCalloutsPath, {
-            feature_name: this.userCalloutsFeatureId,
-          })
-          .catch((e) => {
-            // eslint-disable-next-line no-console, @gitlab/require-i18n-strings
-            console.error('Failed to dismiss trial status popover.', e);
-          });
-      }
-    },
-    onResize() {
-      this.updateDisabledState();
+    updateDisabledState() {
+      this.disabled = disabledBreakpoints.includes(bp.getBreakpointSize());
     },
     onShown() {
       this.trackPageAction('popoverShown');
       shouldHandRaiseLeadButtonMount();
-    },
-    updateDisabledState() {
-      this.disabled = disabledBreakpoints.includes(bp.getBreakpointSize());
     },
   },
 };
@@ -132,17 +87,13 @@ export default {
 <template>
   <gl-popover
     ref="popover"
+    placement="rightbottom"
+    boundary="viewport"
     :container="containerId"
     :target="targetId"
     :disabled="disabled"
-    placement="rightbottom"
-    boundary="viewport"
     :delay="{ hide: 400 }"
-    :show="show"
-    :triggers="forciblyShowing ? '' : 'hover focus'"
-    :show-close-button="startInitiallyShown"
     @shown="onShown"
-    @close-button-clicked.prevent="onClose"
   >
     <template #title>
       {{ $options.i18n.popoverTitle }}
@@ -160,21 +111,20 @@ export default {
       <gitlab-experiment name="group_contact_sales">
         <template #control>
           <gl-button
-            ref="upgradeBtn"
+            data-testid="upgrade-btn"
             category="primary"
             variant="confirm"
             size="small"
             class="gl-mb-0"
             block
             :href="purchaseHref"
-            @click="trackPageAction('upgradeBtnClick')"
           >
             <span class="gl-font-sm">{{ upgradeButtonTitle }}</span>
           </gl-button>
         </template>
 
         <template #candidate>
-          <div data-testid="contactSalesBtn" @click="trackPageAction('contactSalesBtnClick')">
+          <div data-testid="contact-sales-btn" @click="trackPageAction('contactSalesBtnClick')">
             <div
               class="js-hand-raise-lead-button"
               :data-namespace-id="user.namespaceId"
@@ -196,7 +146,7 @@ export default {
         size="small"
         class="gl-mb-0"
         block
-        data-testid="compareBtn"
+        data-testid="compare-btn"
         :title="$options.i18n.compareAllButtonTitle"
         @click="trackPageAction('compareBtnClick')"
       >

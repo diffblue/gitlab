@@ -7,7 +7,6 @@ exports[`TrialStatusPopover component group_contact_sales experiment candidate m
   delay="[object Object]"
   placement="rightbottom"
   target="target-element-identifier"
-  triggers="hover focus"
 >
    
   <gl-sprintf-stub
@@ -18,7 +17,7 @@ exports[`TrialStatusPopover component group_contact_sales experiment candidate m
     class="gl-mt-5"
   >
     <div
-      data-testid="contactSalesBtn"
+      data-testid="contact-sales-btn"
     >
       <div
         class="js-hand-raise-lead-button"
@@ -37,7 +36,7 @@ exports[`TrialStatusPopover component group_contact_sales experiment candidate m
       buttontextclasses=""
       category="secondary"
       class="gl-mb-0"
-      data-testid="compareBtn"
+      data-testid="compare-btn"
       href="billing/path-for/group"
       icon=""
       size="small"
@@ -61,7 +60,6 @@ exports[`TrialStatusPopover component group_contact_sales experiment control mat
   delay="[object Object]"
   placement="rightbottom"
   target="target-element-identifier"
-  triggers="hover focus"
 >
    
   <gl-sprintf-stub
@@ -76,6 +74,7 @@ exports[`TrialStatusPopover component group_contact_sales experiment control mat
       buttontextclasses=""
       category="primary"
       class="gl-mb-0"
+      data-testid="upgrade-btn"
       href="transactions/new"
       icon=""
       size="small"
@@ -93,7 +92,7 @@ exports[`TrialStatusPopover component group_contact_sales experiment control mat
       buttontextclasses=""
       category="secondary"
       class="gl-mb-0"
-      data-testid="compareBtn"
+      data-testid="compare-btn"
       href="billing/path-for/group"
       icon=""
       size="small"

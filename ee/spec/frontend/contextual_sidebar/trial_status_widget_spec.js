@@ -51,16 +51,13 @@ describe('TrialStatusWidget component', () => {
       expect(findGlLink().attributes('id')).toBe(undefined);
     });
 
-    it('tracks when the widget is clicked', () => {
+    it('tracks when the widget menu is clicked', () => {
       const { action, ...options } = trackingEvents.widgetClick;
       const trackingSpy = mockTracking(undefined, undefined, jest.spyOn);
 
-      findGlLink().vm.$emit('click');
+      wrapper.find('[data-testid="widget-menu"]').trigger('click');
 
-      expect(trackingSpy).toHaveBeenCalledWith(undefined, action, {
-        ...options,
-        value: defaultDaysRemaining,
-      });
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, action, { ...options });
 
       unmockTracking();
     });
