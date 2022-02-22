@@ -7,11 +7,11 @@
 .pipeline-quota.container-fluid
   .row
     .col-sm-6.offset-sm-6
-      - if ::Gitlab.com?
+      - if ::Gitlab.dev_env_or_com?
         = link_to s_('UsageQuota|Buy additional minutes'),
         buy_additional_minutes_path(namespace),
         target: buy_addon_target_attr(namespace),
-        class: 'gl-button btn btn-confirm float-right',
+        class: 'gl-button btn btn-confirm float-right js-buy-additional-minutes',
         data: { track_action: 'click_buy_ci_minutes', track_label: namespace.actual_plan_name, track_property: 'pipeline_quota_page' }
 
   .row

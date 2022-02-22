@@ -5,6 +5,10 @@ class Profiles::UsageQuotasController < Profiles::ApplicationController
 
   feature_category :purchase
 
+  before_action only: [:index] do
+    push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
+  end
+
   def index
     @hide_search_settings = true
     @namespace = current_user.namespace
