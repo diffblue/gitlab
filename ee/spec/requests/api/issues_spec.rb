@@ -188,7 +188,7 @@ RSpec.describe API::Issues, :mailer do
       end
 
       context 'filtering by iteration' do
-        let_it_be(:iteration_1) { create(:iteration, group: group, start_date: Date.today) }
+        let_it_be(:iteration_1) { create(:iteration, group: group, start_date: Date.current) }
         let_it_be(:iteration_2) { create(:iteration, group: group) }
         let_it_be(:iteration_1_issue) { create(:issue, project: group_project, iteration: iteration_1) }
         let_it_be(:iteration_2_issue) { create(:issue, project: group_project, iteration: iteration_2) }
@@ -572,6 +572,69 @@ RSpec.describe API::Issues, :mailer do
     end
   end
 
+  describe 'PUT /projects/:id/issues/:issue_iid/metric_images/authorize' do
+    include_context 'workhorse headers'
+
+    let_it_be(:issue) { create(:incident, project: project) }
+
+    before do
+      project.add_developer(user)
+    end
+
+    subject { post api("/projects/#{project.id}/issues/#{issue.iid}/metric_images/authorize", user), headers: workhorse_headers }
+
+    it 'authorizes uploading with workhorse header' do
+      subject
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(response.media_type.to_s).to eq(Gitlab::Workhorse::INTERNAL_API_CONTENT_TYPE)
+    end
+
+    it 'rejects requests that bypassed gitlab-workhorse' do
+      workhorse_headers.delete(Gitlab::Workhorse::INTERNAL_API_REQUEST_HEADER)
+
+      subject
+
+      expect(response).to have_gitlab_http_status(:forbidden)
+    end
+
+    context 'when using remote storage' do
+      context 'when direct upload is enabled' do
+        before do
+          stub_uploads_object_storage(MetricImageUploader, enabled: true, direct_upload: true)
+        end
+
+        it 'responds with status 200, location of file remote store and object details' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(response.media_type.to_s).to eq(Gitlab::Workhorse::INTERNAL_API_CONTENT_TYPE)
+          expect(json_response).not_to have_key('TempPath')
+          expect(json_response['RemoteObject']).to have_key('ID')
+          expect(json_response['RemoteObject']).to have_key('GetURL')
+          expect(json_response['RemoteObject']).to have_key('StoreURL')
+          expect(json_response['RemoteObject']).to have_key('DeleteURL')
+          expect(json_response['RemoteObject']).to have_key('MultipartUpload')
+        end
+      end
+
+      context 'when direct upload is disabled' do
+        before do
+          stub_uploads_object_storage(MetricImageUploader, enabled: true, direct_upload: false)
+        end
+
+        it 'handles as a local file' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(response.media_type.to_s).to eq(Gitlab::Workhorse::INTERNAL_API_CONTENT_TYPE)
+          expect(json_response['TempPath']).to eq(MetricImageUploader.workhorse_local_upload_path)
+          expect(json_response['RemoteObject']).to be_nil
+        end
+      end
+    end
+  end
+
   describe 'POST /projects/:id/issues/:issue_iid/metric_images' do
     include WorkhorseHelpers
     using RSpec::Parameterized::TableSyntax
@@ -606,7 +669,7 @@ RSpec.describe API::Issues, :mailer do
         expect(json_response['filename']).to eq(file_name)
         expect(json_response['url']).to eq(url)
         expect(json_response['url_text']).to eq(url_text)
-        expect(json_response['file_path']).to match(%r{/uploads/-/system/issuable_metric_image/file/[\d+]/#{file_name}})
+        expect(json_response['file_path']).to match(%r{/uploads/-/system/issuable_metric_image/file/[\d+]+/#{file_name}})
         expect(json_response['created_at']).not_to be_nil
         expect(json_response['id']).not_to be_nil
       end
@@ -631,8 +694,8 @@ RSpec.describe API::Issues, :mailer do
     with_them do
       before do
         # Local storage
-        stub_uploads_object_storage(IssuableMetricImageUploader, enabled: false)
-        allow_any_instance_of(IssuableMetricImageUploader).to receive(:file_storage?).and_return(true)
+        stub_uploads_object_storage(MetricImageUploader, enabled: false)
+        allow_any_instance_of(MetricImageUploader).to receive(:file_storage?).and_return(true)
 
         stub_licensed_features(incident_metric_upload: true)
         project.send("add_#{user_role}", user2)
@@ -662,9 +725,9 @@ RSpec.describe API::Issues, :mailer do
       before do
         # Object storage
         stub_licensed_features(incident_metric_upload: true)
-        stub_uploads_object_storage(IssuableMetricImageUploader)
+        stub_uploads_object_storage(MetricImageUploader)
 
-        allow_any_instance_of(IssuableMetricImageUploader).to receive(:file_storage?).and_return(false)
+        allow_any_instance_of(MetricImageUploader).to receive(:file_storage?).and_return(false)
         project.add_developer(user2)
       end
 

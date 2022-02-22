@@ -158,7 +158,7 @@ RSpec.describe Geo::FileUploadService do
 
     context 'incident metrics upload' do
       let(:incident_metric_image) { create(:issuable_metric_image) }
-      let(:upload) { Upload.find_by(model: incident_metric_image, uploader: ::IssuableMetricImageUploader.name) }
+      let(:upload) { Upload.find_by(model: incident_metric_image, uploader: ::MetricImageUploader.name) }
       let(:params) { { id: upload.id, type: 'issuable_metric_image' } }
       let(:request_data) { Gitlab::Geo::Replication::FileTransfer.new(:file, upload).request_data }
 

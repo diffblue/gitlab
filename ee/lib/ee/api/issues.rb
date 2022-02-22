@@ -25,7 +25,7 @@ module EE
                 maximum_size: ::IssuableMetricImage::MAX_FILE_SIZE.to_i
               }
 
-              ::IssuableMetricImageUploader.workhorse_authorize(**params)
+              ::MetricImageUploader.workhorse_authorize(**params)
             end
 
             desc 'Upload a metric image for an issue' do

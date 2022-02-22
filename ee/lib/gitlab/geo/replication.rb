@@ -12,6 +12,7 @@ module Gitlab
         file
         import_export
         issuable_metric_image
+        metric_image
         namespace_file
         personal_file
       ].freeze
