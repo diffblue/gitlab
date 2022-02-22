@@ -10,10 +10,10 @@
 - icon = icons[variant]
 
 %div{ role: 'alert', class: ['gl-alert', "gl-alert-#{variant}", alert_class], data: alert_data }
-  = sprite_icon(icon, size: 16, css_class: "gl-alert-icon#{' gl-alert-icon-no-title' if title.nil?}")
+  = sprite_icon(icon, css_class: "gl-alert-icon#{' gl-alert-icon-no-title' if title.nil?}")
   - if dismissible
     %button.btn.gl-dismiss-btn.btn-default.btn-sm.gl-button.btn-default-tertiary.btn-icon.js-close{ type: 'button', aria: { label: _('Dismiss') }, class: close_button_class, data: close_button_data }
-      = sprite_icon('close', size: 16)
+      = sprite_icon('close')
   .gl-alert-content{ role: 'alert' }
     - if title
       %h4.gl-alert-title
