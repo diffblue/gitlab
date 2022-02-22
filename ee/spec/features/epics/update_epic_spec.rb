@@ -55,7 +55,7 @@ RSpec.describe 'Update Epic', :js do
 
         click_button 'Save changes'
 
-        expect(find('.issuable-details h2.title')).to have_content('New epic title')
+        expect(find('.issuable-details h1.title')).to have_content('New epic title')
         expect(find('.issuable-details .description')).to have_content('New epic description')
       end
 
@@ -89,7 +89,7 @@ RSpec.describe 'Update Epic', :js do
 
         click_button 'Save changes'
 
-        expect(find('.issuable-details h2.title')).to have_content('title')
+        expect(find('.issuable-details h1.title')).to have_content('title')
 
         visit dashboard_todos_path
 
