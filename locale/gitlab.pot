@@ -26483,9 +26483,6 @@ msgstr ""
 msgid "PerformanceBar|wall"
 msgstr ""
 
-msgid "Performs a rebase but skips triggering a new pipeline"
-msgstr ""
-
 msgid "Period in seconds"
 msgstr ""
 
@@ -29966,10 +29963,7 @@ msgstr ""
 msgid "Rebase source branch on the target branch."
 msgstr ""
 
-msgid "Rebase without CI"
-msgstr ""
-
-msgid "Rebases and triggers a pipeline"
+msgid "Rebase without pipeline"
 msgstr ""
 
 msgid "Recaptcha verified?"
