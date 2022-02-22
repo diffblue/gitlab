@@ -4,9 +4,7 @@ const CLICK_BUTTON_ACTION = 'click_button';
 const RESIZE_EVENT_DEBOUNCE_MS = 150;
 
 export const RESIZE_EVENT = 'resize';
-export const EXPERIMENT_KEY = 'forcibly_show_trial_status_popover';
-export const TRACKING_PROPERTY_WHEN_FORCED = 'forced';
-export const TRACKING_PROPERTY_WHEN_VOLUNTARY = 'voluntary';
+export const EXPERIMENT_KEY = 'group_contact_sales';
 
 export const WIDGET = {
   i18n: {
@@ -21,11 +19,7 @@ export const WIDGET = {
     },
   },
   trackingEvents: {
-    widgetClick: {
-      action: 'click_link',
-      label: 'trial_status_widget',
-      property: TRACKING_PROPERTY_WHEN_VOLUNTARY,
-    },
+    widgetClick: { action: 'click_link', label: 'trial_status_widget' },
   },
 };
 
@@ -43,9 +37,7 @@ export const POPOVER = {
   },
   trackingEvents: {
     popoverShown: { action: 'popover_shown', label: 'trial_status_popover' },
-    closeBtnClick: { action: CLICK_BUTTON_ACTION, label: 'close_popover' },
     contactSalesBtnClick: { action: CLICK_BUTTON_ACTION, label: 'contact_sales' },
-    upgradeBtnClick: { action: CLICK_BUTTON_ACTION, label: 'upgrade_to_ultimate' },
     compareBtnClick: { action: CLICK_BUTTON_ACTION, label: 'compare_all_plans' },
   },
   resizeEventDebounceMS: RESIZE_EVENT_DEBOUNCE_MS,

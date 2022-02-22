@@ -1,8 +1,0 @@
----
-name: forcibly_show_trial_status_popover
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/65283
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/335043
-milestone: '14.1'
-type: experiment
-group: group::conversion
-default_enabled: false
