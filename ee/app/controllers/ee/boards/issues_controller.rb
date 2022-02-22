@@ -7,7 +7,7 @@ module EE
 
       override :serializer_options
       def serializer_options(issues)
-        super.merge(blocked_issue_ids: ::IssueLink.blocked_issue_ids(issues.map(&:id)))
+        super.merge(blocked_issue_ids: ::IssueLink.blocked_issuable_ids(issues.map(&:id)))
       end
     end
   end

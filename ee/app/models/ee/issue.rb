@@ -213,14 +213,14 @@ module EE
     end
 
     def update_blocking_issues_count!
-      blocking_count = ::IssueLink.blocking_issues_count_for(self)
+      blocking_count = ::IssueLink.blocking_issuables_count_for(self)
 
       update!(blocking_issues_count: blocking_count)
     end
 
     def refresh_blocking_and_blocked_issues_cache!
       self_and_blocking_issues_ids = [self.id] + blocking_issues_ids
-      blocking_issues_count_by_id = ::IssueLink.blocking_issues_for_collection(self_and_blocking_issues_ids).to_sql
+      blocking_issues_count_by_id = ::IssueLink.blocking_issuables_for_collection(self_and_blocking_issues_ids).to_sql
 
       self.class.connection.execute <<~SQL
         UPDATE issues
@@ -264,7 +264,7 @@ module EE
     private
 
     def blocking_issues_ids
-      @blocking_issues_ids ||= ::IssueLink.blocking_issue_ids_for(self)
+      @blocking_issues_ids ||= ::IssueLink.blocking_issuables_ids_for(self)
     end
 
     def validate_confidential_epic
