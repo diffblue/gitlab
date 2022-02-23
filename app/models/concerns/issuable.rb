@@ -73,7 +73,15 @@ module Issuable
       end
     end
 
-    has_many :note_authors, -> { distinct }, through: :notes, source: :author
+    has_many :note_authors, -> { distinct }, through: :notes, source: :author do
+      def user_notes
+        where("notes.system = false")
+      end
+
+      def system_notes
+        where("notes.system = true")
+      end
+    end
 
     has_many :label_links, as: :target, inverse_of: :target
     has_many :labels, through: :label_links
