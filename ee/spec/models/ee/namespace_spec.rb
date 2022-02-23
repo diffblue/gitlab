@@ -2207,6 +2207,101 @@ RSpec.describe Namespace do
     end
   end
 
+  describe '#apply_free_user_cap?', :saas do
+    let_it_be(:namespace) { create(:group_with_plan, plan: :free_plan) }
+    let_it_be(:subgroup) {  create(:group, parent: namespace) }
+
+    subject(:apply_free_user_cap?) { namespace.apply_free_user_cap? }
+
+    context 'when not on Gitlab.com' do
+      before do
+        allow(::Gitlab).to receive(:com?).and_return(false)
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context 'when :free_user_cap is disabled' do
+      before do
+        stub_feature_flags(free_user_cap: false)
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context 'when :free_user_cap is enabled' do
+      before do
+        stub_feature_flags(free_user_cap: true)
+      end
+
+      it { is_expected.to be true }
+
+      context 'when the namespace is not a group' do
+        let_it_be(:namespace) do
+          namespace = create(:user).namespace
+          create(:gitlab_subscription, hosted_plan: create(:free_plan), namespace: namespace)
+          namespace
+        end
+
+        it { is_expected.to be true }
+      end
+
+      context 'when it is a non free plan' do
+        let_it_be(:namespace) { create(:group_with_plan, plan: :ultimate_plan) }
+
+        it { is_expected.to be false }
+      end
+
+      context 'when no plan exists' do
+        let_it_be(:namespace) { create(:group) }
+
+        it { is_expected.to be false }
+      end
+    end
+  end
+
+  describe '#apply_user_cap?' do
+    let(:namespace) { build(:namespace) }
+
+    where(:user_cap_available, :apply_free_user_cap, :result) do
+      false | false | false
+      false | true  | true
+      true  | false | true
+      true  | true  | true
+    end
+
+    subject { namespace.apply_user_cap? }
+
+    with_them do
+      before do
+        allow(namespace).to receive(:user_cap_available?).and_return(user_cap_available)
+        allow(namespace).to receive(:apply_free_user_cap?).and_return(apply_free_user_cap)
+      end
+
+      it { is_expected.to eq(result) }
+    end
+  end
+
+  describe '#on_existing_free_subscription?', :saas do
+    it 'returns true with a free plan' do
+      namespace = create(:group_with_plan, plan: :free_plan)
+
+      expect(namespace.on_existing_free_subscription?).to be(true)
+    end
+
+    it 'returns false when the plan is not free' do
+      namespace = create(:group_with_plan, plan: :ultimate_plan)
+
+      expect(namespace.on_existing_free_subscription?).to be(false)
+    end
+
+    it 'returns false when there is no plan' do
+      namespace = create(:namespace)
+
+      expect(namespace.on_existing_free_subscription?).to be(false)
+    end
+  end
+
   def create_project(repository_size:, lfs_objects_size:, repository_size_limit:)
     create(:project, namespace: namespace, repository_size_limit: repository_size_limit).tap do |project|
       create(:project_statistics, project: project, repository_size: repository_size, lfs_objects_size: lfs_objects_size)

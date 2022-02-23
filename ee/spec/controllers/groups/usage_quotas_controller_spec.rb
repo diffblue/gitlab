@@ -43,7 +43,7 @@ RSpec.describe Groups::UsageQuotasController do
 
     before do
       allow_next_found_instance_of(Group) do |group|
-        allow(group).to receive(:user_cap_available?).and_return(feature_available)
+        allow(group).to receive(:apply_user_cap?).and_return(feature_available)
       end
     end
 
