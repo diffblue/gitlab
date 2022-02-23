@@ -1,8 +1,6 @@
 <script>
-import { GlResizeObserverDirective } from '@gitlab/ui';
 import { GlAreaChart } from '@gitlab/ui/dist/charts';
 import dateFormat from 'dateformat';
-import { isFunction } from 'lodash';
 
 import { COLORS, DATE_FORMATS, TIME } from './constants';
 
@@ -10,9 +8,6 @@ export default {
   name: 'StatisticsHistoryChart',
   components: {
     GlAreaChart,
-  },
-  directives: {
-    GlResizeObserverDirective,
   },
   props: {
     data: {
@@ -87,18 +82,13 @@ export default {
     onChartCreated(chartInstance) {
       this.chartInstance = chartInstance;
     },
-    onResize() {
-      if (isFunction(this.chartInstance?.resize)) {
-        this.chartInstance.resize();
-      }
-    },
   },
 };
 </script>
 
 <template>
   <gl-area-chart
-    v-gl-resize-observer-directive="onResize"
+    :responsive="true"
     :data="chartData"
     :option="chartOptions"
     :include-legend-avg-max="false"

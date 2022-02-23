@@ -1,27 +1,9 @@
 import { GlAreaChart } from '@gitlab/ui/dist/charts';
 import { shallowMount } from '@vue/test-utils';
-import Vue, { nextTick } from 'vue';
+import { nextTick } from 'vue';
 import { TOTAL_REQUESTS, ANOMALOUS_REQUESTS } from 'ee/threat_monitoring/components/constants';
 import StatisticsHistory from 'ee/threat_monitoring/components/statistics_history.vue';
 import { mockNominalHistory, mockAnomalousHistory } from '../mocks/mock_data';
-
-let resizeCallback = null;
-const MockResizeObserverDirective = {
-  bind(el, { value }) {
-    resizeCallback = value;
-  },
-
-  simulateResize() {
-    // Let tests fail if callback throws or isn't callable
-    resizeCallback();
-  },
-
-  unbind() {
-    resizeCallback = null;
-  },
-};
-
-Vue.directive('gl-resize-observer-directive', MockResizeObserverDirective);
 
 describe('StatisticsHistory component', () => {
   let wrapper;
@@ -71,38 +53,6 @@ describe('StatisticsHistory component', () => {
           min: 'foo',
           max: 'bar',
         },
-      });
-    });
-  });
-
-  describe('given the component needs to resize', () => {
-    let mockChartInstance;
-    beforeEach(() => {
-      factory();
-
-      mockChartInstance = {
-        resize: jest.fn(),
-      };
-    });
-
-    describe('given the chart has not emitted the created event', () => {
-      beforeEach(() => {
-        MockResizeObserverDirective.simulateResize();
-      });
-
-      it('there is no attempt to resize the chart instance', () => {
-        expect(mockChartInstance.resize).not.toHaveBeenCalled();
-      });
-    });
-
-    describe('given the chart has emitted the created event', () => {
-      beforeEach(() => {
-        findChart().vm.$emit('created', mockChartInstance);
-        MockResizeObserverDirective.simulateResize();
-      });
-
-      it('the chart instance is resized', () => {
-        expect(mockChartInstance.resize).toHaveBeenCalledTimes(1);
       });
     });
   });
