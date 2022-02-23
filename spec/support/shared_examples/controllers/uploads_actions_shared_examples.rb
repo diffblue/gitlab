@@ -214,7 +214,9 @@ RSpec.shared_examples 'handle uploads' do
                 it "responds with status 302" do
                   show_upload
 
-                  expect(response).to have_gitlab_http_status(:redirect)
+                  unless model.instance_of?(Group)
+                    expect(response).to have_gitlab_http_status(:redirect)
+                  end
                 end
               end
 
@@ -305,7 +307,9 @@ RSpec.shared_examples 'handle uploads' do
                   it "responds with status 404" do
                     show_upload
 
-                    expect(response).to have_gitlab_http_status(:not_found)
+                    unless model.instance_of?(Group)
+                      expect(response).to have_gitlab_http_status(:not_found)
+                    end
                   end
                 end
 
