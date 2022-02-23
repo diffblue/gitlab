@@ -135,4 +135,55 @@ RSpec.describe EE::Issuable do
       it { is_expected.to eq(available) }
     end
   end
+
+  describe '#to_hook_data' do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:project) { create(:project) }
+    let_it_be(:escalation_policy) { create(:incident_management_escalation_policy, project: project) }
+
+    let(:builder) { double }
+
+    context 'escalation status is updated' do
+      let(:issue) { create(:incident, :with_escalation_status) }
+      let(:policy_changes) { { policy: escalation_policy, escalations_started_at: Time.current } }
+      let(:status_changes) { {} }
+      let(:old_associations) { { escalation_status: :triggered, escalation_policy: nil } }
+      let(:expected_policy_hash) { { 'id' => escalation_policy.id, 'name' => escalation_policy.name } }
+
+      before do
+        stub_licensed_features(oncall_schedules: true, escalation_policies: true)
+
+        issue.escalation_status.update!(**policy_changes, **status_changes)
+
+        expect(Gitlab::HookData::IssuableBuilder).to receive(:new).with(issue).and_return(builder)
+      end
+
+      it 'delegates to Gitlab::HookData::IssuableBuilder#build' do
+        expect(builder).to receive(:build).with(
+          user: user,
+          changes: hash_including(
+            'escalation_policy' => [nil, expected_policy_hash]
+          )
+        )
+
+        issue.to_hook_data(user, old_associations: old_associations)
+      end
+
+      context 'with policy and status changes' do
+        let(:status_changes) { { status: IncidentManagement::IssuableEscalationStatus::STATUSES[:acknowledged] } }
+
+        it 'includes both status and policy fields simultaneously' do
+          expect(builder).to receive(:build).with(
+            user: user,
+            changes: hash_including(
+              'escalation_status' => %i(triggered acknowledged),
+              'escalation_policy' => [nil, expected_policy_hash]
+            )
+          )
+
+          issue.to_hook_data(user, old_associations: old_associations)
+        end
+      end
+    end
+  end
 end

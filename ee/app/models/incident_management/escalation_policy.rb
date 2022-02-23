@@ -20,5 +20,12 @@ module IncidentManagement
     accepts_nested_attributes_for :rules
 
     delegate :name, to: :project, prefix: true
+
+    def hook_attrs
+      {
+        id: id,
+        name: name
+      }
+    end
   end
 end

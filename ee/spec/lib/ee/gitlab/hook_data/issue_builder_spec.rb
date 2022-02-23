@@ -50,5 +50,17 @@ RSpec.describe Gitlab::HookData::IssueBuilder do
         expect(data[:description]).to eq("test![Issue_Image](#{Settings.gitlab.url}/#{expected_path}")
       end
     end
+
+    context 'for incident with escalation policies feature enabled' do
+      let_it_be(:issue) { create(:incident, :with_escalation_status) }
+
+      before do
+        stub_licensed_features(oncall_schedules: true, escalation_policies: true)
+      end
+
+      it 'includes additional attr' do
+        expect(data).to include(:escalation_policy)
+      end
+    end
   end
 end

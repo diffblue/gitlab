@@ -44,6 +44,14 @@ RSpec.describe IncidentManagement::IssuableEscalationStatuses::PrepareUpdateServ
     end
   end
 
+  context 'when policy is unchanged' do
+    let(:params) { { policy: nil } }
+
+    it_behaves_like 'successful response' do
+      let(:payload) { { escalation_status: {} } }
+    end
+  end
+
   context 'when escalation policies feature is unavailable' do
     before do
       stub_licensed_features(oncall_schedules: false, escalation_policies: false)
