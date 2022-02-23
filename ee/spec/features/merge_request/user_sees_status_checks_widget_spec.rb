@@ -23,6 +23,9 @@ RSpec.describe 'Merge request > User sees status checks widget', :js do
 
   context 'user is authorized' do
     before do
+      stub_feature_flags(refactor_mr_widgets_extensions: false)
+      stub_feature_flags(refactor_mr_widgets_extensions_user: false)
+
       project.add_maintainer(user)
       sign_in(user)
 
@@ -44,6 +47,31 @@ RSpec.describe 'Merge request > User sees status checks widget', :js do
           expect(page).to have_css(".ci-status-icon-#{icon_type}")
           expect(page).to have_content("#{rule.name}, #{rule.external_url}")
         end
+      end
+    end
+  end
+
+  context 'widget extension flag is enabled' do
+    before do
+      project.add_maintainer(user)
+      sign_in(user)
+
+      visit project_merge_request_path(project, merge_request)
+    end
+
+    it 'shows the widget' do
+      expect(page).to have_content('Status checks 1 pending')
+    end
+
+    it 'shows the status check issues', :aggregate_failures do
+      within '[data-testid="widget-extension"]' do
+        find('[data-testid="toggle-button"]').click
+      end
+
+      [check1, check2].each do |rule|
+        icon_type = rule.approved?(merge_request, merge_request.source_branch_sha) ? 'success' : 'neutral'
+        expect(page).to have_css("[data-testid='status-#{icon_type}-icon']")
+        expect(page).to have_content("#{rule.name}: #{rule.external_url}")
       end
     end
   end
