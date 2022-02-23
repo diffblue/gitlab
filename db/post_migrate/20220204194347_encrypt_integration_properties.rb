@@ -3,7 +3,7 @@
 class EncryptIntegrationProperties < Gitlab::Database::Migration[1.0]
   disable_ddl_transaction!
   MIGRATION = 'EncryptIntegrationProperties'
-  BATCH_SIZE = 5_000
+  BATCH_SIZE = 1_000
   INTERVAL = 2.minutes.to_i
 
   def up
