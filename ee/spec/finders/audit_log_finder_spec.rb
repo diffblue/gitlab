@@ -350,7 +350,7 @@ RSpec.describe AuditLogFinder do
   describe '#find_by!' do
     let(:id) { user_audit_event.id }
 
-    subject { finder.find_by!(id: id) }
+    subject { finder.find_by!(id: id) } # rubocop:disable Rails/FindById
 
     it { is_expected.to eq(user_audit_event) }
 

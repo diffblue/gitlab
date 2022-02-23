@@ -333,22 +333,6 @@ Rails/CreateTableWithTimestamps:
 Rails/FilePath:
   Enabled: false
 
-# Offense count: 15
-# Cop supports --auto-correct.
-Rails/FindById:
-  Exclude:
-    - 'app/controllers/projects/pipelines_controller.rb'
-    - 'app/services/concerns/deploy_token_methods.rb'
-    - 'ee/app/controllers/ee/groups/group_members_controller.rb'
-    - 'ee/lib/api/audit_events.rb'
-    - 'ee/lib/api/merge_request_approval_rules.rb'
-    - 'ee/lib/ee/api/groups.rb'
-    - 'ee/lib/ee/api/projects.rb'
-    - 'ee/spec/finders/audit_log_finder_spec.rb'
-    - 'lib/api/snippets.rb'
-    - 'spec/finders/concerns/finder_methods_spec.rb'
-    - 'spec/finders/concerns/finder_with_cross_project_access_spec.rb'
-
 # Offense count: 354
 # Configuration parameters: Include.
 # Include: app/models/**/*.rb
