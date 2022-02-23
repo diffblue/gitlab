@@ -15,7 +15,7 @@ class Groups::UsageQuotasController < Groups::ApplicationController
   end
 
   def pending_members
-    render_404 unless @group.user_cap_available?
+    render_404 unless @group.apply_user_cap?
     @hide_search_settings = true
   end
 

@@ -301,6 +301,18 @@ module EE
         end
     end
 
+    def on_existing_free_subscription?
+      # this is a side-effect free version of checking if a namespace
+      # is on a free plan - see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/80839#note_851566461
+      strong_memoize(:on_existing_free_subscription) do
+        ::Plan
+          .joins(:hosted_subscriptions)
+          .where(name: ::Plan::FREE)
+          .where(gitlab_subscriptions: { namespace_id: id })
+          .exists?
+      end
+    end
+
     # When a purchasing a GL.com plan for a User namespace
     # we only charge for a single user.
     # This method is overwritten in Group where we made the calculation
@@ -456,6 +468,17 @@ module EE
       return false unless ::Gitlab.com?
 
       ::Feature.enabled?(:saas_user_caps, root_ancestor, default_enabled: :yaml)
+    end
+
+    def apply_free_user_cap?
+      return false unless ::Gitlab.com?
+      return false unless root_ancestor.on_existing_free_subscription?
+
+      ::Feature.enabled?(:free_user_cap, root_ancestor, default_enabled: :yaml)
+    end
+
+    def apply_user_cap?
+      user_cap_available? || apply_free_user_cap?
     end
 
     private
