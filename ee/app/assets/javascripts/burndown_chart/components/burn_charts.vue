@@ -78,7 +78,7 @@ export default {
       },
       query: BurnupQuery,
       variables() {
-        const fullPath = this.iterationId ? { fullPath: this.fullPath } : {};
+        const fullPath = this.isIterationReport ? { fullPath: this.fullPath } : {};
 
         return {
           id: this.iterationId || this.milestoneId,
@@ -128,6 +128,9 @@ export default {
     },
     burnupData() {
       return this.report.burnupData;
+    },
+    isIterationReport() {
+      return this.iterationId && !this.milestoneId;
     },
     columns() {
       return [

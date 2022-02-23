@@ -287,7 +287,7 @@ describe('burndown_chart', () => {
     });
   });
 
-  describe('with Apollo mock', () => {
+  describe('fullPath is only passed for iteration report', () => {
     let burnupQuerySpy;
 
     const createComponentWithApollo = ({ props = {} }) => {
