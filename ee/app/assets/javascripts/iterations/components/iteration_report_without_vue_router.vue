@@ -20,8 +20,10 @@ import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { Namespace } from '../constants';
 import deleteIteration from '../queries/destroy_iteration.mutation.graphql';
 import query from '../queries/iteration.query.graphql';
+import { getIterationPeriod } from '../utils';
 import IterationForm from './iteration_form_without_vue_router.vue';
 import IterationReportTabs from './iteration_report_tabs.vue';
+import IterationTitle from './iteration_title.vue';
 
 const iterationStates = {
   closed: 'closed',
@@ -46,6 +48,7 @@ export default {
     GlLoadingIcon,
     IterationForm,
     IterationReportTabs,
+    IterationTitle,
     GlModal,
   },
   directives: {
@@ -134,7 +137,7 @@ export default {
       return this.$apollo.queries.iteration.loading;
     },
     showEmptyState() {
-      return !this.loading && this.iteration && !this.iteration.title;
+      return !this.loading && this.iteration && !this.iteration.startDate;
     },
     status() {
       switch (this.iteration.state) {
@@ -150,6 +153,9 @@ export default {
         default:
           return { text: __('Open'), variant: 'success' };
       }
+    },
+    iterationPeriod() {
+      return getIterationPeriod(this.iteration);
     },
   },
   mounted() {
@@ -243,9 +249,7 @@ export default {
         <gl-badge :variant="status.variant">
           {{ status.text }}
         </gl-badge>
-        <span class="gl-ml-4"
-          >{{ formatDate(iteration.startDate) }} – {{ formatDate(iteration.dueDate) }}</span
-        >
+        <span class="gl-ml-4">{{ iterationPeriod }}</span>
         <gl-dropdown
           v-if="canEditIteration"
           ref="menu"
@@ -280,7 +284,10 @@ export default {
           }}
         </gl-modal>
       </div>
-      <h3 ref="title" class="page-title">{{ iteration.title }}</h3>
+      <div ref="heading">
+        <h3 class="page-title gl-mb-1" data-testid="iteration-period">{{ iterationPeriod }}</h3>
+        <iteration-title v-if="iteration.title" :title="iteration.title" class="text-secondary" />
+      </div>
       <div
         ref="description"
         v-safe-html:[$options.safeHtmlConfig]="iteration.descriptionHtml"

@@ -3,7 +3,6 @@ import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
-
 import BoardListHeader from 'ee/boards/components/board_list_header.vue';
 import defaultGetters from 'ee/boards/stores/getters';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -20,12 +19,6 @@ Vue.use(Vuex);
 const listMocks = {
   [ListType.assignee]: {
     assignee: {},
-  },
-  [ListType.iteration]: {
-    iteration: {
-      startDate: '2021-11-01',
-      dueDate: '2021-11-05',
-    },
   },
   [ListType.label]: {
     ...mockLabelList,
@@ -61,7 +54,6 @@ describe('Board List Header Component', () => {
     currentUserId = 1,
     state = { activeId: inactiveId },
     getters = {},
-    glFeatures = {},
   } = {}) => {
     const boardId = '1';
 
@@ -101,13 +93,11 @@ describe('Board List Header Component', () => {
         boardId,
         weightFeatureAvailable,
         currentUserId,
-        glFeatures,
       },
     });
   };
 
   const findSettingsButton = () => wrapper.findComponent({ ref: 'settingsBtn' });
-  const findIterationPeriod = () => wrapper.find('[data-testid="board-list-iteration-period"]');
 
   afterEach(() => {
     wrapper.destroy();
@@ -221,30 +211,6 @@ describe('Board List Header Component', () => {
       createComponent();
 
       expect(wrapper.findComponent({ ref: 'weightTooltip' }).exists()).toBe(false);
-    });
-  });
-
-  describe('iteration cadence', () => {
-    describe('iteration_cadences feature flag is on', () => {
-      it('displays iteration period', () => {
-        createComponent({
-          listType: ListType.iteration,
-          glFeatures: {
-            iterationCadences: true,
-          },
-        });
-
-        expect(findIterationPeriod().text()).toContain('Nov 1, 2021 - Nov 5, 2021');
-        expect(findIterationPeriod().isVisible()).toBe(true);
-      });
-    });
-
-    describe('iteration_cadences feature flag is off', () => {
-      it('does not display iteration period', () => {
-        createComponent({ listType: ListType.iteration });
-
-        expect(findIterationPeriod().exists()).toBe(false);
-      });
     });
   });
 });
