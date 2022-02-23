@@ -16,9 +16,6 @@ class Groups::EpicsController < Groups::ApplicationController
   before_action :verify_group_bulk_edit_enabled!, only: [:bulk_update]
   after_action :log_epic_show, only: :show
 
-  # Limit the amount of epics created per minute. Epics share the issue creation rate limit
-  before_action -> { check_rate_limit!(:issues_create, scope: current_user) }, only: [:create]
-
   before_action do
     push_frontend_feature_flag(:improved_emoji_picker, @group, type: :development, default_enabled: :yaml)
   end
