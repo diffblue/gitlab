@@ -83,7 +83,11 @@ export default {
       return threshold + totalScoreDelta <= 0;
     },
     shouldRenderBrowserPerformance() {
-      return this.hasBrowserPerformancePaths && this.hasBrowserPerformanceDegradation;
+      return (
+        this.hasBrowserPerformancePaths &&
+        this.hasBrowserPerformanceDegradation &&
+        !this.shouldShowExtension
+      );
     },
     hasLoadPerformanceMetrics() {
       return (
@@ -352,7 +356,7 @@ export default {
         :has-issues="hasBrowserPerformanceMetrics"
       />
       <grouped-load-performance-reports-app
-        v-if="hasLoadPerformancePaths"
+        v-if="hasLoadPerformancePaths && !shouldShowExtension"
         :status="loadPerformanceStatus"
         :loading-text="translateText('load-performance').loading"
         :error-text="translateText('load-performance').error"
@@ -472,12 +476,12 @@ export default {
       />
 
       <grouped-accessibility-reports-app
-        v-if="shouldShowAccessibilityReport"
+        v-if="shouldShowAccessibilityReport && !shouldShowExtension"
         :endpoint="mr.accessibilityReportPath"
       />
 
       <status-checks-reports-app
-        v-if="shouldRenderStatusReport"
+        v-if="shouldRenderStatusReport && !shouldShowExtension"
         :endpoint="mr.apiStatusChecksPath"
       />
 
