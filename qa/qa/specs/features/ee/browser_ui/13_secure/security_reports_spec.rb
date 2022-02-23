@@ -146,12 +146,12 @@ module QA
           end
         end
 
-        it 'displays false positives for the vulnerabilities', quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/351125', type: :flaky }, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/350412' do
+        it 'displays false positives for the vulnerabilities', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/350412' do
           Page::Project::Menu.perform(&:click_project)
           Page::Project::Menu.perform(&:click_on_vulnerability_report)
 
           EE::Page::Project::Secure::Show.perform do |security_dashboard|
-            filter_report_and_perform(security_dashboard, "SAST") do
+            security_dashboard.filter_report_type("SAST") do
               expect(security_dashboard).to have_vulnerability sast_scan_fp_example_vuln
             end
           end
