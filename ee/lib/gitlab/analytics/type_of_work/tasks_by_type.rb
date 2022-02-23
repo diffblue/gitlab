@@ -96,7 +96,7 @@ module Gitlab
         end
 
         def labels_by_id
-          @labels_by_id = labels.each_with_object({}) { |label, hash| hash[label.id] = label }
+          @labels_by_id = labels.index_by(&:id)
         end
       end
     end
