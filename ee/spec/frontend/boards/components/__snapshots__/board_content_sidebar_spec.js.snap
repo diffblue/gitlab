@@ -82,7 +82,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
       class="sidebar-collapsed-icon"
     >
       <div
-        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between"
+        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
       >
         <svg
           aria-hidden="true"
@@ -229,7 +229,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                       class="gl-new-dropdown-item-text-primary"
                     >
                       <div
-                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between"
+                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
                       >
                         <svg
                           aria-hidden="true"
@@ -242,7 +242,9 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                           />
                         </svg>
                          
-                        <span>
+                        <span
+                          class="gl-min-w-0 gl-text-truncate"
+                        >
                           Critical - S1
                         </span>
                       </div>
@@ -286,7 +288,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                       class="gl-new-dropdown-item-text-primary"
                     >
                       <div
-                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between"
+                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
                       >
                         <svg
                           aria-hidden="true"
@@ -299,7 +301,9 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                           />
                         </svg>
                          
-                        <span>
+                        <span
+                          class="gl-min-w-0 gl-text-truncate"
+                        >
                           High - S2
                         </span>
                       </div>
@@ -343,7 +347,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                       class="gl-new-dropdown-item-text-primary"
                     >
                       <div
-                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between"
+                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
                       >
                         <svg
                           aria-hidden="true"
@@ -356,7 +360,9 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                           />
                         </svg>
                          
-                        <span>
+                        <span
+                          class="gl-min-w-0 gl-text-truncate"
+                        >
                           Medium - S3
                         </span>
                       </div>
@@ -400,7 +406,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                       class="gl-new-dropdown-item-text-primary"
                     >
                       <div
-                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between"
+                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
                       >
                         <svg
                           aria-hidden="true"
@@ -413,7 +419,9 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                           />
                         </svg>
                          
-                        <span>
+                        <span
+                          class="gl-min-w-0 gl-text-truncate"
+                        >
                           Low - S4
                         </span>
                       </div>
@@ -457,7 +465,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                       class="gl-new-dropdown-item-text-primary"
                     >
                       <div
-                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between"
+                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
                       >
                         <svg
                           aria-hidden="true"
@@ -470,7 +478,9 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                           />
                         </svg>
                          
-                        <span>
+                        <span
+                          class="gl-min-w-0 gl-text-truncate"
+                        >
                           Unknown
                         </span>
                       </div>
@@ -490,7 +500,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
       </div>
        
       <div
-        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between"
+        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
       >
         <svg
           aria-hidden="true"
@@ -503,7 +513,9 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
           />
         </svg>
          
-        <span>
+        <span
+          class="gl-min-w-0 gl-text-truncate"
+        >
           Unknown
         </span>
       </div>
