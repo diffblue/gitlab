@@ -3,14 +3,14 @@
 exports[`TrialStatusWidget component without the optional containerId prop matches the snapshot 1`] = `
 <gl-link-stub
   href="billing/path-for/group"
-  title="Ultimate Trial – 20 days left"
+  title="Ultimate Trial"
 >
   <div
     class="gl-display-flex gl-flex-direction-column gl-align-items-stretch gl-w-full"
     data-testid="widget-menu"
   >
-    <span
-      class="gl-display-flex gl-align-items-center"
+    <div
+      class="gl-display-flex gl-w-full"
     >
       <span
         class="nav-icon-container svg-container"
@@ -23,22 +23,30 @@ exports[`TrialStatusWidget component without the optional containerId prop match
       </span>
        
       <span
-        class="nav-item-name gl-white-space-normal"
+        class="nav-item-name"
       >
         
-        Ultimate Trial – 20 days left
+        Ultimate Trial
       
       </span>
-    </span>
+       
+      <span
+        class="collapse-text gl-font-sm gl-mr-auto"
+      >
+        
+        Day 10/30
+      
+      </span>
+    </div>
      
-    <span
-      class="gl-display-flex gl-align-items-stretch gl-mt-3"
+    <div
+      class="gl-display-flex gl-align-items-stretch gl-mt-2"
     >
       <gl-progress-bar-stub
         class="gl-flex-grow-1"
         value="10"
       />
-    </span>
+    </div>
   </div>
 </gl-link-stub>
 `;
