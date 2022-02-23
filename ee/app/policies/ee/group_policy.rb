@@ -270,6 +270,7 @@ module EE
       rule { auditor }.policy do
         enable :read_group
         enable :read_group_security_dashboard
+        enable :read_group_audit_events
       end
 
       rule { group_saml_config_enabled & group_saml_available & (admin | owner) }.enable :admin_group_saml
