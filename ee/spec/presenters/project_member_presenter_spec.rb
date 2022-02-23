@@ -21,22 +21,27 @@ RSpec.describe ProjectMemberPresenter do
   end
 
   describe '#can_update?' do
-    context 'when user cannot update_project_member but can override_project_member' do
+    context 'when user cannot update project_member' do
       before do
+        allow(project_member).to receive(:owner?).and_return(false)
         allow(presenter).to receive(:can?).with(user, :update_project_member, presenter).and_return(false)
-        allow(presenter).to receive(:can?).with(user, :override_project_member, presenter).and_return(true)
       end
 
-      it { expect(presenter.can_update?).to eq(true) }
-    end
+      context 'when user can override_project_member' do
+        before do
+          allow(presenter).to receive(:can?).with(user, :override_project_member, presenter).and_return(true)
+        end
 
-    context 'when user cannot update_project_member and cannot override_project_member' do
-      before do
-        allow(presenter).to receive(:can?).with(user, :update_project_member, presenter).and_return(false)
-        allow(presenter).to receive(:can?).with(user, :override_project_member, presenter).and_return(false)
+        it { expect(presenter.can_update?).to eq(true) }
       end
 
-      it { expect(presenter.can_update?).to eq(false) }
+      context 'when user cannot override_project_member' do
+        before do
+          allow(presenter).to receive(:can?).with(user, :override_project_member, presenter).and_return(false)
+        end
+
+        it { expect(presenter.can_update?).to eq(false) }
+      end
     end
   end
 
