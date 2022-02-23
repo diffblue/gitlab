@@ -6,6 +6,7 @@ module Ci
     # This class ensures that we keep 1 record per namespace per month.
     class NamespaceMonthlyUsage < Ci::ApplicationRecord
       include Ci::NamespacedModelName
+      include AfterCommitQueue
 
       belongs_to :namespace
 
@@ -29,10 +30,17 @@ module Ci
         current_usage = unsafe_find_current(namespace_id)
         return current_usage if current_usage
 
-        current_month.for_namespace(namespace_id).create!.tap do
-          Namespace.find_by_id(namespace_id).try do |namespace|
-            Ci::Minutes::Limit.new(namespace).recalculate_remaining_purchased_minutes!
+        current_month.for_namespace(namespace_id).new.tap do |new_usage|
+          # TODO: Remove in https://gitlab.com/gitlab-org/gitlab/-/issues/350617
+          # Avoid cross-database modifications in transaction since
+          # recalculation of purchased minutes touches `namespaces` table.
+          new_usage.run_after_commit do
+            Namespace.find_by_id(namespace_id).try do |namespace|
+              Ci::Minutes::Limit.new(namespace).recalculate_remaining_purchased_minutes!
+            end
           end
+
+          new_usage.save!
         end
       rescue ActiveRecord::RecordNotUnique
         unsafe_find_current(namespace_id)
