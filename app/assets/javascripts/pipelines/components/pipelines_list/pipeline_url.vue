@@ -193,8 +193,8 @@ export default {
           <gl-link
             v-if="mergeRequestRef"
             :href="mergeRequestRef.path"
-            class="ref-name"
-            data-testid="merge-request-ref gl-mr-3"
+            class="ref-name gl-mr-3"
+            data-testid="merge-request-ref"
             >{{ mergeRequestRef.iid }}</gl-link
           >
           <gl-link v-else :href="refUrl" class="ref-name gl-mr-3" data-testid="commit-ref-name">{{
