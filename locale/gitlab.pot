@@ -19262,6 +19262,9 @@ msgstr ""
 msgid "IncidentManagement|No incidents to display."
 msgstr ""
 
+msgid "IncidentManagement|None"
+msgstr ""
+
 msgid "IncidentManagement|Open"
 msgstr ""
 
@@ -19278,6 +19281,9 @@ msgid "IncidentManagement|Published to status page"
 msgstr ""
 
 msgid "IncidentManagement|Severity"
+msgstr ""
+
+msgid "IncidentManagement|Status"
 msgstr ""
 
 msgid "IncidentManagement|There are no closed incidents"

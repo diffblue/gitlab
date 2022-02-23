@@ -59,12 +59,6 @@ export default {
     hasNoTimeRemaining() {
       return this.remainingTime === 0;
     },
-    isMissedSLA() {
-      return this.hasNoTimeRemaining && !this.isClosed;
-    },
-    isAchievedSLA() {
-      return this.hasNoTimeRemaining && this.isClosed;
-    },
     isClosed() {
       return this.issueState === 'closed';
     },
@@ -74,12 +68,16 @@ export default {
     shouldShow() {
       return isValidSlaDueAt(this.slaDueAt);
     },
-    slaText() {
-      if (this.isMissedSLA) {
-        return this.$options.i18n.missedSLAText;
-      }
-      if (this.isAchievedSLA) {
+    hasNoTimeRemainingText() {
+      if (this.isClosed) {
         return this.$options.i18n.achievedSLAText;
+      }
+
+      return this.$options.i18n.missedSLAText;
+    },
+    slaText() {
+      if (this.hasNoTimeRemaining) {
+        return this.hasNoTimeRemainingText;
       }
 
       const remainingDuration = formatTime(this.remainingTime);
@@ -89,7 +87,7 @@ export default {
     },
     slaTitle() {
       if (this.hasNoTimeRemaining) {
-        return '';
+        return this.hasNoTimeRemainingText;
       }
 
       const minutes = Math.floor(this.remainingTime / 1000 / 60) % 60;

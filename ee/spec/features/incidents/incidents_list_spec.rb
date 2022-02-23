@@ -13,29 +13,12 @@ RSpec.describe 'Incident Management index', :js do
 
   before do
     sign_in(developer)
-
-    visit project_incidents_path(project)
-    wait_for_requests
   end
 
   context 'when a developer displays the incident list' do
-    it 'shows the status tabs' do
-      expect(page).to have_selector('.gl-tabs')
-    end
-
-    it 'shows the filtered search' do
-      expect(page).to have_selector('.filtered-search-wrapper')
-    end
-
-    it 'shows the alert table' do
-      expect(page).to have_selector('.gl-table')
-    end
-
-    it 'alert page title' do
-      expect(page).to have_content('Incidents')
-    end
-
     it 'has expected columns' do
+      visit project_incidents_path(project)
+      wait_for_requests
       table = page.find('.gl-table')
 
       expect(table).to have_content('Severity')
@@ -43,18 +26,34 @@ RSpec.describe 'Incident Management index', :js do
       expect(table).to have_content('Status')
       expect(table).to have_content('Date created')
       expect(table).to have_content('Assignees')
+
+      expect(table).not_to have_content('Time to SLA')
+      expect(table).not_to have_content('Published')
     end
 
-    context 'when :incident_escalations feature is disabled' do
+    context 'with SLA feature available' do
       before do
-        stub_feature_flags(incident_escalations: false)
+        stub_licensed_features(incident_sla: true)
       end
 
-      it 'does not include the Status columns' do
+      it 'includes the SLA column' do
         visit project_incidents_path(project)
         wait_for_requests
 
-        expect(page.find('.gl-table')).not_to have_content('Status')
+        expect(page.find('.gl-table')).to have_content('Time to SLA')
+      end
+    end
+
+    context 'with Status Page feature available' do
+      before do
+        stub_licensed_features(status_page: true)
+      end
+
+      it 'includes the Published column' do
+        visit project_incidents_path(project)
+        wait_for_requests
+
+        expect(page.find('.gl-table')).to have_content('Published')
       end
     end
   end
