@@ -18,18 +18,18 @@ RSpec.describe EncryptIntegrationProperties, :migration, schema: 20220204193000 
     record1 = integrations.create!(properties: some_props)
     record2 = integrations.create!(properties: some_props)
     record3 = integrations.create!(properties: some_props)
-
-    # no update required
-    integrations.create!(properties: nil)
+    record4 = integrations.create!(properties: nil)
+    record5 = integrations.create!(properties: nil)
 
     Sidekiq::Testing.fake! do
       freeze_time do
         migrate!
 
         expect(described_class::MIGRATION).to be_scheduled_migration(record1.id, record2.id)
-        expect(described_class::MIGRATION).to be_scheduled_migration(record3.id, record3.id)
+        expect(described_class::MIGRATION).to be_scheduled_migration(record3.id, record4.id)
+        expect(described_class::MIGRATION).to be_scheduled_migration(record5.id, record5.id)
 
-        expect(BackgroundMigrationWorker.jobs.size).to eq(2)
+        expect(BackgroundMigrationWorker.jobs.size).to eq(3)
       end
     end
   end

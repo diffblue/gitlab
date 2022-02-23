@@ -64,6 +64,8 @@ module Gitlab
           "(#{record.id}, #{bytea(encrypted_properties)}, #{bytea(encrypted_properties_iv)})"
         end
 
+        return if values.empty?
+
         Integration.connection.execute(<<~SQL.squish)
           WITH cte(cte_id, cte_encrypted_properties, cte_encrypted_properties_iv)
             AS #{::Gitlab::Database::AsWithMaterialized.materialized_if_supported} (
