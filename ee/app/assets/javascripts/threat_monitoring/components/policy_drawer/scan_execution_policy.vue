@@ -1,5 +1,5 @@
 <script>
-import { GlSafeHtmlDirective as SafeHtml } from '@gitlab/ui';
+import { GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import {
   fromYaml,
@@ -12,15 +12,16 @@ import PolicyInfoRow from './policy_info_row.vue';
 
 export default {
   i18n: {
-    summary: SUMMARY_TITLE,
+    multipleActionMessage: s__('SecurityOrchestration|Runs %{actions} and %{lastAction} scans'),
+    noActionMessage: s__('SecurityOrchestration|No actions defined - policy will not run.'),
+    singleActionMessage: s__(`SecurityOrchestration|Runs a %{action} scan`),
     scanExecution: s__('SecurityOrchestration|Scan execution'),
+    summary: SUMMARY_TITLE,
   },
   components: {
+    GlSprintf,
     PolicyDrawerLayout,
     PolicyInfoRow,
-  },
-  directives: {
-    SafeHtml,
   },
   props: {
     policy: {
@@ -55,7 +56,25 @@ export default {
   >
     <template v-if="parsedYaml" #summary>
       <policy-info-row data-testid="policy-summary" :label="$options.i18n.summary">
-        <p v-safe-html="humanizedActions"></p>
+        <p>
+          <template v-if="!humanizedActions.length">{{ $options.i18n.noActionMessage }}</template>
+          <gl-sprintf
+            v-else-if="humanizedActions.length === 1"
+            :message="$options.i18n.singleActionMessage"
+          >
+            <template #action>
+              <strong>{{ humanizedActions[0] }}</strong>
+            </template>
+          </gl-sprintf>
+          <gl-sprintf v-else :message="$options.i18n.multipleActionMessage">
+            <template #actions>
+              <strong>{{ humanizedActions.slice(0, -1).join(', ') }}</strong>
+            </template>
+            <template #lastAction>
+              <strong>{{ humanizedActions[humanizedActions.length - 1] }}</strong>
+            </template>
+          </gl-sprintf>
+        </p>
         <ul>
           <li v-for="(rule, idx) in humanizedRules" :key="idx">
             {{ rule }}

@@ -1,0 +1,74 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ScanExecutionPolicy component default policy renders the correct policy action message 1`] = `
+<div
+  data-testid="policy-summary"
+>
+  <policy-info-row-stub
+    data-testid="policy-summary"
+    label="Summary"
+  >
+    <p>
+      <gl-sprintf-stub
+        message="Runs a %{action} scan"
+      />
+    </p>
+     
+    <ul>
+      <li>
+        
+          Scan to be performed on every pipeline on the main branch
+        
+      </li>
+    </ul>
+  </policy-info-row-stub>
+</div>
+`;
+
+exports[`ScanExecutionPolicy component multiple action policy renders the correct policy action message 1`] = `
+<div
+  data-testid="policy-summary"
+>
+  <policy-info-row-stub
+    data-testid="policy-summary"
+    label="Summary"
+  >
+    <p>
+      <gl-sprintf-stub
+        message="Runs %{actions} and %{lastAction} scans"
+      />
+    </p>
+     
+    <ul>
+      <li>
+        
+          Scan to be performed on every pipeline on the main branch
+        
+      </li>
+    </ul>
+  </policy-info-row-stub>
+</div>
+`;
+
+exports[`ScanExecutionPolicy component no action policy renders the correct policy action message 1`] = `
+<div
+  data-testid="policy-summary"
+>
+  <policy-info-row-stub
+    data-testid="policy-summary"
+    label="Summary"
+  >
+    <p>
+      No actions defined - policy will not run.
+    </p>
+     
+    <ul>
+      <li>
+        
+          Scan to be performed on every pipeline on the main branch
+        
+      </li>
+    </ul>
+  </policy-info-row-stub>
+</div>
+`;

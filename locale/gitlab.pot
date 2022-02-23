@@ -32587,10 +32587,10 @@ msgstr ""
 msgid "SecurityOrchestration|Rules"
 msgstr ""
 
-msgid "SecurityOrchestration|Runs <strong>%{actions}</strong> and <strong>%{lastAction}</strong> scans"
+msgid "SecurityOrchestration|Runs %{actions} and %{lastAction} scans"
 msgstr ""
 
-msgid "SecurityOrchestration|Runs a <strong>%{actions}</strong> scan"
+msgid "SecurityOrchestration|Runs a %{action} scan"
 msgstr ""
 
 msgid "SecurityOrchestration|Scan Execution"

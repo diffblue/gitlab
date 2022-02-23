@@ -3,10 +3,7 @@ import {
   humanizeRules,
 } from 'ee/threat_monitoring/components/policy_editor/scan_execution_policy/lib';
 
-import {
-  NO_ACTION_MESSAGE,
-  NO_RULE_MESSAGE,
-} from 'ee/threat_monitoring/components/policy_editor/constants';
+import { NO_RULE_MESSAGE } from 'ee/threat_monitoring/components/policy_editor/constants';
 
 jest.mock('~/locale', () => ({
   getPreferredLocales: jest.fn().mockReturnValue(['en']),
@@ -37,17 +34,19 @@ const mockRules = [
 
 describe('humanizeActions', () => {
   it('returns an empty Array of actions as an empty Set', () => {
-    expect(humanizeActions([])).toStrictEqual(NO_ACTION_MESSAGE);
+    expect(humanizeActions([])).toStrictEqual([]);
   });
 
   it('returns a single action as human-readable string', () => {
-    expect(humanizeActions([mockActions[0]])).toStrictEqual('Runs a <strong>Dast</strong> scan');
+    expect(humanizeActions([mockActions[0]])).toStrictEqual(['Dast']);
   });
 
   it('returns multiple actions as human-readable strings', () => {
-    expect(humanizeActions(mockActions)).toStrictEqual(
-      'Runs <strong>Dast, Secret Detection</strong> and <strong>Container Image Scanning</strong> scans',
-    );
+    expect(humanizeActions(mockActions)).toStrictEqual([
+      'Dast',
+      'Secret Detection',
+      'Container Image Scanning',
+    ]);
   });
 });
 
