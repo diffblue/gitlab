@@ -9,7 +9,7 @@ import {
 } from '@gitlab/ui';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { PROJECTS_PER_PAGE } from '../constants';
+import { PROJECTS_PER_PAGE, PROJECT_TABLE_LABEL_STORAGE_USAGE } from '../constants';
 import query from '../queries/namespace_storage.query.graphql';
 import { formatUsageSize, parseGetStorageResults } from '../utils';
 import ProjectList from './project_list.vue';
@@ -34,6 +34,9 @@ export default {
   },
   directives: {
     GlModalDirective,
+  },
+  i18n: {
+    PROJECT_TABLE_LABEL_STORAGE_USAGE,
   },
   mixins: [glFeatureFlagsMixin()],
   inject: ['namespacePath', 'purchaseStorageUrl', 'isTemporaryStorageIncreaseVisible', 'helpLinks'],
@@ -212,6 +215,7 @@ export default {
       :projects="namespaceProjects"
       :is-loading="isQueryLoading"
       :additional-purchased-storage-size="namespace.additionalPurchasedStorageSize || 0"
+      :usage-label="$options.i18n.PROJECT_TABLE_LABEL_STORAGE_USAGE"
       @search="handleSearch"
     />
     <div class="gl-display-flex gl-justify-content-center gl-mt-5">
