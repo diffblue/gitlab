@@ -4,6 +4,8 @@ module Security
   class Scan < ApplicationRecord
     include CreatedAtFilterable
 
+    STALE_AFTER = 90.days
+
     self.table_name = 'security_scans'
 
     validates :build_id, presence: true
@@ -46,6 +48,7 @@ module Security
     scope :latest_successful, -> { latest.succeeded }
     scope :by_build_ids, ->(build_ids) { where(build_id: build_ids) }
     scope :without_errors, -> { where("jsonb_array_length(COALESCE(info->'errors', '[]'::jsonb)) = 0") }
+    scope :stale, -> { succeeded.or(preparation_failed).where('created_at < ?', STALE_AFTER.ago) }
 
     delegate :name, to: :build
 

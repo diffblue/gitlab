@@ -248,6 +248,25 @@ RSpec.describe Security::Scan do
     it { is_expected.to match_array([latest_scan]) }
   end
 
+  describe '.stale' do
+    let!(:stale_succeeded_scan) { create(:security_scan, status: :succeeded, created_at: 91.days.ago) }
+    let!(:stale_failed_scan) { create(:security_scan, status: :preparation_failed, created_at: 91.days.ago) }
+
+    subject { described_class.stale }
+
+    before do
+      create(:security_scan, status: :succeeded)
+      create(:security_scan, status: :preparation_failed)
+      create(:security_scan, status: :created, created_at: 91.days.ago)
+      create(:security_scan, status: :job_failed, created_at: 91.days.ago)
+      create(:security_scan, status: :report_error, created_at: 91.days.ago)
+      create(:security_scan, status: :preparing, created_at: 91.days.ago)
+      create(:security_scan, status: :purged, created_at: 91.days.ago)
+    end
+
+    it { is_expected.to match_array([stale_succeeded_scan, stale_failed_scan]) }
+  end
+
   describe '#report_findings' do
     let(:artifact) { create(:ee_ci_job_artifact, :dast) }
     let(:scan) { create(:security_scan, build: artifact.job) }
