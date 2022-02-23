@@ -13,7 +13,6 @@ import {
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { fetchPolicies } from '~/lib/graphql';
 import { __, s__ } from '~/locale';
-import IterationPeriod from 'ee/iterations/components/iteration_period.vue';
 import { getIterationPeriod } from '../utils';
 import { Namespace } from '../constants';
 import groupQuery from '../queries/group_iterations_in_cadence.query.graphql';
@@ -53,7 +52,6 @@ export default {
     GlModal,
     GlSkeletonLoader,
     TimeboxStatusBadge,
-    IterationPeriod,
   },
   apollo: {
     workspace: {
@@ -305,16 +303,12 @@ export default {
               v-for="iteration in iterations"
               :key="iteration.id"
               class="gl-bg-gray-10 gl-p-5 gl-border-t-solid gl-border-gray-100 gl-border-t-1"
+              data-testid="iteration-item"
             >
               <router-link :to="path(iteration.id)">
-                {{ iteration.title }}
+                {{ getIterationPeriod(iteration) }}
               </router-link>
-              <IterationPeriod class="gl-pt-2">{{ getIterationPeriod(iteration) }}</IterationPeriod>
-              <timebox-status-badge
-                v-if="showStateBadge"
-                class="gl-mt-2"
-                :state="iteration.state"
-              />
+              <timebox-status-badge v-if="showStateBadge" :state="iteration.state" />
             </li>
           </ol>
           <div v-if="loading" class="gl-p-5">

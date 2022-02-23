@@ -10,7 +10,14 @@ import query from 'ee/iterations/queries/iteration.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import { mockIterationNode, mockGroupIterations, mockProjectIterations } from '../mock_data';
+import { getIterationPeriod } from 'ee/iterations/utils';
+import IterationTitle from 'ee/iterations/components/iteration_title.vue';
+import {
+  mockIterationNode,
+  mockIterationNodeWithoutTitle,
+  createMockGroupIterations,
+  mockProjectIterations,
+} from '../mock_data';
 
 const localVue = createLocalVue();
 
@@ -24,7 +31,7 @@ describe('Iterations report', () => {
   };
 
   const findTopbar = () => wrapper.findComponent({ ref: 'topbar' });
-  const findTitle = () => wrapper.findComponent({ ref: 'title' });
+  const findHeading = () => wrapper.findComponent({ ref: 'heading' });
   const findDescription = () => wrapper.findComponent({ ref: 'description' });
   const findActionsDropdown = () => wrapper.find('[data-testid="actions-dropdown"]');
   const clickEditButton = () => {
@@ -53,6 +60,7 @@ describe('Iterations report', () => {
         GlLoadingIcon,
         GlTab,
         GlTabs,
+        IterationTitle,
       },
     });
   };
@@ -60,54 +68,53 @@ describe('Iterations report', () => {
   describe('with mock apollo', () => {
     describe.each([
       [
-        'group',
-        {
-          fullPath: 'group-name',
-          iterationId: String(getIdFromGraphQLId(mockIterationNode.id)),
-        },
-        mockGroupIterations,
-        {
-          fullPath: 'group-name',
-          id: mockIterationNode.id,
-          isGroup: true,
-        },
+        Namespace.Group,
+        'group-name',
+        mockIterationNodeWithoutTitle,
+        createMockGroupIterations(mockIterationNodeWithoutTitle),
       ],
       [
-        'project',
-        {
-          fullPath: 'group-name/project-name',
-          iterationId: String(getIdFromGraphQLId(mockIterationNode.id)),
-          namespaceType: Namespace.Project,
-        },
-        mockProjectIterations,
-        {
-          fullPath: 'group-name/project-name',
-          id: mockIterationNode.id,
-          isGroup: false,
-        },
+        Namespace.Group,
+        'group-name',
+        mockIterationNode,
+        createMockGroupIterations(mockIterationNode),
       ],
-    ])('when viewing an iteration in a %s', (_, props, mockIteration, expectedParams) => {
-      it('calls a query with correct parameters', () => {
-        const iterationQueryHandler = jest.fn();
-        mountComponentWithApollo({
-          props,
-          iterationQueryHandler,
+      [Namespace.Project, 'group-name/project-name', mockIterationNode, mockProjectIterations],
+    ])(
+      'when viewing an iteration in a %s',
+      (namespaceType, fullPath, mockIteration, mockIterations) => {
+        let iterationQueryHandler;
+
+        beforeEach(() => {
+          iterationQueryHandler = jest.fn().mockResolvedValue(mockIterations);
+
+          mountComponentWithApollo({
+            props: {
+              namespaceType,
+              fullPath,
+              iterationId: String(getIdFromGraphQLId(mockIteration.id)),
+            },
+            iterationQueryHandler,
+          });
         });
 
-        expect(iterationQueryHandler).toHaveBeenNthCalledWith(1, expectedParams);
-      });
-
-      it('renders an iteration title', async () => {
-        mountComponentWithApollo({
-          props,
-          iterationQueryHandler: jest.fn().mockResolvedValue(mockIteration),
+        it('calls a query with correct parameters', () => {
+          expect(iterationQueryHandler).toHaveBeenNthCalledWith(1, {
+            fullPath,
+            id: mockIteration.id,
+            isGroup: namespaceType === Namespace.Group,
+          });
         });
 
-        await waitForPromises();
+        it('renders iteration dates optionally with title', async () => {
+          await waitForPromises();
 
-        expect(findTitle().text()).toContain(mockIterationNode.title);
-      });
-    });
+          expect(findHeading().text()).toContain(getIterationPeriod(mockIteration));
+
+          if (mockIteration.title) expect(findHeading().text()).toContain(mockIteration.title);
+        });
+      },
+    );
   });
 
   const mountComponent = ({ props = defaultProps, loading = false } = {}) => {
@@ -149,7 +156,7 @@ describe('Iterations report', () => {
       });
 
       expect(findEmptyState().props('title')).toBe('Could not find iteration');
-      expect(findTitle().exists()).toBe(false);
+      expect(findHeading().exists()).toBe(false);
       expect(findDescription().exists()).toBe(false);
       expect(findActionsDropdown().exists()).toBe(false);
     });
@@ -157,7 +164,7 @@ describe('Iterations report', () => {
 
   describe('item loaded', () => {
     const iteration = {
-      title: 'June week 1',
+      title: null,
       id: 'gid://gitlab/Iteration/2',
       descriptionHtml: 'The first week of June',
       startDate: '2020-06-02',
@@ -189,8 +196,8 @@ describe('Iterations report', () => {
         expect(findEmptyState().exists()).toBe(false);
       });
 
-      it('shows title and description', () => {
-        expect(findTitle().text()).toContain(iteration.title);
+      it('shows period and description', () => {
+        expect(findHeading().text()).toContain('Jun 2, 2020 - Jun 8, 2020');
         expect(findDescription().text()).toContain(iteration.descriptionHtml);
       });
 
