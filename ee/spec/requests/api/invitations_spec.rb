@@ -77,4 +77,43 @@ RSpec.describe API::Invitations, 'EE Invitations' do
       end
     end
   end
+
+  context 'group with LDAP group link' do
+    include LdapHelpers
+
+    let(:group) { create(:group_with_ldap_group_link, :public) }
+    let(:owner) { create(:user) }
+    let(:developer) { create(:user) }
+    let(:invite) { create(:group_member, :invited, source: group, user: developer) }
+
+    before do
+      create(:group_member, :owner, group: group, user: owner)
+      stub_ldap_setting(enabled: true)
+      stub_application_setting(lock_memberships_to_ldap: true)
+    end
+
+    describe 'POST /groups/:id/invitations' do
+      it 'returns a forbidden response' do
+        post api("/groups/#{group.id}/invitations", owner), params: { email: developer.email, access_level: Member::DEVELOPER }
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+
+    describe 'PUT /groups/:id/invitations/:email' do
+      it 'returns a forbidden response' do
+        put api("/groups/#{group.id}/invitations/#{invite.invite_email}", owner), params: { access_level: Member::MAINTAINER }
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+
+    describe 'DELETE /groups/:id/invitations/:email' do
+      it 'returns a forbidden response' do
+        delete api("/groups/#{group.id}/invitations/#{invite.invite_email}", owner)
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+  end
 end
