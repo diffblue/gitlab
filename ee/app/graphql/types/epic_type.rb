@@ -18,67 +18,67 @@ module Types
     implements(Types::CurrentUserTodos)
     implements(Types::EventableType)
 
+    field :confidential, GraphQL::Types::Boolean, null: true,
+          description: 'Indicates if the epic is confidential.'
+    field :description, GraphQL::Types::String, null: true,
+          description: 'Description of the epic.'
     field :id, GraphQL::Types::ID, null: false,
           description: 'ID of the epic.'
     field :iid, GraphQL::Types::ID, null: false,
           description: 'Internal ID of the epic.'
-    field :title, GraphQL::Types::String, null: true,
-          description: 'Title of the epic.'
-    field :description, GraphQL::Types::String, null: true,
-          description: 'Description of the epic.'
     field :state, EpicStateEnum, null: false,
           description: 'State of the epic.'
-    field :confidential, GraphQL::Types::Boolean, null: true,
-          description: 'Indicates if the epic is confidential.'
+    field :title, GraphQL::Types::String, null: true,
+          description: 'Title of the epic.'
 
+    field :author, Types::UserType, null: false,
+          description: 'Author of the epic.'
     field :group, GroupType, null: false,
           description: 'Group to which the epic belongs.'
     field :parent, EpicType, null: true,
           description: 'Parent epic of the epic.'
-    field :author, Types::UserType, null: false,
-          description: 'Author of the epic.'
 
     field :start_date, Types::TimeType, null: true,
           description: 'Start date of the epic.'
-    field :start_date_is_fixed, GraphQL::Types::Boolean, null: true,
-          description: 'Indicates if the start date has been manually set.',
-          method: :start_date_is_fixed?, authorize: :admin_epic
     field :start_date_fixed, Types::TimeType, null: true,
           description: 'Fixed start date of the epic.',
-          authorize: :admin_epic
-    field :start_date_from_milestones, Types::TimeType, null: true,
-          description: 'Inherited start date of the epic from milestones.',
           authorize: :admin_epic
     field :start_date_from_inherited_source, Types::TimeType, null: true,
           description: 'Inherited start date of the epic from child epics or milestones.',
           authorize: :admin_epic
+    field :start_date_from_milestones, Types::TimeType, null: true,
+          description: 'Inherited start date of the epic from milestones.',
+          authorize: :admin_epic
+    field :start_date_is_fixed, GraphQL::Types::Boolean, null: true,
+          description: 'Indicates if the start date has been manually set.',
+          method: :start_date_is_fixed?, authorize: :admin_epic
 
     field :due_date, Types::TimeType, null: true,
           description: 'Due date of the epic.'
-    field :due_date_is_fixed, GraphQL::Types::Boolean, null: true,
-          description: 'Indicates if the due date has been manually set.',
-          method: :due_date_is_fixed?, authorize: :admin_epic
     field :due_date_fixed, Types::TimeType, null: true,
           description: 'Fixed due date of the epic.',
-          authorize: :admin_epic
-    field :due_date_from_milestones, Types::TimeType, null: true,
-          description: 'Inherited due date of the epic from milestones.',
           authorize: :admin_epic
     field :due_date_from_inherited_source, Types::TimeType, null: true,
           description: 'Inherited due date of the epic from child epics or milestones.',
           authorize: :admin_epic
+    field :due_date_from_milestones, Types::TimeType, null: true,
+          description: 'Inherited due date of the epic from milestones.',
+          authorize: :admin_epic
+    field :due_date_is_fixed, GraphQL::Types::Boolean, null: true,
+          description: 'Indicates if the due date has been manually set.',
+          method: :due_date_is_fixed?, authorize: :admin_epic
 
-    field :upvotes, GraphQL::Types::Int, null: false,
-          description: 'Number of upvotes the epic has received.'
     field :downvotes, GraphQL::Types::Int, null: false,
           description: 'Number of downvotes the epic has received.'
+    field :upvotes, GraphQL::Types::Int, null: false,
+          description: 'Number of upvotes the epic has received.'
 
-    field :user_notes_count, GraphQL::Types::Int, null: false,
-          description: 'Number of user notes of the epic.',
-          resolver: Resolvers::UserNotesCountResolver
     field :user_discussions_count, GraphQL::Types::Int, null: false,
           description: 'Number of user discussions in the epic.',
           resolver: Resolvers::UserDiscussionsCountResolver
+    field :user_notes_count, GraphQL::Types::Int, null: false,
+          description: 'Number of user notes of the epic.',
+          resolver: Resolvers::UserNotesCountResolver
 
     field :closed_at, Types::TimeType, null: true,
           description: 'Timestamp of when the epic was closed.'
@@ -108,11 +108,11 @@ module Types
           description: 'Web URL of the epic.',
           method: :group_epic_url
 
-    field :relative_position, GraphQL::Types::Int, null: true,
-          description: 'Relative position of the epic in the epic tree.'
     field :relation_path, GraphQL::Types::String, null: true,
            description: 'URI path of the epic-issue relationship.',
            method: :group_epic_link_path
+    field :relative_position, GraphQL::Types::Int, null: true,
+          description: 'Relative position of the epic in the epic tree.'
 
     field :reference, GraphQL::Types::String, null: false,
           description: 'Internal reference of the epic. Returned in shortened format by default.',
