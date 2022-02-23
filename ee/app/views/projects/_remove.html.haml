@@ -1,5 +1,6 @@
 - return unless can?(current_user, :remove_project, project)
-- adjourned_deletion = project.adjourned_deletion?
+- can_delay_project_deletions = License.feature_available?(:adjourned_deletion_for_projects_and_groups)
+- adjourned_deletion = project.adjourned_deletion_configured?
 - adjourned_date = adjourned_deletion ? permanent_deletion_date(Time.now.utc).to_s : nil
 - restore_help_path = help_page_path('user/project/settings/index', anchor: 'restore-a-project')
 - merge_requests_count = Projects::AllMergeRequestsCountService.new(project).count
@@ -9,11 +10,14 @@
 - unless project.marked_for_deletion?
   .sub-section
     %h4.danger-title= _('Delete this project')
-    - if adjourned_deletion
+    - if adjourned_deletion && can_delay_project_deletions
       = render 'projects/settings/marked_for_removal'
-      #js-project-adjourned-delete-button{ data: { restore_help_path: restore_help_path, adjourned_removal_date: adjourned_date, form_path: project_path(project), confirm_phrase: delete_confirm_phrase(project), is_fork: project.forked?.to_s, issues_count: number_with_delimiter(issues_count), merge_requests_count: number_with_delimiter(merge_requests_count), forks_count: number_with_delimiter(forks_count), stars_count: number_with_delimiter(project.star_count) } }
     - else
       %p= permanent_delete_message(project)
+
+    - if project.feature_available?(:adjourned_deletion_for_projects_and_groups)
+      #js-project-adjourned-delete-button{ data: { restore_help_path: restore_help_path, adjourned_removal_date: adjourned_date, form_path: project_path(project), confirm_phrase: delete_confirm_phrase(project), is_fork: project.forked?.to_s, issues_count: number_with_delimiter(issues_count), merge_requests_count: number_with_delimiter(merge_requests_count), forks_count: number_with_delimiter(forks_count), stars_count: number_with_delimiter(project.star_count) } }
+    - else
       #js-project-delete-button{ data: { form_path: project_path(project), confirm_phrase: delete_confirm_phrase(project), is_fork: project.forked?.to_s, issues_count: number_with_delimiter(issues_count), merge_requests_count: number_with_delimiter(merge_requests_count), forks_count: number_with_delimiter(forks_count), stars_count: number_with_delimiter(project.star_count) } }
 - else
   = render 'projects/settings/restore', project: project

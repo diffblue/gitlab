@@ -728,13 +728,17 @@ module EE
 
     def adjourned_deletion?
       feature_available?(:adjourned_deletion_for_projects_and_groups) &&
-        ::Gitlab::CurrentSettings.deletion_adjourned_period > 0 &&
+        adjourned_deletion_configured?
+    end
+
+    def adjourned_deletion_configured?
+      ::Gitlab::CurrentSettings.deletion_adjourned_period > 0 &&
         group_deletion_mode_configured?
     end
 
     def marked_for_deletion?
       marked_for_deletion_at.present? &&
-        feature_available?(:adjourned_deletion_for_projects_and_groups)
+        License.feature_available?(:adjourned_deletion_for_projects_and_groups)
     end
 
     def ancestor_marked_for_deletion

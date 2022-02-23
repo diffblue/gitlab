@@ -125,7 +125,8 @@ module EE
 
           override :delete_project
           def delete_project(user_project)
-            return super unless user_project.adjourned_deletion?
+            return super unless License.feature_available?(:adjourned_deletion_for_projects_and_groups)
+            return super unless user_project.adjourned_deletion_configured?
 
             result = destroy_conditionally!(user_project) do
               ::Projects::MarkForDeletionService.new(user_project, current_user, {}).execute

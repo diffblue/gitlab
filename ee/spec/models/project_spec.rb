@@ -3021,6 +3021,43 @@ RSpec.describe Project do
     end
   end
 
+  describe '#adjourned_deletion_configured?' do
+    subject { project.adjourned_deletion_configured? }
+
+    where(:feature_enabled_on_group?, :adjourned_period, :result) do
+      true  | 0 | false
+      true  | 1 | true
+      false | 0 | false
+      false | 1 | false
+    end
+
+    with_them do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:project) { create(:project, group: group) }
+
+      before do
+        stub_application_setting(deletion_adjourned_period: adjourned_period)
+        allow(group.namespace_settings).to receive(:delayed_project_removal?).and_return(feature_enabled_on_group?)
+      end
+
+      it { is_expected.to be result }
+    end
+
+    context 'when project belongs to user namespace' do
+      let_it_be(:user) { create(:user) }
+      let_it_be(:user_project) { create(:project, namespace: user.namespace) }
+
+      before do
+        stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
+        stub_application_setting(deletion_adjourned_period: 7)
+      end
+
+      it 'deletes immediately' do
+        expect(user_project.adjourned_deletion?).to be_falsey
+      end
+    end
+  end
+
   describe 'calculate template repositories' do
     let(:group1) { create(:group) }
     let(:group2) { create(:group) }

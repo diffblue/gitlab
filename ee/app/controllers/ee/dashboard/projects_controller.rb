@@ -38,7 +38,7 @@ module EE
       end
 
       def projects_pending_deletion_params
-        finder_params = { aimed_for_deletion: true }
+        finder_params = { aimed_for_deletion: true, include_hidden: true }
 
         unless current_user.can_admin_all_resources?
           finder_params[:min_access_level] = ::Gitlab::Access::OWNER

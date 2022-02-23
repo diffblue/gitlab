@@ -331,15 +331,24 @@ RSpec.describe ProjectsHelper do
     subject { helper.marked_for_removal_message(project) }
 
     before do
-      allow(project).to receive(:adjourned_deletion?).and_return(enabled)
+      allow(project).to receive(:feature_available?).with(:adjourned_deletion_for_projects_and_groups).and_return(feature_available)
     end
 
-    context 'when project has delayed deletion enabled' do
-      let(:enabled) { true }
+    context 'when project has delayed deletion feature' do
+      let(:feature_available) { true }
 
       specify do
         deletion_date = helper.permanent_deletion_date(Time.now.utc)
         expect(subject).to eq "This action deletes <code>#{project.path_with_namespace}</code> on #{deletion_date} and everything this project contains."
+      end
+    end
+
+    context 'when project does not have delayed deletion feature' do
+      let(:feature_available) { false }
+
+      specify do
+        deletion_date = helper.permanent_deletion_date(Time.now.utc)
+        expect(subject).to eq "This action deletes <code>#{project.path_with_namespace}</code> on #{deletion_date} and everything this project contains. <strong>There is no going back.</strong>"
       end
     end
   end
