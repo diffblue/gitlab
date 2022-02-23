@@ -181,9 +181,11 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService do
     end
 
     context 'when Issue data is present' do
-      let_it_be(:issue1) { create(:issue, project: project1, closed_at: Time.current) }
-      let_it_be(:issue2) { create(:issue, project: project1, closed_at: Time.current) }
-      let_it_be(:issue3) { create(:issue, project: project2, closed_at: Time.current) }
+      let_it_be(:issue1) { create(:issue, project: project1, closed_at: 5.minutes.from_now) }
+      let_it_be(:issue2) { create(:issue, project: project1, closed_at: 5.minutes.from_now) }
+      let_it_be(:issue3) { create(:issue, project: project2, closed_at: 5.minutes.from_now) }
+      # invalid the creation time would be later than closed_at, this should not be aggregated
+      let_it_be(:issue4) { create(:issue, project: project2, closed_at: 5.minutes.ago) }
 
       it 'inserts stage records' do
         expected_data = [issue1, issue2, issue3].map do |issue|
