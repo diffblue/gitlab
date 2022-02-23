@@ -3,8 +3,6 @@ import { GlAlert, GlButton, GlSprintf } from '@gitlab/ui';
 import { isInFuture } from '~/lib/utils/datetime/date_calculation_utility';
 import { sprintf } from '~/locale';
 import {
-  activateSubscription,
-  noActiveSubscription,
   subscriptionActivationNotificationText,
   subscriptionActivationFutureDatedNotificationTitle,
   subscriptionActivationFutureDatedNotificationMessage,
@@ -20,10 +18,8 @@ import {
 import getCurrentLicense from '../graphql/queries/get_current_license.query.graphql';
 import getPastLicenseHistory from '../graphql/queries/get_past_license_history.query.graphql';
 import getFutureLicenseHistory from '../graphql/queries/get_future_license_history.query.graphql';
-import SubscriptionActivationCard from './subscription_activation_card.vue';
 import SubscriptionBreakdown from './subscription_breakdown.vue';
-import SubscriptionPurchaseCard from './subscription_purchase_card.vue';
-import SubscriptionTrialCard from './subscription_trial_card.vue';
+import NoActiveSubscription from './no_active_subscription.vue';
 
 export default {
   name: 'CloudLicenseApp',
@@ -31,15 +27,11 @@ export default {
     GlAlert,
     GlButton,
     GlSprintf,
-    SubscriptionActivationCard,
     SubscriptionBreakdown,
-    SubscriptionPurchaseCard,
-    SubscriptionTrialCard,
+    NoActiveSubscription,
   },
   i18n: {
-    activateSubscription,
     exportLicenseUsageBtnText,
-    noActiveSubscription,
     subscriptionMainTitle,
     subscriptionHistoryFailedTitle,
     subscriptionHistoryFailedMessage,
@@ -176,21 +168,10 @@ export default {
       :subscription-list="subscriptionHistory"
       v-on="$options.activationListeners"
     />
-    <div v-else class="row">
-      <div class="col-12">
-        <h3 class="gl-mb-7 gl-mt-6 gl-text-center" data-testid="subscription-activation-title">
-          {{ $options.i18n.noActiveSubscription }}
-        </h3>
-        <subscription-activation-card v-on="$options.activationListeners" />
-        <div class="row gl-mt-7">
-          <div class="col-lg-6">
-            <subscription-trial-card />
-          </div>
-          <div class="col-lg-6">
-            <subscription-purchase-card />
-          </div>
-        </div>
-      </div>
-    </div>
+    <no-active-subscription
+      v-else
+      :subscription-list="subscriptionHistory"
+      v-on="$options.activationListeners"
+    />
   </div>
 </template>

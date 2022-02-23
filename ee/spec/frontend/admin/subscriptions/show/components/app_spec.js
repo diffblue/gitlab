@@ -1,12 +1,11 @@
 import { GlButton, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import SubscriptionManagementApp from 'ee/admin/subscriptions/show/components/app.vue';
-import SubscriptionActivationCard from 'ee/admin/subscriptions/show/components/subscription_activation_card.vue';
 import SubscriptionBreakdown from 'ee/admin/subscriptions/show/components/subscription_breakdown.vue';
+import NoActiveSubscription from 'ee_else_ce/admin/subscriptions/show/components/no_active_subscription.vue';
 import {
-  noActiveSubscription,
   subscriptionActivationNotificationText,
   subscriptionActivationFutureDatedNotificationTitle,
   subscriptionHistoryFailedTitle,
@@ -35,10 +34,8 @@ describe('SubscriptionManagementApp', () => {
 
   let wrapper;
 
-  const findActivateSubscriptionCard = () => wrapper.findComponent(SubscriptionActivationCard);
   const findSubscriptionBreakdown = () => wrapper.findComponent(SubscriptionBreakdown);
-  const findSubscriptionActivationTitle = () =>
-    wrapper.findByTestId('subscription-activation-title');
+  const findNoActiveSubscription = () => wrapper.findComponent(NoActiveSubscription);
   const findSubscriptionMainTitle = () => wrapper.findByTestId('subscription-main-title');
   const findSubscriptionActivationSuccessAlert = () =>
     wrapper.findByTestId('subscription-activation-success-alert');
@@ -77,8 +74,8 @@ describe('SubscriptionManagementApp', () => {
     wrapper.destroy();
   });
 
-  describe('when failing to fetch subcriptions', () => {
-    describe('when failing to fetch history subcriptions', () => {
+  describe('when failing to fetch subscriptions', () => {
+    describe('when failing to fetch history subscriptions', () => {
       describe.each`
         currentFails | pastFails | futureFails
         ${true}      | ${false}  | ${false}
@@ -139,45 +136,52 @@ describe('SubscriptionManagementApp', () => {
     });
   });
 
-  describe('Subscription Activation Form', () => {
-    it('shows the main title', () => {
-      currentSubscriptionResolver = jest
-        .fn()
-        .mockResolvedValue({ data: { currentLicense: license.ULTIMATE } });
-      pastSubscriptionsResolver = jest.fn().mockResolvedValue({
-        data: { licenseHistoryEntries: { nodes: subscriptionPastHistory } },
-      });
-      futureSubscriptionsResolver = jest.fn().mockResolvedValue({
-        data: { subscriptionFutureEntries: { nodes: subscriptionFutureHistory } },
-      });
-      createComponent({}, [
-        currentSubscriptionResolver,
-        pastSubscriptionsResolver,
-        futureSubscriptionsResolver,
-      ]);
-      expect(findSubscriptionMainTitle().text()).toBe(subscriptionMainTitle);
+  it('shows the main title', () => {
+    currentSubscriptionResolver = jest
+      .fn()
+      .mockResolvedValue({ data: { currentLicense: license.ULTIMATE } });
+    pastSubscriptionsResolver = jest.fn().mockResolvedValue({
+      data: { licenseHistoryEntries: { nodes: subscriptionPastHistory } },
     });
+    futureSubscriptionsResolver = jest.fn().mockResolvedValue({
+      data: { subscriptionFutureEntries: { nodes: subscriptionFutureHistory } },
+    });
+    createComponent({}, [
+      currentSubscriptionResolver,
+      pastSubscriptionsResolver,
+      futureSubscriptionsResolver,
+    ]);
+    expect(findSubscriptionMainTitle().text()).toBe(subscriptionMainTitle);
+  });
 
+  describe('Subscription Activation Form', () => {
     describe('without an active license', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         currentSubscriptionResolver = jest
           .fn()
           .mockResolvedValue({ data: { currentLicense: null } });
-        pastSubscriptionsResolver = jest
-          .fn()
-          .mockResolvedValue({ data: { licenseHistoryEntries: { nodes: [] } } });
-        futureSubscriptionsResolver = jest
-          .fn()
-          .mockResolvedValue({ data: { subscriptionFutureEntries: { nodes: [] } } });
-        createComponent({}, [
+        pastSubscriptionsResolver = jest.fn().mockResolvedValue({
+          data: { licenseHistoryEntries: { nodes: subscriptionPastHistory } },
+        });
+        futureSubscriptionsResolver = jest.fn().mockResolvedValue({
+          data: { subscriptionFutureEntries: { nodes: subscriptionFutureHistory } },
+        });
+        createComponent({ hasActiveLicense: false }, [
           currentSubscriptionResolver,
           pastSubscriptionsResolver,
           futureSubscriptionsResolver,
         ]);
+        await waitForPromises();
       });
 
-      it('shows a title saying there is no active subscription', () => {
-        expect(findSubscriptionActivationTitle().text()).toBe(noActiveSubscription);
+      it('shows the no active subscription state', () => {
+        expect(findNoActiveSubscription().exists()).toBe(true);
+      });
+
+      it('passes correct data to the no subscription state', () => {
+        expect(findNoActiveSubscription().props()).toMatchObject({
+          subscriptionList: [...subscriptionFutureHistory, ...subscriptionPastHistory],
+        });
       });
 
       it('queries for the past history', () => {
@@ -186,10 +190,6 @@ describe('SubscriptionManagementApp', () => {
 
       it('queries for the future history', () => {
         expect(futureSubscriptionsResolver).toHaveBeenCalledTimes(1);
-      });
-
-      it('shows the subscription activation form', () => {
-        expect(findActivateSubscriptionCard().exists()).toBe(true);
       });
 
       it('does not show the activation success notification', () => {
@@ -202,11 +202,11 @@ describe('SubscriptionManagementApp', () => {
 
       describe('activating the license', () => {
         it('shows the activation success notification', async () => {
-          findActivateSubscriptionCard().vm.$emit(
+          findNoActiveSubscription().vm.$emit(
             SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
             license.ULTIMATE,
           );
-          await waitForPromises();
+          await nextTick();
 
           expect(findSubscriptionActivationSuccessAlert().props('title')).toBe(
             subscriptionActivationNotificationText,
@@ -214,10 +214,12 @@ describe('SubscriptionManagementApp', () => {
         });
 
         it('shows the future dated activation success notification', async () => {
-          await findActivateSubscriptionCard().vm.$emit(
+          findNoActiveSubscription().vm.$emit(
             SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
             license.ULTIMATE_FUTURE_DATED,
           );
+          await nextTick();
+
           expect(findSubscriptionActivationSuccessAlert().props('title')).toBe(
             subscriptionActivationFutureDatedNotificationTitle,
           );
@@ -261,10 +263,12 @@ describe('SubscriptionManagementApp', () => {
       });
 
       it('shows the activation success notification', async () => {
-        await findSubscriptionBreakdown().vm.$emit(
+        findSubscriptionBreakdown().vm.$emit(
           SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
           license.ULTIMATE,
         );
+        await nextTick();
+
         expect(findSubscriptionActivationSuccessAlert().props('title')).toBe(
           subscriptionActivationNotificationText,
         );
@@ -281,10 +285,12 @@ describe('SubscriptionManagementApp', () => {
       });
 
       it('calls refetch to update local state', async () => {
-        await findSubscriptionBreakdown().vm.$emit(
+        findSubscriptionBreakdown().vm.$emit(
           SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
           license.ULTIMATE_FUTURE_DATED,
         );
+        await nextTick();
+
         expect(wrapper.vm.$apollo.queries.currentSubscription.refetch).toHaveBeenCalledTimes(1);
         expect(wrapper.vm.$apollo.queries.pastLicenseHistoryEntries.refetch).toHaveBeenCalledTimes(
           1,
@@ -333,7 +339,7 @@ describe('SubscriptionManagementApp', () => {
         });
       });
 
-      it('does not the activation success notification', () => {
+      it('does not show the activation success notification', () => {
         expect(findSubscriptionActivationSuccessAlert().exists()).toBe(false);
       });
 

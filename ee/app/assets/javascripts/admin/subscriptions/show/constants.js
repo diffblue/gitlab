@@ -158,3 +158,10 @@ export const subscriptionBannerText = s__(
 export const subscriptionBannerBlogPostUrl =
   'https://about.gitlab.com/blog/2021/07/20/improved-billing-and-subscription-management/';
 export const exportLicenseUsageBtnText = s__('SuperSonics|Export license usage file');
+
+export const instanceHasFutureLicenseBanner = {
+  title: s__('SuperSonics|You have a future dated license'),
+  message: s__(
+    'SuperSonics|You have added a license that activates on %{date}. Please see the subscription history table below for more details.',
+  ),
+};
