@@ -7,10 +7,12 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService do
     let(:service) { described_class.new(project: project, params: { policy: policy }) }
     let(:enabled) { true }
     let(:policy_type) { 'scan_execution_policy' }
+    let(:name) { 'New policy' }
     let(:rule) { { clusters: { production: {} } } }
     let(:policy) do
       {
         type: policy_type,
+        name: name,
         enabled: enabled,
         rules: [rule]
       }
@@ -40,6 +42,26 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService do
       end
 
       context 'when policy type is valid' do
+        it { expect(result[:status]).to eq(:success) }
+      end
+    end
+
+    shared_examples 'checks policy name' do
+      context 'when policy name is not provided' do
+        let(:name) { nil }
+
+        it { expect(result[:status]).to eq(:error) }
+        it { expect(result[:message]).to eq('Empty policy name') }
+      end
+
+      context 'when policy name is invalid' do
+        let(:name) { '' }
+
+        it { expect(result[:status]).to eq(:error) }
+        it { expect(result[:message]).to eq('Empty policy name') }
+      end
+
+      context 'when policy name is valid' do
         it { expect(result[:status]).to eq(:success) }
       end
     end

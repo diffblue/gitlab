@@ -4,6 +4,8 @@ module Security
   module SecurityOrchestrationPolicies
     class ValidatePolicyService < ::BaseProjectService
       def execute
+        return error(s_('SecurityOrchestration|Empty policy name')) if blank_name?
+
         return success if policy_disabled?
 
         return error(s_('SecurityOrchestration|Invalid policy type')) if invalid_policy_type?
@@ -23,6 +25,10 @@ module Security
         return true if policy[:type].blank?
 
         !Security::OrchestrationPolicyConfiguration::AVAILABLE_POLICY_TYPES.include?(policy_type)
+      end
+
+      def blank_name?
+        policy[:name].blank?
       end
 
       def blank_branch_for_rule?

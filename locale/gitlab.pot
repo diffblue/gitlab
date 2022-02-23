@@ -32428,6 +32428,9 @@ msgstr ""
 msgid "SecurityOrchestration|Edit policy project"
 msgstr ""
 
+msgid "SecurityOrchestration|Empty policy name"
+msgstr ""
+
 msgid "SecurityOrchestration|Enabled"
 msgstr ""
 
