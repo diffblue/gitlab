@@ -4,8 +4,13 @@ require 'spec_helper'
 
 RSpec.describe IncidentManagement::IssuableEscalationStatus do
   let_it_be(:escalation_status, reload: true) { create(:incident_management_issuable_escalation_status, :paging, :acknowledged) }
+  let_it_be(:escalation_policy) { escalation_status.policy }
 
   subject { escalation_status }
+
+  before do
+    stub_licensed_features(oncall_schedules: true, escalation_policies: true)
+  end
 
   describe 'validations' do
     context 'when policy and escalation start time are both provided' do
