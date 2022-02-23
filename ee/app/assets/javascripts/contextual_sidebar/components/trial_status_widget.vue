@@ -16,6 +16,8 @@ export default {
   mixins: [trackingMixin],
   inject: {
     containerId: { default: null },
+    trialDaysUsed: {},
+    trialDuration: {},
     daysRemaining: {},
     navIconImagePath: {},
     percentageComplete: {},
@@ -24,12 +26,12 @@ export default {
   },
   computed: {
     widgetTitle() {
-      const i18nWidgetTitle = i18n.widgetTitle.countableTranslator(this.daysRemaining);
-
-      return sprintf(i18nWidgetTitle, {
-        planName: removeTrialSuffix(this.planName),
-        enDash: '–',
-        num: this.daysRemaining,
+      return sprintf(i18n.widgetTitle, { planName: removeTrialSuffix(this.planName) });
+    },
+    widgetRemainingDays() {
+      return sprintf(i18n.widgetRemainingDays, {
+        daysUsed: this.trialDaysUsed,
+        duration: this.trialDuration,
       });
     },
   },
@@ -49,17 +51,20 @@ export default {
       class="gl-display-flex gl-flex-direction-column gl-align-items-stretch gl-w-full"
       @click="onWidgetClick"
     >
-      <span class="gl-display-flex gl-align-items-center">
+      <div class="gl-display-flex gl-w-full">
         <span class="nav-icon-container svg-container">
           <img :src="navIconImagePath" width="16" class="svg" />
         </span>
-        <span class="nav-item-name gl-white-space-normal">
+        <span class="nav-item-name">
           {{ widgetTitle }}
         </span>
-      </span>
-      <span class="gl-display-flex gl-align-items-stretch gl-mt-3">
+        <span class="collapse-text gl-font-sm gl-mr-auto">
+          {{ widgetRemainingDays }}
+        </span>
+      </div>
+      <div class="gl-display-flex gl-align-items-stretch gl-mt-2">
         <gl-progress-bar :value="percentageComplete" class="gl-flex-grow-1" />
-      </span>
+      </div>
     </div>
   </gl-link>
 </template>

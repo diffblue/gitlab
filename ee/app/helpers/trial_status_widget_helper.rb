@@ -25,6 +25,8 @@ module TrialStatusWidgetHelper
 
   def trial_status_widget_data_attrs(group)
     trial_status_common_data_attrs(group).merge(
+      trial_days_used: group.gitlab_subscription&.trial_days_used,
+      trial_duration: group.gitlab_subscription&.trial_duration,
       days_remaining: group.trial_days_remaining,
       nav_icon_image_path: image_path('illustrations/golden_tanuki.svg'),
       percentage_complete: group.trial_percentage_complete

@@ -8,14 +8,18 @@ describe('TrialStatusWidget component', () => {
   let wrapper;
 
   const { trackingEvents } = WIDGET;
-  const defaultDaysRemaining = 20;
+  const trialDaysUsed = 10;
+  const trialDuration = 30;
+  const daysRemaining = 20;
 
   const findGlLink = () => wrapper.findComponent(GlLink);
 
   const createComponent = (providers = {}) => {
     return shallowMount(TrialStatusWidget, {
       provide: {
-        daysRemaining: defaultDaysRemaining,
+        trialDaysUsed,
+        trialDuration,
+        daysRemaining,
         navIconImagePath: 'illustrations/golden_tanuki.svg',
         percentageComplete: 10,
         planName: 'Ultimate',
@@ -65,7 +69,7 @@ describe('TrialStatusWidget component', () => {
     it('does not render Trial twice if the plan name includes "Trial"', () => {
       wrapper = createComponent({ planName: 'Ultimate Trial' });
 
-      expect(wrapper.text()).toEqual('Ultimate Trial – 20 days left');
+      expect(wrapper.text()).toMatchInterpolatedText('Ultimate Trial Day 10/30');
     });
   });
 

@@ -1,4 +1,4 @@
-import { n__, s__ } from '~/locale';
+import { s__ } from '~/locale';
 
 const CLICK_BUTTON_ACTION = 'click_button';
 const RESIZE_EVENT_DEBOUNCE_MS = 150;
@@ -8,15 +8,8 @@ export const EXPERIMENT_KEY = 'group_contact_sales';
 
 export const WIDGET = {
   i18n: {
-    widgetTitle: {
-      countableTranslator(count) {
-        return n__(
-          'Trials|%{planName} Trial %{enDash} %{num} day left',
-          'Trials|%{planName} Trial %{enDash} %{num} days left',
-          count,
-        );
-      },
-    },
+    widgetTitle: s__('Trials|%{planName} Trial'),
+    widgetRemainingDays: s__('Trials|Day %{daysUsed}/%{duration}'),
   },
   trackingEvents: {
     widgetClick: { action: 'click_link', label: 'trial_status_widget' },

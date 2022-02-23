@@ -6,6 +6,7 @@ RSpec.describe TrialStatusWidgetHelper, :saas do
   describe 'data attributes for mounting Vue components', :freeze_time do
     let(:trial_length) { 30 } # days
     let(:trial_days_remaining) { 18 }
+    let(:trial_days_used) { trial_length - trial_days_remaining }
     let(:trial_end_date) { Date.current.advance(days: trial_days_remaining) }
     let(:trial_start_date) { Date.current.advance(days: trial_days_remaining - trial_length) }
     let(:trial_percentage_complete) { (trial_length - trial_days_remaining) * 100 / trial_length }
@@ -89,6 +90,8 @@ RSpec.describe TrialStatusWidgetHelper, :saas do
       it 'returns the needed data attributes for mounting the widget Vue component' do
         expect(data_attrs).to match(
           shared_expected_attrs.merge(
+            trial_days_used: trial_days_used,
+            trial_duration: trial_length,
             nav_icon_image_path: '/image-path/for-file.svg',
             percentage_complete: trial_percentage_complete
           )
