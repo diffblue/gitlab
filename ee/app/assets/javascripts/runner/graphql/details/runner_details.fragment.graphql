@@ -1,4 +1,4 @@
-#import "~/runner/graphql/runner_details_shared.fragment.graphql"
+#import "~/runner/graphql/details/runner_details_shared.fragment.graphql"
 
 fragment RunnerDetails on CiRunner {
   ...RunnerDetailsShared

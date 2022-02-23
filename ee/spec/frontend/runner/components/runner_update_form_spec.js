@@ -8,7 +8,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { runnerData } from 'jest/runner/mock_data';
 import { createAlert, VARIANT_SUCCESS } from '~/flash';
 import RunnerUpdateForm from '~/runner/components/runner_update_form.vue';
-import runnerUpdateMutation from '~/runner/graphql/runner_update.mutation.graphql';
+import runnerUpdateMutation from '~/runner/graphql/details/runner_update.mutation.graphql';
 
 jest.mock('~/flash');
 
