@@ -602,7 +602,7 @@ error: (CC::CLI::Analyze::EngineFailure) engine pmd ran for 900 seconds and was 
 Could not analyze code quality for the repository at /code
 ```
 
-To work around this problem, set `TIMEOUT_SECONDS` to a higher value in your `.gitlab.-ci.yml` file. 
+To work around this problem, set `TIMEOUT_SECONDS` to a higher value in your `.gitlab.-ci.yml` file.
 
 For example:
 
