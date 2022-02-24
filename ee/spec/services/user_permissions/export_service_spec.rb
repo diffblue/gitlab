@@ -3,59 +3,13 @@
 require 'spec_helper'
 
 RSpec.describe UserPermissions::ExportService do
-  let(:service) { described_class.new(current_user) }
+  let(:service) { described_class.new }
 
   let_it_be(:admin) { create(:admin) }
   let_it_be(:user) { create(:user, username: 'Jessica', email: 'jessica@test.com', last_activity_on: Date.new(2020, 12, 16)) }
 
-  context 'access' do
-    shared_examples 'allowed to export user permissions' do
-      it { expect(service.csv_data).to be_success }
-    end
-
-    shared_examples 'not allowed to export user permissions' do
-      it { expect(service.csv_data).not_to be_success }
-    end
-
-    before do
-      stub_licensed_features(export_user_permissions: licensed)
-    end
-
-    context 'when user is an admin', :enable_admin_mode do
-      let(:current_user) { admin }
-
-      context 'when licensed' do
-        let(:licensed) { true }
-
-        it_behaves_like 'allowed to export user permissions'
-      end
-
-      context 'when not licensed' do
-        let(:licensed) { false }
-
-        it_behaves_like 'not allowed to export user permissions'
-      end
-    end
-
-    context 'when user is not an admin' do
-      let(:current_user) { user }
-
-      context 'when licensed' do
-        let(:licensed) { true }
-
-        it_behaves_like 'not allowed to export user permissions'
-      end
-
-      context 'when not licensed' do
-        let(:licensed) { false }
-
-        it_behaves_like 'not allowed to export user permissions'
-      end
-    end
-  end
-
   context 'data verification', :enable_admin_mode do
-    subject(:csv) { CSV.parse(service.csv_data.payload.to_a.join, headers: true) }
+    subject(:csv) { CSV.parse(service.execute.payload[:csv_data], headers: true) }
 
     let_it_be(:current_user) { admin }
     let_it_be(:group) { create(:group) }
