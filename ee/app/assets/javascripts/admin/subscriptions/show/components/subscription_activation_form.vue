@@ -19,7 +19,7 @@ import {
   SUBSCRIPTION_ACTIVATION_FINALIZED_EVENT,
   subscriptionActivationForm,
 } from '../constants';
-import { getErrorsAsData, getLicenseFromData } from '../graphql/utils';
+import { getErrorsAsData, getLicenseFromData } from '../utils';
 import activateSubscriptionMutation from '../graphql/mutations/activate_subscription.mutation.graphql';
 
 const feedbackMap = {

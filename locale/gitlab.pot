@@ -35558,6 +35558,9 @@ msgstr ""
 msgid "SuperSonics|Maximum users"
 msgstr ""
 
+msgid "SuperSonics|Offline cloud"
+msgstr ""
+
 msgid "SuperSonics|Paste your activation code"
 msgstr ""
 

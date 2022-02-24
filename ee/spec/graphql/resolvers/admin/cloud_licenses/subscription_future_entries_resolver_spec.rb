@@ -24,19 +24,21 @@ RSpec.describe Resolvers::Admin::CloudLicenses::SubscriptionFutureEntriesResolve
       end
     end
 
-    context 'when no subscriptions exist' do
-      it 'returns an empty array', :enable_admin_mode do
+    context 'when no subscriptions exist', :enable_admin_mode do
+      it 'returns an empty array' do
         allow(::Gitlab::CurrentSettings).to receive(:future_subscriptions).and_return([])
 
         expect(result).to eq([])
       end
     end
 
-    context 'when future subscriptions exist' do
+    context 'when future subscriptions exist', :enable_admin_mode do
       let(:cloud_license_enabled) { true }
+      let(:offline_cloud_licensing) { false }
       let(:subscription) do
         {
           'cloud_license_enabled' => cloud_license_enabled,
+          'offline_cloud_licensing' => offline_cloud_licensing,
           'plan' => 'ultimate',
           'name' => 'User Example',
           'email' => 'user@example.com',
@@ -51,11 +53,11 @@ RSpec.describe Resolvers::Admin::CloudLicenses::SubscriptionFutureEntriesResolve
         allow(::Gitlab::CurrentSettings).to receive(:future_subscriptions).and_return([subscription])
       end
 
-      it 'returns the subscription future entries', :enable_admin_mode do
+      it 'returns the subscription future entries' do
         expect(result).to match(
           [
             hash_including(
-              'type' => 'cloud',
+              'type' => License::CLOUD_LICENSE_TYPE,
               'plan' => 'ultimate',
               'name' => 'User Example',
               'email' => 'user@example.com',
@@ -71,8 +73,16 @@ RSpec.describe Resolvers::Admin::CloudLicenses::SubscriptionFutureEntriesResolve
       context 'cloud_license_enabled is false' do
         let(:cloud_license_enabled) { false }
 
-        it 'returns type as license_file', :enable_admin_mode do
-          expect(result.first).to include('type' => 'license_file')
+        it 'returns type as license_file' do
+          expect(result.first).to include('type' => License::LICENSE_FILE_TYPE)
+        end
+      end
+
+      context 'cloud_license_enabled is true and offline_cloud_licensing is true' do
+        let(:offline_cloud_licensing) { true }
+
+        it 'returns type as offline_cloud' do
+          expect(result.first).to include('type' => License::OFFLINE_CLOUD_TYPE)
         end
       end
     end
