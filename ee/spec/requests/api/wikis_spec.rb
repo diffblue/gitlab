@@ -21,7 +21,7 @@ RSpec.describe API::Wikis do
   let(:group) { create(:group, :internal, :wiki_repo) }
   let(:wiki) { create(:group_wiki, container: group, user: user) }
   let(:payload) { { content: 'content', format: 'rdoc', title: 'title' } }
-  let(:expected_keys_with_content) { %w(content format slug title) }
+  let(:expected_keys_with_content) { %w(content format slug title encoding) }
   let(:expected_keys_without_content) { %w(format slug title) }
 
   before do
