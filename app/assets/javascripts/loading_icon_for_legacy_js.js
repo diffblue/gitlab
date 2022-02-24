@@ -1,6 +1,8 @@
+import Vue from 'vue';
+import { GlLoadingIcon } from '@gitlab/ui';
 import { __ } from '~/locale';
 
-const baseCSSClass = 'gl-spinner';
+const defaultValue = (prop) => GlLoadingIcon.props[prop]?.default;
 
 /**
  * Returns a loading icon/spinner element.
@@ -18,21 +20,34 @@ const baseCSSClass = 'gl-spinner';
  * @returns {HTMLElement}
  */
 export const loadingIconForLegacyJS = ({
-  inline = false,
-  color = 'dark',
-  size = 'sm',
+  inline = defaultValue('inline'),
+  color = defaultValue('color'),
+  size = defaultValue('size'),
   classes = [],
   label = __('Loading'),
 } = {}) => {
-  const container = document.createElement(inline ? 'span' : 'div');
-  container.classList.add(`${baseCSSClass}-container`, ...classes);
-  container.setAttribute('role', 'status');
+  const mountEl = document.createElement('div');
 
-  const spinner = document.createElement('span');
-  spinner.classList.add(baseCSSClass, `${baseCSSClass}-${color}`, `${baseCSSClass}-${size}`);
-  spinner.setAttribute('aria-label', label);
+  const vm = new Vue({
+    el: mountEl,
+    render(h) {
+      return h(GlLoadingIcon, {
+        class: classes,
+        props: {
+          inline,
+          color,
+          size,
+          label,
+        },
+      });
+    },
+  });
 
-  container.appendChild(spinner);
+  // Ensure it's rendered
+  vm.$forceUpdate();
 
-  return container;
+  const el = vm.$el.cloneNode(true);
+  vm.$destroy();
+
+  return el;
 };
