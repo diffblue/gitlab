@@ -160,6 +160,14 @@ module Types
           resolver: ::Resolvers::EpicAncestorsResolver,
           description: 'Ancestors (parents) of the epic.'
 
+    field :color, GraphQL::Types::String, null: false,
+          description: 'Color of the epic.',
+          feature_flag: :epic_color_highlight
+
+    field :text_color, GraphQL::Types::String, null: false,
+          description: 'Text color generated for the epic.',
+          feature_flag: :epic_color_highlight
+
     markdown_field :title_html, null: true
     markdown_field :description_html, null: true
 

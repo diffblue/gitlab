@@ -21,10 +21,18 @@ module EE
       include Todoable
       include SortableTitle
 
+      DEFAULT_COLOR = '#1068bf'
+
+      default_value_for :color, allows_nil: false, value: DEFAULT_COLOR
+
       enum state_id: {
         opened: ::Epic.available_states[:opened],
         closed: ::Epic.available_states[:closed]
       }
+
+      validates :color, color: true, allow_blank: false
+
+      before_validation :strip_whitespace_from_color
 
       alias_attribute :state, :state_id
 
@@ -202,6 +210,20 @@ module EE
       def usage_ping_record_epic_creation
         ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_created_action(author: author)
       end
+
+      def light_color?(color)
+        if color.length == 4
+          r, g, b = color[1, 4].scan(/./).map { |v| (v * 2).hex }
+        else
+          r, g, b = color[1, 7].scan(/.{2}/).map(&:hex)
+        end
+
+        (r + g + b) > 500
+      end
+
+      def strip_whitespace_from_color
+        color.strip!
+      end
     end
 
     class_methods do
@@ -344,6 +366,14 @@ module EE
             order_expression: ::Epic.arel_table[:id].desc
           )
         ])
+      end
+    end
+
+    def text_color
+      if light_color?(color)
+        '#333333'
+      else
+        '#FFFFFF'
       end
     end
 

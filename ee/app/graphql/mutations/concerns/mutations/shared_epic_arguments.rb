@@ -51,6 +51,11 @@ module Mutations
                [GraphQL::Types::ID],
                required: false,
                description: 'IDs of labels to be removed from the epic.'
+
+      argument :color,
+               GraphQL::Types::String,
+               required: false,
+               description: 'Color of the epic. Available only when feature flag `epic_color_highlight` is enabled. This flag is disabled by default, because the feature is experimental and is subject to change without notice.'
     end
 
     def validate_arguments!(args)
@@ -58,6 +63,8 @@ module Mutations
         raise Gitlab::Graphql::Errors::ArgumentError,
           'The list of epic attributes is empty'
       end
+
+      args.delete(:color) unless Feature.enabled?(:epic_color_highlight)
     end
   end
 end

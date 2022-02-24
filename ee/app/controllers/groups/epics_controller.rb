@@ -80,6 +80,7 @@ class Groups::EpicsController < Groups::ApplicationController
 
   def epic_params_attributes
     [
+      :color,
       :title,
       :description,
       :start_date_fixed,
