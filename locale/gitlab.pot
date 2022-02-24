@@ -26813,10 +26813,19 @@ msgstr ""
 msgid "PipelineWizardDefaultCommitMessage|Update %{filename}"
 msgstr ""
 
+msgid "PipelineWizardInputValidation|At least one entry is required"
+msgstr ""
+
 msgid "PipelineWizardInputValidation|This field is required"
 msgstr ""
 
 msgid "PipelineWizardInputValidation|This value is not valid"
+msgstr ""
+
+msgid "PipelineWizardListWidget|add another step"
+msgstr ""
+
+msgid "PipelineWizardListWidget|remove step"
 msgstr ""
 
 msgid "PipelineWizard|Commit"
