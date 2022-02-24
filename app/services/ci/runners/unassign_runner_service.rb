@@ -16,6 +16,12 @@ module Ci
 
         @runner_project.destroy
       end
+
+      private
+
+      attr_reader :runner_project, :user
     end
   end
 end
+
+Ci::Runners::UnassignRunnerService.prepend_mod
