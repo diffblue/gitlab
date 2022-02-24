@@ -885,14 +885,7 @@ RSpec.describe Vulnerabilities::Finding do
         context 'has no evidence summary when evidence is present, summary is not' do
           let(:finding) { create(:vulnerabilities_finding, raw_metadata: { evidence: {} }) }
 
-          it do
-            is_expected.to match a_hash_including(
-              summary: nil,
-              source: nil,
-              supporting_messages: [],
-              request: nil,
-              response: nil)
-          end
+          it { is_expected.to be_nil }
         end
       end
 

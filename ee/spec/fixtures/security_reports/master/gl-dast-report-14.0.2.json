@@ -162,7 +162,7 @@
           "reason_phrase": "OK",
           "status_code": 200
         },
-        "summary": ""
+        "summary": "Evidence summary"
       },
       "id": "47308329-7297-4f8f-b98e-1cc33f26fad4",
       "identifiers": [
@@ -186,9 +186,9 @@
       ],
       "location": {
         "hostname": "http://pancakes",
-        "method": "",
+        "method": "GET",
         "param": "",
-        "path": ""
+        "path": "/WebGoat/plugins/bootstrap/css/pancakes.css"
       },
       "message": "Content Security Policy (CSP) Header Not Set",
       "scanner": {
