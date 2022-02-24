@@ -8,7 +8,7 @@ module Gitlab
     class Receiver
       include Gitlab::Utils::StrongMemoize
 
-      RECEIVER_HEADER_REGEX = /for \<(.*)\>/.freeze
+      RECEIVED_HEADER_REGEX = /for\s+\<(.+)\>/.freeze
 
       def initialize(raw)
         @raw = raw
@@ -40,7 +40,7 @@ module Gitlab
           envelope_to: envelope_to.map(&:value),
           x_envelope_to: x_envelope_to.map(&:value),
           # reduced down to what looks like an email in the received headers
-          received_recipients: received_headers_containing_possible_recipients.map(&:value).map { |v| RECEIVER_HEADER_REGEX.match(v)[1] },
+          received_recipients: recipients_from_received_headers,
           meta: {
             client_id: "email/#{mail.from.first}",
             project: handler&.project&.full_path
@@ -148,25 +148,15 @@ module Gitlab
       end
 
       def find_first_key_from_received_headers
-        # there are often multiple Received headers
-        # and we just want ones that has something that looks like an email
-        # and return the first one that matches
-        filtered = received_headers_containing_possible_recipients
-        matching = filtered.map(&:value).grep(RECEIVER_HEADER_REGEX)
-
-        matching.find do |value|
-          looks_like_email = RECEIVER_HEADER_REGEX.match(value)
-          key = email_class.key_from_address(looks_like_email[1])
-
+        recipients_from_received_headers.find do |email|
+          key = email_class.key_from_address(email)
           break key if key
         end
       end
 
-      def received_headers_containing_possible_recipients
-        strong_memoize :matching_received_headers do
-          # there are often multiple Received headers so we filter them out
-          # and also have some extra stuff so we have to strip that out
-          received.select { |header| RECEIVER_HEADER_REGEX =~ header.value }
+      def recipients_from_received_headers
+        strong_memoize :emails_from_received_headers do
+          received.map { |header| header.value[RECEIVED_HEADER_REGEX, 1] }.compact
         end
       end
 
