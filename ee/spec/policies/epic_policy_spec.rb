@@ -27,22 +27,41 @@ RSpec.describe EpicPolicy do
   end
 
   shared_examples 'can only read epics' do
-    it do
-      is_expected.to be_allowed(:read_epic, :read_epic_iid, :read_note, :create_todo)
-      is_expected.to be_disallowed(:update_epic, :destroy_epic, :admin_epic, :create_epic)
+    it 'matches expected permissions' do
+      is_expected.to be_allowed(:read_epic, :read_epic_iid, :read_note,
+                                :create_todo, :read_related_epic_link)
+      is_expected.to be_disallowed(:update_epic, :destroy_epic, :admin_epic,
+                                   :create_epic, :admin_related_epic_link)
     end
   end
 
   shared_examples 'can manage epics' do
-    it { is_expected.to be_allowed(:read_epic, :read_epic_iid, :read_note, :update_epic, :admin_epic, :create_epic, :create_todo) }
+    it 'matches expected permissions' do
+      is_expected.to be_allowed(:read_epic, :read_epic_iid, :read_note,
+                                :update_epic, :admin_epic, :create_epic,
+                                :create_todo, :read_related_epic_link,
+                                :admin_related_epic_link)
+    end
   end
 
   shared_examples 'all epic permissions disabled' do
-    it { is_expected.to be_disallowed(:read_epic, :read_epic_iid, :update_epic, :destroy_epic, :admin_epic, :create_epic, :create_note, :award_emoji, :read_note, :create_todo) }
+    it 'matches expected permissions' do
+      is_expected.to be_disallowed(:read_epic, :read_epic_iid, :update_epic,
+                                   :destroy_epic, :admin_epic, :create_epic,
+                                   :create_note, :award_emoji, :read_note,
+                                   :create_todo, :read_related_epic_link,
+                                   :admin_related_epic_link)
+    end
   end
 
   shared_examples 'all reporter epic permissions enabled' do
-    it { is_expected.to be_allowed(:read_epic, :read_epic_iid, :update_epic, :admin_epic, :create_epic, :create_note, :award_emoji, :read_note, :create_todo) }
+    it 'matches expected permissions' do
+      is_expected.to be_allowed(:read_epic, :read_epic_iid, :update_epic,
+                                :admin_epic, :create_epic, :create_note,
+                                :award_emoji, :read_note, :create_todo,
+                                :read_related_epic_link,
+                                :admin_related_epic_link)
+    end
   end
 
   shared_examples 'group member permissions' do
@@ -111,7 +130,7 @@ RSpec.describe EpicPolicy do
 
   context 'when epics feature is enabled' do
     before do
-      stub_licensed_features(epics: true)
+      stub_licensed_features(epics: true, related_epics: true)
     end
 
     context 'when an epic is in a private group' do
@@ -225,6 +244,23 @@ RSpec.describe EpicPolicy do
         end
 
         it_behaves_like 'all reporter epic permissions enabled'
+      end
+    end
+
+    context 'when related_epics feature is not available' do
+      let(:group) { create(:group) }
+
+      before do
+        stub_licensed_features(epics: true)
+        group.add_maintainer(user)
+      end
+
+      it 'matches expected permissions' do
+        is_expected.to be_allowed(:read_epic, :read_epic_iid, :update_epic,
+                                  :admin_epic, :create_epic, :create_note,
+                                  :award_emoji, :read_note, :create_todo)
+        is_expected.to be_disallowed(:read_related_epic_link,
+                                     :admin_related_epic_link)
       end
     end
   end

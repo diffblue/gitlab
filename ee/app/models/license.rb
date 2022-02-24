@@ -187,6 +187,7 @@ class License < ApplicationRecord
     prometheus_alerts
     pseudonymizer
     quality_management
+    related_epics
     release_evidence_test_artifacts
     report_approver_rules
     requirements
