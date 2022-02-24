@@ -2,13 +2,8 @@
 import { GlTooltip, GlTooltipDirective, GlIcon, GlBadge, GlTableLite } from '@gitlab/ui';
 import { kebabCase } from 'lodash';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
-import {
-  cloudLicenseText,
-  detailsLabels,
-  licenseFileText,
-  subscriptionTable,
-  subscriptionTypes,
-} from '../constants';
+import { detailsLabels, subscriptionTable } from '../constants';
+import { getLicenseTypeLabel } from '../utils';
 
 const DEFAULT_BORDER_CLASSES = 'gl-border-b-1! gl-border-b-gray-100! gl-border-b-solid!';
 const DEFAULT_TH_CLASSES = 'gl-bg-white! gl-border-t-0! gl-pb-5! gl-px-5! gl-text-gray-700!';
@@ -99,8 +94,7 @@ export default {
         },
         {
           key: 'type',
-          formatter: (v, k, item) =>
-            item.type === subscriptionTypes.LICENSE_FILE ? licenseFileText : cloudLicenseText,
+          formatter: (v, k, item) => getLicenseTypeLabel(item.type),
           label: subscriptionTable.type,
           tdAttr,
           tdClass: this.cellClass,

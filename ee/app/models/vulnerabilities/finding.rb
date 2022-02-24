@@ -293,6 +293,8 @@ module Vulnerabilities
     def evidence
       evidence_data = finding_evidence.present? && Feature.enabled?(:read_from_vulnerability_finding_evidence) ? finding_evidence.data : metadata.dig('evidence')
 
+      return if evidence_data.nil?
+
       {
         summary: evidence_data&.dig('summary'),
         request: build_evidence_request(evidence_data&.dig('request')),

@@ -2,12 +2,8 @@ import { GlBadge, GlIcon, GlTooltip } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import SubscriptionDetailsHistory from 'ee/admin/subscriptions/show/components/subscription_details_history.vue';
-import {
-  detailsLabels,
-  cloudLicenseText,
-  licenseFileText,
-  subscriptionTypes,
-} from 'ee/admin/subscriptions/show/constants';
+import { detailsLabels, onlineCloudLicenseText } from 'ee/admin/subscriptions/show/constants';
+import { getLicenseTypeLabel } from 'ee/admin/subscriptions/show/utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { license, subscriptionFutureHistory, subscriptionPastHistory } from '../mock_data';
 
@@ -54,7 +50,7 @@ describe('Subscription Details History', () => {
     });
 
     it('has the correct license type', () => {
-      expect(findCurrentRow().text()).toContain(cloudLicenseText);
+      expect(findCurrentRow().text()).toContain(onlineCloudLicenseText);
       expect(findTableRows().at(-1).text()).toContain('License file');
     });
 
@@ -119,9 +115,7 @@ describe('Subscription Details History', () => {
 
       it('displays the correct value for the type cell', () => {
         const cellTestId = `subscription-cell-type`;
-        const type =
-          subscription.type === subscriptionTypes.LICENSE_FILE ? licenseFileText : cloudLicenseText;
-        expect(findCellByTestid(cellTestId).text()).toBe(type);
+        expect(findCellByTestid(cellTestId).text()).toBe(getLicenseTypeLabel(subscription.type));
       });
 
       it('displays the correct value for the plan cell', () => {

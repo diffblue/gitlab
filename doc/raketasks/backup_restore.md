@@ -1461,7 +1461,7 @@ To prepare the new server:
    1. On the top bar, select **Menu > Admin**.
    1. On the left sidebar, select **Monitoring > Background Jobs**.
    1. Under the Sidekiq dashboard, verify that the numbers
-      match with what was shown on the old server.   
+      match with what was shown on the old server.
    1. While still under the Sidekiq dashboard, select **Cron** and then **Enable All**
       to re-enable periodic background jobs.
 1. Test that read-only operations on the GitLab instance work as expected. For example, browse through project repository files, merge requests, and issues.

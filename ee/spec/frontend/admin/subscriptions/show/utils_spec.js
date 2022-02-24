@@ -1,6 +1,16 @@
-import { getErrorsAsData, getLicenseFromData } from 'ee/admin/subscriptions/show/graphql/utils';
+import {
+  subscriptionTypes,
+  offlineCloudLicenseText,
+  onlineCloudLicenseText,
+  licenseFileText,
+} from 'ee/admin/subscriptions/show/constants';
+import {
+  getErrorsAsData,
+  getLicenseFromData,
+  getLicenseTypeLabel,
+} from 'ee/admin/subscriptions/show/utils';
 
-describe('graphQl utils', () => {
+describe('utils', () => {
   describe('getLicenseFromData', () => {
     const license = { id: 'license-id' };
     const gitlabSubscriptionActivate = { license };
@@ -56,6 +66,18 @@ describe('graphQl utils', () => {
       const result = getErrorsAsData();
 
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('getLicenseTypeLabel', () => {
+    const typeLabels = {
+      OFFLINE_CLOUD: offlineCloudLicenseText,
+      ONLINE_CLOUD: onlineCloudLicenseText,
+      LICENSE_FILE: licenseFileText,
+    };
+
+    it.each(Object.keys(subscriptionTypes))('should return correct label for type', (key) => {
+      expect(getLicenseTypeLabel(subscriptionTypes[key])).toBe(typeLabels[key]);
     });
   });
 });

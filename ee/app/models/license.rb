@@ -8,6 +8,7 @@ class License < ApplicationRecord
   PREMIUM_PLAN = 'premium'
   ULTIMATE_PLAN = 'ultimate'
   CLOUD_LICENSE_TYPE = 'cloud'
+  OFFLINE_CLOUD_TYPE = 'offline_cloud'
   LICENSE_FILE_TYPE = 'license_file'
   ALLOWED_PERCENTAGE_OF_USERS_OVERAGE = (10 / 100.0)
 
@@ -587,11 +588,11 @@ class License < ApplicationRecord
   end
 
   def offline_cloud_license?
-    !!license&.offline_cloud_licensing?
+    cloud_license? && !!license&.offline_cloud_licensing?
   end
 
   def online_cloud_license?
-    cloud_license? && !offline_cloud_license?
+    cloud_license? && !license&.offline_cloud_licensing?
   end
 
   def customer_service_enabled?
@@ -603,7 +604,10 @@ class License < ApplicationRecord
   end
 
   def license_type
-    cloud_license? ? CLOUD_LICENSE_TYPE : LICENSE_FILE_TYPE
+    return OFFLINE_CLOUD_TYPE if offline_cloud_license?
+    return CLOUD_LICENSE_TYPE if online_cloud_license?
+
+    LICENSE_FILE_TYPE
   end
 
   def auto_renew
