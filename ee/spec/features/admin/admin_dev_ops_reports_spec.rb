@@ -33,13 +33,13 @@ RSpec.describe 'DevOps Reports page', :js do
     end
 
     it 'shows the tabbed layout' do
-      visit admin_dev_ops_report_path
+      visit admin_dev_ops_reports_path
 
       expect(page).to have_selector tabs_selector
     end
 
     it 'shows the correct tabs' do
-      visit admin_dev_ops_report_path
+      visit admin_dev_ops_reports_path
 
       within tabs_selector do
         expect(page.all(:css, tab_item_selector).length).to be(6)
@@ -48,7 +48,7 @@ RSpec.describe 'DevOps Reports page', :js do
     end
 
     it 'defaults to the Overview tab' do
-      visit admin_dev_ops_report_path
+      visit admin_dev_ops_reports_path
 
       within tabs_selector do
         expect(page).to have_selector active_tab_selector, text: 'Overview'
@@ -57,7 +57,7 @@ RSpec.describe 'DevOps Reports page', :js do
 
     shared_examples 'displays tab content' do |tab|
       it "displays the #{tab} tab content when selected" do
-        visit admin_dev_ops_report_path
+        visit admin_dev_ops_reports_path
 
         click_link tab
 
@@ -72,22 +72,22 @@ RSpec.describe 'DevOps Reports page', :js do
     end
 
     it 'does not add the tab param when the Overview tab is selected' do
-      visit admin_dev_ops_report_path
+      visit admin_dev_ops_reports_path
 
       within tabs_selector do
         click_link 'Overview'
       end
 
-      expect(page).to have_current_path(admin_dev_ops_report_path)
+      expect(page).to have_current_path(admin_dev_ops_reports_path)
     end
 
     shared_examples 'appends the tab param to the url' do |tab, text|
       it "adds the ?tab=#{tab} param when the #{text} tab is selected" do
-        visit admin_dev_ops_report_path
+        visit admin_dev_ops_reports_path
 
         click_link text
 
-        expect(page).to have_current_path(admin_dev_ops_report_path(tab: tab))
+        expect(page).to have_current_path(admin_dev_ops_reports_path(tab: tab))
       end
     end
 
@@ -96,7 +96,7 @@ RSpec.describe 'DevOps Reports page', :js do
     end
 
     it 'shows the devops core tab when the tab param is set' do
-      visit admin_dev_ops_report_path(tab: 'devops-score')
+      visit admin_dev_ops_reports_path(tab: 'devops-score')
 
       within tabs_selector do
         expect(page).to have_selector active_tab_selector, text: 'DevOps Score'
@@ -105,7 +105,7 @@ RSpec.describe 'DevOps Reports page', :js do
 
     context 'the devops score tab' do
       it 'has dismissable intro callout' do
-        visit admin_dev_ops_report_path(tab: 'devops-score')
+        visit admin_dev_ops_reports_path(tab: 'devops-score')
 
         expect(page).to have_content 'Introducing Your DevOps Reports'
 
@@ -122,13 +122,13 @@ RSpec.describe 'DevOps Reports page', :js do
         end
 
         it 'shows empty state' do
-          visit admin_dev_ops_report_path(tab: 'devops-score')
+          visit admin_dev_ops_reports_path(tab: 'devops-score')
 
           expect(page).to have_text('Service ping is off')
         end
 
         it 'hides the intro callout' do
-          visit admin_dev_ops_report_path(tab: 'devops-score')
+          visit admin_dev_ops_reports_path(tab: 'devops-score')
 
           expect(page).not_to have_content 'Introducing Your DevOps Reports'
         end
@@ -138,7 +138,7 @@ RSpec.describe 'DevOps Reports page', :js do
         it 'shows empty state' do
           stub_application_setting(usage_ping_enabled: true)
 
-          visit admin_dev_ops_report_path(tab: 'devops-score')
+          visit admin_dev_ops_reports_path(tab: 'devops-score')
 
           expect(page).to have_content('Data is still calculating')
         end
@@ -149,7 +149,7 @@ RSpec.describe 'DevOps Reports page', :js do
           stub_application_setting(usage_ping_enabled: true)
           create(:dev_ops_report_metric)
 
-          visit admin_dev_ops_report_path(tab: 'devops-score')
+          visit admin_dev_ops_reports_path(tab: 'devops-score')
 
           expect(page).to have_selector('[data-testid="devops-score-app"]')
         end
@@ -163,7 +163,7 @@ RSpec.describe 'DevOps Reports page', :js do
     end
 
     it 'does not show the tabbed layout' do
-      visit admin_dev_ops_report_path
+      visit admin_dev_ops_reports_path
 
       expect(page).not_to have_selector tabs_selector
     end
