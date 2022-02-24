@@ -29,27 +29,18 @@ RSpec.describe Issuable do
       end
 
       describe 'note_authors' do
+        it { is_expected.to have_many(:note_authors).through(:notes) }
+      end
+
+      describe 'user_note_authors' do
         let(:system_user) { create(:user) }
         let!(:system_note) { create(:system_note, author: system_user, noteable: issue, project: issue.project) }
 
-        it { is_expected.to have_many(:note_authors).through(:notes) }
+        it 'filters the authors to those of user notes' do
+          authors = issue.user_note_authors
 
-        describe 'note_authors.user_notes' do
-          it 'filters the authors to those of user notes' do
-            authors = issue.note_authors.user_notes
-
-            expect(authors).to include(note.author)
-            expect(authors).not_to include(system_user)
-          end
-        end
-
-        describe 'note_authors.system_notes' do
-          it 'filters the authors to those of system notes' do
-            authors = issue.note_authors.system_notes
-
-            expect(authors).to include(system_user)
-            expect(authors).not_to include(note.author)
-          end
+          expect(authors).to include(note.author)
+          expect(authors).not_to include(system_user)
         end
       end
     end
