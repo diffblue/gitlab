@@ -26,5 +26,20 @@ RSpec.describe 'Groups > Contribution Analytics', :js do
 
       expect(page).to have_content "Contribution analytics for issues, merge requests and push"
     end
+
+    it 'displays text indicating no pushes, merge requests and issues' do
+      visit group_path(group)
+
+      within('.nav-sidebar') do
+        find('a', text: 'Analytics').click
+
+        within('.sidebar-sub-level-items') do
+          find('a', text: 'Contribution').click
+        end
+      end
+      expect(page).to have_content "No pushes for the selected time period."
+      expect(page).to have_content "No merge requests for the selected time period."
+      expect(page).to have_content "No issues for the selected time period."
+    end
   end
 end
