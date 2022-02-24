@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module AuditEvents
-  class RunnerRegistrationAuditEventService < ::AuditEventService
-    # Logs an audit event related to a runner registration event
+  class RunnerAuditEventService < ::AuditEventService
+    # Logs an audit event related to a runner event
     #
     # @param [Ci::Runner] runner
     # @param [String, User] author the entity initiating the operation (e.g. a runner registration or authentication token)
@@ -40,10 +40,6 @@ module AuditEvents
     private
 
     def message
-      raise NotImplementedError, "Please implement #{self.class}##{__method__}"
-    end
-
-    def author_class
       raise NotImplementedError, "Please implement #{self.class}##{__method__}"
     end
 

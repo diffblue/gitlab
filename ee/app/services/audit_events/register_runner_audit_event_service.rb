@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module AuditEvents
-  class RegisterRunnerAuditEventService < RunnerRegistrationAuditEventService
+  class RegisterRunnerAuditEventService < RunnerAuditEventService
     def token_field
       :runner_registration_token
     end
