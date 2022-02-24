@@ -114,6 +114,12 @@ RSpec.describe Gitlab::EtagCaching::Router::Rails do
     end
   end
 
+  it 'has a caller_id for every route', :aggregate_failures do
+    described_class::ROUTES.each do |route|
+      expect(route.caller_id).to include('#'), "#{route.name} has caller_id #{route.caller_id}, which is not valid"
+    end
+  end
+
   def match_route(path)
     described_class.match(double(path_info: path))
   end

@@ -3,23 +3,24 @@
 module Gitlab
   module EtagCaching
     module Router
-      Route = Struct.new(:regexp, :name, :feature_category, :router) do
+      Route = Struct.new(:router, :regexp, :name, :feature_category, :caller_id) do
         delegate :match, to: :regexp
         delegate :cache_key, to: :router
       end
 
       module Helpers
         def build_route(attrs)
-          EtagCaching::Router::Route.new(*attrs, self)
+          EtagCaching::Router::Route.new(self, *attrs)
         end
 
         def build_rails_route(attrs)
           regexp, name, controller, action_name = *attrs
           EtagCaching::Router::Route.new(
+            self,
             regexp,
             name,
             controller.feature_category_for_action(action_name).to_s,
-            self
+            controller.endpoint_id_for_action(action_name).to_s
           )
         end
       end
