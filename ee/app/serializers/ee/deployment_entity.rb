@@ -6,6 +6,7 @@ module EE
 
     prepended do
       expose :pending_approval_count
+      expose :approvals, using: ::API::Entities::Deployments::Approval
     end
   end
 end

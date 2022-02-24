@@ -34,7 +34,7 @@ module EE
     def pending_approval_count
       return 0 unless blocked?
 
-      environment.required_approval_count - approvals.count
+      environment.required_approval_count - approvals.length
     end
   end
 end

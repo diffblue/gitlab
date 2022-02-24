@@ -21,4 +21,10 @@ RSpec.describe DeploymentEntity do
       expect(subject[:pending_approval_count]).to eq(2)
     end
   end
+
+  describe '#approvals' do
+    it 'exposes approvals' do
+      expect(subject[:approvals].length).to eq(1)
+    end
+  end
 end
