@@ -8,6 +8,6 @@ RSpec.describe API::Entities::Deployments::Approval do
   let(:approval) { build(:deployment_approval) }
 
   it 'exposes correct attributes' do
-    expect(subject.keys).to contain_exactly(:user, :status)
+    expect(subject.keys).to contain_exactly(:user, :status, :created_at)
   end
 end
