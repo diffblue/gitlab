@@ -9,7 +9,13 @@ module MergeRequests
     enum reason: ::Enums::MergeRequests::ComplianceViolation.reasons
     enum severity_level: ::Enums::MergeRequests::ComplianceViolation.severity_levels
 
-    scope :approved_by_committer, -> { where(reason: ::Gitlab::ComplianceManagement::Violations::ApprovedByCommitter::REASON) }
+    scope :with_merge_requests, -> { preload(merge_request: [{ target_project: :namespace }, :metrics]) }
+    scope :join_projects, -> { with_merge_requests.joins(merge_request: { target_project: :namespace }) }
+
+    scope :by_approved_by_committer, -> { where(reason: ::Gitlab::ComplianceManagement::Violations::ApprovedByCommitter::REASON) }
+    scope :by_group, -> (group) { join_projects.where(merge_requests: { projects: { namespace_id: group.self_and_descendants } }) }
+
+    scope :order_by_severity_level, -> (direction) { order(severity_level: direction, id: direction) }
 
     belongs_to :violating_user, class_name: 'User'
     belongs_to :merge_request

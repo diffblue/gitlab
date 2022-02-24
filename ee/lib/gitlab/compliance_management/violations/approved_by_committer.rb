@@ -43,7 +43,7 @@ module Gitlab
 
         # rubocop: disable CodeReuse/ActiveRecord
         def existing_violating_user_ids
-          @merge_request.compliance_violations.approved_by_committer.pluck(:violating_user_id)
+          @merge_request.compliance_violations.by_approved_by_committer.pluck(:violating_user_id)
         end
         # rubocop: enable CodeReuse/ActiveRecord
       end
