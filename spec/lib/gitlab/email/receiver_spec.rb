@@ -32,7 +32,7 @@ RSpec.describe Gitlab::Email::Receiver do
 
       metadata = receiver.mail_metadata
 
-      expect(metadata.keys).to match_array(%i(mail_uid from_address to_address mail_key references delivered_to envelope_to x_envelope_to meta))
+      expect(metadata.keys).to match_array(%i(mail_uid from_address to_address mail_key references delivered_to envelope_to x_envelope_to meta received_recipients))
       expect(metadata[:meta]).to include(client_id: 'email/jake@example.com', project: project.full_path)
       expect(metadata[meta_key]).to eq(meta_value)
     end
@@ -71,6 +71,14 @@ RSpec.describe Gitlab::Email::Receiver do
       let(:email_raw) { fixture_file('emails/envelope_to_header_with_angle_brackets.eml') }
       let(:meta_key) { :envelope_to }
       let(:meta_value) { ["<incoming+gitlabhq/gitlabhq+auth_token@appmail.example.com>"] }
+
+      it_behaves_like 'successful receive'
+    end
+
+    context 'when all other headers are missing, fall back to checking Received headers' do
+      let(:email_raw) { fixture_file('emails/missing_delivered_to_header.eml') }
+      let(:meta_key) { :received_recipients }
+      let(:meta_value) { ['incoming+gitlabhq/gitlabhq+auth_token@appmail.example.com', 'incoming+gitlabhq/gitlabhq@example.com'] }
 
       it_behaves_like 'successful receive'
     end
