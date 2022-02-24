@@ -10,7 +10,7 @@ module Types
 
     authorize :read_scan
 
-    field :name, GraphQL::Types::String, null: false, description: 'Name of the scan.'
     field :errors, [GraphQL::Types::String], null: false, description: 'List of errors.'
+    field :name, GraphQL::Types::String, null: false, description: 'Name of the scan.'
   end
 end
