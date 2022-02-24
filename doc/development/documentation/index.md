@@ -11,16 +11,16 @@ The GitLab documentation is [intended as the single source of truth (SSOT)](http
 
 In addition to this page, the following resources can help you craft and contribute to documentation:
 
-- [Style Guide](styleguide/index.md) - What belongs in the docs, language guidelines, Markdown standards to follow, links, and more.
+- [Style Guide](styleguide/index.md) - What belongs in the docs, language guidelines, markdown standards to follow, links and more.
 - [Topic type template](structure.md) - Learn about the different types of topics.
 - [Documentation process](workflow.md).
-- [Markdown Guide](../../user/markdown.md) - A reference for all Markdown syntax supported by GitLab.
+- [Markdown Guide](../../user/markdown.md) - A reference for all markdown syntax supported by GitLab.
 - [Site architecture](site_architecture/index.md) - How <https://docs.gitlab.com> is built.
 - [Documentation for feature flags](feature_flags.md) - How to write and update documentation for GitLab features deployed behind feature flags.
 
 ## Source files and rendered web locations
 
-Documentation for GitLab, GitLab Runner, Omnibus GitLab, and Charts is published to <https://docs.gitlab.com>. Documentation for GitLab is also published within the application at `/help` on the domain of the GitLab instance.
+Documentation for GitLab, GitLab Runner, Omnibus GitLab, and charts are published to <https://docs.gitlab.com>. Documentation for GitLab is also published within the application at `/help` on the domain of the GitLab instance.
 At `/help`, only help for your current edition and version is included. Help for other versions is available at <https://docs.gitlab.com/archives/>.
 
 The source of the documentation exists within the codebase of each GitLab application in the following repository locations:
@@ -57,14 +57,14 @@ docs-only merge requests using the following guide:
 
 To ensure that GitLab docs are current, there are special processes and responsibilities for all [feature changes](workflow.md), that is development work that impacts the appearance, usage, or administration of a feature.
 
-However, anyone can contribute [documentation improvements](workflow.md) that are not associated with a feature change. For example, adding a new doc on how to accomplish a use case that's already possible with GitLab or with third-party tools and GitLab.
+However, anyone can contribute [documentation improvements](workflow.md) that are not associated with a feature change. For example, adding a new document on how to accomplish a use case that's already possible with GitLab or with third-party tools and GitLab.
 
 ## Markdown and styles
 
 [GitLab docs](https://gitlab.com/gitlab-org/gitlab-docs) uses [GitLab Kramdown](https://gitlab.com/gitlab-org/gitlab_kramdown)
 as its Markdown rendering engine. See the [GitLab Markdown Guide](https://about.gitlab.com/handbook/markdown-guide/) for a complete Kramdown reference.
 
-Adhere to the [Documentation Style Guide](styleguide/index.md). If a style standard is missing, you are welcome to suggest one via a merge request.
+Stick to the [Documentation Style Guide](styleguide/index.md). If a style standard is missing, you are welcome to suggest one via merge request.
 
 ## Folder structure and files
 
@@ -87,8 +87,8 @@ belongs to, as well as an information block as described below:
 - `group`: The [Group](https://about.gitlab.com/company/team/structure/#product-groups)
   to which the majority of the page's content belongs.
 - `info`: The following line, which provides direction to contributors regarding
-  how to contact the Technical Writer associated with the page's Stage and
-  Group:
+  how to contact the technical writer associated with the page's stage and
+  group:
 
   ```plaintext
   To determine the technical writer assigned to the Stage/Group
@@ -116,7 +116,7 @@ The following metadata should be added when a page is moved to another location:
   location to which visitors should be redirected for a moved page.
   [Learn more](redirects.md).
 - `disqus_identifier`: Identifier for Disqus commenting system. Used to keep
-  comments with a page that's been moved to a new URL.
+  comments with a page that has been moved to a new URL.
   [Learn more](redirects.md#redirections-for-pages-with-disqus-comments).
 
 ### Comments metadata
@@ -179,7 +179,7 @@ After a merge request that updates documentation is merged, it is available onli
 in 4 hours or less.
 
 However, it's only available at `/help` on self-managed instances in the next released
-version. The date an update is merged can impact which self-managed release the update
+version. The date on which an update is merged can impact which self-managed release the update
 is present in.
 
 For example:
