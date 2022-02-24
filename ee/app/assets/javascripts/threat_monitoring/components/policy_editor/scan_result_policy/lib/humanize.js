@@ -1,6 +1,6 @@
 import { sprintf, s__, n__ } from '~/locale';
-import { convertToTitleCase, humanize } from '~/lib/utils/text_utility';
 import { NO_RULE_MESSAGE } from '../../constants';
+import { convertScannersToTitleCase } from '../../utils';
 
 /**
  * Simple logic for indefinite articles which does not include the exceptions
@@ -172,7 +172,7 @@ const humanizeRule = (rule) => {
     ),
     {
       scanners: humanizeItems({
-        items: rule.scanners.map((scanner) => convertToTitleCase(humanize(scanner))),
+        items: convertScannersToTitleCase(rule.scanners),
         singular: s__('SecurityOrchestration|scanner finds'),
         plural: s__('SecurityOrchestration|scanners find'),
       }),

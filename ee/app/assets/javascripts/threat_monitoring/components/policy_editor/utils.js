@@ -1,3 +1,4 @@
+import { convertToTitleCase, humanize } from '~/lib/utils/text_utility';
 import createPolicyProject from 'ee/threat_monitoring/graphql/mutations/create_policy_project.mutation.graphql';
 import createScanExecutionPolicy from 'ee/threat_monitoring/graphql/mutations/create_scan_execution_policy.mutation.graphql';
 import { gqClient } from 'ee/threat_monitoring/utils';
@@ -122,4 +123,15 @@ export const assignSecurityPolicyProject = async (projectPath) => {
   checkForErrors({ errors });
 
   return { ...project, branch: project?.branch?.rootRef, errors };
+};
+
+/**
+ * Converts scanner strings to title case
+ * @param {Array} scanners (e.g. 'container_scanning', `dast`, etcetera)
+ * @returns {Array} (e.g. 'Container Scanning', `Dast`, etcetera)
+ */
+export const convertScannersToTitleCase = (scanners) => {
+  if (!Array.isArray(scanners)) return [];
+
+  return scanners.map((scanner) => convertToTitleCase(humanize(scanner)));
 };

@@ -4,24 +4,36 @@ exports[`ScanExecutionPolicy component default policy renders the correct policy
 <div
   data-testid="policy-summary"
 >
-  <policy-info-row-stub
+  <div
     data-testid="policy-summary"
-    label="Summary"
   >
-    <p>
-      <gl-sprintf-stub
-        message="Runs a %{action} scan"
-      />
-    </p>
+    <h5
+      class="gl-mt-6"
+      data-testid="label"
+    >
+      Summary
+    </h5>
      
-    <ul>
-      <li>
-        
+    <p
+      data-testid="content"
+    >
+      <p>
+        Runs a 
+        <strong>
+          Dast
+        </strong>
+         scan
+      </p>
+       
+      <ul>
+        <li>
+          
           Scan to be performed on every pipeline on the main branch
         
-      </li>
-    </ul>
-  </policy-info-row-stub>
+        </li>
+      </ul>
+    </p>
+  </div>
 </div>
 `;
 
@@ -29,24 +41,40 @@ exports[`ScanExecutionPolicy component multiple action policy renders the correc
 <div
   data-testid="policy-summary"
 >
-  <policy-info-row-stub
+  <div
     data-testid="policy-summary"
-    label="Summary"
   >
-    <p>
-      <gl-sprintf-stub
-        message="Runs %{actions} and %{lastAction} scans"
-      />
-    </p>
+    <h5
+      class="gl-mt-6"
+      data-testid="label"
+    >
+      Summary
+    </h5>
      
-    <ul>
-      <li>
-        
+    <p
+      data-testid="content"
+    >
+      <p>
+        Runs 
+        <strong>
+          Container Scanning, Secret Detection
+        </strong>
+         and 
+        <strong>
+          Sast
+        </strong>
+         scans
+      </p>
+       
+      <ul>
+        <li>
+          
           Scan to be performed on every pipeline on the main branch
         
-      </li>
-    </ul>
-  </policy-info-row-stub>
+        </li>
+      </ul>
+    </p>
+  </div>
 </div>
 `;
 
@@ -54,21 +82,31 @@ exports[`ScanExecutionPolicy component no action policy renders the correct poli
 <div
   data-testid="policy-summary"
 >
-  <policy-info-row-stub
+  <div
     data-testid="policy-summary"
-    label="Summary"
   >
-    <p>
-      No actions defined - policy will not run.
-    </p>
+    <h5
+      class="gl-mt-6"
+      data-testid="label"
+    >
+      Summary
+    </h5>
      
-    <ul>
-      <li>
-        
+    <p
+      data-testid="content"
+    >
+      <p>
+        No actions defined - policy will not run.
+      </p>
+       
+      <ul>
+        <li>
+          
           Scan to be performed on every pipeline on the main branch
         
-      </li>
-    </ul>
-  </policy-info-row-stub>
+        </li>
+      </ul>
+    </p>
+  </div>
 </div>
 `;

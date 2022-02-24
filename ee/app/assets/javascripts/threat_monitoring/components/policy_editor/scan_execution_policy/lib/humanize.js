@@ -1,7 +1,7 @@
 import cronstrue from 'cronstrue/i18n';
-import { convertToTitleCase, humanize } from '~/lib/utils/text_utility';
 import { getPreferredLocales, sprintf, s__, n__ } from '~/locale';
 import { NO_RULE_MESSAGE } from '../../constants';
+import { convertScannersToTitleCase } from '../../utils';
 
 /**
  * Create a human-readable list of strings, adding the necessary punctuation and conjunctions
@@ -65,7 +65,8 @@ const HUMANIZE_RULES_METHODS = {
  * @returns {Array}
  */
 export const humanizeActions = (actions) => {
-  return [...new Set(actions.map((a) => convertToTitleCase(humanize(a.scan))))];
+  const scanners = actions.map((a) => a.scan);
+  return [...new Set(convertScannersToTitleCase(scanners))];
 };
 
 /**

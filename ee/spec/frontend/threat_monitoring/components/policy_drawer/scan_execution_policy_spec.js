@@ -1,6 +1,5 @@
-import PolicyDrawerLayout from 'ee/threat_monitoring/components/policy_drawer/policy_drawer_layout.vue';
 import ScanExecutionPolicy from 'ee/threat_monitoring/components/policy_drawer/scan_execution_policy.vue';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import {
   mockScanExecutionPolicy,
   mockScanExecutionManifestNoActions,
@@ -10,14 +9,11 @@ import {
 describe('ScanExecutionPolicy component', () => {
   let wrapper;
 
-  const findSummary = () => wrapper.find('[data-testid="policy-summary"]');
+  const findSummary = () => wrapper.findByTestId('policy-summary');
 
   const factory = ({ propsData } = {}) => {
-    wrapper = shallowMountExtended(ScanExecutionPolicy, {
+    wrapper = mountExtended(ScanExecutionPolicy, {
       propsData,
-      stubs: {
-        PolicyDrawerLayout,
-      },
     });
   };
 

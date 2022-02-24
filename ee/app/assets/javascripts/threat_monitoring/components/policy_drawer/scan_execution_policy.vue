@@ -43,6 +43,21 @@ export default {
         return null;
       }
     },
+    hasOnlyOneAction() {
+      return this.humanizedActions.length === 1;
+    },
+    hasMultipleActions() {
+      return this.humanizedActions.length > 1;
+    },
+    firstAction() {
+      return this.hasOnlyOneAction ? this.humanizedActions[0] : '';
+    },
+    allButLastActions() {
+      return this.hasMultipleActions ? this.humanizedActions.slice(0, -1).join(', ') : '';
+    },
+    lastAction() {
+      return this.hasMultipleActions ? [...this.humanizedActions].pop() : '';
+    },
   },
 };
 </script>
@@ -58,20 +73,17 @@ export default {
       <policy-info-row data-testid="policy-summary" :label="$options.i18n.summary">
         <p>
           <template v-if="!humanizedActions.length">{{ $options.i18n.noActionMessage }}</template>
-          <gl-sprintf
-            v-else-if="humanizedActions.length === 1"
-            :message="$options.i18n.singleActionMessage"
-          >
+          <gl-sprintf v-else-if="hasOnlyOneAction" :message="$options.i18n.singleActionMessage">
             <template #action>
-              <strong>{{ humanizedActions[0] }}</strong>
+              <strong>{{ firstAction }}</strong>
             </template>
           </gl-sprintf>
           <gl-sprintf v-else :message="$options.i18n.multipleActionMessage">
             <template #actions>
-              <strong>{{ humanizedActions.slice(0, -1).join(', ') }}</strong>
+              <strong>{{ allButLastActions }}</strong>
             </template>
             <template #lastAction>
-              <strong>{{ humanizedActions[humanizedActions.length - 1] }}</strong>
+              <strong>{{ lastAction }}</strong>
             </template>
           </gl-sprintf>
         </p>

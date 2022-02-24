@@ -85,6 +85,7 @@ rules:
 actions:
   - scan: container_scanning
   - scan: secret_detection
+  - scan: sast
 `;
 
 export const mockDastScanExecutionObject = {
