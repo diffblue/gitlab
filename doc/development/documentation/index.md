@@ -11,16 +11,16 @@ The GitLab documentation is [intended as the single source of truth (SSOT)](http
 
 In addition to this page, the following resources can help you craft and contribute to documentation:
 
-- [Style Guide](styleguide/index.md) - What belongs in the docs, language guidelines, markdown standards to follow, links and more.
+- [Style Guide](styleguide/index.md) - What belongs in the docs, language guidelines, Markdown standards to follow, links and more.
 - [Topic type template](structure.md) - Learn about the different types of topics.
 - [Documentation process](workflow.md).
-- [Markdown Guide](../../user/markdown.md) - A reference for all markdown syntax supported by GitLab.
+- [Markdown Guide](../../user/markdown.md) - A reference for all Markdown syntax supported by GitLab.
 - [Site architecture](site_architecture/index.md) - How <https://docs.gitlab.com> is built.
 - [Documentation for feature flags](feature_flags.md) - How to write and update documentation for GitLab features deployed behind feature flags.
 
 ## Source files and rendered web locations
 
-Documentation for GitLab, GitLab Runner, Omnibus GitLab, and charts are published to <https://docs.gitlab.com>. Documentation for GitLab is also published within the application at `/help` on the domain of the GitLab instance.
+Documentation for GitLab, GitLab Runner, Omnibus GitLab, and Charts are published to <https://docs.gitlab.com>. Documentation for GitLab is also published within the application at `/help` on the domain of the GitLab instance.
 At `/help`, only help for your current edition and version is included. Help for other versions is available at <https://docs.gitlab.com/archives/>.
 
 The source of the documentation exists within the codebase of each GitLab application in the following repository locations:
