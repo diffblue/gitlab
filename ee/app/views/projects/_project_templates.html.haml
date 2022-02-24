@@ -3,19 +3,16 @@
   - group_id = params[:namespace_id]
 
   .project-templates-buttons
-    %ul.nav-tabs.nav-links.nav.scrolling-tabs
-      %li.built-in-tab
-        %a.nav-link.active{ href: "#built-in", data: { toggle: 'tab'} }
-          = _('Built-in')
-          = gl_tab_counter_badge Gitlab::ProjectTemplate.all.count + Gitlab::SampleDataTemplate.all.count
-      %li.custom-instance-project-templates-tab
-        %a.nav-link.js-custom-instance-project-templates-nav-link.qa-instance-templates-tab{ href: "#custom-instance-project-templates", data: { toggle: 'tab'} }
-          = _('Instance')
-          = gl_tab_counter_badge(project_template_count, { class: 'qa-instance-template-tab-badge' })
-      %li.custom-group-project-templates-tab
-        %a.nav-link.js-custom-group-project-templates-nav-link.qa-group-templates-tab{ href: "#custom-group-project-templates", data: { toggle: 'tab'} }
-          = _('Group')
-          = gl_tab_counter_badge(group_project_templates_count(group_id), { class: 'qa-group-template-tab-badge' })
+    = gl_tabs_nav({ class: 'nav-links scrolling-tabs gl-display-flex gl-flex-grow-1 gl-flex-nowrap gl-border-0' }) do
+      = gl_tab_link_to '#built-in', tab_class: 'built-in-tab', class: 'active', data: { toggle: 'tab' } do
+        = _('Built-in')
+        = gl_tab_counter_badge Gitlab::ProjectTemplate.all.count + Gitlab::SampleDataTemplate.all.count
+      = gl_tab_link_to '#custom-instance-project-templates', tab_class: 'custom-instance-project-templates-tab', class: 'js-custom-instance-project-templates-nav-link qa-instance-templates-tab', data: { toggle: 'tab' } do
+        = _('Instance')
+        = gl_tab_counter_badge(project_template_count, { class: 'qa-instance-template-tab-badge' })
+      = gl_tab_link_to '#custom-group-project-templates', tab_class: 'custom-group-project-templates-tab', class: 'js-custom-group-project-templates-nav-link qa-group-templates-tab', data: { toggle: 'tab' } do
+        = _('Group')
+        = gl_tab_counter_badge(group_project_templates_count(group_id), { class: 'qa-group-template-tab-badge' })
 
   .tab-content
     .project-templates-buttons.import-buttons.tab-pane.active#built-in

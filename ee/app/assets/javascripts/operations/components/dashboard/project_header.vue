@@ -1,7 +1,7 @@
 <script>
 import { GlButton, GlLink, GlTooltipDirective } from '@gitlab/ui';
 import { __ } from '~/locale';
-import ProjectAvatar from '~/vue_shared/components/deprecated_project_avatar/default.vue';
+import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 
 export default {
   components: {
@@ -49,26 +49,35 @@ export default {
 </script>
 
 <template>
-  <div :class="headerClasses" class="card-header border-0 py-2 d-flex align-items-center">
-    <project-avatar :project="project" :size="24" class="flex-shrink-0 border rounded" />
-    <div class="flex-grow-1 block-truncated">
+  <div
+    :class="headerClasses"
+    class="card-header gl-border-0 gl-py-3 gl-display-flex gl-align-items-center"
+  >
+    <project-avatar
+      :project-name="project.name"
+      :project-avatar-url="project.avatar_url"
+      :size="24"
+      class="gl-mr-3"
+    />
+    <div class="gl-flex-grow-1 block-truncated">
       <gl-link
         v-gl-tooltip
-        class="js-project-link cgray"
+        class="gl-text-black-normal"
         :href="project.web_url"
         :title="project.name_with_namespace"
+        data-testid="project-link"
       >
-        <span class="js-project-namespace">{{ project.namespace.name }} /</span>
-        <span class="js-project-name bold"> {{ project.name }}</span>
+        <span data-testid="project-namespace">{{ project.namespace.name }} /</span>
+        <span class="gl-font-weight-bold" data-testid="project-name"> {{ project.name }}</span>
       </gl-link>
     </div>
     <gl-button
       v-gl-tooltip
-      class="js-remove-button"
       category="tertiary"
       :title="title"
       :aria-label="title"
       icon="remove"
+      data-testid="remove-project-button"
       @click="onRemove"
     />
   </div>
