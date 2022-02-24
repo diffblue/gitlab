@@ -62,7 +62,9 @@
         "parent": { "type": "uri" },
         "additionalProperties": false
       }
-    }
+    },
+    "color": { "type": "string" },
+    "text_color": { "type": "string" }
   },
   "required": [
     "id", "iid", "group_id", "title", "confidential", "_links"

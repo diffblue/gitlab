@@ -818,7 +818,8 @@ RSpec.describe Epic do
           "issues_count" => 2,
           "issues_state_id" => 1,
           "issues_weight_sum" => 5,
-          "parent_id" => epic1.id
+          "parent_id" => epic1.id,
+          "color" => ::EE::Epic::DEFAULT_COLOR
         }, {
           "epic_state_id" => 2,
           "id" => epic3.id,
@@ -826,7 +827,8 @@ RSpec.describe Epic do
           "issues_count" => 1,
           "issues_state_id" => 2,
           "issues_weight_sum" => 0,
-          "parent_id" => epic2.id
+          "parent_id" => epic2.id,
+          "color" => ::EE::Epic::DEFAULT_COLOR
         }]
         expect(result).to match_array(expected)
       end
@@ -840,6 +842,24 @@ RSpec.describe Epic do
       expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_created_action)
 
       create(:epic)
+    end
+  end
+
+  context 'with coloured epics' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:epic_color, :expected_text_color) do
+      ::EE::Epic::DEFAULT_COLOR | '#FFFFFF'
+      '#FFFFFF' | '#333333'
+      '#000000' | '#FFFFFF'
+    end
+
+    with_them do
+      it 'returns correct text color' do
+        epic = build(:epic, color: epic_color)
+
+        expect(epic.text_color).to eq(expected_text_color)
+      end
     end
   end
 end
