@@ -86,6 +86,9 @@ describe('Grouped security reports app', () => {
   const createWrapper = (propsData, options, provide) => {
     wrapper = mount(GroupedSecurityReportsApp, {
       propsData,
+      stubs: {
+        VulnerabilityTraining: true,
+      },
       mocks: {
         $apollo: {
           queries: {
