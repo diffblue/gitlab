@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Ci::UnregisterRunnerService, '#execute' do
+RSpec.describe ::Ci::Runners::UnregisterRunnerService, '#execute' do
   let(:audit_service) { instance_double(::AuditEvents::UnregisterRunnerAuditEventService) }
   let(:current_user) { nil }
   let(:token) { 'abc123' }
