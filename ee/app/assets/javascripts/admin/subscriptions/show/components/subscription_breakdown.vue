@@ -20,7 +20,14 @@ import SubscriptionDetailsCard from './subscription_details_card.vue';
 import SubscriptionDetailsHistory from './subscription_details_history.vue';
 import SubscriptionDetailsUserInfo from './subscription_details_user_info.vue';
 
-export const subscriptionDetailsFields = ['id', 'plan', 'expiresAt', 'lastSync', 'startsAt'];
+export const subscriptionDetailsFields = [
+  'id',
+  'plan',
+  'type',
+  'expiresAt',
+  'lastSync',
+  'startsAt',
+];
 export const licensedToFields = ['name', 'email', 'company'];
 export const modalId = 'subscription-activation-modal';
 
@@ -86,7 +93,7 @@ export default {
       return this.customersPortalUrl && this.hasSubscription;
     },
     canSyncSubscription() {
-      return this.subscriptionSyncPath && this.isCloudType;
+      return this.subscriptionSyncPath && this.isOnlineCloudType;
     },
     canRemoveLicense() {
       return this.licenseRemovePath;
@@ -97,8 +104,8 @@ export default {
     hasSubscriptionHistory() {
       return Boolean(this.subscriptionList.length);
     },
-    isCloudType() {
-      return this.subscription.type === subscriptionTypes.CLOUD;
+    isOnlineCloudType() {
+      return this.subscription.type === subscriptionTypes.ONLINE_CLOUD;
     },
     isLicenseFileType() {
       return this.subscription.type === subscriptionTypes.LICENSE_FILE;

@@ -36,7 +36,8 @@ export const manageSubscriptionButtonText = s__('SuperSonics|Manage');
 export const syncSubscriptionButtonText = s__('SuperSonics|Sync subscription details');
 export const copySubscriptionIdButtonText = __('Copy');
 export const licenseFileText = __('License file');
-export const cloudLicenseText = s__('SuperSonics|Cloud license');
+export const onlineCloudLicenseText = s__('SuperSonics|Cloud license');
+export const offlineCloudLicenseText = s__('SuperSonics|Offline cloud');
 export const usersInSubscriptionUnlimited = __('Unlimited');
 export const detailsLabels = {
   address: __('Address'),
@@ -46,6 +47,7 @@ export const detailsLabels = {
   lastSync: __('Last Sync'),
   name: licensedToHeaderText,
   plan: __('Plan'),
+  type: __('Type'),
   expiresAt: __('Renews'),
   startsAt: __('Started'),
 };
@@ -106,7 +108,8 @@ export const subscriptionSyncStatus = {
 };
 
 export const subscriptionTypes = {
-  CLOUD: 'cloud',
+  ONLINE_CLOUD: 'cloud',
+  OFFLINE_CLOUD: 'offline_cloud',
   LICENSE_FILE: 'license_file',
 };
 
