@@ -75,6 +75,7 @@ export default {
         <gl-icon v-else name="doc-text" />
         <gl-truncate
           class="gl-lg-max-w-80p gl-display-none gl-lg-display-inline-flex"
+          position="start"
           :text="locationPath"
           with-tooltip
         />
