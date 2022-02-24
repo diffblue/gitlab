@@ -4,14 +4,15 @@ module EE
   module Gitlab
     module EtagCaching
       module Router
-        module Restful
+        module Rails
           extend ActiveSupport::Concern
 
           EE_ROUTE_DEFINITONS = [
             [
               %r(^/groups/#{::Gitlab::PathRegex.full_namespace_route_regex}/-/epics/\d+/notes\z),
               'epic_notes',
-              'portfolio_management'
+              ::Groups::Epics::NotesController,
+              :index
             ]
           ].freeze
 
@@ -28,7 +29,7 @@ module EE
             end
 
             def ee_routes
-              EE_ROUTE_DEFINITONS.map(&method(:build_route))
+              EE_ROUTE_DEFINITONS.map(&method(:build_rails_route))
             end
           end
         end

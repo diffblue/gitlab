@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::EtagCaching::Router::Restful do
+RSpec.describe Gitlab::EtagCaching::Router::Rails do
   it 'matches issue notes endpoint' do
     result = match_route('/my-group/and-subgroup/here-comes-the-project/noteable/issue/1/notes')
 
