@@ -55,9 +55,9 @@ docs-only merge requests using the following guide:
 
 [Contributions to GitLab docs](workflow.md) are welcome from the entire GitLab community.
 
-To ensure that GitLab docs are current, there are special processes and responsibilities for all [feature changes](workflow.md), that is development work that impacts the appearance, usage, or administration of a feature.
+To ensure that GitLab docs are current, there are special processes and responsibilities for all [feature changes](workflow.md), that is development work that impacts the appearance, usage or administration of a feature.
 
-However, anyone can contribute [documentation improvements](workflow.md) that are not associated with a feature change. For example, adding a new document on how to accomplish a use case that's already possible with GitLab or with third-party tools and GitLab.
+However, anyone can contribute [documentation improvements](workflow.md) that are not associated with a feature change. For example, adding a new document on how to accomplish a use case that's already possible with GitLab or with the third-party tools and GitLab.
 
 ## Markdown and styles
 
@@ -79,7 +79,7 @@ All values are treated as strings and are only used for the
 
 ### Stage and group metadata
 
-Each page should ideally have metadata related to the stage and group it
+Each page should ideally have metadata related to the stage and the group it
 belongs to, as well as an information block as described below:
 
 - `stage`: The [Stage](https://about.gitlab.com/handbook/product/categories/#devops-stages)
@@ -316,7 +316,7 @@ process. This is configured in the `Dangerfile` in the GitLab repository under
 
 ## Automatic screenshot generator
 
-You can now set up an automatic screenshot generator to take and compress screenshots, with the
+You can now set up an automatic screenshot generator to take and compress screenshots with the
 help of a configuration file known as **screenshot generator**.
 
 ### Use the tool
@@ -370,7 +370,7 @@ To have the screenshot focuses few more steps are needed:
 - **set the crop area**: `set_crop_data(screenshot_area, 20)`
 
 In particular, `set_crop_data` accepts as arguments: a `DOM` element and a
-padding. The padding is added around the element, enlarging the screenshot area.
+padding. The padding is added around the element enlarging the screenshot area.
 
 #### Live example
 
