@@ -172,7 +172,7 @@ export default {
         >
         <div
           v-if="!rebaseInProgress && canPushToSourceBranch && !isMakingRequest"
-          class="accept-merge-holder clearfix js-toggle-container accept-action media space-children align-items-center"
+          class="accept-merge-holder clearfix js-toggle-container accept-action media space-children gl-align-items-center"
         >
           <gl-button
             v-if="!glFeatures.restructuredMrWidget"
