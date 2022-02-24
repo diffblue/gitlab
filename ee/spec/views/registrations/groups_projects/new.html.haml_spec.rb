@@ -42,4 +42,16 @@ RSpec.describe 'registrations/groups_projects/new' do
       is_expected.not_to match(/www.googletagmanager.com/)
     end
   end
+
+  describe 'expected DOM elements' do
+    before do
+      render
+    end
+
+    subject { rendered }
+
+    it 'contains js-groups-projects-form class' do
+      is_expected.to have_css('.js-groups-projects-form')
+    end
+  end
 end
