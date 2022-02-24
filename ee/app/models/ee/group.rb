@@ -582,10 +582,10 @@ module EE
 
     def billed_user_ids_excluding_guests
       strong_memoize(:billed_user_ids_excluding_guests) do
-        group_member_user_ids = billed_group_users(non_guests: true).distinct.pluck(:id)
-        project_member_user_ids = billed_project_users(non_guests: true).distinct.pluck(:id)
-        shared_group_user_ids = billed_shared_non_guests_group_users.distinct.pluck(:id)
-        shared_project_user_ids = billed_invited_non_guests_group_to_project_users.distinct.pluck(:id)
+        group_member_user_ids = billed_group_users(exclude_guests: true).distinct.pluck(:id)
+        project_member_user_ids = billed_project_users(exclude_guests: true).distinct.pluck(:id)
+        shared_group_user_ids = billed_shared_group_users(exclude_guests: true).distinct.pluck(:id)
+        shared_project_user_ids = billed_invited_group_to_project_users(exclude_guests: true).distinct.pluck(:id)
 
         {
           user_ids: (group_member_user_ids + project_member_user_ids + shared_group_user_ids + shared_project_user_ids).to_set,
@@ -624,21 +624,21 @@ module EE
     end
 
     # Members belonging directly to Group or its subgroups
-    def billed_group_users(non_guests: false)
+    def billed_group_users(exclude_guests: false)
       members = ::GroupMember.active_without_invites_and_requests.where(
         source_id: self_and_descendants
       )
 
-      members = members.non_guests if non_guests
+      members = members.non_guests if exclude_guests
 
       users_without_project_bots(members)
     end
 
     # Members belonging directly to Projects within Group or Projects within subgroups
-    def billed_project_users(non_guests: false)
+    def billed_project_users(exclude_guests: false)
       members = ::ProjectMember.without_invites_and_requests
 
-      members = members.non_guests if non_guests
+      members = members.non_guests if exclude_guests
 
       members = members.where(
         source_id: ::Project.joins(:group).where(namespace: self_and_descendants)
@@ -648,13 +648,11 @@ module EE
     end
 
     # Members belonging to Groups invited to collaborate with Projects
-    def billed_invited_group_to_project_users
-      members = invited_or_shared_group_members(invited_groups_in_projects)
-      users_without_project_bots(members)
-    end
+    def billed_invited_group_to_project_users(exclude_guests: false)
+      groups = (exclude_guests ? invited_group_as_non_guests_in_projects : invited_groups_in_projects)
+      members = invited_or_shared_group_members(groups)
+      members = members.non_guests if exclude_guests
 
-    def billed_invited_non_guests_group_to_project_users
-      members = invited_or_shared_group_members(invited_group_as_non_guests_in_projects).non_guests
       users_without_project_bots(members)
     end
 
@@ -668,13 +666,11 @@ module EE
     end
 
     # Members belonging to Groups invited to collaborate with Groups and Subgroups
-    def billed_shared_group_users
-      members = invited_or_shared_group_members(invited_group_in_groups)
-      users_without_project_bots(members)
-    end
+    def billed_shared_group_users(exclude_guests: false)
+      groups = (exclude_guests ? invited_non_guest_group_in_groups : invited_group_in_groups)
+      members = invited_or_shared_group_members(groups)
+      members = members.non_guests if exclude_guests
 
-    def billed_shared_non_guests_group_users
-      members = invited_or_shared_group_members(invited_non_guest_group_in_groups).non_guests
       users_without_project_bots(members)
     end
 
