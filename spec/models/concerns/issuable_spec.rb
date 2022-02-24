@@ -33,7 +33,8 @@ RSpec.describe Issuable do
       end
 
       describe 'user_note_authors' do
-        let(:system_user) { create(:user) }
+        let_it_be(:system_user) { create(:user) }
+
         let!(:system_note) { create(:system_note, author: system_user, noteable: issue, project: issue.project) }
 
         it 'filters the authors to those of user notes' do
