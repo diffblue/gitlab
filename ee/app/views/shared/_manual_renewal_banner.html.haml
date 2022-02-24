@@ -2,14 +2,15 @@
 - return unless payload&.display?
 
 = content_for :page_level_alert do
-  = render 'shared/global_alert',
-    title: payload.subject,
-    variant: payload.display_error_version? ? :danger : :warning,
-    alert_class: 'gl-my-5',
-    alert_data: { testid: 'manual-renewal-banner' },
-    dismissible: false do
-    .gl-alert-body
-      = payload.body
-    .gl-alert-actions
-      = link_to s_('SubscriptionBanner|Export license usage file'), admin_license_usage_export_path(format: :csv), class: 'btn gl-alert-action gl-button btn-confirm'
-      = link_to s_('SubscriptionBanner|Upload new license'), new_admin_license_path, class: 'btn gl-alert-action gl-button btn-default'
+  %div{ class: [container_class, @content_class, 'gl-pt-5!'] }
+    = render 'shared/global_alert',
+      title: payload.subject,
+      variant: payload.display_error_version? ? :danger : :warning,
+      alert_class: 'gl-my-5',
+      alert_data: { testid: 'manual-renewal-banner' },
+      dismissible: false do
+      .gl-alert-body
+        = payload.body
+      .gl-alert-actions
+        = link_to s_('SubscriptionBanner|Export license usage file'), admin_license_usage_export_path(format: :csv), class: 'btn gl-alert-action gl-button btn-confirm'
+        = link_to s_('SubscriptionBanner|Upload new license'), new_admin_license_path, class: 'btn gl-alert-action gl-button btn-default'
