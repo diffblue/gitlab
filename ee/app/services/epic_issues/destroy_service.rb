@@ -4,6 +4,13 @@ module EpicIssues
   class DestroyService < IssuableLinks::DestroyService
     extend ::Gitlab::Utils::Override
 
+    def initialize(link, user)
+      @link = link
+      @current_user = user
+      @source = link.epic
+      @target = link.issue
+    end
+
     private
 
     override :after_destroy
@@ -16,14 +23,6 @@ module EpicIssues
 
     def track_usage_ping_event
       ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_issue_removed(author: current_user)
-    end
-
-    def source
-      @source ||= link.epic
-    end
-
-    def target
-      @target ||= link.issue
     end
 
     def permission_to_remove_relation?

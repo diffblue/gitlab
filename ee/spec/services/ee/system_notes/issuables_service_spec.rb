@@ -88,4 +88,15 @@ RSpec.describe ::SystemNotes::IssuablesService do
       end
     end
   end
+
+  describe '#unrelate_issuable' do
+    let(:noteable) { epic }
+    let(:target) { create(:epic) }
+
+    it 'creates system notes when epic gets unrelated' do
+      result = service.unrelate_issuable(target)
+
+      expect(result.note).to eq("removed the relation with #{target.to_reference(noteable.group)}")
+    end
+  end
 end
