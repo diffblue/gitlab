@@ -20,8 +20,8 @@ module Types
     field :sequence, GraphQL::Types::Int, null: false,
           description: "Sequence number for the iteration when you sort the containing cadence's iterations by the start and end date. The earliest starting and ending iteration is assigned 1."
 
-    field :title, GraphQL::Types::String, null: false,
-          description: 'Title of the iteration.'
+    field :title, GraphQL::Types::String, null: true,
+          description: 'Title of the iteration. Title must be specified unless iteration_cadences feature flag is enabled.'
 
     field :description, GraphQL::Types::String, null: true,
           description: 'Description of the iteration.'

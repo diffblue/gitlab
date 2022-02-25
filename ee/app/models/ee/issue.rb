@@ -42,7 +42,7 @@ module EE
       scope :in_iteration_scope, ->(iteration_scope) { joins(:iteration).merge(iteration_scope) }
       scope :in_iteration_cadences, ->(iteration_cadences) { joins(:iteration).where(sprints: { iterations_cadence_id: iteration_cadences }) }
       scope :with_iteration_title, ->(iteration_title) { joins(:iteration).where(sprints: { title: iteration_title }) }
-      scope :without_iteration_title, ->(iteration_title) { left_outer_joins(:iteration).where('sprints.title != ? OR sprints.id IS NULL', iteration_title) }
+      scope :without_iteration_title, ->(iteration_title) { left_outer_joins(:iteration).where('sprints.title IS DISTINCT FROM ? OR sprints.id IS NULL', iteration_title) }
       scope :on_status_page, -> do
         joins(project: :status_page_setting)
         .where(status_page_settings: { enabled: true })

@@ -171,16 +171,14 @@ RSpec.describe 'Issue Sidebar' do
 
           within '[data-testid="iteration-edit"]' do
             expect(page).not_to have_text(iteration_cadence.title)
-            expect(page).to have_text(iteration.title)
-            expect(page).to have_text(iteration_period(iteration))
+            expect(page).to have_text(iteration.period)
           end
 
-          select_iteration(iteration.title)
+          select_iteration(iteration.period)
 
           within '[data-testid="select-iteration"]' do
             expect(page).not_to have_text(iteration_cadence.title)
-            expect(page).to have_text(iteration.title)
-            expect(page).to have_text(iteration_period(iteration))
+            expect(page).to have_text(iteration.period)
           end
 
           find_and_click_edit_iteration
@@ -215,7 +213,7 @@ RSpec.describe 'Issue Sidebar' do
           find_and_click_edit_iteration
 
           page.within '[data-testid="iteration-edit"]' do
-            expect(page).not_to have_content iteration2.title
+            expect(page).not_to have_content iteration2.period
           end
         end
       end
@@ -234,16 +232,14 @@ RSpec.describe 'Issue Sidebar' do
 
           within '[data-testid="iteration-edit"]' do
             expect(page).to have_text(iteration_cadence.title)
-            expect(page).to have_text(iteration.title)
-            expect(page).to have_text(iteration_period(iteration))
+            expect(page).to have_text(iteration.period)
           end
 
-          select_iteration(iteration.title)
+          select_iteration(iteration.period)
 
           within '[data-testid="select-iteration"]' do
             expect(page).to have_text(iteration_cadence.title)
-            expect(page).to have_text(iteration.title)
-            expect(page).to have_text(iteration_period(iteration))
+            expect(page).to have_text(iteration.period)
           end
 
           find_and_click_edit_iteration
@@ -278,7 +274,7 @@ RSpec.describe 'Issue Sidebar' do
           find_and_click_edit_iteration
 
           page.within '[data-testid="iteration-edit"]' do
-            expect(page).not_to have_content iteration2.title
+            expect(page).not_to have_content iteration2.period
           end
         end
       end

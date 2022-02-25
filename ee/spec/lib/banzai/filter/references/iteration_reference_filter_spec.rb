@@ -168,25 +168,6 @@ RSpec.describe Banzai::Filter::References::IterationReferenceFilter do
     end
   end
 
-  shared_examples 'references with HTML entities' do
-    before do
-      iteration.update!(title: '&lt;html&gt;')
-    end
-
-    it 'links to a valid reference' do
-      doc = reference_filter('See *iteration:"&lt;html&gt;"')
-
-      expect(doc.css('a').first.attr('href')).to eq urls.iteration_url(iteration)
-      expect(doc.text).to eq 'See <html>'
-    end
-
-    it 'ignores invalid iteration names and escapes entities' do
-      act = %(Iteration *iteration:"&lt;non valid&gt;")
-
-      expect(reference_filter(act).to_html).to eq act
-    end
-  end
-
   shared_context 'group iterations' do
     let(:reference) { iteration.to_reference(format: :name) }
 
@@ -195,12 +176,6 @@ RSpec.describe Banzai::Filter::References::IterationReferenceFilter do
     it_behaves_like 'String-based single-word references'
     it_behaves_like 'String-based multi-word references in quotes'
     it_behaves_like 'referencing a iteration in a link href'
-    it_behaves_like 'references with HTML entities'
-
-    it_behaves_like 'HTML text with references' do
-      let(:resource) { iteration }
-      let(:resource_text) { resource.title }
-    end
 
     it_behaves_like 'Integer-based references' do
       let(:reference) { iteration.to_reference(format: :id) }
@@ -286,7 +261,7 @@ RSpec.describe Banzai::Filter::References::IterationReferenceFilter do
 
   context 'when iteration is open' do
     context 'group iterations' do
-      let(:iteration) { create(:iteration, group: group) }
+      let(:iteration) { create(:iteration, :with_title, group: group) }
 
       include_context 'group iterations'
     end
@@ -294,7 +269,7 @@ RSpec.describe Banzai::Filter::References::IterationReferenceFilter do
 
   context 'when iteration is closed' do
     context 'group iterations' do
-      let(:iteration) { create(:iteration, :closed, group: group) }
+      let(:iteration) { create(:iteration, :with_title, :closed, group: group) }
 
       include_context 'group iterations'
     end
@@ -303,15 +278,15 @@ RSpec.describe Banzai::Filter::References::IterationReferenceFilter do
   context 'checking N+1' do
     let_it_be(:group) { create(:group) }
     let_it_be(:group2) { create(:group, parent: group) }
-    let_it_be(:iteration) { create(:iteration, group: group) }
+    let_it_be(:iteration) { create(:iteration, :with_title, group: group) }
     let_it_be(:iteration_reference) { iteration.to_reference(format: :name) }
-    let_it_be(:iteration2) { create(:iteration, group: group) }
+    let_it_be(:iteration2) { create(:iteration, :with_title, group: group) }
     let_it_be(:iteration2_reference) { iteration2.to_reference(format: :id) }
-    let_it_be(:iteration3) { create(:iteration, group: group2) }
+    let_it_be(:iteration3) { create(:iteration, :with_title, group: group2) }
     let_it_be(:iteration3_reference) { iteration3.to_reference(format: :name) }
 
     it 'does not have N+1 per multiple references per group', :use_sql_query_cache, :aggregate_failures do
-      max_count = 3
+      max_count = 4
       markdown = "#{iteration_reference}"
 
       # warm the cache
@@ -330,7 +305,7 @@ RSpec.describe Banzai::Filter::References::IterationReferenceFilter do
 
     it 'has N+1 for multiple unique group references', :use_sql_query_cache do
       markdown = "#{iteration_reference}"
-      max_count = 3
+      max_count = 4
 
       # warm the cache
       reference_filter(markdown, { project: nil, group: group2 })

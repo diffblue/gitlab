@@ -188,7 +188,7 @@ RSpec.describe API::Issues, :mailer do
       end
 
       context 'filtering by iteration' do
-        let_it_be(:iteration_1) { create(:iteration, group: group, start_date: Date.current) }
+        let_it_be(:iteration_1) { create(:iteration, :with_title, group: group, start_date: Date.current) }
         let_it_be(:iteration_2) { create(:iteration, group: group) }
         let_it_be(:iteration_1_issue) { create(:issue, project: group_project, iteration: iteration_1) }
         let_it_be(:iteration_2_issue) { create(:issue, project: group_project, iteration: iteration_2) }

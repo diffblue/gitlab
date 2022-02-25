@@ -51,6 +51,7 @@ module Mutations
         args[:id] = id_from_args(args)
 
         parent = resolve_group(full_path: args[:group_path]).try(:sync)
+        validate_title_argument!(parent, args)
         iteration = authorized_find!(parent: parent, id: args[:id])
 
         response = ::Iterations::UpdateService.new(parent, current_user, args).execute(iteration)
@@ -74,6 +75,12 @@ module Mutations
 
       def validate_arguments!(args)
         raise Gitlab::Graphql::Errors::ArgumentError, 'The list of iteration attributes is empty' if args.except(:group_path, :id).empty?
+      end
+
+      def validate_title_argument!(parent, args)
+        if !parent.iteration_cadences_feature_flag_enabled? && args[:title].blank?
+          raise Gitlab::Graphql::Errors::ArgumentError, "Title can't be blank"
+        end
       end
 
       # Originally accepted a raw model id. Now accept a gid, but allow a raw id

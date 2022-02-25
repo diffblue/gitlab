@@ -72,17 +72,55 @@ RSpec.describe 'Updating an Iteration' do
 
         # Let's check that the mutation response is good
         iteration_hash = mutation_response['iteration']
-        expect(iteration_hash['title']).to eq('title')
         expect(iteration_hash['description']).to eq('some description')
         expect(iteration_hash['startDate'].to_date).to eq(start_date.to_date)
         expect(iteration_hash['dueDate'].to_date).to eq(end_date.to_date)
 
         # Let's also check that the object was updated properly
         iteration.reload
-        expect(iteration.title).to eq('title')
         expect(iteration.description).to eq('some description')
         expect(iteration.start_date).to eq(start_date.to_date)
         expect(iteration.due_date).to eq(end_date.to_date)
+      end
+
+      context 'when updating title' do
+        context 'with iterations_cadences FF enabled' do
+          using RSpec::Parameterized::TableSyntax
+
+          before do
+            stub_feature_flags(iteration_cadences: true)
+          end
+
+          where(:title_before, :title_after, :expected_title) do
+            nil   | "abc" | "abc"
+            "abc" | "def" | "def"
+          end
+
+          with_them do
+            let(:iteration) { create(:iteration, title: title_before, group: group, iterations_cadence: cadence) }
+            let(:attributes) { { title: title_after } }
+
+            it 'updates an iteration', :aggregate_failures do
+              post_graphql_mutation(mutation, current_user: current_user)
+
+              expect(mutation_response['iteration']['title']).to eq(expected_title)
+              expect(iteration.reload.title).to eq(expected_title)
+            end
+          end
+        end
+
+        context 'with iterations_cadences FF disabled' do
+          before do
+            stub_feature_flags(iteration_cadences: false)
+          end
+
+          context 'when title is not given' do
+            let(:attributes) { { title: "" } }
+
+            it_behaves_like 'a mutation that returns top-level errors',
+                            errors: ["Title can't be blank"]
+          end
+        end
       end
 
       context 'when updating dates' do
@@ -102,10 +140,6 @@ RSpec.describe 'Updating an Iteration' do
           expect(iteration.start_date).to eq(start_date.to_date)
         end
 
-        it 'does not update the iteration title' do
-          expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(iteration, :title)
-        end
-
         context 'when another iteration with given dates overlap' do
           let_it_be(:another_iteration) { create(:iteration, group: group, iterations_cadence: cadence, start_date: start_date.strftime('%F'), due_date: end_date.strftime('%F') ) }
 
@@ -113,6 +147,8 @@ RSpec.describe 'Updating an Iteration' do
                           errors: ["Dates cannot overlap with other existing Iterations within this iterations cadence"]
 
           context 'with iterations_cadences FF disabled' do
+            let_it_be(:attributes) { { title: 'iteration', start_date: start_date.strftime('%F') } }
+
             before do
               stub_feature_flags(iteration_cadences: false)
             end
