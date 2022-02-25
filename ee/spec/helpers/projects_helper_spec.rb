@@ -430,43 +430,25 @@ RSpec.describe ProjectsHelper do
       allow(helper).to receive(:can?).and_return(true)
     end
 
-    context 'with group_merge_request_approval_settings_feature_flag disabled' do
-      before do
-        stub_feature_flags(group_merge_request_approval_settings_feature_flag: false)
-      end
-
-      it 'returns the correct data' do
-        expect(subject).to eq({
-          project_id: project.id,
-          can_edit: 'true',
-          can_modify_author_settings: 'true',
-          can_modify_commiter_settings: 'true',
-          approvals_path: expose_path(api_v4_projects_approvals_path(id: project.id)),
-          project_path: expose_path(api_v4_projects_path(id: project.id)),
-          settings_path: expose_path(api_v4_projects_approval_settings_path(id: project.id)),
-          rules_path: expose_path(api_v4_projects_approval_settings_rules_path(id: project.id)),
-          allow_multi_rule: project.multiple_approval_rules_available?.to_s,
-          eligible_approvers_docs_path: help_page_path('user/project/merge_requests/approvals/rules', anchor: 'eligible-approvers'),
-          security_approvals_help_page_path: help_page_path('user/application_security/index', anchor: 'security-approvals-in-merge-requests'),
-          security_configuration_path: project_security_configuration_path(project),
-          vulnerability_check_help_page_path: help_page_path('user/application_security/index', anchor: 'security-approvals-in-merge-requests'),
-          license_check_help_page_path: help_page_path('user/application_security/index', anchor: 'enabling-license-approvals-within-a-project'),
-          coverage_check_help_page_path: help_page_path('ci/pipelines/settings', anchor: 'coverage-check-approval-rule')
-        })
-      end
-    end
-
-    context 'with group_merge_request_approval_settings_feature_flag enabled' do
-      before do
-        stub_feature_flags(group_merge_request_approval_settings_feature_flag: true)
-      end
-
-      it 'returns the correct data' do
-        expect(subject).to include(
-          approvals_path: expose_path(api_v4_projects_merge_request_approval_setting_path(id: project.id)),
-          group_name: project.root_ancestor.name
-        )
-      end
+    it 'returns the correct data' do
+      expect(subject).to include(
+        project_id: project.id,
+        can_edit: 'true',
+        can_modify_author_settings: 'true',
+        can_modify_commiter_settings: 'true',
+        approvals_path: expose_path(api_v4_projects_merge_request_approval_setting_path(id: project.id)),
+        project_path: expose_path(api_v4_projects_path(id: project.id)),
+        settings_path: expose_path(api_v4_projects_approval_settings_path(id: project.id)),
+        rules_path: expose_path(api_v4_projects_approval_settings_rules_path(id: project.id)),
+        allow_multi_rule: project.multiple_approval_rules_available?.to_s,
+        eligible_approvers_docs_path: help_page_path('user/project/merge_requests/approvals/rules', anchor: 'eligible-approvers'),
+        security_approvals_help_page_path: help_page_path('user/application_security/index', anchor: 'security-approvals-in-merge-requests'),
+        security_configuration_path: project_security_configuration_path(project),
+        vulnerability_check_help_page_path: help_page_path('user/application_security/index', anchor: 'security-approvals-in-merge-requests'),
+        license_check_help_page_path: help_page_path('user/application_security/index', anchor: 'enabling-license-approvals-within-a-project'),
+        coverage_check_help_page_path: help_page_path('ci/pipelines/settings', anchor: 'coverage-check-approval-rule'),
+        group_name: project.root_ancestor.name
+      )
     end
   end
 
