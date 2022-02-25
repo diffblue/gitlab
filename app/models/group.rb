@@ -23,9 +23,9 @@ class Group < Namespace
   extend ::Gitlab::Utils::Override
 
   # Prefix for runners_token which can be used to invalidate existing tokens.
-  # The value chosen here is a hex encoded YYYYMMDD date corresponding to
-  # the date before which tokens are invalidated.
-  RUNNERS_TOKEN_PREFIX = '1348940'
+  # The value chosen here is GR (for Gitlab Runner) combined with the rotation
+  # date (20220225) decimal to hex encoded.
+  RUNNERS_TOKEN_PREFIX = 'GR1348941'
 
   def self.sti_name
     'Group'

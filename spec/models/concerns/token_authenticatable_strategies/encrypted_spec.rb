@@ -34,7 +34,7 @@ RSpec.describe TokenAuthenticatableStrategies::Encrypted do
       end
 
       context 'when a prefix is required' do
-        let(:options) { { encrypted: :required, prefix: '1348940' } }
+        let(:options) { { encrypted: :required, prefix: 'GR1348941' } }
 
         it 'finds the encrypted resource by cleartext' do
           allow(model).to receive(:where)
@@ -79,7 +79,7 @@ RSpec.describe TokenAuthenticatableStrategies::Encrypted do
       end
 
       context 'when a prefix is required' do
-        let(:options) { { encrypted: :optional, prefix: '1348940' } }
+        let(:options) { { encrypted: :optional, prefix: 'GR1348941' } }
 
         it 'finds the encrypted resource by cleartext' do
           allow(model).to receive(:where)
@@ -120,7 +120,7 @@ RSpec.describe TokenAuthenticatableStrategies::Encrypted do
       end
 
       context 'when a prefix is required' do
-        let(:options) { { encrypted: :migrating, prefix: '1348940' } }
+        let(:options) { { encrypted: :migrating, prefix: 'GR1348941' } }
 
         it 'finds the encrypted resource by cleartext' do
           allow(model).to receive(:where)
