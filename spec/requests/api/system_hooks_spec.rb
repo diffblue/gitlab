@@ -48,6 +48,48 @@ RSpec.describe API::SystemHooks do
     end
   end
 
+  describe "GET /hooks/:id" do
+    context "when no user" do
+      it "returns authentication error" do
+        get api("/hooks/#{hook.id}")
+
+        expect(response).to have_gitlab_http_status(:unauthorized)
+      end
+    end
+
+    context "when not an admin" do
+      it "returns forbidden error" do
+        get api("/hooks/#{hook.id}", user)
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+
+    context "when authenticated as admin" do
+      it "gets a hook", :aggregate_failures do
+        get api("/hooks/#{hook.id}", admin)
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response).to match(
+          'id' => be(hook.id),
+          'url' => eq(hook.url),
+          'created_at' => eq(hook.created_at.iso8601(3)),
+          'push_events' => be(hook.push_events),
+          'tag_push_events' => be(hook.tag_push_events),
+          'merge_requests_events' => be(hook.merge_requests_events),
+          'repository_update_events' => be(hook.repository_update_events),
+          'enable_ssl_verification' => be(hook.enable_ssl_verification)
+        )
+      end
+
+      it 'returns 404 if the system hook does not exist' do
+        get api("/hooks/#{non_existing_record_id}", admin)
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+  end
+
   describe "POST /hooks" do
     it "creates new hook" do
       expect do
