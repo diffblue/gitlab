@@ -105,8 +105,47 @@ RSpec.describe Gitlab::OmniauthInitializer do
     it 'configures defaults for gitlab' do
       conf = {
         'name' => 'gitlab',
-        "args" => {}
+        "args" => { 'client_options' => { 'site' => generate(:url) } }
       }
+
+      expect(devise_config).to receive(:omniauth).with(
+        :gitlab,
+        client_options: { site: conf.dig('args', 'client_options', 'site') },
+        authorize_params: { gl_auth_type: 'login' }
+      )
+
+      subject.execute([conf])
+    end
+
+    it 'configures defaults for gitlab, when arguments are not provided' do
+      conf = { 'name' => 'gitlab' }
+
+      expect(devise_config).to receive(:omniauth).with(
+        :gitlab,
+        authorize_params: { gl_auth_type: 'login' }
+      )
+
+      subject.execute([conf])
+    end
+
+    it 'configures defaults for gitlab, when array arguments are provided' do
+      conf = { 'name' => 'gitlab', 'args' => ['a'] }
+
+      expect(devise_config).to receive(:omniauth).with(
+        :gitlab,
+        'a',
+        authorize_params: { gl_auth_type: 'login' }
+      )
+
+      subject.execute([conf])
+    end
+
+    it 'tracks a configuration error if the arguments are neither a hash nor an array' do
+      conf = { 'name' => 'gitlab', 'args' => 17 }
+
+      expect(::Gitlab::ErrorTracking)
+        .to receive(:track_and_raise_for_dev_exception)
+        .with(described_class::ConfigurationError, provider_name: 'gitlab', arguments_type: 'Integer')
 
       expect(devise_config).to receive(:omniauth).with(
         :gitlab,
