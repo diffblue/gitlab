@@ -25626,6 +25626,9 @@ msgstr ""
 msgid "Open errors"
 msgstr ""
 
+msgid "Open in Gitpod"
+msgstr ""
+
 msgid "Open in Web IDE"
 msgstr ""
 
