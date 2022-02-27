@@ -38917,7 +38917,7 @@ msgstr ""
 msgid "URL is triggered when repository is updated"
 msgstr ""
 
-msgid "URL must be percent-encoded if neccessary."
+msgid "URL must be percent-encoded if necessary."
 msgstr ""
 
 msgid "URL must start with %{codeStart}http://%{codeEnd}, %{codeStart}https://%{codeEnd}, or %{codeStart}ftp://%{codeEnd}"
