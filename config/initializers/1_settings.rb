@@ -629,7 +629,7 @@ Gitlab.ee do
   Settings.cron_jobs['active_user_count_threshold_worker']['cron'] ||= '0 12 * * *'
   Settings.cron_jobs['active_user_count_threshold_worker']['job_class'] = 'ActiveUserCountThresholdWorker'
   Settings.cron_jobs['adjourned_group_deletion_worker'] ||= Settingslogic.new({})
-  Settings.cron_jobs['adjourned_group_deletion_worker']['cron'] ||= '0 3 * * *'
+  Settings.cron_jobs['adjourned_group_deletion_worker']['cron'] ||= '0 2 * * *'
   Settings.cron_jobs['adjourned_group_deletion_worker']['job_class'] = 'AdjournedGroupDeletionWorker'
   Settings.cron_jobs['clear_shared_runners_minutes_worker'] ||= Settingslogic.new({})
   Settings.cron_jobs['clear_shared_runners_minutes_worker']['cron'] ||= '0 0 1 * *'
