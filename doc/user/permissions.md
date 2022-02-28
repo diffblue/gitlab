@@ -431,8 +431,7 @@ The following table lists group permissions available for each role:
 
 <!-- markdownlint-disable MD029 -->
 
-1. Groups can be set to [allow either Owners or Owners and
-  Maintainers to create subgroups](group/subgroups/index.md#creating-a-subgroup)
+1. Groups can be set to allow either Owners, or Owners and users with the Maintainer role, to [create subgroups](group/subgroups/index.md#create-a-subgroup).
 2. Introduced in GitLab 12.2.
 3. Default project creation role can be changed at:
    - The [instance level](admin_area/settings/visibility_and_access_controls.md#define-which-roles-can-create-projects).
@@ -451,7 +450,7 @@ permission level from the parent group(s). This model allows access to
 nested groups if you have membership in one of its parents.
 
 To learn more, read through the documentation on
-[subgroups memberships](group/subgroups/index.md#membership).
+[subgroups memberships](group/subgroups/index.md#subgroup-membership).
 
 ## External users **(FREE SELF)**
 
