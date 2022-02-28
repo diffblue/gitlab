@@ -140,7 +140,7 @@ module EE
       end
 
       def add_migrate_to_hashed_storage_link(message)
-        migrate_link = link_to(_('For more info, read the documentation.'), help_page_path('administration/raketasks/storage.md', anchor: 'migrate-to-hashed-storage'), target: '_blank')
+        migrate_link = link_to(_('For more info, read the documentation.'), help_page_path('administration/raketasks/storage.md', anchor: 'migrate-to-hashed-storage'), target: '_blank', rel: 'noopener')
         linked_message = message % { migrate_link: migrate_link }
         linked_message.html_safe
       end
