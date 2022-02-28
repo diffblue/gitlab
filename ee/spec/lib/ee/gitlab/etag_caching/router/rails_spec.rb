@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::EtagCaching::Router::Restful do
+RSpec.describe Gitlab::EtagCaching::Router::Rails do
   it 'matches epic notes endpoint' do
     result = described_class.match(
       double(path_info: '/groups/my-group/and-subgroup/-/epics/1/notes')
