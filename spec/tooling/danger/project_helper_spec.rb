@@ -274,7 +274,7 @@ RSpec.describe Tooling::Danger::ProjectHelper do
 
   describe '.local_warning_message' do
     it 'returns an informational message with rules that can run' do
-      expect(described_class.local_warning_message).to eq('==> Only the following Danger rules can be run locally: changelog, ci_config, database, documentation, duplicate_yarn_dependencies, eslint, gitaly, pajamas, pipeline, prettier, product_intelligence, utility_css, vue_shared_documentation, datateam')
+      expect(described_class.local_warning_message).to eq('==> Only the following Danger rules can be run locally: ci_config, database, documentation, duplicate_yarn_dependencies, eslint, gitaly, pajamas, pipeline, prettier, product_intelligence, utility_css, vue_shared_documentation, datateam')
     end
   end
 
@@ -303,18 +303,6 @@ RSpec.describe Tooling::Danger::ProjectHelper do
       it 'returns all rules' do
         expect(project_helper.rule_names).to eq(described_class::LOCAL_RULES | described_class::CI_ONLY_RULES)
       end
-    end
-  end
-
-  describe '#all_ee_changes' do
-    subject { project_helper.all_ee_changes }
-
-    it 'returns all changed files starting with ee/' do
-      changes = double
-      expect(fake_helper).to receive(:changes).and_return(changes)
-      expect(changes).to receive(:files).and_return(%w[fr/ee/beer.rb ee/wine.rb ee/lib/ido.rb ee.k])
-
-      is_expected.to match_array(%w[ee/wine.rb ee/lib/ido.rb])
     end
   end
 
