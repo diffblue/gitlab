@@ -294,7 +294,7 @@ RSpec.describe API::AlertManagementAlerts do
       it_behaves_like "#{params[:expected_status]}"
     end
 
-    context 'user has access' do
+    context 'when user has access' do
       before do
         project.add_developer(user)
       end
@@ -304,7 +304,7 @@ RSpec.describe API::AlertManagementAlerts do
           stub_licensed_features(alert_metric_upload: true)
         end
 
-        context 'metric image not found' do
+        context 'and metric image not found' do
           subject { put api("/projects/#{project.id}/alert_management_alerts/#{alert.iid}/metric_images/#{non_existing_record_id}", user) }
 
           it 'returns an error' do
@@ -328,6 +328,99 @@ RSpec.describe API::AlertManagementAlerts do
       end
 
       context 'feature not enabled' do
+        before do
+          stub_licensed_features(alert_metric_upload: false)
+        end
+
+        it 'returns an error' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:forbidden)
+          expect(json_response['message']).to eq('Feature not available')
+        end
+      end
+    end
+  end
+
+  describe 'DELETE /projects/:id/alert_management_alerts/:alert_iid/metric_images/:metric_image_id' do
+    using RSpec::Parameterized::TableSyntax
+
+    let!(:image) { create(:alert_metric_image, alert: alert) }
+
+    subject { delete api("/projects/#{project.id}/alert_management_alerts/#{alert.iid}/metric_images/#{image.id}", user) }
+
+    shared_examples 'can delete metric image successfully' do
+      it 'can delete the metric images' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:no_content)
+        expect { image.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    shared_examples 'unauthorized delete' do
+      it 'cannot delete the metric image' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+        expect(image.reload).to eq(image)
+      end
+    end
+
+    where(:user_role, :public_project, :expected_status) do
+      :not_member | false | 'unauthorized delete'
+      :not_member | true  | 'unauthorized delete'
+      :guest      | false | 'unauthorized delete'
+      :reporter   | false | 'unauthorized delete'
+      :developer  | false | 'can delete metric image successfully'
+    end
+
+    with_them do
+      before do
+        stub_licensed_features(alert_metric_upload: true)
+        project.send("add_#{user_role}", user) unless user_role == :not_member
+        project.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE) unless public_project
+      end
+
+      it_behaves_like "#{params[:expected_status]}"
+    end
+
+    context 'when user has access' do
+      before do
+        stub_licensed_features(alert_metric_upload: true)
+        project.add_developer(user)
+      end
+
+      context 'when metric image not found' do
+        subject { delete api("/projects/#{project.id}/alert_management_alerts/#{alert.iid}/metric_images/#{non_existing_record_id}", user) }
+
+        it 'returns an error' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:not_found)
+          expect(json_response['message']).to eq('Metric image not found')
+        end
+      end
+
+      context 'when error when deleting' do
+        before do
+          allow_next_instance_of(AlertManagement::AlertsFinder) do |finder|
+            allow(finder).to receive(:execute).and_return([alert])
+          end
+
+          allow(alert).to receive_message_chain('metric_images.find_by_id') { image }
+          allow(image).to receive(:destroy).and_return(false)
+        end
+
+        it 'returns an error' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:unprocessable_entity)
+          expect(json_response['message']).to eq('Metric image could not be deleted')
+        end
+      end
+
+      context 'when feature not enabled' do
         before do
           stub_licensed_features(alert_metric_upload: false)
         end

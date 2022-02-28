@@ -86,10 +86,34 @@ module API
 
           render_api_error!('Metric image not found', 404) unless metric_image
 
-          if metric_image&.update(params.slice(:url, :url_text))
+          if metric_image.update(params.slice(:url, :url_text))
             present metric_image, with: Entities::MetricImage, current_user: current_user, project: user_project
           else
-            render_api_error!('Metric image could not be updated', 422)
+            unprocessable_entity!('Metric image could not be updated')
+          end
+        end
+
+        desc 'Remove a metric image for an alert' do
+          success Entities::MetricImage
+        end
+        params do
+          requires :metric_image_id, type: Integer, desc: 'The ID of metric image'
+        end
+        delete ':metric_image_id' do
+          alert = find_project_alert(params[:alert_iid])
+
+          authorize!(:destroy_alert_management_metric_image, alert)
+
+          render_api_error!('Feature not available', 403) unless alert.metric_images_available?
+
+          metric_image = alert.metric_images.find_by_id(params[:metric_image_id])
+
+          render_api_error!('Metric image not found', 404) unless metric_image
+
+          if metric_image.destroy
+            no_content!
+          else
+            unprocessable_entity!('Metric image could not be deleted')
           end
         end
       end
