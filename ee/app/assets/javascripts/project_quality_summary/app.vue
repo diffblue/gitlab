@@ -2,11 +2,12 @@
 import { GlSkeletonLoader, GlCard, GlLink, GlIcon, GlPopover } from '@gitlab/ui';
 import { GlSingleStat } from '@gitlab/ui/dist/charts';
 import createFlash from '~/flash';
-import { s__ } from '~/locale';
 import { percent, percentHundred } from '~/lib/utils/unit_format';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import TestRunsEmptyState from './components/test_runs_empty_state.vue';
 import getProjectQuality from './graphql/queries/get_project_quality.query.graphql';
 import { formatStat } from './utils';
+import { i18n } from './constants';
 
 export default {
   components: {
@@ -16,6 +17,7 @@ export default {
     GlIcon,
     GlPopover,
     GlSingleStat,
+    TestRunsEmptyState,
   },
   inject: {
     projectPath: {
@@ -57,6 +59,9 @@ export default {
     },
   },
   computed: {
+    hasTestRunsData() {
+      return Boolean(this.projectQuality?.testReportSummary?.total.count);
+    },
     testSuccessPercentage() {
       return formatStat(
         this.projectQuality?.testReportSummary.total.success /
@@ -85,32 +90,7 @@ export default {
       return `${this.projectQuality?.pipelinePath}/test_report`;
     },
   },
-  i18n: {
-    testRuns: {
-      title: s__('ProjectQualitySummary|Test runs'),
-      popoverBody: s__(
-        'ProjectQualitySummary|The percentage of tests that succeed, fail, or are skipped.',
-      ),
-      learnMoreLink: s__('ProjectQualitySummary|Learn more about test reports'),
-      fullReportLink: s__('ProjectQualitySummary|See full report'),
-      successLabel: s__('ProjectQualitySummary|Success'),
-      failureLabel: s__('ProjectQualitySummary|Failure'),
-      skippedLabel: s__('ProjectQualitySummary|Skipped'),
-    },
-    coverage: {
-      title: s__('ProjectQualitySummary|Test coverage'),
-      popoverBody: s__(
-        'ProjectQualitySummary|Measure of how much of your code is covered by tests.',
-      ),
-      learnMoreLink: s__('ProjectQualitySummary|Learn more about test coverage'),
-      fullReportLink: s__('ProjectQualitySummary|See project Code Coverage Statistics'),
-      coverageLabel: s__('ProjectQualitySummary|Coverage'),
-    },
-    subHeader: s__('ProjectQualitySummary|Latest pipeline results'),
-    fetchError: s__(
-      'ProjectQualitySummary|An error occurred while trying to fetch project quality statistics',
-    ),
-  },
+  i18n,
   testRunsHelpPath: helpPagePath('ci/unit_test_reports'),
   coverageHelpPath: helpPagePath('ci/pipelines/settings', {
     anchor: 'add-test-coverage-results-to-a-merge-request',
@@ -119,10 +99,10 @@ export default {
 </script>
 <template>
   <div>
-    <gl-card class="gl-mt-6">
+    <gl-card v-if="$apollo.queries.projectQuality.loading || hasTestRunsData" class="gl-mt-6">
       <template #header>
-        <div class="gl-display-flex gl-justify-content-space-between gl-align-items-baseline">
-          <h4 class="gl-m-2">{{ $options.i18n.testRuns.title }}</h4>
+        <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
+          <h5 class="gl-font-lg gl-m-2">{{ $options.i18n.testRuns.title }}</h5>
           <gl-icon
             id="test-runs-question-icon"
             name="question-o"
@@ -152,7 +132,7 @@ export default {
       </template>
       <template #default>
         <gl-skeleton-loader v-if="$apollo.queries.projectQuality.loading" />
-        <div v-else-if="projectQuality.testReportSummary" class="row gl-ml-2">
+        <div v-else class="row gl-ml-2">
           <gl-single-stat
             class="col-sm-6 col-md-4"
             data-testid="test-runs-stat"
@@ -183,10 +163,15 @@ export default {
         </div>
       </template>
     </gl-card>
+    <template v-else>
+      <test-runs-empty-state />
+      <hr />
+    </template>
+
     <gl-card class="gl-mt-6">
       <template #header>
-        <div class="gl-display-flex gl-justify-content-space-between gl-align-items-baseline">
-          <h4 class="gl-m-2">{{ $options.i18n.coverage.title }}</h4>
+        <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
+          <h5 class="gl-font-lg gl-m-2">{{ $options.i18n.coverage.title }}</h5>
           <gl-icon
             id="coverage-question-icon"
             name="question-o"
