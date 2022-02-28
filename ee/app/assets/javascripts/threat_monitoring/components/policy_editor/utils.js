@@ -130,8 +130,5 @@ export const assignSecurityPolicyProject = async (projectPath) => {
  * @param {Array} scanners (e.g. 'container_scanning', `dast`, etcetera)
  * @returns {Array} (e.g. 'Container Scanning', `Dast`, etcetera)
  */
-export const convertScannersToTitleCase = (scanners) => {
-  if (!Array.isArray(scanners)) return [];
-
-  return scanners.map((scanner) => convertToTitleCase(humanize(scanner)));
-};
+export const convertScannersToTitleCase = (scanners = []) =>
+  scanners.map((scanner) => convertToTitleCase(humanize(scanner)));

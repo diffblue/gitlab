@@ -106,10 +106,10 @@ describe('modifyPolicy', () => {
 
 describe('convertScannersToTitleCase', () => {
   it.each`
-    title                                       | input                                                 | output
-    ${'returns empty array for a non-array'}    | ${{}}                                                 | ${[]}
-    ${'returns empty array for an empty array'} | ${[]}                                                 | ${[]}
-    ${'returns converted array'}                | ${['dast', 'container_scanning', 'secret_detection']} | ${['Dast', 'Container Scanning', 'Secret Detection']}
+    title                                            | input                                                 | output
+    ${'returns empty array if no imput is provided'} | ${undefined}                                          | ${[]}
+    ${'returns empty array for an empty array'}      | ${[]}                                                 | ${[]}
+    ${'returns converted array'}                     | ${['dast', 'container_scanning', 'secret_detection']} | ${['Dast', 'Container Scanning', 'Secret Detection']}
   `('$title', ({ input, output }) => {
     expect(convertScannersToTitleCase(input)).toStrictEqual(output);
   });
