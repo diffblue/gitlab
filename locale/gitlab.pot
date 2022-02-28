@@ -7612,7 +7612,7 @@ msgstr ""
 msgid "Cluster level"
 msgstr ""
 
-msgid "Cluster type must be specificed for Stages::ClusterEndpointInserter"
+msgid "Cluster type must be specified for Stages::ClusterEndpointInserter"
 msgstr ""
 
 msgid "ClusterAgents|%{name} successfully deleted"
