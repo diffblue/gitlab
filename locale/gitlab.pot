@@ -37428,7 +37428,7 @@ msgstr ""
 msgid "This group can't be removed because it is linked to a subscription. To remove this group, %{linkStart}link the subscription%{linkEnd} with a different group."
 msgstr ""
 
-msgid "This group can't be transfered because it is linked to a subscription. To transfer this group, %{linkStart}link the subscription%{linkEnd} with a different group."
+msgid "This group can't be transferred because it is linked to a subscription. To transfer this group, %{linkStart}link the subscription%{linkEnd} with a different group."
 msgstr ""
 
 msgid "This group cannot be invited to a project inside a group with enforced SSO"

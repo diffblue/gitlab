@@ -359,7 +359,7 @@
 ### Security (5 changes)
 
 - Don't show Contribution Analytics to users who are not group members.
-- Update epic tree when group is transfered.
+- Update epic tree when group is transferred.
 - Fix Service Side Request Forgery in JenkinsDeprecatedService.
 - Enforce vulnerability feedback pipeline is in the same project.
 - Enforce existing vulnerability feedback pipeline is in the same project.
