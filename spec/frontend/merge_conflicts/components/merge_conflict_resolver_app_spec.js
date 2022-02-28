@@ -41,6 +41,7 @@ describe('Merge Conflict Resolver App', () => {
     wrapper.destroy();
   });
 
+  const findLoadingSpinner = () => wrapper.find('[data-testid="loading-spinner"]');
   const findConflictsCount = () => wrapper.find('[data-testid="conflicts-count"]');
   const findFiles = () => wrapper.findAll('[data-testid="files"]');
   const findFileHeader = (w = wrapper) => w.find('[data-testid="file-name"]');
@@ -58,6 +59,19 @@ describe('Merge Conflict Resolver App', () => {
 
     expect(title.exists()).toBe(true);
     expect(title.text().trim()).toBe('Showing 3 conflicts between test-conflicts and main');
+  });
+
+  it('shows a loading spinner while loading', () => {
+    store.commit('SET_LOADING_STATE', true);
+    mountComponent();
+
+    expect(findLoadingSpinner().exists()).toBe(true);
+  });
+
+  it('does not show a loading spinner once loaded', () => {
+    mountComponent();
+
+    expect(findLoadingSpinner().exists()).toBe(false);
   });
 
   describe('files', () => {
