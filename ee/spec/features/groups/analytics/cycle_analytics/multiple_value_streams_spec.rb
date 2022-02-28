@@ -25,6 +25,7 @@ RSpec.describe 'Multiple value streams', :js do
   end
 
   before do
+    stub_feature_flags(use_vsa_aggregated_tables: false)
     stub_licensed_features(cycle_analytics_for_groups: true, type_of_work_analytics: true)
 
     sign_in(user)

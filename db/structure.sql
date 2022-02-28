@@ -10652,13 +10652,13 @@ CREATE TABLE analytics_cycle_analytics_group_stages (
     relative_position integer,
     start_event_identifier integer NOT NULL,
     end_event_identifier integer NOT NULL,
-    group_id bigint NOT NULL,
+    group_id bigint,
     start_event_label_id bigint,
     end_event_label_id bigint,
     hidden boolean DEFAULT false NOT NULL,
     custom boolean DEFAULT true NOT NULL,
     name character varying(255) NOT NULL,
-    group_value_stream_id bigint NOT NULL,
+    group_value_stream_id bigint,
     stage_event_hash_id bigint,
     CONSTRAINT check_e6bd4271b5 CHECK ((stage_event_hash_id IS NOT NULL))
 );
@@ -10674,11 +10674,10 @@ ALTER SEQUENCE analytics_cycle_analytics_group_stages_id_seq OWNED BY analytics_
 
 CREATE TABLE analytics_cycle_analytics_group_value_streams (
     id bigint NOT NULL,
+    name character varying(255) NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
-    group_id bigint NOT NULL,
-    name text NOT NULL,
-    CONSTRAINT check_bc1ed5f1f7 CHECK ((char_length(name) <= 100))
+    group_id bigint NOT NULL
 );
 
 CREATE SEQUENCE analytics_cycle_analytics_group_value_streams_id_seq
@@ -11126,8 +11125,6 @@ CREATE TABLE application_settings (
     elasticsearch_indexed_file_size_limit_kb integer DEFAULT 1024 NOT NULL,
     enforce_namespace_storage_limit boolean DEFAULT false NOT NULL,
     container_registry_delete_tags_service_timeout integer DEFAULT 250 NOT NULL,
-    kroki_url character varying,
-    kroki_enabled boolean,
     elasticsearch_client_request_timeout integer DEFAULT 0 NOT NULL,
     gitpod_enabled boolean DEFAULT false NOT NULL,
     gitpod_url text DEFAULT 'https://gitpod.io/'::text,
@@ -11138,26 +11135,28 @@ CREATE TABLE application_settings (
     encrypted_ci_jwt_signing_key text,
     encrypted_ci_jwt_signing_key_iv text,
     container_registry_expiration_policies_worker_capacity integer DEFAULT 4 NOT NULL,
-    elasticsearch_analyzers_smartcn_enabled boolean DEFAULT false NOT NULL,
-    elasticsearch_analyzers_smartcn_search boolean DEFAULT false NOT NULL,
-    elasticsearch_analyzers_kuromoji_enabled boolean DEFAULT false NOT NULL,
-    elasticsearch_analyzers_kuromoji_search boolean DEFAULT false NOT NULL,
     secret_detection_token_revocation_enabled boolean DEFAULT false NOT NULL,
     secret_detection_token_revocation_url text,
     encrypted_secret_detection_token_revocation_token text,
     encrypted_secret_detection_token_revocation_token_iv text,
+    elasticsearch_analyzers_smartcn_enabled boolean DEFAULT false NOT NULL,
+    elasticsearch_analyzers_smartcn_search boolean DEFAULT false NOT NULL,
+    elasticsearch_analyzers_kuromoji_enabled boolean DEFAULT false NOT NULL,
+    elasticsearch_analyzers_kuromoji_search boolean DEFAULT false NOT NULL,
+    new_user_signups_cap integer,
     domain_denylist_enabled boolean DEFAULT false,
     domain_denylist text,
     domain_allowlist text,
-    new_user_signups_cap integer,
     encrypted_cloud_license_auth_token text,
     encrypted_cloud_license_auth_token_iv text,
     secret_detection_revocation_token_types_url text,
+    kroki_url text,
+    kroki_enabled boolean DEFAULT false NOT NULL,
     disable_feed_token boolean DEFAULT false NOT NULL,
     personal_access_token_prefix text DEFAULT 'glpat-'::text,
     rate_limiting_response_text text,
-    invisible_captcha_enabled boolean DEFAULT false NOT NULL,
     container_registry_cleanup_tags_service_max_list_size integer DEFAULT 200 NOT NULL,
+    invisible_captcha_enabled boolean DEFAULT false NOT NULL,
     enforce_ssh_key_expiration boolean DEFAULT true NOT NULL,
     git_two_factor_session_expiry integer DEFAULT 15 NOT NULL,
     keep_latest_artifact boolean DEFAULT true NOT NULL,
@@ -11212,10 +11211,10 @@ CREATE TABLE application_settings (
     throttle_unauthenticated_api_enabled boolean DEFAULT false NOT NULL,
     throttle_unauthenticated_api_requests_per_period integer DEFAULT 3600 NOT NULL,
     throttle_unauthenticated_api_period_in_seconds integer DEFAULT 3600 NOT NULL,
-    jobs_per_stage_page_size integer DEFAULT 200 NOT NULL,
     sidekiq_job_limiter_mode smallint DEFAULT 1 NOT NULL,
     sidekiq_job_limiter_compression_threshold_bytes integer DEFAULT 100000 NOT NULL,
     sidekiq_job_limiter_limit_bytes integer DEFAULT 0 NOT NULL,
+    jobs_per_stage_page_size integer DEFAULT 200 NOT NULL,
     suggest_pipeline_enabled boolean DEFAULT true NOT NULL,
     throttle_unauthenticated_deprecated_api_requests_per_period integer DEFAULT 1800 NOT NULL,
     throttle_unauthenticated_deprecated_api_period_in_seconds integer DEFAULT 3600 NOT NULL,
@@ -11232,20 +11231,20 @@ CREATE TABLE application_settings (
     sentry_dsn text,
     sentry_clientside_dsn text,
     sentry_environment text,
-    max_ssh_key_lifetime integer,
     static_objects_external_storage_auth_token_encrypted text,
+    max_ssh_key_lifetime integer,
     future_subscriptions jsonb DEFAULT '[]'::jsonb NOT NULL,
     user_email_lookup_limit integer DEFAULT 60 NOT NULL,
     packages_cleanup_package_file_worker_capacity smallint DEFAULT 2 NOT NULL,
+    runner_token_expiration_interval integer,
+    group_runner_token_expiration_interval integer,
+    project_runner_token_expiration_interval integer,
     container_registry_import_max_tags_count integer DEFAULT 100 NOT NULL,
     container_registry_import_max_retries integer DEFAULT 3 NOT NULL,
     container_registry_import_start_max_retries integer DEFAULT 50 NOT NULL,
     container_registry_import_max_step_duration integer DEFAULT 300 NOT NULL,
     container_registry_import_target_plan text DEFAULT 'free'::text NOT NULL,
-    container_registry_import_created_before timestamp with time zone DEFAULT '2022-01-23 00:00:00+00'::timestamp with time zone NOT NULL,
-    runner_token_expiration_interval integer,
-    group_runner_token_expiration_interval integer,
-    project_runner_token_expiration_interval integer,
+    container_registry_import_created_before timestamp with time zone DEFAULT '2022-01-23 11:00:00+11'::timestamp with time zone NOT NULL,
     ecdsa_sk_key_restriction integer DEFAULT 0 NOT NULL,
     ed25519_sk_key_restriction integer DEFAULT 0 NOT NULL,
     users_get_by_id_limit integer DEFAULT 300 NOT NULL,
@@ -11260,7 +11259,7 @@ CREATE TABLE application_settings (
     CONSTRAINT app_settings_registry_exp_policies_worker_capacity_positive CHECK ((container_registry_expiration_policies_worker_capacity >= 0)),
     CONSTRAINT app_settings_yaml_max_depth_positive CHECK ((max_yaml_depth > 0)),
     CONSTRAINT app_settings_yaml_max_size_positive CHECK ((max_yaml_size_bytes > 0)),
-    CONSTRAINT check_17d9558205 CHECK ((char_length((kroki_url)::text) <= 1024)),
+    CONSTRAINT check_17d9558205 CHECK ((char_length(kroki_url) <= 1024)),
     CONSTRAINT check_2dba05b802 CHECK ((char_length(gitpod_url) <= 255)),
     CONSTRAINT check_32710817e9 CHECK ((char_length(static_objects_external_storage_auth_token_encrypted) <= 255)),
     CONSTRAINT check_3559645ae5 CHECK ((char_length(container_registry_import_target_plan) <= 255)),
@@ -17415,7 +17414,8 @@ CREATE TABLE namespaces (
     shared_runners_enabled boolean DEFAULT true NOT NULL,
     allow_descendants_override_disabled_shared_runners boolean DEFAULT false NOT NULL,
     traversal_ids integer[] DEFAULT '{}'::integer[] NOT NULL,
-    tmp_project_id integer
+    tmp_project_id integer,
+    email_visibility_disabled boolean
 );
 
 CREATE SEQUENCE namespaces_id_seq
@@ -18598,8 +18598,8 @@ CREATE TABLE plan_limits (
     ci_max_artifact_size_api_fuzzing integer DEFAULT 0 NOT NULL,
     ci_pipeline_deployments integer DEFAULT 500 NOT NULL,
     pull_mirror_interval_seconds integer DEFAULT 300 NOT NULL,
-    daily_invites integer DEFAULT 0 NOT NULL,
     rubygems_max_file_size bigint DEFAULT '3221225472'::bigint NOT NULL,
+    daily_invites integer DEFAULT 0 NOT NULL,
     terraform_module_max_file_size bigint DEFAULT 1073741824 NOT NULL,
     helm_max_file_size bigint DEFAULT 5242880 NOT NULL,
     ci_registered_group_runners integer DEFAULT 1000 NOT NULL,
@@ -21989,8 +21989,8 @@ CREATE TABLE web_hooks (
     encrypted_url character varying,
     encrypted_url_iv character varying,
     deployment_events boolean DEFAULT false NOT NULL,
-    releases_events boolean DEFAULT false NOT NULL,
     feature_flag_events boolean DEFAULT false NOT NULL,
+    releases_events boolean DEFAULT false NOT NULL,
     member_events boolean DEFAULT false NOT NULL,
     subgroup_events boolean DEFAULT false NOT NULL,
     recent_failures smallint DEFAULT 0 NOT NULL,
@@ -26631,6 +26631,8 @@ CREATE INDEX index_analytics_ca_group_stages_on_end_event_label_id ON analytics_
 
 CREATE INDEX index_analytics_ca_group_stages_on_group_id ON analytics_cycle_analytics_group_stages USING btree (group_id);
 
+CREATE UNIQUE INDEX index_analytics_ca_group_stages_on_group_id_vs_id_and_name ON analytics_cycle_analytics_group_stages USING btree (group_id, group_value_stream_id, name);
+
 CREATE INDEX index_analytics_ca_group_stages_on_relative_position ON analytics_cycle_analytics_group_stages USING btree (relative_position);
 
 CREATE INDEX index_analytics_ca_group_stages_on_start_event_label_id ON analytics_cycle_analytics_group_stages USING btree (start_event_label_id);
@@ -27165,6 +27167,8 @@ CREATE INDEX index_cluster_agent_tokens_on_agent_id_status_last_used_at ON clust
 
 CREATE INDEX index_cluster_agent_tokens_on_created_by_user_id ON cluster_agent_tokens USING btree (created_by_user_id);
 
+CREATE INDEX index_cluster_agent_tokens_on_last_used_at ON cluster_agent_tokens USING btree (last_used_at DESC NULLS LAST);
+
 CREATE UNIQUE INDEX index_cluster_agent_tokens_on_token_encrypted ON cluster_agent_tokens USING btree (token_encrypted);
 
 CREATE INDEX index_cluster_agents_on_created_by_user_id ON cluster_agents USING btree (created_by_user_id);
@@ -27541,7 +27545,7 @@ CREATE INDEX index_events_on_author_id_and_created_at_merge_requests ON events U
 
 CREATE INDEX index_events_on_author_id_and_id ON events USING btree (author_id, id);
 
-CREATE INDEX index_events_on_created_at_and_id ON events USING btree (created_at, id) WHERE (created_at > '2021-08-27 00:00:00+00'::timestamp with time zone);
+CREATE INDEX index_events_on_created_at_and_id ON events USING btree (created_at, id) WHERE (created_at > '2021-08-27 10:00:00+10'::timestamp with time zone);
 
 CREATE INDEX index_events_on_group_id_partial ON events USING btree (group_id) WHERE (group_id IS NOT NULL);
 
@@ -27726,8 +27730,6 @@ CREATE INDEX index_group_import_states_on_group_id ON group_import_states USING 
 CREATE INDEX index_group_import_states_on_user_id ON group_import_states USING btree (user_id) WHERE (user_id IS NOT NULL);
 
 CREATE INDEX index_group_repository_storage_moves_on_group_id ON group_repository_storage_moves USING btree (group_id);
-
-CREATE UNIQUE INDEX index_group_stages_on_group_id_group_value_stream_id_and_name ON analytics_cycle_analytics_group_stages USING btree (group_id, group_value_stream_id, name);
 
 CREATE INDEX index_group_stages_on_stage_event_hash_id ON analytics_cycle_analytics_group_stages USING btree (stage_event_hash_id);
 
@@ -28284,6 +28286,8 @@ CREATE INDEX index_notes_on_created_at ON notes USING btree (created_at);
 CREATE INDEX index_notes_on_discussion_id ON notes USING btree (discussion_id);
 
 CREATE INDEX index_notes_on_line_code ON notes USING btree (line_code);
+
+CREATE INDEX index_notes_on_note_gin_trigram ON notes USING gin (note gin_trgm_ops);
 
 CREATE INDEX index_notes_on_noteable_id_and_noteable_type_and_system ON notes USING btree (noteable_id, noteable_type, system);
 
@@ -29521,8 +29525,6 @@ CREATE UNIQUE INDEX issue_user_mentions_on_issue_id_index ON issue_user_mentions
 
 CREATE UNIQUE INDEX kubernetes_namespaces_cluster_and_namespace ON clusters_kubernetes_namespaces USING btree (cluster_id, namespace);
 
-CREATE INDEX merge_request_mentions_temp_index ON merge_requests USING btree (id) WHERE ((description ~~ '%@%'::text) OR ((title)::text ~~ '%@%'::text));
-
 CREATE UNIQUE INDEX merge_request_user_mentions_on_mr_id_and_note_id_index ON merge_request_user_mentions USING btree (merge_request_id, note_id);
 
 CREATE UNIQUE INDEX merge_request_user_mentions_on_mr_id_index ON merge_request_user_mentions USING btree (merge_request_id) WHERE (note_id IS NULL);
@@ -29569,7 +29571,7 @@ CREATE INDEX tmp_gitlab_subscriptions_max_seats_used_migration_2 ON gitlab_subsc
 
 CREATE INDEX tmp_idx_vulnerability_occurrences_on_id_where_report_type_7_99 ON vulnerability_occurrences USING btree (id) WHERE (report_type = ANY (ARRAY[7, 99]));
 
-CREATE INDEX tmp_index_ci_job_artifacts_on_id_where_trace_and_expire_at ON ci_job_artifacts USING btree (id) WHERE ((file_type = 3) AND (expire_at = ANY (ARRAY['2021-04-22 00:00:00+00'::timestamp with time zone, '2021-05-22 00:00:00+00'::timestamp with time zone, '2021-06-22 00:00:00+00'::timestamp with time zone, '2022-01-22 00:00:00+00'::timestamp with time zone, '2022-02-22 00:00:00+00'::timestamp with time zone, '2022-03-22 00:00:00+00'::timestamp with time zone, '2022-04-22 00:00:00+00'::timestamp with time zone])));
+CREATE INDEX tmp_index_ci_job_artifacts_on_id_where_trace_and_expire_at ON ci_job_artifacts USING btree (id) WHERE ((file_type = 3) AND (expire_at = ANY (ARRAY['2021-04-22 10:00:00+10'::timestamp with time zone, '2021-05-22 10:00:00+10'::timestamp with time zone, '2021-06-22 10:00:00+10'::timestamp with time zone, '2022-01-22 11:00:00+11'::timestamp with time zone, '2022-02-22 11:00:00+11'::timestamp with time zone, '2022-03-22 11:00:00+11'::timestamp with time zone, '2022-04-22 10:00:00+10'::timestamp with time zone])));
 
 CREATE INDEX tmp_index_container_repositories_on_id_migration_state ON container_repositories USING btree (id, migration_state);
 
@@ -31501,7 +31503,7 @@ ALTER TABLE ONLY merge_request_assignees
     ADD CONSTRAINT fk_af036e3261 FOREIGN KEY (updated_state_by_user_id) REFERENCES users(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY analytics_cycle_analytics_group_stages
-    ADD CONSTRAINT fk_analytics_cycle_analytics_group_stages_group_value_stream_id FOREIGN KEY (group_value_stream_id) REFERENCES analytics_cycle_analytics_group_value_streams(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_analytics_cycle_analytics_group_stages_group_value_stream_id FOREIGN KEY (group_value_stream_id) REFERENCES analytics_cycle_analytics_group_value_streams(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY fork_network_members
     ADD CONSTRAINT fk_b01280dae4 FOREIGN KEY (forked_from_project_id) REFERENCES projects(id) ON DELETE SET NULL;
