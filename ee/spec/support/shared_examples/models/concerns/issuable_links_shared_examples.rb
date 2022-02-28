@@ -13,14 +13,6 @@ RSpec.shared_examples 'issuables that can block or be blocked' do
     end
   end
 
-  describe '.inverse_link_type' do
-    it 'returns the inverse type of link' do
-      expect(described_class.inverse_link_type('relates_to')).to eq('relates_to')
-      expect(described_class.inverse_link_type('is_blocked_by')).to eq('is_blocked_by')
-      expect(described_class.inverse_link_type('blocks')).to eq('is_blocked_by')
-    end
-  end
-
   describe '.blocked_issuable_ids' do
     it 'returns only ids of issues which are blocked' do
       link1 = create(factory_class, link_type: ::IssuableLink::TYPE_BLOCKS)
@@ -40,13 +32,6 @@ RSpec.shared_examples 'issuables that can block or be blocked' do
       blocking_ids = described_class.blocking_issuables_ids_for(blocked_issuable_1)
 
       expect(blocking_ids).to match_array([blocking_issuable_1.id, blocking_issuable_2.id])
-    end
-  end
-
-  describe '.inverse_link_type' do
-    it 'returns reverse type of link' do
-      expect(described_class.inverse_link_type('relates_to')).to eq 'relates_to'
-      expect(described_class.inverse_link_type('blocks')).to eq 'is_blocked_by'
     end
   end
 

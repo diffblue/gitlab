@@ -25,12 +25,6 @@ module EE
         blocked_or_blocking_issuables(issuable.id).pluck(:source_id)
       end
 
-      def blocked_or_blocking_issuables(issuables_ids)
-        where(link_type: ::IssueLink::TYPE_BLOCKS).where(target_id: issuables_ids)
-          .joins(:source)
-          .where(source: { state_id: ::Issuable::STATE_ID_MAP[:opened] })
-      end
-
       def blocking_issuables_for_collection(issuables_ids)
         open_state_id = ::Issuable::STATE_ID_MAP[:opened]
         grouping_row_name = "blocking_#{issuable_type}_id"
@@ -56,6 +50,14 @@ module EE
 
       def blocking_issuables_count_for(issue)
         blocking_issuables_for_collection(issue.id)[0]&.count.to_i
+      end
+
+      private
+
+      def blocked_or_blocking_issuables(issuables_ids)
+        where(link_type: ::IssuableLink::TYPE_BLOCKS).where(target_id: issuables_ids)
+          .joins(:source)
+          .where(source: { state_id: ::Issuable::STATE_ID_MAP[:opened] })
       end
     end
   end
