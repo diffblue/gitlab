@@ -10,6 +10,6 @@ module RequestAwareEntity
   end
 
   def request
-    options.fetch(:request, nil)
+    options.fetch(:request)
   end
 end
