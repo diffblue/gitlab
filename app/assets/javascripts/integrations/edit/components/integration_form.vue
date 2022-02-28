@@ -3,6 +3,7 @@ import { GlButton, GlModalDirective, GlSafeHtmlDirective as SafeHtml, GlForm } f
 import axios from 'axios';
 import * as Sentry from '@sentry/browser';
 import { mapState, mapActions, mapGetters } from 'vuex';
+
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   I18N_FETCH_TEST_SETTINGS_DEFAULT_ERROR_MESSAGE,
@@ -41,10 +42,8 @@ export default {
     SafeHtml,
   },
   mixins: [glFeatureFlagsMixin()],
-  props: {
+  inject: {
     helpHtml: {
-      type: String,
-      required: false,
       default: '',
     },
   },
@@ -82,7 +81,7 @@ export default {
       return Boolean(this.isSaving || this.isResetting || this.isTesting);
     },
     form() {
-      return this.$refs.integrationForm.$el;
+      return this.$refs.integrationForm?.$el;
     },
   },
   methods: {
