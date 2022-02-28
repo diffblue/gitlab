@@ -13,6 +13,7 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
   let(:new_excluded_urls) { ["#{new_target_url}/signout"] }
   let(:new_request_headers) { "Authorization: Bearer #{SecureRandom.hex}" }
   let(:new_target_type) { 'api' }
+  let(:new_scan_method) { 'postman' }
 
   let(:new_auth) do
     {
@@ -42,6 +43,7 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
         target_type: new_target_type,
         excluded_urls: new_excluded_urls,
         request_headers: new_request_headers,
+        scan_method: new_scan_method,
         auth: new_auth
       )
     end
@@ -63,6 +65,7 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
             target_type: new_target_type,
             excluded_urls: new_excluded_urls,
             request_headers: new_request_headers,
+            scan_method: new_scan_method,
             auth_enabled: new_auth[:enabled],
             auth_url: new_auth[:url],
             auth_username_field: new_auth[:username_field],
@@ -88,6 +91,7 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
             auth_username_field: new_auth[:username_field],
             auth_password_field: new_auth[:password_field],
             auth_username: new_auth[:username],
+            scan_method: new_scan_method,
             dast_site: have_attributes(url: new_target_url)
           )
 
@@ -141,6 +145,18 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
             allow(service).to receive(:execute).and_return(result)
 
             expect(subject).to include(errors: ['Oops'])
+          end
+        end
+
+        context 'when the feature flag dast_api_scanner is disabled' do
+          before do
+            stub_feature_flags(dast_api_scanner: false)
+          end
+
+          it 'does not update the scan_method and uses the default value according to the target_type' do
+            dast_site_profile = subject[:id].find
+
+            expect(dast_site_profile.scan_method).to eq('openapi')
           end
         end
       end

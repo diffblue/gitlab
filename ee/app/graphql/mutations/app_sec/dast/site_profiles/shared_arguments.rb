@@ -22,6 +22,11 @@ module Mutations
                      required: false,
                      description: 'Type of target to be scanned.'
 
+            argument :scan_method, Types::Dast::ScanMethodTypeEnum,
+                     required: false,
+                     description: 'Scan method by the scanner. Is not saved or updated ' \
+                         'if `dast_api_scanner` feature flag is disabled.'
+
             argument :request_headers, GraphQL::Types::String,
                      required: false,
                      description: 'Comma-separated list of request header names and values to be ' \
