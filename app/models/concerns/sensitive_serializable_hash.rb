@@ -3,6 +3,17 @@
 module SensitiveSerializableHash
   extend ActiveSupport::Concern
 
+  included do
+    class_attribute :attributes_exempt_from_serializable_hash, default: []
+  end
+
+  class_methods do
+    def prevent_from_serialization(*keys)
+      self.attributes_exempt_from_serializable_hash ||= []
+      self.attributes_exempt_from_serializable_hash.concat keys
+    end
+  end
+
   # Override serializable_hash to exclude sensitive attributes by default
   #
   # In general, prefer NOT to use serializable_hash / to_json / as_json in favor
@@ -12,6 +23,8 @@ module SensitiveSerializableHash
 
     options = options.try(:dup) || {}
     options[:except] = Array(options[:except]).dup
+
+    options[:except].concat self.class.attributes_exempt_from_serializable_hash
 
     if self.class.respond_to?(:token_authenticatable_fields)
       options[:except].concat self.class.token_authenticatable_fields

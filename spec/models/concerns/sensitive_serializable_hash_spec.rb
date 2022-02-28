@@ -3,6 +3,37 @@
 require 'spec_helper'
 
 RSpec.describe SensitiveSerializableHash do
+  describe '.prevent_from_serialization' do
+    let(:test_class) do
+      Class.new do
+        include ActiveModel::Serialization
+        include SensitiveSerializableHash
+
+        attr_accessor :name, :super_secret
+
+        prevent_from_serialization :super_secret
+
+        def attributes
+          { 'name' => nil, 'super_secret' => nil }
+        end
+      end
+    end
+
+    it 'does not include the field in serializable_hash' do
+      model = test_class.new
+
+      expect(model.serializable_hash).not_to include('super_secret')
+    end
+
+    context 'unsafe_serialization_hash option' do
+      it 'includes the field in serializable_hash' do
+        model = test_class.new
+
+        expect(model.serializable_hash(unsafe_serialization_hash: true)).to include('super_secret')
+      end
+    end
+  end
+
   describe '#serializable_hash' do
     shared_examples "attr_encrypted attribute" do |klass, attribute_name|
       context "#{klass.name}\##{attribute_name}" do
