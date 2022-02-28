@@ -352,6 +352,34 @@ RSpec.describe VulnerabilitiesHelper do
         expect(dismissal_feedback[:comment_details][:comment]).to eq(feedback.comment)
       end
     end
+
+    context 'with markdown field for description' do
+      context 'when vulnerability has no description and finding has description' do
+        before do
+          vulnerability.description = nil
+          vulnerability.finding.description = '# Finding'
+        end
+
+        it 'returns finding information' do
+          rendered_markdown = '<h1 data-sourcepos="1:1-1:9" dir="auto">&#x000A;<a id="user-content-finding" class="anchor" href="#finding" aria-hidden="true"></a>Finding</h1>'
+
+          expect(subject[:description_html]).to eq(rendered_markdown)
+        end
+      end
+
+      context 'when vulnerability has description and finding has description' do
+        before do
+          vulnerability.description = '# Vulnerability'
+          vulnerability.finding.description = '# Finding'
+        end
+
+        it 'returns finding information' do
+          rendered_markdown = '<h1 data-sourcepos="1:1-1:15" dir="auto">&#x000A;<a id="user-content-vulnerability" class="anchor" href="#vulnerability" aria-hidden="true"></a>Vulnerability</h1>'
+
+          expect(subject[:description_html]).to eq(rendered_markdown)
+        end
+      end
+    end
   end
 
   describe '#vulnerability_scan_data?' do
