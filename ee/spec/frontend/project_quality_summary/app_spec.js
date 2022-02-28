@@ -1,4 +1,4 @@
-import { GlSkeletonLoader } from '@gitlab/ui';
+import { GlSkeletonLoader, GlEmptyState } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import mockProjectQualityResponse from 'test_fixtures/graphql/project_quality_summary/graphql/queries/get_project_quality.query.graphql.json';
@@ -9,6 +9,7 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 
 import ProjectQualitySummary from 'ee/project_quality_summary/app.vue';
 import getProjectQuality from 'ee/project_quality_summary/graphql/queries/get_project_quality.query.graphql';
+import { i18n } from 'ee/project_quality_summary/constants';
 
 jest.mock('~/flash');
 
@@ -36,6 +37,7 @@ describe('Project quality summary app component', () => {
         projectPath: 'project-path',
         coverageChartPath,
         defaultBranch: 'main',
+        testRunsEmptyStateImagePath: 'image/path',
       },
     });
   };
@@ -102,6 +104,22 @@ describe('Project quality summary app component', () => {
       it('shows the coverage percentage', () => {
         expect(findCoverageStat().text()).toContain(`${coverage}%`);
       });
+    });
+  });
+
+  describe('without data', () => {
+    beforeEach(async () => {
+      createComponent(jest.fn().mockResolvedValue([]));
+      await waitForPromises();
+    });
+
+    it('shows a test runs empty state', () => {
+      const emptyState = wrapper.findComponent(GlEmptyState);
+
+      expect(emptyState.exists()).toBe(true);
+      expect(emptyState.text()).toContain(i18n.testRuns.title);
+      expect(emptyState.text()).toContain(i18n.testRuns.emptyStateDescription);
+      expect(emptyState.text()).toContain(i18n.testRuns.emptyStateLink);
     });
   });
 });
