@@ -109,11 +109,10 @@ export default {
     <div v-if="hasDropdownActions" class="gl-p-2">
       <gl-dropdown
         data-testid="dropdown-toggle"
-        :text-sr-only="!showButtonLabels"
+        v-gl-tooltip="$options.i18n.userAdministration"
         icon="ellipsis_v"
         data-qa-selector="user_actions_dropdown_toggle"
         :data-qa-username="user.username"
-        v-gl-tooltip="$options.i18n.userAdministration"
         no-caret
         right
       >
