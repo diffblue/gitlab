@@ -111,7 +111,7 @@ module Integrations
     end
 
     def help
-      jira_doc_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_url('integration/jira/index.html') }
+      jira_doc_link_start = '<a href="%{url}">'.html_safe % { url: help_page_url('integration/jira/index.html') }
       s_("JiraService|You must configure Jira before enabling this integration. %{jira_doc_link_start}Learn more.%{link_end}") % { jira_doc_link_start: jira_doc_link_start, link_end: '</a>'.html_safe }
     end
 
