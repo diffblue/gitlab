@@ -26,16 +26,6 @@ module SensitiveSerializableHash
 
     options[:except].concat self.class.attributes_exempt_from_serializable_hash
 
-    if self.class.respond_to?(:token_authenticatable_fields)
-      options[:except].concat self.class.token_authenticatable_fields
-
-      # See https://gitlab.com/gitlab-org/security/gitlab/-/tree/master/app/models/concerns/token_authenticatable_strategies
-      # TODO expose this fields from the TokenAuthenticatable module instead
-      options[:except].concat self.class.token_authenticatable_fields.map { |token_field| "#{token_field}_expires_at" }
-      options[:except].concat self.class.token_authenticatable_fields.map { |token_field| "#{token_field}_digest" }
-      options[:except].concat self.class.token_authenticatable_fields.map { |token_field| "#{token_field}_encrypted" }
-    end
-
     if self.class.respond_to?(:encrypted_attributes)
       options[:except].concat self.class.encrypted_attributes.keys
 

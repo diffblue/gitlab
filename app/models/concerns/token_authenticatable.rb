@@ -27,6 +27,8 @@ module TokenAuthenticatable
       strategy = TokenAuthenticatableStrategies::Base
         .fabricate(self, token_field, options)
 
+      prevent_from_serialization(*strategy.token_fields) if respond_to?(:prevent_from_serialization)
+
       if options.fetch(:unique, true)
         define_singleton_method("find_by_#{token_field}") do |token|
           strategy.find_token_authenticatable(token)
