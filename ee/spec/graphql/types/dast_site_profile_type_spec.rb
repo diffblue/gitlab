@@ -9,7 +9,7 @@ RSpec.describe GitlabSchema.types['DastSiteProfile'] do
   let_it_be(:project) { create(:project) }
   let_it_be(:user) { create(:user, developer_projects: [project]) }
   let_it_be(:object, reload: true) { create(:dast_site_profile, project: project) }
-  let_it_be(:fields) { %i[id profileName targetUrl targetType editPath excludedUrls requestHeaders validationStatus userPermissions normalizedTargetUrl auth referencedInSecurityPolicies] }
+  let_it_be(:fields) { %i[id profileName targetUrl targetType editPath excludedUrls requestHeaders validationStatus userPermissions normalizedTargetUrl auth referencedInSecurityPolicies scanMethod] }
 
   before do
     stub_licensed_features(security_on_demand_scans: true)
@@ -102,6 +102,22 @@ RSpec.describe GitlabSchema.types['DastSiteProfile'] do
 
       expect(field_value).to be_a(GraphQL::Execution::Lazy)
       expect(field_value.value).to eq(object.referenced_in_security_policies)
+    end
+  end
+
+  describe 'scan_method field' do
+    context 'when the feature flag is disabled' do
+      it 'resolves nil' do
+        stub_feature_flags(dast_api_scanner: false)
+
+        expect(resolve_field(:scan_method, object, current_user: user)).to eq(nil)
+      end
+    end
+
+    context 'when the feature flag is enabled' do
+      it 'is the scan method' do
+        expect(resolve_field(:scan_method, object, current_user: user)).to eq('site')
+      end
     end
   end
 
