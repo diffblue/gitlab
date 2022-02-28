@@ -274,13 +274,13 @@ More details about the permissions for some project-level features follow.
 | Stop [environments](../ci/environments/index.md)                                  |            |         |          | ✓         | ✓          | ✓     |
 | View a job with [debug logging](../ci/variables/index.md#debug-logging)           |            |         |          | ✓         | ✓          | ✓     |
 | Use pipeline editor                                                               |            |         |          | ✓         | ✓          | ✓     |
+| Run [interactive web terminals](../ci/interactive_web_terminal/index.md)          |            |         |          | ✓         | ✓          | ✓     |
 | Add specific runners to project                                                   |            |         |          |           | ✓          | ✓     |
 | Clear runner caches manually                                                      |            |         |          |           | ✓          | ✓     |
 | Enable shared runners in project                                                  |            |         |          |           | ✓          | ✓     |
 | Manage CI/CD settings                                                             |            |         |          |           | ✓          | ✓     |
 | Manage job triggers                                                               |            |         |          |           | ✓          | ✓     |
 | Manage project-level CI/CD variables                                              |            |         |          |           | ✓          | ✓     |
-| Run [interactive web terminals](../ci/interactive_web_terminal/index.md)          |            |         |          |           | ✓          | ✓     |
 | Use [environment terminals](../ci/environments/index.md#web-terminals-deprecated) |            |         |          |           | ✓          | ✓     |
 | Delete pipelines                                                                  |            |         |          |           |            | ✓     |
 
