@@ -32,13 +32,6 @@ Graphql/IDType:
 Layout/ArgumentAlignment:
   Enabled: false
 
-# Offense count: 54
-# Cop supports --auto-correct.
-# Configuration parameters: AllowAliasSyntax, AllowedMethods.
-# AllowedMethods: alias_method, public, protected, private
-Layout/EmptyLinesAroundAttributeAccessor:
-  Enabled: false
-
 # Offense count: 771
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, IndentationWidth.

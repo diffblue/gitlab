@@ -37,6 +37,7 @@ module Security
     private
 
     attr_reader :pipeline, :params
+
     delegate :project, :has_security_findings?, to: :pipeline, private: true
 
     def findings
