@@ -293,7 +293,7 @@ module EE
             # returns a hash user_id -> LDAP identity in current LDAP provider
             def resolve_ldap_identities(for_users:)
               ::Identity.for_user(for_users).with_provider(provider)
-                .to_h { |identity| [identity.user_id, identity] }
+                .index_by(&:user_id)
             end
 
             # returns a hash of normalized DN -> user for the current LDAP provider
