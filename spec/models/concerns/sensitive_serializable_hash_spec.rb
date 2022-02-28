@@ -19,17 +19,25 @@ RSpec.describe SensitiveSerializableHash do
       end
     end
 
-    it 'does not include the field in serializable_hash' do
-      model = test_class.new
+    let(:model) { test_class.new }
 
+    it 'does not include the field in serializable_hash' do
       expect(model.serializable_hash).not_to include('super_secret')
     end
 
     context 'unsafe_serialization_hash option' do
       it 'includes the field in serializable_hash' do
-        model = test_class.new
-
         expect(model.serializable_hash(unsafe_serialization_hash: true)).to include('super_secret')
+      end
+    end
+
+    context 'when prevent_sensitive_fields_from_serializable_hash feature flag is disabled' do
+      before do
+        stub_feature_flags(prevent_sensitive_fields_from_serializable_hash: false)
+      end
+
+      it 'includes the field in serializable_hash' do
+        expect(model.serializable_hash).to include('super_secret')
       end
     end
   end
