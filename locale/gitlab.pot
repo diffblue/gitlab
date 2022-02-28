@@ -42611,7 +42611,7 @@ msgstr ""
 msgid "Your public email will be displayed on your public profile."
 msgstr ""
 
-msgid "Your request for access could not be processed: %{error_meesage}"
+msgid "Your request for access could not be processed: %{error_message}"
 msgstr ""
 
 msgid "Your request for access has been queued for review."
