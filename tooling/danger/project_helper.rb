@@ -75,7 +75,9 @@ module Tooling
           spec/frontend/tracking/.*\.js |
           spec/frontend/tracking_spec\.js
         )\z}x => [:frontend, :product_intelligence],
-        %r{\A((ee|jh)/)?app/(assets|views)/} => :frontend,
+        %r{\A((ee|jh)/)?app/assets/} => :frontend,
+        %r{\A((ee|jh)/)?app/views/.*\.svg} => :frontend,
+        %r{\A((ee|jh)/)?app/views/} => [:frontend, :backend],
         %r{\A((ee|jh)/)?public/} => :frontend,
         %r{\A((ee|jh)/)?spec/(javascripts|frontend|frontend_integration)/} => :frontend,
         %r{\A((ee|jh)/)?vendor/assets/} => :frontend,
