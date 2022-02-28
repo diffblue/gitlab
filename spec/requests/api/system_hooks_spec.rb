@@ -36,7 +36,7 @@ RSpec.describe API::SystemHooks do
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(response).to include_pagination_headers
-        expect(json_response).to be_an Array
+        expect(response).to match_response_schema('public_api/v4/system_hooks')
         expect(json_response.first).not_to have_key("token")
         expect(json_response.first['url']).to eq(hook.url)
         expect(json_response.first['push_events']).to be false
@@ -70,6 +70,7 @@ RSpec.describe API::SystemHooks do
         get api("/hooks/#{hook.id}", admin)
 
         expect(response).to have_gitlab_http_status(:ok)
+        expect(response).to match_response_schema('public_api/v4/system_hook')
         expect(json_response).to match(
           'id' => be(hook.id),
           'url' => eq(hook.url),
@@ -121,6 +122,7 @@ RSpec.describe API::SystemHooks do
       post api('/hooks', admin), params: { url: 'http://mep.mep' }
 
       expect(response).to have_gitlab_http_status(:created)
+      expect(response).to match_response_schema('public_api/v4/system_hook')
       expect(json_response['enable_ssl_verification']).to be true
       expect(json_response['push_events']).to be false
       expect(json_response['tag_push_events']).to be false
@@ -142,6 +144,7 @@ RSpec.describe API::SystemHooks do
         }
 
       expect(response).to have_gitlab_http_status(:created)
+      expect(response).to match_response_schema('public_api/v4/system_hook')
       expect(json_response['enable_ssl_verification']).to be false
       expect(json_response['push_events']).to be true
       expect(json_response['tag_push_events']).to be true
