@@ -610,7 +610,6 @@ Rails/TimeZone:
     - 'spec/features/**/*'
     - 'ee/spec/features/**/*'
 
-# WIP: See https://gitlab.com/gitlab-org/gitlab/-/issues/220040
 Rails/SaveBang:
   Enabled: true
   AllowImplicitReturn: false
