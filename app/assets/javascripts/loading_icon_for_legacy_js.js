@@ -12,11 +12,11 @@ const defaultValue = (prop) => GlLoadingIcon.props[prop]?.default;
  * https://gitlab.com/groups/gitlab-org/-/epics/7626.
  *
  * @param {object} props - The props to configure the spinner.
- * @param {boolean} inline - Display the spinner inline; otherwise, as a block.
- * @param {string} color - The color of the spinner ('dark' or 'light')
- * @param {string} size - The size of the spinner ('sm', 'md', 'lg', 'xl')
- * @param {string[]} classes - Additional classes to apply to the element.
- * @param {string} label - The ARIA label to apply to the spinner.
+ * @param {boolean} props.inline - Display the spinner inline; otherwise, as a block.
+ * @param {string} props.color - The color of the spinner ('dark' or 'light')
+ * @param {string} props.size - The size of the spinner ('sm', 'md', 'lg', 'xl')
+ * @param {string[]} props.classes - Additional classes to apply to the element.
+ * @param {string} props.label - The ARIA label to apply to the spinner.
  * @returns {HTMLElement}
  */
 export const loadingIconForLegacyJS = ({
