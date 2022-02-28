@@ -1,16 +1,6 @@
 ---
 GraphQL/OrderedFields:
   Exclude:
-  - app/graphql/types/board_list_type.rb
-  - app/graphql/types/ci/analytics_type.rb
-  - app/graphql/types/ci/ci_cd_setting_type.rb
-  - app/graphql/types/ci/config/group_type.rb
-  - app/graphql/types/ci/config/job_type.rb
-  - app/graphql/types/ci/config/stage_type.rb
-  - app/graphql/types/ci/detailed_status_type.rb
-  - app/graphql/types/ci/group_type.rb
-  - app/graphql/types/ci/job_type.rb
-  - app/graphql/types/ci/runner_architecture_type.rb
   - app/graphql/types/ci/runner_platform_type.rb
   - app/graphql/types/ci/runner_type.rb
   - app/graphql/types/ci/stage_type.rb
