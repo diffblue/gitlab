@@ -2,13 +2,17 @@ import { GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
 import BurnCharts from 'ee/burndown_chart/components/burn_charts.vue';
 import BurndownChart from 'ee/burndown_chart/components/burndown_chart.vue';
 import BurnupChart from 'ee/burndown_chart/components/burnup_chart.vue';
+import BurnupQuery from 'shared_queries/burndown_chart/burnup.query.graphql';
 import OpenTimeboxSummary from 'ee/burndown_chart/components/open_timebox_summary.vue';
 import TimeboxSummaryCards from 'ee/burndown_chart/components/timebox_summary_cards.vue';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import { useFakeDate } from 'helpers/fake_date';
+import waitForPromises from 'helpers/wait_for_promises';
 import { day1, day2, day3, day4 } from '../mock_data';
 
 function useFakeDateFromDay({ date }) {
@@ -280,6 +284,52 @@ describe('burndown_chart', () => {
         ...day1,
         date: day3.date,
       });
+    });
+  });
+
+  describe('fullPath is only passed for iteration report', () => {
+    let burnupQuerySpy;
+
+    const createComponentWithApollo = ({ props = {} }) => {
+      Vue.use(VueApollo);
+      burnupQuerySpy = jest.fn();
+      wrapper = shallowMount(BurnCharts, {
+        apolloProvider: createMockApollo([[BurnupQuery, burnupQuerySpy]]),
+        propsData: {
+          ...defaultProps,
+          ...props,
+        },
+      });
+    };
+
+    it('makes a request with a fullPath for iteration', async () => {
+      createComponentWithApollo({ props: { iterationId: 'id' } });
+      await waitForPromises();
+
+      expect(burnupQuerySpy).toHaveBeenCalledTimes(1);
+      expect(burnupQuerySpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'id',
+          fullPath: defaultProps.fullPath,
+        }),
+      );
+    });
+
+    it('makes a request without a fullPath for milestone', async () => {
+      createComponentWithApollo({ props: { milestoneId: 'id' } });
+      await waitForPromises();
+
+      expect(burnupQuerySpy).toHaveBeenCalledTimes(1);
+      expect(burnupQuerySpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'id',
+        }),
+      );
+      expect(burnupQuerySpy).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          fullPath: defaultProps.fullPath,
+        }),
+      );
     });
   });
 });
