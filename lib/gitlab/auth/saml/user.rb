@@ -12,7 +12,7 @@ module Gitlab
         extend ::Gitlab::Utils::Override
 
         def save
-          super('SAML')
+          super(protocol_name)
         end
 
         def find_user
@@ -38,6 +38,10 @@ module Gitlab
 
         def bypass_two_factor?
           saml_config.upstream_two_factor_authn_contexts&.include?(auth_hash.authn_context)
+        end
+
+        def protocol_name
+          'SAML'
         end
 
         protected

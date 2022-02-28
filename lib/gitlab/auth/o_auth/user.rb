@@ -96,6 +96,10 @@ module Gitlab
           end
         end
 
+        def protocol_name
+          ''
+        end
+
         protected
 
         def should_save?
