@@ -136,6 +136,10 @@ module Types
     def redacted_name
       return object.name unless object.project_bot?
 
+      if object.groups
+        return object.name if context[:current_user]&.can?(:read_group, object.groups.first)
+      end
+
       return object.name if context[:current_user]&.can?(:read_project, object.projects.first)
 
       # If the requester does not have permission to read the project bot name,

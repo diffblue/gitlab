@@ -11,6 +11,10 @@ module API
 
         current_user = request.respond_to?(:current_user) ? request.current_user : options.fetch(:current_user, nil)
 
+        if user.groups
+          next user.name if current_user&.can?(:read_group, user.groups.first)
+        end
+
         next user.name if current_user&.can?(:read_project, user.projects.first)
 
         # If the requester does not have permission to read the project bot name,
