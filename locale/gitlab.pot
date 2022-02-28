@@ -19864,9 +19864,6 @@ msgstr ""
 msgid "Integrations|Use default settings"
 msgstr ""
 
-msgid "Integrations|When you mention a Jira issue in a commit or merge request, GitLab creates a remote link and comment (if enabled)."
-msgstr ""
-
 msgid "Integrations|You can now close this window and return to the GitLab for Jira application."
 msgstr ""
 
@@ -20830,13 +20827,13 @@ msgstr ""
 msgid "JiraService|Define the type of Jira issue to create from a vulnerability."
 msgstr ""
 
-msgid "JiraService|Displaying Jira issues while leaving the GitLab issue functionality enabled might be confusing. Consider %{linkStart}disabling GitLab issues%{linkEnd} if they won’t otherwise be used."
+msgid "JiraService|Displaying Jira issues while leaving GitLab issues also enabled might be confusing. Consider %{linkStart}disabling GitLab issues%{linkEnd} if they won’t otherwise be used."
+msgstr ""
+
+msgid "JiraService|Enable Jira issue creation from vulnerabilities"
 msgstr ""
 
 msgid "JiraService|Enable Jira issues"
-msgstr ""
-
-msgid "JiraService|Enable Jira issues creation from vulnerabilities"
 msgstr ""
 
 msgid "JiraService|Enable Jira transitions"
@@ -20953,16 +20950,19 @@ msgstr ""
 msgid "JiraService|View Jira issues in GitLab"
 msgstr ""
 
-msgid "JiraService|Warning: All GitLab users that have access to this GitLab project are able to view all issues from the Jira project specified below."
+msgid "JiraService|Warning: All GitLab users with access to this GitLab project can view all issues from the Jira project you select."
 msgstr ""
 
 msgid "JiraService|Web URL"
 msgstr ""
 
-msgid "JiraService|Work on Jira issues without leaving GitLab. Adds a Jira menu to access your list of Jira issues and view any issue as read-only."
+msgid "JiraService|When a Jira issue is mentioned in a commit or merge request, a remote link and comment (if enabled) will be created."
 msgstr ""
 
-msgid "JiraService|You must configure Jira before enabling this integration. For more details, read the %{jira_doc_link_start}Jira integration documentation%{link_end}."
+msgid "JiraService|Work on Jira issues without leaving GitLab. Add a Jira menu to access a read-only list of your Jira issues."
+msgstr ""
+
+msgid "JiraService|You must configure Jira before enabling this integration. %{jira_doc_link_start}Learn more.%{link_end}"
 msgstr ""
 
 msgid "Job"
