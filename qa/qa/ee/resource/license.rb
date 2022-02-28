@@ -17,6 +17,13 @@ module QA
             end
           end
 
+          unless EE::Page::Admin::Subscription.perform(&:has_ultimate_subscription_plan?)
+            license_length = license.to_s.strip.length
+            license_info = "License key length: #{license_length}. " + (license_length > 5 ? "Last five characters: #{license.to_s.strip[-5..]}" : "")
+
+            raise "Adding license key was unsuccessful. #{license_info}"
+          end
+
           QA::Page::Main::Menu.perform(&:sign_out_if_signed_in)
         end
       end

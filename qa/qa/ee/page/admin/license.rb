@@ -25,11 +25,11 @@ module QA
           end
 
           def add_new_license(key)
-            raise 'License key empty!' if key.to_s.empty?
+            raise 'License key empty!' if key.to_s.strip.empty?
 
             click_element(:license_upload_link)
             choose_element(:license_type_key_radio)
-            fill_element(:license_key_field, key)
+            fill_element(:license_key_field, key.strip)
             check_element(:accept_eula_checkbox)
             click_element(:license_upload_button)
           end
