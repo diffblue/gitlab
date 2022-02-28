@@ -315,7 +315,7 @@ class License < ApplicationRecord
 
     def cache
       Gitlab::SafeRequestStore[:license_cache] ||=
-        Gitlab::JsonCache.new(namespace: :ee, backend: ::Gitlab::ProcessMemoryCache.cache_backend)
+        Gitlab::JsonCache.new(namespace: :ee, backend: ::Gitlab::ProcessMemoryCache.cache_backend, cache_key_strategy: :version)
     end
 
     def all_plans
