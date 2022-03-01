@@ -176,6 +176,19 @@ module UsersHelper
     user.public_email.present?
   end
 
+  def secure_project_bot_name(current_user, user)
+    if user.groups.any?
+      return user.name if current_user&.can?(:read_group, user.groups.first)
+    end
+
+    return user.name if current_user&.can?(:read_project, user.projects.first)
+
+    # If the requester does not have permission to read the project bot name,
+    # the API returns an arbitrary string. UI changes will be addressed in a follow up issue:
+    # https://gitlab.com/gitlab-org/gitlab/-/issues/346058
+    '****'
+  end
+
   private
 
   def admin_users_paths

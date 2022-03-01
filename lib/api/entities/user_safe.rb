@@ -3,20 +3,13 @@
 module API
   module Entities
     class UserSafe < Grape::Entity
+      include UsersHelper
+
       expose :id, :username
       expose :name do |user|
         next user.name unless user.project_bot?
 
-        if user.groups
-          next user.name if options[:current_user]&.can?(:read_group, user.groups.first)
-        end
-
-        next user.name if options[:current_user]&.can?(:read_project, user.projects.first)
-
-        # If the requester does not have permission to read the project bot name,
-        # the API returns an arbitrary string. UI changes will be addressed in a follow up issue:
-        # https://gitlab.com/gitlab-org/gitlab/-/issues/346058
-        '****'
+        secure_project_bot_name(options[:current_user], user)
       end
     end
   end

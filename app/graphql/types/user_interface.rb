@@ -3,6 +3,7 @@
 module Types
   module UserInterface
     include Types::BaseInterface
+    include UsersHelper
 
     graphql_name 'User'
     description 'Representation of a GitLab user.'
@@ -136,16 +137,7 @@ module Types
     def redacted_name
       return object.name unless object.project_bot?
 
-      if object.groups
-        return object.name if context[:current_user]&.can?(:read_group, object.groups.first)
-      end
-
-      return object.name if context[:current_user]&.can?(:read_project, object.projects.first)
-
-      # If the requester does not have permission to read the project bot name,
-      # the API returns an arbitrary string. UI changes will be addressed in a follow up issue:
-      # https://gitlab.com/gitlab-org/gitlab/-/issues/346058
-      '****'
+      secure_project_bot_name(context[:current_user], object)
     end
   end
 end
