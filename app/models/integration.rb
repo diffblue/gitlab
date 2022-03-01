@@ -346,6 +346,10 @@ class Integration < ApplicationRecord
     true
   end
 
+  def activate_disabled_reason
+    nil
+  end
+
   def category
     read_attribute(:category).to_sym
   end

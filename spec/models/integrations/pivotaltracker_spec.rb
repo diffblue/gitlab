@@ -93,4 +93,22 @@ RSpec.describe Integrations::Pivotaltracker do
       end
     end
   end
+
+  describe '#activate_disabled_reason' do
+    let(:integration) { build(:pivotaltracker_integration, project: project) }
+
+    let_it_be_with_refind(:project) { create :project }
+
+    subject { integration.activate_disabled_reason }
+
+    context 'when there is an external issue tracker integration' do
+      let_it_be(:custom_tracker) { create(:custom_issue_tracker_integration, project: project) }
+
+      it { is_expected.to eq(trackers: [custom_tracker]) }
+    end
+
+    context 'when there is no external issue tracker integration' do
+      it { is_expected.to be(nil) }
+    end
+  end
 end
