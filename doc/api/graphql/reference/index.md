@@ -15388,6 +15388,18 @@ Represents a list of security scanners.
 | <a id="securityscannersenabled"></a>`enabled` | [`[SecurityScannerType!]`](#securityscannertype) | List of analyzers which are enabled for the project. |
 | <a id="securityscannerspipelinerun"></a>`pipelineRun` | [`[SecurityScannerType!]`](#securityscannertype) | List of analyzers which ran successfully in the latest pipeline. |
 
+### `SecurityTrainingUrl`
+
+Represents a URL related to a security training.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="securitytrainingurlname"></a>`name` | [`String`](#string) | Name of the training provider. |
+| <a id="securitytrainingurlstatus"></a>`status` | [`TrainingUrlRequestStatus`](#trainingurlrequeststatus) | Status of the request to training provider. |
+| <a id="securitytrainingurlurl"></a>`url` | [`String`](#string) | URL of the link for security training content. |
+
 ### `SentryDetailedError`
 
 A Sentry error.
@@ -16359,6 +16371,7 @@ Represents a vulnerability.
 | <a id="vulnerabilityresolvedby"></a>`resolvedBy` | [`UserCore`](#usercore) | User that resolved the vulnerability. |
 | <a id="vulnerabilityresolvedondefaultbranch"></a>`resolvedOnDefaultBranch` | [`Boolean!`](#boolean) | Indicates whether the vulnerability is fixed on the default branch or not. |
 | <a id="vulnerabilityscanner"></a>`scanner` | [`VulnerabilityScanner`](#vulnerabilityscanner) | Scanner metadata for the vulnerability. |
+| <a id="vulnerabilitysecuritytrainingurls"></a>`securityTrainingUrls` | [`[SecurityTrainingUrl!]`](#securitytrainingurl) | Security training URLs for the vulnerability. |
 | <a id="vulnerabilityseverity"></a>`severity` | [`VulnerabilitySeverity`](#vulnerabilityseverity) | Severity of the vulnerability (INFO, UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL). |
 | <a id="vulnerabilitystate"></a>`state` | [`VulnerabilityState`](#vulnerabilitystate) | State of the vulnerability (DETECTED, CONFIRMED, RESOLVED, DISMISSED). |
 | <a id="vulnerabilitytitle"></a>`title` | [`String`](#string) | Title of the vulnerability. |
@@ -18367,6 +18380,15 @@ State of a test report.
 | <a id="todotargetenumepic"></a>`EPIC` | An Epic. |
 | <a id="todotargetenumissue"></a>`ISSUE` | Issue. |
 | <a id="todotargetenummergerequest"></a>`MERGEREQUEST` | Merge request. |
+
+### `TrainingUrlRequestStatus`
+
+Status of the request to the training provider. The URL of a TrainingUrl is calculated asynchronously. When PENDING, the URL of the TrainingUrl will be null. When COMPLETED, the URL of the TrainingUrl will be available.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="trainingurlrequeststatuscompleted"></a>`COMPLETED` | Completed request. |
+| <a id="trainingurlrequeststatuspending"></a>`PENDING` | Pending request. |
 
 ### `TypeEnum`
 
