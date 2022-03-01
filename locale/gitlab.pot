@@ -1773,13 +1773,13 @@ msgstr ""
 msgid "AWS Access Key"
 msgstr ""
 
-msgid "AWS Access Key. Only required if not using role instance credentials"
-msgstr ""
-
 msgid "AWS Secret Access Key"
 msgstr ""
 
-msgid "AWS Secret Access Key. Only required if not using role instance credentials"
+msgid "AWS access key ID (Optional)"
+msgstr ""
+
+msgid "AWS secret access key (Optional)"
 msgstr ""
 
 msgid "AWS service error: %{error}"
@@ -1837,9 +1837,6 @@ msgid "Access forbidden. Check your access level."
 msgstr ""
 
 msgid "Access granted"
-msgstr ""
-
-msgid "Access key ID"
 msgstr ""
 
 msgid "Access requests"
@@ -25611,6 +25608,9 @@ msgstr ""
 msgid "Only reCAPTCHA v2 is supported:"
 msgstr ""
 
+msgid "Only required if not using role instance credentials."
+msgstr ""
+
 msgid "Only use lowercase letters, numbers, and underscores."
 msgstr ""
 
@@ -32288,9 +32288,6 @@ msgid "Secret"
 msgstr ""
 
 msgid "Secret Detection"
-msgstr ""
-
-msgid "Secret access key"
 msgstr ""
 
 msgid "Secret token"
