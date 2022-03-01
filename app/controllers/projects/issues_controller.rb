@@ -43,6 +43,8 @@ class Projects::IssuesController < Projects::ApplicationController
     push_frontend_feature_flag(:iteration_cadences, project&.group, default_enabled: :yaml)
     push_frontend_feature_flag(:contacts_autocomplete, project&.group, default_enabled: :yaml)
     push_frontend_feature_flag(:markdown_continue_lists, project, default_enabled: :yaml)
+    push_frontend_feature_flag(:incident_timeline, project, default_enabled: :yaml)
+    push_licensed_feature(:incident_timeline_events) if project.licensed_feature_available?(:incident_timeline_events)
   end
 
   before_action only: :show do
