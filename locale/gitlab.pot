@@ -34613,10 +34613,10 @@ msgstr ""
 msgid "SourcegraphAdmin|Enable code intelligence powered by %{link_start}Sourcegraph%{link_end} on your GitLab instance's code views and merge requests."
 msgstr ""
 
-msgid "SourcegraphAdmin|If checked, only public projects will have code intelligence and communicate with Sourcegraph."
+msgid "SourcegraphAdmin|Learn more."
 msgstr ""
 
-msgid "SourcegraphAdmin|More information"
+msgid "SourcegraphAdmin|Only public projects have code intelligence enabled and communicate with Sourcegraph."
 msgstr ""
 
 msgid "SourcegraphAdmin|Save changes"
@@ -34625,7 +34625,7 @@ msgstr ""
 msgid "SourcegraphAdmin|Sourcegraph URL"
 msgstr ""
 
-msgid "SourcegraphAdmin|e.g. https://sourcegraph.example.com"
+msgid "SourcegraphAdmin|https://sourcegraph.example.com"
 msgstr ""
 
 msgid "SourcegraphPreferences|This feature is experimental and currently limited to certain projects."
