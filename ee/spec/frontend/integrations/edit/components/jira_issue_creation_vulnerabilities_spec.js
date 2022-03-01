@@ -81,7 +81,7 @@ describe('JiraIssuesFields', () => {
     });
   });
 
-  describe('"Enable Jira issues creation from vulnerabilities" checkbox', () => {
+  describe('"Enable Jira issue creation from vulnerabilities" checkbox', () => {
     beforeEach(() => {
       wrapper = createShallowComponent();
     });
