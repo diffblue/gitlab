@@ -82,6 +82,11 @@ module EE
 
         group.all_group_members
       end
+
+      override :filter_params
+      def filter_params
+        super.merge(params.permit(:enterprise))
+      end
     end
   end
 end
