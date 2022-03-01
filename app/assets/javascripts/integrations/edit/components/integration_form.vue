@@ -80,28 +80,28 @@ export default {
     disableButtons() {
       return Boolean(this.isSaving || this.isResetting || this.isTesting);
     },
-    form() {
-      return this.$refs.integrationForm?.$el;
-    },
   },
   methods: {
     ...mapActions(['setOverride', 'requestJiraIssueTypes']),
+    form() {
+      return this.$refs.integrationForm.$el;
+    },
     setIsValidated() {
       this.isValidated = true;
     },
     onSaveClick() {
       this.isSaving = true;
 
-      if (this.integrationActive && !this.form.checkValidity()) {
+      if (this.integrationActive && !this.form().checkValidity()) {
         this.isSaving = false;
         this.setIsValidated();
         return;
       }
 
-      this.form.submit();
+      this.form().submit();
     },
     onTestClick() {
-      if (!this.form.checkValidity()) {
+      if (!this.form().checkValidity()) {
         this.setIsValidated();
         return;
       }
@@ -146,7 +146,7 @@ export default {
       this.requestJiraIssueTypes(this.getFormData());
     },
     getFormData() {
-      return new FormData(this.form);
+      return new FormData(this.form());
     },
     onToggleIntegrationState(integrationActive) {
       this.integrationActive = integrationActive;

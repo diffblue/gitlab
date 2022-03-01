@@ -113,7 +113,7 @@ export default {
       return '';
     },
   },
-  created() {
+  mounted() {
     if (this.initialIsEnabled) {
       this.requestJiraIssueTypes();
     }
