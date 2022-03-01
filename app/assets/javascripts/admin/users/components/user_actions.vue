@@ -99,8 +99,8 @@ export default {
       }}</gl-button>
       <gl-button
         v-else
-        icon="pencil-square"
         v-gl-tooltip="$options.i18n.edit"
+        icon="pencil-square"
         v-bind="editButtonAttrs"
         :aria-label="$options.i18n.edit"
       />
@@ -108,8 +108,8 @@ export default {
 
     <div v-if="hasDropdownActions" class="gl-p-2">
       <gl-dropdown
-        data-testid="dropdown-toggle"
         v-gl-tooltip="$options.i18n.userAdministration"
+        data-testid="dropdown-toggle"
         icon="ellipsis_v"
         data-qa-selector="user_actions_dropdown_toggle"
         :data-qa-username="user.username"
