@@ -117,10 +117,6 @@ reproduction.
 - [Don't wait for AJAX when no AJAX request is fired](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/30461): <https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/10454>
 - [Bis](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/34647): <https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/12626>
 
-#### PhantomJS / WebKit related issues
-
-- Memory is through the roof! (Load images but block images requests!): <https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/12003>
-
 #### Capybara expectation times out
 
 - [Test imports a project (via Sidekiq) that is growing over time, leading to timeouts when the import takes longer than 60 seconds](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/22599)
