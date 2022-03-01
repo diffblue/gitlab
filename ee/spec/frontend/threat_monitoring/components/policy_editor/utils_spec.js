@@ -1,6 +1,7 @@
 import {
   assignSecurityPolicyProject,
   modifyPolicy,
+  convertScannersToTitleCase,
 } from 'ee/threat_monitoring/components/policy_editor/utils';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/threat_monitoring/constants';
 import createPolicyProject from 'ee/threat_monitoring/graphql/mutations/create_policy_project.mutation.graphql';
@@ -100,5 +101,16 @@ describe('modifyPolicy', () => {
     gqClient.mutate.mockImplementation(mockApolloResponses(true));
 
     await expect(modifyPolicy(createSavePolicyInput())).rejects.toThrowError(error);
+  });
+});
+
+describe('convertScannersToTitleCase', () => {
+  it.each`
+    title                                            | input                                                 | output
+    ${'returns empty array if no imput is provided'} | ${undefined}                                          | ${[]}
+    ${'returns empty array for an empty array'}      | ${[]}                                                 | ${[]}
+    ${'returns converted array'}                     | ${['dast', 'container_scanning', 'secret_detection']} | ${['Dast', 'Container Scanning', 'Secret Detection']}
+  `('$title', ({ input, output }) => {
+    expect(convertScannersToTitleCase(input)).toStrictEqual(output);
   });
 });

@@ -1,12 +1,7 @@
 import cronstrue from 'cronstrue/i18n';
-import { convertToTitleCase, humanize } from '~/lib/utils/text_utility';
 import { getPreferredLocales, sprintf, s__, n__ } from '~/locale';
 import { NO_RULE_MESSAGE } from '../../constants';
-
-const getActionText = (scanType) =>
-  sprintf(s__('SecurityOrchestration|Executes a %{scanType} scan'), {
-    scanType: convertToTitleCase(humanize(scanType)),
-  });
+import { convertScannersToTitleCase } from '../../utils';
 
 /**
  * Create a human-readable list of strings, adding the necessary punctuation and conjunctions
@@ -67,10 +62,11 @@ const HUMANIZE_RULES_METHODS = {
 /**
  * Create a human-readable version of the actions
  * @param {Array} actions [{"scan":"dast","scanner_profile":"Scanner Profile","site_profile":"Site Profile"},{"type":"secret_detection"}]
- * @returns {Set}
+ * @returns {Array}
  */
 export const humanizeActions = (actions) => {
-  return new Set(actions.map((action) => getActionText(action.scan)));
+  const scanners = actions.map((a) => a.scan);
+  return [...new Set(convertScannersToTitleCase(scanners))];
 };
 
 /**

@@ -32488,9 +32488,6 @@ msgstr ""
 msgid "SecurityOrchestration|.yaml preview"
 msgstr ""
 
-msgid "SecurityOrchestration|Action"
-msgstr ""
-
 msgid "SecurityOrchestration|Actions"
 msgstr ""
 
@@ -32533,9 +32530,6 @@ msgstr ""
 msgid "SecurityOrchestration|Enforce security for this project. %{linkStart}More information.%{linkEnd}"
 msgstr ""
 
-msgid "SecurityOrchestration|Executes a %{scanType} scan"
-msgstr ""
-
 msgid "SecurityOrchestration|If you are using Auto DevOps, your %{monospacedStart}auto-deploy-values.yaml%{monospacedEnd} file will not be updated if you change a policy in this section. Auto DevOps users should make changes by following the %{linkStart}Container Network Policy documentation%{linkEnd}."
 msgstr ""
 
@@ -32549,6 +32543,9 @@ msgid "SecurityOrchestration|Network"
 msgstr ""
 
 msgid "SecurityOrchestration|New policy"
+msgstr ""
+
+msgid "SecurityOrchestration|No actions defined - policy will not run."
 msgstr ""
 
 msgid "SecurityOrchestration|No description"
@@ -32593,10 +32590,13 @@ msgstr ""
 msgid "SecurityOrchestration|Require %{approvals} %{plural} from %{approvers} if any of the following occur:"
 msgstr ""
 
-msgid "SecurityOrchestration|Rule"
+msgid "SecurityOrchestration|Rules"
 msgstr ""
 
-msgid "SecurityOrchestration|Rules"
+msgid "SecurityOrchestration|Runs %{actions} and %{lastAction} scans"
+msgstr ""
+
+msgid "SecurityOrchestration|Runs a %{action} scan"
 msgstr ""
 
 msgid "SecurityOrchestration|Scan Execution"
