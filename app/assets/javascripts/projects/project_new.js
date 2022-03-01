@@ -3,6 +3,7 @@ import { debounce } from 'lodash';
 import DEFAULT_PROJECT_TEMPLATES from 'ee_else_ce/projects/default_project_templates';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '../lib/utils/constants';
+import { ENTER_KEY } from '../lib/utils/keys';
 import axios from '../lib/utils/axios_utils';
 import {
   convertToTitleCase,
@@ -194,7 +195,21 @@ const bindEvents = () => {
     setProjectNamePathHandlers($activeTabProjectName, $activeTabProjectPath);
   }
 
+  function toggleActiveClassOnLabel(event) {
+    const $label = $(event.target).parent();
+    $label.toggleClass('active');
+  }
+
+  function chooseTemplateOnEnter(event) {
+    if (event.code === ENTER_KEY) {
+      chooseTemplate.call(this);
+    }
+  }
+
   $useTemplateBtn.on('click', chooseTemplate);
+
+  $useTemplateBtn.on('focus focusout', toggleActiveClassOnLabel);
+  $useTemplateBtn.on('keypress', chooseTemplateOnEnter);
 
   $changeTemplateBtn.on('click', () => {
     $projectTemplateButtons.removeClass('hidden');
@@ -203,7 +218,9 @@ const bindEvents = () => {
   });
 
   $newProjectForm.on('submit', () => {
-    $projectPath.val($projectPath.val().trim());
+    if ($projectPath) {
+      $projectPath.val($projectPath.val().trim());
+    }
   });
 
   const updateUrlPathWarningVisibility = async () => {
