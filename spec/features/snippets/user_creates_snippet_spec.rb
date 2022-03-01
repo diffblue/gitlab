@@ -24,6 +24,10 @@ RSpec.describe 'User creates snippet', :js do
 
   def fill_form
     snippet_fill_in_form(title: title, content: file_content, description: md_description)
+
+    # It takes some time after sending keys for the vue
+    # component to update
+    sleep 1
   end
 
   it 'authenticated user creates a snippet' do
@@ -112,10 +116,13 @@ RSpec.describe 'User creates snippet', :js do
   it 'validation fails for the first time' do
     fill_in snippet_title_field, with: title
 
-    expect(page).not_to have_button('Create snippet')
+    click_button('Create snippet')
+
+    expect(page).to have_content('This field is required.')
 
     snippet_fill_in_form(title: title, content: file_content)
-    expect(page).to have_button('Create snippet')
+
+    expect(page).not_to have_content('This field is required.')
   end
 
   it 'previews a snippet with file' do
