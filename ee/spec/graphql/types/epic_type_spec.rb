@@ -20,6 +20,8 @@ RSpec.describe GitlabSchema.types['Epic'] do
 
   it { expect(described_class.interfaces).to include(Types::CurrentUserTodos) }
 
+  it { expect(described_class.interfaces).to include(Types::TodoableInterface) }
+
   it { expect(described_class).to expose_permissions_using(Types::PermissionTypes::Epic) }
 
   it { expect(described_class.graphql_name).to eq('Epic') }
