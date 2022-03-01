@@ -1,7 +1,7 @@
 import { GlSprintf } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended, extendedWrapper } from 'helpers/vue_test_utils_helper';
 import InlineConflictLines from '~/merge_conflicts/components/inline_conflict_lines.vue';
 import ParallelConflictLines from '~/merge_conflicts/components/parallel_conflict_lines.vue';
 import component from '~/merge_conflicts/merge_conflict_resolver_app.vue';
@@ -44,9 +44,10 @@ describe('Merge Conflict Resolver App', () => {
   const findLoadingSpinner = () => wrapper.findByTestId('loading-spinner');
   const findConflictsCount = () => wrapper.findByTestId('conflicts-count');
   const findFiles = () => wrapper.findAllByTestId('files');
-  const findFileHeader = (w = wrapper) => w.find('[data-testid="file-name"]');
-  const findFileInteractiveButton = (w = wrapper) => w.find('[data-testid="interactive-button"]');
-  const findFileInlineButton = (w = wrapper) => w.find('[data-testid="inline-button"]');
+  const findFileHeader = (w = wrapper) => extendedWrapper(w).findByTestId('file-name');
+  const findFileInteractiveButton = (w = wrapper) =>
+    extendedWrapper(w).findByTestId('interactive-button');
+  const findFileInlineButton = (w = wrapper) => extendedWrapper(w).findByTestId('inline-button');
   const findSideBySideButton = () => wrapper.findByTestId('side-by-side');
   const findInlineConflictLines = (w = wrapper) => w.find(InlineConflictLines);
   const findParallelConflictLines = (w = wrapper) => w.find(ParallelConflictLines);
