@@ -125,6 +125,13 @@ reproduction.
 
 - [Test imports a project (via Sidekiq) that is growing over time, leading to timeouts when the import takes longer than 60 seconds](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/22599)
 
+### Hanging specs
+
+When a spec hangs, this is possibly due to a [bug in Rails](https://github.com/rails/rails/issues/34310):
+
+- <https://gitlab.com/gitlab-org/gitlab/-/merge_requests/81112>
+- <https://gitlab.com/gitlab-org/gitlab/-/issues/337039>
+
 ## Resources
 
 - [Flaky Tests: Are You Sure You Want to Rerun Them?](https://semaphoreci.com/blog/2017/04/20/flaky-tests.html)
