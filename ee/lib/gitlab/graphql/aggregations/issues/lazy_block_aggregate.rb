@@ -45,7 +45,7 @@ module Gitlab
             # The record hasn't been loaded yet, so
             # hit the database with all pending IDs to prevent N+1
             pending_ids = @lazy_state[:pending_ids].to_a
-            blocked_data = IssueLink.blocked_issues_for_collection(pending_ids).compact.flatten
+            blocked_data = IssueLink.blocked_issuables_for_collection(pending_ids).compact.flatten
 
             blocked_data.each do |blocked|
               @lazy_state[:loaded_objects][blocked.blocked_issue_id] = blocked.count

@@ -8,9 +8,12 @@ class Epic::RelatedEpicLink < ApplicationRecord
 
   self.table_name = 'related_epic_links'
 
-  private
+  class << self
+    extend ::Gitlab::Utils::Override
 
-  def issuable_type
-    :epic
+    override :issuable_type
+    def issuable_type
+      :epic
+    end
   end
 end
