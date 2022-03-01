@@ -4,6 +4,7 @@ exports[`StatisticsHistory component chart tooltip renders the title and series 
 <div
   data="[object Object],[object Object]"
   option="[object Object]"
+  responsive="true"
 >
   <div>
     Dec 4, 2019 12:00am (Time)
