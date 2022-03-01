@@ -78,7 +78,7 @@ module Integrations
     private
 
     def external_issue_trackers
-      return false unless project_level?
+      return [] unless project_level?
 
       project.integrations.external_issue_trackers
     end
