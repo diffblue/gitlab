@@ -47,6 +47,7 @@ RSpec.describe ProjectPolicy do
         read_software_license_policy
         read_threat_monitoring read_merge_train
         read_release
+        read_project_audit_events
       ]
     end
 
