@@ -1,11 +1,5 @@
 <script>
-import {
-  GlButton,
-  GlModal,
-  GlModalDirective,
-  GlSegmentedControl,
-  GlTooltipDirective,
-} from '@gitlab/ui';
+import { GlButtonGroup, GlButton, GlModal, GlModalDirective, GlTooltipDirective } from '@gitlab/ui';
 import { s__, sprintf } from '~/locale';
 import { DELETE_MODAL_CONFIG, EDITOR_MODES, EDITOR_MODE_RULE, EDITOR_MODE_YAML } from './constants';
 
@@ -16,7 +10,7 @@ export default {
   components: {
     GlButton,
     GlModal,
-    GlSegmentedControl,
+    GlButtonGroup,
     PolicyYamlEditor: () =>
       import(/* webpackChunkName: 'policy_yaml_editor' */ '../policy_yaml_editor.vue'),
   },
@@ -128,11 +122,18 @@ export default {
   <section class="gl-mt-6">
     <div class="gl-mb-5">
       <div class="gl-border-b-solid gl-border-b-1 gl-border-gray-100 gl-mb-6 gl-pb-6">
-        <gl-segmented-control
-          :options="editorModes"
-          :checked="selectedEditorMode"
-          @input="updateEditorMode"
-        />
+        <gl-button-group :vertical="false">
+          <gl-button
+            v-for="{ text, value } in editorModes"
+            :key="value"
+            :data-testid="`button-${value}`"
+            :selected="selectedEditorMode === value"
+            type="button"
+            @click="updateEditorMode(value)"
+          >
+            {{ text }}
+          </gl-button>
+        </gl-button-group>
       </div>
       <div class="gl-display-flex gl-sm-flex-direction-column">
         <section class="gl-w-full gl-mr-7">
