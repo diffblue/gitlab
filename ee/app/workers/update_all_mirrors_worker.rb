@@ -50,7 +50,7 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
     # Therefore, the scheduling counter should reset the counter before entering
     # the scheduling phase. In addition, this clean-up task prevents a project
     # id from being stuck in the list forever.
-    ::Gitlab::Mirror.reset_scheduling if scheduling_tracking_enabled?
+    ::Gitlab::Mirror.reset_scheduling
 
     capacity = Gitlab::Mirror.available_capacity
 
@@ -144,7 +144,7 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
     return if projects.empty?
 
     # projects were materialized at this stage
-    ::Gitlab::Mirror.track_scheduling(projects.map(&:id)) if scheduling_tracking_enabled?
+    ::Gitlab::Mirror.track_scheduling(projects.map(&:id))
 
     ProjectImportScheduleWorker.bulk_perform_async_with_contexts(
       projects,
@@ -168,14 +168,6 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
   # rubocop: enable CodeReuse/ActiveRecord
 
   def pending_project_import_scheduling?
-    if scheduling_tracking_enabled?
-      ::Gitlab::Mirror.current_scheduling > 0
-    else
-      ProjectImportScheduleWorker.queue_size > 0
-    end
-  end
-
-  def scheduling_tracking_enabled?
-    Feature.enabled?(:mirror_scheduling_tracking, default_enabled: :yaml)
+    ::Gitlab::Mirror.current_scheduling > 0
   end
 end
