@@ -4,6 +4,7 @@ import { mount } from '@vue/test-utils';
 import axios from '~/lib/utils/axios_utils';
 import SecureFilesList from '~/ci_secure_files/components/secure_files_list.vue';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
+import waitForPromises from 'helpers/wait_for_promises';
 
 import { secureFiles } from '../mock_data';
 
@@ -52,7 +53,7 @@ describe('SecureFilesList', () => {
       mock.onGet(expectedUrl).reply(200, secureFiles);
 
       createWrapper();
-      await axios.waitForAll();
+      await waitForPromises();
     });
 
     it('displays a table with expected headers', () => {
@@ -79,7 +80,7 @@ describe('SecureFilesList', () => {
       mock.onGet(expectedUrl).reply(200, []);
 
       createWrapper();
-      await axios.waitForAll();
+      await waitForPromises();
     });
 
     it('displays a table with expected headers', () => {
@@ -100,7 +101,7 @@ describe('SecureFilesList', () => {
       mock.onGet(expectedUrl).reply(200, secureFiles, { 'x-total': 30 });
 
       createWrapper();
-      await axios.waitForAll();
+      await waitForPromises();
 
       expect(findPagination().exists()).toBe(true);
     });
@@ -110,7 +111,7 @@ describe('SecureFilesList', () => {
       mock.onGet(expectedUrl).reply(200, secureFiles, { 'x-total': 20 });
 
       createWrapper();
-      await axios.waitForAll();
+      await waitForPromises();
 
       expect(findPagination().exists()).toBe(false);
     });
@@ -130,7 +131,7 @@ describe('SecureFilesList', () => {
       mock.onGet(expectedUrl).reply(200, secureFiles);
 
       createWrapper();
-      await axios.waitForAll();
+      await waitForPromises();
 
       expect(findLoadingIcon().exists()).toBe(false);
     });

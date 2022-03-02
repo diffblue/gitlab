@@ -21,6 +21,11 @@ export default {
       next: __('Next'),
       prev: __('Prev'),
     },
+    title: __('Secure Files'),
+    overviewMessage: __(
+      'Use Secure Files to store files used by your pipelines such as Android keystores, or Apple provisioning profiles and signing certificates.',
+    ),
+    moreInformation: __('More information'),
   },
   data() {
     return {
@@ -74,16 +79,14 @@ export default {
 
 <template>
   <div>
-    <h1 data-testid="title" class="gl-font-size-h1 gl-mt-3 gl-mb-0">{{ __('Secure Files') }}</h1>
+    <h1 data-testid="title" class="gl-font-size-h1 gl-mt-3 gl-mb-0">{{ $options.i18n.title }}</h1>
 
     <p>
       <span data-testid="info-message" class="gl-mr-2">
-        {{
-          __(
-            'Use Secure Files to store files used by your pipelines such as Android keystores, or Apple provisioning profiles and signing certificates.',
-          )
-        }}
-        <gl-link :href="$options.docsLink" target="_blank">{{ __('More information') }}</gl-link>
+        {{ $options.i18n.overviewMessage }}
+        <gl-link :href="$options.docsLink" target="_blank">{{
+          $options.i18n.moreInformation
+        }}</gl-link>
       </span>
     </p>
 
