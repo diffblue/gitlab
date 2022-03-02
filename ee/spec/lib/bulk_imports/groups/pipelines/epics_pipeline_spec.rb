@@ -61,7 +61,7 @@ RSpec.describe BulkImports::Groups::Pipelines::EpicsPipeline do
       expect(group.epics.first.labels.count).to eq(1)
       expect(label.title).to eq('title')
       expect(label.description).to eq('description')
-      expect(label.color).to eq('#cd2c5c')
+      expect(label.color).to be_color('#cd2c5c')
     end
 
     it 'imports epic system note metadata' do

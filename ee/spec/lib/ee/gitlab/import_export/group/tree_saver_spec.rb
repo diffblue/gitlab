@@ -105,7 +105,7 @@ RSpec.describe Gitlab::ImportExport::Group::TreeSaver do
         epic_label = epic_json['label_links'].first['label']
         expect(epic_label['title']).to eq(label.title)
         expect(epic_label['description']).to eq(label.description)
-        expect(epic_label['color']).to eq(label.color)
+        expect(epic_label['color']).to be_color(label.color)
       end
     end
 

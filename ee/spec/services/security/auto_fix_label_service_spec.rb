@@ -32,7 +32,7 @@ RSpec.describe Security::AutoFixLabelService do
 
         expect(result).to be_success
         expect(label.title).to eq(title)
-        expect(label.color).to eq(color)
+        expect(label.color).to be_color(color)
         expect(label.description).to eq(description)
       end
     end
