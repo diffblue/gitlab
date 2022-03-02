@@ -15979,9 +15979,6 @@ msgstr ""
 msgid "Generate site and private keys at"
 msgstr ""
 
-msgid "Generated service account is linked to the selected environment"
-msgstr ""
-
 msgid "Generic"
 msgstr ""
 
@@ -16999,9 +16996,6 @@ msgstr ""
 msgid "Google Cloud authorizations required"
 msgstr ""
 
-msgid "Google Cloud project"
-msgstr ""
-
 msgid "Google Cloud project misconfigured"
 msgstr ""
 
@@ -17009,6 +17003,30 @@ msgid "Google Cloud project required"
 msgstr ""
 
 msgid "Google authentication is not %{link_start}properly configured%{link_end}. Ask your GitLab administrator if you want to use this service."
+msgstr ""
+
+msgid "GoogleCloud|Cancel"
+msgstr ""
+
+msgid "GoogleCloud|Configured region is linked to the selected branch or tag"
+msgstr ""
+
+msgid "GoogleCloud|Create service account"
+msgstr ""
+
+msgid "GoogleCloud|Generated service account is linked to the selected branch or tag"
+msgstr ""
+
+msgid "GoogleCloud|Google Cloud project"
+msgstr ""
+
+msgid "GoogleCloud|I understand the responsibilities involved with managing service account keys"
+msgstr ""
+
+msgid "GoogleCloud|New service account is generated for the selected Google Cloud project"
+msgstr ""
+
+msgid "GoogleCloud|Refs"
 msgstr ""
 
 msgid "Got it"
@@ -18207,9 +18225,6 @@ msgid "I accept the %{terms_link}"
 msgstr ""
 
 msgid "I forgot my password"
-msgstr ""
-
-msgid "I understand the responsibilities involved with managing service account keys"
 msgstr ""
 
 msgid "I want to explore GitLab to see if it’s worth switching to"
@@ -22047,9 +22062,6 @@ msgstr ""
 msgid "List of all merge commits"
 msgstr ""
 
-msgid "List of environments for this project"
-msgstr ""
-
 msgid "List of suitable GCP locations"
 msgstr ""
 
@@ -24505,9 +24517,6 @@ msgid "New runners registration token has been generated!"
 msgstr ""
 
 msgid "New schedule"
-msgstr ""
-
-msgid "New service account is generated for the selected Google Cloud project"
 msgstr ""
 
 msgid "New snippet"
