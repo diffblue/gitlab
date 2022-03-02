@@ -436,41 +436,41 @@ RSpec.describe Gitlab::GitalyClient::OperationService do
           Gitlab::Git::Repository::GitError, "something failed")
       end
     end
+  end
 
-    describe '#user_commit_files' do
-      subject do
-        client.user_commit_files(
-          gitaly_user, 'my-branch', 'Commit files message', [], 'janedoe@example.com', 'Jane Doe',
-          'master', repository)
+  describe '#user_commit_files' do
+    subject do
+      client.user_commit_files(
+        gitaly_user, 'my-branch', 'Commit files message', [], 'janedoe@example.com', 'Jane Doe',
+        'master', repository)
+    end
+
+    before do
+      expect_any_instance_of(Gitaly::OperationService::Stub)
+        .to receive(:user_commit_files).with(kind_of(Enumerator), kind_of(Hash))
+        .and_return(response)
+    end
+
+    context 'when a pre_receive_error is present' do
+      let(:response) { Gitaly::UserCommitFilesResponse.new(pre_receive_error: "GitLab: something failed") }
+
+      it 'raises a PreReceiveError' do
+        expect { subject }.to raise_error(Gitlab::Git::PreReceiveError, "something failed")
       end
+    end
 
-      before do
-        expect_any_instance_of(Gitaly::OperationService::Stub)
-          .to receive(:user_commit_files).with(kind_of(Enumerator), kind_of(Hash))
-          .and_return(response)
+    context 'when an index_error is present' do
+      let(:response) { Gitaly::UserCommitFilesResponse.new(index_error: "something failed") }
+
+      it 'raises a PreReceiveError' do
+        expect { subject }.to raise_error(Gitlab::Git::Index::IndexError, "something failed")
       end
+    end
 
-      context 'when a pre_receive_error is present' do
-        let(:response) { Gitaly::UserCommitFilesResponse.new(pre_receive_error: "GitLab: something failed") }
+    context 'when branch_update is nil' do
+      let(:response) { Gitaly::UserCommitFilesResponse.new }
 
-        it 'raises a PreReceiveError' do
-          expect { subject }.to raise_error(Gitlab::Git::PreReceiveError, "something failed")
-        end
-      end
-
-      context 'when an index_error is present' do
-        let(:response) { Gitaly::UserCommitFilesResponse.new(index_error: "something failed") }
-
-        it 'raises a PreReceiveError' do
-          expect { subject }.to raise_error(Gitlab::Git::Index::IndexError, "something failed")
-        end
-      end
-
-      context 'when branch_update is nil' do
-        let(:response) { Gitaly::UserCommitFilesResponse.new }
-
-        it { expect(subject).to be_nil }
-      end
+      it { expect(subject).to be_nil }
     end
   end
 
