@@ -80,7 +80,7 @@ module Integrations
     def external_issue_trackers
       return [] unless project_level?
 
-      project.integrations.external_issue_trackers
+      @external_issue_trackers ||= project.integrations.external_issue_trackers
     end
 
     def allowed_branch?(ref)

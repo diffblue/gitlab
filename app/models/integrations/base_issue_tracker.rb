@@ -141,7 +141,7 @@ module Integrations
     def other_external_issue_trackers
       return [] unless project_level?
 
-      project.integrations.external_issue_trackers.where.not(id: id)
+      @other_external_issue_trackers ||= project.integrations.external_issue_trackers.where.not(id: id)
     end
 
     def enabled_in_gitlab_config
