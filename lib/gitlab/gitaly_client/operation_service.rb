@@ -299,6 +299,26 @@ module Gitlab
         end
 
         response.squash_sha
+      rescue GRPC::BadStatus => e
+        detailed_error = decode_detailed_error(e)
+
+        case detailed_error&.error
+        when :resolve_revision, :rebase_conflict
+          # Theoretically, we could now raise specific errors based on the type
+          # of the detailed error. Most importantly, we get error details when
+          # Gitaly was not able to resolve the `start_sha` or `end_sha` via a
+          # ResolveRevisionError, and we get information about which files are
+          # conflicting via a MergeConflictError.
+          #
+          # We don't do this now though such that we can maintain backwards
+          # compatibility with the minimum required set of changes during the
+          # transitory period where we're migrating UserSquash to use
+          # structured errors. We thus continue to just return a GitError, like
+          # we previously did.
+          raise Gitlab::Git::Repository::GitError, e.details
+        else
+          raise
+        end
       end
 
       def user_update_submodule(user:, submodule:, commit_sha:, branch:, message:)

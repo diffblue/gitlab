@@ -436,6 +436,58 @@ RSpec.describe Gitlab::GitalyClient::OperationService do
           Gitlab::Git::Repository::GitError, "something failed")
       end
     end
+
+    shared_examples '#user_squash with an error' do
+      it 'raises a GitError exception' do
+        expect_any_instance_of(Gitaly::OperationService::Stub)
+          .to receive(:user_squash).with(request, kind_of(Hash))
+          .and_raise(raised_error)
+
+        expect { subject }.to raise_error(expected_error)
+      end
+    end
+
+    context 'when ResolveRevisionError is raised' do
+      let(:raised_error) do
+        new_detailed_error(
+          GRPC::Core::StatusCodes::INVALID_ARGUMENT,
+          'something failed',
+          Gitaly::UserSquashError.new(
+            resolve_revision: Gitaly::ResolveRevisionError.new(
+              revision: start_sha
+            )))
+      end
+
+      let(:expected_error) { Gitlab::Git::Repository::GitError }
+
+      it_behaves_like '#user_squash with an error'
+    end
+
+    context 'when RebaseConflictError is raised' do
+      let(:raised_error) do
+        new_detailed_error(
+          GRPC::Core::StatusCodes::INTERNAL,
+          'something failed',
+          Gitaly::UserSquashError.new(
+            rebase_conflict: Gitaly::MergeConflictError.new(
+              conflicting_files: ['conflicting-file']
+            )))
+      end
+
+      let(:expected_error) { Gitlab::Git::Repository::GitError }
+
+      it_behaves_like '#user_squash with an error'
+    end
+
+    context 'when non-detailed gRPC error is raised' do
+      let(:raised_error) do
+        GRPC::Internal.new('non-detailed error')
+      end
+
+      let(:expected_error) { GRPC::Internal }
+
+      it_behaves_like '#user_squash with an error'
+    end
   end
 
   describe '#user_commit_files' do
