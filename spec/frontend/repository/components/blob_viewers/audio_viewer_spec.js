@@ -12,12 +12,12 @@ describe('Audio Viewer', () => {
     wrapper = shallowMount(AudioViewer, { propsData: { blob: DEFAULT_BLOB_DATA } });
   };
 
-  const findImage = () => wrapper.find('[data-testid="audio"]');
+  const findContent = () => wrapper.find('[data-testid="audio"]');
 
   it('renders an audio source component', () => {
     createComponent();
 
-    expect(findImage().exists()).toBe(true);
-    expect(findImage().attributes('src')).toBe(DEFAULT_BLOB_DATA.rawPath);
+    expect(findContent().exists()).toBe(true);
+    expect(findContent().attributes('src')).toBe(DEFAULT_BLOB_DATA.rawPath);
   });
 });
