@@ -1,7 +1,12 @@
-import { GlFormInput, GlToken } from '@gitlab/ui';
+import { GlFormInput } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
+import MockAdapter from 'axios-mock-adapter';
 import PolicyActionBuilder from 'ee/threat_monitoring/components/policy_editor/scan_result_policy/policy_action_builder.vue';
+import ApproversSelect from 'ee/approvals/components/approvers_select.vue';
+import ApproversList from 'ee/approvals/components/approvers_list.vue';
+import ApproversListItem from 'ee/approvals/components/approvers_list_item.vue';
+import axios from '~/lib/utils/axios_utils';
 
 const APPROVER_1 = {
   id: 1,
@@ -21,6 +26,15 @@ const APPROVER_2 = {
   avatar_url: '',
 };
 
+const NEW_APPROVER = {
+  id: 3,
+  name: 'name2',
+  state: 'active',
+  username: 'username2',
+  web_url: '',
+  avatar_url: '',
+};
+
 const APPROVERS = [APPROVER_1, APPROVER_2];
 
 const APPROVERS_IDS = APPROVERS.map((approver) => approver.id);
@@ -32,6 +46,7 @@ const ACTION = {
 
 describe('PolicyActionBuilder', () => {
   let wrapper;
+  let mock;
 
   const factory = (propsData = {}) => {
     wrapper = mount(PolicyActionBuilder, {
@@ -47,14 +62,28 @@ describe('PolicyActionBuilder', () => {
   };
 
   const findApprovalsRequiredInput = () => wrapper.findComponent(GlFormInput);
-  const findAllGlTokens = () => wrapper.findAllComponents(GlToken);
+  const findApproversList = () => wrapper.findComponent(ApproversList);
+  const findAddApproversSelect = () => wrapper.findComponent(ApproversSelect);
+  const findAllApproversItem = () => wrapper.findAllComponents(ApproversListItem);
 
-  it('renders approvals required form input, gl-tokens', async () => {
+  beforeEach(() => {
+    mock = new MockAdapter(axios);
+    mock.onGet('/api/undefined/projects/1/users').reply(200);
+    mock.onGet('/api/undefined/projects/1/groups.json').reply(200);
+  });
+
+  afterEach(() => {
+    wrapper.destroy();
+    mock.restore();
+  });
+
+  it('renders approvals required form input, approvers list and approvers select', async () => {
     factory();
     await nextTick();
 
     expect(findApprovalsRequiredInput().exists()).toBe(true);
-    expect(findAllGlTokens().length).toBe(APPROVERS.length);
+    expect(findApproversList().exists()).toBe(true);
+    expect(findAddApproversSelect().exists()).toBe(true);
   });
 
   it('triggers an update when changing approvals required', async () => {
@@ -71,17 +100,17 @@ describe('PolicyActionBuilder', () => {
     ]);
   });
 
-  it('removes one approver when triggering a gl-token', async () => {
+  it('removes one approver when triggering a remove button click', async () => {
     factory();
     await nextTick();
 
-    const allGlTokens = findAllGlTokens();
-    const glToken = allGlTokens.at(0);
+    const allApproversItems = findAllApproversItem();
+    const approversItem = allApproversItems.at(0);
     const approversLengthMinusOne = APPROVERS.length - 1;
 
-    expect(allGlTokens.length).toBe(APPROVERS.length);
+    expect(allApproversItems.length).toBe(APPROVERS.length);
 
-    await glToken.vm.$emit('close', { ...APPROVER_1, type: 'user' });
+    await approversItem.vm.$emit('remove', { ...APPROVER_1, type: 'user' });
 
     expect(wrapper.emitted().changed).toEqual([
       [
@@ -92,6 +121,29 @@ describe('PolicyActionBuilder', () => {
         },
       ],
     ]);
-    expect(findAllGlTokens()).toHaveLength(approversLengthMinusOne);
+    expect(findAllApproversItem()).toHaveLength(approversLengthMinusOne);
+  });
+
+  it('adds one approver when triggering a new user is selected', async () => {
+    factory();
+    await nextTick();
+
+    const allApproversItems = findAllApproversItem();
+    const approversLengthPlusOne = APPROVERS.length + 1;
+
+    expect(allApproversItems.length).toBe(APPROVERS.length);
+
+    await findAddApproversSelect().vm.$emit('input', [{ ...NEW_APPROVER, type: 'user' }]);
+
+    expect(wrapper.emitted().changed).toEqual([
+      [
+        {
+          approvals_required: ACTION.approvals_required,
+          user_approvers_ids: [APPROVER_1.id, APPROVER_2.id, NEW_APPROVER.id],
+          group_approvers_ids: [],
+        },
+      ],
+    ]);
+    expect(findAllApproversItem()).toHaveLength(approversLengthPlusOne);
   });
 });

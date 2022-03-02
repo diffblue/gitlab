@@ -1,23 +1,18 @@
 <script>
-import {
-  GlSprintf,
-  GlForm,
-  GlFormInput,
-  GlModalDirective,
-  GlToken,
-  GlAvatarLabeled,
-} from '@gitlab/ui';
+import { GlSprintf, GlForm, GlFormInput, GlModalDirective } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { AVATAR_SHAPE_OPTION_CIRCLE, AVATAR_SHAPE_OPTION_RECT } from '~/vue_shared/constants';
-import { groupApprovers, decomposeApprovers, USER_TYPE } from './lib/actions';
+import ApproversSelect from 'ee/approvals/components/approvers_select.vue';
+import ApproversList from 'ee/approvals/components/approvers_list.vue';
+import { groupApprovers, decomposeApprovers, groupIds, userIds, USER_TYPE } from './lib/actions';
 
 export default {
   components: {
     GlSprintf,
     GlForm,
     GlFormInput,
-    GlToken,
-    GlAvatarLabeled,
+    ApproversSelect,
+    ApproversList,
   },
   directives: {
     GlModalDirective,
@@ -37,11 +32,23 @@ export default {
     return {
       action: { ...this.initAction },
       approvers: groupApprovers(this.existingApprovers),
+      approversToAdd: [],
     };
+  },
+  computed: {
+    groupIds() {
+      return groupIds(this.approvers);
+    },
+    userIds() {
+      return userIds(this.approvers);
+    },
   },
   watch: {
     approvers(values) {
       this.action = decomposeApprovers(this.action, values);
+    },
+    approversToAdd(val) {
+      this.approvers.push(val[0]);
     },
     action: {
       handler(values) {
@@ -59,6 +66,9 @@ export default {
         (approver) => approver.type !== removedApprover.type || approver.id !== removedApprover.id,
       );
     },
+    selectedApprover(approver) {
+      this.approvers.push(approver);
+    },
     avatarShape(approver) {
       return this.isUser(approver) ? AVATAR_SHAPE_OPTION_CIRCLE : AVATAR_SHAPE_OPTION_RECT;
     },
@@ -73,7 +83,7 @@ export default {
     addAnApprover: s__('ScanResultPolicy|add an approver'),
   },
   humanizedTemplate: s__(
-    'ScanResultPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require approval from %{approvalsRequired} of the following approvers: %{approvers}',
+    'ScanResultPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require approval from %{approvalsRequired} of the following approvers:',
   ),
 };
 </script>
@@ -100,25 +110,18 @@ export default {
             @input="approvalsRequiredChanged"
           />
         </template>
-
-        <template #approvers>
-          <gl-token
-            v-for="approver in approvers"
-            :key="approver.type + approver.id"
-            class="gl-ml-3"
-            @close="removeApprover(approver)"
-          >
-            <gl-avatar-labeled
-              :src="approver.avatar_url"
-              :size="24"
-              :shape="avatarShape(approver)"
-              :label="approverName(approver)"
-              :entity-name="approver.name"
-              :alt="approver.name"
-            />
-          </gl-token>
-        </template>
       </gl-sprintf>
+      <div class="gl-bg-white gl-w-full gl-display-flex">
+        <approvers-select
+          v-model="approversToAdd"
+          :skip-user-ids="userIds"
+          :skip-group-ids="groupIds"
+          :project-id="projectId"
+        />
+      </div>
+      <div class="gl-bg-white gl-w-full gl-mt-3 gl-border gl-rounded-base gl-overflow-auto h-12em">
+        <approvers-list v-model="approvers" />
+      </div>
     </gl-form>
   </div>
 </template>
