@@ -301,15 +301,18 @@ module EE
         end
     end
 
-    def on_existing_free_subscription?
+    def has_free_or_no_subscription?
       # this is a side-effect free version of checking if a namespace
-      # is on a free plan - see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/80839#note_851566461
-      strong_memoize(:on_existing_free_subscription) do
-        ::Plan
-          .joins(:hosted_subscriptions)
-          .where(name: ::Plan::FREE)
-          .where(gitlab_subscriptions: { namespace_id: id })
-          .exists?
+      # is on a free plan or has no plan - see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/80839#note_851566461
+      strong_memoize(:has_free_or_no_subscription) do
+        subscription = root_ancestor.gitlab_subscription
+
+        # there is a chance that subscriptions do not have a plan https://gitlab.com/gitlab-org/gitlab/-/merge_requests/81432#note_858514873
+        if subscription&.plan_name
+          subscription.plan_name == ::Plan::FREE
+        else
+          true
+        end
       end
     end
 
@@ -472,7 +475,7 @@ module EE
 
     def apply_free_user_cap?
       return false unless ::Gitlab.com?
-      return false unless root_ancestor.on_existing_free_subscription?
+      return false unless has_free_or_no_subscription?
 
       ::Feature.enabled?(:free_user_cap, root_ancestor, default_enabled: :yaml)
     end

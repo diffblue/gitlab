@@ -2255,7 +2255,7 @@ RSpec.describe Namespace do
       context 'when no plan exists' do
         let_it_be(:namespace) { create(:group) }
 
-        it { is_expected.to be false }
+        it { is_expected.to be true }
       end
     end
   end
@@ -2282,23 +2282,70 @@ RSpec.describe Namespace do
     end
   end
 
-  describe '#on_existing_free_subscription?', :saas do
+  describe '#has_free_or_no_subscription?', :saas do
     it 'returns true with a free plan' do
       namespace = create(:group_with_plan, plan: :free_plan)
 
-      expect(namespace.on_existing_free_subscription?).to be(true)
+      expect(namespace.has_free_or_no_subscription?).to be(true)
     end
 
     it 'returns false when the plan is not free' do
       namespace = create(:group_with_plan, plan: :ultimate_plan)
 
-      expect(namespace.on_existing_free_subscription?).to be(false)
+      expect(namespace.has_free_or_no_subscription?).to be(false)
     end
 
-    it 'returns false when there is no plan' do
+    it 'returns true when there is no plan' do
       namespace = create(:namespace)
 
-      expect(namespace.on_existing_free_subscription?).to be(false)
+      expect(namespace.has_free_or_no_subscription?).to be(true)
+    end
+
+    it 'returns true when there is a subscription with no plan' do
+      namespace = create(:namespace)
+      create(:gitlab_subscription, hosted_plan: nil, namespace: namespace)
+
+      expect(namespace.has_free_or_no_subscription?).to be(true)
+    end
+
+    context 'when it is a subgroup' do
+      let(:subgroup) { create(:group, parent: namespace) }
+
+      context 'with a free plan' do
+        let(:namespace) { create(:group_with_plan, plan: :free_plan) }
+
+        it 'returns true' do
+          expect(subgroup.has_free_or_no_subscription?).to be(true)
+        end
+      end
+
+      context 'with a plan that is not free' do
+        let(:namespace) { create(:group_with_plan, plan: :ultimate_plan) }
+
+        it 'returns false' do
+          expect(subgroup.has_free_or_no_subscription?).to be(false)
+        end
+      end
+
+      context 'when there is no plan' do
+        let(:namespace) { create(:group) }
+
+        it 'returns true' do
+          expect(subgroup.has_free_or_no_subscription?).to be(true)
+        end
+      end
+
+      context 'when there is a subscription with no plan' do
+        let(:namespace) { create(:group) }
+
+        before do
+          create(:gitlab_subscription, hosted_plan: nil, namespace: namespace)
+        end
+
+        it 'returns true' do
+          expect(subgroup.has_free_or_no_subscription?).to be(true)
+        end
+      end
     end
   end
 
