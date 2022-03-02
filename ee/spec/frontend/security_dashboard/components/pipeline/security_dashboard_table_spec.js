@@ -1,4 +1,4 @@
-import { GlEmptyState, GlFormCheckbox } from '@gitlab/ui';
+import { GlAlert, GlEmptyState, GlFormCheckbox } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
@@ -33,6 +33,8 @@ describe('Security Dashboard Table', () => {
   });
 
   const findCheckbox = () => wrapper.findComponent(GlFormCheckbox);
+  const findAlert = () => wrapper.findComponent(GlAlert);
+  const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findSelectionSummaryCollapse = () => wrapper.findByTestId('selection-summary-collapse');
 
   describe('while loading', () => {
@@ -91,7 +93,7 @@ describe('Security Dashboard Table', () => {
     });
 
     it('should render the empty state', () => {
-      expect(wrapper.findComponent(GlEmptyState).exists()).toBe(true);
+      expect(findEmptyState().exists()).toBe(true);
     });
   });
 
@@ -101,11 +103,11 @@ describe('Security Dashboard Table', () => {
     });
 
     it('should not render the empty state', () => {
-      expect(wrapper.findComponent(GlEmptyState).exists()).toBe(false);
+      expect(findEmptyState().exists()).toBe(false);
     });
 
     it('should render the error alert', () => {
-      expect(wrapper.find('.flash-alert').exists()).toBe(true);
+      expect(findAlert().exists()).toBe(true);
     });
   });
 
