@@ -41,7 +41,7 @@ export default {
     <gl-table v-else :items="members" :fields="$options.fields">
       <template #cell(name)="{ item }">
         <span class="d-flex">
-          <gl-avatar v-gl-tooltip :src="item.avatar_url" :size="48" />
+          <gl-avatar :src="item.avatar_url" :size="48" />
           <div class="ml-2">
             <div class="font-weight-bold">
               <a
