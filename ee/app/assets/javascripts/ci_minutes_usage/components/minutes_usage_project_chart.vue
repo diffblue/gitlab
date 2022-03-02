@@ -2,13 +2,13 @@
 import { GlAlert, GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
 import { keyBy } from 'lodash';
+import { formatDate } from '~/lib/utils/datetime_utility';
 import {
   USAGE_BY_PROJECT,
   X_AXIS_PROJECT_LABEL,
   X_AXIS_CATEGORY,
   Y_AXIS_LABEL,
   NO_CI_MINUTES_MSG,
-  MONTHS,
 } from '../constants';
 
 export default {
@@ -43,7 +43,7 @@ export default {
       ];
     },
     usageDataByMonth() {
-      return keyBy(this.minutesUsageData, 'month');
+      return keyBy(this.minutesUsageData, 'monthIso8601');
     },
     getUsageDataSelectedMonth() {
       return this.usageDataByMonth[this.selectedMonth]?.projects?.nodes.map((cur) => [
@@ -52,7 +52,7 @@ export default {
       ]);
     },
     months() {
-      return this.minutesUsageData.filter((cur) => cur.minutes > 0).map((cur) => cur.month);
+      return this.minutesUsageData.filter((cur) => cur.minutes > 0).map((cur) => cur.monthIso8601);
     },
     isDataEmpty() {
       return this.minutesUsageData.length === 0 && !this.selectedMonth;
@@ -69,14 +69,14 @@ export default {
     }
   },
   methods: {
-    changeSelectedMonth(month) {
-      this.selectedMonth = month;
+    changeSelectedMonth(monthIso8601) {
+      this.selectedMonth = monthIso8601;
     },
     setFirstMonthDropdown() {
       [this.selectedMonth] = this.months;
     },
-    getTranslatedMonthName(month) {
-      return MONTHS[month.toLowerCase()] ?? month;
+    getFormattedMonthYear(monthIso8601) {
+      return formatDate(monthIso8601, 'mmm yyyy');
     },
   },
 };
@@ -86,16 +86,21 @@ export default {
     <div class="gl-display-flex gl-mt-7" :class="{ 'gl-mb-3': !isDataEmpty }">
       <h5 class="gl-flex-grow-1">{{ $options.USAGE_BY_PROJECT }}</h5>
 
-      <gl-dropdown v-if="!isDataEmpty" :text="selectedMonth" data-testid="project-month-dropdown">
+      <gl-dropdown
+        v-if="!isDataEmpty"
+        :text="getFormattedMonthYear(selectedMonth)"
+        data-testid="project-month-dropdown"
+        right
+      >
         <gl-dropdown-item
-          v-for="(monthName, index) in months"
+          v-for="(monthIso8601, index) in months"
           :key="index"
-          :is-checked="selectedMonth === monthName"
+          :is-checked="selectedMonth === monthIso8601"
           is-check-item
           data-testid="month-dropdown-item"
-          @click="changeSelectedMonth(monthName)"
+          @click="changeSelectedMonth(monthIso8601)"
         >
-          {{ getTranslatedMonthName(monthName) }}
+          {{ getFormattedMonthYear(monthIso8601) }}
         </gl-dropdown-item>
       </gl-dropdown>
     </div>
