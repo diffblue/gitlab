@@ -13,7 +13,6 @@ module EE
       before_action :log_unarchive_audit_event, only: [:unarchive]
 
       before_action only: :edit do
-        push_frontend_feature_flag(:group_merge_request_approval_settings_feature_flag, project.root_ancestor, default_enabled: :yaml)
         push_frontend_feature_flag(:permit_all_shared_groups_for_approval, project, default_enabled: :yaml)
       end
 

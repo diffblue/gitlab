@@ -319,9 +319,8 @@ RSpec.describe 'Edit group settings' do
       create(:group_merge_request_approval_setting, group: group, allow_author_approval: false)
     end
 
-    context 'when feature flag is enabled and group is licensed' do
+    context 'when group is licensed' do
       before do
-        stub_feature_flags(group_merge_request_approval_settings_feature_flag: true)
         stub_licensed_features(merge_request_approvers: true)
       end
 
@@ -352,9 +351,8 @@ RSpec.describe 'Edit group settings' do
       end
     end
 
-    context 'when feature flag is disabled and group is not licensed' do
+    context 'when group is not licensed' do
       before do
-        stub_feature_flags(group_merge_request_approval_settings_feature_flag: false)
         stub_licensed_features(merge_request_approvers: false)
       end
 
