@@ -2937,6 +2937,9 @@ msgstr ""
 msgid "AdminUsers|Send email to users"
 msgstr ""
 
+msgid "AdminUsers|Sort by"
+msgstr ""
+
 msgid "AdminUsers|The user can't access git repositories."
 msgstr ""
 
