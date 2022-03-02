@@ -53,7 +53,7 @@ module Mutations
                description: 'IDs of labels to be removed from the epic.'
 
       argument :color,
-               GraphQL::Types::String,
+               ::Types::ColorType,
                required: false,
                description: 'Color of the epic. Available only when feature flag `epic_color_highlight` is enabled. This flag is disabled by default, because the feature is experimental and is subject to change without notice.'
     end
