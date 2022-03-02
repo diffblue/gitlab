@@ -19418,6 +19418,9 @@ msgstr ""
 msgid "Incidents|There was an issue uploading your image."
 msgstr ""
 
+msgid "Incident|Add new timeline event"
+msgstr ""
+
 msgid "Incident|Alert details"
 msgstr ""
 
@@ -19439,6 +19442,9 @@ msgstr ""
 msgid "Incident|Metrics"
 msgstr ""
 
+msgid "Incident|No timeline items have been added yet."
+msgstr ""
+
 msgid "Incident|Summary"
 msgstr ""
 
@@ -19446,6 +19452,9 @@ msgid "Incident|There was an issue loading alert data. Please try again."
 msgstr ""
 
 msgid "Incident|There was an issue loading incident data. Please try again."
+msgstr ""
+
+msgid "Incident|Timeline"
 msgstr ""
 
 msgid "Include author name in notification email body"
