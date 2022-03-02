@@ -5,6 +5,8 @@ module Security
     class ProcessPolicyService
       include BaseServiceUtility
 
+      Error = Class.new(StandardError)
+
       def initialize(policy_configuration:, params:)
         @policy_configuration = policy_configuration
         @params = params
@@ -29,7 +31,7 @@ module Security
         return error('Invalid policy YAML', :bad_request, pass_back: { details: policy_configuration_validation_errors(policy_hash) }) unless policy_configuration_valid?(policy_hash)
 
         success(policy_hash: policy_hash)
-      rescue StandardError => e
+      rescue Error => e
         error(e.message)
       end
 
@@ -43,13 +45,13 @@ module Security
           return
         end
 
-        raise StandardError, "Policy already exists with same name" if policy_exists?(policy_hash, policy[:name], type)
+        raise Error, "Policy already exists with same name" if policy_exists?(policy_hash, policy[:name], type)
 
         policy_hash[type] += [policy]
       end
 
       def replace_in_policy_hash(policy_hash, name, policy, type)
-        raise StandardError, "Policy already exists with same name" if name && name != policy[:name] && policy_exists?(policy_hash, policy[:name], type)
+        raise Error, "Policy already exists with same name" if name && name != policy[:name] && policy_exists?(policy_hash, policy[:name], type)
 
         existing_policy_index = check_if_policy_exists!(policy_hash, name || policy[:name], type)
         policy_hash[type][existing_policy_index] = policy
@@ -62,7 +64,7 @@ module Security
 
       def check_if_policy_exists!(policy_hash, policy_name, type)
         existing_policy_index = policy_exists?(policy_hash, policy_name, type)
-        raise StandardError, "Policy does not exist" if existing_policy_index.nil?
+        raise Error, "Policy does not exist" if existing_policy_index.nil?
 
         existing_policy_index
       end
