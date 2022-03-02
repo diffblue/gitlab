@@ -20,4 +20,8 @@ class Groups::Analytics::RepositoryAnalyticsController < Groups::Analytics::Appl
       namespace: @group
     }
   end
+
+  def build_canonical_path(group)
+    url_for(safe_params.merge(group_id: group.to_param))
+  end
 end
