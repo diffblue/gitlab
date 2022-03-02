@@ -13,11 +13,11 @@ module EE
 
       render_label_text(
         label.scoped_label_key,
-        css_class: "gl-label-text #{text_color_class_for_bg(label.color)}",
+        css_class: "gl-label-text #{label.text_color_class}",
         bg_color: label.color
       ) + render_label_text(
         label.scoped_label_value,
-        css_class: "gl-label-text-scoped #{('gl-label-text-dark' if light_color?(label.color))}",
+        css_class: "gl-label-text-scoped #{label.text_color_class}",
         suffix: suffix
       )
     end
