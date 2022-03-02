@@ -71,17 +71,7 @@ module Integrations
       end
     end
 
-    def activate_disabled_reason
-      { trackers: external_issue_trackers } if external_issue_trackers.any?
-    end
-
     private
-
-    def external_issue_trackers
-      return [] unless project_level?
-
-      @external_issue_trackers ||= project.integrations.external_issue_trackers
-    end
 
     def allowed_branch?(ref)
       return true unless ref.present? && restrict_to_branch.present?
