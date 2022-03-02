@@ -19,26 +19,6 @@ RSpec.describe Issue do
 
     it { is_expected.to have_one(:requirement) }
     it { is_expected.to have_many(:test_reports) }
-
-    context 'for an issue with associated test report' do
-      let_it_be(:requirement_issue) do
-        ri = create(:requirement_issue)
-        create(:test_report, requirement_issue: ri, requirement: create(:requirement))
-        ri
-      end
-
-      context 'for an issue of type Requirement' do
-        specify { expect(requirement_issue.test_reports.count).to eq(1) }
-      end
-
-      context 'for an issue of a different type' do
-        before do
-          requirement_issue.update_attribute(:issue_type, :incident)
-        end
-
-        specify { expect(requirement_issue.test_reports.count).to eq(0) }
-      end
-    end
   end
 
   describe 'modules' do
@@ -55,6 +35,25 @@ RSpec.describe Issue do
         create(:issue, health_status: :at_risk)
 
         expect(Issue.counts_by_health_status).to eq({ 'on_track' => 2, 'at_risk' => 1 } )
+      end
+    end
+
+    describe '.for_requirement_iids' do
+      let_it_be(:project) { create(:project) }
+      let_it_be(:requirement_1) { create(:requirement, project: project) }
+      let_it_be(:requirement_2) { create(:requirement, project: project) }
+      let_it_be(:requirement_3) { create(:requirement, project: project) }
+      let_it_be(:requirement_4) { create(:requirement, project: project) }
+
+      context 'when issue is of type requirement' do
+        it 'filters requirement issues by associated requirements iids' do
+          iids = [requirement_1.iid, requirement_3.iid, requirement_4.iid]
+          requirement_4.requirement_issue.update!(issue_type: WorkItems::Type.base_types[:issue])
+
+          requirement_issues = Issue.for_requirement_iids(iids)
+
+          expect(requirement_issues).to match_array([requirement_1.requirement_issue, requirement_3.requirement_issue])
+        end
       end
     end
 

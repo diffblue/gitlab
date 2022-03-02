@@ -10,8 +10,8 @@ RSpec.describe Resolvers::RequirementsManagement::TestReportsResolver do
   context 'with a project' do
     let_it_be(:project) { create(:project, :private) }
     let_it_be(:requirement) { create(:requirement, project: project, state: :opened, created_at: 5.hours.ago) }
-    let_it_be(:test_report1) { create(:test_report, requirement: requirement, created_at: 3.hours.ago) }
-    let_it_be(:test_report2) { create(:test_report, requirement: requirement, created_at: 4.hours.ago) }
+    let_it_be(:test_report1) { create(:test_report, requirement_issue: requirement.requirement_issue, created_at: 3.hours.ago) }
+    let_it_be(:test_report2) { create(:test_report, requirement_issue: requirement.requirement_issue, created_at: 4.hours.ago) }
 
     before do
       stub_licensed_features(requirements: true)

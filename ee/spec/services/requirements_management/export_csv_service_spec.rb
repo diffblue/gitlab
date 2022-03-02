@@ -39,7 +39,7 @@ RSpec.describe RequirementsManagement::ExportCsvService do
   end
 
   context 'includes' do
-    let_it_be(:report) { create(:test_report, requirement: requirement, state: :passed, build: nil, author: user) }
+    let_it_be(:report) { create(:test_report, requirement_issue: requirement.requirement_issue, state: :passed, build: nil, author: user) }
 
     let(:time_format) { '%Y-%m-%d %H:%M:%S %Z' }
 

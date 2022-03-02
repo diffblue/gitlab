@@ -43,10 +43,10 @@ RSpec.describe Resolvers::RequirementsManagement::RequirementsResolver do
       end
 
       it 'preloads correct latest test report' do
-        requirement_2_latest_report = create(:test_report, requirement: requirement2, created_at: 1.hour.ago)
-        create(:test_report, requirement: requirement1, created_at: 2.hours.ago)
-        create(:test_report, requirement: requirement2, created_at: 4.hours.ago)
-        requirement_3_latest_report = create(:test_report, requirement: requirement3, created_at: 3.hours.ago)
+        requirement_2_latest_report = create(:test_report, requirement_issue: requirement2.requirement_issue, created_at: 1.hour.ago)
+        create(:test_report, requirement_issue: requirement1.requirement_issue, created_at: 2.hours.ago)
+        create(:test_report, requirement_issue: requirement2.requirement_issue, created_at: 4.hours.ago)
+        requirement_3_latest_report = create(:test_report, requirement_issue: requirement3.requirement_issue, created_at: 3.hours.ago)
 
         requirements = resolve_requirements(sort: 'created_desc').to_a
 
@@ -57,9 +57,9 @@ RSpec.describe Resolvers::RequirementsManagement::RequirementsResolver do
       context 'when filtering by last test report state' do
         before do
           create(:test_report, state: :failed)
-          create(:test_report, requirement: requirement1, state: :passed)
-          create(:test_report, requirement: requirement1, state: :failed)
-          create(:test_report, requirement: requirement3, state: :passed)
+          create(:test_report, requirement_issue: requirement1.requirement_issue, state: :passed)
+          create(:test_report, requirement_issue: requirement1.requirement_issue, state: :failed)
+          create(:test_report, requirement_issue: requirement3.requirement_issue, state: :passed)
         end
 
         it 'filters by failed requirements' do

@@ -11,8 +11,8 @@ RSpec.describe RequirementsManagement::Requirement do
 
     it { is_expected.to belong_to(:author).class_name('User') }
     it { is_expected.to belong_to(:project) }
-    it { is_expected.to have_many(:test_reports) }
-    it { is_expected.to have_many(:recent_test_reports).order(created_at: :desc) }
+    it { is_expected.to have_many(:test_reports).through(:requirement_issue) }
+    it { is_expected.to have_many(:recent_test_reports).through(:requirement_issue).order('requirements_management_test_reports.created_at DESC') }
 
     it_behaves_like 'a model with a requirement issue association'
   end
@@ -120,11 +120,11 @@ RSpec.describe RequirementsManagement::Requirement do
       let_it_be(:requirement3) { create(:requirement) }
 
       before do
-        create(:test_report, requirement: requirement1, state: :passed)
-        create(:test_report, requirement: requirement1, state: :failed)
-        create(:test_report, requirement: requirement2, state: :failed)
-        create(:test_report, requirement: requirement2, state: :passed)
-        create(:test_report, requirement: requirement3, state: :passed)
+        create(:test_report, requirement_issue: requirement1.requirement_issue, state: :passed)
+        create(:test_report, requirement_issue: requirement1.requirement_issue, state: :failed)
+        create(:test_report, requirement_issue: requirement2.requirement_issue, state: :failed)
+        create(:test_report, requirement_issue: requirement2.requirement_issue, state: :passed)
+        create(:test_report, requirement_issue: requirement3.requirement_issue, state: :passed)
       end
 
       subject { described_class.with_last_test_report_state(state) }
@@ -148,7 +148,7 @@ RSpec.describe RequirementsManagement::Requirement do
     let_it_be(:requirement2) { create(:requirement) }
 
     before do
-      create(:test_report, requirement: requirement2, state: :passed)
+      create(:test_report, requirement_issue: requirement2.requirement_issue, state: :passed)
     end
 
     it 'returns requirements without test reports' do
@@ -161,7 +161,7 @@ RSpec.describe RequirementsManagement::Requirement do
 
     context 'when latest test report is passing' do
       it 'returns passing' do
-        create(:test_report, requirement: requirement, state: :passed, build: nil)
+        create(:test_report, requirement_issue: requirement.requirement_issue, state: :passed, build: nil)
 
         expect(requirement.last_test_report_state).to eq('passed')
       end
@@ -169,7 +169,7 @@ RSpec.describe RequirementsManagement::Requirement do
 
     context 'when latest test report is failing' do
       it 'returns failing' do
-        create(:test_report, requirement: requirement, state: :failed, build: nil)
+        create(:test_report, requirement_issue: requirement.requirement_issue, state: :failed, build: nil)
 
         expect(requirement.last_test_report_state).to eq('failed')
       end
@@ -187,7 +187,7 @@ RSpec.describe RequirementsManagement::Requirement do
 
     context 'when latest test report has a build' do
       it 'returns false' do
-        create(:test_report, requirement: requirement, state: :passed)
+        create(:test_report, requirement_issue: requirement.requirement_issue, state: :passed)
 
         expect(requirement.last_test_report_manually_created?).to eq(false)
       end
@@ -195,7 +195,7 @@ RSpec.describe RequirementsManagement::Requirement do
 
     context 'when latest test report does not have a build' do
       it 'returns true' do
-        create(:test_report, requirement: requirement, state: :passed, build: nil)
+        create(:test_report, requirement_issue: requirement.requirement_issue, state: :passed, build: nil)
 
         expect(requirement.last_test_report_manually_created?).to eq(true)
       end
