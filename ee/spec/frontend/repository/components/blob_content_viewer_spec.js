@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import Vuex from 'vuex';
 import VueRouter from 'vue-router';
 import VueApollo from 'vue-apollo';
 import axios from 'axios';
@@ -27,6 +28,9 @@ let wrapper;
 let mockResolver;
 
 Vue.use(VueApollo);
+
+const createMockStore = () =>
+  new Vuex.Store({ actions: { fetchData: jest.fn, setInitialData: jest.fn() } });
 
 const createComponent = async (mockData = {}) => {
   const {
@@ -58,6 +62,7 @@ const createComponent = async (mockData = {}) => {
   const fakeApollo = createMockApollo([[blobInfoQuery, mockResolver]]);
 
   wrapper = mountExtended(BlobContentViewer, {
+    store: createMockStore(),
     router,
     apolloProvider: fakeApollo,
     propsData: {
