@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService do
+  include Ci::TemplateHelpers
+
   describe '#execute' do
     let_it_be(:service) { described_class.new }
     let_it_be(:ci_variables) do
@@ -40,7 +42,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
             },
             variables: {
               GIT_DEPTH: '50',
-              SECURE_ANALYZERS_PREFIX: 'registry.gitlab.com/security-products',
+              SECURE_ANALYZERS_PREFIX: secure_analyzers_prefix,
               SECRETS_ANALYZER_VERSION: '3',
               SECRET_DETECTION_EXCLUDED_PATHS: '',
               SECRET_DETECTION_HISTORIC_SCAN: 'false'
