@@ -31986,7 +31986,7 @@ msgstr ""
 msgid "ScanResultPolicy|%{ifLabelStart}if%{ifLabelEnd} %{scanners} scan in an open merge request targeting the %{branches} branch(es) finds %{vulnerabilitiesAllowed} or more %{severities} vulnerabilities that are %{vulnerabilityStates}"
 msgstr ""
 
-msgid "ScanResultPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require approval from %{approvalsRequired} of the following approvers: %{approvers}"
+msgid "ScanResultPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require approval from %{approvalsRequired} of the following approvers:"
 msgstr ""
 
 msgid "ScanResultPolicy|add an approver"
