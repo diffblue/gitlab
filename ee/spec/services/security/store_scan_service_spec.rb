@@ -139,6 +139,28 @@ RSpec.describe Security::StoreScanService do
         expect(Security::StoreFindingsMetadataService).to have_received(:execute)
       end
 
+      context 'when the report has some warnings' do
+        before do
+          artifact.security_report.warnings << { 'type' => 'foo', 'message' => 'bar' }
+        end
+
+        let(:security_scan) { Security::Scan.last }
+
+        it 'calls the `Security::StoreFindingsMetadataService` to store findings' do
+          expect(store_scan).to be(true)
+
+          expect(Security::StoreFindingsMetadataService).to have_received(:execute)
+        end
+
+        it 'stores the warnings' do
+          store_scan
+
+          expect(security_scan.processing_warnings).to include(
+            { 'type' => 'foo', 'message' => 'bar' }
+          )
+        end
+      end
+
       context 'when the security scan already exists for the artifact' do
         let_it_be(:security_scan) { create(:security_scan, build: artifact.job, scan_type: :sast, status: :succeeded) }
         let_it_be(:unique_security_finding) do

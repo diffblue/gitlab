@@ -15255,6 +15255,7 @@ Represents the security scan information.
 | ---- | ---- | ----------- |
 | <a id="scanerrors"></a>`errors` | [`[String!]!`](#string) | List of errors. |
 | <a id="scanname"></a>`name` | [`String!`](#string) | Name of the scan. |
+| <a id="scanwarnings"></a>`warnings` | [`[String!]!`](#string) | List of warnings. |
 
 ### `ScanExecutionPolicy`
 

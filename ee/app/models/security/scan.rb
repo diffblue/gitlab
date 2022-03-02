@@ -55,12 +55,24 @@ module Security
       scan_types.keys & Array(given_types).map(&:to_s)
     end
 
+    def has_warnings?
+      processing_warnings.present?
+    end
+
+    def processing_warnings
+      info.fetch('warnings', [])
+    end
+
+    def processing_warnings=(warnings)
+      info['warnings'] = warnings
+    end
+
     def has_errors?
       processing_errors.present?
     end
 
     def processing_errors
-      info&.fetch('errors', [])
+      info.fetch('errors', [])
     end
 
     def processing_errors=(errors)
