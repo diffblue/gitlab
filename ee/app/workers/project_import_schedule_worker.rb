@@ -16,10 +16,6 @@ class ProjectImportScheduleWorker
   loggable_arguments 1 # For the job waiter key
   log_bulk_perform_async!
 
-  # UpdateAllMirrorsWorker depends on the queue size of this worker:
-  # https://gitlab.com/gitlab-org/gitlab/-/issues/340630
-  tags :needs_own_queue
-
   def perform(project_id)
     ::Gitlab::Mirror.untrack_scheduling(project_id)
 
