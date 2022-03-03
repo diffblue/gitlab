@@ -1,4 +1,5 @@
 - return unless Gitlab.dev_env_or_com?
+- return if in_trial_flow?
 
 - experiment(:bypass_registration, user: current_user) do |e|
   - e.publish_to_database
