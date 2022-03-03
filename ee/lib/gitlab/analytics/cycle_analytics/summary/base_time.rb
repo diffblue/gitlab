@@ -5,16 +5,14 @@ module Gitlab
     module CycleAnalytics
       module Summary
         class BaseTime
+          include Gitlab::CycleAnalytics::Summary::Defaults
+
           def initialize(stage:, current_user:, options:)
             @stage = stage
             @current_user = current_user
             @options = options
 
             assign_stage_metadata
-          end
-
-          def identifier
-            self.class.name.demodulize.underscore.to_sym
           end
 
           def value
@@ -31,10 +29,6 @@ module Gitlab
 
           def self.end_event_identifier
             raise NotImplementedError, "Expected #{self.name} to implement end_event_identifier"
-          end
-
-          def links
-            []
           end
 
           private
