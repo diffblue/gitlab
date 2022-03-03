@@ -31,6 +31,8 @@ module Database
       end
 
       def perform
+        return unless base_model
+
         Gitlab::Database::SharedModel.using_connection(base_model.connection) do
           break unless Feature.enabled?(:execute_batched_migrations_on_schedule, type: :ops, default_enabled: :yaml) && active_migration
 
