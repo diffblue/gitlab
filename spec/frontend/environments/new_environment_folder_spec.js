@@ -30,7 +30,10 @@ describe('~/environments/components/new_environments_folder.vue', () => {
   const createWrapper = (propsData, apolloProvider) =>
     mountExtended(EnvironmentsFolder, {
       apolloProvider,
-      propsData,
+      propsData: {
+        scope: 'available',
+        ...propsData,
+      },
       stubs: { transition: stubTransition() },
       provide: { helpPagePath: '/help' },
     });
