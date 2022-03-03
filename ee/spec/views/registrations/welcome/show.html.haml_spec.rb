@@ -28,15 +28,15 @@ RSpec.describe 'registrations/welcome/show' do
 
     subject { rendered }
 
-    where(:redirect_path, :signup_onboarding_enabled, :show_progress_bar, :flow, :is_continue) do
-      '/-/subscriptions/new'    | false | true  | :subscription | true
-      '/-/subscriptions/new'    | true  | true  | :subscription | true
-      '/-/trials/new'           | false | false | :trial        | true
-      '/-/trials/new'           | true  | false | :trial        | true
-      '/oauth/authorize/abc123' | false | false | nil           | false
-      '/oauth/authorize/abc123' | true  | false | nil           | false
-      nil                       | false | false | nil           | false
-      nil                       | true  | true  | nil           | true
+    where(:redirect_path, :signup_onboarding_enabled, :show_progress_bar, :flow, :is_continue, :show_joining_question) do
+      '/-/subscriptions/new'    | false | true  | :subscription | true  | true
+      '/-/subscriptions/new'    | true  | true  | :subscription | true  | true
+      '/-/trials/new'           | false | false | :trial        | true  | false
+      '/-/trials/new'           | true  | false | :trial        | true  | false
+      '/oauth/authorize/abc123' | false | false | nil           | false | true
+      '/oauth/authorize/abc123' | true  | false | nil           | false | true
+      nil                       | false | false | nil           | false | true
+      nil                       | true  | true  | nil           | true  | true
     end
 
     with_them do
@@ -60,7 +60,7 @@ RSpec.describe 'registrations/welcome/show' do
         context 'when in the candidate variant' do
           let(:experiments) { { bypass_registration: :candidate } }
 
-          it { is_expected.to have_selector('#joining_project_true') }
+          it { is_expected_to_show_joining_question(show_joining_question) }
         end
       end
 
@@ -87,6 +87,14 @@ RSpec.describe 'registrations/welcome/show' do
       is_expected.to have_selector('#progress-bar')
     else
       is_expected.not_to have_selector('#progress-bar')
+    end
+  end
+
+  def is_expected_to_show_joining_question(status)
+    if status
+      is_expected.to have_selector('#joining_project_true')
+    else
+      is_expected.not_to have_selector('#joining_project_true')
     end
   end
 
