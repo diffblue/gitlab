@@ -39,6 +39,14 @@ export default {
       import(
         /* webpackChunkName: 'integrationSectionConnection' */ '~/integrations/edit/components/sections/connection.vue'
       ),
+    IntegrationSectionJiraIssues: () =>
+      import(
+        /* webpackChunkName: 'integrationSectionJiraIssues' */ '~/integrations/edit/components/sections/jira_issues.vue'
+      ),
+    IntegrationSectionJiraTrigger: () =>
+      import(
+        /* webpackChunkName: 'integrationSectionJiraTrigger' */ '~/integrations/edit/components/sections/jira_trigger.vue'
+      ),
     GlButton,
     GlForm,
   },
@@ -225,6 +233,7 @@ export default {
               :fields="fieldsForSection(section)"
               :is-validated="isValidated"
               @toggle-integration-active="onToggleIntegrationState"
+              @request-jira-issue-types="onRequestJiraIssueTypes"
             />
           </div>
         </div>
@@ -244,13 +253,13 @@ export default {
           @toggle-integration-active="onToggleIntegrationState"
         />
         <jira-trigger-fields
-          v-if="isJira"
+          v-if="isJira && !hasSections"
           :key="`${currentKey}-jira-trigger-fields`"
           v-bind="propsSource.triggerFieldsProps"
           :is-validated="isValidated"
         />
         <trigger-fields
-          v-else-if="propsSource.triggerEvents.length"
+          v-else-if="propsSource.triggerEvents.length && !hasSections"
           :key="`${currentKey}-trigger-fields`"
           :events="propsSource.triggerEvents"
           :type="propsSource.type"
@@ -262,7 +271,7 @@ export default {
           :is-validated="isValidated"
         />
         <jira-issues-fields
-          v-if="isJira && !isInstanceOrGroupLevel"
+          v-if="isJira && !isInstanceOrGroupLevel && !hasSections"
           :key="`${currentKey}-jira-issues-fields`"
           v-bind="propsSource.jiraIssuesProps"
           :is-validated="isValidated"
