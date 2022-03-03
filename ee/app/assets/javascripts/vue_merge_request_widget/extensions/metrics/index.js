@@ -13,9 +13,6 @@ export default {
   },
   expandEvent: 'i_testing_metrics_report_widget_total',
   computed: {
-    statusIcon() {
-      return this.numberOfChanges() === 0 ? EXTENSION_ICONS.success : EXTENSION_ICONS.warning;
-    },
     numberOfChanges() {
       const changedMetrics =
         this.collapsedData?.existing_metrics?.filter((metric) => metric?.previous_value) || [];
@@ -24,19 +21,26 @@ export default {
 
       return changedMetrics.length + newMetrics.length + removedMetrics.length;
     },
+    hasChanges() {
+      return this.numberOfChanges() > 0;
+    },
+    statusIcon() {
+      return this.hasChanges() ? EXTENSION_ICONS.warning : EXTENSION_ICONS.success;
+    },
   },
   methods: {
     summary() {
+      const hasChanges = this.hasChanges();
       const numberOfChanges = this.numberOfChanges();
       const changesSummary = sprintf(
-        s__('Reports|Metrics reports: %{numberOfChanges} %{changes}'),
+        s__('Reports|Metrics reports: %{strong_start}%{numberOfChanges}%{strong_end} %{changes}'),
         {
           numberOfChanges,
           changes: n__('change', 'changes', numberOfChanges),
         },
       );
       const noChangesSummary = s__('Reports|Metrics report scanning detected no new changes');
-      return numberOfChanges === 0 ? noChangesSummary : changesSummary;
+      return hasChanges ? changesSummary : noChangesSummary;
     },
     fetchCollapsedData() {
       return axios.get(this.metricsReportsPath);
@@ -52,52 +56,57 @@ export default {
       return Number.isNaN(delta) ? Infinity : delta;
     },
     prepareReports() {
-      const { new_metrics = [], existing_metrics = [], removed_metrics = [] } = this.collapsedData;
-      const changedMetrics = existing_metrics
-        .filter((metric) => metric?.previous_value)
-        .map((metric) => {
+      const {
+        new_metrics: newMetrics = [],
+        existing_metrics: existingMetrics = [],
+        removed_metrics: removedMetrics = [],
+      } = this.collapsedData;
+
+      return [
+        ...newMetrics.map((metric, index) => {
           return {
-            id: uniqueId('changed-metric-'),
-            text: `${metric.name}: ${metric.value} (${metric.previous_value})`,
-            icon: { name: EXTENSION_ICONS.neutral },
-            delta: this.formatMetricDelta(metric),
-          };
-        })
-        .sort((a, b) => b.delta - a.delta)
-        .map((metric, index) => {
-          return {
-            header: index === 0 && __('Changed'),
-            ...metric,
-          };
-        });
-      const newMetrics = new_metrics.map((metric, index) => {
-        return {
-          header: index === 0 && __('New'),
-          id: uniqueId('new-metric-'),
-          text: `${metric.name}: ${metric.value}`,
-          icon: { name: EXTENSION_ICONS.neutral },
-        };
-      });
-      const removedMetrics = removed_metrics.map((metric, index) => {
-        return {
-          header: index === 0 && __('Removed'),
-          id: uniqueId('resolved-metric-'),
-          text: `${metric.name}: ${metric.value}`,
-          icon: { name: EXTENSION_ICONS.neutral },
-        };
-      });
-      const unchangedMetrics = existing_metrics
-        .filter((metric) => !metric?.previous_value)
-        .map((metric, index) => {
-          return {
-            header: index === 0 && __('No changes'),
-            id: uniqueId('unchanged-metric-'),
+            header: index === 0 && __('New'),
+            id: uniqueId('new-metric-'),
             text: `${metric.name}: ${metric.value}`,
             icon: { name: EXTENSION_ICONS.neutral },
           };
-        });
-
-      return [...newMetrics, ...removedMetrics, ...changedMetrics, ...unchangedMetrics];
+        }),
+        ...removedMetrics.map((metric, index) => {
+          return {
+            header: index === 0 && __('Removed'),
+            id: uniqueId('resolved-metric-'),
+            text: `${metric.name}: ${metric.value}`,
+            icon: { name: EXTENSION_ICONS.neutral },
+          };
+        }),
+        ...existingMetrics
+          .filter((metric) => metric?.previous_value)
+          .map((metric) => {
+            return {
+              id: uniqueId('changed-metric-'),
+              text: `${metric.name}: ${metric.value} (${metric.previous_value})`,
+              icon: { name: EXTENSION_ICONS.neutral },
+              delta: this.formatMetricDelta(metric),
+            };
+          })
+          .sort((a, b) => b.delta - a.delta)
+          .map((metric, index) => {
+            return {
+              header: index === 0 && __('Changed'),
+              ...metric,
+            };
+          }),
+        ...existingMetrics
+          .filter((metric) => !metric?.previous_value)
+          .map((metric, index) => {
+            return {
+              header: index === 0 && __('No changes'),
+              id: uniqueId('unchanged-metric-'),
+              text: `${metric.name}: ${metric.value}`,
+              icon: { name: EXTENSION_ICONS.neutral },
+            };
+          }),
+      ];
     },
   },
 };

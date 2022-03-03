@@ -30874,7 +30874,7 @@ msgstr ""
 msgid "Reports|Metrics reports failed to load results"
 msgstr ""
 
-msgid "Reports|Metrics reports: %{numberOfChanges} %{changes}"
+msgid "Reports|Metrics reports: %{strong_start}%{numberOfChanges}%{strong_end} %{changes}"
 msgstr ""
 
 msgid "Reports|Scanner"
