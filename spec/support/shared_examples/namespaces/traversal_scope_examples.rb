@@ -2,14 +2,14 @@
 
 RSpec.shared_examples 'namespace traversal scopes' do
   # Hierarchy 1
-  let_it_be(:group_1) { create(:group) }
-  let_it_be(:nested_group_1) { create(:group, parent: group_1) }
-  let_it_be(:deep_nested_group_1) { create(:group, parent: nested_group_1) }
+  let_it_be(:group_1) { create(:group, path: 'group-1') }
+  let_it_be(:nested_group_1) { create(:group, path: 'nested-group-1', parent: group_1) }
+  let_it_be(:deep_nested_group_1) { create(:group, path: 'deep-nested-group-1', parent: nested_group_1) }
 
   # Hierarchy 2
-  let_it_be(:group_2) { create(:group) }
-  let_it_be(:nested_group_2) { create(:group, parent: group_2) }
-  let_it_be(:deep_nested_group_2) { create(:group, parent: nested_group_2) }
+  let_it_be(:group_2) { create(:group, path: 'group-2') }
+  let_it_be(:nested_group_2) { create(:group, path: 'nested-group-2', parent: group_2) }
+  let_it_be(:deep_nested_group_2) { create(:group, path: 'deep-nested-group-2', parent: nested_group_2) }
 
   # All groups
   let_it_be(:groups) do
@@ -126,7 +126,7 @@ RSpec.shared_examples 'namespace traversal scopes' do
     end
 
     context 'with offset and limit' do
-      subject { described_class.where(id: [deep_nested_group_1, deep_nested_group_2]).offset(1).limit(1).self_and_ancestors }
+      subject { described_class.where(id: [deep_nested_group_1, deep_nested_group_2]).order(:path).offset(1).limit(1).self_and_ancestors }
 
       it { is_expected.to contain_exactly(group_2, nested_group_2, deep_nested_group_2) }
     end
@@ -185,6 +185,7 @@ RSpec.shared_examples 'namespace traversal scopes' do
       subject do
         described_class
           .where(id: [deep_nested_group_1, deep_nested_group_2])
+          .order(:path)
           .limit(1)
           .offset(1)
           .self_and_ancestor_ids
@@ -240,7 +241,7 @@ RSpec.shared_examples 'namespace traversal scopes' do
     end
 
     context 'with offset and limit' do
-      subject { described_class.where(id: [group_1, group_2]).offset(1).limit(1).self_and_descendants }
+      subject { described_class.where(id: [group_1, group_2]).order(:path).offset(1).limit(1).self_and_descendants }
 
       it { is_expected.to contain_exactly(group_2, nested_group_2, deep_nested_group_2) }
     end
@@ -288,6 +289,7 @@ RSpec.shared_examples 'namespace traversal scopes' do
       subject do
         described_class
           .where(id: [group_1, group_2])
+          .order(:path)
           .limit(1)
           .offset(1)
           .self_and_descendant_ids
