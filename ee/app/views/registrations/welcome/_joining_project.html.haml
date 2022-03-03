@@ -1,4 +1,4 @@
-- return unless Gitlab.dev_env_or_com?
+- return unless Gitlab.com?
 - return if in_trial_flow?
 
 - experiment(:bypass_registration, user: current_user) do |e|

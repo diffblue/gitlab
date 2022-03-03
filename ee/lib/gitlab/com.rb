@@ -14,7 +14,7 @@ module Gitlab
     def self.gitlab_com_group_member?(user_id)
       return false unless user_id
 
-      Gitlab.dev_env_or_com? && gitlab_com_user_ids.include?(user_id)
+      Gitlab.com? && gitlab_com_user_ids.include?(user_id)
     end
 
     # rubocop: disable CodeReuse/ActiveRecord

@@ -194,7 +194,7 @@ module EE
 
     def send_account_validation_email(pipeline)
       return unless ::Feature.enabled?(:account_validation_email)
-      return unless ::Gitlab.dev_env_or_com?
+      return unless ::Gitlab.com?
       return unless pipeline.failed?
       return unless pipeline.user_not_verified?
 

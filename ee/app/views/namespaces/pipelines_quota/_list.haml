@@ -7,7 +7,7 @@
 .pipeline-quota.container-fluid
   .row
     .col-sm-6.offset-sm-6
-      - if ::Gitlab.dev_env_or_com?
+      - if ::Gitlab.com?
         = link_to s_('UsageQuota|Buy additional minutes'),
         buy_additional_minutes_path(namespace),
         target: buy_addon_target_attr(namespace),
