@@ -2,8 +2,8 @@
 
 const { statSync } = require('fs');
 const path = require('path');
-const sass = require('node-sass'); // eslint-disable-line import/no-unresolved
-const { buildIncludePaths, resolveGlobUrl } = require('node-sass-magic-importer/dist/toolbox'); // eslint-disable-line import/no-unresolved
+const sass = require('sass');
+const { buildIncludePaths, resolveGlobUrl } = require('node-sass-magic-importer/dist/toolbox');
 const webpack = require('webpack');
 const IS_EE = require('../../config/helpers/is_ee_env');
 const IS_JH = require('../../config/helpers/is_jh_env');
