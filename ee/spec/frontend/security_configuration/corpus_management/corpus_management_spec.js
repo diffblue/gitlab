@@ -7,6 +7,7 @@ import { shallowMount } from '@vue/test-utils';
 import CorpusManagement from 'ee/security_configuration/corpus_management/components/corpus_management.vue';
 import CorpusTable from 'ee/security_configuration/corpus_management/components/corpus_table.vue';
 import CorpusUpload from 'ee/security_configuration/corpus_management/components/corpus_upload.vue';
+import EmptyState from 'ee/security_configuration/corpus_management/components/empty_state.vue';
 import getCorpusesQuery from 'ee/security_configuration/corpus_management/graphql/queries/get_corpuses.query.graphql';
 import deleteCorpusMutation from 'ee/security_configuration/corpus_management/graphql/mutations/delete_corpus.mutation.graphql';
 
@@ -17,6 +18,7 @@ import { getCorpusesQueryResponse, deleteCorpusMutationResponse } from './mock_d
 
 const TEST_PROJECT_FULL_PATH = '/namespace/project';
 const TEST_CORPUS_HELP_PATH = '/docs/corpus-management';
+const TEST_EMPTY_STATE_SVG_PATH = '/illustrations/no_commits.svg';
 
 describe('EE - CorpusManagement', () => {
   let wrapper;
@@ -71,6 +73,7 @@ describe('EE - CorpusManagement', () => {
       provide: {
         projectFullPath: TEST_PROJECT_FULL_PATH,
         corpusHelpPath: TEST_CORPUS_HELP_PATH,
+        emptyStateSvgPath: TEST_EMPTY_STATE_SVG_PATH,
       },
       apolloProvider: createMockApolloProvider(),
       ...options,
@@ -233,9 +236,29 @@ describe('EE - CorpusManagement', () => {
         createComponent();
 
         expect(wrapper.findComponent(CorpusManagement).exists()).toBe(true);
-        expect(wrapper.findComponent(CorpusUpload).exists()).toBe(true);
+        expect(wrapper.findComponent(CorpusUpload).exists()).toBe(false);
         expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
         expect(wrapper.findComponent(CorpusTable).exists()).toBe(false);
+      });
+    });
+
+    describe('empty state', () => {
+      it('should render empty state if no corpuses exist', async () => {
+        createComponent({
+          apolloProvider: createMockApolloProvider({
+            getCorpusesQueryRequestHandler: jest.fn().mockResolvedValue({
+              data: {
+                project: {
+                  corpuses: {
+                    nodes: [],
+                  },
+                },
+              },
+            }),
+          }),
+        });
+        await waitForPromises();
+        expect(wrapper.findComponent(EmptyState).exists()).toBe(true);
       });
     });
   });

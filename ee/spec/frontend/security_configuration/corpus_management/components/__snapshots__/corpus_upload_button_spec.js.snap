@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Corpus Upload Button component renders header 1`] = `
+<div>
+  <gl-button-stub
+    buttontextclasses=""
+    category="primary"
+    data-testid="new-corpus"
+    icon=""
+    role="button"
+    size="medium"
+    tabindex="0"
+    variant="confirm"
+  >
+    
+    New corpus
+  
+  </gl-button-stub>
+   
+  <gl-modal-stub
+    actioncancel="[object Object]"
+    actionprimary="[object Object]"
+    dismisslabel="Close"
+    modalclass=""
+    modalid="corpus-upload-modal"
+    size="sm"
+    title="New corpus"
+    titletag="h4"
+  >
+    <corpus-upload-form-stub
+      states="[object Object]"
+    />
+  </gl-modal-stub>
+</div>
+`;

@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EE - CorpusManagement - EmptyState should render correct content 1`] = `
+<gl-empty-state-stub
+  invertindarkmode="true"
+  svgpath="/illustrations/no_commits.svg"
+  title="Manage your fuzz testing corpus files"
+>
+  <gl-sprintf-stub
+    message="A corpus is used by fuzz testing to improve coverage. Corpus files can be manually created or auto-generated. %{linkStart}Learn more%{linkEnd}"
+  />
+  <button>
+    Perform action
+  </button>
+</gl-empty-state-stub>
+`;

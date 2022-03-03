@@ -44,13 +44,11 @@ describe('Corpus upload modal', () => {
 
         const props = {
           states: {
-            uploadState: {
-              isUploading: false,
-              progress: 0,
-              errors: {
-                name: '',
-                file: '',
-              },
+            isUploading: false,
+            progress: 0,
+            errors: {
+              name: '',
+              file: '',
             },
           },
         };
@@ -99,13 +97,11 @@ describe('Corpus upload modal', () => {
 
         const props = {
           states: {
-            uploadState: {
-              isUploading: false,
-              progress: 0,
-              errors: {
-                name: '',
-                file: '',
-              },
+            isUploading: false,
+            progress: 0,
+            errors: {
+              name: '',
+              file: '',
             },
           },
         };
@@ -154,13 +150,11 @@ describe('Corpus upload modal', () => {
 
         const props = {
           states: {
-            uploadState: {
-              isUploading: true,
-              progress: 25,
-              errors: {
-                name: '',
-                file: '',
-              },
+            isUploading: true,
+            progress: 25,
+            errors: {
+              name: '',
+              file: '',
             },
           },
         };
@@ -209,13 +203,11 @@ describe('Corpus upload modal', () => {
 
         const props = {
           states: {
-            uploadState: {
-              isUploading: false,
-              progress: 100,
-              errors: {
-                name: '',
-                file: '',
-              },
+            isUploading: false,
+            progress: 100,
+            errors: {
+              name: '',
+              file: '',
             },
           },
         };
@@ -256,13 +248,11 @@ describe('Corpus upload modal', () => {
 
           const props = {
             states: {
-              uploadState: {
-                isUploading: false,
-                progress: 0,
-                errors: {
-                  name: I18N.invalidName,
-                  file: '',
-                },
+              isUploading: false,
+              progress: 0,
+              errors: {
+                name: I18N.invalidName,
+                file: '',
               },
             },
           };
@@ -306,13 +296,11 @@ describe('Corpus upload modal', () => {
 
           const props = {
             states: {
-              uploadState: {
-                isUploading: false,
-                progress: 0,
-                errors: {
-                  name: '',
-                  file: I18N.fileTooLarge,
-                },
+              isUploading: false,
+              progress: 0,
+              errors: {
+                name: '',
+                file: I18N.fileTooLarge,
               },
             },
           };
@@ -356,13 +344,11 @@ describe('Corpus upload modal', () => {
 
           const props = {
             states: {
-              uploadState: {
-                isUploading: false,
-                progress: 0,
-                errors: {
-                  name: '',
-                  file: '',
-                },
+              isUploading: false,
+              progress: 0,
+              errors: {
+                name: '',
+                file: '',
               },
             },
           };
