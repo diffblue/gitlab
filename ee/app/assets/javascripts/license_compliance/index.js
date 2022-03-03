@@ -29,7 +29,6 @@ export default () => {
   const store = createStore(storeSettings);
 
   const provide = {
-    sbomSurveySvgPath: el.dataset.sbomSurveySvgPath,
     emptyStateSvgPath: el.dataset.emptyStateSvgPath,
     documentationPath: el.dataset.documentationPath,
   };

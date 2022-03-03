@@ -28,7 +28,6 @@ module SecurityHelper
   def security_dashboard_unavailable_view_data
     {
       empty_state_svg_path: image_path('illustrations/security-dashboard-empty-state.svg'),
-      sbom_survey_svg_path: image_path('illustrations/monitoring/tracing.svg'),
       dashboard_documentation: help_page_path('user/application_security/security_dashboard/index'),
       is_unavailable: "true"
     }

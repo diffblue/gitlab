@@ -10,7 +10,6 @@ const TEST_DATASET = {
   svgPath: '/test/no_changes_state.svg',
   dashboardDocumentation: '/test/dashboard_page',
   emptyStateSvgPath: '/test/empty_state.svg',
-  sbomSurveySvgPath: '/',
 };
 
 describe('Security Dashboard', () => {
