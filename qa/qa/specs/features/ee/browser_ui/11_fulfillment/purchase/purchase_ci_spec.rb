@@ -18,13 +18,13 @@ module QA
 
       let(:group) do
         Resource::Sandbox.fabricate! do |sandbox|
-          sandbox.path = "gitlab-qa-group-#{hash}"
+          sandbox.path = "test-group-fulfillment#{hash}"
           sandbox.api_client = Runtime::API::Client.as_admin
         end
       end
 
       before do
-        group.add_member(user, Resource::Members::AccessLevel::OWNER)
+        Flow::Login.sign_in(as: user)
 
         # A group project is required for additional CI Minutes to show up
         Resource::Project.fabricate_via_api! do |project|
@@ -34,7 +34,6 @@ module QA
           project.api_client = Runtime::API::Client.as_admin
         end
 
-        Flow::Login.sign_in(as: user)
         group.visit!
       end
 
