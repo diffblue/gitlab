@@ -63,7 +63,7 @@ RSpec.describe 'Trial Capture Lead', :js do
         click_button 'Continue'
 
         expect(page).not_to have_css('flash-container')
-        expect(current_path).to eq(select_trials_path)
+        expect(page).to have_current_path(select_trials_path, ignore_query: true)
       end
     end
 
@@ -82,7 +82,7 @@ RSpec.describe 'Trial Capture Lead', :js do
         click_button 'Continue'
 
         expect(page).not_to have_css('flash-container')
-        expect(current_path).to eq(select_trials_path)
+        expect(page).to have_current_path(select_trials_path, ignore_query: true)
       end
     end
   end
@@ -99,7 +99,7 @@ RSpec.describe 'Trial Capture Lead', :js do
         click_button 'Continue'
 
         expect(phone_validation_message).to eq('Please fill out this field.')
-        expect(current_path).to eq(new_trial_path)
+        expect(page).to have_current_path(new_trial_path, ignore_query: true)
       end
     end
 
@@ -118,7 +118,7 @@ RSpec.describe 'Trial Capture Lead', :js do
           click_button 'Continue'
 
           expect(phone_validation_message).to eq('Please match the requested format.')
-          expect(current_path).to eq(new_trial_path)
+          expect(page).to have_current_path(new_trial_path, ignore_query: true)
         end
       end
     end

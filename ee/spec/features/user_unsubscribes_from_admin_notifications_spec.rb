@@ -21,7 +21,7 @@ RSpec.describe "Admin unsubscribes from notification" do
 
     last_email = ActionMailer::Base.deliveries.last
 
-    expect(current_path).to eq(root_path)
+    expect(page).to have_current_path(root_path, ignore_query: true)
     expect(last_email.text_part.body.decoded).to include(NOTIFICATION_TEXT)
   end
 end

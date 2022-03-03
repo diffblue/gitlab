@@ -68,7 +68,7 @@ RSpec.describe 'SAML access enforcement' do
         expect(page).not_to have_content('Page Not Found')
         expect(page).not_to have_content('SAML SSO Sign')
         expect(page).to have_content(resource_name)
-        expect(current_path).to eq(resource_path)
+        expect(page).to have_current_path(resource_path, ignore_query: true)
       end
     end
 

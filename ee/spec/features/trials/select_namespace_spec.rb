@@ -65,7 +65,7 @@ RSpec.describe 'Trial Select Namespace', :js do
             wait_for_requests
 
             expect(page).not_to have_css('flash-container')
-            expect(current_path).to eq('/gitlab')
+            expect(page).to have_current_path('/gitlab', ignore_query: true)
           end
         end
 
@@ -101,7 +101,7 @@ RSpec.describe 'Trial Select Namespace', :js do
           wait_for_requests
 
           expect(page).not_to have_css('flash-container')
-          expect(current_path).to eq('/gitlab1')
+          expect(page).to have_current_path('/gitlab1', ignore_query: true)
         end
       end
 
@@ -112,7 +112,7 @@ RSpec.describe 'Trial Select Namespace', :js do
           message = page.find('#new_group_name').native.attribute('validationMessage')
 
           expect(message).to eq('Please fill out this field.')
-          expect(current_path).to eq(select_trials_path)
+          expect(page).to have_current_path(select_trials_path, ignore_query: true)
         end
       end
     end
@@ -137,7 +137,7 @@ RSpec.describe 'Trial Select Namespace', :js do
 
           wait_for_requests
 
-          expect(current_path).to eq("/#{group.path}")
+          expect(page).to have_current_path("/#{group.path}", ignore_query: true)
         end
       end
 
@@ -152,7 +152,7 @@ RSpec.describe 'Trial Select Namespace', :js do
           click_button 'Start your free trial'
 
           expect(find('[data-testid="alert-danger"]')).to have_text(error_message)
-          expect(current_path).to eq(apply_trials_path)
+          expect(page).to have_current_path(apply_trials_path, ignore_query: true)
           expect(find('#namespace_id', visible: false).value).to eq(group.id.to_s)
 
           # new group name should be functional

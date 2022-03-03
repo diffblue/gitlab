@@ -20,14 +20,14 @@ RSpec.describe 'User edits hooks' do
   it 'updates existing hook' do
     click_link('Edit')
 
-    expect(current_path).to eq(edit_group_hook_path(group, hook))
+    expect(page).to have_current_path(edit_group_hook_path(group, hook), ignore_query: true)
 
     fill_in('URL', with: url)
 
     click_button('Save changes')
 
     expect(hook.reload.url).to eq(url)
-    expect(current_path).to eq(group_hooks_path(group))
+    expect(page).to have_current_path(group_hooks_path(group), ignore_query: true)
     expect(page).to have_selector('[data-testid="alert-info"]', text: 'Hook was successfully updated.')
   end
 end

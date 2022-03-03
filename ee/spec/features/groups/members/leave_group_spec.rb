@@ -25,7 +25,7 @@ RSpec.describe 'Groups > Members > Leave group' do
       click_link 'Leave group'
 
       expect(group.users).not_to include(user)
-      expect(current_path).to eq(new_user_session_path)
+      expect(page).to have_current_path(new_user_session_path, ignore_query: true)
     end
 
     it 'guest leaves the group by url param and is signed off', :js do
@@ -37,7 +37,7 @@ RSpec.describe 'Groups > Members > Leave group' do
       page.accept_confirm
 
       wait_for_all_requests
-      expect(current_path).to eq(new_user_session_path)
+      expect(page).to have_current_path(new_user_session_path, ignore_query: true)
       expect(group.users).not_to include(user)
     end
   end
@@ -56,7 +56,7 @@ RSpec.describe 'Groups > Members > Leave group' do
       page.accept_confirm
 
       wait_for_all_requests
-      expect(current_path).to eq(dashboard_groups_path)
+      expect(page).to have_current_path(dashboard_groups_path, ignore_query: true)
       expect(group.users).not_to include(user)
     end
 
@@ -66,7 +66,7 @@ RSpec.describe 'Groups > Members > Leave group' do
       visit group_path(group)
       click_link 'Leave group'
 
-      expect(current_path).to eq(dashboard_groups_path)
+      expect(page).to have_current_path(dashboard_groups_path, ignore_query: true)
       expect(group.users).not_to include(user)
     end
   end

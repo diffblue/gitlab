@@ -266,7 +266,7 @@ RSpec.describe 'SAML provider settings' do
 
             click_link 'Sign in with Single Sign-On'
 
-            expect(current_path).to eq group_path(group)
+            expect(page).to have_current_path group_path(group), ignore_query: true
             expect(page).to have_content('Already signed in')
           end
         end
@@ -298,7 +298,7 @@ RSpec.describe 'SAML provider settings' do
             click_link 'Sign in with Single Sign-On'
 
             expect(page).to have_content('Your account is locked.')
-            expect(current_path).to eq sso_group_saml_providers_path(group)
+            expect(page).to have_current_path sso_group_saml_providers_path(group), ignore_query: true
           end
         end
       end
@@ -310,13 +310,13 @@ RSpec.describe 'SAML provider settings' do
           it "doesn't show sso page" do
             visit sso_group_saml_providers_path(group)
 
-            expect(current_path).to eq(new_user_session_path)
+            expect(page).to have_current_path(new_user_session_path, ignore_query: true)
           end
 
           it "shows the sso page if the token is given" do
             visit sso_group_saml_providers_path(group, token: group.saml_discovery_token)
 
-            expect(current_path).to eq sso_group_saml_providers_path(group)
+            expect(page).to have_current_path sso_group_saml_providers_path(group), ignore_query: true
           end
         end
 
@@ -328,7 +328,7 @@ RSpec.describe 'SAML provider settings' do
           end
 
           it 'displays sign in button' do
-            expect(current_path).to eq sso_group_saml_providers_path(group)
+            expect(page).to have_current_path sso_group_saml_providers_path(group), ignore_query: true
 
             within '.login-box' do
               expect(page).to have_link 'Authorize'
