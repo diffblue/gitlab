@@ -223,7 +223,7 @@ export default {
       <div
         v-for="(section, index) in customState.sections"
         :key="section.type"
-        :class="{ 'gl-border-b gl-mb-5': index !== customState.sections.length - 1 }"
+        :class="{ 'gl-border-b gl-pb-3 gl-mb-6': index !== customState.sections.length - 1 }"
         data-testid="integration-section"
       >
         <div class="row">
