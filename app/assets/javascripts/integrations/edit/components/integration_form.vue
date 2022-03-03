@@ -282,9 +282,12 @@ export default {
           :is-validated="isValidated"
           @request-jira-issue-types="onRequestJiraIssueTypes"
         />
+      </div>
+    </div>
 
+    <div v-if="isEditable" class="row">
+      <div :class="hasSections ? 'col' : 'col-lg-8 offset-lg-4'">
         <div
-          v-if="isEditable"
           class="footer-block row-content-block gl-display-flex gl-justify-content-space-between"
         >
           <div>
