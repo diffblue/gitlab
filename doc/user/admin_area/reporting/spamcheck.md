@@ -4,7 +4,7 @@ group: Distribution
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
 ---
 
-# Spamcheck anti-spam service **(FREE SELF)**
+# Spamcheck anti-spam service **(PREMIUM SELF)**
 
 > [Introduced](https://gitlab.com/gitlab-org/omnibus-gitlab/-/issues/6259) in GitLab 14.8.
 
