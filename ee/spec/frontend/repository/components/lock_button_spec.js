@@ -59,10 +59,10 @@ describe('LockButton component', () => {
       isLocked | label
       ${false} | ${'Lock'}
       ${true}  | ${'Unlock'}
-    `('renders the correct button labels', ({ isLocked, label }) => {
+    `('renders the $label button label', ({ isLocked, label }) => {
       createComponent({ isLocked });
 
-      expect(findLockButton().text()).toBe(label);
+      expect(findLockButton().text()).toContain(label);
     });
 
     it('passes the correct prop if lockLoading is set to true', async () => {
