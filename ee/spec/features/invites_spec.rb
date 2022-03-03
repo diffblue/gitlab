@@ -64,7 +64,7 @@ RSpec.describe 'Group or Project invitations' do
     it 'does not sign the user in' do
       fill_in_sign_up_form(new_user)
 
-      expect(current_path).to eq(new_user_session_path)
+      expect(page).to have_current_path(new_user_session_path, ignore_query: true)
       expect(page).to have_content('You have signed up successfully. However, we could not sign you in because your account is awaiting approval from your GitLab administrator.')
     end
   end

@@ -46,7 +46,7 @@ RSpec.describe 'Trial Sign Up' do
         choose 'user_setup_for_company_true'
         click_button 'Continue'
 
-        expect(current_path).to eq(new_trial_path)
+        expect(page).to have_current_path(new_trial_path, ignore_query: true)
         expect(page).to have_content('Start your Free Ultimate Trial')
       end
     end

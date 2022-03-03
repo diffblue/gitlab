@@ -26,7 +26,7 @@ RSpec.describe "User tests hooks", :js do
       end
 
       it "triggers a hook" do
-        expect(current_path).to eq(group_hooks_path(group))
+        expect(page).to have_current_path(group_hooks_path(group), ignore_query: true)
         expect(page).to have_selector('[data-testid="alert-info"]', text: "Hook executed successfully: HTTP 200")
       end
     end

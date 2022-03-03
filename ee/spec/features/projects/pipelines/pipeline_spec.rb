@@ -159,7 +159,7 @@ RSpec.describe 'Pipeline', :js do
       end
 
       it 'displays the pipeline graph' do
-        expect(current_path).to eq(pipeline_path(pipeline))
+        expect(page).to have_current_path(pipeline_path(pipeline), ignore_query: true)
         expect(page).not_to have_css('#js-tab-security')
         expect(page).to have_selector('.js-pipeline-graph')
       end
@@ -197,7 +197,7 @@ RSpec.describe 'Pipeline', :js do
       end
 
       it 'displays the pipeline graph' do
-        expect(current_path).to eq(pipeline_path(pipeline))
+        expect(page).to have_current_path(pipeline_path(pipeline), ignore_query: true)
         expect(page).not_to have_content('Licenses')
         expect(page).to have_selector('.js-pipeline-graph')
       end

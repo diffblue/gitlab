@@ -62,7 +62,7 @@ RSpec.describe 'User sees Security Configuration table', :js do
           click_button 'Configure with a merge request'
           wait_for_requests
 
-          expect(current_path).to eq(project_new_merge_request_path(project))
+          expect(page).to have_current_path(project_new_merge_request_path(project), ignore_query: true)
         end
       end
     end
