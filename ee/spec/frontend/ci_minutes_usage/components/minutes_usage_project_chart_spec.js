@@ -2,6 +2,7 @@ import { GlAlert, GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
 import { shallowMount } from '@vue/test-utils';
 import MinutesUsageProjectChart from 'ee/ci_minutes_usage/components/minutes_usage_project_chart.vue';
+import { formatDate } from '~/lib/utils/datetime_utility';
 import { ciMinutesUsageMockData } from '../mock_data';
 
 const defaultProps = { minutesUsageData: ciMinutesUsageMockData.data.ciMinutesUsage.nodes };
@@ -42,7 +43,7 @@ describe('Minutes usage by project chart component', () => {
     it('renders a dropdown component', () => {
       expect(findDropdown().exists()).toBe(true);
       expect(findDropdown().props('text')).toBe(
-        ciMinutesUsageMockData.data.ciMinutesUsage.nodes[0].month,
+        formatDate(ciMinutesUsageMockData.data.ciMinutesUsage.nodes[0].monthIso8601, 'mmm yyyy'),
       );
       expect(findAlert().exists()).toBe(false);
     });
