@@ -55,6 +55,11 @@ export default {
     SafeHtml,
   },
   mixins: [glFeatureFlagsMixin()],
+  provide() {
+    return {
+      hasSections: this.hasSections,
+    };
+  },
   inject: {
     helpHtml: {
       default: '',
@@ -216,9 +221,9 @@ export default {
 
     <template v-if="hasSections">
       <div
-        v-for="section in customState.sections"
+        v-for="(section, index) in propsSource.sections"
         :key="section.type"
-        class="gl-border-b gl-mb-5"
+        :class="{ 'gl-border-b gl-mb-5': index !== propsSource.sections.length - 1 }"
         data-testid="integration-section"
       >
         <div class="row">
