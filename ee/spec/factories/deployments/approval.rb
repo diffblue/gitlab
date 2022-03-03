@@ -5,6 +5,7 @@ FactoryBot.define do
     user
     deployment
     status { 'approved' }
+    comment { 'Looks good to me!' }
 
     trait :rejected do
       status { 'rejected' }

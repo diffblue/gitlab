@@ -9,6 +9,7 @@ RSpec.describe Deployments::ApprovalService do
   let(:user) { create(:user) }
   let(:environment) { create(:environment, project: project) }
   let(:status) { 'approved' }
+  let(:comment) { nil }
   let(:required_approval_count) { 2 }
   let(:build) { create(:ci_build, :manual, project: project) }
   let(:deployment) { create(:deployment, :blocked, project: project, environment: environment, deployable: build) }
@@ -48,32 +49,55 @@ RSpec.describe Deployments::ApprovalService do
     end
   end
 
+  shared_examples_for 'comment' do
+    context 'with a comment' do
+      let(:comment) { 'LGTM!' }
+
+      it 'saves the comment' do
+        expect(subject[:status]).to eq(:success)
+        expect(subject[:approval].comment).to eq(comment)
+      end
+    end
+  end
+
   describe '#execute' do
-    subject { service.execute(deployment, status) }
+    subject { service.execute(deployment: deployment, status: status, comment: comment) }
 
     context 'when status is approved' do
       include_examples 'approve'
+      include_examples 'comment'
     end
 
     context 'when status is rejected' do
       let(:status) { 'rejected' }
 
       include_examples 'reject'
+      include_examples 'comment'
     end
 
     context 'when user already approved' do
+      let(:comment) { 'Changed comment' }
+
       before do
-        service.execute(deployment, :approved)
+        service.execute(deployment: deployment, status: :approved, comment: 'Original comment')
       end
 
       context 'and is approving again' do
         include_examples 'approve'
+
+        it 'does not change the comment' do
+          expect(subject[:approval].comment).to eq('Original comment')
+        end
       end
 
       context 'and is rejecting' do
         let(:status) { 'rejected' }
 
         include_examples 'reject'
+
+        it 'saves the changed comment' do
+          expect(subject[:approval].comment).to eq('Changed comment')
+        end
       end
     end
 

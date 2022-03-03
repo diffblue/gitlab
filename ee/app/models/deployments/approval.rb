@@ -10,6 +10,7 @@ module Deployments
     validates :user, presence: true, uniqueness: { scope: :deployment_id }
     validates :deployment, presence: true
     validates :status, presence: true
+    validates :comment, length: { maximum: 255 }
 
     enum status: {
       approved: 0,
