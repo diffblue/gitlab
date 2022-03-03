@@ -18,7 +18,7 @@ module Gitlab
       end
 
       def set_secondary_as_primary
-        ActiveRecord::Base.transaction do
+        GeoNode.transaction do
           primary_node = GeoNode.primary_node
           current_node = GeoNode.current_node
 

@@ -47,7 +47,7 @@ module Gitlab
 
           # Wrap this with the connection to make it possible to reconnect if
           # PGbouncer dies: https://github.com/rails/rails/issues/29189
-          ActiveRecord::Base.connection_pool.with_connection do
+          ::Geo::EventLog.connection_pool.with_connection do
             LogCursor::EventLogs.new.fetch_in_batches do |batch, last_id|
               break if exit?
 
