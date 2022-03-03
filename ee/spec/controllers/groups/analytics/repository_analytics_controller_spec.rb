@@ -35,6 +35,22 @@ RSpec.describe Groups::Analytics::RepositoryAnalyticsController do
       )
     end
 
+    context 'when requesting a redirected path' do
+      let(:redirect_route) { group.redirect_routes.create!(path: 'old-path') }
+      let(:group_full_path) { redirect_route.path }
+
+      before do
+        allow(request).to receive(:original_fullpath).and_return("/#{group_full_path}")
+      end
+
+      it 'redirects to the canonical path' do
+        get :show, params: { group_id: group_full_path }
+
+        expect(response).to redirect_to(group_analytics_repository_analytics_path(group))
+        expect(controller).to set_flash[:notice].to(/Please update any links and bookmarks/)
+      end
+    end
+
     context 'when license is missing' do
       before do
         stub_licensed_features(feature_name => false)
