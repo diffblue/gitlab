@@ -7,14 +7,19 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import pipelineSecurityReportSummaryQuery from 'ee/security_dashboard/graphql/queries/pipeline_security_report_summary.query.graphql';
 import PipelineSecurityDashboard from 'ee/security_dashboard/components/pipeline/pipeline_security_dashboard.vue';
-import ScanErrorsAlert from 'ee/security_dashboard/components/pipeline/scan_errors_alert.vue';
+import ScanAlerts, {
+  TYPE_ERRORS,
+  TYPE_WARNINGS,
+} from 'ee/security_dashboard/components/pipeline/scan_alerts.vue';
 import SecurityDashboard from 'ee/security_dashboard/components/pipeline/security_dashboard_vuex.vue';
 import SecurityReportsSummary from 'ee/security_dashboard/components/pipeline/security_reports_summary.vue';
 import VulnerabilityReport from 'ee/security_dashboard/components/shared/vulnerability_report.vue';
 import {
   pipelineSecurityReportSummary,
   pipelineSecurityReportSummaryWithErrors,
+  pipelineSecurityReportSummaryWithWarnings,
   scansWithErrors,
+  scansWithWarnings,
   pipelineSecurityReportSummaryEmpty,
 } from './mock_data';
 
@@ -39,7 +44,7 @@ describe('Pipeline Security Dashboard component', () => {
 
   const findSecurityDashboard = () => wrapper.findComponent(SecurityDashboard);
   const findVulnerabilityReport = () => wrapper.findComponent(VulnerabilityReport);
-  const findScanErrorsAlert = () => wrapper.findComponent(ScanErrorsAlert);
+  const findScanAlerts = () => wrapper.findComponent(ScanAlerts);
 
   const factory = ({ stubs, provide, apolloProvider } = {}) => {
     store = new Vuex.Store({
@@ -173,7 +178,10 @@ describe('Pipeline Security Dashboard component', () => {
       });
 
       it('shows an alert with information about each scan with errors', () => {
-        expect(findScanErrorsAlert().props('scans')).toEqual(scansWithErrors);
+        expect(findScanAlerts().props()).toMatchObject({
+          scans: scansWithErrors,
+          type: TYPE_ERRORS,
+        });
       });
     });
 
@@ -190,7 +198,47 @@ describe('Pipeline Security Dashboard component', () => {
       });
 
       it('does not show the alert', () => {
-        expect(findScanErrorsAlert().exists()).toBe(false);
+        expect(findScanAlerts().exists()).toBe(false);
+      });
+    });
+  });
+
+  describe('scan warnings', () => {
+    describe('with warnings', () => {
+      beforeEach(async () => {
+        factoryWithApollo({
+          requestHandlers: [
+            [
+              pipelineSecurityReportSummaryQuery,
+              jest.fn().mockResolvedValueOnce(pipelineSecurityReportSummaryWithWarnings),
+            ],
+          ],
+        });
+        await waitForPromises();
+      });
+
+      it('shows an alert with information about each scan with warnings', () => {
+        expect(findScanAlerts().props()).toMatchObject({
+          scans: scansWithWarnings,
+          type: TYPE_WARNINGS,
+        });
+      });
+    });
+
+    describe('without warnings', () => {
+      beforeEach(() => {
+        factoryWithApollo({
+          requestHandlers: [
+            [
+              pipelineSecurityReportSummaryQuery,
+              jest.fn().mockResolvedValueOnce(pipelineSecurityReportSummary),
+            ],
+          ],
+        });
+      });
+
+      it('does not show the alert', () => {
+        expect(findScanAlerts().exists()).toBe(false);
       });
     });
   });

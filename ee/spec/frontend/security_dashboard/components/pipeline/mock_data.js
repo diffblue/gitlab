@@ -220,9 +220,12 @@ export const pipelineSecurityReportSummary = {
   },
 };
 
-export const scansWithErrors = [{ errors: ['error description'], name: 'scan-name' }];
+export const scansWithErrors = [{ errors: ['error description'], warnings: [], name: 'scan-name' }];
+export const scansWithWarnings = [
+  { errors: [], warnings: ['warning description'], name: 'scan-name' },
+];
 
-export const pipelineSecurityReportSummaryWithErrors = merge({}, pipelineSecurityReportSummary, {
+const getSecurityReportsSummaryMock = (nodes) => ({
   data: {
     project: {
       id: 'project-1',
@@ -232,7 +235,7 @@ export const pipelineSecurityReportSummaryWithErrors = merge({}, pipelineSecurit
           dast: {
             __typename: 'SecurityReportSummarySection',
             scans: {
-              nodes: scansWithErrors,
+              nodes,
             },
           },
         },
@@ -240,6 +243,18 @@ export const pipelineSecurityReportSummaryWithErrors = merge({}, pipelineSecurit
     },
   },
 });
+
+export const pipelineSecurityReportSummaryWithErrors = merge(
+  {},
+  pipelineSecurityReportSummary,
+  getSecurityReportsSummaryMock(scansWithErrors),
+);
+
+export const pipelineSecurityReportSummaryWithWarnings = merge(
+  {},
+  pipelineSecurityReportSummary,
+  getSecurityReportsSummaryMock(scansWithWarnings),
+);
 
 export const pipelineSecurityReportSummaryEmpty = merge({}, pipelineSecurityReportSummary, {
   data: {
