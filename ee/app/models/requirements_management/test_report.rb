@@ -2,8 +2,11 @@
 
 module RequirementsManagement
   class TestReport < ApplicationRecord
+    include IgnorableColumns
     include Sortable
     include BulkInsertSafe
+
+    ignore_column :requirement_id, remove_with: '14.10', remove_after: '2022-03-22'
 
     belongs_to :author, inverse_of: :test_reports, class_name: 'User'
     belongs_to :build, class_name: 'Ci::Build'
