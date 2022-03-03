@@ -23,6 +23,11 @@ describe('Iteration Form', () => {
     dueDate: new Date('2020-07-05'),
   };
 
+  const title = 'Updated title';
+  const description = 'Updated description';
+  const startDate = '2020-05-06';
+  const dueDate = '2020-05-26';
+
   const createMutationSuccess = { data: { createIteration: { iteration, errors: [] } } };
   const createMutationFailure = {
     data: { createIteration: { iteration, errors: ['alas, your data is unchanged'] } },
@@ -63,6 +68,16 @@ describe('Iteration Form', () => {
   const clickSave = () => findSaveButton().vm.$emit('click');
   const clickCancel = () => findCancelButton().vm.$emit('click');
 
+  const inputFormData = () => {
+    findTitle().vm.$emit('input', title);
+    findDescription().setValue( description);
+    findStartDate().vm.$emit('input', startDate ? new Date(startDate) : null);
+    findDueDate().vm.$emit('input', dueDate ? new Date(dueDate) : null);
+
+    findTitle().trigger('change');
+    findStartDate().trigger('change');
+  };
+
   it('renders a form', () => {
     createComponent();
     expect(wrapper.findComponent(GlForm).exists()).toBe(true);
@@ -81,19 +96,7 @@ describe('Iteration Form', () => {
 
     describe('save', () => {
       it('triggers mutation with form data', () => {
-        const title = 'Iteration 5';
-        const description = 'The fifth iteration';
-        const startDate = '2020-05-05';
-        const dueDate = '2020-05-25';
-
-        findTitle().vm.$emit('input', title);
-        findDescription().setValue(description);
-        findStartDate().vm.$emit('input', startDate ? new Date(startDate) : null);
-        findDueDate().vm.$emit('input', dueDate ? new Date(dueDate) : null);
-
-        findTitle().trigger('change');
-        findStartDate().trigger('change');
-
+        inputFormData();
         clickSave();
 
         expect(wrapper.vm.$apollo.mutate).toHaveBeenCalledWith({
@@ -112,20 +115,7 @@ describe('Iteration Form', () => {
 
       it('redirects to Iteration page on success', async () => {
         createComponent();
-
-        const title = 'Iteration 5';
-        const description = 'The fifth iteration';
-        const startDate = '2020-05-05';
-        const dueDate = '2020-05-25';
-
-        findTitle().vm.$emit('input', title);
-        findDescription().setValue(description);
-        findStartDate().vm.$emit('input', startDate ? new Date(startDate) : null);
-        findDueDate().vm.$emit('input', dueDate ? new Date(dueDate) : null);
-
-        findTitle().trigger('change');
-        findStartDate().trigger('change');
-
+        inputFormData();
         clickSave();
 
         await nextTick();
@@ -141,9 +131,9 @@ describe('Iteration Form', () => {
         await nextTick();
 
         expect(findSaveButton().props('loading')).toBe(false);
-        expect(wrapper.vm.checkValidations()).toBe(false);
-        expect(wrapper.vm.isValidTitle).toBe(false);
-        expect(wrapper.vm.isValidStartDate).toBe(false);
+        expect(wrapper.vm.isValid).toBe(false);
+        expect(wrapper.vm.titleState).toBe(false);
+        expect(wrapper.vm.startDateState).toBe(false);
         expect(visitUrl).not.toHaveBeenCalled();
       });
 
@@ -179,13 +169,11 @@ describe('Iteration Form', () => {
         props: propsWithIteration,
       });
 
-      const startDate = new Date(findStartDate().attributes('value'));
-      const dueDate = new Date(findDueDate().attributes('value'));
-
       expect(findTitle().attributes('value')).toBe(iteration.title);
       expect(findDescription().element.value).toBe(iteration.description);
-      expect(startDate).toEqual(iteration.startDate);
-      expect(dueDate).toEqual(iteration.dueDate);
+      
+      expect(new Date(findStartDate().attributes('value'))).toEqual(iteration.startDate);
+      expect(new Date(findDueDate().attributes('value'))).toEqual(iteration.dueDate);
     });
 
     it('shows update text on submit button', () => {
@@ -201,16 +189,7 @@ describe('Iteration Form', () => {
         props: propsWithIteration,
       });
 
-      const title = 'Updated title';
-      const description = 'Updated description';
-      const startDate = '2020-05-06';
-      const dueDate = '2020-05-26';
-
-      findTitle().vm.$emit('input', title);
-      findDescription().setValue(description);
-      findStartDate().vm.$emit('input', startDate ? new Date(startDate) : null);
-      findDueDate().vm.$emit('input', dueDate ? new Date(dueDate) : null);
-
+      inputFormData();
       clickSave();
 
       expect(wrapper.vm.$apollo.mutate).toHaveBeenCalledWith({
@@ -260,6 +239,7 @@ describe('Iteration Form', () => {
 
       findTitle().vm.$emit('input', '');
       findStartDate().vm.$emit('input', null);
+      
       findTitle().trigger('change');
       findStartDate().trigger('change');
 
@@ -268,9 +248,9 @@ describe('Iteration Form', () => {
       await nextTick();
 
       expect(findSaveButton().props('loading')).toBe(false);
-      expect(wrapper.vm.checkValidations()).toBe(false);
-      expect(wrapper.vm.isValidTitle).toBe(false);
-      expect(wrapper.vm.isValidStartDate).toBe(false);
+      expect(wrapper.vm.isValid).toBe(false);
+      expect(wrapper.vm.titleState).toBe(false);
+      expect(wrapper.vm.startDateState).toBe(false);
       expect(visitUrl).not.toHaveBeenCalled();
     });
 

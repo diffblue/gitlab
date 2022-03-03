@@ -51,8 +51,7 @@ export default {
       description: this.iteration.description ?? '',
       startDate: this.iteration.startDate,
       dueDate: this.iteration.dueDate,
-      isValidTitle: true,
-      isValidStartDate: true,
+      showValidation: false,
     };
   },
   computed: {
@@ -70,28 +69,21 @@ export default {
     invalidFeedback() {
       return __('This field is required.');
     },
+    isValid() {
+      return this.titleState && this.startDateState;
+    },
+    titleState() {
+      return !this.showValidation || Boolean(this.title);
+    },
+    startDateState() {
+      return !this.showValidation || Boolean(this.startDate);
+    },
   },
   methods: {
-    checkValidations() {
-      let isValid = true;
-
-      if (!this.title) {
-        this.isValidTitle = false;
-        isValid = false;
-      } else {
-        this.isValidTitle = true;
-      }
-
-      if (!this.startDate) {
-        this.isValidStartDate = false;
-        isValid = false;
-      } else {
-        this.isValidStartDate = true;
-      }
-      return isValid;
-    },
     save() {
-      if (!this.checkValidations()) {
+      this.showValidation = true;
+
+      if (!this.isValid) {
         return {};
       }
 
@@ -185,7 +177,7 @@ export default {
           :label="__('Title')"
           class="gl-flex-grow-1"
           label-for="iteration-title"
-          :state="isValidTitle"
+          :state="titleState"
           :invalid-feedback="invalidFeedback"
         >
           <gl-form-input
@@ -193,7 +185,7 @@ export default {
             v-model="title"
             autocomplete="off"
             data-qa-selector="iteration_title_field"
-            :state="isValidTitle"
+            :state="titleState"
             required
           />
         </gl-form-group>
@@ -228,14 +220,14 @@ export default {
       <div class="col-md-6">
         <gl-form-group
           :label="__('Start date')"
-          :state="isValidStartDate"
+          :state="startDateState"
           :invalid-feedback="invalidFeedback"
         >
           <div class="gl-display-inline-block gl-mr-2">
             <gl-datepicker
               id="iteration-start-date"
               v-model="startDate"
-              :state="isValidStartDate"
+              :state="startDateState"
               required
             />
           </div>
