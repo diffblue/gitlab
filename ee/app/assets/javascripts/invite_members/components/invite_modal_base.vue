@@ -10,20 +10,16 @@ import {
   GlButton,
   GlFormInput,
 } from '@gitlab/ui';
-import { unescape } from 'lodash';
-import { sanitize } from '~/lib/dompurify';
 import { sprintf } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   ACCESS_LEVEL,
   ACCESS_EXPIRE_DATE,
-  INVALID_FEEDBACK_MESSAGE_DEFAULT,
   READ_MORE_TEXT,
   INVITE_BUTTON_TEXT,
   CANCEL_BUTTON_TEXT,
   HEADER_CLOSE_LABEL,
 } from '~/invite_members/constants';
-import { responseMessageFromError } from '~/invite_members/utils/response_message_parser';
 import {
   OVERAGE_MODAL_LINK,
   OVERAGE_MODAL_TITLE,
@@ -91,6 +87,16 @@ export default {
       required: false,
       default: false,
     },
+    isLoading: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    invalidFeedbackMessage: {
+      type: String,
+      required: false,
+      default: '',
+    },
     subscriptionSeats: {
       type: Number,
       required: false,
@@ -100,10 +106,8 @@ export default {
   data() {
     // Be sure to check out reset!
     return {
-      invalidFeedbackMessage: '',
       selectedAccessLevel: this.defaultAccessLevel,
       selectedDate: undefined,
-      isLoading: false,
       minDate: new Date(),
       hasOverage: false,
       totalUserCount: null,
@@ -152,16 +156,9 @@ export default {
     },
   },
   methods: {
-    showInvalidFeedbackMessage(response) {
-      const message = this.unescapeMsg(responseMessageFromError(response));
-
-      this.invalidFeedbackMessage = message || INVALID_FEEDBACK_MESSAGE_DEFAULT;
-    },
     reset() {
       // This component isn't necessarily disposed,
       // so we might need to reset it's state.
-      this.isLoading = false;
-      this.invalidFeedbackMessage = '';
       this.selectedAccessLevel = this.defaultAccessLevel;
       this.selectedDate = undefined;
 
@@ -174,32 +171,14 @@ export default {
       this.reset();
       this.$refs.modal.hide();
     },
-    clearValidation() {
-      this.invalidFeedbackMessage = '';
-    },
     changeSelectedItem(item) {
       this.selectedAccessLevel = item;
     },
     submit() {
-      this.isLoading = true;
-      this.invalidFeedbackMessage = '';
-
       this.$emit('submit', {
-        onSuccess: () => {
-          this.isLoading = false;
-        },
-        onError: (...args) => {
-          this.isLoading = false;
-          this.showInvalidFeedbackMessage(...args);
-        },
-        data: {
-          accessLevel: this.selectedAccessLevel,
-          expiresAt: this.selectedDate,
-        },
+        accessLevel: this.selectedAccessLevel,
+        expiresAt: this.selectedDate,
       });
-    },
-    unescapeMsg(message) {
-      return unescape(sanitize(message, { ALLOWED_TAGS: [] }));
     },
     checkOverage() {
       // add a more complex check in https://gitlab.com/gitlab-org/gitlab/-/merge_requests/78287
@@ -272,10 +251,7 @@ export default {
             data-testid="members-form-group"
           >
             <label :id="selectLabelId" class="col-form-label">{{ labelSearchField }}</label>
-            <slot
-              name="select"
-              v-bind="{ clearValidation, validationState, labelId: selectLabelId }"
-            ></slot>
+            <slot name="select" v-bind="{ validationState, labelId: selectLabelId }"></slot>
           </gl-form-group>
 
           <label class="gl-font-weight-bold">{{ $options.i18n.ACCESS_LEVEL }}</label>
