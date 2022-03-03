@@ -14,7 +14,7 @@ module EE
       private
 
       def copy_metric_images_to(issue)
-        alert.metric_images.each do |img|
+        alert.metric_images.find_each do |img|
           ::IncidentManagement::Incidents::UploadMetricService
             .new(issue, user, { file: img.file, url: img.url, url_text: img.url_text })
             .execute
