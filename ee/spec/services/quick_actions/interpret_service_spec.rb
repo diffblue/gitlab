@@ -87,6 +87,22 @@ RSpec.describe QuickActions::InterpretService do
     end
   end
 
+  shared_examples 'failed command' do |error_msg|
+    let(:match_msg) { error_msg ? eq(error_msg) : be_empty }
+
+    it 'populates {} if content contains an unsupported command' do
+      _, updates, _ = service.execute(content, issuable)
+
+      expect(updates).to be_empty
+    end
+
+    it "returns #{error_msg || 'an empty'} message" do
+      _, _, message = service.execute(content, issuable)
+
+      expect(message).to match_msg
+    end
+  end
+
   describe '#execute' do
     let(:merge_request) { create(:merge_request, source_project: project) }
 
@@ -1224,6 +1240,36 @@ RSpec.describe QuickActions::InterpretService do
       it_behaves_like 'empty command' do
         let(:content) { "/merge" }
         let(:issuable) { build(:merge_request, source_project: project) }
+      end
+    end
+
+    context 'when the merge request is not approved' do
+      it_behaves_like 'failed command', 'Could not apply merge command.' do
+        let(:content) { '/merge' }
+        let(:issuable) { merge_request }
+        let!(:rule) { create(:any_approver_rule, merge_request: merge_request, approvals_required: 1) }
+      end
+    end
+
+    context 'when the merge request is blocked' do
+      it_behaves_like 'failed command', 'Could not apply merge command.' do
+        before do
+          stub_licensed_features(blocking_merge_requests: true)
+        end
+
+        let(:content) { '/merge' }
+        let(:issuable) { create(:merge_request, :blocked, source_project: project) }
+      end
+    end
+
+    context 'when merge request has denied policies' do
+      it_behaves_like 'failed command', 'Could not apply merge command.' do
+        before do
+          allow(merge_request).to receive(:has_denied_policies?).and_return(true)
+        end
+
+        let(:content) { '/merge' }
+        let(:issuable) { merge_request }
       end
     end
 
