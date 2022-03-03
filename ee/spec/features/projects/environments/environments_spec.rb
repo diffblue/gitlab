@@ -216,6 +216,8 @@ RSpec.describe 'Environments page', :js do
     it 'shows the open alert for the environment row' do
       visit project_environments_path(project)
 
+      page.click_button _('Expand')
+
       within(find('div[data-testid="alert"]')) do
         expect(page).to have_content('Critical')
         expect(page).to have_content('HTTP Error Rate exceeded 1.0%')
