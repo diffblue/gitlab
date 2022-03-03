@@ -9724,7 +9724,7 @@ Represents the current license.
 | <a id="currentlicensecreatedat"></a>`createdAt` | [`Date`](#date) | Date when the license was added. |
 | <a id="currentlicenseemail"></a>`email` | [`String`](#string) | Email of the licensee. |
 | <a id="currentlicenseexpiresat"></a>`expiresAt` | [`Date`](#date) | Date when the license expires. |
-| <a id="currentlicenseid"></a>`id` | [`ID!`](#id) | ID of the license. |
+| <a id="currentlicenseid"></a>`id` | [`ID!`](#id) | ID of the license extracted from the license data. |
 | <a id="currentlicenselastsync"></a>`lastSync` | [`Time`](#time) | Date when the license was last synced. |
 | <a id="currentlicensemaximumusercount"></a>`maximumUserCount` | [`Int`](#int) | Highest number of billable users on the system during the term of the current license. |
 | <a id="currentlicensename"></a>`name` | [`String`](#string) | Name of the licensee. |
@@ -12216,7 +12216,7 @@ Represents an entry from the Cloud License history.
 | <a id="licensehistoryentrycreatedat"></a>`createdAt` | [`Date`](#date) | Date when the license was added. |
 | <a id="licensehistoryentryemail"></a>`email` | [`String`](#string) | Email of the licensee. |
 | <a id="licensehistoryentryexpiresat"></a>`expiresAt` | [`Date`](#date) | Date when the license expires. |
-| <a id="licensehistoryentryid"></a>`id` | [`ID!`](#id) | ID of the license. |
+| <a id="licensehistoryentryid"></a>`id` | [`ID!`](#id) | ID of the license extracted from the license data. |
 | <a id="licensehistoryentryname"></a>`name` | [`String`](#string) | Name of the licensee. |
 | <a id="licensehistoryentryplan"></a>`plan` | [`String!`](#string) | Name of the subscription plan. |
 | <a id="licensehistoryentrystartsat"></a>`startsAt` | [`Date`](#date) | Date when the license started. |
