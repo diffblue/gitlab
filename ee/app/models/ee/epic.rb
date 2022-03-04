@@ -367,6 +367,12 @@ module EE
           )
         ])
       end
+
+      def epics_readable_by_user(epics, user = nil)
+        DeclarativePolicy.user_scope do
+          epics.select { |epic| epic.readable_by?(user) }
+        end
+      end
     end
 
     def text_color
@@ -570,6 +576,31 @@ module EE
       if !confidential? && parent.confidential?
         errors.add :confidential, _('A non-confidential epic cannot be assigned to a confidential parent epic')
       end
+    end
+
+    def related_epics(current_user, preload: nil)
+      select_for_related_epics =
+        ::Epic.select(['epics.*', 'related_epic_links.id AS related_epic_link_id',
+                       'related_epic_links.link_type as related_epic_link_type_value',
+                       'related_epic_links.target_id as related_epic_link_source_id',
+                       'related_epic_links.created_at as related_epic_link_created_at',
+                       'related_epic_links.updated_at as related_epic_link_updated_at'])
+
+      target_epics = select_for_related_epics
+        .joins("INNER JOIN related_epic_links ON related_epic_links.target_id = epics.id")
+        .where(related_epic_links: { source_id: id })
+
+      source_epics = select_for_related_epics
+        .joins("INNER JOIN related_epic_links ON related_epic_links.source_id = epics.id")
+        .where(related_epic_links: { target_id: id })
+
+      related_epics = ::Epic.from_union([target_epics, source_epics])
+        .preload(preload)
+        .reorder('related_epic_link_id')
+
+      related_epics = yield related_epics if block_given?
+
+      self.class.epics_readable_by_user(related_epics, current_user)
     end
   end
 end
