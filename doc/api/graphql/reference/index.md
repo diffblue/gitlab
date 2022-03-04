@@ -10759,10 +10759,11 @@ Represents an epic board list.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="epiclistcollapsed"></a>`collapsed` | [`Boolean`](#boolean) | Indicates if this list is collapsed for this user. |
-| <a id="epiclistepicscount"></a>`epicsCount` | [`Int`](#int) | Count of epics in the list. |
+| <a id="epiclistepicscount"></a>`epicsCount` **{warning-solid}** | [`Int`](#int) | **Deprecated** in 14.9. This was renamed. Use: `metadata`. |
 | <a id="epiclistid"></a>`id` | [`BoardsEpicListID!`](#boardsepiclistid) | Global ID of the board list. |
 | <a id="epiclistlabel"></a>`label` | [`Label`](#label) | Label of the list. |
 | <a id="epiclistlisttype"></a>`listType` | [`String!`](#string) | Type of the list. |
+| <a id="epiclistmetadata"></a>`metadata` | [`EpicListMetadata`](#epiclistmetadata) | Epic list metatada. |
 | <a id="epiclistposition"></a>`position` | [`Int`](#int) | Position of the list within the board. |
 | <a id="epiclisttitle"></a>`title` | [`String!`](#string) | Title of the list. |
 
@@ -10783,6 +10784,17 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="epiclistepicsfilters"></a>`filters` | [`EpicFilters`](#epicfilters) | Filters applied when selecting epics in the board list. |
+
+### `EpicListMetadata`
+
+Represents epic board list metadata.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="epiclistmetadataepicscount"></a>`epicsCount` | [`Int`](#int) | Count of epics in the list. |
+| <a id="epiclistmetadatatotalweight"></a>`totalWeight` | [`Int`](#int) | Total weight of all issues in the list. Available only when feature flag `epic_board_total_weight` is enabled. This flag is disabled by default, because the feature is experimental and is subject to change without notice. |
 
 ### `EpicPermissions`
 

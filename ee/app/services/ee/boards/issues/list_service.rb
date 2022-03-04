@@ -87,8 +87,12 @@ module EE
         # rubocop: enable CodeReuse/ActiveRecord
 
         override :metadata_fields
-        def metadata_fields
-          super.merge(total_weight: 'COALESCE(SUM(weight), 0)')
+        def metadata_fields(required_fields)
+          fields = super
+
+          fields[:total_weight] = 'COALESCE(SUM(weight), 0)' if required_fields.include?(:total_issue_weight)
+
+          fields
         end
 
         # rubocop: disable CodeReuse/ActiveRecord

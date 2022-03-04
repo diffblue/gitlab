@@ -132,6 +132,26 @@ RSpec.describe Boards::Issues::ListService, services: true do
           expect(metadata[:size]).to eq(0)
           expect(metadata[:total_weight]).to eq(0)
         end
+
+        context 'when total_issue_weight is not included in the required_fields' do
+          it 'returns only issue count' do
+            params = { board_id: board.id, id: backlog.id }
+
+            metadata = described_class.new(parent, user, params).metadata([:issue_count])
+
+            expect(metadata).to eq(size: 3)
+          end
+        end
+
+        context 'when required_fields array is empty' do
+          it 'returns empty hash' do
+            params = { board_id: board.id, id: backlog.id }
+
+            metadata = described_class.new(parent, user, params).metadata([])
+
+            expect(metadata).to eq({})
+          end
+        end
       end
 
       context 'when list_id is missing' do

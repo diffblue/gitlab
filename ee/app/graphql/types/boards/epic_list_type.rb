@@ -36,24 +36,35 @@ module Types
             description: 'List epics.'
 
       field :epics_count, GraphQL::Types::Int, null: true,
-            description: 'Count of epics in the list.'
+            description: 'Count of epics in the list.',
+            deprecated: { reason: :renamed, replacement: 'metadata', milestone: '14.9' }
+
+      field :metadata, Types::Boards::EpicListMetadataType, null: true,
+          description: 'Epic list metatada.',
+          extras: [:lookahead]
 
       def collapsed
         object.collapsed?(current_user)
       end
 
       def epics_count
-        metadata[:size]
+        list_service.metadata([:epics_count])[:epics_count]
       end
 
-      def metadata
-        strong_memoize(:metadata) do
-          params = (context[:epic_filters] || {}).merge(board_id: list.epic_board_id, id: list.id)
+      def metadata(lookahead: nil)
+        required_metadata = []
+        required_metadata << :epics_count if lookahead&.selects?(:epics_count)
+        required_metadata << :total_weight if lookahead&.selects?(:total_weight)
 
-          ::Boards::Epics::ListService
-              .new(list.epic_board.resource_parent, current_user, params)
-              .metadata
-        end
+        list_service.metadata(required_metadata)
+      end
+
+      def list_service
+        ::Boards::Epics::ListService.new(list.epic_board.resource_parent, current_user, params)
+      end
+
+      def params
+        (context[:epic_filters] || {}).merge(board_id: list.epic_board_id, id: list.id)
       end
     end
     # rubocop: enable Graphql/AuthorizeTypes
