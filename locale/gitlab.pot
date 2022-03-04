@@ -37308,7 +37308,7 @@ msgstr ""
 msgid "This %{issuable} is locked. Only %{strong_open}project members%{strong_close} can comment."
 msgstr ""
 
-msgid "This %{noteableTypeText} is %{confidentialLinkStart}confidential%{linkEnd} and %{lockedLinkStart}locked%{linkEnd}."
+msgid "This %{noteableTypeText} is %{confidentialLinkStart}confidential%{confidentialLinkEnd} and %{lockedLinkStart}locked%{lockedLinkEnd}."
 msgstr ""
 
 msgid "This %{noteableTypeText} is locked."
