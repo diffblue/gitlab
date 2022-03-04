@@ -33241,6 +33241,9 @@ msgstr ""
 msgid "Select target branch"
 msgstr ""
 
+msgid "Select target branch or tag"
+msgstr ""
+
 msgid "Select timezone"
 msgstr ""
 
@@ -35991,6 +35994,9 @@ msgid "Target Path"
 msgstr ""
 
 msgid "Target branch"
+msgstr ""
+
+msgid "Target branch or tag"
 msgstr ""
 
 msgid "Target-Branch"
