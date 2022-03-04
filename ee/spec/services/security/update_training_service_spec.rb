@@ -8,14 +8,22 @@ RSpec.describe Security::UpdateTrainingService do
     let_it_be(:training_provider) { create(:security_training_provider) }
 
     let(:is_primary) { false }
-    let(:params) { { provider_id: training_provider.to_global_id, is_enabled: is_enabled, is_primary: is_primary } }
+    let(:is_enabled) { false }
+    let(:provider_id) { training_provider.to_global_id }
+    let(:params) { { provider_id: provider_id, is_enabled: is_enabled, is_primary: is_primary } }
     let(:service_object) { described_class.new(project, params) }
 
     subject(:update_training) { service_object.execute }
 
-    context 'when `is_enabled` argument is false' do
-      let(:is_enabled) { false }
+    context 'when there is no provider with the given id' do
+      let(:provider_id) { 'gid://gitlab/Security::TrainingProvider/0' }
 
+      it 'does not raise error' do
+        expect { update_training }.not_to raise_error
+      end
+    end
+
+    context 'when `is_enabled` argument is false' do
       context 'when the deletion fails' do
         before do
           allow_next_instance_of(Security::Training) do |training_instance|
