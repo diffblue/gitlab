@@ -38,8 +38,8 @@ RSpec.describe Sidebars::Projects::Menus::IssuesMenu do
 
   describe 'Iterations' do
     let(:user) { create(:user) }
-    let(:group) { build(:group) }
-    let(:project) { build(:project, group: group) }
+    let(:group) { create(:group) }
+    let(:project) { create(:project, group: group) }
 
     subject { described_class.new(context).renderable_items.index { |e| e.item_id == :iterations} }
 
