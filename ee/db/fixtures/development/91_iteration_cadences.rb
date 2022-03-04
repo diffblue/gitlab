@@ -9,7 +9,7 @@ module Iterations
 end
 
 Gitlab::Seeder.quiet do
-  Group.all.each do |group|
+  Group.not_mass_generated.each do |group|
     cadences = []
     1000.times do
       random_number = rand(5)
