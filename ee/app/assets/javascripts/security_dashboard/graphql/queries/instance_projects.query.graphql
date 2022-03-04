@@ -5,6 +5,7 @@ query instanceProjects($search: String, $pageSize: Int) {
         id
         name
         nameWithNamespace
+        avatarUrl
       }
     }
   }
