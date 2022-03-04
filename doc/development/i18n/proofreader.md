@@ -110,6 +110,8 @@ are very appreciative of the work done by translators and proofreaders!
   - Iaroslav Postovalov - [GitLab](https://gitlab.com/CMDR_Tvis), [Crowdin](https://crowdin.com/profile/CMDR_Tvis)
 - Serbian (Latin and Cyrillic)
   - Proofreaders needed.
+- Sinhalese/Sinhala සිංහල
+  - හෙළබස (HelaBasa) - [GitLab](https://gitlab.com/helabasa), [Crowdin](https://crowdin.com/profile/helabasa)
 - Slovak
   - Proofreaders needed.
 - Spanish
