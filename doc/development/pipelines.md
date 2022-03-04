@@ -313,7 +313,7 @@ We do run our test suite against Redis 5 on `nightly` scheduled pipelines, speci
 | Where? | Redis version |
 | ------ | ------------------ |
 | MRs    | 6 |
-| `main` (non-scheduled pipelines) | 6 |
+| `default branch` (non-scheduled pipelines) | 6 |
 | `nightly` scheduled pipelines | 5 |
 
 ## Pipelines types for merge requests
