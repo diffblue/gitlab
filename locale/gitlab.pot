@@ -5458,6 +5458,9 @@ msgstr ""
 msgid "BambooService|The user with API access to the Bamboo server."
 msgstr ""
 
+msgid "Banner message"
+msgstr ""
+
 msgid "Based on"
 msgstr ""
 
