@@ -21,7 +21,7 @@ import { propsData } from 'jest/invite_members/mock_data/modal_base';
 describe('InviteModalBase', () => {
   let wrapper;
 
-  const createComponent = (data = {}, props = {}, glFeatures = {}) => {
+  const createComponent = (props = {}, glFeatures = {}) => {
     wrapper = shallowMountExtended(InviteModalBase, {
       propsData: {
         ...propsData,
@@ -29,9 +29,6 @@ describe('InviteModalBase', () => {
       },
       provide: {
         ...glFeatures,
-      },
-      data() {
-        return data;
       },
       stubs: {
         GlModal: stubComponent(GlModal, {
@@ -64,6 +61,7 @@ describe('InviteModalBase', () => {
   const findOverageInviteButton = () => wrapper.findByTestId('invite-with-overage-button');
   const findInitialModalContent = () => wrapper.findByTestId('invite-modal-initial-content');
   const findOverageModalContent = () => wrapper.findByTestId('invite-modal-overage-content');
+  const findMembersFormGroup = () => wrapper.findByTestId('members-form-group');
 
   const clickInviteButton = () => findInviteButton().vm.$emit('click');
   const clickBackButton = () => findBackButton().vm.$emit('click');
@@ -114,11 +112,39 @@ describe('InviteModalBase', () => {
     it("doesn't show the overage content", () => {
       expect(findOverageModalContent().isVisible()).toBe(false);
     });
+
+    it('renders the members form group', () => {
+      expect(findMembersFormGroup().props()).toEqual({
+        description: propsData.formGroupDescription,
+        invalidFeedback: '',
+        state: null,
+      });
+    });
+  });
+
+  it('with isLoading, shows loading for invite button', () => {
+    createComponent({
+      isLoading: true,
+    });
+
+    expect(findInviteButton().props('loading')).toBe(true);
+  });
+
+  it('with invalidFeedbackMessage, set members form group validation state', () => {
+    createComponent({
+      invalidFeedbackMessage: 'invalid message!',
+    });
+
+    expect(findMembersFormGroup().props()).toEqual({
+      description: propsData.formGroupDescription,
+      invalidFeedback: 'invalid message!',
+      state: false,
+    });
   });
 
   describe('displays overage modal', () => {
     beforeEach(() => {
-      createComponent({}, {}, { glFeatures: { overageMembersModal: true } });
+      createComponent({}, { glFeatures: { overageMembersModal: true } });
       clickInviteButton();
     });
 
