@@ -15,6 +15,8 @@ module Gitlab
     # https://gitlab.com/gitlab-org/gitlab_git/merge_requests/77#note_4754193
     ENCODING_CONFIDENCE_THRESHOLD = 50
 
+    INVALID_UTF_CHARACTER_PLACEHOLDER = "☃"
+
     def encode!(message)
       message = force_encode_utf8(message)
       return message if message.valid_encoding?
@@ -46,6 +48,14 @@ module Gitlab
     def detect_binary?(data, detect = nil)
       detect ||= detect_encoding(data)
       detect && detect[:type] == :binary && detect[:confidence] == 100
+    end
+
+    def detect_invalid_utf8?(data)
+      data.include?(INVALID_UTF_CHARACTER_PLACEHOLDER)
+    end
+
+    def fix_invalid_utf8(data)
+      encode_utf8(data, replace: INVALID_UTF_CHARACTER_PLACEHOLDER)
     end
 
     # EncodingDetector checks the first 1024 * 1024 bytes for NUL byte, libgit2 checks

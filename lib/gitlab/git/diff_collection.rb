@@ -157,6 +157,12 @@ module Gitlab
         @iterator.size == 1 || !@enforce_limits || @expanded
       end
 
+      def fix_invalid_diff!(diff)
+        converted_diff = Gitlab::EncodingHelper.fix_invalid_utf8(diff.diff)
+
+        diff.diff = converted_diff if Gitlab::EncodingHelper.detect_invalid_utf8?(converted_diff)
+      end
+
       def each_gitaly_patch
         i = @array.length
 
@@ -186,6 +192,10 @@ module Gitlab
           end
 
           diff = Gitlab::Git::Diff.new(raw, expanded: expand_diff?)
+
+          if Feature.enabled?(:convert_diff_to_utf8_with_replacement_symbol, default_enabled: :yaml)
+            fix_invalid_diff!(diff)
+          end
 
           if !expand_diff? && over_safe_limits?(i) && diff.line_count > 0
             diff.collapse!
