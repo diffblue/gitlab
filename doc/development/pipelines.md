@@ -306,7 +306,7 @@ We follow the [PostgreSQL versions shipped with Omnibus GitLab](../administratio
 Our test suite runs against Redis 6 as GitLab.com runs on Redis 6 and
 [Omnibus defaults to Redis 6 for new installs and upgrades](https://gitlab.com/gitlab-org/omnibus-gitlab/-/blob/master/config/software/redis.rb).
 
-We do run our test suite against Redis 5 on `nightly` scheduled pipelines, specifically when running backward-compatible and forward-compatible postgreSQL jobs.
+We do run our test suite against Redis 5 on `nightly` scheduled pipelines, specifically when running backward-compatible and forward-compatible PostgreSQL jobs.
 
 ### Current versions testing
 
