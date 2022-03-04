@@ -24,9 +24,11 @@ module Security
       override_finding_uuids! if override_uuids?
       set_security_scan_non_latest! if job.retried?
 
-      return deduplicate if security_scan.has_errors? || !security_scan.latest? || !security_scan.succeeded?
+      return deduplicate if !security_scan.latest? || security_scan.report_error? || security_scan.job_failed?
 
       store_findings
+
+      deduplicate_findings?
     end
 
     private
@@ -47,8 +49,14 @@ module Security
       @security_scan ||= Security::Scan.safe_find_or_create_by!(build: job, scan_type: artifact.file_type) do |scan|
         scan.processing_errors = security_report.errors.map(&:stringify_keys) if security_report.errored?
         scan.processing_warnings = security_report.warnings.map(&:stringify_keys)
-        scan.status = job.success? ? :succeeded : :failed
+        scan.status = initial_scan_status
       end
+    end
+
+    def initial_scan_status
+      return :report_error if security_report.errored?
+
+      job.success? ? :preparing : :job_failed
     end
 
     def store_findings
@@ -58,7 +66,11 @@ module Security
         update_deduplicated_findings if result[:status] == :error && deduplicate_findings?
       end
 
-      deduplicate_findings?
+      security_scan.succeeded!
+    rescue StandardError => error
+      security_scan.preparation_failed!
+
+      Gitlab::ErrorTracking.track_exception(error)
     end
 
     def set_security_scan_non_latest!

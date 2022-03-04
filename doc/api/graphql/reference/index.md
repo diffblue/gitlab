@@ -15271,6 +15271,7 @@ Represents the security scan information.
 | ---- | ---- | ----------- |
 | <a id="scanerrors"></a>`errors` | [`[String!]!`](#string) | List of errors. |
 | <a id="scanname"></a>`name` | [`String!`](#string) | Name of the scan. |
+| <a id="scanstatus"></a>`status` | [`ScanStatus!`](#scanstatus) | Indicates the status of the scan. |
 | <a id="scanwarnings"></a>`warnings` | [`[String!]!`](#string) | List of warnings. |
 
 ### `ScanExecutionPolicy`
@@ -18141,6 +18142,20 @@ Size of UI component in SAST configuration page.
 | <a id="sastuicomponentsizelarge"></a>`LARGE` | Size of UI component in SAST configuration page is large. |
 | <a id="sastuicomponentsizemedium"></a>`MEDIUM` | Size of UI component in SAST configuration page is medium. |
 | <a id="sastuicomponentsizesmall"></a>`SMALL` | Size of UI component in SAST configuration page is small. |
+
+### `ScanStatus`
+
+The status of the security scan.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="scanstatuscreated"></a>`CREATED` | The scan has been created. |
+| <a id="scanstatusjob_failed"></a>`JOB_FAILED` | The related CI build failed. |
+| <a id="scanstatuspreparation_failed"></a>`PREPARATION_FAILED` | Report couldn't be prepared. |
+| <a id="scanstatuspreparing"></a>`PREPARING` | Preparing the report for the scan. |
+| <a id="scanstatuspurged"></a>`PURGED` | Report for the scan has been removed from the database. |
+| <a id="scanstatusreport_error"></a>`REPORT_ERROR` | The report artifact provided by the CI build couldn't be parsed. |
+| <a id="scanstatussucceeded"></a>`SUCCEEDED` | The report has been successfully prepared. |
 
 ### `SecurityReportTypeEnum`
 
