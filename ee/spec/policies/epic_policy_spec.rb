@@ -31,7 +31,8 @@ RSpec.describe EpicPolicy do
       is_expected.to be_allowed(:read_epic, :read_epic_iid, :read_note,
                                 :create_todo, :read_related_epic_link)
       is_expected.to be_disallowed(:update_epic, :destroy_epic, :admin_epic,
-                                   :create_epic, :admin_related_epic_link)
+                                   :create_epic, :admin_related_epic_link,
+                                   :set_epic_metadata, :set_confidentiality)
     end
   end
 
@@ -40,7 +41,8 @@ RSpec.describe EpicPolicy do
       is_expected.to be_allowed(:read_epic, :read_epic_iid, :read_note,
                                 :update_epic, :admin_epic, :create_epic,
                                 :create_todo, :read_related_epic_link,
-                                :admin_related_epic_link)
+                                :admin_related_epic_link, :set_epic_metadata,
+                                :set_confidentiality)
     end
   end
 
@@ -50,7 +52,8 @@ RSpec.describe EpicPolicy do
                                    :destroy_epic, :admin_epic, :create_epic,
                                    :create_note, :award_emoji, :read_note,
                                    :create_todo, :read_related_epic_link,
-                                   :admin_related_epic_link)
+                                   :admin_related_epic_link, :set_epic_metadata,
+                                   :set_confidentiality)
     end
   end
 
@@ -60,7 +63,8 @@ RSpec.describe EpicPolicy do
                                 :admin_epic, :create_epic, :create_note,
                                 :award_emoji, :read_note, :create_todo,
                                 :read_related_epic_link,
-                                :admin_related_epic_link)
+                                :admin_related_epic_link,
+                                :set_epic_metadata, :set_confidentiality)
     end
   end
 
