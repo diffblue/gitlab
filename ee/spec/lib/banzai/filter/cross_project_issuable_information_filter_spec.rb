@@ -3,7 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe Banzai::Filter::CrossProjectIssuableInformationFilter do
-  include ActionView::Helpers::UrlHelper
   include FilterSpecHelper
 
   let(:user) { create(:user) }
@@ -13,7 +12,7 @@ RSpec.describe Banzai::Filter::CrossProjectIssuableInformationFilter do
 
   def create_link(issuable)
     type = issuable.class.name.underscore.downcase
-    link_to(issuable.to_reference, '',
+    ActionController::Base.helpers.link_to(issuable.to_reference, '',
             class: 'gfm has-tooltip',
             title: issuable.title,
             data: {
