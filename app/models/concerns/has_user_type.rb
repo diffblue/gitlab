@@ -46,4 +46,17 @@ module HasUserType
   def internal?
     ghost? || (bot? && !project_bot?)
   end
+
+  def secure_name(viewing_user)
+    if self.groups.any?
+      return self.name if viewing_user&.can?(:read_group, self.groups.first)
+    end
+
+    return self.name if viewing_user&.can?(:read_project, self.projects.first)
+
+    # If the requester does not have permission to read the project bot name,
+    # the API returns an arbitrary string. UI changes will be addressed in a follow up issue:
+    # https://gitlab.com/gitlab-org/gitlab/-/issues/346058
+    '****'
+  end
 end

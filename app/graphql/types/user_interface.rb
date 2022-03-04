@@ -3,7 +3,6 @@
 module Types
   module UserInterface
     include Types::BaseInterface
-    include UsersHelper
 
     graphql_name 'User'
     description 'Representation of a GitLab user.'
@@ -137,7 +136,7 @@ module Types
     def redacted_name
       return object.name unless object.project_bot?
 
-      secure_project_bot_name(context[:current_user], object)
+      object.secure_name(context[:current_user])
     end
   end
 end
