@@ -49,7 +49,7 @@ Spamcheck is only available for package-based installations:
 1. Select **Save changes**.
 
 NOTE:
-In single-node instances, Spamcehck runs over `localhost`, and hence is running
+In single-node instances, Spamcheck runs over `localhost`, and hence is running
 in an unauthenticated mode. If on multi-node instances where GitLab runs on one
 server and Spamcheck runs on another server listening over a public endpoint, it
 is recommended to enforce some sort of authentication using a reverse proxy in
