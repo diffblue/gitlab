@@ -301,6 +301,21 @@ We follow the [PostgreSQL versions shipped with Omnibus GitLab](../administratio
 | PG11               | `nightly`              | `nightly`              | `nightly`              | `nightly`              | `nightly`              | `nightly`              |
 | PG13               | `nightly`              | `nightly`              | `nightly`              | `nightly`              | `nightly`              | `nightly`              |
 
+## Redis versions testing
+
+Our test suite runs against Redis 6 as GitLab.com runs on Redis 6 and
+[Omnibus defaults to Redis 6 for new installs and upgrades](https://gitlab.com/gitlab-org/omnibus-gitlab/-/blob/master/config/software/redis.rb).
+
+We do run our test suite against Redis 5 on `nightly` scheduled pipelines, specifically when running backward-compatible and forward-compatible postgreSQL jobs.
+
+### Current versions testing
+
+| Where? | Redis version |
+| ------ | ------------------ |
+| MRs    | 6 |
+| `main` (non-scheduled pipelines) | 6 |
+| `nightly` scheduled pipelines | 5 |
+
 ## Pipelines types for merge requests
 
 In general, pipelines for an MR fall into one of the following types (from shorter to longer), depending on the changes made in the MR:
