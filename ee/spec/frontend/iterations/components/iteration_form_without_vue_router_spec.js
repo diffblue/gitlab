@@ -70,7 +70,7 @@ describe('Iteration Form', () => {
 
   const inputFormData = () => {
     findTitle().vm.$emit('input', title);
-    findDescription().setValue( description);
+    findDescription().setValue(description);
     findStartDate().vm.$emit('input', startDate ? new Date(startDate) : null);
     findDueDate().vm.$emit('input', dueDate ? new Date(dueDate) : null);
 
@@ -171,7 +171,7 @@ describe('Iteration Form', () => {
 
       expect(findTitle().attributes('value')).toBe(iteration.title);
       expect(findDescription().element.value).toBe(iteration.description);
-      
+
       expect(new Date(findStartDate().attributes('value'))).toEqual(iteration.startDate);
       expect(new Date(findDueDate().attributes('value'))).toEqual(iteration.dueDate);
     });
@@ -239,7 +239,7 @@ describe('Iteration Form', () => {
 
       findTitle().vm.$emit('input', '');
       findStartDate().vm.$emit('input', null);
-      
+
       findTitle().trigger('change');
       findStartDate().trigger('change');
 
