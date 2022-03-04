@@ -21,9 +21,9 @@ function getCallout(el) {
 
 function toggleElementVisibility(el, show) {
   if (show) {
-    el.classList.remove('gl-display-none');
+    el?.classList.remove('gl-display-none');
   } else {
-    el.classList.add('gl-display-none');
+    el?.classList.add('gl-display-none');
   }
 }
 
@@ -66,8 +66,9 @@ export default class SamlSettingsForm {
 
     this.testButtonTooltipWrapper = this.form.querySelector('#js-saml-test-button');
     this.testButton = this.testButtonTooltipWrapper.querySelector('a');
+    this.testButtonDisabled = this.testButtonTooltipWrapper.querySelector('button[disabled]');
     this.dirtyFormChecker = dirtySubmitFactory(this.form);
-    this.form.addEventListener('change', this.handleChangeEvent);
+    this.dirtyFormChecker.addInputsListener(this.handleInputsChange);
   }
 
   findSetting(name) {
@@ -99,11 +100,12 @@ export default class SamlSettingsForm {
     this.updateView();
   }
 
-  handleChangeEvent = (event) => {
+  handleInputsChange = (event) => {
     if (this.settingIsDefined(event.target)) {
       this.updateSAMLSettings();
-      this.updateView();
     }
+
+    this.updateView();
   };
 
   isFormDirty() {
@@ -118,7 +120,7 @@ export default class SamlSettingsForm {
   }
 
   testButtonTooltip() {
-    if (!this.samlProviderEnabled) {
+    if (!this.getValueWithDeps('group-saml')) {
       return __('Group SAML must be enabled to test');
     }
 
@@ -127,6 +129,16 @@ export default class SamlSettingsForm {
     }
 
     return __('Redirect to SAML provider to test configuration');
+  }
+
+  disableTestButton() {
+    toggleElementVisibility(this.testButton, false);
+    toggleElementVisibility(this.testButtonDisabled, true);
+  }
+
+  enableTestButton() {
+    toggleElementVisibility(this.testButton, true);
+    toggleElementVisibility(this.testButtonDisabled, false);
   }
 
   updateCheckboxes() {
@@ -154,9 +166,9 @@ export default class SamlSettingsForm {
 
   updateView() {
     if (this.getValueWithDeps('group-saml') && !this.isFormDirty()) {
-      this.testButton.removeAttribute('disabled');
+      this.enableTestButton();
     } else {
-      this.testButton.setAttribute('disabled', true);
+      this.disableTestButton();
     }
 
     this.updateCheckboxes();
