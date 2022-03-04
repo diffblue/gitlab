@@ -9,12 +9,9 @@
 # calculate which report artifact to download and parse.
 module Security
   class Finding < ApplicationRecord
-    include IgnorableColumns
     include EachBatch
 
     self.table_name = 'security_findings'
-
-    ignore_column :position, remove_with: '14.8', remove_after: '2022-02-22'
 
     belongs_to :scan, inverse_of: :findings, optional: false
     belongs_to :scanner, class_name: 'Vulnerabilities::Scanner', inverse_of: :security_findings, optional: false
