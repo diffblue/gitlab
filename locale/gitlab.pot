@@ -27149,9 +27149,6 @@ msgstr ""
 msgid "Pipeline|Checking pipeline status."
 msgstr ""
 
-msgid "Pipeline|Commit"
-msgstr ""
-
 msgid "Pipeline|Could not retrieve the pipeline status. For troubleshooting steps, read the %{linkStart}documentation%{linkEnd}."
 msgstr ""
 
@@ -27165,9 +27162,6 @@ msgid "Pipeline|Date"
 msgstr ""
 
 msgid "Pipeline|Detached merge request pipeline"
-msgstr ""
-
-msgid "Pipeline|Duration"
 msgstr ""
 
 msgid "Pipeline|Failed"
