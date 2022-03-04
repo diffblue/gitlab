@@ -862,4 +862,170 @@ RSpec.describe Epic do
       end
     end
   end
+
+  describe '.epics_readable_by_user' do
+    let_it_be(:visible_epic) { create(:epic) }
+    let_it_be(:confidential_epic) { create(:epic, :confidential) }
+
+    subject { described_class.epics_readable_by_user(epics, user) }
+
+    before do
+      stub_licensed_features(epics: true)
+    end
+
+    let(:epics) { [visible_epic]}
+
+    context 'with an admin when admin mode is enabled', :enable_admin_mode do
+      let(:user) { build(:user, admin: true) }
+
+      it { expect(subject).to match_array(epics) }
+    end
+
+    context 'with an admin when admin mode is disabled' do
+      let(:user) { build(:user, admin: true) }
+
+      it 'returns the epics readable by the admin' do
+        expect(visible_epic).to receive(:readable_by?).with(user).and_return(true)
+
+        expect(subject).to match_array(epics)
+      end
+
+      it 'returns no epics when not given access' do
+        allow(visible_epic).to receive(:readable_by?).with(user).and_return(false)
+
+        expect(subject).to be_empty
+      end
+    end
+
+    context 'with a regular user' do
+      let(:user) { build(:user) }
+
+      it 'returns the epics readable by the user' do
+        expect(visible_epic).to receive(:readable_by?).with(user).and_return(true)
+
+        expect(subject).to match_array(epics)
+      end
+
+      it 'returns an empty array when no epics are readable' do
+        expect(visible_epic).to receive(:readable_by?).with(user).and_return(false)
+
+        expect(subject).to be_empty
+      end
+    end
+
+    context 'without a regular user' do
+      let(:user) { nil }
+      let(:epics) { [confidential_epic, visible_epic] }
+
+      it 'returns epics that are publicly visible' do
+        expect(subject).to contain_exactly(visible_epic)
+      end
+    end
+
+    it 'avoids N+1 queries when authorizing a list of epics', :request_store do
+      user = create(:user)
+      group = create(:group, :private).tap { |group| group.add_maintainer(user) }
+      epic = create(:epic, group: group)
+      control = ActiveRecord::QueryRecorder.new { described_class.epics_readable_by_user([epic], user) }
+
+      new_group1 = create(:group, :public)
+      new_group3 = create(:group, :public)
+      new_group2 = create(:group, :private, parent: group)
+
+      new_epic1 = create(:epic, group: new_group1)
+      new_epic2 = create(:epic, group: new_group2)
+      new_epic3 = create(:epic, group: new_group3)
+
+      expect { described_class.epics_readable_by_user([epic, new_epic1, new_epic2, new_epic3], user) }
+        .not_to exceed_query_limit(control).with_threshold(4)
+      # Permission checks perform N+1 queries.
+      # See https://gitlab.com/gitlab-org/gitlab/-/issues/353915 for more info.
+    end
+
+    context 'with group hierarchy' do
+      let_it_be(:user) { create(:user) }
+      let_it_be(:ancestor) { create(:group, :private) }
+      let_it_be(:base_group) { create(:group, :private, parent: ancestor) }
+      let_it_be(:subgroup) { create(:group, :private, parent: base_group) }
+
+      let_it_be(:epic1) { create(:epic, group: ancestor) }
+      let_it_be(:epic2) { create(:epic, group: base_group) }
+      let_it_be(:epic3) { create(:epic, group: subgroup) }
+
+      let_it_be(:epics) { [epic1, epic2, epic3] }
+
+      context 'when user is not a member' do
+        it 'returns no epic' do
+          expect(described_class.epics_readable_by_user(epics, user)).to be_empty
+        end
+      end
+
+      context 'when user is a reporter in the ancestor group' do
+        before do
+          ancestor.add_reporter(user)
+        end
+
+        it 'returns epics from all groups' do
+          expect(described_class.epics_readable_by_user(epics, user)).to match_array(epics)
+        end
+      end
+
+      context 'when user is a reporter in the base group' do
+        before do
+          base_group.add_reporter(user)
+        end
+
+        it 'returns epics in main group and its descendants' do
+          expect(described_class.epics_readable_by_user(epics, user)).to contain_exactly(epic2, epic3)
+        end
+      end
+
+      context 'when user is a reporter in the subgroup' do
+        before do
+          subgroup.add_reporter(user)
+        end
+
+        it 'returns epics in subgroup' do
+          expect(described_class.epics_readable_by_user(epics, user)).to contain_exactly(epic3)
+        end
+      end
+    end
+  end
+
+  describe '#related_epics' do
+    let_it_be_with_reload(:epic) { create(:epic) }
+
+    let_it_be(:user) { create(:user) }
+    let_it_be(:public_epic) { create(:epic) }
+    let_it_be(:confidential_epic) { create(:epic, :confidential) }
+    let_it_be(:sub_epic) { create(:epic, group: create(:group, parent: epic.group)) }
+    let_it_be(:private_epic) { create(:epic, group: create(:group, :private)) }
+
+    before do
+      epic.group.add_reporter(user)
+    end
+
+    context 'when epics feature is enabled' do
+      before do
+        stub_licensed_features(epics: true)
+        [public_epic, confidential_epic, sub_epic, private_epic].each do |source_epic|
+          create(:related_epic_link, source: source_epic, target: epic)
+        end
+      end
+
+      it 'returns readable related epics of the epic' do
+        expect(epic.related_epics(user)).to contain_exactly(public_epic, sub_epic)
+      end
+    end
+
+    context 'when epics feature is disabled' do
+      before do
+        stub_licensed_features(epics: false)
+      end
+
+      it 'returns empty result' do
+        expect(epic.related_epics(user)).to be_empty
+      end
+    end
+  end
 end
