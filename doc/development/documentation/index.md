@@ -64,7 +64,7 @@ However, anyone can contribute [documentation improvements](workflow.md) that ar
 [GitLab docs](https://gitlab.com/gitlab-org/gitlab-docs) uses [GitLab Kramdown](https://gitlab.com/gitlab-org/gitlab_kramdown)
 as its Markdown rendering engine. See the [GitLab Markdown Guide](https://about.gitlab.com/handbook/markdown-guide/) for a complete Kramdown reference.
 
-Stick to the [Documentation Style Guide](styleguide/index.md). If a style standard is missing, you are welcome to suggest one via merge request.
+Adhere to the [Documentation Style Guide](styleguide/index.md). If a style standard is missing, you are welcome to suggest one via a merge request.
 
 ## Folder structure and files
 
