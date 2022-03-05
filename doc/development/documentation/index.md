@@ -79,7 +79,7 @@ All values are treated as strings and are only used for the
 
 ### Stage and group metadata
 
-Each page should ideally have metadata related to the stage and the group it
+Each page should ideally have metadata related to the stage and group it
 belongs to, as well as an information block as described below:
 
 - `stage`: The [Stage](https://about.gitlab.com/handbook/product/categories/#devops-stages)
