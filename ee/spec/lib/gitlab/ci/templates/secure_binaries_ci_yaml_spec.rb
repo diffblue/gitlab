@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Secure-Binaries.gitlab-ci.yml' do
+  include Ci::TemplateHelpers
+
   subject(:template) { Gitlab::Template::GitlabCiYmlTemplate.find('Secure-Binaries') }
 
   specify { expect(template).not_to be_nil }
@@ -52,7 +54,7 @@ RSpec.describe 'Secure-Binaries.gitlab-ci.yml' do
 
       it_behaves_like 'an offline image download job' do
         it 'sets SECURE_BINARIES_IMAGE explicitly' do
-          image = 'registry.gitlab.com/security-products/${CI_JOB_NAME}:${SECURE_BINARIES_ANALYZER_VERSION}'
+          image = "#{secure_analyzers_prefix}/${CI_JOB_NAME}:${SECURE_BINARIES_ANALYZER_VERSION}"
 
           expect(build.variables.to_hash).to include('SECURE_BINARIES_IMAGE' => image)
         end
