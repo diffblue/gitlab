@@ -87,7 +87,7 @@ belongs to, as well as an information block as described below:
 - `group`: The [Group](https://about.gitlab.com/company/team/structure/#product-groups)
   to which the majority of the page's content belongs.
 - `info`: The following line, which provides direction to contributors regarding
-  how to contact the technical writer associated with the page's stage and
+  how to contact the Technical Writer associated with the page's stage and
   group:
 
   ```plaintext
