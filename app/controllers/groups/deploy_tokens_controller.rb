@@ -12,3 +12,5 @@ class Groups::DeployTokensController < Groups::ApplicationController
     redirect_to group_settings_repository_path(@group, anchor: 'js-deploy-tokens')
   end
 end
+
+Groups::DeployTokensController.prepend_mod
