@@ -28883,6 +28883,9 @@ msgstr ""
 msgid "ProjectSettings|Merge suggestions"
 msgstr ""
 
+msgid "ProjectSettings|Merging is only allowed when the source branch is up-to-date with its target."
+msgstr ""
+
 msgid "ProjectSettings|No merge commits are created."
 msgstr ""
 
@@ -29052,6 +29055,9 @@ msgid "ProjectSettings|What are merge trains?"
 msgstr ""
 
 msgid "ProjectSettings|When merge request pipelines are enabled in the CI/CD configuration file, pipelines validate the combined results of the source and target branches. %{link_start}How to configure merge request pipelines?%{link_end}"
+msgstr ""
+
+msgid "ProjectSettings|When semi-linear merge is not possible, the user is given the option to rebase."
 msgstr ""
 
 msgid "ProjectSettings|When there is a merge conflict, the user is given the option to rebase."
