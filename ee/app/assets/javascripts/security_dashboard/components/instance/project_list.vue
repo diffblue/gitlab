@@ -80,7 +80,6 @@ export default {
           class="gl-mr-3"
           :project-name="project.name"
           :project-avatar-url="project.avatarUrl"
-          :size="32"
         />
         {{ project.nameWithNamespace }}
         <gl-button
