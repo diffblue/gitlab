@@ -7,7 +7,7 @@ RSpec.describe 'Creating an Iteration' do
 
   let_it_be(:current_user) { create(:user) }
   let_it_be(:group) { create(:group) }
-  let_it_be(:cadence) { create(:iterations_cadence, group: group)}
+  let_it_be(:cadence) { build(:iterations_cadence, group: group, automatic: false).tap { |cadence| cadence.save!(validate: false) } }
 
   let(:start_date) { Time.now.strftime('%F') }
   let(:end_date) { 1.day.from_now.strftime('%F') }

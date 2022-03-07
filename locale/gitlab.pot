@@ -22694,6 +22694,9 @@ msgstr ""
 msgid "Manual"
 msgstr ""
 
+msgid "Manual iteration cadences are deprecated. Only automatic iteration cadences are allowed."
+msgstr ""
+
 msgid "ManualOrdering|Couldn't save the order of the issues"
 msgstr ""
 

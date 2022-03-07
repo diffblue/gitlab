@@ -32,6 +32,41 @@ RSpec.describe ::Iterations::Cadence do
 
       it { is_expected.not_to validate_presence_of(:start_date) }
     end
+
+    describe 'cadence_is_automatic' do
+      context 'when creating a new cadence' do
+        it 'does not allow the creation of manul cadences' do
+          cadence = build(:iterations_cadence, automatic: false).tap { |cadence| cadence.valid? }
+
+          expect(cadence.errors.full_messages).to include(_('Manual iteration cadences are deprecated. Only automatic iteration cadences are allowed.'))
+        end
+      end
+
+      context 'when cadence already existed as manual' do
+        let_it_be(:manual_cadence, refind: true) { build(:iterations_cadence).tap { |cadence| cadence.save!(validate: false) } }
+
+        context 'when `automatic` is not updated' do
+          it 'allows to change other attributes' do
+            manual_cadence.assign_attributes(duration_in_weeks: 2, iterations_in_advance: 4)
+
+            expect(manual_cadence).to be_valid
+          end
+        end
+      end
+
+      context 'when cadence already existed as automatic' do
+        let_it_be(:automatic_cadence, refind: true) { create(:iterations_cadence) }
+
+        context 'when changing a cadence to manual' do
+          it 'adds a validation error' do
+            automatic_cadence.assign_attributes(duration_in_weeks: 2, iterations_in_advance: 4, automatic: false)
+
+            expect(automatic_cadence).to be_invalid
+            expect(automatic_cadence.errors.full_messages).to include(_('Manual iteration cadences are deprecated. Only automatic iteration cadences are allowed.'))
+          end
+        end
+      end
+    end
   end
 
   describe '#update_iteration_sequences', :aggregate_failures do
