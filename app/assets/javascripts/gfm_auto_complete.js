@@ -961,7 +961,7 @@ GfmAutoComplete.Contacts = {
 
 const loadingSpinner = loadingIconForLegacyJS({
   inline: true,
-  classes: ['gl-mr-2', 'gl-vertical-align-text-bottom'],
+  classes: ['gl-mr-2'],
 }).outerHTML;
 
 GfmAutoComplete.Loading = {
