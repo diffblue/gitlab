@@ -768,6 +768,15 @@
   :weight: 1
   :idempotent:
   :tags: []
+- :name: pipeline_background:ci_minutes_refresh_cached_data
+  :worker_name: Ci::Minutes::RefreshCachedDataWorker
+  :feature_category: :continuous_integration
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: pipeline_background:ci_minutes_update_project_and_namespace_usage
   :worker_name: Ci::Minutes::UpdateProjectAndNamespaceUsageWorker
   :feature_category: :continuous_integration

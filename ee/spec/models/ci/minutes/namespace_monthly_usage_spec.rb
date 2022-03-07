@@ -43,6 +43,14 @@ RSpec.describe Ci::Minutes::NamespaceMonthlyUsage do
           expect(subject.created_at).to eq(Time.current)
         end
       end
+
+      it 'kicks off Ci::Minutes::RefreshCachedDataWorker' do
+        expect(::Ci::Minutes::RefreshCachedDataWorker)
+          .to receive(:perform_async)
+          .with(namespace.id)
+
+        subject
+      end
     end
 
     shared_examples 'does not update the additional minutes' do
