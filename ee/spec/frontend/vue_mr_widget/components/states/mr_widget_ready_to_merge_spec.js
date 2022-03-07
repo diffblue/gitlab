@@ -373,6 +373,28 @@ describe('ReadyToMerge', () => {
         expect(button.exists()).toBe(true);
         expect(button.attributes('disabled')).toBe('true');
       });
+
+      it.each`
+        disabled     | disabledText | totalCount
+        ${'true'}    | ${'disable'} | ${1}
+        ${undefined} | ${'enable'}  | ${0}
+      `(
+        'should $disabledText merge button blockingMergeRequests.total_count is $totalCount',
+        ({ disabled, totalCount }) => {
+          factory({
+            isMergeAllowed: true,
+            availableAutoMergeStrategies: [],
+            blockingMergeRequests: {
+              total_count: totalCount,
+            },
+          });
+
+          const button = findMergeButton();
+
+          expect(button.exists()).toBe(true);
+          expect(button.attributes('disabled')).toBe(disabled);
+        },
+      );
     });
   });
 

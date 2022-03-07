@@ -31,6 +31,17 @@ export default {
           this.mr.preventMerge,
       );
     },
+    shouldShowMergeControls() {
+      if (this.glFeatures.restructuredMrWidget) {
+        return this.restructuredWidgetShowMergeButtons;
+      }
+
+      if (this.mr.blockingMergeRequests?.total_count > 0) {
+        return false;
+      }
+
+      return this.isMergeAllowed || this.isAutoMergeAvailable;
+    },
     mergeDisabledText() {
       if (this.isApprovalNeeded) {
         return MERGE_DISABLED_TEXT_UNAPPROVED;
