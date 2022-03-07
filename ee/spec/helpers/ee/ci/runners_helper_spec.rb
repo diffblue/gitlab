@@ -22,7 +22,7 @@ RSpec.describe EE::Ci::RunnersHelper do
 
     context 'with a project and namespace' do
       context 'when not on dot com' do
-        let(:dev_env_or_com) { false }
+        let(:com) { false }
 
         it { is_expected.to be_falsey }
       end
@@ -106,7 +106,7 @@ RSpec.describe EE::Ci::RunnersHelper do
   end
 
   context 'with notifications' do
-    let(:dev_env_or_com) { true }
+    let(:com) { true }
 
     describe '.show_buy_pipeline_minutes?' do
       subject { helper.show_buy_pipeline_minutes?(project, namespace) }
@@ -114,7 +114,7 @@ RSpec.describe EE::Ci::RunnersHelper do
       context 'when on dot com' do
         it_behaves_like 'minutes notification' do
           before do
-            allow(::Gitlab).to receive(:dev_env_or_com?).and_return(dev_env_or_com)
+            allow(::Gitlab).to receive(:com?).and_return(com)
           end
         end
       end
@@ -124,7 +124,7 @@ RSpec.describe EE::Ci::RunnersHelper do
       subject { helper.show_pipeline_minutes_notification_dot?(project, namespace) }
 
       before do
-        allow(::Gitlab).to receive(:dev_env_or_com?).and_return(dev_env_or_com)
+        allow(::Gitlab).to receive(:com?).and_return(com)
       end
 
       it_behaves_like 'minutes notification'
@@ -151,7 +151,7 @@ RSpec.describe EE::Ci::RunnersHelper do
       subject { helper.show_buy_pipeline_with_subtext?(project, namespace) }
 
       before do
-        allow(::Gitlab).to receive(:dev_env_or_com?).and_return(dev_env_or_com)
+        allow(::Gitlab).to receive(:com?).and_return(com)
       end
 
       context 'when the notification dot has not been acknowledged' do

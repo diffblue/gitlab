@@ -28,7 +28,7 @@ RSpec.describe EE::Gitlab::GonHelper do
 
     context 'when GitLab.com' do
       before do
-        allow(Gitlab).to receive(:dev_env_or_com?).and_return(true)
+        allow(Gitlab).to receive(:com?).and_return(true)
       end
 
       it 'includes CustomersDot variables' do

@@ -26,7 +26,7 @@ module SeatsCountAlertHelper
   end
 
   def show_seats_count_alert?
-    return false unless ::Gitlab.dev_env_or_com? && group_with_owner? && current_subscription
+    return false unless ::Gitlab.com? && group_with_owner? && current_subscription
     return false if user_dismissed_alert?
 
     !!@display_seats_count_alert

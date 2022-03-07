@@ -5,11 +5,9 @@ require 'spec_helper'
 RSpec.describe TrialsController, :saas do
   let_it_be(:user) { create(:user, email_opted_in: true, last_name: 'Doe') }
 
-  let(:dev_env_or_com) { true }
   let(:logged_in) { true }
 
   before do
-    allow(::Gitlab).to receive(:dev_env_or_com?).and_return(dev_env_or_com)
     sign_in(user) if logged_in
   end
 
@@ -30,13 +28,15 @@ RSpec.describe TrialsController, :saas do
   shared_examples 'a dot-com only feature' do
     let(:success_status) { :ok }
 
-    context 'when not on gitlab.com and not in development environment' do
-      let(:dev_env_or_com) { false }
+    context 'when not on gitlab.com ' do
+      before do
+        allow(::Gitlab).to receive(:com?).and_return(false)
+      end
 
       it { is_expected.to have_gitlab_http_status(:not_found) }
     end
 
-    context 'when on gitlab.com or in dev environment' do
+    context 'when on gitlab.com' do
       it { is_expected.to have_gitlab_http_status(success_status) }
     end
   end

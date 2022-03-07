@@ -69,7 +69,7 @@ module EE
     end
 
     def signup_onboarding_enabled?
-      ::Gitlab.dev_env_or_com?
+      ::Gitlab.com?
     end
   end
 end

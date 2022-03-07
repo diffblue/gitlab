@@ -10,7 +10,7 @@ RSpec.describe 'GitLab.com Google Analytics DataLayer', :js do
   let_it_be(:group) { create(:group) }
 
   before do
-    allow(Gitlab).to receive(:dev_env_or_com?).and_return(true)
+    allow(Gitlab).to receive(:com?).and_return(true)
     stub_application_setting(require_admin_approval_after_user_signup: false)
     stub_feature_flags(gitlab_gtm_datalayer: true)
     stub_config(extra: { google_tag_manager_id: google_tag_manager_id, google_tag_manager_nonce_id: google_tag_manager_id })

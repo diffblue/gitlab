@@ -7,11 +7,11 @@ RSpec.describe 'Group or Project invitations' do
   let(:project) { create(:project, :repository, namespace: group) }
   let(:group_invite) { create(:group_member, :invited, group: group) }
   let(:new_user) { build_stubbed(:user, email: group_invite.invite_email) }
-  let(:dev_env_or_com) { true }
+  let(:com) { true }
 
   before do
     stub_application_setting(require_admin_approval_after_user_signup: false)
-    allow(::Gitlab).to receive(:dev_env_or_com?).and_return(dev_env_or_com)
+    allow(::Gitlab).to receive(:com?).and_return(com)
 
     visit invite_path(group_invite.raw_invite_token)
   end
@@ -47,7 +47,7 @@ RSpec.describe 'Group or Project invitations' do
   end
 
   context 'when not on .com' do
-    let(:dev_env_or_com) { false }
+    let(:com) { false }
 
     it 'bypasses the setup_for_company question' do
       fill_in_sign_up_form(new_user)

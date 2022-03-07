@@ -15,7 +15,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
       subject { get :new }
 
       before do
-        allow(::Gitlab).to receive(:dev_env_or_com?).and_return(true)
+        allow(::Gitlab).to receive(:com?).and_return(true)
         sign_in(user)
       end
 
@@ -64,7 +64,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
     let(:extra_params) { {} }
     let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s, setup_for_company: setup_for_company } }
     let(:project_params) { { name: 'New project', path: 'project-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE, initialize_with_readme: 'true' } }
-    let(:dev_env_or_com) { true }
+    let(:com) { true }
     let(:setup_for_company) { nil }
     let(:combined_registration?) { true }
 
@@ -76,7 +76,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
     context 'with an authenticated user' do
       before do
         sign_in(user)
-        allow(::Gitlab).to receive(:dev_env_or_com?).and_return(dev_env_or_com)
+        allow(::Gitlab).to receive(:com?).and_return(com)
       end
 
       it_behaves_like 'hides email confirmation warning'
@@ -155,7 +155,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
       end
 
       context 'with signup onboarding not enabled' do
-        let(:dev_env_or_com) { false }
+        let(:com) { false }
 
         it { is_expected.to have_gitlab_http_status(:not_found) }
       end
@@ -339,7 +339,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
 
     let(:params) { { group: group_params, import_url: new_import_github_path } }
     let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s, setup_for_company: nil } }
-    let(:dev_env_or_com) { true }
+    let(:com) { true }
 
     context 'with an unauthenticated user' do
       it { is_expected.to have_gitlab_http_status(:redirect) }
@@ -349,7 +349,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
     context 'with an authenticated user' do
       before do
         sign_in(user)
-        allow(::Gitlab).to receive(:dev_env_or_com?).and_return(dev_env_or_com)
+        allow(::Gitlab).to receive(:com?).and_return(com)
       end
 
       it_behaves_like 'hides email confirmation warning'
@@ -421,7 +421,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
     context 'with an authenticated user' do
       before do
         sign_in(user)
-        allow(::Gitlab).to receive(:dev_env_or_com?).and_return(true)
+        allow(::Gitlab).to receive(:com?).and_return(true)
       end
 
       it { is_expected.to have_gitlab_http_status(:redirect) }

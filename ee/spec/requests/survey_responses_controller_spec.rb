@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe SurveyResponsesController do
   describe 'GET #index' do
     before do
-      allow(::Gitlab).to receive(:dev_env_or_com?).and_return(ondotcom)
+      allow(::Gitlab).to receive(:com?).and_return(ondotcom)
     end
 
     subject(:request) { get survey_responses_path(params) }

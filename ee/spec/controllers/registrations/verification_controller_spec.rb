@@ -14,11 +14,11 @@ RSpec.describe Registrations::VerificationController do
     end
 
     context 'with an authenticated user' do
-      let(:dev_env_or_com) { true }
+      let(:com) { true }
 
       before do
         sign_in(user)
-        allow(::Gitlab).to receive(:dev_env_or_com?).and_return(dev_env_or_com)
+        allow(::Gitlab).to receive(:com?).and_return(com)
       end
 
       context 'when on .com' do
@@ -36,7 +36,7 @@ RSpec.describe Registrations::VerificationController do
       end
 
       context 'when not on .com' do
-        let(:dev_env_or_com) { false }
+        let(:com) { false }
 
         it { is_expected.to have_gitlab_http_status(:not_found) }
       end

@@ -17,20 +17,20 @@ module EE
       end
 
       def show_buy_pipeline_minutes?(project, namespace)
-        return false unless ::Gitlab.dev_env_or_com?
+        return false unless ::Gitlab.com?
 
         show_out_of_pipeline_minutes_notification?(project, namespace)
       end
 
       def show_pipeline_minutes_notification_dot?(project, namespace)
-        return false unless ::Gitlab.dev_env_or_com?
+        return false unless ::Gitlab.com?
         return false if notification_dot_acknowledged?
 
         show_out_of_pipeline_minutes_notification?(project, namespace)
       end
 
       def show_buy_pipeline_with_subtext?(project, namespace)
-        return false unless ::Gitlab.dev_env_or_com?
+        return false unless ::Gitlab.com?
         return false unless notification_dot_acknowledged?
 
         show_out_of_pipeline_minutes_notification?(project, namespace)

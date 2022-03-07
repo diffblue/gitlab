@@ -455,7 +455,7 @@ module EE
     end
 
     def requires_credit_card?(project)
-      return false unless ::Gitlab.dev_env_or_com?
+      return false unless ::Gitlab.com?
       return false unless created_after_credit_card_release_day?(project)
 
       root_namespace = project.root_namespace

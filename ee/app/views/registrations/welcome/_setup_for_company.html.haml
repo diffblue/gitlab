@@ -1,4 +1,4 @@
-- return unless Gitlab.dev_env_or_com?
+- return unless Gitlab.com?
 
 - if user_has_memberships?
   = f.hidden_field :setup_for_company, value: true
