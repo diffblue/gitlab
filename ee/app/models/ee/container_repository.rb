@@ -31,7 +31,12 @@ module EE
           joins(project: [:namespace]).where(namespaces: { path: GITLAB_ORG_NAMESPACE })
         else
           joins(
-            project: [namespace: [gitlab_subscription: [:hosted_plan]]]
+            %{
+              INNER JOIN "projects" on "projects"."id" = "container_repositories"."project_id"
+              INNER JOIN "namespaces" on "namespaces"."id" = "projects"."namespace_id"
+              INNER JOIN "gitlab_subscriptions" on "gitlab_subscriptions"."namespace_id" = "namespaces"."traversal_ids"[1]
+              INNER JOIN "plans" on "plans"."id" = "gitlab_subscriptions"."hosted_plan_id"
+            }
           ).where(plans: { id: ::ContainerRegistry::Migration.target_plan.id })
         end
       end
