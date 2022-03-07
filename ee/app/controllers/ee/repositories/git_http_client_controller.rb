@@ -70,13 +70,13 @@ module EE
           !!CONTROLLER_AND_ACTIONS_TO_REDIRECT[controller_name]&.include?(action_name) ||
             git_receive_pack_request? ||
             redirect_to_avoid_enumeration? ||
-            not_yet_replicated_redirect?
+            out_of_date_redirect?
         end
 
-        def not_yet_replicated_redirect?
+        def out_of_date_redirect?
           return false unless project
 
-          git_upload_pack_request? && !::Geo::ProjectRegistry.repository_replicated_for?(project.id)
+          git_upload_pack_request? && ::Geo::ProjectRegistry.repository_out_of_date?(project.id)
         end
 
         private
@@ -150,7 +150,7 @@ module EE
 
         def redirect?
           return true if batch_upload?
-          return true if not_yet_replicated_redirect?
+          return true if out_of_date_redirect?
 
           false
         end
@@ -186,10 +186,10 @@ module EE
           geo_route_helper.match?('lfs_storage', 'download')
         end
 
-        def not_yet_replicated_redirect?
+        def out_of_date_redirect?
           return false unless project
 
-          (batch_download? || transfer_download?) && !::Geo::ProjectRegistry.repository_replicated_for?(project.id)
+          (batch_download? || transfer_download?) && ::Geo::ProjectRegistry.repository_out_of_date?(project.id)
         end
 
         def wanted_version

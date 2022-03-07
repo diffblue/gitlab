@@ -11,6 +11,7 @@ RSpec.describe "Git HTTP requests (Geo)", :geo do
 
   let_it_be(:project_with_repo) { create(:project, :repository, :private) }
   let_it_be(:project_no_repo) { create(:project, :private) }
+  let_it_be(:registry_with_repo) { create(:geo_project_registry, :synced, project: project_with_repo, last_repository_successful_sync_at: project_with_repo.last_repository_updated_at + 10.seconds) }
 
   let_it_be(:primary_url) { 'http://primary.example.com' }
   let_it_be(:primary_internal_url) { 'http://primary-internal.example.com' }
@@ -31,8 +32,6 @@ RSpec.describe "Git HTTP requests (Geo)", :geo do
   before do
     project_with_repo.add_maintainer(user)
     project_with_repo.add_guest(user_without_push_access)
-    create(:geo_project_registry, :synced, project: project_with_repo)
-
     project_no_repo.add_maintainer(user)
     project_no_repo.add_guest(user_without_push_access)
 

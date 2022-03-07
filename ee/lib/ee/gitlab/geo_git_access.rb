@@ -28,13 +28,13 @@ module EE
         return unless ::Gitlab::Database.read_only?
         return unless ::Gitlab::Geo.secondary_with_primary?
 
-        receive_pack? || upload_pack_and_not_replicated?
+        receive_pack? || upload_pack_and_out_of_date?
       end
 
-      def upload_pack_and_not_replicated?
+      def upload_pack_and_out_of_date?
         return false unless project
 
-        upload_pack? && !::Geo::ProjectRegistry.repository_replicated_for?(project.id)
+        upload_pack? && ::Geo::ProjectRegistry.repository_out_of_date?(project.id)
       end
 
       def messages
