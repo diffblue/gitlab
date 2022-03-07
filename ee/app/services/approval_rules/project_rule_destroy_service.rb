@@ -4,8 +4,9 @@ module ApprovalRules
   class ProjectRuleDestroyService < ::BaseService
     attr_reader :rule
 
-    def initialize(approval_rule)
+    def initialize(approval_rule, current_user)
       @rule = approval_rule
+      super(approval_rule, current_user)
     end
 
     def execute
@@ -17,6 +18,7 @@ module ApprovalRules
       end
 
       if rule.destroyed?
+        audit_deletion(rule)
         success
       else
         error(rule.errors.messages)
@@ -30,6 +32,17 @@ module ApprovalRules
         .from_project_rule(rule)
         .for_unmerged_merge_requests
         .delete_all
+    end
+
+    def audit_deletion(rule)
+      audit_context = {
+        author: current_user,
+        scope: rule.project,
+        target: rule,
+        message: 'Deleted approval rule'
+      }
+
+      ::Gitlab::Audit::Auditor.audit(audit_context)
     end
   end
 end

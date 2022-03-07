@@ -75,7 +75,7 @@ module API
         approval_rule = user_project.approval_rules.find(params[:approval_rule_id])
 
         destroy_conditionally!(approval_rule) do |rule|
-          ::ApprovalRules::ProjectRuleDestroyService.new(rule).execute
+          ::ApprovalRules::ProjectRuleDestroyService.new(rule, current_user).execute
         end
       end
     end
