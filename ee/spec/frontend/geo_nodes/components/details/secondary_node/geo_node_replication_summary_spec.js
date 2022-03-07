@@ -39,7 +39,7 @@ describe('GeoNodeReplicationSummary', () => {
 
     it('renders the GlButton as a link', () => {
       expect(findGlButton().exists()).toBe(true);
-      expect(findGlButton().attributes('href')).toBe(MOCK_NODES[1].webGeoProjectsUrl);
+      expect(findGlButton().attributes('href')).toBe(MOCK_NODES[1].webGeoReplicationDetailsUrl);
     });
 
     it('renders the geo node replication status', () => {

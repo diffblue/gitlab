@@ -48,7 +48,8 @@
     "sync_object_storage" : { "type":  "boolean" },
     "clone_protocol": { "type": "string" },
     "web_edit_url": { "type": "string" },
-    "web_geo_projects_url" : { "type": ["string", "null"] },
+    "web_geo_projects_url": { "type": ["string", "null"] },
+    "web_geo_replication_details_url" : { "type": ["string", "null"] },
     "_links": {
       "type": "object",
       "required": ["self", "repair"],

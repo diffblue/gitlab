@@ -2,11 +2,11 @@
 
 %header.py-2
   %h2.page-title
-    = _('Geo Replication')
+    = _('Geo Replication - %{node_name}' % { node_name: @target_node.name })
   %p
     = s_('Geo|Review replication status, and resynchronize and reverify items with the primary site.')
 = gl_tabs_nav({ class: 'border-top border-bottom border-secondary-100' }) do
   = gl_tab_link_to _('Projects'), admin_geo_replicables_path(replicable_name_plural: 'projects'), { title: _('Projects'), class: 'gl-mr-2' }
   = gl_tab_link_to _('Designs'), admin_geo_replicables_path(replicable_name_plural: 'designs'), { title: _('Designs'), class: 'gl-mr-2' }
   - Gitlab::Geo.enabled_replicator_classes.each do |replicator_class|
-    = gl_tab_link_to replicator_class.replicable_title_plural, admin_geo_replicables_path(replicable_name_plural: replicator_class.replicable_name_plural), { title: replicator_class.replicable_title_plural, class: 'gl-mr-2' }
+    = gl_tab_link_to replicator_class.replicable_title_plural, site_replicables_admin_geo_node_path(id: @target_node.id, replicable_name_plural: replicator_class.replicable_name_plural), { title: replicator_class.replicable_title_plural, class: 'gl-mr-2' }

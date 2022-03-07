@@ -647,6 +647,24 @@ RSpec.describe GeoNode, :request_store, :geo, type: :model do
     end
   end
 
+  describe '#geo_replication_details_url' do
+    before do
+      allow(Gitlab::Geo).to receive(:enabled_replicator_classes).and_return(
+        instance_double("Array", first: class_double("Gitlab::Geo::Replicator", replicable_name_plural: 'replicables'))
+      )
+    end
+
+    it 'returns the Geo Replicables url for the specific node' do
+      expected_url = "https://localhost:3000/gitlab/admin/geo/sites/#{new_node.id}/replication/replicables"
+
+      expect(new_node.geo_replication_details_url).to eq(expected_url)
+    end
+
+    it 'returns nil when node is a primary one' do
+      expect(primary_node.geo_replication_details_url).to be_nil
+    end
+  end
+
   describe '#missing_oauth_application?' do
     context 'on a primary node' do
       it 'returns false' do

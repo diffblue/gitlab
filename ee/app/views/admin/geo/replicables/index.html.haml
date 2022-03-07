@@ -2,4 +2,6 @@
 #js-geo-replicable{ data: { "geo-replicable-empty-svg-path" => image_path("illustrations/empty-state/geo-replication-empty.svg"),
   "geo-troubleshooting-link" => help_page_path("administration/geo/replication/troubleshooting.md"),
   "replicable-type" => @replicator_class.replicable_name_plural,
-  "graphql-field-name" => @replicator_class.graphql_field_name } }
+  "graphql-field-name" => @replicator_class.graphql_field_name,
+  "geo-target-node-id" => @target_node&.id,
+  "geo-current-node-id" => @current_node&.id } }

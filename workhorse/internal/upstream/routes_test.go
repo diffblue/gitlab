@@ -6,6 +6,22 @@ import (
 	"gitlab.com/gitlab-org/gitlab/workhorse/internal/testhelper"
 )
 
+func TestAdminGeoPathsWithGeoProxy(t *testing.T) {
+	testCases := []testCase{
+		{"Regular admin/geo", "/admin/geo", "Geo primary received request to path /admin/geo"},
+		{"Specific object replication", "/admin/geo/replication/object_type", "Geo primary received request to path /admin/geo/replication/object_type"},
+		{"Specific object replication per-site", "/admin/geo/sites/2/replication/object_type", "Geo primary received request to path /admin/geo/sites/2/replication/object_type"},
+		{"Projects replication per-site", "/admin/geo/sites/2/replication/projects", "Geo primary received request to path /admin/geo/sites/2/replication/projects"},
+		{"Designs replication per-site", "/admin/geo/sites/2/replication/designs", "Geo primary received request to path /admin/geo/sites/2/replication/designs"},
+		{"Projects replication", "/admin/geo/replication/projects", "Local Rails server received request to path /admin/geo/replication/projects"},
+		{"Projects replication subpaths", "/admin/geo/replication/projects/2", "Local Rails server received request to path /admin/geo/replication/projects/2"},
+		{"Designs replication", "/admin/geo/replication/designs", "Local Rails server received request to path /admin/geo/replication/designs"},
+		{"Designs replication subpaths", "/admin/geo/replication/designs/3", "Local Rails server received request to path /admin/geo/replication/designs/3"},
+	}
+
+	runTestCasesWithGeoProxyEnabled(t, testCases)
+}
+
 func TestProjectNotExistingGitHttpPullWithGeoProxy(t *testing.T) {
 	testCases := []testCase{
 		{"secondary info/refs", "/group/project.git/info/refs", "Local Rails server received request to path /group/project.git/info/refs"},

@@ -175,6 +175,7 @@ export const MOCK_NODES = [
     revision: 'b93c51849b',
     storageShardsMatch: true,
     webGeoProjectsUrl: 'http://127.0.0.1:3002/replication/projects',
+    webGeoReplicationDetailsUrl: 'http://127.0.0.1:3002/admin/geo/sites/2/replication/lfs_objects',
   },
 ];
 
@@ -239,6 +240,8 @@ export const MOCK_NODE_STATUSES_RES = [
     revision: 'b93c51849b',
     storage_shards_match: true,
     web_geo_projects_url: 'http://127.0.0.1:3002/replication/projects',
+    web_geo_replication_details_url:
+      'http://127.0.0.1:3002/admin/geo/sites/2/replication/lfs_objects',
   },
 ];
 

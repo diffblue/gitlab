@@ -385,11 +385,10 @@ func configureRoutes(u *upstream) {
 		u.route("", "^/oauth/geo/(auth|callback|logout)$", defaultUpstream),
 
 		// Admin Area > Geo routes
-		u.route("", "^/admin/geo$", defaultUpstream),
-		u.route("", "^/admin/geo/", defaultUpstream),
+		u.route("", "^/admin/geo/replication/projects", defaultUpstream),
+		u.route("", "^/admin/geo/replication/designs", defaultUpstream),
 
 		// Geo API routes
-		u.route("", "^/api/v4/geo_nodes", defaultUpstream),
 		u.route("", "^/api/v4/geo_replication", defaultUpstream),
 		u.route("", "^/api/v4/geo/proxy_git_ssh", defaultUpstream),
 		u.route("", "^/api/v4/geo/graphql", defaultUpstream),

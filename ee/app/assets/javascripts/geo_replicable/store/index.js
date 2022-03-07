@@ -7,11 +7,16 @@ import createState from './state';
 
 Vue.use(Vuex);
 
-export const getStoreConfig = ({ replicableType, graphqlFieldName }) => ({
+export const getStoreConfig = ({
+  replicableType,
+  graphqlFieldName,
+  geoCurrentNodeId,
+  geoTargetNodeId,
+}) => ({
   actions,
   getters,
   mutations,
-  state: createState({ replicableType, graphqlFieldName }),
+  state: createState({ replicableType, graphqlFieldName, geoCurrentNodeId, geoTargetNodeId }),
 });
 
 const createStore = (config) => new Vuex.Store(getStoreConfig(config));
