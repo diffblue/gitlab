@@ -1,9 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`App component cart_abandonment_modal experiment candidate matches the snapshot 1`] = `
-<div
-  class="gl-h-full"
->
+<div>
   <gl-modal-stub
     dismisslabel="Close"
     modalclass=""
@@ -18,20 +16,14 @@ exports[`App component cart_abandonment_modal experiment candidate matches the s
   
   </gl-modal-stub>
    
-  <step-order-app-stub
-    class="gl-h-full"
-  />
+  <step-order-app-stub />
 </div>
 `;
 
 exports[`App component cart_abandonment_modal experiment control matches the snapshot 1`] = `
-<div
-  class="gl-h-full"
->
+<div>
   <!---->
    
-  <step-order-app-stub
-    class="gl-h-full"
-  />
+  <step-order-app-stub />
 </div>
 `;
