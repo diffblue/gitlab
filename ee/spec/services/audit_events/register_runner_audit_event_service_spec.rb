@@ -116,6 +116,8 @@ RSpec.describe AuditEvents::RegisterRunnerAuditEventService do
             author_name: author[0...8],
             runner_registration_token: author[0...8],
             custom_message: 'Registered group CI runner',
+            entity_id: entity.id,
+            entity_type: entity.class.name,
             entity_path: entity.full_path,
             target_details: target_details
           }
@@ -173,6 +175,8 @@ RSpec.describe AuditEvents::RegisterRunnerAuditEventService do
             details: {
               author_name: author[0...8],
               runner_registration_token: author[0...8],
+              entity_id: entity.id,
+              entity_type: entity.class.name,
               entity_path: entity.full_path,
               target_details: target_details
             }
