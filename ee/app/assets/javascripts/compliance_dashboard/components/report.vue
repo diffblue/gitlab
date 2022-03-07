@@ -1,5 +1,5 @@
 <script>
-import { GlAlert, GlLoadingIcon, GlTable, GlLink, GlKeysetPagination } from '@gitlab/ui';
+import { GlAlert, GlButton, GlLoadingIcon, GlTable, GlLink, GlKeysetPagination } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { s__, __ } from '~/locale';
 import { thWidthClass, sortObjectToString, sortStringToObject } from '~/lib/utils/table_utility';
@@ -21,6 +21,7 @@ export default {
   name: 'ComplianceReport',
   components: {
     GlAlert,
+    GlButton,
     GlLoadingIcon,
     GlTable,
     GlLink,
@@ -114,13 +115,16 @@ export default {
       this.updateUrlQuery({ ...this.urlQuery, sort: this.sortParam });
     },
     toggleDrawer(rows) {
-      const { id, mergeRequest, project } = rows[0] || {};
+      const { mergeRequest, project } = rows[0] || {};
 
-      if (!mergeRequest || (this.showDrawer && id === this.drawerMergeRequest.id)) {
+      if (!mergeRequest || this.isCurrentDrawer(mergeRequest)) {
         this.closeDrawer();
       } else {
         this.openDrawer(mergeRequest, project);
       }
+    },
+    isCurrentDrawer(mergeRequest) {
+      return this.showDrawer && mergeRequest.id === this.drawerMergeRequest.id;
     },
     openDrawer(mergeRequest, project) {
       this.showDrawer = true;
@@ -180,6 +184,12 @@ export default {
       thClass: thWidthClass(20),
       sortable: true,
     },
+    {
+      key: 'viewDetails',
+      label: '',
+      thClass: 'gl-display-none',
+      tdClass: 'gl-md-display-none view-details',
+    },
   ],
   i18n: {
     heading: __('Compliance report'),
@@ -191,6 +201,7 @@ export default {
     learnMore: __('Learn more.'),
     prev: __('Prev'),
     next: __('Next'),
+    viewDetailsBtn: __('View details'),
   },
   documentationPath: helpPagePath('user/compliance/compliance_report/index.md', {
     anchor: 'approval-status-and-separation-of-duties',
@@ -243,6 +254,7 @@ export default {
       select-mode="single"
       hover
       selected-variant="primary"
+      class="compliance-report-table"
       thead-class="gl-border-b-solid gl-border-b-1 gl-border-b-gray-100"
       @row-selected="toggleDrawer"
       @sort-changed="handleSortChanged"
@@ -261,6 +273,11 @@ export default {
       </template>
       <template #table-busy>
         <gl-loading-icon size="lg" color="dark" class="gl-my-5" />
+      </template>
+      <template #cell(viewDetails)="{ item }">
+        <gl-button class="gl-mb-0" block @click="toggleDrawer([item])">
+          {{ $options.i18n.viewDetailsBtn }}
+        </gl-button>
       </template>
     </gl-table>
     <div v-if="showPagination" class="gl-display-flex gl-justify-content-center">

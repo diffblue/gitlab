@@ -1,4 +1,4 @@
-import { GlAlert, GlLoadingIcon, GlTable, GlLink, GlKeysetPagination } from '@gitlab/ui';
+import { GlAlert, GlButton, GlLoadingIcon, GlTable, GlLink, GlKeysetPagination } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
@@ -58,8 +58,17 @@ describe('ComplianceReport component', () => {
     findViolationsTable().findAll('tbody > tr').at(0).findAll('td');
   const findSelectedRows = () => findViolationsTable().findAll('tr.b-table-row-selected');
 
+  const findRow = (idx) => {
+    return findViolationsTable().findAll('tbody > tr').at(idx);
+  };
+
   const selectRow = async (idx) => {
-    await findViolationsTable().findAll('tbody > tr').at(idx).trigger('click');
+    await findRow(idx).trigger('click');
+    await nextTick();
+  };
+
+  const viewDetails = async (idx) => {
+    await findRow(idx).find(GlButton).trigger('click');
     await nextTick();
   };
 
@@ -206,7 +215,13 @@ describe('ComplianceReport component', () => {
     it('has the correct table headers', () => {
       const headerTexts = findTableHeaders().wrappers.map((h) => h.text());
 
-      expect(headerTexts).toStrictEqual(['Severity', 'Violation', 'Merge request', 'Date merged']);
+      expect(headerTexts).toStrictEqual([
+        'Severity',
+        'Violation',
+        'Merge request',
+        'Date merged',
+        '',
+      ]);
     });
 
     it('has the correct first row data', () => {
@@ -217,6 +232,7 @@ describe('ComplianceReport component', () => {
         'Approved by committer',
         'Officiis architecto voluptas ut sit qui qui quisquam sequi consectetur porro.',
         'in 1 year',
+        'View details',
       ]);
     });
 
@@ -247,23 +263,8 @@ describe('ComplianceReport component', () => {
     });
 
     describe('with the merge request drawer', () => {
-      it('opens the drawer', async () => {
-        const drawerData = mapViolations(mockResolver().mergeRequestViolations.nodes)[0];
-
-        await selectRow(0);
-
-        expect(findMergeRequestDrawer().props('showDrawer')).toBe(true);
-        expect(findMergeRequestDrawer().props('mergeRequest')).toStrictEqual(
-          stripTypenames(drawerData.mergeRequest),
-        );
-        expect(findMergeRequestDrawer().props('project')).toStrictEqual(
-          stripTypenames(drawerData.project),
-        );
-      });
-
       it('closes the drawer via the drawer close event', async () => {
         await selectRow(0);
-        expect(findSelectedRows()).toHaveLength(1);
 
         await findMergeRequestDrawer().vm.$emit('close');
 
@@ -273,31 +274,48 @@ describe('ComplianceReport component', () => {
         expect(findMergeRequestDrawer().props('project')).toStrictEqual({});
       });
 
-      it('closes the drawer via the row-selected event', async () => {
-        await selectRow(0);
+      describe.each`
+        rowAction      | eventDescription
+        ${viewDetails} | ${'view details button is clicked'}
+        ${selectRow}   | ${'row is selected'}
+      `('when a $eventDescription', ({ rowAction, eventDescription }) => {
+        it('opens then drawer', async () => {
+          const drawerData = mapViolations(mockResolver().mergeRequestViolations.nodes)[0];
 
-        expect(findSelectedRows()).toHaveLength(1);
+          await rowAction(0);
 
-        await selectRow(0);
+          expect(findMergeRequestDrawer().props('showDrawer')).toBe(true);
+          expect(findMergeRequestDrawer().props('mergeRequest')).toStrictEqual(
+            stripTypenames(drawerData.mergeRequest),
+          );
+          expect(findMergeRequestDrawer().props('project')).toStrictEqual(
+            stripTypenames(drawerData.project),
+          );
+        });
 
-        expect(findMergeRequestDrawer().props('showDrawer')).toBe(false);
-        expect(findMergeRequestDrawer().props('mergeRequest')).toStrictEqual({});
-        expect(findMergeRequestDrawer().props('project')).toStrictEqual({});
-      });
+        it(`closes the drawer when the same ${eventDescription} again`, async () => {
+          await rowAction(0);
+          await rowAction(0);
 
-      it('swaps the drawer when a new row is selected', async () => {
-        const drawerData = mapViolations(mockResolver().mergeRequestViolations.nodes)[1];
+          expect(findMergeRequestDrawer().props('showDrawer')).toBe(false);
+          expect(findMergeRequestDrawer().props('mergeRequest')).toStrictEqual({});
+          expect(findMergeRequestDrawer().props('project')).toStrictEqual({});
+        });
 
-        await selectRow(0);
-        await selectRow(1);
+        it(`swaps the drawer when another ${eventDescription}`, async () => {
+          const drawerData = mapViolations(mockResolver().mergeRequestViolations.nodes)[1];
 
-        expect(findMergeRequestDrawer().props('showDrawer')).toBe(true);
-        expect(findMergeRequestDrawer().props('mergeRequest')).toStrictEqual(
-          stripTypenames(drawerData.mergeRequest),
-        );
-        expect(findMergeRequestDrawer().props('project')).toStrictEqual(
-          stripTypenames(drawerData.project),
-        );
+          await rowAction(0);
+          await rowAction(1);
+
+          expect(findMergeRequestDrawer().props('showDrawer')).toBe(true);
+          expect(findMergeRequestDrawer().props('mergeRequest')).toStrictEqual(
+            stripTypenames(drawerData.mergeRequest),
+          );
+          expect(findMergeRequestDrawer().props('project')).toStrictEqual(
+            stripTypenames(drawerData.project),
+          );
+        });
       });
     });
 
