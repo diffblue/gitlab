@@ -60,15 +60,7 @@ module QA
           settings.expand_mirroring_repositories do |mirror_settings|
             mirror_settings.update(source_project_uri) # rubocop:disable Rails/SaveBang
 
-            # Use the API to wait until the update was successful (pull mirroring is treated as an import)
-            mirror_succeeded = mirror_settings.wait_until(reload: false, max_duration: 180, sleep_interval: 1, raise_on_failure: false) do
-              target_project.reload!
-              target_project.api_resource[:import_status] == "finished"
-            end
-
-            unless mirror_succeeded
-              raise "Mirroring failed with error: #{target_project.api_resource[:import_error]}"
-            end
+            target_project.wait_for_pull_mirroring
 
             mirror_settings.verify_update(source_project_uri)
           end
@@ -77,7 +69,7 @@ module QA
         # Check that the target project has the commit from the source
         target_project.visit!
         Page::Project::Show.perform do |project|
-          expect { project.has_file?('README.md') }.to eventually_be_truthy.within(max_duration: 60), "Expected a file named README.md but it did not appear."
+          expect { project.has_file?('README.md') }.to eventually_be_truthy.within(max_duration: 60, reload_page: page), "Expected a file named README.md but it did not appear."
           expect(project).to have_readme_content('This is a pull mirroring test project')
           expect(project).to have_text("Mirrored from #{masked_url(source_project_uri)}")
         end

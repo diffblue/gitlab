@@ -29,7 +29,11 @@ module QA
             mirror_settings.authentication_method = 'Password'
             mirror_settings.password = Runtime::User.admin_password
             mirror_settings.mirror_repository
-            mirror_settings.update source_project_uri # rubocop:disable Rails/SaveBang
+            mirror_settings.update(source_project_uri) # rubocop:disable Rails/SaveBang
+
+            target_project.wait_for_pull_mirroring
+
+            mirror_settings.verify_update(source_project_uri)
           end
         end
 
@@ -37,7 +41,7 @@ module QA
         target_project.visit!
 
         Page::Project::Show.perform do |project|
-          expect { project.has_file?('README.md') }.to eventually_be_truthy.within(max_duration: 60), "Expected a file named README.md but it did not appear."
+          expect { project.has_file?('README.md') }.to eventually_be_truthy.within(max_duration: 60, reload_page: page), "Expected a file named README.md but it did not appear."
           expect(project).to have_readme_content('This is a pull mirroring test project')
           expect(project).to have_text("Mirrored from #{masked_url(source_project_uri)}")
         end
