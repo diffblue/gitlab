@@ -79,7 +79,7 @@ export default {
       'hasValueStreams',
     ]),
     shouldRenderEmptyState() {
-      return !this.isLoadingValueStreams && !this.hasValueStreams;
+      return this.isLoadingValueStreams || !this.hasValueStreams;
     },
     shouldDisplayFilters() {
       return !this.errorCode && !this.hasNoAccessError;
@@ -203,7 +203,9 @@ export default {
   <div>
     <value-stream-empty-state
       v-if="shouldRenderEmptyState"
+      :is-loading="isLoadingValueStreams"
       :empty-state-svg-path="emptyStateSvgPath"
+      :has-date-range-error="!hasDateRangeSet"
     />
     <div v-else class="gl-max-w-full">
       <div
