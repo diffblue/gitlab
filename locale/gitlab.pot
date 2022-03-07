@@ -2589,6 +2589,9 @@ msgstr ""
 msgid "AdminSettings|A Let's Encrypt account will be configured for this GitLab instance using this email address. You will receive emails to warn of expiring certificates. %{link_start}Learn more.%{link_end}"
 msgstr ""
 
+msgid "AdminSettings|Affects all new and existing groups."
+msgstr ""
+
 msgid "AdminSettings|All new projects can use the instance's shared runners by default."
 msgstr ""
 
@@ -2664,6 +2667,9 @@ msgstr ""
 msgid "AdminSettings|Set a CI/CD template as the required pipeline configuration for all projects in the instance. Project CI/CD configuration merges into the required pipeline configuration when the pipeline runs. %{link_start}What is a required pipeline configuration?%{link_end}"
 msgstr ""
 
+msgid "AdminSettings|Set the initial name and protections for the default branch of new repositories created in the instance."
+msgstr ""
+
 msgid "AdminSettings|Set the maximum size of GitLab Pages per project (0 for unlimited). %{link_start}Learn more.%{link_end}"
 msgstr ""
 
@@ -2671,9 +2677,6 @@ msgid "AdminSettings|Size and domain settings for Pages static sites."
 msgstr ""
 
 msgid "AdminSettings|The default domain to use for Auto Review Apps and Auto Deploy stages in all projects."
-msgstr ""
-
-msgid "AdminSettings|The default name for the initial branch of new repositories created in the instance."
 msgstr ""
 
 msgid "AdminSettings|The latest artifacts for all jobs in the most recent successful pipelines in each project are stored and do not expire."
@@ -3591,7 +3594,7 @@ msgstr ""
 msgid "Allow only the selected protocols to be used for Git access."
 msgstr ""
 
-msgid "Allow owners to manage default branch protection per group"
+msgid "Allow owners to manage default branch protection per group."
 msgstr ""
 
 msgid "Allow owners to manually add users outside of LDAP"
@@ -11564,9 +11567,6 @@ msgstr ""
 msgid "Default branch and protected branches"
 msgstr ""
 
-msgid "Default branch protection"
-msgstr ""
-
 msgid "Default delayed project deletion"
 msgstr ""
 
@@ -11583,9 +11583,6 @@ msgid "Default first day of the week"
 msgstr ""
 
 msgid "Default first day of the week in calendars and date pickers."
-msgstr ""
-
-msgid "Default initial branch name"
 msgstr ""
 
 msgid "Default project deletion protection"
@@ -17662,13 +17659,13 @@ msgstr ""
 msgid "GroupSettings|Select the project that contains your custom Insights file."
 msgstr ""
 
+msgid "GroupSettings|Set the initial name and protections for the default branch of new repositories created in the group."
+msgstr ""
+
 msgid "GroupSettings|Set the maximum size of GitLab Pages for this group. %{link_start}Learn more.%{link_end}"
 msgstr ""
 
 msgid "GroupSettings|The Auto DevOps pipeline runs if no alternative CI configuration file is found."
-msgstr ""
-
-msgid "GroupSettings|The default name for the initial branch of new repositories created in the group."
 msgstr ""
 
 msgid "GroupSettings|The projects in this subgroup can be selected as templates for new projects created in the group. %{link_start}Learn more.%{link_end}"
@@ -19602,6 +19599,12 @@ msgid "Inherited"
 msgstr ""
 
 msgid "Inherited:"
+msgstr ""
+
+msgid "Initial default branch name"
+msgstr ""
+
+msgid "Initial default branch protection"
 msgstr ""
 
 msgid "Inline"
