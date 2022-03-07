@@ -23020,6 +23020,9 @@ msgstr ""
 msgid "Merge request dependencies"
 msgstr ""
 
+msgid "Merge request diff sha parameter is required for the merge quick action."
+msgstr ""
+
 msgid "Merge request events"
 msgstr ""
 
