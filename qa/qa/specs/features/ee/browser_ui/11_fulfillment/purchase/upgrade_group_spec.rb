@@ -9,7 +9,7 @@ module QA
         let(:hash) { SecureRandom.hex(4) }
         let(:user) do
           Resource::User.fabricate_via_api! do |user|
-            user.email = "gitlab-qa+#{hash}@gitlab.com"
+            user.email = "test-user-#{hash}@gitlab.com"
             user.api_client = Runtime::API::Client.as_admin
             user.hard_delete_on_api_removal = true
           end
@@ -20,13 +20,12 @@ module QA
         # that has a Subscription attached
         let(:group) do
           Resource::Sandbox.fabricate! do |sandbox|
-            sandbox.path = "gitlab-qa-group-#{hash}"
+            sandbox.path = "test-group-fulfillment#{hash}"
             sandbox.api_client = Runtime::API::Client.as_admin
           end
         end
 
         before do
-          group.add_member(user, Resource::Members::AccessLevel::OWNER)
           Flow::Login.sign_in(as: user)
 
           group.visit!
