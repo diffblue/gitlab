@@ -2,6 +2,8 @@ package upstream
 
 import (
 	"testing"
+
+	"gitlab.com/gitlab-org/gitlab/workhorse/internal/testhelper"
 )
 
 func TestProjectNotExistingGitHttpPullWithGeoProxy(t *testing.T) {
@@ -41,6 +43,18 @@ func TestProjectNotExistingGitSSHPushWithGeoProxy(t *testing.T) {
 		{"GitLab Shell call to allowed", "/api/v4/internal/allowed", "Local Rails server received request to path /api/v4/internal/allowed"},
 		{"GitLab Shell call to info/refs", "/api/v4/geo/proxy_git_ssh/info_refs_upload_pack", "Local Rails server received request to path /api/v4/geo/proxy_git_ssh/info_refs_upload_pack"},
 		{"GitLab Shell call to receive_pack", "/api/v4/geo/proxy_git_ssh/upload_pack", "Local Rails server received request to path /api/v4/geo/proxy_git_ssh/upload_pack"},
+	}
+
+	runTestCasesWithGeoProxyEnabled(t, testCases)
+}
+
+func TestAssetsServedLocallyWithGeoProxy(t *testing.T) {
+	path := "/assets/static.txt"
+	content := "local geo asset"
+	testhelper.SetupStaticFileHelper(t, path, content, testDocumentRoot)
+
+	testCases := []testCase{
+		{"assets path", "/assets/static.txt", "local geo asset"},
 	}
 
 	runTestCasesWithGeoProxyEnabled(t, testCases)
