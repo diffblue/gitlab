@@ -39,7 +39,7 @@ RSpec.describe 'Multiple Issue Boards', :js do
 
       click_button board.name
 
-      expect(page).not_to have_content('Some of your boards are hidden, activate a license to see them again.')
+      expect(page).not_to have_content('Some of your boards are hidden, add a license to see them again.')
     end
 
     it 'shows a license warning when group has more than one board' do
@@ -50,7 +50,7 @@ RSpec.describe 'Multiple Issue Boards', :js do
 
       click_button board.name
 
-      expect(page).to have_content('Some of your boards are hidden, activate a license to see them again.')
+      expect(page).to have_content('Some of your boards are hidden, add a license to see them again.')
     end
   end
 

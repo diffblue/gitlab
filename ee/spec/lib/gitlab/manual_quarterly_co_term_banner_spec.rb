@@ -140,7 +140,7 @@ RSpec.describe Gitlab::ManualQuarterlyCoTermBanner do
               "You have more active users than are allowed by your license. Before #{next_reconciliation_date} " \
                 "GitLab must reconcile your subscription. To complete this process, export your license usage " \
                 "file and email it to #{Gitlab::SubscriptionPortal::RENEWAL_SERVICE_EMAIL}. A new license will " \
-                "be emailed to the email address registered in the Customers Portal. You can upload this license " \
+                "be emailed to the email address registered in the Customers Portal. You can add this license " \
                 "to your instance."
             )
           end
@@ -167,7 +167,7 @@ RSpec.describe Gitlab::ManualQuarterlyCoTermBanner do
             "You have more active users than are allowed by your license. GitLab must now reconcile your " \
               "subscription. To complete this process, export your license usage file and email it to " \
               "#{Gitlab::SubscriptionPortal::RENEWAL_SERVICE_EMAIL}. A new license will be emailed to the " \
-              "email address registered in the Customers Portal. You can upload this license to your instance."
+              "email address registered in the Customers Portal. You can add this license to your instance."
           )
         end
       end

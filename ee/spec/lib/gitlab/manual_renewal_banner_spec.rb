@@ -144,7 +144,7 @@ RSpec.describe Gitlab::ManualRenewalBanner do
             expect(body).to eq(
               "To renew, export your license usage file and email it to " \
                 "#{Gitlab::SubscriptionPortal::RENEWAL_SERVICE_EMAIL}. A new license will be emailed to the email " \
-                "address registered in the Customers Portal. You can upload this license to your instance."
+                "address registered in the Customers Portal. You can add this license to your instance."
             )
           end
         end
@@ -169,7 +169,7 @@ RSpec.describe Gitlab::ManualRenewalBanner do
           expect(body).to eq(
             "Your subscription is now expired. To renew, export your license usage file and email it to " \
               "#{Gitlab::SubscriptionPortal::RENEWAL_SERVICE_EMAIL}. A new license will be emailed to the email " \
-              "address registered in the Customers Portal. You can upload this license to your instance. To use " \
+              "address registered in the Customers Portal. You can add this license to your instance. To use " \
               "Free tier, remove your current license."
           )
         end
