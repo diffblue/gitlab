@@ -86,6 +86,7 @@ module EE
       scope :from_id, -> (epic_id) { where('epics.id >= ?', epic_id) }
 
       scope :with_web_entity_associations, -> { preload(:author, group: [:ip_restrictions, :route]) }
+      scope :with_api_entity_associations, -> { preload(:author, :labels) }
 
       scope :within_timeframe, -> (start_date, end_date) do
         where('start_date is not NULL or end_date is not NULL')

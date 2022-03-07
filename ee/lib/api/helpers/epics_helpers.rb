@@ -11,6 +11,10 @@ module API
         forbidden! unless user_group.licensed_feature_available?(:subepics)
       end
 
+      def authorize_related_epics_feature!
+        forbidden! unless user_group.licensed_feature_available?(:related_epics)
+      end
+
       def authorize_can_read!
         authorize!(:read_epic, epic)
       end
@@ -56,11 +60,12 @@ module API
       end
       # rubocop: enable CodeReuse/ActiveRecord
 
-      def epic_options
+      def epic_options(entity: EE::API::Entities::Epic, issuable_metadata: nil)
         {
-          with: EE::API::Entities::Epic,
+          with: entity,
           user: current_user,
-          group: user_group
+          group: user_group,
+          issuable_metadata: issuable_metadata
         }
       end
     end
