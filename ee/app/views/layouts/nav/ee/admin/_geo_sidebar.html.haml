@@ -14,11 +14,10 @@
         = link_to admin_geo_nodes_path, title: _('Sites') do
           %span
             = _('Sites')
-      - if Gitlab::Geo.secondary?
-        = nav_link(controller: %w(admin/geo/projects admin/geo/uploads admin/geo/designs admin/geo/replicables)) do
-          = link_to admin_geo_projects_path, title: _('Replication') do
-            %span
-              = _('Replication')
+      = nav_link(controller: %w(admin/geo/projects admin/geo/uploads admin/geo/designs admin/geo/replicables)) do
+        = link_to admin_geo_projects_path, title: _('Replication') do
+          %span
+            = _('Replication')
       = nav_link(path: 'admin/geo/settings#show') do
         = link_to admin_geo_settings_path, title: _('Settings') do
           %span

@@ -53,7 +53,14 @@ namespace :admin do
     get '/projects', to: redirect(path: 'admin/geo/replication/projects')
     get '/designs', to: redirect(path: 'admin/geo/replication/designs')
 
-    resources :nodes, path: 'sites', only: [:index, :create, :new, :edit, :update]
+    resources :nodes, path: 'sites', only: [:index, :create, :new, :edit, :update] do
+      member do
+        scope '/replication' do
+          get '/', to: 'nodes#index'
+          get '/:replicable_name_plural', to: 'replicables#index', as: 'site_replicables'
+        end
+      end
+    end
 
     # Old Route Replaced in 14.7
     get '/nodes', to: redirect(path: 'admin/geo/sites')
@@ -61,7 +68,7 @@ namespace :admin do
     get '/nodes/:id/edit', to: redirect(path: 'admin/geo/sites/%{id}/edit')
 
     scope '/replication' do
-      get '/', to: redirect(path: 'admin/geo/replication/projects')
+      get '/', to: redirect(path: 'admin/geo/sites')
 
       resources :projects, only: [:index, :destroy] do
         member do

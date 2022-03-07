@@ -7,12 +7,13 @@ RSpec.describe 'admin Geo Replication Nav', :js, :geo do
   include StubENV
 
   let_it_be(:admin) { create(:admin) }
+  let_it_be(:secondary_node) { create(:geo_node) }
 
   before do
     stub_licensed_features(geo: true)
     sign_in(admin)
     gitlab_enable_admin_mode_sign_in(admin)
-    stub_secondary_node
+    stub_current_geo_node(secondary_node)
   end
 
   shared_examples 'active sidebar link' do |link_name|

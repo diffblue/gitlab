@@ -38,7 +38,7 @@ export default {
         variant="confirm"
         icon="external-link"
         category="secondary"
-        :href="node.webGeoProjectsUrl"
+        :href="node.webGeoReplicationDetailsUrl"
         target="_blank"
         >{{ $options.i18n.replicationDetailsButton }}</gl-button
       >
