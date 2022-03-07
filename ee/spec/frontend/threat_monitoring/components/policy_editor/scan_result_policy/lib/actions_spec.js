@@ -25,11 +25,18 @@ const groupApprover = {
   web_url: null,
 };
 
+const actionDataWithoutApprovers = {
+  approvals_required: 1,
+  type: 'require_approval',
+};
+
 const unknownApprover = { id: 3, name: null };
 
 const allApprovers = [userApprover, groupApprover];
 
 const groupedApprovers = groupApprovers(allApprovers);
+
+const userOnlyGroupedApprovers = groupApprovers([userApprover]);
 
 describe('groupApprovers', () => {
   describe('with mixed approvers', () => {
@@ -104,7 +111,8 @@ describe('groupApprovers', () => {
 
 describe('decomposeApprovers', () => {
   it('returns a copy of approvers adding id fields for both group and users', () => {
-    expect(decomposeApprovers({}, groupedApprovers)).toStrictEqual({
+    expect(decomposeApprovers(actionDataWithoutApprovers, groupedApprovers)).toStrictEqual({
+      ...actionDataWithoutApprovers,
       group_approvers_ids: [groupApprover.id],
       user_approvers_ids: [userApprover.id],
     });
@@ -112,26 +120,40 @@ describe('decomposeApprovers', () => {
 
   it('removes group_approvers and user_approvers keys only keeping the id fields', () => {
     expect(
-      decomposeApprovers({ user_approvers: null, group_approvers: null }, groupedApprovers),
+      decomposeApprovers(
+        { ...actionDataWithoutApprovers, user_approvers: null, group_approvers: null },
+        groupedApprovers,
+      ),
     ).toStrictEqual({
+      ...actionDataWithoutApprovers,
       group_approvers_ids: [groupApprover.id],
       user_approvers_ids: [userApprover.id],
     });
   });
 
-  it('preserves any other keys in addition to the id fields', () => {
-    expect(decomposeApprovers({ existingKey: null }, groupedApprovers)).toStrictEqual({
-      group_approvers_ids: [groupApprover.id],
+  it('returns only user info when group info is empty', () => {
+    expect(
+      decomposeApprovers({ ...actionDataWithoutApprovers }, userOnlyGroupedApprovers),
+    ).toStrictEqual({
+      ...actionDataWithoutApprovers,
       user_approvers_ids: [userApprover.id],
-      existingKey: null,
     });
   });
 
-  it('returns empty id fields if there is only unknown types', () => {
-    expect(decomposeApprovers({}, [unknownApprover])).toStrictEqual({
-      group_approvers_ids: [],
-      user_approvers_ids: [],
+  it('removes unrelated keys', () => {
+    expect(
+      decomposeApprovers({ ...actionDataWithoutApprovers, existingKey: null }, groupedApprovers),
+    ).toStrictEqual({
+      ...actionDataWithoutApprovers,
+      group_approvers_ids: [groupApprover.id],
+      user_approvers_ids: [userApprover.id],
     });
+  });
+
+  it('does not returns any approvers for unknown types', () => {
+    expect(decomposeApprovers(actionDataWithoutApprovers, [unknownApprover])).toStrictEqual(
+      actionDataWithoutApprovers,
+    );
   });
 });
 

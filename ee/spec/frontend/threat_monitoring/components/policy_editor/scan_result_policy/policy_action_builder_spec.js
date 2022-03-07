@@ -117,7 +117,6 @@ describe('PolicyActionBuilder', () => {
         {
           approvals_required: ACTION.approvals_required,
           user_approvers_ids: [APPROVER_2.id],
-          group_approvers_ids: [],
         },
       ],
     ]);
@@ -140,7 +139,6 @@ describe('PolicyActionBuilder', () => {
         {
           approvals_required: ACTION.approvals_required,
           user_approvers_ids: [APPROVER_1.id, APPROVER_2.id, NEW_APPROVER.id],
-          group_approvers_ids: [],
         },
       ],
     ]);
