@@ -28,6 +28,9 @@
       %a.nav-link#pipelines-quota{ data: { toggle: "tab", action: '#pipelines-quota-tab' }, href: '#pipelines-quota-tab', 'aria-controls': '#pipelines-quota-tab', 'aria-selected': false }
         = s_('UsageQuota|Pipelines')
     %li.nav-item
+      %a.nav-link#shared-runners-usage-quota{ data: { toggle: "tab", action: '#shared-runners-usage-quota-tab' }, href: '#shared-runners-usage-quota-tab', 'aria-controls': '#shared-runners-usage-quota-tab', 'aria-selected': false }
+        = s_('CICDAnalytics|Shared runner usage')
+    %li.nav-item
       %a.nav-link#storage-quota{ data: { toggle: "tab", action: '#storage-quota-tab' }, href: '#storage-quota-tab', 'aria-controls': '#storage-quota-tab', 'aria-selected': false }
         = s_('UsageQuota|Storage')
 .tab-content
@@ -37,5 +40,7 @@
     #js-ci-minutes-usage-group{ data: { namespace_id: @group.id } }
     = render "namespaces/pipelines_quota/list",
       locals: { namespace: @group, projects: @projects }
+  .tab-pane#shared-runners-usage-quota-tab
+    #js-shared-runner-usage-quota{ data: { namespace_id: @group.id } }
   .tab-pane#storage-quota-tab
     #js-storage-counter-app{ data: { namespace_path: @group.full_path, purchase_storage_url: url_to_purchase_storage, buy_addon_target_attr: buy_addon_target_attr, is_temporary_storage_increase_visible: temporary_storage_increase_visible?(@group).to_s } }
