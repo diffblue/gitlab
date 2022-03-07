@@ -5,7 +5,7 @@ module Analytics
     class DataLoaderService
       include Validations
 
-      MAX_UPSERT_COUNT = 10_000
+      MAX_UPSERT_COUNT = 50_000
       UPSERT_LIMIT = 1000
       BATCH_LIMIT = 500
       EVENTS_LIMIT = 25
@@ -15,11 +15,10 @@ module Analytics
         MergeRequest => { event_model: MergeRequestStageEvent, project_column: :target_project_id }.freeze
       }.freeze
 
-      def initialize(group:, model:, cursor: nil, updated_at_before: Time.current)
+      def initialize(group:, model:, context: Analytics::CycleAnalytics::AggregationContext.new)
         @group = group
         @model = model
-        @cursor = cursor
-        @updated_at_before = updated_at_before
+        @context = context
         @upsert_count = 0
 
         load_stages # ensure stages are loaded/created
@@ -29,8 +28,9 @@ module Analytics
         error_response = validate
         return error_response if error_response
 
-        response = success(:model_processed, cursor: {})
+        response = success(:model_processed, context: context)
 
+        context.processing_start!
         iterator.each_batch(of: BATCH_LIMIT) do |records|
           loaded_records = records.to_a
 
@@ -38,22 +38,27 @@ module Analytics
 
           load_timestamp_data_into_value_stream_analytics(loaded_records)
 
+          context.processed_records += loaded_records.size
+          context.cursor = cursor_for_node(loaded_records.last)
+
           if upsert_count >= MAX_UPSERT_COUNT
-            response = success(:limit_reached, cursor: cursor_for_node(loaded_records.last))
+            response = success(:limit_reached, context: context)
             break
           end
         end
+
+        context.processing_finished!
 
         response
       end
 
       private
 
-      attr_reader :group, :model, :cursor, :updated_at_before, :upsert_count, :stages
+      attr_reader :group, :model, :context, :upsert_count, :stages
 
       # rubocop: disable CodeReuse/ActiveRecord
       def iterator_base_scope
-        model.updated_before(updated_at_before).order(:updated_at, :id)
+        model.order(:updated_at, :id)
       end
       # rubocop: enable CodeReuse/ActiveRecord
 
@@ -66,7 +71,7 @@ module Analytics
           }
         }
 
-        Gitlab::Pagination::Keyset::Iterator.new(scope: iterator_base_scope, cursor: cursor, **opts)
+        Gitlab::Pagination::Keyset::Iterator.new(scope: iterator_base_scope, cursor: context.cursor, **opts)
       end
       # rubocop: enable CodeReuse/ActiveRecord
 

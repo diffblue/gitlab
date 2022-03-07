@@ -80,6 +80,7 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService do
       expect(service_response).to be_success
       expect(service_response.payload[:reason]).to eq(:model_processed)
       expect(Analytics::CycleAnalytics::IssueStageEvent.count).to eq(0)
+      expect(service_response[:context].processed_records).to eq(0)
     end
 
     it 'loads nothing for MergeRequest model' do
@@ -88,6 +89,7 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService do
       expect(service_response).to be_success
       expect(service_response.payload[:reason]).to eq(:model_processed)
       expect(Analytics::CycleAnalytics::MergeRequestStageEvent.count).to eq(0)
+      expect(service_response[:context].processed_records).to eq(0)
     end
 
     context 'when MergeRequest data is present' do
@@ -123,14 +125,6 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService do
         end
 
         expect(event_data.sort).to match_array(expected_data.sort)
-      end
-
-      it 'inserts records with record.updated_at < updated_at_before' do
-        described_class.new(group: top_level_group, model: MergeRequest, updated_at_before: 7.days.ago).execute
-
-        mr_ids = Analytics::CycleAnalytics::MergeRequestStageEvent.pluck(:merge_request_id)
-
-        expect(mr_ids).to match_array([mr3.id])
       end
 
       it 'inserts nothing for group outside of the hierarchy' do
@@ -169,13 +163,15 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService do
           stub_const('Analytics::CycleAnalytics::DataLoaderService::BATCH_LIMIT', 1)
 
           service_response = described_class.new(group: top_level_group, model: MergeRequest).execute
-          cursor = service_response.payload[:cursor]
+          ctx = service_response.payload[:context]
 
           expect(Analytics::CycleAnalytics::MergeRequestStageEvent.count).to eq(1)
 
-          described_class.new(group: top_level_group, model: MergeRequest, cursor: cursor).execute
+          described_class.new(group: top_level_group, model: MergeRequest, context: ctx).execute
 
           expect(Analytics::CycleAnalytics::MergeRequestStageEvent.count).to eq(2)
+          expect(ctx.processed_records).to eq(2)
+          expect(ctx.runtime).to be > 0
         end
       end
     end
