@@ -28957,6 +28957,8 @@ CREATE INDEX index_security_scans_on_pipeline_id ON security_scans USING btree (
 
 CREATE INDEX index_security_scans_on_project_id ON security_scans USING btree (project_id);
 
+CREATE UNIQUE INDEX index_security_training_providers_on_unique_name ON security_training_providers USING btree (name);
+
 CREATE INDEX index_security_trainings_on_project_id ON security_trainings USING btree (project_id);
 
 CREATE INDEX index_security_trainings_on_provider_id ON security_trainings USING btree (provider_id);
