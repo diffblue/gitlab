@@ -18,11 +18,9 @@
     .project-templates-buttons.import-buttons.tab-pane.active#built-in
       = render partial: 'projects/project_templates/template', collection: Gitlab::ProjectTemplate.all + Gitlab::SampleDataTemplate.all
     .project-templates-buttons.import-buttons.tab-pane.js-custom-instance-project-templates-tab-content#custom-instance-project-templates{ data: {initial_templates: user_available_project_templates_path(current_user)} }
-      .text-center.m-4
-        .gl-spinner.gl-spinner-md
+      = gl_loading_icon(size: 'md', css_class: 'gl-mt-4')
     .project-templates-buttons.import-buttons.tab-pane.js-custom-group-project-templates-tab-content#custom-group-project-templates{ data: {initial_templates: user_available_group_templates_path(current_user, group_id: group_id)} }
-      .text-center.m-4
-        .gl-spinner.gl-spinner-md
+      = gl_loading_icon(size: 'md', css_class: 'gl-mt-4')
 
   .project-fields-form
     = render 'projects/project_templates/project_fields_form'
