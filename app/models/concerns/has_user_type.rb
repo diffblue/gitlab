@@ -48,6 +48,8 @@ module HasUserType
   end
 
   def secure_name(viewing_user)
+    return self.name unless self.project_bot?
+
     if self.groups.any?
       return self.name if viewing_user&.can?(:read_group, self.groups.first)
     end

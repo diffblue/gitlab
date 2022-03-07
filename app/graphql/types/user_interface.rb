@@ -134,8 +134,6 @@ module Types
     end
 
     def redacted_name
-      return object.name unless object.project_bot?
-
       object.secure_name(context[:current_user])
     end
   end
