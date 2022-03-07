@@ -370,12 +370,12 @@ RSpec.describe Geo::ProjectRegistry, :geo do
     end
   end
 
-  describe '.repository_replicated_for?' do
+  describe '.repository_out_of_date?' do
     let_it_be(:project) { create(:project) }
 
     context 'for a non-Geo setup' do
-      it 'returns true' do
-        expect(described_class.repository_replicated_for?(project.id)).to be_truthy
+      it 'returns false' do
+        expect(described_class.repository_out_of_date?(project.id)).to be_falsey
       end
     end
 
@@ -387,8 +387,8 @@ RSpec.describe Geo::ProjectRegistry, :geo do
       context 'for a Geo Primary' do
         let(:current_node) { create(:geo_node, :primary) }
 
-        it 'returns true' do
-          expect(described_class.repository_replicated_for?(project.id)).to be_truthy
+        it 'returns false' do
+          expect(described_class.repository_out_of_date?(project.id)).to be_falsey
         end
       end
 
@@ -396,8 +396,8 @@ RSpec.describe Geo::ProjectRegistry, :geo do
         let(:current_node) { create(:geo_node) }
 
         context 'where Primary node is not configured' do
-          it 'returns true' do
-            expect(described_class.repository_replicated_for?(project.id)).to be_truthy
+          it 'returns false' do
+            expect(described_class.repository_out_of_date?(project.id)).to be_falsey
           end
         end
 
@@ -407,29 +407,46 @@ RSpec.describe Geo::ProjectRegistry, :geo do
           end
 
           context 'where project_registry entry does not exist' do
-            it 'returns false' do
-              project_without_registry = create(:project)
-
-              expect(described_class.repository_replicated_for?(project_without_registry.id)).to be_falsey
+            it 'returns true' do
+              expect(described_class.repository_out_of_date?(project.id)).to be_truthy
             end
           end
 
           context 'where project_registry entry does exist' do
-            context 'where last_repository_successful_sync_at is not set' do
+            context 'where last_repository_updated_at is not set' do
               it 'returns false' do
-                project_with_failed_registry = create(:project)
-                create(:geo_project_registry, :repository_sync_failed, project: project_with_failed_registry)
+                registry = create(:geo_project_registry, :synced)
+                registry.project.update!(last_repository_updated_at: nil)
 
-                expect(described_class.repository_replicated_for?(project_with_failed_registry.id)).to be_falsey
+                expect(described_class.repository_out_of_date?(registry.project_id)).to be_falsey
               end
             end
 
-            context 'where last_repository_successful_sync_at is set' do
-              it 'returns true' do
-                project_with_synced_registry = create(:project)
-                create(:geo_project_registry, :synced, project: project_with_synced_registry)
+            context 'where last_repository_updated_at is set' do
+              context 'where last_repository_successful_sync_at is not set' do
+                it 'returns true' do
+                  registry = create(:geo_project_registry, :repository_sync_failed)
 
-                expect(described_class.repository_replicated_for?(project_with_synced_registry.id)).to be_truthy
+                  expect(described_class.repository_out_of_date?(registry.project_id)).to be_truthy
+                end
+              end
+
+              context 'where last_repository_successful_sync_at is set' do
+                context 'where the latest repo change has probably not been synced yet' do
+                  it 'returns true' do
+                    create(:geo_project_registry, :synced, project: project, last_repository_successful_sync_at: project.last_repository_updated_at - 1.minute)
+
+                    expect(described_class.repository_out_of_date?(project.id)).to be_truthy
+                  end
+                end
+
+                context 'where the latest repo change has probably been synced' do
+                  it 'returns false' do
+                    create(:geo_project_registry, :synced, project: project, last_repository_successful_sync_at: project.last_repository_updated_at + 1.minute)
+
+                    expect(described_class.repository_out_of_date?(project.id)).to be_falsey
+                  end
+                end
               end
             end
           end

@@ -228,10 +228,29 @@ class Geo::ProjectRegistry < Geo::BaseRegistry
     where(id: start..finish)
   end
 
-  def self.repository_replicated_for?(project_id)
-    return true unless ::Gitlab::Geo.secondary_with_primary?
+  # @return [Boolean] whether the project repository is out-of-date on this site
+  def self.repository_out_of_date?(project_id)
+    return false unless ::Gitlab::Geo.secondary_with_primary?
 
-    where(project_id: project_id).where.not(last_repository_successful_sync_at: nil).exists?
+    registry = find_by(project_id: project_id)
+
+    # Out-of-date if registry or project don't exist
+    return true if registry.nil? || registry.project.nil?
+
+    # Up-to-date if there is no timestamp for the latest change to the repo
+    return false unless registry.project.last_repository_updated_at
+
+    # Out-of-date if the repo has never been synced
+    return true unless registry.last_repository_successful_sync_at
+
+    # Return whether the latest change is replicated
+    #
+    # Current limitations:
+    #
+    # - We assume last_repository_updated_at is a timestamp of the latest change
+    # - last_repository_updated_at is also touched when a project wiki is updated
+    # - last_repository_updated_at touches are throttled within Event::REPOSITORY_UPDATED_AT_INTERVAL minutes
+    registry.last_repository_successful_sync_at <= registry.project.last_repository_updated_at
   end
 
   # Must be run before fetching the repository to avoid a race condition
