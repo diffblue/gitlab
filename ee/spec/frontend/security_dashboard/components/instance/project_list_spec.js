@@ -7,7 +7,7 @@ import projectsQuery from 'ee/security_dashboard/graphql/queries/instance_projec
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import ProjectAvatar from '~/vue_shared/components/deprecated_project_avatar/default.vue';
+import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 
 Vue.use(VueApollo);
 
@@ -19,6 +19,7 @@ const generateMockProjects = (count) => {
       id: i,
       name: `project${i}`,
       nameWithNamespace: `group/project${i}`,
+      avatarUrl: '/avatar',
     });
   }
 
@@ -97,7 +98,14 @@ describe('Project List component', () => {
     });
 
     it('renders a project item with an avatar', () => {
-      expect(getFirstProjectItem().findComponent(ProjectAvatar).exists()).toBe(true);
+      const projectAvatar = getFirstProjectItem().findComponent(ProjectAvatar);
+      const project = projects[0];
+
+      expect(projectAvatar.exists()).toBe(true);
+      expect(projectAvatar.props()).toMatchObject({
+        projectName: project.name,
+        projectAvatarUrl: project.avatarUrl,
+      });
     });
 
     it('renders a project item with a project name', () => {
