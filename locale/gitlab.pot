@@ -371,11 +371,6 @@ msgid_plural "%d projects selected"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "%d request with warnings"
-msgid_plural "%d requests with warnings"
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "%d second"
 msgid_plural "%d seconds"
 msgstr[0] ""
