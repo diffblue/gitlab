@@ -55,31 +55,65 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::CancelPendingPipelines do
       context 'when the previous pipeline has a child pipeline' do
         let(:child_pipeline) { create(:ci_pipeline, child_of: prev_pipeline) }
 
-        context 'when the child pipeline has an interruptible job' do
+        context 'when the child pipeline has only interruptible running jobs' do
           before do
+            create(:ci_build, :interruptible, :running, pipeline: child_pipeline)
             create(:ci_build, :interruptible, :running, pipeline: child_pipeline)
           end
 
-          it 'cancels interruptible builds of child pipeline' do
-            expect(build_statuses(child_pipeline)).to contain_exactly('running')
+          it 'cancels all child pipeline builds' do
+            expect(build_statuses(child_pipeline)).to contain_exactly('running', 'running')
 
             perform
 
-            expect(build_statuses(child_pipeline)).to contain_exactly('canceled')
+            expect(build_statuses(child_pipeline)).to contain_exactly('canceled', 'canceled')
+          end
+
+          context 'when the child pipeline includes completed interruptible jobs' do
+            before do
+              create(:ci_build, :interruptible, :failed, pipeline: child_pipeline)
+              create(:ci_build, :interruptible, :success, pipeline: child_pipeline)
+            end
+
+            it 'cancels all child pipeline builds with a cancelable_status' do
+              expect(build_statuses(child_pipeline)).to contain_exactly('running', 'running', 'failed', 'success')
+
+              perform
+
+              expect(build_statuses(child_pipeline)).to contain_exactly('canceled', 'canceled', 'failed', 'success')
+            end
           end
         end
 
-        context 'when the child pipeline has not an interruptible job' do
+        context 'when the child pipeline has started non-interruptible job' do
           before do
-            create(:ci_build, :running, pipeline: child_pipeline)
+            create(:ci_build, :interruptible, :running, pipeline: child_pipeline)
+            # non-iterruptible started
+            create(:ci_build, :success, pipeline: child_pipeline)
           end
 
-          it 'does not cancel the build of child pipeline' do
-            expect(build_statuses(child_pipeline)).to contain_exactly('running')
+          it 'does not cancel any child pipeline builds' do
+            expect(build_statuses(child_pipeline)).to contain_exactly('running', 'success')
 
             perform
 
-            expect(build_statuses(child_pipeline)).to contain_exactly('running')
+            expect(build_statuses(child_pipeline)).to contain_exactly('running', 'success')
+          end
+        end
+
+        context 'when the child pipeline has non-interruptible non-started job' do
+          before do
+            create(:ci_build, :interruptible, :running, pipeline: child_pipeline)
+            # non-iterruptible but non-started
+            create(:ci_build, :created, pipeline: child_pipeline)
+          end
+
+          it 'cancels all child pipeline builds' do
+            expect(build_statuses(child_pipeline)).to contain_exactly('running', 'created')
+
+            perform
+
+            expect(build_statuses(child_pipeline)).to contain_exactly('canceled', 'canceled')
           end
         end
       end
