@@ -1,8 +1,7 @@
 - page_title _('SAML SSO for %{group_name}') % { group_name: @group_name }
 
 - if @auto_redirect_to_provider
-  .gl-spinner-container
-    .gl-spinner.gl-spinner-dark.gl-spinner-lg{ aria: { label: 'Loading' } }
+  = gl_loading_icon(size: 'lg')
   .gl-text-center.gl-mt-7
     %h4= _('Reauthenticating with SAML provider.')
   = saml_link _('Sign in with Single Sign-On'), @group_path, id: 'js-auto-redirect-to-provider', html_class: 'gl-display-none', redirect: @redirect_path
