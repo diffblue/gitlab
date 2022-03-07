@@ -462,9 +462,6 @@ msgstr ""
 msgid "%{address} is an invalid IP address range"
 msgstr ""
 
-msgid "%{anchorOpen}Learn more%{anchorClose} about how you can customize / disable registration on your instance."
-msgstr ""
-
 msgid "%{author_link} cloned %{original_issue} to %{new_issue}."
 msgstr ""
 
@@ -1984,6 +1981,9 @@ msgid "AccountValidation|unsubscribe"
 msgstr ""
 
 msgid "AccountValidation|you may %{unsubscribe_link} at any time."
+msgstr ""
+
+msgid "Acknowledge"
 msgstr ""
 
 msgid "Action"
@@ -4206,6 +4206,9 @@ msgid "Any milestone"
 msgstr ""
 
 msgid "Any namespace"
+msgstr ""
+
+msgid "Anyone can register for an account."
 msgstr ""
 
 msgid "App ID"
@@ -25632,6 +25635,9 @@ msgstr ""
 msgid "Only admins can delete project"
 msgstr ""
 
+msgid "Only allow anyone to register for accounts on GitLab instances that you intend to be used by anyone. Allowing anyone to register makes GitLab instances more vulnerable."
+msgstr ""
+
 msgid "Only effective when remote storage is enabled. Set to 0 for no size limit."
 msgstr ""
 
@@ -25702,9 +25708,6 @@ msgid "Open in your IDE"
 msgstr ""
 
 msgid "Open raw"
-msgstr ""
-
-msgid "Open registration is enabled on your instance."
 msgstr ""
 
 msgid "Open sidebar"
@@ -40607,9 +40610,6 @@ msgid "View replaced file @ "
 msgstr ""
 
 msgid "View seat usage"
-msgstr ""
-
-msgid "View setting"
 msgstr ""
 
 msgid "View supported languages and frameworks"
