@@ -73,11 +73,11 @@ RSpec.describe Boards::IssuesController do
         end
 
         context 'with search param' do
-          it 'returns matching issues using optimized search' do
+          it 'returns matching issues' do
             create(:labeled_issue, project: project_1, labels: [planning], title: 'Test Issue')
             create(:labeled_issue, project: project_1, labels: [planning], title: 'Sample Issue')
 
-            list_issues user: user, board: board, list: list1, search: 'Te'
+            list_issues user: user, board: board, list: list1, search: 'test'
 
             expect(response).to match_response_schema('issues')
             expect(json_response['issues'].length).to eq 1

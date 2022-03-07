@@ -218,6 +218,10 @@ RSpec.describe Boards::Issues::ListService, services: true do
       end
 
       context 'when search param is present' do
+        before do
+          stub_feature_flags(issues_full_text_search: false)
+        end
+
         it 'returns correct issues' do
           params = { board_id: board.id, search: 'Iss' }
 
