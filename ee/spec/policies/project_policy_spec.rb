@@ -45,7 +45,7 @@ RSpec.describe ProjectPolicy do
         create_merge_request_in award_emoji
         read_project_security_dashboard read_security_resource read_vulnerability_scanner
         read_software_license_policy
-        read_threat_monitoring read_merge_train
+        read_merge_train
         read_release
         read_project_audit_events
       ]
@@ -64,7 +64,7 @@ RSpec.describe ProjectPolicy do
       let(:current_user) { auditor }
 
       before do
-        stub_licensed_features(security_dashboard: true, license_scanning: true, threat_monitoring: true)
+        stub_licensed_features(security_dashboard: true, license_scanning: true)
       end
 
       context 'who is not a team member' do
@@ -701,70 +701,6 @@ RSpec.describe ProjectPolicy do
       it do
         is_expected.to be_disallowed(*permissions)
       end
-    end
-  end
-
-  describe 'read_threat_monitoring' do
-    context 'when threat monitoring feature is available' do
-      before do
-        stub_feature_flags(threat_monitoring: true)
-        stub_licensed_features(threat_monitoring: true)
-      end
-
-      context 'with developer or higher role' do
-        where(role: %w[owner maintainer developer])
-
-        with_them do
-          let(:current_user) { public_send(role) }
-
-          it { is_expected.to be_allowed(:read_threat_monitoring) }
-        end
-      end
-
-      context 'with admin' do
-        let(:current_user) { admin }
-
-        context 'when admin mode enabled', :enable_admin_mode do
-          it { is_expected.to be_allowed(:read_threat_monitoring) }
-        end
-
-        context 'when admin mode disabled' do
-          it { is_expected.to be_disallowed(:read_threat_monitoring) }
-        end
-      end
-
-      context 'with less than developer role' do
-        where(role: %w[reporter guest])
-
-        with_them do
-          let(:current_user) { public_send(role) }
-
-          it { is_expected.to be_disallowed(:read_threat_monitoring) }
-        end
-      end
-
-      context 'with non member' do
-        let(:current_user) { non_member }
-
-        it { is_expected.to be_disallowed(:read_threat_monitoring) }
-      end
-
-      context 'with anonymous' do
-        let(:current_user) { anonymous }
-
-        it { is_expected.to be_disallowed(:read_threat_monitoring) }
-      end
-    end
-
-    context 'when threat monitoring feature is not available' do
-      let(:current_user) { admin }
-
-      before do
-        stub_feature_flags(threat_monitoring: false)
-        stub_licensed_features(threat_monitoring: false)
-      end
-
-      it { is_expected.to be_disallowed(:read_threat_monitoring) }
     end
   end
 
