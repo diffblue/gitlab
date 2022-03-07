@@ -197,6 +197,15 @@ module EE
         end
       end
 
+      def epic_link_type
+        return unless respond_to?(:related_epic_link_type_value) && respond_to?(:related_epic_link_source_id)
+
+        type = ::Epic::RelatedEpicLink.link_types.key(related_epic_link_type_value) || ::Epic::RelatedEpicLink::TYPE_RELATES_TO
+        return type if related_epic_link_source_id == id
+
+        ::Epic::RelatedEpicLink.inverse_link_type(type)
+      end
+
       private
 
       def set_fixed_start_date

@@ -1028,4 +1028,31 @@ RSpec.describe Epic do
       end
     end
   end
+
+  describe '#epic_link_type' do
+    let_it_be(:source_epic) { create(:epic, group: group) }
+    let_it_be(:target_epic) { create(:epic, group: group) }
+    let_it_be(:epic_link) { create(:related_epic_link, link_type: ::IssuableLink::TYPE_BLOCKS, source: source_epic, target: target_epic) }
+
+    before do
+      stub_licensed_features(epics: true, related_epics: true)
+      group.add_developer(user)
+    end
+
+    it 'returns nil if link_type attributes are not available' do
+      expect(source_epic.epic_link_type).to be_nil
+    end
+
+    it 'returns link type value for sources' do
+      related_epics = source_epic.related_epics(user)
+
+      expect(related_epics.first.epic_link_type).to eq ::IssuableLink::TYPE_BLOCKS
+    end
+
+    it 'returns inverse link type value for targets' do
+      related_epics = target_epic.related_epics(user)
+
+      expect(related_epics.first.epic_link_type).to eq ::IssuableLink::TYPE_IS_BLOCKED_BY
+    end
+  end
 end
