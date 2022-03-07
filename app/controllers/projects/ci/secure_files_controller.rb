@@ -5,8 +5,6 @@ class Projects::Ci::SecureFilesController < Projects::ApplicationController
 
   feature_category :pipeline_authoring
 
-  urgency :low, [:show]
-
   def show
   end
 
