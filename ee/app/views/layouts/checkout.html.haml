@@ -1,8 +1,9 @@
 !!! 5
 %html.subscriptions-layout-html{ lang: 'en' }
   = render 'layouts/head'
-  %body.ui-indigo.d-flex.vh-100{ data: body_data }
+  %body.ui-indigo.gl-display-flex{ data: body_data }
     = render "layouts/header/logo_with_title"
-    = render "layouts/broadcast"
-    .container.d-flex.gl-flex-direction-column.m-0
-      = yield
+    .container.gl-display-flex.gl-flex-direction-column.gl-m-0.gl-px-0
+      = render "layouts/broadcast"
+      .gl-px-5
+        = yield
