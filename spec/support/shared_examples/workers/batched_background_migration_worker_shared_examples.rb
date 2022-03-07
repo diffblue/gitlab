@@ -55,6 +55,16 @@ RSpec.shared_examples 'it runs batched background migration jobs' do |tracking_d
 
         expect { worker.perform }.not_to raise_error
       end
+
+      it 'logs a message indicating execution is skipped' do
+        expect(Sidekiq.logger).to receive(:info) do |payload|
+          expect(payload[:class]).to eq(described_class.name)
+          expect(payload[:database]).to eq(tracking_database)
+          expect(payload[:message]).to match(/skipping migration execution/)
+        end
+
+        expect { worker.perform }.not_to raise_error
+      end
     end
 
     context 'when the base model does exist' do
