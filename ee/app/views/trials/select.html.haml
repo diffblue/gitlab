@@ -26,7 +26,7 @@
           = label_tag :trial_entity, _('Who will be using GitLab?')
           .gl-form-checkbox-group
             .gl-form-checkbox.form-check.form-check-inline
-              = radio_button_tag :trial_entity, :company, params[:trial_entity]=='company', required: true, class: 'form-check-input'
+              = radio_button_tag :trial_entity, :company, params[:trial_entity]=='company', required: true, class: 'form-check-input', data: { qa_selector: 'trial_company' }
               = label_tag :trial_entity_company, _('My company or team'), class: 'form-check-label'
             .gl-form-checkbox.form-check.form-check-inline
               = radio_button_tag :trial_entity, :individual, params[:trial_entity]=='individual', required: true, class: 'form-check-input', data: { qa_selector: 'trial_individual' }
