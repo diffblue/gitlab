@@ -48,7 +48,7 @@ RSpec.shared_examples_for 'license type fields' do
       describe 'id' do
         let(:field_name) { :id }
 
-        it { is_expected.to eq(license.to_global_id) }
+        it { is_expected.to include(license.license_id.to_s) }
       end
 
       describe 'type' do
