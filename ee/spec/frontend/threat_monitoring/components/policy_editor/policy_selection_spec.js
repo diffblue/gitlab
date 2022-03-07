@@ -17,7 +17,6 @@ describe('PolicySelection component', () => {
 
   describe.each`
     id                                                          | title
-    ${POLICY_TYPE_COMPONENT_OPTIONS.container.urlParameter}     | ${PolicySelection.i18n.networkPolicyTitle}
     ${POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter}    | ${PolicySelection.i18n.scanResultPolicyTitle}
     ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter} | ${PolicySelection.i18n.scanExecutionPolicyTitle}
   `('selection card: $title', ({ id, title }) => {

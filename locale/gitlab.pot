@@ -33578,9 +33578,6 @@ msgstr ""
 msgid "SecurityOrchestration|All policies"
 msgstr ""
 
-msgid "SecurityOrchestration|Allow all inbound traffic to all pods from all pods on ports 443/TCP."
-msgstr ""
-
 msgid "SecurityOrchestration|An error occurred assigning your security policy project"
 msgstr ""
 
@@ -33635,9 +33632,6 @@ msgstr ""
 msgid "SecurityOrchestration|If any scanner finds a newly detected critical vulnerability in an open merge request targeting the master branch, then require two approvals from any member of App security."
 msgstr ""
 
-msgid "SecurityOrchestration|If you are using Auto DevOps, your %{monospacedStart}auto-deploy-values.yaml%{monospacedEnd} file will not be updated if you change a policy in this section. Auto DevOps users should make changes by following the %{linkStart}Container Network Policy documentation%{linkEnd}."
-msgstr ""
-
 msgid "SecurityOrchestration|Invalid policy type"
 msgstr ""
 
@@ -33645,9 +33639,6 @@ msgid "SecurityOrchestration|Latest scan run against %{agent}"
 msgstr ""
 
 msgid "SecurityOrchestration|Network"
-msgstr ""
-
-msgid "SecurityOrchestration|Network policy"
 msgstr ""
 
 msgid "SecurityOrchestration|New network policy"
@@ -33815,9 +33806,6 @@ msgstr ""
 msgid "SecurityOrchestration|Use a scan result policy to create rules that ensure security issues are checked before merging a merge request."
 msgstr ""
 
-msgid "SecurityOrchestration|Use network policies to create firewall rules for network connections in your Kubernetes cluster."
-msgstr ""
-
 msgid "SecurityOrchestration|View policy project"
 msgstr ""
 
@@ -33873,9 +33861,6 @@ msgid "SecurityOrchestration|vulnerability"
 msgstr ""
 
 msgid "SecurityPolicies|+%{count} more"
-msgstr ""
-
-msgid "SecurityPolicies|Environment(s)"
 msgstr ""
 
 msgid "SecurityPolicies|Policy type"

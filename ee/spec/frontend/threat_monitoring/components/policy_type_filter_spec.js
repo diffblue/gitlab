@@ -23,7 +23,6 @@ describe('PolicyTypeFilter component', () => {
   it.each`
     value                                                   | expectedToggleText
     ${POLICY_TYPE_OPTIONS.ALL.value}                        | ${POLICY_TYPE_OPTIONS.ALL.text}
-    ${POLICY_TYPE_OPTIONS.POLICY_TYPE_NETWORK.value}        | ${POLICY_TYPE_OPTIONS.POLICY_TYPE_NETWORK.text}
     ${POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_EXECUTION.value} | ${POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_EXECUTION.text}
   `('selects the correct option when value is "$value"', ({ value, expectedToggleText }) => {
     createWrapper(value);
@@ -45,9 +44,11 @@ describe('PolicyTypeFilter component', () => {
     expect(wrapper.emitted('input')).toBeUndefined();
 
     wrapper
-      .findByTestId(`policy-type-${POLICY_TYPE_OPTIONS.POLICY_TYPE_NETWORK.value}-option`)
+      .findByTestId(`policy-type-${POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_EXECUTION.value}-option`)
       .trigger('click');
 
-    expect(wrapper.emitted('input')).toEqual([[POLICY_TYPE_OPTIONS.POLICY_TYPE_NETWORK.value]]);
+    expect(wrapper.emitted('input')).toEqual([
+      [POLICY_TYPE_OPTIONS.POLICY_TYPE_SCAN_EXECUTION.value],
+    ]);
   });
 });
