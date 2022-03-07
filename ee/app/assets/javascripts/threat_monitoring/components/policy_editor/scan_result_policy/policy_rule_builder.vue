@@ -157,7 +157,7 @@ export default {
     <gl-button
       icon="remove"
       category="tertiary"
-      class="gl-absolute gl-top-3 gl-right-3"
+      class="gl-absolute gl-top-1 gl-right-1"
       :aria-label="__('Remove')"
       data-testid="remove-rule"
       @click="$emit('remove', $event)"
