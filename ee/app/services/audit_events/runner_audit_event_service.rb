@@ -19,6 +19,7 @@ module AuditEvents
         target_type: runner.class.name,
         target_details: runner_path
       }
+      details.merge!(entity_id: @token_scope.id, entity_type: @token_scope.class.name) if @token_scope
 
       if author.is_a?(String)
         author = author[0...8]
