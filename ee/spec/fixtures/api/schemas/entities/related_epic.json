@@ -1,0 +1,30 @@
+{
+  "type": "object",
+  "allOf": [
+    {
+      "required" : [
+        "id",
+        "confidential",
+        "title",
+        "state",
+        "created_at",
+        "closed_at",
+        "reference",
+        "path",
+        "link_type"
+      ],
+      "properties" : {
+        "id": { "type": "integer" },
+        "confidential": { "type": "boolean" },
+        "title": { "type": "string" },
+        "state": { "type": "string" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "closed_at": { "type": ["string", "null"], "format": "date-time" },
+        "reference": { "type": "string" },
+        "path": { "type": "string" },
+        "link_type": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  ]
+}
