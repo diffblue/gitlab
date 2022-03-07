@@ -11,11 +11,6 @@ RSpec.describe Groups::DeployTokens::DestroyService do
   describe '#execute' do
     subject { described_class.new(entity, user, deploy_token_params).execute }
 
-    it "destroys a token record and it's associated DeployToken" do
-      expect { subject }.to change { GroupDeployToken.count }.by(-1)
-                                                             .and change { DeployToken.count }.by(-1)
-    end
-
     it "creates an audit event" do
       expect { subject }.to change { AuditEvent.count }.by(1)
 
