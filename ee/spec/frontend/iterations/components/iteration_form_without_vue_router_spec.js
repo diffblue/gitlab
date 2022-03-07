@@ -237,9 +237,9 @@ describe('Iteration Form', () => {
         props: propsWithIteration,
       });
 
+      // remove input from edit page
       findTitle().vm.$emit('input', '');
       findStartDate().vm.$emit('input', null);
-
       findTitle().trigger('change');
       findStartDate().trigger('change');
 

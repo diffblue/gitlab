@@ -49,8 +49,8 @@ export default {
       loading: false,
       title: this.iteration.title,
       description: this.iteration.description ?? '',
-      startDate: this.iteration.startDate,
-      dueDate: this.iteration.dueDate,
+      startDate: this.iteration.startDate ? new Date(this.iteration.startDate) : null,
+      dueDate: this.iteration.dueDate ? new Date(this.iteration.dueDate) : null,
       showValidation: false,
     };
   },

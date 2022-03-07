@@ -29,6 +29,8 @@ RSpec.describe 'User edits iteration' do
       with_them do
         let(:iteration_page) { using_cadences ? group_iteration_cadence_iteration_path(group, iteration_cadence_id: cadence.id, id: iteration.id) : group_iteration_path(iteration.group, iteration.id) }
         let(:edit_iteration_page) { using_cadences ? edit_group_iteration_cadence_iteration_path(group, iteration_cadence_id: cadence.id, id: iteration.id) : edit_group_iteration_path(iteration.group, iteration.id) }
+        let(:start_date_input) { using_cadences ? start_date_with_cadences : start_date_without_cadences}
+        let(:due_date_input) { using_cadences ? due_date_with_cadences : due_date_without_cadences }
 
         context 'load edit page directly', :js do
           before do
@@ -52,8 +54,16 @@ RSpec.describe 'User edits iteration' do
 
             fill_in('Title', with: updated_title)
             fill_in('Description', with: updated_desc)
-            fill_in('Start date', with: updated_start_date.strftime('%Y-%m-%d'))
-            fill_in('Due date', with: updated_due_date.strftime('%Y-%m-%d'))
+
+            if using_cadences
+              fill_in('Start date', with: updated_start_date.strftime('%Y-%m-%d'))
+              fill_in('Due date', with: updated_due_date.strftime('%Y-%m-%d'))
+            else
+              start_date_input.set(updated_start_date)
+              due_date_input.set(updated_due_date)
+              due_date_input.set(updated_due_date)
+            end
+
             click_button('Update iteration')
 
             aggregate_failures do
@@ -132,12 +142,24 @@ RSpec.describe 'User edits iteration' do
       page.find('#iteration-description')
     end
 
-    def start_date_input
+    def start_date_with_cadences
       page.find('#iteration-start-date')
     end
 
-    def due_date_input
+    def due_date_with_cadences
       page.find('#iteration-due-date')
+    end
+
+    def start_date_without_cadences
+      input = page.first('[data-testid="gl-datepicker-input"]')
+      input.set(now - 1.day)
+      input
+    end
+
+    def due_date_without_cadences
+      input = all('[data-testid="gl-datepicker-input"]').last
+      input.set(now)
+      input
     end
   end
 end
