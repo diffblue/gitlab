@@ -3,12 +3,10 @@
 - expired_tokens = active_tokens.select(&:expired_but_not_enforced?)
 - return unless expired_tokens.present?
 
-.gl-alert.gl-alert-danger.js-token-expiry-callout.gl-mb-3{ role: 'alert', data: { feature_id: "profile_personal_access_token_expiry", dismiss_endpoint: callouts_path, defer_links: "true" } }
-  .gl-alert-container
-    = sprite_icon('error', css_class: 'gl-icon s16 gl-alert-icon')
-    %button.js-close.btn.gl-dismiss-btn.btn-default.btn-sm.gl-button.btn-default-tertiary.btn-icon{ type: 'button', 'aria-label' => _('Dismiss') }
-      = sprite_icon('close', css_class: 'gl-button-icon gl-icon s16')
-    .gl-alert-content
-      %h4.gl-alert-title= n_('%d token has expired', '%d tokens have expired', expired_tokens.size) % expired_tokens.size
-      .gl-alert-body
-        = _('Until revoked, expired personal access tokens pose a security risk.')
+= render 'shared/global_alert',
+  title: n_('%d token has expired', '%d tokens have expired', expired_tokens.size) % expired_tokens.size,
+  alert_class: 'gl-mb-3 js-token-expiry-callout',
+  alert_data: { feature_id: "profile_personal_access_token_expiry", dismiss_endpoint: callouts_path, defer_links: 'true' },
+  variant: :danger do
+  .gl-alert-body
+    = _('Until revoked, expired personal access tokens pose a security risk.')
