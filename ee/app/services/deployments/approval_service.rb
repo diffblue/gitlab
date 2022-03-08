@@ -2,11 +2,11 @@
 
 module Deployments
   class ApprovalService < ::BaseService
-    def execute(deployment, status)
+    def execute(deployment:, status:, comment: nil)
       error_message = validate(deployment, status)
       return error(error_message) if error_message
 
-      approval = upsert_approval(deployment, status)
+      approval = upsert_approval(deployment, status, comment)
       return error(approval.errors.full_messages) if approval.errors.any?
 
       process_build!(deployment, approval)
@@ -16,13 +16,13 @@ module Deployments
 
     private
 
-    def upsert_approval(deployment, status)
+    def upsert_approval(deployment, status, comment)
       if (approval = deployment.approvals.find_by_user_id(current_user.id))
         return approval if approval.status == status
 
-        approval.tap { |a| a.update(status: status) }
+        approval.tap { |a| a.update(status: status, comment: comment) }
       else
-        deployment.approvals.create(user: current_user, status: status)
+        deployment.approvals.create(user: current_user, status: status, comment: comment)
       end
     end
 

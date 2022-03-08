@@ -2,11 +2,17 @@
   "type": "object",
   "required": [
     "status",
-    "user"
+    "user",
+    "created_at",
+    "comment"
   ],
   "properties": {
     "status": {
-      "type": "string"
+      "type": "string",
+      "enum": [
+        "approved",
+        "rejected"
+      ]
     },
     "user": {
       "type": "object",
@@ -17,6 +23,10 @@
     "created_at": {
       "type": "string",
       "format": "date-time"
+    },
+    "comment": {
+      "type": ["string", "null"],
+      "maxLength": 255
     }
   },
   "additionalProperties": false

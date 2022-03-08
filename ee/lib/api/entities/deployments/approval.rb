@@ -7,6 +7,7 @@ module API
         expose :user, using: Entities::UserBasic
         expose :status
         expose :created_at
+        expose :comment
       end
     end
   end

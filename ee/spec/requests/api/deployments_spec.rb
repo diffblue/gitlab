@@ -267,6 +267,20 @@ RSpec.describe API::Deployments do
             expect(json_response['status']).to eq('approved')
             expect(json_response.dig('user', 'id')).to eq(user.id)
           end
+
+          it 'creates a rejection' do
+            expect { post(api(path, user), params: { status: 'rejected' }) }.to change { Deployments::Approval.count }.by(1)
+
+            expect(response).to have_gitlab_http_status(:success)
+            expect(json_response['status']).to eq('rejected')
+          end
+
+          it 'creates an approval with a comment' do
+            expect { post(api(path, user), params: { status: 'approved', comment: 'LGTM!' }) }.to change { Deployments::Approval.count }.by(1)
+
+            expect(response).to have_gitlab_http_status(:success)
+            expect(json_response['comment']).to eq('LGTM!')
+          end
         end
 
         context 'and user is not authorized to update deployment' do
