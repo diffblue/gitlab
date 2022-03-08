@@ -9,42 +9,7 @@
     %h2.gl-pb-5.gl-my-0
       = _("About your company")
 
-      #js-company-registration-form
-  
-    -# = form_for(new_users_sign_up_company_path, :html => { :novalidate => 'novalidate', }) do |f|
-    -#   .row
-    -#     .col.form-group
-    -#       = f.label :company_name, s_('Company name'), for: :company_name, class: 'col-form-label'
-    -#       = f.text_field :company_name, class: 'form-control gl-form-input', required: true
-    -#     .col.form-group.gl-select2-html5-required-fix
-    -#       = f.label :company_size, s_('Number of employees'), for: :company_size, class: 'col-form-label'
-    -#       = select_tag :company_size, company_size_options_for_select(params[:company_size]), class: 'select2', required: true
-    -#   .row
-    -#     .form-group.col-sm-12.gl-select2-html5-required-fix
-    -#       = render 'shared/groups/country_or_region_selector'
-    -#   .row
-    -#     .form-group.col-sm-12
-    -#       = f.label :phone_number, s_('Telephone number'), for: :phone_number, class: 'col-form-label'
-    -#       = telephone_field_tag :phone_number, params[:phone_number], pattern: '^(\+)*[0-9-\s]+$', class: 'form-control', required: true
-    -#       %p.gray-500= _('Allowed characters: +, 0-9, -, and spaces.')
-    -#   .row
-    -#     .form-group.col-sm-12
-    -#       = f.label :website, s_('Website (Optional)'), for: :website, class: 'col-form-label'
-    -#       = f.text_field :website, class: 'form-control gl-form-input'
-    -#   .row
-    -#     .form-group.col-sm-12
-    -#       = f.label :trial_toggle, s_('GitLab Ultimate trial (optional)'), for: :trial_toggle, class: 'col-form-label'
-    -#       %p= html_escape(('Try all GitLab features for free for 30 days. No credit card required.')) % { br_tag: '<br/>'.html_safe }
-    -#       .js-trial-toggle{ data: { active: true } }
-    -#       .gl-toggle-wrapper.gl-display-flex.gl-flex-direction-column.gl-mb-0.gl-w-max-content
-    -#         %button.gl-toggle
-    -#           %span.toggle-icon
-    -#             %svg.gl-icon.s16
-    -#               %use{:href => "/_nuxt/img/icons.e1c5b62.svg#close"}
-      .row
-        .form-group.col-sm-4.gl-mb-0
-          -# = button_tag class: %w[btn gl-button btn-confirm gl-w-full!] do
-          -#   = _('Continue')
+      #js-company-registration-form{ data: { active: params[:trial] == 'true' } }
 
   .col-md-4.gl-display-inline-flex.gl-vertical-align-middle
     = image_tag 'illustrations/saas-trial-illustration.svg', alt: '', class: 'gl-display-none d-md-inline gl-w-full'

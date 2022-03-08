@@ -5,11 +5,15 @@ import RegistrationForm from '../components/registration_form.vue';
 export default () => {
   const el = document.querySelector('#js-company-registration-form');
 
+  const { active } = el.dataset;
+
   return new Vue({
     el,
     apolloProvider,
     render(createElement) {
-      return createElement(RegistrationForm);
+      return createElement(RegistrationForm, {
+        props: { active },
+      });
     },
   });
 };
