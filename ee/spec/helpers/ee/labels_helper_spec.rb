@@ -8,24 +8,6 @@ RSpec.describe LabelsHelper do
   let(:scoped_label) { build_stubbed(:label, name: 'key::value', project: project).present(issuable_subject: nil) }
 
   describe '#render_label' do
-    context 'with scoped labels enabled' do
-      before do
-        stub_licensed_features(scoped_labels: true)
-      end
-
-      it 'right text span does not have .gl-label-text-dark class if label color is dark' do
-        scoped_label.color = '#D10069'
-
-        expect(render_label(scoped_label)).not_to match(%r(<span.*gl-label-text-dark.*>#{scoped_label.scoped_label_value}</span>)m)
-      end
-
-      it 'right text span has .gl-label-text-dark class if label color is light' do
-        scoped_label.color = '#FFECDB'
-
-        expect(render_label(scoped_label)).to match(%r(<span.*gl-label-text-dark.*>#{scoped_label.scoped_label_value}</span>)m)
-      end
-    end
-
     context 'with scoped labels disabled' do
       before do
         stub_licensed_features(scoped_labels: false)
