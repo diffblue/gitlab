@@ -183,10 +183,6 @@ class Integration < ApplicationRecord
     self.supported_events.map { |event| IntegrationsHelper.integration_event_field_name(event) }
   end
 
-  def self.supported_event_actions
-    %w[]
-  end
-
   def self.supported_events
     %w[commit push tag_push issue confidential_issue merge_request wiki_page]
   end
@@ -471,10 +467,6 @@ class Integration < ApplicationRecord
     else
       events
     end
-  end
-
-  def configurable_event_actions
-    self.class.supported_event_actions
   end
 
   def supported_events
