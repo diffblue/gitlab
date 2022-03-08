@@ -18,7 +18,7 @@ RSpec.describe 'compliance_management/compliance_framework/_project_settings.htm
   it 'shows the section description' do
     render
 
-    expect(rendered).to have_text 'Select a compliance framework to apply to this project. Learn more.'
+    expect(rendered).to have_text 'Select a compliance framework to apply to this project. How are these added?'
   end
 
   context 'group has compliance frameworks' do
@@ -47,7 +47,7 @@ RSpec.describe 'compliance_management/compliance_framework/_project_settings.htm
       it 'shows the no permissions text' do
         render
 
-        expect(rendered).to have_text('Customizable by owners.')
+        expect(rendered).to have_text('Owners can modify this selection.')
       end
 
       it 'disables the dropdown' do
@@ -67,10 +67,16 @@ RSpec.describe 'compliance_management/compliance_framework/_project_settings.htm
       group.compliance_management_frameworks.delete_all
     end
 
-    it 'shows the empty text' do
+    it 'renders the empty state' do
       render
 
-      expect(rendered).to match /No compliance frameworks are in use. Create one from the .* section in Group Settings./
+      expect(rendered).to have_css(
+        '#js-project-compliance-framework-empty-state'\
+          "[data-add-framework-path=\"#{edit_group_path(group)}#js-compliance-frameworks-settings\"]"\
+          "[data-empty-state-svg-path]"\
+          "[data-group-name=\"#{group.name}\"]"\
+          "[data-group-path=\"#{group_path(group)}\"]"
+      )
     end
 
     it 'hides the submit button' do
@@ -85,10 +91,15 @@ RSpec.describe 'compliance_management/compliance_framework/_project_settings.htm
         allow(view).to receive(:current_user).and_return(maintainer)
       end
 
-      it 'shows the empty text' do
+      it 'renders the empty state' do
         render
 
-        expect(rendered).to have_text('No compliance frameworks are in use.')
+        expect(rendered).to have_css(
+          '#js-project-compliance-framework-empty-state'\
+            "[data-empty-state-svg-path]"\
+            "[data-group-name=\"#{group.name}\"]"\
+            "[data-group-path=\"#{group_path(group)}\"]"
+        )
       end
 
       it 'hides the submit button' do

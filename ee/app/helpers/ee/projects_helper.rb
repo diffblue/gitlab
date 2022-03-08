@@ -258,6 +258,19 @@ module EE
       project.marked_for_deletion_at.present?
     end
 
+    def project_compliance_framework_app_data(project, can_edit)
+      group = project.root_ancestor
+      {
+        group_name: group.name,
+        group_path: group_path(group),
+        empty_state_svg_path: image_path('illustrations/welcome/ee_trial.svg')
+      }.tap do |data|
+        if can_edit
+          data[:add_framework_path] = "#{edit_group_path(group)}#js-compliance-frameworks-settings"
+        end
+      end
+    end
+
     private
 
     def remove_message_data(project)
