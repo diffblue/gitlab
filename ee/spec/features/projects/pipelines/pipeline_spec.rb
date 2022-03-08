@@ -30,7 +30,7 @@ RSpec.describe 'Pipeline', :js do
         create_link(pipeline, downstream_pipeline)
       end
 
-      context 'upstream pipelines' do
+      context 'expands the upstream pipeline on click' do
         it 'renders upstream pipeline' do
           subject
 
@@ -38,90 +38,59 @@ RSpec.describe 'Pipeline', :js do
           expect(page).to have_content(upstream_pipeline.project.name)
         end
 
-        context 'without license' do
-          it 'cannot expand the upstream pipeline' do
-            subject
+        it 'expands the upstream on click' do
+          subject
 
-            page.find(".js-pipeline-expand-#{upstream_pipeline.id}").click
-            wait_for_requests
-            expect(page).not_to have_selector("#pipeline-links-container-#{upstream_pipeline.id}")
-          end
+          page.find(".js-pipeline-expand-#{upstream_pipeline.id}").click
+          wait_for_requests
+          expect(page).to have_selector("#pipeline-links-container-#{upstream_pipeline.id}")
         end
 
-        context 'with license' do
-          before do
-            stub_licensed_features(cross_project_pipelines: true)
-          end
+        it 'closes the expanded upstream on click' do
+          subject
 
-          it 'expands the upstream on click' do
-            subject
+          # open
+          page.find(".js-pipeline-expand-#{upstream_pipeline.id}").click
+          wait_for_requests
 
-            page.find(".js-pipeline-expand-#{upstream_pipeline.id}").click
-            wait_for_requests
-            expect(page).to have_selector("#pipeline-links-container-#{upstream_pipeline.id}")
-          end
+          # close
+          page.find(".js-pipeline-expand-#{upstream_pipeline.id}").click
 
-          it 'closes the expanded upstream on click' do
-            subject
-
-            # open
-            page.find(".js-pipeline-expand-#{upstream_pipeline.id}").click
-            wait_for_requests
-
-            # close
-            page.find(".js-pipeline-expand-#{upstream_pipeline.id}").click
-
-            expect(page).not_to have_selector("#pipeline-links-container-#{upstream_pipeline.id}")
-          end
+          expect(page).not_to have_selector("#pipeline-links-container-#{upstream_pipeline.id}")
         end
       end
 
-      context 'downstream pipelines' do
-        it 'renders downstream pipeline' do
+      it 'renders downstream pipeline' do
+        subject
+
+        expect(page).to have_content(downstream_pipeline.id)
+        expect(page).to have_content(downstream_pipeline.project.name)
+      end
+
+      context 'expands the downstream pipeline on click' do
+        it 'expands the downstream on click' do
           subject
 
-          expect(page).to have_content(downstream_pipeline.id)
-          expect(page).to have_content(downstream_pipeline.project.name)
+          page.find(".js-pipeline-expand-#{downstream_pipeline.id}").click
+          wait_for_requests
+          expect(page).to have_selector("#pipeline-links-container-#{downstream_pipeline.id}")
         end
 
-        context 'without license' do
-          it 'cannot expand the downstream pipeline' do
-            subject
+        it 'closes the expanded downstream on click' do
+          subject
 
-            page.find(".js-pipeline-expand-#{downstream_pipeline.id}").click
-            wait_for_requests
-            expect(page).not_to have_selector("#pipeline-links-container-#{downstream_pipeline.id}")
-          end
-        end
+          # open
+          page.find(".js-pipeline-expand-#{downstream_pipeline.id}").click
+          wait_for_requests
 
-        context 'with license' do
-          before do
-            stub_licensed_features(cross_project_pipelines: true)
-          end
+          # close
+          page.find(".js-pipeline-expand-#{downstream_pipeline.id}").click
 
-          it 'expands the downstream on click' do
-            subject
-
-            page.find(".js-pipeline-expand-#{downstream_pipeline.id}").click
-            wait_for_requests
-            expect(page).to have_selector("#pipeline-links-container-#{downstream_pipeline.id}")
-          end
-
-          it 'closes the expanded downstream on click' do
-            subject
-
-            # open
-            page.find(".js-pipeline-expand-#{downstream_pipeline.id}").click
-            wait_for_requests
-
-            # close
-            page.find(".js-pipeline-expand-#{downstream_pipeline.id}").click
-
-            expect(page).not_to have_selector("#pipeline-links-container-#{downstream_pipeline.id}")
-          end
+          expect(page).not_to have_selector("#pipeline-links-container-#{downstream_pipeline.id}")
         end
       end
     end
+
     context 'when :ci_require_credit_card_on_free_plan flag is on' do
       before do
         allow(::Gitlab).to receive(:com?).and_return(true)
