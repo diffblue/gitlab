@@ -179,7 +179,7 @@ After a merge request that updates documentation is merged, it is available onli
 in 4 hours or less.
 
 However, it's only available at `/help` on self-managed instances in the next released
-version. The date on which an update is merged can impact which self-managed release the update
+version. The date an update is merged can impact which self-managed release the update
 is present in.
 
 For example:
