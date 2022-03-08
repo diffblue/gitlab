@@ -70,6 +70,19 @@ RSpec.describe ProtectedEnvironment::DeployAccessLevel do
         it { is_expected.to be_truthy }
       end
 
+      context 'when there is an inherited member of a group' do
+        let_it_be(:parent_group) { create(:group) }
+        let_it_be(:child_group) { create(:group, parent: parent_group, projects: [project])}
+
+        let(:deploy_access_level) { create(:protected_environment_deploy_access_level, protected_environment: protected_environment, group: child_group) }
+
+        before do
+          parent_group.add_reporter(user)
+        end
+
+        it { is_expected.to be_truthy }
+      end
+
       context 'when no permissions have been given to a group' do
         let(:deploy_access_level) { create(:protected_environment_deploy_access_level, protected_environment: protected_environment) }
 
