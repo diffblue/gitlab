@@ -9,6 +9,8 @@ module Security
       self.reactive_cache_refresh_interval = 1.minute
       self.reactive_cache_lifetime = 10.minutes
       self.reactive_cache_work_type = :external_dependency
+      self.reactive_cache_key = ->(finder) { finder.full_url }
+      self.reactive_cache_worker_finder = ->(id, *args) { from_cache(id) }
 
       def initialize(provider, identifier)
         @provider = provider
