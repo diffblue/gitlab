@@ -17,9 +17,6 @@ export default {
     showCreate() {
       return this.isEpicBoard || this.multipleIssueBoardsAvailable;
     },
-    showDelete() {
-      return this.boards.length > 1;
-    },
     currentBoardQuery() {
       return this.isEpicBoard ? epicBoardQuery : this.currentBoardQueryCE;
     },

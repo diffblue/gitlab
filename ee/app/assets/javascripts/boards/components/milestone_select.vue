@@ -86,7 +86,8 @@ export default {
     selectMilestone(milestone) {
       this.selected = milestone;
       this.toggleEdit();
-      this.$emit('set-milestone', milestone?.id || null);
+      // TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/354264
+      this.$emit('set-milestone', milestone?.id !== ANY_MILESTONE.id ? milestone?.id : null);
     },
     toggleEdit() {
       if (!this.isEditing && !this.isDropdownShowing) {
