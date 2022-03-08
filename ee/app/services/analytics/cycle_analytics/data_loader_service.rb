@@ -106,7 +106,12 @@ module Analytics
 
         records.each_value do |record|
           stages.each do |stage|
-            next if record[event_column_name(stage.start_event)].nil?
+            start_event = record[event_column_name(stage.start_event)]
+            end_event = record[event_column_name(stage.end_event)]
+
+            next if start_event.nil?
+            # Avoid negative duration values
+            next if end_event && start_event > end_event
 
             data << {
               stage_event_hash_id: stage.stage_event_hash_id,
@@ -116,8 +121,8 @@ module Analytics
               author_id: record['author_id'],
               milestone_id: record['milestone_id'],
               state_id: record['state_id'],
-              start_event_timestamp: record[event_column_name(stage.start_event)],
-              end_event_timestamp: record[event_column_name(stage.end_event)]
+              start_event_timestamp: start_event,
+              end_event_timestamp: end_event
             }
 
             if data.size == UPSERT_LIMIT
