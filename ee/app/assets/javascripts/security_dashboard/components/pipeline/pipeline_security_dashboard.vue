@@ -7,15 +7,17 @@ import { fetchPolicies } from '~/lib/graphql';
 import { s__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import VulnerabilityReport from '../shared/vulnerability_report.vue';
-import ScanErrorsAlert from './scan_errors_alert.vue';
+import ScanAlerts, { TYPE_ERRORS, TYPE_WARNINGS } from './scan_alerts.vue';
 import SecurityDashboard from './security_dashboard_vuex.vue';
 import SecurityReportsSummary from './security_reports_summary.vue';
 
 export default {
   name: 'PipelineSecurityDashboard',
+  errorsAlertType: TYPE_ERRORS,
+  warningsAlertType: TYPE_WARNINGS,
   components: {
     GlEmptyState,
-    ScanErrorsAlert,
+    ScanAlerts,
     SecurityReportsSummary,
     SecurityDashboard,
     VulnerabilityReport,
@@ -76,19 +78,30 @@ export default {
         primaryButtonText: s__('SecurityReports|Learn more about setting up your dashboard'),
       };
     },
-    scansWithErrors() {
+    scans() {
       const getScans = (reportSummary) => reportSummary?.scans?.nodes || [];
-      const hasErrors = (scan) => Boolean(scan.errors?.length);
 
       return this.reportSummary
         ? Object.values(this.reportSummary)
             // generate flat array of all scans
             .flatMap(getScans)
-            .filter(hasErrors)
         : [];
+    },
+    scansWithErrors() {
+      const hasErrors = (scan) => Boolean(scan.errors?.length);
+
+      return this.scans.filter(hasErrors);
     },
     hasScansWithErrors() {
       return this.scansWithErrors.length > 0;
+    },
+    scansWithWarnings() {
+      const hasWarnings = (scan) => Boolean(scan.warnings?.length);
+
+      return this.scans.filter(hasWarnings);
+    },
+    hasScansWithWarnings() {
+      return this.scansWithWarnings.length > 0;
     },
   },
   created() {
@@ -100,13 +113,38 @@ export default {
     ...mapActions('vulnerabilities', ['setSourceBranch']),
     ...mapActions('pipelineJobs', ['setPipelineJobsPath', 'setProjectId']),
   },
+  i18n: {
+    parsingErrorAlertTitle: s__('SecurityReports|Error parsing security reports'),
+    parsingErrorAlertDescription: s__(
+      'SecurityReports|The following security reports contain one or more vulnerability findings that could not be parsed and were not recorded. To investigate a report, download the artifacts in the job output. Ensure the security report conforms to the relevant %{helpPageLinkStart}JSON schema%{helpPageLinkEnd}.',
+    ),
+    parsingWarningAlertTitle: s__('SecurityReports|Warning parsing security reports'),
+    parsingWarningAlertDescription: s__(
+      'SecurityReports|Check the messages generated while parsing the following security reports, as they may prevent the results from being ingested by GitLab. Ensure the security report conforms to a supported %{helpPageLinkStart}JSON schema%{helpPageLinkEnd}.',
+    ),
+  },
 };
 </script>
 
 <template>
   <div>
     <div v-if="reportSummary" class="gl-my-5">
-      <scan-errors-alert v-if="hasScansWithErrors" :scans="scansWithErrors" class="gl-mb-5" />
+      <scan-alerts
+        v-if="hasScansWithErrors"
+        :type="$options.errorsAlertType"
+        :scans="scansWithErrors"
+        :title="$options.i18n.parsingErrorAlertTitle"
+        :description="$options.i18n.parsingErrorAlertDescription"
+        class="gl-mb-5"
+      />
+      <scan-alerts
+        v-if="hasScansWithWarnings"
+        :type="$options.warningsAlertType"
+        :scans="scansWithWarnings"
+        :title="$options.i18n.parsingWarningAlertTitle"
+        :description="$options.i18n.parsingWarningAlertDescription"
+        class="gl-mb-5"
+      />
       <security-reports-summary :summary="reportSummary" :jobs="jobs" />
     </div>
     <security-dashboard

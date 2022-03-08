@@ -1,6 +1,8 @@
 <script>
 import { GlAccordion, GlAccordionItem, GlAlert, GlButton, GlSprintf } from '@gitlab/ui';
-import { s__ } from '~/locale';
+
+export const TYPE_ERRORS = 'errors';
+export const TYPE_WARNINGS = 'warnings';
 
 export default {
   components: {
@@ -16,31 +18,45 @@ export default {
       type: Array,
       required: true,
     },
+    type: {
+      type: String,
+      required: true,
+      validator: (value) => [TYPE_ERRORS, TYPE_WARNINGS].includes(value),
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
   },
   computed: {
+    alertVariant() {
+      return {
+        [TYPE_ERRORS]: 'danger',
+        [TYPE_WARNINGS]: 'warning',
+      }[this.type];
+    },
     scansWithTitles() {
       return this.scans.map((scan) => ({
         ...scan,
-        title: `${scan.name} (${scan.errors.length})`,
+        issues: scan[this.type],
+        accordionTitle: `${scan.name} (${scan[this.type].length})`,
       }));
     },
-  },
-  i18n: {
-    title: s__('SecurityReports|Error parsing security reports'),
-    description: s__(
-      'SecurityReports|The security reports below contain one or more vulnerability findings that could not be parsed and were not recorded. Download the artifacts in the job output to investigate. Ensure any security report created conforms to the relevant %{helpPageLinkStart}JSON schema%{helpPageLinkEnd}.',
-    ),
   },
 };
 </script>
 
 <template>
-  <gl-alert variant="danger" :dismissible="false">
+  <gl-alert :variant="alertVariant" :dismissible="false">
     <strong role="heading">
-      {{ $options.i18n.title }}
+      {{ title }}
     </strong>
     <p class="gl-mt-3">
-      <gl-sprintf :message="$options.i18n.description" data-testid="description">
+      <gl-sprintf :message="description" data-testid="description">
         <template #helpPageLink="{ content }">
           <gl-button
             variant="link"
@@ -55,12 +71,12 @@ export default {
     </p>
     <gl-accordion :header-level="3">
       <gl-accordion-item
-        v-for="{ name, errors, title } in scansWithTitles"
+        v-for="{ name, issues, accordionTitle } in scansWithTitles"
         :key="name"
-        :title="title"
+        :title="accordionTitle"
       >
         <ul class="gl-pl-4">
-          <li v-for="error in errors" :key="error">{{ error }}</li>
+          <li v-for="issue in issues" :key="issue">{{ issue }}</li>
         </ul>
       </gl-accordion-item>
     </gl-accordion>
