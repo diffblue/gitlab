@@ -370,7 +370,7 @@ To have the screenshot focuses few more steps are needed:
 - **set the crop area**: `set_crop_data(screenshot_area, 20)`
 
 In particular, `set_crop_data` accepts as arguments: a `DOM` element and a
-padding. The padding is added around the element enlarging the screenshot area.
+padding. The padding is added around the element, enlarging the screenshot area.
 
 #### Live example
 
