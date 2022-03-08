@@ -11,10 +11,6 @@ module Gitlab
       class User < Gitlab::Auth::OAuth::User
         extend ::Gitlab::Utils::Override
 
-        def save
-          super(protocol_name)
-        end
-
         def find_user
           user = find_by_uid_and_provider
 

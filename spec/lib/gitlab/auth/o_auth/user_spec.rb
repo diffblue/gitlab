@@ -587,7 +587,7 @@ RSpec.describe Gitlab::Auth::OAuth::User do
 
           context 'when a sign up user cap has been set up but has not been reached yet' do
             it 'still creates a blocked user' do
-              allow(Gitlab::CurrentSettings).to receive(:new_user_signups_cap).and_return(999)
+              stub_application_setting(new_user_signups_cap: 999)
 
               oauth_user.save # rubocop:disable Rails/SaveBang
               expect(gl_user).to be_valid
@@ -612,9 +612,9 @@ RSpec.describe Gitlab::Auth::OAuth::User do
 
         before do
           stub_omniauth_config({
-              allow_single_sign_on: ['saml'],
-              auto_link_saml_user: true,
-              block_auto_created_users: block_auto_created_users
+            allow_single_sign_on: ['saml'],
+            auto_link_saml_user: true,
+            block_auto_created_users: block_auto_created_users
           })
         end
 
@@ -1049,8 +1049,8 @@ RSpec.describe Gitlab::Auth::OAuth::User do
   end
 
   describe '#protocol_name' do
-    it 'is empty' do
-      expect(oauth_user.protocol_name).to eq('')
+    it 'is OAuth' do
+      expect(oauth_user.protocol_name).to eq('OAuth')
     end
   end
 end

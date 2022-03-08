@@ -11,9 +11,6 @@ module Gitlab
     module Ldap
       class User < Gitlab::Auth::OAuth::User
         extend ::Gitlab::Utils::Override
-        def save
-          super(protocol_name)
-        end
 
         # instance methods
         def find_user
