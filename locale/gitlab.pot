@@ -33094,6 +33094,9 @@ msgstr ""
 msgid "SecurityReports|scanned resources"
 msgstr ""
 
+msgid "SecurityTraining|Primary Training"
+msgstr ""
+
 msgid "See example DevOps Score page in our documentation."
 msgstr ""
 
