@@ -39,6 +39,29 @@ RSpec.describe ProtectedEnvironments::BaseService, '#execute' do
           )
         end
 
+        context 'with invited groups' do
+          let_it_be(:linked_group) { create(:group) }
+          let_it_be(:group_link) { create(:group_group_link, shared_group: group, shared_with_group: linked_group) }
+
+          let(:params) do
+            {
+              deploy_access_levels_attributes: [
+                { group_id: group.id },
+                { group_id: linked_group.id }
+              ]
+            }
+          end
+
+          it 'includes invited groups' do
+            is_expected.to eq(
+              deploy_access_levels_attributes: [
+               { group_id: group.id },
+               { group_id: linked_group.id }
+              ]
+            )
+          end
+        end
+
         context 'with delete flag' do
           let(:params) do
             {
@@ -94,7 +117,7 @@ RSpec.describe ProtectedEnvironments::BaseService, '#execute' do
           )
         end
 
-        context 'with delte flag' do
+        context 'with delete flag' do
           let(:params) do
             {
               deploy_access_levels_attributes: [
