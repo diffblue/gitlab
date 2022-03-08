@@ -110,7 +110,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::CancelPendingPipelines do
           context 'when the jobs are cancelable' do
             cancelable_not_started_statuses = Set.new(not_started_statuses).intersection(Ci::HasStatus::CANCELABLE_STATUSES)
             cancelable_not_started_statuses.each do |status|
-              it 'cancels all child pipeline builds' do
+              it "cancels all child pipeline builds when build status #{status} included" do
                 # non-interruptible but non-started
                 create(:ci_build, status.to_sym, pipeline: child_pipeline)
 
@@ -126,7 +126,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::CancelPendingPipelines do
           context 'when the jobs are not cancelable' do
             not_cancelable_not_started_statuses = not_started_statuses - Ci::HasStatus::CANCELABLE_STATUSES
             not_cancelable_not_started_statuses.each do |status|
-              it 'does not cancel child pipeline builds' do
+              it "does not cancel child pipeline builds when build status #{status} included" do
                 # non-interruptible but non-started
                 create(:ci_build, status.to_sym, pipeline: child_pipeline)
 
