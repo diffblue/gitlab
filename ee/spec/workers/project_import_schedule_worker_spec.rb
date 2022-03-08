@@ -35,28 +35,10 @@ RSpec.describe ProjectImportScheduleWorker do
         expect(import_state).to be_scheduled
       end
 
-      context 'mirror_scheduling_tracking flag is enabled' do
-        before do
-          stub_feature_flags(mirror_scheduling_tracking: true)
-        end
+      it 'tracks the status of the worker' do
+        subject
 
-        it 'tracks the status of the worker' do
-          subject
-
-          expect(Gitlab::Mirror).to have_received(:untrack_scheduling).with(project.id).at_least(:once)
-        end
-      end
-
-      context 'mirror_scheduling_tracking flag is disabled' do
-        before do
-          stub_feature_flags(mirror_scheduling_tracking: false)
-        end
-
-        it 'does not track the status of the worker' do
-          subject
-
-          expect(Gitlab::Mirror).not_to have_received(:untrack_scheduling)
-        end
+        expect(Gitlab::Mirror).to have_received(:untrack_scheduling).with(project.id).at_least(:once)
       end
     end
 

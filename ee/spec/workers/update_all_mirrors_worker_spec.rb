@@ -62,42 +62,16 @@ RSpec.describe UpdateAllMirrorsWorker do
         allow(Gitlab::Mirror).to receive(:current_scheduling) { |_| count -= 1 }
       end
 
-      context 'mirror_scheduling_tracking flags is on' do
-        before do
-          stub_feature_flags(mirror_scheduling_tracking: true)
-        end
+      it 'waits until ProjectImportScheduleWorker job tracker returns 0' do
+        worker.perform
 
-        it 'waits until ProjectImportScheduleWorker job tracker returns 0' do
-          worker.perform
-
-          expect(Gitlab::Mirror).to have_received(:current_scheduling).exactly(3).times
-        end
-
-        it 'sleeps a bit after scheduling mirrors' do
-          expect(worker).to receive(:sleep).with(described_class::RESCHEDULE_WAIT).exactly(3).times
-
-          worker.perform
-        end
+        expect(Gitlab::Mirror).to have_received(:current_scheduling).exactly(3).times
       end
 
-      context 'mirror_scheduling_tracking flags is off' do
-        before do
-          stub_feature_flags(mirror_scheduling_tracking: false)
-          count = 3
-          allow(ProjectImportScheduleWorker).to receive(:queue_size) { |_| count -= 1 }
-        end
+      it 'sleeps a bit after scheduling mirrors' do
+        expect(worker).to receive(:sleep).with(described_class::RESCHEDULE_WAIT).exactly(3).times
 
-        it 'waits until ProjectImportScheduleWorker jobs to complete' do
-          worker.perform
-
-          expect(ProjectImportScheduleWorker).to have_received(:queue_size).exactly(3).times
-        end
-
-        it 'sleeps a bit after scheduling mirrors' do
-          expect(worker).to receive(:sleep).with(described_class::RESCHEDULE_WAIT).exactly(3).times
-
-          worker.perform
-        end
+        worker.perform
       end
 
       context 'if capacity is available' do
