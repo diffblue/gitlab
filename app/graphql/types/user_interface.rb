@@ -134,7 +134,7 @@ module Types
     end
 
     def redacted_name
-      object.secure_name(context[:current_user])
+      object.redacted_name(context[:current_user])
     end
   end
 end
