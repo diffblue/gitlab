@@ -1,7 +1,6 @@
 <script>
 import { mapGetters } from 'vuex';
 import { __ } from '~/locale';
-import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import AssigneeSelect from './assignee_select.vue';
 import BoardScopeCurrentIteration from './board_scope_current_iteration.vue';
 import BoardLabelsSelect from './labels_select.vue';
@@ -53,7 +52,7 @@ export default {
         : __('Board scope affects which epics are displayed for anyone who visits this board');
     },
     iterationId() {
-      return getIdFromGraphQLId(this.board.iteration?.id) || null;
+      return this.board.iteration?.id;
     },
   },
 
