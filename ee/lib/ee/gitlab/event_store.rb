@@ -25,6 +25,9 @@ module EE
 
           store.subscribe ::GitlabSubscriptions::NotifySeatsExceededWorker, to: ::Members::MembersAddedEvent
           store.subscribe ::Security::Findings::DeleteByJobIdWorker, to: ::Ci::JobArtifactsDeletedEvent
+          store.subscribe ::Geo::CreateRepositoryUpdatedEventWorker,
+            to: ::Repositories::KeepAroundRefsCreatedEvent,
+            if: -> (_) { ::Gitlab::Geo.primary? }
         end
       end
     end
