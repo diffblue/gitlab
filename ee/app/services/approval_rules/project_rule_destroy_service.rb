@@ -6,7 +6,7 @@ module ApprovalRules
 
     def initialize(approval_rule, current_user)
       @rule = approval_rule
-      super(approval_rule, current_user)
+      super(approval_rule.project, current_user)
     end
 
     def execute
@@ -18,7 +18,7 @@ module ApprovalRules
       end
 
       if rule.destroyed?
-        audit_deletion(rule)
+        audit_deletion
         success
       else
         error(rule.errors.messages)
@@ -34,7 +34,7 @@ module ApprovalRules
         .delete_all
     end
 
-    def audit_deletion(rule)
+    def audit_deletion
       audit_context = {
         author: current_user,
         scope: rule.project,
