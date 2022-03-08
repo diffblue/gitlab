@@ -13834,7 +13834,7 @@ msgstr ""
 msgid "Environment scope"
 msgstr ""
 
-msgid "Environment variable %{code_start}%{environment_variable}%{code_end} does not exist or is not pointing to a valid directory."
+msgid "Environment variable %{environment_variable} does not exist or is not pointing to a valid directory."
 msgstr ""
 
 msgid "Environment variables are configured by your administrator to be %{link_start}protected%{link_end} by default."
