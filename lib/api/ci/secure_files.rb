@@ -7,7 +7,7 @@ module API
 
       before do
         authenticate!
-        authorize! :admin_build, user_project
+        authorize! :admin_secure_files, user_project
         feature_flag_enabled?
       end
 
@@ -82,7 +82,7 @@ module API
         delete ':id/secure_files/:secure_file_id' do
           secure_file = user_project.secure_files.find(params[:secure_file_id])
 
-          secure_file.destroy!
+          ::Ci::DestroySecureFileService.new(user_project, current_user).execute(secure_file)
 
           no_content!
         end
