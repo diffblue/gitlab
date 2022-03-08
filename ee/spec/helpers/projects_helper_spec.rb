@@ -462,4 +462,42 @@ RSpec.describe ProjectsHelper do
       })
     end
   end
+
+  describe '#project_compliance_framework_app_data' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
+
+    let(:can_edit) { false }
+
+    subject { helper.project_compliance_framework_app_data(project, can_edit) }
+
+    before do
+      allow(helper).to receive(:image_path).and_return('#empty_state_svg_path')
+    end
+
+    context 'when the user cannot edit' do
+      let(:can_edit) { false }
+
+      it 'returns the correct data' do
+        expect(subject).to eq({
+          group_name: group.name,
+          group_path: group_path(group),
+          empty_state_svg_path: '#empty_state_svg_path'
+        })
+      end
+    end
+
+    context 'when the user can edit' do
+      let(:can_edit) { true }
+
+      it 'includes the framework edit path' do
+        expect(subject).to eq({
+          group_name: group.name,
+          group_path: group_path(group),
+          empty_state_svg_path: '#empty_state_svg_path',
+          add_framework_path: "#{edit_group_path(group)}#js-compliance-frameworks-settings"
+        })
+      end
+    end
+  end
 end
