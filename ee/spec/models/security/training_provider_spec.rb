@@ -25,8 +25,8 @@ RSpec.describe Security::TrainingProvider do
     subject { described_class.for_project(project, only_enabled: only_enabled) }
 
     before_all do
-      create(:security_training, :primary, project: project, provider: security_training_provider_1)
-      create(:security_training, project: project, provider: security_training_provider_2)
+      create(:security_training, :primary, project: project, provider: security_training_provider_2)
+      create(:security_training, project: project, provider: security_training_provider_1)
     end
 
     context 'when the `only_enabled` flag is provided as `false`' do
@@ -50,6 +50,14 @@ RSpec.describe Security::TrainingProvider do
           an_object_having_attributes(is_primary: false, is_enabled: true),
           an_object_having_attributes(is_primary: false, is_enabled: false)
         ])
+      end
+    end
+
+    describe '.ordered_by_is_primary_desc' do
+      let(:only_enabled) { false }
+
+      it "returns primary providers first" do
+        expect(subject.ordered_by_is_primary_desc).to eq([security_training_provider_2, security_training_provider_1, security_training_provider_3])
       end
     end
   end

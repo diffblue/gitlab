@@ -33,12 +33,35 @@ RSpec.describe Vulnerabilities::Identifier do
       let!(:identifier) { create(:vulnerabilities_identifier, fingerprint: fingerprint) }
 
       it 'selects the identifier' do
-        is_expected.to eq([identifier])
+        is_expected.to match_array([identifier])
       end
     end
 
     context 'when identifier does not have the corresponding fingerprint' do
       let!(:identifier) { create(:vulnerabilities_identifier) }
+
+      it 'does not select the identifier' do
+        is_expected.to be_empty
+      end
+    end
+  end
+
+  describe '.with_external_type' do
+    let(:external_type_scope) { 'cwe' }
+    let(:external_type_not_in_scope) { 'cve' }
+
+    subject { described_class.with_external_type(external_type_scope) }
+
+    context 'when identifier has the corresponding external_type' do
+      let!(:identifier) { create(:vulnerabilities_identifier, external_type: external_type_scope) }
+
+      it 'selects the identifier' do
+        is_expected.to match_array([identifier])
+      end
+    end
+
+    context 'when identifier does not have the corresponding external_type' do
+      let!(:identifier) { create(:vulnerabilities_identifier, external_type: external_type_not_in_scope) }
 
       it 'does not select the identifier' do
         is_expected.to be_empty
