@@ -38,7 +38,6 @@ module QA
 
       before do
         @event_count = get_audit_event_count(group)
-        Runtime::Feature.enable(:invite_members_group_modal)
       end
 
       let(:user) { Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1) }
@@ -100,7 +99,6 @@ module QA
 
       context 'Add and remove project access', :requires_admin, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347912' do
         before do
-          Runtime::Feature.enable(:invite_members_group_modal)
           sign_in
           project.visit!
 
