@@ -45,16 +45,6 @@ RSpec.describe Groups::GroupMembersController do
     end
   end
 
-  describe 'POST #create' do
-    it 'creates an audit event' do
-      expect do
-        post :create, params: { group_id: group,
-                                user_ids: user.id,
-                                access_level: Gitlab::Access::GUEST }
-      end.to change(AuditEvent, :count).by(1)
-    end
-  end
-
   describe 'DELETE #leave' do
     context 'when member is not an owner' do
       it 'creates an audit event' do
