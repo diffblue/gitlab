@@ -145,7 +145,7 @@ export default {
         hasSections
           ? null
           : s__(
-              'Integrations|When you mention a Jira issue in a commit or merge request, GitLab creates a remote link and comment (if enabled).',
+              'JiraService|When a Jira issue is mentioned in a commit or merge request, a remote link and comment (if enabled) will be created.',
             )
       "
     >
