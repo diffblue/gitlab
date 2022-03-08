@@ -26915,6 +26915,9 @@ msgstr ""
 msgid "PipelineWizard|There was a problem while checking whether your file already exists in the specified branch."
 msgstr ""
 
+msgid "PipelineWizard|There was an unexpected error trying to set up the template. The error has been logged."
+msgstr ""
+
 msgid "Pipelines"
 msgstr ""
 
