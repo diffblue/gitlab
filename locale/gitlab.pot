@@ -5026,6 +5026,9 @@ msgstr ""
 msgid "Attention"
 msgstr ""
 
+msgid "Attention requested"
+msgstr ""
+
 msgid "Audit Events"
 msgstr ""
 
@@ -24631,6 +24634,9 @@ msgid "No artifacts found"
 msgstr ""
 
 msgid "No assignee"
+msgstr ""
+
+msgid "No attention request"
 msgstr ""
 
 msgid "No authentication methods configured."
