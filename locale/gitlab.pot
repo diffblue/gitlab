@@ -41011,9 +41011,6 @@ msgstr ""
 msgid "Vulnerability|Scanner Provider"
 msgstr ""
 
-msgid "Vulnerability|Secure Code Warrior"
-msgstr ""
-
 msgid "Vulnerability|Security Audit"
 msgstr ""
 

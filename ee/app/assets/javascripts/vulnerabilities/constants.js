@@ -93,3 +93,6 @@ export const SUPPORTED_IDENTIFIER_TYPES = {
 export const VULNERABILITY_TRAINING_HEADING = {
   title: s__('Vulnerability|Training'),
 };
+
+export const SECURITY_TRAINING_URL_STATUS_COMPLETED = 'COMPLETED';
+export const SECURITY_TRAINING_URL_STATUS_PENDING = 'PENDING';
