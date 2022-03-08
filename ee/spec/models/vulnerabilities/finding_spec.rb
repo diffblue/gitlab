@@ -876,31 +876,14 @@ RSpec.describe Vulnerabilities::Finding do
       context 'with finding_evidence' do
         let(:finding_evidence) { build(:vulnerabilties_finding_evidence) }
         let(:finding) { finding_evidence.finding }
+        let(:evidence) { finding_evidence.data }
 
         before do
           finding_evidence.data[:summary] = "finding_evidence Summary"
           finding_evidence.save!
         end
 
-        context 'when the read_from_vulnerability_finding_evidence feature flag is off' do
-          let(:evidence) { finding.metadata['evidence'] }
-
-          before do
-            stub_feature_flags(read_from_vulnerability_finding_evidence: false)
-          end
-
-          include_examples 'evidence schema'
-        end
-
-        context 'when the read_from_vulnerability_finding_evidence feature flag is on' do
-          let(:evidence) { finding_evidence.data }
-
-          before do
-            stub_feature_flags(read_from_vulnerability_finding_evidence: true)
-          end
-
-          include_examples 'evidence schema'
-        end
+        include_examples 'evidence schema'
       end
     end
 
