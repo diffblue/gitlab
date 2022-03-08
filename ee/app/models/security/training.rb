@@ -20,14 +20,14 @@ module Security
     # if there are other trainings enabled for the project.
     # Users have to select another primary before deleting trainings.
     def prevent_deleting_primary
-      return unless is_primary? && only_training_available?
+      return unless is_primary? && other_trainings_available?
 
       errors.add(:base, _("Can not delete primary training"))
 
       throw :abort # rubocop:disable Cop/BanCatchThrow
     end
 
-    def only_training_available?
+    def other_trainings_available?
       project.security_trainings.not_including(self).exists?
     end
   end
