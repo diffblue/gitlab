@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :security_training_provider, class: 'Security::TrainingProvider' do
-    name { 'Acme' }
+    sequence(:name) { |n| "acme #{n}" }
     url { 'example.com' }
   end
 end
