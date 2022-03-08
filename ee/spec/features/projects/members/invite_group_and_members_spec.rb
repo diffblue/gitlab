@@ -9,30 +9,17 @@ RSpec.describe 'Project > Members > Invite group and members' do
 
   let(:maintainer) { create(:user) }
 
-  using RSpec::Parameterized::TableSyntax
+  it 'displays the invite modal button triggers' do
+    project = create(:project, namespace: create(:group))
 
-  where(:invite_members_group_modal_enabled, :expected_invite_member_selector, :expected_invite_group_selector, :expected_import_button_selector) do
-    true  | '.js-invite-members-trigger' | '.js-invite-group-trigger' | '.js-import-a-project-modal'
-    false | '#invite-member-tab'         | '#invite-group-tab'        | '.invite-users-form .btn-default'
-  end
+    project.add_maintainer(maintainer)
+    sign_in(maintainer)
 
-  with_them do
-    before do
-      stub_feature_flags(invite_members_group_modal: invite_members_group_modal_enabled)
-    end
+    visit project_project_members_path(project)
 
-    it 'displays either the invite modal button triggers or the form with tabs based on the feature flag' do
-      project = create(:project, namespace: create(:group))
-
-      project.add_maintainer(maintainer)
-      sign_in(maintainer)
-
-      visit project_project_members_path(project)
-
-      expect(page).to have_selector(expected_invite_member_selector)
-      expect(page).to have_selector(expected_invite_group_selector)
-      expect(page).to have_selector(expected_import_button_selector)
-    end
+    expect(page).to have_selector('.js-invite-members-trigger')
+    expect(page).to have_selector('.js-invite-group-trigger')
+    expect(page).to have_selector('.js-import-a-project-modal')
   end
 
   describe 'Share group lock' do

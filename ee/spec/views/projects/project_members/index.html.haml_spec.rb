@@ -46,19 +46,6 @@ RSpec.describe 'projects/project_members/index', :aggregate_failures do
           expect(rendered).not_to have_content('You can invite')
           expect(response).to render_template(partial: 'projects/_invite_members_modal')
         end
-
-        context 'when modal is not enabled' do
-          before do
-            stub_feature_flags(invite_members_group_modal: false)
-          end
-
-          it 'renders as expected' do
-            render
-
-            expect(rendered).not_to have_content('Project members')
-            expect(response).not_to render_template(partial: 'projects/_invite_members_modal')
-          end
-        end
       end
     end
   end

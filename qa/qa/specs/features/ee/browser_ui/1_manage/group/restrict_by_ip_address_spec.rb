@@ -23,8 +23,6 @@ module QA
           project.initialize_with_readme = true
         end
 
-        Runtime::Feature.enable(:invite_members_group_modal, project: @project)
-
         @project.add_member(@user)
 
         @api_client = Runtime::API::Client.new(:gitlab, user: @user)
