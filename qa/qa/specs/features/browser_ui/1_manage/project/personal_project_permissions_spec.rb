@@ -44,15 +44,7 @@ module QA
             expect(projects).to have_project_with_access_role(project.name, 'Owner')
           end
 
-          issue.visit!
-
-          Page::Project::Issue::Show.perform do |issue|
-            issue.delete_issue
-          end
-
-          Page::Project::Issue::Index.perform do |index|
-            expect(index).not_to have_issue(issue)
-          end
+          expect_owner_permissions_allow_delete_issue
         end
       end
 
@@ -85,12 +77,34 @@ module QA
             expect(projects).to have_project_with_access_role(project.name, 'Maintainer')
           end
 
+          expect_maintainer_permissions_do_not_allow_delete_issue
+        end
+      end
+
+      private
+
+      def expect_owner_permissions_allow_delete_issue
+        expect do
+          issue.visit!
+
+          Page::Project::Issue::Show.perform do |issue|
+            issue.delete_issue
+          end
+
+          Page::Project::Issue::Index.perform do |index|
+            expect(index).not_to have_issue(issue)
+          end
+        end.not_to raise_error
+      end
+
+      def expect_maintainer_permissions_do_not_allow_delete_issue
+        expect do
           issue.visit!
 
           Page::Project::Issue::Show.perform do |issue|
             expect(issue).not_to have_delete_issue_button
           end
-        end
+        end.not_to raise_error
       end
     end
   end
