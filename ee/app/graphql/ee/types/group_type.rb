@@ -85,7 +85,9 @@ module EE
 
         field :billable_members_count, ::GraphQL::Types::Int,
               null: true,
-              description: 'Number of billable users in the group.'
+              description: 'Number of billable users in the group.' do
+                argument :requested_hosted_plan, String, required: false, description: 'Plan from which to get billable members.'
+              end
 
         field :dora,
               ::Types::DoraType,
@@ -105,6 +107,10 @@ module EE
               description: 'Compliance violations reported on merge requests merged within the group.' \
                            ' Available only when feature flag `compliance_violations_graphql_type` is enabled. This flag is disabled by default, because the feature is experimental and is subject to change without notice.',
               resolver: ::Resolvers::ComplianceManagement::MergeRequests::ComplianceViolationResolver
+
+        def billable_members_count(requested_hosted_plan: nil)
+          object.billable_members_count(requested_hosted_plan)
+        end
       end
     end
   end

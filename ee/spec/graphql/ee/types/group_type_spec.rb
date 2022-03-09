@@ -66,6 +66,73 @@ RSpec.describe GitlabSchema.types['Group'] do
     end
   end
 
+  describe 'billable members count' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, namespace: group) }
+    let_it_be(:user1) { create(:user) }
+    let_it_be(:user2) { create(:user) }
+    let_it_be(:user3) { create(:user) }
+    let_it_be(:user4) { create(:user) }
+
+    before do
+      group.add_developer(user1)
+      group.add_guest(user2)
+      project.add_developer(user3)
+      project.add_guest(user4)
+    end
+
+    it "returns billable users count including guests when no plan is provided" do
+      query = <<~GQL
+        query {
+          group(fullPath: "#{group.full_path}") {
+            id,
+            billableMembersCount
+          }
+        }
+      GQL
+
+      result = GitlabSchema.execute(query, context: { current_user: user1 }).as_json
+
+      billable_members_count = result.dig('data', 'group', 'billableMembersCount')
+
+      expect(billable_members_count).to eq(4)
+    end
+
+    it "returns billable users count including guests when a plan that should include guests is provided" do
+      query = <<~GQL
+        query {
+          group(fullPath: "#{group.full_path}") {
+            id,
+            billableMembersCount(requestedHostedPlan: "#{::Plan::SILVER}")
+          }
+        }
+      GQL
+
+      result = GitlabSchema.execute(query, context: { current_user: user1 }).as_json
+
+      billable_members_count = result.dig('data', 'group', 'billableMembersCount')
+
+      expect(billable_members_count).to eq(4)
+    end
+
+    it "returns billable users count excluding guests when a plan that should exclude guests is provided" do
+      query = <<~GQL
+        query {
+          group(fullPath: "#{group.full_path}") {
+            id,
+            billableMembersCount(requestedHostedPlan: "#{::Plan::ULTIMATE}")
+          }
+        }
+      GQL
+
+      result = GitlabSchema.execute(query, context: { current_user: user1 }).as_json
+
+      billable_members_count = result.dig('data', 'group', 'billableMembersCount')
+
+      expect(billable_members_count).to eq(2)
+    end
+  end
+
   describe 'dora field' do
     subject { described_class.fields['dora'] }
 
