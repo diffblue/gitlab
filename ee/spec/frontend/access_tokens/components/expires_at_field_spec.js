@@ -1,5 +1,8 @@
-import { shallowMount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import { GlDatepicker } from '@gitlab/ui';
+
 import ExpiresAtField from '~/access_tokens/components/expires_at_field.vue';
+import MaxExpirationDateMessage from 'ee/access_tokens/components/max_expiration_date_message.vue';
 
 describe('~/access_tokens/components/expires_at_field', () => {
   let wrapper;
@@ -10,10 +13,11 @@ describe('~/access_tokens/components/expires_at_field', () => {
       name: 'personal_access_token[expires_at]',
       placeholder: 'YYYY-MM-DD',
     },
+    maxDate: new Date('2022-3-2'),
   };
 
   const createComponent = (propsData = defaultPropsData) => {
-    wrapper = shallowMount(ExpiresAtField, {
+    wrapper = mount(ExpiresAtField, {
       propsData,
     });
   };
@@ -27,7 +31,11 @@ describe('~/access_tokens/components/expires_at_field', () => {
     wrapper = null;
   });
 
-  it('should render datepicker with input info', () => {
-    expect(wrapper.element).toMatchSnapshot();
+  it('renders `MaxExpirationDateMessage` message component', () => {
+    expect(wrapper.findComponent(MaxExpirationDateMessage).exists()).toBe(true);
+  });
+
+  it('sets `GlDatepicker` `maxDate` prop', () => {
+    expect(wrapper.findComponent(GlDatepicker).props('maxDate')).toEqual(defaultPropsData.maxDate);
   });
 });
