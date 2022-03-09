@@ -21,14 +21,12 @@ module AuditEvents
       }
       details.merge!(entity_id: @token_scope.id, entity_type: @token_scope.class.name) if @token_scope
 
-      if author.is_a?(String)
-        author = author[0...8]
-        details[token_field] = author
-      end
+      safe_author = safe_author(author)
+      details[token_field] = safe_author if safe_author != author
 
       details[:errors] = @runner.errors.full_messages unless @runner.errors.empty?
 
-      super(author, token_scope, details)
+      super(safe_author, token_scope, details)
     end
 
     def track_event
@@ -58,6 +56,16 @@ module AuditEvents
       else
         url_helpers.admin_runner_path(@runner)
       end
+    end
+
+    def safe_author(author)
+      return author unless author.is_a?(String)
+
+      runners_token_prefix = ::Project::RUNNERS_TOKEN_PREFIX
+      safe_token_length = 8
+      safe_token_length += runners_token_prefix.length if author.start_with?(runners_token_prefix)
+
+      author[0...safe_token_length]
     end
   end
 end

@@ -90,13 +90,28 @@ RSpec.describe AuditEvents::RegisterRunnerAuditEventService do
       end
 
       context 'on persisted runner' do
-        let(:runner) { create(:ci_runner) }
+        let_it_be(:runner) { create(:ci_runner) }
+
         let(:target_details) { ::Gitlab::Routing.url_helpers.admin_runner_path(runner) }
         let(:extra_attrs) do
           { details: { custom_message: 'Registered instance CI runner' } }
         end
 
         it_behaves_like 'expected audit log'
+
+        context 'with registration token prefixed with RUNNERS_TOKEN_PREFIX' do
+          let(:author) { "#{::Project::RUNNERS_TOKEN_PREFIX}b6bce79c3a" }
+          let(:extra_attrs) do
+            {
+              details: {
+                custom_message: 'Registered instance CI runner',
+                runner_registration_token: author[0...::Project::RUNNERS_TOKEN_PREFIX.length + 8]
+              }
+            }
+          end
+
+          it_behaves_like 'expected audit log'
+        end
       end
     end
 
