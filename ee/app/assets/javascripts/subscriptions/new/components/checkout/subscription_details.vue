@@ -238,7 +238,7 @@ export default {
         <gl-form-group
           v-if="shouldDisableNumberOfUsers"
           ref="company-link"
-          class="label ml-3 align-self-end"
+          class="label gl-mb-0 ml-3 align-self-end"
         >
           <gl-sprintf :message="$options.i18n.needMoreUsersLink">
             <template #company>
