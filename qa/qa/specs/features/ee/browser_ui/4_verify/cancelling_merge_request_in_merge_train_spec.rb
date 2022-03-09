@@ -76,7 +76,13 @@ module QA
         end
 
         Flow::Login.sign_in(as: @user)
-        merge_request.visit!
+
+        Support::Retrier.retry_until do
+          merge_request.visit!
+          Page::MergeRequest::Show.perform do |show|
+            show.has_title? @mr_title
+          end
+        end
 
         Page::MergeRequest::Show.perform do |show|
           show.has_pipeline_status?('passed')
