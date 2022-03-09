@@ -28,7 +28,7 @@ describe('MergeRequestDrawer component', () => {
       targetBranch: null,
       targetBranchUri: null,
     },
-    project: defaultData.project,
+    project: defaultData.mergeRequest.project,
   };
 
   const findTitle = () => wrapper.findByTestId('dashboard-drawer-title');

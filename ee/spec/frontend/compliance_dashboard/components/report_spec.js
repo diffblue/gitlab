@@ -30,12 +30,12 @@ describe('ComplianceReport component', () => {
 
   const mergeCommitsCsvExportPath = '/csv';
   const groupPath = 'group-path';
-  const createdAfter = '2021-11-16';
-  const createdBefore = '2021-12-15';
+  const mergedAfter = '2021-11-16';
+  const mergedBefore = '2021-12-15';
   const defaultQuery = {
     projectIds: ['20'],
-    createdAfter,
-    createdBefore,
+    mergedAfter,
+    mergedBefore,
     sort: DEFAULT_SORT,
   };
   const mockGraphQlError = new Error('GraphQL networkError');
@@ -237,9 +237,9 @@ describe('ComplianceReport component', () => {
     });
 
     it('renders the violation severity badge', () => {
-      const { severity } = mapViolations(mockResolver().mergeRequestViolations.nodes)[0];
+      const { severityLevel } = mapViolations(mockResolver().mergeRequestViolations.nodes)[0];
 
-      expect(findSeverityBadge().props()).toStrictEqual({ severity });
+      expect(findSeverityBadge().props()).toStrictEqual({ severity: severityLevel });
     });
 
     it('renders the violation reason', () => {
@@ -289,7 +289,7 @@ describe('ComplianceReport component', () => {
             stripTypenames(drawerData.mergeRequest),
           );
           expect(findMergeRequestDrawer().props('project')).toStrictEqual(
-            stripTypenames(drawerData.project),
+            stripTypenames(drawerData.mergeRequest.project),
           );
         });
 
@@ -313,7 +313,7 @@ describe('ComplianceReport component', () => {
             stripTypenames(drawerData.mergeRequest),
           );
           expect(findMergeRequestDrawer().props('project')).toStrictEqual(
-            stripTypenames(drawerData.project),
+            stripTypenames(drawerData.mergeRequest.project),
           );
         });
       });
@@ -335,7 +335,7 @@ describe('ComplianceReport component', () => {
       });
 
       describe('when the filters changed', () => {
-        const query = { createdAfter, createdBefore, projectIds: [1, 2, 3] };
+        const query = { mergedAfter, mergedBefore, projectIds: [1, 2, 3] };
 
         beforeEach(() => {
           return findViolationFilter().vm.$emit('filters-changed', query);

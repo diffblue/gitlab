@@ -15,8 +15,8 @@ export default {
             {
               __typename: 'MergeRequestViolation',
               id: 1,
-              severity: 1,
-              reason: 1,
+              severityLevel: 'HIGH',
+              reason: 'APPROVED_BY_COMMITTER',
               violatingUser: {
                 __typename: 'Violator',
                 id: 50,
@@ -42,7 +42,7 @@ export default {
                     'https://secure.gravatar.com/avatar/7ff9b8111da2e2109e7b66f37aa632cc?s=80&d=identicon',
                   webUrl: 'https://gdk.localhost:3443/user6',
                 },
-                mergedBy: {
+                mergeUser: {
                   __typename: 'MergedBy',
                   id: 50,
                   name: 'John Doe6',
@@ -93,37 +93,37 @@ export default {
                   ],
                 },
                 fullRef: 'gitlab-shell!1',
-                reference: '!1',
+                ref: '!1',
                 sourceBranch: 'ut-171ad4e263',
                 sourceBranchExists: false,
                 targetBranch: 'master',
                 targetBranchExists: true,
-              },
-              project: {
-                __typename: 'Project',
-                id: 1,
-                avatarUrl: null,
-                name: 'Gitlab Shell',
-                webUrl: 'https://gdk.localhost:3443/gitlab-org/gitlab-shell',
-                complianceFrameworks: {
-                  __typename: 'ComplianceFrameworks',
-                  nodes: [
-                    {
-                      __typename: 'ComplianceFrameworks',
-                      id: 1,
-                      name: 'GDPR',
-                      description: 'General Data Protection Regulation',
-                      color: '#009966',
-                    },
-                  ],
+                project: {
+                  __typename: 'Project',
+                  id: 1,
+                  avatarUrl: null,
+                  name: 'Gitlab Shell',
+                  webUrl: 'https://gdk.localhost:3443/gitlab-org/gitlab-shell',
+                  complianceFrameworks: {
+                    __typename: 'ComplianceFrameworks',
+                    nodes: [
+                      {
+                        __typename: 'ComplianceFrameworks',
+                        id: 1,
+                        name: 'GDPR',
+                        description: 'General Data Protection Regulation',
+                        color: '#009966',
+                      },
+                    ],
+                  },
                 },
               },
             },
             {
               __typename: 'MergeRequestViolation',
               id: 2,
-              severity: 2,
-              reason: 2,
+              severityLevel: 'HIGH',
+              reason: 'APPROVED_BY_INSUFFICIENT_USERS',
               violatingUser: {
                 __typename: 'Violator',
                 id: 50,
@@ -149,7 +149,7 @@ export default {
                     'https://secure.gravatar.com/avatar/7ff9b8111da2e2109e7b66f37aa632cc?s=80&d=identicon',
                   webUrl: 'https://gdk.localhost:3443/user6',
                 },
-                mergedBy: {
+                mergeUser: {
                   __typename: 'MergedBy',
                   id: 50,
                   name: 'John Doe6',
@@ -191,29 +191,29 @@ export default {
                   ],
                 },
                 fullRef: 'gitlab-test!2',
-                reference: '!2',
+                ref: '!2',
                 sourceBranch: 'ut-171ad4e264',
                 sourceBranchExists: false,
                 targetBranch: 'master',
                 targetBranchExists: true,
-              },
-              project: {
-                __typename: 'Project',
-                id: 2,
-                avatarUrl: null,
-                name: 'Gitlab Test',
-                webUrl: 'https://gdk.localhost:3443/gitlab-org/gitlab-test',
-                complianceFrameworks: {
-                  __typename: 'ComplianceFrameworks',
-                  nodes: [
-                    {
-                      __typename: 'ComplianceFrameworks',
-                      id: 2,
-                      name: 'SOX',
-                      description: 'A framework',
-                      color: '#00FF00',
-                    },
-                  ],
+                project: {
+                  __typename: 'Project',
+                  id: 2,
+                  avatarUrl: null,
+                  name: 'Gitlab Test',
+                  webUrl: 'https://gdk.localhost:3443/gitlab-org/gitlab-test',
+                  complianceFrameworks: {
+                    __typename: 'ComplianceFrameworks',
+                    nodes: [
+                      {
+                        __typename: 'ComplianceFrameworks',
+                        id: 2,
+                        name: 'SOX',
+                        description: 'A framework',
+                        color: '#00FF00',
+                      },
+                    ],
+                  },
                 },
               },
             },

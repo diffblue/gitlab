@@ -21,8 +21,8 @@ describe('ViolationFilter component', () => {
   const startDate = getDateInPast(CURRENT_DATE, 20);
   const endDate = getDateInPast(CURRENT_DATE, 4);
   const dateRangeQuery = {
-    createdAfter: pikadayToString(startDate),
-    createdBefore: pikadayToString(endDate),
+    mergedAfter: pikadayToString(startDate),
+    mergedBefore: pikadayToString(endDate),
   };
   const defaultProjects = createDefaultProjects(2);
   const projectsResponse = createDefaultProjectsResponse(defaultProjects);
@@ -119,7 +119,7 @@ describe('ViolationFilter component', () => {
     });
 
     describe('with a default query', () => {
-      const defaultQuery = { projectIds, createdAfter: '2022-01-01', createdBefore: '2022-01-31' };
+      const defaultQuery = { projectIds, mergedAfter: '2022-01-01', mergedBefore: '2022-01-31' };
 
       beforeEach(() => {
         createComponent({ defaultQuery });

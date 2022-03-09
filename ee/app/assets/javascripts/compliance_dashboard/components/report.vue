@@ -115,21 +115,21 @@ export default {
       this.updateUrlQuery({ ...this.urlQuery, sort: this.sortParam });
     },
     toggleDrawer(rows) {
-      const { mergeRequest, project } = rows[0] || {};
+      const { mergeRequest } = rows[0] || {};
 
       if (!mergeRequest || this.isCurrentDrawer(mergeRequest)) {
         this.closeDrawer();
       } else {
-        this.openDrawer(mergeRequest, project);
+        this.openDrawer(mergeRequest);
       }
     },
     isCurrentDrawer(mergeRequest) {
       return this.showDrawer && mergeRequest.id === this.drawerMergeRequest.id;
     },
-    openDrawer(mergeRequest, project) {
+    openDrawer(mergeRequest) {
       this.showDrawer = true;
       this.drawerMergeRequest = mergeRequest;
-      this.drawerProject = project;
+      this.drawerProject = mergeRequest.project;
     },
     closeDrawer() {
       this.showDrawer = false;
@@ -161,7 +161,7 @@ export default {
   },
   fields: [
     {
-      key: 'severity',
+      key: 'severityLevel',
       label: __('Severity'),
       thClass: thWidthClass(10),
       sortable: true,
@@ -259,8 +259,8 @@ export default {
       @row-selected="toggleDrawer"
       @sort-changed="handleSortChanged"
     >
-      <template #cell(severity)="{ item: { severity } }">
-        <severity-badge class="gl-reset-text-align!" :severity="severity" />
+      <template #cell(severityLevel)="{ item: { severityLevel } }">
+        <severity-badge class="gl-reset-text-align!" :severity="severityLevel" />
       </template>
       <template #cell(violationReason)="{ item: { reason, violatingUser } }">
         <violation-reason :reason="reason" :user="violatingUser" />
