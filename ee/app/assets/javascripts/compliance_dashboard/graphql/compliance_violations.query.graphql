@@ -21,7 +21,7 @@ query getComplianceViolations(
     mergeRequestViolations {
       nodes {
         id
-        severity
+        severityLevel
         reason
         violatingUser {
           id
@@ -42,7 +42,7 @@ query getComplianceViolations(
             avatarUrl
             webUrl
           }
-          mergedBy {
+          mergeUser {
             id
             name
             username
@@ -76,24 +76,24 @@ query getComplianceViolations(
               webUrl
             }
           }
-          reference
+          ref
           fullRef: reference(full: true)
           sourceBranch
           sourceBranchExists
           targetBranch
           targetBranchExists
-        }
-        project {
-          id
-          avatarUrl
-          name
-          webUrl
-          complianceFrameworks {
-            nodes {
-              id
-              name
-              description
-              color
+          project {
+            id
+            avatarUrl
+            name
+            webUrl
+            complianceFrameworks {
+              nodes {
+                id
+                name
+                description
+                color
+              }
             }
           }
         }

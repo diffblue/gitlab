@@ -38,11 +38,11 @@ export default {
   },
   computed: {
     defaultStartDate() {
-      const startDate = this.defaultQuery.createdAfter;
+      const startDate = this.defaultQuery.mergedAfter;
       return startDate ? parsePikadayDate(startDate) : getDateInPast(CURRENT_DATE, 30);
     },
     defaultEndDate() {
-      const endDate = this.defaultQuery.createdBefore;
+      const endDate = this.defaultQuery.mergedBefore;
       return endDate ? parsePikadayDate(endDate) : CURRENT_DATE;
     },
   },
@@ -74,8 +74,8 @@ export default {
     },
     dateRangeChanged({ startDate = this.defaultStartDate, endDate = this.defaultEndDate }) {
       this.updateFilter({
-        createdAfter: pikadayToString(startDate),
-        createdBefore: pikadayToString(endDate),
+        mergedAfter: pikadayToString(startDate),
+        mergedBefore: pikadayToString(endDate),
       });
     },
     updateFilter(query) {
