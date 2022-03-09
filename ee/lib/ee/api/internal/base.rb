@@ -23,6 +23,19 @@ module EE
               end
             end
 
+            override :send_git_audit_streaming_event
+            def send_git_audit_streaming_event(msg)
+              return if actor.user.blank? || @project.blank?
+              return unless ::Feature.enabled?(:audit_event_streaming_git_operations, @project.group)
+
+              ::AuditEvents::BuildService.new(
+                author: actor.user,
+                scope: @project,
+                target: @project,
+                message: msg
+              ).execute.stream_to_external_destinations(use_json: true)
+            end
+
             override :two_factor_otp_check
             def two_factor_otp_check
               return { success: false, message: 'Feature is not available' } unless ::License.feature_available?(:git_two_factor_enforcement)

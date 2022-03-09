@@ -22,4 +22,14 @@ RSpec.describe Repositories::GitHttpController do
       let(:access_checker_class) { Gitlab::GitAccessWiki }
     end
   end
+
+  context 'git audit streaming event' do
+    include GitHttpHelpers
+
+    it_behaves_like 'sends git audit streaming event' do
+      subject do
+        post :git_upload_pack, params: { repository_path: "#{project.full_path}.git" }
+      end
+    end
+  end
 end
