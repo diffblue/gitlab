@@ -16,6 +16,8 @@ module EE
       PREMIUM_TRIAL = 'premium_trial'
       OPEN_SOURCE = 'opensource'
 
+      FREE_USER_LIMIT = 5
+
       EE_DEFAULT_PLANS = (const_get(:DEFAULT_PLANS, false) + [FREE]).freeze
       PAID_HOSTED_PLANS = [BRONZE, SILVER, PREMIUM, GOLD, ULTIMATE, ULTIMATE_TRIAL, PREMIUM_TRIAL, OPEN_SOURCE].freeze
       EE_ALL_PLANS = (EE_DEFAULT_PLANS + PAID_HOSTED_PLANS).freeze

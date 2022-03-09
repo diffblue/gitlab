@@ -147,10 +147,10 @@ module EE
     end
 
     def set_membership_activation
-      return unless group
-      return if user && ::Member.in_hierarchy(group).with_user(user).with_state(:active).any?
+      return unless source.root_ancestor.apply_user_cap? # this guard is likely cheaper than doing the Member query all the time
+      return if user && ::Member.in_hierarchy(source).with_user(user).with_state(:active).any?
 
-      self.state = ::Member::STATE_AWAITING if group.user_cap_reached?
+      self.state = ::Member::STATE_AWAITING if source.root_ancestor.user_limit_reached?
     end
   end
 end
