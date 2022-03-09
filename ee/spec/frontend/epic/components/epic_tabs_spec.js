@@ -60,6 +60,7 @@ describe('EpicTabs', () => {
       const treeTab = findEpicTreeTab();
       expect(treeTab.exists()).toBe(true);
       expect(treeTab.text()).toBe('Epics and Issues');
+      expect(treeTab.props().selected).toBe(true);
     });
 
     it('displays the roadmap tab', () => {
@@ -68,6 +69,7 @@ describe('EpicTabs', () => {
       const treeTab = findEpicRoadmapTab();
       expect(treeTab.exists()).toBe(true);
       expect(treeTab.text()).toBe('Roadmap');
+      expect(treeTab.props().selected).toBe(false);
     });
 
     const treeTabFixture = `
