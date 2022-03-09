@@ -12,6 +12,7 @@ import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import {
   EDITOR_MODE_YAML,
+  EDITOR_MODE_RULE,
   SECURITY_POLICY_ACTIONS,
   GRAPHQL_ERROR_MESSAGE,
   PARSING_ERROR_MESSAGE,
@@ -26,6 +27,7 @@ import { DEFAULT_SCAN_RESULT_POLICY, fromYaml, toYaml, buildRule } from './lib';
 export default {
   SECURITY_POLICY_ACTIONS,
   EDITOR_MODE_YAML,
+  EDITOR_MODE_RULE,
   SHARED_FOR_DISABLED:
     'gl-bg-gray-10 gl-border-solid gl-border-1 gl-border-gray-100 gl-rounded-base',
   i18n: {
@@ -97,7 +99,7 @@ export default {
         'scan-result-policy-editor',
       ),
       yamlEditorError: null,
-      mode: EDITOR_MODE_YAML,
+      mode: EDITOR_MODE_RULE,
     };
   },
   computed: {
@@ -159,7 +161,7 @@ export default {
         const mergeRequest = await modifyPolicy({
           action,
           assignedPolicyProject,
-          name: this.originalName || fromYaml(this.yamlEditorValue)?.name,
+          name: this.originalName || fromYaml(yamlValue)?.name,
           projectPath: this.projectPath,
           yamlEditorValue: yamlValue,
         });
@@ -215,7 +217,6 @@ export default {
   <policy-editor-layout
     v-if="!disableScanPolicyUpdate"
     :custom-save-button-text="$options.i18n.createMergeRequest"
-    :default-editor-mode="$options.EDITOR_MODE_YAML"
     :is-editing="isEditing"
     :is-removing-policy="isRemovingPolicy"
     :is-updating-policy="isCreatingMR"

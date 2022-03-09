@@ -18,6 +18,7 @@ import { visitUrl } from '~/lib/utils/url_utility';
 import { modifyPolicy } from 'ee/threat_monitoring/components/policy_editor/utils';
 import {
   SECURITY_POLICY_ACTIONS,
+  EDITOR_MODE_RULE,
   EDITOR_MODE_YAML,
 } from 'ee/threat_monitoring/components/policy_editor/constants';
 import DimDisableContainer from 'ee/threat_monitoring/components/policy_editor/dim_disable_container.vue';
@@ -108,7 +109,8 @@ describe('ScanResultPolicyEditor', () => {
         DEFAULT_SCAN_RESULT_POLICY,
       );
 
-      await findPolicyEditorLayout().vm.$emit('update-yaml', newManifest);
+      findPolicyEditorLayout().vm.$emit('update-yaml', newManifest);
+      await nextTick();
 
       expect(findPolicyEditorLayout().attributes('yamleditorvalue')).toBe(newManifest);
     });
@@ -125,7 +127,8 @@ describe('ScanResultPolicyEditor', () => {
 
       expect(findAlert().exists()).toBe(false);
 
-      await findPolicyEditorLayout().vm.$emit('update-yaml', 'invalid manifest');
+      findPolicyEditorLayout().vm.$emit('update-yaml', 'invalid manifest');
+      await nextTick();
 
       expect(findAlert().exists()).toBe(true);
     });
@@ -133,7 +136,8 @@ describe('ScanResultPolicyEditor', () => {
     it('disables all rule mode related components when the yaml is invalid', async () => {
       await factory();
 
-      await findPolicyEditorLayout().vm.$emit('update-yaml', 'invalid manifest');
+      findPolicyEditorLayout().vm.$emit('update-yaml', 'invalid manifest');
+      await nextTick();
 
       expect(findNameInput().attributes('disabled')).toBe('true');
       expect(findDescriptionTextArea().attributes('disabled')).toBe('true');
@@ -142,10 +146,24 @@ describe('ScanResultPolicyEditor', () => {
       expect(findAllDisabledComponents().at(1).props('disabled')).toBe(true);
     });
 
-    it('defaults to YAML mode', async () => {
+    it('defaults to rule mode', async () => {
       await factory();
 
-      expect(findPolicyEditorLayout().attributes().defaulteditormode).toBe(EDITOR_MODE_YAML);
+      expect(findPolicyEditorLayout().attributes().defaulteditormode).toBe(EDITOR_MODE_RULE);
+    });
+
+    it('uses name from policy rule builder', async () => {
+      const newPolicyName = 'new policy name';
+      await factory();
+      findNameInput().vm.$emit('input', newPolicyName);
+      findPolicyEditorLayout().vm.$emit('save-policy');
+      await waitForPromises();
+
+      expect(modifyPolicy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: newPolicyName,
+        }),
+      );
     });
 
     describe.each`
@@ -157,8 +175,9 @@ describe('ScanResultPolicyEditor', () => {
       it('updates YAML when switching modes', async () => {
         await factory();
 
-        await currentComponent().vm.$emit(event, newValue);
-        await findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_YAML);
+        currentComponent().vm.$emit(event, newValue);
+        findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_YAML);
+        await nextTick();
 
         expect(findPolicyEditorLayout().attributes('yamleditorvalue')).toMatch(newValue.toString());
       });
@@ -166,7 +185,8 @@ describe('ScanResultPolicyEditor', () => {
       it('updates the yaml preview', async () => {
         await factory();
 
-        await currentComponent().vm.$emit(event, newValue);
+        currentComponent().vm.$emit(event, newValue);
+        await nextTick();
 
         expect(findYamlPreview().html()).toMatch(newValue.toString());
       });
@@ -209,7 +229,8 @@ describe('ScanResultPolicyEditor', () => {
 
       expect(findAllRuleBuilders().length).toBe(rulesCount);
 
-      await findAddRuleButton().vm.$emit('click');
+      findAddRuleButton().vm.$emit('click');
+      await nextTick();
 
       expect(findAllRuleBuilders()).toHaveLength(rulesCount + 1);
     });
@@ -218,10 +239,11 @@ describe('ScanResultPolicyEditor', () => {
       const limit = 5;
       factory();
       await nextTick();
-      await findAddRuleButton().vm.$emit('click');
-      await findAddRuleButton().vm.$emit('click');
-      await findAddRuleButton().vm.$emit('click');
-      await findAddRuleButton().vm.$emit('click');
+      findAddRuleButton().vm.$emit('click');
+      findAddRuleButton().vm.$emit('click');
+      findAddRuleButton().vm.$emit('click');
+      findAddRuleButton().vm.$emit('click');
+      await nextTick();
 
       expect(findAllRuleBuilders()).toHaveLength(limit);
       expect(findAddRuleButton().exists()).toBe(false);
@@ -238,7 +260,8 @@ describe('ScanResultPolicyEditor', () => {
       };
       factory();
       await nextTick();
-      await findAllRuleBuilders().at(0).vm.$emit('changed', newValue);
+      findAllRuleBuilders().at(0).vm.$emit('changed', newValue);
+      await nextTick();
 
       expect(wrapper.vm.policy.rules[0]).toEqual(newValue);
       expect(findYamlPreview().html()).toMatch('vulnerabilities_allowed: 1');
@@ -251,7 +274,8 @@ describe('ScanResultPolicyEditor', () => {
 
       expect(findAllRuleBuilders()).toHaveLength(initialRuleCount);
 
-      await findAllRuleBuilders().at(0).vm.$emit('remove', 0);
+      findAllRuleBuilders().at(0).vm.$emit('remove', 0);
+      await nextTick();
 
       expect(findAllRuleBuilders()).toHaveLength(initialRuleCount - 1);
     });
@@ -286,7 +310,8 @@ describe('ScanResultPolicyEditor', () => {
       factory();
 
       await nextTick();
-      await findPolicyActionBuilder().vm.$emit('changed', UPDATED_ACTION);
+      findPolicyActionBuilder().vm.$emit('changed', UPDATED_ACTION);
+      await nextTick();
 
       expect(findPolicyActionBuilder().props('initAction')).toEqual(UPDATED_ACTION);
     });
