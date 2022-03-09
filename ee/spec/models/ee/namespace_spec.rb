@@ -1025,6 +1025,7 @@ RSpec.describe Namespace do
           group.add_developer(developer)
           group.add_developer(create(:user, :blocked))
           group.add_guest(guest)
+          group.clear_memoization(:billed_user_ids_including_guests)
           create(:group_member, :awaiting, :developer, source: group)
         end
 
@@ -1054,6 +1055,7 @@ RSpec.describe Namespace do
               project.add_guest(create(:user))
               project.add_developer(developer)
               project.add_developer(create(:user, :blocked))
+              group.clear_memoization(:billed_user_ids_including_guests)
               create(:project_member, :awaiting, :developer, source: project)
             end
 
@@ -1088,6 +1090,7 @@ RSpec.describe Namespace do
                 invited_group.add_guest(create(:user))
                 invited_group.add_developer(create(:user, :blocked))
                 invited_group.add_developer(developer)
+                group.clear_memoization(:billed_user_ids_including_guests)
                 create(:group_member, :awaiting, :developer, source: invited_group)
               end
 
@@ -1133,6 +1136,8 @@ RSpec.describe Namespace do
               shared_group.add_developer(shared_group_developer)
               shared_group.add_guest(create(:user))
               shared_group.add_developer(create(:user, :blocked))
+              group.clear_memoization(:billed_user_ids_including_guests)
+              shared_group.clear_memoization(:billed_user_ids_including_guests)
               create(:group_member, :awaiting, :developer, source: shared_group)
 
               create(:group_group_link, { shared_with_group: shared_group,
@@ -1162,6 +1167,7 @@ RSpec.describe Namespace do
                 another_shared_group.add_developer(another_shared_group_developer)
                 another_shared_group.add_guest(create(:user))
                 another_shared_group.add_developer(create(:user, :blocked))
+                group.clear_memoization(:billed_user_ids_including_guests)
                 create(:group_member, :awaiting, :developer, source: another_shared_group)
               end
 
@@ -1242,6 +1248,7 @@ RSpec.describe Namespace do
                 project.add_guest(project_guest)
                 project.add_developer(create(:user, :blocked))
                 project.add_developer(developer)
+                group.clear_memoization(:billed_user_ids_including_guests)
                 create(:project_member, :awaiting, :developer, source: project)
               end
 
@@ -1274,6 +1281,7 @@ RSpec.describe Namespace do
                   invited_group.add_developer(developer)
                   invited_group.add_guest(invited_group_guest)
                   invited_group.add_developer(create(:user, :blocked))
+                  group.clear_memoization(:billed_user_ids_including_guests)
                   create(:group_member, :awaiting, :developer, source: invited_group)
                   create(:project_group_link, project: project, group: invited_group)
                 end
@@ -1314,6 +1322,8 @@ RSpec.describe Namespace do
                 shared_group.add_developer(shared_group_developer)
                 shared_group.add_guest(shared_group_guest)
                 shared_group.add_developer(create(:user, :blocked))
+                group.clear_memoization(:billed_user_ids_including_guests)
+                shared_group.clear_memoization(:billed_user_ids_including_guests)
                 create(:group_member, :awaiting, :developer, source: shared_group)
 
                 create(:group_group_link, { shared_with_group: shared_group,
@@ -1360,6 +1370,7 @@ RSpec.describe Namespace do
         group.add_developer(developer)
         group.add_developer(create(:user, :blocked))
         group.add_guest(create(:user))
+        group.clear_memoization(:billed_user_ids_including_guests)
         create(:group_member, :awaiting, :developer, source: group)
       end
 
@@ -1380,6 +1391,7 @@ RSpec.describe Namespace do
             project.add_guest(create(:user))
             project.add_developer(developer)
             project.add_developer(create(:user, :blocked))
+            group.clear_memoization(:billed_user_ids_including_guests)
             create(:project_member, :awaiting, :developer, source: project)
           end
 
@@ -1404,6 +1416,7 @@ RSpec.describe Namespace do
               invited_group.add_guest(create(:user))
               invited_group.add_developer(create(:user, :blocked))
               invited_group.add_developer(developer)
+              group.clear_memoization(:billed_user_ids_including_guests)
               create(:group_member, :awaiting, :developer, source: invited_group)
               create(:project_group_link, project: project, group: invited_group)
             end
@@ -1421,6 +1434,7 @@ RSpec.describe Namespace do
             other_group.add_developer(create(:user))
             other_group.add_guest(create(:user))
             other_group.add_developer(create(:user, :blocked))
+            group.clear_memoization(:billed_user_ids_including_guests)
             create(:group_member, :awaiting, :developer, source: other_group)
 
             create(:group_group_link, { shared_with_group: other_group,
@@ -1449,6 +1463,7 @@ RSpec.describe Namespace do
               project.add_guest(create(:user))
               project.add_developer(create(:user, :blocked))
               project.add_developer(developer)
+              group.clear_memoization(:billed_user_ids_including_guests)
               create(:project_member, :awaiting, :developer, source: project)
             end
 
@@ -1473,6 +1488,7 @@ RSpec.describe Namespace do
                 invited_group.add_developer(developer)
                 invited_group.add_guest(create(:user))
                 invited_group.add_developer(create(:user, :blocked))
+                group.clear_memoization(:billed_user_ids_including_guests)
                 create(:group_member, :awaiting, :developer, source: invited_group)
                 create(:project_group_link, project: project, group: invited_group)
               end
@@ -1491,6 +1507,7 @@ RSpec.describe Namespace do
               other_group.add_developer(create(:user))
               other_group.add_guest(create(:user))
               other_group.add_developer(create(:user, :blocked))
+              group.clear_memoization(:billed_user_ids_including_guests)
               create(:group_member, :awaiting, :developer, source: other_group)
 
               create(:group_group_link, { shared_with_group: other_group,
@@ -1503,6 +1520,139 @@ RSpec.describe Namespace do
           end
         end
       end
+    end
+  end
+
+  describe '#free_user_cap_reached?' do
+    let(:group) { create(:group) }
+
+    subject(:free_user_cap_reached_for_group?) { group.free_user_cap_reached? }
+
+    context 'when free user cap feature is not applied' do
+      before do
+        allow(group).to receive(:apply_free_user_cap?).and_return(false)
+      end
+
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when free user cap feature is applied' do
+      before do
+        allow(group).to receive(:apply_free_user_cap?).and_return(true)
+      end
+
+      context 'when the :saas_user_caps feature flag is not enabled' do
+        it { is_expected.to be_falsey }
+      end
+
+      context 'when the :free_user_cap feature flag is enabled' do
+        before do
+          stub_feature_flags(free_user_cap: true)
+        end
+
+        let(:free_plan) { false }
+
+        shared_examples 'returning the right value for free_user_cap_reached?' do
+          before do
+            allow(root_group).to receive(:apply_free_user_cap?).and_return(true)
+            allow(root_group).to receive(:has_free_or_no_subscription?).and_return(free_plan)
+          end
+
+          context 'when no free user cap has been set to that root ancestor' do
+            it { is_expected.to be_falsey }
+          end
+
+          context 'when a free user cap has been set to that root ancestor' do
+            let(:free_plan) { true }
+
+            before do
+              allow(root_group).to receive(:free_plan_members_count).and_return(free_plan_members_count)
+              allow(group).to receive(:root_ancestor).and_return(root_group)
+            end
+
+            context 'when the free cap is higher than the number of billable members' do
+              let(:free_plan_members_count) { 3 }
+
+              it { is_expected.to be_falsey }
+            end
+
+            context 'when the free cap is the same as the number of billable members' do
+              let(:free_plan_members_count) { ::Plan::FREE_USER_LIMIT }
+
+              it { is_expected.to be_truthy }
+            end
+
+            context 'when the free cap is lower than the number of billable members' do
+              let(:free_plan_members_count) { 6 }
+
+              it { is_expected.to be_truthy }
+            end
+          end
+        end
+
+        context 'when this is a user namespace' do
+          it_behaves_like 'returning the right value for free_user_cap_reached?' do
+            let(:root_group) { create(:user).namespace }
+          end
+        end
+
+        context 'when this group has no root ancestor' do
+          it_behaves_like 'returning the right value for free_user_cap_reached?' do
+            let(:root_group) { group }
+          end
+        end
+
+        context 'when this group has a root ancestor' do
+          it_behaves_like 'returning the right value for free_user_cap_reached?' do
+            let(:root_group) { create(:group, children: [group]) }
+          end
+        end
+      end
+    end
+  end
+
+  describe '#user_limit_reached?' do
+    where(:free_user_cap_reached) do
+      [
+        true,
+        false
+      ]
+    end
+
+    let(:namespace) { build(:namespace) }
+
+    subject { namespace.user_limit_reached? }
+
+    with_them do
+      before do
+        allow(namespace).to receive(:free_user_cap_reached?).and_return(free_user_cap_reached)
+      end
+
+      it { is_expected.to eq(free_user_cap_reached) }
+    end
+  end
+
+  describe '#free_plan_user_ids' do
+    let_it_be(:namespace) { create(:namespace) }
+    let_it_be(:owner) { namespace.owner }
+    let_it_be(:project) { create(:project, namespace: namespace) }
+    let_it_be(:project_user) { create(:project_member, project: project).user }
+    let_it_be(:project_2) { create(:project, namespace: namespace) }
+    let_it_be(:project2_user) { create(:project_member, project: project_2).user }
+    let_it_be(:bot_project_user) { create(:project_member, project: project, user: create(:user, :bot)).user }
+
+    before do
+      create(:project_member, :invited, project: project) # invited member
+      create(:project_member, :access_request, project: project) # requested member
+      create(:project_member) # a random project member with project not under our namespace
+      create(:group_member) # a random group member with group not under our namespace
+      create(:project_member, project: project_2, user: project_user) # member using same user as project_user
+      create(:project_member, project: project, user: create(:user, :project_bot)) # project bot
+      create(:project_member, project: project, user: create(:user, :blocked)) # not active user
+    end
+
+    it 'only includes users from projects of a personal namespace and the owner of the namespace' do
+      expect(namespace.free_plan_user_ids).to contain_exactly(project_user.id, owner.id, project2_user.id, bot_project_user.id)
     end
   end
 

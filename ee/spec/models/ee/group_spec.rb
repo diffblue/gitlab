@@ -3,9 +3,12 @@
 require 'spec_helper'
 
 RSpec.describe Group do
+  using RSpec::Parameterized::TableSyntax
+
   let(:group) { create(:group) }
 
   it { is_expected.to include_module(EE::Group) }
+  it { is_expected.to be_kind_of(ReactiveCaching) }
 
   describe 'associations' do
     it { is_expected.to have_many(:audit_events).dependent(false) }
@@ -1602,6 +1605,55 @@ RSpec.describe Group do
           end
         end
       end
+    end
+  end
+
+  describe '#calculate_reactive_cache' do
+    let(:group) { build(:group) }
+
+    subject { group.calculate_reactive_cache }
+
+    it 'returns cache data for the free plan members count' do
+      expect(group).to receive(:billable_members_count).and_return(5)
+
+      is_expected.to eq(5)
+    end
+  end
+
+  describe '#user_limit_reached?' do
+    where(:user_cap_reached, :free_user_cap_reached, :result) do
+      false | false | false
+      false | true  | true
+      true  | false | true
+      true  | true  | true
+    end
+
+    subject { group.user_limit_reached? }
+
+    with_them do
+      before do
+        allow(group).to receive(:user_cap_reached?).and_return(user_cap_reached)
+        allow(group).to receive(:free_user_cap_reached?).and_return(free_user_cap_reached)
+      end
+
+      it { is_expected.to eq(result) }
+    end
+  end
+
+  describe '#free_plan_members_count' do
+    let_it_be(:namespace) { create(:group) }
+    let_it_be(:owner) { create(:user) }
+    let_it_be(:project) { create(:project, group: namespace) }
+    let_it_be(:project_user) { create(:project_member, project: project).user }
+    let_it_be(:project_2) { create(:project, group: namespace) }
+    let_it_be(:project2_user) { create(:project_member, project: project_2).user }
+
+    before do
+      namespace.add_owner(owner)
+    end
+
+    it 'has the correct count' do
+      expect(namespace.free_plan_members_count).to eq 3
     end
   end
 

@@ -275,6 +275,169 @@ RSpec.describe Member, type: :model do
     end
   end
 
+  context 'check if free user cap has been reached', :saas do
+    let_it_be(:group, refind: true) { create(:group_with_plan, plan: :free_plan) }
+    let_it_be(:subgroup) { create(:group, parent: group) }
+    let_it_be(:project, refind: true) { create(:project, namespace: group)}
+    let_it_be(:user) { create(:user) }
+
+    before_all do
+      group.add_developer(create(:user))
+    end
+
+    context 'when the :free_user_cap feature flag is disabled' do
+      before do
+        stub_feature_flags(free_user_cap: false)
+      end
+
+      it 'sets the group member state to active' do
+        group.add_developer(user)
+
+        expect(user.group_members.last).to be_active
+      end
+
+      it 'sets the project member state to active' do
+        project.add_developer(user)
+
+        expect(user.project_members.last).to be_active
+      end
+    end
+
+    context 'when the :free_user_cap feature flag is enabled' do
+      before do
+        stub_feature_flags(free_user_cap: true)
+      end
+
+      context 'when the free user cap has not been reached' do
+        it 'sets the group member to active' do
+          group.add_developer(user)
+
+          expect(user.group_members.last).to be_active
+        end
+
+        it 'sets the project member to active' do
+          project.add_developer(user)
+
+          expect(user.project_members.last).to be_active
+        end
+
+        context 'when user is added to a group-less project' do
+          let(:project) do
+            project = create(:project)
+            namespace = project.namespace
+            create(:gitlab_subscription, hosted_plan: create(:free_plan), namespace: namespace)
+            project
+          end
+
+          it 'adds project member and leaves the state to active' do
+            project.root_ancestor.clear_memoization(:existing_free_plan)
+            project.add_developer(create(:user))
+            project.add_developer(user)
+
+            expect(user.project_members.last).to be_active
+          end
+        end
+      end
+
+      context 'when the free user cap has been reached' do
+        before do
+          stub_const('::Plan::FREE_USER_LIMIT', 1)
+        end
+
+        it 'sets the group member to awaiting' do
+          group.add_developer(user)
+
+          expect(user.group_members.last).to be_awaiting
+        end
+
+        it 'sets the group member to awaiting when added to a subgroup' do
+          subgroup.add_developer(user)
+
+          expect(user.group_members.last).to be_awaiting
+        end
+
+        it 'sets the project member to awaiting' do
+          project.add_developer(user)
+
+          expect(user.project_members.last).to be_awaiting
+        end
+
+        context 'when multiple members are added' do
+          before do
+            stub_const('::Plan::FREE_USER_LIMIT', 2)
+          end
+
+          it 'sets members to the correct status' do
+            over_limit_user = create(:user)
+            project.root_namespace.clear_memoization(:billed_user_ids_including_guests)
+            project.add_developer(user)
+            project.root_namespace.clear_memoization(:billed_user_ids_including_guests)
+            project.add_developer(over_limit_user)
+
+            expect(user.project_members.last).to be_active
+            expect(over_limit_user.project_members.last).to be_awaiting
+          end
+        end
+
+        context 'when the user is already an active root group member' do
+          it 'sets the group member to active' do
+            create(:group_member, :active, group: group, user: user)
+
+            subgroup.add_owner(user)
+
+            expect(user.group_members.last).to be_active
+          end
+        end
+
+        context 'when the user is already an active subgroup member' do
+          it 'sets the group member to active' do
+            other_subgroup = create(:group, parent: group)
+            create(:group_member, :active, group: other_subgroup, user: user)
+
+            subgroup.add_developer(user)
+
+            expect(user.group_members.last).to be_active
+          end
+        end
+
+        context 'when the user is already an active project member' do
+          it 'sets the group member to active' do
+            create(:project_member, :active, project: project, user: user)
+
+            expect { subgroup.add_owner(user) }.to change { ::Member.with_state(:active).count }.by(1)
+            expect(user.group_members.last).to be_active
+          end
+        end
+
+        context 'when user is added to a group-less project' do
+          let(:project) do
+            project = create(:project)
+            namespace = project.namespace
+            create(:gitlab_subscription, hosted_plan: create(:free_plan), namespace: namespace)
+            project
+          end
+
+          before do
+            stub_const('::Plan::FREE_USER_LIMIT', 2)
+          end
+
+          it 'adds multiple members and correctly shows the state' do
+            project.root_ancestor.clear_memoization(:has_free_or_no_subscription)
+            over_limit_user = create(:user)
+
+            project.root_ancestor.clear_memoization(:free_plan_user_ids)
+            project.add_developer(user)
+            project.root_ancestor.clear_memoization(:free_plan_user_ids)
+            project.add_developer(over_limit_user)
+
+            expect(user.project_members.last).to be_active
+            expect(over_limit_user.project_members.last).to be_awaiting
+          end
+        end
+      end
+    end
+  end
+
   describe '.distinct_awaiting_or_invited_for_group' do
     let_it_be(:other_sub_group) { create(:group, parent: group) }
     let_it_be(:active_group_member) { create(:group_member, group: group) }

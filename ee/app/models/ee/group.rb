@@ -342,12 +342,20 @@ module EE
       billable_ids[:user_ids].count
     end
 
+    override :free_plan_members_count
+    def free_plan_members_count
+      billable_ids = billed_user_ids_including_guests
+
+      billable_ids[:user_ids].count
+    end
+
     # For now, we are not billing for members with a Guest role for subscriptions
     # with a Gold/Ultimate plan. The other plans will treat Guest members as a regular member
     # for billing purposes.
     #
     # For the user_ids key, we are plucking the user_ids from the "Members" table in an array and
     # converting the array of user_ids to a Set which will have unique user_ids.
+    override :billed_user_ids
     def billed_user_ids(requested_hosted_plan = nil)
       exclude_guests = ([actual_plan_name, requested_hosted_plan] & [::Plan::GOLD, ::Plan::ULTIMATE, ::Plan::ULTIMATE_TRIAL]).any?
 
@@ -527,6 +535,11 @@ module EE
       user_cap <= members_count
     end
 
+    override :user_limit_reached?
+    def user_limit_reached?(use_cache: false)
+      super || user_cap_reached?(use_cache: use_cache)
+    end
+
     def shared_externally?
       strong_memoize(:shared_externally) do
         internal_groups = ::Group.groups_including_descendants_by([self])
@@ -685,10 +698,6 @@ module EE
 
     def invited_or_shared_group_members(groups)
       ::GroupMember.active_without_invites_and_requests.where(source_id: groups.self_and_ancestors)
-    end
-
-    def users_without_project_bots(members)
-      ::User.where(id: members.distinct.select(:user_id)).without_project_bot
     end
 
     override :_safe_read_repository_read_only_column

@@ -338,6 +338,10 @@ module EE
       }
     end
 
+    def free_plan_members_count
+      free_plan_user_ids.count
+    end
+
     def eligible_for_trial?
       ::Gitlab.com? &&
         !has_parent? &&
@@ -484,7 +488,38 @@ module EE
       user_cap_available? || apply_free_user_cap?
     end
 
+    def free_user_cap_reached?
+      return false unless apply_free_user_cap?
+
+      members_count = root_ancestor.free_plan_members_count
+      return false unless members_count
+
+      ::Plan::FREE_USER_LIMIT <= members_count
+    end
+
+    def user_limit_reached?(use_cache: false)
+      free_user_cap_reached?
+    end
+
+    def free_plan_user_ids
+      strong_memoize(:free_plan_user_ids) do
+        billed_users.pluck(:id)
+      end
+    end
+
     private
+
+    # Members belonging directly to Projects within user/project namespaces
+    def billed_users
+      # this will include the namespace owner(user namespace) as well
+      members = ::ProjectMember.without_invites_and_requests.where(source_id: ::Project.in_namespace(self))
+
+      users_without_project_bots(members).with_state(:active)
+    end
+
+    def users_without_project_bots(members)
+      ::User.id_in(members.distinct.select(:user_id)).without_project_bot
+    end
 
     def any_project_with_shared_runners_enabled_with_cte?
       projects_query = if user_namespace?

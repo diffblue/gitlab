@@ -103,6 +103,11 @@ RSpec.describe GitlabSubscription, :saas do
         %w[bronze premium].each do |plan|
           it 'excludes these members' do
             gitlab_subscription.update!(plan_code: plan)
+            # plan has already memoized in ee/namespace.rb as `actual_plan`, so this then
+            # is not known at this point since `actual_plan` has already been set when
+            # `group.add_guest` in the before action, and was performed due to member set logic where we
+            # go through that path already
+            group.clear_memoization(:actual_plan)
 
             expect(gitlab_subscription.calculate_seats_in_use).to eq(1)
           end
