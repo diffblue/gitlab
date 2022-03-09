@@ -14,8 +14,7 @@ import { TYPE_ITERATION } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { s__ } from '~/locale';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { Namespace } from '../constants';
+import { Namespace, iterationStates } from '../constants';
 import deleteIteration from '../queries/destroy_iteration.mutation.graphql';
 import query from '../queries/iteration.query.graphql';
 import { getIterationPeriod } from '../utils';
@@ -60,7 +59,6 @@ export default {
       },
     },
   },
-  mixins: [glFeatureFlagsMixin()],
   inject: [
     'fullPath',
     'hasScopedLabelsFeature',
@@ -95,6 +93,9 @@ export default {
     },
     iterationPeriod() {
       return getIterationPeriod(this.iteration);
+    },
+    showDelete() {
+      return this.iteration.state !== iterationStates.closed;
     },
   },
   methods: {
@@ -165,7 +166,7 @@ export default {
             ><gl-icon name="ellipsis_v" />
           </template>
           <gl-dropdown-item :to="editPage">{{ __('Edit') }}</gl-dropdown-item>
-          <gl-dropdown-item data-testid="delete-iteration" @click="showModal">
+          <gl-dropdown-item v-if="showDelete" @click="showModal">
             {{ __('Delete') }}
           </gl-dropdown-item>
         </gl-dropdown>
