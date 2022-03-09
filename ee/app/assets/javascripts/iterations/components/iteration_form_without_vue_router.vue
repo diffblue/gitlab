@@ -61,8 +61,8 @@ export default {
           groupPath: this.groupPath,
           title: this.title,
           description: this.description,
-          startDate: this.startDate ? formatDate(this.startDate, 'yyyy-mm-dd') : null,
-          dueDate: this.dueDate ? formatDate(this.dueDate, 'yyyy-mm-dd') : null,
+          startDate: this.formattedDate(this.startDate),
+          dueDate: this.formattedDate(this.dueDate),
         },
       };
     },
@@ -80,6 +80,9 @@ export default {
     },
   },
   methods: {
+    formattedDate(date) {
+      return date ? formatDate(date, 'yyyy-mm-dd') : null;
+    },
     save() {
       this.showValidation = true;
 
