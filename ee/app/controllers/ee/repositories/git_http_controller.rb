@@ -81,6 +81,12 @@ module EE
         render_bad_geo_jwt("Invalid signature time ")
       end
 
+      override :update_fetch_statistics
+      def update_fetch_statistics
+        send_git_audit_streaming_event
+        super
+      end
+
       def jwt_scope_valid?
         decoded_authorization[:scope] == repository_path.delete_suffix('.git')
       end
@@ -101,6 +107,18 @@ module EE
 
       def ip_allowed?
         ::Gitlab::Geo.allowed_ip?(request.ip)
+      end
+
+      def send_git_audit_streaming_event
+        return if user.blank? || project.blank?
+        return unless ::Feature.enabled?(:audit_event_streaming_git_operations, project.group)
+
+        AuditEvents::BuildService.new(
+          author: user,
+          scope: project,
+          target: project,
+          message: { protocol: 'http', action: 'git-upload-pack' }
+        ).execute.stream_to_external_destinations(use_json: true)
       end
     end
   end
