@@ -62,8 +62,8 @@ ask an administrator to [enable the feature flag](../administration/feature_flag
 On GitLab.com, this feature is not available.
 The feature is not ready for production use.
 
-When you enable this feature, new actions for the same user on the same object
-create new to-do items.
+When you enable this feature, mentions for the same user on the same object
+create new to-do items. Other actions are limited to one to-do item per action type.
 
 ## Create a to-do item
 
