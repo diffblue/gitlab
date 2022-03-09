@@ -754,23 +754,24 @@ describe('Api', () => {
     const projectId = 1;
     const deploymentId = 2;
     const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/projects/${projectId}/deployments/${deploymentId}/approval`;
+    const comment = 'comment';
 
     it('sends an approval when approve is true', async () => {
-      mock.onPost(expectedUrl, { status: 'approved' }).replyOnce(httpStatus.OK);
+      mock.onPost(expectedUrl, { status: 'approved', comment }).replyOnce(httpStatus.OK);
 
-      await Api.deploymentApproval(projectId, deploymentId, true);
+      await Api.deploymentApproval({ id: projectId, deploymentId, approve: true, comment });
 
       expect(mock.history.post.length).toBe(1);
-      expect(mock.history.post[0].data).toBe(JSON.stringify({ status: 'approved' }));
+      expect(mock.history.post[0].data).toBe(JSON.stringify({ status: 'approved', comment }));
     });
 
     it('sends a rejection when approve is false', async () => {
-      mock.onPost(expectedUrl, { status: 'rejected' }).replyOnce(httpStatus.OK);
+      mock.onPost(expectedUrl, { status: 'rejected', comment }).replyOnce(httpStatus.OK);
 
-      await Api.deploymentApproval(projectId, deploymentId, false);
+      await Api.deploymentApproval({ id: projectId, deploymentId, approve: false, comment });
 
       expect(mock.history.post.length).toBe(1);
-      expect(mock.history.post[0].data).toBe(JSON.stringify({ status: 'rejected' }));
+      expect(mock.history.post[0].data).toBe(JSON.stringify({ status: 'rejected', comment }));
     });
   });
 });
