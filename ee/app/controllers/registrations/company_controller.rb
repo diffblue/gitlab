@@ -2,13 +2,9 @@
 
 module Registrations
   class CompanyController < ApplicationController
-    include Registrations::CreateGroup
-    include Registrations::ApplyTrial
-    include ::Gitlab::Utils::StrongMemoize
-    include OneTrustCSP
-
     layout 'minimal'
 
+    before_action :check_if_gl_com_or_dev
     feature_category :onboarding
 
     def new

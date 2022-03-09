@@ -6,13 +6,13 @@ import {
   companySizes,
 } from 'ee/vue_shared/leads/constants';
 import csrf from '~/lib/utils/csrf';
-import CountryOrRegionSelector from '../../../trials/components/country_or_region_selector.vue';
+import CountryOrRegionSelector from '../../../../trials/components/country_or_region_selector.vue';
 import {
   TRIAL_COMPANY_SIZE_PROMPT,
   TRIAL_PHONE_DESCRIPTION,
   TRIAL_FORM_SUBMIT_TEXT,
-} from '../../../trials/constants';
-import RegistrationTrialToggle from '../../components/registration_trial_toggle.vue';
+} from '../../../../trials/constants';
+import RegistrationTrialToggle from '../../../components/registration_trial_toggle.vue';
 
 export default {
   csrf,
@@ -26,8 +26,9 @@ export default {
     CountryOrRegionSelector,
     RegistrationTrialToggle,
   },
+  inject: ['createLeadPath'],
   props: {
-    active: {
+    trial: {
       type: Boolean,
       required: false,
       default: false,
@@ -65,7 +66,7 @@ export default {
 </script>
 
 <template>
-  <gl-form :action="__('/-/trials/create_lead')" method="post">
+  <gl-form :action="createLeadPath" method="post" novalidate>
     <input :value="$options.csrf.token" type="hidden" name="authenticity_token" />
     <div class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-mt-5">
       <gl-form-group
@@ -74,7 +75,13 @@ export default {
         label-for="company_name"
         class="gl-mr-5 gl-w-half gl-xs-w-full"
       >
-        <gl-form-input id="company_name" :value="companyName" name="company_name" required />
+        <gl-form-input
+          id="company_name"
+          :value="companyName"
+          name="company_name"
+          data-testid="company_name"
+          required
+        />
       </gl-form-group>
       <gl-form-group
         :label="$options.i18n.companySizeLabel"
@@ -89,11 +96,12 @@ export default {
           :options="companySizeOptionsWithDefault"
           value-field="id"
           text-field="name"
+          data-testid="company_size"
           required
         />
       </gl-form-group>
     </div>
-    <country-or-region-selector :country="country" :state="state" required />
+    <country-or-region-selector :country="country" :state="state" data-testid="country" required />
     <gl-form-group
       label="Telephone Number (Optional)"
       label-size="sm"
@@ -105,17 +113,18 @@ export default {
         :value="phoneNumber"
         name="phone_number"
         type="tel"
+        data-testid="phone_number"
         pattern="^(\+)*[0-9-\s]+$"
       />
     </gl-form-group>
     <gl-form-group label="Website (Optional)" label-size="sm" label-for="website">
-      <gl-form-input id="website" :value="website" name="website" />
+      <gl-form-input id="website" :value="website" name="website" data-testid="website" />
     </gl-form-group>
-    <gl-form-group label="GitLab Ultimate trial (optional)" label-size="sm" label-for="website">
+    <gl-form-group label="GitLab Ultimate trial (optional)" label-size="sm">
       <gl-form-text class="gl-pb-3">{{
         __('Try all GitLab features for free for 30 days. No credit card required.')
       }}</gl-form-text>
-      <registration-trial-toggle :active="active" />
+      <registration-trial-toggle :active="trial" data-testid="trial" />
     </gl-form-group>
     <gl-button type="submit" variant="confirm" class="gl-w-20">
       {{ $options.i18n.formSubmitText }}
