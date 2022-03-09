@@ -207,7 +207,8 @@ module EE
           can_admin_vulnerability: can?(current_user, :admin_vulnerability, project).to_s,
           false_positive_doc_url: help_page_path('user/application_security/vulnerabilities/index'),
           can_view_false_positive: can_view_false_positive?,
-          security_configuration_path: project_security_configuration_path(@project)
+          security_configuration_path: project_security_configuration_path(@project),
+          new_vulnerability_path: new_project_security_vulnerability_path(@project)
         }.merge!(security_dashboard_pipeline_data(project))
       end
     end

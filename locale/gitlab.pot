@@ -33022,6 +33022,9 @@ msgstr ""
 msgid "SecurityReports|Status"
 msgstr ""
 
+msgid "SecurityReports|Submit vulnerability"
+msgstr ""
+
 msgid "SecurityReports|Take survey"
 msgstr ""
 

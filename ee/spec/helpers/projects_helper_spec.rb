@@ -229,7 +229,8 @@ RSpec.describe ProjectsHelper do
           scanners: '[{"id":123,"vendor":"Security Vendor","report_type":"SAST"}]',
           can_admin_vulnerability: 'true',
           can_view_false_positive: 'false',
-          security_configuration_path: kind_of(String)
+          security_configuration_path: kind_of(String),
+          new_vulnerability_path: end_with('/security/vulnerabilities/new')
         }
       end
 
