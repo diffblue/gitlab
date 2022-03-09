@@ -2,7 +2,7 @@
 
 module IncidentManagement
   module OncallShifts
-    class ReadService
+    class ReadService < ::BaseProjectService
       MAXIMUM_TIMEFRAME = 1.month
 
       # @param rotation [IncidentManagement::OncallRotation]
@@ -11,8 +11,9 @@ module IncidentManagement
       # @option params - start_time [Time]
       # @option params - end_time [Time]
       def initialize(rotation, current_user, start_time:, end_time:)
+        super(project: rotation.project, current_user: current_user)
+
         @rotation = rotation
-        @current_user = current_user
         @start_time = start_time
         @end_time = end_time
         @current_time = Time.current
@@ -33,7 +34,7 @@ module IncidentManagement
 
       private
 
-      attr_reader :rotation, :current_user, :start_time, :end_time, :current_time
+      attr_reader :rotation, :start_time, :end_time, :current_time
 
       def find_shifts
         rotation
@@ -62,7 +63,7 @@ module IncidentManagement
       end
 
       def available?
-        ::Gitlab::IncidentManagement.oncall_schedules_available?(rotation.project)
+        ::Gitlab::IncidentManagement.oncall_schedules_available?(project)
       end
 
       def allowed?
