@@ -7,6 +7,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import pipelineSecurityReportSummaryQuery from 'ee/security_dashboard/graphql/queries/pipeline_security_report_summary.query.graphql';
 import PipelineSecurityDashboard from 'ee/security_dashboard/components/pipeline/pipeline_security_dashboard.vue';
+import ReportStatusAlert from 'ee/security_dashboard/components/pipeline/report_status_alert.vue';
 import ScanAlerts, {
   TYPE_ERRORS,
   TYPE_WARNINGS,
@@ -18,6 +19,8 @@ import {
   pipelineSecurityReportSummary,
   pipelineSecurityReportSummaryWithErrors,
   pipelineSecurityReportSummaryWithWarnings,
+  purgedPipelineSecurityReportSummaryWithErrors,
+  purgedPipelineSecurityReportSummaryWithWarnings,
   scansWithErrors,
   scansWithWarnings,
   pipelineSecurityReportSummaryEmpty,
@@ -45,6 +48,7 @@ describe('Pipeline Security Dashboard component', () => {
   const findSecurityDashboard = () => wrapper.findComponent(SecurityDashboard);
   const findVulnerabilityReport = () => wrapper.findComponent(PipelineVulnerabilityReport);
   const findScanAlerts = () => wrapper.findComponent(ScanAlerts);
+  const findReportStatusAlert = () => wrapper.findComponent(ReportStatusAlert);
 
   const factory = ({ stubs, provide, apolloProvider } = {}) => {
     store = new Vuex.Store({
@@ -163,24 +167,82 @@ describe('Pipeline Security Dashboard component', () => {
     });
   });
 
-  describe('scans error alert', () => {
-    describe('with errors', () => {
+  describe('report status alert', () => {
+    describe('with purged scans', () => {
       beforeEach(async () => {
         factoryWithApollo({
           requestHandlers: [
             [
               pipelineSecurityReportSummaryQuery,
-              jest.fn().mockResolvedValueOnce(pipelineSecurityReportSummaryWithErrors),
+              jest.fn().mockResolvedValueOnce(purgedPipelineSecurityReportSummaryWithErrors),
             ],
           ],
         });
         await waitForPromises();
       });
 
-      it('shows an alert with information about each scan with errors', () => {
-        expect(findScanAlerts().props()).toMatchObject({
-          scans: scansWithErrors,
-          type: TYPE_ERRORS,
+      it('shows the alert', () => {
+        expect(findReportStatusAlert().exists()).toBe(true);
+      });
+    });
+
+    describe('without purged scans', () => {
+      beforeEach(async () => {
+        factoryWithApollo({
+          requestHandlers: [
+            [
+              pipelineSecurityReportSummaryQuery,
+              jest.fn().mockResolvedValueOnce(pipelineSecurityReportSummary),
+            ],
+          ],
+        });
+        await waitForPromises();
+      });
+
+      it('does not show the alert', () => {
+        expect(findReportStatusAlert().exists()).toBe(false);
+      });
+    });
+  });
+
+  describe('scans error alert', () => {
+    describe('with errors', () => {
+      describe('with purged scans', () => {
+        beforeEach(async () => {
+          factoryWithApollo({
+            requestHandlers: [
+              [
+                pipelineSecurityReportSummaryQuery,
+                jest.fn().mockResolvedValueOnce(purgedPipelineSecurityReportSummaryWithErrors),
+              ],
+            ],
+          });
+          await waitForPromises();
+        });
+
+        it('does not show the alert', () => {
+          expect(findScanAlerts().exists()).toBe(false);
+        });
+      });
+
+      describe('without purged scans', () => {
+        beforeEach(async () => {
+          factoryWithApollo({
+            requestHandlers: [
+              [
+                pipelineSecurityReportSummaryQuery,
+                jest.fn().mockResolvedValueOnce(pipelineSecurityReportSummaryWithErrors),
+              ],
+            ],
+          });
+          await waitForPromises();
+        });
+
+        it('shows an alert with information about each scan with errors', () => {
+          expect(findScanAlerts().props()).toMatchObject({
+            scans: scansWithErrors,
+            type: TYPE_ERRORS,
+          });
         });
       });
     });
@@ -205,22 +267,42 @@ describe('Pipeline Security Dashboard component', () => {
 
   describe('scan warnings', () => {
     describe('with warnings', () => {
-      beforeEach(async () => {
-        factoryWithApollo({
-          requestHandlers: [
-            [
-              pipelineSecurityReportSummaryQuery,
-              jest.fn().mockResolvedValueOnce(pipelineSecurityReportSummaryWithWarnings),
+      describe('with purged scans', () => {
+        beforeEach(async () => {
+          factoryWithApollo({
+            requestHandlers: [
+              [
+                pipelineSecurityReportSummaryQuery,
+                jest.fn().mockResolvedValueOnce(purgedPipelineSecurityReportSummaryWithWarnings),
+              ],
             ],
-          ],
+          });
+          await waitForPromises();
         });
-        await waitForPromises();
+
+        it('does not show the alert', () => {
+          expect(findScanAlerts().exists()).toBe(false);
+        });
       });
 
-      it('shows an alert with information about each scan with warnings', () => {
-        expect(findScanAlerts().props()).toMatchObject({
-          scans: scansWithWarnings,
-          type: TYPE_WARNINGS,
+      describe('without purged scans', () => {
+        beforeEach(async () => {
+          factoryWithApollo({
+            requestHandlers: [
+              [
+                pipelineSecurityReportSummaryQuery,
+                jest.fn().mockResolvedValueOnce(pipelineSecurityReportSummaryWithWarnings),
+              ],
+            ],
+          });
+          await waitForPromises();
+        });
+
+        it('shows an alert with information about each scan with warnings', () => {
+          expect(findScanAlerts().props()).toMatchObject({
+            scans: scansWithWarnings,
+            type: TYPE_WARNINGS,
+          });
         });
       });
     });

@@ -7,6 +7,7 @@ import { fetchPolicies } from '~/lib/graphql';
 import { s__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import ScanAlerts, { TYPE_ERRORS, TYPE_WARNINGS } from './scan_alerts.vue';
+import ReportStatusAlert, { STATUS_PURGED } from './report_status_alert.vue';
 import SecurityDashboard from './security_dashboard_vuex.vue';
 import SecurityReportsSummary from './security_reports_summary.vue';
 import PipelineVulnerabilityReport from './pipeline_vulnerability_report.vue';
@@ -15,8 +16,10 @@ export default {
   name: 'PipelineSecurityDashboard',
   errorsAlertType: TYPE_ERRORS,
   warningsAlertType: TYPE_WARNINGS,
+  scanPurgedStatus: STATUS_PURGED,
   components: {
     GlEmptyState,
+    ReportStatusAlert,
     ScanAlerts,
     SecurityReportsSummary,
     SecurityDashboard,
@@ -87,21 +90,27 @@ export default {
             .flatMap(getScans)
         : [];
     },
+    purgedScans() {
+      return this.scans.filter((scan) => scan.status === this.$options.scanPurgedStatus);
+    },
+    hasPurgedScans() {
+      return this.purgedScans.length > 0;
+    },
     scansWithErrors() {
       const hasErrors = (scan) => Boolean(scan.errors?.length);
 
       return this.scans.filter(hasErrors);
     },
-    hasScansWithErrors() {
-      return this.scansWithErrors.length > 0;
+    showScanErrors() {
+      return this.scansWithErrors.length > 0 && !this.hasPurgedScans;
     },
     scansWithWarnings() {
       const hasWarnings = (scan) => Boolean(scan.warnings?.length);
 
       return this.scans.filter(hasWarnings);
     },
-    hasScansWithWarnings() {
-      return this.scansWithWarnings.length > 0;
+    showScanWarnings() {
+      return this.scansWithWarnings.length > 0 && !this.hasPurgedScans;
     },
   },
   created() {
@@ -130,7 +139,7 @@ export default {
   <div>
     <div v-if="reportSummary" class="gl-my-5">
       <scan-alerts
-        v-if="hasScansWithErrors"
+        v-if="showScanErrors"
         :type="$options.errorsAlertType"
         :scans="scansWithErrors"
         :title="$options.i18n.parsingErrorAlertTitle"
@@ -138,13 +147,14 @@ export default {
         class="gl-mb-5"
       />
       <scan-alerts
-        v-if="hasScansWithWarnings"
+        v-if="showScanWarnings"
         :type="$options.warningsAlertType"
         :scans="scansWithWarnings"
         :title="$options.i18n.parsingWarningAlertTitle"
         :description="$options.i18n.parsingWarningAlertDescription"
         class="gl-mb-5"
       />
+      <report-status-alert v-if="hasPurgedScans" class="gl-mb-5" />
       <security-reports-summary :summary="reportSummary" :jobs="jobs" />
     </div>
     <security-dashboard
