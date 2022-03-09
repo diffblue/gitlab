@@ -1,3 +1,5 @@
+import { omitBy, isEmpty } from 'lodash';
+
 export const USER_TYPE = 'user';
 const GROUP_TYPE = 'group';
 
@@ -41,12 +43,13 @@ export function groupApprovers(existingApprovers) {
   Convert approvers into yaml fields (user_approvers, users_approvers_ids) in relation to action.
 */
 export function decomposeApprovers(action, approvers) {
-  const newAction = { ...action };
-  delete newAction.group_approvers;
-  delete newAction.user_approvers;
-  return {
-    ...newAction,
-    user_approvers_ids: userIds(approvers),
-    group_approvers_ids: groupIds(approvers),
-  };
+  const newAction = { type: action.type, approvals_required: action.approvals_required };
+  const approversInfo = omitBy(
+    {
+      user_approvers_ids: userIds(approvers),
+      group_approvers_ids: groupIds(approvers),
+    },
+    isEmpty,
+  );
+  return { ...newAction, ...approversInfo };
 }
