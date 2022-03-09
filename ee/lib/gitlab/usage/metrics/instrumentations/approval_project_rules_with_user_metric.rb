@@ -6,6 +6,13 @@ module Gitlab
       module Instrumentations
         class ApprovalProjectRulesWithUserMetric < DatabaseMetric
           operation :count
+
+          metric_options do
+            {
+              batch_size: 10_000
+            }
+          end
+
           start { ApprovalProjectRule.regular.minimum(:id) }
           finish { ApprovalProjectRule.regular.maximum(:id) }
 
