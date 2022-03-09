@@ -2,11 +2,11 @@
 
 module Deployments
   class ApprovalService < ::BaseService
-    def execute(deployment:, status:, comment: nil)
+    def execute(deployment, status)
       error_message = validate(deployment, status)
       return error(error_message) if error_message
 
-      approval = upsert_approval(deployment, status, comment)
+      approval = upsert_approval(deployment, status, params[:comment])
       return error(approval.errors.full_messages) if approval.errors.any?
 
       process_build!(deployment, approval)
