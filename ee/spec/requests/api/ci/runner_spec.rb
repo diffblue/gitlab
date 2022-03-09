@@ -59,6 +59,7 @@ RSpec.describe API::Ci::Runner do
                       'vault' => {
                         'server' => {
                           'url' => 'https://vault.example.com',
+                          'namespace' => nil,
                           'auth' => {
                             'name' => 'jwt',
                             'path' => 'jwt',
