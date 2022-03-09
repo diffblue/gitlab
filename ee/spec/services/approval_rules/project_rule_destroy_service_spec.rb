@@ -8,13 +8,28 @@ RSpec.describe ApprovalRules::ProjectRuleDestroyService do
 
   describe '#execute' do
     let!(:project_rule) { create(:approval_project_rule, project: project) }
+    let(:current_user) { create(:user, name: 'Bruce Wayne') }
 
-    subject { described_class.new(project_rule) }
+    subject { described_class.new(project_rule, current_user) }
+
+    shared_context 'an audit event is added' do
+      it 'adds an audit event' do
+        expect { subject.execute }.to change { AuditEvent.count }.by(1)
+        expect(AuditEvent.last.details).to include({
+                                                     author_name: current_user.name,
+                                                     custom_message: 'Deleted approval rule',
+                                                     target_type: 'ApprovalProjectRule',
+                                                     target_id: project_rule.id
+                                                   })
+      end
+    end
 
     context 'when there is no merge request rules' do
       it 'destroys project rule' do
         expect { subject.execute }.to change { ApprovalProjectRule.count }.by(-1)
       end
+
+      include_context 'an audit event is added'
     end
 
     context 'when there is a merge request rule' do
@@ -28,6 +43,8 @@ RSpec.describe ApprovalRules::ProjectRuleDestroyService do
         it 'destroys merge request rules' do
           expect { subject.execute }.to change { ApprovalMergeRequestRule.count }.by(-1)
         end
+
+        include_context 'an audit event is added'
       end
 
       context 'when merged' do
@@ -38,6 +55,8 @@ RSpec.describe ApprovalRules::ProjectRuleDestroyService do
         it 'does nothing' do
           expect { subject.execute }.not_to change { ApprovalMergeRequestRule.count }
         end
+
+        include_context 'an audit event is added'
       end
     end
   end
