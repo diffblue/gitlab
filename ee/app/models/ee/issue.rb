@@ -82,6 +82,18 @@ module EE
         after_transition do |issue|
           issue.refresh_blocking_and_blocked_issues_cache!
         end
+
+        after_transition any => :closed do |issue|
+          next unless issue.incident?
+
+          related_production_env = issue.project.environments.production.first
+
+          next unless related_production_env
+
+          issue.run_after_commit do
+            ::Dora::DailyMetrics::RefreshWorker.perform_async(related_production_env.id, issue.closed_at.to_date.to_s)
+          end
+        end
       end
     end
 

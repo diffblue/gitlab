@@ -150,6 +150,41 @@ RSpec.describe Dora::DailyMetrics, type: :model do
       end
     end
 
+    context 'with closed issues' do
+      before do
+        create(:issue, :incident, :closed, project: project, created_at: date - 7.days, closed_at: date)
+        create(:issue, :incident, :closed, project: project, created_at: date - 5.days, closed_at: date)
+        create(:issue, :incident, :closed, project: project, created_at: date - 3.days, closed_at: date)
+        create(:issue, :incident, :closed, project: project, created_at: date - 1.day, closed_at: date)
+
+        # Issues which shouldn't be included in calculation
+        create(:issue, :closed, project: project, created_at: date - 1.year, closed_at: date) # not an incident
+        create(:issue, :incident, project: project, created_at: date - 1.year) # not closed yet
+        create(:issue, :incident, :closed, created_at: date - 1.year, closed_at: date) # different project
+        create(:issue, :incident, :closed, project: project, created_at: date - 1.year, closed_at: date + 1.day) # different date
+      end
+
+      context 'for production environment' do
+        let_it_be(:environment) { create(:environment, :production, project: project) }
+
+        it 'inserts the daily metrics with time_to_restore_service' do
+          subject
+
+          metrics = environment.dora_daily_metrics.find_by_date(date)
+          expect(metrics.time_to_restore_service_in_seconds).to eq(4.days.to_i) # median
+        end
+      end
+
+      context 'for non-production environment' do
+        it 'does not calculate time_to_restore_service daily metric' do
+          subject
+
+          metrics = environment.dora_daily_metrics.find_by_date(date)
+          expect(metrics.time_to_restore_service_in_seconds).to be_nil
+        end
+      end
+    end
+
     context 'when date is invalid type' do
       let(:date) { '2021-02-03' }
 
@@ -215,18 +250,20 @@ RSpec.describe Dora::DailyMetrics, type: :model do
       end
     end
 
-    context 'when metric is lead time for changes' do
-      before_all do
-        create(:dora_daily_metrics, lead_time_for_changes_in_seconds: 100, date: '2021-01-01')
-        create(:dora_daily_metrics, lead_time_for_changes_in_seconds: 90, date: '2021-01-01')
-        create(:dora_daily_metrics, lead_time_for_changes_in_seconds: 80, date: '2021-01-02')
-        create(:dora_daily_metrics, lead_time_for_changes_in_seconds: 70, date: '2021-01-02')
-        create(:dora_daily_metrics, lead_time_for_changes_in_seconds: 60, date: '2021-01-03')
-        create(:dora_daily_metrics, lead_time_for_changes_in_seconds: 50, date: '2021-01-03')
-        create(:dora_daily_metrics, lead_time_for_changes_in_seconds: nil, date: '2021-01-04')
-      end
+    shared_examples 'median metric' do |metric|
+      subject { described_class.aggregate_for!(metric, interval) }
 
-      let(:metric) { described_class::METRIC_LEAD_TIME_FOR_CHANGES }
+      before_all do
+        column_name = :"#{metric}_in_seconds"
+
+        create(:dora_daily_metrics, column_name => 100, :date => '2021-01-01')
+        create(:dora_daily_metrics, column_name => 90, :date => '2021-01-01')
+        create(:dora_daily_metrics, column_name => 80, :date => '2021-01-02')
+        create(:dora_daily_metrics, column_name => 70, :date => '2021-01-02')
+        create(:dora_daily_metrics, column_name => 60, :date => '2021-01-03')
+        create(:dora_daily_metrics, column_name => 50, :date => '2021-01-03')
+        create(:dora_daily_metrics, column_name => nil, :date => '2021-01-04')
+      end
 
       context 'when interval is all' do
         let(:interval) { described_class::INTERVAL_ALL }
@@ -260,6 +297,14 @@ RSpec.describe Dora::DailyMetrics, type: :model do
 
         it { expect { subject }.to raise_error(ArgumentError, 'Unknown interval') }
       end
+    end
+
+    context 'when metric is lead time for changes' do
+      include_examples 'median metric', described_class::METRIC_LEAD_TIME_FOR_CHANGES
+    end
+
+    context 'when metric is time_to_restore_service' do
+      include_examples 'median metric', described_class::METRIC_TIME_TO_RESTORE_SERVICE
     end
 
     context 'when metric is unknown' do
