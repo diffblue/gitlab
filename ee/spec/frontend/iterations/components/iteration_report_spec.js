@@ -13,8 +13,11 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 import { getIterationPeriod } from 'ee/iterations/utils';
+import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { __ } from '~/locale';
 import {
   mockIterationNode,
+  mockPastIterationNode,
   createMockGroupIterations,
   mockIterationNodeWithoutTitle,
   mockProjectIterations,
@@ -46,6 +49,7 @@ describe('Iterations report', () => {
   const findHeading = () => wrapper.findComponent({ ref: 'heading' });
   const findDescription = () => wrapper.findComponent({ ref: 'description' });
   const findActionsDropdown = () => wrapper.find('[data-testid="actions-dropdown"]');
+  const findDeleteButton = () => wrapper.findByText(__('Delete'));
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
@@ -63,33 +67,35 @@ describe('Iterations report', () => {
       [deleteIteration, deleteMutationMock],
     ]);
 
-    wrapper = shallowMount(IterationReport, {
-      apolloProvider: mockApollo,
-      propsData: props,
-      provide: {
-        fullPath: props.fullPath,
-        groupPath: props.fullPath,
-        cadencesListPath: '/groups/some-group/-/cadences',
-        canCreateCadence: true,
-        canEditCadence: true,
-        namespaceType: props.namespaceType,
-        canEditIteration: props.canEditIteration,
-        hasScopedLabelsFeature: true,
-        labelsFetchPath,
-        previewMarkdownPath: '/markdown',
-        noIssuesSvgPath: '/some.svg',
-      },
-      mocks: {
-        $router,
-        $toast,
-      },
-      stubs: {
-        GlLoadingIcon,
-        GlTab,
-        GlTabs,
-        IterationTitle,
-      },
-    });
+    wrapper = extendedWrapper(
+      shallowMount(IterationReport, {
+        apolloProvider: mockApollo,
+        propsData: props,
+        provide: {
+          fullPath: props.fullPath,
+          groupPath: props.fullPath,
+          cadencesListPath: '/groups/some-group/-/cadences',
+          canCreateCadence: true,
+          canEditCadence: true,
+          namespaceType: props.namespaceType,
+          canEditIteration: props.canEditIteration,
+          hasScopedLabelsFeature: true,
+          labelsFetchPath,
+          previewMarkdownPath: '/markdown',
+          noIssuesSvgPath: '/some.svg',
+        },
+        mocks: {
+          $router,
+          $toast,
+        },
+        stubs: {
+          GlLoadingIcon,
+          GlTab,
+          GlTabs,
+          IterationTitle,
+        },
+      }),
+    );
   };
 
   describe('with mock apollo', () => {
@@ -149,6 +155,14 @@ describe('Iterations report', () => {
   });
 
   describe('delete iteration', () => {
+    it('does not show delete option for past iterations', async () => {
+      mountComponent({ mockQueryResponse: createMockGroupIterations(mockPastIterationNode) });
+
+      await waitForPromises();
+
+      expect(findDeleteButton().exists()).toBe(false);
+    });
+
     it('deletes iteration', async () => {
       mountComponent();
 
