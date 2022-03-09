@@ -356,6 +356,8 @@ Edition, follow the guides below based on the installation method:
   script, start the application and check its status.
 - [Omnibus CE to EE](package/convert_to_ee.md) - Follow this guide to update your Omnibus
   GitLab Community Edition to the Enterprise Edition.
+- [Docker CE to EE](../install/docker.md#convert-community-edition-to-enterprise-edition) -
+  Follow this guide to update your GitLab Community Edition container to an Enterprise Edition container.
 
 ### Enterprise to Community Edition
 
