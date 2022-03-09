@@ -39,12 +39,15 @@ describe('User Popover Component', () => {
     gon.api_version = 'v4';
     mock = new MockAdapter(axios);
     loadFixtures(fixtureTemplate);
+    gon.features = {};
   });
 
   afterEach(() => {
     gon.api_version = apiVersion;
     mock.restore();
     wrapper.destroy();
+
+    gon.features = {};
   });
 
   const findUserStatus = () => wrapper.findByTestId('user-popover-status');
@@ -54,14 +57,15 @@ describe('User Popover Component', () => {
   const findUserLocalTime = () => wrapper.findByTestId('user-popover-local-time');
   const findToggleFollowButton = () => wrapper.findByTestId('toggle-follow-button');
 
-  const createWrapper = (props = {}, options = {}) => {
+  const createWrapper = (props = {}, { followInUserPopover = true } = {}) => {
+    gon.features.followInUserPopover = followInUserPopover;
+
     wrapper = mountExtended(UserPopover, {
       propsData: {
         ...DEFAULT_PROPS,
         target: findTarget(),
         ...props,
       },
-      ...options,
     });
   };
 
@@ -306,7 +310,7 @@ describe('User Popover Component', () => {
     });
   });
 
-  describe('follow actions', () => {
+  describe('follow actions with `followInUserPopover` flag enabled', () => {
     describe("when current user doesn't follow the user", () => {
       beforeEach(() => createWrapper());
 
@@ -425,6 +429,14 @@ describe('User Popover Component', () => {
       it('does not render the toggle follow button', () => {
         expect(findToggleFollowButton().exists()).toBe(false);
       });
+    });
+  });
+
+  describe('follow actions with `followInUserPopover` flag disabled', () => {
+    beforeEach(() => createWrapper({}, { followInUserPopover: false }));
+
+    it('doesn’t render the toggle follow button', () => {
+      expect(findToggleFollowButton().exists()).toBe(false);
     });
   });
 });
