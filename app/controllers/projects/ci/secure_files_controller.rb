@@ -11,6 +11,6 @@ class Projects::Ci::SecureFilesController < Projects::ApplicationController
   private
 
   def check_can_collaborate!
-    render_404 unless can_collaborate_with_project?(project)
+    render_404 unless can?(current_user, :read_secure_files, project)
   end
 end

@@ -7,8 +7,8 @@ module API
 
       before do
         authenticate!
-        authorize! :admin_secure_files, user_project
         feature_flag_enabled?
+        authorize! :read_secure_files, user_project
       end
 
       feature_category :pipeline_authoring
@@ -59,6 +59,10 @@ module API
           optional :permissions, type: String, desc: 'The file permissions', default: 'read_only', values: %w[read_only read_write execute]
         end
 
+        before do
+          authorize! :admin_secure_files, user_project
+        end
+
         route_setting :authentication, basic_auth_personal_access_token: true, job_token_allowed: true
         post ':id/secure_files' do
           secure_file = user_project.secure_files.new(
@@ -78,6 +82,11 @@ module API
         end
 
         desc 'Delete an individual Secure File'
+
+        before do
+          authorize! :admin_secure_files, user_project
+        end
+
         route_setting :authentication, basic_auth_personal_access_token: true, job_token_allowed: true
         delete ':id/secure_files/:secure_file_id' do
           secure_file = user_project.secure_files.find(params[:secure_file_id])
