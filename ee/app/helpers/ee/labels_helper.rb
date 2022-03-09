@@ -17,7 +17,7 @@ module EE
         bg_color: label.color
       ) + render_label_text(
         label.scoped_label_value,
-        css_class: "gl-label-text-scoped #{label.text_color_class}",
+        css_class: "gl-label-text-scoped",
         suffix: suffix
       )
     end
