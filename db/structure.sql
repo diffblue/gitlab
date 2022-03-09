@@ -18325,7 +18325,7 @@ ALTER SEQUENCE packages_packages_id_seq OWNED BY packages_packages.id;
 
 CREATE TABLE packages_pypi_metadata (
     package_id bigint NOT NULL,
-    required_python text,
+    required_python text DEFAULT ''::text,
     CONSTRAINT check_0d9aed55b2 CHECK ((required_python IS NOT NULL)),
     CONSTRAINT check_379019d5da CHECK ((char_length(required_python) <= 255))
 );
