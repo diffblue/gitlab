@@ -17,6 +17,7 @@ module EE
       def vault_server
         @vault_server ||= {
           'url' => variable_value('VAULT_SERVER_URL'),
+          'namespace' => variable_value('VAULT_NAMESPACE'),
           'auth' => {
             'name' => 'jwt',
             'path' => variable_value('VAULT_AUTH_PATH', 'jwt'),

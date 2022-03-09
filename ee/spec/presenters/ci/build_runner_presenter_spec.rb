@@ -83,6 +83,24 @@ RSpec.describe Ci::BuildRunnerPresenter do
         end
       end
 
+      context 'Vault namespace' do
+        let(:vault_server) { presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'vault', 'server') }
+
+        context 'VAULT_NAMESPACE CI variable is present' do
+          it 'contains user defined namespace' do
+            create(:ci_variable, project: ci_build.project, key: 'VAULT_NAMESPACE', value: 'custom_namespace')
+
+            expect(vault_server.fetch('namespace')).to eq('custom_namespace')
+          end
+        end
+
+        context 'VAULT_NAMESPACE CI variable is not present' do
+          it 'returns nil' do
+            expect(vault_server.fetch('namespace')).to be_nil
+          end
+        end
+      end
+
       context 'File variable configuration' do
         subject { presenter.secrets_configuration.dig('DATABASE_PASSWORD') }
 
