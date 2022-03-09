@@ -1,15 +1,9 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Manage', :requires_admin do
+  RSpec.describe 'Manage' do
     describe 'Personal project permissions' do
-      let!(:admin_api_client) { Runtime::API::Client.as_admin }
-
-      let!(:owner) do
-        Resource::User.fabricate_via_api! do |user|
-          user.api_client = admin_api_client
-        end
-      end
+      let!(:owner) { Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1) }
 
       let!(:owner_api_client) { Runtime::API::Client.new(:gitlab, user: owner) }
 
@@ -23,7 +17,6 @@ module QA
 
       after do
         project&.remove_via_api!
-        owner&.remove_via_api!
       end
 
       context 'when user is added as Owner' do
@@ -41,6 +34,8 @@ module QA
 
         it "has Owner role with Owner permissions", testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/352542' do
           Page::Dashboard::Projects.perform do |projects|
+            projects.filter_by_name(project.name)
+
             expect(projects).to have_project_with_access_role(project.name, 'Owner')
           end
 
@@ -49,11 +44,7 @@ module QA
       end
 
       context 'when user is added as Maintainer' do
-        let(:maintainer) do
-          Resource::User.fabricate_via_api! do |user|
-            user.api_client = admin_api_client
-          end
-        end
+        let(:maintainer) { Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_2, Runtime::Env.gitlab_qa_password_2) }
 
         let(:issue) do
           Resource::Issue.fabricate_via_api! do |issue|
@@ -68,12 +59,10 @@ module QA
           Flow::Login.sign_in(as: maintainer)
         end
 
-        after do
-          maintainer&.remove_via_api!
-        end
-
         it "has Maintainer role without Owner permissions", testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/352607' do
           Page::Dashboard::Projects.perform do |projects|
+            projects.filter_by_name(project.name)
+
             expect(projects).to have_project_with_access_role(project.name, 'Maintainer')
           end
 
@@ -87,9 +76,7 @@ module QA
         expect do
           issue.visit!
 
-          Page::Project::Issue::Show.perform do |issue|
-            issue.delete_issue
-          end
+          Page::Project::Issue::Show.perform(&:delete_issue)
 
           Page::Project::Issue::Index.perform do |index|
             expect(index).not_to have_issue(issue)

@@ -79,9 +79,10 @@ module QA
 
           def delete_issue
             click_element(:issue_actions_ellipsis_dropdown)
-            click_element(:delete_issue_button)
+            click_element(:delete_issue_button, Page::Modal::DeleteIssue)
 
-            within('.modal-content') { click_button 'Delete issue' }
+            Page::Modal::DeleteIssue.perform(&:confirm_delete_issue)
+
             wait_for_requests
           end
         end
