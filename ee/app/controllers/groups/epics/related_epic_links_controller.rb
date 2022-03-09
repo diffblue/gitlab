@@ -9,14 +9,32 @@ class Groups::Epics::RelatedEpicLinksController < Groups::ApplicationController
   before_action :ensure_related_epics_enabled!
   before_action :check_epics_available!
   before_action :check_related_epics_available!
+  before_action :authorize_related_epic_link_association!, only: [:destroy]
+  before_action :authorize_admin!, only: [:destroy]
 
   feature_category :portfolio_management
   urgency :default
 
   private
 
+  def authorized_object
+    'related_epic_link'
+  end
+
+  def link
+    @link ||= Epic::RelatedEpicLink.find(params[:id])
+  end
+
+  def authorize_related_epic_link_association!
+    render_404 if link.target != epic && link.source != epic
+  end
+
   def list_service
     Epics::RelatedEpicLinks::ListService.new(epic, current_user)
+  end
+
+  def destroy_service
+    Epics::RelatedEpicLinks::DestroyService.new(link, current_user)
   end
 
   def ensure_related_epics_enabled!
