@@ -40915,6 +40915,9 @@ msgstr ""
 msgid "Vulnerability|Class"
 msgstr ""
 
+msgid "Vulnerability|Cluster"
+msgstr ""
+
 msgid "Vulnerability|Code Review"
 msgstr ""
 
