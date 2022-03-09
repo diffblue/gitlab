@@ -270,7 +270,7 @@ RSpec.describe API::Deployments do
         end
 
         context 'and user is not authorized to update deployment' do
-          include_examples 'not created', response_status: :bad_request, message: 'You do not have permission to approve or reject this deployment'
+          include_examples 'not created', response_status: :bad_request, message: "You don't have permission to review this deployment. Contact the project or group owner for help."
         end
 
         context 'with an invalid status' do
