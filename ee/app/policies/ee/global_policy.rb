@@ -14,8 +14,7 @@ module EE
       end
 
       condition(:adjourned_project_deletion_available) do
-        License.feature_available?(:adjourned_deletion_for_projects_and_groups) &&
-          (::Feature.enabled?(:project_owners_list_project_pending_deletion, default_enabled: :yaml) || can?(:admin_all_resources))
+        License.feature_available?(:adjourned_deletion_for_projects_and_groups)
       end
 
       condition(:export_user_permissions_available) do
