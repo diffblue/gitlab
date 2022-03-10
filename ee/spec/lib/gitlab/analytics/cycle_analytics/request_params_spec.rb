@@ -230,4 +230,16 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams do
       expect(data_attributes[:direction]).to eq('asc')
     end
   end
+
+  describe 'aggregation params' do
+    it 'exposes the aggregation params' do
+      data_collector_params = subject.to_data_attributes
+
+      expect(data_collector_params[:aggregation]).to eq({
+        enabled: 'true',
+        last_run_at: nil,
+        next_run_at: nil
+      })
+    end
+  end
 end
