@@ -27617,7 +27617,7 @@ msgstr ""
 msgid "Potentially unwanted character detected: Unicode BiDi Control"
 msgstr ""
 
-msgid "Pre-defined push rules."
+msgid "Pre-defined push rules"
 msgstr ""
 
 msgid "Preferences"
@@ -29901,6 +29901,9 @@ msgid "Push events"
 msgstr ""
 
 msgid "Push project from command line"
+msgstr ""
+
+msgid "Push rules"
 msgstr ""
 
 msgid "Push the result of the merge to GitLab"
