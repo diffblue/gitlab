@@ -5,6 +5,14 @@ module ClustersHelper
     clusterable.is_a?(Project)
   end
 
+  def default_branch_name(clusterable)
+    return clusterable.default_branch if clusterable.is_a?(Project)
+  end
+
+  def clusterable_project_path(clusterable)
+    return clusterable.full_path if clusterable.is_a?(Project)
+  end
+
   def js_clusters_list_data(clusterable)
     {
       ancestor_help_path: help_page_path('user/group/clusters/index', anchor: 'cluster-precedence'),
@@ -15,24 +23,19 @@ module ClustersHelper
         gcp: { path: image_path('illustrations/logos/google_gke.svg'), text: s_('ClusterIntegration|Google GKE') }
       },
       clusters_empty_state_image: image_path('illustrations/empty-state/empty-state-clusters.svg'),
+      empty_state_image: image_path('illustrations/empty-state/empty-state-agents.svg'),
       empty_state_help_text: clusterable.empty_state_help_text,
       new_cluster_path: clusterable.new_path,
       add_cluster_path: clusterable.connect_path,
       can_add_cluster: clusterable.can_add_cluster?.to_s,
       can_admin_cluster: clusterable.can_admin_cluster?.to_s,
       display_cluster_agents: display_cluster_agents?(clusterable).to_s,
-      certificate_based_clusters_enabled: Feature.enabled?(:certificate_based_clusters, clusterable, default_enabled: :yaml, type: :ops).to_s
-    }
-  end
-
-  def js_clusters_data(clusterable)
-    {
-      default_branch_name: clusterable.default_branch,
-      empty_state_image: image_path('illustrations/empty-state/empty-state-agents.svg'),
-      project_path: clusterable.full_path,
+      certificate_based_clusters_enabled: Feature.enabled?(:certificate_based_clusters, clusterable, default_enabled: :yaml, type: :ops).to_s,
+      default_branch_name: default_branch_name(clusterable),
+      project_path: clusterable_project_path(clusterable),
       kas_address: Gitlab::Kas.external_url,
       gitlab_version: Gitlab.version_info
-    }.merge(js_clusters_list_data(clusterable))
+    }
   end
 
   def js_cluster_form_data(cluster, can_edit)

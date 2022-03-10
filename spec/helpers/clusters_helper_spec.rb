@@ -58,6 +58,7 @@ RSpec.describe ClustersHelper do
 
     it 'displays empty image path' do
       expect(subject[:clusters_empty_state_image]).to match(%r(/illustrations/empty-state/empty-state-clusters|svg))
+      expect(subject[:empty_state_image]).to match(%r(/illustrations/empty-state/empty-state-agents|svg))
     end
 
     it 'displays create cluster using certificate path' do
@@ -66,6 +67,22 @@ RSpec.describe ClustersHelper do
 
     it 'displays add cluster using certificate path' do
       expect(subject[:add_cluster_path]).to eq("#{project_path(project)}/-/clusters/connect")
+    end
+
+    it 'displays project default branch' do
+      expect(subject[:default_branch_name]).to eq(project.default_branch)
+    end
+
+    it 'displays project path' do
+      expect(subject[:project_path]).to eq(project.full_path)
+    end
+
+    it 'displays kas address' do
+      expect(subject[:kas_address]).to eq(Gitlab::Kas.external_url)
+    end
+
+    it 'displays GitLab version' do
+      expect(subject[:gitlab_version]).to eq(Gitlab.version_info)
     end
 
     context 'user has no permissions to create a cluster' do
@@ -129,34 +146,6 @@ RSpec.describe ClustersHelper do
           expect(subject[:certificate_based_clusters_enabled]).to eq('false')
         end
       end
-    end
-  end
-
-  describe '#js_clusters_data' do
-    let_it_be(:current_user) { create(:user) }
-    let_it_be(:project) { build(:project) }
-    let_it_be(:clusterable) { ClusterablePresenter.fabricate(project, current_user: current_user) }
-
-    subject { helper.js_clusters_data(clusterable) }
-
-    it 'displays project default branch' do
-      expect(subject[:default_branch_name]).to eq(project.default_branch)
-    end
-
-    it 'displays image path' do
-      expect(subject[:empty_state_image]).to match(%r(/illustrations/empty-state/empty-state-agents|svg))
-    end
-
-    it 'displays project path' do
-      expect(subject[:project_path]).to eq(project.full_path)
-    end
-
-    it 'displays kas address' do
-      expect(subject[:kas_address]).to eq(Gitlab::Kas.external_url)
-    end
-
-    it 'displays GitLab version' do
-      expect(subject[:gitlab_version]).to eq(Gitlab.version_info)
     end
   end
 
