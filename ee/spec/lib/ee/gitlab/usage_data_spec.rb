@@ -93,7 +93,6 @@ RSpec.describe Gitlab::UsageData do
         container_scanning_jobs
         coverage_fuzzing_jobs
         dast_jobs
-        dependency_list_usages_total
         dependency_scanning_jobs
         epics
         epics_deepest_relationship_level

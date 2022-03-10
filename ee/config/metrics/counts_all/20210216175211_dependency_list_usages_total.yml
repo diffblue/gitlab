@@ -7,7 +7,7 @@ product_stage: secure
 product_group: group::composition analysis
 product_category: dependency_scanning
 value_type: number
-status: active
+status: removed
 time_frame: all
 data_source: redis
 distribution:
