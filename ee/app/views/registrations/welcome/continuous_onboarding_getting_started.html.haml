@@ -14,5 +14,4 @@
         %div= link_to s_("LearnGitlab|Ok, let's go"), project_learn_gitlab_path(project), class: 'btn btn-confirm gl-button gl-mt-7'
       - else
         %p.gl-text-center.gl-text-gray-700.gl-mt-7= s_('LearnGitlab|Creating your onboarding experience...')
-        .gl-spinner-container
-          .gl-spinner.gl-spinner-md{ aria: { label: _('Loading') } }
+        = gl_loading_icon(size: 'md')
