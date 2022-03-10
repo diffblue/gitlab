@@ -1,7 +1,12 @@
 import { shallowMount } from '@vue/test-utils';
 import { GlBanner } from '@gitlab/ui';
 import { makeMockUserCalloutDismisser } from 'helpers/mock_user_callout_dismisser';
+import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import SecurityTrainingPromo from 'ee/security_dashboard/components/shared/security_training_promo.vue';
+import {
+  TRACK_PROMOTION_BANNER_CTA_CLICK_ACTION,
+  TRACK_PROMOTION_BANNER_CTA_CLICK_LABEL,
+} from '~/security_configuration/constants';
 
 const SECURITY_CONFIGURATION_PATH = 'foo/bar';
 const VULNERABILITY_MANAGEMENT_TAB_NAME = 'vulnerability-management';
@@ -67,6 +72,29 @@ describe('Security training promo component', () => {
       wrapper = createWrapper({ shouldShowCallout: false });
 
       expect(findBanner().exists()).toBe(false);
+    });
+  });
+
+  describe('metrics', () => {
+    let trackingSpy;
+
+    beforeEach(async () => {
+      trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+      wrapper = createWrapper();
+    });
+
+    afterEach(() => {
+      unmockTracking();
+    });
+
+    it('tracks clicks on the CTA button', () => {
+      expect(trackingSpy).not.toHaveBeenCalled();
+
+      findBanner().vm.$emit('primary');
+
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, TRACK_PROMOTION_BANNER_CTA_CLICK_ACTION, {
+        label: TRACK_PROMOTION_BANNER_CTA_CLICK_LABEL,
+      });
     });
   });
 });

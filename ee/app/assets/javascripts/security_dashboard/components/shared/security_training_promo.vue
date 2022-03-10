@@ -2,12 +2,18 @@
 import { GlBanner } from '@gitlab/ui';
 import { __ } from '~/locale';
 import UserCalloutDismisser from '~/vue_shared/components/user_callout_dismisser.vue';
+import Tracking from '~/tracking';
+import {
+  TRACK_PROMOTION_BANNER_CTA_CLICK_ACTION,
+  TRACK_PROMOTION_BANNER_CTA_CLICK_LABEL,
+} from '~/security_configuration/constants';
 
 export default {
   components: {
     GlBanner,
     UserCalloutDismisser,
   },
+  mixins: [Tracking.mixin()],
   inject: ['securityConfigurationPath'],
   i18n: {
     title: __('Reduce risk and triage fewer vulnerabilities with security training'),
@@ -19,6 +25,13 @@ export default {
   computed: {
     buttonLink() {
       return `${this.securityConfigurationPath}?tab=vulnerability-management`;
+    },
+  },
+  methods: {
+    trackCTAClick() {
+      this.track(TRACK_PROMOTION_BANNER_CTA_CLICK_ACTION, {
+        label: TRACK_PROMOTION_BANNER_CTA_CLICK_LABEL,
+      });
     },
   },
 };
@@ -33,6 +46,7 @@ export default {
         :button-text="$options.i18n.buttonText"
         :button-link="buttonLink"
         variant="introduction"
+        @primary="trackCTAClick"
         @close="dismiss"
       >
         <p>{{ $options.i18n.content }}</p>
