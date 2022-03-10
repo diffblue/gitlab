@@ -32377,6 +32377,9 @@ msgstr ""
 msgid "Secret token"
 msgstr ""
 
+msgid "Secure Code Warrior"
+msgstr ""
+
 msgid "Secure Files"
 msgstr ""
 
