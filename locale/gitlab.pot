@@ -33121,6 +33121,9 @@ msgstr ""
 msgid "SecurityTraining|Primary Training"
 msgstr ""
 
+msgid "SecurityTraining|Training from this partner takes precedence when more than one training partner is enabled."
+msgstr ""
+
 msgid "See example DevOps Score page in our documentation."
 msgstr ""
 
