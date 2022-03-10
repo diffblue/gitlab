@@ -447,24 +447,8 @@ RSpec.describe Vulnerabilities::Finding do
       context 'when there are finding links assigned to given finding' do
         let_it_be(:finding_link) { create(:finding_link, name: 'finding_link', url: 'https://link.example.com', finding: finding) }
 
-        context 'when the feature flag is enabled' do
-          before do
-            stub_feature_flags(vulnerability_finding_replace_metadata: true)
-          end
-
-          it 'returns links from finding link' do
-            expect(links).to eq([{ 'url' => 'https://link.example.com', 'name' => 'finding_link' }])
-          end
-        end
-
-        context 'when the feature flag is disabled' do
-          before do
-            stub_feature_flags(vulnerability_finding_replace_metadata: false)
-          end
-
-          it 'returns links from raw_metadata' do
-            expect(links).to eq([{ 'url' => 'https://raw.example.com', 'name' => 'raw_metadata_link' }])
-          end
+        it 'returns links from finding link' do
+          expect(links).to match_array([{ 'url' => 'https://link.example.com', 'name' => 'finding_link' }])
         end
       end
     end
@@ -898,7 +882,7 @@ RSpec.describe Vulnerabilities::Finding do
           finding_evidence.save!
         end
 
-        context 'when the vulnerability_finding_replace_metadata feature flag is off' do
+        context 'when the read_from_vulnerability_finding_evidence feature flag is off' do
           let(:evidence) { finding.metadata['evidence'] }
 
           before do
@@ -908,7 +892,7 @@ RSpec.describe Vulnerabilities::Finding do
           include_examples 'evidence schema'
         end
 
-        context 'when the vulnerability_finding_replace_metadata feature flag is on' do
+        context 'when the read_from_vulnerability_finding_evidence feature flag is on' do
           let(:evidence) { finding_evidence.data }
 
           before do
