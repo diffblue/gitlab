@@ -19,8 +19,8 @@ export default {
     },
   },
   i18n: {
-    heading: s__('ComplianceFrameworks|No compliance frameworks are configured'),
-    description: s__('ComplianceFrameworks|Configured compliance frameworks appear here.'),
+    heading: s__('ComplianceFrameworks|No compliance frameworks are set up yet'),
+    description: s__('ComplianceFrameworks|Frameworks that have been added will appear here.'),
     addButton: s__('ComplianceFrameworks|Add framework'),
   },
 };
@@ -28,13 +28,15 @@ export default {
 
 <template>
   <gl-empty-state
-    :title="$options.i18n.heading"
     :description="$options.i18n.description"
     :svg-path="imagePath"
     :primary-button-link="addFrameworkPath"
     :primary-button-text="$options.i18n.addButton"
     compact
-    :svg-height="110"
-    class="gl-mt-5"
-  />
+    :svg-height="100"
+  >
+    <template #title>
+      <h5 class="gl-mt-0">{{ $options.i18n.heading }}</h5>
+    </template>
+  </gl-empty-state>
 </template>
