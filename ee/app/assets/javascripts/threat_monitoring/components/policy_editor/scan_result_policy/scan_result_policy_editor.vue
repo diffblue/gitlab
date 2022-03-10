@@ -37,7 +37,7 @@ export default {
     name: __('Name'),
     toggleLabel: s__('SecurityOrchestration|Policy status'),
     rules: s__('SecurityOrchestration|Rules'),
-    createMergeRequest: __('Create via merge request'),
+    createMergeRequest: __('Configure with a merge request'),
     notOwnerButtonText: __('Learn more'),
     notOwnerDescription: s__(
       'SecurityOrchestration|Scan result policies can only be created by project owners.',
