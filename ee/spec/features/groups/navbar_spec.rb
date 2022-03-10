@@ -16,6 +16,7 @@ RSpec.describe 'Group navbar' do
     group.add_maintainer(user)
     stub_feature_flags(customer_relations: false)
     stub_group_wikis(false)
+    stub_feature_flags(harbor_registry_integration: false)
     sign_in(user)
 
     insert_package_nav(_('Kubernetes'))
@@ -226,6 +227,18 @@ RSpec.describe 'Group navbar' do
           nav_sub_items: []
         }
       )
+      visit group_path(group)
+    end
+
+    it_behaves_like 'verified navigation bar'
+  end
+
+  context 'when harbor registry is available' do
+    before do
+      stub_feature_flags(harbor_registry_integration: true)
+
+      insert_harbor_registry_nav(_('Package Registry'))
+
       visit group_path(group)
     end
 
