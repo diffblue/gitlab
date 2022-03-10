@@ -145,7 +145,7 @@ export default {
 };
 </script>
 <template>
-  <div :class="{ 'gl-border-t-1 gl-border-t-solid gl-border-t-gray-100': isEmpty }">
+  <div>
     <gl-alert
       v-if="alertMessage"
       class="gl-mt-5"
