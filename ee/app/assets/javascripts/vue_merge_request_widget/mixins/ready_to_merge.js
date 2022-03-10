@@ -36,7 +36,10 @@ export default {
         return this.restructuredWidgetShowMergeButtons;
       }
 
-      if (this.mr.blockingMergeRequests?.total_count > 0) {
+      if (
+        (this.mr.blockingMergeRequests?.visible_merge_requests?.merged?.length || 0) !==
+        (this.mr.blockingMergeRequests?.total_count || 0)
+      ) {
         return false;
       }
 

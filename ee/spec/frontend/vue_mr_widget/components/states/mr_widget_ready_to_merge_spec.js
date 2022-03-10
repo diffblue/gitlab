@@ -375,17 +375,18 @@ describe('ReadyToMerge', () => {
       });
 
       it.each`
-        disabled     | disabledText | totalCount
-        ${'true'}    | ${'disable'} | ${1}
-        ${undefined} | ${'enable'}  | ${0}
+        disabled     | disabledText | totalCount | mergedCount
+        ${'true'}    | ${'disable'} | ${1}       | ${0}
+        ${undefined} | ${'enable'}  | ${1}       | ${1}
       `(
-        'should $disabledText merge button blockingMergeRequests.total_count is $totalCount',
-        ({ disabled, totalCount }) => {
+        'should $disabledText merge button blockingMergeRequests.total_count is $totalCount and merged is $mergedCount',
+        ({ disabled, totalCount, mergedCount }) => {
           factory({
             isMergeAllowed: true,
             availableAutoMergeStrategies: [],
             blockingMergeRequests: {
               total_count: totalCount,
+              visible_merge_requests: { merged: new Array(mergedCount) },
             },
           });
 
