@@ -5,14 +5,14 @@ module EE
     module Auth
       module OAuth
         module User
+          protected
+
           def activate_user_if_user_cap_not_reached
             if activate_user_based_on_user_cap?(gl_user)
               gl_user.activate
               log_user_changes(gl_user, protocol_name, "user cap not reached yet, unblocking")
             end
           end
-
-          protected
 
           def find_ldap_person(auth_hash, adapter)
             if auth_hash.provider == 'kerberos'

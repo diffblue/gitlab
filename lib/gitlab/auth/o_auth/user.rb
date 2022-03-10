@@ -101,11 +101,11 @@ module Gitlab
           'OAuth'
         end
 
+        protected
+
         def activate_user_if_user_cap_not_reached
           nil
         end
-
-        protected
 
         def should_save?
           true

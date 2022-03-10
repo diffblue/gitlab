@@ -22,12 +22,10 @@ RSpec.shared_examples 'finding user when user cap is set' do
     context 'when the user cap has not been reached' do
       let(:new_user_signups_cap) { 100 }
 
-      before do
-        stub_omniauth_setting(block_auto_created_users: block)
-      end
-
       context 'when the user can be activated based on user cap' do
-        let(:block) { false }
+        before do
+          stub_omniauth_setting(block_auto_created_users: false)
+        end
 
         it 'activates the user' do
           o_auth_user.save # rubocop:disable Rails/SaveBang
@@ -51,7 +49,11 @@ RSpec.shared_examples 'finding user when user cap is set' do
       end
 
       context 'when the user cannot be activated based on user cap' do
-        let(:block) { true }
+        before do
+          allow_next_instance_of(::Gitlab::Auth::Ldap::Config) do |config|
+            allow(config).to receive_messages(block_auto_created_users: true)
+          end
+        end
 
         it 'does not activate the user' do
           o_auth_user.save # rubocop:disable Rails/SaveBang

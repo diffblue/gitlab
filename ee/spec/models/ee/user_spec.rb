@@ -1923,7 +1923,7 @@ RSpec.describe User do
     end
   end
 
-  describe '#blocked_auto_created_omniauth_user?' do
+  describe '#blocked_auto_created_oauth_ldap_user?' do
     context 'when the auto-creation of an omniauth user is blocked' do
       before do
         stub_omniauth_setting(block_auto_created_users: true)
@@ -1933,7 +1933,7 @@ RSpec.describe User do
         it 'is true' do
           omniauth_user = create(:omniauth_user)
 
-          expect(omniauth_user.blocked_auto_created_omniauth_user?).to be_truthy
+          expect(omniauth_user.blocked_auto_created_oauth_ldap_user?).to be_truthy
         end
       end
 
@@ -1941,7 +1941,37 @@ RSpec.describe User do
         it 'is false' do
           user = build(:user)
 
-          expect(user.blocked_auto_created_omniauth_user?).to be_falsey
+          expect(user.blocked_auto_created_oauth_ldap_user?).to be_falsey
+        end
+      end
+
+      context 'when the config for auto-creation of LDAP user is set' do
+        let(:ldap_user) { create(:omniauth_user, :ldap) }
+
+        before do
+          allow_next_instance_of(::Gitlab::Auth::Ldap::Config) do |config|
+            allow(config).to receive_messages(block_auto_created_users: ldap_auto_create_blocked)
+          end
+        end
+
+        subject(:blocked_user?) { ldap_user.blocked_auto_created_oauth_ldap_user? }
+
+        context 'when it blocks the creation of a LDAP user' do
+          let(:ldap_auto_create_blocked) { true }
+
+          it { is_expected.to be_truthy }
+
+          context 'when no provider is linked to the user' do
+            let(:ldap_user) { create(:user) }
+
+            it { is_expected.to be_falsey }
+          end
+        end
+
+        context 'when it does not block the creation of a LDAP user' do
+          let(:ldap_auto_create_blocked) { false }
+
+          it { is_expected.to be_falsey }
         end
       end
     end
@@ -2041,7 +2071,7 @@ RSpec.describe User do
 
     with_them do
       before do
-        allow(user).to receive(:blocked_auto_created_omniauth_user?).and_return(blocked_auto_created_omniauth)
+        allow(user).to receive(:blocked_auto_created_oauth_ldap_user?).and_return(blocked_auto_created_omniauth)
         allow(user).to receive(:blocked_pending_approval?).and_return(blocked_pending_approval)
         allow(described_class.user_cap_max).to receive(:present?).and_return(user_cap_max_present)
       end
