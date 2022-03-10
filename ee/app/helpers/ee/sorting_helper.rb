@@ -37,26 +37,5 @@ module EE
         super
       end
     end
-
-    override :issuable_sort_options
-    def issuable_sort_options(viewing_issues, viewing_merge_requests)
-      options = super
-
-      if viewing_issues && (@project || @group)&.licensed_feature_available?(:issue_weights)
-        options.concat([weight_option])
-      end
-
-      options.concat([blocking_option]) if viewing_issues
-
-      options
-    end
-
-    def weight_option
-      { value: sort_value_weight, text: sort_title_weight, href: page_filter_path(sort: sort_value_weight) }
-    end
-
-    def blocking_option
-      { value: sort_value_blocking_desc, text: sort_title_blocking, href: page_filter_path(sort: sort_value_blocking_desc) }
-    end
   end
 end
