@@ -6,8 +6,9 @@ module Ci
       # @param [Ci::RunnerProject] runner_project the runner/project association to destroy
       # @param [User] user the user performing the operation
       def initialize(runner_project, user)
-        @runner = runner_project.runner
         @runner_project = runner_project
+        @runner = runner_project.runner
+        @project = runner_project.project
         @user = user
       end
 
@@ -19,7 +20,7 @@ module Ci
 
       private
 
-      attr_reader :runner_project, :user
+      attr_reader :runner, :project, :user
     end
   end
 end

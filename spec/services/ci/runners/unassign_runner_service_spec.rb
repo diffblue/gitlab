@@ -10,10 +10,6 @@ RSpec.describe ::Ci::Runners::UnassignRunnerService, '#execute' do
 
   let(:runner_project) { runner.runner_projects.last }
 
-  before do
-    allow(runner_project).to receive(:project).and_return(project)
-  end
-
   context 'without user' do
     let(:user) { nil }
 

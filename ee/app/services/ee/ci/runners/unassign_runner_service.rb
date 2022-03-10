@@ -9,11 +9,9 @@ module EE
 
         override :execute
         def execute
-          runner = runner_project.runner
-          project = runner_project.project
           result = super
 
-          audit_log_event(runner, project) if result
+          audit_log_event if result
 
           result
         end
@@ -22,7 +20,7 @@ module EE
 
         AUDIT_MESSAGE = 'Unassigned CI runner from project'
 
-        def audit_log_event(runner, project)
+        def audit_log_event
           ::AuditEvents::RunnerCustomAuditEventService.new(runner, user, project, AUDIT_MESSAGE).track_event
         end
       end
