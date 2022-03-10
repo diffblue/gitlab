@@ -749,4 +749,28 @@ describe('Api', () => {
       });
     });
   });
+
+  describe('deployment approvals', () => {
+    const projectId = 1;
+    const deploymentId = 2;
+    const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/projects/${projectId}/deployments/${deploymentId}/approval`;
+
+    it('sends an approval when approve is true', async () => {
+      mock.onPost(expectedUrl, { status: 'approved' }).replyOnce(httpStatus.OK);
+
+      await Api.deploymentApproval(projectId, deploymentId, true);
+
+      expect(mock.history.post.length).toBe(1);
+      expect(mock.history.post[0].data).toBe(JSON.stringify({ status: 'approved' }));
+    });
+
+    it('sends a rejection when approve is false', async () => {
+      mock.onPost(expectedUrl, { status: 'rejected' }).replyOnce(httpStatus.OK);
+
+      await Api.deploymentApproval(projectId, deploymentId, false);
+
+      expect(mock.history.post.length).toBe(1);
+      expect(mock.history.post[0].data).toBe(JSON.stringify({ status: 'rejected' }));
+    });
+  });
 });
