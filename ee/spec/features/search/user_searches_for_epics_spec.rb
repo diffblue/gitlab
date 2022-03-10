@@ -10,7 +10,7 @@ RSpec.describe 'User searches for epics', :js do
 
   def search_for_epic(search)
     fill_in('dashboard_search', with: search)
-    find('.btn-search').click
+    find('.gl-search-box-by-click-search-button').click
     select_search_scope('Epics')
   end
 
