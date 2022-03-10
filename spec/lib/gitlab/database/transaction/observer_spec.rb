@@ -38,27 +38,40 @@ RSpec.describe Gitlab::Database::Transaction::Observer do
       expect(context[:backtraces].length).to eq(1)
     end
 
-    context 'with stubbed network requests' do
-      before do
-        stub_request(:any, 'example.gitlab.com')
-      end
-
-      it 'tracks external requests duration', :request_store do
-        ::Net::HTTP.get('example.gitlab.com', '/')
+    describe 'tracking external network requests', :request_store do
+      it 'tracks external requests' do
+        perform_stubbed_external_http_request(duration: 0.25)
+        perform_stubbed_external_http_request(duration: 1.25)
 
         ActiveRecord::Base.transaction do
-          ActiveRecord::Base.transaction(requires_new: true) do
-            User.first
+          User.first
 
-            expect(context[:external_http_count_start]).to eq(1)
-            expect(context[:external_http_duration_start]).to eq(0)
+          expect(context[:external_http_count_start]).to eq(2)
+          expect(context[:external_http_duration_start]).to eq(1.5)
 
-            ::Net::HTTP.get('example.gitlab.com', '/')
-            ::Net::HTTP.get('example.gitlab.com', '/')
+          perform_stubbed_external_http_request(duration: 1)
+          perform_stubbed_external_http_request(duration: 3)
 
-            expect(transaction_context.external_http_requests_count).to eq 2
-          end
+          expect(transaction_context.external_http_requests_count).to eq 2
+          expect(transaction_context.external_http_requests_duration).to eq 4
         end
+      end
+
+      pending 'logs a transaction if external requests rate has been exceeded' do
+        raise
+      end
+
+      def perform_stubbed_external_http_request(duration:)
+        ::Gitlab::Metrics::Subscribers::ExternalHttp.new.request(
+          instance_double(
+            'ActiveSupport::Notifications::Event',
+            payload: {
+              method: 'GET', code: '200', duration: duration,
+              scheme: 'http', host: 'example.gitlab.com', port: 80, path: '/'
+            },
+            time: Time.current
+          )
+        )
       end
     end
 
