@@ -15,6 +15,9 @@ export const MERGE_DISABLED_TEXT_UNAPPROVED = s__(
 export const PIPELINE_MUST_SUCCEED_CONFLICT_TEXT = __(
   'A CI/CD pipeline must run and be successful before merge.',
 );
+export const MERGE_DISABLED_DEPENDENCIES_TEXT = __(
+  'Merge blocked: all merge request dependencies must be merged or closed.',
+);
 
 export default {
   computed: {
@@ -31,15 +34,18 @@ export default {
           this.mr.preventMerge,
       );
     },
+    hasBlockingMergeRequests() {
+      return (
+        (this.mr.blockingMergeRequests?.visible_merge_requests?.merged?.length || 0) !==
+        (this.mr.blockingMergeRequests?.total_count || 0)
+      );
+    },
     shouldShowMergeControls() {
       if (this.glFeatures.restructuredMrWidget) {
         return this.restructuredWidgetShowMergeButtons;
       }
 
-      if (
-        (this.mr.blockingMergeRequests?.visible_merge_requests?.merged?.length || 0) !==
-        (this.mr.blockingMergeRequests?.total_count || 0)
-      ) {
+      if (this.hasBlockingMergeRequests) {
         return false;
       }
 
@@ -48,6 +54,8 @@ export default {
     mergeDisabledText() {
       if (this.isApprovalNeeded) {
         return MERGE_DISABLED_TEXT_UNAPPROVED;
+      } else if (this.hasBlockingMergeRequests) {
+        return MERGE_DISABLED_DEPENDENCIES_TEXT;
       }
 
       return base.computed.mergeDisabledText.call(this);
