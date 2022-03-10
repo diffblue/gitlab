@@ -311,7 +311,7 @@ module EE
         # set to 0, i.e. unspecified when creating default iterations as we do validate for presence.
         iterations_in_advance: 0,
         duration_in_weeks: 0
-      ).safe_find_or_create_by!(group: group)
+      ).order(id: :asc).safe_find_or_create_by!(group: group)
     end
 
     # TODO: remove this as part of https://gitlab.com/gitlab-org/gitlab/-/issues/296100
