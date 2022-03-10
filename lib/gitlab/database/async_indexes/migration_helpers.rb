@@ -72,7 +72,7 @@ module Gitlab
         end
 
         def async_index_creation_available?
-          ApplicationRecord.connection.table_exists?(:postgres_async_indexes)
+          connection.table_exists?(:postgres_async_indexes)
         end
       end
     end
