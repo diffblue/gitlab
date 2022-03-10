@@ -26,7 +26,7 @@ module ComplianceManagement
       end
 
       def execute
-        return ::MergeRequests::ComplianceViolation.none unless allowed?
+        return unless allowed?
 
         items = init_collection
 
@@ -42,8 +42,7 @@ module ComplianceManagement
       attr_reader :current_user, :group, :params
 
       def allowed?
-        ::Feature.enabled?(:compliance_violations_graphql_type, group, default_enabled: :yaml) &&
-          Ability.allowed?(current_user, :read_group_compliance_dashboard, group)
+        Ability.allowed?(current_user, :read_group_compliance_dashboard, group)
       end
 
       def init_collection
