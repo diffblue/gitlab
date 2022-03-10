@@ -11,10 +11,9 @@ RSpec.shared_examples 'page quick action' do
     let_it_be(:incident, reload: true) { create(:incident, project: project) }
     let_it_be(:escalation_status, reload: true) { create(:incident_management_issuable_escalation_status, issue: incident) }
 
-    context 'when feature flags and licenses are disabled' do
+    context 'when feature flag is disabled' do
       before do
         stub_feature_flags(incident_escalations: false)
-        stub_licensed_features(oncall_schedules: false, escalation_policies: false)
         visit project_issue_path(project, incident)
         wait_for_all_requests
       end
@@ -26,9 +25,21 @@ RSpec.shared_examples 'page quick action' do
       end
     end
 
-    context 'when feature flags and licenses are enabled' do
+    context 'when licensed features are disabled' do
       before do
-        stub_feature_flags(incident_escalations: true)
+        visit project_issue_path(project, incident)
+        wait_for_all_requests
+      end
+
+      it 'does not escalate issue' do
+        add_note('/page spec policy')
+
+        expect(page).to have_content('Could not apply page command')
+      end
+    end
+
+    context 'when licensed features are enabled' do
+      before do
         stub_licensed_features(oncall_schedules: true, escalation_policies: true)
       end
 
@@ -62,6 +73,16 @@ RSpec.shared_examples 'page quick action' do
             add_note('/page spec policy')
 
             expect(page).to have_content("This incident is already escalated with 'spec policy'.")
+          end
+        end
+
+        context 'when issue already has an alert' do
+          let_it_be(:alert) { create(:alert_management_alert, issue: incident) }
+
+          it 'does not escalate issue' do
+            add_note('/page spec policy')
+
+            expect(page).to have_content('Could not apply page command')
           end
         end
 
