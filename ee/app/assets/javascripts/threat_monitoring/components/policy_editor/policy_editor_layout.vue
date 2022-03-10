@@ -166,7 +166,7 @@ export default {
     >
       <gl-button
         type="submit"
-        variant="success"
+        variant="confirm"
         data-testid="save-policy"
         :loading="isUpdatingPolicy"
         :disabled="disableUpdate"

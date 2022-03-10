@@ -17,7 +17,7 @@ export default {
   DEFAULT_EDITOR_MODE: EDITOR_MODE_YAML,
   EDITOR_MODES: [EDITOR_MODES[1]],
   i18n: {
-    createMergeRequest: __('Create via merge request'),
+    createMergeRequest: __('Configure with a merge request'),
     notOwnerButtonText: __('Learn more'),
     notOwnerDescription: s__(
       'SecurityOrchestration|Scan execution policies can only be created by project owners.',
