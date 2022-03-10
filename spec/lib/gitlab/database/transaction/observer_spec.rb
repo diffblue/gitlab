@@ -38,14 +38,26 @@ RSpec.describe Gitlab::Database::Transaction::Observer do
       expect(context[:backtraces].length).to eq(1)
     end
 
-    it 'tracks external requests duration', :request_store do
-      # TODO add tests!
-      ActiveRecord::Base.transaction do
-        ActiveRecord::Base.transaction(requires_new: true) do
-          User.first
+    context 'with stubbed network requests' do
+      before do
+        stub_request(:any, 'example.gitlab.com')
+      end
 
-          expect(context[:external_http_count_start]).to eq(0)
-          expect(context[:external_http_duration_start]).to eq(0)
+      it 'tracks external requests duration', :request_store do
+        ::Net::HTTP.get('example.gitlab.com', '/')
+
+        ActiveRecord::Base.transaction do
+          ActiveRecord::Base.transaction(requires_new: true) do
+            User.first
+
+            expect(context[:external_http_count_start]).to eq(1)
+            expect(context[:external_http_duration_start]).to eq(0)
+
+            ::Net::HTTP.get('example.gitlab.com', '/')
+            ::Net::HTTP.get('example.gitlab.com', '/')
+
+            expect(transaction_context.external_http_requests_count).to eq 2
+          end
         end
       end
     end

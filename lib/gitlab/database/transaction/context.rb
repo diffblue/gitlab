@@ -85,6 +85,14 @@ module Gitlab
           @context[:backtraces].to_a
         end
 
+        def external_http_requests_count
+          @requests_count ||= external_http_requests_count_total - @context[:external_http_count_start].to_i
+        end
+
+        def external_http_requests_duration
+          @requests_duration ||= external_http_requests_duration_total - @context[:external_http_duration_start].to_f
+        end
+
         private
 
         def queries
@@ -129,14 +137,6 @@ module Gitlab
 
         def application_info(attributes)
           Gitlab::AppJsonLogger.info(attributes)
-        end
-
-        def external_http_requests_count
-          @requests_count ||= external_http_requests_count_total - @context[:external_http_count_start].to_i
-        end
-
-        def external_http_requests_duration
-          @requests_duration ||= external_http_requests_duration_total - @context[:external_http_duration_start].to_f
         end
 
         def external_http_requests_count_total
