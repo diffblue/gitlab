@@ -162,7 +162,6 @@ RSpec.describe 'layouts/nav/sidebar/_project' do
           security_on_demand_scans: true,
           dependency_scanning: true,
           license_scanning: true,
-          threat_monitoring: true,
           security_orchestration_policies: true,
           audit_events: true
         )
@@ -192,10 +191,6 @@ RSpec.describe 'layouts/nav/sidebar/_project' do
 
       it 'license compliance link is visible' do
         expect(rendered).to have_link('License compliance', href: project_licenses_path(project))
-      end
-
-      it 'threat monitoring link is visible' do
-        expect(rendered).to have_link('Threat monitoring', href: project_threat_monitoring_path(project))
       end
 
       it 'policies link is visible' do

@@ -108,6 +108,11 @@ module EE
       end
 
       with_scope :subject
+      condition(:threat_monitoring_enabled) do
+        @subject.feature_available?(:threat_monitoring)
+      end
+
+      with_scope :subject
       condition(:code_review_analytics_enabled) do
         @subject.feature_available?(:code_review_analytics, @user)
       end
@@ -237,6 +242,8 @@ module EE
       rule { issues_disabled & merge_requests_disabled }.policy do
         prevent(*create_read_update_admin_destroy(:iteration))
       end
+
+      rule { threat_monitoring_enabled & (auditor | can?(:developer_access)) }.enable :read_threat_monitoring
 
       rule { dependency_scanning_enabled & can?(:download_code) }.enable :read_dependencies
 
