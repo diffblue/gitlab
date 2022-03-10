@@ -207,6 +207,12 @@ module EE
               null: true,
               method: :itself,
               description: "Project's DORA metrics."
+
+        field :security_training_urls,
+              [::Types::Security::TrainingUrlType],
+              null: true,
+              description: 'Security training URLs for the enabled training providers of the project.',
+              resolver: ::Resolvers::SecurityTrainingUrlsResolver
       end
 
       def api_fuzzing_ci_configuration

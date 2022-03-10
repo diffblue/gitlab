@@ -15,7 +15,7 @@ module Security
       end
 
       def full_url
-        Gitlab::Utils.append_path(provider.url, "?#{identifier.external_type}=#{identifier.external_id}")
+        Gitlab::Utils.append_path(provider.url, "?cwe=#{identifier_external_id}")
       end
     end
   end
