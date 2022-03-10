@@ -16,6 +16,7 @@ RSpec.describe Namespace do
 
   it { is_expected.to have_one(:namespace_limit) }
   it { is_expected.to have_one(:elasticsearch_indexed_namespace) }
+  it { is_expected.to have_one(:security_orchestration_policy_configuration).class_name('Security::OrchestrationPolicyConfiguration').with_foreign_key(:namespace_id) }
   it { is_expected.to have_one :upcoming_reconciliation }
   it { is_expected.to have_many(:ci_minutes_additional_packs) }
 
