@@ -31,6 +31,11 @@ module EE
 
       has_many :ci_minutes_additional_packs, class_name: "Ci::Minutes::AdditionalPack"
 
+      has_one :security_orchestration_policy_configuration,
+              class_name: 'Security::OrchestrationPolicyConfiguration',
+              foreign_key: :namespace_id,
+              inverse_of: :namespace
+
       accepts_nested_attributes_for :gitlab_subscription, update_only: true
       accepts_nested_attributes_for :namespace_limit
 

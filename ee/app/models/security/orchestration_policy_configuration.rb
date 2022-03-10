@@ -14,13 +14,18 @@ module Security
     POLICY_SCHEMA = JSONSchemer.schema(Rails.root.join(POLICY_SCHEMA_PATH))
     AVAILABLE_POLICY_TYPES = %i{scan_execution_policy scan_result_policy}.freeze
 
-    belongs_to :project, inverse_of: :security_orchestration_policy_configuration
+    belongs_to :project, inverse_of: :security_orchestration_policy_configuration, optional: true
+    belongs_to :namespace, inverse_of: :security_orchestration_policy_configuration, optional: true
     belongs_to :security_policy_management_project, class_name: 'Project', foreign_key: 'security_policy_management_project_id'
 
-    validates :project, presence: true, uniqueness: true
+    validates :project, uniqueness: true, if: :project
+    validates :project, presence: true, unless: :namespace
+    validates :namespace, uniqueness: true, if: :namespace
+    validates :namespace, presence: true, unless: :project
     validates :security_policy_management_project, presence: true
 
     scope :for_project, -> (project_id) { where(project_id: project_id) }
+    scope :for_namespace, -> (namespace_id) { where(namespace_id: namespace_id) }
     scope :with_outdated_configuration, -> do
       joins(:security_policy_management_project)
         .where(arel_table[:configured_at].lt(Project.arel_table[:last_repository_updated_at]).or(arel_table[:configured_at].eq(nil)))

@@ -20,6 +20,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
 
   describe 'associations' do
     it { is_expected.to belong_to(:project).inverse_of(:security_orchestration_policy_configuration) }
+    it { is_expected.to belong_to(:namespace).inverse_of(:security_orchestration_policy_configuration) }
     it { is_expected.to belong_to(:security_policy_management_project).class_name('Project') }
     it { is_expected.to have_many(:rule_schedules).class_name('Security::OrchestrationPolicyRuleSchedule').inverse_of(:security_orchestration_policy_configuration) }
   end
@@ -27,10 +28,21 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
   describe 'validations' do
     subject { create(:security_orchestration_policy_configuration) }
 
-    it { is_expected.to validate_presence_of(:project) }
-    it { is_expected.to validate_presence_of(:security_policy_management_project) }
+    context 'when created for project' do
+      it { is_expected.not_to validate_presence_of(:namespace) }
+      it { is_expected.to validate_presence_of(:project) }
+      it { is_expected.to validate_uniqueness_of(:project) }
+    end
 
-    it { is_expected.to validate_uniqueness_of(:project) }
+    context 'when created for namespace' do
+      subject { create(:security_orchestration_policy_configuration, :namespace) }
+
+      it { is_expected.not_to validate_presence_of(:project) }
+      it { is_expected.to validate_presence_of(:namespace) }
+      it { is_expected.to validate_uniqueness_of(:namespace) }
+    end
+
+    it { is_expected.to validate_presence_of(:security_policy_management_project) }
   end
 
   describe '.for_project' do
@@ -41,6 +53,18 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     subject { described_class.for_project([security_orchestration_policy_configuration_2.project, security_orchestration_policy_configuration_3.project]) }
 
     it 'returns configuration for given projects' do
+      is_expected.to contain_exactly(security_orchestration_policy_configuration_2, security_orchestration_policy_configuration_3)
+    end
+  end
+
+  describe '.for_namespace' do
+    let_it_be(:security_orchestration_policy_configuration_1) { create(:security_orchestration_policy_configuration, :namespace) }
+    let_it_be(:security_orchestration_policy_configuration_2) { create(:security_orchestration_policy_configuration, :namespace) }
+    let_it_be(:security_orchestration_policy_configuration_3) { create(:security_orchestration_policy_configuration, :namespace) }
+
+    subject { described_class.for_namespace([security_orchestration_policy_configuration_2.namespace, security_orchestration_policy_configuration_3.namespace]) }
+
+    it 'returns configuration for given namespaces' do
       is_expected.to contain_exactly(security_orchestration_policy_configuration_2, security_orchestration_policy_configuration_3)
     end
   end
