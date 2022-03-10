@@ -17,6 +17,7 @@ describe('Policies Header Component', () => {
   const findHeader = () => wrapper.findByRole('heading');
   const findMoreInformationLink = () => wrapper.findComponent(GlButton);
   const findEditPolicyProjectButton = () => wrapper.findByTestId('edit-project-policy-button');
+  const findViewPolicyProjectButton = () => wrapper.findByTestId('view-project-policy-button');
   const findNewPolicyButton = () => wrapper.findByTestId('new-policy-button');
   const findSubheader = () => wrapper.findByTestId('policies-subheader');
 
@@ -58,12 +59,14 @@ describe('Policies Header Component', () => {
       expect(findNewPolicyButton().attributes('href')).toBe(newPolicyPath);
     });
 
-    it('displays the Edit policy project button', () => {
-      expect(findEditPolicyProjectButton().text()).toBe('Edit policy project');
-    });
-
-    it('does not display the alert component by default', () => {
-      expect(findAlert().exists()).toBe(false);
+    it.each`
+      status        | component                       | findFn                         | exists
+      ${'does'}     | ${'edit policy project button'} | ${findEditPolicyProjectButton} | ${true}
+      ${'does not'} | ${'view policy project button'} | ${findViewPolicyProjectButton} | ${false}
+      ${'does not'} | ${'alert component'}            | ${findAlert}                   | ${false}
+      ${'does'}     | ${'header'}                     | ${findHeader}                  | ${true}
+    `('$status display the $component', ({ findFn, exists }) => {
+      expect(findFn().exists()).toBe(exists);
     });
 
     it('mounts the scan new policy modal', () => {
@@ -74,10 +77,6 @@ describe('Policies Header Component', () => {
       await findEditPolicyProjectButton().trigger('click');
 
       expect(findScanNewPolicyModal().props().visible).toBe(true);
-    });
-
-    it('displays the header', () => {
-      expect(findHeader().text()).toBe('Policies');
     });
 
     it('displays the subheader', () => {
@@ -106,12 +105,36 @@ describe('Policies Header Component', () => {
   });
 
   describe('project user', () => {
-    beforeEach(() => {
-      createWrapper({ provide: { disableSecurityPolicyProject: true } });
+    describe('with a security policy project', () => {
+      beforeEach(() => {
+        createWrapper({
+          provide: { assignedPolicyProject: { id: '1' }, disableSecurityPolicyProject: true },
+        });
+      });
+
+      it.each`
+        status        | component                       | findFn                         | exists
+        ${'does not'} | ${'edit policy project button'} | ${findEditPolicyProjectButton} | ${false}
+        ${'does'}     | ${'view policy project button'} | ${findViewPolicyProjectButton} | ${true}
+      `('$status display the $component', ({ findFn, exists }) => {
+        expect(findFn().exists()).toBe(exists);
+      });
     });
 
-    it('does not display the Edit policy project button', () => {
-      expect(findEditPolicyProjectButton().exists()).toBe(false);
+    describe('without a security policy project', () => {
+      beforeEach(() => {
+        createWrapper({
+          provide: { disableSecurityPolicyProject: true },
+        });
+      });
+
+      it.each`
+        component                       | findFn
+        ${'edit policy project button'} | ${findEditPolicyProjectButton}
+        ${'view policy project button'} | ${findViewPolicyProjectButton}
+      `('does not display the $component', ({ findFn }) => {
+        expect(findFn().exists()).toBe(false);
+      });
     });
   });
 });
