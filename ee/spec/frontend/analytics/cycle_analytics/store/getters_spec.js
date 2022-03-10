@@ -152,44 +152,6 @@ describe('Value Stream Analytics getters', () => {
     });
   });
 
-  describe('enableCustomOrdering', () => {
-    describe('with no errors saving the stage order', () => {
-      beforeEach(() => {
-        state = {
-          errorSavingStageOrder: false,
-        };
-      });
-
-      it('returns true when stages have numeric IDs', () => {
-        state.stages = [{ id: 1 }, { id: 2 }];
-        expect(getters.enableCustomOrdering(state)).toEqual(true);
-      });
-
-      it('returns false when stages have string based IDs', () => {
-        state.stages = [{ id: 'one' }, { id: 'two' }];
-        expect(getters.enableCustomOrdering(state)).toEqual(false);
-      });
-    });
-
-    describe('with errors saving the stage order', () => {
-      beforeEach(() => {
-        state = {
-          errorSavingStageOrder: true,
-        };
-      });
-
-      it('returns false when stages have numeric IDs', () => {
-        state.stages = [{ id: 1 }, { id: 2 }];
-        expect(getters.enableCustomOrdering(state)).toEqual(false);
-      });
-
-      it('returns false when stages have string based IDs', () => {
-        state.stages = [{ id: 'one' }, { id: 'two' }];
-        expect(getters.enableCustomOrdering(state)).toEqual(false);
-      });
-    });
-  });
-
   describe.each`
     isEditingCustomStage | isCreatingCustomStage | result
     ${true}              | ${true}               | ${true}
