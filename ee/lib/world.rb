@@ -4,7 +4,7 @@ module World
   include ::Gitlab::Utils::StrongMemoize
   extend self
 
-  DENYLIST = ['Iran (Islamic Republic of)', 'Sudan', 'Syrian Arab Republic', 'Korea (Democratic People\'s Republic of)', 'Cuba'].freeze
+  DENYLIST = ['Iran (Islamic Republic of)', 'Sudan', 'Syrian Arab Republic', 'Korea (Democratic People\'s Republic of)', 'Cuba', 'Belarus', 'Russian Federation'].freeze
   JH_MARKET = ['China', 'Hong Kong', 'Macao'].freeze
 
   def countries_for_select
