@@ -120,6 +120,10 @@ module EE
       escalations_service(noteable, noteable.project).start_escalation(escalation_policy, author)
     end
 
+    def add_timeline_event(timeline_event)
+      incidents_service(timeline_event.incident).add_timeline_event(timeline_event)
+    end
+
     private
 
     def issuables_service(noteable, project, author)
@@ -140,6 +144,10 @@ module EE
 
     def escalations_service(noteable, project)
       ::SystemNotes::EscalationsService.new(noteable: noteable, project: project)
+    end
+
+    def incidents_service(incident)
+      ::SystemNotes::IncidentsService.new(noteable: incident)
     end
   end
 end
