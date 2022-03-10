@@ -19,8 +19,9 @@ module Gitlab
       end
 
       def db_replication_lag_seconds
+        # Geo currently only replicates the primary database (not the ci database)
         # Obtain the replication lag in seconds
-        ActiveRecord::Base.connection
+        ApplicationRecord.connection
           .execute(db_replication_lag_seconds_query)
           .first
           .fetch('replication_lag').to_i
@@ -71,7 +72,7 @@ module Gitlab
         strong_memoize(:database_version) do
           if defined?(ActiveRecord)
             connection = ::Geo::BaseRegistry.connection
-            schema_migrations_table_name = ActiveRecord::Base.schema_migrations_table_name
+            schema_migrations_table_name = ApplicationRecord.schema_migrations_table_name
 
             if connection.table_exists?(schema_migrations_table_name)
               connection.execute("SELECT MAX(version) AS version FROM #{schema_migrations_table_name}")
@@ -107,7 +108,7 @@ module Gitlab
       end
 
       def streaming_replication_enabled?
-        !ActiveRecord::Base.connection
+        !ApplicationRecord.connection
           .execute("SELECT * FROM pg_last_wal_receive_lsn() as result")
           .first['result']
           .nil?
@@ -115,7 +116,7 @@ module Gitlab
 
       def some_replication_active?
         # Is some sort of replication active?
-        !ActiveRecord::Base.connection
+        !ApplicationRecord.connection
           .execute("SELECT * FROM pg_last_xact_replay_timestamp() as result")
           .first['result']
           .nil?
@@ -123,7 +124,7 @@ module Gitlab
 
       def streaming_replication_active?
         # This only works for Postgresql 9.6 and greater
-        ActiveRecord::Base.connection
+        ApplicationRecord.connection
           .select_values('SELECT pid FROM pg_stat_wal_receiver').first.to_i > 0
       end
     end
