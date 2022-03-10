@@ -17,6 +17,7 @@ RSpec.describe 'Merge Requests > User resets approvers', :js do
 
   before do
     stub_licensed_features(multiple_approval_rules: true)
+    stub_feature_flags(gl_avatar_for_all_user_avatars: false)
 
     project_approvers.each do |approver|
       project.add_developer(approver)

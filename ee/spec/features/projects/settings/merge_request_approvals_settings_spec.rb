@@ -18,6 +18,7 @@ RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js do
     project.add_maintainer(user)
     group.add_developer(user)
     group.add_developer(group_member)
+    stub_feature_flags(gl_avatar_for_all_user_avatars: false)
   end
 
   it 'adds approver' do
