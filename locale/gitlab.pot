@@ -32758,6 +32758,9 @@ msgstr ""
 msgid "SecurityOrchestration|Update scan policies"
 msgstr ""
 
+msgid "SecurityOrchestration|View policy project"
+msgstr ""
+
 msgid "SecurityOrchestration|a"
 msgstr ""
 

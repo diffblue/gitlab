@@ -1,14 +1,16 @@
 <script>
-import { GlAlert, GlSprintf, GlButton } from '@gitlab/ui';
+import { GlAlert, GlButton, GlIcon, GlSprintf } from '@gitlab/ui';
+import { joinPaths } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 import { NEW_POLICY_BUTTON_TEXT } from '../constants';
 import ScanNewPolicyModal from './scan_new_policy_modal.vue';
 
 export default {
   components: {
-    GlSprintf,
-    GlButton,
     GlAlert,
+    GlButton,
+    GlIcon,
+    GlSprintf,
     ScanNewPolicyModal,
   },
   inject: [
@@ -24,6 +26,7 @@ export default {
     ),
     newPolicyButtonText: NEW_POLICY_BUTTON_TEXT,
     editPolicyProjectButtonText: s__('SecurityOrchestration|Edit policy project'),
+    viewPolicyProjectButtonText: s__('SecurityOrchestration|View policy project'),
   },
   data() {
     return {
@@ -37,6 +40,9 @@ export default {
   computed: {
     hasAssignedPolicyProject() {
       return Boolean(this.assignedPolicyProject?.id);
+    },
+    securityPolicyProjectPath() {
+      return joinPaths('/', this.assignedPolicyProject?.full_path);
     },
   },
   methods: {
@@ -100,6 +106,16 @@ export default {
         @click="showNewPolicyModal"
       >
         {{ $options.i18n.editPolicyProjectButtonText }}
+      </gl-button>
+      <gl-button
+        v-else-if="hasAssignedPolicyProject"
+        data-testid="view-project-policy-button"
+        class="gl-mr-4"
+        target="_blank"
+        :href="securityPolicyProjectPath"
+      >
+        <gl-icon name="external-link" />
+        {{ $options.i18n.viewPolicyProjectButtonText }}
       </gl-button>
       <gl-button
         data-testid="new-policy-button"
