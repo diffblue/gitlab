@@ -6,6 +6,11 @@ require 'gitlab/testing/request_inspector_middleware'
 require 'gitlab/testing/clear_process_memory_cache_middleware'
 require 'gitlab/utils'
 
+# Set GITLAB_USE_MODEL_LOAD_BALANCING to a non-nil value
+# CI tables consistently use the same connection
+# See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/82562
+ENV['GITLAB_USE_MODEL_LOAD_BALANCING'] ||= 'true'
+
 Rails.application.configure do
   # Make sure the middleware is inserted first in middleware chain
   config.middleware.insert_before(ActionDispatch::Static, Gitlab::Testing::RequestBlockerMiddleware)

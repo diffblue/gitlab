@@ -264,14 +264,7 @@ RSpec.configure do |config|
       stub_feature_flags(force_no_sharing_primary_model: false)
     end
 
-    # Set GITLAB_USE_MODEL_LOAD_BALANCING to a non-nil value
-    # so that feature, and request specs work with multiple databases
-    previous_value = ENV['GITLAB_USE_MODEL_LOAD_BALANCING']
-    ENV['GITLAB_USE_MODEL_LOAD_BALANCING'] ||= 'true'
-
     example.run
-
-    ENV['GITLAB_USE_MODEL_LOAD_BALANCING'] = previous_value
   end
 
   config.append_after do
