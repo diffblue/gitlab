@@ -65,11 +65,26 @@ RSpec.describe PushRule, :saas do
         subject.branch_name_allowed?('ee-feature-ee')
       end
 
-      it 'falls back to ruby regex engine' do
-        push_rule.update_column(:branch_name_regex, '(ee|ce).*\1')
+      context 'when unsafe regexps are available' do
+        it 'falls back to ruby regex engine' do
+          stub_feature_flags(disable_unsafe_regexp: false)
 
-        expect(subject.branch_name_allowed?('ee-feature-ee')).to be true
-        expect(subject.branch_name_allowed?('ee-feature-ce')).to be false
+          push_rule.update_column(:branch_name_regex, '(ee|ce).*\1')
+
+          expect(subject.branch_name_allowed?('ee-feature-ee')).to be true
+          expect(subject.branch_name_allowed?('ee-feature-ce')).to be false
+        end
+      end
+
+      context 'when unsafe regexps are disabled' do
+        it 'raises an exception' do
+          stub_feature_flags(disable_unsafe_regexp: true)
+
+          push_rule.update_column(:branch_name_regex, '(ee|ce).*\1')
+
+          expect { subject.branch_name_allowed?('ee-feature-ee') }
+            .to raise_error(described_class::MatchError)
+        end
       end
     end
   end
