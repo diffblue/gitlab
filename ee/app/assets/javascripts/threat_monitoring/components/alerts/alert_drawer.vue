@@ -161,9 +161,11 @@ export default {
         </gl-button>
       </div>
     </template>
-    <gl-alert v-if="errored" variant="danger" :dismissible="false" contained>
-      {{ errorMessage }}
-    </gl-alert>
+    <div v-if="errored" class="gl-p-0!">
+      <gl-alert variant="danger" :dismissible="false">
+        {{ errorMessage }}
+      </gl-alert>
+    </div>
     <sidebar-assignees-widget
       issuable-type="alert"
       :iid="selectedAlert.iid"

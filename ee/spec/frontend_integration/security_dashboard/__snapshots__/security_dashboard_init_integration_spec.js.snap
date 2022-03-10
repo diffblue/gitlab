@@ -9,7 +9,7 @@ exports[`Security Dashboard default states sets up group-level 1`] = `
     >
       <span
         aria-label="Loading"
-        class="align-text-bottom gl-spinner gl-spinner-dark gl-spinner-lg"
+        class="gl-vertical-align-text-bottom! gl-spinner gl-spinner-dark gl-spinner-lg"
       />
     </div>
   </div>
@@ -25,7 +25,7 @@ exports[`Security Dashboard default states sets up instance-level 1`] = `
     >
       <span
         aria-label="Loading"
-        class="align-text-bottom gl-spinner gl-spinner-dark gl-spinner-lg"
+        class="gl-vertical-align-text-bottom! gl-spinner gl-spinner-dark gl-spinner-lg"
       />
     </div>
   </div>
