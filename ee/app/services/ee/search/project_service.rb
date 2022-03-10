@@ -10,6 +10,7 @@ module EE
 
       override :execute
       def execute
+        return super if project.respond_to?(:archived?) && project.archived?
         return super unless use_elasticsearch? && use_default_branch?
 
         if project.is_a?(Array)
