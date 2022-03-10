@@ -87,6 +87,22 @@ RSpec.describe 'Creating an Iteration' do
 
           it_behaves_like 'a mutation that returns top-level errors',
             errors: ['Please provide iterations_cadence_id argument to assign iteration to respective cadence']
+
+          context 'when iteration_cadences FF is disabled' do
+            before do
+              stub_feature_flags(iteration_cadences: false)
+            end
+
+            it 'creates a new iteration in the default cadence' do
+              post_graphql_mutation(mutation, current_user: current_user)
+
+              iteration_hash = mutation_response['iteration']
+              aggregate_failures do
+                expect(iteration_hash['title']).to eq('title')
+                expect(iteration_hash['iterationCadence']['id']).to eq(group.iterations_cadences.first.to_global_id.to_s)
+              end
+            end
+          end
         end
       end
 

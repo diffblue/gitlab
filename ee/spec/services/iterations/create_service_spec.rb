@@ -110,38 +110,65 @@ RSpec.describe Iterations::CreateService do
       it_behaves_like 'iterations create service'
     end
 
-    context 'group with multiple cadences' do
-      let_it_be(:cadence) { create_list(:iterations_cadence, 2, group: group) }
+    context 'group with multiple cadences', :aggregate_failures do
       let_it_be(:parent, refind: true) { group }
+
+      let(:base_params) do
+        {
+          title: 'v2.1.9',
+          description: 'Patch release to fix security issue',
+          start_date: Time.current.to_s,
+          due_date: 1.day.from_now.to_s
+        }
+      end
+
+      let(:response) { described_class.new(parent, user, params).execute }
+      let(:saved_iteration) { response.payload[:iteration] }
 
       it_behaves_like 'iterations create service'
 
       context 'with specific cadence being passed as param' do
         let_it_be(:user) { create(:user) }
+        let_it_be(:cadences) { create_list(:iterations_cadence, 2, group: group) }
 
-        let(:params) do
-          {
-            title: 'v2.1.9',
-            description: 'Patch release to fix security issue',
-            start_date: Time.current.to_s,
-            due_date: 1.day.from_now.to_s,
-            iterations_cadence_id: group.iterations_cadences.last.id
-          }
-        end
-
-        let(:response) { described_class.new(parent, user, params).execute }
-        let(:iteration) { response.payload[:iteration] }
+        let(:params) { base_params.merge(iterations_cadence_id: cadences.last.id) }
 
         before do
           parent.add_developer(user)
         end
 
-        context 'valid params' do
-          it 'creates an iteration' do
-            expect(response.success?).to be_truthy
-            expect(iteration).to be_persisted
-            expect(iteration.iterations_cadence_id).to eq(group.iterations_cadences.last.id)
-          end
+        it 'creates an iteration' do
+          expect(response).to be_success
+          expect(saved_iteration).to be_persisted
+          expect(saved_iteration.iterations_cadence_id).to eq(cadences.last.id)
+        end
+      end
+
+      context 'when iteration_cadences FF is disabled' do
+        let_it_be(:user) { create(:user) }
+        let_it_be(:group) { create(:group) }
+        let_it_be(:cadences) { create_list(:iterations_cadence, 2, group: group) }
+        let_it_be(:other_iteration) { create(:iteration, iterations_cadence: cadences.second) }
+        let_it_be(:parent, refind: true) { group }
+
+        let(:params) { base_params }
+        let(:ordered_cadences) { group.iterations_cadences.order(id: :asc) }
+
+        before do
+          stub_feature_flags(iteration_cadences: false)
+          parent.add_developer(user)
+        end
+
+        it 'creates an iteration in the default (first) cadence' do
+          expect(response).to be_success
+          expect(saved_iteration).to be_persisted
+          expect(saved_iteration.title).to eq('v2.1.9')
+          expect(saved_iteration.iterations_cadence_id).to eq(ordered_cadences.first.id)
+        end
+
+        it 'does not update the iterations from the non-default cadences' do
+          expect(response).to be_success
+          expect(other_iteration.iterations_cadence_id).to eq(ordered_cadences.second.id)
         end
       end
     end
