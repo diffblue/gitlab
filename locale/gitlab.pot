@@ -15646,9 +15646,6 @@ msgstr ""
 msgid "Filter users"
 msgstr ""
 
-msgid "Filter your repositories by name"
-msgstr ""
-
 msgid "Filter..."
 msgstr ""
 
