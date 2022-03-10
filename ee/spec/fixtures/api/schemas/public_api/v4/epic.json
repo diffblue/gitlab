@@ -69,5 +69,5 @@
   "required": [
     "id", "iid", "group_id", "title", "confidential", "_links"
   ],
-  "additionalProperties": false
+  "additionalProperties": true
 }
