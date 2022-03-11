@@ -72,6 +72,16 @@ RSpec.describe Iteration do
     it { is_expected.to eq('Sep 30, 2022 - Oct 4, 2022') }
   end
 
+  describe '#title' do
+    let_it_be(:iteration) { create(:iteration, title: "foobar", group: create(:group)) }
+
+    it 'updates title to a blank value', :aggregate_failures do
+      iteration.update!(title: "")
+
+      expect(iteration.title).to be_nil
+    end
+  end
+
   describe '.reference_pattern' do
     let_it_be(:group) { create(:group) }
     let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group) }
