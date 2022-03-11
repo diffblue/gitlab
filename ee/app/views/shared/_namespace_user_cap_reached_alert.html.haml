@@ -10,17 +10,12 @@
 - users_pending_approval_link_start = link_start.html_safe % { url: help_page_path('user/group/index', anchor: 'approve-pending-members-for-a-group') }
 - link_end = '</a>'.html_safe
 
-.gl-py-5
-  .gl-alert.gl-alert-warning{ role: 'alert' }
-    = sprite_icon('warning', css_class: "gl-icon gl-alert-icon")
-    .gl-alert-title
-      %h4.gl-alert-title= s_('NamespaceUserCap|Your group has reached its billable member limit')
-
-    %button.js-namespace-user-cap-alert-dismiss.gl-alert-dismiss.gl-cursor-pointer{ type: 'button', 'aria-label' => _('Dismiss'), data: { cookie_id: hide_user_cap_alert_cookie_id(root_namespace), level: :warning, testid: 'namespace_user_cap_alert_dismiss' } }
-      = sprite_icon('close', css_class: 'gl-icon')
-
-    .gl-alert-body
-      = s_('NamespaceUserCap|Pending users must be reviewed and approved by a group owner. Learn more about %{user_caps_link_start}user caps%{link_end} and %{users_pending_approval_link_start}users pending approval%{link_end}.').html_safe % { user_caps_link_start: user_caps_link_start, users_pending_approval_link_start: users_pending_approval_link_start, link_end: link_end }
-
-    .gl-alert-actions
-      = link_to(s_('NamespaceUserCap|View pending approvals'), pending_users_link, class: "btn gl-alert-action btn-md gl-button btn-confirm")
+= render 'shared/global_alert',
+  title: s_('NamespaceUserCap|Your group has reached its billable member limit'),
+  variant: :warning,
+  close_button_class: 'js-namespace-user-cap-alert-dismiss',
+  close_button_data: { cookie_id: hide_user_cap_alert_cookie_id(root_namespace), testid: 'namespace_user_cap_alert_dismiss' } do
+  .gl-alert-body
+    = s_('NamespaceUserCap|Pending users must be reviewed and approved by a group owner. Learn more about %{user_caps_link_start}user caps%{link_end} and %{users_pending_approval_link_start}users pending approval%{link_end}.').html_safe % { user_caps_link_start: user_caps_link_start, users_pending_approval_link_start: users_pending_approval_link_start, link_end: link_end }
+  .gl-alert-actions
+    = link_to(s_('NamespaceUserCap|View pending approvals'), pending_users_link, class: "btn gl-alert-action btn-md gl-button btn-confirm")
