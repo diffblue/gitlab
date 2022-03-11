@@ -31858,7 +31858,7 @@ msgstr ""
 msgid "Runners|No recent contact from this runner; last contact was %{timeAgo}"
 msgstr ""
 
-msgid "Runners|Not available to run jobs"
+msgid "Runners|Not accepting jobs"
 msgstr ""
 
 msgid "Runners|Offline"
@@ -31871,6 +31871,9 @@ msgid "Runners|Online"
 msgstr ""
 
 msgid "Runners|Online runners"
+msgstr ""
+
+msgid "Runners|Pause from accepting jobs"
 msgstr ""
 
 msgid "Runners|Paused"
@@ -31907,6 +31910,9 @@ msgid "Runners|Registration token copied!"
 msgstr ""
 
 msgid "Runners|Reset token"
+msgstr ""
+
+msgid "Runners|Resume accepting jobs"
 msgstr ""
 
 msgid "Runners|Revision"
