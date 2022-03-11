@@ -23,6 +23,8 @@
   - if namespace.free_personal?
     - groups_link = link_to s_("BillingPlans|group"), dashboard_groups_path
     %p= html_escape_once(s_("BillingPlans|Looking to purchase or manage a subscription for your group? Navigate to your %{groups_link} and go to %{strong_open}Settings &gt; Billing.%{strong_close}")).html_safe % { groups_link: groups_link.html_safe, strong_open: '<strong>'.html_safe, strong_close: '</strong>'.html_safe }
+    %p.gl-mt-1
+      = add_namespace_plan_to_group_instructions
   - elsif parent_group
     %p= s_("BillingPlans|This group uses the plan associated with its parent group.")
     - parent_billing_page_link = link_to parent_group.full_name, group_billings_path(parent_group)

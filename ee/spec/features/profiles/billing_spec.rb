@@ -42,6 +42,24 @@ RSpec.describe 'Profiles > Billing', :js do
 
         expect(page).not_to have_field(placeholder: SearchHelpers::INPUT_PLACEHOLDER)
       end
+
+      context "wtihout a group" do
+        it 'displays help for moving groups' do
+          visit profile_billings_path
+
+          expect(page).to have_content "You don't have any groups."
+        end
+      end
+
+      context "with a maintained or owned group" do
+        it 'displays help for moving groups' do
+          create(:group).add_owner user
+          visit profile_billings_path
+
+          expect(page).not_to have_content "You don't have any groups"
+          expect(page).to have_content "You'll have to move this project"
+        end
+      end
     end
   end
 end
