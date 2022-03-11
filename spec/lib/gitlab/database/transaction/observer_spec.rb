@@ -57,8 +57,36 @@ RSpec.describe Gitlab::Database::Transaction::Observer do
         end
       end
 
-      pending 'logs a transaction if external requests rate has been exceeded' do
-        raise
+      context 'when external HTTP requests duration has been exceeded' do
+        it 'logs transaction details including exceeding thresholds' do
+          expect(Gitlab::AppJsonLogger).to receive(:info).with(
+            hash_including(
+              external_http_requests_count: 2,
+              external_http_requests_duration: 12
+            )
+          )
+
+          ActiveRecord::Base.transaction do
+            User.first
+
+            perform_stubbed_external_http_request(duration: 2)
+            perform_stubbed_external_http_request(duration: 10)
+          end
+        end
+      end
+
+      context 'when external HTTP requests count has been exceeded' do
+        it 'logs transaction details including exceeding thresholds' do
+          expect(Gitlab::AppJsonLogger).to receive(:info).with(
+            hash_including(external_http_requests_count: 55)
+          )
+
+          ActiveRecord::Base.transaction do
+            User.first
+
+            55.times { perform_stubbed_external_http_request(duration: 0.01) }
+          end
+        end
       end
 
       def perform_stubbed_external_http_request(duration:)
