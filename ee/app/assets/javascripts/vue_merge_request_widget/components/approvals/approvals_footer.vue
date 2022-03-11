@@ -68,11 +68,9 @@ export default {
 <template>
   <div>
     <div class="mr-widget-extension d-flex align-items-center pl-3 gl-py-3">
-      <!-- TODO: simplify button classes once https://gitlab.com/gitlab-org/gitlab-ui/-/issues/1029 is completed -->
       <gl-button
         class="gl-mr-3"
         size="small"
-        :class="{ 'gl-shadow-none!': shouldShowLoadingSpinner }"
         :aria-label="ariaLabel"
         :loading="shouldShowLoadingSpinner"
         :icon="angleIcon"
@@ -81,14 +79,24 @@ export default {
       />
       <template v-if="isCollapsed">
         <user-avatar-list :items="suggestedApproversTrimmed" :breakpoint="0" empty-text="" />
-        <gl-button data-testid="approvers-expand-button" variant="link" @click="toggle">{{
-          __('View eligible approvers')
-        }}</gl-button>
+        <gl-button
+          data-testid="approvers-expand-button"
+          category="tertiary"
+          variant="confirm"
+          size="small"
+          @click="toggle"
+          >{{ __('View eligible approvers') }}</gl-button
+        >
       </template>
       <template v-else>
-        <gl-button data-testid="approvers-collapse-button" variant="link" @click="toggle">{{
-          __('Collapse')
-        }}</gl-button>
+        <gl-button
+          data-testid="approvers-collapse-button"
+          category="tertiary"
+          variant="confirm"
+          size="small"
+          @click="toggle"
+          >{{ __('Collapse') }}</gl-button
+        >
       </template>
     </div>
     <div v-if="!isCollapsed && approvalRules.length" class="border-top">
