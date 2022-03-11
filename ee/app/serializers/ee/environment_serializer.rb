@@ -21,5 +21,18 @@ module EE
     def project_associations
       super.deep_merge(protected_environments: [])
     end
+
+    override :batch_load
+    def batch_load(resource)
+      environments = super
+
+      ::Preloaders::Environments::ProtectedEnvironmentPreloader.new(environments).execute
+
+      environments.each do |environment|
+        # JobEntity loads environment for permission checks in #cancelable?, #retryable?, #playable?
+        environment.last_deployment&.deployable&.persisted_environment = environment
+        environment.upcoming_deployment&.deployable&.persisted_environment = environment
+      end
+    end
   end
 end

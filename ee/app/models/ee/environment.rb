@@ -110,6 +110,11 @@ module EE
       end
     end
 
+    # Use ProtectedEnvironmentPreloader to fetch associated protected environments in batch
+    def associated_protected_environments=(protected_environments)
+      strong_memoize(:associated_protected_environments) { protected_environments }
+    end
+
     private
 
     def protected_environment_accesses(user)
