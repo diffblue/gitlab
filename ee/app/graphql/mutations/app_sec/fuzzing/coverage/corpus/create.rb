@@ -21,8 +21,6 @@ module Mutations
         def resolve(full_path:, package_id:)
           project = authorized_find!(full_path)
 
-          raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'Feature disabled' unless allowed?(project)
-
           response = ::AppSec::Fuzzing::Coverage::Corpuses::CreateService.new(
             project: project,
             current_user: current_user,
@@ -37,10 +35,6 @@ module Mutations
         end
 
         private
-
-        def allowed?(project)
-          Feature.enabled?(:corpus_management, project, default_enabled: :yaml)
-        end
 
         def build_response(payload)
           {

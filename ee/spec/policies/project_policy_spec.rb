@@ -796,8 +796,8 @@ RSpec.describe ProjectPolicy do
     end
   end
 
-  describe 'read_corpus_management' do
-    context 'when corpus_management feature is available' do
+  describe 'coverage_fuzzing' do
+    context 'when coverage_fuzzing feature is available' do
       before do
         stub_licensed_features(coverage_fuzzing: true)
       end

@@ -166,7 +166,6 @@ module EE
         field :corpuses, ::Types::AppSec::Fuzzing::Coverage::CorpusType.connection_type,
               null: true,
               resolver: ::Resolvers::AppSec::Fuzzing::Coverage::CorpusesResolver,
-              feature_flag: :corpus_management,
               description: "Find corpuses of the project."
 
         field :push_rules,
