@@ -73,6 +73,15 @@ module Gitlab
       push_to_gon_attributes(:features, name, enabled)
     end
 
+    # Exposes the state of a feature flag to the frontend code.
+    # Can be used for more complex feature flag checks.
+    #
+    # name - The name of the feature flag, e.g. `my_feature`.
+    # enabled - Boolean to be pushed directly to the frontend. Should be fetched by checking a feature flag.
+    def push_force_frontend_feature_flag(name, enabled)
+      push_to_gon_attributes(:features, name, !!enabled)
+    end
+
     def push_to_gon_attributes(key, name, enabled)
       var_name = name.to_s.camelize(:lower)
       # Here the `true` argument signals gon that the value should be merged
