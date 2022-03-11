@@ -107,6 +107,8 @@ export default {
     <gl-column-chart
       v-if="!isDataEmpty"
       class="gl-mb-3"
+      responsive
+      :width="0"
       :bars="chartData"
       :y-axis-title="$options.Y_AXIS_LABEL"
       :x-axis-title="$options.X_AXIS_PROJECT_LABEL"

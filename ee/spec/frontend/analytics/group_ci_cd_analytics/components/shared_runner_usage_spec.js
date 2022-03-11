@@ -65,6 +65,10 @@ describe('Shared runner usage tab', () => {
     it('should display the chart', () => {
       expect(findAreaChart().exists()).toBe(true);
     });
+
+    it('should contain a responsive attribute for the area chart', () => {
+      expect(findAreaChart().attributes('responsive')).toBeDefined();
+    });
   });
 
   describe('when the component is loading data', () => {

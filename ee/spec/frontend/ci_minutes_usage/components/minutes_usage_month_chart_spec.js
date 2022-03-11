@@ -37,6 +37,12 @@ describe('Minutes usage by month chart component', () => {
     expect(findAlert().exists()).toBe(false);
   });
 
+  it('should contain a responsive attribute for the area chart', () => {
+    createComponent();
+
+    expect(findAreaChart().attributes('responsive')).toBeDefined();
+  });
+
   it('renders an alert when no data is available', () => {
     createComponent({ minutesUsageData: [] });
 
