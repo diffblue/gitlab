@@ -13,8 +13,10 @@ RSpec.describe Geo::DesignRepositorySyncService do
   let(:project) { create(:project_empty_repo, :design_repo, namespace: create(:namespace, owner: user)) }
 
   let(:repository) { project.design_repository }
+  let(:temp_repo) { subject.send(:temp_repo) }
   let(:lease_key) { "geo_sync_service:design:#{project.id}" }
   let(:lease_uuid) { 'uuid' }
+  let(:url_to_repo) { "#{primary.url}#{project.full_path}.design.git" }
 
   subject { described_class.new(project) }
 
@@ -26,8 +28,6 @@ RSpec.describe Geo::DesignRepositorySyncService do
   it_behaves_like 'geo base sync fetch'
 
   describe '#execute' do
-    let(:url_to_repo) { "#{primary.url}#{project.full_path}.design.git" }
-
     before do
       # update_highest_role uses exclusive key too:
       allow(Gitlab::ExclusiveLease).to receive(:new).and_call_original
@@ -170,6 +170,55 @@ RSpec.describe Geo::DesignRepositorySyncService do
       expect(registry).to receive(:finish_sync!).and_return(false)
 
       subject.send(:mark_sync_as_successful)
+    end
+  end
+
+  context 'when the repository is redownloaded' do
+    context 'with geo_use_clone_on_first_sync flag disabled' do
+      before do
+        stub_feature_flags(geo_use_clone_on_first_sync: false)
+        allow(subject).to receive(:redownload?).and_return(true)
+      end
+
+      it 'creates a new repository and fetches with JWT credentials' do
+        expect(temp_repo).to receive(:create_repository)
+        expect(temp_repo).to receive(:fetch_as_mirror)
+                               .with(url_to_repo, forced: true, http_authorization_header: anything)
+                               .once
+        expect(subject).to receive(:set_temp_repository_as_main)
+
+        subject.execute
+      end
+
+      it 'cleans temporary repo after redownload' do
+        expect(subject).to receive(:fetch_geo_mirror).with(target_repository: temp_repo)
+        expect(subject).to receive(:clean_up_temporary_repository).twice.and_call_original
+
+        subject.execute
+      end
+    end
+
+    context 'with geo_use_clone_on_first_sync flag enabled' do
+      before do
+        stub_feature_flags(geo_use_clone_on_first_sync: true)
+        allow(subject).to receive(:redownload?).and_return(true)
+      end
+
+      it 'clones a new repository with JWT credentials' do
+        expect(temp_repo).to receive(:clone_as_mirror)
+                               .with(url_to_repo, http_authorization_header: anything)
+                               .once
+        expect(subject).to receive(:set_temp_repository_as_main)
+
+        subject.execute
+      end
+
+      it 'cleans temporary repo after redownload' do
+        expect(subject).to receive(:clone_geo_mirror).with(target_repository: temp_repo)
+        expect(subject).to receive(:clean_up_temporary_repository).twice.and_call_original
+
+        subject.execute
+      end
     end
   end
 end

@@ -63,13 +63,19 @@ module Geo
       elsif repository.exists?
         fetch_geo_mirror
       else
-        clone_geo_mirror
-        repository.expire_status_cache # after_create
+        if Feature.enabled?('geo_use_clone_on_first_sync', type: :ops)
+          clone_geo_mirror
 
-        # Because we ensure a repository exists by this point, we need to
-        # mark it as new, even if fetching the mirror fails, we should run
-        # housekeeping to enable object deduplication to run
-        @new_repository = true
+          @new_repository = true
+        else
+          ensure_repository
+
+          # Because we ensure a repository exists by this point, we need to
+          # mark it as new, even if fetching the mirror fails, we should run
+          # housekeeping to enable object deduplication to run
+          @new_repository = true
+          fetch_geo_mirror
+        end
       end
 
       update_root_ref
@@ -90,7 +96,13 @@ module Geo
 
       log_info("Attempting to fetch repository via git")
 
-      clone_geo_mirror(target_repository: temp_repo)
+      if Feature.enabled?('geo_use_clone_on_first_sync', type: :ops)
+        clone_geo_mirror(target_repository: temp_repo)
+      else
+        # `git fetch` needs an empty bare repository to fetch into
+        temp_repo.create_repository
+        fetch_geo_mirror(target_repository: temp_repo)
+      end
 
       set_temp_repository_as_main
     ensure
@@ -103,11 +115,12 @@ module Geo
 
     # Updates an existing repository using JWT authentication mechanism
     #
-    def fetch_geo_mirror
+    # @param [Repository] target_repository specify a different temporary repository (default: current repository)
+    def fetch_geo_mirror(target_repository: repository)
       # Fetch the repository, using a JWT header for authentication
-      repository.fetch_as_mirror(remote_url,
-                                 forced: true,
-                                 http_authorization_header: jwt_authentication_header)
+      target_repository.fetch_as_mirror(remote_url,
+                                       forced: true,
+                                       http_authorization_header: jwt_authentication_header)
     end
 
     # Clone a Geo repository using JWT authentication mechanism

@@ -150,13 +150,34 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
     end
 
     context 'with a never synced repository' do
-      it 'clones repository with JWT credentials' do
-        allow(repository).to receive(:exists?) { false }
-        expect(repository).to receive(:clone_as_mirror)
-                                .with(url_to_repo, http_authorization_header: anything)
-                                .once
+      context 'with geo_use_clone_on_first_sync flag enabled' do
+        before do
+          stub_feature_flags(geo_use_clone_on_first_sync: true)
+          allow(repository).to receive(:exists?) { false }
+        end
 
-        subject.execute
+        it 'clones repository with JWT credentials' do
+          expect(repository).to receive(:clone_as_mirror)
+                                  .with(url_to_repo, http_authorization_header: anything)
+                                  .once
+
+          subject.execute
+        end
+      end
+
+      context 'with geo_use_clone_on_first_sync flag disabled' do
+        before do
+          stub_feature_flags(geo_use_clone_on_first_sync: false)
+          allow(repository).to receive(:exists?) { false }
+        end
+
+        it 'fetches repository with JWT credentials' do
+          expect(repository).to receive(:fetch_as_mirror)
+                                  .with(url_to_repo, forced: true, http_authorization_header: anything)
+                                  .once
+
+          subject.execute
+        end
       end
     end
 
@@ -253,51 +274,10 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
           subject.execute
         end
 
-        it 'sets the redownload flag to false after success' do
-          registry.update!(retry_count: described_class::RETRIES_BEFORE_REDOWNLOAD + 1, force_to_redownload: true)
+        it 'tries to redownload when should_be_redownloaded' do
+          allow(subject).to receive(:should_be_redownloaded?) { true }
 
-          subject.execute
-
-          expect(registry.reload.force_to_redownload).to be false
-        end
-
-        it 'tries to redownload repo' do
-          registry.update!(retry_count: described_class::RETRIES_BEFORE_REDOWNLOAD + 1)
-
-          expect(subject).to receive(:sync_repository).and_call_original
-          expect(subject.gitlab_shell).to receive(:mv_repository).twice.and_call_original
-
-          expect(subject.gitlab_shell).to receive(:remove_repository).twice.and_call_original
-
-          subject.execute
-
-          repo_path = Gitlab::GitalyClient::StorageSettings.allow_disk_access do
-            repository.path
-          end
-
-          expect(File.directory?(repo_path)).to be true
-        end
-
-        it 'tries to redownload repo when force_redownload flag is set' do
-          registry.update!(
-            retry_count: described_class::RETRIES_BEFORE_REDOWNLOAD - 1,
-            force_to_redownload: true
-          )
-
-          expect(subject).to receive(:sync_repository)
-
-          subject.execute
-        end
-
-        it 'cleans temporary repo after redownload' do
-          registry.update!(
-            retry_count: described_class::RETRIES_BEFORE_REDOWNLOAD - 1,
-            force_to_redownload: true
-          )
-
-          expect(subject).to receive(:clone_geo_mirror).with(target_repository: temp_repo)
-          expect(subject).to receive(:clean_up_temporary_repository).twice.and_call_original
-          expect(subject.gitlab_shell).to receive(:repository_exists?).twice.with(replicator.model_record.repository_storage, /.git$/)
+          expect(subject).to receive(:redownload_repository)
 
           subject.execute
         end
@@ -326,6 +306,82 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
 
           expect(repository).to receive(:expire_exists_cache).twice.and_call_original
           expect(subject).not_to receive(:fail_registry_sync!)
+
+          subject.execute
+        end
+      end
+    end
+
+    context 'when repository is redownloaded' do
+      it 'sets the redownload flag to false after success' do
+        registry.update!(retry_count: described_class::RETRIES_BEFORE_REDOWNLOAD + 1, force_to_redownload: true)
+
+        subject.execute
+
+        expect(registry.reload.force_to_redownload).to be false
+      end
+
+      it 'tries to redownload repo' do
+        registry.update!(retry_count: described_class::RETRIES_BEFORE_REDOWNLOAD + 1)
+
+        expect(subject).to receive(:sync_repository).and_call_original
+        expect(subject.gitlab_shell).to receive(:mv_repository).twice.and_call_original
+
+        expect(subject.gitlab_shell).to receive(:remove_repository).twice.and_call_original
+
+        subject.execute
+
+        repo_path = Gitlab::GitalyClient::StorageSettings.allow_disk_access do
+          repository.path
+        end
+
+        expect(File.directory?(repo_path)).to be true
+      end
+
+      context 'with geo_use_clone_on_first_sync flag disabled' do
+        before do
+          stub_feature_flags(geo_use_clone_on_first_sync: false)
+          allow(subject).to receive(:should_be_redownloaded?) { true }
+        end
+
+        it 'creates a new repository and fetches with JWT credentials' do
+          expect(temp_repo).to receive(:create_repository)
+          expect(temp_repo).to receive(:fetch_as_mirror)
+                                 .with(url_to_repo, forced: true, http_authorization_header: anything)
+                                 .once
+          expect(subject).to receive(:set_temp_repository_as_main)
+
+          subject.execute
+        end
+
+        it 'cleans temporary repo after redownload' do
+          expect(subject).to receive(:fetch_geo_mirror).with(target_repository: temp_repo)
+          expect(subject).to receive(:clean_up_temporary_repository).twice.and_call_original
+          expect(subject.gitlab_shell).to receive(:repository_exists?).twice.with(replicator.model_record.repository_storage, /.git$/)
+
+          subject.execute
+        end
+      end
+
+      context 'with geo_use_clone_on_first_sync flag enabled' do
+        before do
+          stub_feature_flags(geo_use_clone_on_first_sync: true)
+          allow(subject).to receive(:should_be_redownloaded?) { true }
+        end
+
+        it 'clones a new repository with JWT credentials' do
+          expect(temp_repo).to receive(:clone_as_mirror)
+                                 .with(url_to_repo, http_authorization_header: anything)
+                                 .once
+          expect(subject).to receive(:set_temp_repository_as_main)
+
+          subject.execute
+        end
+
+        it 'cleans temporary repo after redownload' do
+          expect(subject).to receive(:clone_geo_mirror).with(target_repository: temp_repo)
+          expect(subject).to receive(:clean_up_temporary_repository).twice.and_call_original
+          expect(subject.gitlab_shell).to receive(:repository_exists?).twice.with(replicator.model_record.repository_storage, /.git$/)
 
           subject.execute
         end

@@ -14,6 +14,7 @@ RSpec.describe Geo::WikiSyncService, :geo do
   let(:temp_repo) { subject.send(:temp_repo) }
   let(:lease_key) { "geo_sync_service:wiki:#{project.id}" }
   let(:lease_uuid) { 'uuid'}
+  let(:url_to_repo) { "#{primary.url}#{project.full_path}.wiki.git" }
 
   subject { described_class.new(project) }
 
@@ -26,8 +27,6 @@ RSpec.describe Geo::WikiSyncService, :geo do
   it_behaves_like 'reschedules sync due to race condition instead of waiting for backfill'
 
   describe '#execute' do
-    let(:url_to_repo) { "#{primary.url}#{project.full_path}.wiki.git" }
-
     before do
       stub_exclusive_lease(lease_key, lease_uuid)
 
@@ -248,6 +247,55 @@ RSpec.describe Geo::WikiSyncService, :geo do
 
       def registry_with_retry_count(retries)
         create(:geo_project_registry, project: project, repository_retry_count: retries, wiki_retry_count: retries)
+      end
+    end
+  end
+
+  context 'when the repository is redownloaded' do
+    context 'with geo_use_clone_on_first_sync flag disabled' do
+      before do
+        stub_feature_flags(geo_use_clone_on_first_sync: false)
+        allow(subject).to receive(:redownload?).and_return(true)
+      end
+
+      it 'creates a new repository and fetches with JWT credentials' do
+        expect(temp_repo).to receive(:create_repository)
+        expect(temp_repo).to receive(:fetch_as_mirror)
+                               .with(url_to_repo, forced: true, http_authorization_header: anything)
+                               .once
+        expect(subject).to receive(:set_temp_repository_as_main)
+
+        subject.execute
+      end
+
+      it 'cleans temporary repo after redownload' do
+        expect(subject).to receive(:fetch_geo_mirror).with(target_repository: temp_repo)
+        expect(subject).to receive(:clean_up_temporary_repository).twice.and_call_original
+
+        subject.execute
+      end
+    end
+
+    context 'with geo_use_clone_on_first_sync flag enabled' do
+      before do
+        stub_feature_flags(geo_use_clone_on_first_sync: true)
+        allow(subject).to receive(:redownload?).and_return(true)
+      end
+
+      it 'clones a new repository with JWT credentials' do
+        expect(temp_repo).to receive(:clone_as_mirror)
+                               .with(url_to_repo, http_authorization_header: anything)
+                               .once
+        expect(subject).to receive(:set_temp_repository_as_main)
+
+        subject.execute
+      end
+
+      it 'cleans temporary repo after redownload' do
+        expect(subject).to receive(:clone_geo_mirror).with(target_repository: temp_repo)
+        expect(subject).to receive(:clean_up_temporary_repository).twice.and_call_original
+
+        subject.execute
       end
     end
   end

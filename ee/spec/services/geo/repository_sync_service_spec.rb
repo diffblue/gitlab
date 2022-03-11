@@ -14,6 +14,7 @@ RSpec.describe Geo::RepositorySyncService, :geo do
   let(:temp_repo) { subject.send(:temp_repo) }
   let(:lease_key) { "geo_sync_service:repository:#{project.id}" }
   let(:lease_uuid) { 'uuid'}
+  let(:url_to_repo) { "#{primary.url}#{project.full_path}.git" }
 
   subject { described_class.new(project) }
 
@@ -26,8 +27,6 @@ RSpec.describe Geo::RepositorySyncService, :geo do
   it_behaves_like 'reschedules sync due to race condition instead of waiting for backfill'
 
   describe '#execute' do
-    let(:url_to_repo) { "#{primary.url}#{project.full_path}.git" }
-
     before do
       stub_exclusive_lease(lease_key, lease_uuid)
       stub_exclusive_lease("geo_project_housekeeping:#{project.id}")
@@ -416,42 +415,107 @@ RSpec.describe Geo::RepositorySyncService, :geo do
   end
 
   context 'when the repository is redownloaded' do
-    before do
-      allow(subject).to receive(:redownload?).and_return(true)
-      allow(subject).to receive(:redownload_repository).and_return(nil)
+    context 'with geo_use_clone_on_first_sync flag disabled' do
+      before do
+        stub_feature_flags(geo_use_clone_on_first_sync: false)
+        allow(subject).to receive(:redownload?).and_return(true)
+      end
+
+      it 'creates a new repository and fetches with JWT credentials' do
+        expect(temp_repo).to receive(:create_repository)
+        expect(temp_repo).to receive(:fetch_as_mirror)
+                               .with(url_to_repo, forced: true, http_authorization_header: anything)
+                               .once
+        expect(subject).to receive(:set_temp_repository_as_main)
+
+        subject.execute
+      end
+
+      it 'cleans temporary repo after redownload' do
+        expect(subject).to receive(:fetch_geo_mirror).with(target_repository: temp_repo)
+        expect(subject).to receive(:clean_up_temporary_repository).twice.and_call_original
+
+        subject.execute
+      end
+
+      it "indicates the repository is not new even with errors" do
+        allow(subject).to receive(:redownload_repository).and_raise(Gitlab::Shell::Error)
+        expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: false).and_call_original
+
+        subject.execute
+      end
     end
 
-    it "indicates the repository is new" do
-      expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: true).and_call_original
+    context 'with geo_use_clone_on_first_sync flag enabled' do
+      before do
+        stub_feature_flags(geo_use_clone_on_first_sync: true)
+        allow(subject).to receive(:redownload?).and_return(true)
+      end
 
-      subject.execute
-    end
+      it 'clones a new repository with JWT credentials' do
+        expect(temp_repo).to receive(:clone_as_mirror)
+                               .with(url_to_repo, http_authorization_header: anything)
+                               .once
+        expect(subject).to receive(:set_temp_repository_as_main)
+        expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: true).and_call_original
 
-    it "indicates the repository is not new even with errors" do
-      allow(subject).to receive(:redownload_repository).and_raise(Gitlab::Shell::Error)
-      expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: false).and_call_original
+        subject.execute
+      end
 
-      subject.execute
+      it 'cleans temporary repo after redownload' do
+        expect(subject).to receive(:clone_geo_mirror).with(target_repository: temp_repo)
+        expect(subject).to receive(:clean_up_temporary_repository).twice.and_call_original
+
+        subject.execute
+      end
     end
   end
 
   context 'when repository did not exist' do
     before do
       allow(repository).to receive(:exists?).and_return(false)
+      allow(subject).to receive(:fetch_geo_mirror).and_return(nil)
       allow(subject).to receive(:clone_geo_mirror).and_return(nil)
     end
 
-    it "indicates the repository is new" do
-      expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: true).and_call_original
+    context 'with geo_use_clone_on_first_sync flag enabled' do
+      before do
+        stub_feature_flags(geo_use_clone_on_first_sync: true)
+      end
 
-      subject.execute
+      it "dont indicates the repository is new when there were errors" do
+        allow(subject).to receive(:clone_geo_mirror).and_raise(Gitlab::Shell::Error)
+
+        expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: false).and_call_original
+
+        subject.execute
+      end
+
+      it "indicates the repository is new if successful" do
+        expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: true).and_call_original
+
+        subject.execute
+      end
     end
 
-    it "indicates the repository is new when there were errors" do
-      allow(subject).to receive(:fetch_geo_mirror).and_raise(Gitlab::Shell::Error)
-      expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: true).and_call_original
+    context 'with geo_use_clone_on_first_sync flag disabled' do
+      before do
+        stub_feature_flags(geo_use_clone_on_first_sync: false)
+      end
 
-      subject.execute
+      it "indicates the repository is new when there were errors" do
+        allow(subject).to receive(:fetch_geo_mirror).and_raise(Gitlab::Shell::Error)
+
+        expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: true).and_call_original
+
+        subject.execute
+      end
+
+      it "indicates the repository is new if successful" do
+        expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: true).and_call_original
+
+        subject.execute
+      end
     end
   end
 
