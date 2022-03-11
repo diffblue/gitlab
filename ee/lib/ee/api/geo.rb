@@ -41,7 +41,7 @@ module EE
             return super unless ::Gitlab::Geo.secondary_with_primary?
 
             if ::Gitlab::Geo.secondary_with_unified_url? || ::Feature.enabled?(:geo_secondary_proxy_separate_urls, default_enabled: :yaml)
-              { geo_proxy_url: ::Gitlab::Geo.primary_node.internal_url }
+              { geo_proxy_url: ::Gitlab::Geo.primary_node.internal_url, geo_proxy_extra_data: ::Gitlab::Geo.proxy_extra_data }
             else
               super
             end
