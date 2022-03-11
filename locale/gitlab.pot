@@ -1811,6 +1811,9 @@ msgstr ""
 msgid "About this feature"
 msgstr ""
 
+msgid "About your company"
+msgstr ""
+
 msgid "Abuse Reports"
 msgstr ""
 
@@ -39418,6 +39421,9 @@ msgid "Try again"
 msgstr ""
 
 msgid "Try again?"
+msgstr ""
+
+msgid "Try all GitLab features for free for 30 days. No credit card required."
 msgstr ""
 
 msgid "Try all GitLab has to offer for 30 days."

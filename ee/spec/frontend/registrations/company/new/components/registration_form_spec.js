@@ -49,7 +49,7 @@ describe('RegistrationForm', () => {
         'company_size',
         'country',
         'phone_number',
-        'website',
+        'website_url',
         'trial',
       ];
 

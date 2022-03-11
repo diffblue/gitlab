@@ -41,7 +41,7 @@ export default {
       phoneNumber: null,
       country: '',
       state: '',
-      website: '',
+      websiteUrl: '',
     };
   },
   computed: {
@@ -117,8 +117,13 @@ export default {
         pattern="^(\+)*[0-9-\s]+$"
       />
     </gl-form-group>
-    <gl-form-group label="Website (Optional)" label-size="sm" label-for="website">
-      <gl-form-input id="website" :value="website" name="website" data-testid="website" />
+    <gl-form-group label="Website (Optional)" label-size="sm" label-for="website_url">
+      <gl-form-input
+        id="website_url"
+        :value="websiteUrl"
+        name="website_url"
+        data-testid="website_url"
+      />
     </gl-form-group>
     <gl-form-group label="GitLab Ultimate trial (Optional)" label-size="sm">
       <gl-form-text class="gl-pb-3">{{
