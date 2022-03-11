@@ -2,6 +2,8 @@
 
 module AuditEvents
   class RunnerAuditEventService < ::AuditEventService
+    SAFE_TOKEN_LENGTH = 8
+
     # Logs an audit event related to a runner event
     #
     # @param [Ci::Runner] runner
@@ -61,9 +63,8 @@ module AuditEvents
     def safe_author(author)
       return author unless author.is_a?(String)
 
-      runners_token_prefix = ::Project::RUNNERS_TOKEN_PREFIX
-      safe_token_length = 8
-      safe_token_length += runners_token_prefix.length if author.start_with?(runners_token_prefix)
+      safe_token_length = SAFE_TOKEN_LENGTH
+      safe_token_length += ::RunnersTokenPrefixable::RUNNERS_TOKEN_PREFIX.length if author.start_with?(::RunnersTokenPrefixable::RUNNERS_TOKEN_PREFIX)
 
       author[0...safe_token_length]
     end

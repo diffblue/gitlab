@@ -56,7 +56,7 @@ RSpec.describe AuditEvents::RegisterRunnerAuditEventService do
           entity_path: nil,
           target_details: target_details,
           details: {
-            runner_registration_token: author[0...8],
+            runner_registration_token: author[0...described_class::SAFE_TOKEN_LENGTH],
             entity_path: nil,
             target_details: target_details
           }
@@ -100,12 +100,12 @@ RSpec.describe AuditEvents::RegisterRunnerAuditEventService do
         it_behaves_like 'expected audit log'
 
         context 'with registration token prefixed with RUNNERS_TOKEN_PREFIX' do
-          let(:author) { "#{::Project::RUNNERS_TOKEN_PREFIX}b6bce79c3a" }
+          let(:author) { "#{::RunnersTokenPrefixable::RUNNERS_TOKEN_PREFIX}b6bce79c3a" }
           let(:extra_attrs) do
             {
               details: {
                 custom_message: 'Registered instance CI runner',
-                runner_registration_token: author[0...::Project::RUNNERS_TOKEN_PREFIX.length + 8]
+                runner_registration_token: author[0...::RunnersTokenPrefixable::RUNNERS_TOKEN_PREFIX.length + described_class::SAFE_TOKEN_LENGTH]
               }
             }
           end
@@ -122,14 +122,14 @@ RSpec.describe AuditEvents::RegisterRunnerAuditEventService do
       let(:target_details) { }
       let(:attrs) do
         common_attrs.deep_merge(
-          author_name: author[0...8],
+          author_name: author[0...described_class::SAFE_TOKEN_LENGTH],
           entity_id: entity.id,
           entity_type: entity.class.name,
           entity_path: entity.full_path,
           target_details: target_details,
           details: {
-            author_name: author[0...8],
-            runner_registration_token: author[0...8],
+            author_name: author[0...described_class::SAFE_TOKEN_LENGTH],
+            runner_registration_token: author[0...described_class::SAFE_TOKEN_LENGTH],
             custom_message: 'Registered group CI runner',
             entity_id: entity.id,
             entity_type: entity.class.name,
@@ -182,14 +182,14 @@ RSpec.describe AuditEvents::RegisterRunnerAuditEventService do
         let(:target_details) { }
         let(:attrs) do
           common_attrs.deep_merge(
-            author_name: author[0...8],
+            author_name: author[0...described_class::SAFE_TOKEN_LENGTH],
             entity_id: entity.id,
             entity_type: entity.class.name,
             entity_path: entity.full_path,
             target_details: target_details,
             details: {
-              author_name: author[0...8],
-              runner_registration_token: author[0...8],
+              author_name: author[0...described_class::SAFE_TOKEN_LENGTH],
+              runner_registration_token: author[0...described_class::SAFE_TOKEN_LENGTH],
               entity_id: entity.id,
               entity_type: entity.class.name,
               entity_path: entity.full_path,
