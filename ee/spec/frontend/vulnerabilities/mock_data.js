@@ -5,8 +5,8 @@ import {
 } from 'ee/vulnerabilities/constants';
 
 export const testIdentifiers = [
-  { externalType: SUPPORTED_IDENTIFIER_TYPES.cwe },
-  { externalType: 'cve' },
+  { externalType: SUPPORTED_IDENTIFIER_TYPES.cwe, externalId: 'cwe-1' },
+  { externalType: 'cve', externalId: 'cve-1' },
 ];
 
 export const generateNote = ({ id = 1295 } = {}) => ({
@@ -43,14 +43,8 @@ export const addTypenamesToDiscussion = (discussion) => {
   };
 };
 
-export const defaultProps = {
-  id: 200,
-};
-
-const createSecurityTrainingVulnerability = ({ urlOverrides = {}, urls, identifiers } = {}) => ({
-  ...defaultProps,
-  identifiers: identifiers || testIdentifiers,
-  securityTrainingUrls: urls || [
+const createSecurityTrainingUrls = ({ urlOverrides = {}, urls } = {}) =>
+  urls || [
     {
       name: testProviderName[0],
       url: testTrainingUrls[0],
@@ -63,20 +57,16 @@ const createSecurityTrainingVulnerability = ({ urlOverrides = {}, urls, identifi
       status: SECURITY_TRAINING_URL_STATUS_COMPLETED,
       ...urlOverrides.second,
     },
-  ],
-});
+  ];
 
-export const getSecurityTrainingVulnerabilityData = (vulnerabilityOverrides = {}) => {
-  const vulnerability = createSecurityTrainingVulnerability(vulnerabilityOverrides);
-
-  const response = {
+export const getSecurityTrainingProjectData = (urlOverrides = {}) => ({
+  response: {
     data: {
-      vulnerability,
+      project: {
+        id: 'gid://gitlab/Project/1',
+        __typename: 'Project',
+        securityTrainingUrls: createSecurityTrainingUrls(urlOverrides),
+      },
     },
-  };
-
-  return {
-    response,
-    data: vulnerability,
-  };
-};
+  },
+});
