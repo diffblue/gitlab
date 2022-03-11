@@ -84,7 +84,7 @@ module EE
         mount_mutation ::Mutations::IncidentManagement::TimelineEvent::Update
         mount_mutation ::Mutations::IncidentManagement::TimelineEvent::Destroy
         mount_mutation ::Mutations::AppSec::Fuzzing::API::CiConfiguration::Create
-        mount_mutation ::Mutations::AppSec::Fuzzing::Coverage::Corpus::Create, feature_flag: :corpus_management
+        mount_mutation ::Mutations::AppSec::Fuzzing::Coverage::Corpus::Create
         mount_mutation ::Mutations::Projects::SetComplianceFramework
         mount_mutation ::Mutations::SecurityPolicy::CommitScanExecutionPolicy
         mount_mutation ::Mutations::SecurityPolicy::AssignSecurityPolicyProject
