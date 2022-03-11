@@ -16,7 +16,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['currentKey', 'propsSource', 'isProjectLevel']),
+    ...mapGetters(['currentKey', 'propsSource']),
   },
 };
 </script>
@@ -24,7 +24,6 @@ export default {
 <template>
   <div>
     <jira-issues-fields
-      v-if="isProjectLevel"
       :key="`${currentKey}-jira-issues-fields`"
       v-bind="propsSource.jiraIssuesProps"
       :is-validated="isValidated"
