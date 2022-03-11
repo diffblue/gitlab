@@ -50,14 +50,16 @@ module Mutations
           when 'instance_type'
             raise Gitlab::Graphql::Errors::ArgumentError, "id must not be specified for '#{type}' scope" if id.present?
 
-            authorize!(:global)
+            scope = ApplicationSetting.current
+            authorize!(scope)
 
-            ApplicationSetting.current.reset_runners_registration_token!
+            scope.reset_runners_registration_token!
             ApplicationSetting.current_without_cache.runners_registration_token
           when 'group_type', 'project_type'
-            project_or_group = authorized_find!(type: type, id: id)
-            project_or_group.reset_runners_token!
-            project_or_group.runners_token
+            scope = authorized_find!(type: type, id: id)
+
+            scope.reset_runners_token!
+            scope.runners_token
           end
         end
       end

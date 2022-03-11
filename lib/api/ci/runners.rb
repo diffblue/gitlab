@@ -246,7 +246,7 @@ module API
           success Entities::Ci::ResetTokenResult
         end
         post 'reset_registration_token' do
-          authorize! :update_runners_registration_token
+          authorize! :update_runners_registration_token, ApplicationSetting.current
 
           ApplicationSetting.current.reset_runners_registration_token!
           present ApplicationSetting.current_without_cache.runners_registration_token_with_expiration, with: Entities::Ci::ResetTokenResult
