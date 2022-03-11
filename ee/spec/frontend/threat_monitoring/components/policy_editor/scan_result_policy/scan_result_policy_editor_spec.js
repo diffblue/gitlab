@@ -52,7 +52,7 @@ describe('ScanResultPolicyEditor', () => {
     branch: 'main',
     fullPath: 'path/to/existing-project',
   };
-  const scanResultPolicyApprovers = [{ id: 1, username: 'username', state: 'active' }];
+  const scanResultPolicyApprovers = [{ id: 1, username: 'the.one', state: 'active' }];
 
   const factory = ({ propsData = {}, provide = {} } = {}) => {
     wrapper = shallowMount(ScanResultPolicyEditor, {
@@ -314,6 +314,27 @@ describe('ScanResultPolicyEditor', () => {
       await nextTick();
 
       expect(findPolicyActionBuilder().props('initAction')).toEqual(UPDATED_ACTION);
+    });
+
+    it('does not show alert when policy matches existing approvers', async () => {
+      factoryWithExistingPolicy();
+
+      expect(findAlert().exists()).toBe(false);
+
+      await findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_RULE);
+
+      expect(findAlert().exists()).toBe(false);
+    });
+
+    it('shows alert when policy does not match existing approvers', async () => {
+      factory();
+
+      expect(findAlert().exists()).toBe(false);
+
+      await findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_RULE);
+
+      expect(findAlert().exists()).toBe(true);
+      expect(findAlert().isVisible()).toBe(true);
     });
   });
 });
