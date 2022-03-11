@@ -46,6 +46,7 @@ export default {
   watch: {
     approvers(values) {
       this.action = decomposeApprovers(this.action, values);
+      this.$emit('approversUpdated', this.approvers);
     },
     approversToAdd(val) {
       this.approvers.push(val[0]);

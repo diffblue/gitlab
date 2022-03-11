@@ -22,7 +22,7 @@ import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
 import DimDisableContainer from '../dim_disable_container.vue';
 import PolicyActionBuilder from './policy_action_builder.vue';
 import PolicyRuleBuilder from './policy_rule_builder.vue';
-import { DEFAULT_SCAN_RESULT_POLICY, fromYaml, toYaml, buildRule } from './lib';
+import { DEFAULT_SCAN_RESULT_POLICY, fromYaml, toYaml, buildRule, approversOutOfSync } from './lib';
 
 export default {
   SECURITY_POLICY_ACTIONS,
@@ -100,6 +100,7 @@ export default {
       ),
       yamlEditorError: null,
       mode: EDITOR_MODE_RULE,
+      existingApprovers: this.scanResultPolicyApprovers,
     };
   },
   computed: {
@@ -207,7 +208,14 @@ export default {
       this.mode = mode;
       if (mode === EDITOR_MODE_YAML && !this.hasParsingError) {
         this.yamlEditorValue = toYaml(this.policy);
+      } else if (mode === EDITOR_MODE_RULE && !this.hasParsingError) {
+        if (approversOutOfSync(this.policy.actions[0], this.existingApprovers)) {
+          this.yamlEditorError = new Error();
+        }
       }
+    },
+    updatePolicyApprovers(values) {
+      this.existingApprovers = values;
     },
   },
 };
@@ -296,8 +304,9 @@ export default {
           :key="index"
           class="gl-mb-4"
           :init-action="action"
-          :existing-approvers="scanResultPolicyApprovers"
+          :existing-approvers="existingApprovers"
           @changed="updateAction(index, $event)"
+          @approversUpdated="updatePolicyApprovers"
         />
       </dim-disable-container>
     </template>
