@@ -34,9 +34,9 @@ module Types
 
     field :author, Types::UserType, null: false,
           description: 'Author of the epic.'
-    field :group, GroupType, null: false,
+    field :group, 'Types::GroupType', null: false,
           description: 'Group to which the epic belongs.'
-    field :parent, EpicType, null: true,
+    field :parent, Types::EpicType, null: true,
           description: 'Parent epic of the epic.'
 
     field :start_date, Types::TimeType, null: true,
