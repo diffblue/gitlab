@@ -120,7 +120,7 @@ export default {
     <gl-form-group label="Website (Optional)" label-size="sm" label-for="website">
       <gl-form-input id="website" :value="website" name="website" data-testid="website" />
     </gl-form-group>
-    <gl-form-group label="GitLab Ultimate trial (optional)" label-size="sm">
+    <gl-form-group label="GitLab Ultimate trial (Optional)" label-size="sm">
       <gl-form-text class="gl-pb-3">{{
         __('Try all GitLab features for free for 30 days. No credit card required.')
       }}</gl-form-text>

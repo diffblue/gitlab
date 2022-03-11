@@ -66,7 +66,7 @@ Rails.application.routes.draw do
     end
 
     Gitlab.ee do
-      resources :company, only: [:new, :create]
+      resources :company, only: [:new]
       resources :groups, only: [:new, :create]
       resources :projects, only: [:new, :create]
       resources :groups_projects, only: [:new, :create] do
