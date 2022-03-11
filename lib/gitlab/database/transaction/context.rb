@@ -6,8 +6,10 @@ module Gitlab
       class Context
         attr_reader :context
 
-        LOG_SAVEPOINTS_THRESHOLD = 1    # 1 `SAVEPOINT` created in a transaction
-        LOG_DURATION_S_THRESHOLD = 120  # transaction that is running for 2 minutes or longer
+        LOG_SAVEPOINTS_THRESHOLD = 1            # 1 `SAVEPOINT` created in a transaction
+        LOG_DURATION_S_THRESHOLD = 120          # transaction that is running for 2 minutes or longer
+        LOG_EXTERNAL_HTTP_COUNT_THRESHOLD = 50  # 50 external HTTP requests executed within transaction
+        LOG_EXTERNAL_HTTP_TOTAL_DURATION_S = 1  # 1 second spent in HTTP requests in total within transaction
         LOG_THROTTLE_DURATION = 1
 
         def initialize
@@ -62,15 +64,16 @@ module Gitlab
           duration.to_i >= LOG_DURATION_S_THRESHOLD
         end
 
+        def external_http_requests_threshold_exceeded?
+          external_http_requests_count >= LOG_EXTERNAL_HTTP_COUNT_THRESHOLD ||
+            external_http_requests_duration >= LOG_EXTERNAL_HTTP_TOTAL_DURATION_S
+        end
+
         def should_log?
           return false if logged_already?
 
-          savepoints_threshold_exceeded? || duration_threshold_exceeded?
-
-          ## TODO
-          #
-          # External requests duration / count exceeded
-          #
+          savepoints_threshold_exceeded? || duration_threshold_exceeded? ||
+            external_http_requests_threshold_exceeded?
         end
 
         def commit
@@ -126,8 +129,8 @@ module Gitlab
             savepoints_count: @context[:savepoints].to_i,
             rollbacks_count: @context[:rollbacks].to_i,
             releases_count: @context[:releases].to_i,
-            transaction_external_http_requests_count: external_http_requests_count,
-            transaction_external_http_requests_duration: external_http_requests_duration,
+            external_http_requests_count: external_http_requests_count,
+            external_http_requests_duration: external_http_requests_duration,
             sql: queries,
             savepoint_backtraces: backtraces
           }
