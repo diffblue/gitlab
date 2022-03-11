@@ -1,1 +1,5 @@
-.js-application-delete-button{ data: { path: admin_application_path(application), name: application.name } }
+
+- submit_btn_css ||= 'gl-button btn btn-danger btn-sm js-application-delete-button'
+%button{ class: submit_btn_css, data: { path: admin_application_path(application), name: application.name } }
+  = _('Destroy')
+

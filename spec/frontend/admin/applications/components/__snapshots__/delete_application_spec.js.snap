@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DeleteApplication the modal component form renders with action and method 1`] = `
+exports[`DeleteApplication the modal component form matches the snapshot 1`] = `
 <form
   action="application/path/1"
   method="post"

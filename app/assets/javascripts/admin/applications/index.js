@@ -2,24 +2,14 @@ import Vue from 'vue';
 import DeleteApplication from './components/delete_application.vue';
 
 export default () => {
-  const elements = document.querySelectorAll('.js-application-delete-button');
+  const el = document.querySelector('.js-application-delete-modal');
 
-  if (!elements) {
-    return false;
-  }
+  if (!el) return false;
 
-  return elements.forEach((el) => {
-    const { path, name } = el.dataset;
-
-    return new Vue({
-      el,
-      provide: {
-        path,
-        name,
-      },
-      render(h) {
-        return h(DeleteApplication);
-      },
-    });
+  return new Vue({
+    el,
+    render(h) {
+      return h(DeleteApplication);
+    },
   });
 };
