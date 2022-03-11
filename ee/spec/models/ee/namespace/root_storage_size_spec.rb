@@ -173,28 +173,52 @@ RSpec.describe EE::Namespace::RootStorageSize, :saas do
         it { is_expected.to eq(true) }
       end
 
+      context 'when subscription is for opensource plan' do
+        let!(:subscription) do
+          create(:gitlab_subscription, namespace: namespace, hosted_plan: create(:opensource_plan))
+        end
+
+        it { is_expected.to eq(false) }
+      end
+
+      context 'when subscription start date is before effective date' do
+        let(:start_date) { described_class::EFFECTIVE_DATE - 1.day }
+
+        before do
+          allow(subscription).to receive(:start_date).and_return(start_date)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+
       context 'when subscription is for a free plan' do
         let!(:subscription) do
           create(:gitlab_subscription, namespace: namespace, hosted_plan: create(:free_plan))
         end
 
-        it { is_expected.to eq(true) }
-      end
-
-      context 'when subscription is for a paid plan' do
-        before do
-          allow(subscription).to receive(:start_date).and_return(start_date)
-        end
-
-        context 'when subscription start date is before effective date' do
-          let(:start_date) { described_class::EFFECTIVE_DATE - 1.day }
+        context 'when enforce_storage_limit_for_free is disabled' do
+          before do
+            stub_feature_flags(enforce_storage_limit_for_free: false)
+          end
 
           it { is_expected.to eq(false) }
         end
 
         context 'when subscription start date is on or after effective date' do
-          let(:start_date) { described_class::EFFECTIVE_DATE }
+          it { is_expected.to eq(true) }
+        end
+      end
 
+      context 'when subscription is for a paid plan' do
+        context 'when enforce_storage_limit_for_paid is disabled' do
+          before do
+            stub_feature_flags(enforce_storage_limit_for_paid: false)
+          end
+
+          it { is_expected.to eq(false) }
+        end
+
+        context 'when subscription start date is on or after effective date' do
           it { is_expected.to eq(true) }
         end
       end
