@@ -942,7 +942,7 @@ class Repository
   end
 
   def clone_as_mirror(url, http_authorization_header: "")
-    import_repository(url, http_authorization_header: http_authorization_header)
+    import_repository(url, http_authorization_header: http_authorization_header, mirror: true)
   end
 
   def fetch_as_mirror(url, forced: false, refmap: :all_refs, prune: true, http_authorization_header: "")
