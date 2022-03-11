@@ -33,6 +33,18 @@ describe('jobs/components/table/graphql/cache_config', () => {
       );
     });
 
+    it('should not add to existing cache if the incoming elements are the same', () => {
+      const res = cacheConfig.typePolicies.CiJobConnection.merge(
+        CIJobConnectionExistingCache,
+        CIJobConnectionExistingCache,
+        {
+          args: firstLoadArgs,
+        },
+      );
+
+      expect(res.nodes).toHaveLength(CIJobConnectionExistingCache.nodes.length);
+    });
+
     it('should contain the pageInfo key as part of the result', () => {
       const res = cacheConfig.typePolicies.CiJobConnection.merge({}, CIJobConnectionIncomingCache, {
         args: firstLoadArgs,

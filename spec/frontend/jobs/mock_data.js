@@ -1912,9 +1912,9 @@ export const CIJobConnectionIncomingCacheRunningStatus = {
 
 export const CIJobConnectionExistingCache = {
   nodes: [
-    { __ref: 'CiJob:gid://gitlab/Ci::Build/2057' },
-    { __ref: 'CiJob:gid://gitlab/Ci::Build/2056' },
-    { __ref: 'CiJob:gid://gitlab/Ci::Build/2051' },
+    { __ref: 'CiJob:gid://gitlab/Ci::Build/2100' },
+    { __ref: 'CiJob:gid://gitlab/Ci::Build/2101' },
+    { __ref: 'CiJob:gid://gitlab/Ci::Build/2102' },
   ],
   statuses: 'PENDING',
 };
