@@ -172,6 +172,24 @@ describe('Iteration cadence form', () => {
         });
       });
 
+      it('displays mutation errors on failure', async () => {
+        mutationMock = jest.fn().mockResolvedValue(createMutationFailure);
+        createComponent({ mutationMock });
+
+        setTitle(title);
+        setStartDate(startDate);
+        setDuration(durationInWeeks);
+        setRollOver(rollOver);
+        setFutureIterations(iterationsInAdvance);
+
+        clickSave();
+
+        await waitForPromises();
+
+        expect(findError().exists()).toBe(true);
+        expect(findError().text()).toContain('alas, your data is unchanged');
+      });
+
       it('redirects to Iteration page on success', async () => {
         setTitle(title);
         setStartDate(startDate);
