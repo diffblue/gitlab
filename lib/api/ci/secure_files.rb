@@ -52,17 +52,18 @@ module API
           body secure_file.file.read
         end
 
+        # Additional authorization check for admin endpoints
+        # All APIs defined below this block will require admin level permissions
+        before do
+          authorize! :admin_secure_files, user_project
+        end
+
         desc 'Upload a Secure File'
         params do
           requires :name, type: String, desc: 'The name of the file'
           requires :file, types: [Rack::Multipart::UploadedFile, ::API::Validations::Types::WorkhorseFile], desc: 'The secure file to be uploaded'
           optional :permissions, type: String, desc: 'The file permissions', default: 'read_only', values: %w[read_only read_write execute]
         end
-
-        before do
-          authorize! :admin_secure_files, user_project
-        end
-
         route_setting :authentication, basic_auth_personal_access_token: true, job_token_allowed: true
         post ':id/secure_files' do
           secure_file = user_project.secure_files.new(
@@ -82,11 +83,6 @@ module API
         end
 
         desc 'Delete an individual Secure File'
-
-        before do
-          authorize! :admin_secure_files, user_project
-        end
-
         route_setting :authentication, basic_auth_personal_access_token: true, job_token_allowed: true
         delete ':id/secure_files/:secure_file_id' do
           secure_file = user_project.secure_files.find(params[:secure_file_id])

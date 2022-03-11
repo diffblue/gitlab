@@ -463,7 +463,6 @@ class ProjectPolicy < BasePolicy
     enable :register_project_runners
     enable :update_runners_registration_token
     enable :admin_project_google_cloud
-    enable :read_secure_files
     enable :admin_secure_files
   end
 
