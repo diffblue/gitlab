@@ -29,6 +29,8 @@ RSpec.describe API::ResourceAccessTokens do
           token_ids = json_response.map { |token| token['id'] }
 
           expect(response).to have_gitlab_http_status(:ok)
+          expect(response).to include_pagination_headers
+          expect(response).to match_response_schema('public_api/v4/resource_access_tokens')
           expect(token_ids).to match_array(access_tokens.pluck(:id))
         end
 
