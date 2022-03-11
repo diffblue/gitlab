@@ -13,6 +13,7 @@ export default () => {
     purchaseStorageUrl,
     buyAddonTargetAttr,
     isTemporaryStorageIncreaseVisible,
+    defaultPerPage,
   } = el.dataset;
 
   const apolloProvider = new VueApollo({
@@ -28,6 +29,7 @@ export default () => {
       buyAddonTargetAttr,
       isTemporaryStorageIncreaseVisible,
       helpLinks,
+      defaultPerPage: Number(defaultPerPage),
     },
     render(createElement) {
       return createElement(NamespaceStorageApp);

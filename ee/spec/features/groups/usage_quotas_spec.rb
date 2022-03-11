@@ -53,7 +53,7 @@ RSpec.describe 'Groups > Usage Quotas' do
       end
 
       it 'renders a 404' do
-        visit_pipeline_quota_page
+        visit_usage_quotas_page
 
         expect(page).to have_gitlab_http_status(:not_found)
       end
@@ -66,7 +66,7 @@ RSpec.describe 'Groups > Usage Quotas' do
     include_examples 'linked in group settings dropdown'
 
     it 'shows correct group quota info' do
-      visit_pipeline_quota_page
+      visit_usage_quotas_page
 
       page.within('.pipeline-quota') do
         expect(page).to have_content("400 / Unlimited minutes")
@@ -82,7 +82,7 @@ RSpec.describe 'Groups > Usage Quotas' do
     include_examples 'linked in group settings dropdown'
 
     it 'shows correct group quota info' do
-      visit_pipeline_quota_page
+      visit_usage_quotas_page
 
       page.within('.pipeline-quota') do
         expect(page).to have_content("0%")
@@ -115,7 +115,7 @@ RSpec.describe 'Groups > Usage Quotas' do
     include_examples 'linked in group settings dropdown'
 
     it 'shows correct group quota info' do
-      visit_pipeline_quota_page
+      visit_usage_quotas_page
 
       page.within('.pipeline-quota') do
         expect(page).to have_content("300 / 500 minutes")
@@ -135,14 +135,14 @@ RSpec.describe 'Groups > Usage Quotas' do
       let(:gitlab_dot_com) { false }
 
       it "does not show 'Buy additional minutes' button" do
-        visit_pipeline_quota_page
+        visit_usage_quotas_page
 
         expect(page).not_to have_content('Buy additional minutes')
       end
     end
 
     it 'has correct tracking setup and shows correct group quota and projects info' do
-      visit_pipeline_quota_page
+      visit_usage_quotas_page
 
       page.within('.pipeline-quota') do
         expect(page).to have_content("1000 / 500 minutes")
@@ -168,7 +168,7 @@ RSpec.describe 'Groups > Usage Quotas' do
     let(:group) { create(:group, parent: root_ancestor) }
 
     it 'does not show subproject' do
-      visit_pipeline_quota_page
+      visit_usage_quotas_page
 
       expect(page).to have_gitlab_http_status(:not_found)
     end
@@ -179,7 +179,7 @@ RSpec.describe 'Groups > Usage Quotas' do
     let!(:subproject) { create(:project, namespace: subgroup, shared_runners_enabled: true) }
 
     it 'does show projects of subgroup' do
-      visit_pipeline_quota_page
+      visit_usage_quotas_page
 
       expect(page).to have_content(project.full_name)
       expect(page).to have_content(subproject.full_name)
@@ -188,13 +188,56 @@ RSpec.describe 'Groups > Usage Quotas' do
 
   context 'when purchasing CI minutes' do
     it 'points to GitLab CI minutes purchase flow' do
-      visit_pipeline_quota_page
+      visit_usage_quotas_page
 
       expect(page).to have_link('Buy additional minutes', href: buy_minutes_subscriptions_path(selected_group: group.id))
     end
   end
 
-  def visit_pipeline_quota_page
-    visit group_usage_quotas_path(group)
+  context 'pagination', :js do
+    let(:per_page) { 1 }
+    let!(:projects) { create_list(:project, 3, namespace: group) }
+
+    before do
+      allow(Kaminari.config).to receive(:default_per_page).and_return(per_page)
+
+      visit_usage_quotas_page('storage-quota-tab')
+    end
+
+    it 'paginates correctly to page 3 and back' do
+      expect(page).to have_selector('.js-project-link', count: per_page)
+      page1_el_text = page.find('.js-project-link').text
+      click_next_page
+
+      expect(page).to have_selector('.js-project-link', count: per_page)
+      page2_el_text = page.find('.js-project-link').text
+      click_next_page
+
+      expect(page).to have_selector('.js-project-link', count: per_page)
+      page3_el_text = page.find('.js-project-link').text
+      click_prev_page
+
+      expect(page3_el_text).not_to eql(page2_el_text)
+      expect(page.find('.js-project-link').text).to eql(page2_el_text)
+
+      click_prev_page
+
+      expect(page.find('.js-project-link').text).to eql(page1_el_text)
+      expect(page).to have_selector('.js-project-link', count: per_page)
+    end
+  end
+
+  def visit_usage_quotas_page(anchor = 'seats-quota-tab')
+    visit group_usage_quotas_path(group, anchor: anchor)
+  end
+
+  def click_next_page
+    page.find('[data-testid="nextButton"]').click
+    wait_for_requests
+  end
+
+  def click_prev_page
+    page.find('[data-testid="prevButton"]').click
+    wait_for_requests
   end
 end

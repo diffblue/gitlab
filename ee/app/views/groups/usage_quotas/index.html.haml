@@ -43,4 +43,4 @@
   .tab-pane#shared-runners-usage-quota-tab
     #js-shared-runner-usage-quota{ data: { namespace_id: @group.id } }
   .tab-pane#storage-quota-tab
-    #js-storage-counter-app{ data: { namespace_path: @group.full_path, purchase_storage_url: url_to_purchase_storage, buy_addon_target_attr: buy_addon_target_attr, is_temporary_storage_increase_visible: temporary_storage_increase_visible?(@group).to_s } }
+    #js-storage-counter-app{ data: { namespace_path: @group.full_path, purchase_storage_url: url_to_purchase_storage, buy_addon_target_attr: buy_addon_target_attr, is_temporary_storage_increase_visible: temporary_storage_increase_visible?(@group).to_s, default_per_page: page_size } }

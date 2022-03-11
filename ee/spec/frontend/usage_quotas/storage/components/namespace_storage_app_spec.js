@@ -1,5 +1,4 @@
 import { mount } from '@vue/test-utils';
-import { nextTick } from 'vue';
 import NamespaceStorageApp from 'ee/usage_quotas/storage/components/namespace_storage_app.vue';
 import CollapsibleProjectStorageDetail from 'ee/usage_quotas/storage/components/collapsible_project_storage_detail.vue';
 import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
@@ -19,6 +18,7 @@ const TEST_LIMIT = 1000;
 
 describe('NamespaceStorageApp', () => {
   let wrapper;
+  let $apollo;
 
   const findTotalUsage = () => wrapper.find("[data-testid='total-usage']");
   const findPurchaseStorageLink = () => wrapper.find("[data-testid='purchase-storage-link']");
@@ -37,7 +37,7 @@ describe('NamespaceStorageApp', () => {
     additionalRepoStorageByNamespace = false,
     namespace = {},
   } = {}) => {
-    const $apollo = {
+    $apollo = {
       queries: {
         namespace: {
           loading,
@@ -66,7 +66,9 @@ describe('NamespaceStorageApp', () => {
   };
 
   beforeEach(() => {
-    createComponent();
+    createComponent({
+      namespace: namespaceData,
+    });
   });
 
   afterEach(() => {
@@ -74,97 +76,55 @@ describe('NamespaceStorageApp', () => {
   });
 
   it('renders the 2 projects', async () => {
-    // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-    // eslint-disable-next-line no-restricted-syntax
-    wrapper.setData({
-      namespace: namespaceData,
-    });
-
-    await nextTick();
-
     expect(wrapper.findAllComponents(CollapsibleProjectStorageDetail)).toHaveLength(3);
   });
 
   describe('limit', () => {
     it('when limit is set it renders limit information', async () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        namespace: namespaceData,
-      });
-
-      await nextTick();
-
       expect(wrapper.text()).toContain(formatUsageSize(namespaceData.limit));
     });
 
     it('when limit is 0 it does not render limit information', async () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
+      createComponent({
         namespace: { ...namespaceData, limit: 0 },
       });
-
-      await nextTick();
 
       expect(wrapper.text()).not.toContain(formatUsageSize(0));
     });
   });
 
+  it('renders N/A for totalUsage when no rootStorageStatistics is provided', async () => {
+    expect(findTotalUsage().text()).toContain('N/A');
+  });
+
   describe('with rootStorageStatistics information', () => {
-    it('renders total usage', async () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
+    beforeEach(() => {
+      createComponent({
         namespace: withRootStorageStatistics,
       });
+    });
 
-      await nextTick();
-
+    it('renders total usage', async () => {
       expect(findTotalUsage().text()).toContain(withRootStorageStatistics.totalUsage);
     });
-  });
 
-  describe('with additional_repo_storage_by_namespace feature', () => {
-    it('usage_graph component hidden is when feature is false', async () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        namespace: withRootStorageStatistics,
+    describe('with additional_repo_storage_by_namespace feature', () => {
+      it('usage_graph component hidden is when feature is false', async () => {
+        expect(findUsageGraph().exists()).toBe(true);
+        expect(findUsageStatistics().exists()).toBe(false);
+        expect(findStorageInlineAlert().exists()).toBe(false);
       });
 
-      await nextTick();
+      it('usage_statistics component is rendered when feature is true', async () => {
+        createComponent({
+          additionalRepoStorageByNamespace: true,
+          namespace: withRootStorageStatistics,
+        });
 
-      expect(findUsageGraph().exists()).toBe(true);
-      expect(findUsageStatistics().exists()).toBe(false);
-      expect(findStorageInlineAlert().exists()).toBe(false);
-    });
-
-    it('usage_statistics component is rendered when feature is true', async () => {
-      createComponent({
-        additionalRepoStorageByNamespace: true,
-        namespace: withRootStorageStatistics,
+        expect(findUsageStatistics().exists()).toBe(true);
+        expect(findUsageGraph().exists()).toBe(false);
+        expect(findStorageInlineAlert().exists()).toBe(true);
       });
-
-      await nextTick();
-
-      expect(findUsageStatistics().exists()).toBe(true);
-      expect(findUsageGraph().exists()).toBe(false);
-      expect(findStorageInlineAlert().exists()).toBe(true);
-    });
-  });
-
-  describe('without rootStorageStatistics information', () => {
-    it('renders N/A', async () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        namespace: namespaceData,
-      });
-
-      await nextTick();
-
-      expect(findTotalUsage().text()).toContain('N/A');
     });
   });
 
@@ -207,10 +167,8 @@ describe('NamespaceStorageApp', () => {
 
     describe('when temporary storage increase is visible', () => {
       beforeEach(() => {
-        createComponent({ provide: { isTemporaryStorageIncreaseVisible: 'true' } });
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
+        createComponent({
+          provide: { isTemporaryStorageIncreaseVisible: 'true' },
           namespace: {
             ...namespaceData,
             limit: TEST_LIMIT,
@@ -280,29 +238,61 @@ describe('NamespaceStorageApp', () => {
     });
   });
 
-  describe('renders projects table pagination component', () => {
-    const namespaceWithPageInfo = {
+  describe('projects table pagination component', () => {
+    const namespaceWithPageInfo = (
+      pageInfo = {
+        hasPreviousPage: false,
+        hasNextPage: true,
+      },
+    ) => ({
       namespace: {
         ...withRootStorageStatistics,
         projects: {
           ...withRootStorageStatistics.projects,
-          pageInfo: {
-            hasPreviousPage: false,
-            hasNextPage: true,
-          },
+          pageInfo,
         },
       },
-    };
+    });
     beforeEach(() => {
-      createComponent(namespaceWithPageInfo);
+      createComponent(namespaceWithPageInfo());
     });
 
-    it('with disabled "Prev" button', () => {
+    it('has "Prev" button disabled', () => {
       expect(findPrevButton().attributes().disabled).toBe('disabled');
     });
 
-    it('with enabled "Next" button', () => {
+    it('has "Next" button enabled', () => {
       expect(findNextButton().attributes().disabled).toBeUndefined();
+    });
+
+    describe('apollo calls', () => {
+      beforeEach(() => {
+        createComponent(
+          namespaceWithPageInfo({
+            hasPreviousPage: true,
+            hasNextPage: true,
+          }),
+        );
+        $apollo.queries.namespace.fetchMore = jest.fn().mockResolvedValue();
+      });
+
+      it('contains correct `first` and `last` values when clicking "Prev" button', () => {
+        findPrevButton().trigger('click');
+        expect($apollo.queries.namespace.fetchMore).toHaveBeenCalledWith(
+          expect.objectContaining({
+            variables: expect.objectContaining({ first: undefined, last: expect.any(Number) }),
+          }),
+        );
+      });
+
+      it('contains `first` value when clicking "Next" button', () => {
+        findNextButton().trigger('click');
+        expect($apollo.queries.namespace.fetchMore).toHaveBeenCalledWith(
+          expect.objectContaining({
+            variables: expect.objectContaining({ first: expect.any(Number) }),
+          }),
+        );
+      });
     });
   });
 });
