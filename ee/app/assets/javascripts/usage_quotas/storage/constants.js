@@ -78,8 +78,6 @@ export const STORAGE_USAGE_THRESHOLDS = {
   [ERROR_THRESHOLD]: 1.0,
 };
 
-export const PROJECTS_PER_PAGE = 20;
-
 export const projectHelpLinks = {
   usageQuotas: helpPagePath('user/usage_quotas'),
   buildArtifacts: helpPagePath('ci/pipelines/job_artifacts', {

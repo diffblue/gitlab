@@ -154,6 +154,7 @@ export const defaultProjectProvideValues = {
 };
 
 export const defaultNamespaceProvideValues = {
+  defaultPerPage: 20,
   namespacePath: 'h5bp',
   purchaseStorageUrl: '',
   buyAddonTargetAttr: '_blank',
