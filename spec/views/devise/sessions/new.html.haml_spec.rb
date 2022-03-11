@@ -3,6 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe 'devise/sessions/new' do
+  before do
+    allow(view).to receive(:arkose_labs_public_key).and_return("arkose-api-key")
+  end
+
   describe 'marketing text' do
     subject { render(template: 'devise/sessions/new', layout: 'layouts/devise') }
 

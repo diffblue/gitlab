@@ -6,7 +6,12 @@ module EE
     extend ::Gitlab::Utils::Override
 
     prepended do
+      include ArkoseLabsCSP
+
       before_action :gitlab_geo_logout, only: [:destroy]
+      before_action only: [:new] do
+        push_frontend_feature_flag(:arkose_labs_login_challenge, default_enabled: :yaml)
+      end
     end
 
     override :new
@@ -18,6 +23,10 @@ module EE
         state = geo_login_state.encode
         redirect_to oauth_geo_auth_url(host: current_node_uri.host, port: current_node_uri.port, state: state)
       else
+        if ::Feature.enabled?(:arkose_labs_login_challenge)
+          @arkose_labs_public_key ||= ENV['ARKOSE_LABS_PUBLIC_KEY'] # rubocop:disable Gitlab/ModuleWithInstanceVariables
+        end
+
         super
       end
     end
