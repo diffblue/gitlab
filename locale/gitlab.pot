@@ -22978,9 +22978,6 @@ msgstr ""
 msgid "Member|Deny access"
 msgstr ""
 
-msgid "Member|Remove member"
-msgstr ""
-
 msgid "Member|Revoke invite"
 msgstr ""
 
