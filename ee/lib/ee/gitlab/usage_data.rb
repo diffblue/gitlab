@@ -191,7 +191,6 @@ module EE
             usage_data[:counts].merge!(
               {
                 confidential_epics: count(::Epic.confidential),
-                dependency_list_usages_total: redis_usage_data { ::Gitlab::UsageCounters::DependencyList.usage_totals[:total] },
                 epics: count(::Epic),
                 epic_issues: count(::EpicIssue),
                 geo_nodes: count(::GeoNode),

@@ -43,16 +43,6 @@ RSpec.describe Projects::DependenciesController do
           end
         end
 
-        context 'when usage ping is collected' do
-          let(:user) { developer }
-
-          it 'counts usage of the feature' do
-            expect(::Gitlab::UsageCounters::DependencyList).to receive(:increment).with(project.id)
-
-            get :index, params: params, format: :json
-          end
-        end
-
         context 'with existing report' do
           let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_dependency_list_report, project: project) }
 
