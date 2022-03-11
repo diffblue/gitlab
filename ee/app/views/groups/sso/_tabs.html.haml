@@ -1,4 +1,8 @@
-= gl_tabs_nav({ class: 'new-session-tabs' }) do
-  = gl_tab_link_to _('Register'), '#register-pane', item_active: true, data: { toggle: 'tab', qa_selector: 'register_pane_link' }
+%ul.nav-links.new-session-tabs.nav-tabs.nav{ role: 'tablist' }
+  %li.nav-item{ role: 'presentation' }
+    %a.nav-link.active{ href: '#register-pane', role: 'tab', data: { toggle: 'tab', qa_selector: 'register_pane_link' } }
+      = _('Register')
   - if ::Feature.enabled?(:convert_user_to_group_managed_accounts) && current_user && current_user.verified_email?(resource.email)
-    = gl_tab_link_to _('Authorize'), '#authorize-pane', data: { toggle: 'tab', qa_selector: 'authorize_pane_link' }
+    %li.nav-item{ role: 'presentation' }
+      %a.nav-link{ href: '#authorize-pane', role: 'tab', data: { toggle: 'tab', qa_selector: 'authorize_pane_link' } }
+        = _('Authorize')
