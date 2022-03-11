@@ -203,6 +203,13 @@ Include in the MR description:
 - Order columns based on the [Ordering Table Columns](ordering_table_columns.md) guidelines.
 - Add foreign keys to any columns pointing to data in other tables, including [an index](migration_style_guide.md#adding-foreign-key-constraints).
 - Add indexes for fields that are used in statements such as `WHERE`, `ORDER BY`, `GROUP BY`, and `JOIN`s.
+- New tables are columns are not necessarily risky, but over time some access patterns are inherently
+difficult to scale. To identify these risky patterns in advance, we need to document expectations for
+access and size.  
+  Include in the MR description answers to the following:
+    - What is the anticipated growth for the new table over the next 3 months, 6 months, 1 year? What assumptions are these based on?
+    - How many reads and writes per hour would you expect this table to have in 3 months, 6 months, 1 year? Under what circumstances are rows updated? What assumptions are these based on?
+    - Based on the anticipated data volume and access patterns, does the new table pose an availability risk to GitLab.com or self-managed instances?
 
 #### Preparation when removing columns, tables, indexes, or other structures
 
@@ -245,6 +252,10 @@ Include in the MR description:
     that post migrations are executed post-deployment in production.
 - Check [timing guidelines for migrations](migration_style_guide.md#how-long-a-migration-should-take)
 - Check migrations are reversible and implement a `#down` method
+- Check new table migrations:
+  - Are the stated access patterns and volume reasonable? Do the assumptions they're based on seem sound? Do these patterns pose risks to stability?
+  - Are the columns [ordered to conserve space](ordering_table_columns.md)?
+  - Are there foreign keys for references to other tables?
 - Check data migrations:
   - Establish a time estimate for execution on GitLab.com.
   - Depending on timing, data migrations can be placed on regular, post-deploy, or background migrations.
@@ -261,8 +272,3 @@ Include in the MR description:
     to queries (changing the query, schema or adding indexes and similar)
   - General guideline is for queries to come in below [100ms execution time](query_performance.md#timing-guidelines-for-queries)
   - Avoid N+1 problems and minimize the [query count](merge_request_performance_guidelines.md#query-counts).
-- Review anticipated data volume and access patterns
-  - If new tables or columns are being added: 
-    - What is the growth for these tables?  What is this assumption based on?
-    - What is the anticipated access pattern for these tables?  Are they read-heavy or write-heavy?
-    - Based on the anticipated data volume and access patterns, does the new table pose an availability risk to GitLab.com or self-managed instances?
