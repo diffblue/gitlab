@@ -12,17 +12,22 @@ export default {
     return {
       name: '',
       path: '',
+      buttons: [],
     };
   },
   mounted() {
-    document.querySelectorAll('.js-application-delete-button').forEach((button) => {
-      button.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.show(button.dataset);
-      });
-    });
+    this.buttons = document.querySelectorAll('.js-application-delete-button');
+
+    this.buttons.forEach((button) => button.addEventListener('click', this.buttonEvent));
+  },
+  destroy() {
+    this.buttons.forEach((button) => button.removeEventListener('click', this.buttonEvent));
   },
   methods: {
+    buttonEvent(e) {
+      e.preventDefault();
+      this.show(e.target.dataset);
+    },
     show(dataset) {
       const { name, path } = dataset;
 
