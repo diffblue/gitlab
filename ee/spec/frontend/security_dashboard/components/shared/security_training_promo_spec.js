@@ -10,6 +10,7 @@ import {
 
 const SECURITY_CONFIGURATION_PATH = 'foo/bar';
 const VULNERABILITY_MANAGEMENT_TAB_NAME = 'vulnerability-management';
+const PROJECT_FULL_PATH = 'namespace/project';
 
 describe('Security training promo component', () => {
   let wrapper;
@@ -18,6 +19,7 @@ describe('Security training promo component', () => {
   const createWrapper = ({ shouldShowCallout = true } = {}) =>
     shallowMount(SecurityTrainingPromo, {
       provide: {
+        projectFullPath: PROJECT_FULL_PATH,
         securityConfigurationPath: SECURITY_CONFIGURATION_PATH,
       },
       stubs: {
@@ -94,6 +96,7 @@ describe('Security training promo component', () => {
 
       expect(trackingSpy).toHaveBeenCalledWith(undefined, TRACK_PROMOTION_BANNER_CTA_CLICK_ACTION, {
         label: TRACK_PROMOTION_BANNER_CTA_CLICK_LABEL,
+        property: PROJECT_FULL_PATH,
       });
     });
   });

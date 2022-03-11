@@ -14,7 +14,7 @@ export default {
     UserCalloutDismisser,
   },
   mixins: [Tracking.mixin()],
-  inject: ['securityConfigurationPath'],
+  inject: ['securityConfigurationPath', 'projectFullPath'],
   i18n: {
     title: __('Reduce risk and triage fewer vulnerabilities with security training'),
     buttonText: __('Enable security training'),
@@ -31,6 +31,7 @@ export default {
     trackCTAClick() {
       this.track(TRACK_PROMOTION_BANNER_CTA_CLICK_ACTION, {
         label: TRACK_PROMOTION_BANNER_CTA_CLICK_LABEL,
+        property: this.projectFullPath,
       });
     },
   },
