@@ -10,5 +10,12 @@ module GroupIssuableResolver
                default_value: false,
                description: "Include #{name_of_things} belonging to subgroups"
     end
+
+    def non_archived(name_of_things)
+      argument :non_archived, GraphQL::Types::Boolean,
+               required: false,
+               default_value: true,
+               description: "Return #{name_of_things} from non archived projects"
+    end
   end
 end

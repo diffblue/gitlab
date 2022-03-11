@@ -6,6 +6,7 @@ module Resolvers
     include GroupIssuableResolver
 
     include_subgroups 'issues'
+    non_archived 'issues'
 
     def ready?(**args)
       if args.dig(:not, :release_tag).present?

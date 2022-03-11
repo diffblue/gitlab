@@ -9,6 +9,7 @@ module Resolvers
     type Types::MergeRequestType.connection_type, null: true
 
     include_subgroups 'merge requests'
+    non_archived 'merge requests'
     accept_assignee
     accept_author
 
