@@ -1,3 +1,14 @@
+import { testProviderName, testTrainingUrls } from 'jest/security_configuration/mock_data';
+import {
+  SUPPORTED_IDENTIFIER_TYPES,
+  SECURITY_TRAINING_URL_STATUS_COMPLETED,
+} from 'ee/vulnerabilities/constants';
+
+export const testIdentifiers = [
+  { externalType: SUPPORTED_IDENTIFIER_TYPES.cwe },
+  { externalType: 'cve' },
+];
+
 export const generateNote = ({ id = 1295 } = {}) => ({
   id: `gid://gitlab/DiscussionNote/${id}`,
   body: 'Created a note.',
@@ -29,5 +40,43 @@ export const addTypenamesToDiscussion = (discussion) => {
         },
       })),
     },
+  };
+};
+
+export const defaultProps = {
+  id: 200,
+};
+
+const createSecurityTrainingVulnerability = ({ urlOverrides = {}, urls, identifiers } = {}) => ({
+  ...defaultProps,
+  identifiers: identifiers || testIdentifiers,
+  securityTrainingUrls: urls || [
+    {
+      name: testProviderName[0],
+      url: testTrainingUrls[0],
+      status: SECURITY_TRAINING_URL_STATUS_COMPLETED,
+      ...urlOverrides.first,
+    },
+    {
+      name: testProviderName[1],
+      url: testTrainingUrls[1],
+      status: SECURITY_TRAINING_URL_STATUS_COMPLETED,
+      ...urlOverrides.second,
+    },
+  ],
+});
+
+export const getSecurityTrainingVulnerabilityData = (vulnerabilityOverrides = {}) => {
+  const vulnerability = createSecurityTrainingVulnerability(vulnerabilityOverrides);
+
+  const response = {
+    data: {
+      vulnerability,
+    },
+  };
+
+  return {
+    response,
+    data: vulnerability,
   };
 };
