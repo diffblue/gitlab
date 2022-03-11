@@ -368,7 +368,7 @@ RSpec.describe GitlabSubscription, :saas do
   end
 
   describe 'callbacks' do
-    context 'after_commit :index_namespace' do
+    context 'after_commit :index_namespace', :saas do
       let_it_be(:namespace) { create(:namespace) }
 
       let(:gitlab_subscription) { build(:gitlab_subscription, plan, namespace: namespace) }

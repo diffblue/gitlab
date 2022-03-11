@@ -28,7 +28,7 @@ RSpec.describe TrialsController, :saas do
   shared_examples 'a dot-com only feature' do
     let(:success_status) { :ok }
 
-    context 'when not on gitlab.com ' do
+    context 'when not on gitlab.com' do
       before do
         allow(::Gitlab).to receive(:com?).and_return(false)
       end

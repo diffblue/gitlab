@@ -256,7 +256,7 @@ module EE
     end
 
     def should_check_namespace_plan?
-      check_namespace_plan? && (Rails.env.test? || ::Gitlab.dev_env_org_or_com?)
+      check_namespace_plan? && (Rails.env.test? || ::Gitlab.org_or_com?)
     end
 
     def elasticsearch_indexing
