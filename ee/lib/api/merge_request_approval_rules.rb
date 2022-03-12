@@ -49,11 +49,24 @@ module API
         end
 
         segment ':approval_rule_id' do
+          desc 'Get merge request approval rule' do
+            success EE::API::Entities::MergeRequestApprovalRule
+          end
+          params do
+            requires :approval_rule_id, type: Integer, desc: 'The ID of a merge request approval rule'
+          end
+          get do
+            merge_request = find_merge_request_with_access(params[:merge_request_iid])
+            approval_rule = find_merge_request_approval_rule(merge_request, params[:approval_rule_id])
+
+            present approval_rule, with: EE::API::Entities::MergeRequestApprovalRule, current_user: current_user
+          end
+
           desc 'Update merge request approval rule' do
             success EE::API::Entities::MergeRequestApprovalRule
           end
           params do
-            requires :approval_rule_id, type: Integer, desc: 'The ID of an approval rule'
+            requires :approval_rule_id, type: Integer, desc: 'The ID of a merge request approval rule'
             optional :name, type: String, desc: 'The name of the approval rule'
             optional :approvals_required, type: Integer, desc: 'The number of required approvals for this rule'
             optional :user_ids, type: Array[Integer], coerce_with: ::API::Validations::Types::CommaSeparatedToIntegerArray.coerce, desc: 'The user ids for this rule'
@@ -75,7 +88,7 @@ module API
 
           desc 'Destroy merge request approval rule'
           params do
-            requires :approval_rule_id, type: Integer, desc: 'The ID of an approval_rule'
+            requires :approval_rule_id, type: Integer, desc: 'The ID of a merge request approval rule'
           end
           delete do
             merge_request = find_merge_request_with_access(params[:merge_request_iid], :update_approvers)
