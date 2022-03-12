@@ -26,6 +26,26 @@ RSpec.describe API::RemoteMirrors do
     end
   end
 
+  describe 'GET /projects/:id/remote_mirrors/:mirror_id' do
+    let(:route) { "/projects/#{project.id}/remote_mirrors/#{mirror.id}" }
+    let(:mirror) { project.remote_mirrors.first }
+
+    it 'requires `admin_remote_mirror` permission' do
+      get api(route, developer)
+
+      expect(response).to have_gitlab_http_status(:unauthorized)
+    end
+
+    it 'returns at remote mirror' do
+      project.add_maintainer(user)
+
+      get api(route, user)
+
+      expect(response).to have_gitlab_http_status(:success)
+      expect(response).to match_response_schema('remote_mirror')
+    end
+  end
+
   describe 'POST /projects/:id/remote_mirrors' do
     let(:route) { "/projects/#{project.id}/remote_mirrors" }
 
