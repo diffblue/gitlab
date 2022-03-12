@@ -17,6 +17,7 @@ query groupVulnerabilities(
   $hasIssues: Boolean
   $hasResolution: Boolean
   $vetEnabled: Boolean = false
+  $clusterAgentId: [ClustersAgentID!]
 ) {
   group(fullPath: $fullPath) {
     id
@@ -34,6 +35,7 @@ query groupVulnerabilities(
       sort: $sort
       hasIssues: $hasIssues
       hasResolution: $hasResolution
+      clusterAgentId: $clusterAgentId
     ) {
       nodes {
         ...VulnerabilityFragment

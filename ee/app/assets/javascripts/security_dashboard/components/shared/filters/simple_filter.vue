@@ -10,6 +10,11 @@ export default {
       type: Object,
       required: true,
     },
+    customOptions: {
+      type: Array,
+      required: false,
+      default: undefined,
+    },
   },
   data() {
     return {
@@ -18,7 +23,7 @@ export default {
   },
   computed: {
     options() {
-      return this.filter.options;
+      return this.customOptions || this.filter.options;
     },
     selectedSet() {
       return new Set(this.selectedOptions);

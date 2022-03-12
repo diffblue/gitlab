@@ -301,5 +301,18 @@ describe('Simple Filter component', () => {
         expect(wrapper.vm.$route.query.other).toEqual(other);
       });
     });
+
+    describe('customOptions', () => {
+      it('uses customOptions over filter.options', () => {
+        const customOptions = [
+          { id: 1, name: 'custom' },
+          { id: 2, name: 'options' },
+        ];
+        createWrapper(undefined, { customOptions });
+        expect(dropdownItems().wrappers.map((w) => w.props('text'))).toStrictEqual(
+          customOptions.map((c) => c.name),
+        );
+      });
+    });
   });
 });

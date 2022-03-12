@@ -34401,6 +34401,9 @@ msgstr ""
 msgid "SecurityReports|Check the messages generated while parsing the following security reports, as they may prevent the results from being ingested by GitLab. Ensure the security report conforms to a supported %{helpPageLinkStart}JSON schema%{helpPageLinkEnd}."
 msgstr ""
 
+msgid "SecurityReports|Cluster"
+msgstr ""
+
 msgid "SecurityReports|Comment added to '%{vulnerabilityName}'"
 msgstr ""
 
@@ -44749,6 +44752,9 @@ msgid "ciReport|API Fuzzing"
 msgstr ""
 
 msgid "ciReport|API fuzzing"
+msgstr ""
+
+msgid "ciReport|All clusters"
 msgstr ""
 
 msgid "ciReport|All projects"
