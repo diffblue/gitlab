@@ -630,3 +630,15 @@ review:
   ```
 
 In both cases, you might need to add `region` to the job artifact [object storage configuration](#connection-settings).
+
+### Job artifact upload fails with `500 Internal Server Error (Missing file)`
+
+Bucket names that include folder paths are not supported with [consolidated object storage](object_storage.md#consolidated-object-storage-configuration).
+For example, `bucket/path`. If a bucket name has a path in it, you might receive an error similar to:
+
+```plaintext
+WARNING: Uploading artifacts as "archive" to coordinator... POST https://gitlab.example.com/api/v4/jobs/job_id/artifacts?artifact_format=zip&artifact_type=archive&expire_in=1+day: 500 Internal Server Error (Missing file) 
+FATAL: invalid argument
+```
+
+If a job artifact fails to upload with the above error when using consolidated object storage, make sure you are [using separate buckets](object_storage.md#use-separate-buckets) for each data type. 
