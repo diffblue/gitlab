@@ -414,6 +414,37 @@ space, and in some cases, manually delete job artifacts to reclaim disk space.
 
 One possible first step is to [clean up _orphaned_ artifact files](../raketasks/cleanup.md#remove-orphan-artifact-files).
 
+#### List projects and builds with artifacts with a specific expiration (or no expiration)
+
+Using a [Rails console](operations/rails_console.md), you can find projects that have job artifacts with either:
+
+- No expiration date.
+- An expiration date more than 7 days in the future.
+
+Similar to [deleting artifacts](#delete-job-artifacts-from-jobs-completed-before-a-specific-date), use the following example time frames
+and alter them as needed:
+
+- `7.days.from_now`
+- `10.days.from_now`
+- `2.weeks.from_now`
+- `3.months.from_now`
+
+Each of the following scripts also limits the search to 50 results with `.limit(50)`, but this number can also be changed as needed:
+
+```ruby
+# Find builds & projects with artifacts that never expire
+builds_with_artifacts_that_never_expire = Ci::Build.with_downloadable_artifacts.where(artifacts_expire_at: nil).limit(50)
+builds_with_artifacts_that_never_expire.find_each do |build|
+  puts "Build with id #{build.id} has artifacts that don't expire and belongs to project #{build.project.full_path}"
+end
+
+# Find builds & projects with artifacts that expire after 7 days from today
+builds_with_artifacts_that_expire_in_a_week = Ci::Build.with_downloadable_artifacts.where('artifacts_expire_at > ?', 7.days.from_now).limit(50)
+builds_with_artifacts_that_expire_in_a_week.find_each do |build|
+  puts "Build with id #{build.id} has artifacts that expire at #{build.artifacts_expire_at} and belongs to project #{build.project.full_path}"
+end
+```
+
 #### List projects by total size of job artifacts stored
 
 List the top 20 projects, sorted by the total size of job artifacts stored, by
