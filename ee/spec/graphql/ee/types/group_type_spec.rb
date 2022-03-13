@@ -69,20 +69,15 @@ RSpec.describe GitlabSchema.types['Group'] do
   describe 'billable members count' do
     let_it_be(:group) { create(:group) }
     let_it_be(:project) { create(:project, namespace: group) }
-    let_it_be(:user1) { create(:user) }
-    let_it_be(:user2) { create(:user) }
-    let_it_be(:user3) { create(:user) }
-    let_it_be(:user4) { create(:user) }
+    let_it_be(:group_owner) { create(:user) }
+    let_it_be(:group_developer) { create(:user) }
+    let_it_be(:group_guest) { create(:user) }
+    let_it_be(:project_developer) { create(:user) }
+    let_it_be(:project_guest) { create(:user) }
 
-    before do
-      group.add_developer(user1)
-      group.add_guest(user2)
-      project.add_developer(user3)
-      project.add_guest(user4)
-    end
-
-    it "returns billable users count including guests when no plan is provided" do
-      query = <<~GQL
+    let(:current_user) { group_owner }
+    let(:query) do
+      <<~GQL
         query {
           group(fullPath: "#{group.full_path}") {
             id,
@@ -90,46 +85,63 @@ RSpec.describe GitlabSchema.types['Group'] do
           }
         }
       GQL
-
-      result = GitlabSchema.execute(query, context: { current_user: user1 }).as_json
-
-      billable_members_count = result.dig('data', 'group', 'billableMembersCount')
-
-      expect(billable_members_count).to eq(4)
     end
 
-    it "returns billable users count including guests when a plan that should include guests is provided" do
-      query = <<~GQL
-        query {
-          group(fullPath: "#{group.full_path}") {
-            id,
-            billableMembersCount(requestedHostedPlan: "#{::Plan::SILVER}")
-          }
-        }
-      GQL
-
-      result = GitlabSchema.execute(query, context: { current_user: user1 }).as_json
-
-      billable_members_count = result.dig('data', 'group', 'billableMembersCount')
-
-      expect(billable_members_count).to eq(4)
+    before do
+      group.add_owner(group_owner)
+      group.add_developer(group_developer)
+      group.add_guest(group_guest)
+      project.add_developer(project_developer)
+      project.add_guest(project_guest)
     end
 
-    it "returns billable users count excluding guests when a plan that should exclude guests is provided" do
-      query = <<~GQL
-        query {
-          group(fullPath: "#{group.full_path}") {
-            id,
-            billableMembersCount(requestedHostedPlan: "#{::Plan::ULTIMATE}")
+    subject(:billable_members_count) do
+      result = GitlabSchema.execute(query, context: { current_user: current_user }).as_json
+
+      result.dig('data', 'group', 'billableMembersCount')
+    end
+
+    context 'when no plan is provided' do
+      it 'returns billable users count including guests' do
+        expect(billable_members_count).to eq(5)
+      end
+    end
+
+    context 'when a plan is provided' do
+      let(:query) do
+        <<~GQL
+          query {
+            group(fullPath: "#{group.full_path}") {
+              id,
+              billableMembersCount(requestedHostedPlan: "#{plan}")
+            }
           }
-        }
-      GQL
+        GQL
+      end
 
-      result = GitlabSchema.execute(query, context: { current_user: user1 }).as_json
+      context 'with a plan that should include guests is provided' do
+        let(:plan) { ::Plan::SILVER }
 
-      billable_members_count = result.dig('data', 'group', 'billableMembersCount')
+        it 'returns billable users count including guests' do
+          expect(billable_members_count).to eq(5)
+        end
+      end
 
-      expect(billable_members_count).to eq(2)
+      context 'with a plan that should exclude guests is provided' do
+        let(:plan) { ::Plan::ULTIMATE }
+
+        it 'returns billable users count excluding guests when a plan that should exclude guests is provided' do
+          expect(billable_members_count).to eq(3)
+        end
+      end
+    end
+
+    context 'without owner authorization' do
+      let(:current_user) { group_developer }
+
+      it 'does not return the billable members count' do
+        expect(billable_members_count).to be_nil
+      end
     end
   end
 

@@ -85,6 +85,7 @@ module EE
 
         field :billable_members_count, ::GraphQL::Types::Int,
               null: true,
+              authorize: :owner_access,
               description: 'Number of billable users in the group.' do
                 argument :requested_hosted_plan, String, required: false, description: 'Plan from which to get billable members.'
               end
