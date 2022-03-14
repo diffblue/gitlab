@@ -45,6 +45,7 @@ module Mutations
 
         def reset_token(type:, **args)
           id = args[:id]
+          scope = nil
 
           case type
           when 'instance_type'
@@ -52,15 +53,11 @@ module Mutations
 
             scope = ApplicationSetting.current
             authorize!(scope)
-
-            scope.reset_runners_registration_token!
-            ApplicationSetting.current_without_cache.runners_registration_token
           when 'group_type', 'project_type'
             scope = authorized_find!(type: type, id: id)
-
-            scope.reset_runners_token!
-            scope.runners_token
           end
+
+          ::Ci::Runners::ResetRegistrationTokenService.new(scope, current_user).execute if scope
         end
       end
     end
