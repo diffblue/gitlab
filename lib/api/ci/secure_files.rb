@@ -52,44 +52,44 @@ module API
           body secure_file.file.read
         end
 
-        # Additional authorization check for admin endpoints
-        # All APIs defined below this block will require admin level permissions
-        before do
-          authorize! :admin_secure_files, user_project
-        end
-
-        desc 'Upload a Secure File'
-        params do
-          requires :name, type: String, desc: 'The name of the file'
-          requires :file, types: [Rack::Multipart::UploadedFile, ::API::Validations::Types::WorkhorseFile], desc: 'The secure file to be uploaded'
-          optional :permissions, type: String, desc: 'The file permissions', default: 'read_only', values: %w[read_only read_write execute]
-        end
-        route_setting :authentication, basic_auth_personal_access_token: true, job_token_allowed: true
-        post ':id/secure_files' do
-          secure_file = user_project.secure_files.new(
-            name: params[:name],
-            permissions: params[:permissions] || :read_only
-          )
-
-          secure_file.file = params[:file]
-
-          file_too_large! unless secure_file.file.size < ::Ci::SecureFile::FILE_SIZE_LIMIT.to_i
-
-          if secure_file.save
-            present secure_file, with: Entities::Ci::SecureFile
-          else
-            render_validation_error!(secure_file)
+        resource do
+          before do
+            authorize! :admin_secure_files, user_project
           end
-        end
 
-        desc 'Delete an individual Secure File'
-        route_setting :authentication, basic_auth_personal_access_token: true, job_token_allowed: true
-        delete ':id/secure_files/:secure_file_id' do
-          secure_file = user_project.secure_files.find(params[:secure_file_id])
+          desc 'Upload a Secure File'
+          params do
+            requires :name, type: String, desc: 'The name of the file'
+            requires :file, types: [Rack::Multipart::UploadedFile, ::API::Validations::Types::WorkhorseFile], desc: 'The secure file to be uploaded'
+            optional :permissions, type: String, desc: 'The file permissions', default: 'read_only', values: %w[read_only read_write execute]
+          end
+          route_setting :authentication, basic_auth_personal_access_token: true, job_token_allowed: true
+          post ':id/secure_files' do
+            secure_file = user_project.secure_files.new(
+              name: params[:name],
+              permissions: params[:permissions] || :read_only
+            )
 
-          ::Ci::DestroySecureFileService.new(user_project, current_user).execute(secure_file)
+            secure_file.file = params[:file]
 
-          no_content!
+            file_too_large! unless secure_file.file.size < ::Ci::SecureFile::FILE_SIZE_LIMIT.to_i
+
+            if secure_file.save
+              present secure_file, with: Entities::Ci::SecureFile
+            else
+              render_validation_error!(secure_file)
+            end
+          end
+
+          desc 'Delete an individual Secure File'
+          route_setting :authentication, basic_auth_personal_access_token: true, job_token_allowed: true
+          delete ':id/secure_files/:secure_file_id' do
+            secure_file = user_project.secure_files.find(params[:secure_file_id])
+
+            ::Ci::DestroySecureFileService.new(user_project, current_user).execute(secure_file)
+
+            no_content!
+          end
         end
       end
 
