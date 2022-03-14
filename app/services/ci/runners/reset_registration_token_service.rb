@@ -11,7 +11,7 @@ module Ci
       end
 
       def execute
-        return false unless @user.present? && @user.can?(:update_runners_registration_token, scope)
+        return unless @user.present? && @user.can?(:update_runners_registration_token, scope)
 
         case scope
         when ::ApplicationSetting
@@ -29,5 +29,3 @@ module Ci
     end
   end
 end
-
-Ci::Runners::AssignRunnerService.prepend_mod
