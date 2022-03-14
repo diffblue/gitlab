@@ -22,8 +22,8 @@ module EE
           post ':id/deployments/:deployment_id/approval' do
             deployment = user_project.deployments.find(params[:deployment_id])
 
-            result = ::Deployments::ApprovalService.new(user_project, current_user)
-                                                   .execute(deployment: deployment, status: params[:status], comment: params[:comment])
+            result = ::Deployments::ApprovalService.new(user_project, current_user, declared_params(include_missing: false))
+                                                   .execute(deployment, params[:status])
 
             if result[:status] == :success
               present(result[:approval], with: ::API::Entities::Deployments::Approval, current_user: current_user)
