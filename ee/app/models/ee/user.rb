@@ -409,13 +409,13 @@ module EE
     end
 
     def activate_based_on_user_cap?
-      !blocked_auto_created_omniauth_user? &&
+      !blocked_auto_created_oauth_ldap_user? &&
         blocked_pending_approval? &&
         self.class.user_cap_max.present?
     end
 
-    def blocked_auto_created_omniauth_user?
-      ::Gitlab.config.omniauth.block_auto_created_users && identities.any?
+    def blocked_auto_created_oauth_ldap_user?
+      identities.any? && block_auto_created_users?
     end
 
     def has_valid_credit_card?
@@ -438,6 +438,17 @@ module EE
     end
 
     private
+
+    def block_auto_created_users?
+      if ldap_user?
+        provider = ldap_identity.provider
+        return false unless provider
+
+        ::Gitlab::Auth::Ldap::Config.new(provider).block_auto_created_users
+      else
+        ::Gitlab.config.omniauth.block_auto_created_users
+      end
+    end
 
     def created_after_credit_card_release_day?(project)
       created_at >= ::Users::CreditCardValidation::RELEASE_DAY ||

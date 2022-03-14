@@ -13,7 +13,6 @@ module EE
 
             if user_in_required_group?
               unblock_user(user, "in required group") if user&.persisted? && user&.ldap_blocked?
-              unblock_user(user, "user cap not reached yet") if activate_user_based_on_user_cap?(user)
             elsif user&.persisted?
               block_user(user, "not in required group") unless user.blocked?
             else
