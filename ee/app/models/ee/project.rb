@@ -69,6 +69,7 @@ module EE
       # the rationale behind vulnerabilities and vulnerability_findings can be found here:
       # https://gitlab.com/gitlab-org/gitlab/issues/10252#terminology
       has_many :vulnerabilities
+      has_many :vulnerability_reads, class_name: 'Vulnerabilities::Read'
       has_many :vulnerability_feedback, class_name: 'Vulnerabilities::Feedback'
       has_many :vulnerability_historical_statistics, class_name: 'Vulnerabilities::HistoricalStatistic'
       has_many :vulnerability_findings, class_name: 'Vulnerabilities::Finding', inverse_of: :project do

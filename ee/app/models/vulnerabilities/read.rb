@@ -23,5 +23,43 @@ module Vulnerabilities
     enum state: ::Enums::Vulnerability.vulnerability_states
     enum report_type: ::Enums::Vulnerability.report_types
     enum severity: ::Enums::Vulnerability.severity_levels, _prefix: :severity
+
+    scope :order_severity_asc, -> { reorder(severity: :asc) }
+    scope :order_severity_desc, -> { reorder(severity: :desc) }
+    scope :order_detected_at_asc, -> { reorder(vulnerability_id: :asc) }
+    scope :order_detected_at_desc, -> { reorder(vulnerability_id: :desc) }
+
+    scope :by_scanner_ids, -> (scanner_ids) { where(scanner_id: scanner_ids) }
+    scope :for_projects, -> (project_ids) { where(project_id: project_ids) }
+    scope :grouped_by_severity, -> { reorder(severity: :desc).group(:severity) }
+    scope :with_report_types, -> (report_types) { where(report_type: report_types) }
+    scope :with_severities, -> (severities) { where(severity: severities) }
+    scope :with_states, -> (states) { where(state: states) }
+    scope :with_container_image, -> (images) { where(location_image: images) }
+    scope :with_cluster_agent_ids, -> (agent_ids) { where(cluster_agent_id: agent_ids) }
+    scope :with_resolution, -> (has_resolution = true) { where(resolved_on_default_branch: has_resolution) }
+    scope :with_issues, -> (has_issues = true) { where(has_issues: has_issues) }
+    scope :with_scanner_external_ids, -> (scanner_external_ids) { joins(:scanner).merge(::Vulnerabilities::Scanner.with_external_id(scanner_external_ids)) }
+    scope :with_findings_scanner_and_identifiers, -> { includes(vulnerability: { findings: [:scanner, :identifiers, finding_identifiers: :identifier] }) }
+    scope :with_created_issue_links_and_issues, -> { includes(vulnerability: { created_issue_links: :issue }) }
+
+    scope :as_vulnerabilities, -> do
+      preload(vulnerability: { project: [:route] }).current_scope.tap do |relation|
+        relation.define_singleton_method(:records) do
+          super().map(&:vulnerability)
+        end
+      end
+    end
+
+    def self.order_by(method)
+      case method.to_s
+      when 'severity_desc' then order_severity_desc
+      when 'severity_asc' then order_severity_asc
+      when 'detected_desc' then order_detected_at_desc
+      when 'detected_asc' then order_detected_at_asc
+      else
+        order_severity_desc
+      end
+    end
   end
 end

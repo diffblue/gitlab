@@ -386,20 +386,19 @@ module EE
     end
 
     def vulnerabilities
-      ::Vulnerability.where(
-        project: ::Project.for_group_and_its_subgroups(self).non_archived.without_deleted
-      )
+      ::Vulnerability.where(project: projects_for_group_and_its_subgroups_without_deleted)
+    end
+
+    def vulnerability_reads
+      ::Vulnerabilities::Read.where(project: projects_for_group_and_its_subgroups_without_deleted)
     end
 
     def vulnerability_scanners
-      ::Vulnerabilities::Scanner.where(
-        project: ::Project.for_group_and_its_subgroups(self).non_archived.without_deleted
-      )
+      ::Vulnerabilities::Scanner.where(project: projects_for_group_and_its_subgroups_without_deleted)
     end
 
     def vulnerability_historical_statistics
-      ::Vulnerabilities::HistoricalStatistic
-        .for_project(::Project.for_group_and_its_subgroups(self).non_archived.without_deleted)
+      ::Vulnerabilities::HistoricalStatistic.for_project(projects_for_group_and_its_subgroups_without_deleted)
     end
 
     def max_personal_access_token_lifetime_from_now
@@ -698,6 +697,14 @@ module EE
 
     def invited_or_shared_group_members(groups)
       ::GroupMember.active_without_invites_and_requests.where(source_id: groups.self_and_ancestors)
+    end
+
+    def users_without_project_bots(members)
+      ::User.where(id: members.distinct.select(:user_id)).without_project_bot
+    end
+
+    def projects_for_group_and_its_subgroups_without_deleted
+      ::Project.for_group_and_its_subgroups(self).non_archived.without_deleted
     end
 
     override :_safe_read_repository_read_only_column

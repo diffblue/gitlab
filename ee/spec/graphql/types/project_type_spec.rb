@@ -7,7 +7,7 @@ RSpec.describe GitlabSchema.types['Project'] do
 
   let_it_be(:project) { create(:project) }
   let_it_be(:user) { create(:user) }
-  let_it_be(:vulnerability) { create(:vulnerability, project: project, severity: :high) }
+  let_it_be(:vulnerability) { create(:vulnerability, :with_finding, project: project, severity: :high) }
 
   before do
     stub_licensed_features(security_dashboard: true)
@@ -71,7 +71,7 @@ RSpec.describe GitlabSchema.types['Project'] do
     let_it_be(:project) { create(:project) }
     let_it_be(:user) { create(:user) }
     let_it_be(:vulnerability) do
-      create(:vulnerability, :detected, :critical, project: project, title: 'A terrible one!')
+      create(:vulnerability, :detected, :critical, :with_finding, project: project, title: 'A terrible one!')
     end
 
     let_it_be(:query) do

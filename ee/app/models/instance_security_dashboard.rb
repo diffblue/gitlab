@@ -29,6 +29,12 @@ class InstanceSecurityDashboard
     Vulnerability.for_projects(projects)
   end
 
+  def vulnerability_reads
+    return Vulnerabilities::Read.none if projects.empty?
+
+    Vulnerabilities::Read.for_projects(projects)
+  end
+
   def vulnerability_scanners
     return Vulnerabilities::Scanner.none if projects.empty?
 
