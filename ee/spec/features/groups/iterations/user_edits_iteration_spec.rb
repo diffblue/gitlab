@@ -9,6 +9,8 @@ RSpec.describe 'User edits iteration' do
   let_it_be(:guest_user) { create(:group_member, :guest, user: create(:user), group: group ).user }
   let_it_be(:cadence) { create(:iterations_cadence, group: group) }
   let_it_be(:iteration) { create(:iteration, :skip_future_date_validation, group: group, title: 'Correct Iteration', description: 'Iteration description', start_date: now - 1.day, due_date: now, iterations_cadence: cadence) }
+  let_it_be(:new_start_date) { now + 4.days }
+  let_it_be(:new_due_date) { now + 5.days }
 
   dropdown_selector = '[data-testid="actions-dropdown"]'
 
@@ -24,13 +26,55 @@ RSpec.describe 'User edits iteration' do
         sign_in(user)
       end
 
-      where(using_cadences: [true, false])
+      let(:start_date_with_cadences) do
+        page.find('#iteration-start-date')
+      end
+
+      let(:due_date_with_cadences) do
+        page.find('#iteration-due-date')
+      end
+
+      let(:start_date_without_cadences) do
+        input = page.first('[data-testid="gl-datepicker-input"]')
+        input.set(now - 1.day)
+        input
+      end
+
+      let(:due_date_without_cadences) do
+        input = all('[data-testid="gl-datepicker-input"]').last
+        input.set(now)
+        input
+      end
+
+      let(:updated_start_date_with_cadences) do
+        fill_in('Start date', with: new_start_date.strftime('%Y-%m-%d'))
+        new_start_date.strftime('%b %-d, %Y')
+      end
+
+      let(:updated_due_date_with_cadences) do
+        fill_in('Due date', with: new_due_date.strftime('%Y-%m-%d'))
+        new_due_date.strftime('%b %-d, %Y')
+      end
+
+      let(:updated_start_date_without_cadences) do
+        start_date_without_cadences.set(new_start_date)
+        new_start_date.strftime('%b %-d, %Y')
+      end
+
+      let(:updated_due_date_without_cadences) do
+        due_date_without_cadences.set(new_due_date)
+        due_date_without_cadences.set(new_due_date)
+        new_due_date.strftime('%b %-d, %Y')
+      end
+
+      where(:using_cadences, :start_date_input, :due_date_input, :updated_start_date, :updated_due_date) do
+        true  | ref(:start_date_with_cadences)    | ref(:due_date_with_cadences)    | ref(:updated_start_date_with_cadences)    | ref(:updated_due_date_with_cadences)
+        false | ref(:start_date_without_cadences) | ref(:due_date_without_cadences) | ref(:updated_start_date_without_cadences) | ref(:updated_due_date_without_cadences)
+      end
 
       with_them do
         let(:iteration_page) { using_cadences ? group_iteration_cadence_iteration_path(group, iteration_cadence_id: cadence.id, id: iteration.id) : group_iteration_path(iteration.group, iteration.id) }
         let(:edit_iteration_page) { using_cadences ? edit_group_iteration_cadence_iteration_path(group, iteration_cadence_id: cadence.id, id: iteration.id) : edit_group_iteration_path(iteration.group, iteration.id) }
-        let(:start_date_input) { using_cadences ? start_date_with_cadences : start_date_without_cadences}
-        let(:due_date_input) { using_cadences ? due_date_with_cadences : due_date_without_cadences }
 
         context 'load edit page directly', :js do
           before do
@@ -49,28 +93,19 @@ RSpec.describe 'User edits iteration' do
 
             updated_title = 'Updated iteration title'
             updated_desc = 'Updated iteration desc'
-            updated_start_date = now + 4.days
-            updated_due_date = now + 5.days
 
             fill_in('Title', with: updated_title)
             fill_in('Description', with: updated_desc)
-
-            if using_cadences
-              fill_in('Start date', with: updated_start_date.strftime('%Y-%m-%d'))
-              fill_in('Due date', with: updated_due_date.strftime('%Y-%m-%d'))
-            else
-              start_date_input.set(updated_start_date)
-              due_date_input.set(updated_due_date)
-              due_date_input.set(updated_due_date)
-            end
+            start_date = updated_start_date
+            due_date = updated_due_date
 
             click_button('Update iteration')
 
             aggregate_failures do
               expect(page).to have_content(updated_title)
               expect(page).to have_content(updated_desc)
-              expect(page).to have_content(updated_start_date.strftime('%b %-d, %Y'))
-              expect(page).to have_content(updated_due_date.strftime('%b %-d, %Y'))
+              expect(page).to have_content(start_date)
+              expect(page).to have_content(due_date)
               expect(page).to have_current_path(iteration_page)
             end
           end
@@ -140,26 +175,6 @@ RSpec.describe 'User edits iteration' do
 
     def description_input
       page.find('#iteration-description')
-    end
-
-    def start_date_with_cadences
-      page.find('#iteration-start-date')
-    end
-
-    def due_date_with_cadences
-      page.find('#iteration-due-date')
-    end
-
-    def start_date_without_cadences
-      input = page.first('[data-testid="gl-datepicker-input"]')
-      input.set(now - 1.day)
-      input
-    end
-
-    def due_date_without_cadences
-      input = all('[data-testid="gl-datepicker-input"]').last
-      input.set(now)
-      input
     end
   end
 end
