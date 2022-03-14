@@ -5,6 +5,7 @@ RSpec.describe ProtectedEnvironment do
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
     it { is_expected.to have_many(:deploy_access_levels) }
+    it { is_expected.to have_many(:approval_rules).class_name('ProtectedEnvironments::ApprovalRule').inverse_of(:protected_environment) }
   end
 
   describe 'validation' do

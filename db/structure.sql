@@ -14270,6 +14270,7 @@ CREATE TABLE deployment_approvals (
     updated_at timestamp with time zone NOT NULL,
     status smallint NOT NULL,
     comment text,
+    approval_rule_id bigint,
     CONSTRAINT check_e2eb6a17d8 CHECK ((char_length(comment) <= 255))
 );
 
@@ -19681,6 +19682,28 @@ CREATE SEQUENCE protected_branches_id_seq
 
 ALTER SEQUENCE protected_branches_id_seq OWNED BY protected_branches.id;
 
+CREATE TABLE protected_environment_approval_rules (
+    id bigint NOT NULL,
+    protected_environment_id bigint NOT NULL,
+    user_id bigint,
+    group_id bigint,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    access_level smallint,
+    required_approvals smallint NOT NULL,
+    CONSTRAINT chk_rails_bed75249bc CHECK ((((access_level IS NOT NULL) AND (group_id IS NULL) AND (user_id IS NULL)) OR ((user_id IS NOT NULL) AND (access_level IS NULL) AND (group_id IS NULL)) OR ((group_id IS NOT NULL) AND (user_id IS NULL) AND (access_level IS NULL)))),
+    CONSTRAINT chk_rails_cfa90ae3b5 CHECK ((required_approvals > 0))
+);
+
+CREATE SEQUENCE protected_environment_approval_rules_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE protected_environment_approval_rules_id_seq OWNED BY protected_environment_approval_rules.id;
+
 CREATE TABLE protected_environment_deploy_access_levels (
     id integer NOT NULL,
     created_at timestamp with time zone NOT NULL,
@@ -22950,6 +22973,8 @@ ALTER TABLE ONLY protected_branch_unprotect_access_levels ALTER COLUMN id SET DE
 
 ALTER TABLE ONLY protected_branches ALTER COLUMN id SET DEFAULT nextval('protected_branches_id_seq'::regclass);
 
+ALTER TABLE ONLY protected_environment_approval_rules ALTER COLUMN id SET DEFAULT nextval('protected_environment_approval_rules_id_seq'::regclass);
+
 ALTER TABLE ONLY protected_environment_deploy_access_levels ALTER COLUMN id SET DEFAULT nextval('protected_environment_deploy_access_levels_id_seq'::regclass);
 
 ALTER TABLE ONLY protected_environments ALTER COLUMN id SET DEFAULT nextval('protected_environments_id_seq'::regclass);
@@ -25066,6 +25091,9 @@ ALTER TABLE ONLY protected_branch_unprotect_access_levels
 ALTER TABLE ONLY protected_branches
     ADD CONSTRAINT protected_branches_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY protected_environment_approval_rules
+    ADD CONSTRAINT protected_environment_approval_rules_pkey PRIMARY KEY (id);
+
 ALTER TABLE ONLY protected_environment_deploy_access_levels
     ADD CONSTRAINT protected_environment_deploy_access_levels_pkey PRIMARY KEY (id);
 
@@ -26707,6 +26735,8 @@ CREATE UNIQUE INDEX index_approval_rule_name_for_code_owners_rule_type ON approv
 
 CREATE UNIQUE INDEX index_approval_rule_name_for_sectional_code_owners_rule_type ON approval_merge_request_rules USING btree (merge_request_id, name, section) WHERE (rule_type = 2);
 
+CREATE INDEX index_approval_rule_on_protected_environment_id ON protected_environment_approval_rules USING btree (protected_environment_id);
+
 CREATE INDEX index_approval_rules_code_owners_rule_type ON approval_merge_request_rules USING btree (merge_request_id) WHERE (rule_type = 2);
 
 CREATE INDEX index_approvals_on_merge_request_id ON approvals USING btree (merge_request_id);
@@ -27342,6 +27372,8 @@ CREATE UNIQUE INDEX index_deploy_tokens_on_token ON deploy_tokens USING btree (t
 CREATE INDEX index_deploy_tokens_on_token_and_expires_at_and_id ON deploy_tokens USING btree (token, expires_at, id) WHERE (revoked IS FALSE);
 
 CREATE UNIQUE INDEX index_deploy_tokens_on_token_encrypted ON deploy_tokens USING btree (token_encrypted);
+
+CREATE INDEX index_deployment_approvals_on_approval_rule_id ON deployment_approvals USING btree (approval_rule_id);
 
 CREATE UNIQUE INDEX index_deployment_approvals_on_deployment_id_and_user_id ON deployment_approvals USING btree (deployment_id, user_id);
 
@@ -28784,6 +28816,10 @@ CREATE INDEX index_protected_branch_unprotect_access_levels_on_group_id ON prote
 CREATE INDEX index_protected_branch_unprotect_access_levels_on_user_id ON protected_branch_unprotect_access_levels USING btree (user_id);
 
 CREATE INDEX index_protected_branches_on_project_id ON protected_branches USING btree (project_id);
+
+CREATE INDEX index_protected_environment_approval_rules_on_group_id ON protected_environment_approval_rules USING btree (group_id);
+
+CREATE INDEX index_protected_environment_approval_rules_on_user_id ON protected_environment_approval_rules USING btree (user_id);
 
 CREATE INDEX index_protected_environment_deploy_access ON protected_environment_deploy_access_levels USING btree (protected_environment_id);
 
@@ -31170,6 +31206,9 @@ ALTER TABLE ONLY ci_pipelines
 ALTER TABLE ONLY merge_request_reviewers
     ADD CONSTRAINT fk_3d674b9f23 FOREIGN KEY (updated_state_by_user_id) REFERENCES users(id) ON DELETE SET NULL;
 
+ALTER TABLE ONLY protected_environment_approval_rules
+    ADD CONSTRAINT fk_405568b491 FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY ci_pipeline_schedule_variables
     ADD CONSTRAINT fk_41c35fda51 FOREIGN KEY (pipeline_schedule_id) REFERENCES ci_pipeline_schedules(id) ON DELETE CASCADE;
 
@@ -31233,6 +31272,9 @@ ALTER TABLE ONLY project_access_tokens
 ALTER TABLE ONLY merge_requests
     ADD CONSTRAINT fk_6149611a04 FOREIGN KEY (assignee_id) REFERENCES users(id) ON DELETE SET NULL;
 
+ALTER TABLE ONLY deployment_approvals
+    ADD CONSTRAINT fk_61cdbdc5b9 FOREIGN KEY (approval_rule_id) REFERENCES protected_environment_approval_rules(id) ON DELETE SET NULL;
+
 ALTER TABLE ONLY dast_profile_schedules
     ADD CONSTRAINT fk_61d52aa0e7 FOREIGN KEY (dast_profile_id) REFERENCES dast_profiles(id) ON DELETE CASCADE;
 
@@ -31271,6 +31313,9 @@ ALTER TABLE ONLY projects
 
 ALTER TABLE ONLY terraform_state_versions
     ADD CONSTRAINT fk_6e81384d7f FOREIGN KEY (created_by_user_id) REFERENCES users(id) ON DELETE SET NULL;
+
+ALTER TABLE ONLY protected_environment_approval_rules
+    ADD CONSTRAINT fk_6ee8249821 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY protected_branch_push_access_levels
     ADD CONSTRAINT fk_7111b68cdb FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
@@ -32282,6 +32327,9 @@ ALTER TABLE ONLY scim_identities
 
 ALTER TABLE ONLY snippet_user_mentions
     ADD CONSTRAINT fk_rails_4d3f96b2cb FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY protected_environment_approval_rules
+    ADD CONSTRAINT fk_rails_4e554f96f5 FOREIGN KEY (protected_environment_id) REFERENCES protected_environments(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY deployment_clusters
     ADD CONSTRAINT fk_rails_4e6243e120 FOREIGN KEY (cluster_id) REFERENCES clusters(id) ON DELETE CASCADE;
