@@ -19,7 +19,7 @@ RSpec.describe 'layouts/header/_ee_subscribable_banner' do
 
       it 'shows both renew and dismiss links' do
         expect(rendered).to have_link 'Renew subscription', href: view.renew_subscription_path
-        expect(rendered).to have_link "That's OK, I don't want to renew", href: '#'
+        expect(rendered).to have_button "That's OK, I don't want to renew"
       end
     end
 
