@@ -6,6 +6,15 @@ module EE
       extend ::Gitlab::Utils::Override
       include ::Gitlab::Utils::StrongMemoize
 
+      override :check_access
+      def check_access(pipeline)
+        if current_user && !current_user.has_required_credit_card_to_run_pipelines?(project)
+          ServiceResponse.error(message: 'Credit card required to be on file in order to retry a pipeline', http_status: :forbidden)
+        else
+          super
+        end
+      end
+
       private
 
       override :builds_relation
