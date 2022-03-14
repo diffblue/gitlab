@@ -61,7 +61,6 @@ export default {
       'currentGroupPath',
       'activeStages',
       'selectedProjectIds',
-      'enableCustomOrdering',
       'cycleAnalyticsRequestParams',
       'pathNavigationData',
       'isOverviewStageSelected',
