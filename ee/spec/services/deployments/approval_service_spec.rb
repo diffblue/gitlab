@@ -157,13 +157,13 @@ RSpec.describe Deployments::ApprovalService do
       context 'when status is not recognized' do
         let(:status) { 'foo' }
 
-        include_examples 'error', message: 'Unrecognized status'
+        include_examples 'error', message: 'Unrecognized approval status.'
       end
 
       context 'when environment is not protected' do
         let(:deployment) { create(:deployment, project: project, deployable: build) }
 
-        include_examples 'error', message: 'This environment is not protected'
+        include_examples 'error', message: 'This environment is not protected.'
       end
 
       context 'when Protected Environments feature is not available' do
@@ -171,7 +171,7 @@ RSpec.describe Deployments::ApprovalService do
           stub_licensed_features(protected_environments: false)
         end
 
-        include_examples 'error', message: 'This environment is not protected'
+        include_examples 'error', message: 'This environment is not protected.'
       end
 
       context 'when the user does not have permission to update deployment' do
@@ -179,19 +179,19 @@ RSpec.describe Deployments::ApprovalService do
           project.add_developer(user)
         end
 
-        include_examples 'error', message: 'You do not have permission to approve or reject this deployment'
+        include_examples 'error', message: "You don't have permission to review this deployment. Contact the project or group owner for help."
       end
 
       context 'when user is nil' do
         let(:user) { nil }
 
-        include_examples 'error', message: 'You do not have permission to approve or reject this deployment'
+        include_examples 'error', message: "You don't have permission to review this deployment. Contact the project or group owner for help."
       end
 
       context 'when deployment is not blocked' do
         let(:deployment) { create(:deployment, project: project, environment: environment, deployable: build) }
 
-        include_examples 'error', message: 'This deployment job is not waiting for approvals'
+        include_examples 'error', message: 'This deployment is not waiting for approvals.'
       end
 
       context 'when the creator of the deployment is approving' do
@@ -199,7 +199,7 @@ RSpec.describe Deployments::ApprovalService do
           deployment.user = user
         end
 
-        include_examples 'error', message: 'The same user can not approve'
+        include_examples 'error', message: 'You cannot approve your own deployment.'
       end
 
       context 'when the creator of the deployment is rejecting' do
