@@ -882,7 +882,7 @@ These are system generated rules.
 | Attribute            | Type    | Required | Description                                    |
 |----------------------|---------|----------|------------------------------------------------|
 | `id`                 | integer or string | yes      | The ID or [URL-encoded path of a project](index.md#namespaced-path-encoding) |
-| `merge_request_iid`  | integer | yes      | The ID of MR                                   |
+| `merge_request_iid`  | integer | yes      | The IID of MR                                  |
 | `approval_rule_id`   | integer | yes      | The ID of a approval rule                      |
 | `name`               | string  | yes      | The name of the approval rule                  |
 | `approvals_required` | integer | yes      | The number of required approvals for this rule |
