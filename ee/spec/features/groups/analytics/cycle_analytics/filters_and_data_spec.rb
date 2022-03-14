@@ -198,8 +198,13 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
 
     context 'with a value stream' do
       before do
-        create(:cycle_analytics_group_value_stream, group: group, name: 'First value stream')
-        create(:cycle_analytics_group_value_stream, group: sub_group, name: 'First sub group value stream')
+        value_stream = create(:cycle_analytics_group_value_stream, group: group, name: 'First value stream')
+        sub_value_stream = create(:cycle_analytics_group_value_stream, group: sub_group, name: 'First sub group value stream')
+
+        Gitlab::Analytics::CycleAnalytics::DefaultStages.all.map do |stage_params|
+          group.cycle_analytics_stages.create!(stage_params.merge(value_stream: value_stream))
+          sub_group.cycle_analytics_stages.create!(stage_params.merge(value_stream: sub_value_stream))
+        end
       end
 
       context 'without valid query parameters set' do
@@ -300,6 +305,9 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
 
           deploy_master(user, project, environment: 'staging')
           deploy_master(user, project)
+
+          aggregation = Analytics::CycleAnalytics::Aggregation.safe_create_for_group(group)
+          Analytics::CycleAnalytics::AggregatorService.new(aggregation: aggregation).execute
 
           select_group(group)
         end

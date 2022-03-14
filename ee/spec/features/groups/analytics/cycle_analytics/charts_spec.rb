@@ -142,7 +142,10 @@ RSpec.describe 'Value stream analytics charts', :js do
 
       context 'with a value stream' do
         before do
-          create(:cycle_analytics_group_value_stream, group: group, name: 'First value stream')
+          create(:cycle_analytics_group_value_stream, group: group, name: 'First value stream', stages: [
+            create(:cycle_analytics_group_stage, group: group, name: "Issue", relative_position: 1),
+            create(:cycle_analytics_group_stage, group: group, name: "Code", relative_position: 2)
+          ])
 
           select_group(group)
         end

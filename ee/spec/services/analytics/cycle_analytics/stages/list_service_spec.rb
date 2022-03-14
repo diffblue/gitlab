@@ -21,8 +21,24 @@ RSpec.describe Analytics::CycleAnalytics::Stages::ListService do
 
   it_behaves_like 'permission check for Value Stream Analytics Stage services', :cycle_analytics_for_groups
 
-  it 'returns only the default stages' do
-    expect(stages.size).to eq(Gitlab::Analytics::CycleAnalytics::DefaultStages.all.size)
+  context 'when the use_vsa_aggregated_tables feature is enabled' do
+    before do
+      stub_feature_flags(use_vsa_aggregated_tables: true)
+    end
+
+    it 'returns empty array' do
+      expect(stages.size).to eq(0)
+    end
+  end
+
+  context 'when the use_vsa_aggregated_tables feature is disabled' do
+    before do
+      stub_feature_flags(use_vsa_aggregated_tables: false)
+    end
+
+    it 'returns the default stages' do
+      expect(stages.size).to eq(Gitlab::Analytics::CycleAnalytics::DefaultStages.all.size)
+    end
   end
 
   it 'provides the default stages as non-persisted objects' do

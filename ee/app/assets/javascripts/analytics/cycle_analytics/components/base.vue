@@ -213,7 +213,10 @@ export default {
       >
         <h3>{{ __('Value Stream Analytics') }}</h3>
         <div class="gl-display-flex gl-flex-direction-row gl-align-items-center gl-mt-0 gl-sm-mt-5">
-          <value-stream-aggregation-status v-if="isAggregationStatusAvailable" :data="aggregation" />
+          <value-stream-aggregation-status
+            v-if="isAggregationStatusAvailable"
+            :data="aggregation"
+          />
           <value-stream-select v-if="shouldDisplayCreateMultipleValueStreams" />
         </div>
       </div>
