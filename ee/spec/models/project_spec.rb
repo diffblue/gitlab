@@ -15,8 +15,6 @@ RSpec.describe Project do
     it { is_expected.to delegate_method(:ci_minutes_quota).to(:shared_runners_limit_namespace) }
     it { is_expected.to delegate_method(:shared_runners_minutes_limit_enabled?).to(:shared_runners_limit_namespace) }
 
-    it { is_expected.to delegate_method(:closest_gitlab_subscription).to(:namespace) }
-
     it { is_expected.to delegate_method(:pipeline_configuration_full_path).to(:compliance_management_framework) }
 
     it { is_expected.to delegate_method(:prevent_merge_without_jira_issue).to(:project_setting) }
