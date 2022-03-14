@@ -26,17 +26,8 @@ RSpec.describe ComplianceManagement::MergeRequests::CreateComplianceViolationsSe
     it_behaves_like 'does not call process_merge_request'
   end
 
-  context 'when the compliance violations graphql type is disabled' do
+  context 'when the compliance report feature is enabled' do
     before do
-      stub_feature_flags(compliance_violations_graphql_type: false)
-    end
-
-    it_behaves_like 'does not call process_merge_request'
-  end
-
-  context 'when the compliance violations graphql type is enabled' do
-    before do
-      stub_feature_flags(compliance_violations_graphql_type: true)
       stub_licensed_features(group_level_compliance_dashboard: true)
     end
 

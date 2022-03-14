@@ -5,8 +5,7 @@ module Types
     module MergeRequests
       class ComplianceViolationType < ::Types::BaseObject
         graphql_name 'ComplianceViolation'
-        description 'Compliance violation associated with a merged merge request.' \
-                    ' Available only when feature flag `compliance_violations_graphql_type` is enabled. This flag is disabled by default, because the feature is experimental and is subject to change without notice.'
+        description 'Compliance violation associated with a merged merge request.'
 
         authorize :read_group_compliance_dashboard
 

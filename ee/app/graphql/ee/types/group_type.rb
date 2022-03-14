@@ -105,9 +105,9 @@ module EE
         field :merge_request_violations,
               ::Types::ComplianceManagement::MergeRequests::ComplianceViolationType.connection_type,
               null: true,
-              description: 'Compliance violations reported on merge requests merged within the group.' \
-                           ' Available only when feature flag `compliance_violations_graphql_type` is enabled. This flag is disabled by default, because the feature is experimental and is subject to change without notice.',
-              resolver: ::Resolvers::ComplianceManagement::MergeRequests::ComplianceViolationResolver
+              description: 'Compliance violations reported on merge requests merged within the group.',
+              resolver: ::Resolvers::ComplianceManagement::MergeRequests::ComplianceViolationResolver,
+              authorize: :read_group_compliance_dashboard
 
         def billable_members_count(requested_hosted_plan: nil)
           object.billable_members_count(requested_hosted_plan)

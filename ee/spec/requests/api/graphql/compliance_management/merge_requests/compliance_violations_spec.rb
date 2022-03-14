@@ -70,88 +70,70 @@ RSpec.describe 'getting the compliance violations for a group' do
     merge_request2.metrics.update!(merged_at: 1.day.ago)
   end
 
-  context 'when feature is disabled' do
-    before do
-      stub_feature_flags(compliance_violations_graphql_type: false)
-    end
-
-    it 'returns empty' do
+  context 'when the user is unauthorized' do
+    it 'returns nil' do
       post_graphql(query, current_user: current_user)
 
-      expect(compliance_violations).to be_empty
+      expect(compliance_violations).to be_nil
     end
   end
 
-  context 'when feature is enabled' do
+  context 'when the user is authorized' do
     before do
-      stub_feature_flags(compliance_violations_graphql_type: true)
+      group.add_owner(current_user)
     end
 
-    context 'when the user is unauthorized' do
-      it 'returns empty' do
+    context 'without any filters or sorting' do
+      it 'finds all the compliance violations' do
         post_graphql(query, current_user: current_user)
 
-        expect(compliance_violations).to be_empty
+        expect(compliance_violations).to contain_exactly(violation_output, violation2_output)
       end
     end
 
-    context 'when the user is authorized' do
-      before do
-        group.add_owner(current_user)
-      end
-
-      context 'without any filters or sorting' do
+    context 'filtering the results' do
+      context 'when given an array of project IDs' do
         it 'finds all the compliance violations' do
-          post_graphql(query, current_user: current_user)
+          post_graphql(query({ filters: { projectIds: [project.to_global_id.to_s] } }), current_user: current_user)
 
-          expect(compliance_violations).to contain_exactly(violation_output, violation2_output)
+          expect(compliance_violations).to contain_exactly(violation_output)
         end
       end
 
-      context 'filtering the results' do
-        context 'when given an array of project IDs' do
-          it 'finds all the compliance violations' do
-            post_graphql(query({ filters: { projectIds: [project.to_global_id.to_s] } }), current_user: current_user)
-
-            expect(compliance_violations).to contain_exactly(violation_output)
-          end
-        end
-
-        context 'when given merged at dates' do
-          where(:merged_params, :result) do
-            { 'mergedBefore' => 2.days.ago.to_date.iso8601 } | lazy { violation_output }
-            { 'mergedAfter' => 2.days.ago.to_date.iso8601 } | lazy { violation2_output }
-            { 'mergedBefore' => Date.current.iso8601, 'mergedAfter' => 2.days.ago.to_date.iso8601 } | lazy { violation2_output }
-          end
-
-          with_them do
-            it 'finds all the compliance violations' do
-              post_graphql(query({ filters: merged_params }), current_user: current_user)
-
-              expect(compliance_violations).to contain_exactly(result)
-            end
-          end
-        end
-      end
-
-      context 'sorting the results' do
-        where(:direction, :result) do
-          :SEVERITY_LEVEL_ASC | lazy { [violation_output, violation2_output] }
-          :SEVERITY_LEVEL_DESC | lazy { [violation2_output, violation_output] }
-          :VIOLATION_REASON_ASC | lazy { [violation_output, violation2_output] }
-          :VIOLATION_REASON_DESC | lazy { [violation2_output, violation_output] }
-          :MERGE_REQUEST_TITLE_ASC | lazy { [violation_output, violation2_output] }
-          :MERGE_REQUEST_TITLE_DESC | lazy { [violation2_output, violation_output] }
-          :MERGED_AT_ASC | lazy { [violation_output, violation2_output] }
-          :MERGED_AT_DESC | lazy { [violation2_output, violation_output] }
+      context 'when given merged at dates' do
+        where(:merged_params, :result) do
+          { 'mergedBefore' => 2.days.ago.to_date.iso8601 } | lazy { violation_output }
+          { 'mergedAfter' => 2.days.ago.to_date.iso8601 } | lazy { violation2_output }
+          { 'mergedBefore' => Date.current.iso8601, 'mergedAfter' => 2.days.ago.to_date.iso8601 } | lazy { violation2_output }
         end
 
         with_them do
           it 'finds all the compliance violations' do
-            post_graphql(query({ sort: direction }), current_user: current_user)
+            post_graphql(query({ filters: merged_params }), current_user: current_user)
 
-            expect(compliance_violations).to match_array(result)
+            expect(compliance_violations).to contain_exactly(result)
           end
+        end
+      end
+    end
+
+    context 'sorting the results' do
+      where(:direction, :result) do
+        :SEVERITY_LEVEL_ASC | lazy { [violation_output, violation2_output] }
+        :SEVERITY_LEVEL_DESC | lazy { [violation2_output, violation_output] }
+        :VIOLATION_REASON_ASC | lazy { [violation_output, violation2_output] }
+        :VIOLATION_REASON_DESC | lazy { [violation2_output, violation_output] }
+        :MERGE_REQUEST_TITLE_ASC | lazy { [violation_output, violation2_output] }
+        :MERGE_REQUEST_TITLE_DESC | lazy { [violation2_output, violation_output] }
+        :MERGED_AT_ASC | lazy { [violation_output, violation2_output] }
+        :MERGED_AT_DESC | lazy { [violation2_output, violation_output] }
+      end
+
+      with_them do
+        it 'finds all the compliance violations' do
+          post_graphql(query({ sort: direction }), current_user: current_user)
+
+          expect(compliance_violations).to match_array(result)
         end
       end
     end
