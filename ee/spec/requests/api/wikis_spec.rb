@@ -179,14 +179,16 @@ RSpec.describe API::Wikis do
       context 'when user is developer' do
         before do
           group.add_developer(user)
-
-          get api(url, user), params: params
         end
 
         include_examples 'wikis API returns wiki page'
 
         context 'when page does not exist' do
           let(:url) { "/groups/#{group.id}/wikis/unknown" }
+
+          before do
+            get api(url, user), params: params
+          end
 
           include_examples 'wiki API 404 Wiki Page Not Found'
         end
@@ -195,14 +197,16 @@ RSpec.describe API::Wikis do
       context 'when user is maintainer' do
         before do
           group.add_maintainer(user)
-
-          get api(url, user), params: params
         end
 
         include_examples 'wikis API returns wiki page'
 
         context 'when page does not exist' do
           let(:url) { "/groups/#{group.id}/wikis/unknown" }
+
+          before do
+            get api(url, user), params: params
+          end
 
           include_examples 'wiki API 404 Wiki Page Not Found'
         end
@@ -221,14 +225,16 @@ RSpec.describe API::Wikis do
       context 'when user is developer' do
         before do
           group.add_developer(user)
-
-          get api(url, user), params: params
         end
 
         include_examples 'wikis API returns wiki page'
 
         context 'when page does not exist' do
           let(:url) { "/groups/#{group.id}/wikis/unknown" }
+
+          before do
+            get api(url, user), params: params
+          end
 
           include_examples 'wiki API 404 Wiki Page Not Found'
         end
@@ -237,14 +243,16 @@ RSpec.describe API::Wikis do
       context 'when user is maintainer' do
         before do
           group.add_maintainer(user)
-
-          get api(url, user), params: params
         end
 
         include_examples 'wikis API returns wiki page'
 
         context 'when page does not exist' do
           let(:url) { "/groups/#{group.id}/wikis/unknown" }
+
+          before do
+            get api(url, user), params: params
+          end
 
           include_examples 'wiki API 404 Wiki Page Not Found'
         end
