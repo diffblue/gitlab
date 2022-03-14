@@ -32,7 +32,7 @@ RSpec.describe 'Subscription expired notification', :js do
     it 'displays and dismisses alert' do
       expect(page).to have_content(expected_content)
 
-      find('.gl-alert-dismiss.js-close').click
+      click_button('Dismiss')
       visit group_path(group)
 
       expect(page).not_to have_content(expected_content)
