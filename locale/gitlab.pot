@@ -981,6 +981,9 @@ msgstr ""
 msgid "%{strongOpen}Warning:%{strongClose} SAML group links can cause GitLab to automatically remove members from groups."
 msgstr ""
 
+msgid "%{strongStart}Need your attention%{strongEnd} are the merge requests that need your help to move forward, as an assignee or reviewer."
+msgstr ""
+
 msgid "%{strongStart}Tip:%{strongEnd} You can also check out merge requests locally. %{linkStart}Learn more.%{linkEnd}"
 msgstr ""
 
@@ -34416,6 +34419,9 @@ msgstr ""
 msgid "Solution"
 msgstr ""
 
+msgid "Some actions remove attention requests, like a reviewer approving or anyone merging the merge request."
+msgstr ""
+
 msgid "Some changes are not shown"
 msgstr ""
 
@@ -38454,6 +38460,9 @@ msgid "To add a custom suffix, set up a Service Desk email address. %{linkStart}
 msgstr ""
 
 msgid "To add the entry manually, provide the following details to the application on your phone."
+msgstr ""
+
+msgid "To ask someone to look at a merge request, select %{strongStart}Request attention%{strongEnd}. Select again to remove the request."
 msgstr ""
 
 msgid "To confirm, type %{phrase_code}"
