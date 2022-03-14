@@ -141,7 +141,7 @@ RSpec.describe 'Querying an Iteration' do
 
   context 'when ID argument is missing' do
     let(:query) do
-      graphql_query_for('iteration', {}, 'title')
+      graphql_query_for('iteration', {}, 'id')
     end
 
     it 'raises an exception' do

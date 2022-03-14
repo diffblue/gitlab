@@ -119,7 +119,7 @@ RSpec.describe Mutations::Boards::Lists::Create do
 
           new_list = subject[:list]
 
-          expect(new_list.title).to eq "#{iteration.title}"
+          expect(new_list.title).to eq "#{iteration.display_text}"
           expect(new_list.iteration_id).to eq iteration.id
           expect(new_list.position).to eq 0
         end

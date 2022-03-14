@@ -73,9 +73,9 @@ RSpec.describe 'Filter issues by iteration', :js do
         end
       end
 
-      context 'when passing specific iteration by title' do
+      context 'when passing specific iteration by period' do
         before do
-          set_filter('iteration', iteration_1.title)
+          set_filter('iteration', iteration_1.period)
         end
 
         it_behaves_like 'filters issues by iteration'
@@ -93,17 +93,17 @@ RSpec.describe 'Filter issues by iteration', :js do
         before do
           visit page_path
 
-          set_negated_filter('iteration', iteration_title)
+          set_negated_filter('iteration', iteration_item)
         end
 
         context 'with specific iteration' do
-          let(:iteration_title) { iteration_1.title }
+          let(:iteration_item) { iteration_1.period }
 
           it_behaves_like 'filters issues by negated iteration'
         end
 
         context 'with current iteration' do
-          let(:iteration_title) { 'Current' }
+          let(:iteration_item) { 'Current' }
 
           it_behaves_like 'filters issues by negated iteration'
         end
@@ -123,14 +123,14 @@ RSpec.describe 'Filter issues by iteration', :js do
         click_link '= is'
       end
 
-      it 'shows cadence titles, and iteration titles and dates', :aggregate_failures do
+      it 'shows cadence titles, and iteration periods and dates', :aggregate_failures do
         within '.gl-filtered-search-suggestion-list' do
           # cadence 1 grouping
-          expect(page).to have_css('li:nth-child(6)', text: "#{iteration_1.period} #{iteration_1.title}")
-          expect(page).to have_css('li:nth-child(7)', text: "#{iteration_3.period} #{iteration_3.title}")
+          expect(page).to have_css('li:nth-child(6)', text: iteration_1.period)
+          expect(page).to have_css('li:nth-child(7)', text: iteration_3.period)
           # cadence 2 grouping
           expect(page).to have_css('li:nth-child(9)', text: cadence_2.title)
-          expect(page).to have_css('li:nth-child(10)', text: "#{iteration_2.period} #{iteration_2.title}")
+          expect(page).to have_css('li:nth-child(10)', text: iteration_2.period)
         end
       end
     end

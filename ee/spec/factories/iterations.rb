@@ -6,7 +6,6 @@ FactoryBot.define do
   end
 
   factory :iteration do
-    title
     start_date { generate(:sequential_date) }
     due_date { generate(:sequential_date) }
 
@@ -17,6 +16,10 @@ FactoryBot.define do
       project_id { nil }
       group_id { nil }
       resource_parent { nil }
+    end
+
+    trait :with_title do
+      title
     end
 
     trait :upcoming do

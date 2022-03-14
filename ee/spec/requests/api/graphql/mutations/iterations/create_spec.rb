@@ -143,11 +143,49 @@ RSpec.describe 'Creating an Iteration' do
         end
       end
 
+      context 'with iterations_cadences FF enabled' do
+        before do
+          stub_feature_flags(iteration_cadences: true)
+        end
+
+        context 'when title is not given' do
+          let(:attributes) { { start_date: start_date, due_date: end_date } }
+
+          it 'creates an iteration' do
+            post_graphql_mutation(mutation, current_user: current_user)
+
+            iteration_hash = mutation_response['iteration']
+            aggregate_failures do
+              expect(iteration_hash['title']).to eq(nil)
+              expect(iteration_hash['startDate']).to eq(start_date)
+              expect(iteration_hash['dueDate']).to eq(end_date)
+            end
+          end
+        end
+      end
+
+      context 'with iterations_cadences FF disabled' do
+        before do
+          stub_feature_flags(iteration_cadences: false)
+        end
+
+        context 'when title is not given' do
+          let(:attributes) { { start_date: start_date, due_date: end_date } }
+
+          it_behaves_like 'a mutation that returns top-level errors',
+                          errors: ["Title can't be blank"]
+
+          it 'does not create the iteration' do
+            expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Iteration, :count)
+          end
+        end
+      end
+
       context 'when there are ActiveRecord validation errors' do
-        let(:attributes) { { title: '' } }
+        let(:attributes) { { description: '' } }
 
         it_behaves_like 'a mutation that returns errors in the response',
-                        errors: ["Start date can't be blank", "Due date can't be blank", "Title can't be blank"]
+                        errors: ["Start date can't be blank", "Due date can't be blank"]
 
         it 'does not create the iteration' do
           expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Iteration, :count)

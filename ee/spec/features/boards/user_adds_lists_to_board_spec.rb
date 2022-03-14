@@ -64,7 +64,7 @@ RSpec.describe 'User adds milestone/iterations lists', :js, :aggregate_failures 
     it 'creates iteration column' do
       add_list('Iteration', iteration.period)
 
-      expect(page).to have_selector('.board', text: iteration.title)
+      expect(page).to have_selector('.board', text: iteration.display_text)
       expect(find('.board:nth-child(2) .board-card')).to have_content(issue_with_iteration.title)
     end
   end

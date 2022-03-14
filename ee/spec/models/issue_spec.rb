@@ -161,7 +161,7 @@ RSpec.describe Issue do
     end
 
     context 'iterations' do
-      let_it_be(:iteration1) { create(:iteration) }
+      let_it_be(:iteration1) { create(:iteration, :with_title) }
       let_it_be(:iteration2) { create(:iteration) }
       let_it_be(:iteration1_issue) { create(:issue, iteration: iteration1) }
       let_it_be(:iteration2_issue) { create(:issue, iteration: iteration2) }

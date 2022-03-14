@@ -54,7 +54,7 @@ RSpec.describe Iterations::CreateService do
             end
 
             expect(response.error?).to be_truthy
-            expect(errors.messages).to match({ title: ["can't be blank"], due_date: ["can't be blank"], start_date: ["can't be blank"] })
+            expect(errors.messages).to match({ due_date: ["can't be blank"], start_date: ["can't be blank"] })
           end
         end
 

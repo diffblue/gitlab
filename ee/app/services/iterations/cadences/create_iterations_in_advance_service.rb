@@ -68,8 +68,7 @@ module Iterations
           group_id: cadence.group_id,
           start_date: start_date,
           due_date: due_date,
-          state_enum: Iteration::STATE_ENUM_MAP[::Iteration.compute_state(start_date, due_date)],
-          title: "Iteration #{iteration_number}"
+          state_enum: Iteration::STATE_ENUM_MAP[::Iteration.compute_state(start_date, due_date)]
         }
       end
 

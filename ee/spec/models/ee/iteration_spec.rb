@@ -62,6 +62,26 @@ RSpec.describe Iteration do
     end
   end
 
+  describe '#period' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:iterations_cadence) { create(:iterations_cadence, group: group) }
+    let_it_be(:iteration) { create(:iteration, iterations_cadence: iterations_cadence, start_date: Date.new(2022, 9, 30), due_date: Date.new(2022, 10, 4)) }
+
+    subject { iteration.period }
+
+    it { is_expected.to eq('Sep 30, 2022 - Oct 4, 2022') }
+  end
+
+  describe '#title' do
+    let_it_be(:iteration) { create(:iteration, title: "foobar", group: create(:group)) }
+
+    it 'updates title to a blank value', :aggregate_failures do
+      iteration.update!(title: "")
+
+      expect(iteration.title).to be_nil
+    end
+  end
+
   describe '.reference_pattern' do
     let_it_be(:group) { create(:group) }
     let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group) }
@@ -369,6 +389,14 @@ RSpec.describe Iteration do
           expect(subject).not_to be_valid
           expect(subject.errors[:due_date]).to include('cannot be more than 500 years in the future')
         end
+      end
+    end
+
+    describe 'title' do
+      subject { build(:iteration, iterations_cadence: iteration_cadence, title: '<img src=x onerror=prompt(1)>') }
+
+      it 'sanitizes user intput', :aggregate_failures do
+        expect(subject.title).to be_blank
       end
     end
   end
@@ -846,7 +874,7 @@ RSpec.describe Iteration do
           expect(new_timebox).to be_valid
         end
 
-        it "does not accept the same title when in same cadence" do
+        it "does not accept the same title when in the same cadence" do
           new_timebox = described_class.new(group: group, iterations_cadence: cadence, title: timebox.title)
 
           expect(new_timebox).not_to be_valid

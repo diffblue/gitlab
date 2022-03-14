@@ -15,7 +15,7 @@ RSpec.describe Resolvers::BoardListIssuesResolver do
   let_it_be(:epic) { create(:epic, group: group) }
   let_it_be(:iteration_cadence1) { create(:iterations_cadence, group: group) }
   let_it_be(:iteration_cadence2) { create(:iterations_cadence, group: group) }
-  let_it_be(:iteration) { create(:iteration, group: group, start_date: 1.week.ago, due_date: 2.days.ago, iterations_cadence: iteration_cadence1) }
+  let_it_be(:iteration) { create(:iteration, :with_title, group: group, start_date: 1.week.ago, due_date: 2.days.ago, iterations_cadence: iteration_cadence1) }
   let_it_be(:current_iteration) { create(:iteration, group: group, start_date: Date.yesterday, due_date: 1.day.from_now, iterations_cadence: iteration_cadence2) }
 
   let_it_be(:issue1) { create(:issue, project: project, labels: [label], weight: 3) }
