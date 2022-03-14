@@ -5,21 +5,20 @@ require 'spec_helper'
 RSpec.describe Security::TrainingUrlsFinder do
   let_it_be(:project) { create(:project) }
   let_it_be(:vulnerability) { create(:vulnerability, :with_findings, project: project) }
+  let_it_be(:identifier) { create(:vulnerabilities_identifier, project: project, external_type: 'cwe', external_id: 2) }
 
-  subject { described_class.new(vulnerability).execute }
+  subject { described_class.new(project, identifier_external_ids).execute }
 
   context 'no identifier with cwe external type' do
+    let(:identifier_external_ids) { [] }
+
     it 'returns empty list' do
       is_expected.to be_empty
     end
   end
 
   context 'identifiers with cwe external type' do
-    let_it_be(:identifier) { create(:vulnerabilities_identifier, external_type: "cwe") }
-
-    before do
-      vulnerability.identifiers << identifier
-    end
+    let(:identifier_external_ids) { [identifier.external_id] }
 
     context 'when there is no training provider enabled for project' do
       it 'returns empty list' do

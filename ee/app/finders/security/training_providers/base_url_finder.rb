@@ -12,9 +12,10 @@ module Security
       self.reactive_cache_key = ->(finder) { finder.full_url }
       self.reactive_cache_worker_finder = ->(id, *args) { from_cache(id) }
 
-      def initialize(provider, identifier)
+      def initialize(project, provider, identifier_external_id)
+        @project = project
         @provider = provider
-        @identifier = identifier
+        @identifier_external_id = identifier_external_id
       end
 
       def execute
@@ -26,18 +27,17 @@ module Security
       end
 
       def self.from_cache(id)
-        project_id, provider_id, identifier_id = id.split('-')
+        project_id, provider_id, identifier_external_id = id.split('-')
 
         project = Project.find(project_id)
         provider = ::Security::TrainingProvider.find(provider_id)
-        identifier = project.vulnerability_identifiers.find(identifier_id)
 
-        new(provider, identifier)
+        new(project, provider, identifier_external_id)
       end
 
       private
 
-      attr_reader :provider, :identifier
+      attr_reader :project, :provider, :identifier_external_id
 
       def response_url
         strong_memoize(:response_url) do
@@ -52,7 +52,7 @@ module Security
       # Required for ReactiveCaching; Usage overridden by
       # self.reactive_cache_worker_finder
       def id
-        "#{identifier.project.id}-#{provider.id}-#{identifier.id}"
+        "#{project.id}-#{provider.id}-#{identifier_external_id}"
       end
     end
   end

@@ -2,25 +2,27 @@
 
 module Security
   class TrainingUrlsFinder
-    def initialize(vulnerability)
-      @vulnerability = vulnerability
+    def initialize(project, identifier_external_ids)
+      @project = project
+      @identifier_external_ids = identifier_external_ids
     end
 
     def execute
-      cwe_identifiers = @vulnerability.identifiers&.with_external_type('cwe')
-      return [] if cwe_identifiers.blank?
+      return [] if identifier_external_ids.blank?
 
-      security_training_urls(cwe_identifiers)
+      security_training_urls(identifier_external_ids)
     end
 
     private
 
-    def security_training_urls(cwe_identifiers)
+    attr_reader :project, :identifier_external_ids
+
+    def security_training_urls(identifier_external_ids)
       [].tap do |content_urls|
         training_providers.each do |provider|
-          cwe_identifiers.each do |identifier|
+          identifier_external_ids.each do |identifier_external_id|
             class_name = "::Security::TrainingProviders::#{provider.name.delete(' ')}UrlFinder".safe_constantize
-            content_url = class_name.new(provider, identifier).execute if class_name
+            content_url = class_name.new(project, provider, identifier_external_id).execute if class_name
             content_urls << content_url if content_url
           end
         end
@@ -28,7 +30,7 @@ module Security
     end
 
     def training_providers
-      ::Security::TrainingProvider.for_project(@vulnerability.project, only_enabled: true).ordered_by_is_primary_desc
+      ::Security::TrainingProvider.for_project(project, only_enabled: true).ordered_by_is_primary_desc
     end
   end
 end

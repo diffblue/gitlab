@@ -9,7 +9,7 @@ module Security
       end
 
       def full_url
-        Gitlab::Utils.append_path(provider.url, "?Id=gitlab&MappingList=#{identifier.external_type}&MappingKey=#{identifier.external_id}")
+        Gitlab::Utils.append_path(provider.url, "?Id=gitlab&MappingList=cwe&MappingKey=#{identifier_external_id}")
       end
     end
   end

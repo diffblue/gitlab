@@ -12,7 +12,7 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder do
 
   describe '#calculate_reactive_cache' do
     context 'when response is nil' do
-      let_it_be(:finder) { described_class.new(provider, identifier) }
+      let_it_be(:finder) {described_class.new(identifier.project, provider, identifier.external_id) }
 
       before do
         synchronous_reactive_cache(finder)
@@ -25,7 +25,7 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder do
     end
 
     context 'when response is not nil' do
-      let_it_be(:finder) { described_class.new(provider, identifier) }
+      let_it_be(:finder) { described_class.new(identifier.project, provider, identifier.external_id) }
       let_it_be(:response) { { 'link' => dummy_url } }
 
       before do
@@ -41,7 +41,7 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder do
 
   describe '#full_url' do
     it 'returns full url path' do
-      expect(described_class.new(provider, identifier).full_url).to eq('example.com/?cwe=2')
+      expect(described_class.new(identifier.project, provider, identifier.external_id).full_url).to eq('example.com/?cwe=2')
     end
   end
 end
