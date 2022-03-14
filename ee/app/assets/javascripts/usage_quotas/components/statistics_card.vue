@@ -35,6 +35,11 @@ export default {
       required: false,
       default: null,
     },
+    helpLabel: {
+      type: String,
+      required: false,
+      default: null,
+    },
     percentage: {
       type: Number,
       required: false,
@@ -65,10 +70,10 @@ export default {
     data-testid="container"
     :class="cssClass"
   >
-    <div class="gl-display-flex gl-justify-content-space-between gl-mb-3">
+    <div class="gl-display-flex gl-justify-content-space-between">
       <p
         v-if="usageValue"
-        class="gl-font-size-h-display gl-font-weight-bold"
+        class="gl-font-size-h-display gl-font-weight-bold gl-mb-3"
         data-testid="denominator"
       >
         {{ usageValue }}
@@ -95,7 +100,7 @@ export default {
         </gl-button>
       </div>
     </div>
-    <p v-if="description" class="gl-font-weight-bold gl-mt-3" data-testid="description">
+    <p v-if="description" class="gl-font-weight-bold" data-testid="description">
       {{ description }}
       <gl-link
         v-if="helpLink"
@@ -103,10 +108,11 @@ export default {
         target="_blank"
         rel="noopener noreferrer nofollow"
         class="gl-ml-2"
+        :aria-label="helpLabel"
       >
         <gl-icon name="question-o" />
       </gl-link>
     </p>
-    <gl-progress-bar v-if="percentage" :value="percentage" />
+    <gl-progress-bar v-if="percentage !== null" :value="percentage" />
   </div>
 </template>
