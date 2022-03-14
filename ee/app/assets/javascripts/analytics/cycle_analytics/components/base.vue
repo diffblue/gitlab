@@ -10,6 +10,7 @@ import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { METRICS_REQUESTS } from '../constants';
 import DurationChart from './duration_chart.vue';
 import TypeOfWorkCharts from './type_of_work_charts.vue';
+import ValueStreamAggregationStatus from './value_stream_aggregation_status.vue';
 import ValueStreamSelect from './value_stream_select.vue';
 
 export default {
@@ -20,6 +21,7 @@ export default {
     TypeOfWorkCharts,
     StageTable,
     PathNavigation,
+    ValueStreamAggregationStatus,
     ValueStreamFilters,
     ValueStreamMetrics,
     ValueStreamSelect,
@@ -55,6 +57,7 @@ export default {
       'selectedStageError',
       'selectedValueStream',
       'pagination',
+      'aggregation',
     ]),
     ...mapGetters([
       'hasNoAccessError',
@@ -81,6 +84,9 @@ export default {
     },
     hasDateRangeSet() {
       return this.createdAfter && this.createdBefore;
+    },
+    isAggregationEnabled() {
+      return this.aggregation?.enabled;
     },
     query() {
       const { project_ids, created_after, created_before } = this.cycleAnalyticsRequestParams;
@@ -141,6 +147,10 @@ export default {
     },
   },
   METRICS_REQUESTS,
+  aggregationPopoverOptions: {
+    triggers: 'hover',
+    placement: 'left',
+  },
 };
 </script>
 <template>
@@ -149,10 +159,10 @@ export default {
       class="gl-mb-3 gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-justify-content-space-between"
     >
       <h3>{{ __('Value Stream Analytics') }}</h3>
-      <value-stream-select
-        v-if="shouldDisplayCreateMultipleValueStreams"
-        class="gl-align-self-start gl-sm-align-self-start gl-mt-0 gl-sm-mt-5"
-      />
+      <div class="gl-display-flex gl-flex-direction-row gl-align-items-center gl-mt-0 gl-sm-mt-5">
+        <value-stream-aggregation-status v-if="isAggregationEnabled" :data="aggregation" />
+        <value-stream-select v-if="shouldDisplayCreateMultipleValueStreams" />
+      </div>
     </div>
     <gl-empty-state
       v-if="shouldRenderEmptyState"

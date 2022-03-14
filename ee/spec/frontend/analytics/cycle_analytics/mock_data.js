@@ -309,3 +309,9 @@ export const durationChartPlottableData = [
 ];
 
 export const pathNavIssueMetric = 172800;
+
+export const aggregationData = {
+  enabled: true,
+  lastRunAt: '2022-03-11T04:34:59Z',
+  nextRunAt: '2022-03-11T05:21:01Z',
+};

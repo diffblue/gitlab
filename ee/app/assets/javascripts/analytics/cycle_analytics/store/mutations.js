@@ -109,6 +109,7 @@ export default {
       selectedValueStream = {},
       defaultStageConfig = [],
       pagination = {},
+      aggregation = {},
     } = {},
   ) {
     state.isLoading = true;
@@ -118,6 +119,8 @@ export default {
     state.createdBefore = createdBefore;
     state.createdAfter = createdAfter;
     state.defaultStageConfig = defaultStageConfig;
+
+    Vue.set(state, 'aggregation', aggregation);
 
     Vue.set(state, 'pagination', {
       page: pagination.page ?? state.pagination.page,
