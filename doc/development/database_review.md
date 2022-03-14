@@ -204,12 +204,11 @@ Include in the MR description:
 - Add foreign keys to any columns pointing to data in other tables, including [an index](migration_style_guide.md#adding-foreign-key-constraints).
 - Add indexes for fields that are used in statements such as `WHERE`, `ORDER BY`, `GROUP BY`, and `JOIN`s.
 - New tables and columns are not necessarily risky, but over time some access patterns are inherently
-difficult to scale. To identify these risky patterns in advance, we need to document expectations for
-access and size.  
-  Include in the MR description answers to the following:
-    - What is the anticipated growth for the new table over the next 3 months, 6 months, 1 year? What assumptions are these based on?
-    - How many reads and writes per hour would you expect this table to have in 3 months, 6 months, 1 year? Under what circumstances are rows updated? What assumptions are these based on?
-    - Based on the anticipated data volume and access patterns, does the new table pose an availability risk to GitLab.com or self-managed instances? Will the proposed design scale to support the needs of GitLab.com and self-managed customers?
+  difficult to scale. To identify these risky patterns in advance, we need to document expectations for
+  access and size. Include in the MR description answers to these questions:
+  - What is the anticipated growth for the new table over the next 3 months, 6 months, 1 year? What assumptions are these based on?
+  - How many reads and writes per hour would you expect this table to have in 3 months, 6 months, 1 year? Under what circumstances are rows updated? What assumptions are these based on?
+  - Based on the anticipated data volume and access patterns, does the new table pose an availability risk to GitLab.com or self-managed instances? Will the proposed design scale to support the needs of GitLab.com and self-managed customers?
 
 #### Preparation when removing columns, tables, indexes, or other structures
 
