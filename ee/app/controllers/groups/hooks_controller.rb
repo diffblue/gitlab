@@ -77,6 +77,7 @@ class Groups::HooksController < Groups::ApplicationController
       :enable_ssl_verification,
       :token,
       :url,
+      :push_events_branch_filter,
       *GroupHook.triggers.values
     )
   end

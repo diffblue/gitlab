@@ -13,6 +13,7 @@ module API
       params :group_hook_properties do
         requires :url, type: String, desc: "The URL to send the request to"
         optional :push_events, type: Boolean, desc: "Trigger hook on push events"
+        optional :push_events_branch_filter, type: String, desc: "Respond to push events only on branches that match this filter"
         optional :issues_events, type: Boolean, desc: "Trigger hook on issues events"
         optional :confidential_issues_events, type: Boolean, desc: "Trigger hook on confidential issues events"
         optional :merge_requests_events, type: Boolean, desc: "Trigger hook on merge request events"

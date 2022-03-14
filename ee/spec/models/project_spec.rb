@@ -984,8 +984,8 @@ RSpec.describe Project do
       it 'does not execute the hook when the feature is disabled' do
         stub_licensed_features(group_webhooks: false)
 
-        expect(WebHookService).not_to receive(:new)
-                                        .with(group_hook, { some: 'info' }, 'push_hooks')
+        expect(project).not_to receive(:group_hooks)
+        expect(WebHookService).not_to receive(:new).with(instance_of(GroupHook), anything, anything)
 
         project.execute_hooks(some: 'info')
       end
@@ -994,16 +994,33 @@ RSpec.describe Project do
         before do
           stub_licensed_features(group_webhooks: true)
         end
-        let(:fake_integration) { double }
+        let(:fake_wh_service) { double }
 
         shared_examples 'triggering group webhook' do
           it 'executes the hook' do
-            expect(fake_integration).to receive(:async_execute).once
+            expect(fake_wh_service).to receive(:async_execute).once
 
             expect(WebHookService)
-              .to receive(:new).with(group_hook, { some: 'info' }, 'push_hooks') { fake_integration }
+              .to receive(:new).with(group_hook, { some: 'info' }, 'push_hooks') { fake_wh_service }
 
             project.execute_hooks(some: 'info')
+          end
+        end
+
+        context 'when the hook defines a branch filter for push events' do
+          let(:wh_service) { double(async_execute: true) }
+          let(:selective_hook) { create(:group_hook, group: group, push_events: true, push_events_branch_filter: 'on-this-branch-only') }
+
+          it 'respects the branch filter' do
+            expect(WebHookService)
+              .to receive(:new).twice.with(group_hook, Hash, 'push_hooks').and_return(wh_service)
+
+            expect(WebHookService)
+              .to receive(:new).once.with(selective_hook, a_hash_including(note: 'matches-filter'), 'push_hooks').and_return(wh_service)
+
+            project.execute_hooks({ note: 'matches-filter', ref: 'refs/heads/on-this-branch-only' }, :push_hooks)
+            project.execute_hooks({ note: 'default-branch', ref: 'refs/heads/master' }, :push_hooks)
+            project.execute_hooks({ note: 'not-push', ref: 'refs/heads/on-this-branch-only' }, :deployment_hooks)
           end
         end
 
