@@ -46,4 +46,9 @@ export default () => ({
     direction: PAGINATION_SORT_DIRECTION_DESC,
   },
   stageCounts: {},
+  aggregation: {
+    enabled: false,
+    lastRunAt: null,
+    nextRunAt: null,
+  },
 });

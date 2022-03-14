@@ -1,6 +1,6 @@
 import dateFormat from 'dateformat';
 import { dateFormats } from '~/analytics/shared/constants';
-import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
+import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_utils';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 
 export const formattedDate = (d) => dateFormat(d, dateFormats.defaultDate);
@@ -101,6 +101,9 @@ export const buildCycleAnalyticsInitialData = ({
   milestonesPath = '',
   defaultStages = null,
   stage = null,
+  aggregationEnabled = false,
+  aggregationLastRunAt = null,
+  aggregationNextRunAt = null,
 } = {}) => ({
   selectedValueStream: buildValueStreamFromJson(valueStream),
   group: groupId
@@ -128,4 +131,9 @@ export const buildCycleAnalyticsInitialData = ({
       }))
     : [],
   stage: JSON.parse(stage),
+  aggregation: {
+    enabled: parseBoolean(aggregationEnabled),
+    lastRunAt: aggregationLastRunAt,
+    nextRunAt: aggregationNextRunAt,
+  },
 });
