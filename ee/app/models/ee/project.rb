@@ -458,17 +458,12 @@ module EE
       end
     end
 
-    override :execute_hooks
-    def execute_hooks(data, hooks_scope = :push_hooks)
-      super
+    override :triggered_hooks
+    def triggered_hooks(scope, data)
+      triggered = super
+      triggered.add_hooks(group_hooks) if group && feature_available?(:group_webhooks)
 
-      if group && feature_available?(:group_webhooks)
-        run_after_commit_or_now do
-          group_hooks.hooks_for(hooks_scope).each do |hook|
-            hook.async_execute(data, hooks_scope.to_s)
-          end
-        end
-      end
+      triggered
     end
 
     # No need to have a Kerberos Web url. Kerberos URL will be used only to

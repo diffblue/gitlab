@@ -110,6 +110,7 @@ RSpec.describe API::GroupHooks do
       {
         url: "http://example.com",
         push_events: true,
+        push_events_branch_filter: 'only-on-this-branch',
         issues_events: true,
         confidential_issues_events: true,
         merge_requests_events: true,
@@ -138,6 +139,7 @@ RSpec.describe API::GroupHooks do
         expect(json_response['issues_events']).to eq(true)
         expect(json_response['confidential_issues_events']).to eq(true)
         expect(json_response['push_events']).to eq(true)
+        expect(json_response['push_events_branch_filter']).to eq('only-on-this-branch')
         expect(json_response['merge_requests_events']).to eq(true)
         expect(json_response['tag_push_events']).to eq(true)
         expect(json_response['note_events']).to eq(true)
@@ -189,13 +191,23 @@ RSpec.describe API::GroupHooks do
   end
 
   describe "PUT /groups/:id/hooks/:hook_id" do
+    before do
+      hook_params.merge!(
+        push_events: true,
+        push_events_branch_filter: 'updated-branch-filter',
+        issues_events: false
+      )
+    end
+
     context "authorized user" do
       it "updates the hook" do
-        make_put_group_hook_request(group.id, hook.id, group_admin, hook_params.merge({ push_events: false }))
+        make_put_group_hook_request(group.id, hook.id, group_admin, hook_params)
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(response).to match_response_schema('public_api/v4/group_hook', dir: 'ee')
-        expect(json_response['push_events']).to eq(false)
+        expect(json_response['push_events']).to eq(true)
+        expect(json_response['issues_events']).to eq(false)
+        expect(json_response['push_events_branch_filter']).to eq('updated-branch-filter')
       end
 
       it "returns 422 if url is not valid" do

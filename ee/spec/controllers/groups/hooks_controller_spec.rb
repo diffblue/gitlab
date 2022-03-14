@@ -17,7 +17,7 @@ RSpec.describe Groups::HooksController do
     end
 
     describe 'GET #index' do
-      it 'is successfull' do
+      it 'is successful' do
         get :index, params: { group_id: group.to_param }
 
         expect(response).to have_gitlab_http_status(:ok)
@@ -27,21 +27,24 @@ RSpec.describe Groups::HooksController do
     describe 'POST #create' do
       it 'sets all parameters' do
         hook_params = {
+          # triggers
           job_events: true,
           confidential_issues_events: true,
-          enable_ssl_verification: true,
           issues_events: true,
           merge_requests_events: true,
           note_events: true,
           pipeline_events: true,
           push_events: true,
           tag_push_events: true,
-          token: 'TEST TOKEN',
-          url: 'http://example.com',
           wiki_page_events: true,
           deployment_events: true,
           member_events: true,
-          subgroup_events: true
+          subgroup_events: true,
+          # editable attributes
+          enable_ssl_verification: true,
+          token: 'TEST TOKEN',
+          url: 'http://example.com',
+          push_events_branch_filter: 'filter-branch'
         }
 
         post :create, params: { group_id: group.to_param, hook: hook_params }
@@ -55,7 +58,7 @@ RSpec.describe Groups::HooksController do
     describe 'GET #edit' do
       let(:hook) { create(:group_hook, group: group) }
 
-      it 'is successfull' do
+      it 'is successful' do
         get :edit, params: { group_id: group.to_param, id: hook }
 
         expect(response).to have_gitlab_http_status(:ok)
