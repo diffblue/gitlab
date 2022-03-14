@@ -6,8 +6,8 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import setWindowLocation from 'helpers/set_window_location_helper';
 import { sprintf, __, s__ } from '~/locale';
-import EnvironmentsApp from '~/environments/components/new_environments_app.vue';
-import EnvironmentsFolder from '~/environments/components/new_environment_folder.vue';
+import EnvironmentsApp from '~/environments/components/environments_app.vue';
+import EnvironmentsFolder from '~/environments/components/environment_folder.vue';
 import EnvironmentsItem from '~/environments/components/new_environment_item.vue';
 import EmptyState from '~/environments/components/empty_state.vue';
 import StopEnvironmentModal from '~/environments/components/stop_environment_modal.vue';
@@ -16,7 +16,7 @@ import { resolvedEnvironmentsApp, resolvedFolder, resolvedEnvironment } from './
 
 Vue.use(VueApollo);
 
-describe('~/environments/components/new_environments_app.vue', () => {
+describe('~/environments/components/environments_app.vue', () => {
   let wrapper;
   let environmentAppMock;
   let environmentFolderMock;

@@ -1,5 +1,5 @@
-import initNewEnvironments from '~/environments/new_index';
+import initEnvironments from '~/environments/index';
 
 const el = document.getElementById('environments-table');
 
-initNewEnvironments(el);
+initEnvironments(el);

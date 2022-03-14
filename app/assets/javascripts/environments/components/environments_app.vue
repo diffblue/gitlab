@@ -10,7 +10,7 @@ import environmentToRollbackQuery from '../graphql/queries/environment_to_rollba
 import environmentToStopQuery from '../graphql/queries/environment_to_stop.query.graphql';
 import environmentToChangeCanaryQuery from '../graphql/queries/environment_to_change_canary.query.graphql';
 import { ENVIRONMENTS_SCOPE } from '../constants';
-import EnvironmentFolder from './new_environment_folder.vue';
+import EnvironmentFolder from './environment_folder.vue';
 import EnableReviewAppModal from './enable_review_app_modal.vue';
 import StopEnvironmentModal from './stop_environment_modal.vue';
 import EnvironmentItem from './new_environment_item.vue';
