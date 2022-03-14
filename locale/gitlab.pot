@@ -36665,7 +36665,7 @@ msgstr ""
 msgid "The connection will time out after %{timeout}. For repositories that take longer, use a clone/push combination."
 msgstr ""
 
-msgid "The contact does not belong to the issue group or an ancestor"
+msgid "The contact does not belong to the issue group's root ancestor"
 msgstr ""
 
 msgid "The content editor may change the markdown formatting style of the document, which may not match your original markdown style."
@@ -43453,7 +43453,7 @@ msgstr ""
 msgid "compliance violation has already been recorded"
 msgstr ""
 
-msgid "contact with same email already exists in group hierarchy"
+msgid "contacts can only be added to root groups"
 msgstr ""
 
 msgid "container registry images"
@@ -44361,6 +44361,9 @@ msgid "open issue"
 msgstr ""
 
 msgid "or"
+msgstr ""
+
+msgid "organizations can only be added to root groups"
 msgstr ""
 
 msgid "other card matches"
