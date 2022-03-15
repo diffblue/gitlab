@@ -696,6 +696,9 @@ msgstr ""
 msgid "%{issuableType} will be removed! Are you sure?"
 msgstr ""
 
+msgid "%{issuable}(s) already assigned"
+msgstr ""
+
 msgid "%{issueType} actions"
 msgstr ""
 
@@ -20467,9 +20470,6 @@ msgstr ""
 msgid "Issue weight"
 msgstr ""
 
-msgid "Issue(s) already assigned"
-msgstr ""
-
 msgid "IssueAnalytics|Age"
 msgstr ""
 
@@ -24813,7 +24813,7 @@ msgstr ""
 msgid "No matches found"
 msgstr ""
 
-msgid "No matching issue found. Make sure that you are adding a valid issue URL."
+msgid "No matching %{issuable} found. Make sure that you are adding a valid %{issuable} URL."
 msgstr ""
 
 msgid "No matching labels"

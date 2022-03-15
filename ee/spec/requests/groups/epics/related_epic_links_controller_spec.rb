@@ -6,8 +6,10 @@ RSpec.describe Groups::Epics::RelatedEpicLinksController do
   let_it_be(:user) { create(:user) }
   let_it_be(:epic) { create(:epic) }
   let_it_be(:epic2) { create(:epic, group: epic.group) }
-  let_it_be(:epic_link1) { create(:related_epic_link, source: epic, target: epic2) }
+  let_it_be(:epic3) { create(:epic, group: epic.group) }
+  let_it_be(:epic_link1) { create(:related_epic_link, source: epic, target: epic3) }
   let_it_be(:epic_link2) { create(:related_epic_link, source: epic) }
+  let_it_be(:listing_service) { Epics::RelatedEpicLinks::ListService }
 
   before do
     stub_licensed_features(epics: true, related_epics: true)
@@ -112,5 +114,85 @@ RSpec.describe Groups::Epics::RelatedEpicLinksController do
         expect(response).to have_gitlab_http_status(:not_found)
       end
     end
+  end
+
+  describe 'POST /groups/*group_id/-/epics/:epic_id/related_epic_links' do
+    let(:issuable_references) { [epic2.to_reference(full: true)] }
+
+    subject(:request) do
+      post group_epic_related_epic_links_path(related_epics_params(issuable_references: issuable_references))
+    end
+
+    before do
+      epic.group.add_developer(user)
+      epic2.group.add_developer(user)
+      login_as user
+    end
+
+    context 'with success' do
+      it 'returns JSON response' do
+        request
+
+        list_service_response = listing_service.new(epic, user).execute
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response).to eq('message' => nil,
+                                    'issuables' => list_service_response.as_json)
+      end
+
+      it 'delegates the creation of the related epic link to Epics::RelatedEpicLinks::CreateService' do
+        expect_next_instance_of(Epics::RelatedEpicLinks::CreateService) do |service|
+          expect(service).to receive(:execute).once.and_call_original
+        end
+
+        request
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+
+      it 'creates a new Epic::RelatedEpicLink record' do
+        expect { request }.to change { Epic::RelatedEpicLink.count }.by(1)
+      end
+
+      it 'returns correct relation path in response' do
+        request
+        related_epic_link = Epic::RelatedEpicLink.find_by(source: epic, target: epic2)
+
+        expect(json_response['issuables'].last)
+          .to include('relation_path' => "/groups/#{epic.group.path}/-/epics/#{epic.iid}/related_epic_links/#{related_epic_link&.id}")
+      end
+    end
+
+    context 'with failure' do
+      context 'when unauthorized' do
+        it 'returns 403' do
+          epic.group.add_guest(user)
+
+          request
+
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+      end
+
+      context 'when failing service result' do
+        let(:issuable_references) { ["##{non_existing_record_iid}"] }
+
+        it 'returns failure JSON' do
+          request
+
+          list_service_response = listing_service.new(epic, user).execute
+
+          expect(response).to have_gitlab_http_status(:not_found)
+          expect(json_response).to eq('message' => 'No matching epic found. Make sure that you are adding a valid epic URL.', 'issuables' => list_service_response.as_json)
+        end
+      end
+
+      it_behaves_like 'a not available action'
+    end
+  end
+
+  def related_epics_params(opts = {})
+    opts.reverse_merge(group_id: epic.group,
+                       epic_id: epic.iid,
+                       format: :json)
   end
 end

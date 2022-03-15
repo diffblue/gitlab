@@ -10,7 +10,7 @@ class Groups::Epics::RelatedEpicLinksController < Groups::ApplicationController
   before_action :check_epics_available!
   before_action :check_related_epics_available!
   before_action :authorize_related_epic_link_association!, only: [:destroy]
-  before_action :authorize_admin!, only: [:destroy]
+  before_action :authorize_admin!, only: [:create, :destroy]
 
   feature_category :portfolio_management
   urgency :default
@@ -37,7 +37,15 @@ class Groups::Epics::RelatedEpicLinksController < Groups::ApplicationController
     Epics::RelatedEpicLinks::DestroyService.new(link, current_user)
   end
 
+  def create_service
+    Epics::RelatedEpicLinks::CreateService.new(epic, current_user, create_params)
+  end
+
   def ensure_related_epics_enabled!
     render_404 unless Feature.enabled?(:related_epics_widget, epic&.group, default_enabled: :yaml)
+  end
+
+  def create_params
+    params.permit(:link_type, issuable_references: [])
   end
 end

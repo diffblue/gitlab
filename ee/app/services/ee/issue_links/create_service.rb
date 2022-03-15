@@ -13,18 +13,6 @@ module EE
 
       private
 
-      def set_link_type(link)
-        return unless params[:link_type].present?
-
-        # `blocked_by` links are treated as `blocks` links where source and target is swapped.
-        if params[:link_type] == ::IssueLink::TYPE_IS_BLOCKED_BY
-          link.source, link.target = link.target, link.source
-          link.link_type = ::IssueLink::TYPE_BLOCKS
-        else
-          link.link_type = params[:link_type]
-        end
-      end
-
       def link_type_available?
         # `blocked_by` is allowed as a param and handled in set_link_type
         return true unless [::IssueLink::TYPE_BLOCKS, ::IssueLink::TYPE_IS_BLOCKED_BY].include?(params[:link_type])
