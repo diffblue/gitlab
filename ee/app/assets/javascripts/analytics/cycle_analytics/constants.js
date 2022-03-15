@@ -56,3 +56,17 @@ export const DURATION_STAGE_TIME_NO_DATA = s__(
 export const DURATION_STAGE_TIME_DESCRIPTION = s__(
   'CycleAnalytics|The average time items spent in this stage. Data limited to items completed within this date range.',
 );
+export const EMPTY_STATE_TITLE = s__(
+  'CycleAnalytics|Custom value streams to measure your DevSecOps lifecycle',
+);
+export const EMPTY_STATE_DESCRIPTION = s__(
+  'CycleAnalytics|Create a custom value stream to view metrics about stages specific to your development process. Use your value stream to visualize your DevSecOps lifecycle, determine the velocity of your group, and identify inefficient processes.',
+);
+export const EMPTY_STATE_ACTION_TEXT = s__('CycleAnalytics|Create a custom value stream…');
+export const EMPTY_STATE_SECONDARY_TEXT = __('Learn more');
+export const EMPTY_STATE_FILTER_ERROR_TITLE = __(
+  'Value Stream Analytics can help you determine your team’s velocity',
+);
+export const EMPTY_STATE_FILTER_ERROR_DESCRIPTION = __(
+  'Filter parameters are not valid. Make sure that the end date is after the start date.',
+);
