@@ -128,7 +128,3 @@ sequenceDiagram
 - Check the `leads` table in CustomersDot.
 - Set up staging credentials for Platypus, and track the leads on the [Platypus Dashboard](https://staging.ci.nexus.gitlabenvironment.cloud/admin/queues/queue/new-lead-queue).
 - Ask for access to the Marketo Sandbox and validate the leads there.
-
-## Trials
-
-Trials follow the same flow as the PQL leads.
