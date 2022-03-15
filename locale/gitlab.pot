@@ -18144,6 +18144,9 @@ msgstr ""
 msgid "Hide shared projects"
 msgstr ""
 
+msgid "Hide thread"
+msgstr ""
+
 msgid "Hide tooltips or popovers"
 msgstr ""
 
@@ -34056,6 +34059,9 @@ msgstr ""
 msgid "Show the Open list"
 msgstr ""
 
+msgid "Show thread"
+msgstr ""
+
 msgid "Show whitespace changes"
 msgstr ""
 
@@ -38672,9 +38678,6 @@ msgid "Toggle sidebar"
 msgstr ""
 
 msgid "Toggle the Performance Bar"
-msgstr ""
-
-msgid "Toggle thread"
 msgstr ""
 
 msgid "Toggled :%{name}: emoji award."
