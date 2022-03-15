@@ -3,19 +3,21 @@
 module GroupIssuableResolver
   extend ActiveSupport::Concern
 
-  class_methods do
-    def include_subgroups(name_of_things)
-      argument :include_subgroups, GraphQL::Types::Boolean,
-               required: false,
-               default_value: false,
-               description: "Include #{name_of_things} belonging to subgroups"
-    end
+  included do
+    argument :include_subgroups, GraphQL::Types::Boolean,
+              required: false,
+              default_value: false,
+              description: "Include #{issuable_collection_name} belonging to subgroups"
 
-    def non_archived(name_of_things)
-      argument :non_archived, GraphQL::Types::Boolean,
-               required: false,
-               default_value: true,
-               description: "Return #{name_of_things} from non archived projects"
-    end
+    argument :non_archived, GraphQL::Types::Boolean,
+              required: false,
+              default_value: true,
+              description: "Return #{issuable_collection_name} from non archived projects"
+  end
+
+  def resolve(**args)
+    args[:non_archived] = !args.delete(:include_archived)
+
+    super
   end
 end

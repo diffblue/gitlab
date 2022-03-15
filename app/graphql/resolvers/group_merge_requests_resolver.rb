@@ -2,14 +2,16 @@
 
 module Resolvers
   class GroupMergeRequestsResolver < MergeRequestsResolver
+    def self.issuable_collection_name
+      'merge requests'
+    end
+
     include GroupIssuableResolver
 
     alias_method :group, :object
 
     type Types::MergeRequestType.connection_type, null: true
 
-    include_subgroups 'merge requests'
-    non_archived 'merge requests'
     accept_assignee
     accept_author
 
