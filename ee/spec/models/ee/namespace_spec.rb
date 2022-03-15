@@ -2119,58 +2119,6 @@ RSpec.describe Namespace do
     end
   end
 
-  describe '#closest_gitlab_subscription', :saas do
-    subject { group.closest_gitlab_subscription }
-
-    context 'when there is a root ancestor' do
-      let(:group) { create(:group, parent: root) }
-
-      context 'when root has a subscription' do
-        let(:root) { create(:group_with_plan) }
-
-        it { is_expected.to be_a(GitlabSubscription) }
-      end
-
-      context 'when root has no subscription' do
-        let(:root) { create(:group) }
-
-        it { is_expected.to be_nil }
-      end
-    end
-
-    context 'when there is no root ancestor' do
-      context 'for groups' do
-        context 'has a subscription' do
-          let(:group) { create(:group_with_plan) }
-
-          it { is_expected.to be_a(GitlabSubscription) }
-        end
-
-        context 'it has no subscription' do
-          let(:group) { create(:group) }
-
-          it { is_expected.to be_nil }
-        end
-      end
-
-      context 'for personal namespaces' do
-        subject { namespace.closest_gitlab_subscription }
-
-        context 'has a subscription' do
-          let(:namespace) { create(:namespace_with_plan) }
-
-          it { is_expected.to be_a(GitlabSubscription) }
-        end
-
-        context 'it has no subscription' do
-          let(:namespace) { create(:namespace) }
-
-          it { is_expected.to be_nil }
-        end
-      end
-    end
-  end
-
   describe '#namespace_limit' do
     let(:group) { create(:group, parent: parent) }
 
