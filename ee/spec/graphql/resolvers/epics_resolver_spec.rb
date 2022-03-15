@@ -42,7 +42,7 @@ RSpec.describe Resolvers::EpicsResolver do
         it 'does not inflate the complexity' do
           field = Types::BaseField.new(name: 'test', type: GraphQL::Types::String, resolver_class: described_class, null: false, max_page_size: 100)
 
-          expect(field.to_graphql.complexity.call({}, { iid: [epic1.iid] }, 5)).to eq 6
+          expect(field.complexity.call({}, { iid: [epic1.iid] }, 5)).to eq 6
         end
       end
 
@@ -59,8 +59,8 @@ RSpec.describe Resolvers::EpicsResolver do
         it 'increases the complexity based on child_complexity and number of iids' do
           field = Types::BaseField.new(name: 'test', type: GraphQL::Types::String, resolver_class: described_class, null: false, max_page_size: 100)
 
-          expect(field.to_graphql.complexity.call({}, { iids: [epic1.iid] }, 5)).to eq 6
-          expect(field.to_graphql.complexity.call({}, { iids: [epic1.iid, epic2.iid] }, 5)).to eq 11
+          expect(field.complexity.call({}, { iids: [epic1.iid] }, 5)).to eq 6
+          expect(field.complexity.call({}, { iids: [epic1.iid, epic2.iid] }, 5)).to eq 11
         end
       end
 

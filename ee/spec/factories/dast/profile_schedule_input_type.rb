@@ -15,8 +15,11 @@ FactoryBot.define do
       startsAt: Time.now,
       cadence: { unit: %w(day month year week).sample, duration: 1 }
     }
-    ::Types::Dast::ProfileScheduleInputType.to_graphql
 
-    initialize_with { ::Types::Dast::ProfileScheduleInputType.new(arguments, defaults_used: [], context: context) }
+    initialize_with do
+      ruby_kwargs = arguments.transform_keys { |key| key.to_s.underscore.to_sym }
+
+      ::Types::Dast::ProfileScheduleInputType.new(ruby_kwargs: ruby_kwargs, defaults_used: [], context: context)
+    end
   end
 end
