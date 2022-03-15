@@ -6,7 +6,7 @@ RSpec.describe AlertManagement::CreateAlertIssueService do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
-  let_it_be(:alert) { create(:alert_management_alert, project: project) }
+  let_it_be_with_reload(:alert) { create(:alert_management_alert, project: project) }
 
   describe '#execute' do
     subject(:execute) { described_class.new(alert, user).execute }
@@ -28,6 +28,14 @@ RSpec.describe AlertManagement::CreateAlertIssueService do
 
       expect_image_matches(first_metric_image, image)
       expect_image_matches(second_metric_image, image_2)
+    end
+
+    context 'when there are no metric images to copy' do
+      it 'has no images' do
+        incident = execute.payload[:issue]
+
+        expect(incident.metric_images.count).to eq(0)
+      end
     end
 
     private
