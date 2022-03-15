@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Issues, :mailer do
+RSpec.describe API::Issues, :mailer, :aggregate_failures do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) do
     create(:project, :public, creator_id: user.id, namespace: user.namespace)
@@ -31,14 +31,14 @@ RSpec.describe API::Issues, :mailer do
         subject
 
         expect(response).to have_gitlab_http_status(:success)
-        expect(epic_issue_response_for(issue_with_epic)['epic_iid']).to eq(epic.iid)
+        expect(issue_response_by_id(issue_with_epic.id)['epic_iid']).to eq(epic.iid)
       end
 
       it 'contains epic in response' do
         subject
 
         expect(response).to have_gitlab_http_status(:success)
-        expect(epic_issue_response_for(issue_with_epic)['epic']).to eq({ "id" => epic.id,
+        expect(issue_response_by_id(issue_with_epic.id)['epic']).to eq({ "id" => epic.id,
                                                                     "iid" => epic.iid,
                                                                     "group_id" => epic.group_id,
                                                                     "title" => epic.title,
@@ -51,7 +51,7 @@ RSpec.describe API::Issues, :mailer do
 
           subject
 
-          response = epic_issue_response_for(issue_with_epic)
+          response = issue_response_by_id(issue_with_epic.id)
           expect(response['epic']).to eq(nil)
           expect(response['epic_id']).to eq(nil)
         end
@@ -67,14 +67,61 @@ RSpec.describe API::Issues, :mailer do
         subject
 
         expect(response).to have_gitlab_http_status(:success)
-        expect(epic_issue_response_for(issue_with_epic)).not_to have_key('epic_iid')
+        expect(issue_response_by_id(issue_with_epic.id)).not_to have_key('epic_iid')
       end
 
       it 'does not contain epic_iid in response' do
         subject
 
         expect(response).to have_gitlab_http_status(:success)
-        expect(epic_issue_response_for(issue_with_epic)).not_to have_key('epic')
+        expect(issue_response_by_id(issue_with_epic.id)).not_to have_key('epic')
+      end
+    end
+  end
+
+  shared_examples 'exposes iteration' do
+    let_it_be(:iteration) { create(:iteration, group: group) }
+    let_it_be(:issue_with_iteration) { create(:issue, project: group_project, iteration: iteration) }
+
+    context 'with iteration feature' do
+      before do
+        stub_licensed_features(iterations: true)
+      end
+
+      it 'contains iteration in response' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:success)
+
+        iteration_data = issue_response_by_id(issue_with_iteration.id)['iteration']
+
+        # Use a json schema fixture
+        # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/355842
+        expect(iteration_data["id"]).to eq(iteration.id)
+        expect(iteration_data["iid"]).to eq(iteration.iid)
+        expect(iteration_data["group_id"]).to eq(iteration.group_id)
+        expect(iteration_data["state"]).to eq(Iteration::STATE_ENUM_MAP[iteration.state])
+        expect(iteration_data["title"]).to eq(iteration.title)
+        expect(iteration_data["sequence"]).to eq(iteration.sequence)
+        expect(iteration_data["description"]).to eq(iteration.description)
+        expect(iteration_data["web_url"]).to eq(group_iteration_url(iteration.group, iteration.id))
+        expect(iteration_data["start_date"]).to be_present
+        expect(iteration_data["due_date"]).to be_present
+        expect(iteration_data["created_at"]).to be_present
+        expect(iteration_data["updated_at"]).to be_present
+      end
+    end
+
+    context 'without iterations feature' do
+      before do
+        stub_licensed_features(iterations: false)
+      end
+
+      it 'does not contain iteration in response' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:success)
+        expect(issue_response_by_id(issue_with_iteration.id)).not_to have_key('iteration')
       end
     end
   end
@@ -256,6 +303,8 @@ RSpec.describe API::Issues, :mailer do
       let!(:issue_with_epic) { create(:issue, project: group_project, epic: epic) }
     end
 
+    it_behaves_like 'exposes iteration'
+
     context 'filtering by iteration' do
       let_it_be(:iteration_1) { create(:iteration, group: group, start_date: Date.today) }
       let_it_be(:iteration_2) { create(:iteration, group: group) }
@@ -270,7 +319,7 @@ RSpec.describe API::Issues, :mailer do
       end
     end
 
-    it 'avoids N+1 queries' do
+    it 'avoids N+1 queries with epics' do
       stub_licensed_features(epics: true)
 
       group.add_developer(user)
@@ -288,6 +337,28 @@ RSpec.describe API::Issues, :mailer do
       subgroup_2_project = create(:project, group: subgroup_2)
 
       create(:issue, project: subgroup_2_project, epic: create(:epic, group: subgroup_2))
+
+      expect { get api("/groups/#{group.id}/issues", user) }.not_to exceed_query_limit(control_count)
+    end
+
+    it 'avoids N+1 queries with iterations' do
+      stub_licensed_features(iterations: true)
+
+      group.add_developer(user)
+
+      subgroup_1 = create(:group, parent: group)
+      subgroup_1_project = create(:project, group: subgroup_1)
+
+      create(:issue, project: subgroup_1_project, iteration: create(:iteration, group: subgroup_1))
+
+      get api("/groups/#{group.id}/issues", user)
+
+      control_count = ActiveRecord::QueryRecorder.new(skip_cached: false) { get api("/groups/#{group.id}/issues", user) }
+
+      subgroup_2 = create(:group, parent: group)
+      subgroup_2_project = create(:project, group: subgroup_2)
+
+      create(:issue, project: subgroup_2_project, iteration: create(:iteration, group: subgroup_2))
 
       expect { get api("/groups/#{group.id}/issues", user) }.not_to exceed_query_limit(control_count)
     end
@@ -329,7 +400,7 @@ RSpec.describe API::Issues, :mailer do
         subject
 
         expect(response).to have_gitlab_http_status(:ok)
-        expect(epic_issue_response_for(issue_with_epic)).not_to have_key('epic_iid')
+        expect(issue_response_by_id(issue_with_epic.id)).not_to have_key('epic_iid')
       end
     end
 
@@ -339,6 +410,7 @@ RSpec.describe API::Issues, :mailer do
       subject { get api("/projects/#{group_project.id}/issues", user) }
 
       it_behaves_like 'exposes epic'
+      it_behaves_like 'exposes iteration'
     end
 
     context 'filtering by iteration' do
@@ -370,7 +442,7 @@ RSpec.describe API::Issues, :mailer do
         subject
 
         expect(response).to have_gitlab_http_status(:ok)
-        expect(epic_issue_response_for(issue_with_epic)).not_to have_key('epic_iid')
+        expect(issue_response_by_id(issue_with_epic.id)).not_to have_key('epic_iid')
       end
     end
 
@@ -987,7 +1059,7 @@ RSpec.describe API::Issues, :mailer do
 
   private
 
-  def epic_issue_response_for(epic_issue)
-    Array.wrap(json_response).find { |issue| issue['id'] == epic_issue.id }
+  def issue_response_by_id(issue_id)
+    Array.wrap(json_response).find { |issue| issue['id'] == issue_id }
   end
 end
