@@ -24,7 +24,7 @@ module AuditEvents
       details.merge!(entity_id: @token_scope.id, entity_type: @token_scope.class.name) if @token_scope
 
       safe_author = safe_author(author)
-      details[token_field] = safe_author if safe_author != author
+      details[token_field] = safe_author if safe_author.is_a?(String)
 
       details[:errors] = @runner.errors.full_messages unless @runner.errors.empty?
 
@@ -39,6 +39,10 @@ module AuditEvents
     end
 
     private
+
+    def token_field
+      raise NotImplementedError, "Please implement #{self.class}##{__method__}"
+    end
 
     def message
       raise NotImplementedError, "Please implement #{self.class}##{__method__}"
