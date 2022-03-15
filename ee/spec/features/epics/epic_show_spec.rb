@@ -30,6 +30,7 @@ RSpec.describe 'Epic show', :js do
   before do
     group.add_developer(user)
     stub_licensed_features(epics: true, subepics: true)
+    stub_feature_flags(related_epics_widget: false)
     sign_in(user)
   end
 
@@ -177,6 +178,12 @@ RSpec.describe 'Epic show', :js do
       page.within('.epic-page-container .detail-page-description') do
         expect(find('.title-container .title')).to have_content(epic_title)
         expect(find('.description .md')).to have_content('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nos commodius agimus. Ex rebus enim timiditas, non ex vocabulis nascitur. Ita prorsus, inquam; Duo Reges: constructio interrete.')
+      end
+    end
+
+    it 'does not show related epics section when related_epics_widget feature flag is not enabled' do
+      page.within('.js-epic-container') do
+        expect(page).not_to have_selector('#related-issues')
       end
     end
 

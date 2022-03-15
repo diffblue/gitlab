@@ -71,6 +71,13 @@
               sorted_by: roadmap_sort_order,
               inner_height: '600',
               child_epics: 'true' } }
+
+  - if Feature.enabled?(:related_epics_widget, @group, default_enabled: :yaml)
+    #js-related-epics{ data: { endpoint: group_epic_related_epic_links_path(@group, @epic),
+      can_add_related_epics: "#{can?(current_user, :admin_related_epic_link, @epic)}",
+      help_path: help_page_path('user/group/epics/linked_epics'),
+      show_categorized_epics: 'true' } }
+
   %hr.epic-discussion-separator.mt-1.mb-0
   .d-flex.justify-content-between.content-block.content-block-small.emoji-list-container.js-noteable-awards
     = render 'award_emoji/awards_block', awardable: @epic, inline: true, api_awards_path: award_emoji_epics_api_path(@epic)

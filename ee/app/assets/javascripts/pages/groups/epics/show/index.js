@@ -7,6 +7,12 @@ import ZenMode from '~/zen_mode';
 initNotesApp();
 initEpicApp();
 
+if (gon.features.relatedEpicsWidget) {
+  import('ee/linked_epics/linked_epics_bundle')
+    .then((m) => m.default())
+    .catch(() => {});
+}
+
 requestIdleCallback(() => {
   const awardEmojiEl = document.getElementById('js-vue-awards-block');
 
