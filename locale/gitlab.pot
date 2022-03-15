@@ -24146,6 +24146,33 @@ msgstr ""
 msgid "NamespaceStorageSize|push to your repository, create pipelines, create issues or add comments. To reduce storage capacity, delete unused repositories, artifacts, wikis, issues, and pipelines."
 msgstr ""
 
+msgid "NamespaceStorage|%{name_with_link} namespace has %{percent} or less namespace storage space remaining."
+msgstr ""
+
+msgid "NamespaceStorage|%{name_with_link} namespace has exceeded its namespace storage limit."
+msgstr ""
+
+msgid "NamespaceStorage|%{name}(%{url}) namespace has %{percent} or less namespace storage space remaining."
+msgstr ""
+
+msgid "NamespaceStorage|%{name}(%{url}) namespace has exceeded its namespace storage limit."
+msgstr ""
+
+msgid "NamespaceStorage|Action required: Less than %{percentage_of_available_storage}%% of namespace storage remains for %{namespace_name}"
+msgstr ""
+
+msgid "NamespaceStorage|Action required: Storage has been exceeded for %{namespace_name}"
+msgstr ""
+
+msgid "NamespaceStorage|Buy more storage"
+msgstr ""
+
+msgid "NamespaceStorage|We recommend that you buy additional storage to ensure your service is not interrupted."
+msgstr ""
+
+msgid "NamespaceStorage|We recommend that you buy additional storage to resume normal service."
+msgstr ""
+
 msgid "NamespaceUserCap|Pending users must be reviewed and approved by a group owner. Learn more about %{user_caps_link_start}user caps%{link_end} and %{users_pending_approval_link_start}users pending approval%{link_end}."
 msgstr ""
 

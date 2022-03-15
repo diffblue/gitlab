@@ -197,4 +197,24 @@ RSpec.describe EE::GitlabRoutingHelper do
       expect(usage_quotas_path(namespace, foo: 'bar', anchor: 'quotas-tab')).to eq('/-/profile/usage_quotas?foo=bar#quotas-tab')
     end
   end
+
+  describe '#usage_quotas_url' do
+    it 'returns the group usage quota url for a group namespace' do
+      group = build(:group)
+
+      expect(usage_quotas_url(group)).to eq("http://test.host/groups/#{group.full_path}/-/usage_quotas")
+    end
+
+    it 'returns the profile usage quotas url for any other namespace' do
+      namespace = build(:namespace)
+
+      expect(usage_quotas_url(namespace)).to eq('http://test.host/-/profile/usage_quotas')
+    end
+
+    it 'returns the url with any args supplied' do
+      namespace = build(:namespace)
+
+      expect(usage_quotas_url(namespace, foo: 'bar', anchor: 'quotas-tab')).to eq('http://test.host/-/profile/usage_quotas?foo=bar#quotas-tab')
+    end
+  end
 end
