@@ -57,7 +57,7 @@ docs-only merge requests using the following guide:
 
 To ensure that the GitLab docs are current, there are special processes and responsibilities for all [feature changes](workflow.md), that is development work that impacts the appearance, usage, or administration of a feature.
 
-However, anyone can contribute [documentation improvements](workflow.md) that are not associated with a feature change. For example, adding a new doc on how to accomplish a use case that's already possible with GitLab or with third-party tools and GitLab.
+However, anyone can contribute [documentation improvements](workflow.md) that are not associated with a feature change. For example, adding a new document on how to accomplish a use case that's already possible with GitLab or with third-party tools and GitLab.
 
 ## Markdown and styles
 
@@ -87,8 +87,8 @@ belongs to, as well as an information block as described below:
 - `group`: The [Group](https://about.gitlab.com/company/team/structure/#product-groups)
   to which the majority of the page's content belongs.
 - `info`: The following line, which provides direction to contributors regarding
-  how to contact the Technical Writer associated with the page's Stage and
-  Group:
+  how to contact the Technical Writer associated with the page's stage and
+  group:
 
   ```plaintext
   To determine the technical writer assigned to the Stage/Group
@@ -116,7 +116,7 @@ The following metadata should be added when a page is moved to another location:
   location to which visitors should be redirected for a moved page.
   [Learn more](redirects.md).
 - `disqus_identifier`: Identifier for Disqus commenting system. Used to keep
-  comments with a page that's been moved to a new URL.
+  comments with a page that has been moved to a new URL.
   [Learn more](redirects.md#redirections-for-pages-with-disqus-comments).
 
 ### Comments metadata
@@ -316,7 +316,7 @@ process. This is configured in the `Dangerfile` in the GitLab repository under
 
 ## Automatic screenshot generator
 
-You can now set up an automatic screenshot generator to take and compress screenshots, with the
+You can now set up an automatic screenshot generator to take and compress screenshots with the
 help of a configuration file known as **screenshot generator**.
 
 ### Use the tool
