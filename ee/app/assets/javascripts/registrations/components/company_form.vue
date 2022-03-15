@@ -28,7 +28,7 @@ export default {
     CountryOrRegionSelector,
     RegistrationTrialToggle,
   },
-  inject: ['createLeadPath'],
+  inject: ['submitPath', 'firstName', 'lastName', 'role', 'jtbd', 'comment'],
   props: {
     trial: {
       type: Boolean,

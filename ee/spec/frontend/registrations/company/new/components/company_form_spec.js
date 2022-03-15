@@ -17,7 +17,12 @@ describe('RegistrationForm', () => {
     return mountFunction(RegistrationForm, {
       localVue,
       provide: {
-        createLeadPath: SUBMIT_PATH,
+        submitPath: SUBMIT_PATH,
+        firstName: 'Joe',
+        lastName: 'Doe',
+        role: 'Software Engineer',
+        jtbd: 'Jobs to be done',
+        comment: 'A comment',
       },
       propsData: { trial: true },
     });
@@ -67,6 +72,17 @@ describe('RegistrationForm', () => {
       ${'trial'}
     `('has the correct form input in the form content', ({ testid }) => {
       expect(findFormInput(testid).exists()).toBe(true);
+    });
+
+    it.each`
+      testid          | value
+      ${'first_name'} | ${'Joe'}
+      ${'last_name'}  | ${'Doe'}
+      ${'role'}       | ${'Software Engineer'}
+      ${'jtbd'}       | ${'Jobs to be done'}
+      ${'comment'}    | ${'A comment'}
+    `('has the hidden injected value for $testid', ({ testid, value }) => {
+      expect(findFormInput(testid).attributes('value')).toBe(value);
     });
   });
 

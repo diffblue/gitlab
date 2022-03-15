@@ -27,6 +27,8 @@ class TrialsController < ApplicationController
   end
 
   def create_lead
+    return create_hand_raise_lead unless Gitlab::Utils.to_boolean(params[:trial])
+
     url_params = { glm_source: params[:glm_source], glm_content: params[:glm_content] }
     @result = GitlabSubscriptions::CreateLeadService.new.execute({ trial_user: company_params })
 
