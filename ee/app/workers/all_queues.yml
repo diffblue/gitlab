@@ -390,6 +390,15 @@
   :weight: 1
   :idempotent:
   :tags: []
+- :name: cronjob:security_findings_cleanup
+  :worker_name: Security::Findings::CleanupWorker
+  :feature_category: :vulnerability_management
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: cronjob:security_orchestration_policy_rule_schedule
   :worker_name: Security::OrchestrationPolicyRuleScheduleWorker
   :feature_category: :security_orchestration

@@ -29,6 +29,7 @@ module Security
     scope :by_severity_levels, -> (severity_levels) { where(severity: severity_levels) }
     scope :by_confidence_levels, -> (confidence_levels) { where(confidence: confidence_levels) }
     scope :by_report_types, -> (report_types) { joins(:scan).merge(Scan.by_scan_types(report_types)) }
+    scope :by_scan, -> (scans) { where(scan: scans) }
     scope :undismissed, -> do
       where('NOT EXISTS (?)',
             Scan.select(1)
