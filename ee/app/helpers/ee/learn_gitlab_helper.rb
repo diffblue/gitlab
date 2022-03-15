@@ -11,19 +11,21 @@ module EE
 
     private
 
-    override :new_action_urls
-    def new_action_urls(project)
+    override :action_urls
+    def action_urls(project)
       urls = super(project)
 
       return urls unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
 
-      glm_params = { glm_source: GITLAB_COM }
-
       urls.merge(
-        trial_started: new_trial_path(glm_params.merge(glm_content: ONBOARDING_START_TRIAL)),
-        required_mr_approvals_enabled: new_trial_path(glm_params.merge(glm_content: ONBOARDING_REQUIRE_MR_APPROVALS)),
-        code_owners_enabled: new_trial_path(glm_params.merge(glm_content: ONBOARDING_CODE_OWNERS))
+        trial_started: new_trial_path_with_glm(content: ONBOARDING_START_TRIAL),
+        required_mr_approvals_enabled: new_trial_path_with_glm(content: ONBOARDING_REQUIRE_MR_APPROVALS),
+        code_owners_enabled: new_trial_path_with_glm(content: ONBOARDING_CODE_OWNERS)
       )
+    end
+
+    def new_trial_path_with_glm(content:, source: GITLAB_COM)
+      new_trial_path({ glm_source: source, glm_content: content })
     end
   end
 end
