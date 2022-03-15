@@ -14,7 +14,7 @@ import {
 } from '../constants';
 
 export default {
-  name: 'ReleasesSortApolloclient',
+  name: 'ReleasesSort',
   components: {
     GlSorting,
     GlSortingItem,

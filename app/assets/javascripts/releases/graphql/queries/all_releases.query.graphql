@@ -1,6 +1,3 @@
-# This query is identical to
-# `app/assets/javascripts/releases/graphql/queries/all_releases.query.graphql`.
-# These two queries should be kept in sync.
 query allReleases(
   $fullPath: ID!
   $first: Int

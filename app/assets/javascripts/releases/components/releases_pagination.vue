@@ -4,7 +4,7 @@ import { isBoolean } from 'lodash';
 import { historyPushState, buildUrlWithCurrentLocation } from '~/lib/utils/common_utils';
 
 export default {
-  name: 'ReleasesPaginationApolloClient',
+  name: 'ReleasesPagination',
   components: { GlKeysetPagination },
   props: {
     pageInfo: {

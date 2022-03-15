@@ -1,13 +1,13 @@
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { historyPushState } from '~/lib/utils/common_utils';
-import ReleasesPaginationApolloClient from '~/releases/components/releases_pagination_apollo_client.vue';
+import ReleasesPagination from '~/releases/components/releases_pagination.vue';
 
 jest.mock('~/lib/utils/common_utils', () => ({
   ...jest.requireActual('~/lib/utils/common_utils'),
   historyPushState: jest.fn(),
 }));
 
-describe('releases_pagination_apollo_client.vue', () => {
+describe('releases_pagination.vue', () => {
   const startCursor = 'startCursor';
   const endCursor = 'endCursor';
   let wrapper;
@@ -18,7 +18,7 @@ describe('releases_pagination_apollo_client.vue', () => {
     onPrev = jest.fn();
     onNext = jest.fn();
 
-    wrapper = mountExtended(ReleasesPaginationApolloClient, {
+    wrapper = mountExtended(ReleasesPagination, {
       propsData: {
         pageInfo,
       },

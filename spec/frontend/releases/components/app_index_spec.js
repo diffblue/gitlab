@@ -5,15 +5,15 @@ import originalAllReleasesQueryResponse from 'test_fixtures/graphql/releases/gra
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import allReleasesQuery from 'shared_queries/releases/all_releases.query.graphql';
+import allReleasesQuery from '~/releases/graphql/queries/all_releases.query.graphql';
 import createFlash from '~/flash';
 import { historyPushState } from '~/lib/utils/common_utils';
-import ReleasesIndexApolloClientApp from '~/releases/components/app_index_apollo_client.vue';
+import ReleasesIndexApp from '~/releases/components/app_index.vue';
 import ReleaseBlock from '~/releases/components/release_block.vue';
 import ReleaseSkeletonLoader from '~/releases/components/release_skeleton_loader.vue';
 import ReleasesEmptyState from '~/releases/components/releases_empty_state.vue';
-import ReleasesPaginationApolloClient from '~/releases/components/releases_pagination_apollo_client.vue';
-import ReleasesSortApolloClient from '~/releases/components/releases_sort_apollo_client.vue';
+import ReleasesPagination from '~/releases/components/releases_pagination.vue';
+import ReleasesSort from '~/releases/components/releases_sort.vue';
 import { PAGE_SIZE, CREATED_ASC, DEFAULT_SORT } from '~/releases/constants';
 
 Vue.use(VueApollo);
@@ -58,7 +58,7 @@ describe('app_index_apollo_client.vue', () => {
       ],
     ]);
 
-    wrapper = shallowMountExtended(ReleasesIndexApolloClientApp, {
+    wrapper = shallowMountExtended(ReleasesIndexApp, {
       apolloProvider,
       provide: {
         newReleasePath,
@@ -91,11 +91,10 @@ describe('app_index_apollo_client.vue', () => {
   // Finders
   const findLoadingIndicator = () => wrapper.findComponent(ReleaseSkeletonLoader);
   const findEmptyState = () => wrapper.findComponent(ReleasesEmptyState);
-  const findNewReleaseButton = () =>
-    wrapper.findByText(ReleasesIndexApolloClientApp.i18n.newRelease);
+  const findNewReleaseButton = () => wrapper.findByText(ReleasesIndexApp.i18n.newRelease);
   const findAllReleaseBlocks = () => wrapper.findAllComponents(ReleaseBlock);
-  const findPagination = () => wrapper.findComponent(ReleasesPaginationApolloClient);
-  const findSort = () => wrapper.findComponent(ReleasesSortApolloClient);
+  const findPagination = () => wrapper.findComponent(ReleasesPagination);
+  const findSort = () => wrapper.findComponent(ReleasesSort);
 
   // Tests
   describe('component states', () => {
@@ -154,7 +153,7 @@ describe('app_index_apollo_client.vue', () => {
         it(`${toDescription(flashMessage)} show a flash message`, () => {
           if (flashMessage) {
             expect(createFlash).toHaveBeenCalledWith({
-              message: ReleasesIndexApolloClientApp.i18n.errorMessage,
+              message: ReleasesIndexApp.i18n.errorMessage,
               captureError: true,
               error: expect.any(Error),
             });

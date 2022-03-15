@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
-import ReleaseIndexApolloClientApp from './components/app_index_apollo_client.vue';
+import ReleaseIndexApp from './components/app_index.vue';
 
 export default () => {
   const el = document.getElementById('js-releases-page');
@@ -27,6 +27,6 @@ export default () => {
     el,
     apolloProvider,
     provide: { ...el.dataset },
-    render: (h) => h(ReleaseIndexApolloClientApp),
+    render: (h) => h(ReleaseIndexApp),
   });
 };

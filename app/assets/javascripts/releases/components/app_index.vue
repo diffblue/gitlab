@@ -1,6 +1,5 @@
 <script>
 import { GlButton } from '@gitlab/ui';
-import allReleasesQuery from 'shared_queries/releases/all_releases.query.graphql';
 import createFlash from '~/flash';
 import { historyPushState } from '~/lib/utils/common_utils';
 import { scrollUp } from '~/lib/utils/scroll_utils';
@@ -8,21 +7,22 @@ import { setUrlParams, getParameterByName } from '~/lib/utils/url_utility';
 import { __ } from '~/locale';
 import { PAGE_SIZE, DEFAULT_SORT } from '~/releases/constants';
 import { convertAllReleasesGraphQLResponse } from '~/releases/util';
+import allReleasesQuery from '../graphql/queries/all_releases.query.graphql';
 import ReleaseBlock from './release_block.vue';
 import ReleaseSkeletonLoader from './release_skeleton_loader.vue';
 import ReleasesEmptyState from './releases_empty_state.vue';
-import ReleasesPaginationApolloClient from './releases_pagination_apollo_client.vue';
-import ReleasesSortApolloClient from './releases_sort_apollo_client.vue';
+import ReleasesPagination from './releases_pagination.vue';
+import ReleasesSort from './releases_sort.vue';
 
 export default {
-  name: 'ReleasesIndexApolloClientApp',
+  name: 'ReleasesIndexApp',
   components: {
     GlButton,
     ReleaseBlock,
     ReleaseSkeletonLoader,
     ReleasesEmptyState,
-    ReleasesPaginationApolloClient,
-    ReleasesSortApolloClient,
+    ReleasesPagination,
+    ReleasesSort,
   },
   inject: {
     projectPath: {
@@ -231,7 +231,7 @@ export default {
 <template>
   <div class="flex flex-column mt-2">
     <div class="gl-align-self-end gl-mb-3">
-      <releases-sort-apollo-client :value="sort" class="gl-mr-2" @input="onSortChanged" />
+      <releases-sort :value="sort" class="gl-mr-2" @input="onSortChanged" />
 
       <gl-button
         v-if="newReleasePath"
@@ -254,7 +254,7 @@ export default {
 
     <release-skeleton-loader v-if="shouldRenderLoadingIndicator" />
 
-    <releases-pagination-apollo-client
+    <releases-pagination
       v-if="shouldRenderPagination"
       :page-info="pageInfo"
       @prev="onPaginationButtonPress"
