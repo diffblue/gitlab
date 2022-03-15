@@ -6,11 +6,11 @@ module QA
       module Project
         module Secure
           class SecurityDashboard < QA::Page::Base
-            view 'ee/app/assets/javascripts/security_dashboard/components/shared/vulnerability_list.vue' do
+            view 'ee/app/assets/javascripts/security_dashboard/components/shared/vulnerability_report/vulnerability_list.vue' do
               element :vulnerability
             end
 
-            view 'ee/app/assets/javascripts/security_dashboard/components/shared/vulnerability_list.vue' do
+            view 'ee/app/assets/javascripts/security_dashboard/components/shared/vulnerability_report/vulnerability_list.vue' do
               element :false_positive_vulnerability
             end
 

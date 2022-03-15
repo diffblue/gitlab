@@ -13,7 +13,7 @@ import ScanAlerts, {
 } from 'ee/security_dashboard/components/pipeline/scan_alerts.vue';
 import SecurityDashboard from 'ee/security_dashboard/components/pipeline/security_dashboard_vuex.vue';
 import SecurityReportsSummary from 'ee/security_dashboard/components/pipeline/security_reports_summary.vue';
-import VulnerabilityReport from 'ee/security_dashboard/components/shared/vulnerability_report.vue';
+import PipelineVulnerabilityReport from 'ee/security_dashboard/components/pipeline/pipeline_vulnerability_report.vue';
 import {
   pipelineSecurityReportSummary,
   pipelineSecurityReportSummaryWithErrors,
@@ -43,7 +43,7 @@ describe('Pipeline Security Dashboard component', () => {
   let wrapper;
 
   const findSecurityDashboard = () => wrapper.findComponent(SecurityDashboard);
-  const findVulnerabilityReport = () => wrapper.findComponent(VulnerabilityReport);
+  const findVulnerabilityReport = () => wrapper.findComponent(PipelineVulnerabilityReport);
   const findScanAlerts = () => wrapper.findComponent(ScanAlerts);
 
   const factory = ({ stubs, provide, apolloProvider } = {}) => {
