@@ -1,8 +1,7 @@
 - if @project.feature_available?(:code_owner_approval_required)
   %td
-    = render "shared/gl_toggle",
-      classes: 'js-code-owner-toggle gl-mr-5',
+    = render Pajamas::ToggleComponent.new(classes: 'js-code-owner-toggle gl-mr-5',
       label: s_("ProtectedBranch|Toggle code owner approval"),
       is_checked: protected_branch.code_owner_approval_required,
-      label_position: 'hidden',
-      data: { qa_selector: 'code_owner_toggle_button', qa_branch_name: protected_branch.name }
+      label_position: :hidden,
+      data: { qa_selector: 'code_owner_toggle_button', qa_branch_name: protected_branch.name })

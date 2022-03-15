@@ -7,8 +7,7 @@
   = render partial: 'projects/settings/ee/access_level_dropdown', locals: { protected_branch: protected_branch, access_levels: protected_branch.push_access_levels, level_frequencies: access_level_frequencies(protected_branch.push_access_levels), input_basic_name: 'push_access_levels', disabled: !can_unprotect, toggle_class: 'js-allowed-to-push' }
 
 %td
-  = render "shared/gl_toggle",
-    classes: 'js-force-push-toggle',
+  = render Pajamas::ToggleComponent.new(classes: 'js-force-push-toggle',
     label: s_("ProtectedBranch|Toggle allowed to force push"),
     is_checked: protected_branch.allow_force_push,
-    label_position: 'hidden'
+    label_position: :hidden)
