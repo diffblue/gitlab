@@ -1,0 +1,7 @@
+%p
+  - name_link = link_to @namespace.name, @usage_quotas_url
+  = html_escape(s_('NamespaceStorage|%{name_with_link} namespace has exceeded its namespace storage limit.')) % { name_with_link: name_link.html_safe }
+%p
+  = s_('NamespaceStorage|We recommend that you buy additional storage to resume normal service.')
+%p
+  = link_to sprintf('%{link_label} →', { link_label: s_('NamespaceStorage|Buy more storage') }), @buy_storage_url
