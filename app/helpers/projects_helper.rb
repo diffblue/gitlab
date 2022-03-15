@@ -420,6 +420,18 @@ module ProjectsHelper
     project.path_with_namespace
   end
 
+  def able_to_see_issues?(project, user)
+    project.issues_enabled? && can?(user, :read_issue, project)
+  end
+
+  def able_to_see_merge_requests?(project, user)
+    project.merge_requests_enabled? && can?(user, :read_merge_request, project)
+  end
+
+  def able_to_see_last_commit?(show_last_commit_as_description, project, user)
+    show_last_commit_as_description && can?(user, :read_commit_status, project)
+  end
+
   def fork_button_disabled_tooltip(project)
     return unless current_user
 
