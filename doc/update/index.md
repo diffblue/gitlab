@@ -250,6 +250,8 @@ To address the above two scenario's, it is advised to do the following prior to 
 1. Pause your runners.
 1. Wait until all jobs are finished.
 1. Upgrade GitLab.
+1. [Update GitLab Runner](https://docs.gitlab.com/runner/install/index.html) to the same version
+   as your GitLab version. Both versions [should be the same](https://docs.gitlab.com/runner/#gitlab-runner-versions).
 
 ## Checking for pending Advanced Search migrations **(PREMIUM SELF)**
 
@@ -456,7 +458,7 @@ or [init scripts](upgrading_from_source.md#configure-sysv-init-script) by [follo
   This is because we [enabled `paginated_tree_graphql_query by default in 14.4](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/70913/diffs), so if GitLab UI is on 14.4 and its API is on 14.3, the frontend will have this feature enabled but the backend will have it disabled. This will result in the following error:
 
   ```shell
-  bundle.esm.js:63 Uncaught (in promise) Error: GraphQL error: Field 'paginatedTree' doesn't exist on type 'Repository' 
+  bundle.esm.js:63 Uncaught (in promise) Error: GraphQL error: Field 'paginatedTree' doesn't exist on type 'Repository'
   ```
 
 ### 14.4.0
