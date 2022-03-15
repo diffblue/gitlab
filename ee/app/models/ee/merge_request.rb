@@ -302,6 +302,10 @@ module EE
       project.security_reports_up_to_date_for_ref?(target_branch)
     end
 
+    def audit_details
+      title
+    end
+
     private
 
     def has_approved_license_check?
