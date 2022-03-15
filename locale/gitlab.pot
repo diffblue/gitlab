@@ -10917,6 +10917,15 @@ msgstr ""
 msgid "CycleAnalytics|Average time to completion"
 msgstr ""
 
+msgid "CycleAnalytics|Create a custom value stream to view metrics about stages specific to your development process. Use your value stream to visualize your DevSecOps lifecycle, determine the velocity of your group, and identify inefficient processes."
+msgstr ""
+
+msgid "CycleAnalytics|Create a custom value stream…"
+msgstr ""
+
+msgid "CycleAnalytics|Custom value streams to measure your DevSecOps lifecycle"
+msgstr ""
+
 msgid "CycleAnalytics|Date"
 msgstr ""
 
