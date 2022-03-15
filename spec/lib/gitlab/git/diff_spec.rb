@@ -161,6 +161,31 @@ EOT
         expect(diff).not_to have_binary_notice
       end
     end
+
+    context 'when diff contains invalid characters' do
+      let(:bad_string) { [0xae].pack("C*") }
+      let(:bad_string_two) { [0x89].pack("C*") }
+
+      context 'when replace_invalid_utf8_chars is true' do
+        let(:diff) { described_class.new(@raw_diff_hash.merge({ diff: bad_string })) }
+        let(:diff_two) { described_class.new(@raw_diff_hash.merge({ diff: bad_string_two })) }
+
+        it 'will convert invalid characters and not cause an encoding error' do
+          expect { Oj.dump(diff) }.not_to raise_error(EncodingError)
+          expect { Oj.dump(diff_two) }.not_to raise_error(EncodingError)
+        end
+      end
+
+      context 'when replace_invalid_utf8_chars is false' do
+        let(:diff) { described_class.new(@raw_diff_hash.merge({ diff: bad_string }), replace_invalid_utf8_chars: false) }
+        let(:diff_two) { described_class.new(@raw_diff_hash.merge({ diff: bad_string_two }), replace_invalid_utf8_chars: false) }
+
+        it 'will not convert any invalid characters' do
+          expect(diff).not_to include(Gitlab::EncodingHelper::UNICODE_REPLACEMENT_CHARACTER)
+          expect(diff_two).not_to include(Gitlab::EncodingHelper::UNICODE_REPLACEMENT_CHARACTER)
+        end
+      end
+    end
   end
 
   describe 'straight diffs' do

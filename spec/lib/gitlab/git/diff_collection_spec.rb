@@ -775,19 +775,6 @@ RSpec.describe Gitlab::Git::DiffCollection, :seed_helper do
         end
       end
     end
-
-    context 'when diff contains invalid characters' do
-      let(:bad_string) { [0xae].pack("C*") }
-      let(:bad_string_two) { [0x89].pack("C*") }
-
-      let(:collection) do
-        Gitlab::Git::DiffCollection.new([{ diff: bad_string }, { diff: bad_string_two }])
-      end
-
-      it 'will not error out' do
-        expect { Oj.dump(collection) }.not_to raise_error(EncodingError)
-      end
-    end
   end
 
   def fake_diff(line_length, line_count)
