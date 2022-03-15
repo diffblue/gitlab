@@ -6,10 +6,7 @@ RSpec.describe AlertManagement::CreateAlertIssueService do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
-
   let_it_be(:alert) { create(:alert_management_alert, project: project) }
-
-  let(:created_issue) { Issue.last! }
 
   describe '#execute' do
     subject(:execute) { described_class.new(alert, user).execute }
@@ -21,18 +18,25 @@ RSpec.describe AlertManagement::CreateAlertIssueService do
 
     it 'copies any metric images' do
       image = create(:alert_metric_image, alert: alert)
+      image_2 = create(:alert_metric_image, alert: alert)
 
-      execute
+      incident = execute.payload[:issue]
 
-      incident = Issue.incident.last
+      expect(incident.metric_images.count).to eq(2)
 
-      expect(incident.metric_images.count).to eq(1)
+      first_metric_image, second_metric_image = incident.metric_images.order(:created_at)
 
-      metric_image = incident.metric_images.first
-      expect(metric_image.url).to eq(image.url)
-      expect(metric_image.url_text).to eq(image.url_text)
-      expect(metric_image.filename).to eq(image.filename)
-      expect(metric_image.file).not_to eq(image.file)
+      expect_image_matches(first_metric_image, image)
+      expect_image_matches(second_metric_image, image_2)
+    end
+
+    private
+
+    def expect_image_matches(image, image_expectation)
+      expect(image.url).to eq(image_expectation.url)
+      expect(image.url_text).to eq(image_expectation.url_text)
+      expect(image.filename).to eq(image_expectation.filename)
+      expect(image.file).not_to eq(image_expectation.file)
     end
   end
 end
