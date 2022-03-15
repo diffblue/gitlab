@@ -1,19 +1,36 @@
 <script>
-import { GlButton, GlButtonGroup, GlLink, GlPopover, GlSprintf } from '@gitlab/ui';
+import {
+  GlButton,
+  GlButtonGroup,
+  GlFormGroup,
+  GlFormTextarea,
+  GlLink,
+  GlPopover,
+  GlSprintf,
+  GlTooltipDirective as GlTooltip,
+} from '@gitlab/ui';
 import { uniqueId } from 'lodash';
 import Api from 'ee/api';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { createAlert } from '~/flash';
 import { __, s__, sprintf } from '~/locale';
 
+const MAX_CHARACTER_COUNT = 250;
+const WARNING_CHARACTERS_LEFT = 30;
+
 export default {
   components: {
     GlButton,
     GlButtonGroup,
+    GlFormGroup,
+    GlFormTextarea,
     GlLink,
     GlPopover,
     GlSprintf,
     TimeAgoTooltip,
+  },
+  directives: {
+    GlTooltip,
   },
   inject: ['projectId'],
   props: {
@@ -25,8 +42,10 @@ export default {
   data() {
     return {
       id: uniqueId('environment-approval'),
+      commentId: uniqueId('environment-approval-comment'),
       loading: false,
       show: false,
+      comment: '',
     };
   },
   computed: {
@@ -61,6 +80,25 @@ export default {
     deployableName() {
       return this.upcomingDeployment.deployable?.name;
     },
+    isCommentValid() {
+      return this.comment.length <= MAX_CHARACTER_COUNT;
+    },
+    commentCharacterCountClasses() {
+      return {
+        'gl-text-orange-500':
+          this.remainingCharacterCount <= WARNING_CHARACTERS_LEFT &&
+          this.remainingCharacterCount >= 0,
+        'gl-text-red-500': this.remainingCharacterCount < 0,
+      };
+    },
+    characterCountTooltip() {
+      return this.isCommentValid
+        ? this.$options.i18n.charactersLeft
+        : this.$options.i18n.charactersOverLimit;
+    },
+    remainingCharacterCount() {
+      return MAX_CHARACTER_COUNT - this.comment.length;
+    },
   },
   methods: {
     showPopover() {
@@ -75,7 +113,11 @@ export default {
     actOnDeployment(action) {
       this.loading = true;
       this.show = false;
-      action(this.projectId, this.upcomingDeployment.id)
+      action({
+        projectId: this.projectId,
+        deploymentId: this.upcomingDeployment.id,
+        comment: this.comment,
+      })
         .catch((err) => {
           if (err.response) {
             createAlert({ message: err.response.data.message });
@@ -106,6 +148,11 @@ export default {
     current: s__('DeploymentApproval| Current approvals: %{current}'),
     approval: s__('DeploymentApproval|Approved by %{user} %{time}'),
     approvalByMe: s__('DeploymentApproval|Approved by you %{time}'),
+    charactersLeft: __('Characters left'),
+    charactersOverLimit: __('Characters over limit'),
+    commentLabel: __('Comment'),
+    optional: __('(optional)'),
+    description: __('Add comment...'),
     approve: __('Approve'),
     reject: __('Reject'),
   },
@@ -163,6 +210,30 @@ export default {
         </gl-sprintf>
       </p>
       <div v-if="canApproveDeployment" class="gl-mt-4 gl-pt-4">
+        <div class="gl-display-flex gl-flex-direction-column gl-mb-5">
+          <gl-form-group
+            :label="$options.i18n.commentLabel"
+            :label-for="commentId"
+            :optional-text="$options.i18n.optional"
+            class="gl-mb-0"
+            optional
+          >
+            <gl-form-textarea
+              :id="commentId"
+              v-model="comment"
+              :placeholder="$options.i18n.description"
+              :state="isCommentValid"
+            />
+          </gl-form-group>
+          <span
+            v-gl-tooltip
+            :title="characterCountTooltip"
+            :class="commentCharacterCountClasses"
+            class="gl-mt-2 gl-align-self-end"
+          >
+            {{ remainingCharacterCount }}
+          </span>
+        </div>
         <gl-button ref="approve" :loading="loading" variant="confirm" @click="approve">
           {{ $options.i18n.approve }}
         </gl-button>

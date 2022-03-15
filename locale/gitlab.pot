@@ -2164,6 +2164,9 @@ msgstr ""
 msgid "Add comment to design"
 msgstr ""
 
+msgid "Add comment..."
+msgstr ""
+
 msgid "Add commit messages as comments to Asana tasks. %{docs_link}"
 msgstr ""
 
@@ -6878,6 +6881,12 @@ msgid "Changes to the title have not been saved"
 msgstr ""
 
 msgid "Changing any setting here requires an application restart"
+msgstr ""
+
+msgid "Characters left"
+msgstr ""
+
+msgid "Characters over limit"
 msgstr ""
 
 msgid "Charts can't be displayed as the request for data has timed out. %{documentationLink}"

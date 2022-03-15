@@ -30,6 +30,11 @@ describe('ee/environments/components/environment_approval.vue', () => {
   const findPopover = () => extendedWrapper(wrapper.findComponent(GlPopover));
   const findButton = () => extendedWrapper(wrapper.findComponent(GlButton));
 
+  const setComment = (comment) =>
+    wrapper
+      .findByRole('textbox', { name: (content) => content.startsWith(__('Comment')) })
+      .setValue(comment);
+
   it('should link the popover to the button', () => {
     wrapper = createWrapper();
     const popover = findPopover();
@@ -90,6 +95,42 @@ describe('ee/environments/components/environment_approval.vue', () => {
       });
     });
 
+    describe('comment', () => {
+      const max = 250;
+      const closeToFull = Array(max - 30)
+        .fill('a')
+        .join('');
+      const full = Array(max).fill('a').join('');
+      const over = Array(max + 1)
+        .fill('a')
+        .join('');
+
+      it.each`
+        comment        | tooltip                        | classes
+        ${'hello'}     | ${__('Characters left')}       | ${{ 'gl-text-orange-500': false, 'gl-text-red-500': false }}
+        ${closeToFull} | ${__('Characters left')}       | ${{ 'gl-text-orange-500': true, 'gl-text-red-500': false }}
+        ${full}        | ${__('Characters left')}       | ${{ 'gl-text-orange-500': true, 'gl-text-red-500': false }}
+        ${over}        | ${__('Characters over limit')} | ${{ 'gl-text-orange-500': false, 'gl-text-red-500': true }}
+      `(
+        'shows remaining length with tooltip $tooltip when comment length is $comment.length, coloured appropriately',
+        async ({ comment, tooltip, classes }) => {
+          await setComment(comment);
+
+          const counter = wrapper.findByTitle(tooltip);
+
+          expect(counter.text()).toBe((max - comment.length).toString());
+
+          Object.entries(classes).forEach(([klass, present]) => {
+            if (present) {
+              expect(counter.classes()).toContain(klass);
+            } else {
+              expect(counter.classes()).not.toContain(klass);
+            }
+          });
+        },
+      );
+    });
+
     describe('permissions', () => {
       beforeAll(() => {
         gon.current_username = 'root';
@@ -139,12 +180,18 @@ describe('ee/environments/components/environment_approval.vue', () => {
         expect(button.text()).toBe(text);
       });
 
-      it('should approve the deployment when Approve is clicked', async () => {
+      it(`should ${ref} the deployment when ${text} is clicked`, async () => {
         api.mockResolvedValue();
+
+        setComment('comment');
 
         await button.trigger('click');
 
-        expect(api).toHaveBeenCalledWith('5', environment.upcomingDeployment.id);
+        expect(api).toHaveBeenCalledWith({
+          projectId: '5',
+          deploymentId: environment.upcomingDeployment.id,
+          comment: 'comment',
+        });
 
         await waitForPromises();
 

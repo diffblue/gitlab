@@ -389,18 +389,18 @@ export default {
       });
   },
 
-  deploymentApproval(id, deploymentId, approve) {
+  deploymentApproval({ id, deploymentId, approve, comment }) {
     const url = Api.buildUrl(this.environmentApprovalPath)
       .replace(':id', encodeURIComponent(id))
       .replace(':deployment_id', encodeURIComponent(deploymentId));
 
-    return axios.post(url, { status: approve ? 'approved' : 'rejected' });
+    return axios.post(url, { status: approve ? 'approved' : 'rejected', comment });
   },
 
-  approveDeployment(id, deploymentId) {
-    return this.deploymentApproval(id, deploymentId, true);
+  approveDeployment({ id, deploymentId, comment }) {
+    return this.deploymentApproval({ id, deploymentId, approve: true, comment });
   },
-  rejectDeployment(id, deploymentId) {
-    return this.deploymentApproval(id, deploymentId, false);
+  rejectDeployment({ id, deploymentId, comment }) {
+    return this.deploymentApproval({ id, deploymentId, approve: false, comment });
   },
 };
