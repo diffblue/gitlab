@@ -13,12 +13,6 @@ module Geo
       model_record.file
     end
 
-    # The feature flag follows the format `geo_#{replicable_name}_replication`,
-    # so here it would be `geo_job_artifact_replication`
-    def self.replication_enabled_by_default?
-      false
-    end
-
     override :verification_feature_flag_enabled?
     def self.verification_feature_flag_enabled?
       # We are adding verification at the same time as replication, so we
