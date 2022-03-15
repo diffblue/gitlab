@@ -6,10 +6,10 @@ import { reportTypeToSecurityReportTypeEnum } from 'ee/vue_shared/security_repor
 import { fetchPolicies } from '~/lib/graphql';
 import { s__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import VulnerabilityReport from '../shared/vulnerability_report.vue';
 import ScanAlerts, { TYPE_ERRORS, TYPE_WARNINGS } from './scan_alerts.vue';
 import SecurityDashboard from './security_dashboard_vuex.vue';
 import SecurityReportsSummary from './security_reports_summary.vue';
+import PipelineVulnerabilityReport from './pipeline_vulnerability_report.vue';
 
 export default {
   name: 'PipelineSecurityDashboard',
@@ -20,7 +20,7 @@ export default {
     ScanAlerts,
     SecurityReportsSummary,
     SecurityDashboard,
-    VulnerabilityReport,
+    PipelineVulnerabilityReport,
   },
   mixins: [glFeatureFlagMixin()],
   inject: [
@@ -159,6 +159,6 @@ export default {
         <gl-empty-state v-bind="emptyStateProps" />
       </template>
     </security-dashboard>
-    <vulnerability-report v-else />
+    <pipeline-vulnerability-report v-else />
   </div>
 </template>
