@@ -11,6 +11,7 @@ RSpec.describe Projects::LicensesController do
     let(:get_licenses) { get :index, params: params, format: :json }
 
     before do
+      stub_feature_flags(lc_remove_legacy_approval_status: false)
       sign_in(user)
     end
 

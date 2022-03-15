@@ -1,13 +1,13 @@
 import { range } from 'lodash';
 import { LICENSE_APPROVAL_STATUS } from 'ee/vue_shared/license_compliance/constants';
 
-export const approvedLicense = {
+export const allowedLicense = {
   id: 5,
   name: 'MIT',
   approvalStatus: LICENSE_APPROVAL_STATUS.ALLOWED,
 };
 
-export const blacklistedLicense = {
+export const deniedLicense = {
   id: 6,
   name: 'New BSD',
   approvalStatus: LICENSE_APPROVAL_STATUS.DENIED,

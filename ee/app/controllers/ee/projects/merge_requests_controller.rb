@@ -19,6 +19,7 @@ module EE
           push_frontend_feature_flag(:refactor_mr_widgets_extensions, @project, default_enabled: :yaml)
           push_frontend_feature_flag(:refactor_mr_widgets_extensions_user, current_user, default_enabled: :yaml)
           push_frontend_feature_flag(:status_checks_add_status_field, default_enabled: :yaml)
+          push_frontend_feature_flag(:lc_remove_legacy_approval_status, @project, default_enabled: :yaml)
         end
 
         before_action :authorize_read_pipeline!, only: [:container_scanning_reports, :dependency_scanning_reports,

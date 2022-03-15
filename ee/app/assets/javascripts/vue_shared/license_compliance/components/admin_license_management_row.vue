@@ -55,12 +55,12 @@ export default {
   [LICENSE_APPROVAL_STATUS.ALLOWED]: s__('LicenseCompliance|Allowed'),
   [LICENSE_APPROVAL_STATUS.DENIED]: s__('LicenseCompliance|Denied'),
   computed: {
-    approveIconClass() {
+    allowedIconClass() {
       return this.license.approvalStatus === LICENSE_APPROVAL_STATUS.ALLOWED
         ? visibleClass
         : invisibleClass;
     },
-    blacklistIconClass() {
+    deniedIconClass() {
       return this.license.approvalStatus === LICENSE_APPROVAL_STATUS.DENIED
         ? visibleClass
         : invisibleClass;
@@ -98,11 +98,11 @@ export default {
           right
         >
           <gl-dropdown-item @click="allowLicense(license)">
-            <gl-icon :class="approveIconClass" name="mobile-issue-close" />
+            <gl-icon :class="allowedIconClass" name="mobile-issue-close" />
             {{ $options[$options.LICENSE_APPROVAL_ACTION.ALLOW] }}
           </gl-dropdown-item>
           <gl-dropdown-item @click="denyLicense(license)">
-            <gl-icon :class="blacklistIconClass" name="mobile-issue-close" />
+            <gl-icon :class="deniedIconClass" name="mobile-issue-close" />
             {{ $options[$options.LICENSE_APPROVAL_ACTION.DENY] }}
           </gl-dropdown-item>
         </gl-dropdown>

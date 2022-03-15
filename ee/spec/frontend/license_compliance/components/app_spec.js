@@ -12,10 +12,7 @@ import * as getters from 'ee/license_compliance/store/modules/list/getters';
 
 import { LICENSE_APPROVAL_CLASSIFICATION } from 'ee/vue_shared/license_compliance/constants';
 import LicenseManagement from 'ee/vue_shared/license_compliance/license_management.vue';
-import {
-  approvedLicense,
-  blacklistedLicense,
-} from 'ee_jest/vue_shared/license_compliance/mock_data';
+import { allowedLicense, deniedLicense } from 'ee_jest/vue_shared/license_compliance/mock_data';
 import setWindowLocation from 'helpers/set_window_location_helper';
 import { stubTransition } from 'helpers/stub_transition';
 import { TEST_HOST } from 'helpers/test_constants';
@@ -25,7 +22,7 @@ Vue.use(Vuex);
 let wrapper;
 
 const readLicensePoliciesEndpoint = `${TEST_HOST}/license_management`;
-const managedLicenses = [approvedLicense, blacklistedLicense];
+const managedLicenses = [allowedLicense, deniedLicense];
 const licenses = [{}, {}];
 const emptyStateSvgPath = '/';
 const documentationPath = '/';
