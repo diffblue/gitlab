@@ -1,7 +1,6 @@
 <script>
 import * as Sentry from '@sentry/browser';
 import { componentNames } from 'ee/reports/components/issue_body';
-import { helpPagePath } from '~/helpers/help_page_helper';
 import axios from '~/lib/utils/axios_utils';
 import { sprintf, s__ } from '~/locale';
 import ReportSection from '~/reports/components/report_section.vue';
@@ -71,9 +70,6 @@ export default {
     heading: s__('StatusCheck|Status checks'),
     errorText: s__('StatusCheck|Failed to load status checks.'),
   },
-  docsLink: helpPagePath('user/project/merge_requests/status_checks.md', {
-    anchor: 'status-checks-widget',
-  }),
 };
 </script>
 
