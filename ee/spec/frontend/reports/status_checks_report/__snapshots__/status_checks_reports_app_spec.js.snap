@@ -9,7 +9,7 @@ exports[`Grouped test reports app when mounted matches the default state compone
         <div class=\\"gl-display-flex gl-align-items-center\\">
           <p class=\\"gl-line-height-normal gl-m-0\\">Status checks</p>
           <!---->
-        </div> <span class=\\"gl-text-gray-500 gl-font-sm\\">When this merge request is updated, a call is sent to the following APIs to confirm their status. <gl-link-stub href=\\"/help/user/project/merge_requests/status_checks.md#status-checks-widget\\" class=\\"gl-font-sm\\">Learn more</gl-link-stub>.</span>
+        </div>
       </div>
       <!---->
     </div>

@@ -16,6 +16,7 @@ RSpec.describe API::StatusChecks do
   let(:single_object_url) { "/projects/#{project.id}/external_status_checks/#{rule.id}" }
   let(:collection_url) { "/projects/#{project.id}/external_status_checks" }
   let(:sha) { merge_request.source_branch_sha }
+  let(:status) { '' }
 
   subject { get api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/status_checks", user), params: { external_status_check_id: rule.id, sha: sha } }
 
@@ -46,16 +47,32 @@ RSpec.describe API::StatusChecks do
         it 'has the correct status values' do
           subject
 
-          expect(json_response[0]["status"]).to eq('approved')
+          expect(json_response[0]["status"]).to eq('passed')
           expect(json_response[1]["status"]).to eq('pending')
           expect(json_response[2]["status"]).to eq('pending')
+        end
+
+        context 'when status_checks_add_status_field is disabled' do
+          before do
+            stub_feature_flags(status_checks_add_status_field: false)
+          end
+
+          it 'has the correct status values' do
+            subject
+
+            expect(json_response[0]["status"]).to eq('approved')
+            expect(json_response[1]["status"]).to eq('pending')
+            expect(json_response[2]["status"]).to eq('pending')
+          end
         end
       end
     end
   end
 
   describe 'POST :id/:merge_requests/:merge_request_iid/status_check_responses' do
-    subject { post api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/status_check_responses", user), params: { external_status_check_id: rule.id, sha: sha } }
+    subject { post api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/status_check_responses", user), params: { external_status_check_id: rule.id, sha: sha, status: status } }
+
+    let(:status) { 'passed' }
 
     context 'permissions' do
       using RSpec::Parameterized::TableSyntax
@@ -92,6 +109,22 @@ RSpec.describe API::StatusChecks do
       before do
         stub_licensed_features(external_status_checks: true)
         project.add_user(user, :maintainer)
+      end
+
+      context 'when status_checks_add_status_field flag is disabled' do
+        before do
+          stub_feature_flags(status_checks_add_status_field: false)
+        end
+
+        context 'status is failed' do
+          let(:status) { 'failed' }
+
+          it 'is overridden to passed' do
+            subject
+
+            expect(MergeRequests::StatusCheckResponse.last.status).to eq("passed")
+          end
+        end
       end
 
       context 'when external status check ID does not belong to the requested project' do
