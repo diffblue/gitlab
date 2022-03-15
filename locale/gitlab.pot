@@ -847,9 +847,6 @@ msgstr ""
 msgid "%{name}, confirm your email address now!"
 msgstr ""
 
-msgid "%{name}: %{resultsString}"
-msgstr ""
-
 msgid "%{no_of_days} day"
 msgid_plural "%{no_of_days} days"
 msgstr[0] ""
@@ -30962,9 +30959,6 @@ msgstr ""
 msgid "Reports|Filename"
 msgstr ""
 
-msgid "Reports|Full report"
-msgstr ""
-
 msgid "Reports|Head report parsing error:"
 msgstr ""
 
@@ -31007,13 +31001,7 @@ msgstr ""
 msgid "Reports|Test summary failed loading results"
 msgstr ""
 
-msgid "Reports|Test summary failed to load results"
-msgstr ""
-
 msgid "Reports|Test summary results are being parsed"
-msgstr ""
-
-msgid "Reports|Test summary results are loading"
 msgstr ""
 
 msgid "Reports|Tool"
