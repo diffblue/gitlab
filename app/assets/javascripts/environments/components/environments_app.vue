@@ -88,6 +88,7 @@ export default {
       interval: undefined,
       isReviewAppModalVisible: false,
       page: parseInt(page, 10),
+      pageInfo: {},
       scope: Object.values(ENVIRONMENTS_SCOPE).includes(scope)
         ? scope
         : ENVIRONMENTS_SCOPE.AVAILABLE,
