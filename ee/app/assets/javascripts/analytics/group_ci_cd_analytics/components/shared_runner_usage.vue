@@ -97,6 +97,12 @@ export default {
         />
       </div>
     </div>
-    <gl-area-chart v-if="!isDataEmpty" :data="chartData" :option="chartOptions" />
+    <gl-area-chart
+      v-if="!isDataEmpty"
+      :data="chartData"
+      :option="chartOptions"
+      :width="0"
+      responsive
+    />
   </div>
 </template>

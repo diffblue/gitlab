@@ -51,6 +51,10 @@ describe('Minutes usage by project chart component', () => {
     it('renders only the months with available minutes data', () => {
       expect(findAllDropdownItems().length).toBe(1);
     });
+
+    it('should contain a responsive attribute for the column chart', () => {
+      expect(findColumnChart().attributes('responsive')).toBeDefined();
+    });
   });
 
   describe('without CI minutes data', () => {
