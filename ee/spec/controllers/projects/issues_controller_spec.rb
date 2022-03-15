@@ -249,7 +249,7 @@ RSpec.describe Projects::IssuesController do
 
     context 'with a related system note' do
       let(:confidential_issue) { create(:issue, :confidential, project: project) }
-      let!(:system_note) { SystemNoteService.relate_issue(issue, confidential_issue, user) }
+      let!(:system_note) { SystemNoteService.relate_issuable(issue, confidential_issue, user) }
 
       shared_examples 'user can see confidential issue' do |access_level|
         context "when a user is a #{access_level}" do

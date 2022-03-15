@@ -50,27 +50,15 @@ RSpec.describe IssueLinks::CreateService do
         end
       end
 
-      it 'creates relationships' do
-        expect { subject }.to change(IssueLink, :count).from(0).to(2)
-
-        expect(IssueLink.find_by!(target: issue_a)).to have_attributes(source: issue, link_type: 'blocks')
-        expect(IssueLink.find_by!(target: another_project_issue)).to have_attributes(source: issue, link_type: 'blocks')
-      end
-
       it 'returns success status' do
         is_expected.to eq(status: :success)
       end
 
-      context 'when blocked_by relation is used' do
-        let(:params) do
-          { issuable_references: [issue_a_ref], link_type: 'is_blocked_by' }
-        end
-
-        it 'creates creates `blocks` relation with swapped source and target' do
-          expect { subject }.to change(IssueLink, :count).from(0).to(1)
-
-          expect(IssueLink.find_by!(source: issue_a)).to have_attributes(target: issue, link_type: 'blocks')
-        end
+      it_behaves_like 'issuable link creation with blocking link_type' do
+        let(:issuable_link_class) { IssueLink }
+        let(:issuable) { issue }
+        let(:issuable2) { issue_a }
+        let(:issuable3) { another_project_issue }
       end
     end
 
