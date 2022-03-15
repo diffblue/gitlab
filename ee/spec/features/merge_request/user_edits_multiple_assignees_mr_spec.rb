@@ -9,5 +9,15 @@ RSpec.describe 'Merge request > User edits MR with multiple assignees' do
     stub_licensed_features(multiple_merge_request_assignees: true)
   end
 
-  it_behaves_like 'multiple assignees merge request', 'updates', 'Save changes'
+  context 'when GraphQL assignees widget feature flag is disabled' do
+    before do
+      stub_feature_flags(issue_assignees_widget: false)
+    end
+
+    it_behaves_like 'multiple assignees merge request', 'updates', 'Save changes'
+  end
+
+  context 'when GraphQL assignees widget feature flag is enabled' do
+    it_behaves_like 'multiple assignees widget merge request', 'updates', 'Save changes'
+  end
 end

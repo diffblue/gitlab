@@ -10,6 +10,7 @@ import {
   isInIssuePage,
   isInDesignPage,
   isInIncidentPage,
+  isInMRPage,
   parseBoolean,
 } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
@@ -135,6 +136,8 @@ function mountAssigneesComponent() {
   if (!el) return;
 
   const { id, iid, fullPath, editable } = getSidebarOptions();
+  const isIssuablePage = isInIssuePage() || isInIncidentPage() || isInDesignPage();
+  const issuableType = isIssuablePage ? IssuableType.Issue : IssuableType.MergeRequest;
   // eslint-disable-next-line no-new
   new Vue({
     el,
@@ -152,21 +155,16 @@ function mountAssigneesComponent() {
         props: {
           iid: String(iid),
           fullPath,
-          issuableType:
-            isInIssuePage() || isInIncidentPage() || isInDesignPage()
-              ? IssuableType.Issue
-              : IssuableType.MergeRequest,
+          issuableType,
           issuableId: id,
           allowMultipleAssignees: !el.dataset.maxAssignees,
         },
         scopedSlots: {
-          collapsed: ({ users, onClick }) =>
+          collapsed: ({ users }) =>
             createElement(CollapsedAssigneeList, {
               props: {
                 users,
-              },
-              nativeOn: {
-                click: onClick,
+                issuableType,
               },
             }),
         },
@@ -585,7 +583,7 @@ function mountCopyEmailComponent() {
 }
 
 const isAssigneesWidgetShown =
-  (isInIssuePage() || isInDesignPage()) && gon.features.issueAssigneesWidget;
+  (isInIssuePage() || isInDesignPage() || isInMRPage()) && gon.features.issueAssigneesWidget;
 
 export function mountSidebar(mediator, store) {
   initInviteMembersModal();

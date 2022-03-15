@@ -15,7 +15,7 @@ import { projectMembersResponse, groupMembersResponse, mockUser2 } from 'jest/si
 import defaultStore from '~/boards/stores';
 import searchGroupUsersQuery from '~/graphql_shared/queries/group_users_search.query.graphql';
 import searchProjectUsersQuery from '~/graphql_shared/queries/users_search.query.graphql';
-import { ASSIGNEES_DEBOUNCE_DELAY } from '~/sidebar/constants';
+import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
 
 Vue.use(VueApollo);
@@ -103,7 +103,7 @@ describe('Assignee select component', () => {
     it('trigger query and renders dropdown with returned users', async () => {
       findEditButton().vm.$emit('click');
       await waitForPromises();
-      jest.advanceTimersByTime(ASSIGNEES_DEBOUNCE_DELAY);
+      jest.advanceTimersByTime(DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
       await waitForPromises();
       expect(usersQueryHandlerSuccess).toHaveBeenCalled();
 
@@ -140,7 +140,7 @@ describe('Assignee select component', () => {
 
       findEditButton().vm.$emit('click');
       await waitForPromises();
-      jest.advanceTimersByTime(ASSIGNEES_DEBOUNCE_DELAY);
+      jest.advanceTimersByTime(DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
       await nextTick();
 
       expect(queryHandler).toHaveBeenCalled();
