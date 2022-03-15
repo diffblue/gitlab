@@ -123,12 +123,12 @@ RSpec.describe 'Query.group.mergeRequests' do
     end
   end
 
-  describe 'passing non_archived: false' do
+  describe 'passing include_archived: true' do
     let(:query) do
       <<~GQL
       query($path: ID!) {
         group(fullPath: $path) {
-          mergeRequests(nonArchived: false) { nodes { id } }
+          mergeRequests(includeArchived: true) { nodes { id } }
         }
       }
       GQL

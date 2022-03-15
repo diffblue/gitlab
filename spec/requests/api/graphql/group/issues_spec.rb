@@ -58,8 +58,8 @@ RSpec.describe 'getting an issue list for a group' do
       expect(issues_ids).to contain_exactly(issue1_gid, issue2_gid)
     end
 
-    context 'when non_archived is false' do
-      let(:issue_filter_params) { { non_archived: false } }
+    context 'when include_archived is true' do
+      let(:issue_filter_params) { { include_archived: true } }
 
       it 'includes issues from archived projects' do
         post_graphql(query, current_user: current_user)
