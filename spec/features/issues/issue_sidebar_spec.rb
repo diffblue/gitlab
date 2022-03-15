@@ -236,6 +236,12 @@ RSpec.describe 'Issue Sidebar' do
         it_behaves_like 'labels sidebar widget'
       end
 
+      context 'escalation status', :js do
+        it 'is not available for default issue type' do
+          expect(page).not_to have_selector('.block.escalation-status')
+        end
+      end
+
       context 'interacting with collapsed sidebar', :js do
         collapsed_sidebar_selector = 'aside.right-sidebar.right-sidebar-collapsed'
         expanded_sidebar_selector = 'aside.right-sidebar.right-sidebar-expanded'
