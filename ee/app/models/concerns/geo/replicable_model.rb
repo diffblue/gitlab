@@ -4,11 +4,20 @@ module Geo
   module ReplicableModel
     extend ActiveSupport::Concern
     include Checksummable
+    include ::Gitlab::Geo::LogHelpers
 
     included do
       # If this hook turns out not to apply to all Models, perhaps we should extract a `ReplicableBlobModel`
-      after_create_commit -> { replicator.handle_after_create_commit if replicator.respond_to?(:handle_after_create_commit) }
-      after_destroy -> { replicator.handle_after_destroy if replicator.respond_to?(:handle_after_destroy) }
+      after_create_commit -> do
+        replicator.handle_after_create_commit if replicator.respond_to?(:handle_after_create_commit)
+      rescue StandardError => err
+        log_error("Geo replicator after_create_commit failed", err)
+      end
+      after_destroy -> do
+        replicator.handle_after_destroy if replicator.respond_to?(:handle_after_destroy)
+      rescue StandardError => err
+        log_error("Geo replicator after_destroy failed", err)
+      end
 
       # Temporarily defining `verification_succeeded` and
       # `verification_failed` for unverified models while verification is
