@@ -7,7 +7,7 @@ class Groups::Analytics::CycleAnalyticsController < Groups::Analytics::Applicati
 
   increment_usage_counter Gitlab::UsageDataCounters::CycleAnalyticsCounter, :views, only: :show
 
-  before_action :load_group, only: :show
+  before_action :load_group, only: %I[show use_aggregated_backend]
   before_action :load_project, only: :show
   before_action :load_value_stream, only: :show
   before_action :request_params, only: :show
@@ -23,6 +23,13 @@ class Groups::Analytics::CycleAnalyticsController < Groups::Analytics::Applicati
   def show
     epic_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: "https://gitlab.com/groups/gitlab-org/-/epics/6046" }
     flash.now[:notice] = s_("ValueStreamAnalytics|Items in Value Stream Analytics are currently filtered by their creation time. There is an %{epic_link_start}epic%{epic_link_end} that will change the Value Stream Analytics date filter to use the end event time for the selected stage.").html_safe % { epic_link_start: epic_link_start, epic_link_end: "</a>".html_safe }
+  end
+
+  def use_aggregated_backend
+    aggregation = Analytics::CycleAnalytics::Aggregation.safe_create_for_group(@group)
+    aggregation.update!(enabled: params[:enabled])
+
+    render json: { enabled: aggregation.enabled }
   end
 
   private

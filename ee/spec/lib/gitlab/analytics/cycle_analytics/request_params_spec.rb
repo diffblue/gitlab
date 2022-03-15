@@ -242,4 +242,33 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams do
       })
     end
   end
+
+  describe 'use_aggregated_data_collector param' do
+    subject(:value) { described_class.new(params).to_data_collector_params[:use_aggregated_data_collector] }
+
+    context 'when the use_vsa_aggregated_tables feature flag is on' do
+      before do
+        stub_feature_flags(use_vsa_aggregated_tables: true)
+      end
+
+      it { is_expected.to eq(true) }
+
+      context 'when the aggregation is disabled by the user' do
+        before do
+          aggregation = ::Analytics::CycleAnalytics::Aggregation.safe_create_for_group(root_group)
+          aggregation.update!(enabled: false)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+    end
+
+    context 'when the use_vsa_aggregated_tables feature flag is off' do
+      before do
+        stub_feature_flags(use_vsa_aggregated_tables: false)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+  end
 end
