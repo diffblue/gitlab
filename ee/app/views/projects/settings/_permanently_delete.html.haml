@@ -2,7 +2,7 @@
 - issues_count = Projects::AllIssuesCountService.new(project).count
 - forks_count = Projects::ForksCountService.new(project).count
 
-.sub-section
-  %h4.danger-title= _('Delete this project')
+.gl-bg-red-50.gl-inset-border-l-3-red-600.gl-py-5.gl-px-6
+  %h4.gl-font-lg.gl-mt-0= _('Delete this project')
   %p= permanent_delete_message(project)
   #js-project-delete-button{ data: { form_path: project_path(project, permanently_delete: true), confirm_phrase: delete_confirm_phrase(project), is_fork: project.forked?.to_s, issues_count: number_with_delimiter(issues_count), merge_requests_count: number_with_delimiter(merge_requests_count), forks_count: number_with_delimiter(forks_count), stars_count: number_with_delimiter(project.star_count) } }

@@ -99,7 +99,7 @@ module EE
     end
 
     def permanent_delete_message(project)
-      message = _('This action deletes %{codeOpen}%{project_path_with_namespace}%{codeClose} and everything this project contains. %{strongOpen}There is no going back%{strongClose}')
+      message = _('This action deletes %{codeOpen}%{project_path_with_namespace}%{codeClose} and everything this project contains. %{strongOpen}There is no going back.%{strongClose}')
       html_escape(message) % remove_message_data(project)
     end
 
