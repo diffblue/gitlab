@@ -1,0 +1,11 @@
+query getExternalDestinations($fullPath: ID!) {
+  group(fullPath: $fullPath) {
+    id
+    externalAuditEventDestinations {
+      nodes {
+        destinationUrl
+        id
+      }
+    }
+  }
+}

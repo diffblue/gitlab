@@ -1,0 +1,118 @@
+<script>
+import { GlButton, GlSafeHtmlDirective as SafeHtml } from '@gitlab/ui';
+import createFlash from '~/flash';
+import {
+  ACTIVE_STREAM,
+  ADD_STREAM,
+  AUDIT_STREAMS_NETWORK_ERRORS,
+  STREAM_COUNT_ICON_ALT,
+} from '../constants';
+import externalDestinationsQuery from '../graphql/get_external_destinations.query.graphql';
+import StreamEmptyState from './stream/stream_empty_state.vue';
+import StreamDestinationEditor from './stream/stream_destination_editor.vue';
+import StreamItem from './stream/stream_item.vue';
+
+const { FETCHING_ERROR } = AUDIT_STREAMS_NETWORK_ERRORS;
+export default {
+  components: {
+    GlButton,
+    StreamDestinationEditor,
+    StreamEmptyState,
+    StreamItem,
+  },
+  directives: {
+    SafeHtml,
+  },
+  inject: ['groupPath', 'streamsIconSvgPath'],
+  data() {
+    return {
+      externalAuditEventDestinations: null,
+      isEditing: false,
+    };
+  },
+  computed: {
+    shouldShowEmptyMode() {
+      return !this.externalAuditEventDestinations?.length && !this.isEditing;
+    },
+    destinationsCount() {
+      return this.externalAuditEventDestinations?.length ?? 0;
+    },
+  },
+  methods: {
+    setEditMode(state) {
+      this.isEditing = state;
+    },
+    refreshDestinations() {
+      return this.$apollo.queries.externalAuditEventDestinations.refetch();
+    },
+    async onAddedDestinationUrl() {
+      await this.refreshDestinations();
+      this.setEditMode(false);
+    },
+  },
+  apollo: {
+    externalAuditEventDestinations: {
+      query: externalDestinationsQuery,
+      context: {
+        isSingleRequest: true,
+      },
+      variables() {
+        return {
+          fullPath: this.groupPath,
+        };
+      },
+      skip() {
+        return !this.groupPath;
+      },
+      update(data) {
+        return data.group.externalAuditEventDestinations.nodes;
+      },
+      error() {
+        createFlash({
+          message: FETCHING_ERROR,
+        });
+      },
+    },
+  },
+  i18n: {
+    ACTIVE_STREAM,
+    ADD_STREAM,
+    FETCHING_ERROR,
+    STREAM_COUNT_ICON_ALT,
+  },
+};
+</script>
+
+<template>
+  <div class="gl-bg-gray-10 gl-rounded-base gl-border">
+    <div class="gl-display-flex gl-align-items-center gl-pl-5 gl-py-3 gl-border-b gl-h-9">
+      <img
+        :alt="$options.i18n.STREAM_COUNT_ICON_ALT"
+        :src="streamsIconSvgPath"
+        class="gl-mr-2 gl-h-5 gl-w-5"
+      />
+      <span class="gl-mr-4">{{ destinationsCount }}</span>
+      <gl-button
+        v-if="destinationsCount"
+        :aria-label="$options.i18n.ADD_STREAM"
+        icon="plus"
+        @click="setEditMode(true)"
+      />
+    </div>
+    <div v-if="isEditing" class="gl-p-4 gl-bg-gray-10">
+      <stream-destination-editor @added="onAddedDestinationUrl" @cancel="setEditMode(false)" />
+    </div>
+    <stream-empty-state v-if="shouldShowEmptyMode" @add="setEditMode(true)" />
+    <div v-if="destinationsCount" class="gl-p-4">
+      <label class="gl-mb-3">{{ $options.i18n.ACTIVE_STREAM }}</label>
+      <ul class="content-list bordered-box gl-bg-white">
+        <stream-item
+          v-for="item in externalAuditEventDestinations"
+          :key="item.id"
+          :item="item"
+          @delete="refreshDestinations"
+        />
+      </ul>
+    </div>
+  </div>
+</template>

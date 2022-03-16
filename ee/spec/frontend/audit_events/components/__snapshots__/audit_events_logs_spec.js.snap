@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`AuditEventsApp when initialized matches the snapshot 1`] = `
+exports[`AuditEventsLog when initialized matches the snapshot 1`] = `
 <div>
   <header>
     <div
@@ -18,21 +18,11 @@ exports[`AuditEventsApp when initialized matches the snapshot 1`] = `
     <div
       class="gl-display-flex gl-flex-direction-column gl-lg-flex-direction-row!"
     >
-      <div
-        class="input-group bg-white flex-grow-1 gl-mr-5 gl-mb-5"
-        data-testid="audit-events-filter"
-      >
-        <gl-filtered-search-stub
-          availabletokens="[object Object],[object Object],[object Object],[object Object]"
-          class="gl-h-32 w-100"
-          clearbuttontitle="Clear"
-          close-button-title="Close"
-          placeholder="Search"
-          searchbuttonattributes="[object Object]"
-          searchinputattributes="[object Object]"
-          value="[object Object]"
-        />
-      </div>
+      <audit-events-filter-stub
+        class="gl-mr-5 gl-mb-5"
+        filtertokenoptions="[object Object],[object Object],[object Object],[object Object]"
+        value="[object Object]"
+      />
        
       <sorting-field-stub
         sortby="created_asc"

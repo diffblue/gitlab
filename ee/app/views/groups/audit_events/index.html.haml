@@ -8,5 +8,9 @@
 #js-group-audit-events-app{ data: { form_path: group_audit_events_path(@group),
   events: @events.to_json,
   is_last_page: @is_last_page.to_json,
+  group_path: @group.full_path,
+  show_streams: can?(current_user, :admin_external_audit_events, @group).to_s,
+  empty_state_svg_path: image_path('illustrations/cloud.svg'),
+  streams_icon_svg_path: image_path('illustrations/live_stream.svg'),
   filter_token_options: group_audit_event_tokens(@group.id).to_json,
   show_filter: show_filter_for_group?(@group).to_json } }
