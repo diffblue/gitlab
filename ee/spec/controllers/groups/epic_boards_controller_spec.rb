@@ -114,8 +114,8 @@ RSpec.describe Groups::EpicBoardsController do
       let_it_be(:board) { create(:epic_board, group: group) }
       subject(:request) { list_boards }
 
-      let(:target_id) { 'g_project_management_users_viewing_epic_boards' }
-      let(:expected_type) { instance_of(String) }
+      let(:target_event) { 'g_project_management_users_viewing_epic_boards' }
+      let(:expected_value) { instance_of(String) }
     end
 
     def list_boards(format: :html)
@@ -215,8 +215,8 @@ RSpec.describe Groups::EpicBoardsController do
     it_behaves_like 'tracking unique hll events' do
       subject(:request) { read_board(board: board) }
 
-      let(:target_id) { 'g_project_management_users_viewing_epic_boards' }
-      let(:expected_type) { instance_of(String) }
+      let(:target_event) { 'g_project_management_users_viewing_epic_boards' }
+      let(:expected_value) { instance_of(String) }
     end
 
     def read_board(board:, format: :html)
