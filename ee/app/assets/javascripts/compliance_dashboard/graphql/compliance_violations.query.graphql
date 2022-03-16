@@ -1,24 +1,22 @@
 #import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
 
-# TODO: Add the correct filter type once it has been added in https://gitlab.com/gitlab-org/gitlab/-/issues/347325
 query getComplianceViolations(
   $fullPath: ID!
-  $filter: Object
-  $sort: String
+  $filters: ComplianceViolationInput
+  $sort: ComplianceViolationSort
   $after: String
   $before: String
   $first: Int
 ) {
-  group(
-    fullPath: $fullPath
-    filter: $filter
-    sort: $sort
-    after: $after
-    before: $before
-    first: $first
-  ) @client {
+  group(fullPath: $fullPath) {
     id
-    mergeRequestViolations {
+    mergeRequestViolations(
+      filters: $filters
+      sort: $sort
+      after: $after
+      before: $before
+      first: $first
+    ) {
       nodes {
         id
         severityLevel
@@ -76,7 +74,7 @@ query getComplianceViolations(
               webUrl
             }
           }
-          ref
+          ref: reference
           fullRef: reference(full: true)
           sourceBranch
           sourceBranchExists

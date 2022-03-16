@@ -93,3 +93,105 @@ export const createDefaultProjectsResponse = (projects) => ({
     },
   },
 });
+
+export const createComplianceViolation = (id) => ({
+  id: `gid://gitlab/MergeRequests::ComplianceViolation/${id}`,
+  severityLevel: 'HIGH',
+  reason: 'APPROVED_BY_COMMITTER',
+  violatingUser: {
+    id: 'gid://gitlab/User/21',
+    name: 'Miranda Friesen',
+    username: 'karren.medhurst',
+    avatarUrl: 'https://www.gravatar.com/avatar/9102aef461ba77d0fa0f37daffb834ac?s=80&d=identicon',
+    webUrl: 'http://gdk.test:3000/karren.medhurst',
+    __typename: 'UserCore',
+  },
+  mergeRequest: {
+    id: `gid://gitlab/MergeRequest/${id}`,
+    title: `Merge request ${id}`,
+    mergedAt: '2022-03-06T16:39:12Z',
+    webUrl: 'http://gdk.test:3000/gitlab-org/gitlab-shell/-/merge_requests/56',
+    author: {
+      id: 'gid://gitlab/User/1',
+      name: 'Administrator',
+      username: 'root',
+      avatarUrl:
+        'https://www.gravatar.com/avatar/e64c7d89f26bd1972efa854d13d7dd61?s=80&d=identicon',
+      webUrl: 'http://gdk.test:3000/root',
+      __typename: 'UserCore',
+    },
+    mergeUser: null,
+    committers: {
+      nodes: [],
+      __typename: 'UserCoreConnection',
+    },
+    participants: {
+      nodes: [
+        {
+          id: 'gid://gitlab/User/1',
+          name: 'Administrator',
+          username: 'root',
+          avatarUrl:
+            'https://www.gravatar.com/avatar/e64c7d89f26bd1972efa854d13d7dd61?s=80&d=identicon',
+          webUrl: 'http://gdk.test:3000/root',
+          __typename: 'UserCore',
+        },
+      ],
+      __typename: 'UserCoreConnection',
+    },
+    approvedBy: {
+      nodes: [],
+      __typename: 'UserCoreConnection',
+    },
+    ref: '!56',
+    fullRef: 'gitlab-org/gitlab-shell!56',
+    sourceBranch: 'master',
+    sourceBranchExists: false,
+    targetBranch: 'feature',
+    targetBranchExists: false,
+    project: {
+      id: 'gid://gitlab/Project/2',
+      avatarUrl: null,
+      name: 'Gitlab Shell',
+      webUrl: 'http://gdk.test:3000/gitlab-org/gitlab-shell',
+      complianceFrameworks: {
+        nodes: [
+          {
+            id: 'gid://gitlab/ComplianceManagement::Framework/1',
+            name: 'GDPR',
+            description: 'asds',
+            color: '#0000ff',
+            __typename: 'ComplianceFramework',
+          },
+        ],
+        __typename: 'ComplianceFrameworkConnection',
+      },
+      __typename: 'Project',
+    },
+    __typename: 'MergeRequest',
+  },
+  __typename: 'ComplianceViolation',
+});
+
+export const createComplianceViolationsResponse = ({ count = 1, pageInfo = {} } = {}) => ({
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/1',
+      __typename: 'Group',
+      mergeRequestViolations: {
+        __typename: 'ComplianceViolationConnection',
+        nodes: Array(count)
+          .fill(null)
+          .map((_, id) => createComplianceViolation(id)),
+        pageInfo: {
+          endCursor: 'abc',
+          hasNextPage: true,
+          hasPreviousPage: false,
+          startCursor: 'abc',
+          __typename: 'PageInfo',
+          ...pageInfo,
+        },
+      },
+    },
+  },
+});

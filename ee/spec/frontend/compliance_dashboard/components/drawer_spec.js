@@ -8,9 +8,9 @@ import Reference from 'ee/compliance_dashboard/components/drawer_sections/refere
 import Reviewers from 'ee/compliance_dashboard/components/drawer_sections/reviewers.vue';
 import { getContentWrapperHeight } from 'ee/threat_monitoring/utils';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import resolvers from 'ee/compliance_dashboard/graphql/resolvers';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { mapViolations } from 'ee/compliance_dashboard/graphql/mappers';
+import { createComplianceViolation } from '../mock_data';
 
 jest.mock('ee/threat_monitoring/utils', () => ({
   getContentWrapperHeight: jest.fn(),
@@ -18,7 +18,7 @@ jest.mock('ee/threat_monitoring/utils', () => ({
 
 describe('MergeRequestDrawer component', () => {
   let wrapper;
-  const defaultData = mapViolations(resolvers.Query.group().mergeRequestViolations.nodes)[0];
+  const defaultData = mapViolations([createComplianceViolation()])[0];
   const data = {
     id: defaultData.id,
     mergeRequest: {

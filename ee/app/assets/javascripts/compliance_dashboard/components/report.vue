@@ -8,7 +8,7 @@ import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
-import complianceViolationsQuery from '../graphql/compliance_violations.query.graphql';
+import getComplianceViolationsQuery from '../graphql/compliance_violations.query.graphql';
 import { mapViolations } from '../graphql/mappers';
 import { DEFAULT_SORT, GRAPHQL_PAGE_SIZE } from '../constants';
 import { parseViolationsQueryFilter } from '../utils';
@@ -44,17 +44,17 @@ export default {
       type: String,
       required: true,
     },
-    defaultQuery: {
+    defaultFilterParams: {
       type: Object,
       required: true,
     },
   },
   data() {
-    const sortParam = this.defaultQuery.sort || DEFAULT_SORT;
+    const sortParam = this.defaultFilterParams.sort || DEFAULT_SORT;
     const { sortBy, sortDesc } = sortStringToObject(sortParam);
 
     return {
-      urlQuery: { ...this.defaultQuery },
+      urlQuery: { ...this.defaultFilterParams },
       queryError: false,
       violations: {
         list: [],
@@ -74,11 +74,11 @@ export default {
   },
   apollo: {
     violations: {
-      query: complianceViolationsQuery,
+      query: getComplianceViolationsQuery,
       variables() {
         return {
           fullPath: this.groupPath,
-          filter: parseViolationsQueryFilter(this.urlQuery),
+          filters: parseViolationsQueryFilter(this.urlQuery),
           sort: this.sortParam,
           first: GRAPHQL_PAGE_SIZE,
           ...this.paginationCursors,
@@ -140,10 +140,17 @@ export default {
       this.drawerProject = {};
     },
     updateUrlQuery({ projectIds = [], ...rest }) {
+      this.resetPagination();
       this.urlQuery = {
         // Clear the URL param when the id array is empty
         projectIds: projectIds?.length > 0 ? projectIds : null,
         ...rest,
+      };
+    },
+    resetPagination() {
+      this.paginationCursors = {
+        before: null,
+        after: null,
       };
     },
     loadPrevPage(startCursor) {
@@ -234,7 +241,7 @@ export default {
     </header>
     <violation-filter
       :group-path="groupPath"
-      :default-query="defaultQuery"
+      :default-query="defaultFilterParams"
       @filters-changed="updateUrlQuery"
     />
     <gl-table

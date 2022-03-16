@@ -9,8 +9,8 @@ import MergeRequestDrawer from 'ee/compliance_dashboard/components/drawer.vue';
 import MergeCommitsExportButton from 'ee/compliance_dashboard/components/merge_requests/merge_commits_export_button.vue';
 import ViolationReason from 'ee/compliance_dashboard/components/violations/reason.vue';
 import ViolationFilter from 'ee/compliance_dashboard/components/violations/filter.vue';
+import getComplianceViolationsQuery from 'ee/compliance_dashboard/graphql/compliance_violations.query.graphql';
 import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
-import resolvers from 'ee/compliance_dashboard/graphql/resolvers';
 import { mapViolations } from 'ee/compliance_dashboard/graphql/mappers';
 import { stripTypenames } from 'helpers/graphql_helpers';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -21,24 +21,30 @@ import { stubComponent } from 'helpers/stub_component';
 import { sortObjectToString } from '~/lib/utils/table_utility';
 import { parseViolationsQueryFilter } from 'ee/compliance_dashboard/utils';
 import { DEFAULT_SORT, GRAPHQL_PAGE_SIZE } from 'ee/compliance_dashboard/constants';
+import { createComplianceViolationsResponse } from '../mock_data';
 
 Vue.use(VueApollo);
 
 describe('ComplianceReport component', () => {
   let wrapper;
-  let mockResolver;
 
   const mergeCommitsCsvExportPath = '/csv';
   const groupPath = 'group-path';
   const mergedAfter = '2021-11-16';
   const mergedBefore = '2021-12-15';
-  const defaultQuery = {
+  const defaultFilterParams = {
     projectIds: ['20'],
     mergedAfter,
     mergedBefore,
     sort: DEFAULT_SORT,
   };
-  const mockGraphQlError = new Error('GraphQL networkError');
+
+  const violationsResponse = createComplianceViolationsResponse({ count: 2 });
+  const violations = violationsResponse.data.group.mergeRequestViolations.nodes;
+  const sentryError = new Error('GraphQL networkError');
+  const mockGraphQlSuccess = jest.fn().mockResolvedValue(violationsResponse);
+  const mockGraphQlLoading = jest.fn().mockResolvedValue(new Promise(() => {}));
+  const mockGraphQlError = jest.fn().mockRejectedValue(sentryError);
 
   const findSubheading = () => wrapper.findByTestId('subheading');
   const findErrorMessage = () => wrapper.findComponent(GlAlert);
@@ -54,8 +60,8 @@ describe('ComplianceReport component', () => {
   const findUrlSync = () => wrapper.findComponent(UrlSync);
 
   const findTableHeaders = () => findViolationsTable().findAll('th div');
-  const findTablesFirstRowData = () =>
-    findViolationsTable().findAll('tbody > tr').at(0).findAll('td');
+  const findTableRowData = (idx) =>
+    findViolationsTable().findAll('tbody > tr').at(idx).findAll('td');
   const findSelectedRows = () => findViolationsTable().findAll('tr.b-table-row-selected');
 
   const findRow = (idx) => {
@@ -72,25 +78,22 @@ describe('ComplianceReport component', () => {
     await nextTick();
   };
 
-  const expectApolloVariables = (variables) => [
-    {},
-    variables,
-    expect.anything(),
-    expect.anything(),
-  ];
+  const createMockApolloProvider = (resolverMock) => {
+    return createMockApollo([[getComplianceViolationsQuery, resolverMock]]);
+  };
 
-  function createMockApolloProvider() {
-    return createMockApollo([], { Query: { group: mockResolver } });
-  }
-
-  const createComponent = (mountFn = shallowMount, props = {}) => {
+  const createComponent = (
+    mountFn = shallowMount,
+    props = {},
+    resolverMock = mockGraphQlLoading,
+  ) => {
     return extendedWrapper(
       mountFn(ComplianceReport, {
-        apolloProvider: createMockApolloProvider(),
+        apolloProvider: createMockApolloProvider(resolverMock),
         propsData: {
           mergeCommitsCsvExportPath,
           groupPath,
-          defaultQuery,
+          defaultFilterParams,
           ...props,
         },
         stubs: {
@@ -104,7 +107,6 @@ describe('ComplianceReport component', () => {
 
   afterEach(() => {
     wrapper.destroy();
-    mockResolver = null;
   });
 
   describe('default behavior', () => {
@@ -131,12 +133,18 @@ describe('ComplianceReport component', () => {
     it('does not render an error message', () => {
       expect(findErrorMessage().exists()).toBe(false);
     });
+
+    it('configures the filter', () => {
+      expect(findViolationFilter().props()).toMatchObject({
+        groupPath,
+        defaultQuery: defaultFilterParams,
+      });
+    });
   });
 
   describe('when initializing', () => {
     beforeEach(() => {
-      mockResolver = jest.fn();
-      wrapper = createComponent(mount);
+      wrapper = createComponent(mount, {}, mockGraphQlLoading);
     });
 
     it('renders the table loading icon', () => {
@@ -145,48 +153,46 @@ describe('ComplianceReport component', () => {
     });
 
     it('fetches the list of merge request violations with the default filter and sort params', async () => {
-      expect(mockResolver).toHaveBeenCalledTimes(1);
-      expect(mockResolver).toHaveBeenCalledWith(
-        ...expectApolloVariables({
-          fullPath: groupPath,
-          filter: parseViolationsQueryFilter(defaultQuery),
-          sort: DEFAULT_SORT,
-          first: GRAPHQL_PAGE_SIZE,
-          after: null,
-          before: null,
-        }),
-      );
+      expect(mockGraphQlLoading).toHaveBeenCalledTimes(1);
+      expect(mockGraphQlLoading).toHaveBeenCalledWith({
+        fullPath: groupPath,
+        filters: parseViolationsQueryFilter(defaultFilterParams),
+        sort: DEFAULT_SORT,
+        first: GRAPHQL_PAGE_SIZE,
+        after: null,
+        before: null,
+      });
     });
   });
 
-  describe('when the defaultQuery has a sort param', () => {
-    const sort = 'SEVERITY_ASC';
+  describe('when the defaultFilterParams has a sort param', () => {
+    const sort = 'VIOLATION_ASC';
 
     beforeEach(() => {
-      mockResolver = jest.fn();
-      wrapper = createComponent(mount, { defaultQuery: { ...defaultQuery, sort } });
+      wrapper = createComponent(
+        mount,
+        { defaultFilterParams: { ...defaultFilterParams, sort } },
+        mockGraphQlLoading,
+      );
     });
 
     it('fetches the list of merge request violations with sort params', async () => {
-      expect(mockResolver).toHaveBeenCalledTimes(1);
-      expect(mockResolver).toHaveBeenCalledWith(
-        ...expectApolloVariables({
-          fullPath: groupPath,
-          filter: parseViolationsQueryFilter(defaultQuery),
-          sort,
-          first: GRAPHQL_PAGE_SIZE,
-          after: null,
-          before: null,
-        }),
-      );
+      expect(mockGraphQlLoading).toHaveBeenCalledTimes(1);
+      expect(mockGraphQlLoading).toHaveBeenCalledWith({
+        fullPath: groupPath,
+        filters: parseViolationsQueryFilter(defaultFilterParams),
+        sort,
+        first: GRAPHQL_PAGE_SIZE,
+        after: null,
+        before: null,
+      });
     });
   });
 
   describe('when the query fails', () => {
     beforeEach(() => {
       jest.spyOn(Sentry, 'captureException');
-      mockResolver = jest.fn().mockRejectedValue(mockGraphQlError);
-      wrapper = createComponent();
+      wrapper = createComponent(shallowMount, {}, mockGraphQlError);
     });
 
     it('renders the error message', async () => {
@@ -196,19 +202,20 @@ describe('ComplianceReport component', () => {
       expect(findErrorMessage().text()).toBe(
         'Retrieving the compliance report failed. Refresh the page and try again.',
       );
-      expect(Sentry.captureException.mock.calls[0][0].networkError).toBe(mockGraphQlError);
+      expect(Sentry.captureException.mock.calls[0][0].networkError).toBe(sentryError);
     });
   });
 
   describe('when there are violations', () => {
     beforeEach(() => {
-      mockResolver = resolvers.Query.group;
-      wrapper = createComponent(mount);
+      wrapper = createComponent(mount, {}, mockGraphQlSuccess);
 
       return waitForPromises();
     });
 
     it('does not render the table loading icon', () => {
+      expect(mockGraphQlSuccess).toHaveBeenCalledTimes(1);
+
       expect(findTableLoadingIcon().exists()).toBe(false);
     });
 
@@ -224,40 +231,37 @@ describe('ComplianceReport component', () => {
       ]);
     });
 
-    it('has the correct first row data', () => {
-      const headerTexts = findTablesFirstRowData().wrappers.map((d) => d.text());
+    it.each(Object.keys(violations))('has the correct data for row %s', (idx) => {
+      const rowTexts = findTableRowData(idx).wrappers.map((d) => d.text());
 
-      expect(headerTexts).toEqual([
+      expect(rowTexts).toEqual([
         'High',
         'Approved by committer',
-        'Officiis architecto voluptas ut sit qui qui quisquam sequi consectetur porro.',
+        `Merge request ${idx}`,
         'in 1 year',
         'View details',
       ]);
     });
 
     it('renders the violation severity badge', () => {
-      const { severityLevel } = mapViolations(mockResolver().mergeRequestViolations.nodes)[0];
+      const { severityLevel } = violations[0];
 
       expect(findSeverityBadge().props()).toStrictEqual({ severity: severityLevel });
     });
 
     it('renders the violation reason', () => {
-      const {
-        violatingUser: { __typename, ...user },
-        reason,
-      } = mockResolver().mergeRequestViolations.nodes[0];
+      const { violatingUser, reason } = violations[0];
 
       expect(findViolationReason().props()).toMatchObject({
         reason,
-        user,
+        user: stripTypenames(violatingUser),
       });
     });
 
     it('renders the time ago tooltip', () => {
       const {
         mergeRequest: { mergedAt },
-      } = mockResolver().mergeRequestViolations.nodes[0];
+      } = violations[0];
 
       expect(findTimeAgoTooltip().props('time')).toBe(mergedAt);
     });
@@ -280,7 +284,7 @@ describe('ComplianceReport component', () => {
         ${selectRow}   | ${'row is selected'}
       `('when a $eventDescription', ({ rowAction, eventDescription }) => {
         it('opens then drawer', async () => {
-          const drawerData = mapViolations(mockResolver().mergeRequestViolations.nodes)[0];
+          const drawerData = mapViolations(violations)[0];
 
           await rowAction(0);
 
@@ -303,7 +307,7 @@ describe('ComplianceReport component', () => {
         });
 
         it(`swaps the drawer when another ${eventDescription}`, async () => {
-          const drawerData = mapViolations(mockResolver().mergeRequestViolations.nodes)[1];
+          const drawerData = mapViolations(violations)[1];
 
           await rowAction(0);
           await rowAction(1);
@@ -319,59 +323,40 @@ describe('ComplianceReport component', () => {
       });
     });
 
-    describe('violation filter', () => {
+    describe('when the filters changed', () => {
+      const query = { mergedAfter, mergedBefore, projectIds: [1, 2, 3] };
+
       beforeEach(() => {
-        mockResolver = jest.fn().mockReturnValue(resolvers.Query.group());
-        wrapper = createComponent(mount);
-
-        return waitForPromises();
+        return findViolationFilter().vm.$emit('filters-changed', query);
       });
 
-      it('configures the filter', () => {
-        expect(findViolationFilter().props()).toMatchObject({
-          groupPath,
-          defaultQuery,
-        });
+      it('updates the URL query', () => {
+        expect(findUrlSync().props('query')).toMatchObject(query);
       });
 
-      describe('when the filters changed', () => {
-        const query = { mergedAfter, mergedBefore, projectIds: [1, 2, 3] };
+      it('shows the table loading icon', () => {
+        expect(findTableLoadingIcon().exists()).toBe(true);
+      });
 
-        beforeEach(() => {
-          return findViolationFilter().vm.$emit('filters-changed', query);
-        });
+      it('sets the pagination component to disabled', () => {
+        expect(findPagination().props('disabled')).toBe(true);
+      });
 
-        it('updates the URL query', () => {
-          expect(findUrlSync().props('query')).toMatchObject(query);
-        });
+      it('clears the project URL query param if the project array is empty', async () => {
+        await findViolationFilter().vm.$emit('filters-changed', { ...query, projectIds: [] });
 
-        it('shows the table loading icon', () => {
-          expect(findTableLoadingIcon().exists()).toBe(true);
-        });
+        expect(findUrlSync().props('query')).toMatchObject({ ...query, projectIds: null });
+      });
 
-        it('sets the pagination component to disabled', () => {
-          expect(findPagination().props('disabled')).toBe(true);
-        });
-
-        it('clears the project URL query param if the project array is empty', async () => {
-          await findViolationFilter().vm.$emit('filters-changed', { ...query, projectIds: [] });
-
-          expect(findUrlSync().props('query')).toMatchObject({ ...query, projectIds: null });
-        });
-
-        it('fetches the filtered violations', async () => {
-          expect(mockResolver).toHaveBeenCalledTimes(2);
-          expect(mockResolver).toHaveBeenNthCalledWith(
-            2,
-            ...expectApolloVariables({
-              fullPath: groupPath,
-              filter: parseViolationsQueryFilter(query),
-              sort: DEFAULT_SORT,
-              first: GRAPHQL_PAGE_SIZE,
-              after: null,
-              before: null,
-            }),
-          );
+      it('fetches the filtered violations', async () => {
+        expect(mockGraphQlSuccess).toHaveBeenCalledTimes(2);
+        expect(mockGraphQlSuccess).toHaveBeenNthCalledWith(2, {
+          fullPath: groupPath,
+          filters: parseViolationsQueryFilter(query),
+          sort: DEFAULT_SORT,
+          first: GRAPHQL_PAGE_SIZE,
+          after: null,
+          before: null,
         });
       });
     });
@@ -380,10 +365,6 @@ describe('ComplianceReport component', () => {
       const sortState = { sortBy: 'mergedAt', sortDesc: true };
 
       beforeEach(async () => {
-        mockResolver = jest.fn().mockReturnValue(resolvers.Query.group());
-        wrapper = createComponent(mount);
-
-        await waitForPromises();
         await findViolationsTable().vm.$emit('sort-changed', sortState);
       });
 
@@ -398,31 +379,23 @@ describe('ComplianceReport component', () => {
       });
 
       it('fetches the sorted violations', async () => {
-        expect(mockResolver).toHaveBeenCalledTimes(2);
-        expect(mockResolver).toHaveBeenNthCalledWith(
-          2,
-          ...expectApolloVariables({
-            fullPath: groupPath,
-            filter: parseViolationsQueryFilter(defaultQuery),
-            sort: sortObjectToString(sortState),
-            first: GRAPHQL_PAGE_SIZE,
-            after: null,
-            before: null,
-          }),
-        );
+        expect(mockGraphQlSuccess).toHaveBeenCalledTimes(2);
+        expect(mockGraphQlSuccess).toHaveBeenNthCalledWith(2, {
+          fullPath: groupPath,
+          filters: parseViolationsQueryFilter(defaultFilterParams),
+          sort: sortObjectToString(sortState),
+          first: GRAPHQL_PAGE_SIZE,
+          after: null,
+          before: null,
+        });
       });
     });
 
     describe('pagination', () => {
-      beforeEach(() => {
-        mockResolver = jest.fn().mockReturnValue(resolvers.Query.group());
-        wrapper = createComponent(mount);
-
-        return waitForPromises();
-      });
-
       it('renders and configures the pagination', () => {
-        const pageInfo = stripTypenames(resolvers.Query.group().mergeRequestViolations.pageInfo);
+        const pageInfo = stripTypenames(
+          violationsResponse.data.group.mergeRequestViolations.pageInfo,
+        );
 
         expect(findPagination().props()).toMatchObject({
           ...pageInfo,
@@ -440,29 +413,29 @@ describe('ComplianceReport component', () => {
           await findPagination().vm.$emit(event, after ?? before);
           await waitForPromises();
 
-          expect(mockResolver).toHaveBeenCalledTimes(2);
-          expect(mockResolver).toHaveBeenNthCalledWith(
-            2,
-            ...expectApolloVariables({
-              fullPath: groupPath,
-              filter: parseViolationsQueryFilter(defaultQuery),
-              first: GRAPHQL_PAGE_SIZE,
-              sort: DEFAULT_SORT,
-              after,
-              before,
-            }),
-          );
+          expect(mockGraphQlSuccess).toHaveBeenCalledTimes(2);
+          expect(mockGraphQlSuccess).toHaveBeenNthCalledWith(2, {
+            fullPath: groupPath,
+            filters: parseViolationsQueryFilter(defaultFilterParams),
+            first: GRAPHQL_PAGE_SIZE,
+            sort: DEFAULT_SORT,
+            after,
+            before,
+          });
         },
       );
 
       describe('when there are no next or previous pages', () => {
         beforeEach(() => {
-          const group = resolvers.Query.group();
-          group.mergeRequestViolations.pageInfo.hasNextPage = false;
-          group.mergeRequestViolations.pageInfo.hasPreviousPage = false;
+          const noPagesResponse = createComplianceViolationsResponse({
+            pageInfo: {
+              hasNextPage: false,
+              hasPreviousPage: false,
+            },
+          });
+          const mockResolver = jest.fn().mockResolvedValue(noPagesResponse);
 
-          mockResolver = () => jest.fn().mockReturnValue(group);
-          wrapper = createComponent(mount);
+          wrapper = createComponent(mount, {}, mockResolver);
 
           return waitForPromises();
         });
@@ -471,20 +444,37 @@ describe('ComplianceReport component', () => {
           expect(findPagination().exists()).toBe(false);
         });
       });
+
+      describe('when the next page has been selected', () => {
+        beforeEach(() => {
+          return findPagination().vm.$emit('next', 'foo');
+        });
+
+        it('clears the pagination when the filter is updated', async () => {
+          const query = { projectIds: [1] };
+
+          await findViolationFilter().vm.$emit('filters-changed', query);
+
+          expect(mockGraphQlSuccess).toHaveBeenCalledTimes(3);
+          expect(mockGraphQlSuccess).toHaveBeenNthCalledWith(3, {
+            fullPath: groupPath,
+            filters: parseViolationsQueryFilter(query),
+            first: GRAPHQL_PAGE_SIZE,
+            sort: DEFAULT_SORT,
+            after: null,
+            before: null,
+          });
+        });
+      });
     });
   });
 
   describe('when there are no violations', () => {
     beforeEach(() => {
-      mockResolver = () => ({
-        __typename: 'Group',
-        id: 1,
-        mergeRequestViolations: {
-          __typename: 'MergeRequestViolations',
-          nodes: [],
-        },
-      });
-      wrapper = createComponent(mount);
+      const noViolationsResponse = createComplianceViolationsResponse({ count: 0 });
+      const mockResolver = jest.fn().mockResolvedValue(noViolationsResponse);
+
+      wrapper = createComponent(mount, {}, mockResolver);
 
       return waitForPromises();
     });
