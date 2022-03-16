@@ -5,13 +5,15 @@ require 'spec_helper'
 RSpec.describe 'Related Epics', :js do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public) }
+  let_it_be(:project) { create(:project, :public, group: group) }
+  let_it_be(:issue) { create(:issue, project: project) }
   let_it_be(:epic1) { create(:epic, group: group) }
   let_it_be(:epic2) { create(:epic, group: group) }
   let_it_be(:epic3) { create(:epic, group: group) }
 
-  def visit_epic
+  def visit_epic(related_epics: true)
     group.add_developer(user)
-    stub_licensed_features(epics: true, related_epics: true)
+    stub_licensed_features(epics: true, related_epics: related_epics)
     sign_in(user)
     visit group_epic_path(group, epic1)
 
@@ -92,11 +94,22 @@ RSpec.describe 'Related Epics', :js do
         page.find('#add-related-issues-form-input').native.send_keys('&')
       end
 
-      expect(page).to have_selector('#at-view-epics')
-      expect(page.find('#at-view-epics')).to have_selector('li', count: 3)
+      wait_for_requests
+
+      expect(page).to have_selector('#at-view-epics .atwho-view-ul li', count: 3)
       [epic3, epic2, epic1].each_with_index do |epic, index|
         expect(page.find("#at-view-epics li:nth-child(#{index + 1})")).to have_content("&#{epic.iid} #{epic.title}")
       end
+    end
+
+    it 'epic input field does not autocomplete issues when `#` is input', :aggregate_failures do
+      page.within('.js-add-related-issues-form-area') do
+        page.find('#add-related-issues-form-input').native.send_keys('#')
+      end
+
+      wait_for_requests
+
+      expect(page).not_to have_selector('#at-view-issues .atwho-view-ul li', count: 1)
     end
 
     it 'user can view list of added epics as tokens within input field', :aggregate_failures do
@@ -142,6 +155,20 @@ RSpec.describe 'Related Epics', :js do
       wait_for_requests
 
       expect(page).not_to have_selector('div[data-link-type="relates_to"]')
+    end
+  end
+
+  describe 'when related epics is not supported by license' do
+    before do
+      stub_feature_flags(related_epics_widget: true)
+
+      visit_epic(related_epics: false)
+    end
+
+    it 'user can not view related epics section under epic description', :aggregate_failures do
+      page.within('.js-epic-container') do
+        expect(page).not_to have_selector('#related-issues')
+      end
     end
   end
 end

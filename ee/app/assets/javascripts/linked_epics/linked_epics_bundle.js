@@ -30,6 +30,7 @@ export default function initRelatedEpics() {
             showCategorizedIssues: parseBoolean(showCategorizedEpics),
             pathIdSeparator: PathIdSeparator.Epic,
             issuableType: issuableTypesMap.EPIC,
+            autoCompleteIssues: false,
           },
         }),
     });
