@@ -141,6 +141,12 @@ describe('EE Value Stream Analytics component', () => {
         noAccessSvgPath,
         ...props,
       },
+      provide: {
+        glFeatures: {
+          useVsaAggregatedTables: true,
+          ...featureFlags,
+        },
+      },
       mocks,
       ...opts,
     });
@@ -366,6 +372,26 @@ describe('EE Value Stream Analytics component', () => {
               ...aggregationData,
               enabled: false,
             },
+          },
+        });
+      });
+
+      it('does not render the aggregation status', () => {
+        expect(findAggregationStatus().exists()).toBe(false);
+      });
+    });
+
+    describe('useVsaAggregatedTables = false', () => {
+      beforeEach(async () => {
+        wrapper = await createComponent({
+          initialState: {
+            ...initialCycleAnalyticsState,
+            aggregation: {
+              ...aggregationData,
+            },
+          },
+          featureFlags: {
+            useVsaAggregatedTables: false,
           },
         });
       });
