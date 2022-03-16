@@ -16,6 +16,10 @@ class Groups::Analytics::CycleAnalyticsController < Groups::Analytics::Applicati
     render_403 unless can?(current_user, :read_group_cycle_analytics, @group)
   end
 
+  before_action do
+    push_frontend_feature_flag(:use_vsa_aggregated_tables, @group, default_enabled: :yaml)
+  end
+
   layout 'group'
 
   track_redis_hll_event :show, name: 'g_analytics_valuestream'

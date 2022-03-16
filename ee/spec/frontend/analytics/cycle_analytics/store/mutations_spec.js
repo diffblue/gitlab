@@ -32,6 +32,9 @@ describe('Value Stream Analytics mutations', () => {
 
   it.each`
     mutation                                     | stateKey                     | value
+    ${types.REQUEST_UPDATE_AGGREGATION}          | ${'isUpdatingAggregation'}   | ${true}
+    ${types.RECEIVE_UPDATE_AGGREGATION_ERROR}    | ${'isUpdatingAggregation'}   | ${false}
+    ${types.RECEIVE_UPDATE_AGGREGATION_SUCCESS}  | ${'isUpdatingAggregation'}   | ${true}
     ${types.REQUEST_VALUE_STREAMS}               | ${'valueStreams'}            | ${[]}
     ${types.RECEIVE_VALUE_STREAMS_ERROR}         | ${'valueStreams'}            | ${[]}
     ${types.REQUEST_VALUE_STREAMS}               | ${'isLoadingValueStreams'}   | ${true}

@@ -447,6 +447,23 @@ describe('Api', () => {
           .catch(done.fail);
       });
     });
+
+    describe('cycleAnalyticsUpdateAggregation', () => {
+      it('updates the aggregation enabled status', (done) => {
+        const reqdata = { enabled: true };
+        const expectedUrl = `${dummyValueStreamAnalyticsUrlRoot}/use_aggregated_backend`;
+
+        mock.onPut(expectedUrl).reply(httpStatus.OK, reqdata);
+
+        Api.cycleAnalyticsUpdateAggregation(groupId, reqdata)
+          .then(({ data, config: { url } }) => {
+            expect(data).toEqual(reqdata);
+            expect(url).toEqual(expectedUrl);
+          })
+          .then(done)
+          .catch(done.fail);
+      });
+    });
   });
 
   describe('GroupActivityAnalytics', () => {

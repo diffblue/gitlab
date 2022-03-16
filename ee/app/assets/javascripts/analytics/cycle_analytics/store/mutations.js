@@ -200,4 +200,13 @@ export default {
       direction: direction || PAGINATION_SORT_DIRECTION_DESC,
     });
   },
+  [types.REQUEST_UPDATE_AGGREGATION](state) {
+    state.isUpdatingAggregation = true;
+  },
+  [types.RECEIVE_UPDATE_AGGREGATION_SUCCESS](state) {
+    state.isUpdatingAggregation = true;
+  },
+  [types.RECEIVE_UPDATE_AGGREGATION_ERROR](state) {
+    state.isUpdatingAggregation = false;
+  },
 };
