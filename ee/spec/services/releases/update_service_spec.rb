@@ -7,7 +7,7 @@ RSpec.describe Releases::UpdateService do
   let(:project) { create(:project, :repository, group: group) }
   let(:user) { create(:user) }
   let(:params) { { tag: tag_name } }
-  let!(:release) { create(:release, project: project) }
+  let!(:release) { create(:release, project: project, tag: tag_name) }
   let(:tag_name) { 'v1.1.0' }
   let(:service) { described_class.new(project, user, params_with_milestones) }
 
