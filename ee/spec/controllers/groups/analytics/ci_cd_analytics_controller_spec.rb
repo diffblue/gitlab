@@ -17,7 +17,6 @@ RSpec.describe Groups::Analytics::CiCdAnalyticsController do
 
   before do
     stub_licensed_features(group_ci_cd_analytics: true)
-    stub_feature_flags(group_ci_cd_analytics_page: true)
 
     sign_in(current_user) if current_user
   end
@@ -71,18 +70,6 @@ RSpec.describe Groups::Analytics::CiCdAnalyticsController do
       end
 
       it_behaves_like 'returns a 403'
-    end
-
-    context "when the :group_ci_cd_analytics_page feature flag is disabled" do
-      before do
-        stub_feature_flags(group_ci_cd_analytics_page: false)
-      end
-
-      it 'returns a 404' do
-        make_request
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
     end
   end
 end

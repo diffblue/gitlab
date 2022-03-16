@@ -62,7 +62,6 @@ module Sidebars
 
         def show_ci_cd_analytics?
           context.group.licensed_feature_available?(:group_ci_cd_analytics) &&
-          ::Feature.enabled?(:group_ci_cd_analytics_page, context.group, default_enabled: true) &&
           can?(context.current_user, :view_group_ci_cd_analytics, context.group)
         end
 
