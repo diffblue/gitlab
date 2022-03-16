@@ -13,15 +13,18 @@ module QA
         end
 
         attribute :id
-        attribute :start_date
         attribute :description
+        attribute :duration
+        attribute :future_iterations
+        attribute :start_date
         attribute :title
 
         def initialize
           @start_date = current_date_yyyy_mm_dd
           @description = "This is a test cadence."
           @title = "Iteration Cadence #{SecureRandom.hex(8)}"
-          @automatic = false
+          @duration = 2
+          @future_iterations = 2
         end
 
         def fabricate!
@@ -33,10 +36,17 @@ module QA
 
           QA::EE::Page::Group::Iteration::Cadence::New.perform do |new|
             new.fill_title(@title)
-            new.uncheck_automatic_scheduling unless @automatic
-            new.fill_start_date(@start_date) if @automatic
+            new.fill_start_date(@start_date)
+            new.fill_duration(@duration)
+            new.fill_future_iterations(@future_iterations)
             new.click_create_iteration_cadence_button
           end
+        end
+
+        def resource_web_url(resource)
+          super
+        rescue ResourceURLMissingError
+          # this particular resource does not expose a web_url property
         end
 
         def api_get_path
@@ -55,7 +65,9 @@ module QA
                 title: "#{@title}"
                 description: "#{@description}"
                 startDate: "#{@start_date}"
-                automatic: #{@automatic}
+                iterationsInAdvance: #{@future_iterations}
+                durationInWeeks: #{@duration}
+                automatic: true
                 active: true
                 }) {
                 iterationCadence {

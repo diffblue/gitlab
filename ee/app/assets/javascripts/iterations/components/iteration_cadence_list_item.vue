@@ -305,7 +305,11 @@ export default {
               class="gl-bg-gray-10 gl-p-5 gl-border-t-solid gl-border-gray-100 gl-border-t-1"
               data-testid="iteration-item"
             >
-              <router-link :to="path(iteration.id)">
+              <router-link
+                :to="path(iteration.id)"
+                data-qa-selector="iteration_item"
+                :data-qa-title="getIterationPeriod(iteration)"
+              >
                 {{ getIterationPeriod(iteration) }}
               </router-link>
               <timebox-status-badge v-if="showStateBadge" :state="iteration.state" />
