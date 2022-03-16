@@ -26,56 +26,62 @@ RSpec.describe 'User edits iteration' do
         sign_in(user)
       end
 
-      let(:start_date_with_cadences) do
+      let(:start_date_with_cadences_input) do
         page.find('#iteration-start-date')
       end
 
-      let(:due_date_with_cadences) do
+      let(:due_date_with_cadences_input) do
         page.find('#iteration-due-date')
       end
 
-      let(:start_date_without_cadences) do
+      let(:start_date_without_cadences_input) do
         input = page.first('[data-testid="gl-datepicker-input"]')
         input.set(now - 1.day)
         input
       end
 
-      let(:due_date_without_cadences) do
+      let(:due_date_without_cadences_input) do
         input = all('[data-testid="gl-datepicker-input"]').last
         input.set(now)
         input
       end
 
-      let(:updated_start_date_with_cadences) do
+      let(:updated_start_date_with_cadences_input) do
         fill_in('Start date', with: new_start_date.strftime('%Y-%m-%d'))
         new_start_date.strftime('%b %-d, %Y')
       end
 
-      let(:updated_due_date_with_cadences) do
+      let(:updated_due_date_with_cadences_input) do
         fill_in('Due date', with: new_due_date.strftime('%Y-%m-%d'))
         new_due_date.strftime('%b %-d, %Y')
       end
 
-      let(:updated_start_date_without_cadences) do
-        start_date_without_cadences.set(new_start_date)
+      let(:updated_start_date_without_cadences_input) do
+        start_date_without_cadences_input.set(new_start_date)
         new_start_date.strftime('%b %-d, %Y')
       end
 
-      let(:updated_due_date_without_cadences) do
-        due_date_without_cadences.set(new_due_date)
-        due_date_without_cadences.set(new_due_date)
+      let(:updated_due_date_without_cadences_input) do
+        # TODO: Reported issue with Capybara
+        # Use fill_in instead, update datepicker to have labels
+        due_date_without_cadences_input.set('')
+
+        due_date_without_cadences_input.set(new_due_date)
         new_due_date.strftime('%b %-d, %Y')
       end
 
-      where(:using_cadences, :start_date_input, :due_date_input, :updated_start_date, :updated_due_date) do
-        true  | ref(:start_date_with_cadences)    | ref(:due_date_with_cadences)    | ref(:updated_start_date_with_cadences)    | ref(:updated_due_date_with_cadences)
-        false | ref(:start_date_without_cadences) | ref(:due_date_without_cadences) | ref(:updated_start_date_without_cadences) | ref(:updated_due_date_without_cadences)
+      let(:iteration_with_cadences_page) { group_iteration_cadence_iteration_path(group, iteration_cadence_id: cadence.id, id: iteration.id) }
+      let(:iteration_without_cadences_page) { group_iteration_path(iteration.group, iteration.id) }
+
+      let(:edit_iteration_with_cadences_page) { edit_group_iteration_cadence_iteration_path(group, iteration_cadence_id: cadence.id, id: iteration.id) }
+      let(:edit_iteration_without_cadences_page) { edit_group_iteration_path(iteration.group, iteration.id) }
+
+      where(:using_cadences, :start_date_input, :due_date_input, :updated_start_date, :updated_due_date, :iteration_page, :edit_iteration_page) do
+        true  | ref(:start_date_with_cadences_input)    | ref(:due_date_with_cadences_input)    | ref(:updated_start_date_with_cadences_input)    | ref(:updated_due_date_with_cadences_input)    | ref(:iteration_with_cadences_page)    | ref(:edit_iteration_with_cadences_page)
+        false | ref(:start_date_without_cadences_input) | ref(:due_date_without_cadences_input) | ref(:updated_start_date_without_cadences_input) | ref(:updated_due_date_without_cadences_input) | ref(:iteration_without_cadences_page) | ref(:edit_iteration_without_cadences_page)
       end
 
       with_them do
-        let(:iteration_page) { using_cadences ? group_iteration_cadence_iteration_path(group, iteration_cadence_id: cadence.id, id: iteration.id) : group_iteration_path(iteration.group, iteration.id) }
-        let(:edit_iteration_page) { using_cadences ? edit_group_iteration_cadence_iteration_path(group, iteration_cadence_id: cadence.id, id: iteration.id) : edit_group_iteration_path(iteration.group, iteration.id) }
-
         context 'load edit page directly', :js do
           before do
             visit edit_iteration_page
