@@ -5,14 +5,6 @@ module ClustersHelper
     clusterable.is_a?(Project)
   end
 
-  def default_branch_name(clusterable)
-    return clusterable.default_branch if clusterable.is_a?(Project)
-  end
-
-  def clusterable_project_path(clusterable)
-    return clusterable.full_path if clusterable.is_a?(Project)
-  end
-
   def js_clusters_list_data(clusterable)
     {
       ancestor_help_path: help_page_path('user/group/clusters/index', anchor: 'cluster-precedence'),
@@ -115,5 +107,15 @@ module ClustersHelper
 
   def can_admin_cluster?(user, cluster)
     can?(user, :admin_cluster, cluster)
+  end
+
+  private
+
+  def default_branch_name(clusterable)
+    return clusterable.default_branch if clusterable.is_a?(Project)
+  end
+
+  def clusterable_project_path(clusterable)
+    return clusterable.full_path if clusterable.is_a?(Project)
   end
 end

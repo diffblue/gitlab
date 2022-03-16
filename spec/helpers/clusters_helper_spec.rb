@@ -38,6 +38,11 @@ RSpec.describe ClustersHelper do
 
     subject { helper.js_clusters_list_data(clusterable) }
 
+    before do
+      helper.send(:default_branch_name, clusterable)
+      helper.send(:clusterable_project_path, clusterable)
+    end
+
     it 'displays endpoint path' do
       expect(subject[:endpoint]).to eq("#{project_path(project)}/-/clusters.json")
     end
@@ -123,6 +128,14 @@ RSpec.describe ClustersHelper do
 
       it 'displays display_cluster_agents as false' do
         expect(subject[:display_cluster_agents]).to eq("false")
+      end
+
+      it 'does not include a default branch' do
+        expect(subject[:default_branch_name]).to be_nil
+      end
+
+      it 'does not include a project path' do
+        expect(subject[:project_path]).to be_nil
       end
     end
 
