@@ -16,7 +16,7 @@ export const PIPELINE_MUST_SUCCEED_CONFLICT_TEXT = __(
   'A CI/CD pipeline must run and be successful before merge.',
 );
 export const MERGE_DISABLED_DEPENDENCIES_TEXT = __(
-  'Merge blocked: all merge request dependencies must be merged or closed.',
+  'Merge blocked: all merge request dependencies must be merged.',
 );
 
 export default {

@@ -21,7 +21,7 @@ RSpec.describe "User views merge request with blocking merge requests", :js do
 
   it 'disables merge button when blocking merge request is open' do
     page.within('.mr-widget-section') do
-      expect(page).to have_content('Merge blocked: all merge request dependencies must be merged or closed.')
+      expect(page).to have_content('Merge blocked: all merge request dependencies must be merged.')
     end
   end
 
@@ -30,7 +30,7 @@ RSpec.describe "User views merge request with blocking merge requests", :js do
 
     it 'enables merge button when blocking merge request is merged' do
       page.within('.mr-widget-section') do
-        expect(page).not_to have_content('Merge blocked: all merge request dependencies must be merged or closed.')
+        expect(page).not_to have_content('Merge blocked: all merge request dependencies must be merged.')
       end
     end
   end
