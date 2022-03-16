@@ -6728,20 +6728,17 @@ RSpec.describe Project, factory_default: :keep do
       let_it_be(:project) { create(:project) }
       let_it_be(:maintainer) { create(:user) }
 
-      before do
-        project.add_maintainer(maintainer)
-      end
+      let(:owner_membership) { project.members.owners.find_by(user_id: project.namespace.owner_id) }
 
-      it 'includes the owner of the personal project' do
-        project_owner_membership = project.members.owners.find_by(user_id: project.namespace.owner_id)
-
-        expect(project.access_request_approvers_to_be_notified).to include(project_owner_membership)
+      it 'includes only the owner of the personal project' do
+        expect(project.access_request_approvers_to_be_notified.to_a).to eq([owner_membership])
       end
 
       it 'includes the maintainers of the personal project, if any' do
-        project_maintainer_membership = project.members.maintainers.find_by(user_id: maintainer.id)
+        project.add_maintainer(maintainer)
+        maintainer_membership = project.members.maintainers.find_by(user_id: maintainer.id)
 
-        expect(project.access_request_approvers_to_be_notified).to include(project_maintainer_membership)
+        expect(project.access_request_approvers_to_be_notified.to_a).to match_array([owner_membership, maintainer_membership])
       end
     end
 
