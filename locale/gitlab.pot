@@ -18607,12 +18607,6 @@ msgstr ""
 msgid "Import issues"
 msgstr ""
 
-msgid "Import members"
-msgstr ""
-
-msgid "Import members from another project"
-msgstr ""
-
 msgid "Import multiple repositories by uploading a manifest file."
 msgstr ""
 
@@ -18620,9 +18614,6 @@ msgid "Import project"
 msgstr ""
 
 msgid "Import project from"
-msgstr ""
-
-msgid "Import project members"
 msgstr ""
 
 msgid "Import projects from Bitbucket"
@@ -25763,9 +25754,6 @@ msgid "Only proceed if you trust %{idp_url} to control your GitLab account sign 
 msgstr ""
 
 msgid "Only project members can comment."
-msgstr ""
-
-msgid "Only project members will be imported. Group members will be skipped."
 msgstr ""
 
 msgid "Only projects created under a Ultimate license are available in Security Dashboards."
