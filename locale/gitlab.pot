@@ -7960,9 +7960,6 @@ msgstr ""
 msgid "ClusterIntegration|Add Kubernetes cluster"
 msgstr ""
 
-msgid "ClusterIntegration|Add a Kubernetes cluster integration"
-msgstr ""
-
 msgid "ClusterIntegration|Adding a Kubernetes cluster to your group will automatically share the cluster across all your projects. Use review apps, deploy your applications, and easily run your pipelines for all projects using the same cluster."
 msgstr ""
 
@@ -8071,7 +8068,7 @@ msgstr ""
 msgid "ClusterIntegration|Clusters are utilized by selecting the nearest ancestor with a matching environment scope. For example, project clusters will override group clusters. %{linkStart}More information%{linkEnd}"
 msgstr ""
 
-msgid "ClusterIntegration|Connect existing cluster"
+msgid "ClusterIntegration|Connect a Kubernetes cluster"
 msgstr ""
 
 msgid "ClusterIntegration|Connect with a certificate"
@@ -8119,18 +8116,6 @@ msgstr ""
 msgid "ClusterIntegration|Create Kubernetes cluster"
 msgstr ""
 
-msgid "ClusterIntegration|Create cluster on"
-msgstr ""
-
-msgid "ClusterIntegration|Create new cluster"
-msgstr ""
-
-msgid "ClusterIntegration|Create new cluster on EKS"
-msgstr ""
-
-msgid "ClusterIntegration|Create new cluster on GKE"
-msgstr ""
-
 msgid "ClusterIntegration|Creating Kubernetes cluster"
 msgstr ""
 
@@ -8164,6 +8149,9 @@ msgstr ""
 msgid "ClusterIntegration|Enable this setting if using role-based access control (RBAC)."
 msgstr ""
 
+msgid "ClusterIntegration|Enter details about your cluster. %{linkStart}How do I use a certificate to connect to my cluster?%{linkEnd}"
+msgstr ""
+
 msgid "ClusterIntegration|Enter new Service Token"
 msgstr ""
 
@@ -8171,6 +8159,9 @@ msgid "ClusterIntegration|Enter the details for your Amazon EKS Kubernetes clust
 msgstr ""
 
 msgid "ClusterIntegration|Enter the details for your Kubernetes cluster"
+msgstr ""
+
+msgid "ClusterIntegration|Enter your Kubernetes cluster certificate details"
 msgstr ""
 
 msgid "ClusterIntegration|Environment scope"
@@ -8236,9 +8227,6 @@ msgstr ""
 msgid "ClusterIntegration|HTTP Error"
 msgstr ""
 
-msgid "ClusterIntegration|If you are setting up multiple clusters and are using Auto DevOps, %{help_link_start}read this first%{help_link_end}."
-msgstr ""
-
 msgid "ClusterIntegration|If you do not wish to delete all associated GitLab resources, you can simply remove the integration."
 msgstr ""
 
@@ -8284,7 +8272,7 @@ msgstr ""
 msgid "ClusterIntegration|Learn more about %{help_link_start}zones%{help_link_end}."
 msgstr ""
 
-msgid "ClusterIntegration|Learn more about Kubernetes"
+msgid "ClusterIntegration|Learn more about Kubernetes."
 msgstr ""
 
 msgid "ClusterIntegration|Learn more about group Kubernetes clusters"
@@ -8375,9 +8363,6 @@ msgid "ClusterIntegration|Number of nodes"
 msgstr ""
 
 msgid "ClusterIntegration|Number of nodes must be a numerical value."
-msgstr ""
-
-msgid "ClusterIntegration|Please enter access information for your Kubernetes cluster. If you need help, you can read our %{linkStart}documentation%{linkEnd} on Kubernetes"
 msgstr ""
 
 msgid "ClusterIntegration|Please make sure that your Google account meets the following requirements:"
@@ -8629,10 +8614,16 @@ msgstr ""
 msgid "ClusterIntegration|Unknown Error"
 msgstr ""
 
+msgid "ClusterIntegration|Use GitLab to deploy to your cluster, run jobs, use review apps, and more."
+msgstr ""
+
 msgid "ClusterIntegration|Use the %{linkStart}GitLab Agent%{linkEnd} to safely connect your Kubernetes clusters to GitLab. You can deploy your applications, run your pipelines, use Review Apps, and much more."
 msgstr ""
 
 msgid "ClusterIntegration|Uses the Cloud Run, Istio, and HTTP Load Balancing addons for this cluster."
+msgstr ""
+
+msgid "ClusterIntegration|Using AutoDevOps with multiple clusters? %{help_link_start}Read this first.%{help_link_end}"
 msgstr ""
 
 msgid "ClusterIntegration|VPC"
@@ -8647,7 +8638,7 @@ msgstr ""
 msgid "ClusterIntegration|We were unable to fetch any projects. Ensure that you have a project on %{docsLinkStart}Google Cloud Platform%{docsLinkEnd}."
 msgstr ""
 
-msgid "ClusterIntegration|With a Kubernetes cluster associated to this project, you can use review apps, deploy your applications, run your pipelines, and much more in an easy way."
+msgid "ClusterIntegration|Where do you want to create a cluster?"
 msgstr ""
 
 msgid "ClusterIntegration|You are about to remove your cluster integration and all GitLab-created resources associated with this cluster."
@@ -9349,6 +9340,12 @@ msgid "Congratulations, your free trial is activated."
 msgstr ""
 
 msgid "Connect"
+msgstr ""
+
+msgid "Connect a Kubernetes Cluster"
+msgstr ""
+
+msgid "Connect a cluster"
 msgstr ""
 
 msgid "Connect all repositories"
@@ -10185,7 +10182,13 @@ msgstr ""
 msgid "Create a GitLab account first, and then connect it to your %{label} account."
 msgstr ""
 
+msgid "Create a Kubernetes cluster"
+msgstr ""
+
 msgid "Create a Mattermost team for this group"
+msgstr ""
+
+msgid "Create a cluster"
 msgstr ""
 
 msgid "Create a group"
