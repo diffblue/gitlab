@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Combined registration flow', :js do
   let_it_be(:user) { create(:user) }
 
-  let(:experiments) { {} }
+  let(:feature_flags) { {} }
 
   before do
     # https://gitlab.com/gitlab-org/gitlab/-/issues/340302
@@ -22,7 +22,12 @@ RSpec.describe 'Combined registration flow', :js do
   end
 
   context 'when combined_registration experiment variant is candidate' do
-    let(:experiments) { { combined_registration: :candidate } }
+    let(:feature_flags) do
+      {
+        combined_registration: true,
+        about_your_company_registration_flow: false
+      }
+   end
 
     it 'A user can create a group and project' do
       page.within '.js-group-path-display' do
@@ -80,7 +85,13 @@ RSpec.describe 'Combined registration flow', :js do
       end
 
       context 'when require_verification_for_namespace_creation experiment is enabled' do
-        let(:experiments) { { combined_registration: :candidate, require_verification_for_namespace_creation: :candidate } }
+        let(:feature_flags) do
+          {
+            combined_registration: true,
+            about_your_company_registration_flow: false,
+            require_verification_for_namespace_creation: true
+          }
+        end
 
         it 'shows a link to exit the page' do
           expect(page).to have_link('Exit.', href: exit_users_sign_up_groups_projects_path)

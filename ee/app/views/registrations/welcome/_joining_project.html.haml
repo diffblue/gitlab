@@ -2,7 +2,6 @@
 - return if in_trial_flow?
 
 - experiment(:bypass_registration, user: current_user) do |e|
-  - e.publish_to_database
   - e.try do
     .row
       .form-group.col-sm-12
@@ -19,3 +18,4 @@
             = _('Join a project')
             .form-text.gl-text-gray-600
               = _('Join your team on GitLab and contribute to an existing project')
+  - e.publish_to_database

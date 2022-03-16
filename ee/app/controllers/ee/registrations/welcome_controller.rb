@@ -74,6 +74,11 @@ module EE
           helpers.signup_onboarding_enabled?
       end
 
+      def show_company_form?
+        update_params[:setup_for_company] == 'true' &&
+          ::Feature.enabled?(:about_your_company_registration_flow)
+      end
+
       def authorized_for_trial_onboarding!
         access_denied! unless can?(current_user, :owner_access, learn_gitlab_project)
       end
@@ -99,7 +104,12 @@ module EE
           path_for_signed_in_user(current_user)
         else
           bypass_registration_event(:creating_project)
-          experiment(:combined_registration, user: current_user).redirect_path
+
+          if show_company_form?
+            new_users_sign_up_company_path
+          else
+            experiment(:combined_registration, user: current_user).redirect_path
+          end
         end
       end
 
