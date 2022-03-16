@@ -11,16 +11,18 @@ import * as types from 'ee/subscriptions/new/store/mutation_types';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import getBillableMembersCountQuery from 'ee/subscriptions/graphql/queries/billable_members_count.query.graphql';
+import waitForPromises from 'helpers/wait_for_promises';
 
 const availablePlans = [
   { id: 'firstPlanId', code: 'bronze', price_per_year: 48, name: 'bronze' },
   { id: 'secondPlanId', code: 'silver', price_per_year: 228, name: 'silver' },
 ];
 
-const groupData = [
-  { id: 132, name: 'My first group', users: 3 },
-  { id: 483, name: 'My second group', users: 12 },
-];
+const firstGroup = { id: 132, name: 'My first group', full_path: 'my-first-group' };
+const secondGroup = { id: 483, name: 'My second group', full_path: 'my-second-group' };
+
+const groupData = [firstGroup, secondGroup];
 
 const createDefaultInitialStoreData = (initialData) => ({
   availablePlans: JSON.stringify(availablePlans),
@@ -39,13 +41,16 @@ describe('Subscription Details', () => {
 
   function createComponent(options = {}) {
     const { apolloProvider, store } = options;
-    return mountExtended(Component, {
+
+    wrapper = mountExtended(Component, {
       store,
       apolloProvider,
       stubs: {
         Step,
       },
     });
+
+    return waitForPromises();
   }
 
   const organizationNameInput = () => wrapper.findComponent({ ref: 'organization-name' });
@@ -53,6 +58,8 @@ describe('Subscription Details', () => {
   const numberOfUsersInput = () => wrapper.findComponent({ ref: 'number-of-users' });
   const companyLink = () => wrapper.findComponent({ ref: 'company-link' });
   const findQsrOverageMessage = () => wrapper.findByTestId('qsr-overage-message');
+  const findNumberOfUsersFormGroup = () => wrapper.findByTestId('number-of-users-field');
+  const findErrorAlert = () => wrapper.findByTestId('error-message');
 
   afterEach(() => {
     wrapper.destroy();
@@ -60,11 +67,11 @@ describe('Subscription Details', () => {
 
   describe('when rendering', () => {
     beforeEach(() => {
-      const mockApollo = createMockApolloProvider(STEPS);
+      const mockApollo = createMockApolloProvider(STEPS, 1, {}, []);
       const store = createStore(
         createDefaultInitialStoreData({ newUser: 'true', setupForCompany: '' }),
       );
-      wrapper = createComponent({ apolloProvider: mockApollo, store });
+      return createComponent({ apolloProvider: mockApollo, store });
     });
 
     it('has an alert displaying a message related to QSR process', () => {
@@ -82,11 +89,11 @@ describe('Subscription Details', () => {
 
   describe('A new user for which we do not have setupForCompany info', () => {
     beforeEach(() => {
-      const mockApollo = createMockApolloProvider(STEPS);
+      const mockApollo = createMockApolloProvider(STEPS, 1, {}, []);
       const store = createStore(
         createDefaultInitialStoreData({ newUser: 'true', setupForCompany: '' }),
       );
-      wrapper = createComponent({ apolloProvider: mockApollo, store });
+      return createComponent({ apolloProvider: mockApollo, store });
     });
 
     it('should not display an input field for the company or group name', () => {
@@ -112,11 +119,11 @@ describe('Subscription Details', () => {
 
   describe('A new user setting up for personal use', () => {
     beforeEach(() => {
-      const mockApollo = createMockApolloProvider(STEPS);
+      const mockApollo = createMockApolloProvider(STEPS, 1, {}, []);
       const store = createStore(
         createDefaultInitialStoreData({ newUser: 'true', setupForCompany: 'false' }),
       );
-      wrapper = createComponent({ apolloProvider: mockApollo, store });
+      return createComponent({ apolloProvider: mockApollo, store });
     });
 
     it('should not display an input field for the company or group name', () => {
@@ -135,6 +142,10 @@ describe('Subscription Details', () => {
       expect(numberOfUsersInput().attributes('min')).toBe('1');
     });
 
+    it('should not show the label description with minimum number of users', () => {
+      expect(findNumberOfUsersFormGroup().props().labelDescription).toBe(null);
+    });
+
     it('should show a link to change to setting up for a company', () => {
       expect(companyLink().exists()).toBe(true);
     });
@@ -142,7 +153,7 @@ describe('Subscription Details', () => {
 
   describe('A new user setting up for a company or group', () => {
     beforeEach(() => {
-      const mockApollo = createMockApolloProvider(STEPS);
+      const mockApollo = createMockApolloProvider(STEPS, 1, {}, []);
       const store = createStore(
         createDefaultInitialStoreData({
           newUser: 'true',
@@ -150,7 +161,7 @@ describe('Subscription Details', () => {
           setupForCompany: 'true',
         }),
       );
-      wrapper = createComponent({ apolloProvider: mockApollo, store });
+      return createComponent({ apolloProvider: mockApollo, store });
     });
 
     it('should display an input field for the company or group name', () => {
@@ -167,6 +178,10 @@ describe('Subscription Details', () => {
 
     it('should set the min number of users to 1', () => {
       expect(numberOfUsersInput().attributes('min')).toBe('1');
+    });
+
+    it('should not show the label description with minimum number of users', () => {
+      expect(findNumberOfUsersFormGroup().props().labelDescription).toBe(null);
     });
 
     it('should not show a link to change to setting up for a company', () => {
@@ -176,7 +191,7 @@ describe('Subscription Details', () => {
 
   describe('An existing user without any groups', () => {
     beforeEach(() => {
-      const mockApollo = createMockApolloProvider(STEPS);
+      const mockApollo = createMockApolloProvider(STEPS, 1, {}, []);
       const store = createStore(
         createDefaultInitialStoreData({
           newUser: 'false',
@@ -184,7 +199,7 @@ describe('Subscription Details', () => {
           setupForCompany: 'true',
         }),
       );
-      wrapper = createComponent({ apolloProvider: mockApollo, store });
+      return createComponent({ apolloProvider: mockApollo, store });
     });
 
     it('should display an input field for the company or group name', () => {
@@ -201,6 +216,10 @@ describe('Subscription Details', () => {
 
     it('should set the min number of users to 1', () => {
       expect(numberOfUsersInput().attributes('min')).toBe('1');
+    });
+
+    it('should not show the label description with minimum number of users', () => {
+      expect(findNumberOfUsersFormGroup().props().labelDescription).toBe(null);
     });
 
     it('should not show a link to change to setting up for a company', () => {
@@ -212,14 +231,18 @@ describe('Subscription Details', () => {
     let store;
 
     beforeEach(() => {
-      const mockApollo = createMockApolloProvider(STEPS);
+      const billableMembersCountMock = jest
+        .fn()
+        .mockResolvedValue({ data: { group: { id: secondGroup.id, billableMembersCount: 12 } } });
+      const handlers = [[getBillableMembersCountQuery, billableMembersCountMock]];
+      const mockApollo = createMockApolloProvider(STEPS, 1, {}, handlers);
       store = createStore(
         createDefaultInitialStoreData({
           newUser: 'false',
           setupForCompany: 'true',
         }),
       );
-      wrapper = createComponent({ apolloProvider: mockApollo, store });
+      return createComponent({ apolloProvider: mockApollo, store });
     });
 
     it('should not display an input field for the company or group name', () => {
@@ -238,13 +261,19 @@ describe('Subscription Details', () => {
       expect(numberOfUsersInput().attributes('min')).toBe('1');
     });
 
+    it('should not show the label description with minimum number of users', () => {
+      expect(findNumberOfUsersFormGroup().props().labelDescription).toBe(null);
+    });
+
     it('should not show a link to change to setting up for a company', () => {
       expect(companyLink().exists()).toBe(false);
     });
 
     describe('selecting an existing group', () => {
-      beforeEach(() => {
-        store.commit(types.UPDATE_SELECTED_GROUP, 483);
+      beforeEach(async () => {
+        store.commit(types.UPDATE_SELECTED_GROUP, secondGroup.id);
+        await waitForPromises();
+        return nextTick();
       });
 
       it('should display the correct description', () => {
@@ -253,6 +282,12 @@ describe('Subscription Details', () => {
 
       it('should set the min number of users to 12', () => {
         expect(numberOfUsersInput().attributes('min')).toBe('12');
+      });
+
+      it('should set the label description with minimum number of users', () => {
+        expect(findNumberOfUsersFormGroup().props().labelDescription).toBe(
+          'This number must be 12 (your seats in use) or more.',
+        );
       });
     });
 
@@ -272,22 +307,31 @@ describe('Subscription Details', () => {
       it('should set the min number of users to 1', () => {
         expect(numberOfUsersInput().attributes('min')).toBe('1');
       });
+
+      it('should not show the label description with minimum number of users', () => {
+        expect(findNumberOfUsersFormGroup().props().labelDescription).toBe(null);
+      });
     });
   });
 
   describe('An existing user for which we do not have setupForCompany info coming from group billing page', () => {
     let store;
+    const billableMembersCountMock = jest.fn();
 
     beforeEach(() => {
-      const mockApollo = createMockApolloProvider(STEPS);
+      billableMembersCountMock.mockResolvedValue({
+        data: { group: { id: firstGroup.id, billableMembersCount: 3 } },
+      });
+      const handlers = [[getBillableMembersCountQuery, billableMembersCountMock]];
+      const mockApollo = createMockApolloProvider(STEPS, 1, {}, handlers);
       store = createStore(
         createDefaultInitialStoreData({
           isNewUser: 'false',
-          namespaceId: '132',
+          namespaceId: firstGroup.id,
           setupForCompany: '',
         }),
       );
-      wrapper = createComponent({ apolloProvider: mockApollo, store });
+      return createComponent({ apolloProvider: mockApollo, store });
     });
 
     it('should not display an input field for the company or group name', () => {
@@ -306,8 +350,21 @@ describe('Subscription Details', () => {
       expect(numberOfUsersInput().attributes('min')).toBe('3');
     });
 
+    it('should set the label description with minimum number of users', () => {
+      expect(findNumberOfUsersFormGroup().props().labelDescription).toBe(
+        'This number must be 3 (your seats in use) or more.',
+      );
+    });
+
+    it('should call the query with appropriate params', () => {
+      expect(billableMembersCountMock).toHaveBeenCalledWith({
+        fullPath: firstGroup.full_path,
+        requestedHostedPlan: 'silver',
+      });
+    });
+
     it('should set the selected group to initial namespace id', () => {
-      expect(groupSelect().element.value).toBe('132');
+      expect(groupSelect().element.value).toBe(firstGroup.id.toString());
     });
 
     it('should not show a link to change to setting up for a company', () => {
@@ -316,7 +373,11 @@ describe('Subscription Details', () => {
 
     describe('selecting an existing group', () => {
       beforeEach(() => {
-        store.commit(types.UPDATE_SELECTED_GROUP, 483);
+        billableMembersCountMock.mockResolvedValue({
+          data: { group: { id: secondGroup.id, billableMembersCount: 12 } },
+        });
+        store.commit(types.UPDATE_SELECTED_GROUP, secondGroup.id);
+        return waitForPromises();
       });
 
       it('should display the correct description', () => {
@@ -327,8 +388,14 @@ describe('Subscription Details', () => {
         expect(numberOfUsersInput().attributes('min')).toBe('12');
       });
 
+      it('should set the label description with minimum number of users', () => {
+        expect(findNumberOfUsersFormGroup().props().labelDescription).toBe(
+          'This number must be 12 (your seats in use) or more.',
+        );
+      });
+
       it('should set the selected group to the user selected namespace id', () => {
-        expect(groupSelect().element.value).toBe('483');
+        expect(groupSelect().element.value).toBe(secondGroup.id.toString());
       });
     });
   });
@@ -337,15 +404,19 @@ describe('Subscription Details', () => {
     let store;
 
     beforeEach(() => {
-      const mockApollo = createMockApolloProvider(STEPS);
+      const billableMembersCountMock = jest
+        .fn()
+        .mockResolvedValue({ data: { group: { id: firstGroup.id, billableMembersCount: 3 } } });
+      const handlers = [[getBillableMembersCountQuery, billableMembersCountMock]];
+      const mockApollo = createMockApolloProvider(STEPS, 1, {}, handlers);
       store = createStore(
         createDefaultInitialStoreData({
           isNewUser: 'false',
-          namespaceId: '132',
+          namespaceId: firstGroup.id,
           setupForCompany: 'false',
         }),
       );
-      wrapper = createComponent({ apolloProvider: mockApollo, store });
+      return createComponent({ apolloProvider: mockApollo, store });
     });
 
     it('should not display an input field for the company or group name', () => {
@@ -360,6 +431,12 @@ describe('Subscription Details', () => {
       expect(numberOfUsersInput().attributes('disabled')).toBeUndefined();
     });
 
+    it('should set the label description with minimum number of users', () => {
+      expect(findNumberOfUsersFormGroup().props().labelDescription).toBe(
+        'This number must be 3 (your seats in use) or more.',
+      );
+    });
+
     it('should not show a link to change to setting up for a company', () => {
       expect(companyLink().exists()).toBe(false);
     });
@@ -368,17 +445,21 @@ describe('Subscription Details', () => {
   describe('tracking', () => {
     let store;
 
-    beforeEach(() => {
-      const mockApollo = createMockApolloProvider(STEPS);
+    beforeEach(async () => {
+      const billableMembersCountMock = jest
+        .fn()
+        .mockResolvedValue({ data: { group: { id: firstGroup.id, billableMembersCount: 3 } } });
+      const handlers = [[getBillableMembersCountQuery, billableMembersCountMock]];
+      const mockApollo = createMockApolloProvider(STEPS, 1, {}, handlers);
       store = createStore(
         createDefaultInitialStoreData({
           isNewUser: 'false',
-          namespaceId: '132',
+          namespaceId: firstGroup.id,
           setupForCompany: 'false',
         }),
       );
+      await createComponent({ apolloProvider: mockApollo, store });
       store.commit(types.UPDATE_NUMBER_OF_USERS, 13);
-      wrapper = createComponent({ apolloProvider: mockApollo, store });
     });
 
     it('tracks completion details', async () => {
@@ -397,7 +478,7 @@ describe('Subscription Details', () => {
       });
       expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_button', {
         label: 'update_group',
-        property: 132,
+        property: firstGroup.id,
       });
       expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_button', {
         label: 'continue_billing',
@@ -422,19 +503,23 @@ describe('Subscription Details', () => {
     let store;
 
     describe('when setting up for a company', () => {
-      beforeEach(() => {
-        const mockApollo = createMockApolloProvider(STEPS);
+      beforeEach(async () => {
+        const billableMembersCountMock = jest
+          .fn()
+          .mockResolvedValue({ data: { group: { id: secondGroup.id, billableMembersCount: 12 } } });
+        const handlers = [[getBillableMembersCountQuery, billableMembersCountMock]];
+        const mockApollo = createMockApolloProvider(STEPS, 1, {}, handlers);
         store = createStore(
           createDefaultInitialStoreData({
-            namespaceId: 483,
+            namespaceId: secondGroup.id,
             newUser: 'true',
             setupForCompany: 'true',
           }),
         );
-        wrapper = createComponent({ apolloProvider: mockApollo, store });
-        store.commit(types.UPDATE_SELECTED_PLAN, 'firstPlanId');
+        await createComponent({ apolloProvider: mockApollo, store });
         store.commit(types.UPDATE_ORGANIZATION_NAME, 'Organization name');
         store.commit(types.UPDATE_NUMBER_OF_USERS, 14);
+        await nextTick();
       });
 
       it('should be valid', () => {
@@ -473,7 +558,7 @@ describe('Subscription Details', () => {
 
     describe('when not setting up for a company and a new user', () => {
       beforeEach(() => {
-        const mockApollo = createMockApolloProvider(STEPS);
+        const mockApollo = createMockApolloProvider(STEPS, 1, {}, []);
         store = createStore(
           createDefaultInitialStoreData({
             namespaceId: 111,
@@ -482,11 +567,15 @@ describe('Subscription Details', () => {
             groupData: JSON.stringify([{ id: 111, name: 'Just me group', users: 1 }]),
           }),
         );
-        wrapper = createComponent({ apolloProvider: mockApollo, store });
+        return createComponent({ apolloProvider: mockApollo, store });
       });
 
       it('should disable the number of users input field', () => {
         expect(numberOfUsersInput().attributes('disabled')).toBeDefined();
+      });
+
+      it('should not show the label description with minimum number of users', () => {
+        expect(findNumberOfUsersFormGroup().props().labelDescription).toBe(null);
       });
 
       it('should be valid', () => {
@@ -495,17 +584,22 @@ describe('Subscription Details', () => {
     });
 
     describe('when not setting up for a company and not a new user', () => {
-      beforeEach(() => {
-        const mockApollo = createMockApolloProvider(STEPS);
+      beforeEach(async () => {
+        const billableMembersCountMock = jest
+          .fn()
+          .mockResolvedValue({ data: { group: { id: firstGroup.id, billableMembersCount: 3 } } });
+        const handlers = [[getBillableMembersCountQuery, billableMembersCountMock]];
+        const mockApollo = createMockApolloProvider(STEPS, 1, {}, handlers);
         store = createStore(
           createDefaultInitialStoreData({
-            namespaceId: 132,
+            namespaceId: firstGroup.id,
             newUser: 'false',
             setupForCompany: 'false',
           }),
         );
-        wrapper = createComponent({ apolloProvider: mockApollo, store });
-        store.commit(types.UPDATE_NUMBER_OF_USERS, 3);
+        await createComponent({ apolloProvider: mockApollo, store });
+        store.commit(types.UPDATE_SELECTED_GROUP, secondGroup.id);
+        await nextTick();
       });
 
       it('should be valid', () => {
@@ -546,13 +640,17 @@ describe('Subscription Details', () => {
     let store;
 
     beforeEach(() => {
-      const mockApollo = createMockApolloProvider(STEPS, 1);
+      const billableMembersCountMock = jest
+        .fn()
+        .mockResolvedValue({ data: { group: { id: firstGroup.id, billableMembersCount: 3 } } });
+      const handlers = [[getBillableMembersCountQuery, billableMembersCountMock]];
+      const mockApollo = createMockApolloProvider(STEPS, 1, {}, handlers);
       store = createStore(createDefaultInitialStoreData());
       store.commit(types.UPDATE_IS_SETUP_FOR_COMPANY, true);
       store.commit(types.UPDATE_SELECTED_PLAN, 'firstPlanId');
       store.commit(types.UPDATE_ORGANIZATION_NAME, 'My Organization');
       store.commit(types.UPDATE_NUMBER_OF_USERS, 25);
-      wrapper = createComponent({ apolloProvider: mockApollo, store });
+      return createComponent({ apolloProvider: mockApollo, store });
     });
 
     it('should show the selected plan', () => {
@@ -570,8 +668,11 @@ describe('Subscription Details', () => {
     });
 
     describe('selecting an existing group', () => {
-      beforeEach(() => {
-        store.commit(types.UPDATE_SELECTED_GROUP, 483);
+      beforeEach(async () => {
+        store.commit(types.UPDATE_SELECTED_GROUP, secondGroup.id);
+        store.commit(types.UPDATE_ORGANIZATION_NAME, null);
+        await waitForPromises();
+        await nextTick();
       });
 
       it('should show the selected group name', () => {
@@ -579,6 +680,62 @@ describe('Subscription Details', () => {
           'Group: My second group',
         );
       });
+    });
+  });
+
+  describe('when errored', () => {
+    const errorMessage = 'Oopsie, something went wrong';
+    beforeEach(() => {
+      const mockError = new Error(errorMessage);
+      const billableMembersCountMock = jest.fn().mockRejectedValue(mockError);
+      const handlers = [[getBillableMembersCountQuery, billableMembersCountMock]];
+      const mockApollo = createMockApolloProvider(STEPS, 1, {}, handlers);
+      const store = createStore(createDefaultInitialStoreData());
+      store.commit(types.UPDATE_SELECTED_GROUP, secondGroup.id);
+      return createComponent({ apolloProvider: mockApollo, store });
+    });
+
+    it('should show an alert with the error message', () => {
+      expect(findErrorAlert().exists()).toBe(true);
+
+      expect(findErrorAlert().text()).toContain(errorMessage);
+    });
+
+    it('should not show the error alert when dismissed', async () => {
+      findErrorAlert().vm.$emit('dismiss');
+
+      await nextTick();
+
+      expect(findErrorAlert().exists()).toBe(false);
+    });
+
+    it('should not show the number of users label description when in error', async () => {
+      findErrorAlert().vm.$emit('dismiss');
+
+      await nextTick();
+
+      expect(findNumberOfUsersFormGroup().props().labelDescription).toBe(null);
+    });
+  });
+
+  describe('when is loading', () => {
+    beforeEach(() => {
+      const billableMembersCountMock = jest.fn().mockImplementation(() => new Promise(() => {}));
+      const handlers = [[getBillableMembersCountQuery, billableMembersCountMock]];
+      const mockApollo = createMockApolloProvider(STEPS, 1, {}, handlers);
+      const store = createStore(createDefaultInitialStoreData());
+      store.commit(types.UPDATE_SELECTED_GROUP, secondGroup.id);
+
+      return createComponent({ apolloProvider: mockApollo, store });
+    });
+
+    it('should show loading step', () => {
+      const step = wrapper.findComponent(Step);
+
+      expect(step.props()).toMatchObject({
+        isValid: false,
+      });
+      expect(step.find('[data-testid="subscription-loading-container"]').exists()).toBe(true);
     });
   });
 });

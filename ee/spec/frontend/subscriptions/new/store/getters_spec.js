@@ -151,90 +151,56 @@ describe('Subscriptions Getters', () => {
     });
   });
 
-  describe('selectedGroupUsers', () => {
-    it('returns 1 when no group is selected', () => {
-      expect(
-        getters.selectedGroupUsers(
-          { groupData: [{ numberOfUsers: 3, value: 123 }], selectedGroup: 123 },
-          { isGroupSelected: false },
-        ),
-      ).toBe(1);
+  describe('isSelectedGroupPresent', () => {
+    it('returns true when known group is selected', () => {
+      expect(getters.isSelectedGroupPresent({}, { selectedGroupData: {} })).toBe(true);
     });
 
-    it('returns `null` when a group is selected, but not present', () => {
+    it('returns false when no group is selected', () => {
+      expect(getters.isSelectedGroupPresent({}, { selectedGroupData: undefined })).toBe(false);
+    });
+  });
+
+  describe('selectedGroupData', () => {
+    it('returns null when no group is selected', () => {
       expect(
-        getters.selectedGroupUsers(
-          { groupData: [{ numberOfUsers: 3, value: 123 }], selectedGroup: 123 },
-          { isGroupSelected: true, isSelectedGroupPresent: false },
+        getters.selectedGroupData(
+          {
+            groupData: [
+              { text: 'Not selected group', value: 'not-selected-group' },
+              { text: 'Selected group', value: 'selected-group' },
+            ],
+          },
+          { isGroupSelected: false },
         ),
       ).toBe(null);
     });
 
-    it('returns the number of users of the selected group when a group is selected and plan is not ultimate', () => {
+    it('returns the selected group when a group is selected', () => {
       expect(
-        getters.selectedGroupUsers(
-          { groupData: [{ numberOfUsers: 3, numberOfGuests: 1, value: 123 }], selectedGroup: 123 },
-          { isGroupSelected: true, isSelectedGroupPresent: true, isUltimatePlan: false },
-        ),
-      ).toBe(3);
-    });
-
-    it('returns difference between the number of users and guests of the selected group if the selected plan is ultimate', () => {
-      expect(
-        getters.selectedGroupUsers(
-          { groupData: [{ numberOfUsers: 3, numberOfGuests: 1, value: 123 }], selectedGroup: 123 },
-          { isGroupSelected: true, isSelectedGroupPresent: true, isUltimatePlan: true },
-        ),
-      ).toBe(2);
-    });
-  });
-
-  describe('isSelectedGroupPresent', () => {
-    it('returns false when group is not selected', () => {
-      expect(
-        getters.isSelectedGroupPresent(
-          { groupData: [{ numberOfUsers: 3, value: 123 }], selectedGroup: null },
-          { isGroupSelected: false },
-        ),
-      ).toBe(false);
-    });
-
-    it('returns false when group is selected, but not present', () => {
-      expect(
-        getters.isSelectedGroupPresent(
-          { groupData: [{ numberOfUsers: 3, value: 123 }], selectedGroup: 321 },
+        getters.selectedGroupData(
+          {
+            selectedGroup: 'selected-group',
+            groupData: [
+              { text: 'Not selected group', value: 'not-selected-group' },
+              { text: 'Selected group', value: 'selected-group' },
+            ],
+          },
           { isGroupSelected: true },
         ),
-      ).toBe(false);
-    });
-
-    it('returns true when group is selected and is present', () => {
-      expect(
-        getters.isSelectedGroupPresent(
-          { groupData: [{ numberOfUsers: 3, value: 123 }], selectedGroup: 123 },
-          { isGroupSelected: true },
-        ),
-      ).toBe(true);
+      ).toEqual({ text: 'Selected group', value: 'selected-group' });
     });
   });
 
   describe('selectedGroupName', () => {
     it('returns null when no group is selected', () => {
-      expect(
-        getters.selectedGroupName(
-          { groupData: [{ text: 'Selected group', value: 123 }], selectedGroup: 123 },
-          { isGroupSelected: false },
-        ),
-      ).toBe(null);
+      expect(getters.selectedGroupName({}, { selectedGroupData: undefined })).toBe(undefined);
     });
 
     it('returns the text attribute of the selected group when a group is selected', () => {
-      expect(
-        getters.selectedGroupName(
-          { groupData: [{ text: 'Selected group', value: 123 }], selectedGroup: 123 },
-          { isGroupSelected: true },
-        ),
-      ).toBe('Selected group');
+      expect(getters.selectedGroupName({}, { selectedGroupData: { text: 'Selected group' } })).toBe(
+        'Selected group',
+      );
     });
   });
 
