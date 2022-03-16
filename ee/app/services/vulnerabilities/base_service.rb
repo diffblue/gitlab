@@ -12,12 +12,27 @@ module Vulnerabilities
 
     private
 
-    def update_with_note(vulnerability, params)
-      return false unless vulnerability.update(params)
+    def update_vulnerability_with(params)
+      @vulnerability.transaction do
+        yield if block_given?
 
-      Vulnerabilities::Statistics::UpdateService.update_for(vulnerability)
-      SystemNoteService.change_vulnerability_state(vulnerability, @user) if vulnerability.state_previously_changed?
+        update_with_note(params)
+      end
+
+      update_statistics
+    end
+
+    def update_with_note(params)
+      return false unless @vulnerability.update(params)
+
+      # The following service call alters the `previous_changes` of the vulnerability object
+      # therefore, we are sending the cloned object as that information is important for the rest of the logic.
+      SystemNoteService.change_vulnerability_state(@vulnerability.clone, @user) if @vulnerability.state_previously_changed?
       true
+    end
+
+    def update_statistics
+      Vulnerabilities::Statistics::UpdateService.update_for(@vulnerability) if @vulnerability.previous_changes.present?
     end
 
     def authorized?
