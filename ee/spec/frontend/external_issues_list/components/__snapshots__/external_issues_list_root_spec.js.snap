@@ -124,6 +124,7 @@ Object {
           "value": "=",
         },
       ],
+      "suggestionsDisabled": true,
       "symbol": "~",
       "title": "Label",
       "token": "LabelTokenMock",
