@@ -17,8 +17,8 @@ export const FILTERED_SEARCH_TOKEN_ENTERPRISE = {
   unique: true,
   operators: OPERATOR_IS_ONLY,
   options: [
-    { value: true, title: __('Yes') },
-    { value: false, title: __('No') },
+    { value: 'true', title: __('Yes') },
+    { value: 'false', title: __('No') },
   ],
   requiredPermissions: 'canFilterByEnterprise',
 };
