@@ -12,11 +12,7 @@ export default {
   directives: {
     GlModal: GlModalDirective,
   },
-  inject: {
-    path: {
-      default: '',
-    },
-  },
+  inject: ['path'],
   data() {
     return {
       modalId: uniqueId('remove-topic-avatar-'),
