@@ -11,6 +11,22 @@ module QA
               element :iteration_issue_link
             end
 
+            view 'ee/app/assets/javascripts/burndown_chart/components/burndown_chart.vue' do
+              element :burndown_chart
+            end
+
+            view 'ee/app/assets/javascripts/burndown_chart/components/burnup_chart.vue' do
+              element :burnup_chart
+            end
+
+            def has_burndown_chart?
+              has_element?(:burndown_chart)
+            end
+
+            def has_burnup_chart?
+              has_element?(:burnup_chart)
+            end
+
             def has_issue?(issue)
               within_element(:iteration_issues_container) do
                 has_element?(:iteration_issue_link, issue_title: issue.title)

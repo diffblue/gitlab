@@ -23,8 +23,17 @@ module QA
                 fill_element(:iteration_cadence_description_field, description)
               end
 
+              def fill_duration(duration)
+                select_element(:iteration_cadence_duration_field, duration)
+              end
+
+              def fill_future_iterations(future_iterations)
+                select_element(:iteration_cadence_future_iterations_field, future_iterations)
+              end
+
               def fill_start_date(start_date)
                 fill_element(:iteration_cadence_start_date_field, start_date)
+                send_keys_to_element(:iteration_cadence_start_date_field, :enter)
               end
 
               def fill_title(title)

@@ -385,6 +385,7 @@ export default {
           class="gl-form-input-md"
           :required="automatic"
           :disabled="loadingCadence || !automatic"
+          data-qa-selector="iteration_cadence_duration_field"
           @change="validate('durationInWeeks')"
         />
       </gl-form-group>
@@ -406,6 +407,7 @@ export default {
           :options="$options.availableFutureIterations"
           :required="automatic"
           class="gl-form-input-md"
+          data-qa-selector="iteration_cadence_future_iterations_field"
           @change="validate('iterationsInAdvance')"
         />
       </gl-form-group>

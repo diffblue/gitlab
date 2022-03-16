@@ -6,10 +6,11 @@ module QA
     describe 'Group Iterations' do
       include Support::Dates
 
-      let(:title) { "Group iteration created via GUI #{SecureRandom.hex(8)}" }
+      let(:title) { "Group iteration cadence created via GUI #{SecureRandom.hex(8)}" }
       let(:start_date) { current_date_yyyy_mm_dd }
-      let(:due_date) { next_month_yyyy_mm_dd }
-      let(:description) { "This is a group test iteration." }
+      let(:due_date) { thirteen_days_from_now_yyyy_mm_dd }
+      let(:description) { "This is a group test iteration cadence." }
+      let(:iteration_period) { "#{format_date(start_date)} - #{format_date(due_date)}" }
 
       let!(:iteration_group) do
         QA::Resource::Group.fabricate_via_api! do |group|
@@ -29,21 +30,27 @@ module QA
         Flow::Login.sign_in
       end
 
-      it 'creates a group iteration', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347943' do
-        EE::Resource::GroupIteration.fabricate_via_browser_ui! do |iteration|
-          iteration.title = title
-          iteration.description = description
-          iteration.due_date = due_date
-          iteration.start_date = start_date
-          iteration.group = iteration_group
+      it 'creates a group iteration automatically through an iteration cadence', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347943' do
+        EE::Resource::GroupCadence.fabricate_via_browser_ui! do |cadence|
+          cadence.group = iteration_group
+          cadence.title = title
+          cadence.description = description
+          cadence.start_date = start_date
+          cadence.duration = 2
+          cadence.future_iterations = 2
+        end
+
+        EE::Page::Group::Iteration::Cadence::Index.perform do |cadence|
+          cadence.retry_on_exception(reload: cadence) do
+            cadence.open_iteration(title, iteration_period)
+          end
         end
 
         EE::Page::Group::Iteration::Show.perform do |iteration|
           aggregate_failures "iteration created successfully" do
-            expect(iteration).to have_content(title)
-            expect(iteration).to have_content(description)
-            expect(iteration).to have_content(format_date(start_date))
-            expect(iteration).to have_content(format_date(due_date))
+            expect(iteration).to have_content(iteration_period)
+            expect(iteration).to have_burndown_chart
+            expect(iteration).to have_burnup_chart
           end
         end
       end
