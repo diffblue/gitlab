@@ -7657,6 +7657,9 @@ msgstr ""
 msgid "ClusterAgents|Actions"
 msgstr ""
 
+msgid "ClusterAgents|Add an agent configuration file to %{linkStart}this repository%{linkEnd} and select it, or create a new one to register with GitLab:"
+msgstr ""
+
 msgid "ClusterAgents|Advanced installation methods"
 msgstr ""
 
@@ -7723,9 +7726,6 @@ msgstr ""
 msgid "ClusterAgents|Connect with the GitLab Agent"
 msgstr ""
 
-msgid "ClusterAgents|Connect your cluster through an agent"
-msgstr ""
-
 msgid "ClusterAgents|Connected"
 msgstr ""
 
@@ -7738,6 +7738,9 @@ msgstr ""
 msgid "ClusterAgents|Create a new cluster"
 msgstr ""
 
+msgid "ClusterAgents|Create agent: %{searchTerm}"
+msgstr ""
+
 msgid "ClusterAgents|Created by"
 msgstr ""
 
@@ -7745,6 +7748,9 @@ msgid "ClusterAgents|Created by %{name} %{time}"
 msgstr ""
 
 msgid "ClusterAgents|Date created"
+msgstr ""
+
+msgid "ClusterAgents|Default configuration"
 msgstr ""
 
 msgid "ClusterAgents|Delete"
@@ -7777,10 +7783,7 @@ msgstr ""
 msgid "ClusterAgents|Give feedback"
 msgstr ""
 
-msgid "ClusterAgents|Go to the repository files"
-msgstr ""
-
-msgid "ClusterAgents|How to register an agent?"
+msgid "ClusterAgents|How do I register an agent?"
 msgstr ""
 
 msgid "ClusterAgents|How to update an agent?"
@@ -7831,10 +7834,7 @@ msgstr ""
 msgid "ClusterAgents|Register"
 msgstr ""
 
-msgid "ClusterAgents|Register an agent to generate a token that will be used to install the agent on your cluster in the next step."
-msgstr ""
-
-msgid "ClusterAgents|Registering Agent"
+msgid "ClusterAgents|Registering agent"
 msgstr ""
 
 msgid "ClusterAgents|Registration token"
@@ -7858,10 +7858,7 @@ msgstr ""
 msgid "ClusterAgents|See Agent activity updates such as tokens created or revoked and clusters connected or not connected."
 msgstr ""
 
-msgid "ClusterAgents|Select an agent"
-msgstr ""
-
-msgid "ClusterAgents|Select an agent to register with GitLab"
+msgid "ClusterAgents|Select an agent or enter a name to create new"
 msgstr ""
 
 msgid "ClusterAgents|Tell us what you think"
@@ -7893,9 +7890,6 @@ msgstr ""
 msgid "ClusterAgents|To delete the agent, type %{name} to confirm:"
 msgstr ""
 
-msgid "ClusterAgents|To install a new agent, first add the agent's configuration file to this repository. %{linkStart}Learn more about installing GitLab Agent.%{linkEnd}"
-msgstr ""
-
 msgid "ClusterAgents|Token created by %{userName}"
 msgstr ""
 
@@ -7915,6 +7909,9 @@ msgid "ClusterAgents|We would love to learn more about your experience with the 
 msgstr ""
 
 msgid "ClusterAgents|What is GitLab Agent activity?"
+msgstr ""
+
+msgid "ClusterAgents|What is default configuration?"
 msgstr ""
 
 msgid "ClusterAgents|You cannot see this token again after you close this window."
