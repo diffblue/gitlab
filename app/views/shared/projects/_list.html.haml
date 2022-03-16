@@ -5,7 +5,7 @@
 - pipeline_status = true unless local_assigns[:pipeline_status] == false
 - skip_namespace = false unless local_assigns[:skip_namespace] == true
 - user = local_assigns[:user]
-- show_last_commit_as_description = false unless local_assigns[:show_last_commit_as_description] == true
+- show_last_commit_as_description = false unless local_assigns[:show_last_commit_as_description] == true && can_show_last_commit_in_list?(project)
 - remote = false unless local_assigns[:remote] == true
 - skip_pagination = false unless local_assigns[:skip_pagination] == true
 - compact_mode = false unless local_assigns[:compact_mode] == true
@@ -37,7 +37,7 @@
         - css_class = (i >= projects_limit) || project.pending_delete? ? 'hide' : nil
         = render "shared/projects/project", project: project, skip_namespace: skip_namespace,
           avatar: avatar, stars: stars, css_class: css_class, use_creator_avatar: use_creator_avatar,
-          forks: project.forking_enabled?, show_last_commit_as_description: able_to_see_last_commit?(show_last_commit_as_description, project, user),
+          forks: project.forking_enabled?, show_last_commit_as_description: show_last_commit_as_description,
           user: user, merge_requests: able_to_see_merge_requests?(project, user), issues: able_to_see_issues?(project, user),
           pipeline_status: pipeline_status, compact_mode: compact_mode
     = paginate_collection(projects, remote: remote) unless skip_pagination

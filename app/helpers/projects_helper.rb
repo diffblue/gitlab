@@ -428,10 +428,6 @@ module ProjectsHelper
     project.merge_requests_enabled? && can?(user, :read_merge_request, project)
   end
 
-  def able_to_see_last_commit?(show_last_commit_as_description, project, user)
-    show_last_commit_as_description && can?(user, :read_commit_status, project)
-  end
-
   def fork_button_disabled_tooltip(project)
     return unless current_user
 

@@ -1046,27 +1046,6 @@ RSpec.describe ProjectsHelper do
         end
       end
     end
-
-    describe "#able_to_see_last_commit?" do
-      subject { helper.able_to_see_last_commit?(show_last_commit_as_description, project, user) }
-
-      where(:can_read_last_commit, :show_last_commit_as_description, :expected) do
-        false | false | false
-        true | false | false
-        false | true | false
-        true | true | true
-      end
-
-      with_them do
-        before do
-          allow(helper).to receive(:can?).with(user, :read_commit_status, project).and_return(can_read_last_commit)
-        end
-
-        it 'returns the correct response' do
-          expect(subject).to eq(expected)
-        end
-      end
-    end
   end
 
   describe '#fork_button_disabled_tooltip' do
