@@ -10,6 +10,7 @@ RSpec.describe Vulnerabilities::ManuallyCreateService do
   let_it_be(:user) { create(:user) }
 
   let(:project) { create(:project) } # cannot use let_it_be here: caching causes problems with permission-related tests
+  let(:different_project) { create(:project) }
 
   subject { described_class.new(project, user, params: params).execute }
 
@@ -108,10 +109,21 @@ RSpec.describe Vulnerabilities::ManuallyCreateService do
       end
 
       context 'when Scanner already exists' do
-        let!(:scanner) { create(:vulnerabilities_scanner, external_id: scanner_attributes[:id]) }
+        let!(:scanner) { create(:vulnerabilities_scanner, external_id: scanner_attributes[:id], project: project) }
 
         it 'does not create a new Scanner' do
           expect { subject }.to change(Vulnerabilities::Scanner, :count).by(0)
+          expect(vulnerability.finding.scanner_id).to eq(scanner.id)
+        end
+      end
+
+      # See https://gitlab.com/gitlab-org/gitlab/-/issues/355802#note_874700035
+      context 'when Scanner with the same name exists in a different project' do
+        let!(:scanner) { create(:vulnerabilities_scanner, external_id: scanner_attributes[:id], project: different_project) }
+
+        it 'creates a new Scanner in the correct project', :aggregate_failures do
+          expect { subject }.to change(Vulnerabilities::Scanner, :count).by(1)
+          expect(vulnerability.finding.scanner_id).not_to eq(scanner.id)
         end
       end
 
