@@ -188,7 +188,7 @@ describe('ee/environments/components/environment_approval.vue', () => {
         await button.trigger('click');
 
         expect(api).toHaveBeenCalledWith({
-          projectId: '5',
+          id: '5',
           deploymentId: environment.upcomingDeployment.id,
           comment: 'comment',
         });

@@ -114,7 +114,7 @@ export default {
       this.loading = true;
       this.show = false;
       action({
-        projectId: this.projectId,
+        id: this.projectId,
         deploymentId: this.upcomingDeployment.id,
         comment: this.comment,
       })
