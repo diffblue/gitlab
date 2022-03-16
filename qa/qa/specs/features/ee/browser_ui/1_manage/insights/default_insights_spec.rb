@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Manage' do
+  RSpec.describe 'Manage', :reliable do
     shared_examples 'default insights page' do
       it 'displays issues and merge requests dashboards' do
         EE::Page::Insights::Show.perform do |show|
