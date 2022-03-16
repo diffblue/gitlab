@@ -4,7 +4,6 @@ import axios from 'axios';
 import * as Sentry from '@sentry/browser';
 import { mapState, mapActions, mapGetters } from 'vuex';
 
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   I18N_FETCH_TEST_SETTINGS_DEFAULT_ERROR_MESSAGE,
   I18N_DEFAULT_ERROR_MESSAGE,
@@ -50,7 +49,6 @@ export default {
     GlModal: GlModalDirective,
     SafeHtml,
   },
-  mixins: [glFeatureFlagsMixin()],
   inject: {
     helpHtml: {
       default: '',
@@ -86,14 +84,11 @@ export default {
     disableButtons() {
       return Boolean(this.isSaving || this.isResetting || this.isTesting);
     },
-    sectionsEnabled() {
-      return this.glFeatures.integrationFormSections;
-    },
     hasSections() {
-      return this.sectionsEnabled && this.customState.sections.length !== 0;
+      return this.customState.sections.length !== 0;
     },
     fieldsWithoutSection() {
-      return this.sectionsEnabled
+      return this.hasSections
         ? this.propsSource.fields.filter((field) => !field.section)
         : this.propsSource.fields;
     },
@@ -246,7 +241,7 @@ export default {
           @toggle-integration-active="onToggleIntegrationState"
         />
         <trigger-fields
-          v-else-if="propsSource.triggerEvents.length && !hasSections"
+          v-if="propsSource.triggerEvents.length && !hasSections"
           :key="`${currentKey}-trigger-fields`"
           :events="propsSource.triggerEvents"
           :type="propsSource.type"
