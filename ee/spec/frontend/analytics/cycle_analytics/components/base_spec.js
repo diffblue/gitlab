@@ -363,6 +363,24 @@ describe('EE Value Stream Analytics component', () => {
       expect(findAggregationStatus().props('data')).toEqual(aggregationData);
     });
 
+    describe('lastRunAt is null', () => {
+      beforeEach(async () => {
+        wrapper = await createComponent({
+          initialState: {
+            ...initialCycleAnalyticsState,
+            aggregation: {
+              ...aggregationData,
+              lastRunAt: null,
+            },
+          },
+        });
+      });
+
+      it('does not render the aggregation status', () => {
+        expect(findAggregationStatus().exists()).toBe(false);
+      });
+    });
+
     describe('enabled=false', () => {
       beforeEach(async () => {
         wrapper = await createComponent({

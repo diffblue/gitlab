@@ -7,6 +7,7 @@ import ValueStreamAggregationStatus, {
   toYmdhs,
 } from 'ee/analytics/cycle_analytics/components/value_stream_aggregation_status.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { useFakeDate } from 'helpers/fake_date';
 import { aggregationData } from '../mock_data';
 
 const createComponent = (props = {}) =>
@@ -20,6 +21,8 @@ const createComponent = (props = {}) =>
   );
 
 describe('ValueStreamAggregationStatus', () => {
+  useFakeDate(2022, 2, 12);
+
   let wrapper = null;
 
   const findBadge = () => wrapper.findComponent(GlBadge);
@@ -38,7 +41,7 @@ describe('ValueStreamAggregationStatus', () => {
 
     it('renders the elapsed time badge', () => {
       expect(findBadge().exists()).toBe(true);
-      expect(findBadge().text()).toContain('Last updated about 1 hour ago');
+      expect(findBadge().text()).toContain('Last updated about 19 hours ago');
     });
 
     it('renders the data refresh popover', () => {
