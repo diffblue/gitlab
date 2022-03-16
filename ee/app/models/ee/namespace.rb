@@ -69,7 +69,7 @@ module EE
       end
 
       scope :with_feature_available_in_plan, -> (feature) do
-        plans = plans_with_feature(feature)
+        plans = GitlabSubscriptions::Features.saas_plans_with_feature(feature)
         matcher = ::Plan.where(name: plans)
           .joins(:hosted_subscriptions)
           .where("gitlab_subscriptions.namespace_id = namespaces.id")
@@ -140,14 +140,6 @@ module EE
       limit.presence || build_namespace_limit
     end
 
-    class_methods do
-      extend ::Gitlab::Utils::Override
-
-      def plans_with_feature(feature)
-        LICENSE_PLANS_TO_NAMESPACE_PLANS.values_at(*License.plans_with_feature(feature)).flatten
-      end
-    end
-
     override :move_dir
     def move_dir
       succeeded = super
@@ -186,7 +178,7 @@ module EE
     def feature_available_in_plan?(feature)
       available_features = strong_memoize(:features_available_in_plan) do
         Hash.new do |h, f|
-          h[f] = (plans.map(&:name) & self.class.plans_with_feature(f)).any?
+          h[f] = (plans.map(&:name) & GitlabSubscriptions::Features.saas_plans_with_feature(f)).any?
         end
       end
 

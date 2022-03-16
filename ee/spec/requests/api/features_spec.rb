@@ -38,7 +38,7 @@ RSpec.describe API::Features, stub_feature_flags: false do
 
     context 'when licensed feature name is given' do
       let(:feature_name) do
-        License::PLANS_BY_FEATURE.each_key.first
+        GitlabSubscriptions::Features::PLANS_BY_FEATURE.each_key.first
       end
 
       it 'returns bad request' do

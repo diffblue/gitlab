@@ -671,7 +671,7 @@ module EE
       return super unless License.current
 
       License.current.features.select do |feature|
-        License.global_feature?(feature) || licensed_feature_available?(feature)
+        GitlabSubscriptions::Features.global?(feature) || licensed_feature_available?(feature)
       end
     end
 
