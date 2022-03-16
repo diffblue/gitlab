@@ -51,8 +51,8 @@ RSpec.describe NetworkPolicies::ResourcesService do
     it_behaves_like 'tracking unique hll events' do
       subject(:request) { service.execute }
 
-      let(:target_id) { 'clusters_using_network_policies_ui' }
-      let(:expected_type) { instance_of(Integer) }
+      let(:target_event) { 'clusters_using_network_policies_ui' }
+      let(:expected_value) { instance_of(Integer) }
 
       before do
         allow(kubeclient).to receive(:get_network_policies)
