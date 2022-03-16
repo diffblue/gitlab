@@ -31768,10 +31768,10 @@ msgstr ""
 msgid "Runner API"
 msgstr ""
 
-msgid "Runner tokens"
+msgid "Runner cannot be deleted, please contact your administrator."
 msgstr ""
 
-msgid "Runner was not deleted because it is assigned to multiple projects."
+msgid "Runner tokens"
 msgstr ""
 
 msgid "Runner was not updated."
