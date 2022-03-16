@@ -25036,6 +25036,9 @@ msgstr ""
 msgid "No start date"
 msgstr ""
 
+msgid "No suggestions found"
+msgstr ""
+
 msgid "No tag selected"
 msgstr ""
 

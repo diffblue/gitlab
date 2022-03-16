@@ -150,6 +150,7 @@ export default {
           token: LabelToken,
           operators: OPERATOR_IS_ONLY,
           defaultLabels: [],
+          suggestionsDisabled: true,
           fetchLabels: () => {
             return Promise.resolve([]);
           },
