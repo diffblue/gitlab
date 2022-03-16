@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`StreamItem render should render correctly 1`] = `
+<li
+  class="list-item py-0"
+>
+  <div
+    class="gl-display-flex gl-align-items-center gl-justify-content-space-between gl-px-5 gl-py-3 gl-rounded-base"
+  >
+    <div
+      class="gl-h-4"
+    >
+      https://api.gitlab.com
+    </div>
+     
+    <div
+      class="actions-button"
+    >
+      <b-button-stub
+        aria-label="Delete https://api.gitlab.com"
+        class="gl-button btn-default-tertiary btn-icon"
+        size="md"
+        tag="button"
+        title="Delete"
+        type="button"
+        variant="default"
+      >
+        <!---->
+         
+        <gl-icon-stub
+          class="gl-button-icon"
+          name="remove"
+          size="16"
+        />
+          
+        <!---->
+      </b-button-stub>
+    </div>
+  </div>
+</li>
+`;

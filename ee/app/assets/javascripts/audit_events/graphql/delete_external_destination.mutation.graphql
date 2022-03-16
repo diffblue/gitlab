@@ -1,0 +1,5 @@
+mutation deleteExternalDestination($id: AuditEventsExternalAuditEventDestinationID!) {
+  externalAuditEventDestinationDestroy(input: { id: $id }) {
+    errors
+  }
+}

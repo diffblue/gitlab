@@ -5066,6 +5066,9 @@ msgstr ""
 msgid "AuditLogs|IP Address"
 msgstr ""
 
+msgid "AuditLogs|Log"
+msgstr ""
+
 msgid "AuditLogs|Member Events"
 msgstr ""
 
@@ -5085,6 +5088,54 @@ msgid "AuditLogs|This month"
 msgstr ""
 
 msgid "AuditLogs|User Events"
+msgstr ""
+
+msgid "AuditStreams|Active"
+msgstr ""
+
+msgid "AuditStreams|Add an HTTP endpoint to manage audit logs in third-party systems."
+msgstr ""
+
+msgid "AuditStreams|Add external stream destination"
+msgstr ""
+
+msgid "AuditStreams|Add stream"
+msgstr ""
+
+msgid "AuditStreams|An error occurred when creating external audit event stream destination. Please try it again."
+msgstr ""
+
+msgid "AuditStreams|An error occurred when deleting external audit event stream destination. Please try it again."
+msgstr ""
+
+msgid "AuditStreams|An error occurred when fetching external audit event streams. Please try it again"
+msgstr ""
+
+msgid "AuditStreams|Cancel editing"
+msgstr ""
+
+msgid "AuditStreams|Delete %{link}"
+msgstr ""
+
+msgid "AuditStreams|Destination URL"
+msgstr ""
+
+msgid "AuditStreams|Destinations receive all audit event data"
+msgstr ""
+
+msgid "AuditStreams|Setup streaming for audit events"
+msgstr ""
+
+msgid "AuditStreams|Stream count icon"
+msgstr ""
+
+msgid "AuditStreams|Streams"
+msgstr ""
+
+msgid "AuditStreams|This could include sensitive information. Make sure you trust the destination endpoint."
+msgstr ""
+
+msgid "AuditStreams|This is great for keeping everything one place."
 msgstr ""
 
 msgid "Aug"
