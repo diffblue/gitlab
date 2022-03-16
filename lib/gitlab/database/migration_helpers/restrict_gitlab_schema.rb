@@ -25,10 +25,9 @@ module Gitlab
 
         def migrate(direction)
           if unmatched_schemas.any?
-            # TODO: This will fail running migration if we have two connections
-            # This will prevent future migrations from being run. Likely the best would
-            # be to ignore this type of migration.
-            # This is yet to be solved: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/73756/diffs#note_866211093
+            # TODO: Today skipping migration would raise an exception.
+            # Ideally, skipped migration should be ignored (not loaded), or softly ignored.
+            # Read more in: https://gitlab.com/gitlab-org/gitlab/-/issues/355014
             raise MigrationSkippedError, "Current migration is skipped since it modifies "\
               "'#{self.class.allowed_gitlab_schemas}' which is outside of '#{allowed_schemas_for_connection}'"
           end

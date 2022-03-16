@@ -248,8 +248,6 @@ module Gitlab
     def self.db_config_for_connection(connection)
       return unless connection
 
-      # The LB connection proxy does not have a direct db_config
-      # that can be referenced
       if connection.is_a?(::Gitlab::Database::LoadBalancing::ConnectionProxy)
         return connection.load_balancer.configuration.primary_db_config
       end

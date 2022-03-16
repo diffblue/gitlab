@@ -34,15 +34,15 @@ RSpec.describe Gitlab::Database::MigrationHelpers::RestrictGitlabSchema, query_a
           end,
           query_matcher: /CREATE TABLE "_test_table"/,
           expected: {
-            no_restrict: {
+            no_gitlab_schema: {
               main: :success,
               ci: :success
             },
-            restrict_gitlab_shared: {
+            gitlab_schema_gitlab_shared: {
               main: :ddl_not_allowed,
               ci: :ddl_not_allowed
             },
-            restrict_gitlab_main: {
+            gitlab_schema_gitlab_main: {
               main: :ddl_not_allowed,
               ci: :skipped
             }
@@ -56,15 +56,15 @@ RSpec.describe Gitlab::Database::MigrationHelpers::RestrictGitlabSchema, query_a
           end,
           query_matcher: /ALTER TABLE "projects" ADD "__test_column" integer/,
           expected: {
-            no_restrict: {
+            no_gitlab_schema: {
               main: :success,
               ci: :success
             },
-            restrict_gitlab_shared: {
+            gitlab_schema_gitlab_shared: {
               main: :ddl_not_allowed,
               ci: :ddl_not_allowed
             },
-            restrict_gitlab_main: {
+            gitlab_schema_gitlab_main: {
               main: :ddl_not_allowed,
               ci: :skipped
             }
@@ -78,15 +78,15 @@ RSpec.describe Gitlab::Database::MigrationHelpers::RestrictGitlabSchema, query_a
           end,
           query_matcher: /ALTER TABLE "ci_builds" ADD "__test_column" integer/,
           expected: {
-            no_restrict: {
+            no_gitlab_schema: {
               main: :success,
               ci: :success
             },
-            restrict_gitlab_shared: {
+            gitlab_schema_gitlab_shared: {
               main: :ddl_not_allowed,
               ci: :ddl_not_allowed
             },
-            restrict_gitlab_main: {
+            gitlab_schema_gitlab_main: {
               main: :ddl_not_allowed,
               ci: :skipped
             }
@@ -101,15 +101,15 @@ RSpec.describe Gitlab::Database::MigrationHelpers::RestrictGitlabSchema, query_a
           end,
           query_matcher: /CREATE INDEX/,
           expected: {
-            no_restrict: {
+            no_gitlab_schema: {
               main: :success,
               ci: :success
             },
-            restrict_gitlab_shared: {
+            gitlab_schema_gitlab_shared: {
               main: :ddl_not_allowed,
               ci: :ddl_not_allowed
             },
-            restrict_gitlab_main: {
+            gitlab_schema_gitlab_main: {
               main: :ddl_not_allowed,
               ci: :skipped
             }
@@ -124,15 +124,15 @@ RSpec.describe Gitlab::Database::MigrationHelpers::RestrictGitlabSchema, query_a
           end,
           query_matcher: /CREATE INDEX/,
           expected: {
-            no_restrict: {
+            no_gitlab_schema: {
               main: :success,
               ci: :success
             },
-            restrict_gitlab_shared: {
+            gitlab_schema_gitlab_shared: {
               main: :ddl_not_allowed,
               ci: :ddl_not_allowed
             },
-            restrict_gitlab_main: {
+            gitlab_schema_gitlab_main: {
               main: :ddl_not_allowed,
               ci: :skipped
             }
@@ -156,15 +156,15 @@ RSpec.describe Gitlab::Database::MigrationHelpers::RestrictGitlabSchema, query_a
           end,
           query_matcher: /CREATE OR REPLACE FUNCTION/,
           expected: {
-            no_restrict: {
+            no_gitlab_schema: {
               main: :success,
               ci: :success
             },
-            restrict_gitlab_shared: {
+            gitlab_schema_gitlab_shared: {
               main: :ddl_not_allowed,
               ci: :ddl_not_allowed
             },
-            restrict_gitlab_main: {
+            gitlab_schema_gitlab_main: {
               main: :ddl_not_allowed,
               ci: :skipped
             }
@@ -183,15 +183,15 @@ RSpec.describe Gitlab::Database::MigrationHelpers::RestrictGitlabSchema, query_a
           end,
           query_matcher: /create schema __test_schema/,
           expected: {
-            no_restrict: {
+            no_gitlab_schema: {
               main: :success,
               ci: :success
             },
-            restrict_gitlab_shared: {
+            gitlab_schema_gitlab_shared: {
               main: :success,
               ci: :success
             },
-            restrict_gitlab_main: {
+            gitlab_schema_gitlab_main: {
               # This is not properly detected today since there are no helpers
               # available to consider this as a DDL type of change
               main: :success,
@@ -215,15 +215,15 @@ RSpec.describe Gitlab::Database::MigrationHelpers::RestrictGitlabSchema, query_a
           end,
           query_matcher: /CREATE TRIGGER/,
           expected: {
-            no_restrict: {
+            no_gitlab_schema: {
               main: :success,
               ci: :success
             },
-            restrict_gitlab_shared: {
+            gitlab_schema_gitlab_shared: {
               main: :ddl_not_allowed,
               ci: :ddl_not_allowed
             },
-            restrict_gitlab_main: {
+            gitlab_schema_gitlab_main: {
               main: :ddl_not_allowed,
               ci: :skipped
             }
@@ -247,15 +247,15 @@ RSpec.describe Gitlab::Database::MigrationHelpers::RestrictGitlabSchema, query_a
           end,
           query_matcher: /INSERT INTO "software_licenses"/,
           expected: {
-            no_restrict: {
+            no_gitlab_schema: {
               main: :dml_not_allowed,
               ci: :dml_not_allowed
             },
-            restrict_gitlab_shared: {
+            gitlab_schema_gitlab_shared: {
               main: :dml_access_denied,
               ci: :dml_access_denied
             },
-            restrict_gitlab_main: {
+            gitlab_schema_gitlab_main: {
               main: :success,
               ci: :skipped
             }
@@ -279,15 +279,15 @@ RSpec.describe Gitlab::Database::MigrationHelpers::RestrictGitlabSchema, query_a
           end,
           query_matcher: /INSERT INTO "ci_instance_variables"/,
           expected: {
-            no_restrict: {
+            no_gitlab_schema: {
               main: :dml_not_allowed,
               ci: :dml_not_allowed
             },
-            restrict_gitlab_shared: {
+            gitlab_schema_gitlab_shared: {
               main: :dml_access_denied,
               ci: :dml_access_denied
             },
-            restrict_gitlab_main: {
+            gitlab_schema_gitlab_main: {
               main: :dml_access_denied,
               ci: :skipped
             }
@@ -310,15 +310,15 @@ RSpec.describe Gitlab::Database::MigrationHelpers::RestrictGitlabSchema, query_a
           end,
           query_matcher: /INSERT INTO "detached_partitions"/,
           expected: {
-            no_restrict: {
+            no_gitlab_schema: {
               main: :success,
               ci: :success
             },
-            restrict_gitlab_shared: {
+            gitlab_schema_gitlab_shared: {
               main: :success,
               ci: :success
             },
-            restrict_gitlab_main: {
+            gitlab_schema_gitlab_main: {
               # TBD: This allow to selectively modify shared tables in context of a specific DB only
               main: :success,
               ci: :skipped
@@ -339,15 +339,15 @@ RSpec.describe Gitlab::Database::MigrationHelpers::RestrictGitlabSchema, query_a
           end,
           query_matcher: /FROM "projects"/,
           expected: {
-            no_restrict: {
+            no_gitlab_schema: {
               main: :dml_not_allowed,
               ci: :dml_not_allowed
             },
-            restrict_gitlab_shared: {
+            gitlab_schema_gitlab_shared: {
               main: :dml_access_denied,
               ci: :dml_access_denied
             },
-            restrict_gitlab_main: {
+            gitlab_schema_gitlab_main: {
               main: :success,
               ci: :skipped
             }
@@ -365,15 +365,15 @@ RSpec.describe Gitlab::Database::MigrationHelpers::RestrictGitlabSchema, query_a
             end
           end,
           expected: {
-            no_restrict: {
+            no_gitlab_schema: {
               main: :dml_not_allowed,
               ci: :dml_not_allowed
             },
-            restrict_gitlab_shared: {
+            gitlab_schema_gitlab_shared: {
               main: :dml_access_denied,
               ci: :dml_access_denied
             },
-            restrict_gitlab_main: {
+            gitlab_schema_gitlab_main: {
               main: :ddl_not_allowed,
               ci: :skipped
             }
@@ -396,15 +396,15 @@ RSpec.describe Gitlab::Database::MigrationHelpers::RestrictGitlabSchema, query_a
           end,
           query_matcher: /FROM "vulnerability_occurrences"/,
           expected: {
-            no_restrict: {
+            no_gitlab_schema: {
               main: :dml_not_allowed,
               ci: :dml_not_allowed
             },
-            restrict_gitlab_shared: {
+            gitlab_schema_gitlab_shared: {
               main: :dml_access_denied,
               ci: :dml_access_denied
             },
-            restrict_gitlab_main: {
+            gitlab_schema_gitlab_main: {
               main: :success,
               ci: :skipped
             }
@@ -423,15 +423,15 @@ RSpec.describe Gitlab::Database::MigrationHelpers::RestrictGitlabSchema, query_a
           end,
           query_matcher: /INSERT INTO "postgres_async_indexes"/,
           expected: {
-            no_restrict: {
+            no_gitlab_schema: {
               main: :success,
               ci: :success
             },
-            restrict_gitlab_shared: {
+            gitlab_schema_gitlab_shared: {
               main: :dml_not_allowed,
               ci: :dml_not_allowed
             },
-            restrict_gitlab_main: {
+            gitlab_schema_gitlab_main: {
               main: :dml_not_allowed,
               ci: :skipped
             }
@@ -440,7 +440,7 @@ RSpec.describe Gitlab::Database::MigrationHelpers::RestrictGitlabSchema, query_a
         "does raise exception when accessing current settings" => {
           migration: ->(klass) do
             def up
-              ApplicationSetting.current
+              ApplicationSetting.last
             end
 
             def down
@@ -448,15 +448,15 @@ RSpec.describe Gitlab::Database::MigrationHelpers::RestrictGitlabSchema, query_a
           end,
           query_matcher: /FROM "application_settings"/,
           expected: {
-            no_restrict: {
+            no_gitlab_schema: {
               main: :dml_not_allowed,
               ci: :dml_not_allowed
             },
-            restrict_gitlab_shared: {
+            gitlab_schema_gitlab_shared: {
               main: :dml_access_denied,
               ci: :dml_access_denied
             },
-            restrict_gitlab_main: {
+            gitlab_schema_gitlab_main: {
               main: :success,
               ci: :skipped
             }
@@ -473,15 +473,15 @@ RSpec.describe Gitlab::Database::MigrationHelpers::RestrictGitlabSchema, query_a
           end,
           query_matcher: /FROM "features"/,
           expected: {
-            no_restrict: {
+            no_gitlab_schema: {
               main: :dml_not_allowed,
               ci: :dml_not_allowed
             },
-            restrict_gitlab_shared: {
+            gitlab_schema_gitlab_shared: {
               main: :dml_access_denied,
               ci: :dml_access_denied
             },
-            restrict_gitlab_main: {
+            gitlab_schema_gitlab_main: {
               main: :success,
               ci: :skipped
             }
@@ -509,18 +509,18 @@ RSpec.describe Gitlab::Database::MigrationHelpers::RestrictGitlabSchema, query_a
             end
           end
 
-          %i[no_restrict restrict_gitlab_main restrict_gitlab_shared].each do |restrict_gitlab_migration|
+          %i[no_gitlab_schema gitlab_schema_gitlab_main gitlab_schema_gitlab_shared].each do |restrict_gitlab_migration|
             context "while restrict_gitlab_migration=#{restrict_gitlab_migration}" do
               it "does run migrate :up and :down" do
                 expected_result = expected.fetch(restrict_gitlab_migration)[db_config_name.to_sym]
                 skip "not configured" unless expected_result
 
                 case restrict_gitlab_migration
-                when :no_restrict
+                when :no_gitlab_schema
                   # no-op
-                when :restrict_gitlab_main
+                when :gitlab_schema_gitlab_main
                   migration_class.restrict_gitlab_migration gitlab_schema: :gitlab_main
-                when :restrict_gitlab_shared
+                when :gitlab_schema_gitlab_shared
                   migration_class.restrict_gitlab_migration gitlab_schema: :gitlab_shared
                 end
 
