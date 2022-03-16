@@ -23,7 +23,7 @@ module QA
           project.visit!
         end
 
-        it 'can load Policies page and view the policies list', :smoke, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347589' do
+        it 'can load Policies page and view the policies list', :smoke, :reliable, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347589' do
           Page::Project::Menu.perform(&:click_on_policies)
 
           EE::Page::Project::Policies::Index.perform do |policies_page|
@@ -33,7 +33,7 @@ module QA
           end
         end
 
-        it 'can navigate to Policy Editor page', :smoke, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347611' do
+        it 'can navigate to Policy Editor page', :smoke, :reliable, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347611' do
           Page::Project::Menu.perform(&:click_on_policies)
 
           EE::Page::Project::Policies::Index.perform(&:click_new_policy_button)
