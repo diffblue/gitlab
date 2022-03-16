@@ -38768,6 +38768,9 @@ msgstr ""
 msgid "To personalize your GitLab experience, we'd like to know a bit more about you"
 msgstr ""
 
+msgid "To preserve performance only %{strongStart}%{visible} of %{total}%{strongEnd} files are displayed."
+msgstr ""
+
 msgid "To preserve performance only %{strong_open}%{display_size} of %{real_size}%{strong_close} files are displayed."
 msgstr ""
 
