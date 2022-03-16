@@ -4122,6 +4122,9 @@ msgstr ""
 msgid "An unauthenticated user"
 msgstr ""
 
+msgid "An unexpected error occurred"
+msgstr ""
+
 msgid "An unexpected error occurred while checking the project environment."
 msgstr ""
 
@@ -7106,6 +7109,9 @@ msgstr ""
 msgid "Checkout|CI minutes"
 msgstr ""
 
+msgid "Checkout|Calculating your subscription..."
+msgstr ""
+
 msgid "Checkout|Checkout"
 msgstr ""
 
@@ -7218,6 +7224,9 @@ msgid "Checkout|Subtotal"
 msgstr ""
 
 msgid "Checkout|Tax"
+msgstr ""
+
+msgid "Checkout|This number must be %{minimumNumberOfUsers} (your seats in use) or more."
 msgstr ""
 
 msgid "Checkout|Total"

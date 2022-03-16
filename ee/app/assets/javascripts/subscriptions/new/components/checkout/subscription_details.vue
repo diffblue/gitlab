@@ -1,5 +1,13 @@
 <script>
-import { GlAlert, GlFormGroup, GlFormSelect, GlFormInput, GlSprintf, GlLink } from '@gitlab/ui';
+import {
+  GlAlert,
+  GlFormGroup,
+  GlFormSelect,
+  GlFormInput,
+  GlSprintf,
+  GlLink,
+  GlLoadingIcon,
+} from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import { mapState, mapGetters, mapActions } from 'vuex';
 import { QSR_RECONCILIATION_PATH, STEP_SUBSCRIPTION_DETAILS } from 'ee/subscriptions/constants';
@@ -9,6 +17,7 @@ import { sprintf, s__, __ } from '~/locale';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
 import Tracking from '~/tracking';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import getBillableMembersCountQuery from 'ee/subscriptions/graphql/queries/billable_members_count.query.graphql';
 
 export default {
   components: {
@@ -18,12 +27,44 @@ export default {
     GlFormInput,
     GlSprintf,
     GlLink,
+    GlLoadingIcon,
     Step,
   },
   directives: {
     autofocusonshow,
   },
   mixins: [Tracking.mixin()],
+  apollo: {
+    billableMembersMin: {
+      query: getBillableMembersCountQuery,
+      loadingKey: 'isLoading',
+      variables() {
+        return {
+          fullPath: this.selectedGroupFullPath,
+          requestedHostedPlan: this.selectedPlanDetails.code,
+        };
+      },
+      update(data) {
+        this.resetError();
+
+        return data.group.billableMembersCount || 1;
+      },
+      skip() {
+        return this.shouldSkipQuery;
+      },
+      error(error) {
+        this.handleError(error);
+      },
+    },
+  },
+  data() {
+    return {
+      billableMembersMin: 1,
+      errorMessage: '',
+      isLoading: 0,
+      showError: false,
+    };
+  },
   computed: {
     ...mapState([
       'availablePlans',
@@ -39,10 +80,14 @@ export default {
       'selectedPlanText',
       'selectedPlanDetails',
       'selectedGroupId',
+      'selectedGroupData',
       'isGroupSelected',
-      'selectedGroupUsers',
       'selectedGroupName',
+      'isSelectedGroupPresent',
     ]),
+    hasError() {
+      return Boolean(this.errorMessage);
+    },
     selectedPlanModel: {
       get() {
         return this.selectedPlan;
@@ -78,6 +123,23 @@ export default {
     selectedPlanTextLine() {
       return sprintf(this.$options.i18n.selectedPlan, { selectedPlanText: this.selectedPlanText });
     },
+    selectedGroupFullPath() {
+      return this.selectedGroupData?.fullPath;
+    },
+    shouldSkipQuery() {
+      return (
+        !this.selectedGroupFullPath || !this.hasSelectedPlan || this.shouldDisableNumberOfUsers
+      );
+    },
+    numberOfUsersLabelDescription() {
+      if (this.shouldSkipQuery || this.hasError) {
+        return null;
+      }
+
+      return sprintf(this.$options.i18n.numberOfUsersLabelDescription, {
+        minimumNumberOfUsers: this.billableMembersMin,
+      });
+    },
     hasAtLeastOneUser() {
       return this.numberOfUsers > 0;
     },
@@ -94,7 +156,7 @@ export default {
       return true;
     },
     isSelectedUsersEqualOrGreaterThanGroupUsers() {
-      return this.numberOfUsers >= this.selectedGroupUsers;
+      return this.numberOfUsers >= this.billableMembersMin;
     },
     isValid() {
       return (
@@ -132,6 +194,16 @@ export default {
       return this.isNewUser && !this.isSetupForCompany;
     },
   },
+  watch: {
+    billableMembersMin(val) {
+      this.updateNumberOfUsers(val);
+    },
+    isSelectedGroupPresent(isSelectedGroupPresent) {
+      if (!isSelectedGroupPresent) {
+        this.billableMembersMin = 1;
+      }
+    },
+  },
   methods: {
     ...mapActions([
       'updateSelectedPlan',
@@ -140,6 +212,17 @@ export default {
       'updateNumberOfUsers',
       'updateOrganizationName',
     ]),
+    hideError() {
+      this.showError = false;
+    },
+    handleError(error) {
+      this.errorMessage = error || __('An unexpected error occurred');
+      this.showError = true;
+    },
+    resetError() {
+      this.errorMessage = '';
+      this.showError = false;
+    },
     trackStepTransition() {
       this.track('click_button', {
         label: 'update_plan_type',
@@ -167,6 +250,10 @@ export default {
     createNewGroupDescription: s__("Checkout|You'll create your new group after checkout"),
     organizationNameLabel: s__('Checkout|Name of company or organization using GitLab'),
     numberOfUsersLabel: s__('Checkout|Number of users'),
+    numberOfUsersLabelDescription: s__(
+      'Checkout|This number must be %{minimumNumberOfUsers} (your seats in use) or more.',
+    ),
+    loadingText: s__('Checkout|Calculating your subscription...'),
     needMoreUsersLink: s__('Checkout|Need more users? Purchase GitLab for your %{company}.'),
     companyOrTeam: s__('Checkout|company or team'),
     selectedPlan: s__('Checkout|%{selectedPlanText} plan'),
@@ -182,6 +269,23 @@ export default {
 </script>
 <template>
   <step
+    v-if="isLoading"
+    :step-id="$options.stepId"
+    :title="$options.i18n.stepTitle"
+    :is-valid="false"
+  >
+    <template #body>
+      <div
+        data-testid="subscription-loading-container"
+        class="gl-display-flex gl-h-200! gl-justify-content-center gl-align-items-center gl-flex-direction-column"
+      >
+        <gl-loading-icon v-if="true" size="md" />
+        <span>{{ $options.i18n.loadingText }}</span>
+      </div>
+    </template>
+  </step>
+  <step
+    v-else
     :step-id="$options.stepId"
     :title="$options.i18n.stepTitle"
     :is-valid="isValid"
@@ -190,6 +294,14 @@ export default {
     @stepEdit="trackStepEdit"
   >
     <template #body>
+      <gl-alert
+        v-if="hasError && showError"
+        data-testid="error-message"
+        class="gl-mb-5"
+        variant="danger"
+        @dismiss="hideError"
+        >{{ errorMessage }}</gl-alert
+      >
       <gl-form-group :label="$options.i18n.selectedPlanLabel" label-size="sm" class="mb-3">
         <gl-form-select
           v-model="selectedPlanModel"
@@ -222,15 +334,18 @@ export default {
       </gl-form-group>
       <div class="combined d-flex">
         <gl-form-group
+          data-testid="number-of-users-field"
           :label="$options.i18n.numberOfUsersLabel"
           label-size="sm"
-          class="number gl-mb-0"
+          class="gl-mb-0"
+          :label-description="numberOfUsersLabelDescription"
         >
           <gl-form-input
             ref="number-of-users"
             v-model.number="numberOfUsersModel"
+            class="number"
             type="number"
-            :min="selectedGroupUsers"
+            :min="billableMembersMin"
             :disabled="shouldDisableNumberOfUsers"
             data-qa-selector="number_of_users"
           />

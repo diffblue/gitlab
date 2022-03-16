@@ -39,11 +39,8 @@ describe('Subscriptions Actions', () => {
       await testAction(
         actions.updateSelectedPlan,
         'planId',
-        { selectedGroupUsers: 4 },
-        [
-          { type: 'UPDATE_SELECTED_PLAN', payload: 'planId' },
-          { type: 'UPDATE_NUMBER_OF_USERS', payload: 4 },
-        ],
+        {},
+        [{ type: 'UPDATE_SELECTED_PLAN', payload: 'planId' }],
         [],
       );
     });
@@ -54,11 +51,10 @@ describe('Subscriptions Actions', () => {
       await testAction(
         actions.updateSelectedGroup,
         'groupId',
-        { selectedGroupUsers: 3 },
+        {},
         [
           { type: 'UPDATE_SELECTED_GROUP', payload: 'groupId' },
           { type: 'UPDATE_ORGANIZATION_NAME', payload: null },
-          { type: 'UPDATE_NUMBER_OF_USERS', payload: 3 },
         ],
         [],
       );

@@ -4,8 +4,13 @@ import stepListQuery from 'ee/vue_shared/purchase_flow/graphql/queries/step_list
 import resolvers from 'ee/vue_shared/purchase_flow/graphql/resolvers';
 import createMockApollo from 'helpers/mock_apollo_helper';
 
-export function createMockApolloProvider(stepList, initialStepIndex = 0, additionalResolvers = {}) {
-  const mockApollo = createMockApollo([], merge({}, resolvers, additionalResolvers));
+export function createMockApolloProvider(
+  stepList,
+  initialStepIndex = 0,
+  additionalResolvers = {},
+  handlers = [],
+) {
+  const mockApollo = createMockApollo(handlers, merge({}, resolvers, additionalResolvers));
   mockApollo.clients.defaultClient.cache.writeQuery({
     query: stepListQuery,
     data: { stepList },
