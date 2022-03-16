@@ -26,8 +26,12 @@ class ProjectClusterablePresenter < ClusterablePresenter
   end
 
   override :learn_more_link
-  def learn_more_link
-    ApplicationController.helpers.link_to(s_('ClusterIntegration|Learn more about Kubernetes.'), help_page_path('user/project/clusters/index'), target: '_blank', rel: 'noopener noreferrer')
+  def learn_more_link(docs_mode = false)
+    if docs_mode
+      ApplicationController.helpers.link_to(s_('ClusterIntegration|Learn more about our integrations.'), help_page_path('user/infrastructure/iac/index', anchor: 'create-a-new-cluster-through-iac'))
+    else
+      ApplicationController.helpers.link_to(s_('ClusterIntegration|Learn more about Kubernetes.'), help_page_path('user/project/clusters/index'), target: '_blank', rel: 'noopener noreferrer')
+    end
   end
 
   def metrics_dashboard_path(cluster)

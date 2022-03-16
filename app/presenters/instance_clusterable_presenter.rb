@@ -43,6 +43,11 @@ class InstanceClusterablePresenter < ClusterablePresenter
     connect_admin_clusters_path
   end
 
+  override :create_path
+  def create_path
+    nil
+  end
+
   override :create_user_clusters_path
   def create_user_clusters_path
     create_user_admin_clusters_path
@@ -74,7 +79,7 @@ class InstanceClusterablePresenter < ClusterablePresenter
   end
 
   override :learn_more_link
-  def learn_more_link
+  def learn_more_link(docs_mode = false)
     ApplicationController.helpers.link_to(s_('ClusterIntegration|Learn more about instance Kubernetes clusters'), help_page_path('user/instance/clusters/index'), target: '_blank', rel: 'noopener noreferrer')
   end
 

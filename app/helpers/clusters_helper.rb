@@ -19,6 +19,7 @@ module ClustersHelper
       empty_state_help_text: clusterable.empty_state_help_text,
       new_cluster_path: clusterable.new_path,
       add_cluster_path: clusterable.connect_path,
+      create_cluster_path: clusterable.create_path,
       can_add_cluster: clusterable.can_add_cluster?.to_s,
       can_admin_cluster: clusterable.can_admin_cluster?.to_s,
       display_cluster_agents: display_cluster_agents?(clusterable).to_s,

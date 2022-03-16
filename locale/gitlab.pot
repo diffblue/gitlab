@@ -7873,6 +7873,9 @@ msgstr ""
 msgid "ClusterAgents|Certificate"
 msgstr ""
 
+msgid "ClusterAgents|Certificate (deprecated)"
+msgstr ""
+
 msgid "ClusterAgents|Configuration"
 msgstr ""
 
@@ -7910,6 +7913,9 @@ msgid "ClusterAgents|Create agent access token"
 msgstr ""
 
 msgid "ClusterAgents|Create agent: %{searchTerm}"
+msgstr ""
+
+msgid "ClusterAgents|Create and connect new cluster"
 msgstr ""
 
 msgid "ClusterAgents|Create token"
@@ -8449,6 +8455,9 @@ msgid "ClusterIntegration|Learn more about group Kubernetes clusters"
 msgstr ""
 
 msgid "ClusterIntegration|Learn more about instance Kubernetes clusters"
+msgstr ""
+
+msgid "ClusterIntegration|Learn more about our integrations."
 msgstr ""
 
 msgid "ClusterIntegration|Loading IAM Roles"

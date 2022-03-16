@@ -1,8 +1,11 @@
+- docs_mode = local_assigns.fetch(:docs_mode, false)
+
 %h3
   = s_('ClusterIntegration|Connect a Kubernetes cluster')
 %p
   = clusterable.sidebar_text
 %p
-  = clusterable.learn_more_link
+  = clusterable.learn_more_link(docs_mode)
 
-= render 'clusters/clusters/multiple_clusters_message'
+- if !docs_mode
+  = render 'clusters/clusters/multiple_clusters_message'

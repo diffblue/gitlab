@@ -49,6 +49,12 @@ RSpec.describe ProjectClusterablePresenter do
     it { is_expected.to eq(connect_project_clusters_path(project)) }
   end
 
+  describe '#create_path' do
+    subject { presenter.create_path }
+
+    it { is_expected.to eq(create_cluster_project_clusters_path(project)) }
+  end
+
   describe '#authorize_aws_role_path' do
     subject { presenter.authorize_aws_role_path }
 
@@ -92,8 +98,18 @@ RSpec.describe ProjectClusterablePresenter do
   end
 
   describe '#learn_more_link' do
-    subject { presenter.learn_more_link }
+    subject { presenter.learn_more_link(docs_mode) }
 
-    it { is_expected.to include('user/project/clusters/index') }
+    context 'feature flag is enabled' do
+      let(:docs_mode) { true }
+
+      it { is_expected.to include('help/user/infrastructure/iac/index#create-a-new-cluster-through-iac') }
+    end
+
+    context 'feature flag is disabled' do
+      let(:docs_mode) { false }
+
+      it { is_expected.to include('user/project/clusters/index') }
+    end
   end
 end

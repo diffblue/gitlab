@@ -1,4 +1,4 @@
-import { GlDropdown, GlDropdownItem, GlButton } from '@gitlab/ui';
+import { GlDropdown, GlDropdownItem, GlDropdownSectionHeader } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ClustersActions from '~/clusters_list/components/clusters_actions.vue';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
@@ -7,12 +7,14 @@ import { INSTALL_AGENT_MODAL_ID, CLUSTERS_ACTIONS } from '~/clusters_list/consta
 describe('ClustersActionsComponent', () => {
   let wrapper;
 
-  const newClusterPath = 'path/to/create/cluster';
+  const newClusterPath = 'path/to/add/cluster';
   const addClusterPath = 'path/to/connect/existing/cluster';
+  const createClusterPath = 'path/to/create/new/cluster';
 
   const defaultProvide = {
     newClusterPath,
     addClusterPath,
+    createClusterPath,
     canAddCluster: true,
     displayClusterAgents: true,
     certificateBasedClustersEnabled: true,
@@ -22,10 +24,11 @@ describe('ClustersActionsComponent', () => {
   const findDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
   const findDropdownItemIds = () =>
     findDropdownItems().wrappers.map((x) => x.attributes('data-testid'));
+  const findAllSectionHeaders = () => wrapper.findAllComponents(GlDropdownSectionHeader);
+  const findSectionHeadersTexts = () => findAllSectionHeaders().wrappers.map((x) => x.text());
   const findNewClusterLink = () => wrapper.findByTestId('new-cluster-link');
   const findConnectClusterLink = () => wrapper.findByTestId('connect-cluster-link');
   const findConnectNewAgentLink = () => wrapper.findByTestId('connect-new-agent-link');
-  const findConnectWithAgentButton = () => wrapper.findComponent(GlButton);
 
   const createWrapper = (provideData = {}) => {
     wrapper = shallowMountExtended(ClustersActions, {
@@ -82,8 +85,16 @@ describe('ClustersActionsComponent', () => {
       it('renders a dropdown with 3 actions items', () => {
         expect(findDropdownItemIds()).toEqual([
           'connect-new-agent-link',
+          'create-cluster-link',
           'new-cluster-link',
           'connect-cluster-link',
+        ]);
+      });
+
+      it('renders proper section headers', () => {
+        expect(findSectionHeadersTexts()).toEqual([
+          CLUSTERS_ACTIONS.agent,
+          CLUSTERS_ACTIONS.certificate,
         ]);
       });
 
@@ -118,6 +129,10 @@ describe('ClustersActionsComponent', () => {
         expect(findDropdownItemIds()).toEqual(['new-cluster-link', 'connect-cluster-link']);
       });
 
+      it("doesn't render section headers", () => {
+        expect(findAllSectionHeaders()).toHaveLength(0);
+      });
+
       it('shows tooltip', () => {
         const tooltip = getBinding(findDropdown().element, 'gl-tooltip');
         expect(tooltip.value).toBe(CLUSTERS_ACTIONS.connectExistingCluster);
@@ -140,17 +155,12 @@ describe('ClustersActionsComponent', () => {
       createWrapper({ certificateBasedClustersEnabled: false });
     });
 
-    it('it does not show the the dropdown', () => {
-      expect(findDropdown().exists()).toBe(false);
+    it('renders a dropdown with 2 actions items', () => {
+      expect(findDropdownItemIds()).toEqual(['connect-new-agent-link', 'create-cluster-link']);
     });
 
-    it('shows the connect with agent button', () => {
-      expect(findConnectWithAgentButton().props()).toMatchObject({
-        disabled: !defaultProvide.canAddCluster,
-        category: 'primary',
-        variant: 'confirm',
-      });
-      expect(findConnectWithAgentButton().text()).toBe(CLUSTERS_ACTIONS.connectWithAgent);
+    it("doesn't render section headers", () => {
+      expect(findAllSectionHeaders()).toHaveLength(0);
     });
   });
 });
