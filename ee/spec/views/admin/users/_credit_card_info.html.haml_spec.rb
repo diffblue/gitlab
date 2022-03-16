@@ -9,7 +9,8 @@ RSpec.describe 'admin/users/_credit_card_info.html.haml', :saas do
 
   def render
     super(
-      partial: 'admin/users/credit_card_info.html.haml',
+      partial: 'admin/users/credit_card_info',
+      formats: :html,
       locals: { user: user }
     )
   end
