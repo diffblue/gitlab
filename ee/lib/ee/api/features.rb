@@ -13,7 +13,7 @@ module EE
           def validate_feature_flag_name!(name)
             super
 
-            if License::PLANS_BY_FEATURE[name.to_sym]
+            if GitlabSubscriptions::Features::PLANS_BY_FEATURE[name.to_sym]
               bad_request!(
                 "The '#{name}' is a licensed feature name, " \
                 "and thus it cannot be used as a feature flag name. " \

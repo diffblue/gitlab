@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Subscriptions
+module GitlabSubscriptions
   class CreateService
     include Gitlab::Utils::StrongMemoize
 

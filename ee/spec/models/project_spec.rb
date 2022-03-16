@@ -1093,11 +1093,11 @@ RSpec.describe Project do
         allow(namespace).to receive(:plan) { plan_license }
       end
 
-      License::EEU_FEATURES.each do |feature_sym|
+      GitlabSubscriptions::Features::ALL_FEATURES.each do |feature_sym|
         context feature_sym.to_s do
           let(:feature) { feature_sym }
 
-          unless License::GLOBAL_FEATURES.include?(feature_sym)
+          unless GitlabSubscriptions::Features::GLOBAL_FEATURES.include?(feature_sym)
             context "checking #{feature_sym} availability both on Global and Namespace license" do
               let(:check_namespace_plan) { true }
 
@@ -1126,7 +1126,7 @@ RSpec.describe Project do
                 end
               end
 
-              unless License.plan_includes_feature?(License::STARTER_PLAN, feature_sym)
+              unless GitlabSubscriptions::Features.plans_with_feature(feature_sym).include?(License::STARTER_PLAN)
                 context 'not allowed by Plan License' do
                   let(:allowed_on_global_license) { true }
                   let(:plan_license) { build(:bronze_plan) }

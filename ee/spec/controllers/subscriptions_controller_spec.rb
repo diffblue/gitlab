@@ -273,7 +273,7 @@ RSpec.describe SubscriptionsController do
 
       before do
         sign_in(user)
-        allow_any_instance_of(Subscriptions::CreateService).to receive(:execute).and_return(service_response)
+        allow_any_instance_of(GitlabSubscriptions::CreateService).to receive(:execute).and_return(service_response)
         allow_any_instance_of(EE::Groups::CreateService).to receive(:execute).and_return(group)
       end
 

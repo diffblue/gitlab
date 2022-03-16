@@ -15,8 +15,7 @@ module EE
 
     prepended do
       def stub_licensed_features(features)
-        # EEU_FEATURES contains all the features we know about
-        missing_features = features.keys.map(&:to_sym) - License::EEU_FEATURES
+        missing_features = features.keys.map(&:to_sym) - GitlabSubscriptions::Features::ALL_FEATURES
 
         if missing_features.any?
           subject = missing_features.join(', ')
