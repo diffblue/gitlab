@@ -3,7 +3,10 @@ import Vue from 'vue';
 import { GlDaterangePicker } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ViolationFilter from 'ee/compliance_dashboard/components/violations/filter.vue';
-import { convertProjectIdsToGraphQl } from 'ee/compliance_dashboard/utils';
+import {
+  convertProjectIdsToGraphQl,
+  buildDefaultFilterParams,
+} from 'ee/compliance_dashboard/utils';
 import ProjectsDropdownFilter from '~/analytics/shared/components/projects_dropdown_filter.vue';
 import { getDateInPast, pikadayToString } from '~/lib/utils/datetime_utility';
 import { CURRENT_DATE } from 'ee/audit_events/constants';
@@ -16,6 +19,7 @@ Vue.use(VueApollo);
 
 describe('ViolationFilter component', () => {
   let wrapper;
+  const defaultQuery = buildDefaultFilterParams('');
   const groupPath = 'group-path';
   const projectIds = ['1', '2'];
   const startDate = getDateInPast(CURRENT_DATE, 20);
@@ -42,7 +46,7 @@ describe('ViolationFilter component', () => {
       apolloProvider: mockApollo(mockResponse),
       propsData: {
         groupPath,
-        defaultQuery: {},
+        defaultQuery,
         ...propsData,
       },
     });
@@ -108,7 +112,9 @@ describe('ViolationFilter component', () => {
       await findProjectsFilter().vm.$emit('selected', defaultProjects);
 
       expect(wrapper.emitted('filters-changed')).toHaveLength(1);
-      expect(wrapper.emitted('filters-changed')[0]).toStrictEqual([{ projectIds: expectedIds }]);
+      expect(wrapper.emitted('filters-changed')[0]).toStrictEqual([
+        { ...defaultQuery, projectIds: expectedIds },
+      ]);
     });
 
     it('emits a query with a start and end date when a date range has been inputted', async () => {
@@ -118,37 +124,29 @@ describe('ViolationFilter component', () => {
       expect(wrapper.emitted('filters-changed')[0]).toStrictEqual([{ ...dateRangeQuery }]);
     });
 
-    describe('with a default query', () => {
-      const defaultQuery = { projectIds, mergedAfter: '2022-01-01', mergedBefore: '2022-01-31' };
+    it('emits the existing filter query with mutations on each update', async () => {
+      await findProjectsFilter().vm.$emit('selected', []);
 
-      beforeEach(() => {
-        createComponent({ defaultQuery });
-      });
+      expect(wrapper.emitted('filters-changed')).toHaveLength(1);
+      expect(wrapper.emitted('filters-changed')[0]).toStrictEqual([
+        { ...defaultQuery, projectIds: [] },
+      ]);
 
-      it('emits the existing filter query with mutations on each update', async () => {
-        await findProjectsFilter().vm.$emit('selected', []);
+      await findDatePicker().vm.$emit('input', { startDate, endDate });
 
-        expect(wrapper.emitted('filters-changed')).toHaveLength(1);
-        expect(wrapper.emitted('filters-changed')[0]).toStrictEqual([
-          { ...defaultQuery, projectIds: [] },
-        ]);
-
-        await findDatePicker().vm.$emit('input', { startDate, endDate });
-
-        expect(wrapper.emitted('filters-changed')).toHaveLength(2);
-        expect(wrapper.emitted('filters-changed')[1]).toStrictEqual([
-          {
-            projectIds: [],
-            ...dateRangeQuery,
-          },
-        ]);
-      });
+      expect(wrapper.emitted('filters-changed')).toHaveLength(2);
+      expect(wrapper.emitted('filters-changed')[1]).toStrictEqual([
+        {
+          projectIds: [],
+          ...dateRangeQuery,
+        },
+      ]);
     });
   });
 
   describe('projects filter', () => {
     it('fetches the project details when the default query contains projectIds', () => {
-      createComponent({ defaultQuery: { projectIds } });
+      createComponent({ defaultQuery: { ...defaultQuery, projectIds } });
 
       expect(groupProjectsSuccess).toHaveBeenCalledWith({
         groupPath,
@@ -158,7 +156,7 @@ describe('ViolationFilter component', () => {
 
     describe('when the defaultProjects are being fetched', () => {
       beforeEach(async () => {
-        createComponent({ defaultQuery: { projectIds } }, groupProjectsLoading);
+        createComponent({ defaultQuery: { ...defaultQuery, projectIds } }, groupProjectsLoading);
 
         await waitForPromises();
       });
@@ -173,7 +171,7 @@ describe('ViolationFilter component', () => {
 
     describe('when the defaultProjects have been fetched', () => {
       beforeEach(async () => {
-        createComponent({ defaultQuery: { projectIds } });
+        createComponent({ defaultQuery: { ...defaultQuery, projectIds } });
 
         await waitForPromises();
       });

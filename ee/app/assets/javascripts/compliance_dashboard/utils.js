@@ -1,8 +1,10 @@
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { convertToGraphQLIds } from '~/graphql_shared/utils';
 import { TYPE_PROJECT } from '~/graphql_shared/constants';
-import { formatDate } from '~/lib/utils/datetime_utility';
+import { formatDate, getDateInPast, pikadayToString } from '~/lib/utils/datetime_utility';
 import { ISO_SHORT_FORMAT } from '~/vue_shared/constants';
+import { queryToObject } from '~/lib/utils/url_utility';
+import { CURRENT_DATE } from '../audit_events/constants';
 
 export const mapDashboardToDrawerData = (mergeRequest) => ({
   id: mergeRequest.id,
@@ -24,8 +26,14 @@ export const convertProjectIdsToGraphQl = (projectIds) =>
     projectIds.filter((id) => Boolean(id)),
   );
 
-export const parseViolationsQueryFilter = ({ createdBefore, createdAfter, projectIds }) => ({
+export const parseViolationsQueryFilter = ({ mergedBefore, mergedAfter, projectIds }) => ({
   projectIds: projectIds ? convertProjectIdsToGraphQl(projectIds) : [],
-  createdBefore: formatDate(createdBefore, ISO_SHORT_FORMAT),
-  createdAfter: formatDate(createdAfter, ISO_SHORT_FORMAT),
+  mergedBefore: formatDate(mergedBefore, ISO_SHORT_FORMAT),
+  mergedAfter: formatDate(mergedAfter, ISO_SHORT_FORMAT),
+});
+
+export const buildDefaultFilterParams = (queryString) => ({
+  mergedAfter: pikadayToString(getDateInPast(CURRENT_DATE, 30)),
+  mergedBefore: pikadayToString(CURRENT_DATE),
+  ...queryToObject(queryString, { gatherArrays: true }),
 });

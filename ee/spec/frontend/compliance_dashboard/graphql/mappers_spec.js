@@ -1,11 +1,9 @@
 import { mapViolations } from 'ee/compliance_dashboard/graphql/mappers';
-import resolvers from 'ee/compliance_dashboard/graphql/resolvers';
+import { createComplianceViolation } from '../mock_data';
 
 describe('mapViolations', () => {
-  const mockViolations = resolvers.Query.group().mergeRequestViolations.nodes;
-
   it('returns the expected result', () => {
-    const { mergeRequest } = mapViolations([{ ...mockViolations[0] }])[0];
+    const { mergeRequest } = mapViolations([createComplianceViolation()])[0];
 
     expect(mergeRequest).toMatchObject({
       reference: mergeRequest.ref,
