@@ -18071,6 +18071,36 @@ msgstr ""
 msgid "Harbor Registry"
 msgstr ""
 
+msgid "HarborIntegration|After the Harbor integration is activated, global variables ‘$HARBOR_USERNAME’, ‘$HARBOR_PASSWORD’, ‘$HARBOR_URL’ and ‘$HARBOR_PROJECT’ will be created for CI/CD use."
+msgstr ""
+
+msgid "HarborIntegration|Base URL of the Harbor instance."
+msgstr ""
+
+msgid "HarborIntegration|Enter Harbor password"
+msgstr ""
+
+msgid "HarborIntegration|Harbor URL"
+msgstr ""
+
+msgid "HarborIntegration|Harbor password"
+msgstr ""
+
+msgid "HarborIntegration|Harbor project name"
+msgstr ""
+
+msgid "HarborIntegration|Harbor username"
+msgstr ""
+
+msgid "HarborIntegration|Password for your Harbor username."
+msgstr ""
+
+msgid "HarborIntegration|The name of the project in Harbor."
+msgstr ""
+
+msgid "HarborIntegration|Use Harbor as this project's container registry."
+msgstr ""
+
 msgid "Hashed Storage must be enabled to use Geo"
 msgstr ""
 
