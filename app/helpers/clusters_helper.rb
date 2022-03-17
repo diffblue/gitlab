@@ -112,10 +112,10 @@ module ClustersHelper
   private
 
   def default_branch_name(clusterable)
-    return clusterable.default_branch if clusterable.is_a?(Project)
+    clusterable.default_branch if clusterable.is_a?(Project)
   end
 
   def clusterable_project_path(clusterable)
-    return clusterable.full_path if clusterable.is_a?(Project)
+    clusterable.full_path if clusterable.is_a?(Project)
   end
 end
