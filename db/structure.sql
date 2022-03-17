@@ -14461,6 +14461,7 @@ CREATE TABLE dora_daily_metrics (
     date date NOT NULL,
     deployment_frequency integer,
     lead_time_for_changes_in_seconds integer,
+    time_to_restore_service_in_seconds integer,
     CONSTRAINT dora_daily_metrics_deployment_frequency_positive CHECK ((deployment_frequency >= 0)),
     CONSTRAINT dora_daily_metrics_lead_time_for_changes_in_seconds_positive CHECK ((lead_time_for_changes_in_seconds >= 0))
 );
@@ -28290,6 +28291,8 @@ CREATE INDEX index_on_group_id_on_webhooks ON web_hooks USING btree (group_id);
 CREATE INDEX index_on_identities_lower_extern_uid_and_provider ON identities USING btree (lower((extern_uid)::text), provider);
 
 CREATE UNIQUE INDEX index_on_instance_statistics_recorded_at_and_identifier ON analytics_usage_trends_measurements USING btree (identifier, recorded_at);
+
+CREATE INDEX index_on_issues_closed_incidents_by_project_id_and_closed_at ON issues USING btree (project_id, closed_at) WHERE ((issue_type = 1) AND (state_id = 2));
 
 CREATE INDEX index_on_label_links_all_columns ON label_links USING btree (target_id, label_id, target_type);
 

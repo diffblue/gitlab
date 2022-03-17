@@ -3,16 +3,15 @@
 require 'spec_helper'
 
 RSpec.describe API::Dora::Metrics do
-  describe 'GET /projects/:id/dora/metrics' do
-    subject { get api(url, user), params: params }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, group: group) }
+  let_it_be(:production) { create(:environment, :production, project: project) }
+  let_it_be(:maintainer) { create(:user) }
+  let_it_be(:guest) { create(:user) }
 
-    let_it_be(:project) { create(:project) }
-    let_it_be(:production) { create(:environment, :production, project: project) }
-    let_it_be(:maintainer) { create(:user) }
-    let_it_be(:guest) { create(:user) }
+  shared_examples 'common dora metrics endpoint' do
+    using RSpec::Parameterized::TableSyntax
 
-    let(:url) { "/projects/#{project.id}/dora/metrics" }
-    let(:params) { { metric: :deployment_frequency } }
     let(:user) { maintainer }
 
     around do |example|
@@ -22,26 +21,45 @@ RSpec.describe API::Dora::Metrics do
     end
 
     before_all do
-      project.add_maintainer(maintainer)
-      project.add_guest(guest)
-      create(:dora_daily_metrics, deployment_frequency: 1, environment: production, date: '2021-01-01')
-      create(:dora_daily_metrics, deployment_frequency: 2, environment: production, date: '2021-01-02')
+      create(:dora_daily_metrics,
+             deployment_frequency: 1,
+             lead_time_for_changes_in_seconds: 3,
+             time_to_restore_service_in_seconds: 5,
+             environment: production,
+             date: '2021-01-01')
+      create(:dora_daily_metrics,
+             deployment_frequency: 2,
+             lead_time_for_changes_in_seconds: 4,
+             time_to_restore_service_in_seconds: 6,
+             environment: production,
+             date: '2021-01-02')
     end
 
     before do
       stub_licensed_features(dora4_analytics: true)
     end
 
-    it 'returns data' do
-      subject
+    where(:metric, :value1, :value2) do
+      :deployment_frequency    | 1  | 2
+      :lead_time_for_changes   | 3  | 4
+      :time_to_restore_service | 5  | 6
+    end
 
-      expect(response).to have_gitlab_http_status(:ok)
-      expect(json_response).to eq([{ 'date' => '2021-01-01', 'value' => 1 },
-                                   { 'date' => '2021-01-02', 'value' => 2 }])
+    with_them do
+      let(:params) { { metric: metric } }
+
+      it 'returns data' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response).to match_array([{ 'date' => '2021-01-01', 'value' => value1 },
+                                              { 'date' => '2021-01-02', 'value' => value2 }])
+      end
     end
 
     context 'when user is guest' do
       let(:user) { guest }
+      let(:params) { { metric: :deployment_frequency } }
 
       it 'returns authorization error' do
         subject
@@ -52,53 +70,25 @@ RSpec.describe API::Dora::Metrics do
     end
   end
 
-  describe 'GET /groups/:id/dora/metrics' do
-    subject { get api(url, user), params: params }
+  describe 'GET /projects/:id/dora/metrics' do
+    subject { get api("/projects/#{project.id}/dora/metrics", user), params: params }
 
-    let_it_be(:group) { create(:group) }
-    let_it_be(:project) { create(:project, group: group) }
-    let_it_be(:production) { create(:environment, :production, project: project) }
-    let_it_be(:maintainer) { create(:user) }
-    let_it_be(:guest) { create(:user) }
-
-    let(:url) { "/groups/#{group.id}/dora/metrics" }
-    let(:params) { { metric: :deployment_frequency } }
-    let(:user) { maintainer }
-
-    around do |example|
-      freeze_time do
-        example.run
-      end
+    before_all do
+      project.add_maintainer(maintainer)
+      project.add_guest(guest)
     end
+
+    include_examples 'common dora metrics endpoint'
+  end
+
+  describe 'GET /groups/:id/dora/metrics' do
+    subject { get api("/groups/#{group.id}/dora/metrics", user), params: params }
 
     before_all do
       group.add_maintainer(maintainer)
       group.add_guest(guest)
-      create(:dora_daily_metrics, deployment_frequency: 1, environment: production, date: 1.day.ago.to_date)
-      create(:dora_daily_metrics, deployment_frequency: 2, environment: production, date: Time.current.to_date)
     end
 
-    before do
-      stub_licensed_features(dora4_analytics: true)
-    end
-
-    it 'returns data' do
-      subject
-
-      expect(response).to have_gitlab_http_status(:ok)
-      expect(json_response).to eq([{ 'date' => 1.day.ago.to_date.to_s, 'value' => 1 },
-                                   { 'date' => Time.current.to_date.to_s, 'value' => 2 }])
-    end
-
-    context 'when user is guest' do
-      let(:user) { guest }
-
-      it 'returns authorization error' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:unauthorized)
-        expect(json_response['message']).to eq('You do not have permission to access dora metrics.')
-      end
-    end
+    include_examples 'common dora metrics endpoint'
   end
 end

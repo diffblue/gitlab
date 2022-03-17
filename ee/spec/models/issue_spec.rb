@@ -353,6 +353,45 @@ RSpec.describe Issue do
     it { is_expected.to have_one(:status_page_published_incident) }
   end
 
+  describe 'state machine' do
+    context 'daily dora metrics refresh' do
+      let_it_be(:production_env) { create(:environment, :production) }
+
+      context 'when incident is closed' do
+        let(:issue) { create(:issue, :incident, project: production_env.project) }
+
+        it 'schedules Dora::DailyMetrics::RefreshWorker' do
+          freeze_time do
+            expect(::Dora::DailyMetrics::RefreshWorker)
+              .to receive(:perform_async).with(production_env.id, Time.current.to_date.to_s)
+
+            issue.close!
+          end
+        end
+      end
+
+      context 'when there is no production env' do
+        let(:issue) { create(:issue, :incident) }
+
+        it 'does not schedule Dora::DailyMetrics::RefreshWorker' do
+          expect(::Dora::DailyMetrics::RefreshWorker).not_to receive(:perform_async)
+
+          issue.close!
+        end
+      end
+
+      context 'when issue is not an incident' do
+        let(:issue) { create(:issue, project: production_env.project) }
+
+        it 'does not schedule Dora::DailyMetrics::RefreshWorker' do
+          expect(::Dora::DailyMetrics::RefreshWorker).not_to receive(:perform_async)
+
+          issue.close!
+        end
+      end
+    end
+  end
+
   it_behaves_like 'an editable mentionable with EE-specific mentions' do
     subject { create(:issue, project: create(:project, :repository)) }
 
