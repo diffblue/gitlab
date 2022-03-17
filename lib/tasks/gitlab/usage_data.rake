@@ -53,11 +53,13 @@ namespace :gitlab do
 
     desc 'GitLab | UsageDataMetrics | Generate raw SQL metrics queries fixture for RSpec'
     task generate_sql_metrics_fixture: :environment do
+      path = Rails.root.join('spec/fixtures/lib/gitlab/usage/sql_metrics_queries.json')
+
       queries = Timecop.freeze(2021, 1, 1) do
         Gitlab::Usage::ServicePingReport.for(output: :metrics_queries)
       end
 
-      File.write('spec/fixtures/lib/gitlab/usage/sql_metrics_queries.json', Gitlab::Json.pretty_generate(queries))
+      File.write(path, Gitlab::Json.pretty_generate(queries))
     end
 
     def ci_template_includes_hash(source, template_directory = nil)
