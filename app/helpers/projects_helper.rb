@@ -635,7 +635,9 @@ module ProjectsHelper
   end
 
   def can_show_last_commit_in_list?(project)
-    can?(current_user, :read_cross_project) && project.commit
+    can?(current_user, :read_cross_project) &&
+      can?(current_user, :read_commit_status, project) &&
+      project.commit
   end
 
   def pages_https_only_disabled?
