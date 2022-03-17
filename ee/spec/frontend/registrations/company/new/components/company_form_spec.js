@@ -41,7 +41,7 @@ describe('RegistrationForm', () => {
 
     it('sets the trial value to be true', () => {
       expect(wrapper.props().trial).toBe(true);
-      expect(wrapper.findComponent(RegistrationTrialToggle).props('active')).toEqual(true);
+      expect(wrapper.findComponent(RegistrationTrialToggle).props('active')).toBe(true);
     });
 
     it.each`

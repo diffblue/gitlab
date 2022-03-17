@@ -3,7 +3,7 @@ require 'spec_helper'
 
 RSpec.describe 'Company Information', :js do
   let_it_be(:user) { create(:user) }
-  let_it_be(:fields) { ['Company Name', 'Number of employees', 'Country', 'Telephone Number (Optional)', 'Website (Optional)', 'GitLab Ultimate trial (Optional)'] }
+  let_it_be(:fields) { ['Company Name', 'Number of employees', 'Country', 'Telephone number (optional)', 'Website (optional)', 'GitLab Ultimate trial (optional)'] }
 
   before do
     allow(Gitlab).to receive(:com?).and_return(true).at_least(:once)
