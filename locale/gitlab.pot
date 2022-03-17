@@ -27877,9 +27877,6 @@ msgstr ""
 msgid "Please select a group"
 msgstr ""
 
-msgid "Please select a group."
-msgstr ""
-
 msgid "Please select a valid target branch"
 msgstr ""
 
