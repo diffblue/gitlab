@@ -31,8 +31,10 @@ RSpec.describe Resolvers::IncidentManagement::OncallShiftsResolver do
   context 'when an error occurs while finding shifts' do
     subject(:shifts) { sync(resolve_oncall_shifts(args, current_user: nil)) }
 
-    it 'raises ResourceNotAvailable error' do
-      expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+    it 'generates a ResourceNotAvailable error' do
+      expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
+        subject
+      end
     end
   end
 

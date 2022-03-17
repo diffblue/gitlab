@@ -92,8 +92,10 @@ RSpec.describe Resolvers::ExternalIssueResolver do
         end
       end
 
-      it 'raises a GraphQL exception' do
-        expect { batch_sync { resolve_external_issue({}) } }.to raise_error(GraphQL::ExecutionError, 'Jira service not configured.')
+      it 'generates an error' do
+        expect_graphql_error_to_be_created(GraphQL::ExecutionError, 'Jira service not configured.') do
+          batch_sync { resolve_external_issue({}) }
+        end
       end
     end
 
@@ -104,8 +106,10 @@ RSpec.describe Resolvers::ExternalIssueResolver do
         end
       end
 
-      it 'raises a GraphQL exception' do
-        expect { batch_sync { resolve_external_issue({}) } }.to raise_error(GraphQL::ExecutionError, 'Jira service unavailable.')
+      it 'generates an error' do
+        expect_graphql_error_to_be_created(GraphQL::ExecutionError, 'Jira service unavailable.') do
+          batch_sync { resolve_external_issue({}) }
+        end
       end
     end
 

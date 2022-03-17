@@ -40,8 +40,10 @@ RSpec.describe Resolvers::Analytics::DevopsAdoption::EnabledNamespacesResolver d
       context 'as a non-admin user' do
         let(:current_user) { user }
 
-        it 'raises ResourceNotAvailable error' do
-          expect { resolved_enabled_namespaces }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+        it 'generates ResourceNotAvailable error' do
+          expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
+            resolved_enabled_namespaces
+          end
         end
       end
 
@@ -50,8 +52,10 @@ RSpec.describe Resolvers::Analytics::DevopsAdoption::EnabledNamespacesResolver d
           stub_licensed_features(instance_level_devops_adoption: false)
         end
 
-        it 'raises ResourceNotAvailable error' do
-          expect { resolved_enabled_namespaces }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+        it 'generates ResourceNotAvailable error' do
+          expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
+            resolved_enabled_namespaces
+          end
         end
       end
     end
@@ -75,8 +79,10 @@ RSpec.describe Resolvers::Analytics::DevopsAdoption::EnabledNamespacesResolver d
           root_group_1.add_guest(user)
         end
 
-        it 'raises ResourceNotAvailable error' do
-          expect { resolved_enabled_namespaces }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+        it 'generates ResourceNotAvailable error' do
+          expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
+            resolved_enabled_namespaces
+          end
         end
       end
 
@@ -85,8 +91,10 @@ RSpec.describe Resolvers::Analytics::DevopsAdoption::EnabledNamespacesResolver d
           stub_licensed_features(instance_level_devops_adoption: false)
         end
 
-        it 'raises ResourceNotAvailable error' do
-          expect { resolved_enabled_namespaces }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+        it 'generates ResourceNotAvailable error' do
+          expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
+            resolved_enabled_namespaces
+          end
         end
       end
     end

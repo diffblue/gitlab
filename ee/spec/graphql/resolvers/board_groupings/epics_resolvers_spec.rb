@@ -93,10 +93,10 @@ RSpec.describe Resolvers::BoardGroupings::EpicsResolver do
         resolve_board_epics(group_board, { issue_filters: filters })
       end
 
-      it 'raises an exception if both epic_id and epic_wildcard_id are present' do
-        expect do
+      it 'generates an error if both epic_id and epic_wildcard_id are present' do
+        expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ArgumentError) do
           resolve_board_epics(group_board, { issue_filters: { epic_id: epic1.to_global_id, epic_wildcard_id: 'NONE' } })
-        end.to raise_error(Gitlab::Graphql::Errors::ArgumentError)
+        end
       end
 
       it 'accepts epic global id' do

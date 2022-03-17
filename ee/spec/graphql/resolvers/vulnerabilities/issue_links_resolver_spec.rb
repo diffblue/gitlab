@@ -15,19 +15,31 @@ RSpec.describe Resolvers::Vulnerabilities::IssueLinksResolver do
       context 'when the filter is a string' do
         let(:filters) { { link_type: 'some string' } }
 
-        it { expect { subject }.to raise_error(Gitlab::Graphql::Errors::ArgumentError, 'Provide a valid vulnerability issue link type') }
+        it 'generates an error' do
+          expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ArgumentError, 'Provide a valid vulnerability issue link type') do
+            subject
+          end
+        end
       end
 
       context 'when the filter is a number' do
         let(:filters) { { link_type: 99 } }
 
-        it { expect { subject }.to raise_error(Gitlab::Graphql::Errors::ArgumentError), 'Provide a valid vulnerability issue link type' }
+        it 'generates an error' do
+          expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ArgumentError, 'Provide a valid vulnerability issue link type') do
+            subject
+          end
+        end
       end
 
       context 'when the filter is a symbol' do
         let(:filters) { { link_type: :CREATED } }
 
-        it { expect { subject }.to raise_error(Gitlab::Graphql::Errors::ArgumentError), 'Provide a valid vulnerability issue link type' }
+        it 'generates an error' do
+          expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ArgumentError, 'Provide a valid vulnerability issue link type') do
+            subject
+          end
+        end
       end
     end
   end

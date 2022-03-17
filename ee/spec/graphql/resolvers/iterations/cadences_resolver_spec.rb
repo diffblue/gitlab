@@ -13,10 +13,10 @@ RSpec.describe Resolvers::Iterations::CadencesResolver do
 
     shared_examples 'fetches iteration cadences' do
       context 'when user does not have permissions to read iterations cadences' do
-        it 'raises error' do
-          expect do
+        it 'generates an error' do
+          expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
             resolve_group_iteration_cadences
-          end.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+          end
         end
       end
 
@@ -45,12 +45,12 @@ RSpec.describe Resolvers::Iterations::CadencesResolver do
       context 'when project does not have a parent group' do
         let_it_be(:project) { create(:project, :private) }
 
-        it 'raises error' do
+        it 'generates an error' do
           project.add_developer(current_user)
 
-          expect do
+          expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
             resolve_group_iteration_cadences({}, project, { current_user: current_user })
-          end.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+          end
         end
       end
     end

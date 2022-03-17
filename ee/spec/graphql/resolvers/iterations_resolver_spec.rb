@@ -174,10 +174,10 @@ RSpec.describe Resolvers::IterationsResolver do
       context 'by timeframe' do
         context 'when start_date and end_date are present' do
           context 'when start date is after end_date' do
-            it 'raises error' do
-              expect do
+            it 'generates an error' do
+              expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ArgumentError, 'start must be before end') do
                 resolve_group_iterations(timeframe: { start: now, end: now - 2.days })
-              end.to raise_error(Gitlab::Graphql::Errors::ArgumentError, "start must be before end")
+              end
             end
           end
         end
@@ -186,38 +186,38 @@ RSpec.describe Resolvers::IterationsResolver do
       context 'by dates' do
         context 'when start_date and end_date are present' do
           context 'when start date is after end_date' do
-            it 'raises error' do
-              expect do
+            it 'generates an error' do
+              expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ArgumentError, 'startDate is after endDate') do
                 resolve_group_iterations(start_date: now, end_date: now - 2.days)
-              end.to raise_error(Gitlab::Graphql::Errors::ArgumentError, "startDate is after endDate")
+              end
             end
           end
         end
 
         context 'when only start_date is present' do
-          it 'raises error' do
-            expect do
+          it 'generates an error' do
+            expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ArgumentError, /Both startDate and endDate/) do
               resolve_group_iterations(start_date: now)
-            end.to raise_error(Gitlab::Graphql::Errors::ArgumentError, /Both startDate and endDate/)
+            end
           end
         end
 
         context 'when only end_date is present' do
-          it 'raises error' do
-            expect do
+          it 'generates an error' do
+            expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ArgumentError, /Both startDate and endDate/) do
               resolve_group_iterations(end_date: now)
-            end.to raise_error(Gitlab::Graphql::Errors::ArgumentError, /Both startDate and endDate/)
+            end
           end
         end
       end
 
       context 'when user cannot read iterations' do
-        it 'raises error' do
+        it 'generates an error' do
           unauthorized_user = create(:user)
 
-          expect do
+          expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
             resolve_group_iterations({}, group, { current_user: unauthorized_user })
-          end.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+          end
         end
       end
     end
