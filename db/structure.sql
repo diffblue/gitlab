@@ -18974,6 +18974,25 @@ CREATE SEQUENCE project_auto_devops_id_seq
 
 ALTER SEQUENCE project_auto_devops_id_seq OWNED BY project_auto_devops.id;
 
+CREATE TABLE project_build_artifacts_size_refreshes (
+    id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    last_job_artifact_id bigint,
+    state smallint DEFAULT 1 NOT NULL,
+    refresh_started_at timestamp with time zone,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
+);
+
+CREATE SEQUENCE project_build_artifacts_size_refreshes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE project_build_artifacts_size_refreshes_id_seq OWNED BY project_build_artifacts_size_refreshes.id;
+
 CREATE TABLE project_ci_cd_settings (
     id integer NOT NULL,
     project_id integer NOT NULL,
@@ -22870,6 +22889,8 @@ ALTER TABLE ONLY project_aliases ALTER COLUMN id SET DEFAULT nextval('project_al
 
 ALTER TABLE ONLY project_auto_devops ALTER COLUMN id SET DEFAULT nextval('project_auto_devops_id_seq'::regclass);
 
+ALTER TABLE ONLY project_build_artifacts_size_refreshes ALTER COLUMN id SET DEFAULT nextval('project_build_artifacts_size_refreshes_id_seq'::regclass);
+
 ALTER TABLE ONLY project_ci_cd_settings ALTER COLUMN id SET DEFAULT nextval('project_ci_cd_settings_id_seq'::regclass);
 
 ALTER TABLE ONLY project_ci_feature_usages ALTER COLUMN id SET DEFAULT nextval('project_ci_feature_usages_id_seq'::regclass);
@@ -24940,6 +24961,9 @@ ALTER TABLE ONLY project_authorizations
 ALTER TABLE ONLY project_auto_devops
     ADD CONSTRAINT project_auto_devops_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY project_build_artifacts_size_refreshes
+    ADD CONSTRAINT project_build_artifacts_size_refreshes_pkey PRIMARY KEY (id);
+
 ALTER TABLE ONLY project_ci_cd_settings
     ADD CONSTRAINT project_ci_cd_settings_pkey PRIMARY KEY (id);
 
@@ -26398,6 +26422,8 @@ CREATE INDEX idx_audit_events_part_on_entity_id_desc_author_id_created_at ON ONL
 
 CREATE INDEX idx_award_emoji_on_user_emoji_name_awardable_type_awardable_id ON award_emoji USING btree (user_id, name, awardable_type, awardable_id);
 
+CREATE INDEX idx_build_artifacts_size_refreshes_state_updated_at ON project_build_artifacts_size_refreshes USING btree (state, updated_at);
+
 CREATE INDEX idx_ci_pipelines_artifacts_locked ON ci_pipelines USING btree (ci_ref_id, id) WHERE (locked = 1);
 
 CREATE INDEX idx_container_exp_policies_on_project_id_next_run_at ON container_expiration_policies USING btree (project_id, next_run_at) WHERE (enabled = true);
@@ -26919,6 +26945,8 @@ CREATE INDEX index_ci_job_artifacts_on_expire_at_and_job_id ON ci_job_artifacts 
 CREATE INDEX index_ci_job_artifacts_on_file_store ON ci_job_artifacts USING btree (file_store);
 
 CREATE INDEX index_ci_job_artifacts_on_file_type_for_devops_adoption ON ci_job_artifacts USING btree (file_type, project_id, created_at) WHERE (file_type = ANY (ARRAY[5, 6, 8, 23]));
+
+CREATE INDEX index_ci_job_artifacts_on_id_project_id_and_created_at ON ci_job_artifacts USING btree (project_id, created_at, id);
 
 CREATE INDEX index_ci_job_artifacts_on_id_project_id_and_file_type ON ci_job_artifacts USING btree (project_id, file_type, id);
 
@@ -28527,6 +28555,8 @@ CREATE UNIQUE INDEX index_project_aliases_on_name ON project_aliases USING btree
 CREATE INDEX index_project_aliases_on_project_id ON project_aliases USING btree (project_id);
 
 CREATE UNIQUE INDEX index_project_auto_devops_on_project_id ON project_auto_devops USING btree (project_id);
+
+CREATE UNIQUE INDEX index_project_build_artifacts_size_refreshes_on_project_id ON project_build_artifacts_size_refreshes USING btree (project_id);
 
 CREATE UNIQUE INDEX index_project_ci_cd_settings_on_project_id ON project_ci_cd_settings USING btree (project_id);
 
@@ -32666,6 +32696,9 @@ ALTER TABLE ONLY list_user_preferences
 
 ALTER TABLE ONLY merge_request_cleanup_schedules
     ADD CONSTRAINT fk_rails_92dd0e705c FOREIGN KEY (merge_request_id) REFERENCES merge_requests(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY project_build_artifacts_size_refreshes
+    ADD CONSTRAINT fk_rails_936db5fc44 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY board_labels
     ADD CONSTRAINT fk_rails_9374a16edd FOREIGN KEY (board_id) REFERENCES boards(id) ON DELETE CASCADE;
