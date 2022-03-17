@@ -11,6 +11,7 @@ RSpec.describe API::ManagedLicenses do
 
   before do
     stub_licensed_features(license_scanning: true)
+    stub_feature_flags(lc_remove_legacy_approval_status: false)
     project.add_maintainer(maintainer_user)
     project.add_developer(dev_user)
     project.add_reporter(reporter_user)
