@@ -22841,9 +22841,6 @@ msgstr ""
 msgid "Maximum authenticated API requests per rate limit period per user"
 msgstr ""
 
-msgid "Maximum authenticated requests by a user per minute"
-msgstr ""
-
 msgid "Maximum authenticated web requests per rate limit period per user"
 msgstr ""
 
