@@ -39,3 +39,12 @@ After the Harbor integration is activated:
 
 - The global variables `$HARBOR_USER`, `$HARBOR_PASSWORD`, `$HARBOR_URL`, and `$HARBOR_PROJECT` are created for CI/CD use.
 - The project-level integration settings override the group-level integration settings.
+
+## Secure your requests to the Harbor APIs
+
+For each API request through the Harbor integration, the credentials for your connection to the Harbor API use
+the `username:password` combination. The following are suggestions for safe use: 
+
+- Use TLS on the Harbor APIs you connect to.
+- Follow the principle of least privilege (for access on Harbor) with your credentials.
+- Have a rotation policy on your credentials.
