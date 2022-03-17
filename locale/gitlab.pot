@@ -23211,7 +23211,7 @@ msgstr ""
 msgid "Merge automatically (%{strategy})"
 msgstr ""
 
-msgid "Merge blocked: all merge request dependencies must be merged or closed."
+msgid "Merge blocked: all merge request dependencies must be merged."
 msgstr ""
 
 msgid "Merge blocked: merge request must be marked as ready. It's still marked as draft."
