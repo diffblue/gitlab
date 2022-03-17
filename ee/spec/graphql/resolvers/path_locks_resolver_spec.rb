@@ -37,7 +37,11 @@ RSpec.describe Resolvers::PathLocksResolver do
       context 'user is unauthorized' do
         let(:user) { create(:user) }
 
-        it { expect { resolve_path_locks }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable) }
+        it 'generates an error' do
+          expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
+            resolve_path_locks
+          end
+        end
       end
     end
   end

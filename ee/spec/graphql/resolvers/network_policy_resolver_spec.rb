@@ -54,8 +54,10 @@ RSpec.describe Resolvers::NetworkPolicyResolver do
         stub_licensed_features(threat_monitoring: false)
       end
 
-      it 'raises ResourceNotAvailable error' do
-        expect { resolve_network_policies }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+      it 'generates a ResourceNotAvailable error' do
+        expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
+          resolve_network_policies
+        end
       end
     end
 
@@ -67,8 +69,10 @@ RSpec.describe Resolvers::NetworkPolicyResolver do
       context 'when NetworkPolicies::ResourcesService is not executed successfully' do
         let(:service_result) { instance_double(ServiceResponse, success?: false, message: 'Error fetching the result') }
 
-        it 'raises Gitlab::Graphql::Errors::BaseError' do
-          expect { resolve_network_policies }.to raise_error(Gitlab::Graphql::Errors::BaseError, 'Error fetching the result')
+        it 'generates a Gitlab::Graphql::Errors::BaseError error' do
+          expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::BaseError, 'Error fetching the result') do
+            resolve_network_policies
+          end
         end
       end
 
@@ -123,8 +127,10 @@ RSpec.describe Resolvers::NetworkPolicyResolver do
       context 'when user is unauthorized' do
         let(:user) { create(:user) }
 
-        it 'raises ResourceNotAvailable error' do
-          expect { resolve_network_policies }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+        it 'generates a ResourceNotAvailable error' do
+          expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
+            resolve_network_policies
+          end
         end
       end
     end

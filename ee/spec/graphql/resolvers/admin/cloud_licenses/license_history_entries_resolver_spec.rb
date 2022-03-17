@@ -20,12 +20,12 @@ RSpec.describe Resolvers::Admin::CloudLicenses::LicenseHistoryEntriesResolver do
     end
 
     context 'when current user is unauthorized' do
-      it 'raises error' do
+      it 'generates an error' do
         unauthorized_user = create(:user)
 
-        expect do
+        expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
           resolve_license_history_entries(current_user: unauthorized_user)
-        end.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+        end
       end
     end
 

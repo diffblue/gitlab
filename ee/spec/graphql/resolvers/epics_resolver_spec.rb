@@ -115,10 +115,12 @@ RSpec.describe Resolvers::EpicsResolver do
         end
 
         context 'with in param' do
-          it 'returns an error if param search is missing' do
+          it 'generates an error if param search is missing' do
             error_message = "`search` should be present when including the `in` argument"
-            expect { resolve_epics(in: ['title']) }
-              .to raise_error(Gitlab::Graphql::Errors::ArgumentError, error_message)
+
+            expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ArgumentError, error_message) do
+              resolve_epics(in: ['title'])
+            end
           end
 
           it 'filters epics by description only' do

@@ -25,8 +25,10 @@ RSpec.describe Resolvers::Boards::EpicListsResolver do
       stub_licensed_features(epics: true)
     end
 
-    it 'raises an error if user cannot read epic lists' do
-      expect { result }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+    it 'generates an error if user cannot read epic lists' do
+      expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
+        result
+      end
     end
 
     context 'when user is member of the group' do

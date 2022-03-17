@@ -30,10 +30,10 @@ RSpec.describe Resolvers::BoardListIssuesResolver do
   end
 
   shared_examples 'raises error on mutually exclusive arguments' do
-    it 'raises an exception if mutually exclusive arguments are present' do
-      expect do
+    it 'generates an error if mutually exclusive arguments are present' do
+      expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ArgumentError) do
         resolve_board_list_issues({ filters: filters })
-      end.to raise_error(Gitlab::Graphql::Errors::ArgumentError)
+      end
     end
   end
 

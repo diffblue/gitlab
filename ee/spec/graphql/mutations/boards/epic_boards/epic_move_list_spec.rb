@@ -46,7 +46,9 @@ RSpec.describe ::Mutations::Boards::EpicBoards::EpicMoveList do
 
     context 'when user does not have permissions' do
       it 'does not allow the move' do
-        expect { subject }.to raise_error
+        expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
+          subject
+        end
       end
     end
 

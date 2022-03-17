@@ -70,8 +70,10 @@ RSpec.describe Resolvers::TimeboxReportResolver do
           stub_const('TimeboxReportService::EVENT_COUNT_LIMIT', 1)
         end
 
-        it 'raises a GraphQL exception' do
-          expect { subject }.to raise_error(GraphQL::ExecutionError, 'Burnup chart could not be generated due to too many events')
+        it 'generates a GraphQL error' do
+          expect_graphql_error_to_be_created(GraphQL::ExecutionError, 'Burnup chart could not be generated due to too many events') do
+            subject
+          end
         end
       end
     end
