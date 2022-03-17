@@ -79,6 +79,10 @@ module Gitlab
       def auth_providers
         AuthenticationEvent::STATIC_PROVIDERS
       end
+
+      def omniauth_provider_names
+        []
+      end
     end
   end
 end

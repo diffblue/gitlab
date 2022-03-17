@@ -214,6 +214,11 @@
     "instances_hangouts_chat_active": "SELECT COUNT(\"integrations\".\"id\") FROM \"integrations\" WHERE \"integrations\".\"active\" = TRUE AND \"integrations\".\"instance\" = TRUE AND \"integrations\".\"type_new\" = 'Integrations::HangoutsChat'",
     "projects_inheriting_hangouts_chat_active": "SELECT COUNT(\"integrations\".\"id\") FROM \"integrations\" WHERE \"integrations\".\"active\" = TRUE AND \"integrations\".\"project_id\" IS NOT NULL AND \"integrations\".\"inherit_from_id\" IS NOT NULL AND \"integrations\".\"type_new\" = 'Integrations::HangoutsChat'",
     "groups_inheriting_hangouts_chat_active": "SELECT COUNT(\"integrations\".\"id\") FROM \"integrations\" WHERE \"integrations\".\"active\" = TRUE AND \"integrations\".\"group_id\" IS NOT NULL AND \"integrations\".\"inherit_from_id\" IS NOT NULL AND \"integrations\".\"type_new\" = 'Integrations::HangoutsChat'",
+    "projects_harbor_active": "SELECT COUNT(\"integrations\".\"id\") FROM \"integrations\" WHERE \"integrations\".\"active\" = TRUE AND \"integrations\".\"project_id\" IS NOT NULL AND \"integrations\".\"type_new\" = 'Integrations::Harbor'",
+    "groups_harbor_active": "SELECT COUNT(\"integrations\".\"id\") FROM \"integrations\" WHERE \"integrations\".\"active\" = TRUE AND \"integrations\".\"group_id\" IS NOT NULL AND \"integrations\".\"type_new\" = 'Integrations::Harbor'",
+    "instances_harbor_active": "SELECT COUNT(\"integrations\".\"id\") FROM \"integrations\" WHERE \"integrations\".\"active\" = TRUE AND \"integrations\".\"instance\" = TRUE AND \"integrations\".\"type_new\" = 'Integrations::Harbor'",
+    "projects_inheriting_harbor_active": "SELECT COUNT(\"integrations\".\"id\") FROM \"integrations\" WHERE \"integrations\".\"active\" = TRUE AND \"integrations\".\"project_id\" IS NOT NULL AND \"integrations\".\"inherit_from_id\" IS NOT NULL AND \"integrations\".\"type_new\" = 'Integrations::Harbor'",
+    "groups_inheriting_harbor_active": "SELECT COUNT(\"integrations\".\"id\") FROM \"integrations\" WHERE \"integrations\".\"active\" = TRUE AND \"integrations\".\"group_id\" IS NOT NULL AND \"integrations\".\"inherit_from_id\" IS NOT NULL AND \"integrations\".\"type_new\" = 'Integrations::Harbor'",
     "projects_irker_active": "SELECT COUNT(\"integrations\".\"id\") FROM \"integrations\" WHERE \"integrations\".\"active\" = TRUE AND \"integrations\".\"project_id\" IS NOT NULL AND \"integrations\".\"type_new\" = 'Integrations::Irker'",
     "groups_irker_active": "SELECT COUNT(\"integrations\".\"id\") FROM \"integrations\" WHERE \"integrations\".\"active\" = TRUE AND \"integrations\".\"group_id\" IS NOT NULL AND \"integrations\".\"type_new\" = 'Integrations::Irker'",
     "instances_irker_active": "SELECT COUNT(\"integrations\".\"id\") FROM \"integrations\" WHERE \"integrations\".\"active\" = TRUE AND \"integrations\".\"instance\" = TRUE AND \"integrations\".\"type_new\" = 'Integrations::Irker'",
@@ -713,16 +718,7 @@
       "groups": "SELECT COUNT(DISTINCT \"members\".\"user_id\") FROM \"members\" WHERE \"members\".\"type\" = 'GroupMember' AND \"members\".\"source_type\" = 'Namespace'",
       "users_created": "SELECT COUNT(\"users\".\"id\") FROM \"users\"",
       "omniauth_providers": [
-        "cas3",
-        "github",
-        "bitbucket",
-        "gitlab",
-        "google_oauth2",
-        "facebook",
-        "twitter",
-        "jwt",
-        "auth0",
-        "authentiq"
+
       ],
       "user_auth_by_provider": {
         "two-factor": "SELECT COUNT(DISTINCT \"authentication_events\".\"user_id\") FROM \"authentication_events\" WHERE \"authentication_events\".\"result\" = 1 AND \"authentication_events\".\"provider\" = 'two-factor'",
@@ -765,7 +761,7 @@
       "ldap_servers": 0,
       "ldap_group_sync_enabled": false,
       "ldap_admin_sync_enabled": false,
-      "group_saml_enabled": true,
+      "group_saml_enabled": false,
       "audit_event_destinations": "SELECT COUNT(\"audit_events_external_audit_event_destinations\".\"id\") FROM \"audit_events_external_audit_event_destinations\"",
       "groups_with_event_streaming_destinations": "SELECT COUNT(DISTINCT \"namespaces\".\"id\") FROM \"namespaces\" INNER JOIN \"audit_events_external_audit_event_destinations\" ON \"audit_events_external_audit_event_destinations\".\"namespace_id\" = \"namespaces\".\"id\" WHERE \"namespaces\".\"type\" = 'Group'"
     },
@@ -922,16 +918,7 @@
       "groups": "SELECT COUNT(DISTINCT \"members\".\"user_id\") FROM \"members\" WHERE \"members\".\"type\" = 'GroupMember' AND \"members\".\"source_type\" = 'Namespace' AND \"members\".\"created_at\" BETWEEN '2020-12-02 00:00:00' AND '2020-12-30 00:00:00'",
       "users_created": "SELECT COUNT(\"users\".\"id\") FROM \"users\" WHERE \"users\".\"created_at\" BETWEEN '2020-12-02 00:00:00' AND '2020-12-30 00:00:00'",
       "omniauth_providers": [
-        "cas3",
-        "github",
-        "bitbucket",
-        "gitlab",
-        "google_oauth2",
-        "facebook",
-        "twitter",
-        "jwt",
-        "auth0",
-        "authentiq"
+
       ],
       "user_auth_by_provider": {
         "two-factor": "SELECT COUNT(DISTINCT \"authentication_events\".\"user_id\") FROM \"authentication_events\" WHERE \"authentication_events\".\"result\" = 1 AND \"authentication_events\".\"provider\" = 'two-factor' AND \"authentication_events\".\"created_at\" BETWEEN '2020-12-02 00:00:00' AND '2020-12-30 00:00:00'",
@@ -974,7 +961,7 @@
       "ldap_servers": 0,
       "ldap_group_sync_enabled": false,
       "ldap_admin_sync_enabled": false,
-      "group_saml_enabled": true,
+      "group_saml_enabled": false,
       "audit_event_destinations": "SELECT COUNT(\"audit_events_external_audit_event_destinations\".\"id\") FROM \"audit_events_external_audit_event_destinations\" WHERE \"audit_events_external_audit_event_destinations\".\"created_at\" BETWEEN '2020-12-02 00:00:00' AND '2020-12-30 00:00:00'",
       "groups_with_event_streaming_destinations": "SELECT COUNT(DISTINCT \"namespaces\".\"id\") FROM \"namespaces\" INNER JOIN \"audit_events_external_audit_event_destinations\" ON \"audit_events_external_audit_event_destinations\".\"namespace_id\" = \"namespaces\".\"id\" WHERE \"namespaces\".\"type\" = 'Group' AND \"namespaces\".\"created_at\" BETWEEN '2020-12-02 00:00:00' AND '2020-12-30 00:00:00'"
     },
@@ -1165,6 +1152,14 @@
     }
   },
   "redis_hll_counters": {
+    "error_tracking": {
+      "error_tracking_view_details_weekly": 0,
+      "error_tracking_view_details_monthly": 0,
+      "error_tracking_view_list_weekly": 0,
+      "error_tracking_view_list_monthly": 0,
+      "error_tracking_total_unique_counts_weekly": 0,
+      "error_tracking_total_unique_counts_monthly": 0
+    },
     "epics_usage": {
       "g_project_management_epic_created_weekly": 0,
       "g_project_management_epic_created_monthly": 0,

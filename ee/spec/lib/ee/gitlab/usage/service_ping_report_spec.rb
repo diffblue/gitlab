@@ -46,6 +46,7 @@ RSpec.describe Gitlab::Usage::ServicePingReport, :use_clean_rails_memory_store_c
         counts_weekly.aggregated_metrics.xmau_plan
         counts_weekly.aggregated_metrics.xmau_project_management
         counts_weekly.aggregated_metrics.users_work_items
+        hostname
         topology.duration_s
         usage_activity_by_stage_monthly.plan.service_desk_issues
         usage_activity_by_stage.plan.service_desk_issues
