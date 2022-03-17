@@ -1,6 +1,6 @@
 import { GlButton, GlForm } from '@gitlab/ui';
 import { createLocalVue } from '@vue/test-utils';
-import RegistrationForm from 'ee/registrations/company/new/components/registration_form.vue';
+import RegistrationForm from 'ee/registrations/components/company_form.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { TRIAL_FORM_SUBMIT_TEXT } from 'ee/trials/constants';
 import RegistrationTrialToggle from 'ee/registrations/components/registration_trial_toggle.vue';
