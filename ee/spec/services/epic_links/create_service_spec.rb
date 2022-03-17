@@ -10,7 +10,7 @@ RSpec.describe EpicLinks::CreateService do
     let(:user) { create(:user) }
     let(:epic) { create(:epic, group: group) }
     let(:epic_to_add) { create(:epic, group: group) }
-    let(:expected_error) { 'No Epic found for given params' }
+    let(:expected_error) { 'No matching epic found. Make sure that you are adding a valid epic URL.' }
     let(:expected_code) { 404 }
 
     let(:valid_reference) { epic_to_add.to_reference(full: true) }

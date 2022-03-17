@@ -87,12 +87,8 @@ module EpicLinks
       @descendants ||= issuable.group.self_and_descendants
     end
 
-    def issuables_assigned_message
-      'Epic(s) already assigned'
-    end
-
-    def issuables_not_found_message
-      'No Epic found for given params'
+    def target_issuable_type
+      :epic
     end
   end
 end
