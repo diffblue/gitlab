@@ -11,7 +11,7 @@ import { APPROVAL_VULNERABILITY_STATES } from 'ee/approvals/constants';
 
 export default {
   scanResultRuleCopy: s__(
-    'ScanResultPolicy|%{ifLabelStart}if%{ifLabelEnd} %{scanners} scan in an open merge request targeting the %{branches} branch(es) finds %{vulnerabilitiesAllowed} or more %{severities} vulnerabilities that are %{vulnerabilityStates}',
+    'ScanResultPolicy|%{ifLabelStart}if%{ifLabelEnd} %{scanners} find(s) more than %{vulnerabilitiesAllowed} %{severities} %{vulnerabilityStates} vulnerabilities in an open merge request targeting %{branches}',
   ),
   components: {
     GlSprintf,
