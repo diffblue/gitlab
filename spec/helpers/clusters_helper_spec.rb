@@ -224,4 +224,33 @@ RSpec.describe ClustersHelper do
       end
     end
   end
+
+  describe '#default_branch_name' do
+    subject { default_branch_name(clusterable) }
+
+    context 'when clusterable is a project without a repository' do
+      let(:clusterable) { build(:project) }
+
+      it 'allows default branch name to display default name from settings' do
+        expect(subject).to eq(Gitlab::CurrentSettings.default_branch_name)
+      end
+    end
+
+    context 'when clusterable is a project with a repository' do
+      let(:clusterable) { build(:project, :repository) }
+      let(:repository) { clusterable.repository }
+
+      it 'allows default branch name to display repository root branch' do
+        expect(subject).to eq(repository.root_ref)
+      end
+    end
+
+    context 'when clusterable is a group' do
+      let(:clusterable) { build(:group) }
+
+      it 'does not allow default branch name to display' do
+        expect(subject).to be_nil
+      end
+    end
+  end
 end
