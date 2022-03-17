@@ -2,7 +2,7 @@
 
 class Groups::Analytics::CycleAnalyticsController < Groups::Analytics::ApplicationController
   include CycleAnalyticsParams
-  include RedisTracking
+  include ProductAnalyticsTracking
   extend ::Gitlab::Utils::Override
 
   increment_usage_counter Gitlab::UsageDataCounters::CycleAnalyticsCounter, :views, only: :show
@@ -22,7 +22,7 @@ class Groups::Analytics::CycleAnalyticsController < Groups::Analytics::Applicati
 
   layout 'group'
 
-  track_redis_hll_event :show, name: 'g_analytics_valuestream'
+  track_event :show, name: 'g_analytics_valuestream', destinations: [:redis_hll, :snowplow]
 
   def show
     epic_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: "https://gitlab.com/groups/gitlab-org/-/epics/6046" }
@@ -55,4 +55,6 @@ class Groups::Analytics::CycleAnalyticsController < Groups::Analytics::Applicati
                       @group.value_streams.find(params[:value_stream_id])
                     end
   end
+
+  alias_method :tracking_namespace_source, :load_group
 end
