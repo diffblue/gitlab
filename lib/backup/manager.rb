@@ -267,11 +267,8 @@ module Backup
       # delete tmp inside backups
       puts_time "Deleting backups/tmp ... ".color(:blue)
 
-      if FileUtils.rm_rf(File.join(backup_path, "tmp"))
-        puts_time "Deleting backups/tmp ... ".color(:blue) + "done".color(:green)
-      else
-        puts_time "Deleting backups/tmp failed".color(:red)
-      end
+      FileUtils.rm_rf(File.join(backup_path, "tmp"))
+      puts_time "Deleting backups/tmp ... ".color(:blue) + "done".color(:green)
     end
 
     def remove_old
