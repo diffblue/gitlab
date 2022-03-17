@@ -16785,6 +16785,9 @@ msgstr ""
 msgid "GitLab Team Member"
 msgstr ""
 
+msgid "GitLab Ultimate trial"
+msgstr ""
+
 msgid "GitLab User"
 msgstr ""
 
@@ -41863,6 +41866,9 @@ msgid "Webhooks|Webhook was automatically disabled"
 msgstr ""
 
 msgid "Webhooks|Wiki page events"
+msgstr ""
+
+msgid "Website"
 msgstr ""
 
 msgid "Website:"
