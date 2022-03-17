@@ -170,7 +170,7 @@ RSpec.describe 'Epic show', :js do
       page.within('.epic-page-container .detail-page-header-body') do
         expect(find('.issuable-status-box > span')).to have_content('Open')
         expect(find('.issuable-meta')).to have_content('Created')
-        expect(find('.issuable-meta .js-user-avatar-link-username')).to have_content('Rick Sanchez')
+        expect(find('.issuable-meta [data-testid="user-avatar-link-username"]')).to have_content('Rick Sanchez')
       end
     end
 
