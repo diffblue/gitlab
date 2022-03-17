@@ -6,8 +6,15 @@ module QA
       let(:executor) { "qa-runner-#{SecureRandom.hex(3)}" }
       let(:tag_name) { "awesome-tag-#{SecureRandom.hex(3)}" }
 
+      let(:group) do
+        Resource::Group.fabricate_via_api! do |group|
+          group.name = "group-for-pipeline-subscriptions-#{SecureRandom.hex(3)}"
+        end
+      end
+
       let(:upstream_project) do
         Resource::Project.fabricate_via_api! do |project|
+          project.group = group
           project.name = 'upstream-project-for-subscription'
           project.description = 'Project with CI subscription'
         end
@@ -15,6 +22,7 @@ module QA
 
       let(:downstream_project) do
         Resource::Project.fabricate_via_api! do |project|
+          project.group = group
           project.name = 'project-with-pipeline-subscription'
           project.description = 'Project with CI subscription'
         end
@@ -22,8 +30,7 @@ module QA
 
       let!(:runner) do
         Resource::Runner.fabricate! do |runner|
-          runner.project = upstream_project
-          runner.token = upstream_project.group.reload!.runners_token
+          runner.token = group.reload!.runners_token
           runner.name = executor
           runner.tags = [executor]
         end
@@ -43,7 +50,7 @@ module QA
       end
 
       after do
-        [runner, upstream_project, downstream_project].each do |item|
+        [runner, upstream_project, downstream_project, group].each do |item|
           item.remove_via_api!
         end
       end
