@@ -57,6 +57,25 @@ RSpec.describe Groups::Analytics::CycleAnalyticsController do
           end
         end
       end
+
+      describe 'tracking events', :snowplow do
+        it 'tracks redis hll event' do
+          expect(Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event).with('g_analytics_valuestream', { values: anything })
+
+          get(:show, params: { group_id: group })
+        end
+
+        it 'tracks snowplow event' do
+          get(:show, params: { group_id: group })
+
+          expect_snowplow_event(
+            category: 'Groups::Analytics::CycleAnalyticsController',
+            action: 'g_analytics_valuestream',
+            namespace: group,
+            user: user
+          )
+        end
+      end
     end
 
     context 'when the license is missing' do
