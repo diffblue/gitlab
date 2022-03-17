@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Plan', :reliable do
+  RSpec.describe 'Plan', :reliable, :requires_admin do
+    # TODO: remove :requires_admin when `Runtime::Feature.enable` method call is removed
+    # See more info in `before` block
     describe 'Assign Iterations' do
       include Support::Dates
 
