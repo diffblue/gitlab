@@ -237,7 +237,7 @@ describe('ComplianceReport component', () => {
       expect(rowTexts).toEqual([
         'High',
         'Approved by committer',
-        `Merge request ${idx}`,
+        violations[idx].mergeRequest.title,
         'in 1 year',
         'View details',
       ]);
@@ -306,7 +306,7 @@ describe('ComplianceReport component', () => {
           expect(findMergeRequestDrawer().props('project')).toStrictEqual({});
         });
 
-        it(`swaps the drawer when another ${eventDescription}`, async () => {
+        it(`keeps the drawer open when another violation's ${eventDescription}`, async () => {
           const drawerData = mapViolations(violations)[1];
 
           await rowAction(0);

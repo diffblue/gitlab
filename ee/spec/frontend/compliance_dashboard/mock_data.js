@@ -107,8 +107,8 @@ export const createComplianceViolation = (id) => ({
     __typename: 'UserCore',
   },
   mergeRequest: {
-    id: `gid://gitlab/MergeRequest/${id}`,
-    title: `Merge request ${id}`,
+    id: `gid://gitlab/MergeRequest/1`,
+    title: `Merge request 1`,
     mergedAt: '2022-03-06T16:39:12Z',
     webUrl: 'http://gdk.test:3000/gitlab-org/gitlab-shell/-/merge_requests/56',
     author: {
