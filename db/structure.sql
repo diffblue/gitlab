@@ -21129,7 +21129,7 @@ CREATE TABLE user_credit_card_validations (
     network text,
     CONSTRAINT check_1765e2b30f CHECK ((char_length(network) <= 32)),
     CONSTRAINT check_3eea080c91 CHECK (((last_digits >= 0) AND (last_digits <= 9999))),
-    CONSTRAINT check_eafe45d88b CHECK ((char_length(holder_name) <= 26))
+    CONSTRAINT check_cc0c8dc0fe CHECK ((char_length(holder_name) <= 50))
 );
 
 CREATE TABLE user_custom_attributes (
