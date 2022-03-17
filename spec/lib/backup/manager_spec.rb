@@ -167,7 +167,9 @@ RSpec.describe Backup::Manager do
 
     before do
       allow(ActiveRecord::Base.connection).to receive(:reconnect!)
+      allow(Gitlab::BackupLogger).to receive(:info)
       allow(Kernel).to receive(:system).and_return(true)
+      allow(YAML).to receive(:load_file).and_call_original
       allow(YAML).to receive(:load_file).with(File.join(Gitlab.config.backup.path, 'backup_information.yml'))
         .and_return(backup_information)
 
@@ -180,6 +182,20 @@ RSpec.describe Backup::Manager do
       subject.create # rubocop:disable Rails/SaveBang
 
       expect(Kernel).to have_received(:system).with(*tar_cmdline)
+    end
+
+    context 'tar fails' do
+      before do
+        expect(Kernel).to receive(:system).with(*tar_cmdline).and_return(false)
+      end
+
+      it 'logs a failure' do
+        expect do
+          subject.create # rubocop:disable Rails/SaveBang
+        end.to raise_error(Backup::Error, 'Backup failed')
+
+        expect(Gitlab::BackupLogger).to have_received(:info).with(message: "Creating archive #{tar_file} failed")
+      end
     end
 
     context 'when BACKUP is set' do
@@ -634,7 +650,10 @@ RSpec.describe Backup::Manager do
     end
 
     context 'when BACKUP variable is set to a correct file' do
+      let(:tar_cmdline) { %w{tar -xf 1451606400_2016_01_01_1.2.3_gitlab_backup.tar} }
+
       before do
+        allow(Gitlab::BackupLogger).to receive(:info)
         allow(Dir).to receive(:glob).and_return(
           [
             '1451606400_2016_01_01_1.2.3_gitlab_backup.tar'
@@ -649,8 +668,21 @@ RSpec.describe Backup::Manager do
       it 'unpacks the file' do
         subject.restore
 
-        expect(Kernel).to have_received(:system)
-          .with("tar", "-xf", "1451606400_2016_01_01_1.2.3_gitlab_backup.tar")
+        expect(Kernel).to have_received(:system).with(*tar_cmdline)
+      end
+
+      context 'tar fails' do
+        before do
+          expect(Kernel).to receive(:system).with(*tar_cmdline).and_return(false)
+        end
+
+        it 'logs a failure' do
+          expect do
+            subject.restore
+          end.to raise_error(SystemExit)
+
+          expect(Gitlab::BackupLogger).to have_received(:info).with(message: 'Unpacking backup failed')
+        end
       end
 
       context 'on version mismatch' do
