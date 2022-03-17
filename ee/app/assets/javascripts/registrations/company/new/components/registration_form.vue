@@ -3,16 +3,18 @@ import { GlForm, GlButton, GlFormGroup, GlFormInput, GlFormSelect, GlFormText } 
 import {
   LEADS_COMPANY_NAME_LABEL,
   LEADS_COMPANY_SIZE_LABEL,
+  LEADS_PHONE_NUMBER_LABEL,
   companySizes,
 } from 'ee/vue_shared/leads/constants';
 import csrf from '~/lib/utils/csrf';
-import CountryOrRegionSelector from '../../../../trials/components/country_or_region_selector.vue';
+import { __ } from '~/locale';
+import CountryOrRegionSelector from 'ee/trials/components/country_or_region_selector.vue';
 import {
   TRIAL_COMPANY_SIZE_PROMPT,
   TRIAL_PHONE_DESCRIPTION,
   TRIAL_FORM_SUBMIT_TEXT,
-} from '../../../../trials/constants';
-import RegistrationTrialToggle from '../../../components/registration_trial_toggle.vue';
+} from 'ee/trials/constants';
+import RegistrationTrialToggle from 'ee/registrations/components/registration_trial_toggle.vue';
 
 export default {
   csrf,
@@ -59,8 +61,13 @@ export default {
     companyNameLabel: LEADS_COMPANY_NAME_LABEL,
     companySizeLabel: LEADS_COMPANY_SIZE_LABEL,
     companySizeSelectPrompt: TRIAL_COMPANY_SIZE_PROMPT,
-    formSubmitText: TRIAL_FORM_SUBMIT_TEXT,
+    phoneNumberLabel: LEADS_PHONE_NUMBER_LABEL,
     phoneNumberDescription: TRIAL_PHONE_DESCRIPTION,
+    formSubmitText: TRIAL_FORM_SUBMIT_TEXT,
+    optional: __('(optional)'),
+    websiteLabel: __('Website'),
+    trialLabel: __('GitLab Ultimate trial'),
+    trialDescription: __('Try all GitLab features for free for 30 days. No credit card required.'),
   },
 };
 </script>
@@ -103,10 +110,12 @@ export default {
     </div>
     <country-or-region-selector :country="country" :state="state" data-testid="country" required />
     <gl-form-group
-      label="Telephone Number (Optional)"
+      :label="$options.i18n.phoneNumberLabel"
+      :optional-text="$options.i18n.optional"
       label-size="sm"
       :description="$options.i18n.phoneNumberDescription"
       label-for="phone_number"
+      optional
     >
       <gl-form-input
         id="phone_number"
@@ -117,7 +126,13 @@ export default {
         pattern="^(\+)*[0-9-\s]+$"
       />
     </gl-form-group>
-    <gl-form-group label="Website (Optional)" label-size="sm" label-for="website_url">
+    <gl-form-group
+      :label="$options.i18n.websiteLabel"
+      :optional-text="$options.i18n.optional"
+      label-size="sm"
+      label-for="website_url"
+      optional
+    >
       <gl-form-input
         id="website_url"
         :value="websiteUrl"
@@ -125,10 +140,13 @@ export default {
         data-testid="website_url"
       />
     </gl-form-group>
-    <gl-form-group label="GitLab Ultimate trial (Optional)" label-size="sm">
-      <gl-form-text class="gl-pb-3">{{
-        __('Try all GitLab features for free for 30 days. No credit card required.')
-      }}</gl-form-text>
+    <gl-form-group
+      :label="$options.i18n.trialLabel"
+      label-size="sm"
+      :optional-text="$options.i18n.optional"
+      optional
+    >
+      <gl-form-text class="gl-pb-3">{{ $options.i18n.trialDescription }}</gl-form-text>
       <registration-trial-toggle :active="trial" data-testid="trial" />
     </gl-form-group>
     <gl-button type="submit" variant="confirm" class="gl-w-20">
@@ -138,7 +156,7 @@ export default {
 </template>
 
 <style>
-.company-size .bv-no-focus-ring {
-  margin-top: -3px;
+.company-size {
+  line-height: 1.2rem;
 }
 </style>
