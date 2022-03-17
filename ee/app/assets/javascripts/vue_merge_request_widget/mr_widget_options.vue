@@ -352,7 +352,7 @@ export default {
       <extensions-container :mr="mr" />
       <blocking-merge-requests-report :mr="mr" />
       <grouped-codequality-reports-app
-        v-if="shouldRenderCodeQuality"
+        v-if="shouldRenderCodeQuality && !shouldShowExtension"
         :head-blob-path="mr.headBlobPath"
         :base-blob-path="mr.baseBlobPath"
         :codequality-reports-path="mr.codequalityReportsPath"
