@@ -23,7 +23,7 @@ module QA
       end
     end
 
-    describe 'Group', :requires_admin do
+    describe 'Group' do
       let(:group) do
         Resource::Group.fabricate_via_api! do |resource|
           resource.path = "test-group-#{SecureRandom.hex(8)}"
@@ -82,7 +82,7 @@ module QA
         it_behaves_like 'audit event', ['Changed name']
       end
 
-      context 'Add user, change access level, remove user', :requires_admin, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347911' do
+      context 'Add user, change access level, remove user', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347911' do
         before do
           sign_in
           group.visit!
@@ -97,7 +97,7 @@ module QA
         it_behaves_like 'audit event', ['Added user access as Guest', 'Changed access level', 'Removed user access']
       end
 
-      context 'Add and remove project access', :requires_admin, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347912' do
+      context 'Add and remove project access', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347912' do
         before do
           sign_in
           project.visit!

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module QA
+  # TODO: Remove :requires_admin when the `Runtime::Feature.enable` method call is removed
   RSpec.describe 'Create', :requires_admin do
     describe 'Codeowners' do
       let(:files) do
