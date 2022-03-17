@@ -30,25 +30,33 @@ module QA
               end
             end
 
-            def assign_iteration(iteration)
+            def assign_iteration(iteration_period)
               within_element(:iteration_container) do
                 click_element(:edit_link)
-                click_on("#{iteration.title}")
+                click_on("#{iteration_period}")
               end
 
               wait_until(reload: false) do
-                has_element?(:iteration_container, text: iteration.title, wait: 0)
+                has_element?(:iteration_container, text: iteration_period, wait: 0)
               end
 
               refresh
             end
 
-            def has_iteration?(iteration_title)
+            def click_iteration(iteration_period)
+              has_iteration?(iteration_period)
+
+              within_element(:iteration_container) do
+                click_element(:iteration_link, text: iteration_period)
+              end
+            end
+
+            def has_iteration?(iteration_period)
               wait_until_iteration_container_loaded
 
               within_element(:iteration_container) do
                 wait_until(reload: false) do
-                  has_element?(:iteration_link, text: iteration_title, wait: 0)
+                  has_element?(:iteration_link, text: iteration_period, wait: 0)
                 end
               end
             end

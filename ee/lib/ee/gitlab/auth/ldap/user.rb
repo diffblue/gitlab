@@ -9,24 +9,10 @@ module EE
     module Auth
       module Ldap
         module User
-          extend ::Gitlab::Utils::Override
-
           def initialize(auth_hash)
             super
 
             set_external_with_external_groups
-          end
-
-          override :find_user
-          def find_user
-            user = super
-
-            if activate_user_based_on_user_cap?(user)
-              user.activate
-              log_user_changes(user, 'LDAP', "user cap not reached yet, unblocking")
-            end
-
-            user
           end
 
           private

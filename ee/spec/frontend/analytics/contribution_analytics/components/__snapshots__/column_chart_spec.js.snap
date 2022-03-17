@@ -1,18 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Contribution Analytics Column Chart matches the snapshot 1`] = `
-<div>
-  <gl-column-chart-stub
-    bars="[object Object]"
-    height="350"
-    lines=""
-    option="[object Object]"
-    secondarydata=""
-    secondarydatatitle=""
-    width="0"
-    xaxistitle="Username"
-    xaxistype="category"
-    yaxistitle="Pushes"
-  />
-</div>
+<gl-column-chart-stub
+  bars="[object Object]"
+  height="350"
+  lines=""
+  option="[object Object]"
+  responsive="true"
+  secondarydata=""
+  secondarydatatitle=""
+  width="0"
+  xaxistitle="Username"
+  xaxistype="category"
+  yaxistitle="Pushes"
+/>
 `;

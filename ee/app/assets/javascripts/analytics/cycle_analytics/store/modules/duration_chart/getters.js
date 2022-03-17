@@ -5,7 +5,7 @@ export const durationChartPlottableData = (state, _, rootState, rootGetters) => 
   const { durationData } = state;
   const { isOverviewStageSelected } = rootGetters;
   const selectedStagesDurationData = isOverviewStageSelected
-    ? durationData.filter((stage) => stage.selected)
+    ? durationData
     : durationData.filter((stage) => stage.id === selectedStage.id);
   const plottableData = getDurationChartData(
     selectedStagesDurationData,

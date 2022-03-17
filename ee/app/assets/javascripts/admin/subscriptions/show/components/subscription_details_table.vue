@@ -1,5 +1,5 @@
 <script>
-import { GlSkeletonLoader, GlTableLite } from '@gitlab/ui';
+import { GlSkeletonLoader, GlTableLite, GlBadge } from '@gitlab/ui';
 import { slugifyWithUnderscore } from '~/lib/utils/text_utility';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import { copySubscriptionIdButtonText, detailsLabels } from '../constants';
@@ -23,7 +23,7 @@ export default {
     },
     {
       key: 'value',
-      formatter: (v, k, item) => item.value.toString(),
+      formatter: (v, k, item) => item.value?.toString() || '-',
       label: '',
       thClass: DEFAULT_TH_CLASSES,
       tdClass: DEFAULT_TD_CLASSES,
@@ -34,6 +34,7 @@ export default {
     ClipboardButton,
     GlSkeletonLoader,
     GlTableLite,
+    GlBadge,
   },
   props: {
     details: {
@@ -61,9 +62,6 @@ export default {
     },
   },
   methods: {
-    isLastRow(index) {
-      return index === this.details.length - 1;
-    },
     placeHolderPosition(index) {
       return (index - 1) * placeholderHeightFactor;
     },
@@ -106,7 +104,12 @@ export default {
         data-testid="details-content"
         :data-qa-selector="qaSelectorValue(item)"
       >
-        {{ value || '-' }}
+        <gl-badge v-if="item.detail === 'type'" size="md" variant="info">
+          {{ value }}
+        </gl-badge>
+        <span v-else>
+          {{ value }}
+        </span>
         <clipboard-button
           v-if="item.detail === 'id'"
           :text="value"

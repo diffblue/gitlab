@@ -9,6 +9,12 @@ RSpec.shared_examples 'TokenAuthenticatable' do
     it { is_expected.to respond_to("set_#{token_field}") }
     it { is_expected.to respond_to("reset_#{token_field}!") }
   end
+
+  describe 'SensitiveSerializableHash' do
+    it 'includes the token field in list of sensitive attributes prevented from serialization' do
+      expect(described_class.attributes_exempt_from_serializable_hash).to include(token_field)
+    end
+  end
 end
 
 RSpec.describe User, 'TokenAuthenticatable' do
@@ -427,4 +433,84 @@ RSpec.describe Ci::Runner, 'TokenAuthenticatable', :freeze_time do
       end
     end
   end
+end
+
+RSpec.shared_examples 'prefixed token rotation' do
+  describe "ensure_runners_token" do
+    subject { instance.ensure_runners_token }
+
+    context 'token is not set' do
+      it 'generates a new token' do
+        expect(subject).to match(/^#{RunnersTokenPrefixable::RUNNERS_TOKEN_PREFIX}/)
+        expect(instance).not_to be_persisted
+      end
+    end
+
+    context 'token is set, but does not match the prefix' do
+      before do
+        instance.set_runners_token('abcdef')
+      end
+
+      it 'generates a new token' do
+        expect(subject).to match(/^#{RunnersTokenPrefixable::RUNNERS_TOKEN_PREFIX}/)
+        expect(instance).not_to be_persisted
+      end
+    end
+
+    context 'token is set and matches prefix' do
+      before do
+        instance.set_runners_token(RunnersTokenPrefixable::RUNNERS_TOKEN_PREFIX + '-abcdef')
+      end
+
+      it 'leaves the token unchanged' do
+        expect { subject }.not_to change(instance, :runners_token)
+        expect(instance).not_to be_persisted
+      end
+    end
+  end
+
+  describe 'ensure_runners_token!' do
+    subject { instance.ensure_runners_token! }
+
+    context 'token is not set' do
+      it 'generates a new token' do
+        expect(subject).to match(/^#{RunnersTokenPrefixable::RUNNERS_TOKEN_PREFIX}/)
+        expect(instance).to be_persisted
+      end
+    end
+
+    context 'token is set, but does not match the prefix' do
+      before do
+        instance.set_runners_token('abcdef')
+      end
+
+      it 'generates a new token' do
+        expect(subject).to match(/^#{RunnersTokenPrefixable::RUNNERS_TOKEN_PREFIX}/)
+        expect(instance).to be_persisted
+      end
+    end
+
+    context 'token is set and matches prefix' do
+      before do
+        instance.set_runners_token(RunnersTokenPrefixable::RUNNERS_TOKEN_PREFIX + '-abcdef')
+        instance.save!
+      end
+
+      it 'leaves the token unchanged' do
+        expect { subject }.not_to change(instance, :runners_token)
+      end
+    end
+  end
+end
+
+RSpec.describe Project, 'TokenAuthenticatable' do
+  let(:instance) { build(:project, runners_token: nil) }
+
+  it_behaves_like 'prefixed token rotation'
+end
+
+RSpec.describe Group, 'TokenAuthenticatable' do
+  let(:instance) { build(:group, runners_token: nil) }
+
+  it_behaves_like 'prefixed token rotation'
 end

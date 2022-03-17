@@ -85,7 +85,10 @@ module EE
 
         field :billable_members_count, ::GraphQL::Types::Int,
               null: true,
-              description: 'Number of billable users in the group.'
+              authorize: :owner_access,
+              description: 'Number of billable users in the group.' do
+                argument :requested_hosted_plan, String, required: false, description: 'Plan from which to get billable members.'
+              end
 
         field :dora,
               ::Types::DoraType,
@@ -98,6 +101,17 @@ module EE
               null: true,
               description: 'External locations that receive audit events belonging to the group.',
               authorize: :admin_external_audit_events
+
+        field :merge_request_violations,
+              ::Types::ComplianceManagement::MergeRequests::ComplianceViolationType.connection_type,
+              null: true,
+              description: 'Compliance violations reported on merge requests merged within the group.',
+              resolver: ::Resolvers::ComplianceManagement::MergeRequests::ComplianceViolationResolver,
+              authorize: :read_group_compliance_dashboard
+
+        def billable_members_count(requested_hosted_plan: nil)
+          object.billable_members_count(requested_hosted_plan)
+        end
       end
     end
   end

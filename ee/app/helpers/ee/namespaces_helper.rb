@@ -55,6 +55,12 @@ module EE
       buy_storage_subscriptions_path(selected_group: namespace.id)
     end
 
+    def buy_storage_url(namespace)
+      return EE::SUBSCRIPTIONS_MORE_STORAGE_URL if use_customers_dot_for_addon_path?(namespace)
+
+      buy_storage_subscriptions_url(selected_group: namespace.id)
+    end
+
     private
 
     def use_customers_dot_for_addon_path?(namespace)

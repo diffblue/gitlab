@@ -32,7 +32,7 @@ module Gitlab
             ids = group.map(&:db_id)
 
             records = klass.id_in(ids).preload_indexing_data
-            records_by_id = records.each_with_object({}) { |record, hash| hash[record.id] = record }
+            records_by_id = records.index_by(&:id)
 
             group.each do |ref|
               ref.database_record = records_by_id[ref.db_id.to_i]

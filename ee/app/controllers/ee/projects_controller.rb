@@ -13,7 +13,6 @@ module EE
       before_action :log_unarchive_audit_event, only: [:unarchive]
 
       before_action only: :edit do
-        push_frontend_feature_flag(:group_merge_request_approval_settings_feature_flag, project.root_ancestor, default_enabled: :yaml)
         push_frontend_feature_flag(:permit_all_shared_groups_for_approval, project, default_enabled: :yaml)
       end
 
@@ -38,17 +37,24 @@ module EE
 
     override :destroy
     def destroy
-      return super unless project.adjourned_deletion?
-      return super if project.marked_for_deletion? && params[:permanently_delete].present?
+      return super unless License.feature_available?(:adjourned_deletion_for_projects_and_groups)
+      return super unless project.adjourned_deletion_configured?
+      return super if project.marked_for_deletion_at? && params[:permanently_delete].present?
 
       return access_denied! unless can?(current_user, :remove_project, project)
 
       result = ::Projects::MarkForDeletionService.new(project, current_user, {}).execute
+
       if result[:status] == :success
         date = permanent_deletion_date(project.marked_for_deletion_at)
         flash[:notice] = _("Project '%{project_name}' will be deleted on %{date}") % { date: date, project_name: project.full_name }
 
-        redirect_to(project_path(project), status: :found)
+        if project.licensed_feature_available?(:adjourned_deletion_for_projects_and_groups)
+          redirect_to(project_path(project), status: :found)
+        else
+          redirect_to dashboard_projects_path, status: :found
+        end
+
       else
         flash.now[:alert] = result[:message]
 

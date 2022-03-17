@@ -81,7 +81,7 @@ export default {
 };
 </script>
 <template>
-  <div>
+  <div class="gl-mt-4">
     <div class="gl-display-flex gl-align-items-center gl-mb-4">
       <div class="gl-display-flex">
         <h3 class="gl-mr-2 gl-my-0">{{ $options.i18n.sharedRunnersUsage }}</h3>
@@ -97,6 +97,12 @@ export default {
         />
       </div>
     </div>
-    <gl-area-chart v-if="!isDataEmpty" :data="chartData" :option="chartOptions" />
+    <gl-area-chart
+      v-if="!isDataEmpty"
+      :data="chartData"
+      :option="chartOptions"
+      :width="0"
+      responsive
+    />
   </div>
 </template>

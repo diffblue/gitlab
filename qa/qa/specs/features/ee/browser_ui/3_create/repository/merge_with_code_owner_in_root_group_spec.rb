@@ -20,9 +20,6 @@ module QA
         end
 
         before do
-          Runtime::Feature.enable(:invite_members_group_modal, project: project)
-          Runtime::Feature.enable(:invite_members_group_modal, group: root_group)
-
           group_or_project.add_member(approver, Resource::Members::AccessLevel::MAINTAINER)
 
           Flow::Login.sign_in

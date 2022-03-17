@@ -20,10 +20,8 @@ module Geo
     def execute
       return false unless Gitlab::Geo.primary?
 
-      ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.allow_cross_database_modification_within_transaction(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/351271') do
-        reset_repository_checksum!
-        create_repository_updated_event!
-      end
+      reset_repository_checksum!
+      create_repository_updated_event!
 
       true
     end

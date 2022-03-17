@@ -17,10 +17,6 @@ const pipelineId = 123;
 const pipelineIid = 12;
 const vulnerabilitiesEndpoint = `${TEST_HOST}/vulnerabilities`;
 
-jest.mock('~/lib/utils/url_utility', () => ({
-  getParameterValues: jest.fn().mockReturnValue([]),
-}));
-
 jest.mock('~/flash');
 
 describe('Security Dashboard component', () => {

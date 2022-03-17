@@ -20,7 +20,7 @@ class Integration < ApplicationRecord
 
   INTEGRATION_NAMES = %w[
     asana assembla bamboo bugzilla buildkite campfire confluence custom_issue_tracker datadog discord
-    drone_ci emails_on_push ewm external_wiki flowdock hangouts_chat irker jira
+    drone_ci emails_on_push ewm external_wiki flowdock hangouts_chat harbor irker jira
     mattermost mattermost_slash_commands microsoft_teams packagist pipelines_email
     pivotaltracker prometheus pushover redmine slack slack_slash_commands teamcity unify_circuit webex_teams youtrack zentao
   ].freeze
@@ -49,6 +49,16 @@ class Integration < ApplicationRecord
 
   serialize :properties, JSON # rubocop:disable Cop/ActiveRecordSerialize
 
+  attr_encrypted :encrypted_properties_tmp,
+                 attribute: :encrypted_properties,
+                 mode: :per_attribute_iv,
+                 key: Settings.attr_encrypted_db_key_base_32,
+                 algorithm: 'aes-256-gcm',
+                 marshal: true,
+                 marshaler: ::Gitlab::Json,
+                 encode: false,
+                 encode_iv: false
+
   alias_attribute :type, :type_new
 
   default_value_for :active, false
@@ -67,6 +77,8 @@ class Integration < ApplicationRecord
   default_value_for :wiki_page_events, true
 
   after_initialize :initialize_properties
+  after_initialize :copy_properties_to_encrypted_properties
+  before_save :copy_properties_to_encrypted_properties
 
   after_commit :reset_updated_properties
 
@@ -110,6 +122,39 @@ class Integration < ApplicationRecord
   scope :alert_hooks, -> { where(alert_events: true, active: true) }
   scope :deployment, -> { where(category: 'deployment') }
 
+  class << self
+    private
+
+    attr_writer :field_storage
+
+    def field_storage
+      @field_storage || :properties
+    end
+  end
+
+  # :nocov: Tested on subclasses.
+  def self.field(name, storage: field_storage, **attrs)
+    fields << ::Integrations::Field.new(name: name, **attrs)
+
+    case storage
+    when :properties
+      prop_accessor(name)
+    when :data_fields
+      data_field(name)
+    else
+      raise ArgumentError, "Unknown field storage: #{storage}"
+    end
+  end
+  # :nocov:
+
+  def self.fields
+    @fields ||= []
+  end
+
+  def fields
+    self.class.fields
+  end
+
   # Provide convenient accessor methods for each serialized property.
   # Also keep track of updated properties in a similar way as ActiveModel::Dirty
   def self.prop_accessor(*args)
@@ -123,8 +168,10 @@ class Integration < ApplicationRecord
 
         def #{arg}=(value)
           self.properties ||= {}
+          self.encrypted_properties_tmp = properties
           updated_properties['#{arg}'] = #{arg} unless #{arg}_changed?
           self.properties['#{arg}'] = value
+          self.encrypted_properties_tmp['#{arg}'] = value
         end
 
         def #{arg}_changed?
@@ -167,10 +214,6 @@ class Integration < ApplicationRecord
 
   def self.event_names
     self.supported_events.map { |event| IntegrationsHelper.integration_event_field_name(event) }
-  end
-
-  def self.supported_event_actions
-    %w[]
   end
 
   def self.supported_events
@@ -346,12 +389,22 @@ class Integration < ApplicationRecord
     true
   end
 
+  def activate_disabled_reason
+    nil
+  end
+
   def category
     read_attribute(:category).to_sym
   end
 
   def initialize_properties
     self.properties = {} if has_attribute?(:properties) && properties.nil?
+  end
+
+  def copy_properties_to_encrypted_properties
+    self.encrypted_properties_tmp = properties
+  rescue ActiveModel::MissingAttributeError
+    # ignore - in a record built from using a restricted select list
   end
 
   def title
@@ -369,11 +422,6 @@ class Integration < ApplicationRecord
   def to_param
     # implement inside child
     self.class.to_param
-  end
-
-  def fields
-    # implement inside child
-    []
   end
 
   def sections
@@ -394,7 +442,21 @@ class Integration < ApplicationRecord
   # return a hash of columns => values suitable for passing to insert_all
   def to_integration_hash
     column = self.class.attribute_aliases.fetch('type', 'type')
-    as_json(except: %w[id instance project_id group_id]).merge(column => type)
+    copy_properties_to_encrypted_properties
+
+    as_json(except: %w[id instance project_id group_id encrypted_properties_tmp])
+      .merge(column => type)
+      .merge(reencrypt_properties)
+  end
+
+  def reencrypt_properties
+    unless properties.nil? || properties.empty?
+      alg = self.class.encrypted_attributes[:encrypted_properties_tmp][:algorithm]
+      iv = generate_iv(alg)
+      ep = self.class.encrypt(:encrypted_properties_tmp, properties, { iv: iv })
+    end
+
+    { 'encrypted_properties' => ep, 'encrypted_properties_iv' => iv }
   end
 
   def to_data_fields_hash
@@ -414,7 +476,10 @@ class Integration < ApplicationRecord
   end
 
   def api_field_names
-    fields.pluck(:name).grep_v(/password|token|key|title|description/)
+    fields
+      .reject { _1[:type] == 'password' }
+      .pluck(:name)
+      .grep_v(/password|token|key/)
   end
 
   def global_fields
@@ -430,10 +495,6 @@ class Integration < ApplicationRecord
     else
       events
     end
-  end
-
-  def configurable_event_actions
-    self.class.supported_event_actions
   end
 
   def supported_events

@@ -212,11 +212,11 @@ RSpec.describe ApplicationSetting do
   describe '#should_check_namespace_plan?' do
     before do
       stub_application_setting(check_namespace_plan: check_namespace_plan_column)
-      allow(::Gitlab).to receive(:dev_env_org_or_com?) { gl_com }
+      allow(::Gitlab).to receive(:org_or_com?) { gl_com }
 
-      # This stub was added in order to force a fallback to Gitlab.dev_env_org_or_com?
+      # This stub was added in order to force a fallback to Gitlab.org_or_com?
       # call testing.
-      # Gitlab.dev_env_org_or_com? responds to `false` on test envs
+      # Gitlab.org_or_com? responds to `false` on test envs
       # and we want to make sure we're still testing
       # should_check_namespace_plan? method through the test-suite (see
       # https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/18461#note_69322821).

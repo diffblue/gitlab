@@ -73,7 +73,7 @@ RSpec.describe 'groups autocomplete' do
 
   describe '#vulnerabilities' do
     let_it_be_with_reload(:project) { create(:project, :private, group: group) }
-    let_it_be(:vulnerability) { create(:vulnerability, project: project) }
+    let_it_be(:vulnerability) { create(:vulnerability, :with_finding, project: project) }
 
     before do
       project.add_developer(user)

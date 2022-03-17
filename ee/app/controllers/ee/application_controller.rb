@@ -12,7 +12,7 @@ module EE
     end
 
     def check_if_gl_com_or_dev
-      render_404 unless ::Gitlab.dev_env_or_com?
+      render_404 unless ::Gitlab.com?
     end
 
     def verify_namespace_plan_check_enabled

@@ -25,13 +25,18 @@ describe('ListEmptyState', () => {
     createComponent();
 
     expect(findEmptyState().props()).toMatchObject({
-      title: 'No compliance frameworks are configured',
-      description: 'Configured compliance frameworks appear here.',
+      description: 'Frameworks that have been added will appear here.',
       svgPath: 'dir/image.svg',
       primaryButtonLink: 'group/framework/new',
       primaryButtonText: 'Add framework',
-      svgHeight: 110,
+      svgHeight: 100,
       compact: true,
     });
+  });
+
+  it('displays the correct title', () => {
+    createComponent();
+
+    expect(findEmptyState().find('h5').text()).toBe('No compliance frameworks are set up yet');
   });
 });

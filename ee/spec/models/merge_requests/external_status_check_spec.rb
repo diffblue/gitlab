@@ -120,5 +120,71 @@ RSpec.describe MergeRequests::ExternalStatusCheck, type: :model do
 
       it { is_expected.to be false }
     end
+
+    describe 'status' do
+      let_it_be(:rule) { create(:external_status_check) }
+      let_it_be(:merge_request) { create(:merge_request) }
+
+      let(:project) { merge_request.source_project }
+
+      subject { rule.status(merge_request, merge_request.source_branch_sha) }
+
+      context 'when a rule has a positive status check response' do
+        let_it_be(:status_check_response) { create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: merge_request.source_branch_sha, status: 'passed') }
+
+        it { is_expected.to eq('passed') }
+
+        context 'when a rule also has a positive check response from an old sha' do
+          before do
+            create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: 'abc1234', status: 'passed')
+          end
+
+          it { is_expected.to eq('passed') }
+        end
+      end
+
+      context 'when a rule has a negative status check response' do
+        let_it_be(:status_check_response) { create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: merge_request.source_branch_sha, status: 'failed') }
+
+        it { is_expected.to eq('failed') }
+      end
+
+      context 'when a rule has no status check response' do
+        it { is_expected.to eq('pending') }
+      end
+    end
+
+    describe 'status' do
+      let_it_be(:rule) { create(:external_status_check) }
+      let_it_be(:merge_request) { create(:merge_request) }
+
+      let(:project) { merge_request.source_project }
+
+      subject { rule.status(merge_request, merge_request.source_branch_sha) }
+
+      context 'when a rule has a positive status check response' do
+        let_it_be(:status_check_response) { create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: merge_request.source_branch_sha, status: 'passed') }
+
+        it { is_expected.to eq('passed') }
+
+        context 'when a rule also has a positive check response from an old sha' do
+          before do
+            create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: 'abc1234', status: 'passed')
+          end
+
+          it { is_expected.to eq('passed') }
+        end
+      end
+
+      context 'when a rule has a negative status check response' do
+        let_it_be(:status_check_response) { create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: merge_request.source_branch_sha, status: 'failed') }
+
+        it { is_expected.to eq('failed') }
+      end
+
+      context 'when a rule has no status check response' do
+        it { is_expected.to eq('pending') }
+      end
+    end
   end
 end

@@ -84,6 +84,7 @@ You can give a user access to all projects in a group.
 
 1. On the top bar, select **Menu > Groups** and find your group.
 1. On the left sidebar, select **Group information > Members**.
+1. Select **Invite members**.
 1. Fill in the fields.
    - The role applies to all projects in the group. [Learn more about permissions](../permissions.md).
    - On the **Access expiration date**, the user can no longer access projects in the group.
@@ -171,6 +172,7 @@ Filter a group to find members. By default, all members in the group and subgrou
    - To view members in the group only, select **Membership = Direct**.
    - To view members of the group and its subgroups, select **Membership = Inherited**.
    - To view members with two-factor authentication enabled or disabled, select **2FA = Enabled** or **Disabled**.
+   - [In GitLab 14.0 and later](https://gitlab.com/gitlab-org/gitlab/-/issues/349887), to view GitLab users created by [SAML SSO](saml_sso/index.md) or [SCIM provisioning](saml_sso/scim_setup.md) select **Enterprise = true**.
 
 ### Search a group
 
@@ -204,24 +206,17 @@ A to-do item is created for all the group and subgroup members.
 
 ## Change the default branch protection of a group
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/7583) in GitLab 12.9.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/7583) in GitLab 12.9.
+> - [Settings moved and renamed](https://gitlab.com/gitlab-org/gitlab/-/issues/340403) in GitLab 14.9.
 
 By default, every group inherits the branch protection set at the global level.
 
-To change this setting for a specific group:
+To change this setting for a specific group, see [group level default branch protection](../project/repository/branches/default.md#group-level-default-branch-protection).
 
-1. On the top bar, select **Menu > Groups**.
-1. Select **Your Groups**.
-1. Find the group and select it.
-1. From the left menu, select **Settings > General**.
-1. Expand the **Permissions and group features** section.
-1. Select the desired option in the **Default branch protection** dropdown list.
-1. Select **Save changes**.
-
-To change this setting globally, see [Default branch protection](../admin_area/settings/visibility_and_access_controls.md#protect-default-branches).
+To change this setting globally, see [initial default branch protection](../project/repository/branches/default.md#instance-level-default-branch-protection).
 
 NOTE:
-In [GitLab Premium or higher](https://about.gitlab.com/pricing/), GitLab administrators can choose to [disable group owners from updating the default branch protection](../admin_area/settings/visibility_and_access_controls.md#prevent-overrides-of-default-branch-protection).
+In [GitLab Premium or higher](https://about.gitlab.com/pricing/), GitLab administrators can choose to [disable group owners from updating the default branch protection](../project/repository/branches/default.md#prevent-overrides-of-default-branch-protection).
 
 ## Add projects to a group
 
@@ -253,7 +248,7 @@ To change this setting globally, see [Default project creation protection](../ad
 
 ## Group activity analytics **(PREMIUM)**
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/207164) in GitLab 12.10 as a [beta feature](https://about.gitlab.com/handbook/product/#beta).
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/207164) in GitLab 12.10 as a [Beta feature](../../policy/alpha-beta-support.md#beta-features).
 
 For a group, you can view how many merge requests, issues, and members were created in the last 90 days.
 
@@ -280,12 +275,8 @@ To view the activity feed in Atom format, select the
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/18328) in GitLab 12.7.
 > - [Changed](https://gitlab.com/gitlab-org/gitlab/-/issues/247208) in GitLab 13.11 from a form to a modal window [with a flag](../feature_flags.md). Disabled by default.
 > - Modal window [enabled on GitLab.com and self-managed](https://gitlab.com/gitlab-org/gitlab/-/issues/247208) in GitLab 14.8.
-
-FLAG:
-On self-managed GitLab, by default the modal window feature is available.
-To hide the feature, ask an administrator to [disable the feature flag](../../administration/feature_flags.md)
-named `invite_members_group_modal`.
-On GitLab.com, this feature is available.
+> - [Generally available](https://gitlab.com/gitlab-org/gitlab/-/issues/352526) in GitLab 14.9.
+    [Feature flag `invite_members_group_modal`](https://gitlab.com/gitlab-org/gitlab/-/issues/352526) removed.
 
 Similar to how you [share a project with a group](../project/members/share_project_with_groups.md),
 you can share a group with another group. Members get direct access
@@ -381,7 +372,7 @@ create a new group and transfer projects to it instead.
 To change your group path (group URL):
 
 1. Go to your group's **Settings > General** page.
-1. Expand the **Path, transfer, remove** section.
+1. Expand the **Advanced** section.
 1. Under **Change group URL**, enter a new name.
 1. Select **Change group URL**.
 
@@ -585,7 +576,7 @@ To prevent members from being added to projects in a group:
 
 1. Go to the group's **Settings > General** page.
 1. Expand the **Permissions and group features** section.
-1. Under **Member lock**, select **Prevent adding new members to project membership within this group**.
+1. Under **Membership**, select **Prevent adding new members to projects within this group**.
 1. Select **Save changes**.
 
 All users who previously had permissions can no longer add members to a group.
@@ -717,7 +708,8 @@ To disable email notifications:
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/21301) in GitLab 12.6.
 
 You can prevent users from being added to a conversation and getting notified when
-anyone mentions a group in which those users are members.
+anyone [mentions a group](../discussions/index.md#mentions)
+in which those users are members.
 
 Groups with disabled mentions are visualized accordingly in the autocompletion dropdown list.
 
@@ -805,9 +797,7 @@ The group's new subgroups have push rules set for them based on either:
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/285458) in GitLab 13.9. [Deployed behind the `group_merge_request_approval_settings_feature_flag` flag](../../administration/feature_flags.md), disabled by default.
 > - [Enabled by default](https://gitlab.com/gitlab-org/gitlab/-/issues/285410) in GitLab 14.5.
-
-FLAG:
-On self-managed GitLab, by default this feature is available. To hide the feature per group, ask an administrator to [disable the feature flag](../../administration/feature_flags.md) named `group_merge_request_approval_settings_feature_flag`. On GitLab.com, this feature is available.
+> - [Feature flag `group_merge_request_approval_settings_feature_flag`](https://gitlab.com/gitlab-org/gitlab/-/issues/343872) removed in GitLab 14.9.
 
 Group approval rules manage [project merge request approval rules](../project/merge_requests/approvals/index.md)
 at the top-level group level. These rules [cascade to all projects](../project/merge_requests/approvals/settings.md#settings-cascading)

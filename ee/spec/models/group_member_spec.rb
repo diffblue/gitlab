@@ -105,6 +105,25 @@ RSpec.describe GroupMember do
     end
   end
 
+  describe '.filter_by_enterprise_users' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:provisioned_member_1_of_group) { group.add_developer(create(:user, provisioned_by_group_id: group.id)) }
+    let_it_be(:provisioned_member_2_of_group) { group.add_developer(create(:user, provisioned_by_group_id: group.id)) }
+    let_it_be(:normal_group_member) { group.add_developer(create(:user)) }
+
+    it 'returns members that are provisioned by a group when the filter is `true`' do
+      result = described_class.filter_by_enterprise_users(true)
+
+      expect(result.to_a).to match_array([provisioned_member_1_of_group, provisioned_member_2_of_group])
+    end
+
+    it 'returns members that are not provisioned by a group when the filter is `false`' do
+      result = described_class.filter_by_enterprise_users(false)
+
+      expect(result.to_a).to match_array([normal_group_member])
+    end
+  end
+
   context 'refreshing project_authorizations' do
     let_it_be_with_refind(:group) { create(:group) }
     let_it_be_with_refind(:user) { create(:user) }

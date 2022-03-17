@@ -102,6 +102,10 @@ RSpec.describe Security::StoreScanService do
         expect(store_scan).to be(false)
         expect(Security::StoreFindingsMetadataService).not_to have_received(:execute)
       end
+
+      it 'sets the status of the scan as `report_error`' do
+        expect { store_scan }.to change { Security::Scan.report_error.count }.by(1)
+      end
     end
 
     context 'when the report is produced by a failed job' do
@@ -109,10 +113,25 @@ RSpec.describe Security::StoreScanService do
         artifact.job.update!(status: :failed)
       end
 
-      it 'does not call the `Security::StoreFindingsMetadataService` and sets the security scan as failed' do
-        expect { store_scan }.to change { Security::Scan.failed.count }.by(1)
+      it 'does not call the `Security::StoreFindingsMetadataService` and sets the security scan as `job_failed`' do
+        expect { store_scan }.to change { Security::Scan.job_failed.count }.by(1)
 
         expect(Security::StoreFindingsMetadataService).not_to have_received(:execute)
+      end
+    end
+
+    context 'when storing the findings raises an error' do
+      let(:error) { RuntimeError.new }
+
+      before do
+        allow(Security::StoreFindingsMetadataService).to receive(:execute).and_raise(error)
+        allow(Gitlab::ErrorTracking).to receive(:track_exception)
+      end
+
+      it 'marks the security scan as `preparation_failed` and tracks the error' do
+        expect { store_scan }.to change { Security::Scan.preparation_failed.count }.by(1)
+
+        expect(Gitlab::ErrorTracking).to have_received(:track_exception).with(error)
       end
     end
 
@@ -137,6 +156,28 @@ RSpec.describe Security::StoreScanService do
         store_scan
 
         expect(Security::StoreFindingsMetadataService).to have_received(:execute)
+      end
+
+      context 'when the report has some warnings' do
+        before do
+          artifact.security_report.warnings << { 'type' => 'foo', 'message' => 'bar' }
+        end
+
+        let(:security_scan) { Security::Scan.last }
+
+        it 'calls the `Security::StoreFindingsMetadataService` to store findings' do
+          expect(store_scan).to be(true)
+
+          expect(Security::StoreFindingsMetadataService).to have_received(:execute)
+        end
+
+        it 'stores the warnings' do
+          store_scan
+
+          expect(security_scan.processing_warnings).to include(
+            { 'type' => 'foo', 'message' => 'bar' }
+          )
+        end
       end
 
       context 'when the security scan already exists for the artifact' do

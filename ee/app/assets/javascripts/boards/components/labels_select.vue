@@ -216,7 +216,7 @@ export default {
       <template #header>
         <dropdown-header
           ref="header"
-          v-model="search"
+          :search-key="search"
           :labels-create-title="footerCreateLabelTitle"
           :labels-list-title="$options.i18n.dropdownTitleText"
           :show-dropdown-contents-create-view="showDropdownContentsCreateView"

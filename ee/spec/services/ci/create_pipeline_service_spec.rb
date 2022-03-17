@@ -193,6 +193,9 @@ RSpec.describe Ci::CreatePipelineService, '#execute', :saas do
         before do
           allow(::Gitlab).to receive(:com?).and_return(true)
           namespace.gitlab_subscription.update!(hosted_plan: create(:free_plan))
+          # namespace gitlab_subscription is cached when source.root_ancestor.user_limit_reached?
+          # is called on member creation callback from add_developer call
+          project.root_ancestor.gitlab_subscription.reset
           user.created_at = ::Users::CreditCardValidation::RELEASE_DAY
         end
 

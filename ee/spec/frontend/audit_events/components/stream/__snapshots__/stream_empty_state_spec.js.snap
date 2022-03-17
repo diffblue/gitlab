@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`StreamEmptyState should render correctly 1`] = `
+<gl-empty-state-stub
+  class="gl-mt-5"
+  svgheight="72"
+  svgpath="mock/path"
+  title="Setup streaming for audit events"
+>
+  <h3
+    class="h4 gl-font-size-h-display gl-line-height-36 gl-mt-n3"
+  >
+    
+      Setup streaming for audit events
+    
+  </h3>
+  <p>
+    Add an HTTP endpoint to manage audit logs in third-party systems.
+  </p>
+   
+  <p>
+    This is great for keeping everything one place.
+  </p>
+  <gl-button-stub
+    buttontextclasses=""
+    category="primary"
+    icon=""
+    size="medium"
+    variant="info"
+  >
+    
+      Add stream
+    
+  </gl-button-stub>
+</gl-empty-state-stub>
+`;

@@ -13,6 +13,7 @@ module Projects
         project,
         current_user,
         { archived: false,
+          hidden: false,
           marked_for_deletion_at: nil,
           deleting_user: nil,
           name: updated_value(project.name),

@@ -5,14 +5,14 @@ require 'spec_helper'
 RSpec.describe Projects::Pipelines::EmailCampaignsController do
   let_it_be(:user) { create(:user) }
 
-  let(:dev_env_or_com) { true }
+  let(:com) { true }
 
   subject(:request) do
     get project_pipeline_validate_account_path(project, pipeline)
   end
 
   before do
-    allow(Gitlab).to receive(:dev_env_or_com?) { dev_env_or_com }
+    allow(Gitlab).to receive(:com?) { com }
   end
 
   describe 'GET #validate_account', :snowplow do
@@ -49,7 +49,7 @@ RSpec.describe Projects::Pipelines::EmailCampaignsController do
       end
 
       context 'when not in .com or dev env' do
-        let(:dev_env_or_com) { false }
+        let(:com) { false }
 
         it 'returns 404' do
           expect(response).to have_gitlab_http_status(:not_found)

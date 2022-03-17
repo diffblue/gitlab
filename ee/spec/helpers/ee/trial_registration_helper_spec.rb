@@ -7,7 +7,7 @@ RSpec.describe EE::TrialRegistrationHelper do
 
   describe '#social_signin_enabled?' do
     before do
-      allow(::Gitlab).to receive(:dev_env_or_com?).and_return(com)
+      allow(::Gitlab).to receive(:com?).and_return(com)
       allow(view).to receive(:omniauth_enabled?).and_return(omniauth_enabled)
       allow(view).to receive(:button_based_providers_enabled?).and_return(button_based_providers_enabled)
       allow(view).to receive(:devise_mapping).and_return(double(omniauthable?: omniauthable))

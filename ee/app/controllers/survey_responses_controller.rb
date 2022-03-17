@@ -19,7 +19,7 @@ class SurveyResponsesController < ApplicationController
   private
 
   def track_response
-    return unless Gitlab.dev_env_or_com?
+    return unless Gitlab.com?
 
     data = {
       survey_id: to_number(params[:survey_id]),
@@ -42,7 +42,7 @@ class SurveyResponsesController < ApplicationController
   end
 
   def set_invite_link
-    return unless Gitlab.dev_env_or_com?
+    return unless Gitlab.com?
     return unless Gitlab::Utils.to_boolean(params[:show_invite_link])
     return unless Feature.enabled?(:calendly_invite_link)
 

@@ -31,13 +31,15 @@ describe('status check issue body', () => {
   });
 
   it('renders the status check name and external URL', () => {
-    expect(wrapper.text()).toBe(`${defaultStatusCheck.name}, ${defaultStatusCheck.external_url}`);
+    expect(wrapper.text()).toBe(`${defaultStatusCheck.name}: ${defaultStatusCheck.external_url}`);
   });
 
   it.each`
     status        | icon
+    ${'passed'}   | ${'success'}
     ${'approved'} | ${'success'}
     ${'pending'}  | ${'pending'}
+    ${'failed'}   | ${'failed'}
   `('sets the status-icon to $icon when the check status is $status', ({ status, icon }) => {
     createComponent({ status });
 

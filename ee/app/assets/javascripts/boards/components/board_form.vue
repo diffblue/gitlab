@@ -3,7 +3,11 @@
 // extends a valid Vue single file component.
 /* eslint-disable @gitlab/no-runtime-template-compiler */
 import { mapGetters } from 'vuex';
+import { fullLabelId } from '~/boards/boards_util';
 import BoardFormFoss from '~/boards/components/board_form.vue';
+import { TYPE_USER } from '~/graphql_shared/constants';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
+
 import createEpicBoardMutation from '../graphql/epic_board_create.mutation.graphql';
 import destroyEpicBoardMutation from '../graphql/epic_board_destroy.mutation.graphql';
 import updateEpicBoardMutation from '../graphql/epic_board_update.mutation.graphql';
@@ -14,6 +18,22 @@ export default {
     ...mapGetters(['isEpicBoard']),
     currentEpicBoardMutation() {
       return this.board.id ? updateEpicBoardMutation : createEpicBoardMutation;
+    },
+    issueBoardScopeMutationVariables() {
+      return {
+        weight: this.board.weight,
+        assigneeId: this.board.assignee?.id
+          ? convertToGraphQLId(TYPE_USER, this.board.assignee.id)
+          : null,
+        milestoneId: this.board.milestone?.id || null,
+        iterationId: this.board.iteration?.id || null,
+      };
+    },
+    boardScopeMutationVariables() {
+      return {
+        labelIds: this.board.labels.map(fullLabelId),
+        ...(this.isIssueBoard && this.issueBoardScopeMutationVariables),
+      };
     },
     mutationVariables() {
       return {

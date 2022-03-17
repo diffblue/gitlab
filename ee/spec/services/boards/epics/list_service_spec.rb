@@ -3,34 +3,34 @@
 require 'spec_helper'
 
 RSpec.describe Boards::Epics::ListService do
+  let_it_be(:user) { create(:user) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:board) { create(:epic_board, group: group) }
+
+  let_it_be(:development) { create(:group_label, group: group, name: 'Development') }
+  let_it_be(:testing) { create(:group_label, group: group, name: 'Testing') }
+
+  let_it_be(:backlog) { create(:epic_list, epic_board: board, list_type: :backlog) }
+  let_it_be(:list1) { create(:epic_list, epic_board: board, label: development, position: 0) }
+  let_it_be(:list2) { create(:epic_list, epic_board: board, label: testing, position: 1) }
+  let_it_be(:closed) { create(:epic_list, epic_board: board, list_type: :closed) }
+
+  let_it_be(:backlog_epic1) { create(:epic, group: group) }
+  let_it_be(:list1_epic1) { create(:labeled_epic, group: group, labels: [development]) }
+  let_it_be(:list1_epic2) { create(:labeled_epic, group: group, labels: [development]) }
+  let_it_be(:list1_epic3) { create(:labeled_epic, group: group, labels: [development]) }
+  let_it_be(:list2_epic1) { create(:labeled_epic, group: group, labels: [testing]) }
+
+  let_it_be(:closed_epic1) { create(:labeled_epic, :closed, group: group, labels: [development], closed_at: 1.day.ago) }
+  let_it_be(:closed_epic2) { create(:labeled_epic, :closed, group: group, labels: [testing], closed_at: 2.days.ago) }
+  let_it_be(:closed_epic3) { create(:epic, :closed, group: group, closed_at: 1.week.ago) }
+
+  before do
+    stub_licensed_features(epics: true)
+    group.add_developer(user)
+  end
+
   describe '#execute' do
-    let_it_be(:user) { create(:user) }
-    let_it_be(:group) { create(:group) }
-    let_it_be(:board) { create(:epic_board, group: group) }
-
-    let_it_be(:development) { create(:group_label, group: group, name: 'Development') }
-    let_it_be(:testing) { create(:group_label, group: group, name: 'Testing') }
-
-    let_it_be(:backlog) { create(:epic_list, epic_board: board, list_type: :backlog) }
-    let_it_be(:list1) { create(:epic_list, epic_board: board, label: development, position: 0) }
-    let_it_be(:list2) { create(:epic_list, epic_board: board, label: testing, position: 1) }
-    let_it_be(:closed) { create(:epic_list, epic_board: board, list_type: :closed) }
-
-    let_it_be(:backlog_epic1) { create(:epic, group: group) }
-    let_it_be(:list1_epic1) { create(:labeled_epic, group: group, labels: [development]) }
-    let_it_be(:list1_epic2) { create(:labeled_epic, group: group, labels: [development]) }
-    let_it_be(:list1_epic3) { create(:labeled_epic, group: group, labels: [development]) }
-    let_it_be(:list2_epic1) { create(:labeled_epic, group: group, labels: [testing]) }
-
-    let_it_be(:closed_epic1) { create(:labeled_epic, :closed, group: group, labels: [development], closed_at: 1.day.ago) }
-    let_it_be(:closed_epic2) { create(:labeled_epic, :closed, group: group, labels: [testing], closed_at: 2.days.ago) }
-    let_it_be(:closed_epic3) { create(:epic, :closed, group: group, closed_at: 1.week.ago) }
-
-    before do
-      stub_licensed_features(epics: true)
-      group.add_developer(user)
-    end
-
     it_behaves_like 'items list service' do
       let(:parent) { group }
       let(:backlog_items) { [backlog_epic1] }
@@ -57,6 +57,50 @@ RSpec.describe Boards::Epics::ListService do
       described_class
         .new(group, user, { board_id: board.id, id: list1.id, from_id: list1_epic2.id })
         .execute
+    end
+  end
+
+  describe '#metadata' do
+    before do
+      project = create(:project, group: group)
+
+      create(:epic_issue, epic: list1_epic1, issue: create(:issue, project: project, weight: 2))
+      create(:epic_issue, epic: list1_epic2, issue: create(:issue, project: project, weight: 3))
+      create(:epic_issue, epic: list1_epic2, issue: create(:issue, project: project, weight: 2))
+    end
+
+    subject { described_class.new(group, user, { board_id: board.id, id: list1.id }).metadata(fields) }
+
+    context 'with all fields included in the required_fields' do
+      let(:fields) { [:total_weight, :epics_count] }
+
+      it 'containes correct data including weight' do
+        expect(subject).to eq({ total_weight: 7, epics_count: 3 })
+      end
+    end
+
+    context 'with total_weight not included in the required_fields' do
+      let(:fields) { [:epics_count] }
+
+      it 'containes correct data without weight' do
+        expect(subject).to eq({ epics_count: 3 })
+      end
+    end
+
+    context 'with epics_countr not included in the required_fields' do
+      let(:fields) { [:total_weight] }
+
+      it 'containes correct data without weight' do
+        expect(subject).to eq({ total_weight: 7 })
+      end
+    end
+
+    context 'with required_fields set to nil' do
+      let(:fields) { nil }
+
+      it 'does not contain any data' do
+        expect(subject).to eq({})
+      end
     end
   end
 end

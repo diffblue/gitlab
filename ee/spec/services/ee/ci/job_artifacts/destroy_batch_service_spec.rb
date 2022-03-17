@@ -21,16 +21,7 @@ RSpec.describe Ci::JobArtifacts::DestroyBatchService do
     end
 
     it 'publishes Ci::JobArtifactsDeletedEvent' do
-      event = double(:event)
-
-      expect(Ci::JobArtifactsDeletedEvent)
-        .to receive(:new)
-        .with(data: event_data)
-        .and_return(event)
-
-      expect(Gitlab::EventStore).to receive(:publish).with(event)
-
-      subject
+      expect { subject }.to publish_event(Ci::JobArtifactsDeletedEvent).with(event_data)
     end
 
     context 'with Geo replication' do

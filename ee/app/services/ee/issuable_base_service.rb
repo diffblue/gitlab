@@ -7,6 +7,17 @@ module EE
 
     private
 
+    override :associations_before_update
+    def associations_before_update(issuable)
+      associations = super
+
+      if issuable.escalation_policies_available? && issuable.escalation_status
+        associations[:escalation_policy] = issuable.escalation_status.policy
+      end
+
+      associations
+    end
+
     attr_reader :label_ids_ordered_by_selection
 
     override :filter_params

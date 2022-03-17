@@ -80,7 +80,7 @@ class ApprovalWrappedRule
 
   def commented_approvers
     strong_memoize(:commented_approvers) do
-      merge_request.note_authors & approvers
+      merge_request.user_note_authors & approvers
     end
   end
 

@@ -27,6 +27,10 @@ module MergeRequests
       ApprovalRules::ExternalApprovalRulePayloadWorker.perform_async(self.id, payload_data(data))
     end
 
+    def status(merge_request, sha)
+      merge_request.status_check_responses.where(external_status_check: self, sha: sha).last&.status || 'pending'
+    end
+
     def approved?(merge_request, sha)
       merge_request.status_check_responses.where(external_status_check: self, sha: sha).exists?
     end

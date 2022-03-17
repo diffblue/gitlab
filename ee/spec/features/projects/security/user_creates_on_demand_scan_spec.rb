@@ -43,12 +43,12 @@ RSpec.describe 'User creates On-demand Scan' do
       click_button 'Save scan'
       wait_for_requests
 
-      expect(current_path).to eq(on_demand_scans_path)
+      expect(page).to have_current_path(on_demand_scans_path, ignore_query: true)
     end
 
     it 'on cancel', :js do
       click_button 'Cancel'
-      expect(current_path).to eq(on_demand_scans_path)
+      expect(page).to have_current_path(on_demand_scans_path, ignore_query: true)
     end
   end
 

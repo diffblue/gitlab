@@ -109,9 +109,12 @@ module EE
         def components_usage_data
           usage_data = super
 
-          if ::Gitlab::CurrentSettings.elasticsearch_indexing?
-            usage_data[:advanced_search] = add_metric("AdvancedSearchMetric")
-          end
+          usage_data[:advanced_search] = {
+              distribution:   add_metric("AdvancedSearch::DistributionMetric"),
+              version:        add_metric("AdvancedSearch::VersionMetric"),
+              build_type:     add_metric("AdvancedSearch::BuildTypeMetric"),
+              lucene_version: add_metric("AdvancedSearch::LuceneVersionMetric")
+          }
 
           usage_data
         end
@@ -123,29 +126,19 @@ module EE
             requirements_created: count(RequirementsManagement::Requirement),
             requirement_test_reports_manual: count(RequirementsManagement::TestReport.without_build),
             requirement_test_reports_ci: count(RequirementsManagement::TestReport.with_build),
-            requirements_with_test_report: distinct_count(RequirementsManagement::TestReport, :requirement_id)
+            requirements_with_test_report: distinct_count(RequirementsManagement::TestReport, :issue_id)
           }
         end
 
         # rubocop:disable CodeReuse/ActiveRecord, UsageData/LargeTable
         def approval_rules_counts
-          approval_project_rules_with_users =
-            ApprovalProjectRule
-              .regular
-              .joins('INNER JOIN approval_project_rules_users ON approval_project_rules_users.approval_project_rule_id = approval_project_rules.id')
-              .group(:id)
-
           {
             approval_project_rules: count(ApprovalProjectRule),
             approval_project_rules_with_target_branch: count(ApprovalProjectRulesProtectedBranch, :approval_project_rule_id),
-            approval_project_rules_with_more_approvers_than_required: count_approval_rules_with_users(approval_project_rules_with_users.having('COUNT(approval_project_rules_users) > approvals_required')),
-            approval_project_rules_with_less_approvers_than_required: count_approval_rules_with_users(approval_project_rules_with_users.having('COUNT(approval_project_rules_users) < approvals_required')),
-            approval_project_rules_with_exact_required_approvers: count_approval_rules_with_users(approval_project_rules_with_users.having('COUNT(approval_project_rules_users) = approvals_required'))
+            approval_project_rules_with_more_approvers_than_required: add_metric('ApprovalProjectRulesWithUserMetric', options: { count_type: 'more_approvers_than_required' }),
+            approval_project_rules_with_less_approvers_than_required: add_metric('ApprovalProjectRulesWithUserMetric', options: { count_type: 'less_approvers_than_required' }),
+            approval_project_rules_with_exact_required_approvers: add_metric('ApprovalProjectRulesWithUserMetric', options: { count_type: 'exact_required_approvers' })
           }
-        end
-
-        def count_approval_rules_with_users(relation)
-          count(relation, batch_size: 10_000, start: minimum_id(ApprovalProjectRule.regular), finish: maximum_id(ApprovalProjectRule.regular)).size
         end
         # rubocop:enable CodeReuse/ActiveRecord, UsageData/LargeTable
 
@@ -198,7 +191,6 @@ module EE
             usage_data[:counts].merge!(
               {
                 confidential_epics: count(::Epic.confidential),
-                dependency_list_usages_total: redis_usage_data { ::Gitlab::UsageCounters::DependencyList.usage_totals[:total] },
                 epics: count(::Epic),
                 epic_issues: count(::EpicIssue),
                 geo_nodes: count(::GeoNode),

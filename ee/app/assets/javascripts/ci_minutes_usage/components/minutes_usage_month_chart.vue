@@ -54,7 +54,14 @@ export default {
 <template>
   <div>
     <h5>{{ $options.USAGE_BY_MONTH }}</h5>
-    <gl-area-chart v-if="!isDataEmpty" class="gl-mb-3" :data="chartData" :option="chartOptions" />
+    <gl-area-chart
+      v-if="!isDataEmpty"
+      class="gl-mb-3"
+      :data="chartData"
+      :option="chartOptions"
+      responsive
+      :width="0"
+    />
     <gl-alert v-else class="gl-mb-5" :dismissible="false">
       {{ $options.NO_CI_MINUTES_MSG }}
     </gl-alert>

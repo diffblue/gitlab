@@ -1,13 +1,17 @@
+- return unless @project.marked_for_deletion?
 - return unless project.feature_available?(:adjourned_deletion_for_projects_and_groups)
 
 - date = permanent_deletion_date(project.marked_for_deletion_at)
-.sub-section
-  %h4= _('Restore project')
-  %p
-    %strong= _('This project will be deleted on %{date}') %{ date: date }
-  %p
-    = _("Restoring the project will prevent the project from being removed on this date and restore people's ability to make changes to it.")
-    = _("The repository can be committed to, and issues, comments and other entities can be created.")
-    %strong= _('Only active projects show up in the search and on the dashboard.')
-  = link_to _('Restore project'), namespace_project_restore_path(project.namespace, project),
-      method: :post, class: "gl-button btn"
+
+.gl-alert.gl-alert-warning.gl-mb-7{ role: 'alert' }
+  .gl-alert-container
+    = sprite_icon('warning', css_class: "gl-icon gl-alert-icon")
+    .gl-alert-content
+      %h4.gl-alert-title= _('This project will be deleted on %{date}') %{ date: date }
+      .gl-alert-body
+        %p
+          = _("Restoring the project will prevent the project from being removed on this date and restore people's ability to make changes to it.")
+          = _("The repository can be committed to, and issues, comments and other entities can be created.")
+          = _('Only active projects show up in the search and on the dashboard.')
+        = link_to _('Restore project'), namespace_project_restore_path(project.namespace, project),
+            method: :post, class: "gl-button btn btn-confirm"

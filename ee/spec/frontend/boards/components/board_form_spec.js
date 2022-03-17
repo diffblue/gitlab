@@ -208,7 +208,7 @@ describe('BoardForm', () => {
             id: 1,
           },
           milestone: {
-            id: 2,
+            id: 'gid://gitlab/Milestone/2',
           },
           iteration: {
             id: 'gid://gitlab/Iteration/3',

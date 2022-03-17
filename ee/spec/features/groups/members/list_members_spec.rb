@@ -79,24 +79,5 @@ RSpec.describe 'Groups > Members > List members' do
         expect(page).not_to have_content(user4.name)
       end
     end
-
-    context 'when the :invite_members_group_modal feature flag is disabled' do
-      before do
-        stub_feature_flags(invite_members_group_modal: false)
-      end
-
-      it 'returns only users with SAML in autocomplete', :js do
-        visit group_group_members_path(group)
-
-        wait_for_requests
-
-        find('.select2-container').click
-
-        expect(page).to have_content(user1.name)
-        expect(page).to have_content(user2.name)
-        expect(page).not_to have_content(user3.name)
-        expect(page).not_to have_content(user4.name)
-      end
-    end
   end
 end

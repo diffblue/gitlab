@@ -128,7 +128,7 @@ RSpec.describe 'admin Geo Nodes', :js, :geo do
       click_button 'Save'
 
       wait_for_requests
-      expect(current_path).to eq admin_geo_nodes_path
+      expect(page).to have_current_path admin_geo_nodes_path, ignore_query: true
 
       page.within(find('.geo-node-core-details-grid-columns', match: :first)) do
         expect(page).to have_content(geo_node.url)
@@ -153,7 +153,7 @@ RSpec.describe 'admin Geo Nodes', :js, :geo do
       click_button 'Save changes'
 
       wait_for_requests
-      expect(current_path).to eq admin_geo_nodes_path
+      expect(page).to have_current_path admin_geo_nodes_path, ignore_query: true
 
       page.within(find('.geo-node-core-details-grid-columns', match: :first)) do
         expect(page).to have_content('http://newsite.com')
@@ -178,7 +178,7 @@ RSpec.describe 'admin Geo Nodes', :js, :geo do
         page.click_button('Remove site')
       end
 
-      expect(current_path).to eq admin_geo_nodes_path
+      expect(page).to have_current_path admin_geo_nodes_path, ignore_query: true
       wait_for_requests
       expect(page).not_to have_css('.geo-node-core-details-grid-columns')
     end

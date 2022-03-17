@@ -15,6 +15,10 @@ module EE
           populate_vulnerability_id
         end
 
+        before_action only: :show do
+          push_licensed_feature(:escalation_policies, project)
+        end
+
         before_action :redirect_if_test_case, only: [:show]
 
         feature_category :team_planning, [:delete_description_version, :description_diff]

@@ -2,6 +2,53 @@
 documentation](doc/development/changelog.md) for instructions on adding your own
 entry.
 
+## 14.8.4 (2022-03-16)
+
+### Added (1 change)
+
+- [Detect and fix artifacts with backfilled expire_at](gitlab-org/gitlab@a627e0ac2f71e48235b956a7f744608b1cf9632f) ([merge request](gitlab-org/gitlab!83013))
+
+### Fixed (1 change)
+
+- [Pass issue ID to merge request creation form](gitlab-org/gitlab@86c4ec0d5f73a7139a8a22021e73171c354f9326) ([merge request](gitlab-org/gitlab!83013))
+
+### Changed (1 change)
+
+- [Enable feature flags to resume artifact removal on self-managed](gitlab-org/gitlab@07dcfcfc11428900de446d195e673be127ad4f07) ([merge request](gitlab-org/gitlab!83013))
+
+## 14.8.3 (2022-03-14)
+
+### Fixed (3 changes)
+
+- [Fix rake task to setup the Geo tracking database](gitlab-org/gitlab@5382a63c46b205bf49b096e834f7241d6bdd6814) ([merge request](gitlab-org/gitlab!82782)) **GitLab Enterprise Edition**
+- [Fix handling of resource iteration events when deleting a User](gitlab-org/gitlab@f26db84ae16d36186b70e630fcb6c3706976ce96) ([merge request](gitlab-org/gitlab!82782)) **GitLab Enterprise Edition**
+- [Ensure cleanup job artifacts task does not include pipeline artifacts](gitlab-org/gitlab@c75ecbaeb59be774d8f449b180b772bd0f611a8d) ([merge request](gitlab-org/gitlab!82782))
+
+### Changed (1 change)
+
+- [Remove runners token prefix feature flags](gitlab-org/gitlab@9f316b9a606df7751b56b4eb966c1c02f6d6b3a0) ([merge request](gitlab-org/gitlab!82119))
+
+## 14.8.2 (2022-02-25)
+
+### Security (8 changes)
+
+- [Limit commands_changes to certain keys](gitlab-org/security/gitlab@7a4e348b3ea3d34469bcd353286474c25288d836) ([merge request](gitlab-org/security/gitlab!2225))
+- [Add runners_token prefix to Group and Project](gitlab-org/security/gitlab@87bd94f7252f887f22f971ffd59044b355712042) ([merge request](gitlab-org/security/gitlab!2248))
+- [Anonymous user can enumerate all users through GraphQL endpoint](gitlab-org/security/gitlab@945da4fadb156ce862bdd12ee5625f57709b590d) ([merge request](gitlab-org/security/gitlab!2213))
+- [Check for unsafe characters in email addresses before sending](gitlab-org/security/gitlab@641b23f6b1ad827536ea704c848330a068fc0472) ([merge request](gitlab-org/security/gitlab!2206))
+- [Warn when snippet contains unretrievable files](gitlab-org/security/gitlab@d703ecef74f7d73eab3d5345af3a5d60f28c9d7f) ([merge request](gitlab-org/security/gitlab!2205))
+- [Prevent DOS when rendering math markdown](gitlab-org/security/gitlab@cedf63be73dc9c37352e425cf8b8cf4e16980935) ([merge request](gitlab-org/security/gitlab!2219))
+- [Check permission when creating members through service](gitlab-org/security/gitlab@6228fd285e7062dd1c2e88f8ca33bc8e9a0f4fad) ([merge request](gitlab-org/security/gitlab!2209))
+- [Reset password field on page load](gitlab-org/security/gitlab@5ece8645add37c3e77f28d7afb8f28ce4bbe2b7f) ([merge request](gitlab-org/security/gitlab!2224))
+
+## 14.8.1 (2022-02-23)
+
+### Fixed (3 changes)
+
+- [Allow assigning users with private profiles with quick-actions](gitlab-org/gitlab@be36d36a5a0a3d2f0a3b507acd1ab1762e1b0f34) ([merge request](gitlab-org/gitlab!81398))
+- [Stop backup files from requiring directories to exist when skipped](gitlab-org/gitlab@f8002e4fe2c83bf01557020e20be5d29f70b20c6) ([merge request](gitlab-org/gitlab!81398))
+- [Fix toolbar buttons in Markdown field](gitlab-org/gitlab@74c058e49eb014662a12247ae5fc5bbfb367af0e) ([merge request](gitlab-org/gitlab!81398))
+
 ## 14.8.0 (2022-02-21)
 
 ### Added (134 changes)
@@ -670,6 +717,29 @@ entry.
 - [Use `ssh_data` gem instead of `net-ssh` and `sshkey` where possible](gitlab-org/gitlab@59a0ee8605d509753c9aec719f8e0da77bcc679d) ([merge request](gitlab-org/gitlab!77424))
 - [Remove feature flag already default enabled](gitlab-org/gitlab@9b7059a4bf9dc2ecdce1910a931cc6967d05b5ad) ([merge request](gitlab-org/gitlab!78238)) **GitLab Enterprise Edition**
 
+## 14.7.5 (2022-03-09)
+
+### Fixed (1 change)
+
+- [Ensure cleanup job artifacts task does not include pipeline artifacts](gitlab-org/gitlab@7b5e91bc78c46109e48537b20239d4ab649a971a) ([merge request](gitlab-org/gitlab!82430))
+
+### Other (1 change)
+
+- [Change to truncate table before adding finding_link_url_idx](gitlab-org/gitlab@6411ec61f40cb8648cea24ed26c1d69c8b910891) ([merge request](gitlab-org/gitlab!82430))
+
+## 14.7.4 (2022-02-25)
+
+### Security (8 changes)
+
+- [Limit commands_changes to certain keys](gitlab-org/security/gitlab@59351be8d1d868e31bc849482b266e4047710eeb) ([merge request](gitlab-org/security/gitlab!2226))
+- [Add runners_token prefix to Group and Project](gitlab-org/security/gitlab@74615b7fd5359c4da7f1a3ca9052685e81e1690f) ([merge request](gitlab-org/security/gitlab!2249))
+- [Anonymous user can enumerate all users through GraphQL endpoint](gitlab-org/security/gitlab@e213dfc546020d3f88b40cdfc0f877138b0aaef5) ([merge request](gitlab-org/security/gitlab!2119))
+- [Check for unsafe characters in email addresses before sending](gitlab-org/security/gitlab@395385ffccfd9d25063531ea955b179d9bc4f0c5) ([merge request](gitlab-org/security/gitlab!2207))
+- [Warn when snippet contains unretrievable files](gitlab-org/security/gitlab@dc4b3c00284e17bcbf20ec2ae1ee7e8a7efae9b2) ([merge request](gitlab-org/security/gitlab!2204))
+- [Prevent DOS when rendering math markdown](gitlab-org/security/gitlab@f01674f210dee4c803b4850292d16412463b18e3) ([merge request](gitlab-org/security/gitlab!2200))
+- [Check permission when creating members through service](gitlab-org/security/gitlab@4f9b302511ddfaf07af8d08d848252e0c64ff307) ([merge request](gitlab-org/security/gitlab!2210))
+- [Reset password field on page load](gitlab-org/security/gitlab@1a6541462e1ddd58ea9a172fbd3c0b9026760784) ([merge request](gitlab-org/security/gitlab!2193))
+
 ## 14.7.3 (2022-02-15)
 
 ### Fixed (2 changes)
@@ -1144,6 +1214,27 @@ See https://about.gitlab.com/releases/2022/02/03/security-release-gitlab-14-7-1-
 - [Pass formats explicitly when rendering .html format](gitlab-org/gitlab@2e8f39197824f4e3203a17f4dc64eb7a0164f8f4) by @edith007 ([merge request](gitlab-org/gitlab!75782))
 - [Fix Gitlab/DelegatePredicateMethods offenses](gitlab-org/gitlab@518700a11025b0000ff3ce011638417a882612b0) by @edith007 ([merge request](gitlab-org/gitlab!76001))
 - [Fix Rails/SaveBang offenses](gitlab-org/gitlab@513b0e1dbdf95ea595e7548ff26929e0be30ce29) by @edith007 ([merge request](gitlab-org/gitlab!75894)) **GitLab Enterprise Edition**
+
+## 14.6.6 (2022-03-01)
+
+### Fixed (3 changes)
+
+- [Ensure cleanup job artifacts task does not include pipeline artifacts](gitlab-org/gitlab@3fc3472de8bfa971985d122573e9896b17606678) ([merge request](gitlab-org/gitlab!81885))
+- [Fix Geo checksummable check failing when file is nil](gitlab-org/gitlab@38b55f334c558377de0b1b0d7f853e62723d9791) ([merge request](gitlab-org/gitlab!81885)) **GitLab Enterprise Edition**
+- [Resolve "Imports fail in 14.5.2 fail with HTTParty::UnsupportedURIScheme error"](gitlab-org/gitlab@b7cbf0c19d9702a0db3ee9a8f8897df5d7da72f1) ([merge request](gitlab-org/gitlab!81885))
+
+## 14.6.5 (2022-02-25)
+
+### Security (8 changes)
+
+- [Limit commands_changes to certain keys](gitlab-org/security/gitlab@138c437f2819d62ce4750fb84399d8868c844b01) ([merge request](gitlab-org/security/gitlab!2227))
+- [Add runners_token prefix to Group and Project](gitlab-org/security/gitlab@682d4e9b63d3d36901638edc75c1b265460d42dc) ([merge request](gitlab-org/security/gitlab!2250))
+- [Anonymous user can enumerate all users through GraphQL endpoint](gitlab-org/security/gitlab@2b00a8036b291d3ad5de551a5e13c2a0a39d0234) ([merge request](gitlab-org/security/gitlab!2102))
+- [Check for unsafe characters in email addresses before sending](gitlab-org/security/gitlab@6bc653b3dadefb3d2c80823786d43e6b7f8c4620) ([merge request](gitlab-org/security/gitlab!2208))
+- [Warn when snippet contains unretrievable files](gitlab-org/security/gitlab@f9ae9515ec98ab934f4aa3a35af0aca806bbe21d) ([merge request](gitlab-org/security/gitlab!2203))
+- [Prevent DOS when rendering math markdown](gitlab-org/security/gitlab@fd6d496df6f4b5eb3da0b851f9ff8ebb1d68d3f2) ([merge request](gitlab-org/security/gitlab!2201))
+- [Check permission when creating members through service](gitlab-org/security/gitlab@948e5103285de2a6cdb5152ff2c13ae4db2f4cda) ([merge request](gitlab-org/security/gitlab!2211))
+- [Reset password field on page load](gitlab-org/security/gitlab@1417b463f2771a4b17e068dea9de3aa6c4540962) ([merge request](gitlab-org/security/gitlab!2194))
 
 ## 14.6.4 (2022-02-03)
 

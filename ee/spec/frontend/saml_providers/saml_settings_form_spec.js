@@ -11,93 +11,91 @@ describe('SamlSettingsForm', () => {
     samlSettingsForm.init();
   });
 
-  const findEnforcedGroupManagedAccountSetting = () =>
-    samlSettingsForm.settings.find((s) => s.name === 'enforced-group-managed-accounts');
+  const findGroupSamlSetting = () => samlSettingsForm.settings.find((s) => s.name === 'group-saml');
   const findEnforcedSsoSetting = () =>
     samlSettingsForm.settings.find((s) => s.name === 'enforced-sso');
-  const findProhibitForksSetting = () =>
-    samlSettingsForm.settings.find((s) => s.name === 'prohibited-outer-forks');
+  const findEnforcedGitActivity = () =>
+    samlSettingsForm.settings.find((s) => s.name === 'enforced-git-activity-check');
+
+  const fireChangeEvent = (setting) => {
+    setting.el.dispatchEvent(
+      new Event('change', {
+        bubbles: true,
+      }),
+    );
+  };
+
+  const checkSetting = (setting) => {
+    // eslint-disable-next-line no-param-reassign
+    setting.el.checked = true;
+
+    fireChangeEvent(setting);
+  };
+
+  const uncheckSetting = (setting) => {
+    // eslint-disable-next-line no-param-reassign
+    setting.el.checked = false;
+
+    fireChangeEvent(setting);
+  };
+
+  const expectTestButtonDisabled = () => {
+    expect(samlSettingsForm.testButtonDisabled.classList.contains('gl-display-none')).toBe(false);
+    expect(samlSettingsForm.testButton.classList.contains('gl-display-none')).toBe(true);
+  };
+  const expectTestButtonEnabled = () => {
+    expect(samlSettingsForm.testButtonDisabled.classList.contains('gl-display-none')).toBe(true);
+    expect(samlSettingsForm.testButton.classList.contains('gl-display-none')).toBe(false);
+  };
 
   describe('updateView', () => {
-    it('disables Test button when form has changes', () => {
-      samlSettingsForm.dirtyFormChecker.dirtyInputs = [findEnforcedGroupManagedAccountSetting().el];
+    it('disables Test button when form has changes and re-enables when returned to starting state', () => {
+      expectTestButtonEnabled();
 
-      expect(samlSettingsForm.testButton.hasAttribute('disabled')).toBe(false);
+      uncheckSetting(findEnforcedSsoSetting());
 
-      samlSettingsForm.updateView();
+      expectTestButtonDisabled();
 
-      expect(samlSettingsForm.testButton.hasAttribute('disabled')).toBe(true);
-    });
+      checkSetting(findEnforcedSsoSetting());
 
-    it('re-enables Test button when form is returned to starting state', () => {
-      samlSettingsForm.testButton.setAttribute('disabled', true);
-
-      samlSettingsForm.updateView();
-
-      expect(samlSettingsForm.testButton.hasAttribute('disabled')).toBe(false);
+      expectTestButtonEnabled();
     });
 
     it('keeps Test button disabled when SAML disabled for the group', () => {
-      samlSettingsForm.settings.find((s) => s.name === 'group-saml').value = false;
-      samlSettingsForm.testButton.setAttribute('disabled', true);
+      expectTestButtonEnabled();
 
-      samlSettingsForm.updateView();
+      uncheckSetting(findGroupSamlSetting());
 
-      expect(samlSettingsForm.testButton.hasAttribute('disabled')).toBe(true);
+      expectTestButtonDisabled();
     });
   });
 
   it('correctly disables dependent toggle and shows helper text', () => {
-    samlSettingsForm.settings.forEach((s) => {
-      const { el } = s;
-      el.checked = true;
-    });
+    expect(findEnforcedSsoSetting().el.hasAttribute('disabled')).toBe(false);
+    expect(findEnforcedSsoSetting().helperText.classList.contains('gl-display-none')).toBe(true);
 
-    samlSettingsForm.updateSAMLSettings();
-    samlSettingsForm.updateView();
-    expect(findProhibitForksSetting().el.hasAttribute('disabled')).toBe(false);
-    expect(findProhibitForksSetting().helperText.classList.contains('gl-display-none')).toBe(true);
+    uncheckSetting(findGroupSamlSetting());
 
-    findEnforcedGroupManagedAccountSetting().el.checked = false;
-    samlSettingsForm.updateSAMLSettings();
-    samlSettingsForm.updateView();
-
-    expect(findProhibitForksSetting().el.hasAttribute('disabled')).toBe(true);
-    expect(findProhibitForksSetting().helperText.classList.contains('gl-display-none')).toBe(false);
-    expect(findProhibitForksSetting().value).toBe(true);
+    expect(findEnforcedSsoSetting().el.hasAttribute('disabled')).toBe(true);
+    expect(findEnforcedSsoSetting().helperText.classList.contains('gl-display-none')).toBe(false);
+    expect(findEnforcedSsoSetting().value).toBe(true);
   });
 
   it('correctly shows warning text when checkbox is unchecked', () => {
     expect(findEnforcedSsoSetting().warning.classList.contains('gl-display-none')).toBe(true);
 
-    findEnforcedSsoSetting().el.checked = false;
-    samlSettingsForm.updateSAMLSettings();
-    samlSettingsForm.updateView();
+    uncheckSetting(findEnforcedSsoSetting());
 
     expect(findEnforcedSsoSetting().warning.classList.contains('gl-display-none')).toBe(false);
   });
 
   it('correctly disables multiple dependent toggles', () => {
-    samlSettingsForm.settings.forEach((s) => {
-      const { el } = s;
-      el.checked = true;
-    });
+    expect(findEnforcedSsoSetting().el.hasAttribute('disabled')).toBe(false);
+    expect(findEnforcedGitActivity().el.hasAttribute('disabled')).toBe(false);
 
-    let groupSamlSetting;
-    let otherSettings;
+    uncheckSetting(findGroupSamlSetting());
 
-    samlSettingsForm.updateSAMLSettings();
-    samlSettingsForm.updateView();
-    [groupSamlSetting, ...otherSettings] = samlSettingsForm.settings;
-    expect(samlSettingsForm.settings.every((s) => s.value)).toBe(true);
-    expect(samlSettingsForm.settings.some((s) => s.el.hasAttribute('disabled'))).toBe(false);
-
-    groupSamlSetting.el.checked = false;
-    samlSettingsForm.updateSAMLSettings();
-    samlSettingsForm.updateView();
-
-    [groupSamlSetting, ...otherSettings] = samlSettingsForm.settings;
-    expect(otherSettings.every((s) => s.value)).toBe(true);
-    expect(otherSettings.every((s) => s.el.hasAttribute('disabled'))).toBe(true);
+    expect(findEnforcedSsoSetting().el.hasAttribute('disabled')).toBe(true);
+    expect(findEnforcedGitActivity().el.hasAttribute('disabled')).toBe(true);
   });
 });

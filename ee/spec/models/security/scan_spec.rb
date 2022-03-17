@@ -46,6 +46,94 @@ RSpec.describe Security::Scan do
     it { is_expected.to delegate_method(:name).to(:build) }
   end
 
+  describe '#has_warnings?' do
+    let(:scan) { build(:security_scan, info: info) }
+
+    subject { scan.has_warnings? }
+
+    context 'when the info attribute is nil' do
+      let(:info) { nil }
+
+      it 'is not valid' do
+        expect(scan.valid?).to eq(false)
+      end
+    end
+
+    context 'when the info attribute is present' do
+      let(:info) { { warnings: warnings } }
+
+      context 'when there is no warnings' do
+        let(:warnings) { [] }
+
+        it { is_expected.to eq(false) }
+      end
+
+      context 'when there are warnings' do
+        let(:warnings) { [{ type: 'Foo', message: 'Bar' }] }
+
+        it { is_expected.to eq(true) }
+      end
+    end
+  end
+
+  describe '#processing_warnings' do
+    let(:scan) { build(:security_scan, info: info) }
+    let(:info) { { warnings: validator_warnings } }
+
+    subject(:warnings) { scan.processing_warnings }
+
+    context 'when there are warnings' do
+      let(:validator_warnings) { [{ type: 'Foo', message: 'Bar' }] }
+
+      it 'returns all warnings' do
+        expect(warnings).to match_array([
+          { "message" => "Bar", "type" => "Foo" }
+        ])
+      end
+    end
+
+    context 'when there are no warnings' do
+      let(:validator_warnings) { [] }
+
+      it 'returns []' do
+        expect(warnings).to match_array(validator_warnings)
+      end
+    end
+  end
+
+  describe '#processing_warnings=' do
+    let(:scan) { create(:security_scan) }
+
+    subject(:set_warnings) { scan.processing_warnings = [:foo] }
+
+    it 'sets the warnings' do
+      expect { set_warnings }.to change { scan.info['warnings'] }.from(nil).to([:foo])
+    end
+  end
+
+  describe '#has_warnings?' do
+    let(:scan) { build(:security_scan, info: info) }
+    let(:info) { { warnings: validator_warnings } }
+
+    subject(:has_warnings?) { scan.has_warnings? }
+
+    context 'when there are warnings' do
+      let(:validator_warnings) { [{ type: 'Foo', message: 'Bar' }] }
+
+      it 'returns true' do
+        expect(has_warnings?).to eq(true)
+      end
+    end
+
+    context 'when there are no warnings' do
+      let(:validator_warnings) { [] }
+
+      it 'returns false' do
+        expect(has_warnings?).to eq(false)
+      end
+    end
+  end
+
   describe '#has_errors?' do
     let(:scan) { build(:security_scan, info: info) }
 
@@ -54,7 +142,9 @@ RSpec.describe Security::Scan do
     context 'when the info attribute is nil' do
       let(:info) { nil }
 
-      it { is_expected.to be_falsey }
+      it 'is not valid' do
+        expect(scan.valid?).to eq(false)
+      end
     end
 
     context 'when the info attribute presents' do
@@ -63,13 +153,13 @@ RSpec.describe Security::Scan do
       context 'when there is no error' do
         let(:errors) { [] }
 
-        it { is_expected.to be_falsey }
+        it { is_expected.to eq(false) }
       end
 
       context 'when there are errors' do
         let(:errors) { [{ type: 'Foo', message: 'Bar' }] }
 
-        it { is_expected.to be_truthy }
+        it { is_expected.to eq(true) }
       end
     end
   end
@@ -106,7 +196,7 @@ RSpec.describe Security::Scan do
   describe '.latest_successful' do
     let!(:first_successful_scan) { create(:security_scan, latest: false, status: :succeeded) }
     let!(:second_successful_scan) { create(:security_scan, latest: true, status: :succeeded) }
-    let!(:failed_scan) { create(:security_scan, latest: true, status: :failed) }
+    let!(:failed_scan) { create(:security_scan, latest: true, status: :job_failed) }
 
     subject { described_class.latest_successful }
 
@@ -156,6 +246,25 @@ RSpec.describe Security::Scan do
     subject { described_class.latest }
 
     it { is_expected.to match_array([latest_scan]) }
+  end
+
+  describe '.stale' do
+    let!(:stale_succeeded_scan) { create(:security_scan, status: :succeeded, created_at: 91.days.ago) }
+    let!(:stale_failed_scan) { create(:security_scan, status: :preparation_failed, created_at: 91.days.ago) }
+
+    subject { described_class.stale }
+
+    before do
+      create(:security_scan, status: :succeeded)
+      create(:security_scan, status: :preparation_failed)
+      create(:security_scan, status: :created, created_at: 91.days.ago)
+      create(:security_scan, status: :job_failed, created_at: 91.days.ago)
+      create(:security_scan, status: :report_error, created_at: 91.days.ago)
+      create(:security_scan, status: :preparing, created_at: 91.days.ago)
+      create(:security_scan, status: :purged, created_at: 91.days.ago)
+    end
+
+    it { is_expected.to match_array([stale_succeeded_scan, stale_failed_scan]) }
   end
 
   describe '#report_findings' do

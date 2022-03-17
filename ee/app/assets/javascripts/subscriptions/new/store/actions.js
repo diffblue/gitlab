@@ -11,14 +11,12 @@ import * as types from './mutation_types';
 
 export const updateSelectedPlan = ({ commit, getters }, selectedPlan) => {
   commit(types.UPDATE_SELECTED_PLAN, selectedPlan);
-  commit(types.UPDATE_NUMBER_OF_USERS, getters.selectedGroupUsers);
   trackCheckout(selectedPlan, getters.confirmOrderParams?.subscription?.quantity);
 };
 
-export const updateSelectedGroup = ({ commit, getters }, selectedGroup) => {
+export const updateSelectedGroup = ({ commit }, selectedGroup) => {
   commit(types.UPDATE_SELECTED_GROUP, selectedGroup);
   commit(types.UPDATE_ORGANIZATION_NAME, null);
-  commit(types.UPDATE_NUMBER_OF_USERS, getters.selectedGroupUsers);
 };
 
 export const toggleIsSetupForCompany = ({ state, commit }) => {

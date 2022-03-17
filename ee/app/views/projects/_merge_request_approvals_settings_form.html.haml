@@ -2,5 +2,4 @@
   = label :approver_ids, class: 'label-bold' do
     = _("Approval rules")
   #js-mr-approvals-settings{ data: approvals_app_data }
-    .text-center.gl-mt-3
-      = sprite_icon('spinner', size: 24, css_class: 'gl-spinner')
+    = gl_loading_icon(size: 'md', css_class: 'gl-mt-3')

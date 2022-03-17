@@ -14,7 +14,7 @@ FactoryBot.define do
     end
 
     trait :author_email do
-      author_email_regex { '.*@veryspecificedomain.com' }
+      author_email_regex { '.*@veryspecificdomain.com' }
     end
 
     factory :push_rule_sample do

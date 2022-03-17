@@ -60,28 +60,18 @@ export const usersPresent = (state) => state.numberOfUsers > 0;
 export const isGroupSelected = (state) =>
   state.selectedGroup !== null && state.selectedGroup !== NEW_GROUP;
 
-export const isSelectedGroupPresent = (state, getters) => {
-  return (
-    getters.isGroupSelected && state.groupData.some((group) => group.value === state.selectedGroup)
-  );
-};
+export const isSelectedGroupPresent = (state, getters) => Boolean(getters.selectedGroupData);
 
-export const selectedGroupUsers = (state, getters) => {
+export const selectedGroupData = (state, getters) => {
   if (!getters.isGroupSelected) {
-    return 1;
-  } else if (getters.isSelectedGroupPresent && getters.isUltimatePlan) {
-    const selectedGroup = state.groupData.find((group) => group.value === state.selectedGroup);
-    return selectedGroup.numberOfUsers - selectedGroup.numberOfGuests;
-  } else if (getters.isSelectedGroupPresent) {
-    return state.groupData.find((group) => group.value === state.selectedGroup).numberOfUsers;
+    return null;
   }
 
-  return null;
+  return state.groupData.find((group) => group.value === state.selectedGroup);
 };
 
 export const selectedGroupName = (state, getters) => {
-  if (!getters.isGroupSelected) return null;
-  return state.groupData.find((group) => group.value === state.selectedGroup).text;
+  return getters.selectedGroupData?.text;
 };
 
 export const selectedGroupId = (state, getters) =>

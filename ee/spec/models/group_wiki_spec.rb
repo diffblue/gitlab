@@ -12,14 +12,15 @@ RSpec.describe GroupWiki do
     end
 
     describe '#create_wiki_repository' do
+      let(:shard) { 'foo' }
+
       it 'tracks the repository storage in the database' do
-        shard = 'foo'
         # Use a custom storage shard value, to make sure we're not falling back to the default.
         allow(subject).to receive(:repository_storage).and_return(shard)
+        allow(subject).to receive(:default_branch).and_return('bar')
 
         # Don't actually create the repository, because the storage shard doesn't exist.
         expect(subject.repository).to receive(:create_if_not_exists)
-        expect(subject).to receive(:change_head_to_default_branch)
         allow(subject).to receive(:repository_exists?).and_return(true)
 
         expect(subject).to receive(:track_wiki_repository).with(shard)

@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe IncidentManagement::EscalationPolicy do
-  subject { build(:incident_management_escalation_policy) }
+  subject(:escalation_policy) { build(:incident_management_escalation_policy) }
 
   it { is_expected.to be_valid }
 
@@ -53,5 +53,11 @@ RSpec.describe IncidentManagement::EscalationPolicy do
         expect(subject).to contain_exactly(other_policy)
       end
     end
+  end
+
+  describe '#hook_attrs' do
+    subject { escalation_policy.hook_attrs }
+
+    it { is_expected.to eq({ id: escalation_policy.id, name: escalation_policy.name }) }
   end
 end

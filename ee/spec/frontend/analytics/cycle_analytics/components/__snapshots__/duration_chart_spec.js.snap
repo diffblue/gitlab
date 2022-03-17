@@ -17,12 +17,6 @@ exports[`DurationChart with the overiew stage selected renders the duration char
     />
   </h4>
    
-  <stagedropdownfilter-stub
-    class="gl-ml-auto"
-    label="stage dropdown"
-    stages="[object Object],[object Object],[object Object]"
-  />
-   
   <scatterplot-stub
     medianlinedata="2019-01-01,17,2019-01-01,2019-01-02,40,2019-01-02"
     medianlineoptions="[object Object]"

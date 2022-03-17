@@ -1,5 +1,4 @@
 <script>
-import { GlResizeObserverDirective as GlResizeObserver } from '@gitlab/ui';
 import { GlLineChart } from '@gitlab/ui/dist/charts';
 import dateFormat from 'dateformat';
 import { merge } from 'lodash';
@@ -7,9 +6,6 @@ import { __, n__, s__, sprintf } from '~/locale';
 import commonChartOptions from './common_chart_options';
 
 export default {
-  directives: {
-    GlResizeObserver,
-  },
   components: {
     GlLineChart,
   },
@@ -113,9 +109,6 @@ export default {
     setChart(chart) {
       this.chart = chart;
     },
-    onResize() {
-      this.chart?.resize();
-    },
     formatTooltipText(params) {
       const [seriesData] = params.seriesData;
       if (!seriesData) {
@@ -143,7 +136,7 @@ export default {
     </div>
     <gl-line-chart
       v-if="!loading"
-      v-gl-resize-observer="onResize"
+      :responsive="true"
       class="burndown-chart js-burndown-chart"
       :data="dataSeries"
       :option="options"

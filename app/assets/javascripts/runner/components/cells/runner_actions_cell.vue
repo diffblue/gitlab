@@ -17,7 +17,13 @@ export default {
       type: Object,
       required: true,
     },
+    editUrl: {
+      type: String,
+      default: null,
+      required: false,
+    },
   },
+  emits: ['deleted'],
   computed: {
     canUpdate() {
       return this.runner.userPermissions?.updateRunner;
@@ -26,20 +32,18 @@ export default {
       return this.runner.userPermissions?.deleteRunner;
     },
   },
+  methods: {
+    onDeleted(value) {
+      this.$emit('deleted', value);
+    },
+  },
 };
 </script>
 
 <template>
   <gl-button-group>
-    <!--
-      This button appears for administrators: those with
-      access to the adminUrl. More advanced permissions policies
-      will allow more granular permissions.
-
-      See https://gitlab.com/gitlab-org/gitlab/-/issues/334802
-    -->
-    <runner-edit-button v-if="canUpdate && runner.editAdminUrl" :href="runner.editAdminUrl" />
+    <runner-edit-button v-if="canUpdate && editUrl" :href="editUrl" />
     <runner-pause-button v-if="canUpdate" :runner="runner" :compact="true" />
-    <runner-delete-button v-if="canDelete" :runner="runner" :compact="true" />
+    <runner-delete-button v-if="canDelete" :runner="runner" :compact="true" @deleted="onDeleted" />
   </gl-button-group>
 </template>

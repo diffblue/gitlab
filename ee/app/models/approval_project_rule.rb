@@ -15,6 +15,7 @@ class ApprovalProjectRule < ApplicationRecord
   has_and_belongs_to_many :protected_branches
   has_many :approval_merge_request_rule_sources
   has_many :approval_merge_request_rules, through: :approval_merge_request_rule_sources
+  after_create_commit :audit_creation
 
   enum rule_type: {
     regular: 0,
@@ -65,6 +66,10 @@ class ApprovalProjectRule < ApplicationRecord
 
   def audit_add(model)
     push_audit_event("Added #{model.class.name} #{model.name} to approval group on #{self.name} rule")
+  end
+
+  def audit_creation
+    push_audit_event("Added approval rule with number of required approvals of #{approvals_required}")
   end
 
   def audit_remove(model)

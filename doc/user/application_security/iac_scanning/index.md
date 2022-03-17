@@ -22,7 +22,7 @@ To run IaC scanning jobs, by default, you need GitLab Runner with the
 If you're using the shared runners on GitLab.com, this is enabled by default.
 
 WARNING:
-Our IaC scanning jobs require a Linux container type. Windows containers are not yet supported.
+Our IaC scanning jobs require a Linux/amd64 container type. Windows containers are not yet supported.
 
 WARNING:
 If you use your own runners, make sure the Docker version installed
@@ -58,7 +58,7 @@ as shown in the following table:
 |:---------------------------------------------------------------------------------------|:--------------------|:-------------------|
 | [Configure IaC Scanners](#configuration)                                               | **{check-circle}**  | **{check-circle}** |
 | View [JSON Report](#reports-json-format)                                               | **{check-circle}**  | **{check-circle}** |
-| Presentation of JSON Report in Merge Request                                           | **{dotted-circle}** | **{check-circle}** |
+| Presentation of JSON Report in merge request                                           | **{dotted-circle}** | **{check-circle}** |
 | [Address vulnerabilities](../../application_security/vulnerabilities/index.md)         | **{dotted-circle}** | **{check-circle}** |
 | [Access to Security Dashboard](../../application_security/security_dashboard/index.md) | **{dotted-circle}** | **{check-circle}** |
 

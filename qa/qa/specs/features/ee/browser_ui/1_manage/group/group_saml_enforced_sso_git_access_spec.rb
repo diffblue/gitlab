@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  # TODO: Remove :requires_admin meta when the `Runtime::Feature.enable` method call is removed
-  RSpec.describe 'Manage', :group_saml, :orchestrated, :requires_admin do
+  RSpec.describe 'Manage', :group_saml, :orchestrated do
     describe 'Group SAML SSO - Enforced SSO' do
       include Support::API
 
@@ -26,8 +25,6 @@ module QA
       end
 
       before do
-        Runtime::Feature.enable(:invite_members_group_modal, group: group)
-
         group.add_member(developer_user)
 
         Flow::Saml.enable_saml_sso(group, saml_idp_service, enforce_sso: true)

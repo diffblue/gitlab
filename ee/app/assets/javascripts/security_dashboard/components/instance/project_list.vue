@@ -4,7 +4,7 @@ import projectsQuery from 'ee/security_dashboard/graphql/queries/instance_projec
 import { PROJECT_LOADING_ERROR_MESSAGE } from 'ee/security_dashboard/helpers';
 import createFlash from '~/flash';
 import { s__ } from '~/locale';
-import ProjectAvatar from '~/vue_shared/components/deprecated_project_avatar/default.vue';
+import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 
 export default {
   i18n: {
@@ -76,7 +76,11 @@ export default {
         :key="project.id"
         class="gl-display-flex gl-align-items-center gl-py-2 js-projects-list-project-item"
       >
-        <project-avatar class="gl-flex-shrink-0" :project="project" :size="32" />
+        <project-avatar
+          class="gl-mr-3"
+          :project-name="project.name"
+          :project-avatar-url="project.avatarUrl"
+        />
         {{ project.nameWithNamespace }}
         <gl-button
           v-gl-tooltip

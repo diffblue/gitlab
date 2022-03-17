@@ -54,7 +54,7 @@ RSpec.describe 'GEO Nodes', :geo do
 
         wait_for_requests
 
-        expected_url = File.join(geo_secondary.url, '/admin/geo/projects')
+        expected_url = File.join(geo_secondary.url, "/admin/geo/sites/#{geo_secondary.id}/replication/lfs_objects")
 
         expect(all('.geo-node-details-grid-columns').last).to have_link('Open replications', href: expected_url)
       end

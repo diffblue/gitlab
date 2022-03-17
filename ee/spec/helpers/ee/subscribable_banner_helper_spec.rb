@@ -23,9 +23,10 @@ RSpec.describe EE::SubscribableBannerHelper, :saas do
 
     shared_examples 'when a subscription exists' do
       let(:gitlab_subscription) { build_stubbed(:gitlab_subscription) }
+      let(:root_ancestor) { entity.root_ancestor }
 
       it 'returns a decorator' do
-        allow(entity).to receive(:closest_gitlab_subscription).and_return(gitlab_subscription)
+        allow(root_ancestor).to receive(:gitlab_subscription).and_return(gitlab_subscription)
 
         expect(subject).to be_a(SubscriptionPresenter)
       end
@@ -117,7 +118,7 @@ RSpec.describe EE::SubscribableBannerHelper, :saas do
           allow(::Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(true)
         end
 
-        let(:gitlab_subscription) { entity.closest_gitlab_subscription }
+        let(:gitlab_subscription) { entity.root_ancestor.gitlab_subscription }
         let(:decorated_mock) { double(:decorated_mock) }
         let(:message_mock) { double(:message_mock) }
         let(:user) { double(:user_mock) }

@@ -33,6 +33,7 @@ export default (el, dashboardType) => {
     dashboardDocumentation: el.dataset.dashboardDocumentation,
     emptyStateSvgPath: el.dataset.emptyStateSvgPath,
     groupFullPath: el.dataset.groupFullPath,
+    projectFullPath: el.dataset.projectFullPath,
     securityConfigurationPath: el.dataset.securityConfigurationPath,
     surveyRequestSvgPath: el.dataset.surveyRequestSvgPath,
     securityDashboardHelpPath: el.dataset.securityDashboardHelpPath,

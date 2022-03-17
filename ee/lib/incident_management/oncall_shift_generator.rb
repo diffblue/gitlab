@@ -63,6 +63,7 @@ module IncidentManagement
     private
 
     attr_reader :rotation
+
     delegate :shift_cycle_duration, to: :rotation
 
     # Starting time of a shift which covers the timestamp.

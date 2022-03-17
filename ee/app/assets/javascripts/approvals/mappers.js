@@ -123,20 +123,3 @@ export const mergeRequestApprovalSettingsMappers = {
     allow_committer_approval: !settings.preventCommittersApproval.value,
   }),
 };
-
-export const projectApprovalsMappers = {
-  mapDataToState: (data) => ({
-    preventAuthorApproval: { value: !data.merge_requests_author_approval },
-    preventMrApprovalRuleEdit: { value: data.disable_overriding_approvers_per_merge_request },
-    requireUserPassword: { value: data.require_password_to_approve },
-    removeApprovalsOnPush: { value: data.reset_approvals_on_push },
-    preventCommittersApproval: { value: data.merge_requests_disable_committers_approval },
-  }),
-  mapStateToPayload: ({ settings }) => ({
-    merge_requests_author_approval: !settings.preventAuthorApproval.value,
-    disable_overriding_approvers_per_merge_request: settings.preventMrApprovalRuleEdit.value,
-    require_password_to_approve: settings.requireUserPassword.value,
-    reset_approvals_on_push: settings.removeApprovalsOnPush.value,
-    merge_requests_disable_committers_approval: settings.preventCommittersApproval.value,
-  }),
-};

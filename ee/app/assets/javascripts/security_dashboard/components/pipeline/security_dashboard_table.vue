@@ -1,5 +1,5 @@
 <script>
-import { GlCollapse, GlEmptyState, GlFormCheckbox } from '@gitlab/ui';
+import { GlAlert, GlCollapse, GlEmptyState, GlFormCheckbox } from '@gitlab/ui';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import Pagination from '~/vue_shared/components/pagination_links.vue';
 import SecurityDashboardTableRow from './security_dashboard_table_row.vue';
@@ -8,6 +8,7 @@ import SelectionSummary from './selection_summary_vuex.vue';
 export default {
   name: 'SecurityDashboardTable',
   components: {
+    GlAlert,
     GlCollapse,
     GlEmptyState,
     GlFormCheckbox,
@@ -88,17 +89,13 @@ export default {
       <div class="table-section section-20" role="rowheader"></div>
     </div>
 
-    <div class="flash-container">
-      <div v-if="dashboardListError" class="flash-alert">
-        <div class="flash-text container-fluid container-limited limit-container-width">
-          {{
-            s__(
-              'SecurityReports|Error fetching the vulnerability list. Please check your network connection and try again.',
-            )
-          }}
-        </div>
-      </div>
-    </div>
+    <gl-alert v-if="dashboardListError" variant="danger" :dismissible="false" class="gl-mt-3">
+      {{
+        s__(
+          'SecurityReports|Error fetching the vulnerability list. Please check your network connection and try again.',
+        )
+      }}
+    </gl-alert>
 
     <template v-if="isLoadingVulnerabilities || isDismissingVulnerabilities">
       <security-dashboard-table-row v-for="n in 10" :key="n" :is-loading="true" />

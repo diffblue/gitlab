@@ -8,7 +8,7 @@ RSpec.describe Projects::AutocompleteSourcesController do
   let_it_be(:project) { create(:project, :public, group: group) }
   let_it_be(:epic) { create(:epic, group: group) }
   let_it_be(:epic2) { create(:epic, group: group2) }
-  let_it_be(:vulnerability) { create(:vulnerability, project: project) }
+  let_it_be(:vulnerability) { create(:vulnerability, :with_finding, project: project) }
 
   before do
     sign_in(user)

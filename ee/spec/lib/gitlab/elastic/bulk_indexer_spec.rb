@@ -53,7 +53,7 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic, :clean_gitlab_redis_share
       indexer.process(issue_as_ref)
 
       expect(es_client).to have_received(:bulk) do |args|
-        body_bytesize = args[:body].map(&:bytesize).reduce(:+)
+        body_bytesize = args[:body].sum(&:bytesize)
         expect(body_bytesize).to be <= bulk_limit_bytes
       end
 
@@ -109,7 +109,7 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic, :clean_gitlab_redis_share
       indexer.process(issue_as_ref)
 
       expect(es_client).to have_received(:bulk) do |args|
-        body_bytesize = args[:body].map(&:bytesize).reduce(:+)
+        body_bytesize = args[:body].sum(&:bytesize)
         expect(body_bytesize).to be <= bulk_limit_bytes
       end
 

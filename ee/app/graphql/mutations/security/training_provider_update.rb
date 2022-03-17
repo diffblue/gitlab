@@ -45,7 +45,7 @@ module Mutations
         return unless training.provider
 
         training.provider.tap do |provider|
-          provider.assign_attributes(is_enabled: !training.destroyed?, is_primary: training.is_primary)
+          provider.assign_attributes(is_enabled: !training.destroyed?, is_primary: !training.destroyed? && training.is_primary)
         end
       end
     end

@@ -35,14 +35,14 @@ module Gitlab
         _(
           'Your subscription is now expired. To renew, export your license usage file and email it to ' \
           '%{renewal_service_email}. A new license will be emailed to the email address registered in the ' \
-          '%{customers_dot}. You can upload this license to your instance. To use Free tier, remove your ' \
+          '%{customers_dot}. You can add this license to your instance. To use Free tier, remove your ' \
           'current license.'
         ).html_safe % { renewal_service_email: renewal_service_email, customers_dot: customers_dot_url }
       else
         _(
           'To renew, export your license usage file and email it to %{renewal_service_email}. ' \
           'A new license will be emailed to the email address registered in the %{customers_dot}. ' \
-          'You can upload this license to your instance.'
+          'You can add this license to your instance.'
         ).html_safe % { renewal_service_email: renewal_service_email, customers_dot: customers_dot_url }
       end
     end

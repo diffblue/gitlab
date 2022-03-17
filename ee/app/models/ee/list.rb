@@ -67,7 +67,7 @@ module EE
       when 'milestone'
         milestone.title
       when 'iteration'
-        iteration.title
+        iteration.display_text
       else
         super
       end

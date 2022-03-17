@@ -373,6 +373,30 @@ module QA
         api_post_to(api_wikis_path, title: title, content: content)
       end
 
+      # Uses the API to wait until a pull mirroring update is successful (pull mirroring is treated as an import)
+      def wait_for_pull_mirroring
+        mirror_succeeded = Support::Retrier.retry_until(max_duration: 180, raise_on_failure: false, sleep_interval: 1) do
+          reload!
+          api_resource[:import_status] == "finished"
+        end
+
+        unless mirror_succeeded
+          raise "Mirroring failed with error: #{api_resource[:import_error]}"
+        end
+      end
+
+      def remove_via_api!
+        super
+
+        Support::Retrier.retry_until(max_duration: 60, sleep_interval: 1, message: "Waiting for #{self.class.name} to be removed") do
+          !exists?
+        rescue InternalServerError
+          # Retry on transient errors that are likely to be due to race conditions between concurrent delete operations
+          # when parts of a resource are stored in multiple tables
+          false
+        end
+      end
+
       protected
 
       # Return subset of fields for comparing projects

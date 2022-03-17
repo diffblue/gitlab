@@ -65,7 +65,7 @@ module EE
       entity = @project || @group
       return unless entity && entity.persisted?
 
-      subscription = entity.closest_gitlab_subscription
+      subscription = entity.root_ancestor.gitlab_subscription
 
       return unless subscription
 

@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Projects::Security::Vulnerabilities::NotesController do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project) }
-  let_it_be(:vulnerability) { create(:vulnerability, project: project) }
+  let_it_be(:vulnerability) { create(:vulnerability, :with_finding, project: project) }
 
   let!(:note) { create(:note, noteable: vulnerability, project: project) }
 

@@ -7,7 +7,7 @@ module QA
 
       def perform_before_hooks
         # Without a license, perform the CE before hooks only.
-        unless ENV['EE_LICENSE']
+        unless ENV['EE_LICENSE'].present?
           QA::CE::Strategy.perform_before_hooks
           return
         end

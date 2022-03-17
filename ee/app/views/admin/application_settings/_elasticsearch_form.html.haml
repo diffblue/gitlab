@@ -21,12 +21,11 @@
           .gl-card-body
             - halted_migrations = elasticsearch_available && Elastic::DataMigrationService.halted_migrations?
             - if halted_migrations
-              .gl-alert.gl-alert-warning.gl-mt-3.gl-mb-3{ role: 'alert' }
-                = sprite_icon('warning', css_class: 'gl-icon gl-alert-icon gl-alert-icon-no-title')
-                %button.js-close.gl-alert-dismiss{ type: 'button', 'aria-label' => _('Dismiss') }
-                  = sprite_icon('close', css_class: 'gl-icon')
+              = render 'shared/global_alert',
+                variant: :warning,
+                title: _('Elasticsearch migration halted'),
+                alert_class: 'gl-my-3' do
                 .gl-alert-body
-                  %h4.gl-alert-title= _('Elasticsearch migration halted')
                   = html_escape_once(_('Check the %{code_open}elasticsearch.log%{code_close} file to debug why the migration halted and make any changes before retrying the migration. When you fix the cause of the failure, select %{strong_open}Retry migration%{strong_close}, and the migration is scheduled to retry in the background.')) % { strong_open: '<strong>'.html_safe, strong_close: '</strong>'.html_safe, code_open: '<code>'.html_safe, code_close: '</code>'.html_safe }
                   = link_to _('Learn more.'), help_page_path('integration/elasticsearch', anchor: 'advanced-search-migrations')
                 .gl-alert-actions

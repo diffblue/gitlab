@@ -34,6 +34,40 @@ RSpec.describe Geo::ReplicableModel do
     let(:replicator_class) { Geo::DummyReplicator }
   end
 
+  describe 'after_create_commit hook' do
+    context 'when the replicator raises an error' do
+      let(:error) { StandardError.new("testing error") }
+
+      before do
+        expect_next_instance_of(Geo::DummyReplicator) do |instance|
+          expect(instance).to receive(:handle_after_create_commit).and_raise(error)
+        end
+      end
+
+      it 'saves the model' do
+        expect { subject.save! }.to change { DummyModel.count }.by(1)
+      end
+    end
+  end
+
+  describe 'after_destroy hook' do
+    context 'when the replicator raises an error' do
+      let(:error) { StandardError.new("testing error") }
+
+      before do
+        expect_next_instance_of(Geo::DummyReplicator) do |instance|
+          expect(instance).to receive(:handle_after_destroy).and_raise(error)
+        end
+      end
+
+      it 'destroys the model' do
+        subject.save!
+
+        expect { subject.destroy! }.to change { DummyModel.count }.by(-1)
+      end
+    end
+  end
+
   describe '.verifiables' do
     context 'when the model can be filtered by locally stored files' do
       it 'filters by locally stored files' do

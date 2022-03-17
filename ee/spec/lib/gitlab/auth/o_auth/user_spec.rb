@@ -44,5 +44,66 @@ RSpec.describe Gitlab::Auth::OAuth::User do
 
       expect(gl_user.email).to eq(real_email)
     end
+
+    describe '#save' do
+      let(:user) { build(:omniauth_user, :blocked_pending_approval) }
+
+      before do
+        allow(oauth_user).to receive(:gl_user).and_return(user)
+      end
+
+      subject(:save_user) { oauth_user.save } # rubocop: disable Rails/SaveBang
+
+      describe '#activate_user_if_user_cap_not_reached' do
+        context 'when a user can be activated based on user cap' do
+          before do
+            allow(user).to receive(:activate_based_on_user_cap?).and_return(true)
+          end
+
+          context 'when the user cap has not been reached yet' do
+            it 'activates the user' do
+              allow(::User).to receive(:user_cap_reached?).and_return(false)
+              expect(oauth_user).to receive(:log_user_changes).with(
+                user, 'OAuth', 'user cap not reached yet, unblocking'
+              )
+
+              expect do
+                save_user
+                user.reload
+              end.to change { user.state }.from('blocked_pending_approval').to('active')
+            end
+          end
+
+          context 'when the user cap has been reached' do
+            it 'leaves the user as blocked' do
+              allow(::User).to receive(:user_cap_reached?).and_return(true)
+              expect(oauth_user).not_to receive(:log_user_changes)
+
+              expect do
+                save_user
+                user.reload
+              end.not_to change { user.state }
+              expect(user.state).to eq('blocked_pending_approval')
+            end
+          end
+        end
+
+        context 'when a user cannot be activated based on user cap' do
+          before do
+            allow(user).to receive(:activate_based_on_user_cap?).and_return(false)
+          end
+
+          it 'leaves the user as blocked' do
+            expect(oauth_user).not_to receive(:log_user_changes)
+
+            expect do
+              save_user
+              user.reload
+            end.not_to change { user.state }
+            expect(user.state).to eq('blocked_pending_approval')
+          end
+        end
+      end
+    end
   end
 end

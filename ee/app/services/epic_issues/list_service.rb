@@ -24,7 +24,7 @@ module EpicIssues
     def serializer_options
       child_issues_ids = child_issuables.map(&:id)
 
-      blocked_issues_ids = ::IssueLink.blocked_issue_ids(child_issues_ids)
+      blocked_issues_ids = ::IssueLink.blocked_issuable_ids(child_issues_ids)
 
       super.merge(blocked_issues_ids: blocked_issues_ids)
     end

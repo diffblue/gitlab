@@ -7,7 +7,7 @@ class AdjournedGroupDeletionWorker # rubocop:disable Scalability/IdempotentWorke
 
   include CronjobQueue
 
-  INTERVAL = 10.seconds.to_i
+  INTERVAL = 20.seconds.to_i
 
   feature_category :compliance_management
 

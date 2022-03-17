@@ -2,7 +2,14 @@ import {
   FiltersInfo as FiltersInfoCE,
   formatIssueInput as formatIssueInputCe,
 } from '~/boards/boards_util';
-import { getIdFromGraphQLId, isGid } from '~/graphql_shared/utils';
+import {
+  TYPE_EPIC_BOARD,
+  TYPE_ITERATION,
+  TYPE_EPIC,
+  TYPE_MILESTONE,
+  TYPE_USER,
+} from '~/graphql_shared/constants';
+import { getIdFromGraphQLId, convertToGraphQLId } from '~/graphql_shared/utils';
 import { objectToQuery, queryToObject } from '~/lib/utils/url_utility';
 import {
   EPIC_LANE_BASE_HEIGHT,
@@ -31,20 +38,16 @@ export function getMilestone({ milestone }) {
 }
 
 export function fullEpicId(epicId) {
-  return `gid://gitlab/Epic/${epicId}`;
+  return convertToGraphQLId(TYPE_EPIC, epicId);
 }
 
 export function fullMilestoneId(milestoneId) {
-  return `gid://gitlab/Milestone/${milestoneId}`;
+  return convertToGraphQLId(TYPE_MILESTONE, milestoneId);
 }
 
 function fullIterationId(id) {
   if (!id) {
     return null;
-  }
-
-  if (isGid(id)) {
-    return id;
   }
 
   if (id === IterationIDs.CURRENT) {
@@ -55,7 +58,7 @@ function fullIterationId(id) {
     return 'UPCOMING';
   }
 
-  return `gid://gitlab/Iteration/${id}`;
+  return convertToGraphQLId(TYPE_ITERATION, id);
 }
 
 function fullIterationCadenceId(id) {
@@ -67,11 +70,11 @@ function fullIterationCadenceId(id) {
 }
 
 export function fullUserId(userId) {
-  return `gid://gitlab/User/${userId}`;
+  return convertToGraphQLId(TYPE_USER, userId);
 }
 
 export function fullEpicBoardId(epicBoardId) {
-  return `gid://gitlab/Boards::EpicBoard/${epicBoardId}`;
+  return convertToGraphQLId(TYPE_EPIC_BOARD, epicBoardId);
 }
 
 export function calculateSwimlanesBufferSize(listTopCoordinate) {
@@ -209,7 +212,7 @@ export function transformBoardConfig(boardConfig) {
   let updatedFilterPath = objectToQuery(updatedBoardConfig);
   const filterPath = updatedFilterPath ? updatedFilterPath.split('&') : [];
 
-  boardConfig.labels.forEach((label) => {
+  boardConfig.labels?.forEach((label) => {
     const labelTitle = encodeURIComponent(label.title);
     const param = `label_name[]=${labelTitle}`;
 

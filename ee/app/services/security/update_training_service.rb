@@ -8,6 +8,8 @@ module Security
     end
 
     def execute
+      return error('Updating security training failed! Provider not found.') unless provider
+
       delete? ? delete_training : upsert_training
 
       service_response
@@ -36,7 +38,10 @@ module Security
     end
 
     def provider
-      @provider ||= GlobalID::Locator.locate(params[:provider_id])
+      @provider ||= begin
+        GlobalID::Locator.locate(params[:provider_id])
+      rescue ActiveRecord::RecordNotFound
+      end
     end
 
     def service_response

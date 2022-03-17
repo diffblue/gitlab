@@ -39,6 +39,7 @@ function parseDatasetToProps(data) {
   const {
     showActive,
     activated,
+    activateDisabled,
     editable,
     canTest,
     commitEvents,
@@ -54,6 +55,7 @@ function parseDatasetToProps(data) {
   return {
     initialActivated: activated,
     showActive,
+    activateDisabled,
     type,
     cancelPath,
     editable,
@@ -116,13 +118,13 @@ export default function initIntegrationSettingsForm() {
 
   return new Vue({
     el: customSettingsEl,
+    name: 'IntegrationEditRoot',
     store: createStore(initialState),
+    provide: {
+      helpHtml,
+    },
     render(createElement) {
-      return createElement(IntegrationForm, {
-        props: {
-          helpHtml,
-        },
-      });
+      return createElement(IntegrationForm);
     },
   });
 }

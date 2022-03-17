@@ -13,6 +13,7 @@ describe('Vulnerability Report', () => {
     const el = document.createElement('div');
     const elDataSet = {
       vulnerability: JSON.stringify(mockVulnerability),
+      projectFullPath: 'namespace/project',
     };
 
     Object.assign(el.dataset, {

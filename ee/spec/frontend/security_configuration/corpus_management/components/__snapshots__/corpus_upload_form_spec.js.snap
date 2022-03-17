@@ -11,7 +11,7 @@ exports[`Corpus upload modal corpus modal uploading state does show the upload p
   >
     <span
       aria-label="Loading"
-      class="align-text-bottom gl-spinner gl-spinner-dark gl-spinner-sm"
+      class="gl-vertical-align-text-bottom! gl-spinner gl-spinner-dark gl-spinner-sm"
     />
   </span>
   

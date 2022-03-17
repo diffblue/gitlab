@@ -31,6 +31,11 @@ module EE
 
       has_many :ci_minutes_additional_packs, class_name: "Ci::Minutes::AdditionalPack"
 
+      has_one :security_orchestration_policy_configuration,
+              class_name: 'Security::OrchestrationPolicyConfiguration',
+              foreign_key: :namespace_id,
+              inverse_of: :namespace
+
       accepts_nested_attributes_for :gitlab_subscription, update_only: true
       accepts_nested_attributes_for :namespace_limit
 
@@ -64,7 +69,7 @@ module EE
       end
 
       scope :with_feature_available_in_plan, -> (feature) do
-        plans = plans_with_feature(feature)
+        plans = GitlabSubscriptions::Features.saas_plans_with_feature(feature)
         matcher = ::Plan.where(name: plans)
           .joins(:hosted_subscriptions)
           .where("gitlab_subscriptions.namespace_id = namespaces.id")
@@ -135,14 +140,6 @@ module EE
       limit.presence || build_namespace_limit
     end
 
-    class_methods do
-      extend ::Gitlab::Utils::Override
-
-      def plans_with_feature(feature)
-        LICENSE_PLANS_TO_NAMESPACE_PLANS.values_at(*License.plans_with_feature(feature)).flatten
-      end
-    end
-
     override :move_dir
     def move_dir
       succeeded = super
@@ -181,7 +178,7 @@ module EE
     def feature_available_in_plan?(feature)
       available_features = strong_memoize(:features_available_in_plan) do
         Hash.new do |h, f|
-          h[f] = (plans.map(&:name) & self.class.plans_with_feature(f)).any?
+          h[f] = (plans.map(&:name) & GitlabSubscriptions::Features.saas_plans_with_feature(f)).any?
         end
       end
 
@@ -202,16 +199,6 @@ module EE
         else
           subscription = gitlab_subscription || generate_subscription
           hosted_plan_for(subscription) || ::Plan.free
-        end
-      end
-    end
-
-    def closest_gitlab_subscription
-      strong_memoize(:closest_gitlab_subscription) do
-        if parent_id
-          root_ancestor.gitlab_subscription
-        else
-          gitlab_subscription
         end
       end
     end
@@ -282,11 +269,7 @@ module EE
     end
 
     def any_project_with_shared_runners_enabled?
-      if ::Feature.enabled?(:cache_shared_runners_enabled, self, default_enabled: :yaml)
-        Rails.cache.fetch([self, :has_project_with_shared_runners_enabled], expires_in: 5.minutes) do
-          any_project_with_shared_runners_enabled_with_cte?
-        end
-      else
+      Rails.cache.fetch([self, :has_project_with_shared_runners_enabled], expires_in: 5.minutes) do
         any_project_with_shared_runners_enabled_with_cte?
       end
     end
@@ -303,6 +286,21 @@ module EE
         else
           ::Plan.hosted_plans_for_namespaces(self)
         end
+    end
+
+    def has_free_or_no_subscription?
+      # this is a side-effect free version of checking if a namespace
+      # is on a free plan or has no plan - see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/80839#note_851566461
+      strong_memoize(:has_free_or_no_subscription) do
+        subscription = root_ancestor.gitlab_subscription
+
+        # there is a chance that subscriptions do not have a plan https://gitlab.com/gitlab-org/gitlab/-/merge_requests/81432#note_858514873
+        if subscription&.plan_name
+          subscription.plan_name == ::Plan::FREE
+        else
+          true
+        end
+      end
     end
 
     # When a purchasing a GL.com plan for a User namespace
@@ -325,6 +323,10 @@ module EE
         shared_group_user_ids: [],
         shared_project_user_ids: []
       }
+    end
+
+    def free_plan_members_count
+      free_plan_user_ids.count
     end
 
     def eligible_for_trial?
@@ -462,7 +464,49 @@ module EE
       ::Feature.enabled?(:saas_user_caps, root_ancestor, default_enabled: :yaml)
     end
 
+    def apply_free_user_cap?
+      return false unless ::Gitlab.com?
+      return false unless has_free_or_no_subscription?
+
+      ::Feature.enabled?(:free_user_cap, root_ancestor, default_enabled: :yaml)
+    end
+
+    def apply_user_cap?
+      user_cap_available? || apply_free_user_cap?
+    end
+
+    def free_user_cap_reached?
+      return false unless apply_free_user_cap?
+
+      members_count = root_ancestor.free_plan_members_count
+      return false unless members_count
+
+      ::Plan::FREE_USER_LIMIT <= members_count
+    end
+
+    def user_limit_reached?(use_cache: false)
+      free_user_cap_reached?
+    end
+
+    def free_plan_user_ids
+      strong_memoize(:free_plan_user_ids) do
+        billed_users.pluck(:id)
+      end
+    end
+
     private
+
+    # Members belonging directly to Projects within user/project namespaces
+    def billed_users
+      # this will include the namespace owner(user namespace) as well
+      members = ::ProjectMember.without_invites_and_requests.where(source_id: ::Project.in_namespace(self))
+
+      users_without_project_bots(members).with_state(:active)
+    end
+
+    def users_without_project_bots(members)
+      ::User.id_in(members.distinct.select(:user_id)).without_project_bot
+    end
 
     def any_project_with_shared_runners_enabled_with_cte?
       projects_query = if user_namespace?

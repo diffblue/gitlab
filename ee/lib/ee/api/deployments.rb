@@ -17,11 +17,12 @@ module EE
           params do
             requires :deployment_id, type: String, desc: 'The Deployment ID'
             requires :status, type: String, values: ::Deployments::Approval.statuses.keys
+            optional :comment, type: String, desc: 'A comment to go with the approval'
           end
           post ':id/deployments/:deployment_id/approval' do
             deployment = user_project.deployments.find(params[:deployment_id])
 
-            result = ::Deployments::ApprovalService.new(user_project, current_user)
+            result = ::Deployments::ApprovalService.new(user_project, current_user, declared_params(include_missing: false))
                                                    .execute(deployment, params[:status])
 
             if result[:status] == :success

@@ -10,6 +10,9 @@ module Registrations
     skip_before_action :require_verification, only: :new
     before_action :set_requires_verification, only: :new, if: -> { helpers.require_verification_experiment.candidate? }
     before_action :require_verification, only: [:create, :import], if: -> { current_user.requires_credit_card_verification }
+    before_action only: [:new] do
+      push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
+    end
 
     layout 'minimal'
 

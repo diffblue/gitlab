@@ -9,11 +9,12 @@ class Clusters::ClustersController < Clusters::BaseController
   before_action :generate_gcp_authorize_url, only: [:new]
   before_action :validate_gcp_token, only: [:new]
   before_action :gcp_cluster, only: [:new]
-  before_action :user_cluster, only: [:new]
+  before_action :user_cluster, only: [:new, :connect]
   before_action :authorize_read_cluster!, only: [:show, :index]
-  before_action :authorize_create_cluster!, only: [:new, :authorize_aws_role]
+  before_action :authorize_create_cluster!, only: [:new, :connect, :authorize_aws_role]
   before_action :authorize_update_cluster!, only: [:update]
   before_action :update_applications_status, only: [:cluster_status]
+  before_action :ensure_feature_enabled!, except: :index
 
   helper_method :token_in_session
 
@@ -151,7 +152,7 @@ class Clusters::ClustersController < Clusters::BaseController
       validate_gcp_token
       gcp_cluster
 
-      render :new, locals: { active_tab: 'add' }
+      render :connect
     end
   end
 
@@ -172,7 +173,17 @@ class Clusters::ClustersController < Clusters::BaseController
 
   private
 
+  def certificate_based_clusters_enabled?
+    Feature.enabled?(:certificate_based_clusters, clusterable, default_enabled: :yaml, type: :ops)
+  end
+
+  def ensure_feature_enabled!
+    render_404 unless certificate_based_clusters_enabled?
+  end
+
   def cluster_list
+    return [] unless certificate_based_clusters_enabled?
+
     finder = ClusterAncestorsFinder.new(clusterable.subject, current_user)
     clusters = finder.execute
 

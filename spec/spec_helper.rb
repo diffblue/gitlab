@@ -199,6 +199,7 @@ RSpec.configure do |config|
   config.include SidekiqMiddleware
   config.include StubActionCableConnection, type: :channel
   config.include StubSpamServices
+  config.include RSpec::Benchmark::Matchers, type: :benchmark
 
   include StubFeatureFlags
 
@@ -457,11 +458,6 @@ RSpec.configure do |config|
     end
   end
 
-  # Allows stdout to be redirected to reduce noise
-  config.before(:each, :silence_stdout) do
-    $stdout = StringIO.new
-  end
-
   # Makes diffs show entire non-truncated values.
   config.before(:each, unlimited_max_formatted_output_length: true) do |_example|
     config.expect_with :rspec do |c|
@@ -472,10 +468,6 @@ RSpec.configure do |config|
   # Ensures that any Javascript script that tries to make the external VersionCheck API call skips it and returns a response
   config.before(:each, :js) do
     allow_any_instance_of(VersionCheck).to receive(:response).and_return({ "severity" => "success" })
-  end
-
-  config.after(:each, :silence_stdout) do
-    $stdout = STDOUT
   end
 
   config.disable_monkey_patching!

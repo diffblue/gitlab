@@ -1,6 +1,7 @@
 export { fromYaml } from './from_yaml';
 export { toYaml } from './to_yaml';
 export { buildRule } from './rules';
+export { approversOutOfSync } from './actions';
 export * from './humanize';
 
 export const DEFAULT_SCAN_RESULT_POLICY = `type: scan_result_policy

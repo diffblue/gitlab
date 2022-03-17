@@ -13,8 +13,7 @@ require_relative '../lib/gitlab/utils'
 require_relative '../lib/gitlab/sidekiq_config/cli_methods'
 require_relative '../lib/gitlab/sidekiq_config/worker_matcher'
 require_relative '../lib/gitlab/sidekiq_logging/json_formatter'
-require_relative '../lib/gitlab/process_management'
-require_relative '../lib/gitlab/process_supervisor'
+require_relative '../metrics_server/dependencies'
 require_relative '../metrics_server/metrics_server'
 require_relative 'sidekiq_cluster'
 
@@ -121,11 +120,12 @@ module Gitlab
 
         ProcessManagement.write_pid(@pid) if @pid
 
-        supervisor = Gitlab::ProcessSupervisor.new(
+        supervisor = SidekiqProcessSupervisor.instance(
           health_check_interval_seconds: @interval,
           terminate_timeout_seconds: @soft_timeout_seconds + TIMEOUT_GRACE_PERIOD_SECONDS,
           term_signals: TERMINATE_SIGNALS,
-          forwarded_signals: FORWARD_SIGNALS
+          forwarded_signals: FORWARD_SIGNALS,
+          synchronous: true
         )
 
         metrics_server_pid = start_metrics_server
@@ -136,7 +136,7 @@ module Gitlab
           # If we're not in the process of shutting down the cluster,
           # and the metrics server died, restart it.
           if supervisor.alive && dead_pids.include?(metrics_server_pid)
-            @logger.info('Metrics server terminated, restarting...')
+            @logger.info('Sidekiq metrics server terminated, restarting...')
             metrics_server_pid = restart_metrics_server(wipe_metrics_dir: false)
             all_pids = worker_pids + Array(metrics_server_pid)
           else

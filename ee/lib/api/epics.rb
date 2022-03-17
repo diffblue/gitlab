@@ -91,6 +91,7 @@ module API
       params do
         requires :title, type: String, desc: 'The title of an epic'
         optional :description, type: String, desc: 'The description of an epic'
+        optional :color, type: String, desc: 'The color of an epic'
         optional :confidential, type: Boolean, desc: 'Indicates if the epic is confidential'
         optional :created_at, type: DateTime, desc: 'Date time when the epic was created. Available only for admins and project owners.'
         optional :start_date, as: :start_date_fixed, type: String, desc: 'The start date of an epic'
@@ -105,6 +106,7 @@ module API
 
         # Setting created_at is allowed only for admins and owners
         params.delete(:created_at) unless current_user.can?(:set_epic_created_at, user_group)
+        params.delete(:color) unless Feature.enabled?(:epic_color_highlight)
 
         epic = ::Epics::CreateService.new(group: user_group, current_user: current_user, params: declared_params(include_missing: false)).execute
         if epic.valid?
@@ -120,6 +122,7 @@ module API
       params do
         requires :epic_iid, type: Integer, desc: 'The internal ID of an epic'
         optional :title, type: String, desc: 'The title of an epic'
+        optional :color, type: String, desc: 'The color of an epic'
         optional :description, type: String, desc: 'The description of an epic'
         optional :confidential, type: Boolean, desc: 'Indicates if the epic is confidential'
         optional :updated_at, type: DateTime, desc: 'Date time when the epic was updated. Available only for admins and project owners.'
@@ -132,13 +135,14 @@ module API
         optional :remove_labels, type: Array[String], coerce_with: Validations::Types::CommaSeparatedToArray.coerce, desc: 'Comma-separated list of label names'
         optional :state_event, type: String, values: %w[reopen close], desc: 'State event for an epic'
         optional :parent_id, type: Integer, desc: 'The id of a parent epic'
-        at_least_one_of :title, :description, :start_date_fixed, :start_date_is_fixed, :due_date_fixed, :due_date_is_fixed, :labels, :add_labels, :remove_labels, :state_event, :confidential, :parent_id
+        at_least_one_of :add_labels, :color, :confidential, :description, :due_date_fixed, :due_date_is_fixed, :labels, :parent_id, :remove_labels, :start_date_fixed, :start_date_is_fixed, :state_event, :title
       end
       put ':id/(-/)epics/:epic_iid' do
         authorize_can_admin_epic!
 
         # Setting updated_at is allowed only for admins and owners
         params.delete(:updated_at) unless current_user.can?(:set_epic_updated_at, user_group)
+        params.delete(:color) unless Feature.enabled?(:epic_color_highlight)
 
         update_params = declared_params(include_missing: false)
         update_params.delete(:epic_iid)

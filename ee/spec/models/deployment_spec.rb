@@ -69,6 +69,17 @@ RSpec.describe Deployment do
           expect(deployment.pending_approval_count).to eq(0)
         end
       end
+
+      context 'loading approval count' do
+        before do
+          deployment.environment.required_approval_count
+          deployment.approvals.to_a
+        end
+
+        it 'does not perform an extra query when approvals are loaded', :request_store do
+          expect { deployment.pending_approval_count }.not_to exceed_query_limit(0)
+        end
+      end
     end
 
     context 'when Protected Environments feature is not available' do

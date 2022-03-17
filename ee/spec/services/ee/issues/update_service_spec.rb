@@ -475,6 +475,8 @@ RSpec.describe Issues::UpdateService do
         it 'triggers side-effects' do
           expect(escalation_update_class).to receive(:new).with(issue, user, status_change_reason: nil).and_return(service_double)
           expect(service_double).to receive(:execute)
+          expect(project).to receive(:execute_hooks).with(an_instance_of(Hash), :issue_hooks)
+          expect(project).to receive(:execute_integrations).with(an_instance_of(Hash), :issue_hooks)
 
           update_issue(opts)
         end
@@ -486,7 +488,8 @@ RSpec.describe Issues::UpdateService do
         end
 
         it 'does not trigger side-effects' do
-          expect(escalation_update_class).not_to receive(:new)
+          expect(project).not_to receive(:execute_hooks)
+          expect(project).not_to receive(:execute_integrations)
 
           update_issue(opts)
         end

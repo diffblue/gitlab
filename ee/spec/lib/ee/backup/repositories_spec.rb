@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe Backup::Repositories do
   let(:progress) { spy(:stdout) }
   let(:strategy) { spy(:strategy) }
+  let(:destination) { 'repositories' }
 
   subject { described_class.new(progress, max_concurrency: 1, max_storage_concurrency: 1, strategy: strategy) }
 
@@ -16,9 +17,9 @@ RSpec.describe Backup::Repositories do
       it 'calls enqueue for each repository type', :aggregate_failures do
         create(:wiki_page, container: group)
 
-        subject.dump
+        subject.dump(destination)
 
-        expect(strategy).to have_received(:start).with(:create)
+        expect(strategy).to have_received(:start).with(:create, destination)
         expect(strategy).to have_received(:enqueue).with(project, Gitlab::GlRepository::PROJECT)
         expect(strategy).to have_received(:enqueue).with(group, Gitlab::GlRepository::WIKI)
         expect(strategy).to have_received(:finish!)
@@ -31,38 +32,38 @@ RSpec.describe Backup::Repositories do
       it 'creates the expected number of threads' do
         expect(Thread).not_to receive(:new)
 
-        expect(strategy).to receive(:start).with(:create)
+        expect(strategy).to receive(:start).with(:create, destination)
         groups.each do |group|
           expect(strategy).to receive(:enqueue).with(group, Gitlab::GlRepository::WIKI)
         end
         expect(strategy).to receive(:finish!)
 
-        subject.dump
+        subject.dump(destination)
       end
 
       describe 'command failure' do
         it 'enqueue_group raises an error' do
           allow(strategy).to receive(:enqueue).with(anything, Gitlab::GlRepository::WIKI).and_raise(IOError)
 
-          expect { subject.dump }.to raise_error(IOError)
+          expect { subject.dump(destination) }.to raise_error(IOError)
         end
 
         it 'group query raises an error' do
           allow(Group).to receive_message_chain(:includes, :find_each).and_raise(ActiveRecord::StatementTimeout)
 
-          expect { subject.dump }.to raise_error(ActiveRecord::StatementTimeout)
+          expect { subject.dump(destination) }.to raise_error(ActiveRecord::StatementTimeout)
         end
       end
 
       it 'avoids N+1 database queries' do
         control_count = ActiveRecord::QueryRecorder.new do
-          subject.dump
+          subject.dump(destination)
         end.count
 
         create_list(:group, 2, :wiki_repo)
 
         expect do
-          subject.dump
+          subject.dump(destination)
         end.not_to exceed_query_limit(control_count)
       end
     end
@@ -73,9 +74,9 @@ RSpec.describe Backup::Repositories do
     let_it_be(:group) { create(:group) }
 
     it 'calls enqueue for each repository type', :aggregate_failures do
-      subject.restore
+      subject.restore(destination)
 
-      expect(strategy).to have_received(:start).with(:restore)
+      expect(strategy).to have_received(:start).with(:restore, destination)
       expect(strategy).to have_received(:enqueue).with(project, Gitlab::GlRepository::PROJECT)
       expect(strategy).to have_received(:enqueue).with(group, Gitlab::GlRepository::WIKI)
       expect(strategy).to have_received(:finish!)

@@ -18,8 +18,7 @@ module EE
       private
 
       def compliance_violations_enabled?(group)
-        ::Feature.enabled?(:compliance_violations_graphql_type, group, default_enabled: :yaml) &&
-          group.licensed_feature_available?(:group_level_compliance_dashboard)
+        group.licensed_feature_available?(:group_level_compliance_dashboard)
       end
     end
   end

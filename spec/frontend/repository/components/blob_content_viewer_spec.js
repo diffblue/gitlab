@@ -1,5 +1,6 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
+import Vuex from 'vuex';
 import Vue, { nextTick } from 'vue';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -17,13 +18,19 @@ import DownloadViewer from '~/repository/components/blob_viewers/download_viewer
 import EmptyViewer from '~/repository/components/blob_viewers/empty_viewer.vue';
 import SourceViewer from '~/vue_shared/components/source_viewer/source_viewer.vue';
 import blobInfoQuery from '~/repository/queries/blob_info.query.graphql';
+import userInfoQuery from '~/repository/queries/user_info.query.graphql';
+import applicationInfoQuery from '~/repository/queries/application_info.query.graphql';
+import CodeIntelligence from '~/code_navigation/components/app.vue';
 import { redirectTo } from '~/lib/utils/url_utility';
 import { isLoggedIn } from '~/lib/utils/common_utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import httpStatusCodes from '~/lib/utils/http_status';
 import {
   simpleViewerMock,
   richViewerMock,
   projectMock,
+  userInfoMock,
+  applicationInfoMock,
   userPermissionsMock,
   propsMock,
   refMock,
@@ -35,8 +42,13 @@ jest.mock('~/lib/utils/common_utils');
 
 let wrapper;
 let mockResolver;
+let userInfoMockResolver;
+let applicationInfoMockResolver;
 
 const mockAxios = new MockAdapter(axios);
+
+const createMockStore = () =>
+  new Vuex.Store({ actions: { fetchData: jest.fn, setInitialData: jest.fn() } });
 
 const createComponent = async (mockData = {}, mountFn = shallowMount) => {
   Vue.use(VueApollo);
@@ -71,10 +83,23 @@ const createComponent = async (mockData = {}, mountFn = shallowMount) => {
     data: { isBinary, project },
   });
 
-  const fakeApollo = createMockApollo([[blobInfoQuery, mockResolver]]);
+  userInfoMockResolver = jest.fn().mockResolvedValue({
+    data: { ...userInfoMock },
+  });
+
+  applicationInfoMockResolver = jest.fn().mockResolvedValue({
+    data: { ...applicationInfoMock },
+  });
+
+  const fakeApollo = createMockApollo([
+    [blobInfoQuery, mockResolver],
+    [userInfoQuery, userInfoMockResolver],
+    [applicationInfoQuery, applicationInfoMockResolver],
+  ]);
 
   wrapper = extendedWrapper(
     mountFn(BlobContentViewer, {
+      store: createMockStore(),
       apolloProvider: fakeApollo,
       propsData: propsMock,
       mixins: [{ data: () => ({ ref: refMock }) }],
@@ -96,16 +121,21 @@ const createComponent = async (mockData = {}, mountFn = shallowMount) => {
   await waitForPromises();
 };
 
+const execImmediately = (callback) => {
+  callback();
+};
+
 describe('Blob content viewer component', () => {
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findBlobHeader = () => wrapper.findComponent(BlobHeader);
   const findWebIdeLink = () => wrapper.findComponent(WebIdeLink);
-  const findPipelineEditor = () => wrapper.findByTestId('pipeline-editor');
   const findBlobContent = () => wrapper.findComponent(BlobContent);
   const findBlobButtonGroup = () => wrapper.findComponent(BlobButtonGroup);
   const findForkSuggestion = () => wrapper.findComponent(ForkSuggestion);
+  const findCodeIntelligence = () => wrapper.findComponent(CodeIntelligence);
 
   beforeEach(() => {
+    jest.spyOn(window, 'requestIdleCallback').mockImplementation(execImmediately);
     isLoggedIn.mockReturnValue(true);
   });
 
@@ -219,6 +249,26 @@ describe('Blob content viewer component', () => {
       loadViewer.mockRestore();
     });
 
+    it('renders a CodeIntelligence component with the correct props', async () => {
+      loadViewer.mockReturnValue(SourceViewer);
+
+      await createComponent();
+
+      expect(findCodeIntelligence().props()).toMatchObject({
+        codeNavigationPath: simpleViewerMock.codeNavigationPath,
+        blobPath: simpleViewerMock.path,
+        pathPrefix: simpleViewerMock.projectBlobPathRoot,
+      });
+    });
+
+    it('does not load a CodeIntelligence component when no viewers are loaded', async () => {
+      const url = 'some_file.js?format=json&viewer=rich';
+      mockAxios.onGet(url).replyOnce(httpStatusCodes.INTERNAL_SERVER_ERROR);
+      await createComponent({ blob: { ...richViewerMock, fileType: 'unknown' } });
+
+      expect(findCodeIntelligence().exists()).toBe(false);
+    });
+
     it('does not render a BlobContent component if a Blob viewer is available', async () => {
       loadViewer.mockReturnValue(() => true);
       await createComponent({ blob: richViewerMock });
@@ -262,6 +312,13 @@ describe('Blob content viewer component', () => {
         editUrl: editBlobPath,
         webIdeUrl: ideEditPath,
         showEditButton: true,
+        showGitpodButton: applicationInfoMock.gitpodEnabled,
+        gitpodEnabled: userInfoMock.currentUser.gitpodEnabled,
+        showPipelineEditorButton: true,
+        gitpodUrl: simpleViewerMock.gitpodBlobUrl,
+        pipelineEditorUrl: simpleViewerMock.pipelineEditorPath,
+        userPreferencesGitpodPath: userInfoMock.currentUser.preferencesGitpodPath,
+        userProfileEnableGitpodPath: userInfoMock.currentUser.profileEnableGitpodPath,
       });
     });
 
@@ -283,15 +340,6 @@ describe('Blob content viewer component', () => {
         webIdeUrl: ideEditPath,
         showEditButton: false,
       });
-    });
-
-    it('renders Pipeline Editor button for .gitlab-ci files', async () => {
-      const pipelineEditorPath = 'some/path/.gitlab-ce';
-      const blob = { ...simpleViewerMock, pipelineEditorPath };
-      await createComponent({ blob, inject: { BlobContent: true, BlobReplace: true } }, mount);
-
-      expect(findPipelineEditor().exists()).toBe(true);
-      expect(findPipelineEditor().attributes('href')).toBe(pipelineEditorPath);
     });
 
     describe('blob header binary file', () => {

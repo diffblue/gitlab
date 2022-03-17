@@ -7,7 +7,7 @@ module EE
       extend ::Gitlab::Utils::Override
 
       prepended do
-        before_action :check_membership_lock!, only: [:create, :import, :apply_import]
+        before_action :check_membership_lock!, only: [:import, :apply_import]
       end
 
       def check_membership_lock!

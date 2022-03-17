@@ -1,0 +1,5 @@
+<%= s_('NamespaceStorage|%{name}(%{url}) namespace has %{percent} or less namespace storage space remaining.') % { name: @namespace.name, url: @usage_quotas_url, percent: "#{@percentage_of_available_storage}%" }%>
+
+<%= s_('NamespaceStorage|We recommend that you buy additional storage to ensure your service is not interrupted.') %>
+
+<%= s_('NamespaceStorage|Buy more storage') %> → <%= @buy_storage_url %>

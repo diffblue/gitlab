@@ -73,7 +73,9 @@ module QA
                         test_merge_train:
                           tags:
                             - #{executor}
-                          script: echo 'OK!'
+                          script:
+                          - sleep 10
+                          - echo 'OK!'
                           only:
                             - merge_requests
                       YAML

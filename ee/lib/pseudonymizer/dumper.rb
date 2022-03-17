@@ -77,6 +77,9 @@ module Pseudonymizer
       end.lazy
     end
 
+    # Disable rubocop Database/MultipleDatabases cop until Pseudonymizer is removed
+    # See https://gitlab.com/gitlab-org/gitlab/-/issues/350190
+    # rubocop:disable Database/MultipleDatabases
     def table_to_schema(table)
       table_config = @config.dig(:tables, table)
 
@@ -97,6 +100,7 @@ module Pseudonymizer
 
       set_schema_column_types(table, type_results)
     end
+    # rubocop:enable Database/MultipleDatabases
 
     def set_schema_column_types(table, type_results)
       has_id = type_results.any? {|c| c[:name] == "id" }

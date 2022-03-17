@@ -7,8 +7,8 @@ module Types
       graphql_name 'RequirementStatesCount'
       description 'Counts of requirements by their state'
 
-      field :opened, GraphQL::Types::Int, null: true, description: 'Number of opened requirements.'
       field :archived, GraphQL::Types::Int, null: true, description: 'Number of archived requirements.'
+      field :opened, GraphQL::Types::Int, null: true, description: 'Number of opened requirements.'
     end
     # rubocop: enable Graphql/AuthorizeTypes
   end

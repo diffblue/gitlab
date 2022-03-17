@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Project compliance framework empty state it matches the snapshot when "addFrameworkPath" is a string path 1`] = `
+<gl-empty-state-stub
+  compact="true"
+  primarybuttonlink="/edit-group"
+  primarybuttontext="Add framework in group-name"
+  svgheight="100"
+  svgpath="/image.svg"
+>
+  <h5
+    class="gl-mt-0"
+  >
+    No compliance frameworks are set up yet
+  </h5>
+  Add a framework to 
+  <gl-link-stub
+    href="/group-path"
+  >
+    group-name
+  </gl-link-stub>
+   and it will appear here.
+</gl-empty-state-stub>
+`;
+
+exports[`Project compliance framework empty state it matches the snapshot when "addFrameworkPath" is undefined 1`] = `
+<gl-empty-state-stub
+  compact="true"
+  svgheight="100"
+  svgpath="/image.svg"
+>
+  <h5
+    class="gl-mt-0"
+  >
+    No compliance frameworks are set up yet
+  </h5>
+  After a framework is added to 
+  <gl-link-stub
+    href="/group-path"
+  >
+    group-name
+  </gl-link-stub>
+  , it will appear here.
+</gl-empty-state-stub>
+`;

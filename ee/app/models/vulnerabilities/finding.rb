@@ -225,7 +225,7 @@ module Vulnerabilities
     end
 
     def links
-      return metadata.fetch('links', []) if Feature.disabled?(:vulnerability_finding_replace_metadata) || finding_links.load.empty?
+      return metadata.fetch('links', []) if finding_links.load.empty?
 
       finding_links.as_json(only: [:name, :url])
     end
@@ -291,7 +291,9 @@ module Vulnerabilities
     end
 
     def evidence
-      evidence_data = finding_evidence.present? && Feature.enabled?(:read_from_vulnerability_finding_evidence) ? finding_evidence.data : metadata.dig('evidence')
+      evidence_data = finding_evidence.present? ? finding_evidence.data : metadata.dig('evidence')
+
+      return if evidence_data.nil?
 
       {
         summary: evidence_data&.dig('summary'),

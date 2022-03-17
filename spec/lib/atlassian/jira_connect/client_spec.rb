@@ -58,12 +58,16 @@ RSpec.describe Atlassian::JiraConnect::Client do
         deployments: :q
       ).and_return(:deploys_stored)
 
-      expect(subject).to receive(:store_dev_info).with(
+      expect(Atlassian::JiraConnect::DevInfo).to receive(:new).with(
         project: project,
         update_sequence_id: :x,
         commits: :a,
         branches: :b,
         merge_requests: :c
+      ).and_call_original
+
+      expect(subject).to receive(:store_dev_info).with(
+        instance_of(Atlassian::JiraConnect::DevInfo)
       ).and_return(:dev_stored)
 
       args = {
@@ -83,9 +87,7 @@ RSpec.describe Atlassian::JiraConnect::Client do
 
     it 'only calls methods that we need to call' do
       expect(subject).to receive(:store_dev_info).with(
-        project: project,
-        update_sequence_id: :x,
-        commits: :a
+        instance_of(Atlassian::JiraConnect::DevInfo)
       ).and_return(:dev_stored)
 
       args = {
@@ -127,11 +129,19 @@ RSpec.describe Atlassian::JiraConnect::Client do
       end
     end
 
+    context 'the response is 202 accepted' do
+      let(:response) { double(code: 202, parsed_response: :foo) }
+
+      it 'yields to the block' do
+        expect(processed).to eq [:data, :foo]
+      end
+    end
+
     context 'the response is 400 bad request' do
       let(:response) { double(code: 400, parsed_response: errors) }
 
       it 'extracts the errors messages' do
-        expect(processed).to eq('errorMessages' => %w(X Y))
+        expect(processed).to eq('errorMessages' => %w(X Y), 'responseCode' => 400)
       end
     end
 
@@ -139,7 +149,7 @@ RSpec.describe Atlassian::JiraConnect::Client do
       let(:response) { double(code: 401, parsed_response: nil) }
 
       it 'reports that our JWT is wrong' do
-        expect(processed).to eq('errorMessages' => ['Invalid JWT'])
+        expect(processed).to eq('errorMessages' => ['Invalid JWT'], 'responseCode' => 401)
       end
     end
 
@@ -147,7 +157,7 @@ RSpec.describe Atlassian::JiraConnect::Client do
       let(:response) { double(code: 403, parsed_response: nil) }
 
       it 'reports that the App is misconfigured' do
-        expect(processed).to eq('errorMessages' => ['App does not support foo'])
+        expect(processed).to eq('errorMessages' => ['App does not support foo'], 'responseCode' => 403)
       end
     end
 
@@ -155,7 +165,7 @@ RSpec.describe Atlassian::JiraConnect::Client do
       let(:response) { double(code: 413, parsed_response: errors) }
 
       it 'extracts the errors messages' do
-        expect(processed).to eq('errorMessages' => ['Data too large', 'X', 'Y'])
+        expect(processed).to eq('errorMessages' => ['Data too large', 'X', 'Y'], 'responseCode' => 413)
       end
     end
 
@@ -163,7 +173,7 @@ RSpec.describe Atlassian::JiraConnect::Client do
       let(:response) { double(code: 429, parsed_response: nil) }
 
       it 'reports that we exceeded the rate limit' do
-        expect(processed).to eq('errorMessages' => ['Rate limit exceeded'])
+        expect(processed).to eq('errorMessages' => ['Rate limit exceeded'], 'responseCode' => 429)
       end
     end
 
@@ -171,7 +181,7 @@ RSpec.describe Atlassian::JiraConnect::Client do
       let(:response) { double(code: 503, parsed_response: nil) }
 
       it 'reports that the service is unavailable' do
-        expect(processed).to eq('errorMessages' => ['Service unavailable'])
+        expect(processed).to eq('errorMessages' => ['Service unavailable'], 'responseCode' => 503)
       end
     end
 
@@ -179,7 +189,7 @@ RSpec.describe Atlassian::JiraConnect::Client do
       let(:response) { double(code: 1000, parsed_response: :something) }
 
       it 'reports that this was unanticipated' do
-        expect(processed).to eq('errorMessages' => ['Unknown error'], 'response' => :something)
+        expect(processed).to eq('errorMessages' => ['Unknown error'], 'responseCode' => 1000, 'response' => :something)
       end
     end
   end
@@ -394,15 +404,7 @@ RSpec.describe Atlassian::JiraConnect::Client do
     end
 
     it "calls the API with auth headers" do
-      subject.send(:store_dev_info, project: project)
-    end
-
-    it 'avoids N+1 database queries' do
-      control_count = ActiveRecord::QueryRecorder.new { subject.send(:store_dev_info, project: project, merge_requests: merge_requests) }.count
-
-      merge_requests << create(:merge_request, :unique_branches)
-
-      expect { subject.send(:store_dev_info, project: project, merge_requests: merge_requests) }.not_to exceed_query_limit(control_count)
+      subject.send(:store_dev_info, Atlassian::JiraConnect::DevInfo.new(project: project))
     end
   end
 end

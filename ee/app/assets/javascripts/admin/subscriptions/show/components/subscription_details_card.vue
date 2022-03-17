@@ -4,12 +4,14 @@ import { identity } from 'lodash';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { getTimeago } from '~/lib/utils/datetime_utility';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
+import { getLicenseTypeLabel } from '../utils';
 import SubscriptionDetailsTable from './subscription_details_table.vue';
 
 const subscriptionDetailsFormatRules = {
   id: getIdFromGraphQLId,
   expiresAt: getTimeago().format,
   lastSync: getTimeago().format,
+  type: getLicenseTypeLabel,
   plan: capitalizeFirstCharacter,
 };
 

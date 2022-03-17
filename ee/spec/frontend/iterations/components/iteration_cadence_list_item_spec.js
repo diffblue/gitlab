@@ -6,6 +6,7 @@ import VueApollo from 'vue-apollo';
 import IterationCadenceListItem from 'ee/iterations/components/iteration_cadence_list_item.vue';
 import TimeboxStatusBadge from 'ee/iterations/components/timebox_status_badge.vue';
 import { Namespace } from 'ee/iterations/constants';
+import { getIterationPeriod } from 'ee/iterations/utils';
 import groupIterationsInCadenceQuery from 'ee/iterations/queries/group_iterations_in_cadence.query.graphql';
 import projectIterationsInCadenceQuery from 'ee/iterations/queries/project_iterations_in_cadence.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -41,9 +42,17 @@ describe('Iteration cadence list item', () => {
       webPath: '/groups/group1/-/iterations/41',
       __typename: 'Iteration',
     },
+    {
+      id: 'gid://gitlab/Iteration/42',
+      scopedPath: '/groups/group1/-/iterations/42',
+      startDate: '2021-08-15',
+      dueDate: '2021-08-20',
+      state: 'upcoming',
+      title: null,
+      webPath: '/groups/group1/-/iterations/42',
+      __typename: 'Iteration',
+    },
   ];
-
-  const iterationPeriods = ['Aug 13, 2021 - Aug 14, 2021'];
 
   const cadence = {
     id: 'gid://gitlab/Iterations::Cadence/561',
@@ -129,6 +138,7 @@ describe('Iteration cadence list item', () => {
   const findLoader = () => wrapper.findComponent(GlSkeletonLoader);
   const findCreateIterationButton = () =>
     wrapper.findByRole('link', { text: i18n.createIteration });
+  const findIterationItemText = (i) => wrapper.findAllByTestId('iteration-item').at(i).text();
   const expand = () => wrapper.findByRole('button', { text: cadence.title }).trigger('click');
 
   afterEach(() => {
@@ -181,17 +191,22 @@ describe('Iteration cadence list item', () => {
     expect(findCreateIterationButton().exists()).toBe(canCreateIteration);
   });
 
-  it('shows iterations with dates after loading', async () => {
+  const expectIterationItemToHavePeriod = () => {
+    iterations.forEach(({ startDate, dueDate }, i) => {
+      const containedText = findIterationItemText(i);
+
+      expect(containedText).toContain(getIterationPeriod({ startDate, dueDate }));
+    });
+  };
+
+  it('shows iteration dates after loading', async () => {
     await createComponent();
 
     expand();
 
     await waitForPromises();
 
-    iterations.forEach(({ title }, i) => {
-      expect(wrapper.text()).toContain(title);
-      expect(wrapper.text()).toContain(iterationPeriods[i]);
-    });
+    expectIterationItemToHavePeriod();
   });
 
   it('automatically expands for newly created cadence', async () => {
@@ -201,9 +216,7 @@ describe('Iteration cadence list item', () => {
 
     await waitForPromises();
 
-    iterations.forEach(({ title }) => {
-      expect(wrapper.text()).toContain(title);
-    });
+    expectIterationItemToHavePeriod();
   });
 
   it('loads project iterations for Project namespaceType', async () => {
@@ -216,9 +229,7 @@ describe('Iteration cadence list item', () => {
 
     await waitForPromises();
 
-    iterations.forEach(({ title }) => {
-      expect(wrapper.text()).toContain(title);
-    });
+    expectIterationItemToHavePeriod();
   });
 
   it('shows alert on query error', async () => {

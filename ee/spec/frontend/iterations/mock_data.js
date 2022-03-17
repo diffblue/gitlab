@@ -1,3 +1,5 @@
+import { iterationStates } from 'ee/iterations/constants';
+
 export const mockIterationNode = {
   description: 'some description',
   descriptionHtml: '<p>some description</p>',
@@ -5,10 +7,20 @@ export const mockIterationNode = {
   id: 'gid://gitlab/Iteration/4',
   iid: '1',
   startDate: '2021-02-10',
-  state: 'upcoming',
+  state: iterationStates.upcoming,
   title: 'top-level-iteration',
   webPath: '/groups/top-level-group/-/iterations/4',
   __typename: 'Iteration',
+};
+
+export const mockPastIterationNode = {
+  ...mockIterationNode,
+  state: iterationStates.closed,
+};
+
+export const mockIterationNodeWithoutTitle = {
+  ...mockIterationNode,
+  title: null,
 };
 
 export const mockGroupIterations = {
@@ -22,6 +34,21 @@ export const mockGroupIterations = {
       __typename: 'Group',
     },
   },
+};
+
+export const createMockGroupIterations = (mockIteration = mockIterationNode) => {
+  return {
+    data: {
+      group: {
+        id: 'gid://gitlab/Group/114',
+        iterations: {
+          nodes: [mockIteration],
+          __typename: 'IterationConnection',
+        },
+        __typename: 'Group',
+      },
+    },
+  };
 };
 
 export const mockProjectIterations = {

@@ -77,7 +77,7 @@ RSpec.describe Security::VulnerabilitiesFinder do
   context 'when filtered by project' do
     let(:group) { create(:group) }
     let(:another_project) { create(:project, namespace: group) }
-    let!(:another_vulnerability) { create(:vulnerability, project: another_project) }
+    let!(:another_vulnerability) { create(:vulnerability, :with_findings, project: another_project) }
     let(:filters) { { project_id: [another_project.id] } }
     let(:vulnerable) { group }
 
@@ -148,7 +148,7 @@ RSpec.describe Security::VulnerabilitiesFinder do
 
   context 'when filtered by more than one property' do
     let_it_be(:vulnerability4) do
-      create(:vulnerability, severity: :medium, report_type: :sast, state: :detected, project: project)
+      create(:vulnerability, :with_findings, severity: :medium, report_type: :sast, state: :detected, project: project)
     end
 
     let(:filters) { { report_type: %w[sast], severity: %w[medium] } }
@@ -160,7 +160,7 @@ RSpec.describe Security::VulnerabilitiesFinder do
 
   context 'when filtered by image' do
     let_it_be(:cluster_vulnerability) { create(:vulnerability, :cluster_image_scanning, project: project) }
-    let_it_be(:finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, vulnerability: cluster_vulnerability) }
+    let_it_be(:finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, project: project, vulnerability: cluster_vulnerability) }
 
     let(:filters) { { image: [finding.location['image']] } }
     let(:feature_enabled) { true }
@@ -188,7 +188,7 @@ RSpec.describe Security::VulnerabilitiesFinder do
 
   context 'when filtered by cluster_id' do
     let_it_be(:cluster_vulnerability) { create(:vulnerability, :cluster_image_scanning, project: project) }
-    let_it_be(:finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, vulnerability: cluster_vulnerability) }
+    let_it_be(:finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, project: project, vulnerability: cluster_vulnerability) }
 
     let(:filters) { { cluster_id: [finding.location['kubernetes_resource']['cluster_id']] } }
 
@@ -207,7 +207,7 @@ RSpec.describe Security::VulnerabilitiesFinder do
 
   context 'when filtered by cluster_agent_id' do
     let_it_be(:cluster_vulnerability) { create(:vulnerability, :cluster_image_scanning, project: project) }
-    let_it_be(:finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, vulnerability: cluster_vulnerability) }
+    let_it_be(:finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, project: project, vulnerability: cluster_vulnerability) }
 
     let(:filters) { { cluster_agent_id: [finding.location['kubernetes_resource']['agent_id']] } }
 

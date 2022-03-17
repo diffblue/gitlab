@@ -39,6 +39,24 @@
   :weight: 1
   :idempotent:
   :tags: []
+- :name: cronjob:analytics_cycle_analytics_consistency
+  :worker_name: Analytics::CycleAnalytics::ConsistencyWorker
+  :feature_category: :value_stream_management
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: cronjob:analytics_cycle_analytics_incremental
+  :worker_name: Analytics::CycleAnalytics::IncrementalWorker
+  :feature_category: :value_stream_management
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: cronjob:analytics_devops_adoption_create_all_snapshots
   :worker_name: Analytics::DevopsAdoption::CreateAllSnapshotsWorker
   :feature_category: :devops_reports
@@ -381,6 +399,15 @@
   :weight: 1
   :idempotent:
   :tags: []
+- :name: cronjob:security_findings_cleanup
+  :worker_name: Security::Findings::CleanupWorker
+  :feature_category: :vulnerability_management
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: cronjob:security_orchestration_policy_rule_schedule
   :worker_name: Security::OrchestrationPolicyRuleScheduleWorker
   :feature_category: :security_orchestration
@@ -497,6 +524,15 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
+  :tags: []
+- :name: geo:geo_create_repository_updated_event
+  :worker_name: Geo::CreateRepositoryUpdatedEventWorker
+  :feature_category: :geo_replication
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
   :tags: []
 - :name: geo:geo_design_repository_shard_sync
   :worker_name: Geo::DesignRepositoryShardSyncWorker
@@ -759,6 +795,15 @@
   :weight: 1
   :idempotent:
   :tags: []
+- :name: pipeline_background:ci_minutes_refresh_cached_data
+  :worker_name: Ci::Minutes::RefreshCachedDataWorker
+  :feature_category: :continuous_integration
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: pipeline_background:ci_minutes_update_project_and_namespace_usage
   :worker_name: Ci::Minutes::UpdateProjectAndNamespaceUsageWorker
   :feature_category: :continuous_integration
@@ -851,15 +896,6 @@
   :tags: []
 - :name: analytics_code_review_metrics
   :worker_name: Analytics::CodeReviewMetricsWorker
-  :feature_category: :value_stream_management
-  :has_external_dependencies:
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: true
-  :tags: []
-- :name: analytics_cycle_analytics_group_data_loader
-  :worker_name: Analytics::CycleAnalytics::GroupDataLoaderWorker
   :feature_category: :value_stream_management
   :has_external_dependencies:
   :urgency: :low
@@ -1217,8 +1253,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
-  :tags:
-  - :needs_own_queue
+  :tags: []
 - :name: project_template_export
   :worker_name: ProjectTemplateExportWorker
   :feature_category: :importers

@@ -256,6 +256,18 @@ RSpec.describe API::ProtectedEnvironments do
         expect(json_response['deploy_access_levels'].first['group_id']).to eq(subgroup.id)
       end
 
+      it 'protects the environment with shared group allowed to deploy' do
+        shared_group = create(:group)
+        create(:group_group_link, shared_group: group, shared_with_group: shared_group)
+
+        post api_url, params: { name: 'staging', deploy_access_levels: [{ group_id: shared_group.id }] }
+
+        expect(response).to have_gitlab_http_status(:created)
+        expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
+        expect(json_response['name']).to eq('staging')
+        expect(json_response['deploy_access_levels'].first['group_id']).to eq(shared_group.id)
+      end
+
       it 'protects the environment with maintainers allowed to deploy' do
         post api_url, params: { name: 'staging', deploy_access_levels: [{ access_level: Gitlab::Access::MAINTAINER }] }
 

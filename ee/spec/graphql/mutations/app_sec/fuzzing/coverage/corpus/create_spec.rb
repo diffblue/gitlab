@@ -27,24 +27,8 @@ RSpec.describe Mutations::AppSec::Fuzzing::Coverage::Corpus::Create do
 
     context 'when the feature is licensed' do
       context 'when the user can create a corpus' do
-        context 'when corpus_management feature is enabled' do
-          before do
-            stub_feature_flags(corpus_management: true)
-          end
-
-          it 'returns the corpus' do
-            expect(resolve[:corpus]).to eq(corpus)
-          end
-        end
-
-        context 'when corpus_management feature is disabled' do
-          before do
-            stub_feature_flags(corpus_management: false)
-          end
-
-          it 'raises the resource not available error' do
-            expect { resolve }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
-          end
+        it 'returns the corpus' do
+          expect(resolve[:corpus]).to eq(corpus)
         end
       end
     end

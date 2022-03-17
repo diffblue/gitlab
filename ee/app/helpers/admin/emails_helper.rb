@@ -5,7 +5,7 @@ module Admin
     include Gitlab::Utils::StrongMemoize
 
     def send_emails_from_admin_area_feature_available?
-      License.feature_available?(:send_emails_from_admin_area) || License.features_with_usage_ping.include?(:send_emails_from_admin_area)
+      License.feature_available?(:send_emails_from_admin_area) || GitlabSubscriptions::Features.usage_ping_feature?(:send_emails_from_admin_area)
     end
 
     def admin_emails_are_currently_rate_limited?

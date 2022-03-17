@@ -11,6 +11,14 @@ RSpec.describe Epics::CreateService do
 
   subject { described_class.new(group: group, current_user: user, params: params).execute }
 
+  it_behaves_like 'rate limited service' do
+    let(:key) { :issues_create }
+    let(:key_scope) { %i[current_user] }
+    let(:application_limit_key) { :issues_create_limit }
+    let(:created_model) { Epic }
+    let(:service) { described_class.new(group: group, current_user: user, params: params) }
+  end
+
   describe '#execute' do
     before do
       group.add_reporter(user)

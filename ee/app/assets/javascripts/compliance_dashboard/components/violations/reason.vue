@@ -1,5 +1,5 @@
 <script>
-import { MERGE_REQUEST_VIOLATION_REASONS, MERGE_REQUEST_VIOLATION_MESSAGES } from '../../constants';
+import { MERGE_REQUEST_VIOLATION_MESSAGES } from '../../constants';
 import UserAvatar from '../shared/user_avatar.vue';
 
 export default {
@@ -8,8 +8,9 @@ export default {
   },
   props: {
     reason: {
-      type: Number,
+      type: String,
       required: true,
+      validator: (reason) => Object.keys(MERGE_REQUEST_VIOLATION_MESSAGES).includes(reason),
     },
     user: {
       type: Object,
@@ -18,11 +19,8 @@ export default {
     },
   },
   computed: {
-    violation() {
-      return MERGE_REQUEST_VIOLATION_REASONS[this.reason];
-    },
     violationMessage() {
-      return MERGE_REQUEST_VIOLATION_MESSAGES[this.violation];
+      return MERGE_REQUEST_VIOLATION_MESSAGES[this.reason];
     },
   },
 };

@@ -31,6 +31,20 @@ module EE
       def member_of_group?(group, user)
         exists?(group: group, user: user)
       end
+
+      def filter_by_enterprise_users(value)
+        subquery =
+          ::UserDetail.where(
+            ::UserDetail.arel_table[:provisioned_by_group_id].eq(arel_table[:source_id]).and(
+              ::UserDetail.arel_table[:user_id].eq(arel_table[:user_id]))
+          )
+
+        if value
+          where_exists(subquery)
+        else
+          where_not_exists(subquery)
+        end
+      end
     end
 
     def provisioned_by_this_group?

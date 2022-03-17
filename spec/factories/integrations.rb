@@ -224,6 +224,23 @@ FactoryBot.define do
     recipients { 'test@example.com' }
   end
 
+  factory :pivotaltracker_integration, class: 'Integrations::Pivotaltracker' do
+    project
+    active { true }
+    token { 'test' }
+  end
+
+  factory :harbor_integration, class: 'Integrations::Harbor' do
+    project
+    active { true }
+    type { 'HarborService' }
+
+    url { 'https://demo.goharbor.io' }
+    project_name { 'testproject' }
+    username { 'harborusername' }
+    password { 'harborpassword' }
+  end
+
   # this is for testing storing values inside properties, which is deprecated and will be removed in
   # https://gitlab.com/gitlab-org/gitlab/issues/29404
   trait :without_properties_callback do

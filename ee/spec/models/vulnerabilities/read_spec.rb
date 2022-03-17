@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Vulnerabilities::Read, type: :model do
+  let_it_be(:project) { create(:project) }
+
   describe 'associations' do
     it { is_expected.to belong_to(:vulnerability) }
     it { is_expected.to belong_to(:project) }
@@ -178,6 +180,250 @@ RSpec.describe Vulnerabilities::Read, type: :model do
             issue_link2.delete
           end.to change { Vulnerabilities::Read.first.has_issues }.from(true).to(false)
         end
+      end
+    end
+  end
+
+  describe '.by_scanner_ids' do
+    it 'returns matching vulnerabilities' do
+      vulnerability1 = create(:vulnerability, :with_finding)
+      create(:vulnerability, :with_finding)
+
+      result = described_class.by_scanner_ids(vulnerability1.finding_scanner_id)
+
+      expect(result).to match_array([vulnerability1.vulnerability_read])
+    end
+  end
+
+  describe '.for_projects' do
+    let_it_be(:project_2) { create(:project) }
+    let_it_be(:vulnerability) { create(:vulnerability, :with_finding, project: project) }
+
+    before do
+      create(:vulnerability, :with_finding, project: project_2)
+    end
+
+    subject { described_class.for_projects([project.id]) }
+
+    it 'returns vulnerability_reads related to the given project IDs' do
+      is_expected.to contain_exactly(vulnerability.vulnerability_read)
+    end
+  end
+
+  describe '.with_report_types' do
+    let!(:dast_vulnerability) { create(:vulnerability, :with_finding, :dast) }
+    let!(:dependency_scanning_vulnerability) { create(:vulnerability, :with_finding, :dependency_scanning) }
+    let(:sast_vulnerability) { create(:vulnerability, :with_finding, :sast) }
+    let(:report_types) { %w[sast dast] }
+
+    subject { described_class.with_report_types(report_types) }
+
+    it 'returns vulnerabilities matching the given report_types' do
+      is_expected.to contain_exactly(sast_vulnerability.vulnerability_read, dast_vulnerability.vulnerability_read)
+    end
+  end
+
+  describe '.with_severities' do
+    let!(:high_vulnerability) { create(:vulnerability, :with_finding, :high) }
+    let!(:medium_vulnerability) { create(:vulnerability, :with_finding, :medium) }
+    let(:low_vulnerability) { create(:vulnerability, :with_finding, :low) }
+    let(:severities) { %w[medium low] }
+
+    subject { described_class.with_severities(severities) }
+
+    it 'returns vulnerabilities matching the given severities' do
+      is_expected.to contain_exactly(medium_vulnerability.vulnerability_read, low_vulnerability.vulnerability_read)
+    end
+  end
+
+  describe '.with_states' do
+    let!(:detected_vulnerability) { create(:vulnerability, :with_finding, :detected) }
+    let!(:dismissed_vulnerability) { create(:vulnerability, :with_finding, :dismissed) }
+    let(:confirmed_vulnerability) { create(:vulnerability, :with_finding, :confirmed) }
+    let(:states) { %w[detected confirmed] }
+
+    subject { described_class.with_states(states) }
+
+    it 'returns vulnerabilities matching the given states' do
+      is_expected.to contain_exactly(detected_vulnerability.vulnerability_read, confirmed_vulnerability.vulnerability_read)
+    end
+  end
+
+  describe '.with_scanner_external_ids' do
+    let!(:vulnerability_1) { create(:vulnerability, :with_finding) }
+    let!(:vulnerability_2) { create(:vulnerability, :with_finding) }
+    let(:vulnerability_3) { create(:vulnerability, :with_finding) }
+    let(:scanner_external_ids) { [vulnerability_1.finding_scanner_external_id, vulnerability_3.finding_scanner_external_id] }
+
+    subject { described_class.with_scanner_external_ids(scanner_external_ids) }
+
+    it 'returns vulnerabilities matching the given scanner external IDs' do
+      is_expected.to contain_exactly(vulnerability_1.vulnerability_read, vulnerability_3.vulnerability_read)
+    end
+  end
+
+  describe '.with_container_image' do
+    let_it_be(:vulnerability) { create(:vulnerability, project: project, report_type: 'cluster_image_scanning') }
+    let_it_be(:finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, project: project, vulnerability: vulnerability) }
+    let_it_be(:image) { finding.location['image'] }
+
+    before do
+      finding_with_different_image = create(
+        :vulnerabilities_finding,
+        :with_cluster_image_scanning_scanning_metadata,
+        project: project,
+        vulnerability: create(:vulnerability, report_type: 'cluster_image_scanning')
+      )
+      finding_with_different_image.location['image'] = 'alpine:latest'
+      finding_with_different_image.save!
+    end
+
+    subject(:cluster_vulnerabilities) { described_class.with_container_image(image) }
+
+    it 'returns vulnerabilities with given image' do
+      expect(cluster_vulnerabilities).to contain_exactly(vulnerability.vulnerability_read)
+    end
+  end
+
+  describe '.with_resolution' do
+    let_it_be(:vulnerability_with_resolution) { create(:vulnerability, :with_finding, resolved_on_default_branch: true) }
+    let_it_be(:vulnerability_without_resolution) { create(:vulnerability, :with_finding, resolved_on_default_branch: false) }
+
+    subject { described_class.with_resolution(with_resolution) }
+
+    context 'when no argument is provided' do
+      subject { described_class.with_resolution }
+
+      it { is_expected.to match_array([vulnerability_with_resolution.vulnerability_read]) }
+    end
+
+    context 'when the argument is provided' do
+      context 'when the given argument is `true`' do
+        let(:with_resolution) { true }
+
+        it { is_expected.to match_array([vulnerability_with_resolution.vulnerability_read]) }
+      end
+
+      context 'when the given argument is `false`' do
+        let(:with_resolution) { false }
+
+        it { is_expected.to match_array([vulnerability_without_resolution.vulnerability_read]) }
+      end
+    end
+  end
+
+  describe '.with_issues' do
+    let_it_be(:vulnerability_with_issues) { create(:vulnerability, :with_finding, :with_issue_links) }
+    let_it_be(:vulnerability_without_issues) { create(:vulnerability, :with_finding) }
+
+    subject { described_class.with_issues(with_issues) }
+
+    context 'when no argument is provided' do
+      subject { described_class.with_issues }
+
+      it { is_expected.to match_array([vulnerability_with_issues.vulnerability_read]) }
+    end
+
+    context 'when the argument is provided' do
+      context 'when the given argument is `true`' do
+        let(:with_issues) { true }
+
+        it { is_expected.to match_array([vulnerability_with_issues.vulnerability_read]) }
+      end
+
+      context 'when the given argument is `false`' do
+        let(:with_issues) { false }
+
+        it { is_expected.to match_array([vulnerability_without_issues.vulnerability_read]) }
+      end
+    end
+  end
+
+  describe '.as_vulnerabilities' do
+    let!(:vulnerability_1) { create(:vulnerability, :with_finding) }
+    let!(:vulnerability_2) { create(:vulnerability, :with_finding) }
+    let!(:vulnerability_3) { create(:vulnerability, :with_finding) }
+
+    subject { described_class.as_vulnerabilities }
+
+    it 'returns vulnerabilities as list' do
+      is_expected.to contain_exactly(vulnerability_1, vulnerability_2, vulnerability_3)
+    end
+  end
+
+  describe '.order_by' do
+    let_it_be(:vulnerability_1) { create(:vulnerability, :with_finding, :low) }
+    let_it_be(:vulnerability_2) { create(:vulnerability, :with_finding, :critical) }
+    let_it_be(:vulnerability_3) { create(:vulnerability, :with_finding, :medium) }
+
+    subject { described_class.order_by(method) }
+
+    context 'when method is nil' do
+      let(:method) { nil }
+
+      it { is_expected.to match_array([vulnerability_2.vulnerability_read, vulnerability_3.vulnerability_read, vulnerability_1.vulnerability_read]) }
+    end
+
+    context 'when ordered by severity_desc' do
+      let(:method) { :severity_desc }
+
+      it { is_expected.to match_array([vulnerability_2.vulnerability_read, vulnerability_3.vulnerability_read, vulnerability_1.vulnerability_read]) }
+    end
+
+    context 'when ordered by severity_asc' do
+      let(:method) { :severity_asc }
+
+      it { is_expected.to match_array([vulnerability_1.vulnerability_read, vulnerability_3.vulnerability_read, vulnerability_2.vulnerability_read]) }
+    end
+
+    context 'when ordered by detected_desc' do
+      let(:method) { :detected_desc }
+
+      it { is_expected.to match_array([vulnerability_3.vulnerability_read, vulnerability_2.vulnerability_read, vulnerability_1.vulnerability_read]) }
+    end
+
+    context 'when ordered by detected_asc' do
+      let(:method) { :detected_asc }
+
+      it { is_expected.to match_array([vulnerability_1.vulnerability_read, vulnerability_2.vulnerability_read, vulnerability_3.vulnerability_read]) }
+    end
+  end
+
+  describe '.order_severity_' do
+    let_it_be(:low_vulnerability) { create(:vulnerability, :with_finding, :low) }
+    let_it_be(:critical_vulnerability) { create(:vulnerability, :with_finding, :critical) }
+    let_it_be(:medium_vulnerability) { create(:vulnerability, :with_finding, :medium) }
+
+    describe 'ascending' do
+      subject { described_class.order_severity_asc }
+
+      it { is_expected.to match_array([low_vulnerability.vulnerability_read, medium_vulnerability.vulnerability_read, critical_vulnerability.vulnerability_read]) }
+    end
+
+    describe 'descending' do
+      subject { described_class.order_severity_desc }
+
+      it { is_expected.to match_array([critical_vulnerability.vulnerability_read, medium_vulnerability.vulnerability_read, low_vulnerability.vulnerability_read]) }
+    end
+  end
+
+  describe '.order_detected_at_' do
+    let_it_be(:old_vulnerability) { create(:vulnerability, :with_finding) }
+    let_it_be(:new_vulnerability) { create(:vulnerability, :with_finding) }
+
+    describe 'ascending' do
+      subject { described_class.order_detected_at_asc }
+
+      it 'returns vulnerabilities ordered by created_at' do
+        is_expected.to match_array([old_vulnerability.vulnerability_read, new_vulnerability.vulnerability_read])
+      end
+    end
+
+    describe 'descending' do
+      subject { described_class.order_detected_at_desc }
+
+      it 'returns vulnerabilities ordered by created_at' do
+        is_expected.to match_array([new_vulnerability.vulnerability_read, old_vulnerability.vulnerability_read])
       end
     end
   end

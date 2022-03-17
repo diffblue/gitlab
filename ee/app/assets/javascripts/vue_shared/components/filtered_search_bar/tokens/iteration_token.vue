@@ -1,11 +1,12 @@
 <script>
 import { GlDropdownDivider, GlDropdownSectionHeader, GlFilteredSearchSuggestion } from '@gitlab/ui';
-import { groupByIterationCadences } from 'ee/iterations/utils';
+import { groupByIterationCadences, getIterationPeriod } from 'ee/iterations/utils';
 import createFlash from '~/flash';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __ } from '~/locale';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 import { DEFAULT_ITERATIONS } from '../constants';
 
 export default {
@@ -14,6 +15,7 @@ export default {
     GlDropdownDivider,
     GlDropdownSectionHeader,
     GlFilteredSearchSuggestion,
+    IterationTitle,
   },
   mixins: [glFeatureFlagMixin()],
   props: {
@@ -65,6 +67,10 @@ export default {
     getId(iteration) {
       return getIdFromGraphQLId(iteration.id).toString();
     },
+    iterationTokenText(iteration) {
+      const cadenceTitle = iteration.iterationCadence.title;
+      return `${cadenceTitle} ${getIterationPeriod(iteration)}`;
+    },
   },
 };
 </script>
@@ -82,7 +88,7 @@ export default {
     v-on="$listeners"
   >
     <template #view="{ viewTokenProps: { inputValue, activeTokenValue } }">
-      {{ activeTokenValue ? activeTokenValue.title : inputValue }}
+      {{ activeTokenValue ? iterationTokenText(activeTokenValue) : inputValue }}
     </template>
     <template #suggestions-list="{ suggestions }">
       <template v-for="(cadence, index) in groupIterationsByCadence(suggestions)">
@@ -99,10 +105,8 @@ export default {
           :key="iteration.id"
           :value="getId(iteration)"
         >
-          {{ iteration.title }}
-          <div v-if="glFeatures.iterationCadences" class="gl-text-gray-400">
-            {{ iteration.period }}
-          </div>
+          {{ iteration.period }}
+          <iteration-title v-if="iteration.title" :title="iteration.title" />
         </gl-filtered-search-suggestion>
       </template>
     </template>

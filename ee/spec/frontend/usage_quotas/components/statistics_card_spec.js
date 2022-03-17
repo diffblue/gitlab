@@ -139,8 +139,16 @@ describe('StatisticsCard', () => {
       expect(wrapper.findComponent(GlProgressBar).exists()).toBe(false);
     });
 
-    it('renders progress bar if prop is passed', () => {
+    it('renders progress bar if prop is greater than 0', () => {
       const percentage = 99;
+      createComponent({ percentage });
+
+      expect(findProgressBar().exists()).toBe(true);
+      expect(findProgressBar().attributes('value')).toBe(String(percentage));
+    });
+
+    it('renders the progress bar if prop is 0', () => {
+      const percentage = 0;
       createComponent({ percentage });
 
       expect(findProgressBar().exists()).toBe(true);

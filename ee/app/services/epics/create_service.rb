@@ -2,6 +2,10 @@
 
 module Epics
   class CreateService < Epics::BaseService
+    prepend RateLimitedService
+
+    rate_limit key: :issues_create, opts: { scope: [:current_user] }
+
     def execute
       set_date_params
 

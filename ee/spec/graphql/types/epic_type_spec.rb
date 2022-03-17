@@ -14,11 +14,13 @@ RSpec.describe GitlabSchema.types['Epic'] do
       notes discussions relative_position subscribed participants
       descendant_counts descendant_weight_sum upvotes downvotes
       user_notes_count user_discussions_count health_status current_user_todos
-      award_emoji events ancestors
+      award_emoji events ancestors color text_color
     ]
   end
 
   it { expect(described_class.interfaces).to include(Types::CurrentUserTodos) }
+
+  it { expect(described_class.interfaces).to include(Types::TodoableInterface) }
 
   it { expect(described_class).to expose_permissions_using(Types::PermissionTypes::Epic) }
 

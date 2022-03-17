@@ -9,6 +9,8 @@ export const initTrialStatusWidget = () => {
 
   const {
     containerId,
+    trialDaysUsed,
+    trialDuration,
     daysRemaining,
     navIconImagePath,
     percentageComplete,
@@ -20,6 +22,8 @@ export const initTrialStatusWidget = () => {
     el,
     provide: {
       containerId,
+      trialDaysUsed: Number(trialDaysUsed) || 0,
+      trialDuration: Number(trialDuration) || 0,
       daysRemaining: Number(daysRemaining),
       navIconImagePath,
       percentageComplete: Number(percentageComplete),

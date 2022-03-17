@@ -3,7 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe MergeRequests::ComplianceViolation, type: :model do
-  let_it_be(:merge_request) { create(:merge_request, state: :merged) }
+  using RSpec::Parameterized::TableSyntax
+
+  let_it_be(:merge_request) { create(:merge_request, state: :merged, title: 'zyxw') }
+  let_it_be(:user) { create(:user) }
 
   describe "Associations" do
     it { is_expected.to belong_to(:violating_user) }
@@ -17,8 +20,6 @@ RSpec.describe MergeRequests::ComplianceViolation, type: :model do
     it { is_expected.to validate_presence_of(:severity_level) }
 
     context "when a violation exists with the same reason and user for a merge request" do
-      let_it_be(:user) { create(:user) }
-
       before do
         allow(merge_request).to receive(:committers).and_return([user])
         merge_request.approver_users << user
@@ -41,21 +42,178 @@ RSpec.describe MergeRequests::ComplianceViolation, type: :model do
     it { is_expected.to define_enum_for(:severity_level).with_values(::Enums::MergeRequests::ComplianceViolation.severity_levels) }
   end
 
-  describe '#approved_by_committer' do
+  describe '#by_approved_by_committer' do
     let_it_be(:violations) do
       [
-        create(:compliance_violation, :approved_by_committer, merge_request: merge_request, violating_user: create(:user)),
+        create(:compliance_violation, :approved_by_committer, merge_request: merge_request, violating_user: user),
         create(:compliance_violation, :approved_by_committer, merge_request: merge_request, violating_user: create(:user))
       ]
     end
 
     before do
       # Add a violation using a different reason to make sure it doesn't pick it up
-      create(:compliance_violation, :approved_by_insufficient_users, merge_request: merge_request, violating_user: create(:user))
+      create(:compliance_violation, :approved_by_insufficient_users, merge_request: merge_request, violating_user: user)
     end
 
     it 'returns the correct collection of violations' do
-      expect(merge_request.compliance_violations.approved_by_committer).to eq violations
+      expect(merge_request.compliance_violations.by_approved_by_committer).to eq violations
+    end
+  end
+
+  describe '#by_group' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:subgroup) { create(:group, parent: group) }
+    let_it_be(:project) { create(:project, :repository, group: group) }
+    let_it_be(:subgroup_project) { create(:project, :repository, group: subgroup) }
+    let_it_be(:alt_merge_request) { create(:merge_request, source_project: project, target_project: project, state: :merged) }
+    let_it_be(:subgroup_merge_request) { create(:merge_request, source_project: subgroup_project, target_project: project, state: :merged) }
+    let_it_be(:violations) do
+      [
+        create(:compliance_violation, :approved_by_committer, merge_request: alt_merge_request, violating_user: user),
+        create(:compliance_violation, :approved_by_committer, merge_request: subgroup_merge_request, violating_user: user),
+        create(:compliance_violation, :approved_by_committer, merge_request: merge_request, violating_user: user)
+      ]
+    end
+
+    it 'returns the correct collection of violations' do
+      expect(described_class.by_group(group)).to contain_exactly(violations[0], violations[1])
+    end
+  end
+
+  describe '#by_projects' do
+    let_it_be(:project) { create(:project, :repository) }
+    let_it_be(:alt_merge_request) { create(:merge_request, source_project: project, target_project: project, state: :merged) }
+    let_it_be(:violations) do
+      [
+        create(:compliance_violation, :approved_by_committer, merge_request: alt_merge_request, violating_user: create(:user)),
+        create(:compliance_violation, :approved_by_committer, merge_request: merge_request, violating_user: create(:user))
+      ]
+    end
+
+    it 'returns the correct collection of violations' do
+      expect(described_class.by_projects([project.id])).to contain_exactly(violations[0])
+    end
+  end
+
+  describe '#merged_before' do
+    let_it_be(:alt_merge_request) { create(:merge_request, state: :merged) }
+    let_it_be(:violations) do
+      [
+        create(:compliance_violation, :approved_by_committer, merge_request: alt_merge_request, violating_user: create(:user)),
+        create(:compliance_violation, :approved_by_committer, merge_request: merge_request, violating_user: create(:user))
+      ]
+    end
+
+    before do
+      alt_merge_request.metrics.update!(merged_at: 2.days.ago)
+    end
+
+    it 'returns the correct collection of violations' do
+      expect(described_class.merged_before(1.day.ago)).to contain_exactly(violations[0])
+    end
+  end
+
+  describe '#merged_after' do
+    let_it_be(:alt_merge_request) { create(:merge_request, state: :merged) }
+    let_it_be(:violations) do
+      [
+        create(:compliance_violation, :approved_by_committer, merge_request: alt_merge_request, violating_user: create(:user)),
+        create(:compliance_violation, :approved_by_committer, merge_request: merge_request, violating_user: create(:user))
+      ]
+    end
+
+    before do
+      alt_merge_request.metrics.update!(merged_at: Date.current)
+    end
+
+    it 'returns the correct collection of violations' do
+      expect(described_class.merged_after(1.day.ago)).to contain_exactly(violations[0])
+    end
+  end
+
+  describe '#order_by_reason' do
+    let_it_be(:violations) do
+      [
+        create(:compliance_violation, :approved_by_merge_request_author, merge_request: merge_request, violating_user: create(:user)),
+        create(:compliance_violation, :approved_by_committer, merge_request: merge_request, violating_user: create(:user))
+      ]
+    end
+
+    where(:direction, :result) do
+      'ASC'  | lazy { [violations[0], violations[1]] }
+      'DESC' | lazy { [violations[1], violations[0]] }
+    end
+
+    with_them do
+      it 'returns the correct collection of violations' do
+        expect(described_class.order_by_reason(direction)).to match_array(result)
+      end
+    end
+  end
+
+  describe '#order_by_severity_level' do
+    let_it_be(:violations) do
+      [
+        create(:compliance_violation, :approved_by_committer, severity_level: :low, merge_request: merge_request, violating_user: create(:user)),
+        create(:compliance_violation, :approved_by_committer, severity_level: :high, merge_request: merge_request, violating_user: create(:user))
+      ]
+    end
+
+    where(:direction, :result) do
+      'ASC'  | lazy { [violations[0], violations[1]] }
+      'DESC' | lazy { [violations[1], violations[0]] }
+    end
+
+    with_them do
+      it 'returns the correct collection of violations' do
+        expect(described_class.order_by_severity_level(direction)).to match_array(result)
+      end
+    end
+  end
+
+  describe '#order_by_merge_request_title' do
+    let_it_be(:alt_merge_request) { create(:merge_request, state: :merged, title: 'abcd') }
+    let_it_be(:violations) do
+      [
+        create(:compliance_violation, :approved_by_committer, severity_level: :high, merge_request: alt_merge_request, violating_user: create(:user)),
+        create(:compliance_violation, :approved_by_committer, severity_level: :low, merge_request: merge_request, violating_user: create(:user))
+      ]
+    end
+
+    where(:direction, :result) do
+      'ASC'  | lazy { [violations[0], violations[1]] }
+      'DESC' | lazy { [violations[1], violations[0]] }
+    end
+
+    with_them do
+      it 'returns the correct collection of violations' do
+        expect(described_class.order_by_merge_request_title(direction)).to match_array(result)
+      end
+    end
+  end
+
+  describe '#order_by_merged_at' do
+    let_it_be(:alt_merge_request) { create(:merge_request, state: :merged) }
+    let_it_be(:violations) do
+      [
+        create(:compliance_violation, :approved_by_committer, merge_request: alt_merge_request, violating_user: create(:user)),
+        create(:compliance_violation, :approved_by_committer, merge_request: merge_request, violating_user: create(:user))
+      ]
+    end
+
+    before do
+      alt_merge_request.metrics.update!(merged_at: 2.days.ago)
+    end
+
+    where(:direction, :result) do
+      'ASC'  | lazy { [violations[0], violations[1]] }
+      'DESC' | lazy { [violations[1], violations[0]] }
+    end
+
+    with_them do
+      it 'returns the correct collection of violations' do
+        expect(described_class.order_by_merged_at(direction)).to match_array(result)
+      end
     end
   end
 

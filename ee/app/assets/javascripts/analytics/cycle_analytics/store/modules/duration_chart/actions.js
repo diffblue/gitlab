@@ -40,25 +40,3 @@ export const fetchDurationData = ({ dispatch, commit, rootGetters }) => {
     .then((data) => commit(types.RECEIVE_DURATION_DATA_SUCCESS, data))
     .catch((error) => dispatch('receiveDurationDataError', error));
 };
-
-export const updateSelectedDurationChartStages = ({ state, commit }, stages) => {
-  const setSelectedPropertyOnStages = (data) =>
-    data.map((stage) => {
-      const selected = stages.reduce((result, object) => {
-        if (object.id === stage.id) return true;
-        return result;
-      }, false);
-
-      return {
-        ...stage,
-        selected,
-      };
-    });
-
-  const { durationData } = state;
-  const updatedDurationStageData = setSelectedPropertyOnStages(durationData);
-
-  commit(types.UPDATE_SELECTED_DURATION_CHART_STAGES, {
-    updatedDurationStageData,
-  });
-};

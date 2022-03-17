@@ -4,7 +4,9 @@ module QA
   RSpec.describe 'Create', :requires_admin do
     describe 'Setup an MR with codeowners file' do
       let(:project) do
-        Resource::Project.fabricate_via_api!
+        Resource::Project.fabricate_via_api! do |project|
+          project.initialize_with_readme = true
+        end
       end
 
       let!(:target) do

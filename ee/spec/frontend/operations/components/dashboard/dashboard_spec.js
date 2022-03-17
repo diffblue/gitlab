@@ -121,7 +121,7 @@ describe('dashboard component', () => {
           mockAxios.onDelete(store.state.projects[0].remove_path).reply(200);
           mockAxios.onGet(mockListEndpoint).replyOnce(200, { projects: [] });
 
-          wrapper.find('button.js-remove-button').vm.$emit('click');
+          wrapper.find('[data-testid="remove-project-button"]').vm.$emit('click');
 
           return waitForPromises().then(() => {
             expect(store.state.projects.length).toEqual(0);

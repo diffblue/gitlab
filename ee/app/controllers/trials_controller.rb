@@ -87,7 +87,7 @@ class TrialsController < ApplicationController
 
   def stored_location_or_provided_path(path)
     if current_user.setup_for_company &&
-        experiment(:combined_registration, user: current_user).variant.name == 'candidate'
+        experiment(:combined_registration, user: current_user).assigned.name == 'candidate'
       stored_location_for(:user) || path
     else
       path

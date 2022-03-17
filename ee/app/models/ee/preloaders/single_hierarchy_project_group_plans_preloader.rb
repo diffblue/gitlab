@@ -4,7 +4,6 @@ module EE
   module Preloaders
     module SingleHierarchyProjectGroupPlansPreloader
       def execute
-        return unless ::Feature.enabled?(:group_project_api_preload_plans, default_enabled: :yaml)
         return unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
         return unless project = projects.take
 

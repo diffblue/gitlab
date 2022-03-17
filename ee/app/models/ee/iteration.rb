@@ -172,10 +172,22 @@ module EE
       end
     end
 
+    def period
+      "#{start_date.to_s(:medium)} - #{due_date.to_s(:medium)}"
+    end
+
     def display_text
       return period unless group.iteration_cadences_feature_flag_enabled?
 
       "#{iterations_cadence.title} #{period}"
+    end
+
+    def title=(value)
+      if value.blank?
+        write_attribute(:title, nil)
+      else
+        super
+      end
     end
 
     def state
@@ -190,10 +202,10 @@ module EE
       group || project
     end
 
-    # Show just the title when we manage to find an iteration, without the reference pattern,
+    # Show display_text when we manage to find an iteration, without the reference pattern,
     # since it's long and unsightly.
     def reference_link_text(from = nil)
-      self.title
+      display_text
     end
 
     def supports_timebox_charts?
@@ -243,8 +255,8 @@ module EE
     def timebox_format_reference(format = :id)
       raise ::ArgumentError, _('Unknown format') unless [:id, :name].include?(format)
 
-      if format == :name
-        super
+      if format == :name && title.present?
+        %("#{title}")
       else
         id
       end
@@ -307,7 +319,7 @@ module EE
         # set to 0, i.e. unspecified when creating default iterations as we do validate for presence.
         iterations_in_advance: 0,
         duration_in_weeks: 0
-      ).safe_find_or_create_by!(group: group)
+      ).order(id: :asc).safe_find_or_create_by!(group: group)
     end
 
     # TODO: remove this as part of https://gitlab.com/gitlab-org/gitlab/-/issues/296100
@@ -318,15 +330,12 @@ module EE
       errors.add(:group, s_('is not valid. The iteration group has to match the iteration cadence group.'))
     end
 
+    # TODO: remove this as part of https://gitlab.com/gitlab-org/gitlab/-/issues/354878
     def uniqueness_of_title
       relation = self.class.where(iterations_cadence_id: self.iterations_cadence)
       title_exists = relation.find_by_title(title)
 
       errors.add(:title, _('already being used for another iteration within this cadence.')) if title_exists
-    end
-
-    def period
-      "#{start_date.to_s(:medium)} - #{due_date.to_s(:medium)}"
     end
   end
 end

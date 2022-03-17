@@ -14,17 +14,20 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Dast do
     where(:report_format,
           :occurrence_count,
           :identifier_count,
+          :evidence_count,
           :scanner_count,
           :scanned_resources_count,
           :last_occurrence_hostname,
           :last_occurrence_method_name,
           :last_occurrence_path,
           :last_occurrence_severity,
-          :last_occurrence_confidence) do
-      :dast                             | 24 | 15 | 1 | 6 | 'http://goat:8080' | 'GET' | '/WebGoat/plugins/bootstrap/css/bootstrap.min.css' | 'info' | 'low'
-      :dast_multiple_sites              | 25 | 15 | 1 | 0 | 'http://goat:8080' | 'GET' | '/WebGoat/plugins/bootstrap/css/bootstrap.min.css' | 'info' | 'low'
-      :dast_deprecated_no_spider        | 2  | 3  | 1 | 0 | 'http://bikebilly-spring-auto-devops-review-feature-br-3y2gpb.35.192.176.43.xip.io' | 'GET' | '/' | 'low' | 'medium'
-      :dast_deprecated_no_common_fields | 24 | 15 | 1 | 0 | 'http://goat:8080' | 'GET' | '/WebGoat/plugins/bootstrap/css/bootstrap.min.css' | 'info' | 'low'
+          :last_occurrence_confidence,
+          :last_occurrence_evidence_summary) do
+      :dast                             | 24 | 15 | 1 | 1 | 6 | 'http://goat:8080' | 'GET' | '/WebGoat/plugins/bootstrap/css/bootstrap.min.css' | 'info' | 'low' | nil
+      :dast_multiple_sites              | 25 | 15 | 1 | 1 | 0 | 'http://goat:8080' | 'GET' | '/WebGoat/plugins/bootstrap/css/bootstrap.min.css' | 'info' | 'low' | nil
+      :dast_deprecated_no_spider        | 2  | 3  | 1 | 1 | 0 | 'http://bikebilly-spring-auto-devops-review-feature-br-3y2gpb.35.192.176.43.xip.io' | 'GET' | '/' | 'low' | 'medium' | nil
+      :dast_deprecated_no_common_fields | 24 | 15 | 1 | 1 | 0 | 'http://goat:8080' | 'GET' | '/WebGoat/plugins/bootstrap/css/bootstrap.min.css' | 'info' | 'low' | nil
+      :dast_14_0_2                      | 1  | 2  | 1 | 1 | 3 | 'http://pancakes' | 'GET' | '/WebGoat/plugins/bootstrap/css/pancakes.css' | 'medium' | 'high' | "Evidence summary"
     end
 
     with_them do
@@ -49,6 +52,11 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Dast do
           method_name: last_occurrence_method_name,
           path: last_occurrence_path
         )
+      end
+
+      it 'generates expected evidence' do
+        evidence = report.findings.last.evidence
+        expect(evidence&.data&.dig('summary')).to eq(last_occurrence_evidence_summary)
       end
 
       describe 'occurrence properties' do

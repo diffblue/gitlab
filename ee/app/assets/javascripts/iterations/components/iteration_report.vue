@@ -14,12 +14,13 @@ import { TYPE_ITERATION } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { s__ } from '~/locale';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { Namespace } from '../constants';
+import { Namespace, iterationStates } from '../constants';
 import deleteIteration from '../queries/destroy_iteration.mutation.graphql';
 import query from '../queries/iteration.query.graphql';
+import { getIterationPeriod } from '../utils';
 import IterationReportTabs from './iteration_report_tabs.vue';
 import TimeboxStatusBadge from './timebox_status_badge.vue';
+import IterationTitle from './iteration_title.vue';
 
 export default {
   components: {
@@ -33,6 +34,7 @@ export default {
     GlModal,
     IterationReportTabs,
     TimeboxStatusBadge,
+    IterationTitle,
   },
   directives: {
     SafeHtml: GlSafeHtmlDirective,
@@ -57,7 +59,6 @@ export default {
       },
     },
   },
-  mixins: [glFeatureFlagsMixin()],
   inject: [
     'fullPath',
     'hasScopedLabelsFeature',
@@ -83,12 +84,18 @@ export default {
       return this.$router.currentRoute.params.iterationId;
     },
     showEmptyState() {
-      return !this.loading && this.iteration && !this.iteration.title;
+      return !this.loading && this.iteration && !this.iteration.startDate;
     },
     editPage() {
       return {
         name: 'editIteration',
       };
+    },
+    iterationPeriod() {
+      return getIterationPeriod(this.iteration);
+    },
+    showDelete() {
+      return this.iteration.state !== iterationStates.closed;
     },
   },
   methods: {
@@ -143,9 +150,7 @@ export default {
         class="gl-display-flex gl-justify-items-center gl-align-items-center gl-py-3 gl-border-1 gl-border-b-solid gl-border-gray-100"
       >
         <timebox-status-badge :state="iteration.state" />
-        <span class="gl-ml-4"
-          >{{ formatDate(iteration.startDate) }} – {{ formatDate(iteration.dueDate) }}</span
-        >
+        <span class="gl-ml-4">{{ iterationPeriod }}</span>
         <gl-dropdown
           v-if="canEdit"
           ref="menu"
@@ -161,7 +166,7 @@ export default {
             ><gl-icon name="ellipsis_v" />
           </template>
           <gl-dropdown-item :to="editPage">{{ __('Edit') }}</gl-dropdown-item>
-          <gl-dropdown-item data-testid="delete-iteration" @click="showModal">
+          <gl-dropdown-item v-if="showDelete" @click="showModal">
             {{ __('Delete') }}
           </gl-dropdown-item>
         </gl-dropdown>
@@ -181,7 +186,10 @@ export default {
           }}
         </gl-modal>
       </div>
-      <h3 ref="title" class="page-title">{{ iteration.title }}</h3>
+      <div ref="heading">
+        <h3 class="page-title gl-mb-1" data-testid="">{{ iterationPeriod }}</h3>
+        <iteration-title v-if="iteration.title" :title="iteration.title" class="text-secondary" />
+      </div>
       <div
         ref="description"
         v-safe-html:[$options.safeHtmlConfig]="iteration.descriptionHtml"

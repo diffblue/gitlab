@@ -33,7 +33,7 @@ RSpec.shared_examples 'invalid daily billable users count compared to limit set 
       overage = billable_users_count - active_user_count
       error_message = "This GitLab installation currently has #{billable_users_count} active users, " \
         "exceeding this license's limit of #{active_user_count} by #{overage} users. " \
-        "Please upload a license for at least #{billable_users_count} users"
+        "Please add a license for at least #{billable_users_count} users"
 
       expect(license.errors.full_messages.to_sentence).to include(error_message)
     end
@@ -78,7 +78,7 @@ RSpec.shared_examples 'invalid prior historical max compared to limit set by lic
       error_message = "During the year before this license started, " \
         "this GitLab installation had #{prior_active_user_count} active users, " \
         "exceeding this license's limit of #{active_user_count} by #{overage} user. " \
-        "Please upload a license for at least #{prior_active_user_count} users"
+        "Please add a license for at least #{prior_active_user_count} users"
 
       expect(license.errors.full_messages.to_sentence).to include(error_message)
     end

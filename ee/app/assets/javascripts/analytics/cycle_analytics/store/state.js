@@ -28,6 +28,7 @@ export default () => ({
   isEditingValueStream: false,
   isDeletingValueStream: false,
   isFetchingGroupLabels: false,
+  isUpdatingAggregation: false,
 
   createValueStreamErrors: {},
   deleteValueStreamError: null,
@@ -46,4 +47,9 @@ export default () => ({
     direction: PAGINATION_SORT_DIRECTION_DESC,
   },
   stageCounts: {},
+  aggregation: {
+    enabled: false,
+    lastRunAt: null,
+    nextRunAt: null,
+  },
 });

@@ -180,13 +180,16 @@ describe('Subscription Breakdown', () => {
 
     describe('footer buttons', () => {
       it.each`
-        url                     | type                              | shouldShow
-        ${subscriptionSyncPath} | ${subscriptionTypes.CLOUD}        | ${true}
-        ${subscriptionSyncPath} | ${subscriptionTypes.LICENSE_FILE} | ${false}
-        ${''}                   | ${subscriptionTypes.CLOUD}        | ${false}
-        ${''}                   | ${subscriptionTypes.LICENSE_FILE} | ${false}
-        ${undefined}            | ${subscriptionTypes.CLOUD}        | ${false}
-        ${undefined}            | ${subscriptionTypes.LICENSE_FILE} | ${false}
+        url                     | type                               | shouldShow
+        ${subscriptionSyncPath} | ${subscriptionTypes.ONLINE_CLOUD}  | ${true}
+        ${subscriptionSyncPath} | ${subscriptionTypes.OFFLINE_CLOUD} | ${false}
+        ${subscriptionSyncPath} | ${subscriptionTypes.LICENSE_FILE}  | ${false}
+        ${''}                   | ${subscriptionTypes.ONLINE_CLOUD}  | ${false}
+        ${''}                   | ${subscriptionTypes.OFFLINE_CLOUD} | ${false}
+        ${''}                   | ${subscriptionTypes.LICENSE_FILE}  | ${false}
+        ${undefined}            | ${subscriptionTypes.ONLINE_CLOUD}  | ${false}
+        ${undefined}            | ${subscriptionTypes.OFFLINE_CLOUD} | ${false}
+        ${undefined}            | ${subscriptionTypes.LICENSE_FILE}  | ${false}
       `(
         'with url is $url and type is $type the sync button is shown: $shouldShow',
         ({ url, type, shouldShow }) => {
@@ -229,13 +232,16 @@ describe('Subscription Breakdown', () => {
       });
 
       it.each`
-        url                  | type                              | shouldShow
-        ${licenseRemovePath} | ${subscriptionTypes.LICENSE_FILE} | ${true}
-        ${licenseRemovePath} | ${subscriptionTypes.CLOUD}        | ${true}
-        ${''}                | ${subscriptionTypes.LICENSE_FILE} | ${false}
-        ${''}                | ${subscriptionTypes.CLOUD}        | ${false}
-        ${undefined}         | ${subscriptionTypes.LICENSE_FILE} | ${false}
-        ${undefined}         | ${subscriptionTypes.CLOUD}        | ${false}
+        url                  | type                               | shouldShow
+        ${licenseRemovePath} | ${subscriptionTypes.LICENSE_FILE}  | ${true}
+        ${licenseRemovePath} | ${subscriptionTypes.ONLINE_CLOUD}  | ${true}
+        ${licenseRemovePath} | ${subscriptionTypes.OFFLINE_CLOUD} | ${true}
+        ${''}                | ${subscriptionTypes.LICENSE_FILE}  | ${false}
+        ${''}                | ${subscriptionTypes.ONLINE_CLOUD}  | ${false}
+        ${''}                | ${subscriptionTypes.OFFLINE_CLOUD} | ${false}
+        ${undefined}         | ${subscriptionTypes.LICENSE_FILE}  | ${false}
+        ${undefined}         | ${subscriptionTypes.ONLINE_CLOUD}  | ${false}
+        ${undefined}         | ${subscriptionTypes.OFFLINE_CLOUD} | ${false}
       `(
         'with url is $url and type is $type the remove button is shown: $shouldShow',
         ({ url, type, shouldShow }) => {
@@ -254,9 +260,10 @@ describe('Subscription Breakdown', () => {
       );
 
       it.each`
-        type                              | shouldShow
-        ${subscriptionTypes.LICENSE_FILE} | ${true}
-        ${subscriptionTypes.CLOUD}        | ${false}
+        type                               | shouldShow
+        ${subscriptionTypes.LICENSE_FILE}  | ${true}
+        ${subscriptionTypes.ONLINE_CLOUD}  | ${false}
+        ${subscriptionTypes.OFFLINE_CLOUD} | ${false}
       `(
         'with url is $url and type is $type the activate cloud license button is shown: $shouldShow',
         ({ type, shouldShow }) => {

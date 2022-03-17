@@ -75,19 +75,11 @@ RSpec.describe ::Gitlab::Security::ScanConfiguration do
         end
       end
 
-      context 'with a scanner under feature flag' do
+      context 'with a scanner' do
         let(:type) { :corpus_management }
         let(:configuration_path) { "/#{project.namespace.path}/#{project.name}/-/security/configuration/corpus_management" }
 
         it { is_expected.to eq(configuration_path) }
-
-        context 'when feature flag is disabled' do
-          before do
-            stub_feature_flags(corpus_management_ui: false)
-          end
-
-          it { is_expected.to be_nil }
-        end
       end
     end
 

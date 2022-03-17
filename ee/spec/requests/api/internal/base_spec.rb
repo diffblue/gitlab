@@ -277,6 +277,12 @@ RSpec.describe API::Internal::Base do
         end
       end
     end
+
+    context 'git audit streaming event' do
+      it_behaves_like 'sends git audit streaming event' do
+        subject { pull(key, project) }
+      end
+    end
   end
 
   describe "POST /internal/lfs_authenticate", :geo do

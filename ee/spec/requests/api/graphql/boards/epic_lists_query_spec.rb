@@ -7,16 +7,19 @@ RSpec.describe 'get list of epic boards' do
 
   let_it_be(:current_user) { create(:user) }
   let_it_be(:group) { create(:group, :private) }
+  let_it_be(:project) { create(:project, group: group) }
   let_it_be(:board) { create(:epic_board, group: group) }
   let_it_be(:list1) { create(:epic_list, epic_board: board) }
   let_it_be(:list2) { create(:epic_list, epic_board: board, list_type: :closed) }
   let_it_be(:list3) { create(:epic_list, epic_board: board, list_type: :backlog) }
 
+  let(:fields) { all_graphql_fields_for('epic_lists'.classify) }
+
   def pagination_query(params = {})
     graphql_query_for(:group, { full_path: group.full_path },
       <<~BOARDS
         epicBoard(id: "#{board.to_global_id}") {
-          #{query_nodes(:lists, all_graphql_fields_for('epic_lists'.classify), include_pagination_info: true, args: params)}
+          #{query_nodes(:lists, fields, include_pagination_info: true, args: params)}
         }
       BOARDS
     )
@@ -79,24 +82,47 @@ RSpec.describe 'get list of epic boards' do
         assert_field_value('collapsed', [false, true, false])
       end
 
-      it 'returns the correct values for count' do
+      it 'returns the correct metadata values' do
         label = create(:group_label, group: group)
         # Epics in backlog, the list which is returned first. The first epic
         # should be ignored because it doesn't have the label by which we are
         # filtering.
         create(:labeled_epic, group: group)
-        create(:labeled_epic, group: group, labels: [label])
         create(:labeled_epic, group: group, labels: [label], confidential: true)
+        epic_with_issue = create(:labeled_epic, group: group, labels: [label])
+
+        create(:issue, project: project, epic: epic_with_issue, weight: 3)
+        create(:issue, project: project, epic: epic_with_issue, weight: 4)
 
         params = { epicFilters: { labelName: label.title, confidential: false } }
         post_graphql(pagination_query(params), current_user: current_user)
 
         assert_field_value('epicsCount', [1, 0, 0])
+        expected_metadata = [
+          { 'epicsCount' => 1, 'totalWeight' => 7 },
+          { 'epicsCount' => 0, 'totalWeight' => nil },
+          { 'epicsCount' => 0, 'totalWeight' => nil }
+        ]
+        assert_field_value('metadata', expected_metadata)
+      end
+
+      context 'when totalWeight not requested' do
+        let(:fields) { "metadata { epicsCount }" }
+
+        it 'does not required the value from the service' do
+          post_graphql(pagination_query, current_user: current_user)
+
+          expect(dig_data('metadata').first.keys).to match_array(['epicsCount'])
+        end
       end
     end
   end
 
   def assert_field_value(field, expected_value)
-    expect(graphql_dig_at(graphql_data, 'group', 'epicBoard', 'lists', 'nodes', field)).to eq(expected_value)
+    expect(dig_data(field)).to eq(expected_value)
+  end
+
+  def dig_data(field)
+    graphql_dig_at(graphql_data, 'group', 'epicBoard', 'lists', 'nodes', field)
   end
 end

@@ -1,6 +1,10 @@
 <script>
 import { GlEmptyState } from '@gitlab/ui';
 import { mapActions, mapState, mapGetters } from 'vuex';
+import createFlash from '~/flash';
+import { s__ } from '~/locale';
+import { refreshCurrentPage } from '~/lib/utils/url_utility';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
 import PathNavigation from '~/cycle_analytics/components/path_navigation.vue';
 import StageTable from '~/cycle_analytics/components/stage_table.vue';
@@ -10,6 +14,7 @@ import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { METRICS_REQUESTS } from '../constants';
 import DurationChart from './duration_chart.vue';
 import TypeOfWorkCharts from './type_of_work_charts.vue';
+import ValueStreamAggregationStatus from './value_stream_aggregation_status.vue';
 import ValueStreamSelect from './value_stream_select.vue';
 
 export default {
@@ -20,11 +25,13 @@ export default {
     TypeOfWorkCharts,
     StageTable,
     PathNavigation,
+    ValueStreamAggregationStatus,
     ValueStreamFilters,
     ValueStreamMetrics,
     ValueStreamSelect,
     UrlSync,
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     emptyStateSvgPath: {
       type: String,
@@ -55,13 +62,14 @@ export default {
       'selectedStageError',
       'selectedValueStream',
       'pagination',
+      'aggregation',
+      'isUpdatingAggregation',
     ]),
     ...mapGetters([
       'hasNoAccessError',
       'currentGroupPath',
       'activeStages',
       'selectedProjectIds',
-      'enableCustomOrdering',
       'cycleAnalyticsRequestParams',
       'pathNavigationData',
       'isOverviewStageSelected',
@@ -81,6 +89,15 @@ export default {
     },
     hasDateRangeSet() {
       return this.createdAfter && this.createdBefore;
+    },
+    canToggleAggregation() {
+      return this.glFeatures.useVsaAggregatedTables;
+    },
+    isAggregationEnabled() {
+      return this.canToggleAggregation && this.aggregation.enabled;
+    },
+    isAggregationStatusAvailable() {
+      return this.isAggregationEnabled && this.aggregation.lastRunAt;
     },
     query() {
       const { project_ids, created_after, created_before } = this.cycleAnalyticsRequestParams;
@@ -118,6 +135,7 @@ export default {
       'setDefaultSelectedStage',
       'setDateRange',
       'updateStageTablePagination',
+      'updateAggregation',
     ]),
     onProjectsSelect(projects) {
       this.setSelectedProjects(projects);
@@ -139,8 +157,43 @@ export default {
     onHandleUpdatePagination(data) {
       this.updateStageTablePagination(data);
     },
+    onToggleAggregation(value) {
+      this.updateAggregation(value)
+        .then(() => {
+          this.$toast.show(
+            value
+              ? s__('CycleAnalytics|Aggregation enabled')
+              : s__('CycleAnalytics|Aggregation disabled'),
+          );
+          /*
+           * NOTE: We have opted for a hard page refresh here as the cleanest way to
+           * ensure users will be seeing accurate information when this request succeeds, or correctly
+           * prompted to create a value stream.
+           *
+           * With https://gitlab.com/groups/gitlab-org/-/epics/6046 we are changing how we calculate
+           * data for value stream analytics. One of the side effects will be removing the "in memory"
+           * default value stream that has currently been available when there are no custom value streams.
+           *
+           * All the API requests require at least 1 value stream to exist in the group, if there are no
+           * value streams available we will instead display an empty state with next steps on how
+           * to set up your first custom value stream: https://gitlab.com/gitlab-org/gitlab/-/issues/351853.
+           */
+          refreshCurrentPage();
+        })
+        .catch(() => {
+          createFlash({
+            message: s__(
+              'CycleAnalytics|There was an error updating the aggregation status, please try again.',
+            ),
+          });
+        });
+    },
   },
   METRICS_REQUESTS,
+  aggregationPopoverOptions: {
+    triggers: 'hover',
+    placement: 'left',
+  },
 };
 </script>
 <template>
@@ -149,10 +202,10 @@ export default {
       class="gl-mb-3 gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-justify-content-space-between"
     >
       <h3>{{ __('Value Stream Analytics') }}</h3>
-      <value-stream-select
-        v-if="shouldDisplayCreateMultipleValueStreams"
-        class="gl-align-self-start gl-sm-align-self-start gl-mt-0 gl-sm-mt-5"
-      />
+      <div class="gl-display-flex gl-flex-direction-row gl-align-items-center gl-mt-0 gl-sm-mt-5">
+        <value-stream-aggregation-status v-if="isAggregationStatusAvailable" :data="aggregation" />
+        <value-stream-select v-if="shouldDisplayCreateMultipleValueStreams" />
+      </div>
     </div>
     <gl-empty-state
       v-if="shouldRenderEmptyState"
@@ -178,6 +231,10 @@ export default {
         :selected-projects="selectedProjects"
         :start-date="createdAfter"
         :end-date="createdBefore"
+        :can-toggle-aggregation="canToggleAggregation"
+        :is-aggregation-enabled="isAggregationEnabled"
+        :is-updating-aggregation-data="isLoading || isUpdatingAggregation"
+        @toggleAggregation="onToggleAggregation"
         @selectProject="onProjectsSelect"
         @setDateRange="onSetDateRange"
       />

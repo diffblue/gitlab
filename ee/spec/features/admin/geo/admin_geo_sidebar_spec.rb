@@ -7,9 +7,11 @@ RSpec.describe 'admin Geo Sidebar', :js, :geo do
   include StubENV
 
   let_it_be(:admin) { create(:admin) }
+  let_it_be(:primary_node) { create(:geo_node, :primary) }
 
   before do
     stub_licensed_features(geo: true)
+    stub_current_geo_node(primary_node)
     sign_in(admin)
     gitlab_enable_admin_mode_sign_in(admin)
   end

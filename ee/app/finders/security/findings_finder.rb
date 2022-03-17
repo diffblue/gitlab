@@ -37,6 +37,7 @@ module Security
     private
 
     attr_reader :pipeline, :params
+
     delegate :project, :has_security_findings?, to: :pipeline, private: true
 
     def findings
@@ -47,13 +48,14 @@ module Security
       report_finding = report_finding_for(security_finding)
       return Vulnerabilities::Finding.new unless report_finding
 
-      finding_data = report_finding.to_hash.except(:compare_key, :identifiers, :location, :scanner, :links, :signatures, :flags)
+      finding_data = report_finding.to_hash.except(:compare_key, :identifiers, :location, :scanner, :links, :signatures, :flags, :evidence)
       identifiers = report_finding.identifiers.map do |identifier|
         Vulnerabilities::Identifier.new(identifier.to_hash)
       end
       signatures = report_finding.signatures.map do |signature|
         Vulnerabilities::FindingSignature.new(signature.to_hash)
       end
+      evidence = Vulnerabilities::Finding::Evidence.new(data: report_finding.evidence.data) if report_finding.evidence
 
       Vulnerabilities::Finding.new(finding_data).tap do |finding|
         finding.location_fingerprint = report_finding.location.fingerprint
@@ -61,6 +63,7 @@ module Security
         finding.project = project
         finding.sha = pipeline.sha
         finding.scanner = security_finding.scanner
+        finding.finding_evidence = evidence
 
         if calculate_false_positive?
           finding.vulnerability_flags = report_finding.flags.map do |flag|

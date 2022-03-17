@@ -20,6 +20,8 @@ class Group < Namespace
   include ChronicDurationAttribute
   include RunnerTokenExpirationInterval
 
+  extend ::Gitlab::Utils::Override
+
   def self.sti_name
     'Group'
   end
@@ -115,7 +117,9 @@ class Group < Namespace
                       message: Gitlab::Regex.group_name_regex_message },
             if: :name_changed?
 
-  add_authentication_token_field :runners_token, encrypted: -> { Feature.enabled?(:groups_tokens_optional_encryption, default_enabled: true) ? :optional : :required }
+  add_authentication_token_field :runners_token,
+                                 encrypted: -> { Feature.enabled?(:groups_tokens_optional_encryption, default_enabled: true) ? :optional : :required },
+                                prefix: RunnersTokenPrefixable::RUNNERS_TOKEN_PREFIX
 
   after_create :post_create_hook
   after_destroy :post_destroy_hook
@@ -669,6 +673,11 @@ class Group < Namespace
     ensure_runners_token!
   end
 
+  override :format_runners_token
+  def format_runners_token(token)
+    "#{RunnersTokenPrefixable::RUNNERS_TOKEN_PREFIX}#{token}"
+  end
+
   def project_creation_level
     super || ::Gitlab::CurrentSettings.default_project_creation
   end
@@ -807,7 +816,9 @@ class Group < Namespace
   private
 
   def max_member_access(user_ids)
-    max_member_access_for_resource_ids(User, user_ids) do |user_ids|
+    Gitlab::SafeRequestLoader.execute(resource_key: max_member_access_for_resource_key(User),
+                                      resource_ids: user_ids,
+                                      default_value: Gitlab::Access::NO_ACCESS) do |user_ids|
       members_with_parents.where(user_id: user_ids).group(:user_id).maximum(:access_level)
     end
   end

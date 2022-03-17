@@ -2,7 +2,7 @@ import Vue from 'vue';
 import { GlToast } from '@gitlab/ui';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import ProjectSettingsApp from './components/project_settings/app.vue';
-import { projectApprovalsMappers, mergeRequestApprovalSettingsMappers } from './mappers';
+import { mergeRequestApprovalSettingsMappers } from './mappers';
 import createStore from './stores';
 import approvalSettingsModule from './stores/modules/approval_settings';
 import projectSettingsModule from './stores/modules/project_settings';
@@ -22,14 +22,7 @@ export default function mountProjectSettingsApprovals(el) {
     approvals: projectSettingsModule(),
   };
 
-  if (gon.features.groupMergeRequestApprovalSettingsFeatureFlag) {
-    modules.approvalSettings = approvalSettingsModule(mergeRequestApprovalSettingsMappers);
-  } else {
-    modules.approvalSettings = approvalSettingsModule({
-      updateMethod: 'post',
-      ...projectApprovalsMappers,
-    });
-  }
+  modules.approvalSettings = approvalSettingsModule(mergeRequestApprovalSettingsMappers);
 
   const store = createStore(modules, {
     ...el.dataset,

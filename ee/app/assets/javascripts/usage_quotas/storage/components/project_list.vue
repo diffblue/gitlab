@@ -23,10 +23,14 @@ export default {
       required: false,
       default: false,
     },
+    usageLabel: {
+      type: String,
+      required: false,
+      default: PROJECT_TABLE_LABEL_USAGE,
+    },
   },
   i18n: {
     PROJECT_TABLE_LABEL_PROJECT,
-    PROJECT_TABLE_LABEL_USAGE,
   },
 };
 </script>
@@ -40,8 +44,12 @@ export default {
       <div class="table-section section-70 gl-font-weight-bold" role="columnheader">
         {{ $options.i18n.PROJECT_TABLE_LABEL_PROJECT }}
       </div>
-      <div class="table-section section-30 gl-font-weight-bold" role="columnheader">
-        {{ $options.i18n.PROJECT_TABLE_LABEL_USAGE }}
+      <div
+        class="table-section section-30 gl-font-weight-bold"
+        role="columnheader"
+        data-testid="usage-label"
+      >
+        {{ usageLabel }}
       </div>
     </div>
     <projects-skeleton-loader v-if="isLoading" />

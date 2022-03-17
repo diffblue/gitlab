@@ -229,7 +229,8 @@ RSpec.describe ProjectsHelper do
           scanners: '[{"id":123,"vendor":"Security Vendor","report_type":"SAST"}]',
           can_admin_vulnerability: 'true',
           can_view_false_positive: 'false',
-          security_configuration_path: kind_of(String)
+          security_configuration_path: kind_of(String),
+          new_vulnerability_path: end_with('/security/vulnerabilities/new')
         }
       end
 
@@ -331,15 +332,24 @@ RSpec.describe ProjectsHelper do
     subject { helper.marked_for_removal_message(project) }
 
     before do
-      allow(project).to receive(:adjourned_deletion?).and_return(enabled)
+      allow(project).to receive(:feature_available?).with(:adjourned_deletion_for_projects_and_groups).and_return(feature_available)
     end
 
-    context 'when project has delayed deletion enabled' do
-      let(:enabled) { true }
+    context 'when project has delayed deletion feature' do
+      let(:feature_available) { true }
 
       specify do
         deletion_date = helper.permanent_deletion_date(Time.now.utc)
         expect(subject).to eq "This action deletes <code>#{project.path_with_namespace}</code> on #{deletion_date} and everything this project contains."
+      end
+    end
+
+    context 'when project does not have delayed deletion feature' do
+      let(:feature_available) { false }
+
+      specify do
+        deletion_date = helper.permanent_deletion_date(Time.now.utc)
+        expect(subject).to eq "This action deletes <code>#{project.path_with_namespace}</code> on #{deletion_date} and everything this project contains. <strong>There is no going back.</strong>"
       end
     end
   end
@@ -421,43 +431,25 @@ RSpec.describe ProjectsHelper do
       allow(helper).to receive(:can?).and_return(true)
     end
 
-    context 'with group_merge_request_approval_settings_feature_flag disabled' do
-      before do
-        stub_feature_flags(group_merge_request_approval_settings_feature_flag: false)
-      end
-
-      it 'returns the correct data' do
-        expect(subject).to eq({
-          project_id: project.id,
-          can_edit: 'true',
-          can_modify_author_settings: 'true',
-          can_modify_commiter_settings: 'true',
-          approvals_path: expose_path(api_v4_projects_approvals_path(id: project.id)),
-          project_path: expose_path(api_v4_projects_path(id: project.id)),
-          settings_path: expose_path(api_v4_projects_approval_settings_path(id: project.id)),
-          rules_path: expose_path(api_v4_projects_approval_settings_rules_path(id: project.id)),
-          allow_multi_rule: project.multiple_approval_rules_available?.to_s,
-          eligible_approvers_docs_path: help_page_path('user/project/merge_requests/approvals/rules', anchor: 'eligible-approvers'),
-          security_approvals_help_page_path: help_page_path('user/application_security/index', anchor: 'security-approvals-in-merge-requests'),
-          security_configuration_path: project_security_configuration_path(project),
-          vulnerability_check_help_page_path: help_page_path('user/application_security/index', anchor: 'security-approvals-in-merge-requests'),
-          license_check_help_page_path: help_page_path('user/application_security/index', anchor: 'enabling-license-approvals-within-a-project'),
-          coverage_check_help_page_path: help_page_path('ci/pipelines/settings', anchor: 'coverage-check-approval-rule')
-        })
-      end
-    end
-
-    context 'with group_merge_request_approval_settings_feature_flag enabled' do
-      before do
-        stub_feature_flags(group_merge_request_approval_settings_feature_flag: true)
-      end
-
-      it 'returns the correct data' do
-        expect(subject).to include(
-          approvals_path: expose_path(api_v4_projects_merge_request_approval_setting_path(id: project.id)),
-          group_name: project.root_ancestor.name
-        )
-      end
+    it 'returns the correct data' do
+      expect(subject).to include(
+        project_id: project.id,
+        can_edit: 'true',
+        can_modify_author_settings: 'true',
+        can_modify_commiter_settings: 'true',
+        approvals_path: expose_path(api_v4_projects_merge_request_approval_setting_path(id: project.id)),
+        project_path: expose_path(api_v4_projects_path(id: project.id)),
+        settings_path: expose_path(api_v4_projects_approval_settings_path(id: project.id)),
+        rules_path: expose_path(api_v4_projects_approval_settings_rules_path(id: project.id)),
+        allow_multi_rule: project.multiple_approval_rules_available?.to_s,
+        eligible_approvers_docs_path: help_page_path('user/project/merge_requests/approvals/rules', anchor: 'eligible-approvers'),
+        security_approvals_help_page_path: help_page_path('user/application_security/index', anchor: 'security-approvals-in-merge-requests'),
+        security_configuration_path: project_security_configuration_path(project),
+        vulnerability_check_help_page_path: help_page_path('user/application_security/index', anchor: 'security-approvals-in-merge-requests'),
+        license_check_help_page_path: help_page_path('user/application_security/index', anchor: 'enabling-license-approvals-within-a-project'),
+        coverage_check_help_page_path: help_page_path('ci/pipelines/settings', anchor: 'coverage-check-approval-rule'),
+        group_name: project.root_ancestor.name
+      )
     end
   end
 
@@ -469,6 +461,44 @@ RSpec.describe ProjectsHelper do
         project_id: project.id,
         status_checks_path: expose_path(api_v4_projects_external_status_checks_path(id: project.id))
       })
+    end
+  end
+
+  describe '#project_compliance_framework_app_data' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
+
+    let(:can_edit) { false }
+
+    subject { helper.project_compliance_framework_app_data(project, can_edit) }
+
+    before do
+      allow(helper).to receive(:image_path).and_return('#empty_state_svg_path')
+    end
+
+    context 'when the user cannot edit' do
+      let(:can_edit) { false }
+
+      it 'returns the correct data' do
+        expect(subject).to eq({
+          group_name: group.name,
+          group_path: group_path(group),
+          empty_state_svg_path: '#empty_state_svg_path'
+        })
+      end
+    end
+
+    context 'when the user can edit' do
+      let(:can_edit) { true }
+
+      it 'includes the framework edit path' do
+        expect(subject).to eq({
+          group_name: group.name,
+          group_path: group_path(group),
+          empty_state_svg_path: '#empty_state_svg_path',
+          add_framework_path: "#{edit_group_path(group)}#js-compliance-frameworks-settings"
+        })
+      end
     end
   end
 end

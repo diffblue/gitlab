@@ -19,6 +19,9 @@ module Pseudonymizer
       end
     end
 
+    # Disable rubocop Database/MultipleDatabases cop until Pseudonymizer is removed
+    # See https://gitlab.com/gitlab-org/gitlab/-/issues/350190
+    # rubocop:disable Database/MultipleDatabases
     def pages_per_id(&block)
       id_offset = 0
 
@@ -40,7 +43,11 @@ module Pseudonymizer
         break if results.count < PAGE_SIZE
       end
     end
+    # rubocop:enable Database/MultipleDatabases
 
+    # Disable rubocop Database/MultipleDatabases cop until Pseudonymizer is removed
+    # See https://gitlab.com/gitlab-org/gitlab/-/issues/350190
+    # rubocop:disable Database/MultipleDatabases
     def pages_per_offset(&block)
       offset = 0
 
@@ -61,5 +68,6 @@ module Pseudonymizer
         break if results.count < PAGE_SIZE
       end
     end
+    # rubocop:enable Database/MultipleDatabases
   end
 end

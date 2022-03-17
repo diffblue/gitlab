@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'User views iteration' do
-  let_it_be(:now) { Time.now }
+  let_it_be(:now) { Time.zone.now }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:project_2) { create(:project, group: group) }
@@ -72,7 +72,7 @@ RSpec.describe 'User views iteration' do
       # for backward compatibility we redirect /-/iterations/inherited/ID to /-/iterations/ID and render iteration page
       let(:url) { "#{project_path(project)}/-/iterations/inherited/#{iteration.id}" }
 
-      it { expect(current_path).to eq("#{project_path(project)}/-/iterations/#{iteration.id}") }
+      it { expect(page).to have_current_path("#{project_path(project)}/-/iterations/#{iteration.id}", ignore_query: true) }
 
       it_behaves_like 'render iteration page'
     end

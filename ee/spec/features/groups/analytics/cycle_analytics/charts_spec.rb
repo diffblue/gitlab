@@ -32,47 +32,8 @@ RSpec.describe 'Value stream analytics charts', :js do
     sign_in(user)
   end
 
-  shared_examples 'has all the default stages' do
-    it 'has all the default stages in the duration dropdown' do
-      toggle_duration_chart_dropdown
-
-      expect(duration_chart_stages).to eq(translated_default_stage_names + [latest_custom_stage_name])
-    end
-  end
-
   context 'Duration chart' do
-    duration_stage_selector = '.js-dropdown-stages'
-
-    let(:duration_chart_dropdown) { page.find(duration_stage_selector) }
     let(:custom_value_stream_name) { "New created value stream" }
-
-    let_it_be(:translated_default_stage_names) do
-      Gitlab::Analytics::CycleAnalytics::DefaultStages.names.map do |name|
-        stage = Analytics::CycleAnalytics::GroupStage.new(name: name)
-        Analytics::CycleAnalytics::StagePresenter.new(stage).title
-      end.freeze
-    end
-
-    def duration_chart_stages
-      duration_chart_dropdown.all('.dropdown-item').collect(&:text)
-    end
-
-    def toggle_duration_chart_dropdown
-      duration_chart_dropdown.click
-    end
-
-    def hide_vsa_stage(index = 0)
-      page.find_button(_('Edit')).click
-      page.find("[data-testid='stage-action-hide-#{index}']").click
-      click_save_value_stream_button
-
-      wait_for_requests
-    end
-
-    def latest_custom_stage_name
-      index = duration_chart_stages.length
-      "Cool custom stage - name #{index}"
-    end
 
     before do
       select_group(group)
@@ -80,15 +41,20 @@ RSpec.describe 'Value stream analytics charts', :js do
       create_custom_value_stream(custom_value_stream_name)
     end
 
-    it_behaves_like 'has all the default stages'
+    it 'displays data for all stages on the overview' do
+      page.within('[data-testid="vsa-path-navigation"]') do
+        click_button "Overview"
+      end
 
-    it 'hidden stages will not appear in the duration chart dropdown' do
-      first_stage_name = duration_chart_stages.first
+      expect(page).to have_text("Total time")
+    end
 
-      hide_vsa_stage
-      toggle_duration_chart_dropdown
+    it 'displays data for a specific stage when selected' do
+      page.within('[data-testid="vsa-path-navigation"]') do
+        click_button "Issue"
+      end
 
-      expect(duration_chart_stages).not_to include(first_stage_name)
+      expect(page).to have_text("Stage time: Issue")
     end
   end
 

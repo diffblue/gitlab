@@ -13,7 +13,7 @@ RSpec.describe Registrations::GroupsController do
     let_it_be(:trial_form_params) { { trial: 'false' } }
     let_it_be(:trial_onboarding_flow_params) { {} }
 
-    let(:dev_env_or_com) { true }
+    let(:com) { true }
     let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s, create_event: true, setup_for_company: setup_for_company } }
     let(:setup_for_company) { nil }
     let(:params) do
@@ -30,7 +30,7 @@ RSpec.describe Registrations::GroupsController do
     context 'with an authenticated user' do
       before do
         sign_in(user)
-        allow(::Gitlab).to receive(:dev_env_or_com?).and_return(dev_env_or_com)
+        allow(::Gitlab).to receive(:com?).and_return(com)
       end
 
       context 'when on .com' do
@@ -235,7 +235,7 @@ RSpec.describe Registrations::GroupsController do
       end
 
       context 'when not on .com' do
-        let(:dev_env_or_com) { false }
+        let(:com) { false }
 
         it { is_expected.to have_gitlab_http_status(:not_found) }
       end

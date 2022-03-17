@@ -229,6 +229,17 @@ class GeoNode < ApplicationRecord
     Gitlab::Routing.url_helpers.admin_geo_projects_url(url_helper_args)
   end
 
+  def geo_replication_details_url
+    return unless self.secondary?
+
+    replicator_class = ::Gitlab::Geo.enabled_replicator_classes.first
+
+    # redirect to the replicables for the first SSF data type
+    Gitlab::Routing.url_helpers.site_replicables_admin_geo_node_url(
+      id: self.id, replicable_name_plural: replicator_class.replicable_name_plural, **url_helper_args
+    )
+  end
+
   def missing_oauth_application?
     self.primary? ? false : !oauth_application.present?
   end

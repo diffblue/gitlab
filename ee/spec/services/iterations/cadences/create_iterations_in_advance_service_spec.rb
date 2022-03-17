@@ -161,8 +161,8 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
             end
 
             context 'when cadence has iterations but all are in the past' do
-              let_it_be(:past_iteration1) { create(:iteration, group: group, title: 'Iteration 1: some user note', iterations_cadence: automated_cadence, start_date: 3.weeks.ago, due_date: 2.weeks.ago)}
-              let_it_be(:past_iteration2) { create(:iteration, group: group, title: 'Iteration 2: some user note', iterations_cadence: automated_cadence, start_date: past_iteration1.due_date + 1.day, due_date: past_iteration1.due_date + 1.week)}
+              let_it_be(:past_iteration1) { create(:iteration, group: group, title: 'Important iteration', iterations_cadence: automated_cadence, start_date: 3.weeks.ago, due_date: 2.weeks.ago)}
+              let_it_be(:past_iteration2) { create(:iteration, group: group, iterations_cadence: automated_cadence, start_date: past_iteration1.due_date + 1.day, due_date: past_iteration1.due_date + 1.week)}
 
               before do
                 automated_cadence.update!(iterations_in_advance: 2)
@@ -181,15 +181,15 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
                 expect(automated_cadence.reload.last_run_date).to eq(automated_cadence.reload.iterations.last(2).first.due_date)
               end
 
-              it 'sets the title correctly based on iterations count without modifying user-edited titles' do
+              it 'does not modify the titles of the existing iterations (if they have any)' do
                 subject
 
                 expect(group.reload.iterations.due_date_order_asc.pluck(:title)).to eq([
-                  'Iteration 1: some user note',
-                  'Iteration 2: some user note',
-                  'Iteration 3',
-                  'Iteration 4',
-                  'Iteration 5'
+                  'Important iteration',
+                  nil,
+                  nil,
+                  nil,
+                  nil
                 ])
               end
 

@@ -60,9 +60,9 @@ RSpec.describe Analytics::CycleAnalytics::ConsistencyCheckService, :aggregate_fa
 
   context 'for issue based stage' do
     let(:event_model) { Analytics::CycleAnalytics::IssueStageEvent }
-    let!(:record1) { create(:issue, :closed, project: project1) }
-    let!(:record2) { create(:issue, :closed, project: project2) }
-    let!(:record3) { create(:issue, :closed, project: project2) }
+    let!(:record1) { create(:issue, :closed, project: project1, created_at: 1.month.ago) }
+    let!(:record2) { create(:issue, :closed, project: project2, created_at: 1.month.ago) }
+    let!(:record3) { create(:issue, :closed, project: project2, created_at: 1.month.ago) }
 
     let!(:stage) { create(:cycle_analytics_group_stage, group: group, start_event_identifier: :issue_created, end_event_identifier: :issue_closed) }
 
@@ -71,9 +71,9 @@ RSpec.describe Analytics::CycleAnalytics::ConsistencyCheckService, :aggregate_fa
 
   context 'for merge request based stage' do
     let(:event_model) { Analytics::CycleAnalytics::MergeRequestStageEvent }
-    let!(:record1) { create(:merge_request, :closed_last_month, project: project1) }
-    let!(:record2) { create(:merge_request, :closed_last_month, project: project2) }
-    let!(:record3) { create(:merge_request, :closed_last_month, project: project2) }
+    let!(:record1) { create(:merge_request, :closed_last_month, project: project1, created_at: 2.months.ago) }
+    let!(:record2) { create(:merge_request, :closed_last_month, project: project2, created_at: 2.months.ago) }
+    let!(:record3) { create(:merge_request, :closed_last_month, project: project2, created_at: 2.months.ago) }
 
     let!(:stage) { create(:cycle_analytics_group_stage, group: group, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_closed) }
 

@@ -62,7 +62,10 @@
               "type": "integer"
             },
             "title": {
-              "type": "string"
+              "type": [
+                "string",
+                "null"
+              ]
             },
             "description": {
               "type": [

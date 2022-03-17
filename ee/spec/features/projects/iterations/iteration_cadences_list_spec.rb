@@ -27,14 +27,14 @@ RSpec.describe 'User views project iteration cadences', :js do
       expect(page).to have_title('Iteration cadences')
       expect(page).to have_content(cadence.title)
       expect(page).to have_content(other_cadence.title)
-      expect(page).not_to have_content(iteration_in_cadence.title)
-      expect(page).not_to have_content(iteration_in_other_cadence.title)
+      expect(page).not_to have_content(iteration_in_cadence.period)
+      expect(page).not_to have_content(iteration_in_other_cadence.period)
 
       click_button cadence.title
 
-      expect(page).to have_content(iteration_in_cadence.title)
-      expect(page).not_to have_content(iteration_in_other_cadence.title)
-      expect(page).not_to have_content(closed_iteration_in_cadence.title)
+      expect(page).to have_content(iteration_in_cadence.period)
+      expect(page).not_to have_content(iteration_in_other_cadence.period)
+      expect(page).not_to have_content(closed_iteration_in_cadence.period)
       expect(page).not_to have_link('New iteration cadence')
     end
   end

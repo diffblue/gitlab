@@ -1,0 +1,8 @@
+---
+name: status_checks_add_status_field
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/81005
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/353836
+milestone: '14.9'
+type: development
+group: group::compliance
+default_enabled: false

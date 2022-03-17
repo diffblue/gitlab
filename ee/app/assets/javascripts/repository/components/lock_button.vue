@@ -90,11 +90,8 @@ export default {
 </script>
 
 <template>
-  <span>
-    <gl-button :disabled="!canLock" :loading="lockLoading" @click="showModal">
-      {{ lockButtonTitle }}
-    </gl-button>
-
+  <gl-button :disabled="!canLock" :loading="lockLoading" @click="showModal">
+    {{ lockButtonTitle }}
     <gl-modal
       modal-id="lock-file-modal"
       :visible="isModalVisible"
@@ -108,5 +105,5 @@ export default {
         {{ lockConfirmText }}
       </p>
     </gl-modal>
-  </span>
+  </gl-button>
 </template>

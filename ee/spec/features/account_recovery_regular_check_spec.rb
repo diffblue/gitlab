@@ -19,7 +19,7 @@ RSpec.describe 'Account recovery regular check callout' do
       end
 
       it 'does not show the callout' do
-        visit root_dashboard_path
+        visit dashboard_todos_path
 
         expect(page).not_to have_content(message)
       end
@@ -32,11 +32,10 @@ RSpec.describe 'Account recovery regular check callout' do
           fill_in 'current_password', with: user_two_factor_disabled.password
 
           click_button 'Register with two-factor app'
-
-          expect(page).not_to have_content(message)
-
           click_button 'Copy codes'
           click_link 'Proceed'
+
+          visit dashboard_todos_path
 
           expect(page).not_to have_content(message)
         end
@@ -49,14 +48,14 @@ RSpec.describe 'Account recovery regular check callout' do
       end
 
       it 'shows callout if not dismissed' do
-        visit root_dashboard_path
+        visit dashboard_todos_path
 
         expect(page).to have_content(message)
         expect(page).to have_link(action_button, href: profile_two_factor_auth_path)
       end
 
       it 'hides callout when user clicks action button', :js do
-        visit root_dashboard_path
+        visit dashboard_todos_path
 
         expect(page).to have_content(message)
 
@@ -67,7 +66,7 @@ RSpec.describe 'Account recovery regular check callout' do
       end
 
       it 'hides callout when user clicks close', :js do
-        visit root_dashboard_path
+        visit dashboard_todos_path
 
         expect(page).to have_content(message)
 
@@ -77,25 +76,25 @@ RSpec.describe 'Account recovery regular check callout' do
       end
 
       it 'shows callout on next session if user did not dismissed it' do
-        visit root_dashboard_path
+        visit dashboard_todos_path
 
         expect(page).to have_content(message)
 
         start_new_session(user_two_factor_enabled)
-        visit root_dashboard_path
+        visit dashboard_todos_path
 
         expect(page).to have_content(message)
       end
 
       it 'hides callout on next session if user dismissed it', :js do
-        visit root_dashboard_path
+        visit dashboard_todos_path
 
         expect(page).to have_content(message)
 
         close_callout
 
         start_new_session(user_two_factor_enabled)
-        visit root_dashboard_path
+        visit dashboard_todos_path
 
         expect(page).not_to have_content(message)
       end

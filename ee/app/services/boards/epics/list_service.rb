@@ -16,6 +16,20 @@ module Boards
         super(items)
       end
 
+      def query_additions(items, required_fields)
+        return items unless required_fields&.include?(:total_weight)
+
+        items.left_joins(epic_issues: :issue)
+      end
+
+      def metadata_fields(required_fields)
+        fields = super
+
+        fields[:total_weight] = 'SUM(weight)' if required_fields&.include?(:total_weight)
+        fields[:epics_count] = 'COUNT(distinct epics.id)' if required_fields&.include?(:epics_count)
+        fields
+      end
+
       def filter_by_from_id(items)
         return items unless params[:from_id].present?
 

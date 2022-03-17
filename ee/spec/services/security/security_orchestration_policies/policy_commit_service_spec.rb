@@ -31,6 +31,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService do
       let(:invalid_input_policy_yaml) do
         <<-EOS
           invalid_name: invalid
+          name: 'policy name'
           type: scan_execution_policy
         EOS
       end
@@ -42,7 +43,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService do
 
         expect(response[:status]).to eq(:error)
         expect(response[:message]).to eq("Invalid policy YAML")
-        expect(response[:details]).to eq(["property '/scan_execution_policy/0' is missing required keys: name, enabled, rules, actions"])
+        expect(response[:details]).to match_array(["property '/scan_execution_policy/0' is missing required keys: enabled, rules, actions"])
       end
     end
 

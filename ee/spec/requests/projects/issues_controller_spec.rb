@@ -50,6 +50,14 @@ RSpec.describe Projects::IssuesController do
         expect(response).to redirect_to(project_quality_test_case_path(project, test_case))
       end
     end
+
+    it 'exposes the escalation_policies licensed feature setting' do
+      stub_licensed_features(escalation_policies: true)
+
+      get_show
+
+      expect(response.body).to have_pushed_frontend_feature_flags(escalationPolicies: true)
+    end
   end
 
   describe 'GET #index' do

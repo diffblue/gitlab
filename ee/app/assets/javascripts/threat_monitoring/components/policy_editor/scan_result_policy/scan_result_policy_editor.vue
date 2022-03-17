@@ -12,6 +12,7 @@ import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import {
   EDITOR_MODE_YAML,
+  EDITOR_MODE_RULE,
   SECURITY_POLICY_ACTIONS,
   GRAPHQL_ERROR_MESSAGE,
   PARSING_ERROR_MESSAGE,
@@ -21,11 +22,12 @@ import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
 import DimDisableContainer from '../dim_disable_container.vue';
 import PolicyActionBuilder from './policy_action_builder.vue';
 import PolicyRuleBuilder from './policy_rule_builder.vue';
-import { DEFAULT_SCAN_RESULT_POLICY, fromYaml, toYaml, buildRule } from './lib';
+import { DEFAULT_SCAN_RESULT_POLICY, fromYaml, toYaml, buildRule, approversOutOfSync } from './lib';
 
 export default {
   SECURITY_POLICY_ACTIONS,
   EDITOR_MODE_YAML,
+  EDITOR_MODE_RULE,
   SHARED_FOR_DISABLED:
     'gl-bg-gray-10 gl-border-solid gl-border-1 gl-border-gray-100 gl-rounded-base',
   i18n: {
@@ -35,7 +37,7 @@ export default {
     name: __('Name'),
     toggleLabel: s__('SecurityOrchestration|Policy status'),
     rules: s__('SecurityOrchestration|Rules'),
-    createMergeRequest: __('Create via merge request'),
+    createMergeRequest: __('Configure with a merge request'),
     notOwnerButtonText: __('Learn more'),
     notOwnerDescription: s__(
       'SecurityOrchestration|Scan result policies can only be created by project owners.',
@@ -97,7 +99,8 @@ export default {
         'scan-result-policy-editor',
       ),
       yamlEditorError: null,
-      mode: EDITOR_MODE_YAML,
+      mode: EDITOR_MODE_RULE,
+      existingApprovers: this.scanResultPolicyApprovers,
     };
   },
   computed: {
@@ -159,7 +162,7 @@ export default {
         const mergeRequest = await modifyPolicy({
           action,
           assignedPolicyProject,
-          name: this.originalName || fromYaml(this.yamlEditorValue)?.name,
+          name: this.originalName || fromYaml(yamlValue)?.name,
           projectPath: this.projectPath,
           yamlEditorValue: yamlValue,
         });
@@ -205,7 +208,14 @@ export default {
       this.mode = mode;
       if (mode === EDITOR_MODE_YAML && !this.hasParsingError) {
         this.yamlEditorValue = toYaml(this.policy);
+      } else if (mode === EDITOR_MODE_RULE && !this.hasParsingError) {
+        if (approversOutOfSync(this.policy.actions[0], this.existingApprovers)) {
+          this.yamlEditorError = new Error();
+        }
       }
+    },
+    updatePolicyApprovers(values) {
+      this.existingApprovers = values;
     },
   },
 };
@@ -215,7 +225,6 @@ export default {
   <policy-editor-layout
     v-if="!disableScanPolicyUpdate"
     :custom-save-button-text="$options.i18n.createMergeRequest"
-    :default-editor-mode="$options.EDITOR_MODE_YAML"
     :is-editing="isEditing"
     :is-removing-policy="isRemovingPolicy"
     :is-updating-policy="isCreatingMR"
@@ -295,8 +304,9 @@ export default {
           :key="index"
           class="gl-mb-4"
           :init-action="action"
-          :existing-approvers="scanResultPolicyApprovers"
+          :existing-approvers="existingApprovers"
           @changed="updateAction(index, $event)"
+          @approversUpdated="updatePolicyApprovers"
         />
       </dim-disable-container>
     </template>

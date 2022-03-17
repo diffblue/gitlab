@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AuditEventsLog when initialized matches the snapshot 1`] = `
+<div>
+  <header>
+    <div
+      class="gl-my-5 gl-display-flex gl-flex-direction-row gl-justify-content-end"
+    >
+      <audit-events-export-button-stub
+        exporthref="http://example.com/audit_log_reports.csv?created_after=2020-01-01&created_before=2020-02-02"
+      />
+    </div>
+  </header>
+   
+  <div
+    class="audit-log-filter row-content-block second-block gl-pb-0"
+  >
+    <div
+      class="gl-display-flex gl-flex-direction-column gl-lg-flex-direction-row!"
+    >
+      <audit-events-filter-stub
+        class="gl-mr-5 gl-mb-5"
+        filtertokenoptions="[object Object],[object Object],[object Object],[object Object]"
+        value="[object Object]"
+      />
+       
+      <sorting-field-stub
+        sortby="created_asc"
+      />
+    </div>
+     
+    <date-range-field-stub
+      enddate="Sun Feb 02 2020 00:00:00 GMT+0000 (Greenwich Mean Time)"
+      startdate="Wed Jan 01 2020 00:00:00 GMT+0000 (Greenwich Mean Time)"
+    />
+  </div>
+   
+  <audit-events-table-stub
+    events="[object Object]"
+    islastpage="true"
+  />
+</div>
+`;

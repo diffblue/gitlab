@@ -102,10 +102,10 @@ RSpec.describe 'getting group information' do
       let_it_be(:public_project) { create(:project, group: public_group) }
       let_it_be(:private_project) { create(:project, group: private_group) }
 
-      let_it_be(:vulnerability_1) { create(:vulnerability, :dismissed, :critical_severity, :with_notes, notes_count: 2, project: public_project) }
-      let_it_be(:vulnerability_2) { create(:vulnerability, :confirmed, :high_severity, :with_notes, notes_count: 3, project: public_project) }
-      let_it_be(:vulnerability_3) { create(:vulnerability, :dismissed, :medium_severity, :with_notes, notes_count: 4, project: private_project) }
-      let_it_be(:vulnerability_4) { create(:vulnerability, :confirmed, :low_severity, :with_notes, notes_count: 7, project: private_project) }
+      let_it_be(:vulnerability_1) { create(:vulnerability, :dismissed, :critical_severity, :with_notes, :with_finding, notes_count: 2, project: public_project) }
+      let_it_be(:vulnerability_2) { create(:vulnerability, :confirmed, :high_severity, :with_notes, :with_finding, notes_count: 3, project: public_project) }
+      let_it_be(:vulnerability_3) { create(:vulnerability, :dismissed, :medium_severity, :with_notes, :with_finding, notes_count: 4, project: private_project) }
+      let_it_be(:vulnerability_4) { create(:vulnerability, :confirmed, :low_severity, :with_notes, :with_finding, notes_count: 7, project: private_project) }
 
       let_it_be(:vulnerability_statistic_1) { create(:vulnerability_statistic, :grade_c, project: public_project) }
       let_it_be(:vulnerability_statistic_2) { create(:vulnerability_statistic, :grade_d, project: private_project) }

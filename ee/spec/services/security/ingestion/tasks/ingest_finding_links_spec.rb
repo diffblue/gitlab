@@ -20,26 +20,9 @@ RSpec.describe Security::Ingestion::Tasks::IngestFindingLinks do
       create(:finding_link, finding: finding_2, url: finding_link.url)
     end
 
-    context 'when the replace raw metadata flag is on' do
-      before do
-        stub_feature_flags(vulnerability_finding_replace_metadata: true)
-      end
-
-      it 'creates finding links for the new records' do
-        expect { ingest_finding_links }.to change { Vulnerabilities::FindingLink.count }.by(1)
-                                      .and change { finding_1.finding_links.count }.by(1)
-      end
-    end
-
-    context 'when the replace raw metadata flag is off' do
-      before do
-        stub_feature_flags(vulnerability_finding_replace_metadata: false)
-      end
-
-      it 'does not create finding links for the new records' do
-        expect { ingest_finding_links }.to change { Vulnerabilities::FindingLink.count }.by(0)
-                                      .and change { finding_1.finding_links.count }.by(0)
-      end
+    it 'creates finding links for the new records' do
+      expect { ingest_finding_links }.to change { Vulnerabilities::FindingLink.count }.by(1)
+                                    .and change { finding_1.finding_links.count }.by(1)
     end
 
     it_behaves_like 'bulk insertable task'

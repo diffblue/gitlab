@@ -50,7 +50,7 @@ module Gitlab
   HTTP_PROXY_ENV_VARS = %w(http_proxy https_proxy HTTP_PROXY HTTPS_PROXY).freeze
 
   def self.simulate_com?
-    return false unless Rails.env.test? || Rails.env.development?
+    return false unless Rails.env.development?
 
     Gitlab::Utils.to_boolean(ENV['GITLAB_SIMULATE_SAAS'])
   end
@@ -88,12 +88,8 @@ module Gitlab
     Gitlab::Saas.subdomain_regex === Gitlab.config.gitlab.url
   end
 
-  def self.dev_env_org_or_com?
-    dev_env_or_com? || org?
-  end
-
-  def self.dev_env_or_com?
-    com?
+  def self.org_or_com?
+    org? || com?
   end
 
   def self.dev_or_test_env?

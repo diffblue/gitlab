@@ -64,7 +64,7 @@ RSpec.describe 'getting a requirement list for a project' do
     end
 
     context 'query performance with test reports' do
-      let_it_be(:test_report) { create(:test_report, requirement: requirement, state: "passed") }
+      let_it_be(:test_report) { create(:test_report, requirement_issue: requirement.requirement_issue, state: "passed") }
 
       let(:fields) do
         <<~QUERY
@@ -81,7 +81,7 @@ RSpec.describe 'getting a requirement list for a project' do
         control = ActiveRecord::QueryRecorder.new { post_graphql(query, current_user: current_user) }
 
         create_list(:requirement, 3, project: project) do |requirement|
-          create(:test_report, requirement: requirement, state: "passed")
+          create(:test_report, requirement_issue: requirement.requirement_issue, state: "passed")
         end
 
         expect { post_graphql(query, current_user: current_user) }.not_to exceed_query_limit(control)
@@ -96,9 +96,9 @@ RSpec.describe 'getting a requirement list for a project' do
       let_it_be(:requirement2) { create(:requirement, project: filter_project, author: other_user, title: 'something about kubernetes') }
 
       before do
-        create(:test_report, requirement: requirement1, state: :failed)
-        create(:test_report, requirement: requirement1, state: :passed)
-        create(:test_report, requirement: requirement2, state: :failed)
+        create(:test_report, requirement_issue: requirement1.requirement_issue, state: :failed)
+        create(:test_report, requirement_issue: requirement1.requirement_issue, state: :passed)
+        create(:test_report, requirement_issue: requirement2.requirement_issue, state: :failed)
 
         post_graphql(query, current_user: current_user)
       end

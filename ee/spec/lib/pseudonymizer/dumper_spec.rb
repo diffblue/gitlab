@@ -102,6 +102,9 @@ RSpec.describe Pseudonymizer::Dumper do
     end
   end
 
+  # Disable rubocop Database/MultipleDatabases cop until Pseudonymizer is removed
+  # See https://gitlab.com/gitlab-org/gitlab/-/issues/350190
+  # rubocop:disable Database/MultipleDatabases
   describe "manifest is valid" do
     it "all tables exist" do
       existing_tables = ActiveRecord::Base.connection.tables
@@ -130,4 +133,5 @@ RSpec.describe Pseudonymizer::Dumper do
       end
     end
   end
+  # rubocop:enable Database/MultipleDatabases
 end

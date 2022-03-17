@@ -2,8 +2,7 @@
 
 module QA
   RSpec.describe 'Create' do
-    # TODO: Remove :requires_admin meta when the `Runtime::Feature.enable` method call is removed
-    describe 'Codeowners', :requires_admin do
+    describe 'Codeowners' do
       # Create one user to be the assigned approver and another user who will not be an approver
       let(:approver) { Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1) }
       let(:non_approver) { Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_2, Runtime::Env.gitlab_qa_password_2) }
@@ -18,7 +17,6 @@ module QA
       let(:branch_name) { 'protected-branch' }
 
       before do
-        Runtime::Feature.enable(:invite_members_group_modal, project: project)
         project.add_member(approver, Resource::Members::AccessLevel::DEVELOPER)
         project.add_member(non_approver, Resource::Members::AccessLevel::DEVELOPER)
 

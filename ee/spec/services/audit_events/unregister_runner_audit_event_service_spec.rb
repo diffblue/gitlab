@@ -42,6 +42,8 @@ RSpec.describe AuditEvents::UnregisterRunnerAuditEventService do
         target_details: target_details,
         details: {
           custom_message: "Unregistered #{entity_class_name&.downcase || 'instance'} CI runner",
+          entity_id: entity&.id || -1,
+          entity_type: entity ? entity_class_name : 'User',
           entity_path: entity&.full_path,
           target_details: target_details
         }

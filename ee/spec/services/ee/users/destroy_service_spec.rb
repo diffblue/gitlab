@@ -42,6 +42,20 @@ RSpec.describe Users::DestroyService do
         end
       end
 
+      context 'migrating associated records' do
+        context 'when hard_delete option is given' do
+          let!(:resource_iteration_event) { create(:resource_iteration_event, user: user) }
+
+          it 'will ghost certain records' do
+            expect_any_instance_of(Users::MigrateToGhostUserService).to receive(:execute).once.and_call_original
+
+            service.execute(user, hard_delete: true)
+
+            expect(resource_iteration_event.reload.user).to be_ghost
+          end
+        end
+      end
+
       context 'when user has oncall rotations' do
         let(:schedule) { create(:incident_management_oncall_schedule, project: project) }
         let(:rotation) { create(:incident_management_oncall_rotation, schedule: schedule) }

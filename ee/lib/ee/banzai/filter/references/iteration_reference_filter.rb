@@ -24,7 +24,7 @@ module EE
             relation = [id_relation, iteration_relation].compact
             return ::Iteration.none if relation.all?(::Iteration.none)
 
-            ::Iteration.from_union(relation).includes(:project, :group) # rubocop: disable CodeReuse/ActiveRecord
+            ::Iteration.from_union(relation).includes(:project, :group, :iterations_cadence) # rubocop: disable CodeReuse/ActiveRecord
           end
 
           def find_object(parent_object, id)

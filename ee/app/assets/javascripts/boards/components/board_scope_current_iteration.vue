@@ -17,9 +17,9 @@ export default {
       required: true,
     },
     iterationId: {
-      type: Number,
+      type: String,
       required: false,
-      default: 0,
+      default: null,
     },
   },
   data() {

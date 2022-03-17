@@ -24,7 +24,7 @@ RSpec.shared_examples "Registrations::GroupsController GET #new" do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:user) { create(:user) }
-  let(:dev_env_or_com) { true }
+  let(:com) { true }
 
   subject { get :new }
 
@@ -36,7 +36,7 @@ RSpec.shared_examples "Registrations::GroupsController GET #new" do
   context 'with an authenticated user' do
     before do
       sign_in(user)
-      allow(::Gitlab).to receive(:dev_env_or_com?).and_return(dev_env_or_com)
+      allow(::Gitlab).to receive(:com?).and_return(com)
     end
 
     context 'when on .com' do
@@ -64,7 +64,7 @@ RSpec.shared_examples "Registrations::GroupsController GET #new" do
     end
 
     context 'when not on .com' do
-      let(:dev_env_or_com) { false }
+      let(:com) { false }
 
       it { is_expected.to have_gitlab_http_status(:not_found) }
     end

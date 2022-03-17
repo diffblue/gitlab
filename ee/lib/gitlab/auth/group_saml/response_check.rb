@@ -7,6 +7,7 @@ module Gitlab
         include ActiveModel::Model
 
         attr_reader :xml_response, :identity
+
         delegate :name_id, :name_id_format, :xml, to: :xml_response
 
         validate :response_error_passthrough!

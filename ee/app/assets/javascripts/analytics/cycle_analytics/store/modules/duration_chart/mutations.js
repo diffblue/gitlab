@@ -4,9 +4,6 @@ export default {
   [types.SET_LOADING](state, loading) {
     state.isLoading = loading;
   },
-  [types.UPDATE_SELECTED_DURATION_CHART_STAGES](state, { updatedDurationStageData }) {
-    state.durationData = updatedDurationStageData;
-  },
   [types.REQUEST_DURATION_DATA](state) {
     state.isLoading = true;
     state.errorCode = null;

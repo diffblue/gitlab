@@ -2,7 +2,7 @@
 import { GlDaterangePicker } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import ProjectsDropdownFilter from '~/analytics/shared/components/projects_dropdown_filter.vue';
-import { getDateInPast, pikadayToString, parsePikadayDate } from '~/lib/utils/datetime_utility';
+import { pikadayToString, parsePikadayDate } from '~/lib/utils/datetime_utility';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __ } from '~/locale';
 import getGroupProjects from '../../graphql/violation_group_projects.query.graphql';
@@ -38,12 +38,10 @@ export default {
   },
   computed: {
     defaultStartDate() {
-      const startDate = this.defaultQuery.createdAfter;
-      return startDate ? parsePikadayDate(startDate) : getDateInPast(CURRENT_DATE, 30);
+      return parsePikadayDate(this.defaultQuery.mergedAfter);
     },
     defaultEndDate() {
-      const endDate = this.defaultQuery.createdBefore;
-      return endDate ? parsePikadayDate(endDate) : CURRENT_DATE;
+      return parsePikadayDate(this.defaultQuery.mergedBefore);
     },
   },
   async created() {
@@ -74,8 +72,8 @@ export default {
     },
     dateRangeChanged({ startDate = this.defaultStartDate, endDate = this.defaultEndDate }) {
       this.updateFilter({
-        createdAfter: pikadayToString(startDate),
-        createdBefore: pikadayToString(endDate),
+        mergedAfter: pikadayToString(startDate),
+        mergedBefore: pikadayToString(endDate),
       });
     },
     updateFilter(query) {
@@ -103,6 +101,7 @@ export default {
       }}</label>
       <projects-dropdown-filter
         v-if="showProjectFilter"
+        data-testid="violations-project-dropdown"
         class="gl-mb-2 gl-lg-mb-0 compliance-filter-dropdown-input"
         :group-namespace="groupPath"
         :query-params="$options.projectsFilterParams"
@@ -115,6 +114,7 @@ export default {
 
     <gl-daterange-picker
       class="gl-display-flex gl-w-full gl-mb-5"
+      data-testid="violations-date-range-picker"
       :default-start-date="defaultStartDate"
       :default-end-date="defaultEndDate"
       :default-max-date="$options.defaultMaxDate"

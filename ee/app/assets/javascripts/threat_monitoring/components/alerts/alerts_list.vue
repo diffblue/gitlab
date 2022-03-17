@@ -15,7 +15,7 @@ import {
 import produce from 'immer';
 import { n__ } from '~/locale';
 import getAlertsQuery from '~/graphql_shared/queries/get_alerts.query.graphql';
-import { convertToSnakeCase } from '~/lib/utils/text_utility';
+import { sortObjectToString } from '~/lib/utils/table_utility';
 import { joinPaths } from '~/lib/utils/url_utility';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import { PAGE_SIZE } from 'ee/threat_monitoring/constants';
@@ -138,10 +138,7 @@ export default {
       }
     },
     fetchSortedData({ sortBy, sortDesc }) {
-      const sortingDirection = sortDesc ? 'DESC' : 'ASC';
-      const sortingColumn = convertToSnakeCase(sortBy).toUpperCase();
-
-      this.sort = `${sortingColumn}_${sortingDirection}`;
+      this.sort = sortObjectToString({ sortBy, sortDesc });
     },
     getIssueState({ issue: { state } }) {
       return state === 'closed' ? `(${this.$options.i18n.CLOSED})` : '';

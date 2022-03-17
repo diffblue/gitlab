@@ -1,0 +1,7 @@
+#import "~/runner/graphql/details/runner_details_shared.fragment.graphql"
+
+fragment RunnerDetails on CiRunner {
+  ...RunnerDetailsShared
+  publicProjectsMinutesCostFactor
+  privateProjectsMinutesCostFactor
+}

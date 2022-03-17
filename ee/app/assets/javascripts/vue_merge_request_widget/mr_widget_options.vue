@@ -12,6 +12,7 @@ import MrWidgetGeoSecondaryNode from './components/states/mr_widget_secondary_ge
 import loadPerformanceExtension from './extensions/load_performance';
 import browserPerformanceExtension from './extensions/browser_performance';
 import statusChecksExtension from './extensions/status_checks';
+import metricsExtension from './extensions/metrics';
 
 export default {
   components: {
@@ -83,7 +84,11 @@ export default {
       return threshold + totalScoreDelta <= 0;
     },
     shouldRenderBrowserPerformance() {
-      return this.hasBrowserPerformancePaths && this.hasBrowserPerformanceDegradation;
+      return (
+        this.hasBrowserPerformancePaths &&
+        this.hasBrowserPerformanceDegradation &&
+        !this.shouldShowExtension
+      );
     },
     hasLoadPerformanceMetrics() {
       return (
@@ -110,6 +115,9 @@ export default {
     },
     shouldRenderStatusReport() {
       return this.mr?.apiStatusChecksPath && !this.mr?.isNothingToMergeState;
+    },
+    shouldRenderMetricsReport() {
+      return Boolean(this.mr?.metricsReportsPath);
     },
 
     browserPerformanceText() {
@@ -198,6 +206,11 @@ export default {
         this.registerStatusCheck();
       }
     },
+    shouldRenderMetricsReport(newVal) {
+      if (newVal) {
+        this.registerMetrics();
+      }
+    },
   },
   methods: {
     registerLoadPerformance() {
@@ -213,6 +226,11 @@ export default {
     registerStatusCheck() {
       if (this.shouldShowExtension) {
         registerExtension(statusChecksExtension);
+      }
+    },
+    registerMetrics() {
+      if (this.shouldShowExtension) {
+        registerExtension(metricsExtension);
       }
     },
     getServiceEndpoints(store) {
@@ -334,7 +352,7 @@ export default {
       <extensions-container :mr="mr" />
       <blocking-merge-requests-report :mr="mr" />
       <grouped-codequality-reports-app
-        v-if="shouldRenderCodeQuality"
+        v-if="shouldRenderCodeQuality && !shouldShowExtension"
         :head-blob-path="mr.headBlobPath"
         :base-blob-path="mr.baseBlobPath"
         :codequality-reports-path="mr.codequalityReportsPath"
@@ -352,7 +370,7 @@ export default {
         :has-issues="hasBrowserPerformanceMetrics"
       />
       <grouped-load-performance-reports-app
-        v-if="hasLoadPerformancePaths"
+        v-if="hasLoadPerformancePaths && !shouldShowExtension"
         :status="loadPerformanceStatus"
         :loading-text="translateText('load-performance').loading"
         :error-text="translateText('load-performance').error"
@@ -472,12 +490,12 @@ export default {
       />
 
       <grouped-accessibility-reports-app
-        v-if="shouldShowAccessibilityReport"
+        v-if="shouldShowAccessibilityReport && !shouldShowExtension"
         :endpoint="mr.accessibilityReportPath"
       />
 
       <status-checks-reports-app
-        v-if="shouldRenderStatusReport"
+        v-if="shouldRenderStatusReport && !shouldShowExtension"
         :endpoint="mr.apiStatusChecksPath"
       />
 

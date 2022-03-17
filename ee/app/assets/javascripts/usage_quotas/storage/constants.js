@@ -60,6 +60,7 @@ export const PROJECT_STORAGE_TYPES = [
 export const PROJECT_TABLE_LABEL_PROJECT = __('Project');
 export const PROJECT_TABLE_LABEL_STORAGE_TYPE = s__('UsageQuota|Storage type');
 export const PROJECT_TABLE_LABEL_USAGE = s__('UsageQuota|Usage');
+export const PROJECT_TABLE_LABEL_STORAGE_USAGE = s__('UsageQuota|Storage used');
 
 export const SKELETON_LOADER_ROWS = 5;
 
@@ -76,8 +77,6 @@ export const STORAGE_USAGE_THRESHOLDS = {
   [ALERT_THRESHOLD]: 0.95,
   [ERROR_THRESHOLD]: 1.0,
 };
-
-export const PROJECTS_PER_PAGE = 20;
 
 export const projectHelpLinks = {
   usageQuotas: helpPagePath('user/usage_quotas'),

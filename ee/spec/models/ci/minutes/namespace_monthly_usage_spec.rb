@@ -43,6 +43,14 @@ RSpec.describe Ci::Minutes::NamespaceMonthlyUsage do
           expect(subject.created_at).to eq(Time.current)
         end
       end
+
+      it 'kicks off Ci::Minutes::RefreshCachedDataWorker' do
+        expect(::Ci::Minutes::RefreshCachedDataWorker)
+          .to receive(:perform_async)
+          .with(namespace.id)
+
+        subject
+      end
     end
 
     shared_examples 'does not update the additional minutes' do
@@ -127,6 +135,33 @@ RSpec.describe Ci::Minutes::NamespaceMonthlyUsage do
           create(:ci_namespace_monthly_usage,
             namespace: namespace,
             date: described_class.beginning_of_month(1.month.ago))
+        end
+
+        it_behaves_like 'creates usage record'
+        it_behaves_like 'attempts recalculation of additional minutes'
+      end
+
+      context 'when inside a transaction in ci database' do
+        let!(:previous_usage) do
+          create(:ci_namespace_monthly_usage,
+            namespace: namespace,
+            date: described_class.beginning_of_month(3.months.ago))
+        end
+
+        let(:project) { create(:project, namespace: namespace) }
+        let(:pipeline) { create(:ci_pipeline, project: project) }
+        let(:build) { create(:ci_build, :created, pipeline: pipeline) }
+
+        before do
+          namespace.clear_memoization(:ci_minutes_quota)
+          create(:ci_runner, :instance_type)
+        end
+
+        subject do
+          pipeline.transaction do
+            pipeline.touch
+            Ci::Minutes::NamespaceMonthlyUsage.find_or_create_current(namespace_id: namespace.id)
+          end
         end
 
         it_behaves_like 'creates usage record'

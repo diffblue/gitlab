@@ -27,7 +27,9 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
       resources :coverage_reports, only: :index
       resource :merge_request_analytics, only: :show
       resource :repository_analytics, only: :show
-      resource :cycle_analytics, only: :show, path: 'value_stream_analytics'
+      resource :cycle_analytics, only: :show, path: 'value_stream_analytics' do
+        put :use_aggregated_backend, on: :collection
+      end
       scope module: :cycle_analytics, as: 'cycle_analytics', path: 'value_stream_analytics' do
         resources :stages, only: [:index, :create, :update, :destroy] do
           member do
@@ -123,6 +125,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
 
       scope module: :epics do
         resources :notes, only: [:index, :create, :destroy, :update], concerns: :awardable, constraints: { id: /\d+/ }
+        resources :related_epic_links, only: [:index, :create, :destroy]
       end
 
       collection do

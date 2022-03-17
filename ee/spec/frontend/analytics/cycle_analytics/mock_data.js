@@ -53,6 +53,7 @@ export const endpoints = {
   tasksByTypeData: /analytics\/type_of_work\/tasks_by_type/,
   tasksByTypeTopLabelsData: /analytics\/type_of_work\/tasks_by_type\/top_labels/,
   valueStreamData: /analytics\/value_stream_analytics\/value_streams/,
+  valueStreamAggregationData: /analytics\/value_stream_analytics\/use_aggregated_backend/,
 };
 
 export const valueStreams = [
@@ -309,3 +310,9 @@ export const durationChartPlottableData = [
 ];
 
 export const pathNavIssueMetric = 172800;
+
+export const aggregationData = {
+  enabled: true,
+  lastRunAt: '2022-03-11T04:34:59Z',
+  nextRunAt: '2022-03-11T05:21:01Z',
+};

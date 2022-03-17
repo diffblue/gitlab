@@ -1,11 +1,13 @@
 <script>
 import { GlLink } from '@gitlab/ui';
 import { Namespace } from 'ee/iterations/constants';
-import { formatDate } from '~/lib/utils/datetime_utility';
+import { getIterationPeriod } from 'ee/iterations/utils';
+import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 
 export default {
   components: {
     GlLink,
+    IterationTitle,
   },
   props: {
     iterations: {
@@ -21,9 +23,7 @@ export default {
     },
   },
   methods: {
-    formatDate(date) {
-      return formatDate(date, 'mmm d, yyyy', true);
-    },
+    getIterationPeriod,
   },
 };
 </script>
@@ -31,14 +31,16 @@ export default {
 <template>
   <ul v-if="iterations.length > 0" class="content-list">
     <li v-for="iteration in iterations" :key="iteration.id" class="gl-p-4!">
-      <div class="gl-mb-3">
+      <div>
         <gl-link :href="iteration.scopedPath || iteration.webPath">
-          <strong>{{ iteration.title }}</strong>
+          <strong>{{ getIterationPeriod(iteration) }}</strong>
         </gl-link>
       </div>
-      <div class="text-secondary">
-        {{ formatDate(iteration.startDate) }}–{{ formatDate(iteration.dueDate) }}
-      </div>
+      <iteration-title
+        v-if="iteration.title"
+        :title="iteration.title"
+        class="text-secondary gl-mt-3"
+      />
     </li>
   </ul>
   <div v-else class="nothing-here-block">

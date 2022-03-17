@@ -28,7 +28,7 @@ RSpec.describe EE::Gitlab::GonHelper do
 
     context 'when GitLab.com' do
       before do
-        allow(Gitlab).to receive(:dev_env_or_com?).and_return(true)
+        allow(Gitlab).to receive(:com?).and_return(true)
       end
 
       it 'includes CustomersDot variables' do
@@ -42,7 +42,7 @@ RSpec.describe EE::Gitlab::GonHelper do
   end
 
   describe '#push_licensed_feature' do
-    let_it_be(:feature) { License::EEU_FEATURES.first }
+    let_it_be(:feature) { GitlabSubscriptions::Features::ALL_FEATURES.first }
 
     shared_examples 'sets the licensed features flag' do
       it 'pushes the licensed feature flag to the frotnend' do

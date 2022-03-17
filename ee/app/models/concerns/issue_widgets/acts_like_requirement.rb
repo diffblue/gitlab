@@ -9,10 +9,15 @@ module IssueWidgets
 
       after_validation :invalidate_if_sync_error, on: [:update, :create]
 
-      # This will mean that non-Requirement issues essentially ignore this relationship and always return []
-      has_many :test_reports, -> { joins(:requirement_issue).where(issues: { issue_type: WorkItems::Type.base_types[:requirement] }) },
-               foreign_key: :issue_id, inverse_of: :requirement_issue, class_name: 'RequirementsManagement::TestReport'
+      has_many :test_reports, foreign_key: :issue_id, inverse_of: :requirement_issue, class_name: 'RequirementsManagement::TestReport'
+
       has_one :requirement, class_name: 'RequirementsManagement::Requirement'
+
+      scope :for_requirement_iids, -> (requirements_iids) do
+        requirement.joins(:requirement)
+          .where(requirement: { iid: requirements_iids })
+          .where('requirement.project_id = issues.project_id') # Prevents filtering too many rows by iids. Greatly increases performance.
+      end
     end
 
     def requirement_sync_error!

@@ -220,6 +220,7 @@ module ApplicationSettingImplementation
         container_registry_delete_tags_service_timeout: 250,
         container_registry_expiration_policies_worker_capacity: 4,
         container_registry_cleanup_tags_service_max_list_size: 200,
+        container_registry_expiration_policies_caching: true,
         container_registry_import_max_tags_count: 100,
         container_registry_import_max_retries: 3,
         container_registry_import_start_max_retries: 50,
@@ -232,7 +233,8 @@ module ApplicationSettingImplementation
         rate_limiting_response_text: nil,
         whats_new_variant: 0,
         user_deactivation_emails_enabled: true,
-        user_email_lookup_limit: 60,
+        search_rate_limit: 30,
+        search_rate_limit_unauthenticated: 10,
         users_get_by_id_limit: 300,
         users_get_by_id_limit_allowlist: []
       }
@@ -403,7 +405,7 @@ module ApplicationSettingImplementation
   def normalized_repository_storage_weights
     strong_memoize(:normalized_repository_storage_weights) do
       repository_storages_weights = repository_storages_weighted.slice(*Gitlab.config.repositories.storages.keys)
-      weights_total = repository_storages_weights.values.reduce(:+)
+      weights_total = repository_storages_weights.values.sum
 
       repository_storages_weights.transform_values do |w|
         next w if weights_total == 0

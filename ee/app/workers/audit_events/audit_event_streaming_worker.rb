@@ -46,7 +46,7 @@ module AuditEvents
     end
 
     def parse_audit_event_json(audit_event_json)
-      audit_event_json = Gitlab::Json.parse(audit_event_json)
+      audit_event_json = Gitlab::Json.parse(audit_event_json).with_indifferent_access
       audit_event = AuditEvent.new(audit_event_json)
       # We want to have created_at as unique id for deduplication if audit_event id is not present
       audit_event.id = audit_event.created_at.to_i if audit_event.id.blank?

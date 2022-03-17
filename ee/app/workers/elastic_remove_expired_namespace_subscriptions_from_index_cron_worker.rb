@@ -12,7 +12,7 @@ class ElasticRemoveExpiredNamespaceSubscriptionsFromIndexCronWorker
   idempotent!
 
   def perform
-    return unless ::Gitlab.dev_env_or_com?
+    return unless ::Gitlab.com?
 
     in_lock(self.class.name.underscore, ttl: 1.hour, retries: 0) do
       GitlabSubscription.yield_long_expired_indexed_namespaces do |indexed_namespace|

@@ -63,65 +63,71 @@ RSpec.describe 'Billing plan pages', :feature, :js do
     end
   end
 
+  shared_examples 'can not contact sales' do
+    before do
+      visit page_path
+    end
+
+    it 'does not render in-app hand raise lead' do
+      expect(page).to have_selector(".js-hand-raise-lead-button[data-namespace-id='#{namespace.id}'][data-user-name='#{user.username}']", visible: false)
+    end
+  end
+
   shared_examples 'can contact sales' do
     before do
       visit page_path
     end
 
     it 'displays the in-app hand raise lead', :aggregate_failures do
-      if namespace.group_namespace?
-        form_data = {
-          first_name: user.first_name,
-          last_name: user.last_name,
-          phone_number: '+1 23 456-78-90',
-          company_size: '1 - 99',
-          company_name: user.organization,
-          country: { id: 'US', name: 'United States of America' },
-          state: { id: 'CA', name: 'California' }
-        }
-        hand_raise_lead_params = {
-          "first_name" => form_data[:first_name],
-          "last_name" => form_data[:last_name],
-          "company_name" => form_data[:company_name],
-          "company_size" => form_data[:company_size].delete(' '),
-          "phone_number" => form_data[:phone_number],
-          "country" => form_data.dig(:country, :id),
-          "state" => form_data.dig(:state, :id),
-          "namespace_id" => namespace.id,
-          "comment" => '',
-          "glm_content" => 'billing-group',
-          "work_email" => user.email,
-          "uid" => user.id,
-          "setup_for_company" => user.setup_for_company,
-          "provider" => "gitlab",
-          "glm_source" => 'gitlab.com'
-        }
+      form_data = {
+        first_name: user.first_name,
+        last_name: user.last_name,
+        phone_number: '+1 23 456-78-90',
+        company_size: '1 - 99',
+        company_name: user.organization,
+        country: { id: 'US', name: 'United States of America' },
+        state: { id: 'CA', name: 'California' }
+      }
+      hand_raise_lead_params = {
+        "first_name" => form_data[:first_name],
+        "last_name" => form_data[:last_name],
+        "company_name" => form_data[:company_name],
+        "company_size" => form_data[:company_size].delete(' '),
+        "phone_number" => form_data[:phone_number],
+        "country" => form_data.dig(:country, :id),
+        "state" => form_data.dig(:state, :id),
+        "namespace_id" => namespace.id,
+        "comment" => '',
+        "glm_content" => 'billing-group',
+        "work_email" => user.email,
+        "uid" => user.id,
+        "setup_for_company" => user.setup_for_company,
+        "provider" => "gitlab",
+        "glm_source" => 'gitlab.com'
+      }
 
-        lead_params = ActionController::Parameters.new(hand_raise_lead_params).permit!
+      lead_params = ActionController::Parameters.new(hand_raise_lead_params).permit!
 
-        expect_next_instance_of(GitlabSubscriptions::CreateHandRaiseLeadService) do |service|
-          expect(service).to receive(:execute).with(lead_params).and_return(double('lead', success?: true ))
-        end
+      expect_next_instance_of(GitlabSubscriptions::CreateHandRaiseLeadService) do |service|
+        expect(service).to receive(:execute).with(lead_params).and_return(double('lead', success?: true ))
+      end
 
-        page.within('[data-testid="plan-card-premium"]') do
-          click_button 'Contact sales'
-        end
+      page.within('[data-testid="plan-card-premium"]') do
+        click_button 'Contact sales'
+      end
 
-        expect(page).to have_content('Contact our Sales team')
-        expect(page).to have_field('First Name', with: form_data[:first_name])
-        expect(page).to have_field('Last Name', with: form_data[:last_name])
-        expect(page).to have_field('Company Name', with: form_data[:company_name])
+      expect(page).to have_content('Contact our Sales team')
+      expect(page).to have_field('First Name', with: form_data[:first_name])
+      expect(page).to have_field('Last Name', with: form_data[:last_name])
+      expect(page).to have_field('Company Name', with: form_data[:company_name])
 
-        page.within('[data-testid="hand-raise-lead-modal"]') do
-          select form_data[:company_size], from: 'company-size'
-          fill_in 'phone-number', with: form_data[:phone_number]
-          select form_data.dig(:country, :name), from: 'country'
-          select form_data.dig(:state, :name), from: 'state'
+      page.within('[data-testid="hand-raise-lead-modal"]') do
+        select form_data[:company_size], from: 'company-size'
+        fill_in 'phone-number', with: form_data[:phone_number]
+        select form_data.dig(:country, :name), from: 'country'
+        select form_data.dig(:state, :name), from: 'state'
 
-          click_button 'Submit information'
-        end
-      else
-        expect(page).to have_selector(".js-hand-raise-lead-button[data-namespace-id='#{namespace.id}'][data-user-name='#{user.username}']", visible: false)
+        click_button 'Submit information'
       end
     end
   end
@@ -293,7 +299,7 @@ RSpec.describe 'Billing plan pages', :feature, :js do
       it_behaves_like 'plan with header'
       it_behaves_like 'downgradable plan'
       it_behaves_like 'upgradable plan'
-      it_behaves_like 'can contact sales'
+      it_behaves_like 'can not contact sales'
       it_behaves_like 'plan with subscription table'
 
       context 'when hide_deprecated_billing_plans is active' do
@@ -327,7 +333,7 @@ RSpec.describe 'Billing plan pages', :feature, :js do
       it_behaves_like 'plan with header'
       it_behaves_like 'downgradable plan'
       it_behaves_like 'upgradable plan'
-      it_behaves_like 'can contact sales'
+      it_behaves_like 'can not contact sales'
       it_behaves_like 'plan with subscription table'
       it_behaves_like 'does not display EoA banner'
     end
@@ -386,7 +392,7 @@ RSpec.describe 'Billing plan pages', :feature, :js do
       it_behaves_like 'plan with header'
       it_behaves_like 'downgradable plan'
       it_behaves_like 'upgradable plan'
-      it_behaves_like 'can contact sales'
+      it_behaves_like 'can not contact sales'
     end
 
     context 'on ultimate plan' do

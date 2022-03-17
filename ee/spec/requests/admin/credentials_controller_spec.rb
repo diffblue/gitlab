@@ -37,7 +37,7 @@ RSpec.describe Admin::CredentialsController, type: :request do
             specify do
               get admin_credentials_path(filter: filter)
 
-              expect(assigns(:credentials)).to match_array([user.personal_access_tokens, project_access_token].flatten)
+              expect(assigns(:credentials)).to match_array([user.personal_access_tokens].flatten)
             end
           end
 

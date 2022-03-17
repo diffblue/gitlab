@@ -22,9 +22,9 @@ RSpec.describe RequirementsManagement::ProcessTestReportsService do
       end
 
       context 'when there are requirements' do
-        let_it_be(:requirement1) { create(:requirement, state: :opened, project: project) }
-        let_it_be(:requirement2) { create(:requirement, state: :opened, project: project) }
-        let_it_be(:requirement3) { create(:requirement, state: :archived, project: project) }
+        let_it_be(:requirement) { create(:requirement_issue, state: :opened, project: project) }
+        let_it_be(:requirement2) { create(:requirement_issue, state: :opened, project: project) }
+        let_it_be(:requirement3) { create(:requirement_issue, state: :closed, project: project) }
 
         context 'when user is not allowed to create requirements test reports' do
           it 'raises an exception' do

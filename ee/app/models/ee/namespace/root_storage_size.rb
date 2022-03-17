@@ -41,15 +41,15 @@ module EE
     def enforce_limit?
       return false if Date.current < ENFORCEMENT_DATE
 
-      return true unless closest_gitlab_subscription&.has_a_paid_hosted_plan?
+      return true unless gitlab_subscription&.has_a_paid_hosted_plan?
 
-      closest_gitlab_subscription.start_date >= EFFECTIVE_DATE
+      gitlab_subscription.start_date >= EFFECTIVE_DATE
     end
 
     private
 
     attr_reader :root_namespace
 
-    delegate :closest_gitlab_subscription, to: :root_namespace
+    delegate :gitlab_subscription, to: :root_namespace
   end
 end

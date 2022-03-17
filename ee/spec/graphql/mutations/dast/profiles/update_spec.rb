@@ -123,6 +123,7 @@ RSpec.describe Mutations::Dast::Profiles::Update do
         context 'when associated dast profile schedule is not present' do
           context 'when dast_profile_schedule param is present' do
             let(:new_dast_profile_schedule) { create(:dast_profile_schedule_input_type) }
+            let(:new_dast_profile_schedule_h) { new_dast_profile_schedule.to_h }
 
             subject do
               mutation.resolve(**params.merge(dast_profile_schedule: new_dast_profile_schedule))
@@ -134,10 +135,10 @@ RSpec.describe Mutations::Dast::Profiles::Update do
               new_schedule = dast_profile.reload.dast_profile_schedule
 
               aggregate_failures do
-                expect(new_schedule.timezone).to eq(new_dast_profile_schedule[:timezone])
-                expect(new_schedule.starts_at.to_i).to eq(new_dast_profile_schedule[:starts_at].to_i)
-                expect(new_schedule.cadence[:duration]).to eq(new_dast_profile_schedule[:cadence].duration)
-                expect(new_schedule.cadence[:unit]).to eq(new_dast_profile_schedule[:cadence].unit)
+                expect(new_schedule.timezone).to eq(new_dast_profile_schedule_h[:timezone])
+                expect(new_schedule.starts_at.to_i).to eq(new_dast_profile_schedule_h[:starts_at].to_i)
+                expect(new_schedule.cadence[:duration]).to eq(new_dast_profile_schedule_h[:cadence][:duration])
+                expect(new_schedule.cadence[:unit]).to eq(new_dast_profile_schedule_h[:cadence][:unit])
               end
             end
           end

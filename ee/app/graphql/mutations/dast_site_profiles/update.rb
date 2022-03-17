@@ -49,6 +49,10 @@ module Mutations
           auth_password: auth_params[:password]
         }.compact
 
+        if Feature.enabled?(:dast_api_scanner, dast_site_profile.project, default_enabled: :yaml)
+          dast_site_profile_params[:scan_method] = params[:scan_method]
+        end
+
         result = ::AppSec::Dast::SiteProfiles::UpdateService.new(dast_site_profile.project, current_user).execute(**dast_site_profile_params)
 
         { id: result.payload.try(:to_global_id), errors: result.errors }

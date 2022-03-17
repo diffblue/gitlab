@@ -55,10 +55,12 @@ RSpec.describe ApprovalWrappedAnyApproverRule do
 
     it "returns an array of approvers who have commented" do
       create(:note, project: merge_request.project, noteable: merge_request, author: approver1)
+      create(:system_note, project: merge_request.project, noteable: merge_request, author: approver2)
 
-      allow(merge_request).to receive(:can_approve?).with(approver1).and_return(true)
+      allow(merge_request).to receive(:can_approve?).and_return(true)
 
-      expect(subject.commented_approvers).to eq([approver1])
+      expect(subject.commented_approvers).to include(approver1)
+      expect(subject.commented_approvers).not_to include(approver2)
     end
   end
 end

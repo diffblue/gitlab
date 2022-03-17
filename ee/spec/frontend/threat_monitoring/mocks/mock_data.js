@@ -49,6 +49,17 @@ export const mockEnvironmentsResponse = {
   stopped_count: 5,
 };
 
+export const mockScanExecutionManifestNoActions = `type: scan_execution_policy
+name: Test Dast
+description: This policy enforces pipeline configuration to have a job with DAST scan
+enabled: false
+rules:
+  - type: pipeline
+    branches:
+      - main
+actions: []
+`;
+
 export const mockDastScanExecutionManifest = `type: scan_execution_policy
 name: Test Dast
 description: This policy enforces pipeline configuration to have a job with DAST scan
@@ -61,6 +72,20 @@ actions:
   - scan: dast
     site_profile: required_site_profile
     scanner_profile: required_scanner_profile
+`;
+
+export const mockScanExecutionManifestMultipleActions = `type: scan_execution_policy
+name: Test Dast
+description: This policy enforces pipeline configuration to have a job with DAST scan
+enabled: false
+rules:
+  - type: pipeline
+    branches:
+      - main
+actions:
+  - scan: container_scanning
+  - scan: secret_detection
+  - scan: sast
 `;
 
 export const mockDastScanExecutionObject = {

@@ -2,7 +2,7 @@
 type: howto
 stage: Fulfillment
 group: Utilization
-info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#assignments
 ---
 
 # Storage usage quota **(FREE)**
@@ -42,7 +42,7 @@ namespace to recalculate the storage.
 > - Enabled on self-managed in GitLab 14.5.
 > - [Feature flag removed](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/71270) in GitLab 14.5.
 
-The following storage usage statistics are available to an owner:
+The following storage usage statistics are available to a maintainer:
 
 - Total namespace storage used: Total amount of storage used across projects in this namespace.
 - Total excess storage used: Total amount of storage used that exceeds their allocated storage.

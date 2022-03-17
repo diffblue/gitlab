@@ -3,7 +3,7 @@
 FactoryBot.define do
   factory :test_report, class: 'RequirementsManagement::TestReport' do
     author
-    requirement
+    requirement_issue
     build factory: :ci_build
     state { :passed }
   end

@@ -447,6 +447,23 @@ describe('Api', () => {
           .catch(done.fail);
       });
     });
+
+    describe('cycleAnalyticsUpdateAggregation', () => {
+      it('updates the aggregation enabled status', (done) => {
+        const reqdata = { enabled: true };
+        const expectedUrl = `${dummyValueStreamAnalyticsUrlRoot}/use_aggregated_backend`;
+
+        mock.onPut(expectedUrl).reply(httpStatus.OK, reqdata);
+
+        Api.cycleAnalyticsUpdateAggregation(groupId, reqdata)
+          .then(({ data, config: { url } }) => {
+            expect(data).toEqual(reqdata);
+            expect(url).toEqual(expectedUrl);
+          })
+          .then(done)
+          .catch(done.fail);
+      });
+    });
   });
 
   describe('GroupActivityAnalytics', () => {
@@ -747,6 +764,31 @@ describe('Api', () => {
           },
         );
       });
+    });
+  });
+
+  describe('deployment approvals', () => {
+    const projectId = 1;
+    const deploymentId = 2;
+    const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/projects/${projectId}/deployments/${deploymentId}/approval`;
+    const comment = 'comment';
+
+    it('sends an approval when approve is true', async () => {
+      mock.onPost(expectedUrl, { status: 'approved', comment }).replyOnce(httpStatus.OK);
+
+      await Api.deploymentApproval({ id: projectId, deploymentId, approve: true, comment });
+
+      expect(mock.history.post.length).toBe(1);
+      expect(mock.history.post[0].data).toBe(JSON.stringify({ status: 'approved', comment }));
+    });
+
+    it('sends a rejection when approve is false', async () => {
+      mock.onPost(expectedUrl, { status: 'rejected', comment }).replyOnce(httpStatus.OK);
+
+      await Api.deploymentApproval({ id: projectId, deploymentId, approve: false, comment });
+
+      expect(mock.history.post.length).toBe(1);
+      expect(mock.history.post[0].data).toBe(JSON.stringify({ status: 'rejected', comment }));
     });
   });
 });

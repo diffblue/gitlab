@@ -547,53 +547,6 @@ RSpec.describe License do
       described_class.reset_current
     end
 
-    describe '.features_for_plan' do
-      it 'returns features for starter plan' do
-        expect(described_class.features_for_plan('starter'))
-          .to include(:multiple_issue_assignees)
-      end
-
-      it 'returns features for premium plan' do
-        expect(described_class.features_for_plan('premium'))
-          .to include(:multiple_issue_assignees, :cluster_deployments, :file_locks, :group_wikis)
-      end
-
-      it 'returns empty array if no features for given plan' do
-        expect(described_class.features_for_plan('bronze')).to eq([])
-      end
-    end
-
-    describe '.plan_includes_feature?' do
-      let(:feature) { :cluster_deployments }
-
-      subject { described_class.plan_includes_feature?(plan, feature) }
-
-      context 'when addon included' do
-        let(:plan) { 'premium' }
-
-        it { is_expected.to eq(true) }
-      end
-
-      context 'when addon not included' do
-        let(:plan) { 'starter' }
-
-        it { is_expected.to eq(false) }
-      end
-
-      context 'when plan is not set' do
-        let(:plan) { nil }
-
-        it { is_expected.to eq(false) }
-      end
-
-      context 'when feature does not exists' do
-        let(:plan) { 'premium' }
-        let(:feature) { nil }
-
-        it { is_expected.to eq(false) }
-      end
-    end
-
     describe '.current', :request_store, :use_clean_rails_memory_store_caching do
       context 'when licenses table does not exist' do
         it 'returns nil' do
@@ -730,22 +683,6 @@ RSpec.describe License do
         it "returns false" do
           expect(described_class.block_changes?).to be_falsey
         end
-      end
-    end
-
-    describe '.global_feature?' do
-      subject { described_class.global_feature?(feature) }
-
-      context 'when it is a global feature' do
-        let(:feature) { :geo }
-
-        it { is_expected.to be(true) }
-      end
-
-      context 'when it is not a global feature' do
-        let(:feature) { :sast }
-
-        it { is_expected.to be(false) }
       end
     end
 
@@ -925,32 +862,6 @@ RSpec.describe License do
       end
     end
 
-    describe '#features_from_add_ons' do
-      context 'without add-ons' do
-        it 'returns an empty array' do
-          license = build_license_with_add_ons({}, plan: 'unknown')
-
-          expect(license.features_from_add_ons).to eq([])
-        end
-      end
-
-      context 'with add-ons' do
-        it 'returns all available add-ons' do
-          license = build_license_with_add_ons({ 'GitLab_FileLocks' => 2 })
-
-          expect(license.features_from_add_ons).to eq([:file_locks])
-        end
-      end
-
-      context 'with nil add-ons' do
-        it 'returns an empty array' do
-          license = build_license_with_add_ons({ 'GitLab_FileLocks' => nil })
-
-          expect(license.features_from_add_ons).to eq([])
-        end
-      end
-    end
-
     describe '#feature_available?' do
       it 'returns true if add-on exists and have a quantity greater than 0' do
         license = build_license_with_add_ons({ 'GitLab_FileLocks' => 1 })
@@ -983,7 +894,7 @@ RSpec.describe License do
           described_class.delete_all
         end
 
-        ::License::EES_FEATURES.each do |feature|
+        ::GitlabSubscriptions::Features::ALL_STARTER_FEATURES.each do |feature|
           it "returns false for #{feature}" do
             expect(license.feature_available?(feature)).to eq(false)
           end
@@ -1640,10 +1551,16 @@ RSpec.describe License do
       it { is_expected.to eq(described_class::LICENSE_FILE_TYPE) }
     end
 
-    context 'when the license is a cloud license' do
+    context 'when the license is an online cloud license' do
       let(:gl_license) { build(:gitlab_license, cloud_licensing_enabled: true) }
 
       it { is_expected.to eq(described_class::CLOUD_LICENSE_TYPE) }
+    end
+
+    context 'when the license is an offline cloud license' do
+      let(:gl_license) { build(:gitlab_license, cloud_licensing_enabled: true, offline_cloud_licensing_enabled: true) }
+
+      it { is_expected.to eq(described_class::OFFLINE_CLOUD_TYPE) }
     end
   end
 

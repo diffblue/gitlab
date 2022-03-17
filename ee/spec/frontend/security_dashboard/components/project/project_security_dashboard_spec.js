@@ -55,6 +55,7 @@ describe('Project Security Dashboard component', () => {
       provide: {
         // To be consumed by SecurityDashboardLayout
         sbomSurveySvgPath: '/',
+        projectFullPath: 'namespace/project',
         glFeatures: {
           secureVulnerabilityTraining: secureVulnerabilityTrainingEnabled,
         },

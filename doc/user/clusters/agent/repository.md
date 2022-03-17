@@ -1,7 +1,7 @@
 ---
 stage: Configure
 group: Configure
-info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#assignments
 ---
 
 # Working with the agent for Kubernetes **(FREE)**
@@ -75,9 +75,28 @@ observability:
     level: debug
 ```
 
+## Reset the agent token
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/327152) in GitLab 14.9.
+
+To reset the agent token without downtime:
+
+1. Create a new token:
+   1. On the top bar, select **Menu > Projects** and find your project.
+   1. On the left sidebar, select **Infrastructure > Kubernetes clusters**.
+   1. Select the agent you want to create a token for.
+   1. On the **Tokens** tab, select **Create token**.
+   1. Enter token's name and description (optional) and select **Create token**.
+1. Securely store the generated token.
+1. Use the token to [install the agent in your cluster](install/index.md#install-the-agent-in-the-cluster) and to [update the agent](install/index.md#update-the-agent-version) to another version.
+1. Delete the token you're no longer using.
+
 ## Remove an agent
 
-You can remove an agent by using the [GitLab UI](#remove-an-agent-through-the-gitlab-ui) or the [GraphQL API](#remove-an-agent-with-the-gitlab-graphql-api).
+You can remove an agent by using the [GitLab UI](#remove-an-agent-through-the-gitlab-ui) or the
+[GraphQL API](#remove-an-agent-with-the-gitlab-graphql-api). The agent and any associated tokens
+are removed from GitLab, but no changes are made in your Kubernetes cluster. You must
+clean up those resources manually.
 
 ### Remove an agent through the GitLab UI
 

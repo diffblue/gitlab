@@ -27,4 +27,26 @@ module EE::GroupMembersFinder
 
     super
   end
+
+  override :apply_additional_filters
+  def apply_additional_filters(filtered_members)
+    members = super
+
+    filter_by_enterprise_users(members)
+  end
+
+  private
+
+  def filter_by_enterprise_users(members)
+    filter_by_enterprise_param = ::Gitlab::Utils.to_boolean(params[:enterprise])
+
+    return members if filter_by_enterprise_param.nil? # we require this param to be either `true` or `false`
+    return members unless can_filter_by_enterprise?
+
+    members.filter_by_enterprise_users(filter_by_enterprise_param)
+  end
+
+  def can_filter_by_enterprise?
+    can_manage_members && group.root_ancestor.saml_enabled?
+  end
 end

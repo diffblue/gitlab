@@ -2,24 +2,17 @@
 - message = gitlab_subscription_message_or_license_message
 
 - if message.present? && subscribable.present?
-  .container-fluid.container-limited.pt-3
-    .gl-alert.gitlab-ee-license-banner.hidden.js-gitlab-ee-license-banner.gl-pb-7.gl-border-1.gl-border-solid.gl-border-gray-100.gl-rounded-base{ role: 'alert', data: { license_expiry: subscribable.expires_at } }
-      %button.gl-alert-dismiss.js-close{ type: 'button', 'aria-label' => 'Dismiss', data: { track_action: 'click_button', track_label: 'dismiss_subscribable_banner' } }
-        = sprite_icon('close', css_class: 'gl-icon')
-      .gl-display-flex.gl-flex-direction-row.gl-align-items-center
-        .gl-pr-6.gl-pl-5.gl-pt-3.gl-display-none.gl-sm-display-block
-          - if subscribable.block_changes?
-            = image_tag('illustrations/subscription-cancelled.svg')
-          - elsif subscribable.expired?
-            = image_tag('illustrations/subscription-downgraded.svg')
-          - else
-            = image_tag('illustrations/subscription-warning.svg')
-        .gl-text-left.gl-pt-3
-          = message
-          - if subscribable.block_changes?
-            = link_to_button_style(path: renew_subscription_path, track_property: 'renew')
-          - elsif subscribable.expired?
-            = link_to_button_style(path: upgrade_subscription_path, track_property: 'upgrade')
-          - else
-            = link_to_button_style(path: renew_subscription_path, track_property: 'renew')
-            = link_to _("That's OK, I don't want to renew"), '#', data: { track_event: 'click_text', track_label: 'subscribable_action', track_property: 'thats_ok' }, 'aria-label' => 'Dismiss', class: 'btn gl-button btn-info btn-info-secondary js-close gl-mb-2'
+  .js-gitlab-ee-license-banner.hidden{ class: [container_class, @content_class, 'gl-pt-5!'] }
+    = render 'shared/global_alert',
+      variant: :danger,
+      title: message,
+      alert_data: { license_expiry: subscribable.expires_at, defer_links: "true" } do
+      .gl-alert-body
+        - if subscribable.block_changes?
+          = link_to_button_style(path: renew_subscription_path, track_property: 'renew')
+        - elsif subscribable.expired?
+          = link_to_button_style(path: upgrade_subscription_path, track_property: 'upgrade')
+        - else
+          = link_to_button_style(path: renew_subscription_path, track_property: 'renew')
+          %button{ type: 'button', data: { track_event: 'click_text', track_label: 'subscribable_action', track_property: 'thats_ok' }, 'aria-label' => 'Dismiss', class: 'btn gl-button btn-default js-close gl-mb-2' }
+            = _("That's OK, I don't want to renew")

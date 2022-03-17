@@ -11,7 +11,17 @@ import query from 'ee/iterations/queries/iteration.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import { mockIterationNode, mockGroupIterations, mockProjectIterations } from '../mock_data';
+import IterationTitle from 'ee/iterations/components/iteration_title.vue';
+import { getIterationPeriod } from 'ee/iterations/utils';
+import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { __ } from '~/locale';
+import {
+  mockIterationNode,
+  mockPastIterationNode,
+  createMockGroupIterations,
+  mockIterationNodeWithoutTitle,
+  mockProjectIterations,
+} from '../mock_data';
 
 const $router = {
   push: jest.fn(),
@@ -36,16 +46,17 @@ describe('Iterations report', () => {
   const labelsFetchPath = '/labels.json';
 
   const findTopbar = () => wrapper.findComponent({ ref: 'topbar' });
-  const findTitle = () => wrapper.findComponent({ ref: 'title' });
+  const findHeading = () => wrapper.findComponent({ ref: 'heading' });
   const findDescription = () => wrapper.findComponent({ ref: 'description' });
   const findActionsDropdown = () => wrapper.find('[data-testid="actions-dropdown"]');
+  const findDeleteButton = () => wrapper.findByText(__('Delete'));
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
 
   const mountComponent = ({
     props = defaultProps,
-    mockQueryResponse = mockGroupIterations,
+    mockQueryResponse = createMockGroupIterations(),
     iterationQueryHandler = jest.fn().mockResolvedValue(mockQueryResponse),
     deleteMutationResponse = { data: { iterationDelete: { errors: [] } } },
     deleteMutationMock = jest.fn().mockResolvedValue(deleteMutationResponse),
@@ -56,86 +67,87 @@ describe('Iterations report', () => {
       [deleteIteration, deleteMutationMock],
     ]);
 
-    wrapper = shallowMount(IterationReport, {
-      apolloProvider: mockApollo,
-      propsData: props,
-      provide: {
-        fullPath: props.fullPath,
-        groupPath: props.fullPath,
-        cadencesListPath: '/groups/some-group/-/cadences',
-        canCreateCadence: true,
-        canEditCadence: true,
-        namespaceType: props.namespaceType,
-        canEditIteration: props.canEditIteration,
-        hasScopedLabelsFeature: true,
-        labelsFetchPath,
-        previewMarkdownPath: '/markdown',
-        noIssuesSvgPath: '/some.svg',
-      },
-      mocks: {
-        $router,
-        $toast,
-      },
-      stubs: {
-        GlLoadingIcon,
-        GlTab,
-        GlTabs,
-      },
-    });
+    wrapper = extendedWrapper(
+      shallowMount(IterationReport, {
+        apolloProvider: mockApollo,
+        propsData: props,
+        provide: {
+          fullPath: props.fullPath,
+          groupPath: props.fullPath,
+          cadencesListPath: '/groups/some-group/-/cadences',
+          canCreateCadence: true,
+          canEditCadence: true,
+          namespaceType: props.namespaceType,
+          canEditIteration: props.canEditIteration,
+          hasScopedLabelsFeature: true,
+          labelsFetchPath,
+          previewMarkdownPath: '/markdown',
+          noIssuesSvgPath: '/some.svg',
+        },
+        mocks: {
+          $router,
+          $toast,
+        },
+        stubs: {
+          GlLoadingIcon,
+          GlTab,
+          GlTabs,
+          IterationTitle,
+        },
+      }),
+    );
   };
 
   describe('with mock apollo', () => {
     describe.each([
       [
-        'group',
-        {
-          fullPath: 'group-name',
-          iterationId: String(getIdFromGraphQLId(mockIterationNode.id)),
-          namespaceType: Namespace.Group,
-        },
-        mockGroupIterations,
-        {
-          fullPath: 'group-name',
-          id: mockIterationNode.id,
-          isGroup: true,
-        },
+        Namespace.Group,
+        'group-name',
+        mockIterationNodeWithoutTitle,
+        createMockGroupIterations(mockIterationNodeWithoutTitle),
       ],
       [
-        'project',
-        {
-          fullPath: 'group-name/project-name',
-          iterationId: String(getIdFromGraphQLId(mockIterationNode.id)),
-          namespaceType: Namespace.Project,
-        },
-        mockProjectIterations,
-        {
-          fullPath: 'group-name/project-name',
-          id: mockIterationNode.id,
-          isGroup: false,
-        },
+        Namespace.Group,
+        'group-name',
+        mockIterationNode,
+        createMockGroupIterations(mockIterationNode),
       ],
-    ])('when viewing an iteration in a %s', (_, props, mockIteration, expectedParams) => {
-      it('calls a query with correct parameters', () => {
-        const iterationQueryHandler = jest.fn().mockResolvedValue(mockIteration);
-        mountComponent({
-          props,
-          iterationQueryHandler,
+      [Namespace.Project, 'group-name/project-name', mockIterationNode, mockProjectIterations],
+    ])(
+      'when viewing an iteration in a %s',
+      (namespaceType, fullPath, mockIteration, mockIterations) => {
+        let iterationQueryHandler;
+
+        beforeEach(() => {
+          iterationQueryHandler = jest.fn().mockResolvedValue(mockIterations);
+
+          mountComponent({
+            props: {
+              namespaceType,
+              fullPath,
+              iterationId: String(getIdFromGraphQLId(mockIteration.id)),
+            },
+            iterationQueryHandler,
+          });
         });
 
-        expect(iterationQueryHandler).toHaveBeenNthCalledWith(1, expectedParams);
-      });
-
-      it('renders an iteration title', async () => {
-        mountComponent({
-          props,
-          iterationQueryHandler: jest.fn().mockResolvedValue(mockIteration),
+        it('calls a query with correct parameters', () => {
+          expect(iterationQueryHandler).toHaveBeenNthCalledWith(1, {
+            fullPath,
+            id: mockIteration.id,
+            isGroup: namespaceType === Namespace.Group,
+          });
         });
 
-        await waitForPromises();
+        it('renders iteration dates optionally with title', async () => {
+          await waitForPromises();
 
-        expect(findTitle().text()).toContain(mockIterationNode.title);
-      });
-    });
+          expect(findHeading().text()).toContain(getIterationPeriod(mockIteration));
+
+          if (mockIteration.title) expect(findHeading().text()).toContain(mockIteration.title);
+        });
+      },
+    );
   });
 
   afterEach(() => {
@@ -143,6 +155,14 @@ describe('Iterations report', () => {
   });
 
   describe('delete iteration', () => {
+    it('does not show delete option for past iterations', async () => {
+      mountComponent({ mockQueryResponse: createMockGroupIterations(mockPastIterationNode) });
+
+      await waitForPromises();
+
+      expect(findDeleteButton().exists()).toBe(false);
+    });
+
     it('deletes iteration', async () => {
       mountComponent();
 
@@ -215,7 +235,7 @@ describe('Iterations report', () => {
       await waitForPromises();
 
       expect(findEmptyState().props('title')).toBe('Could not find iteration');
-      expect(findTitle().exists()).toBe(false);
+      expect(findHeading().exists()).toBe(false);
       expect(findDescription().exists()).toBe(false);
       expect(findActionsDropdown().exists()).toBe(false);
     });
@@ -225,7 +245,9 @@ describe('Iterations report', () => {
     describe('user without edit permission', () => {
       beforeEach(async () => {
         mountComponent({
-          iterationQueryHandler: jest.fn().mockResolvedValue(mockGroupIterations),
+          iterationQueryHandler: jest
+            .fn()
+            .mockResolvedValue(createMockGroupIterations(mockIterationNode)),
         });
 
         await waitForPromises();
@@ -246,8 +268,8 @@ describe('Iterations report', () => {
         expect(findEmptyState().exists()).toBe(false);
       });
 
-      it('shows title', () => {
-        expect(findTitle().text()).toContain(mockIterationNode.title);
+      it('shows iteration dates', () => {
+        expect(findHeading().text()).toContain(getIterationPeriod(mockIterationNode));
       });
 
       it('shows description', () => {
@@ -282,7 +304,7 @@ describe('Iterations report', () => {
         ({ canEdit, namespaceType, canEditIteration }) => {
           beforeEach(async () => {
             const mockQueryResponse = {
-              [Namespace.Group]: mockGroupIterations,
+              [Namespace.Group]: createMockGroupIterations(mockIterationNode),
               [Namespace.Project]: mockProjectIterations,
             }[namespaceType];
 

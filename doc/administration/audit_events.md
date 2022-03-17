@@ -44,6 +44,9 @@ There are two kinds of events logged:
 - Instance events scoped to the whole GitLab instance, used by your Compliance team to
   perform formal audits.
 
+NOTE:
+Some events are recorded and available only as [streaming audit events](audit_event_streaming.md).
+
 ### Impersonation data
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/536) in GitLab 13.0.
@@ -109,6 +112,8 @@ From there, you can see the following actions:
 - Compliance framework created, updated, or deleted. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/340649) in GitLab 14.5.
 - Event streaming destination created, updated, or deleted. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/344664) in GitLab 14.6.
 - Instance administrator started or stopped impersonation of a group member. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/300961) in GitLab 14.8.
+- Group deploy token was successfully created, revoked, or deleted. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/353452) in GitLab 14.9.
+- Failed attempt to create a group deploy token. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/353452) in GitLab 14.9.
 
 Group events can also be accessed via the [Group Audit Events API](../api/audit_events.md#group-audit-events)
 
@@ -160,6 +165,8 @@ From there, you can see the following actions:
 - Allowing force push to protected branch changed ([introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/338873) in GitLab 14.3)
 - Code owner approval requirement on merge requests targeting protected branch changed ([introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/338873) in GitLab 14.3)
 - Users and groups allowed to merge and push to protected branch added or removed ([introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/338873) in GitLab 14.3)
+- Project deploy token was successfully created, revoked or deleted ([introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/353451) in GitLab 14.9)
+- Failed attempt to create a project deploy token ([introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/353451) in GitLab 14.9)
 
 Project events can also be accessed via the [Project Audit Events API](../api/audit_events.md#project-audit-events).
 

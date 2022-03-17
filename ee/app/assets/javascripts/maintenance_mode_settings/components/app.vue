@@ -15,6 +15,7 @@ export default {
       'GitLab is undergoing maintenance and is operating in read-only mode.',
     ),
     buttonText: __('Save changes'),
+    bannerLabel: __('Banner message'),
   },
   components: {
     GlForm,
@@ -53,7 +54,7 @@ export default {
           </p>
         </div>
       </div>
-      <gl-form-group label="Banner Message" label-for="maintenanceBannerMessage">
+      <gl-form-group :label="$options.i18n.bannerLabel" label-for="maintenanceBannerMessage">
         <gl-form-textarea
           id="maintenanceBannerMessage"
           v-model="bannerMessage"

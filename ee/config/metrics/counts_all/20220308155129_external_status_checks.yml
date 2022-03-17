@@ -1,0 +1,19 @@
+---
+key_path: counts.external_status_checks
+description: Total number of external status checks
+product_section: dev
+product_stage: manage
+product_group: compliance
+product_category: "Compliance Management"
+value_type: number
+status: active
+milestone: "14.9"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/82416
+time_frame: all
+data_source: database
+data_category: optional
+instrumentation_class: CountExternalStatusChecksMetric
+distribution:
+- ee
+tier:
+- ultimate

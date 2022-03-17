@@ -1,0 +1,28 @@
+{
+  "type": "object",
+  "properties" : {
+    "id": { "type": "integer" },
+    "confidential": { "type": "boolean" },
+    "title": { "type": "string" },
+    "state": { "type": "string" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "closed_at": { "type": ["string", "null"], "format": "date-time" },
+    "relation_path": { "type": ["string", "null"] },
+    "reference": { "type": "string" },
+    "path": { "type": "string" },
+    "link_type": { "type": "string" }
+  },
+  "required" : [
+    "id",
+    "confidential",
+    "title",
+    "state",
+    "created_at",
+    "closed_at",
+    "relation_path",
+    "reference",
+    "path",
+    "link_type"
+  ],
+  "additionalProperties": false
+}

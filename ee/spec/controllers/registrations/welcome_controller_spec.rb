@@ -13,7 +13,7 @@ RSpec.describe Registrations::WelcomeController do
       allow(controller.helpers).to receive(:signup_onboarding_enabled?).and_return(true)
 
       wrapped_experiment(experiment(:combined_registration)) do |e|
-        expect(e).to receive(:publish_to_client)
+        expect(e).to receive(:publish)
       end
 
       get :show

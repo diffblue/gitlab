@@ -39,9 +39,8 @@
   requirements_import_csv_path: import_csv_project_requirements_management_requirements_path(@project) } }
   - if current_tab_count == 0
     -# Show regular spinner only when there will be no
-    -# requirements to show for current tab.
-    .gl-spinner-container.mt-3
-      %span.align-text-bottom.gl-spinner.gl-spinner-orange.gl-spinner-md{ aria: { label: _('Loading'), hidden: 'true' } }
+    -# requirements to show for current tab
+    = gl_loading_icon(css_class: 'gl-mt-3', size: 'md')
   - else
     -# Following block shows skeleton loading same as mounted Vue app so while
     -# app is being loaded and initialized, user continues to see skeleton loading.

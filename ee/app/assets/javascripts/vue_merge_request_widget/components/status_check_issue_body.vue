@@ -1,7 +1,7 @@
 <script>
 import SummaryRow from '~/reports/components/summary_row.vue';
-import { ICON_SUCCESS, ICON_PENDING } from '~/reports/constants';
-import { APPROVED } from '../../reports/status_checks_report/constants';
+import { ICON_SUCCESS, ICON_PENDING, ICON_FAILED } from '~/reports/constants';
+import { PASSED, APPROVED, FAILED } from '../../reports/status_checks_report/constants';
 
 export default {
   name: 'StatusCheckIssueBody',
@@ -16,10 +16,16 @@ export default {
   },
   computed: {
     statusIcon() {
-      if (this.issue.status === APPROVED) {
-        return ICON_SUCCESS;
+      switch (this.issue.status) {
+        case APPROVED:
+          return ICON_SUCCESS;
+        case PASSED:
+          return ICON_SUCCESS;
+        case FAILED:
+          return ICON_FAILED;
+        default:
+          return ICON_PENDING;
       }
-      return ICON_PENDING;
     },
   },
 };
@@ -29,7 +35,7 @@ export default {
   <div class="gl-w-full" :data-testid="`mr-status-check-issue-${issue.id}`">
     <summary-row :status-icon="statusIcon" nested-summary>
       <template #summary>
-        <span>{{ issue.name }}, {{ issue.external_url }}</span>
+        <span>{{ issue.name }}: {{ issue.external_url }}</span>
       </template>
     </summary-row>
   </div>

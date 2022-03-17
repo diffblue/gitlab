@@ -50,5 +50,10 @@ RSpec.describe Groups::GroupMembersHelper do
     it 'adds `export_csv_path`' do
       expect(subject[:export_csv_path]).not_to be_nil
     end
+
+    it 'adds `can_filter_by_enterprise`' do
+      allow(group.root_ancestor).to receive(:saml_enabled?).and_return(true)
+      expect(subject[:can_filter_by_enterprise]).to eq(true)
+    end
   end
 end

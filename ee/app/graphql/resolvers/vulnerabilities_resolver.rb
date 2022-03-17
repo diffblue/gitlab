@@ -73,19 +73,41 @@ module Resolvers
     end
 
     def unconditional_includes
-      [:findings]
+      if vulnerability_reads_enabled?
+        [{ vulnerability: [:findings] }]
+      else
+        [:findings]
+      end
     end
 
     def preloads
-      {
-        has_solutions: [{ findings: [:remediations] }]
-      }
+      if vulnerability_reads_enabled?
+        {
+          vulnerability: {
+            has_solutions: [{ findings: [:remediations] }]
+          }
+        }
+      else
+        {
+          has_solutions: [{ findings: [:remediations] }]
+        }
+      end
     end
 
     private
 
     def vulnerabilities(params)
-      apply_lookahead(::Security::VulnerabilitiesFinder.new(vulnerable, params).execute)
+      if vulnerability_reads_enabled?
+        apply_lookahead(::Security::VulnerabilityReadsFinder.new(vulnerable, params).execute.as_vulnerabilities)
+      else
+        apply_lookahead(::Security::VulnerabilitiesFinder.new(vulnerable, params).execute)
+      end
+    end
+
+    def vulnerability_reads_enabled?
+      return false if vulnerable.nil? || vulnerable.is_a?(::InstanceSecurityDashboard)
+
+      Feature.enabled?(:vulnerability_reads_table, vulnerable, default_enabled: :yaml)
     end
   end
 end

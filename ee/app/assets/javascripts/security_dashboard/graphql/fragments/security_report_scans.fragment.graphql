@@ -3,6 +3,7 @@ fragment SecurityReportSummaryScans on SecurityReportSummarySection {
     nodes {
       name
       errors
+      warnings
     }
   }
 }

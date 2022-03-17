@@ -23,6 +23,8 @@ class EpicEntity < IssuableEntity
   expose :state
   expose :lock_version
   expose :confidential
+  expose :color
+  expose :text_color
 
   expose :web_url do |epic|
     group_epic_path(epic.group, epic)

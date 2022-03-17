@@ -87,5 +87,27 @@ RSpec.describe ::SystemNotes::IssuablesService do
         subject
       end
     end
+
+    describe '#relate_issuable' do
+      let(:noteable) { epic }
+      let(:target) { create(:epic) }
+
+      it 'creates system notes when relating epics' do
+        result = service.relate_issuable(target)
+
+        expect(result.note).to eq("marked this epic as related to #{target.to_reference(target.group, full: true)}")
+      end
+    end
+  end
+
+  describe '#unrelate_issuable' do
+    let(:noteable) { epic }
+    let(:target) { create(:epic) }
+
+    it 'creates system notes when epic gets unrelated' do
+      result = service.unrelate_issuable(target)
+
+      expect(result.note).to eq("removed the relation with #{target.to_reference(noteable.group)}")
+    end
   end
 end

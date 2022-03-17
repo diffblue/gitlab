@@ -92,7 +92,7 @@ describe('Service Level Agreement', () => {
       ${5}  | ${7}    | ${'5 hours, 7 minutes remaining'}
       ${5}  | ${0}    | ${'5 hours, 0 minutes remaining'}
       ${0}  | ${7}    | ${'7 minutes remaining'}
-      ${0}  | ${0}    | ${''}
+      ${0}  | ${0}    | ${'Missed SLA'}
     `(
       'returns the correct message for: hours: "$hours", minutes: "$minutes"',
       ({ hours, minutes, expectedMessage }) => {

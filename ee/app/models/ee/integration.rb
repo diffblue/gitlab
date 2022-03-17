@@ -30,7 +30,7 @@ module EE
       end
 
       override :available_integration_names
-      def available_integration_names(*)
+      def available_integration_names(...)
         names = super
         names -= saas_only_integration_names unless include_saas_only?
         names

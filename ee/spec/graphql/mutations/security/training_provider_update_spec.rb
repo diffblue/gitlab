@@ -46,11 +46,22 @@ RSpec.describe Mutations::Security::TrainingProviderUpdate do
           subject { mutation_result[:training] }
 
           context 'when the training is deleted' do
-            before do
-              training.destroy!
+            context 'when training is not primary' do
+              before do
+                training.destroy!
+              end
+
+              it { is_expected.to have_attributes(is_enabled: false, is_primary: false) }
             end
 
-            it { is_expected.to have_attributes(is_enabled: false, is_primary: false) }
+            context 'when training is primary' do
+              before do
+                training.update!(is_primary: true)
+                training.destroy!
+              end
+
+              it { is_expected.to have_attributes(is_enabled: false, is_primary: false) }
+            end
           end
 
           context 'when the training is not deleted' do

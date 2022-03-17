@@ -73,7 +73,9 @@ RSpec.describe 'User creates branch and merge request on issue page', :js do
 
             expect(page).to have_content('New merge request')
             expect(page).to have_content("From #{issue.to_branch_name} into #{project.default_branch}")
-            expect(page).to have_current_path(project_new_merge_request_path(project, merge_request: { source_branch: issue.to_branch_name, target_branch: project.default_branch }))
+            expect(page).to have_content("Closes ##{issue.iid}")
+            expect(page).to have_field("Title", with: "Draft: Resolve \"Cherry-Coloured Funk\"")
+            expect(page).to have_current_path(project_new_merge_request_path(project, merge_request: { source_branch: issue.to_branch_name, target_branch: project.default_branch, issue_iid: issue.iid }))
           end
         end
 
@@ -83,7 +85,7 @@ RSpec.describe 'User creates branch and merge request on issue page', :js do
           wait_for_requests
 
           expect(page).to have_selector('.dropdown-toggle-text ', text: '1-cherry-coloured-funk')
-          expect(current_path).to eq project_tree_path(project, '1-cherry-coloured-funk')
+          expect(page).to have_current_path project_tree_path(project, '1-cherry-coloured-funk'), ignore_query: true
         end
       end
 
@@ -96,7 +98,9 @@ RSpec.describe 'User creates branch and merge request on issue page', :js do
 
             expect(page).to have_content('New merge request')
             expect(page).to have_content("From #{branch_name} into #{project.default_branch}")
-            expect(page).to have_current_path(project_new_merge_request_path(project, merge_request: { source_branch: branch_name, target_branch: project.default_branch }))
+            expect(page).to have_content("Closes ##{issue.iid}")
+            expect(page).to have_field("Title", with: "Draft: Resolve \"Cherry-Coloured Funk\"")
+            expect(page).to have_current_path(project_new_merge_request_path(project, merge_request: { source_branch: branch_name, target_branch: project.default_branch, issue_iid: issue.iid }))
           end
         end
 
@@ -106,7 +110,7 @@ RSpec.describe 'User creates branch and merge request on issue page', :js do
           wait_for_requests
 
           expect(page).to have_selector('.dropdown-toggle-text ', text: branch_name)
-          expect(current_path).to eq project_tree_path(project, branch_name)
+          expect(page).to have_current_path project_tree_path(project, branch_name), ignore_query: true
         end
       end
     end

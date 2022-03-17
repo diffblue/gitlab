@@ -8,9 +8,10 @@ RSpec.describe Gitlab::EventStore do
       instance = described_class.instance
 
       expect(instance.subscriptions.keys).to include(
+        ::Ci::JobArtifactsDeletedEvent,
         ::Ci::PipelineCreatedEvent,
         ::Members::MembersAddedEvent,
-        ::Ci::JobArtifactsDeletedEvent
+        ::Repositories::KeepAroundRefsCreatedEvent
       )
     end
   end

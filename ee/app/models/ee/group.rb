@@ -342,12 +342,20 @@ module EE
       billable_ids[:user_ids].count
     end
 
+    override :free_plan_members_count
+    def free_plan_members_count
+      billable_ids = billed_user_ids_including_guests
+
+      billable_ids[:user_ids].count
+    end
+
     # For now, we are not billing for members with a Guest role for subscriptions
     # with a Gold/Ultimate plan. The other plans will treat Guest members as a regular member
     # for billing purposes.
     #
     # For the user_ids key, we are plucking the user_ids from the "Members" table in an array and
     # converting the array of user_ids to a Set which will have unique user_ids.
+    override :billed_user_ids
     def billed_user_ids(requested_hosted_plan = nil)
       exclude_guests = ([actual_plan_name, requested_hosted_plan] & [::Plan::GOLD, ::Plan::ULTIMATE, ::Plan::ULTIMATE_TRIAL]).any?
 
@@ -378,20 +386,19 @@ module EE
     end
 
     def vulnerabilities
-      ::Vulnerability.where(
-        project: ::Project.for_group_and_its_subgroups(self).non_archived.without_deleted
-      )
+      ::Vulnerability.where(project: projects_for_group_and_its_subgroups_without_deleted)
+    end
+
+    def vulnerability_reads
+      ::Vulnerabilities::Read.where(project: projects_for_group_and_its_subgroups_without_deleted)
     end
 
     def vulnerability_scanners
-      ::Vulnerabilities::Scanner.where(
-        project: ::Project.for_group_and_its_subgroups(self).non_archived.without_deleted
-      )
+      ::Vulnerabilities::Scanner.where(project: projects_for_group_and_its_subgroups_without_deleted)
     end
 
     def vulnerability_historical_statistics
-      ::Vulnerabilities::HistoricalStatistic
-        .for_project(::Project.for_group_and_its_subgroups(self).non_archived.without_deleted)
+      ::Vulnerabilities::HistoricalStatistic.for_project(projects_for_group_and_its_subgroups_without_deleted)
     end
 
     def max_personal_access_token_lifetime_from_now
@@ -527,6 +534,11 @@ module EE
       user_cap <= members_count
     end
 
+    override :user_limit_reached?
+    def user_limit_reached?(use_cache: false)
+      super || user_cap_reached?(use_cache: use_cache)
+    end
+
     def shared_externally?
       strong_memoize(:shared_externally) do
         internal_groups = ::Group.groups_including_descendants_by([self])
@@ -582,10 +594,10 @@ module EE
 
     def billed_user_ids_excluding_guests
       strong_memoize(:billed_user_ids_excluding_guests) do
-        group_member_user_ids = billed_group_users(non_guests: true).distinct.pluck(:id)
-        project_member_user_ids = billed_project_users(non_guests: true).distinct.pluck(:id)
-        shared_group_user_ids = billed_shared_non_guests_group_users.distinct.pluck(:id)
-        shared_project_user_ids = billed_invited_non_guests_group_to_project_users.distinct.pluck(:id)
+        group_member_user_ids = billed_group_users(exclude_guests: true).distinct.pluck(:id)
+        project_member_user_ids = billed_project_users(exclude_guests: true).distinct.pluck(:id)
+        shared_group_user_ids = billed_shared_group_users(exclude_guests: true).distinct.pluck(:id)
+        shared_project_user_ids = billed_invited_group_to_project_users(exclude_guests: true).distinct.pluck(:id)
 
         {
           user_ids: (group_member_user_ids + project_member_user_ids + shared_group_user_ids + shared_project_user_ids).to_set,
@@ -624,21 +636,21 @@ module EE
     end
 
     # Members belonging directly to Group or its subgroups
-    def billed_group_users(non_guests: false)
+    def billed_group_users(exclude_guests: false)
       members = ::GroupMember.active_without_invites_and_requests.where(
         source_id: self_and_descendants
       )
 
-      members = members.non_guests if non_guests
+      members = members.non_guests if exclude_guests
 
       users_without_project_bots(members)
     end
 
     # Members belonging directly to Projects within Group or Projects within subgroups
-    def billed_project_users(non_guests: false)
+    def billed_project_users(exclude_guests: false)
       members = ::ProjectMember.without_invites_and_requests
 
-      members = members.non_guests if non_guests
+      members = members.non_guests if exclude_guests
 
       members = members.where(
         source_id: ::Project.joins(:group).where(namespace: self_and_descendants)
@@ -648,13 +660,11 @@ module EE
     end
 
     # Members belonging to Groups invited to collaborate with Projects
-    def billed_invited_group_to_project_users
-      members = invited_or_shared_group_members(invited_groups_in_projects)
-      users_without_project_bots(members)
-    end
+    def billed_invited_group_to_project_users(exclude_guests: false)
+      groups = (exclude_guests ? invited_group_as_non_guests_in_projects : invited_groups_in_projects)
+      members = invited_or_shared_group_members(groups)
+      members = members.non_guests if exclude_guests
 
-    def billed_invited_non_guests_group_to_project_users
-      members = invited_or_shared_group_members(invited_group_as_non_guests_in_projects).non_guests
       users_without_project_bots(members)
     end
 
@@ -668,13 +678,11 @@ module EE
     end
 
     # Members belonging to Groups invited to collaborate with Groups and Subgroups
-    def billed_shared_group_users
-      members = invited_or_shared_group_members(invited_group_in_groups)
-      users_without_project_bots(members)
-    end
+    def billed_shared_group_users(exclude_guests: false)
+      groups = (exclude_guests ? invited_non_guest_group_in_groups : invited_group_in_groups)
+      members = invited_or_shared_group_members(groups)
+      members = members.non_guests if exclude_guests
 
-    def billed_shared_non_guests_group_users
-      members = invited_or_shared_group_members(invited_non_guest_group_in_groups).non_guests
       users_without_project_bots(members)
     end
 
@@ -693,6 +701,10 @@ module EE
 
     def users_without_project_bots(members)
       ::User.where(id: members.distinct.select(:user_id)).without_project_bot
+    end
+
+    def projects_for_group_and_its_subgroups_without_deleted
+      ::Project.for_group_and_its_subgroups(self).non_archived.without_deleted
     end
 
     override :_safe_read_repository_read_only_column

@@ -2,6 +2,8 @@ import { GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import timezoneMock from 'timezone-mock';
 import IterationsList from 'ee/iterations/components/iterations_list.vue';
+import IterationTitle from 'ee/iterations/components/iteration_title.vue';
+import { getIterationPeriod } from 'ee/iterations/utils';
 
 describe('Iterations list', () => {
   let wrapper;
@@ -11,6 +13,9 @@ describe('Iterations list', () => {
   const mountComponent = (propsData = { iterations: [] }) => {
     wrapper = shallowMount(IterationsList, {
       propsData,
+      stubs: {
+        IterationTitle,
+      },
     });
   };
 
@@ -29,7 +34,7 @@ describe('Iterations list', () => {
   describe('with iterations', () => {
     const iteration = {
       id: '123',
-      title: 'Iteration #1',
+      title: null,
       startDate: '2020-05-27',
       dueDate: '2020-06-04',
       scopedPath: null,
@@ -42,7 +47,19 @@ describe('Iterations list', () => {
       });
 
       expect(wrapper.html()).not.toHaveText('No iterations to show');
-      expect(wrapper.html()).toHaveText(iteration.title);
+      expect(findGlLink().text()).toBe(getIterationPeriod(iteration));
+    });
+
+    describe('when iteration has a title', () => {
+      it('shows iteration with title', () => {
+        mountComponent({
+          iterations: [{ ...iteration, title: 'Iteration #1' }],
+        });
+
+        expect(wrapper.html()).not.toHaveText('No iterations to show');
+        expect(findGlLink().text()).toBe(getIterationPeriod(iteration));
+        expect(wrapper.html()).toHaveText('Iteration #1');
+      });
     });
 
     it('displays dates in UTC time, regardless of user timezone', () => {

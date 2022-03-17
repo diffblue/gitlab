@@ -160,7 +160,7 @@ class GitlabSubscription < ApplicationRecord
   end
 
   def automatically_index_in_elasticsearch?
-    return false unless ::Gitlab.dev_env_or_com?
+    return false unless ::Gitlab.com?
     return false if expired?
 
     # We only index paid groups on dot com for now.

@@ -11,6 +11,8 @@ class Groups::InsightsController < Groups::ApplicationController
 
   feature_category :value_stream_management
 
+  urgency :low
+
   private
 
   def authorize_read_group!

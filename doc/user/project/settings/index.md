@@ -217,7 +217,11 @@ cannot change them:
   This ensures that your job uses the settings you intend and that they are not overridden by
   project-level pipelines.
 
-##### Avoid parent and child pipelines
+##### Avoid parent and child pipelines in GitLab 14.7 and earlier
+
+NOTE:
+This advice does not apply to GitLab 14.8 and later because [a fix](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/78878) added
+compatibility for combining compliance pipelines, and parent and child pipelines.
 
 Compliance pipelines start on the run of _every_ pipeline in a relevant project. This means that if a pipeline in the relevant project
 triggers a child pipeline, the compliance pipeline runs first. This can trigger the parent pipeline, instead of the child pipeline.
@@ -537,7 +541,7 @@ Configure [alert integrations](../../../operations/incident_management/integrati
 
 #### Alert integration
 
-Automatically [create](../../../operations/incident_management/incidents.md#create-incidents-automatically), [notify on](../../../operations/incident_management/paging.md#email-notifications), and [resolve](../../../operations/incident_management/incidents.md#automatically-close-incidents-via-recovery-alerts) incidents based on GitLab alerts.
+Automatically [create](../../../operations/incident_management/incidents.md#create-incidents-automatically), [notify on](../../../operations/incident_management/paging.md#email-notifications-for-alerts), and [resolve](../../../operations/incident_management/incidents.md#automatically-close-incidents-via-recovery-alerts) incidents based on GitLab alerts.
 
 #### PagerDuty integration
 
@@ -551,11 +555,11 @@ Automatically [create](../../../operations/incident_management/incidents.md#crea
 
 Configure Error Tracking to discover and view [Sentry errors within GitLab](../../../operations/error_tracking.md).
 
-### Jaeger tracing **(ULTIMATE)**
+### Jaeger tracing
 
 Add the URL of a Jaeger server to allow your users to [easily access the Jaeger UI from within GitLab](../../../operations/tracing.md).
 
-### Status Page
+### Status Page **(ULTIMATE)**
 
 [Add Storage credentials](../../../operations/incident_management/status_page.md#sync-incidents-to-the-status-page)
 to enable the syncing of public Issues to a [deployed status page](../../../operations/incident_management/status_page.md#create-a-status-page-project).

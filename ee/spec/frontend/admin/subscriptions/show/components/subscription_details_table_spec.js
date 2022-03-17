@@ -1,4 +1,4 @@
-import { GlSkeletonLoader } from '@gitlab/ui';
+import { GlSkeletonLoader, GlBadge } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import SubscriptionDetailsTable from 'ee/admin/subscriptions/show/components/subscription_details_table.vue';
 import { detailsLabels } from 'ee/admin/subscriptions/show/constants';
@@ -14,6 +14,9 @@ const licenseDetails = [
     detail: 'lastSync',
     value: 'just now',
   },
+  {
+    detail: 'email',
+  },
 ];
 
 const hasFontWeightBold = (wrapper) => wrapper.classes('gl-font-weight-bold');
@@ -26,6 +29,7 @@ describe('Subscription Details Table', () => {
   const findLabelCells = () => wrapper.findAllByTestId('details-label');
   const findLastSyncRow = () => wrapper.findByTestId('row-lastsync');
   const findClipboardButton = () => wrapper.findComponent(ClipboardButton);
+  const findTypeBadge = () => wrapper.findComponent(GlBadge);
   const hasClass = (className) => (w) => w.classes(className);
   const isNotLastSyncRow = (w) => w.attributes('data-testid') !== 'row-lastsync';
 
@@ -45,8 +49,8 @@ describe('Subscription Details Table', () => {
     });
 
     it('displays the correct number of rows', () => {
-      expect(findLabelCells()).toHaveLength(2);
-      expect(findContentCells()).toHaveLength(2);
+      expect(findLabelCells()).toHaveLength(licenseDetails.length);
+      expect(findContentCells()).toHaveLength(licenseDetails.length);
     });
 
     it('displays the correct content for rows', () => {
@@ -62,8 +66,38 @@ describe('Subscription Details Table', () => {
       expect(findClipboardButton().exists()).toBe(false);
     });
 
+    it('does not show a badge', () => {
+      expect(findTypeBadge().exists()).toBe(false);
+    });
+
     it('shows the default row color', () => {
       expect(findLastSyncRow().classes('gl-text-gray-800')).toBe(true);
+    });
+
+    it('displays a dash for empty values', () => {
+      expect(findLabelCells().at(2).text()).toBe(`${detailsLabels.email}:`);
+      expect(findContentCells().at(2).text()).toBe('-');
+    });
+  });
+
+  describe('with type detail', () => {
+    beforeEach(() => {
+      createComponent({
+        details: [
+          {
+            detail: 'type',
+            value: 'My type',
+          },
+        ],
+      });
+    });
+
+    it('shows a badge', () => {
+      expect(findTypeBadge().exists()).toBe(true);
+    });
+
+    it('displays the correct text', () => {
+      expect(findContentCells().at(0).text()).toBe('My type');
     });
   });
 

@@ -12,7 +12,11 @@ module API
 
     helpers do
       def vulnerabilities_by(project)
-        Security::VulnerabilitiesFinder.new(project).execute
+        if Feature.enabled?(:vulnerability_reads_table, project)
+          Security::VulnerabilityReadsFinder.new(project).execute.as_vulnerabilities
+        else
+          Security::VulnerabilitiesFinder.new(project).execute
+        end
       end
 
       def find_vulnerability!

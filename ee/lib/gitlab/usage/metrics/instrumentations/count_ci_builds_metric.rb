@@ -7,6 +7,11 @@ module Gitlab
         class CountCiBuildsMetric < DatabaseMetric
           relation { ::Ci::Build }
           operation :count
+          metric_options do
+            {
+              batch_size: 1_000_000
+            }
+          end
 
           def initialize(time_frame:, options: {})
             super

@@ -107,7 +107,6 @@ export default {
       v-if="errorMessage"
       variant="danger"
       :dismissible="hasSettings"
-      :contained="true"
       :class="{ 'gl-mb-6': hasSettings }"
       data-testid="error-alert"
       @dismiss="dismissErrorMessage"

@@ -12,7 +12,7 @@ RSpec.describe ElasticRemoveExpiredNamespaceSubscriptionsFromIndexCronWorker, :s
   let(:expired_subscription2) { create(:gitlab_subscription, :bronze, end_date: Date.today - 35) }
 
   before do
-    allow(::Gitlab).to receive(:dev_env_or_com?).and_return(true)
+    allow(::Gitlab).to receive(:com?).and_return(true)
     ElasticsearchIndexedNamespace.safe_find_or_create_by!(namespace_id: not_expired_subscription1.namespace_id)
     ElasticsearchIndexedNamespace.safe_find_or_create_by!(namespace_id: not_expired_subscription2.namespace_id)
     ElasticsearchIndexedNamespace.safe_find_or_create_by!(namespace_id: recently_expired_subscription.namespace_id)
@@ -35,9 +35,9 @@ RSpec.describe ElasticRemoveExpiredNamespaceSubscriptionsFromIndexCronWorker, :s
     end
   end
 
-  context 'when not dev_env_or_com?' do
+  context 'when not com?' do
     before do
-      allow(::Gitlab).to receive(:dev_env_or_com?).and_return(false)
+      allow(::Gitlab).to receive(:com?).and_return(false)
     end
 
     it 'does nothing' do

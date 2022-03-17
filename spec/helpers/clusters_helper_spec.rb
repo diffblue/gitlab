@@ -31,34 +31,6 @@ RSpec.describe ClustersHelper do
     end
   end
 
-  describe '#create_new_cluster_label' do
-    subject { helper.create_new_cluster_label(provider: provider) }
-
-    context 'GCP provider' do
-      let(:provider) { 'gcp' }
-
-      it { is_expected.to eq('Create new cluster on GKE') }
-    end
-
-    context 'AWS provider' do
-      let(:provider) { 'aws' }
-
-      it { is_expected.to eq('Create new cluster on EKS') }
-    end
-
-    context 'other provider' do
-      let(:provider) { 'other' }
-
-      it { is_expected.to eq('Create new cluster') }
-    end
-
-    context 'no provider' do
-      let(:provider) { nil }
-
-      it { is_expected.to eq('Create new cluster') }
-    end
-  end
-
   describe '#js_clusters_list_data' do
     let_it_be(:current_user) { create(:user) }
     let_it_be(:project) { build(:project) }
@@ -89,7 +61,11 @@ RSpec.describe ClustersHelper do
     end
 
     it 'displays create cluster using certificate path' do
-      expect(subject[:new_cluster_path]).to eq("#{project_path(project)}/-/clusters/new?tab=create")
+      expect(subject[:new_cluster_path]).to eq("#{project_path(project)}/-/clusters/new")
+    end
+
+    it 'displays add cluster using certificate path' do
+      expect(subject[:add_cluster_path]).to eq("#{project_path(project)}/-/clusters/connect")
     end
 
     context 'user has no permissions to create a cluster' do
@@ -114,6 +90,10 @@ RSpec.describe ClustersHelper do
       it 'doesn\'t display empty state help text' do
         expect(subject[:empty_state_help_text]).to be_nil
       end
+
+      it 'displays display_cluster_agents as true' do
+        expect(subject[:display_cluster_agents]).to eq("true")
+      end
     end
 
     context 'group cluster' do
@@ -122,6 +102,32 @@ RSpec.describe ClustersHelper do
 
       it 'displays empty state help text' do
         expect(subject[:empty_state_help_text]).to eq(s_('ClusterIntegration|Adding an integration to your group will share the cluster across all your projects.'))
+      end
+
+      it 'displays display_cluster_agents as false' do
+        expect(subject[:display_cluster_agents]).to eq("false")
+      end
+    end
+
+    describe 'certificate based clusters enabled' do
+      before do
+        stub_feature_flags(certificate_based_clusters: flag_enabled)
+      end
+
+      context 'feature flag is enabled' do
+        let(:flag_enabled) { true }
+
+        it do
+          expect(subject[:certificate_based_clusters_enabled]).to eq('true')
+        end
+      end
+
+      context 'feature flag is disabled' do
+        let(:flag_enabled) { false }
+
+        it do
+          expect(subject[:certificate_based_clusters_enabled]).to eq('false')
+        end
       end
     end
   end
@@ -143,10 +149,6 @@ RSpec.describe ClustersHelper do
 
     it 'displays project path' do
       expect(subject[:project_path]).to eq(project.full_path)
-    end
-
-    it 'displays add cluster using certificate path' do
-      expect(subject[:add_cluster_path]).to eq("#{project_path(project)}/-/clusters/new?tab=add")
     end
 
     it 'displays kas address' do

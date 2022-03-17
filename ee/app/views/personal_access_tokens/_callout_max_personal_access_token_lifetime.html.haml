@@ -1,4 +1,0 @@
-- return unless personal_access_token_expiration_policy_enabled?
-
-.bs-callout.bs-callout-danger
-  = _('Maximum lifetime allowable for Personal Access Tokens is active, your expire date must be set before %{maximum_allowable_date}.') % { maximum_allowable_date: personal_access_token_max_expiry_date.to_date }

@@ -56,7 +56,8 @@ module EE
         def current_params
           strong_memoize(:current_params) do
             super.merge(
-              policy: escalation_status.policy
+              policy: escalation_status.policy,
+              escalations_started_at: escalation_status.escalations_started_at
             )
           end
         end

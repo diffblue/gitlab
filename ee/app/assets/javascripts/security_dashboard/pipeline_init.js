@@ -50,6 +50,9 @@ export default () => {
       projectId: parseInt(projectId, 10),
       commitPathTemplate,
       projectFullPath,
+      // fullPath is needed even though projectFullPath is already provided because
+      // vulnerability_list_graphql.vue expects the property name to be 'fullPath'
+      fullPath: projectFullPath,
       dashboardDocumentation,
       emptyStateSvgPath,
       canAdminVulnerability: parseBoolean(canAdminVulnerability),

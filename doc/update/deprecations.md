@@ -36,6 +36,79 @@ For deprecation reviewers (Technical Writers only):
   https://about.gitlab.com/handbook/marketing/blog/release-posts/#update-the-deprecations-doc
 -->
 
+## 14.9
+
+### GitLab Pages running as daemon
+
+In 15.0, support for daemon mode for GitLab Pages will be removed.
+
+**Planned removal milestone: 15.0 (2022-05-22)**
+
+### GitLab self-monitoring
+
+WARNING:
+This feature will be changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+GitLab self-monitoring gives administrators of self-hosted GitLab instances the tools to monitor the health of their instances. This feature is deprecated in GitLab 14.9, and is scheduled for removal in 15.0.
+
+**Planned removal milestone: 15.0 (2022-05-22)**
+
+### GraphQL permissions change for Package settings
+
+WARNING:
+This feature will be changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+The GitLab Package stage offers a Package Registry, Container Registry, and Dependency Proxy to help you manage all of your dependencies using GitLab. Each of these product categories has a variety of settings that can be adjusted using the API.
+
+The permissions model for GraphQL is being updated. After 15.0, users with the Guest, Reporter, and Developer role can no longer update these settings:
+
+- [Package Registry settings](https://docs.gitlab.com/ee/api/graphql/reference/#packagesettings)
+- [Container Registry cleanup policy](https://docs.gitlab.com/ee/api/graphql/reference/#containerexpirationpolicy)
+- [Dependency Proxy time-to-live policy](https://docs.gitlab.com/ee/api/graphql/reference/#dependencyproxyimagettlgrouppolicy)
+- [Enabling the Dependency Proxy for your group](https://docs.gitlab.com/ee/api/graphql/reference/#dependencyproxysetting)
+
+**Planned removal milestone: 15.0 (2022-05-22)**
+
+### Move `custom_hooks_dir` setting from GitLab Shell to Gitaly
+
+The [`custom_hooks_dir`](https://docs.gitlab.com/ee/administration/server_hooks.html#create-a-global-server-hook-for-all-repositories) setting is now configured in Gitaly, and will be removed from GitLab Shell in GitLab 15.0.
+
+**Planned removal milestone: 15.0 ()**
+
+### Permissions change for downloading Composer dependencies
+
+WARNING:
+This feature will be changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+The GitLab Composer repository can be used to push, search, fetch metadata about, and download PHP dependencies. All these actions require authentication, except for downloading dependencies.
+
+Downloading Composer dependencies without authentication is deprecated in GitLab 14.9, and will be removed in GitLab 15.0. Starting with GitLab 15.0, you must authenticate to download Composer dependencies.
+
+**Planned removal milestone: 15.0 (2022-05-22)**
+
+### htpasswd Authentication for the Container Registry
+
+WARNING:
+This feature will be changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+The Container Registry supports [authentication](https://gitlab.com/gitlab-org/container-registry/-/blob/master/docs/configuration.md#auth) with `htpasswd`. It relies on an [Apache `htpasswd` file](https://httpd.apache.org/docs/2.4/programs/htpasswd.html), with passwords hashed using `bcrypt`.
+
+Since it isn't used in the context of GitLab (the product), `htpasswd` authentication will be deprecated in GitLab 14.9 and removed in GitLab 15.0.
+
+**Planned removal milestone: 15.0 (2022-05-22)**
+
 ## 14.8
 
 ### Changes to the `CI_JOB_JWT`
@@ -48,7 +121,7 @@ changes to your code, settings, or workflow.
 
 The `CI_JOB_JWT` will be updated to support a wider variety of cloud providers. It will be changed to match [`CI_JOB_JWT_V2`](https://docs.gitlab.com/ee/ci/variables/predefined_variables.html), but this change may not be backwards compatible for all users, including Hashicorp Vault users. To maintain the current behavior, users can switch to using `CI_JOB_JWT_V1`, or update their configuration in GitLab 15.0 to use the improved `CI_JOB_JWT`.
 
-**Planned removal milestone: 15.0 ()**
+**Planned removal milestone: 15.0 (2022-05-22)**
 
 ### Configurable Gitaly `per_repository` election strategy
 
@@ -100,7 +173,7 @@ gemnasium-python-dependency_scanning:
 
 For users using Python 3.6, as of GitLab 15.0 you will no longer be able to use the default template for dependency scanning. You will need to switch to use the deprecated `gemnasium-python:2` analyzer image. If you are impacted by this please comment in [this issue](https://gitlab.com/gitlab-org/gitlab/-/issues/351503) so we can extend the removal if needed.
 
-For users using the 3.9 special exception image, you must instead use the default value and no longer override your container. To verify if you are using the 3.9 special exception image, check your `.gitlab-ci.yml` file for the following reference: 
+For users using the 3.9 special exception image, you must instead use the default value and no longer override your container. To verify if you are using the 3.9 special exception image, check your `.gitlab-ci.yml` file for the following reference:
 
 ```yaml
 gemnasium-python-dependency_scanning:
@@ -584,7 +657,7 @@ Each analyzer is distributed as a container image.
 Starting in GitLab 14.8, new versions of GitLab Secure and Protect analyzers are published to a new registry location under `registry.gitlab.com/security-products`.
 
 We will update the default value of [GitLab-managed CI/CD templates](https://gitlab.com/gitlab-org/gitlab/-/tree/master/lib/gitlab/ci/templates/Security) to reflect this change:
-  
+
 - For all analyzers except Container Scanning, we will update the variable `SECURE_ANALYZERS_PREFIX` to the new image registry location.
 - For Container Scanning, the default image address is already updated. There is no `SECURE_ANALYZERS_PREFIX` variable for Container Scanning.
 
@@ -670,7 +743,7 @@ Before updating GitLab, review the details carefully to determine if you need to
 changes to your code, settings, or workflow.
 
 To simplify setting a test coverage pattern, in GitLab 15.0 the
-[project setting for test coverage parsing](https://docs.gitlab.com/ee/ci/pipelines/settings.html#add-test-coverage-results-to-a-merge-request-deprecated)
+[project setting for test coverage parsing](https://docs.gitlab.com/ee/ci/pipelines/settings.html#add-test-coverage-results-using-project-settings-deprecated)
 is being removed.
 
 Instead, using the project’s `.gitlab-ci.yml`, provide a regular expression with the `coverage` keyword to set
@@ -1118,8 +1191,8 @@ GitLab will continue to fix security and critical issues.
 If you use GitLab.com, certificate-based integrations will cease functioning in 15.0.
 
 For a more robust, secure, forthcoming, and reliable integration with Kubernetes, we recommend you use the
-[agent for Kubernetes](https://docs.gitlab.com/ee/user/clusters/agent/) to connect Kubernetes clusters with GitLab. 
-See the documentation for [how to migrate](https://docs.gitlab.com/ee/user/infrastructure/clusters/migrate_to_gitlab_agent.html). 
+[agent for Kubernetes](https://docs.gitlab.com/ee/user/clusters/agent/) to connect Kubernetes clusters with GitLab.
+See the documentation for [how to migrate](https://docs.gitlab.com/ee/user/infrastructure/clusters/migrate_to_gitlab_agent.html).
 
 For updates and details about this deprecation, follow [this epic](https://gitlab.com/groups/gitlab-org/configure/-/epics/8).
 

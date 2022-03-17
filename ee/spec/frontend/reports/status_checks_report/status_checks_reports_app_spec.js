@@ -8,7 +8,13 @@ import axios from '~/lib/utils/axios_utils';
 import httpStatus from '~/lib/utils/http_status';
 import ReportSection from '~/reports/components/report_section.vue';
 import { status as reportStatus } from '~/reports/constants';
-import { approvedChecks, pendingChecks, approvedAndPendingChecks } from './mock_data';
+import {
+  approvedChecks,
+  pendingChecks,
+  failedChecks,
+  approvedAndPendingChecks,
+  pendingAndFailedChecks,
+} from './mock_data';
 
 jest.mock('~/flash');
 
@@ -34,6 +40,9 @@ describe('Grouped test reports app', () => {
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
+    window.gon.features = {
+      statusChecksAddStatusField: true,
+    };
   });
 
   afterEach(() => {
@@ -73,29 +82,34 @@ describe('Grouped test reports app', () => {
     };
 
     describe.each`
-      state         | response                    | text            | resolvedIssues    | neutralIssues
-      ${'approved'} | ${approvedChecks}           | ${'All passed'} | ${approvedChecks} | ${[]}
-      ${'pending'}  | ${pendingChecks}            | ${'1 pending'}  | ${[]}             | ${pendingChecks}
-      ${'mixed'}    | ${approvedAndPendingChecks} | ${'1 pending'}  | ${approvedChecks} | ${pendingChecks}
-    `('and the status checks are $state', ({ response, text, resolvedIssues, neutralIssues }) => {
-      beforeEach(() => {
-        return mountWithResponse(httpStatus.OK, response);
-      });
+      state                     | response                    | text                         | resolvedIssues    | neutralIssues    | unresolvedIssues
+      ${'approved'}             | ${approvedChecks}           | ${'All passed'}              | ${approvedChecks} | ${[]}            | ${[]}
+      ${'pending'}              | ${pendingChecks}            | ${'0 failed, and 1 pending'} | ${[]}             | ${pendingChecks} | ${[]}
+      ${'approved and pending'} | ${approvedAndPendingChecks} | ${'0 failed, and 1 pending'} | ${approvedChecks} | ${pendingChecks} | ${[]}
+      ${'pending and failed'}   | ${pendingAndFailedChecks}   | ${'1 failed, and 1 pending'} | ${[]}             | ${pendingChecks} | ${failedChecks}
+    `(
+      'and the status checks are $state',
+      ({ response, text, resolvedIssues, neutralIssues, unresolvedIssues }) => {
+        beforeEach(() => {
+          return mountWithResponse(httpStatus.OK, response);
+        });
 
-      it('sets the report status to success', () => {
-        expect(findReport().props('status')).toBe(reportStatus.SUCCESS);
-      });
+        it('sets the report status to success', () => {
+          expect(findReport().props('status')).toBe(reportStatus.SUCCESS);
+        });
 
-      it('sets the issues on the report', () => {
-        expect(findReport().props('hasIssues')).toBe(true);
-        expect(findReport().props('resolvedIssues')).toStrictEqual(resolvedIssues);
-        expect(findReport().props('neutralIssues')).toStrictEqual(neutralIssues);
-      });
+        it('sets the issues on the report', () => {
+          expect(findReport().props('hasIssues')).toBe(true);
+          expect(findReport().props('unresolvedIssues')).toStrictEqual(unresolvedIssues);
+          expect(findReport().props('resolvedIssues')).toStrictEqual(resolvedIssues);
+          expect(findReport().props('neutralIssues')).toStrictEqual(neutralIssues);
+        });
 
-      it(`renders '${text}' in the report section`, () => {
-        expect(findReport().text()).toContain(text);
-      });
-    });
+        it(`renders '${text}' in the report section`, () => {
+          expect(findReport().text()).toContain(text);
+        });
+      },
+    );
 
     describe('and an error occurred', () => {
       beforeEach(() => {

@@ -8,6 +8,12 @@ FactoryBot.modify do
       end
     end
 
+    trait :blocked do
+      after :create do |merge_request, _|
+        create(:merge_request_block, blocked_merge_request: merge_request)
+      end
+    end
+
     trait :on_train do
       transient do
         train_creator { author }

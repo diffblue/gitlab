@@ -37,7 +37,7 @@ RSpec.describe 'Profile > Account' do
       expect(page).to have_content unlink_label
       click_link "Disconnect"
 
-      expect(current_path).to eq profile_account_path
+      expect(page).to have_current_path profile_account_path, ignore_query: true
       expect(page).not_to have_content(unlink_label)
     end
 
@@ -61,7 +61,7 @@ RSpec.describe 'Profile > Account' do
         expect(page).to have_content unlink_label
         click_link "Disconnect"
 
-        expect(current_path).to eq profile_account_path
+        expect(page).to have_current_path profile_account_path, ignore_query: true
         expect(page).not_to have_content(unlink_label)
       end
     end
@@ -77,7 +77,7 @@ RSpec.describe 'Profile > Account' do
         expect(page).to have_content unlink_label
         click_link "Disconnect"
 
-        expect(current_path).to eq profile_account_path
+        expect(page).to have_current_path profile_account_path, ignore_query: true
         expect(page).not_to have_content(unlink_label)
       end
     end

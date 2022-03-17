@@ -1,0 +1,8 @@
+---
+name: related_epics_widget
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/81816
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/353896
+milestone: '14.9'
+type: development
+group: group::product planning
+default_enabled: false

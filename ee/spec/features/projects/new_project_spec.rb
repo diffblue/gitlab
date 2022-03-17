@@ -88,7 +88,7 @@ RSpec.describe 'New project', :js do
 
           created_project = Project.last
 
-          expect(current_path).to eq(project_import_path(created_project))
+          expect(page).to have_current_path(project_import_path(created_project), ignore_query: true)
           expect(created_project.project_feature).to be_issues_enabled
         end
       end
@@ -107,7 +107,7 @@ RSpec.describe 'New project', :js do
           click_button 'Create project'
 
           created_project = Project.last
-          expect(current_path).to eq(project_path(created_project))
+          expect(page).to have_current_path(project_path(created_project), ignore_query: true)
           expect(created_project.mirror).to eq(true)
           expect(created_project.project_feature).not_to be_issues_enabled
         end

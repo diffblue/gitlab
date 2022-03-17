@@ -2,12 +2,12 @@
 
 class Groups::Analytics::CycleAnalyticsController < Groups::Analytics::ApplicationController
   include CycleAnalyticsParams
-  include RedisTracking
+  include ProductAnalyticsTracking
   extend ::Gitlab::Utils::Override
 
   increment_usage_counter Gitlab::UsageDataCounters::CycleAnalyticsCounter, :views, only: :show
 
-  before_action :load_group, only: :show
+  before_action :load_group, only: %I[show use_aggregated_backend]
   before_action :load_project, only: :show
   before_action :load_value_stream, only: :show
   before_action :request_params, only: :show
@@ -16,13 +16,24 @@ class Groups::Analytics::CycleAnalyticsController < Groups::Analytics::Applicati
     render_403 unless can?(current_user, :read_group_cycle_analytics, @group)
   end
 
+  before_action do
+    push_frontend_feature_flag(:use_vsa_aggregated_tables, @group, default_enabled: :yaml)
+  end
+
   layout 'group'
 
-  track_redis_hll_event :show, name: 'g_analytics_valuestream'
+  track_event :show, name: 'g_analytics_valuestream', destinations: [:redis_hll, :snowplow]
 
   def show
     epic_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: "https://gitlab.com/groups/gitlab-org/-/epics/6046" }
     flash.now[:notice] = s_("ValueStreamAnalytics|Items in Value Stream Analytics are currently filtered by their creation time. There is an %{epic_link_start}epic%{epic_link_end} that will change the Value Stream Analytics date filter to use the end event time for the selected stage.").html_safe % { epic_link_start: epic_link_start, epic_link_end: "</a>".html_safe }
+  end
+
+  def use_aggregated_backend
+    aggregation = Analytics::CycleAnalytics::Aggregation.safe_create_for_group(@group)
+    aggregation.update!(enabled: params[:enabled])
+
+    render json: { enabled: aggregation.enabled }
   end
 
   private
@@ -44,4 +55,6 @@ class Groups::Analytics::CycleAnalyticsController < Groups::Analytics::Applicati
                       @group.value_streams.find(params[:value_stream_id])
                     end
   end
+
+  alias_method :tracking_namespace_source, :load_group
 end

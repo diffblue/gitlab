@@ -52,7 +52,7 @@ module EE
       def update_params
         clean_params = super.merge(params.require(:user).permit(:email_opted_in, :registration_objective))
 
-        return clean_params unless ::Gitlab.dev_env_or_com?
+        return clean_params unless ::Gitlab.com?
 
         clean_params[:email_opted_in] = '1' if clean_params[:setup_for_company] == 'true'
 
@@ -85,7 +85,7 @@ module EE
       end
 
       def publish_combined_registration_experiment
-        combined_registration_experiment.publish_to_client if show_signup_onboarding?
+        combined_registration_experiment.publish if show_signup_onboarding?
       end
 
       def combined_registration_experiment

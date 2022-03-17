@@ -17,9 +17,7 @@ export default {
   mixins: [glFeatureFlagMixin()],
   computed: {
     showSecurityTab() {
-      return (
-        this.glFeatures.kubernetesClusterVulnerabilities && this.glFeatures.clusterVulnerabilities
-      );
+      return this.glFeatures.kubernetesClusterVulnerabilities;
     },
   },
 };

@@ -40,11 +40,11 @@ class Vulnerabilities::FindingEntity < Grape::Entity
     expose :location
     expose :remediations
     expose :solution
-    expose(:evidence) { |model, _| model.evidence[:summary] }
-    expose(:request, using: Vulnerabilities::RequestEntity) { |model, _| model.evidence[:request] }
-    expose(:response, using: Vulnerabilities::ResponseEntity) { |model, _| model.evidence[:response] }
-    expose(:evidence_source) { |model, _| model.evidence[:source] }
-    expose(:supporting_messages) { |model, _| model.evidence[:supporting_messages]}
+    expose(:evidence) { |model, _| model.evidence&.dig(:summary) }
+    expose(:request, using: Vulnerabilities::RequestEntity) { |model, _| model.evidence&.dig(:request) }
+    expose(:response, using: Vulnerabilities::ResponseEntity) { |model, _| model.evidence&.dig(:response) }
+    expose(:evidence_source) { |model, _| model.evidence&.dig(:source) }
+    expose(:supporting_messages) { |model, _| model.evidence&.dig(:supporting_messages)}
     expose(:assets) { |model, _| model.assets }
   end
 

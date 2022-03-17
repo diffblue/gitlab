@@ -1,3 +1,42 @@
+export const clusterImageScanningVulnerability = {
+  hasSolutions: null,
+  mergeRequest: null,
+  __typename: 'Vulnerability',
+  id: 'gid://gitlab/Vulnerability/22087293',
+  title: 'CVE-2021-29921',
+  state: 'DETECTED',
+  severity: 'CRITICAL',
+  detectedAt: '2021-11-04T20:01:14Z',
+  vulnerabilityPath:
+    '/gitlab-org/protect/demos/agent-cluster-image-scanning-demo/-/security/vulnerabilities/22087293',
+  resolvedOnDefaultBranch: false,
+  userNotesCount: 0,
+  falsePositive: false,
+  issueLinks: {
+    nodes: [],
+    __typename: 'VulnerabilityIssueLinkConnection',
+  },
+  identifiers: [
+    {
+      externalType: 'cve',
+      name: 'CVE-2021-29921',
+      __typename: 'VulnerabilityIdentifier',
+    },
+  ],
+  location: {
+    __typename: 'VulnerabilityLocationClusterImageScanning',
+    kubernetesResource: {
+      agent: {
+        name: 'cis-demo',
+        webPath:
+          '/gitlab-org/protect/demos/agent-cluster-image-scanning-demo/-/cluster_agents/cis-demo',
+        __typename: 'ClusterAgent',
+      },
+      __typename: 'VulnerableKubernetesResource',
+    },
+  },
+};
+
 export const generateVulnerabilities = () => [
   {
     id: 'id_0',
@@ -43,6 +82,7 @@ export const generateVulnerabilities = () => [
     externalIssueLinks: {
       nodes: [{ id: 'issue-1', issue: { iid: 15, externalTracker: 'jira' } }],
     },
+    __typename: 'Vulnerability',
   },
   {
     id: 'id_1',
@@ -72,6 +112,7 @@ export const generateVulnerabilities = () => [
       id: 'scanner-2',
       vendor: 'GitLab',
     },
+    __typename: 'Vulnerability',
   },
   {
     id: 'id_2',
@@ -92,6 +133,7 @@ export const generateVulnerabilities = () => [
       id: 'scanner-3',
       vendor: 'My Custom Scanner',
     },
+    __typename: 'Vulnerability',
   },
   {
     id: 'id_3',
@@ -106,6 +148,7 @@ export const generateVulnerabilities = () => [
       nameWithNamespace: 'Mixed Vulnerabilities / Rails App',
     },
     scanner: {},
+    __typename: 'Vulnerability',
   },
   {
     id: 'id_4',
@@ -118,6 +161,7 @@ export const generateVulnerabilities = () => [
       nameWithNamespace: 'Administrator / Security reports',
     },
     scanner: {},
+    __typename: 'Vulnerability',
   },
   {
     id: 'id_5',
@@ -132,6 +176,7 @@ export const generateVulnerabilities = () => [
       nameWithNamespace: 'Administrator / Security reports',
     },
     scanner: {},
+    __typename: 'Vulnerability',
   },
 ];
 

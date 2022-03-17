@@ -142,15 +142,26 @@ export default {
         .then((results) => ({ results }));
     },
     fetchGroups(term) {
-      const hasTerm = term.trim().length > 0;
-      const DEVELOPER_ACCESS_LEVEL = 30;
+      if (this.isFeatureEnabled) {
+        const hasTerm = term.trim().length > 0;
+        const DEVELOPER_ACCESS_LEVEL = 30;
 
-      return Api.projectGroups(this.projectId, {
+        return Api.projectGroups(this.projectId, {
+          skip_groups: this.skipGroupIds,
+          ...(hasTerm ? { search: term } : {}),
+          with_shared: true,
+          shared_visible_only: !this.isFeatureEnabled,
+          shared_min_access_level: DEVELOPER_ACCESS_LEVEL,
+        });
+      }
+
+      // Don't includeAll when search is empty. Otherwise, the user could get a lot of garbage choices.
+      // https://gitlab.com/gitlab-org/gitlab/issues/11566
+      const includeAll = term.trim().length > 0;
+
+      return Api.groups(term, {
         skip_groups: this.skipGroupIds,
-        ...(hasTerm ? { search: term } : {}),
-        with_shared: true,
-        shared_visible_only: !this.isFeatureEnabled,
-        shared_min_access_level: DEVELOPER_ACCESS_LEVEL,
+        all_available: includeAll,
       });
     },
     fetchUsers(term) {

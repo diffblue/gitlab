@@ -17,6 +17,7 @@ const mockActions = [
   { scan: 'dast', scanner_profile: 'Scanner Profile', site_profile: 'Site Profile' },
   { scan: 'dast', scanner_profile: 'Scanner Profile 01', site_profile: 'Site Profile 01' },
   { scan: 'secret_detection' },
+  { scan: 'container_image_scanning' },
 ];
 
 const mockRules = [
@@ -33,17 +34,19 @@ const mockRules = [
 
 describe('humanizeActions', () => {
   it('returns an empty Array of actions as an empty Set', () => {
-    expect(humanizeActions([])).toStrictEqual(new Set());
+    expect(humanizeActions([])).toStrictEqual([]);
   });
 
   it('returns a single action as human-readable string', () => {
-    expect(humanizeActions([mockActions[0]])).toStrictEqual(new Set(['Executes a Dast scan']));
+    expect(humanizeActions([mockActions[0]])).toStrictEqual(['Dast']);
   });
 
   it('returns multiple actions as human-readable strings', () => {
-    expect(humanizeActions(mockActions)).toStrictEqual(
-      new Set(['Executes a Dast scan', 'Executes a Secret Detection scan']),
-    );
+    expect(humanizeActions(mockActions)).toStrictEqual([
+      'Dast',
+      'Secret Detection',
+      'Container Image Scanning',
+    ]);
   });
 });
 

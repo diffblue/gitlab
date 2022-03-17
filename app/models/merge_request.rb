@@ -1026,12 +1026,13 @@ class MergeRequest < ApplicationRecord
     ensure_target_project_iid!
 
     fetch_ref!
-    # Prevent the after_create hook from fetching the source branch again
-    # Drop this field after rollout in https://gitlab.com/gitlab-org/gitlab/-/issues/353044.
+    # Prevent the after_create hook from fetching the source branch again.
     @skip_fetch_ref = true
   end
 
   def create_merge_request_diff
+    # Callers such as MergeRequests::BuildService may not call eager_fetch_ref!. Just
+    # in case they haven't, we fetch the ref.
     fetch_ref! unless skip_fetch_ref
 
     # n+1: https://gitlab.com/gitlab-org/gitlab/-/issues/19377
@@ -1151,15 +1152,20 @@ class MergeRequest < ApplicationRecord
 
   # rubocop: disable CodeReuse/ServiceClass
   def mergeable_state?(skip_ci_check: false, skip_discussions_check: false)
-    return false unless open?
-    return false if work_in_progress?
-    return false if broken?
-    return false unless skip_discussions_check || mergeable_discussions_state?
-
     if Feature.enabled?(:improved_mergeability_checks, self.project, default_enabled: :yaml)
-      additional_checks = MergeRequests::Mergeability::RunChecksService.new(merge_request: self, params: { skip_ci_check: skip_ci_check })
+      additional_checks = MergeRequests::Mergeability::RunChecksService.new(
+        merge_request: self,
+        params: {
+          skip_ci_check: skip_ci_check,
+          skip_discussions_check: skip_discussions_check
+        }
+      )
       additional_checks.execute.all?(&:success?)
     else
+      return false unless open?
+      return false if draft?
+      return false if broken?
+      return false unless skip_discussions_check || mergeable_discussions_state?
       return false unless skip_ci_check || mergeable_ci_state?
 
       true
@@ -1936,8 +1942,16 @@ class MergeRequest < ApplicationRecord
     merge_request_assignees.find_by(user_id: user.id)
   end
 
+  def merge_request_assignees_with(user_ids)
+    merge_request_assignees.where(user_id: user_ids)
+  end
+
   def find_reviewer(user)
     merge_request_reviewers.find_by(user_id: user.id)
+  end
+
+  def merge_request_reviewers_with(user_ids)
+    merge_request_reviewers.where(user_id: user_ids)
   end
 
   def enabled_reports

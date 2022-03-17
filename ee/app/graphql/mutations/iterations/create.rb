@@ -63,12 +63,16 @@ module Mutations
           raise Gitlab::Graphql::Errors::ArgumentError, 'The list of iteration attributes is empty'
         end
 
+        if !parent.iteration_cadences_feature_flag_enabled? && args[:title].blank?
+          raise Gitlab::Graphql::Errors::ArgumentError, "Title can't be blank"
+        end
+
         # Currently there is a single iteration cadence per group, so if `iterations_cadence_id` argument is not provided
         # we assign iteration to the only cadence in the group(see `Iteration#set_iterations_cadence`).
         # Once we introduce cadence CRUD support we need to specify to which iteration cadence a given iteration
         # belongs if there are more than once cadence in the group. Eventually `iterations_cadence_id` argument should
         # become required and there should be no need for group_path argument for iteration.
-        if args[:iterations_cadence].blank? && parent.iterations_cadences.count > 1
+        if args[:iterations_cadence].blank? && parent.iterations_cadences.count > 1 && parent.iteration_cadences_feature_flag_enabled?
           raise Gitlab::Graphql::Errors::ArgumentError, 'Please provide iterations_cadence_id argument to assign iteration to respective cadence'
         end
       end

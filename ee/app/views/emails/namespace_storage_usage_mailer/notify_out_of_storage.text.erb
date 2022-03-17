@@ -1,0 +1,5 @@
+<%= s_('NamespaceStorage|%{name}(%{url}) namespace has exceeded its namespace storage limit.') % { name: @namespace.name, url: @usage_quotas_url }%>
+
+<%= s_('NamespaceStorage|We recommend that you buy additional storage to resume normal service.') %>
+
+<%= s_('NamespaceStorage|Buy more storage') %> → <%= @buy_storage_url %>

@@ -16,7 +16,8 @@
     'mr_settings_path': presenter.api_approval_settings_path,
     'eligible_approvers_docs_path': help_page_path('user/project/merge_requests/approvals/rules', anchor: 'eligible-approvers'),
     'project_settings_path': presenter.api_project_approval_settings_path } }
-    = sprite_icon('spinner', size: 24, css_class: 'gl-spinner gl-mt-5')
+    .gl-mt-5
+      = gl_loading_icon(size: 'md', inline: true)
   = render 'projects/merge_requests/code_owner_approval_rules', merge_request: @mr_presenter
 - elsif ::Gitlab::CurrentSettings.should_check_namespace_plan?
   - top_level_namespace = @target_project.root_ancestor

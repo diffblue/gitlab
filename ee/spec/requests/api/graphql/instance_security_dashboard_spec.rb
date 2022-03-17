@@ -83,9 +83,9 @@ RSpec.describe 'Query.instanceSecurityDashboard.projects' do
         graphql_query_for('instanceSecurityDashboard', nil, fields)
       end
 
-      let_it_be(:vulnerability_1) { create(:vulnerability, :dismissed, :critical_severity, :with_notes, notes_count: 2, project: project) }
-      let_it_be(:vulnerability_2) { create(:vulnerability, :confirmed, :high_severity, :with_notes, notes_count: 3, project: project) }
-      let_it_be(:vulnerability_3) { create(:vulnerability, :confirmed, :medium_severity, :with_notes, notes_count: 7, project: other_project) }
+      let_it_be(:vulnerability_1) { create(:vulnerability, :dismissed, :critical_severity, :with_notes, :with_finding, notes_count: 2, project: project) }
+      let_it_be(:vulnerability_2) { create(:vulnerability, :confirmed, :high_severity, :with_notes, :with_finding, notes_count: 3, project: project) }
+      let_it_be(:vulnerability_3) { create(:vulnerability, :confirmed, :medium_severity, :with_notes, :with_finding, notes_count: 7, project: other_project) }
 
       let_it_be(:vulnerability_statistic_1) { create(:vulnerability_statistic, :grade_c, project: project) }
       let_it_be(:vulnerability_statistic_2) { create(:vulnerability_statistic, :grade_d, project: other_project) }

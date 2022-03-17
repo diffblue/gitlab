@@ -69,6 +69,7 @@ module EE
       # the rationale behind vulnerabilities and vulnerability_findings can be found here:
       # https://gitlab.com/gitlab-org/gitlab/issues/10252#terminology
       has_many :vulnerabilities
+      has_many :vulnerability_reads, class_name: 'Vulnerabilities::Read'
       has_many :vulnerability_feedback, class_name: 'Vulnerabilities::Feedback'
       has_many :vulnerability_historical_statistics, class_name: 'Vulnerabilities::HistoricalStatistic'
       has_many :vulnerability_findings, class_name: 'Vulnerabilities::Finding', inverse_of: :project do
@@ -197,7 +198,6 @@ module EE
       delegate :merge_trains_enabled, :merge_trains_enabled=, to: :ci_cd_settings, allow_nil: true
 
       delegate :auto_rollback_enabled, :auto_rollback_enabled=, to: :ci_cd_settings, allow_nil: true
-      delegate :closest_gitlab_subscription, to: :namespace
 
       delegate :requirements_access_level, to: :project_feature, allow_nil: true
       delegate :pipeline_configuration_full_path, to: :compliance_management_framework, allow_nil: true
@@ -458,17 +458,12 @@ module EE
       end
     end
 
-    override :execute_hooks
-    def execute_hooks(data, hooks_scope = :push_hooks)
-      super
+    override :triggered_hooks
+    def triggered_hooks(scope, data)
+      triggered = super
+      triggered.add_hooks(group_hooks) if group && feature_available?(:group_webhooks)
 
-      if group && feature_available?(:group_webhooks)
-        run_after_commit_or_now do
-          group_hooks.hooks_for(hooks_scope).each do |hook|
-            hook.async_execute(data, hooks_scope.to_s)
-          end
-        end
-      end
+      triggered
     end
 
     # No need to have a Kerberos Web url. Kerberos URL will be used only to
@@ -543,13 +538,9 @@ module EE
     end
 
     def reset_approvals_on_push
-      if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self.group&.root_ancestor, default_enabled: :yaml)
-        !ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group, project: self)
-                                                                    .retain_approvals_on_push
-                                                                    .value && feature_available?(:merge_request_approvers)
-      else
-        super && feature_available?(:merge_request_approvers)
-      end
+      !ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group, project: self)
+                                                                  .retain_approvals_on_push
+                                                                  .value && feature_available?(:merge_request_approvers)
     end
     alias_method :reset_approvals_on_push?, :reset_approvals_on_push
 
@@ -577,13 +568,9 @@ module EE
     end
 
     def require_password_to_approve
-      if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self&.group&.root_ancestor, default_enabled: :yaml)
-        ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group, project: self)
-                                                                    .require_password_to_approve
-                                                                    .value && password_authentication_enabled_for_web?
-      else
-        super && password_authentication_enabled_for_web?
-      end
+      ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group, project: self)
+                                                                  .require_password_to_approve
+                                                                  .value && password_authentication_enabled_for_web?
     end
 
     def require_password_to_approve?
@@ -684,7 +671,7 @@ module EE
       return super unless License.current
 
       License.current.features.select do |feature|
-        License.global_feature?(feature) || licensed_feature_available?(feature)
+        GitlabSubscriptions::Features.global?(feature) || licensed_feature_available?(feature)
       end
     end
 
@@ -728,13 +715,17 @@ module EE
 
     def adjourned_deletion?
       feature_available?(:adjourned_deletion_for_projects_and_groups) &&
-        ::Gitlab::CurrentSettings.deletion_adjourned_period > 0 &&
+        adjourned_deletion_configured?
+    end
+
+    def adjourned_deletion_configured?
+      ::Gitlab::CurrentSettings.deletion_adjourned_period > 0 &&
         group_deletion_mode_configured?
     end
 
     def marked_for_deletion?
       marked_for_deletion_at.present? &&
-        feature_available?(:adjourned_deletion_for_projects_and_groups)
+        License.feature_available?(:adjourned_deletion_for_projects_and_groups)
     end
 
     def ancestor_marked_for_deletion
@@ -746,17 +737,11 @@ module EE
 
     def disable_overriding_approvers_per_merge_request
       strong_memoize(:disable_overriding_approvers_per_merge_request) do
-        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self, default_enabled: :yaml)
-          super unless feature_available?(:admin_merge_request_approvers_rules)
+        super unless feature_available?(:admin_merge_request_approvers_rules)
 
-          !ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group&.root_ancestor, project: self)
-                                                                      .allow_overrides_to_approver_list_per_merge_request
-                                                                      .value
-        else
-          next super unless feature_available?(:admin_merge_request_approvers_rules)
-
-          ::Gitlab::CurrentSettings.disable_overriding_approvers_per_merge_request? || super
-        end
+        !ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group&.root_ancestor, project: self)
+                                                                    .allow_overrides_to_approver_list_per_merge_request
+                                                                    .value
       end
     end
 
@@ -766,18 +751,11 @@ module EE
 
     def merge_requests_author_approval
       strong_memoize(:merge_requests_author_approval) do
-        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self, default_enabled: :yaml)
-          super unless feature_available?(:admin_merge_request_approvers_rules)
+        super unless feature_available?(:admin_merge_request_approvers_rules)
 
-          ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group&.root_ancestor, project: self)
-                                                                       .allow_author_approval
-                                                                       .value
-        else
-          next super unless License.feature_available?(:admin_merge_request_approvers_rules)
-          next false if ::Gitlab::CurrentSettings.prevent_merge_requests_author_approval?
-
-          !!read_attribute(:merge_requests_author_approval)
-        end
+        ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group&.root_ancestor, project: self)
+                                                                     .allow_author_approval
+                                                                     .value
       end
     end
 
@@ -787,17 +765,11 @@ module EE
 
     def merge_requests_disable_committers_approval
       strong_memoize(:merge_requests_disable_committers_approval) do
-        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self, default_enabled: :yaml)
-          super unless feature_available?(:admin_merge_request_approvers_rules)
+        super unless feature_available?(:admin_merge_request_approvers_rules)
 
-          !ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group&.root_ancestor, project: self)
-                                                                       .allow_committer_approval
-                                                                       .value
-        else
-          next super unless License.feature_available?(:admin_merge_request_approvers_rules)
-
-          ::Gitlab::CurrentSettings.prevent_merge_requests_committers_approval? || super
-        end
+        !ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group&.root_ancestor, project: self)
+                                                                     .allow_committer_approval
+                                                                     .value
       end
     end
 

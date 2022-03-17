@@ -14,7 +14,7 @@ RSpec.describe Dashboard::ProjectsController do
     before do
       sign_in(user)
 
-      allow(Kaminari.config).to receive(:default_per_page).and_return(1)
+      allow(Kaminari.config).to receive(:default_per_page).and_return(2)
     end
 
     shared_examples 'returns not found' do
@@ -32,6 +32,7 @@ RSpec.describe Dashboard::ProjectsController do
 
       context 'for admin users', :enable_admin_mode do
         let_it_be(:user) { create(:admin) }
+        let_it_be(:hidden_project) { create(:project, :hidden, :archived, creator: user, marked_for_deletion_at: 2.days.ago) }
         let_it_be(:projects) { create_list(:project, 2, :archived, creator: user, marked_for_deletion_at: 3.days.ago) }
 
         it 'returns success' do
@@ -43,7 +44,13 @@ RSpec.describe Dashboard::ProjectsController do
         it 'paginates the records' do
           subject
 
-          expect(assigns(:projects).count).to eq(1)
+          expect(assigns(:projects).count).to eq(2)
+        end
+
+        it 'returns projects marked for deletion' do
+          subject
+
+          expect(assigns(:projects)).to contain_exactly(hidden_project, projects.first)
         end
       end
 
@@ -72,7 +79,7 @@ RSpec.describe Dashboard::ProjectsController do
         it 'paginates the records' do
           subject
 
-          expect(assigns(:projects).count).to eq(1)
+          expect(assigns(:projects).count).to eq(2)
         end
 
         context 'for should_check_namespace_plan' do

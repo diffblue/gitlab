@@ -274,6 +274,7 @@ issue_emails: :gitlab_main
 issue_email_participants: :gitlab_main
 issue_links: :gitlab_main
 issue_metrics: :gitlab_main
+issue_search_data: :gitlab_main
 issues: :gitlab_main
 issues_prometheus_alert_events: :gitlab_main
 issues_self_managed_prometheus_alert_events: :gitlab_main
@@ -380,7 +381,6 @@ pages_deployments: :gitlab_main
 pages_deployment_states: :gitlab_main
 pages_domain_acme_orders: :gitlab_main
 pages_domains: :gitlab_main
-partitioned_foreign_keys: :gitlab_main
 path_locks: :gitlab_main
 personal_access_tokens: :gitlab_main
 plan_limits: :gitlab_main
@@ -459,6 +459,7 @@ reviews: :gitlab_main
 routes: :gitlab_main
 saml_group_links: :gitlab_main
 saml_providers: :gitlab_main
+saved_replies: :gitlab_main
 schema_migrations: :gitlab_shared
 scim_identities: :gitlab_main
 scim_oauth_access_tokens: :gitlab_main

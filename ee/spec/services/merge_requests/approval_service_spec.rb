@@ -65,6 +65,14 @@ RSpec.describe MergeRequests::ApprovalService do
         service.execute(merge_request)
       end
 
+      it 'sends the audit streaming event' do
+        expect_next_instance_of(AuditEvent) do |instance|
+          expect(instance).to receive(:stream_to_external_destinations).with(use_json: true)
+        end
+
+        service.execute(merge_request)
+      end
+
       context 'with remaining approvals' do
         it 'fires an approval webhook' do
           expect(merge_request).to receive(:approvals_left).and_return(5)

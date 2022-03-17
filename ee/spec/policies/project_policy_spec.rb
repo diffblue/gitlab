@@ -47,6 +47,7 @@ RSpec.describe ProjectPolicy do
         read_software_license_policy
         read_threat_monitoring read_merge_train
         read_release
+        read_project_audit_events
       ]
     end
 
@@ -795,8 +796,8 @@ RSpec.describe ProjectPolicy do
     end
   end
 
-  describe 'read_corpus_management' do
-    context 'when corpus_management feature is available' do
+  describe 'coverage_fuzzing' do
+    context 'when coverage_fuzzing feature is available' do
       before do
         stub_licensed_features(coverage_fuzzing: true)
       end

@@ -9,7 +9,7 @@ import {
 } from '@gitlab/ui';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { PROJECTS_PER_PAGE } from '../constants';
+import { PROJECT_TABLE_LABEL_STORAGE_USAGE } from '../constants';
 import query from '../queries/namespace_storage.query.graphql';
 import { formatUsageSize, parseGetStorageResults } from '../utils';
 import ProjectList from './project_list.vue';
@@ -35,8 +35,17 @@ export default {
   directives: {
     GlModalDirective,
   },
+  i18n: {
+    PROJECT_TABLE_LABEL_STORAGE_USAGE,
+  },
   mixins: [glFeatureFlagsMixin()],
-  inject: ['namespacePath', 'purchaseStorageUrl', 'isTemporaryStorageIncreaseVisible', 'helpLinks'],
+  inject: [
+    'namespacePath',
+    'purchaseStorageUrl',
+    'isTemporaryStorageIncreaseVisible',
+    'helpLinks',
+    'defaultPerPage',
+  ],
   apollo: {
     namespace: {
       query,
@@ -45,7 +54,7 @@ export default {
           fullPath: this.namespacePath,
           searchTerm: this.searchTerm,
           withExcessStorageData: this.isAdditionalStorageFlagEnabled,
-          first: PROJECTS_PER_PAGE,
+          first: this.defaultPerPage,
         };
       },
       update: parseGetStorageResults,
@@ -118,7 +127,6 @@ export default {
         variables: {
           fullPath: this.namespacePath,
           withExcessStorageData: this.isAdditionalStorageFlagEnabled,
-          first: PROJECTS_PER_PAGE,
           ...vars,
         },
         updateQuery(previousResult, { fetchMoreResult }) {
@@ -128,12 +136,12 @@ export default {
     },
     onPrev(before) {
       if (this.pageInfo?.hasPreviousPage) {
-        this.fetchMoreProjects({ before });
+        this.fetchMoreProjects({ before, last: this.defaultPerPage, first: undefined });
       }
     },
     onNext(after) {
       if (this.pageInfo?.hasNextPage) {
-        this.fetchMoreProjects({ after });
+        this.fetchMoreProjects({ after, first: this.defaultPerPage });
       }
     },
   },
@@ -212,6 +220,7 @@ export default {
       :projects="namespaceProjects"
       :is-loading="isQueryLoading"
       :additional-purchased-storage-size="namespace.additionalPurchasedStorageSize || 0"
+      :usage-label="$options.i18n.PROJECT_TABLE_LABEL_STORAGE_USAGE"
       @search="handleSearch"
     />
     <div class="gl-display-flex gl-justify-content-center gl-mt-5">

@@ -1,0 +1,7 @@
+%p
+  - name_link = link_to @namespace.name, @usage_quotas_url
+  = html_escape(s_('NamespaceStorage|%{name_with_link} namespace has %{percent} or less namespace storage space remaining.')) % { name_with_link: name_link.html_safe, percent: "#{@percentage_of_available_storage}%" }
+%p
+  = s_('NamespaceStorage|We recommend that you buy additional storage to ensure your service is not interrupted.')
+%p
+  = link_to sprintf('%{link_label} →', { link_label: s_('NamespaceStorage|Buy more storage') }), @buy_storage_url

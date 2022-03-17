@@ -22,6 +22,7 @@ Default.args = {
   totalValue: '1,500',
   description: 'Additional minutes used',
   helpLink: 'dummy.com/link',
+  helpLabel: 'Help link label, used for aria-label',
   percentage: 84,
 };
 
@@ -41,6 +42,7 @@ WithUnits.args = {
   totalUnit: 'GiB',
   description: 'Storage used',
   helpLink: 'dummy.com/link',
+  helpLabel: 'Help link label, used for aria-label',
   percentage: 4,
   purchaseButtonLink: 'purchase.com/test',
   purchaseButtonText: 'Purchase storage',

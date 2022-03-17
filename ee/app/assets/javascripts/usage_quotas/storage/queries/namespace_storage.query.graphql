@@ -4,7 +4,8 @@ query getNamespaceStorageStatistics(
   $fullPath: ID!
   $withExcessStorageData: Boolean = false
   $searchTerm: String = ""
-  $first: Int!
+  $first: Int
+  $last: Int
   $after: String
   $before: String
 ) {
@@ -33,6 +34,7 @@ query getNamespaceStorageStatistics(
       includeSubgroups: true
       search: $searchTerm
       first: $first
+      last: $last
       after: $after
       before: $before
       sort: STORAGE

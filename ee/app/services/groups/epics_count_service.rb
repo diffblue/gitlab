@@ -11,7 +11,7 @@ module Groups
     def relation_for_count
       EpicsFinder
         .new(user, group_id: group.id, state: 'opened')
-        .execute(skip_visibility_check: false)
+        .execute(skip_visibility_check: true)
     end
 
     def issuable_key

@@ -24,6 +24,19 @@ module EE
       def affected_epics(_issues)
         []
       end
+
+      override :set_link_type
+      def set_link_type(link)
+        return unless params[:link_type].present?
+
+        # `blocked_by` links are treated as `blocks` links where source and target is swapped.
+        if params[:link_type] == ::IssuableLink::TYPE_IS_BLOCKED_BY
+          link.source, link.target = link.target, link.source
+          link.link_type = ::IssuableLink::TYPE_BLOCKS
+        else
+          link.link_type = params[:link_type]
+        end
+      end
     end
   end
 end

@@ -14,6 +14,7 @@ RSpec.describe Mutations::DastSiteProfiles::Create do
 
   let_it_be(:request_headers) { 'Authorization: token' }
   let_it_be(:target_type) { 'api' }
+  let_it_be(:scan_method) { 'openapi' }
 
   let(:auth) do
     {
@@ -45,7 +46,8 @@ RSpec.describe Mutations::DastSiteProfiles::Create do
         target_type: target_type,
         excluded_urls: excluded_urls,
         request_headers: request_headers,
-        auth: auth
+        auth: auth,
+        scan_method: scan_method
       )
     end
 
@@ -63,6 +65,28 @@ RSpec.describe Mutations::DastSiteProfiles::Create do
           project.add_developer(user)
         end
 
+        context 'when the feature flag dast_api_scanner is disabled' do
+          before do
+            stub_feature_flags(dast_api_scanner: false)
+          end
+
+          context 'when the target_type is api' do
+            it 'creates a dast_site_profile with the default value for the scan_method' do
+              dast_site_profile = subject[:id].find
+              expect(dast_site_profile.scan_method).to eq('openapi')
+            end
+          end
+
+          context 'when the target_type is website' do
+            let_it_be(:target_type) { 'website' }
+
+            it 'creates a dast_site_profile with the default value for the scan_method' do
+              dast_site_profile = subject[:id].find
+              expect(dast_site_profile.scan_method).to eq('site')
+            end
+          end
+        end
+
         it 'creates a dast_site_profile and dast_site_profile_secret_variables', :aggregate_failures do
           dast_site_profile = subject[:id].find
 
@@ -75,7 +99,8 @@ RSpec.describe Mutations::DastSiteProfiles::Create do
             auth_password_field: auth[:password_field],
             auth_username: auth[:username],
             dast_site: have_attributes(url: target_url),
-            target_type: target_type
+            target_type: target_type,
+            scan_method: scan_method
           )
 
           password_variable = dast_site_profile.secret_variables.find_by!(key: Dast::SiteProfileSecretVariable::PASSWORD)
@@ -99,6 +124,7 @@ RSpec.describe Mutations::DastSiteProfiles::Create do
             target_type: target_type,
             excluded_urls: excluded_urls,
             request_headers: request_headers,
+            scan_method: scan_method,
             auth_enabled: auth[:enabled],
             auth_url: auth[:url],
             auth_username_field: auth[:username_field],

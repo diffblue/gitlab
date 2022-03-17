@@ -1,17 +1,6 @@
 # frozen_string_literal: true
 
 module ClustersHelper
-  def create_new_cluster_label(provider: nil)
-    case provider
-    when 'aws'
-      s_('ClusterIntegration|Create new cluster on EKS')
-    when 'gcp'
-      s_('ClusterIntegration|Create new cluster on GKE')
-    else
-      s_('ClusterIntegration|Create new cluster')
-    end
-  end
-
   def display_cluster_agents?(clusterable)
     clusterable.is_a?(Project)
   end
@@ -27,9 +16,12 @@ module ClustersHelper
       },
       clusters_empty_state_image: image_path('illustrations/empty-state/empty-state-clusters.svg'),
       empty_state_help_text: clusterable.empty_state_help_text,
-      new_cluster_path: clusterable.new_path(tab: 'create'),
+      new_cluster_path: clusterable.new_path,
+      add_cluster_path: clusterable.connect_path,
       can_add_cluster: clusterable.can_add_cluster?.to_s,
-      can_admin_cluster: clusterable.can_admin_cluster?.to_s
+      can_admin_cluster: clusterable.can_admin_cluster?.to_s,
+      display_cluster_agents: display_cluster_agents?(clusterable).to_s,
+      certificate_based_clusters_enabled: Feature.enabled?(:certificate_based_clusters, clusterable, default_enabled: :yaml, type: :ops).to_s
     }
   end
 
@@ -38,7 +30,6 @@ module ClustersHelper
       default_branch_name: clusterable.default_branch,
       empty_state_image: image_path('illustrations/empty-state/empty-state-agents.svg'),
       project_path: clusterable.full_path,
-      add_cluster_path: clusterable.new_path(tab: 'add'),
       kas_address: Gitlab::Kas.external_url,
       gitlab_version: Gitlab.version_info
     }.merge(js_clusters_list_data(clusterable))

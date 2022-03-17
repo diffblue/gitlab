@@ -64,7 +64,7 @@ RSpec.describe List do
   end
 
   context 'when it is an iteration type' do
-    let(:iteration) { build(:iteration, title: 'awesome-iteration', group: create(:group)) }
+    let(:iteration) { build(:iteration, group: create(:group)) }
 
     subject { described_class.new(list_type: :iteration, iteration: iteration, board: board) }
 
@@ -84,8 +84,8 @@ RSpec.describe List do
     end
 
     describe '#title' do
-      it 'returns the iteration title' do
-        expect(subject.title).to eq('awesome-iteration')
+      it 'returns the iteration cadence and period as title' do
+        expect(subject.title).to eq(iteration.display_text)
       end
     end
   end

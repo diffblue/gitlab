@@ -28,6 +28,20 @@ For removal reviewers (Technical Writers only):
   https://about.gitlab.com/handbook/marketing/blog/release-posts/#update-the-removals-doc
 -->
 
+## 14.9
+
+### Integrated error tracking disabled by default
+
+WARNING:
+This feature was changed or removed in 14.9
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+In GitLab 14.4, GitLab released an integrated error tracking backend that replaces Sentry. This feature caused database performance issues. In GitLab 14.9, integrated error tracking is removed from GitLab.com, and turned off by default in GitLab self-managed. While we explore the future development of this feature, please consider switching to the Sentry backend by [changing your error tracking to Sentry in your project settings](https://docs.gitlab.com/ee/operations/error_tracking.html#sentry-error-tracking).
+
+For additional background on this removal, please reference [Disable Integrated Error Tracking by Default](https://gitlab.com/groups/gitlab-org/-/epics/7580). If you have feedback please add a comment to [Feedback: Removal of Integrated Error Tracking](https://gitlab.com/gitlab-org/gitlab/-/issues/355493).
+
 ## 14.6
 
 ### Limit the number of triggered pipeline to 25K in free tier
@@ -569,8 +583,8 @@ As we continuously [develop GitLab's Terraform integrations](https://gitlab.com/
 At every major release of GitLab, the "latest version" template becomes the "major version" template, inheriting the "latest template" setup.
 As we have added many new features to the Terraform integration, the new setup for the "major version" template can be considered a breaking change.
 
-The latest template supports the [Terraform Merge Request widget](https://docs.gitlab.com/ee/user/infrastructure/mr_integration.html) and
-doesn't need additional setup to work with the [GitLab managed Terraform state](https://docs.gitlab.com/ee/user/infrastructure/terraform_state.html).
+The latest template supports the [Terraform Merge Request widget](https://docs.gitlab.com/ee/user/infrastructure/iac/mr_integration.html) and
+doesn't need additional setup to work with the [GitLab managed Terraform state](https://docs.gitlab.com/ee/user/infrastructure/iac/terraform_state.html).
 
 To check the new changes, see the [new "major version" template](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Terraform.gitlab-ci.yml).
 

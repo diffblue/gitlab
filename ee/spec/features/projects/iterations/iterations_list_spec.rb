@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Iterations list', :js do
-  let_it_be(:now) { Time.now }
+  let_it_be(:now) { Time.zone.now }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, :public, group: group) }
   let_it_be(:user) { create(:user) }
@@ -18,21 +18,21 @@ RSpec.describe 'Iterations list', :js do
     end
 
     it 'shows iterations on each tab', :aggregate_failures do
-      expect(page).to have_link(current_iteration.title, href: project_iteration_path(project, current_iteration.id))
-      expect(page).to have_link(upcoming_iteration.title, href: project_iteration_path(project, upcoming_iteration.id))
-      expect(page).not_to have_link(closed_iteration.title)
+      expect(page).to have_link(current_iteration.period, href: project_iteration_path(project, current_iteration.id))
+      expect(page).to have_link(upcoming_iteration.period, href: project_iteration_path(project, upcoming_iteration.id))
+      expect(page).not_to have_link(closed_iteration.period)
 
       click_link('Closed')
 
-      expect(page).to have_link(closed_iteration.title, href: project_iteration_path(project, closed_iteration.id))
-      expect(page).not_to have_link(current_iteration.title)
-      expect(page).not_to have_link(upcoming_iteration.title)
+      expect(page).to have_link(closed_iteration.period, href: project_iteration_path(project, closed_iteration.id))
+      expect(page).not_to have_link(current_iteration.period)
+      expect(page).not_to have_link(upcoming_iteration.period)
 
       click_link('All')
 
-      expect(page).to have_link(current_iteration.title, href: project_iteration_path(project, current_iteration.id))
-      expect(page).to have_link(upcoming_iteration.title, href: project_iteration_path(project, upcoming_iteration.id))
-      expect(page).to have_link(closed_iteration.title, href: project_iteration_path(project, closed_iteration.id))
+      expect(page).to have_link(current_iteration.period, href: project_iteration_path(project, current_iteration.id))
+      expect(page).to have_link(upcoming_iteration.period, href: project_iteration_path(project, upcoming_iteration.id))
+      expect(page).to have_link(closed_iteration.period, href: project_iteration_path(project, closed_iteration.id))
     end
   end
 

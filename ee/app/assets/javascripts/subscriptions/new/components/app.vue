@@ -16,14 +16,14 @@ export default {
 };
 </script>
 <template>
-  <div class="gl-h-full">
+  <div>
     <gitlab-experiment name="cart_abandonment_modal">
       <template #candidate>
         <modal />
       </template>
     </gitlab-experiment>
 
-    <step-order-app class="gl-h-full">
+    <step-order-app>
       <template #checkout>
         <checkout />
       </template>

@@ -928,6 +928,17 @@ RSpec.describe API::Members do
       end
     end
 
+    describe 'POST /groups/:id/members' do
+      let(:stranger) { create(:user) }
+
+      it 'returns a forbidden response' do
+        post api("/groups/#{group.id}/members", owner),
+             params: { user_id: stranger.id, access_level: Member::DEVELOPER }
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+
     describe 'POST /groups/:id/members/:user_id/override' do
       it 'succeeds when override is set on an LDAP user' do
         post api("/groups/#{group.id}/members/#{ldap_developer.id}/override", owner)

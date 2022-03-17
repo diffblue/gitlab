@@ -40,12 +40,12 @@ RSpec.describe 'User sees new onboarding flow', :js do
     click_on "Ok, let's go"
 
     expect(page).to have_content('Learn GitLab')
+    expect(page).to have_content('GitLab is better with colleagues!')
   end
 
   context 'with confetti_post_signup experiment candidate experience', :experiment do
     before do
-      stub_experiments(change_continuous_onboarding_link_urls: :control,
-                       combined_registration: :control,
+      stub_experiments(combined_registration: :control,
                        confetti_post_signup: :candidate)
     end
 

@@ -166,7 +166,6 @@ module EE
         field :corpuses, ::Types::AppSec::Fuzzing::Coverage::CorpusType.connection_type,
               null: true,
               resolver: ::Resolvers::AppSec::Fuzzing::Coverage::CorpusesResolver,
-              feature_flag: :corpus_management,
               description: "Find corpuses of the project."
 
         field :push_rules,
@@ -199,6 +198,7 @@ module EE
         field :network_policies,
               ::Types::NetworkPolicyType.connection_type,
               null: true,
+              deprecated: { reason: 'Network policies are deprecated and will be removed in GitLab 15.0', milestone: '14.8' },
               description: 'Network Policies of the project',
               resolver: ::Resolvers::NetworkPolicyResolver
 
@@ -207,6 +207,12 @@ module EE
               null: true,
               method: :itself,
               description: "Project's DORA metrics."
+
+        field :security_training_urls,
+              [::Types::Security::TrainingUrlType],
+              null: true,
+              description: 'Security training URLs for the enabled training providers of the project.',
+              resolver: ::Resolvers::SecurityTrainingUrlsResolver
       end
 
       def api_fuzzing_ci_configuration

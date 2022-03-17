@@ -13,6 +13,8 @@ class Projects::InsightsController < Projects::ApplicationController
 
   feature_category :value_stream_management
 
+  urgency :low
+
   private
 
   def insights_entity

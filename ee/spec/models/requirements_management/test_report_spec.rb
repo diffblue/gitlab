@@ -7,7 +7,6 @@ RSpec.describe RequirementsManagement::TestReport do
     subject { build(:test_report) }
 
     it { is_expected.to belong_to(:author).class_name('User') }
-    it { is_expected.to belong_to(:requirement) }
     it { is_expected.to belong_to(:requirement_issue) }
     it { is_expected.to belong_to(:build) }
   end
@@ -19,17 +18,10 @@ RSpec.describe RequirementsManagement::TestReport do
     let(:requirement_issue) { build(:requirement_issue) }
 
     it { is_expected.to validate_presence_of(:state) }
-    it { is_expected.to validate_presence_of(:requirement) }
+    it { is_expected.to validate_presence_of(:requirement_issue) }
 
     context 'requirements associations' do
-      subject { build(:test_report, requirement: requirement_arg, requirement_issue: requirement_issue_arg) }
-
-      context 'when only requirement is set' do
-        let(:requirement_arg) { requirement }
-        let(:requirement_issue_arg) { nil }
-
-        specify { expect(subject).to be_valid }
-      end
+      subject { build(:test_report, requirement_issue: requirement_issue_arg) }
 
       context 'when only requirement issue is set' do
         let(:requirement_arg) { nil }
@@ -91,7 +83,7 @@ RSpec.describe RequirementsManagement::TestReport do
         end
 
         it 'creates test report with expected status for each open requirement' do
-          requirement1 = create(:requirement, state: :opened, project: project, requirement_issue: create(:requirement_issue))
+          requirement1 = create(:requirement, state: :opened, project: project)
           requirement2 = create(:requirement, state: :opened, project: project)
           create(:requirement, state: :opened) # different project
           create(:requirement, state: :archived, project: project) # archived
@@ -101,11 +93,10 @@ RSpec.describe RequirementsManagement::TestReport do
           reports = RequirementsManagement::TestReport.where(build: build)
 
           expect(reports).to match_array([
-            have_attributes(requirement: requirement1,
-                            requirement_issue: requirement1.requirement_issue,
+            have_attributes(requirement_issue: requirement1.requirement_issue,
                             author: build.user,
                             state: 'passed'),
-            have_attributes(requirement: requirement2,
+            have_attributes(requirement_issue: requirement2.requirement_issue,
                             author: build.user,
                             state: 'failed')
 
@@ -138,18 +129,16 @@ RSpec.describe RequirementsManagement::TestReport do
     let_it_be(:build_author) { create(:user) }
     let_it_be(:build) { create(:ci_build, author: build_author) }
     let_it_be(:requirement_issue) { create(:requirement_issue)}
-    let_it_be(:requirement) { create(:requirement, requirement_issue: requirement_issue, state: :opened) }
 
     let(:now) { Time.current }
 
     context 'when build is passed as argument' do
       it 'builds test report with correct attributes' do
-        test_report = described_class.build_report(requirement: requirement, author: user, state: 'failed', build: build, timestamp: now)
+        test_report = described_class.build_report(requirement_issue: requirement_issue, author: user, state: 'failed', build: build, timestamp: now)
 
         expect(test_report.author).to eq(build.author)
         expect(test_report.build).to eq(build)
-        expect(test_report.requirement).to eq(requirement)
-        expect(test_report.requirement_issue).to eq(requirement.requirement_issue)
+        expect(test_report.requirement_issue).to eq(requirement_issue)
         expect(test_report.state).to eq('failed')
         expect(test_report.created_at).to eq(now)
       end
@@ -157,12 +146,11 @@ RSpec.describe RequirementsManagement::TestReport do
 
     context 'when build is not passed as argument' do
       it 'builds test report with correct attributes' do
-        test_report = described_class.build_report(requirement: requirement, author: user, state: 'passed', timestamp: now)
+        test_report = described_class.build_report(requirement_issue: requirement_issue, author: user, state: 'passed', timestamp: now)
 
         expect(test_report.author).to eq(user)
         expect(test_report.build).to eq(nil)
-        expect(test_report.requirement).to eq(requirement)
-        expect(test_report.requirement_issue).to eq(requirement.requirement_issue)
+        expect(test_report.requirement_issue).to eq(requirement_issue)
         expect(test_report.state).to eq('passed')
         expect(test_report.created_at).to eq(now)
       end

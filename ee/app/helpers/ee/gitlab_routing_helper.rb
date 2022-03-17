@@ -87,5 +87,13 @@ module EE
         profile_usage_quotas_path(*args)
       end
     end
+
+    def usage_quotas_url(namespace, *args)
+      if namespace.group_namespace?
+        group_usage_quotas_url(namespace, *args)
+      else
+        profile_usage_quotas_url(*args)
+      end
+    end
   end
 end

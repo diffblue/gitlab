@@ -18,8 +18,6 @@ module Projects
           render status: :ok
         end
         format.json do
-          ::Gitlab::UsageCounters::DependencyList.increment(project.id)
-
           render json: serializer.represent(dependencies, build: report_service.build)
         end
       end

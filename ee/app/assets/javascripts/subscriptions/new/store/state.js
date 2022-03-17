@@ -14,8 +14,7 @@ const parseGroupData = (groupData) =>
   JSON.parse(groupData).map((group) => ({
     value: group.id,
     text: group.name,
-    numberOfUsers: group.users,
-    numberOfGuests: group.guests,
+    fullPath: group.full_path,
   }));
 
 const determineSelectedPlan = (planId, plans) => {
@@ -23,20 +22,6 @@ const determineSelectedPlan = (planId, plans) => {
     return planId;
   }
   return plans[0] && plans[0].value;
-};
-
-const determineNumberOfUsers = (groupId, groups) => {
-  if (!groupId || !groups) {
-    return 1;
-  }
-
-  const chosenGroup = groups.find((group) => group.value === groupId);
-
-  if (chosenGroup?.numberOfUsers > 1) {
-    return chosenGroup.numberOfUsers;
-  }
-
-  return 1;
 };
 
 export default ({
@@ -66,7 +51,7 @@ export default ({
     groupData: groups,
     selectedGroup: groupId,
     organizationName: null,
-    numberOfUsers: determineNumberOfUsers(groupId, groups),
+    numberOfUsers: 1,
     country: null,
     streetAddressLine1: null,
     streetAddressLine2: null,

@@ -4,7 +4,7 @@ query issueIterationsAliased($fullPath: ID!, $title: String, $state: IterationSt
   workspace: group(fullPath: $fullPath) {
     __typename
     id
-    attributes: iterations(title: $title, state: $state) {
+    attributes: iterations(search: $title, in: [TITLE, CADENCE_TITLE], state: $state) {
       nodes {
         ...IterationFragment
         state

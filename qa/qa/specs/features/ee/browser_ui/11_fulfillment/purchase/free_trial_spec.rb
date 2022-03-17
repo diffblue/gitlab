@@ -6,21 +6,22 @@ module QA
       let(:api_client) { Runtime::API::Client.as_admin }
       let(:user) do
         Resource::User.fabricate_via_api! do |user|
-          user.email = "gitlab-qa+#{SecureRandom.hex(2)}@gitlab.com"
+          user.email = "test-user-#{SecureRandom.hex(4)}@gitlab.com"
           user.api_client = api_client
           user.hard_delete_on_api_removal = true
         end
       end
 
-      let(:group1) do
+      let(:group_for_trial) do
         Resource::Sandbox.fabricate! do |sandbox|
-          sandbox.path = "gitlab-qa-group-#{SecureRandom.hex(4)}"
+          sandbox.path = "test-group-fulfillment#{SecureRandom.hex(4)}"
           sandbox.api_client = api_client
         end
       end
 
       before do
-        group1.add_member(user, Resource::Members::AccessLevel::OWNER)
+        Flow::Login.sign_in(as: user)
+        group_for_trial.visit!
       end
 
       after do
@@ -29,23 +30,23 @@ module QA
 
       describe 'starts a free trial' do
         context 'when on about page with multiple eligible namespaces' do
-          let(:group2) do
+          let!(:group) do
             Resource::Sandbox.fabricate! do |sandbox|
-              sandbox.path = "gitlab-qa-group-#{SecureRandom.hex(4)}"
+              sandbox.path = "test-group-fulfillment#{SecureRandom.hex(4)}"
               sandbox.api_client = api_client
             end
           end
 
           before do
-            group2.add_member(user, Resource::Members::AccessLevel::OWNER)
-
-            Flow::Login.sign_in(as: user)
-
             Runtime::Browser.visit(:about, Chemlab::Vendor::GitlabHandbook::Page::About)
 
             Chemlab::Vendor::GitlabHandbook::Page::About.perform(&:get_free_trial)
 
             Page::Trials::New.perform(&:visit)
+          end
+
+          after do
+            group.remove_via_api!
           end
 
           it 'registers for a new trial', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347671' do
@@ -60,15 +61,14 @@ module QA
             Gitlab::Page::Group::Settings::Billing.perform do |billing|
               expect do
                 billing.billing_plan_header
-              end.to eventually_include("#{group1.path} is currently using the Ultimate SaaS Trial Plan").within(max_duration: 120, max_attempts: 60, reload_page: page)
+              end.to eventually_include("#{group_for_trial.path} is currently using the Ultimate SaaS Trial Plan").within(max_duration: 120, max_attempts: 60, reload_page: page)
             end
           end
         end
 
         context 'when on billing page with only one eligible namespace' do
           before do
-            Flow::Login.sign_in(as: user)
-            group1.visit!
+            group_for_trial.visit!
             Page::Group::Menu.perform(&:go_to_billing)
           end
 
@@ -85,7 +85,7 @@ module QA
             Gitlab::Page::Group::Settings::Billing.perform do |billing|
               expect do
                 billing.billing_plan_header
-              end.to eventually_include("#{group1.path} is currently using the Ultimate SaaS Trial Plan").within(max_duration: 120, max_attempts: 60, reload_page: page)
+              end.to eventually_include("#{group_for_trial.path} is currently using the Ultimate SaaS Trial Plan").within(max_duration: 120, max_attempts: 60, reload_page: page)
             end
           end
         end
@@ -117,7 +117,7 @@ module QA
 
         unless skip_select
           Page::Trials::Select.perform do |select|
-            select.subscription_for = group1.path
+            select.subscription_for = group_for_trial.path
             select.trial_company
             select.start_your_free_trial
           end

@@ -522,6 +522,16 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
       end
     end
 
+    context 'when evidence is not provided in the report findings' do
+      let!(:artifact_sast) { create(:ee_ci_job_artifact, :sast, job: build_sast, project: project) }
+
+      it 'does not set the evidences for findings' do
+        evidences = subject.findings.select(&:sast?).map(&:evidence)
+
+        expect(evidences.compact).to be_empty
+      end
+    end
+
     def read_fixture(fixture)
       Gitlab::Json.parse(File.read(fixture.file.path))
     end

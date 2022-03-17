@@ -3,7 +3,7 @@
 module Admin
   module RepoSizeLimitHelper
     def repo_size_limit_feature_available?
-      License.feature_available?(:repository_size_limit) || License.features_with_usage_ping.include?(:repository_size_limit)
+      License.feature_available?(:repository_size_limit) || GitlabSubscriptions::Features.usage_ping_feature?(:repository_size_limit)
     end
   end
 end

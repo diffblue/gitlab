@@ -11,7 +11,7 @@ RSpec.describe 'OneTrust in the sign up flow' do
   before do
     stub_config(extra: { one_trust_id: one_trust_id })
     stub_feature_flags(ecomm_instrumentation: true)
-    allow(::Gitlab).to receive(:dev_env_or_com?).and_return(true)
+    allow(::Gitlab).to receive(:com?).and_return(true)
     sign_in(user)
   end
 

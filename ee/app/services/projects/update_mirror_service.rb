@@ -61,7 +61,7 @@ module Projects
     end
 
     def update_branches
-      local_branches = repository.branches.each_with_object({}) { |branch, branches| branches[branch.name] = branch }
+      local_branches = repository.branches.index_by(&:name)
 
       errors = []
 
@@ -96,7 +96,7 @@ module Projects
     end
 
     def update_tags(&block)
-      old_tags = repository_tags_with_target.each_with_object({}) { |tag, tags| tags[tag.name] = tag }
+      old_tags = repository_tags_with_target.index_by(&:name)
 
       fetch_result = yield
       return fetch_result unless fetch_result&.tags_changed

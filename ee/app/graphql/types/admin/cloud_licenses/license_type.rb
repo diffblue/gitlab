@@ -8,8 +8,7 @@ module Types
 
         included do
           field :id, GraphQL::Types::ID, null: false,
-                description: 'ID of the license.',
-                method: :license_id
+                description: 'ID of the license extracted from the license data.'
 
           field :type, GraphQL::Types::String, null: false,
                 description: 'Type of the license.',
@@ -48,6 +47,10 @@ module Types
           field :users_in_license_count, GraphQL::Types::Int, null: true,
                 description: 'Number of paid users in the license.',
                 method: :restricted_user_count
+
+          def id
+            ::Gitlab::GlobalId.build(object, model_name: object.class.to_s, id: object.license_id).to_s
+          end
         end
       end
     end

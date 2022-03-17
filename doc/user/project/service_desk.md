@@ -93,8 +93,8 @@ displayed in the information note.
 
 ### Using customized email templates
 
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/2460) in GitLab Premium 12.7.
-> - Moved to GitLab Free in 13.2.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/2460) in GitLab 12.7.
+> - Moved from GitLab Premium to GitLab Free in 13.2.
 
 An email is sent to the author when:
 
@@ -171,7 +171,7 @@ To edit the custom email display name:
 
 ### Using a custom email address **(FREE SELF)**
 
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/2201) in GitLab Premium 13.0.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/2201) in GitLab 13.0.
 > - [Feature flag removed](https://gitlab.com/gitlab-org/gitlab/-/issues/284656) in GitLab 13.8.
 
 It is possible to customize the email address used by Service Desk. To do this, you must configure
@@ -241,7 +241,7 @@ The configuration options are the same as for configuring
 
 ##### Microsoft Graph
 
-> Introduced in [GitLab 13.11](https://gitlab.com/gitlab-org/gitlab/-/issues/214900)
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/214900) in GitLab 13.11.
 
 Service Desk can be configured to read Microsoft Exchange Online mailboxes with the Microsoft
 Graph API instead of IMAP. Follow the [documentation in the incoming email section for setting up an OAuth2 application for Microsoft Graph](../../administration/incoming_email.md#microsoft-graph).
@@ -292,6 +292,7 @@ In these issues, you can also see our friendly neighborhood [Support Bot](#suppo
 
 > Support for additional email headers [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/346600) in GitLab 14.6.
 > In earlier versions, the Service Desk email address had to be in the "To" field.
+
 To create a Service Desk issue, an end user does not need to know anything about
 the GitLab instance. They just send an email to the address they are given, and
 receive an email back confirming receipt:
@@ -327,7 +328,28 @@ You can read and write comments as you normally do in GitLab:
 Note that:
 
 - The project's visibility (private, internal, public) does not affect Service Desk.
-- The path to the project, including its group or namespace, are shown in emails.
+- The path to the project, including its group or namespace, is shown in emails.
+
+#### Issues created on someone's behalf
+
+To allow third party applications and ticketing systems to interface with Service Desk,
+when the email contains the `Reply-To` email header, this email address is used as the address of the
+issue author.
+
+Because the `Reply-To` header can be set to arbitrary values, do not blindly trust that an issue
+created on behalf of `someone@example.com` was indeed created by the real owner of such email address.
+
+For example, an email with headers `To: support@example.com` and `Reply-To:someone@example.com`
+creates an issue with the following note:
+
+> Created (…) by `support@example.com` (reply to: `someone@example.com`) (…)
+
+#### Privacy considerations
+
+Service Desk issues are confidential, but the project owner can
+[make an issue public](issues/confidential_issues.md#modify-issue-confidentiality).
+When a Service Desk issue becomes public, the issue creator's email address is disclosed
+to everyone who can view the project.
 
 ### Support Bot user
 

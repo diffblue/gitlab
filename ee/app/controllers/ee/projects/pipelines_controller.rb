@@ -11,6 +11,8 @@ module EE
         before_action do
           push_frontend_feature_flag(:pipeline_security_dashboard_graphql, project, type: :development, default_enabled: :yaml)
           push_frontend_feature_flag(:graphql_code_quality_full_report, project, type: :development, default_enabled: :yaml)
+          push_frontend_feature_flag(:secure_vulnerability_training, project, default_enabled: :yaml)
+          push_frontend_feature_flag(:vulnerability_report_pagination, current_user, default_enabled: :yaml)
         end
 
         feature_category :license_compliance, [:licenses]

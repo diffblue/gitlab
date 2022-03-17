@@ -33,3 +33,60 @@ export default () => [
   populateEvent('User 3', true, false),
   populateEvent('User 4', false, false),
 ];
+
+export const mockExternalDestinationUrl = 'https://api.gitlab.com';
+
+export const mockExternalDestinations = [
+  {
+    destinationUrl: mockExternalDestinationUrl,
+    id: 'test_id1',
+  },
+  {
+    destinationUrl: 'https://apiv2.gitlab.com',
+    id: 'test_id2',
+  },
+];
+
+export const groupPath = 'test-group';
+
+export const testGroupId = 'test-group-id';
+
+export const destinationDataPopulator = (nodes) => ({
+  data: {
+    group: { id: testGroupId, externalAuditEventDestinations: { nodes } },
+  },
+});
+
+export const destinationCreateMutationPopulator = (errors = []) => {
+  const correctData = {
+    errors,
+    externalAuditEventDestination: {
+      id: 'test-create-id',
+      destinationUrl: mockExternalDestinationUrl,
+      group: {
+        name: groupPath,
+        id: testGroupId,
+      },
+    },
+  };
+
+  const errorData = {
+    errors,
+    externalAuditEventDestination: {
+      id: null,
+      destinationUrl: null,
+      group: {
+        name: null,
+        id: testGroupId,
+      },
+    },
+  };
+
+  return {
+    data: {
+      externalAuditEventDestinationCreate: errors.length > 0 ? errorData : correctData,
+    },
+  };
+};
+
+export const mockSvgPath = 'mock/path';

@@ -7,7 +7,7 @@ RSpec.describe GitlabSchema.types['Project'] do
 
   let_it_be(:project) { create(:project) }
   let_it_be(:user) { create(:user) }
-  let_it_be(:vulnerability) { create(:vulnerability, project: project, severity: :high) }
+  let_it_be(:vulnerability) { create(:vulnerability, :with_finding, project: project, severity: :high) }
 
   before do
     stub_licensed_features(security_dashboard: true)
@@ -22,7 +22,7 @@ RSpec.describe GitlabSchema.types['Project'] do
       security_dashboard_path iterations iteration_cadences repository_size_excess actual_repository_size_limit
       code_coverage_summary api_fuzzing_ci_configuration corpuses path_locks incident_management_escalation_policies
       incident_management_escalation_policy scan_execution_policies network_policies incident_management_timeline_events
-      incident_management_timeline_event
+      incident_management_timeline_event security_training_urls
     ]
 
     expect(described_class).to include_graphql_fields(*expected_fields)
@@ -71,7 +71,7 @@ RSpec.describe GitlabSchema.types['Project'] do
     let_it_be(:project) { create(:project) }
     let_it_be(:user) { create(:user) }
     let_it_be(:vulnerability) do
-      create(:vulnerability, :detected, :critical, project: project, title: 'A terrible one!')
+      create(:vulnerability, :detected, :critical, :with_finding, project: project, title: 'A terrible one!')
     end
 
     let_it_be(:query) do

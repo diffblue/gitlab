@@ -3,3 +3,18 @@
     max-width: 11rem;
   }
 }
+
+.compliance-report-table {
+  .view-details {
+    background-color: $gray-10;
+
+    div {
+      width: 100% !important;
+      padding: 0 !important;
+    }
+  }
+
+  tr:hover .view-details {
+    background-color: transparent;
+  }
+}

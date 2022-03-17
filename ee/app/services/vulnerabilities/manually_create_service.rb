@@ -65,10 +65,9 @@ module Vulnerabilities
       # In the GraphQL mutation mutation arguments we want to respect the security scanner schema:
       # https://gitlab.com/gitlab-org/security-products/security-report-schemas/-/blob/master/src/security-report-format.json#L339
       # So the id provided to the mutation is actually external_id in our database
-      Vulnerabilities::Scanner.find_or_initialize_by(external_id: scanner_hash[:id]) do |s|
+      Vulnerabilities::Scanner.find_or_initialize_by(external_id: scanner_hash[:id], project_id: @project.id) do |s|
         s.name = scanner_hash[:name]
         s.vendor = scanner_hash.dig(:vendor, :name).to_s
-        s.project = @project
       end
     end
     # rubocop: enable CodeReuse/ActiveRecord

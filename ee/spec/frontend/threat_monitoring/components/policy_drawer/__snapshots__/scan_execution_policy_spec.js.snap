@@ -1,0 +1,112 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ScanExecutionPolicy component default policy renders the correct policy action message 1`] = `
+<div
+  data-testid="policy-summary"
+>
+  <div
+    data-testid="policy-summary"
+  >
+    <h5
+      class="gl-mt-6"
+      data-testid="label"
+    >
+      Summary
+    </h5>
+     
+    <p
+      data-testid="content"
+    >
+      <p>
+        Runs a 
+        <strong>
+          Dast
+        </strong>
+         scan
+      </p>
+       
+      <ul>
+        <li>
+          
+          Scan to be performed on every pipeline on the main branch
+        
+        </li>
+      </ul>
+    </p>
+  </div>
+</div>
+`;
+
+exports[`ScanExecutionPolicy component multiple action policy renders the correct policy action message 1`] = `
+<div
+  data-testid="policy-summary"
+>
+  <div
+    data-testid="policy-summary"
+  >
+    <h5
+      class="gl-mt-6"
+      data-testid="label"
+    >
+      Summary
+    </h5>
+     
+    <p
+      data-testid="content"
+    >
+      <p>
+        Runs 
+        <strong>
+          Container Scanning, Secret Detection
+        </strong>
+         and 
+        <strong>
+          Sast
+        </strong>
+         scans
+      </p>
+       
+      <ul>
+        <li>
+          
+          Scan to be performed on every pipeline on the main branch
+        
+        </li>
+      </ul>
+    </p>
+  </div>
+</div>
+`;
+
+exports[`ScanExecutionPolicy component no action policy renders the correct policy action message 1`] = `
+<div
+  data-testid="policy-summary"
+>
+  <div
+    data-testid="policy-summary"
+  >
+    <h5
+      class="gl-mt-6"
+      data-testid="label"
+    >
+      Summary
+    </h5>
+     
+    <p
+      data-testid="content"
+    >
+      <p>
+        No actions defined - policy will not run.
+      </p>
+       
+      <ul>
+        <li>
+          
+          Scan to be performed on every pipeline on the main branch
+        
+        </li>
+      </ul>
+    </p>
+  </div>
+</div>
+`;

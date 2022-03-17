@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  # TODO: Remove :requires_admin meta when the `Runtime::Feature.enable` method call is removed
-  RSpec.describe 'Plan', :reliable, :requires_admin do
+  RSpec.describe 'Plan', :reliable do
     describe 'Read-only board configuration' do
       let(:qa_user) do
         Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1)
@@ -13,8 +12,6 @@ module QA
       end
 
       before do
-        Runtime::Feature.enable(:invite_members_group_modal, project: label_board_list.project)
-
         Flow::Login.sign_in
 
         label_board_list.project.add_member(qa_user, Resource::Members::AccessLevel::GUEST)

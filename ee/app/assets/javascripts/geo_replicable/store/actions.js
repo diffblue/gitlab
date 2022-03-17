@@ -9,7 +9,7 @@ import { __, sprintf } from '~/locale';
 import toast from '~/vue_shared/plugins/global_toast';
 import { FILTER_STATES, PREV, NEXT, DEFAULT_PAGE_SIZE } from '../constants';
 import buildReplicableTypeQuery from '../graphql/replicable_type_query_builder';
-import { gqClient } from '../utils';
+import { getGraphqlClient } from '../utils';
 import * as types from './mutation_types';
 
 // Fetch Replicable Items
@@ -49,7 +49,9 @@ export const fetchReplicableItemsGraphQl = ({ state, dispatch }, direction) => {
     after = state.paginationData.endCursor;
   }
 
-  gqClient
+  const client = getGraphqlClient(state.geoCurrentNodeId, state.geoTargetNodeId);
+
+  client
     .query({
       query: buildReplicableTypeQuery(state.graphqlFieldName),
       variables: { first, last, before, after },

@@ -41,17 +41,8 @@ RSpec.describe MergeRequests::PostMergeService do
         it_behaves_like 'does not call the compliance violations worker'
       end
 
-      context 'when the compliance violations graphql type is disabled' do
+      context 'when the compliance report feature is licensed' do
         before do
-          stub_feature_flags(compliance_violations_graphql_type: false)
-        end
-
-        it_behaves_like 'does not call the compliance violations worker'
-      end
-
-      context 'when the compliance violations graphql type is enabled' do
-        before do
-          stub_feature_flags(compliance_violations_graphql_type: true)
           stub_licensed_features(group_level_compliance_dashboard: true)
         end
 

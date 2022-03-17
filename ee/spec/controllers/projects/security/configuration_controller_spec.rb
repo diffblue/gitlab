@@ -188,7 +188,6 @@ RSpec.describe Projects::Security::ConfigurationController do
 
       before do
         stub_feature_flags(security_auto_fix: false)
-        stub_feature_flags(corpus_management_ui: false)
 
         request
       end

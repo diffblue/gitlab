@@ -8,7 +8,7 @@ export default (el) => {
     return null;
   }
 
-  const { falsePositiveDocUrl, canViewFalsePositive } = el.dataset;
+  const { falsePositiveDocUrl, canViewFalsePositive, projectFullPath } = el.dataset;
 
   const vulnerability = convertObjectPropsToCamelCase(JSON.parse(el.dataset.vulnerability), {
     deep: true,
@@ -22,7 +22,6 @@ export default (el) => {
       newIssueUrl: vulnerability.newIssueUrl,
       commitPathTemplate: el.dataset.commitPathTemplate,
       projectFingerprint: vulnerability.projectFingerprint,
-      projectFullPath: vulnerability.project?.fullPath,
       vulnerabilityId: vulnerability.id,
       issueTrackingHelpPath: vulnerability.issueTrackingHelpPath,
       permissionsHelpPath: vulnerability.permissionsHelpPath,
@@ -32,6 +31,7 @@ export default (el) => {
       jiraIntegrationSettingsPath: vulnerability.jiraIntegrationSettingsPath,
       falsePositiveDocUrl,
       canViewFalsePositive: parseBoolean(canViewFalsePositive),
+      projectFullPath,
     },
     render: (h) =>
       h(App, {

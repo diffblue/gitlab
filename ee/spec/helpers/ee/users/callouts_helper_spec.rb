@@ -431,7 +431,7 @@ RSpec.describe EE::Users::CalloutsHelper do
 
     with_them do
       before do
-        allow(Gitlab).to receive(:dev_env_or_com?).and_return(on_gitlab_com?)
+        allow(Gitlab).to receive(:com?).and_return(on_gitlab_com?)
         allow(helper).to receive(:current_user).and_return(logged_in? ? user : nil)
         allow(user).to receive(:has_valid_credit_card?).and_return(!unverified?)
         pipeline.update!(failure_reason: nil) unless failed_pipeline?
@@ -444,7 +444,7 @@ RSpec.describe EE::Users::CalloutsHelper do
 
     describe 'dismissing the alert timing' do
       before do
-        allow(Gitlab).to receive(:dev_env_or_com?).and_return(true)
+        allow(Gitlab).to receive(:com?).and_return(true)
         allow(helper).to receive(:current_user).and_return(user)
         create(:callout, user: user, feature_name: :verification_reminder, dismissed_at: Time.current)
         create(:ci_pipeline, user: user, failure_reason: :user_not_verified, created_at: pipeline_created_at)

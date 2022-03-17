@@ -21,7 +21,7 @@ RSpec.describe API::Wikis do
   let(:group) { create(:group, :internal, :wiki_repo) }
   let(:wiki) { create(:group_wiki, container: group, user: user) }
   let(:payload) { { content: 'content', format: 'rdoc', title: 'title' } }
-  let(:expected_keys_with_content) { %w(content format slug title) }
+  let(:expected_keys_with_content) { %w(content format slug title encoding) }
   let(:expected_keys_without_content) { %w(format slug title) }
 
   before do
@@ -128,6 +128,7 @@ RSpec.describe API::Wikis do
   describe 'GET /groups/:id/wikis/:slug' do
     let(:page) { create(:wiki_page, wiki: wiki) }
     let(:url) { "/groups/#{group.id}/wikis/#{page.slug}" }
+    let(:params) { {} }
 
     context 'when wiki is disabled' do
       before do
@@ -178,13 +179,16 @@ RSpec.describe API::Wikis do
       context 'when user is developer' do
         before do
           group.add_developer(user)
-          get api(url, user)
         end
 
         include_examples 'wikis API returns wiki page'
 
         context 'when page does not exist' do
           let(:url) { "/groups/#{group.id}/wikis/unknown" }
+
+          before do
+            get api(url, user), params: params
+          end
 
           include_examples 'wiki API 404 Wiki Page Not Found'
         end
@@ -193,14 +197,16 @@ RSpec.describe API::Wikis do
       context 'when user is maintainer' do
         before do
           group.add_maintainer(user)
-
-          get api(url, user)
         end
 
         include_examples 'wikis API returns wiki page'
 
         context 'when page does not exist' do
           let(:url) { "/groups/#{group.id}/wikis/unknown" }
+
+          before do
+            get api(url, user), params: params
+          end
 
           include_examples 'wiki API 404 Wiki Page Not Found'
         end
@@ -219,14 +225,16 @@ RSpec.describe API::Wikis do
       context 'when user is developer' do
         before do
           group.add_developer(user)
-
-          get api(url, user)
         end
 
         include_examples 'wikis API returns wiki page'
 
         context 'when page does not exist' do
           let(:url) { "/groups/#{group.id}/wikis/unknown" }
+
+          before do
+            get api(url, user), params: params
+          end
 
           include_examples 'wiki API 404 Wiki Page Not Found'
         end
@@ -235,14 +243,16 @@ RSpec.describe API::Wikis do
       context 'when user is maintainer' do
         before do
           group.add_maintainer(user)
-
-          get api(url, user)
         end
 
         include_examples 'wikis API returns wiki page'
 
         context 'when page does not exist' do
           let(:url) { "/groups/#{group.id}/wikis/unknown" }
+
+          before do
+            get api(url, user), params: params
+          end
 
           include_examples 'wiki API 404 Wiki Page Not Found'
         end

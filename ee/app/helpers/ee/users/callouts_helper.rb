@@ -104,7 +104,7 @@ module EE
       end
 
       def show_verification_reminder?
-        return false unless ::Gitlab.dev_env_or_com?
+        return false unless ::Gitlab.com?
         return false unless ::Feature.enabled?(:verification_reminder, default_enabled: :yaml)
         return false unless current_user
         return false if current_user.has_valid_credit_card?
@@ -140,7 +140,7 @@ module EE
       end
 
       def add_migrate_to_hashed_storage_link(message)
-        migrate_link = link_to(_('For more info, read the documentation.'), help_page_path('administration/raketasks/storage.md', anchor: 'migrate-to-hashed-storage'), target: '_blank')
+        migrate_link = link_to(_('For more info, read the documentation.'), help_page_path('administration/raketasks/storage.md', anchor: 'migrate-to-hashed-storage'), target: '_blank', rel: 'noopener')
         linked_message = message % { migrate_link: migrate_link }
         linked_message.html_safe
       end

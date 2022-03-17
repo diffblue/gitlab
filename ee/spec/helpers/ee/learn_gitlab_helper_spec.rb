@@ -23,10 +23,6 @@ RSpec.describe LearnGitlabHelper do
     end
 
     context 'when in the new action URLs experiment' do
-      before do
-        stub_experiments(change_continuous_onboarding_link_urls: :candidate)
-      end
-
       context 'for trial- and subscription-related actions' do
         context 'when namespace plans are not enabled' do
           before do

@@ -300,6 +300,13 @@ RSpec.describe ApprovalProjectRule do
       it_behaves_like 'auditable'
     end
 
+    describe "#audit_creation after approval rule is created" do
+      let(:action!) { create(:approval_project_rule, approvals_required: 1) }
+      let(:message) {'Added approval rule with number of required approvals of 1'}
+
+      it_behaves_like 'auditable'
+    end
+
     describe '#vulnerability_states_for_branch' do
       let(:project) { create(:project, :repository) }
       let(:branch_name) { project.default_branch }

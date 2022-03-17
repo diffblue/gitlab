@@ -15,8 +15,6 @@ RSpec.describe Project do
     it { is_expected.to delegate_method(:ci_minutes_quota).to(:shared_runners_limit_namespace) }
     it { is_expected.to delegate_method(:shared_runners_minutes_limit_enabled?).to(:shared_runners_limit_namespace) }
 
-    it { is_expected.to delegate_method(:closest_gitlab_subscription).to(:namespace) }
-
     it { is_expected.to delegate_method(:pipeline_configuration_full_path).to(:compliance_management_framework) }
 
     it { is_expected.to delegate_method(:prevent_merge_without_jira_issue).to(:project_setting) }
@@ -51,6 +49,7 @@ RSpec.describe Project do
     it { is_expected.to have_many(:downstream_projects) }
     it { is_expected.to have_many(:vulnerability_historical_statistics).class_name('Vulnerabilities::HistoricalStatistic') }
     it { is_expected.to have_many(:vulnerability_remediations).class_name('Vulnerabilities::Remediation') }
+    it { is_expected.to have_many(:vulnerability_reads).class_name('Vulnerabilities::Read') }
 
     it { is_expected.to have_one(:github_integration) }
     it { is_expected.to have_many(:project_aliases) }
@@ -754,43 +753,26 @@ RSpec.describe Project do
     end
 
     describe '#disable_overriding_approvers_per_merge_request' do
-      context 'when group_merge_request_approval_settings_feature_flag flag is disabled' do
-        before do
-          stub_feature_flags(group_merge_request_approval_settings_feature_flag: false)
+      it 'returns false when the resolver returns true' do
+        allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
+          allow(resolver).to receive(:allow_overrides_to_approver_list_per_merge_request)
+                               .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: true,
+                                                                                                           locked: false,
+                                                                                                           inherited_from: nil))
         end
 
-        it_behaves_like 'setting modified by application setting' do
-          let(:setting) { :disable_overriding_approvers_per_merge_request }
-          let(:application_setting) { :disable_overriding_approvers_per_merge_request }
-        end
+        expect(project.disable_overriding_approvers_per_merge_request).to be false
       end
 
-      context 'when group_merge_request_approval_settings_feature_flag flag is true' do
-        before do
-          stub_feature_flags(group_merge_request_approval_settings_feature_flag: true)
+      it 'returns true when the resolver returns false' do
+        allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
+          allow(resolver).to receive(:allow_overrides_to_approver_list_per_merge_request)
+                               .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: false,
+                                                                                                           locked: false,
+                                                                                                           inherited_from: nil))
         end
 
-        it 'returns false when the resolver returns true' do
-          allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
-            allow(resolver).to receive(:allow_overrides_to_approver_list_per_merge_request)
-                                 .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: true,
-                                                                                                             locked: false,
-                                                                                                             inherited_from: nil))
-          end
-
-          expect(project.disable_overriding_approvers_per_merge_request).to be false
-        end
-
-        it 'returns true when the resolver returns false' do
-          allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
-            allow(resolver).to receive(:allow_overrides_to_approver_list_per_merge_request)
-                                 .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: false,
-                                                                                                             locked: false,
-                                                                                                             inherited_from: nil))
-          end
-
-          expect(project.disable_overriding_approvers_per_merge_request).to be true
-        end
+        expect(project.disable_overriding_approvers_per_merge_request).to be true
       end
     end
 
@@ -819,43 +801,26 @@ RSpec.describe Project do
     end
 
     describe '#merge_requests_disable_committers_approval' do
-      context 'when group_merge_request_approval_settings_feature_flag flag is disabled' do
-        before do
-          stub_feature_flags(group_merge_request_approval_settings_feature_flag: false)
+      it 'returns false when the resolver returns true' do
+        allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
+          allow(resolver).to receive(:allow_committer_approval)
+                               .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: true,
+                                                                                                           locked: false,
+                                                                                                           inherited_from: nil))
         end
 
-        it_behaves_like 'setting modified by application setting' do
-          let(:setting) { :merge_requests_disable_committers_approval }
-          let(:application_setting) { :prevent_merge_requests_committers_approval }
-        end
+        expect(project.merge_requests_disable_committers_approval).to be false
       end
 
-      context 'when group_merge_request_approval_settings_feature_flag flag is true' do
-        before do
-          stub_feature_flags(group_merge_request_approval_settings_feature_flag: true)
+      it 'returns true when the resolver returns false' do
+        allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
+          allow(resolver).to receive(:allow_committer_approval)
+                               .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: false,
+                                                                                                           locked: false,
+                                                                                                           inherited_from: nil))
         end
 
-        it 'returns false when the resolver returns true' do
-          allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
-            allow(resolver).to receive(:allow_committer_approval)
-                                 .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: true,
-                                                                                                             locked: false,
-                                                                                                             inherited_from: nil))
-          end
-
-          expect(project.merge_requests_disable_committers_approval).to be false
-        end
-
-        it 'returns true when the resolver returns false' do
-          allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
-            allow(resolver).to receive(:allow_committer_approval)
-                                 .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: false,
-                                                                                                             locked: false,
-                                                                                                             inherited_from: nil))
-          end
-
-          expect(project.merge_requests_disable_committers_approval).to be true
-        end
+        expect(project.merge_requests_disable_committers_approval).to be true
       end
     end
 
@@ -866,103 +831,53 @@ RSpec.describe Project do
     end
 
     describe '#require_password_to_approve?' do
-      context 'when group_merge_request_approval_settings_feature_flag flag is disabled' do
-        stub_feature_flags(group_merge_request_approval_settings_feature_flag: false)
-
-        it_behaves_like 'a predicate wrapper method' do
-          let(:wrapped_method) { :require_password_to_approve }
+      it 'returns true when the resolver returns true' do
+        allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
+          allow(resolver).to receive(:require_password_to_approve)
+                               .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: true,
+                                                                                                           locked: false,
+                                                                                                           inherited_from: nil))
         end
+
+        expect(project.require_password_to_approve).to be true
       end
 
-      context 'when group_merge_request_approval_settings_feature_flag flag is enabled' do
-        stub_feature_flags(group_merge_request_approval_settings_feature_flag: true)
-
-        it 'returns true when the resolver returns true' do
-          allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
-            allow(resolver).to receive(:require_password_to_approve)
-                                 .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: true,
-                                                                                                             locked: false,
-                                                                                                             inherited_from: nil))
-          end
-
-          expect(project.require_password_to_approve).to be true
+      it 'returns false when the resolver returns false' do
+        allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
+          allow(resolver).to receive(:require_password_to_approve)
+                               .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: false,
+                                                                                                           locked: false,
+                                                                                                           inherited_from: nil))
         end
 
-        it 'returns false when the resolver returns false' do
-          allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
-            allow(resolver).to receive(:require_password_to_approve)
-                                 .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: false,
-                                                                                                             locked: false,
-                                                                                                             inherited_from: nil))
-          end
-
-          expect(project.require_password_to_approve).to be false
-        end
+        expect(project.require_password_to_approve).to be false
       end
     end
 
     describe '#merge_requests_author_approval' do
-      context 'when group_merge_request_approval_settings_feature_flag flag is enabled' do
-        let(:setting) { :merge_requests_author_approval }
-        let(:application_setting) { :prevent_merge_requests_author_approval }
+      let(:setting) { :merge_requests_author_approval }
+      let(:application_setting) { :prevent_merge_requests_author_approval }
 
-        before do
-          stub_feature_flags(group_merge_request_approval_settings_feature_flag: true)
+      it 'returns true when the resolver returns true' do
+        allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
+          allow(resolver).to receive(:allow_author_approval)
+                               .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: true,
+                                                                                                           locked: false,
+                                                                                                           inherited_from: nil))
         end
 
-        it 'returns true when the resolver returns true' do
-          allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
-            allow(resolver).to receive(:allow_author_approval)
-                                 .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: true,
-                                                                                                             locked: false,
-                                                                                                             inherited_from: nil))
-          end
-
-          expect(project.merge_requests_author_approval).to be true
-        end
-
-        it 'returns false when the resolver returns false' do
-          allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
-            allow(resolver).to receive(:allow_author_approval)
-                                 .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: false,
-                                                                                                             locked: false,
-                                                                                                             inherited_from: nil))
-          end
-
-          expect(project.merge_requests_author_approval).to be false
-        end
+        expect(project.merge_requests_author_approval).to be true
       end
 
-      context 'when flag is disabled' do
-        let(:setting) { :merge_requests_author_approval }
-        let(:application_setting) { :prevent_merge_requests_author_approval }
-
-        where(:feature_enabled, :app_setting, :project_setting, :final_setting) do
-          true  | true  | true  | false
-          true  | false | true  | true
-          true  | true  | false | false
-          true  | false | false | false
-          false | true  | true  | true
-          false | false | true  | true
-          false | true  | false | false
-          false | false | false | false
+      it 'returns false when the resolver returns false' do
+        allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
+          allow(resolver).to receive(:allow_author_approval)
+                               .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: false,
+                                                                                                           locked: false,
+                                                                                                           inherited_from: nil))
         end
 
-        with_them do
-          let(:project) { create(:project) }
-
-          before do
-            stub_licensed_features(admin_merge_request_approvers_rules: feature_enabled)
-            stub_application_setting(application_setting => app_setting)
-            project.update!(setting => project_setting)
-            stub_feature_flags(group_merge_request_approval_settings_feature_flag: false)
-          end
-
-          it 'shows proper setting' do
-            expect(project.send(setting)).to eq(final_setting)
-            expect(project.send("#{setting}?")).to eq(final_setting)
-          end
-        end
+        expect(project.merge_requests_author_approval).to be false
       end
     end
 
@@ -1067,8 +982,8 @@ RSpec.describe Project do
       it 'does not execute the hook when the feature is disabled' do
         stub_licensed_features(group_webhooks: false)
 
-        expect(WebHookService).not_to receive(:new)
-                                        .with(group_hook, { some: 'info' }, 'push_hooks')
+        expect(project).not_to receive(:group_hooks)
+        expect(WebHookService).not_to receive(:new).with(instance_of(GroupHook), anything, anything)
 
         project.execute_hooks(some: 'info')
       end
@@ -1077,16 +992,33 @@ RSpec.describe Project do
         before do
           stub_licensed_features(group_webhooks: true)
         end
-        let(:fake_integration) { double }
+        let(:fake_wh_service) { double }
 
         shared_examples 'triggering group webhook' do
           it 'executes the hook' do
-            expect(fake_integration).to receive(:async_execute).once
+            expect(fake_wh_service).to receive(:async_execute).once
 
             expect(WebHookService)
-              .to receive(:new).with(group_hook, { some: 'info' }, 'push_hooks') { fake_integration }
+              .to receive(:new).with(group_hook, { some: 'info' }, 'push_hooks') { fake_wh_service }
 
             project.execute_hooks(some: 'info')
+          end
+        end
+
+        context 'when the hook defines a branch filter for push events' do
+          let(:wh_service) { double(async_execute: true) }
+          let(:selective_hook) { create(:group_hook, group: group, push_events: true, push_events_branch_filter: 'on-this-branch-only') }
+
+          it 'respects the branch filter' do
+            expect(WebHookService)
+              .to receive(:new).twice.with(group_hook, Hash, 'push_hooks').and_return(wh_service)
+
+            expect(WebHookService)
+              .to receive(:new).once.with(selective_hook, a_hash_including(note: 'matches-filter'), 'push_hooks').and_return(wh_service)
+
+            project.execute_hooks({ note: 'matches-filter', ref: 'refs/heads/on-this-branch-only' }, :push_hooks)
+            project.execute_hooks({ note: 'default-branch', ref: 'refs/heads/master' }, :push_hooks)
+            project.execute_hooks({ note: 'not-push', ref: 'refs/heads/on-this-branch-only' }, :deployment_hooks)
           end
         end
 
@@ -1161,11 +1093,11 @@ RSpec.describe Project do
         allow(namespace).to receive(:plan) { plan_license }
       end
 
-      License::EEU_FEATURES.each do |feature_sym|
+      GitlabSubscriptions::Features::ALL_FEATURES.each do |feature_sym|
         context feature_sym.to_s do
           let(:feature) { feature_sym }
 
-          unless License::GLOBAL_FEATURES.include?(feature_sym)
+          unless GitlabSubscriptions::Features::GLOBAL_FEATURES.include?(feature_sym)
             context "checking #{feature_sym} availability both on Global and Namespace license" do
               let(:check_namespace_plan) { true }
 
@@ -1194,7 +1126,7 @@ RSpec.describe Project do
                 end
               end
 
-              unless License.plan_includes_feature?(License::STARTER_PLAN, feature_sym)
+              unless GitlabSubscriptions::Features.plans_with_feature(feature_sym).include?(License::STARTER_PLAN)
                 context 'not allowed by Plan License' do
                   let(:allowed_on_global_license) { true }
                   let(:plan_license) { build(:bronze_plan) }
@@ -1510,54 +1442,26 @@ RSpec.describe Project do
   end
 
   describe "#reset_approvals_on_push?" do
-    context 'when group_merge_request_approval_settings_feature_flag flag is disabled' do
-      where(:license_value, :db_value, :expected) do
-        true  | true  | true
-        true  | false | false
-        false | true  | false
-        false | false | false
+    it 'returns false when the resolver returns true' do
+      allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
+        allow(resolver).to receive(:retain_approvals_on_push)
+                             .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: true,
+                                                                                                         locked: false,
+                                                                                                         inherited_from: nil))
       end
 
-      with_them do
-        let(:project) { build(:project, reset_approvals_on_push: db_value) }
-
-        subject { project.reset_approvals_on_push? }
-
-        before do
-          stub_feature_flags(group_merge_request_approval_settings_feature_flag: false)
-          stub_licensed_features(merge_request_approvers: license_value)
-        end
-
-        it { is_expected.to eq(expected) }
-      end
+      expect(project.reset_approvals_on_push).to be false
     end
 
-    context 'when group_merge_request_approval_settings_feature_flag flag is enabled' do
-      before do
-        stub_feature_flags(group_merge_request_approval_settings_feature_flag: true)
+    it 'returns true when the resolver returns false' do
+      allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
+        allow(resolver).to receive(:retain_approvals_on_push)
+                             .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: false,
+                                                                                                         locked: false,
+                                                                                                         inherited_from: nil))
       end
 
-      it 'returns false when the resolver returns true' do
-        allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
-          allow(resolver).to receive(:retain_approvals_on_push)
-                               .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: true,
-                                                                                                           locked: false,
-                                                                                                           inherited_from: nil))
-        end
-
-        expect(project.reset_approvals_on_push).to be false
-      end
-
-      it 'returns true when the resolver returns false' do
-        allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
-          allow(resolver).to receive(:retain_approvals_on_push)
-                               .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: false,
-                                                                                                           locked: false,
-                                                                                                           inherited_from: nil))
-        end
-
-        expect(project.reset_approvals_on_push).to be true
-      end
+      expect(project.reset_approvals_on_push).to be true
     end
   end
 
@@ -2999,6 +2903,43 @@ RSpec.describe Project do
 
       before do
         stub_licensed_features(adjourned_deletion_for_projects_and_groups: licensed?)
+        stub_application_setting(deletion_adjourned_period: adjourned_period)
+        allow(group.namespace_settings).to receive(:delayed_project_removal?).and_return(feature_enabled_on_group?)
+      end
+
+      it { is_expected.to be result }
+    end
+
+    context 'when project belongs to user namespace' do
+      let_it_be(:user) { create(:user) }
+      let_it_be(:user_project) { create(:project, namespace: user.namespace) }
+
+      before do
+        stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
+        stub_application_setting(deletion_adjourned_period: 7)
+      end
+
+      it 'deletes immediately' do
+        expect(user_project.adjourned_deletion?).to be_falsey
+      end
+    end
+  end
+
+  describe '#adjourned_deletion_configured?' do
+    subject { project.adjourned_deletion_configured? }
+
+    where(:feature_enabled_on_group?, :adjourned_period, :result) do
+      true  | 0 | false
+      true  | 1 | true
+      false | 0 | false
+      false | 1 | false
+    end
+
+    with_them do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:project) { create(:project, group: group) }
+
+      before do
         stub_application_setting(deletion_adjourned_period: adjourned_period)
         allow(group.namespace_settings).to receive(:delayed_project_removal?).and_return(feature_enabled_on_group?)
       end

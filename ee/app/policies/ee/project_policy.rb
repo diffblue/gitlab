@@ -276,6 +276,7 @@ module EE
         enable :read_environment
         enable :read_deployment
         enable :read_pages
+        enable :read_project_audit_events
       end
 
       rule { ~security_and_compliance_disabled & auditor }.policy do

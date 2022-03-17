@@ -12,7 +12,6 @@ import { mapState, mapActions } from 'vuex';
 import { slugifyWithUnderscore } from '~/lib/utils/text_utility';
 import { sprintf, __, s__ } from '~/locale';
 import Tracking from '~/tracking';
-import { generateInitialStageData } from './create_value_stream_form/utils';
 import ValueStreamForm from './value_stream_form.vue';
 
 const i18n = {
@@ -43,12 +42,8 @@ export default {
   mixins: [Tracking.mixin()],
   data() {
     return {
-      showCreateModal: false,
+      showForm: false,
       isEditing: false,
-      initialData: {
-        name: '',
-        stages: [],
-      },
     };
   },
   computed: {
@@ -57,9 +52,6 @@ export default {
       deleteValueStreamError: 'deleteValueStreamError',
       data: 'valueStreams',
       selectedValueStream: 'selectedValueStream',
-      selectedValueStreamStages: 'stages',
-      initialFormErrors: 'createValueStreamErrors',
-      defaultStageConfig: 'defaultStageConfig',
     }),
     hasValueStreams() {
       return Boolean(this.data.length);
@@ -100,24 +92,12 @@ export default {
       });
     },
     onCreate() {
-      this.showCreateModal = true;
+      this.showForm = true;
       this.isEditing = false;
-      this.initialData = {
-        name: '',
-        stages: [],
-      };
     },
     onEdit() {
-      this.showCreateModal = true;
+      this.showForm = true;
       this.isEditing = true;
-      const stages = generateInitialStageData(
-        this.defaultStageConfig,
-        this.selectedValueStreamStages,
-      );
-      this.initialData = {
-        ...this.selectedValueStream,
-        stages,
-      };
     },
     slugify(valueStreamTitle) {
       return slugifyWithUnderscore(valueStreamTitle);
@@ -185,14 +165,7 @@ export default {
       @click="onCreate"
       >{{ $options.i18n.CREATE_VALUE_STREAM }}</gl-button
     >
-    <value-stream-form
-      v-if="showCreateModal"
-      :initial-data="initialData"
-      :initial-form-errors="initialFormErrors"
-      :default-stage-config="defaultStageConfig"
-      :is-editing="isEditing"
-      @hidden="showCreateModal = false"
-    />
+    <value-stream-form v-if="showForm" :is-editing="isEditing" @hidden="showForm = false" />
     <gl-modal
       data-testid="delete-value-stream-modal"
       modal-id="delete-value-stream-modal"

@@ -30,12 +30,12 @@ RSpec.describe 'User sees Scanner profile' do
 
     it 'on submit', :js do
       fill_in_profile_form
-      expect(current_path).to eq(profile_library_path)
+      expect(page).to have_current_path(profile_library_path, ignore_query: true)
     end
 
     it 'on cancel', :js do
       click_button 'Cancel'
-      expect(current_path).to eq(profile_library_path)
+      expect(page).to have_current_path(profile_library_path, ignore_query: true)
     end
   end
 

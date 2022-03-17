@@ -1,5 +1,4 @@
 import dateFormat from 'dateformat';
-import { isNumber } from 'lodash';
 import { dateFormats } from '~/analytics/shared/constants';
 import { OVERVIEW_STAGE_ID } from '~/cycle_analytics/constants';
 import {
@@ -53,9 +52,6 @@ export const paginationParams = basePaginationParams;
 
 export const hiddenStages = ({ stages }) => filterStagesByHiddenStatus(stages);
 export const activeStages = ({ stages }) => filterStagesByHiddenStatus(stages, false);
-
-export const enableCustomOrdering = ({ stages, errorSavingStageOrder }) =>
-  stages.some((stage) => isNumber(stage.id)) && !errorSavingStageOrder;
 
 export const customStageFormActive = ({ isCreatingCustomStage, isEditingCustomStage }) =>
   Boolean(isCreatingCustomStage || isEditingCustomStage);

@@ -6,7 +6,7 @@ import { mockScanResultPolicy } from '../../mocks/mock_data';
 describe('ScanResultPolicy component', () => {
   let wrapper;
 
-  const findRules = () => wrapper.findByTestId('policy-rules');
+  const findSummary = () => wrapper.findByTestId('policy-summary');
 
   const factory = ({ propsData } = {}) => {
     wrapper = shallowMountExtended(ScanResultPolicy, {
@@ -26,8 +26,8 @@ describe('ScanResultPolicy component', () => {
       factory({ propsData: { policy: mockScanResultPolicy } });
     });
 
-    it('does render the policy rules', () => {
-      expect(findRules().exists()).toBe(true);
+    it('does render the policy summary', () => {
+      expect(findSummary().exists()).toBe(true);
     });
   });
 });

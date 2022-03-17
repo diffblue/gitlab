@@ -52,7 +52,7 @@ RSpec.describe Gitlab::Mirror do
     end
   end
 
-  describe '#max_mirror_capacity_reached?' do
+  describe '#max_mirror_capacity_reached?', :clean_gitlab_redis_shared_state do
     it 'returns true if available capacity is 0' do
       expect(described_class).to receive(:available_capacity).and_return(0)
 
@@ -63,10 +63,6 @@ RSpec.describe Gitlab::Mirror do
       expect(described_class).to receive(:available_capacity).and_return(1)
 
       expect(described_class.max_mirror_capacity_reached?).to eq(false)
-    end
-
-    after do
-      Gitlab::Redis::SharedState.with { |redis| redis.del(Gitlab::Mirror::PULL_CAPACITY_KEY) }
     end
   end
 
@@ -94,7 +90,7 @@ RSpec.describe Gitlab::Mirror do
     end
   end
 
-  describe '#available_capacity' do
+  describe '#available_capacity', :clean_gitlab_redis_shared_state do
     context 'when redis key does not exist' do
       it 'returns mirror_max_capacity' do
         expect(described_class.available_capacity).to eq(Gitlab::CurrentSettings.mirror_max_capacity)
@@ -114,25 +110,17 @@ RSpec.describe Gitlab::Mirror do
         expect(described_class.available_capacity).to eq(Gitlab::CurrentSettings.mirror_max_capacity - current_capacity)
       end
     end
-
-    after do
-      Gitlab::Redis::SharedState.with { |redis| redis.del(Gitlab::Mirror::PULL_CAPACITY_KEY) }
-    end
   end
 
-  describe '#increment_capacity' do
+  describe '#increment_capacity', :clean_gitlab_redis_shared_state do
     it 'increments capacity' do
       max_capacity = Gitlab::CurrentSettings.mirror_max_capacity
 
       expect { described_class.increment_capacity(1) }.to change { described_class.available_capacity }.from(max_capacity).to(max_capacity - 1)
     end
-
-    after do
-      Gitlab::Redis::SharedState.with { |redis| redis.del(Gitlab::Mirror::PULL_CAPACITY_KEY) }
-    end
   end
 
-  describe '#decrement_capacity' do
+  describe '#decrement_capacity', :clean_gitlab_redis_shared_state do
     let!(:id) { 1 }
 
     context 'with capacity above 0' do
@@ -150,9 +138,57 @@ RSpec.describe Gitlab::Mirror do
         expect { described_class.decrement_capacity(id) }.not_to change { described_class.available_capacity }
       end
     end
+  end
 
-    after do
-      Gitlab::Redis::SharedState.with { |redis| redis.del(Gitlab::Mirror::PULL_CAPACITY_KEY) }
+  describe '#track_scheduling', :clean_gitlab_redis_shared_state do
+    it 'increments current scheduling counter' do
+      expect { described_class.track_scheduling([1, 2, 3, 4]) }.to change { described_class.current_scheduling }.from(0).to(4)
+    end
+
+    it 'excludes existing ids from existing counter' do
+      described_class.track_scheduling([1, 2, 3])
+      expect { described_class.track_scheduling([1, 2, 3, 4]) }.to change { described_class.current_scheduling }.from(3).to(4)
+    end
+  end
+
+  describe '#untrack_scheduling', :clean_gitlab_redis_shared_state do
+    context 'with scheduling counter above 0' do
+      before do
+        described_class.track_scheduling([1, 2, 3])
+      end
+
+      it 'decrements scheduling counter' do
+        expect { described_class.untrack_scheduling(1) }.to change { described_class.current_scheduling }.from(3).to(2)
+      end
+
+      it 'does not decrement scheduling counter for non-existant id' do
+        expect { described_class.untrack_scheduling(5) }.not_to change { described_class.current_scheduling }
+      end
+    end
+
+    context 'with scheduling counter equal to 0' do
+      it 'does not decrement scheduling counter' do
+        expect { described_class.untrack_scheduling(1) }.not_to change { described_class.current_scheduling }
+      end
+    end
+  end
+
+  describe '#reset_scheduling', :clean_gitlab_redis_shared_state do
+    context 'with scheduling counter above 0' do
+      before do
+        described_class.track_scheduling([1, 2, 3])
+      end
+
+      it 'decrements scheduling counter to 0' do
+        expect { described_class.reset_scheduling }.to change { described_class.current_scheduling }.from(3).to(0)
+      end
+    end
+
+    context 'with scheduling counter equal to 0' do
+      it 'decrements scheduling counter to 0' do
+        expect { described_class.reset_scheduling }.not_to change { described_class.current_scheduling }
+        expect(described_class.current_scheduling).to eq(0)
+      end
     end
   end
 

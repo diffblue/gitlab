@@ -23,7 +23,7 @@ class Groups::Analytics::ApplicationController < ApplicationController
   def load_group
     return unless params['group_id']
 
-    @group = find_routable!(Group, params['group_id'], request.fullpath)
+    @group ||= find_routable!(Group, params['group_id'], request.fullpath)
   end
 
   def load_project

@@ -24,9 +24,8 @@ RSpec.describe Emails::Issues do
 
       it 'shows the iteration it was changed to' do
         expect(subject).to have_body_text 'Iteration changed to'
-        expect(subject).to have_body_text 'Sep 30, 2022 - Oct 4, 2022'
-        expect(subject).to have_body_text iteration.name
-        expect(subject).not_to have_body_text 'Plan cadence'
+        expect(subject).to have_body_text iteration.period
+        expect(subject).not_to have_body_text iterations_cadence.title
       end
 
       context 'when iteration_cadences FF enabled' do
@@ -35,7 +34,7 @@ RSpec.describe Emails::Issues do
         end
 
         it 'shows the iteration it was changed to' do
-          expect(subject).to have_body_text 'Plan cadence Sep 30, 2022 - Oct 4, 2022'
+          expect(subject).to have_body_text iteration.display_text
         end
       end
     end

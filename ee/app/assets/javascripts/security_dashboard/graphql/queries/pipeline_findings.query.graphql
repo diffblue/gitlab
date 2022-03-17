@@ -1,10 +1,12 @@
-#import "~/graphql_shared/fragments/pageInfoCursorsOnly.fragment.graphql"
+#import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
 #import "../fragments/vulnerability_location.fragment.graphql"
 
 query pipelineFindings(
   $fullPath: ID!
   $pipelineId: ID!
   $first: Int
+  $last: Int
+  $before: String
   $after: String
   $severity: [String!]
   $reportType: [String!]
@@ -17,8 +19,10 @@ query pipelineFindings(
     pipeline(iid: $pipelineId) {
       id
       securityReportFindings(
+        before: $before
         after: $after
         first: $first
+        last: $last
         severity: $severity
         reportType: $reportType
         scanner: $scanner

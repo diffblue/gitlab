@@ -56,6 +56,13 @@ module EE
       }
     end
 
+    override :integration_event_title
+    def integration_event_title(event)
+      return _('Vulnerability') if event == 'vulnerability'
+
+      super
+    end
+
     override :default_integration_event_description
     def default_integration_event_description(event)
       return s_("ProjectService|Trigger event when a new, unique vulnerability is recorded. (Note: This feature requires an Ultimate plan.)") if event == 'vulnerability'

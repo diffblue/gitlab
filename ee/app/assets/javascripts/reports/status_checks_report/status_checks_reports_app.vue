@@ -1,19 +1,15 @@
 <script>
-import { GlLink, GlSprintf } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { componentNames } from 'ee/reports/components/issue_body';
-import { helpPagePath } from '~/helpers/help_page_helper';
 import axios from '~/lib/utils/axios_utils';
 import { sprintf, s__ } from '~/locale';
 import ReportSection from '~/reports/components/report_section.vue';
 import { status } from '~/reports/constants';
-import { APPROVED, PENDING } from './constants';
+import { APPROVED, PASSED, PENDING, FAILED } from './constants';
 
 export default {
   name: 'StatusChecksReportsApp',
   components: {
-    GlLink,
-    GlSprintf,
     ReportSection,
   },
   componentNames,
@@ -31,21 +27,26 @@ export default {
   },
   computed: {
     approvedStatusChecks() {
-      return this.statusChecks.filter((s) => s.status === APPROVED);
+      return this.statusChecks.filter((s) => [PASSED, APPROVED].includes(s.status));
     },
     pendingStatusChecks() {
       return this.statusChecks.filter((s) => s.status === PENDING);
+    },
+    failedStatusChecks() {
+      return this.statusChecks.filter((s) => s.status === FAILED);
     },
     hasStatusChecks() {
       return this.statusChecks.length > 0;
     },
     headingReportText() {
-      if (this.pendingStatusChecks.length > 0) {
-        return sprintf(s__('StatusCheck|%{pending} pending'), {
-          pending: this.pendingStatusChecks.length,
-        });
+      if (this.approvedStatusChecks.length === this.statusChecks.length) {
+        return s__('StatusCheck|All passed');
       }
-      return s__('StatusCheck|All passed');
+
+      return sprintf(s__('StatusCheck| %{failed} failed, and %{pending} pending'), {
+        pending: this.pendingStatusChecks.length,
+        failed: this.failedStatusChecks.length,
+      });
     },
   },
   mounted() {
@@ -67,14 +68,8 @@ export default {
   },
   i18n: {
     heading: s__('StatusCheck|Status checks'),
-    subHeading: s__(
-      'StatusCheck|When this merge request is updated, a call is sent to the following APIs to confirm their status. %{linkStart}Learn more%{linkEnd}.',
-    ),
     errorText: s__('StatusCheck|Failed to load status checks.'),
   },
-  docsLink: helpPagePath('user/project/merge_requests/status_checks.md', {
-    anchor: 'status-checks-widget',
-  }),
 };
 </script>
 
@@ -85,6 +80,7 @@ export default {
     :error-text="$options.i18n.errorText"
     :has-issues="hasStatusChecks"
     :resolved-issues="approvedStatusChecks"
+    :unresolved-issues="failedStatusChecks"
     :neutral-issues="pendingStatusChecks"
     :component="$options.componentNames.StatusCheckIssueBody"
     :show-report-section-status-icon="false"
@@ -98,16 +94,6 @@ export default {
         {{ $options.i18n.heading }}
         <strong class="gl-p-1">{{ headingReportText }}</strong>
       </p>
-    </template>
-
-    <template #sub-heading>
-      <span class="gl-text-gray-500 gl-font-sm">
-        <gl-sprintf :message="$options.i18n.subHeading">
-          <template #link="{ content }">
-            <gl-link class="gl-font-sm" :href="$options.docsLink">{{ content }}</gl-link>
-          </template>
-        </gl-sprintf>
-      </span>
     </template>
   </report-section>
 </template>

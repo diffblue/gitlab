@@ -610,6 +610,7 @@ RSpec.describe GroupPolicy do
 
           it { is_expected.to be_allowed(:read_group) }
           it { is_expected.to be_allowed(:read_milestone) }
+          it { is_expected.to be_allowed(:read_group_audit_events) }
         end
       end
     end

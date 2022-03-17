@@ -23,5 +23,7 @@ module Security
         .select('COALESCE(st.is_primary, FALSE) AS is_primary')
         .tap { |relation| relation.where!('st.id IS NOT NULL') if only_enabled }
     end
+
+    scope :ordered_by_is_primary_desc, -> { order(is_primary: :desc) }
   end
 end

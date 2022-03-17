@@ -19,6 +19,10 @@ FactoryBot.define do
       public_email { email }
     end
 
+    trait :private_profile do
+      private_profile { true }
+    end
+
     trait :blocked do
       after(:build) { |user, _| user.block! }
     end
@@ -147,7 +151,7 @@ FactoryBot.define do
 
       transient do
         extern_uid { '123456' }
-        provider { 'ldapmain' }
+        provider { 'twitter' }
       end
 
       after(:create) do |user, evaluator|
@@ -161,6 +165,12 @@ FactoryBot.define do
         end
 
         user.identities << create(:identity, identity_attrs)
+      end
+
+      trait :ldap do
+        transient do
+          provider { 'ldapmain' }
+        end
       end
     end
 

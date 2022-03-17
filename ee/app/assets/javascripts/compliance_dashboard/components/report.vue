@@ -1,5 +1,5 @@
 <script>
-import { GlAlert, GlLoadingIcon, GlTable, GlLink, GlKeysetPagination } from '@gitlab/ui';
+import { GlAlert, GlButton, GlLoadingIcon, GlTable, GlLink, GlKeysetPagination } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { s__, __ } from '~/locale';
 import { thWidthClass, sortObjectToString, sortStringToObject } from '~/lib/utils/table_utility';
@@ -8,7 +8,7 @@ import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
-import complianceViolationsQuery from '../graphql/compliance_violations.query.graphql';
+import getComplianceViolationsQuery from '../graphql/compliance_violations.query.graphql';
 import { mapViolations } from '../graphql/mappers';
 import { DEFAULT_SORT, GRAPHQL_PAGE_SIZE } from '../constants';
 import { parseViolationsQueryFilter } from '../utils';
@@ -21,6 +21,7 @@ export default {
   name: 'ComplianceReport',
   components: {
     GlAlert,
+    GlButton,
     GlLoadingIcon,
     GlTable,
     GlLink,
@@ -43,17 +44,17 @@ export default {
       type: String,
       required: true,
     },
-    defaultQuery: {
+    defaultFilterParams: {
       type: Object,
       required: true,
     },
   },
   data() {
-    const sortParam = this.defaultQuery.sort || DEFAULT_SORT;
+    const sortParam = this.defaultFilterParams.sort || DEFAULT_SORT;
     const { sortBy, sortDesc } = sortStringToObject(sortParam);
 
     return {
-      urlQuery: { ...this.defaultQuery },
+      urlQuery: { ...this.defaultFilterParams },
       queryError: false,
       violations: {
         list: [],
@@ -73,11 +74,11 @@ export default {
   },
   apollo: {
     violations: {
-      query: complianceViolationsQuery,
+      query: getComplianceViolationsQuery,
       variables() {
         return {
           fullPath: this.groupPath,
-          filter: parseViolationsQueryFilter(this.urlQuery),
+          filters: parseViolationsQueryFilter(this.urlQuery),
           sort: this.sortParam,
           first: GRAPHQL_PAGE_SIZE,
           ...this.paginationCursors,
@@ -114,18 +115,21 @@ export default {
       this.updateUrlQuery({ ...this.urlQuery, sort: this.sortParam });
     },
     toggleDrawer(rows) {
-      const { id, mergeRequest, project } = rows[0] || {};
+      const { mergeRequest } = rows[0] || {};
 
-      if (!mergeRequest || (this.showDrawer && id === this.drawerMergeRequest.id)) {
+      if (!mergeRequest || this.isCurrentDrawer(mergeRequest)) {
         this.closeDrawer();
       } else {
-        this.openDrawer(mergeRequest, project);
+        this.openDrawer(mergeRequest);
       }
     },
-    openDrawer(mergeRequest, project) {
+    isCurrentDrawer(mergeRequest) {
+      return this.showDrawer && mergeRequest.id === this.drawerMergeRequest.id;
+    },
+    openDrawer(mergeRequest) {
       this.showDrawer = true;
       this.drawerMergeRequest = mergeRequest;
-      this.drawerProject = project;
+      this.drawerProject = mergeRequest.project;
     },
     closeDrawer() {
       this.showDrawer = false;
@@ -136,10 +140,17 @@ export default {
       this.drawerProject = {};
     },
     updateUrlQuery({ projectIds = [], ...rest }) {
+      this.resetPagination();
       this.urlQuery = {
         // Clear the URL param when the id array is empty
         projectIds: projectIds?.length > 0 ? projectIds : null,
         ...rest,
+      };
+    },
+    resetPagination() {
+      this.paginationCursors = {
+        before: null,
+        after: null,
       };
     },
     loadPrevPage(startCursor) {
@@ -157,7 +168,7 @@ export default {
   },
   fields: [
     {
-      key: 'severity',
+      key: 'severityLevel',
       label: __('Severity'),
       thClass: thWidthClass(10),
       sortable: true,
@@ -180,6 +191,12 @@ export default {
       thClass: thWidthClass(20),
       sortable: true,
     },
+    {
+      key: 'viewDetails',
+      label: '',
+      thClass: 'gl-display-none',
+      tdClass: 'gl-md-display-none view-details',
+    },
   ],
   i18n: {
     heading: __('Compliance report'),
@@ -191,6 +208,7 @@ export default {
     learnMore: __('Learn more.'),
     prev: __('Prev'),
     next: __('Next'),
+    viewDetailsBtn: __('View details'),
   },
   documentationPath: helpPagePath('user/compliance/compliance_report/index.md', {
     anchor: 'approval-status-and-separation-of-duties',
@@ -223,7 +241,7 @@ export default {
     </header>
     <violation-filter
       :group-path="groupPath"
-      :default-query="defaultQuery"
+      :default-query="defaultFilterParams"
       @filters-changed="updateUrlQuery"
     />
     <gl-table
@@ -243,12 +261,13 @@ export default {
       select-mode="single"
       hover
       selected-variant="primary"
+      class="compliance-report-table"
       thead-class="gl-border-b-solid gl-border-b-1 gl-border-b-gray-100"
       @row-selected="toggleDrawer"
       @sort-changed="handleSortChanged"
     >
-      <template #cell(severity)="{ item: { severity } }">
-        <severity-badge class="gl-reset-text-align!" :severity="severity" />
+      <template #cell(severityLevel)="{ item: { severityLevel } }">
+        <severity-badge class="gl-reset-text-align!" :severity="severityLevel" />
       </template>
       <template #cell(violationReason)="{ item: { reason, violatingUser } }">
         <violation-reason :reason="reason" :user="violatingUser" />
@@ -261,6 +280,11 @@ export default {
       </template>
       <template #table-busy>
         <gl-loading-icon size="lg" color="dark" class="gl-my-5" />
+      </template>
+      <template #cell(viewDetails)="{ item }">
+        <gl-button class="gl-mb-0" block @click="toggleDrawer([item])">
+          {{ $options.i18n.viewDetailsBtn }}
+        </gl-button>
       </template>
     </gl-table>
     <div v-if="showPagination" class="gl-display-flex gl-justify-content-center">

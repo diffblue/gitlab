@@ -18,6 +18,28 @@ RSpec.describe Search::ProjectService do
       let(:user) { scope.first_owner }
       let(:service) { described_class.new(scope, user, params) }
     end
+
+    context 'and project is archived' do
+      it 'uses basic project search' do
+        project        = instance_double(Project, archived?: true)
+        user           = instance_double(User)
+        search_results = instance_double(Gitlab::ProjectSearchResults)
+        params         = { search: "foo" }
+        search_service = described_class.new(project, user, params)
+
+        expect(Gitlab::ProjectSearchResults).to receive(:new).with(
+          user,
+          params[:search],
+          project: project,
+          repository_ref: params[:repository_ref],
+          order_by: params[:order_by],
+          sort: params[:sort],
+          filters: { confidential: params[:confidential], state: params[:state] }
+        ).and_return search_results
+
+        expect(search_service.execute).to eq(search_results)
+      end
+    end
   end
 
   context 'when a multiple projects provided' do

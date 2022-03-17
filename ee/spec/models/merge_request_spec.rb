@@ -1362,4 +1362,12 @@ RSpec.describe MergeRequest do
       it { is_expected.to be false }
     end
   end
+
+  describe '#audit_details' do
+    it 'equals to the title' do
+      merge_request = create(:merge_request, title: 'I am a title')
+
+      expect(merge_request.audit_details).to eq(merge_request.title)
+    end
+  end
 end

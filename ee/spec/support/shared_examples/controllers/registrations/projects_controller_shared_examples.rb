@@ -9,7 +9,7 @@ RSpec.shared_examples "Registrations::ProjectsController POST #create" do
   let_it_be(:first_project) { create(:project) }
 
   let(:params) { { namespace_id: namespace.id, name: 'New project', path: 'project-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE } }
-  let(:dev_env_or_com) { true }
+  let(:com) { true }
   let(:extra_params) { {} }
   let(:success_path) { nil }
   let(:stored_location_for) { nil }
@@ -23,7 +23,7 @@ RSpec.shared_examples "Registrations::ProjectsController POST #create" do
     before do
       namespace.add_owner(user)
       sign_in(user)
-      allow(::Gitlab).to receive(:dev_env_or_com?).and_return(dev_env_or_com)
+      allow(::Gitlab).to receive(:com?).and_return(com)
       allow(controller).to receive(:experiment).and_call_original
     end
 
@@ -132,7 +132,7 @@ RSpec.shared_examples "Registrations::ProjectsController POST #create" do
     end
 
     context 'with signup onboarding not enabled' do
-      let(:dev_env_or_com) { false }
+      let(:com) { false }
 
       it { is_expected.to have_gitlab_http_status(:not_found) }
     end

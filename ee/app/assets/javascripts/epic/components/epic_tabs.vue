@@ -1,5 +1,5 @@
 <script>
-import { GlTabs, GlTab } from '@gitlab/ui';
+import { GlButtonGroup, GlButton } from '@gitlab/ui';
 import initRelatedItemsTree from 'ee/related_items_tree/related_items_tree_bundle';
 
 const displayNoneClass = 'gl-display-none';
@@ -7,8 +7,8 @@ const containerClass = 'container-limited';
 
 export default {
   components: {
-    GlTabs,
-    GlTab,
+    GlButton,
+    GlButtonGroup,
   },
   inject: {
     allowSubEpics: {
@@ -27,6 +27,7 @@ export default {
   data() {
     return {
       roadmapLoaded: false,
+      activeButton: this.$options.TABS.TREE,
     };
   },
   computed: {
@@ -51,11 +52,13 @@ export default {
         .catch(() => {});
     },
     onTreeTabClick() {
+      this.activeButton = this.$options.TABS.TREE;
       this.roadmapElement.classList.add(displayNoneClass);
       this.treeElement.classList.remove(displayNoneClass);
       this.containerElement.classList.add(containerClass);
     },
     showRoadmapTabContent() {
+      this.activeButton = this.$options.TABS.ROADMAP;
       this.roadmapElement.classList.remove(displayNoneClass);
       this.treeElement.classList.add(displayNoneClass);
       this.containerElement.classList.remove(containerClass);
@@ -73,26 +76,34 @@ export default {
       }
     },
   },
+  TABS: {
+    TREE: 'related_items_tree',
+    ROADMAP: 'roadmap',
+  },
 };
 </script>
 <template>
-  <gl-tabs
-    content-class="gl-display-none"
-    nav-wrapper-class="epic-tabs-container"
-    nav-class="gl-border-bottom-0"
-    class="epic-tabs-holder"
-    data-testid="tabs"
-  >
-    <gl-tab title-link-class="js-epic-tree-tab" data-testid="epic-tree-tab" @click="onTreeTabClick">
-      <template #title>{{ allowSubEpics ? __('Epics and Issues') : __('Issues') }}</template>
-    </gl-tab>
-    <gl-tab
-      v-if="allowSubEpics"
-      title-link-class="js-epic-roadmap-tab"
-      data-testid="epic-roadmap-tab"
-      @click="onRoadmapTabClick"
-    >
-      <template #title>{{ __('Roadmap') }}</template>
-    </gl-tab>
-  </gl-tabs>
+  <div class="epic-tabs-holder gl-pl-0 gl-pr-0 gl-ml-0 gl-mr-0">
+    <div class="epic-tabs-container gl-pt-3 gl-pb-3">
+      <gl-button-group data-testid="tabs">
+        <gl-button
+          class="js-epic-tree-tab"
+          data-testid="epic-tree-tab"
+          :selected="activeButton === $options.TABS.TREE"
+          @click="onTreeTabClick"
+        >
+          {{ allowSubEpics ? __('Epics and Issues') : __('Issues') }}
+        </gl-button>
+        <gl-button
+          v-if="allowSubEpics"
+          class="js-epic-roadmap-tab"
+          data-testid="epic-roadmap-tab"
+          :selected="activeButton === $options.TABS.ROADMAP"
+          @click="onRoadmapTabClick"
+        >
+          {{ __('Roadmap') }}
+        </gl-button>
+      </gl-button-group>
+    </div>
+  </div>
 </template>

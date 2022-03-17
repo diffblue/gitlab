@@ -26,27 +26,9 @@ describe('Contribution Analytics Column Chart', () => {
 
   afterEach(() => {
     wrapper.destroy();
-    wrapper = null;
   });
 
   it('matches the snapshot', () => {
     expect(wrapper.element).toMatchSnapshot();
-  });
-
-  it('matches properties', () => {
-    const {
-      height,
-      xAxis: {
-        axisLabel: { formatter, ...axisLabel },
-        nameTextStyle,
-      },
-    } = wrapper.find('gl-column-chart-stub').props().option;
-    expect(height).toEqual(200);
-    expect(nameTextStyle).toEqual({
-      padding: [55, 0, 0, 0],
-    });
-    expect(axisLabel).toEqual({
-      rotate: 45,
-    });
   });
 });

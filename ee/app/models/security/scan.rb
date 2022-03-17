@@ -4,6 +4,8 @@ module Security
   class Scan < ApplicationRecord
     include CreatedAtFilterable
 
+    STALE_AFTER = 90.days
+
     self.table_name = 'security_scans'
 
     validates :build_id, presence: true
@@ -27,7 +29,7 @@ module Security
       cluster_image_scanning: 8
     }
 
-    enum status: { created: 0, succeeded: 1, failed: 2 }
+    declarative_enum Security::ScanStatusEnum
 
     scope :by_scan_types, -> (scan_types) { where(scan_type: sanitize_scan_types(scan_types)) }
     scope :distinct_scan_types, -> { select(:scan_type).distinct.pluck(:scan_type) }
@@ -46,6 +48,7 @@ module Security
     scope :latest_successful, -> { latest.succeeded }
     scope :by_build_ids, ->(build_ids) { where(build_id: build_ids) }
     scope :without_errors, -> { where("jsonb_array_length(COALESCE(info->'errors', '[]'::jsonb)) = 0") }
+    scope :stale, -> { succeeded.or(preparation_failed).where('created_at < ?', STALE_AFTER.ago) }
 
     delegate :name, to: :build
 
@@ -55,12 +58,24 @@ module Security
       scan_types.keys & Array(given_types).map(&:to_s)
     end
 
+    def has_warnings?
+      processing_warnings.present?
+    end
+
+    def processing_warnings
+      info.fetch('warnings', [])
+    end
+
+    def processing_warnings=(warnings)
+      info['warnings'] = warnings
+    end
+
     def has_errors?
       processing_errors.present?
     end
 
     def processing_errors
-      info&.fetch('errors', [])
+      info.fetch('errors', [])
     end
 
     def processing_errors=(errors)

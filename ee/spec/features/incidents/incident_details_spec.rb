@@ -206,6 +206,22 @@ RSpec.describe 'Incident details', :js do
     end
   end
 
+  context 'escalation status dropdown' do
+    let(:escalation_status_container) { page.find('[data-testid="escalation_status_container"]') }
+    let(:current_user) { developer }
+
+    before do
+      stub_licensed_features(oncall_schedules: true, escalation_policies: true)
+    end
+
+    it 'includes help info for escalations' do
+      visit_incident_with_expanded_sidebar
+
+      escalation_status_container.find('[data-testid="edit-button"]').click
+      expect(escalation_status_container).to have_selector('#escalation-status-help')
+    end
+  end
+
   private
 
   def visit_incident_with_collapsed_sidebar

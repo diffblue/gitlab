@@ -23,6 +23,8 @@ export default {
   cycleAnalyticsStagePath:
     '/groups/:id/-/analytics/value_stream_analytics/value_streams/:value_stream_id/stages/:stage_id',
   cycleAnalyticsGroupLabelsPath: '/groups/:namespace_path/-/labels.json',
+  cycleAnalyticsAggregationPath:
+    '/groups/:namespace_path/-/analytics/value_stream_analytics/use_aggregated_backend',
   codeReviewAnalyticsPath: '/api/:version/analytics/code_review',
   groupActivityIssuesPath: '/api/:version/analytics/group_activity/issues_count',
   groupActivityMergeRequestsPath: '/api/:version/analytics/group_activity/merge_requests_count',
@@ -43,6 +45,7 @@ export default {
   issueMetricImagesPath: '/api/:version/projects/:id/issues/:issue_iid/metric_images',
   issueMetricSingleImagePath:
     '/api/:version/projects/:id/issues/:issue_iid/metric_images/:image_id',
+  environmentApprovalPath: '/api/:version/projects/:id/deployments/:deployment_id/approval',
 
   userSubscription(namespaceId) {
     const url = Api.buildUrl(this.subscriptionPath).replace(':id', encodeURIComponent(namespaceId));
@@ -206,6 +209,14 @@ export default {
     return axios.get(url, {
       params,
     });
+  },
+
+  cycleAnalyticsUpdateAggregation(groupId, data) {
+    const url = Api.buildUrl(this.cycleAnalyticsAggregationPath).replace(
+      ':namespace_path',
+      groupId,
+    );
+    return axios.put(url, data);
   },
 
   codeReviewAnalytics(params = {}) {
@@ -386,5 +397,20 @@ export default {
       .then(({ data }) => {
         return data;
       });
+  },
+
+  deploymentApproval({ id, deploymentId, approve, comment }) {
+    const url = Api.buildUrl(this.environmentApprovalPath)
+      .replace(':id', encodeURIComponent(id))
+      .replace(':deployment_id', encodeURIComponent(deploymentId));
+
+    return axios.post(url, { status: approve ? 'approved' : 'rejected', comment });
+  },
+
+  approveDeployment({ id, deploymentId, comment }) {
+    return this.deploymentApproval({ id, deploymentId, approve: true, comment });
+  },
+  rejectDeployment({ id, deploymentId, comment }) {
+    return this.deploymentApproval({ id, deploymentId, approve: false, comment });
   },
 };

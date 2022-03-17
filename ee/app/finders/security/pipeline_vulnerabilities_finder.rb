@@ -82,7 +82,7 @@ module Security
     def normalize_report_findings(report_findings, vulnerabilities)
       report_findings.map do |report_finding|
         finding_hash = report_finding.to_hash
-          .except(:compare_key, :identifiers, :location, :scanner, :links, :signatures, :flags)
+          .except(:compare_key, :identifiers, :location, :scanner, :links, :signatures, :flags, :evidence)
 
         finding = Vulnerabilities::Finding.new(finding_hash)
         # assigning Vulnerabilities to Findings to enable the computed state
@@ -100,6 +100,7 @@ module Security
         finding.signatures = report_finding.signatures.map do |signature|
           Vulnerabilities::FindingSignature.new(signature.to_hash)
         end
+        finding.finding_evidence = Vulnerabilities::Finding::Evidence.new(data: report_finding.evidence.data) if report_finding.evidence
 
         if calculate_false_positive?
           finding.vulnerability_flags = report_finding.flags.map do |flag|

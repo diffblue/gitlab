@@ -95,7 +95,7 @@ class SubscriptionsController < ApplicationController
       return render json: group.errors.to_json
     end
 
-    response = Subscriptions::CreateService.new(
+    response = GitlabSubscriptions::CreateService.new(
       current_user,
       group: group,
       customer_params: customer_params,

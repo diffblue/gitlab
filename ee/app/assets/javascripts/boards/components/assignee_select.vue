@@ -5,7 +5,7 @@ import { mapActions, mapGetters } from 'vuex';
 import searchGroupUsers from '~/graphql_shared/queries/group_users_search.query.graphql';
 import searchProjectUsers from '~/graphql_shared/queries/users_search.query.graphql';
 import { s__ } from '~/locale';
-import { ASSIGNEES_DEBOUNCE_DELAY } from '~/sidebar/constants';
+import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
 import UserAvatarImage from '~/vue_shared/components/user_avatar/user_avatar_image.vue';
 
@@ -59,7 +59,7 @@ export default {
         // https://gitlab.com/gitlab-org/gitlab/-/issues/329750
         return data.workspace?.users?.nodes.filter((x) => x?.user).map(({ user }) => user) || [];
       },
-      debounce: ASSIGNEES_DEBOUNCE_DELAY,
+      debounce: DEFAULT_DEBOUNCE_AND_THROTTLE_MS,
       error() {
         this.setError({ message: this.$options.i18n.errorSearchingUsers });
       },

@@ -16,6 +16,10 @@ module QA
           element :dashboard_project_card
         end
 
+        view 'ee/app/assets/javascripts/operations/components/dashboard/project_header.vue' do
+          element :remove_project_button
+        end
+
         def add_project(project_name)
           open_add_project_modal
 
@@ -27,8 +31,8 @@ module QA
         end
 
         def remove_all_projects
-          project_cards.each do |card|
-            card.find('button.btn.js-remove-button').click
+          remove_project_buttons.each do |button|
+            button.click
           end
         end
 
@@ -51,6 +55,10 @@ module QA
 
         def project_cards
           all_elements(:dashboard_project_card, minimum: 1)
+        end
+
+        def remove_project_buttons
+          all_elements(:remove_project_button, minimum: 1)
         end
 
         def within_add_projects_modal

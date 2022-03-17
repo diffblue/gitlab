@@ -25,7 +25,7 @@ db_namespace = namespace :db do
 
     ActiveRecord::Tasks::DatabaseTasks.for_each(databases) do |name|
       desc "Creates the #{name} database, loads the schema, and initializes with the seed data (use db:reset:#{name} to also drop the database first)"
-      task name => ["db:create:#{name}", :environment, "db:schema:load:#{name}", "db:seed"]
+      task name => ["db:create:#{name}", :environment, "db:schema:load:#{name}", "db:seed:#{name}"]
     end
   end
 
@@ -52,7 +52,7 @@ db_namespace = namespace :db do
 
     desc "Loads the seed data from ee/db/geo/seeds.rb"
     task geo: :load_config do
-      db_namespace["abort_if_pending_migrations"].invoke
+      db_namespace["abort_if_pending_migrations:geo"].invoke
       ActiveRecord::Tasks::DatabaseTasks.seed_loader = seed_loader
       ActiveRecord::Tasks::DatabaseTasks.load_seed
     end

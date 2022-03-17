@@ -8,4 +8,5 @@
 #js-vulnerability-main{ data: { vulnerability: vulnerability_details_json(@vulnerability, @pipeline),
                                 false_positive_doc_url: help_page_path('user/application_security/vulnerabilities/index'),
                                 can_view_false_positive: @project.licensed_feature_available?(:sast_fp_reduction).to_s,
-                                commit_path_template: commit_path_template(@project) } }
+                                commit_path_template: commit_path_template(@project),
+                                project_full_path: @project.full_path } }

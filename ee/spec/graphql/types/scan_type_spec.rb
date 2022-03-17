@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe GitlabSchema.types['Scan'] do
   include GraphqlHelpers
 
-  let(:fields) { %i(name errors) }
+  let(:fields) { %i(name errors warnings status) }
 
   it { expect(described_class).to have_graphql_fields(fields) }
   it { expect(described_class).to require_graphql_authorizations(:read_scan) }
@@ -36,7 +36,23 @@ RSpec.describe GitlabSchema.types['Scan'] do
         security_scan.update!(info: { 'errors' => [{ 'type' => 'foo', 'message' => 'bar' }] })
       end
 
-      it { is_expected.to eq(['[foo] bar']) }
+      it { is_expected.to match_array(['[foo] bar']) }
+    end
+
+    describe 'warnings' do
+      let(:field_name) { :warnings }
+
+      before do
+        security_scan.update!(info: { 'warnings' => [{ 'type' => 'foo', 'message' => 'bar' }] })
+      end
+
+      it { is_expected.to match_array(['[foo] bar']) }
+    end
+
+    describe 'status' do
+      let(:field_name) { :status }
+
+      it { is_expected.to eq('created') }
     end
   end
 end

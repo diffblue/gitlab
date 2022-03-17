@@ -8,8 +8,8 @@ RSpec.describe 'getting test reports of a requirement' do
   let_it_be(:current_user) { create(:user) }
   let_it_be(:project) { create(:project) }
   let_it_be(:requirement) { create(:requirement, project: project) }
-  let_it_be(:test_report_1) { create(:test_report, requirement: requirement, created_at: 3.days.from_now) }
-  let_it_be(:test_report_2) { create(:test_report, requirement: requirement, created_at: 2.days.from_now) }
+  let_it_be(:test_report_1) { create(:test_report, requirement_issue: requirement.requirement_issue, created_at: 3.days.from_now) }
+  let_it_be(:test_report_2) { create(:test_report, requirement_issue: requirement.requirement_issue, created_at: 2.days.from_now) }
 
   let(:test_reports_data) { graphql_data['project']['requirements']['edges'][0]['node']['testReports']['edges'] }
   let(:fields) do
@@ -61,7 +61,7 @@ RSpec.describe 'getting test reports of a requirement' do
 
     context 'with pagination' do
       let_it_be(:data_path) { [:project, :requirement, :testReports] }
-      let_it_be(:test_report_3) { create(:test_report, requirement: requirement, created_at: 4.days.ago) }
+      let_it_be(:test_report_3) { create(:test_report, requirement_issue: requirement.requirement_issue, created_at: 4.days.ago) }
 
       def pagination_query(params)
         graphql_query_for(:project, { full_path: project.full_path },

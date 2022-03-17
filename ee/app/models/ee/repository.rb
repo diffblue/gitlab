@@ -60,7 +60,15 @@ module EE
     def keep_around(*shas)
       super
     ensure
-      log_geo_updated_event
+      # The keep_around method is called from different places. One of them
+      # is when a pipeline is created. So, in this case, it is still under
+      # Ci::Pipeline.transaction. It's safe to skip the transaction check
+      # because we already wrote the refs to the repository on disk.
+      Sidekiq::Worker.skipping_transaction_check do
+        ::Gitlab::EventStore.publish(
+          ::Repositories::KeepAroundRefsCreatedEvent.new(data: { project_id: project.id })
+        )
+      end
     end
 
     override :after_change_head

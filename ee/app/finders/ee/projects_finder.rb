@@ -8,6 +8,9 @@ module EE
   # Added arguments:
   #   params:
   #     plans: string[]
+  #     feature_available: string[]
+  #     aimed_for_deletion: Symbol
+  #     include_hidden: boolean
   module ProjectsFinder
     extend ::Gitlab::Utils::Override
 
@@ -18,6 +21,7 @@ module EE
       collection = super(collection)
       collection = by_plans(collection)
       collection = by_feature_available(collection)
+      collection = by_hidden(collection)
       by_aimed_for_deletion(collection)
     end
 
@@ -43,6 +47,10 @@ module EE
       else
         items
       end
+    end
+
+    def by_hidden(items)
+      params[:include_hidden].present? ? items : items.not_hidden
     end
   end
 end

@@ -29,9 +29,11 @@ RSpec.describe 'projects/project_members/index', :aggregate_failures do
         expect(rendered).to have_content('You can invite another group to')
         expect(rendered).not_to have_link('Import from a project')
         expect(rendered).to have_selector('.js-invite-group-trigger')
+        expect(rendered).to have_selector('.js-invite-groups-modal')
         expect(rendered).not_to have_selector('.js-invite-members-trigger')
         expect(rendered).not_to have_content('Members can be added by project')
         expect(response).to render_template(partial: 'projects/_invite_members_modal')
+        expect(response).to render_template(partial: 'projects/_invite_groups_modal')
       end
 
       context 'when project can not be shared' do
@@ -44,20 +46,9 @@ RSpec.describe 'projects/project_members/index', :aggregate_failures do
 
           expect(rendered).to have_content('Project members')
           expect(rendered).not_to have_content('You can invite')
+          expect(rendered).not_to have_selector('.js-invite-group-trigger')
+          expect(response).not_to render_template(partial: 'projects/_invite_groups_modal')
           expect(response).to render_template(partial: 'projects/_invite_members_modal')
-        end
-
-        context 'when modal is not enabled' do
-          before do
-            stub_feature_flags(invite_members_group_modal: false)
-          end
-
-          it 'renders as expected' do
-            render
-
-            expect(rendered).not_to have_content('Project members')
-            expect(response).not_to render_template(partial: 'projects/_invite_members_modal')
-          end
         end
       end
     end

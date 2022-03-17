@@ -78,7 +78,7 @@ describe('Status checks extension', () => {
         ${'approved'}             | ${approvedChecks}           | ${'Status checks all passed'}
         ${'pending'}              | ${pendingChecks}            | ${'1 pending'}
         ${'approved and pending'} | ${approvedAndPendingChecks} | ${'1 pending'}
-        ${'failed and pending'}   | ${pendingAndFailedChecks}   | ${'1 failed, and 1 pending'}
+        ${'failed and pending'}   | ${pendingAndFailedChecks}   | ${'1 failed, 1 pending'}
       `('and the status checks are $state', ({ response, text }) => {
         beforeEach(async () => {
           await setupWithResponse(httpStatus.OK, response);

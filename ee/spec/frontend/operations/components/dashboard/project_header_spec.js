@@ -1,20 +1,22 @@
-import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ProjectHeader from 'ee/operations/components/dashboard/project_header.vue';
 import { trimText } from 'helpers/text_helper';
-import ProjectAvatar from '~/vue_shared/components/deprecated_project_avatar/default.vue';
+import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 import { mockOneProject } from '../../mock_data';
 
 describe('project header component', () => {
   let wrapper;
 
   const factory = () => {
-    wrapper = shallowMount(ProjectHeader, {
+    wrapper = shallowMountExtended(ProjectHeader, {
       propsData: {
         project: mockOneProject,
       },
     });
   };
+
+  const findRemoveProjectButton = () => wrapper.findByTestId('remove-project-button');
 
   beforeEach(() => {
     factory();
@@ -25,8 +27,8 @@ describe('project header component', () => {
   });
 
   it('renders project name with namespace', () => {
-    const namespace = wrapper.find('.js-project-namespace').text();
-    const name = wrapper.find('.js-project-name').text();
+    const namespace = wrapper.findByTestId('project-namespace').text();
+    const name = wrapper.findByTestId('project-name').text();
 
     expect(trimText(namespace).trim()).toBe(`${mockOneProject.namespace.name} /`);
     expect(trimText(name).trim()).toBe(mockOneProject.name);
@@ -35,24 +37,22 @@ describe('project header component', () => {
   it('links project name to project', () => {
     const path = mockOneProject.web_url;
 
-    expect(wrapper.find('.js-project-link').attributes('href')).toBe(path);
+    expect(wrapper.findByTestId('project-link').attributes('href')).toBe(path);
   });
 
   describe('remove button', () => {
     it('renders removal button icon', () => {
-      expect(wrapper.find('.js-remove-button').exists()).toBe(true);
+      expect(findRemoveProjectButton().props('icon')).toBe('remove');
     });
 
     it('renders correct title for removal icon', () => {
-      const button = wrapper.find('.js-remove-button');
-
-      expect(button.attributes('title')).toBe('Remove card');
+      expect(findRemoveProjectButton().attributes('title')).toBe('Remove card');
     });
 
     it('emits project removal link on click', async () => {
-      wrapper.find('.js-remove-button').vm.$emit('click');
-
+      findRemoveProjectButton().vm.$emit('click');
       await nextTick();
+
       expect(wrapper.emitted().remove).toStrictEqual([[mockOneProject.remove_path]]);
     });
   });
@@ -64,7 +64,10 @@ describe('project header component', () => {
       });
 
       it('binds project', () => {
-        expect(wrapper.findComponent(ProjectAvatar).props('project')).toEqual(mockOneProject);
+        expect(wrapper.findComponent(ProjectAvatar).props()).toMatchObject({
+          projectName: mockOneProject.name,
+          projectAvatarUrl: mockOneProject.avatar_url,
+        });
       });
     });
   });

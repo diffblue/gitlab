@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'admin Geo Projects', :js, :geo do
+  include ::EE::GeoHelpers
+
   let!(:geo_node) { create(:geo_node) }
   let!(:synced_registry) { create(:geo_project_registry, :synced, :repository_verified) }
   let!(:sync_pending_registry) { create(:geo_project_registry, :synced, :repository_dirty) }
@@ -14,6 +16,7 @@ RSpec.describe 'admin Geo Projects', :js, :geo do
   end
 
   before do
+    stub_current_geo_node(geo_node)
     allow(Gitlab::Geo).to receive(:license_allows?).and_return(true)
     admin = create(:admin)
     sign_in(admin)

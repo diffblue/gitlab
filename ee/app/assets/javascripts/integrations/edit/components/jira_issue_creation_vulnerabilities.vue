@@ -16,7 +16,7 @@ import { defaultJiraIssueTypeId } from '../constants';
 
 export const i18n = {
   checkbox: {
-    label: s__('JiraService|Enable Jira issues creation from vulnerabilities'),
+    label: s__('JiraService|Enable Jira issue creation from vulnerabilities'),
     description: s__(
       'JiraService|Issues created from vulnerabilities in this project will be Jira issues, even if GitLab issues are enabled.',
     ),
@@ -113,7 +113,7 @@ export default {
       return '';
     },
   },
-  created() {
+  mounted() {
     if (this.initialIsEnabled) {
       this.requestJiraIssueTypes();
     }

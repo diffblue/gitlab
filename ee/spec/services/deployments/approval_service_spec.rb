@@ -5,10 +5,12 @@ require 'spec_helper'
 RSpec.describe Deployments::ApprovalService do
   let_it_be(:project) { create(:project, :repository) }
 
-  let(:service) { described_class.new(project, user) }
+  let(:service) { described_class.new(project, user, params) }
+  let(:params) { { comment: comment } }
   let(:user) { create(:user) }
   let(:environment) { create(:environment, project: project) }
   let(:status) { 'approved' }
+  let(:comment) { nil }
   let(:required_approval_count) { 2 }
   let(:build) { create(:ci_build, :manual, project: project) }
   let(:deployment) { create(:deployment, :blocked, project: project, environment: environment, deployable: build) }
@@ -27,7 +29,7 @@ RSpec.describe Deployments::ApprovalService do
   end
 
   shared_examples_for 'reject' do
-    it 'rejects the deployment' do
+    it 'rejects the deployment', :aggregate_failures do
       expect(subject[:status]).to eq(:success)
       expect(subject[:approval].status).to eq('rejected')
       expect(subject[:approval].user).to eq(user)
@@ -38,7 +40,7 @@ RSpec.describe Deployments::ApprovalService do
   end
 
   shared_examples_for 'approve' do
-    it 'approves the deployment' do
+    it 'approves the deployment', :aggregate_failures do
       expect(subject[:status]).to eq(:success)
       expect(subject[:approval].status).to eq('approved')
       expect(subject[:approval].user).to eq(user)
@@ -48,32 +50,63 @@ RSpec.describe Deployments::ApprovalService do
     end
   end
 
+  shared_examples_for 'comment' do
+    context 'with a comment' do
+      let(:comment) { 'LGTM!' }
+
+      it 'saves the comment' do
+        expect(subject[:status]).to eq(:success)
+        expect(subject[:approval].comment).to eq(comment)
+      end
+    end
+  end
+
   describe '#execute' do
     subject { service.execute(deployment, status) }
 
     context 'when status is approved' do
       include_examples 'approve'
+      include_examples 'comment'
     end
 
     context 'when status is rejected' do
       let(:status) { 'rejected' }
 
       include_examples 'reject'
+      include_examples 'comment'
     end
 
     context 'when user already approved' do
+      let(:comment) { 'Original comment' }
+
       before do
         service.execute(deployment, :approved)
       end
 
       context 'and is approving again' do
         include_examples 'approve'
+
+        context 'with a different comment' do
+          it 'does not change the comment' do
+            service = described_class.new(project, user, params.merge(comment: 'Changed comment'))
+
+            expect(service.execute(deployment, status)[:approval].comment).to eq('Original comment')
+          end
+        end
       end
 
       context 'and is rejecting' do
         let(:status) { 'rejected' }
 
         include_examples 'reject'
+
+        context 'with a different comment' do
+          it 'changes the comment' do
+            service = described_class.new(project, user, params.merge(comment: 'Changed comment'))
+
+            expect(service.execute(deployment, status)[:approval].comment).to eq('Changed comment')
+          end
+        end
       end
     end
 
@@ -124,13 +157,13 @@ RSpec.describe Deployments::ApprovalService do
       context 'when status is not recognized' do
         let(:status) { 'foo' }
 
-        include_examples 'error', message: 'Unrecognized status'
+        include_examples 'error', message: 'Unrecognized approval status.'
       end
 
       context 'when environment is not protected' do
         let(:deployment) { create(:deployment, project: project, deployable: build) }
 
-        include_examples 'error', message: 'This environment is not protected'
+        include_examples 'error', message: 'This environment is not protected.'
       end
 
       context 'when Protected Environments feature is not available' do
@@ -138,7 +171,7 @@ RSpec.describe Deployments::ApprovalService do
           stub_licensed_features(protected_environments: false)
         end
 
-        include_examples 'error', message: 'This environment is not protected'
+        include_examples 'error', message: 'This environment is not protected.'
       end
 
       context 'when the user does not have permission to update deployment' do
@@ -146,19 +179,19 @@ RSpec.describe Deployments::ApprovalService do
           project.add_developer(user)
         end
 
-        include_examples 'error', message: 'You do not have permission to approve or reject this deployment'
+        include_examples 'error', message: "You don't have permission to review this deployment. Contact the project or group owner for help."
       end
 
       context 'when user is nil' do
         let(:user) { nil }
 
-        include_examples 'error', message: 'You do not have permission to approve or reject this deployment'
+        include_examples 'error', message: "You don't have permission to review this deployment. Contact the project or group owner for help."
       end
 
       context 'when deployment is not blocked' do
         let(:deployment) { create(:deployment, project: project, environment: environment, deployable: build) }
 
-        include_examples 'error', message: 'This deployment job is not waiting for approvals'
+        include_examples 'error', message: 'This deployment is not waiting for approvals.'
       end
 
       context 'when the creator of the deployment is approving' do
@@ -166,7 +199,7 @@ RSpec.describe Deployments::ApprovalService do
           deployment.user = user
         end
 
-        include_examples 'error', message: 'The same user can not approve'
+        include_examples 'error', message: 'You cannot approve your own deployment.'
       end
 
       context 'when the creator of the deployment is rejecting' do

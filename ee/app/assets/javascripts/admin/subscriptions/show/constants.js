@@ -36,7 +36,8 @@ export const manageSubscriptionButtonText = s__('SuperSonics|Manage');
 export const syncSubscriptionButtonText = s__('SuperSonics|Sync subscription details');
 export const copySubscriptionIdButtonText = __('Copy');
 export const licenseFileText = __('License file');
-export const cloudLicenseText = s__('SuperSonics|Cloud license');
+export const onlineCloudLicenseText = s__('SuperSonics|Cloud license');
+export const offlineCloudLicenseText = s__('SuperSonics|Offline cloud');
 export const usersInSubscriptionUnlimited = __('Unlimited');
 export const detailsLabels = {
   address: __('Address'),
@@ -46,6 +47,7 @@ export const detailsLabels = {
   lastSync: __('Last Sync'),
   name: licensedToHeaderText,
   plan: __('Plan'),
+  type: __('Type'),
   expiresAt: __('Renews'),
   startsAt: __('Started'),
 };
@@ -53,8 +55,6 @@ export const detailsLabels = {
 export const removeLicense = __('Remove license');
 export const removeLicenseConfirm = __('Are you sure you want to remove the license?');
 export const removeLicenseButtonLabel = __('Remove license');
-export const uploadLicense = __('Upload license');
-export const uploadLicenseFile = s__('SuperSonics|Upload a license file');
 export const billableUsersTitle = s__('SuperSonics|Billable users');
 export const maximumUsersTitle = s__('SuperSonics|Maximum users');
 export const usersInSubscriptionTitle = s__('SuperSonics|Users in subscription');
@@ -106,7 +106,8 @@ export const subscriptionSyncStatus = {
 };
 
 export const subscriptionTypes = {
-  CLOUD: 'cloud',
+  ONLINE_CLOUD: 'cloud',
+  OFFLINE_CLOUD: 'offline_cloud',
   LICENSE_FILE: 'license_file',
 };
 
@@ -158,3 +159,10 @@ export const subscriptionBannerText = s__(
 export const subscriptionBannerBlogPostUrl =
   'https://about.gitlab.com/blog/2021/07/20/improved-billing-and-subscription-management/';
 export const exportLicenseUsageBtnText = s__('SuperSonics|Export license usage file');
+
+export const instanceHasFutureLicenseBanner = {
+  title: s__('SuperSonics|You have a future dated license'),
+  message: s__(
+    'SuperSonics|You have added a license that activates on %{date}. Please see the subscription history table below for more details.',
+  ),
+};

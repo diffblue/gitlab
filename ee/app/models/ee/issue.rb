@@ -42,7 +42,7 @@ module EE
       scope :in_iteration_scope, ->(iteration_scope) { joins(:iteration).merge(iteration_scope) }
       scope :in_iteration_cadences, ->(iteration_cadences) { joins(:iteration).where(sprints: { iterations_cadence_id: iteration_cadences }) }
       scope :with_iteration_title, ->(iteration_title) { joins(:iteration).where(sprints: { title: iteration_title }) }
-      scope :without_iteration_title, ->(iteration_title) { left_outer_joins(:iteration).where('sprints.title != ? OR sprints.id IS NULL', iteration_title) }
+      scope :without_iteration_title, ->(iteration_title) { left_outer_joins(:iteration).where('sprints.title IS DISTINCT FROM ?', iteration_title) }
       scope :on_status_page, -> do
         joins(project: :status_page_setting)
         .where(status_page_settings: { enabled: true })
@@ -87,7 +87,7 @@ module EE
 
     class_methods do
       def with_api_entity_associations
-        super.preload(epic: { group: :route })
+        super.preload(epic: { group: :route }, iteration: { group: :route })
       end
 
       # override
@@ -213,14 +213,14 @@ module EE
     end
 
     def update_blocking_issues_count!
-      blocking_count = ::IssueLink.blocking_issues_count_for(self)
+      blocking_count = ::IssueLink.blocking_issuables_count_for(self)
 
       update!(blocking_issues_count: blocking_count)
     end
 
     def refresh_blocking_and_blocked_issues_cache!
       self_and_blocking_issues_ids = [self.id] + blocking_issues_ids
-      blocking_issues_count_by_id = ::IssueLink.blocking_issues_for_collection(self_and_blocking_issues_ids).to_sql
+      blocking_issues_count_by_id = ::IssueLink.blocking_issuables_for_collection(self_and_blocking_issues_ids).to_sql
 
       self.class.connection.execute <<~SQL
         UPDATE issues
@@ -264,7 +264,7 @@ module EE
     private
 
     def blocking_issues_ids
-      @blocking_issues_ids ||= ::IssueLink.blocking_issue_ids_for(self)
+      @blocking_issues_ids ||= ::IssueLink.blocking_issuables_ids_for(self)
     end
 
     def validate_confidential_epic

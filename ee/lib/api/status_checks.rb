@@ -106,16 +106,19 @@ module API
           requires :merge_request_iid, type: Integer, desc: 'The IID of a merge request'
           requires :external_status_check_id, type: Integer, desc: 'The ID of a external status check'
           requires :sha, type: String, desc: 'The current SHA at HEAD of the merge request.'
+          optional :status, type: String, desc: 'Status of the merge request status check', default: 'passed', values: %w(passed failed)
         end
         post 'status_check_responses' do
           merge_request = find_merge_request_with_access(params[:merge_request_iid], :approve_merge_request)
+
+          status = ::Feature.enabled?(:status_checks_add_status_field, merge_request.project, default_enabled: :yaml) ? params[:status] : 'passed'
           status_check = merge_request.project.external_status_checks.find(params[:external_status_check_id])
 
           check_sha_param!(params, merge_request)
 
           not_found! unless current_user.can?(:provide_status_check_response, merge_request)
 
-          approval = merge_request.status_check_responses.create!(external_status_check: status_check, sha: params[:sha])
+          approval = merge_request.status_check_responses.create!(external_status_check: status_check, sha: params[:sha], status: status)
 
           present(approval, with: Entities::MergeRequests::StatusCheckResponse)
         end

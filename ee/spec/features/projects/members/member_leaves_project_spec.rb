@@ -22,7 +22,7 @@ RSpec.describe 'Projects > Members > Member leaves project' do
       it "removes the user's branch permissions" do
         click_link 'Leave project'
 
-        expect(current_path).to eq(dashboard_projects_path)
+        expect(page).to have_current_path(dashboard_projects_path, ignore_query: true)
         expect(matching_protected_branch.push_access_levels.where(user: user)).not_to exist
         expect(matching_protected_branch.merge_access_levels.where(user: user)).not_to exist
         expect(non_matching_protected_branch.push_access_levels.where(user: other_user)).to exist

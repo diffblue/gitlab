@@ -109,6 +109,7 @@ export default {
       selectedValueStream = {},
       defaultStageConfig = [],
       pagination = {},
+      aggregation = {},
     } = {},
   ) {
     state.isLoading = true;
@@ -118,6 +119,8 @@ export default {
     state.createdBefore = createdBefore;
     state.createdAfter = createdAfter;
     state.defaultStageConfig = defaultStageConfig;
+
+    Vue.set(state, 'aggregation', aggregation);
 
     Vue.set(state, 'pagination', {
       page: pagination.page ?? state.pagination.page,
@@ -196,5 +199,14 @@ export default {
       sort: sort || PAGINATION_SORT_FIELD_END_EVENT,
       direction: direction || PAGINATION_SORT_DIRECTION_DESC,
     });
+  },
+  [types.REQUEST_UPDATE_AGGREGATION](state) {
+    state.isUpdatingAggregation = true;
+  },
+  [types.RECEIVE_UPDATE_AGGREGATION_SUCCESS](state) {
+    state.isUpdatingAggregation = true;
+  },
+  [types.RECEIVE_UPDATE_AGGREGATION_ERROR](state) {
+    state.isUpdatingAggregation = false;
   },
 };

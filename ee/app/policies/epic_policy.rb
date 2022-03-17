@@ -10,6 +10,8 @@ class EpicPolicy < BasePolicy
     @subject.confidential?
   end
 
+  condition(:related_epics_available) { @subject.group.licensed_feature_available?(:related_epics) }
+
   rule { can?(:read_epic) }.policy do
     enable :read_epic_iid
     enable :read_note
@@ -39,5 +41,13 @@ class EpicPolicy < BasePolicy
   rule { can?(:admin_epic) }.policy do
     enable :set_epic_metadata
     enable :set_confidentiality
+  end
+
+  rule { can?(:read_epic) & related_epics_available }.policy do
+    enable :read_related_epic_link
+  end
+
+  rule { can?(:admin_epic) & related_epics_available }.policy do
+    enable :admin_related_epic_link
   end
 end

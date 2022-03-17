@@ -21,10 +21,18 @@ module EE
       include Todoable
       include SortableTitle
 
+      DEFAULT_COLOR = '#1068bf'
+
+      default_value_for :color, allows_nil: false, value: DEFAULT_COLOR
+
       enum state_id: {
         opened: ::Epic.available_states[:opened],
         closed: ::Epic.available_states[:closed]
       }
+
+      validates :color, color: true, allow_blank: false
+
+      before_validation :strip_whitespace_from_color
 
       alias_attribute :state, :state_id
 
@@ -78,6 +86,7 @@ module EE
       scope :from_id, -> (epic_id) { where('epics.id >= ?', epic_id) }
 
       scope :with_web_entity_associations, -> { preload(:author, group: [:ip_restrictions, :route]) }
+      scope :with_api_entity_associations, -> { preload(:author, :labels) }
 
       scope :within_timeframe, -> (start_date, end_date) do
         where('start_date is not NULL or end_date is not NULL')
@@ -189,6 +198,15 @@ module EE
         end
       end
 
+      def epic_link_type
+        return unless respond_to?(:related_epic_link_type_value) && respond_to?(:related_epic_link_source_id)
+
+        type = ::Epic::RelatedEpicLink.link_types.key(related_epic_link_type_value) || ::Epic::RelatedEpicLink::TYPE_RELATES_TO
+        return type if related_epic_link_source_id == id
+
+        ::Epic::RelatedEpicLink.inverse_link_type(type)
+      end
+
       private
 
       def set_fixed_start_date
@@ -201,6 +219,20 @@ module EE
 
       def usage_ping_record_epic_creation
         ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_created_action(author: author)
+      end
+
+      def light_color?(color)
+        if color.length == 4
+          r, g, b = color[1, 4].scan(/./).map { |v| (v * 2).hex }
+        else
+          r, g, b = color[1, 7].scan(/.{2}/).map(&:hex)
+        end
+
+        (r + g + b) > 500
+      end
+
+      def strip_whitespace_from_color
+        color.strip!
       end
     end
 
@@ -344,6 +376,20 @@ module EE
             order_expression: ::Epic.arel_table[:id].desc
           )
         ])
+      end
+
+      def epics_readable_by_user(epics, user = nil)
+        DeclarativePolicy.user_scope do
+          epics.select { |epic| epic.readable_by?(user) }
+        end
+      end
+    end
+
+    def text_color
+      if light_color?(color)
+        '#333333'
+      else
+        '#FFFFFF'
       end
     end
 
@@ -540,6 +586,31 @@ module EE
       if !confidential? && parent.confidential?
         errors.add :confidential, _('A non-confidential epic cannot be assigned to a confidential parent epic')
       end
+    end
+
+    def related_epics(current_user, preload: nil)
+      select_for_related_epics =
+        ::Epic.select(['epics.*', 'related_epic_links.id AS related_epic_link_id',
+                       'related_epic_links.link_type as related_epic_link_type_value',
+                       'related_epic_links.target_id as related_epic_link_source_id',
+                       'related_epic_links.created_at as related_epic_link_created_at',
+                       'related_epic_links.updated_at as related_epic_link_updated_at'])
+
+      target_epics = select_for_related_epics
+        .joins("INNER JOIN related_epic_links ON related_epic_links.target_id = epics.id")
+        .where(related_epic_links: { source_id: id })
+
+      source_epics = select_for_related_epics
+        .joins("INNER JOIN related_epic_links ON related_epic_links.source_id = epics.id")
+        .where(related_epic_links: { target_id: id })
+
+      related_epics = ::Epic.from_union([target_epics, source_epics])
+        .preload(preload)
+        .reorder('related_epic_link_id')
+
+      related_epics = yield related_epics if block_given?
+
+      self.class.epics_readable_by_user(related_epics, current_user)
     end
   end
 end

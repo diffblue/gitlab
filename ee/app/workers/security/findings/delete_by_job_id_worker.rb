@@ -14,7 +14,7 @@ module Security
       idempotent!
 
       def handle_event(event)
-        ::Security::Finding.by_build_ids(event.data[:job_ids]).delete_all
+        ::Security::Findings::CleanupService.delete_by_build_ids(event.data[:job_ids])
       end
     end
   end

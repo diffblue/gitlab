@@ -19,9 +19,7 @@ module Gitlab
         activerecord_relation(groups)
       )
       # A Hash mapping group IDs to their corresponding Group instances.
-      groups_map = groups_and_ancestors.each_with_object({}) do |group, hash|
-        hash[group.id] = group
-      end
+      groups_map = groups_and_ancestors.index_by(&:id)
 
       all_plan_ids = Set.new
 
@@ -45,9 +43,7 @@ module Gitlab
       # Grab all the plans for all the Groups, using only a single query.
       plans = Plan
         .where(id: all_plan_ids.to_a)
-        .each_with_object({}) do |plan, hash|
-          hash[plan.id] = plan
-        end
+        .index_by(&:id)
 
       # Assign all the plans to the groups that have access to them.
       groups.each do |group|

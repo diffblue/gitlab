@@ -3,20 +3,18 @@
 require 'spec_helper'
 
 RSpec.describe Security::Findings::DeleteByJobIdWorker do
-  let_it_be(:security_scan1) { create(:security_scan) }
-  let_it_be(:security_scan2) { create(:security_scan) }
-  let_it_be(:security_finding_to_be_deleted) { create(:security_finding, scan: security_scan1) }
-  let_it_be(:security_finding_not_to_be_deleted) { create(:security_finding, scan: security_scan2) }
+  let(:job_ids) { [1, 2, 3] }
+  let(:event) { Ci::PipelineCreatedEvent.new(data: { job_ids: job_ids }) }
 
-  let(:event) { Ci::PipelineCreatedEvent.new(data: { job_ids: [security_scan1.build_id] }) }
+  subject(:consume_event) { described_class.new.perform(event.class.name, event.data) }
 
-  subject { consume_event(event) }
-
-  def consume_event(event)
-    described_class.new.perform(event.class.name, event.data)
+  before do
+    allow(::Security::Findings::CleanupService).to receive(:delete_by_build_ids)
   end
 
-  it 'destroys all expired artifacts' do
-    expect { subject }.to change { Security::Finding.count }.from(2).to(1)
+  it 'initiates the cleanup by build ids' do
+    consume_event
+
+    expect(::Security::Findings::CleanupService).to have_received(:delete_by_build_ids).with(job_ids)
   end
 end

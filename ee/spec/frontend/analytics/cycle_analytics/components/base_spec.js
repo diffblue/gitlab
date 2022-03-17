@@ -8,6 +8,7 @@ import Component from 'ee/analytics/cycle_analytics/components/base.vue';
 import DurationChart from 'ee/analytics/cycle_analytics/components/duration_chart.vue';
 import TypeOfWorkCharts from 'ee/analytics/cycle_analytics/components/type_of_work_charts.vue';
 import ValueStreamSelect from 'ee/analytics/cycle_analytics/components/value_stream_select.vue';
+import ValueStreamAggregationStatus from 'ee/analytics/cycle_analytics/components/value_stream_aggregation_status.vue';
 import createStore from 'ee/analytics/cycle_analytics/store';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
@@ -42,6 +43,7 @@ import {
   issueEvents,
   groupLabels,
   tasksByTypeData,
+  aggregationData,
 } from '../mock_data';
 
 const noDataSvgPath = 'path/to/no/data';
@@ -139,6 +141,12 @@ describe('EE Value Stream Analytics component', () => {
         noAccessSvgPath,
         ...props,
       },
+      provide: {
+        glFeatures: {
+          useVsaAggregatedTables: true,
+          ...featureFlags,
+        },
+      },
       mocks,
       ...opts,
     });
@@ -155,6 +163,7 @@ describe('EE Value Stream Analytics component', () => {
     return comp;
   }
 
+  const findAggregationStatus = () => wrapper.findComponent(ValueStreamAggregationStatus);
   const findPathNavigation = () => wrapper.findComponent(PathNavigation);
   const findStageTable = () => wrapper.findComponent(StageTable);
 
@@ -329,6 +338,84 @@ describe('EE Value Stream Analytics component', () => {
 
       it('displays the duration chart', () => {
         displaysDurationChart(true);
+      });
+
+      it('does not render the aggregation status', () => {
+        expect(findAggregationStatus().exists()).toBe(false);
+      });
+    });
+  });
+
+  describe('with aggregation data', () => {
+    beforeEach(async () => {
+      wrapper = await createComponent({
+        initialState: {
+          ...initialCycleAnalyticsState,
+          aggregation: {
+            ...aggregationData,
+          },
+        },
+      });
+    });
+
+    it('renders the aggregation status', () => {
+      expect(findAggregationStatus().exists()).toBe(true);
+      expect(findAggregationStatus().props('data')).toEqual(aggregationData);
+    });
+
+    describe('lastRunAt is null', () => {
+      beforeEach(async () => {
+        wrapper = await createComponent({
+          initialState: {
+            ...initialCycleAnalyticsState,
+            aggregation: {
+              ...aggregationData,
+              lastRunAt: null,
+            },
+          },
+        });
+      });
+
+      it('does not render the aggregation status', () => {
+        expect(findAggregationStatus().exists()).toBe(false);
+      });
+    });
+
+    describe('enabled=false', () => {
+      beforeEach(async () => {
+        wrapper = await createComponent({
+          initialState: {
+            ...initialCycleAnalyticsState,
+            aggregation: {
+              ...aggregationData,
+              enabled: false,
+            },
+          },
+        });
+      });
+
+      it('does not render the aggregation status', () => {
+        expect(findAggregationStatus().exists()).toBe(false);
+      });
+    });
+
+    describe('useVsaAggregatedTables = false', () => {
+      beforeEach(async () => {
+        wrapper = await createComponent({
+          initialState: {
+            ...initialCycleAnalyticsState,
+            aggregation: {
+              ...aggregationData,
+            },
+          },
+          featureFlags: {
+            useVsaAggregatedTables: false,
+          },
+        });
+      });
+
+      it('does not render the aggregation status', () => {
+        expect(findAggregationStatus().exists()).toBe(false);
       });
     });
   });

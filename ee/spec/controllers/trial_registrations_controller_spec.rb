@@ -3,17 +3,17 @@
 require 'spec_helper'
 
 RSpec.describe TrialRegistrationsController do
-  let(:dev_env_or_com) { true }
+  let(:com) { true }
 
   before do
-    allow(Gitlab).to receive(:dev_env_or_com?).and_return(dev_env_or_com)
+    allow(Gitlab).to receive(:com?).and_return(com)
   end
 
   shared_examples 'a dot-com only feature' do
     let(:success_status) { :ok }
 
     context 'when not on gitlab.com and not in development environment' do
-      let(:dev_env_or_com) { false }
+      let(:com) { false }
 
       it { is_expected.to have_gitlab_http_status(:not_found) }
     end

@@ -78,10 +78,13 @@ export default {
       },
       query: BurnupQuery,
       variables() {
+        const fullPath = this.isIterationReport ? { fullPath: this.fullPath } : {};
+
         return {
           id: this.iterationId || this.milestoneId,
           isIteration: Boolean(this.iterationId),
           weight: !this.issuesSelected,
+          ...fullPath,
         };
       },
       update(data) {
@@ -125,6 +128,9 @@ export default {
     },
     burnupData() {
       return this.report.burnupData;
+    },
+    isIterationReport() {
+      return this.iterationId && !this.milestoneId;
     },
     columns() {
       return [

@@ -64,7 +64,7 @@ module EE
         can_modify_commiter_settings: can_modify_commiter_settings.to_s,
         project_path: expose_path(api_v4_projects_path(id: project.id)),
         settings_path: expose_path(api_v4_projects_approval_settings_path(id: project.id)),
-        approvals_path: expose_path(api_v4_projects_approvals_path(id: project.id)),
+        approvals_path: expose_path(api_v4_projects_merge_request_approval_setting_path(id: project.id)),
         rules_path: expose_path(api_v4_projects_approval_settings_rules_path(id: project.id)),
         allow_multi_rule: project.multiple_approval_rules_available?.to_s,
         eligible_approvers_docs_path: help_page_path('user/project/merge_requests/approvals/rules', anchor: 'eligible-approvers'),
@@ -72,13 +72,9 @@ module EE
         security_configuration_path: project_security_configuration_path(project),
         vulnerability_check_help_page_path: help_page_path('user/application_security/index', anchor: 'security-approvals-in-merge-requests'),
         license_check_help_page_path: help_page_path('user/application_security/index', anchor: 'enabling-license-approvals-within-a-project'),
-        coverage_check_help_page_path: help_page_path('ci/pipelines/settings', anchor: 'coverage-check-approval-rule')
-      }.tap do |data|
-        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, project.root_ancestor, default_enabled: :yaml)
-          data[:approvals_path] = expose_path(api_v4_projects_merge_request_approval_setting_path(id: project.id))
-          data[:group_name] = project.root_ancestor.name
-        end
-      end
+        coverage_check_help_page_path: help_page_path('ci/pipelines/settings', anchor: 'coverage-check-approval-rule'),
+        group_name: project.root_ancestor.name
+      }
     end
 
     def status_checks_app_data(project)
@@ -103,13 +99,19 @@ module EE
     end
 
     def permanent_delete_message(project)
-      message = _('This action deletes %{codeOpen}%{project_path_with_namespace}%{codeClose} and everything this project contains. %{strongOpen}There is no going back%{strongClose}')
+      message = _('This action deletes %{codeOpen}%{project_path_with_namespace}%{codeClose} and everything this project contains. %{strongOpen}There is no going back.%{strongClose}')
       html_escape(message) % remove_message_data(project)
     end
 
     def marked_for_removal_message(project)
       date = permanent_deletion_date(Time.now.utc)
-      message = _("This action deletes %{codeOpen}%{project_path_with_namespace}%{codeClose} on %{date} and everything this project contains.")
+
+      message = if project.feature_available?(:adjourned_deletion_for_projects_and_groups)
+                  _("This action deletes %{codeOpen}%{project_path_with_namespace}%{codeClose} on %{date} and everything this project contains.")
+                else
+                  _("This action deletes %{codeOpen}%{project_path_with_namespace}%{codeClose} on %{date} and everything this project contains. %{strongOpen}There is no going back.%{strongClose}")
+                end
+
       html_escape(message) % remove_message_data(project).merge(date: date)
     end
 
@@ -205,7 +207,8 @@ module EE
           can_admin_vulnerability: can?(current_user, :admin_vulnerability, project).to_s,
           false_positive_doc_url: help_page_path('user/application_security/vulnerabilities/index'),
           can_view_false_positive: can_view_false_positive?,
-          security_configuration_path: project_security_configuration_path(@project)
+          security_configuration_path: project_security_configuration_path(@project),
+          new_vulnerability_path: new_project_security_vulnerability_path(@project)
         }.merge!(security_dashboard_pipeline_data(project))
       end
     end
@@ -254,6 +257,19 @@ module EE
 
     def scheduled_for_deletion?(project)
       project.marked_for_deletion_at.present?
+    end
+
+    def project_compliance_framework_app_data(project, can_edit)
+      group = project.root_ancestor
+      {
+        group_name: group.name,
+        group_path: group_path(group),
+        empty_state_svg_path: image_path('illustrations/welcome/ee_trial.svg')
+      }.tap do |data|
+        if can_edit
+          data[:add_framework_path] = "#{edit_group_path(group)}#js-compliance-frameworks-settings"
+        end
+      end
     end
 
     private

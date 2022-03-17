@@ -50,6 +50,10 @@ module Types
           calls_gitaly: true,
           description: 'List of security policy names that are referencing given project.'
 
+    field :scan_method, Types::Dast::ScanMethodTypeEnum, null: true,
+          description: 'Scan method used by the scanner. Always returns `null` ' \
+                         'if `dast_api_scanner` feature flag is disabled.'
+
     def target_url
       object.dast_site.url
     end
@@ -71,6 +75,12 @@ module Types
         context,
         object
       )
+    end
+
+    def scan_method
+      return unless Feature.enabled?(:dast_api_scanner, object.project, default_enabled: :yaml)
+
+      object.scan_method
     end
   end
 end

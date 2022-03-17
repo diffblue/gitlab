@@ -21,6 +21,10 @@ module EE
 
         ::Deployments::AutoRollbackWorker.perform_async(environment.id)
       end
+
+      def metric_images_available?
+        ::AlertManagement::MetricImage.available_for?(project)
+      end
     end
   end
 end

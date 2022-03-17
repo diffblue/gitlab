@@ -15,5 +15,6 @@ RSpec.describe Deployments::Approval do
     it { is_expected.to validate_uniqueness_of(:user).scoped_to(:deployment_id) }
     it { is_expected.to validate_presence_of(:deployment) }
     it { is_expected.to validate_presence_of(:status) }
+    it { is_expected.to validate_length_of(:comment).is_at_most(255) }
   end
 end

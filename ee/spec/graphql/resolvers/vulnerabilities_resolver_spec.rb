@@ -12,20 +12,25 @@ RSpec.describe Resolvers::VulnerabilitiesResolver do
     let_it_be(:user) { create(:user, security_dashboard_projects: [project]) }
 
     let_it_be(:low_vulnerability) do
-      create(:vulnerability, :with_findings, :detected, :low, :dast, :with_issue_links, project: project)
+      create(:vulnerability, :with_finding, :detected, :low, :dast, :with_issue_links, project: project)
     end
 
     let_it_be(:critical_vulnerability) do
-      create(:vulnerability, :with_findings, :detected, :critical, :sast, resolved_on_default_branch: true, project: project)
+      create(:vulnerability, :with_finding, :detected, :critical, :sast, resolved_on_default_branch: true, project: project)
     end
 
     let_it_be(:high_vulnerability) do
-      create(:vulnerability, :with_findings, :dismissed, :high, :container_scanning, project: project)
+      create(:vulnerability, :with_finding, :dismissed, :high, :container_scanning, project: project)
     end
 
     let(:current_user) { user }
     let(:params) { {} }
     let(:vulnerable) { project }
+    let(:vulnerability_reads_table_enabled) { false }
+
+    before do
+      stub_feature_flags(vulnerability_reads_table: vulnerability_reads_table_enabled)
+    end
 
     context 'when given sort' do
       context 'when sorting descending by severity' do
@@ -136,7 +141,7 @@ RSpec.describe Resolvers::VulnerabilitiesResolver do
     context 'when given project IDs' do
       let_it_be(:group) { create(:group) }
       let_it_be(:project2) { create(:project, namespace: group) }
-      let_it_be(:project2_vulnerability) { create(:vulnerability, project: project2) }
+      let_it_be(:project2_vulnerability) { create(:vulnerability, :with_finding, project: project2) }
 
       let(:params) { { project_id: [project2.id] } }
       let(:vulnerable) { group }
@@ -194,7 +199,7 @@ RSpec.describe Resolvers::VulnerabilitiesResolver do
 
     context 'when image is given' do
       let_it_be(:cluster_vulnerability) { create(:vulnerability, :cluster_image_scanning, project: project) }
-      let_it_be(:cluster_finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, vulnerability: cluster_vulnerability) }
+      let_it_be(:cluster_finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, vulnerability: cluster_vulnerability, project: project) }
 
       let(:params) { { image: [cluster_finding.location['image']] } }
 
@@ -213,27 +218,46 @@ RSpec.describe Resolvers::VulnerabilitiesResolver do
 
     context 'when cluster_id is given' do
       let_it_be(:cluster_vulnerability) { create(:vulnerability, :cluster_image_scanning, project: project) }
-      let_it_be(:cluster_finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, vulnerability: cluster_vulnerability) }
+      let_it_be(:cluster_finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, vulnerability: cluster_vulnerability, project: project) }
       let_it_be(:cluster_gid) { ::Gitlab::GlobalId.as_global_id(cluster_finding.location['kubernetes_resource']['cluster_id'].to_i, model_name: 'Clusters::Cluster') }
 
-      let(:params) { { cluster_id: [cluster_gid] } }
+      context 'when vulnerability_reads_table is disabled' do
+        before do
+          # cluster_id is not supported by vulnerability_reads
+          stub_feature_flags(vulnerability_reads_table: false)
+        end
 
-      it 'only returns vulnerabilities with given cluster' do
-        is_expected.to contain_exactly(cluster_vulnerability)
+        let(:params) { { cluster_id: [cluster_gid] } }
+
+        it 'only returns vulnerabilities with given cluster' do
+          is_expected.to contain_exactly(cluster_vulnerability)
+        end
+
+        context 'when different report_type is given along with cluster' do
+          let(:params) { { report_type: %w[sast], cluster_id: [cluster_gid] } }
+
+          it 'returns empty list' do
+            is_expected.to be_empty
+          end
+        end
       end
 
-      context 'when different report_type is given along with cluster' do
-        let(:params) { { report_type: %w[sast], cluster_id: [cluster_gid] } }
+      context 'when vulnerability_reads_table is enabled' do
+        before do
+          stub_feature_flags(vulnerability_reads_table: true)
+        end
 
-        it 'returns empty list' do
-          is_expected.to be_empty
+        let(:params) { { cluster_id: [Gitlab::GlobalId.build(nil, model_name: 'Clusters::Cluster', id: non_existing_record_id)] } }
+
+        it 'ignores the filter and returns unmatching vulnerabilities' do
+          is_expected.to include(cluster_vulnerability)
         end
       end
     end
 
     context 'when cluster_agent_id is given' do
       let_it_be(:cluster_vulnerability) { create(:vulnerability, :cluster_image_scanning, project: project) }
-      let_it_be(:cluster_finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, vulnerability: cluster_vulnerability) }
+      let_it_be(:cluster_finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, project: project, vulnerability: cluster_vulnerability) }
       let_it_be(:cluster_gid) { ::Gitlab::GlobalId.as_global_id(cluster_finding.location['kubernetes_resource']['agent_id'].to_i, model_name: 'Clusters::Agent') }
 
       let(:params) { { cluster_agent_id: [cluster_gid] } }
@@ -248,6 +272,22 @@ RSpec.describe Resolvers::VulnerabilitiesResolver do
         it 'returns empty list' do
           is_expected.to be_empty
         end
+      end
+    end
+
+    context 'when vulnerability_reads_table feature is enabled' do
+      let(:vulnerability_reads_table_enabled) { true }
+      let(:params) { { report_type: %w[sast dast] } }
+      let(:vulnerable) { project }
+
+      it 'returns vulnerabilities of a project' do
+        is_expected.to contain_exactly(low_vulnerability, critical_vulnerability)
+      end
+
+      it 'calls VulnerabilityReadsFinder' do
+        expect(Security::VulnerabilityReadsFinder).to receive(:new).with(vulnerable, params).and_call_original
+
+        subject
       end
     end
   end

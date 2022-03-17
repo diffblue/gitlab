@@ -6,7 +6,7 @@ RSpec.describe Autocomplete::VulnerabilitiesAutocompleteFinder do
   describe '#execute' do
     let_it_be(:group, refind: true) { create(:group) }
     let_it_be(:project, refind: true) { create(:project, group: group) }
-    let_it_be(:vulnerability) { create(:vulnerability, project: project) }
+    let_it_be(:vulnerability) { create(:vulnerability, :with_finding, project: project) }
 
     let(:params) { {} }
 
@@ -44,7 +44,7 @@ RSpec.describe Autocomplete::VulnerabilitiesAutocompleteFinder do
 
             context 'when multiple vulnerabilities are found' do
               before do
-                create_list(:vulnerability, 10, project: project)
+                create_list(:vulnerability, 10, :with_finding, project: project)
               end
 
               it 'returns max 5 items' do

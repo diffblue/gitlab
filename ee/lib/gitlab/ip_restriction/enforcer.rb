@@ -12,7 +12,7 @@ module Gitlab
       end
 
       def allows_current_ip?
-        return true unless group&.feature_available?(:group_ip_restriction) || ::License.features_with_usage_ping.include?(:group_ip_restriction)
+        return true unless group&.feature_available?(:group_ip_restriction) || ::GitlabSubscriptions::Features.usage_ping_feature?(:group_ip_restriction)
 
         current_ip_address = Gitlab::IpAddressState.current
 

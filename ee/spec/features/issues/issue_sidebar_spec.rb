@@ -171,16 +171,14 @@ RSpec.describe 'Issue Sidebar' do
 
           within '[data-testid="iteration-edit"]' do
             expect(page).not_to have_text(iteration_cadence.title)
-            expect(page).to have_text(iteration.title)
-            expect(page).to have_text(iteration_period(iteration))
+            expect(page).to have_text(iteration.period)
           end
 
-          select_iteration(iteration.title)
+          select_iteration(iteration.period)
 
           within '[data-testid="select-iteration"]' do
             expect(page).not_to have_text(iteration_cadence.title)
-            expect(page).to have_text(iteration.title)
-            expect(page).to have_text(iteration_period(iteration))
+            expect(page).to have_text(iteration.period)
           end
 
           find_and_click_edit_iteration
@@ -190,11 +188,32 @@ RSpec.describe 'Issue Sidebar' do
           expect(page.find('[data-testid="select-iteration"]')).to have_content('None')
         end
 
+        context 'when searching iteration by its cadence title', :aggregate_failures do
+          let_it_be(:plan_cadence) { create(:iterations_cadence, title: 'plan cadence', group: group, active: true) }
+          let_it_be(:plan_iteration) { create(:iteration, :with_due_date, iterations_cadence: plan_cadence, start_date: 1.week.from_now) }
+
+          it "returns the correct iteration" do
+            find_and_click_edit_iteration
+
+            within '[data-testid="iteration-edit"]' do
+              page.find(".gl-search-box-by-type-input").send_keys('plan')
+
+              wait_for_requests
+
+              expect(page).to have_text(plan_iteration.title)
+              expect(page).to have_text(plan_iteration.period)
+              expect(page).not_to have_text(iteration_cadence.title)
+              expect(page).not_to have_text(iteration.period)
+              expect(page).not_to have_text(iteration2.period)
+            end
+          end
+        end
+
         it 'does not show closed iterations' do
           find_and_click_edit_iteration
 
           page.within '[data-testid="iteration-edit"]' do
-            expect(page).not_to have_content iteration2.title
+            expect(page).not_to have_content iteration2.period
           end
         end
       end
@@ -213,16 +232,14 @@ RSpec.describe 'Issue Sidebar' do
 
           within '[data-testid="iteration-edit"]' do
             expect(page).to have_text(iteration_cadence.title)
-            expect(page).to have_text(iteration.title)
-            expect(page).to have_text(iteration_period(iteration))
+            expect(page).to have_text(iteration.period)
           end
 
-          select_iteration(iteration.title)
+          select_iteration(iteration.period)
 
           within '[data-testid="select-iteration"]' do
             expect(page).to have_text(iteration_cadence.title)
-            expect(page).to have_text(iteration.title)
-            expect(page).to have_text(iteration_period(iteration))
+            expect(page).to have_text(iteration.period)
           end
 
           find_and_click_edit_iteration
@@ -232,11 +249,32 @@ RSpec.describe 'Issue Sidebar' do
           expect(page.find('[data-testid="select-iteration"]')).to have_content('None')
         end
 
+        context 'when searching iteration by its cadence title', :aggregate_failures do
+          let_it_be(:plan_cadence) { create(:iterations_cadence, title: 'plan cadence', group: group, active: true) }
+          let_it_be(:plan_iteration) { create(:iteration, :with_due_date, iterations_cadence: plan_cadence, start_date: 1.week.from_now) }
+
+          it "returns the correct iteration" do
+            find_and_click_edit_iteration
+
+            within '[data-testid="iteration-edit"]' do
+              page.find(".gl-search-box-by-type-input").send_keys('plan')
+
+              wait_for_requests
+
+              expect(page).to have_text(plan_cadence.title)
+              expect(page).to have_text(plan_iteration.period)
+              expect(page).not_to have_text(iteration_cadence.title)
+              expect(page).not_to have_text(iteration.period)
+              expect(page).not_to have_text(iteration2.period)
+            end
+          end
+        end
+
         it 'does not show closed iterations' do
           find_and_click_edit_iteration
 
           page.within '[data-testid="iteration-edit"]' do
-            expect(page).not_to have_content iteration2.title
+            expect(page).not_to have_content iteration2.period
           end
         end
       end

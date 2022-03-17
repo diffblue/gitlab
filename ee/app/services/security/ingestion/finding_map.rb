@@ -17,6 +17,7 @@ module Security
       delegate :scan, to: :security_finding, private: true
       delegate :project, to: :scan, private: true
       delegate :project_fingerprint, to: :report_finding, private: true
+      delegate :evidence, to: :report_finding
 
       def initialize(security_finding, report_finding)
         @security_finding = security_finding

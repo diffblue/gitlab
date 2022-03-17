@@ -41,6 +41,8 @@ export default {
     TimeAgoTooltip,
     Delete,
     EnvironmentAlert: () => import('ee_component/environments/components/environment_alert.vue'),
+    EnvironmentApproval: () =>
+      import('ee_component/environments/components/environment_approval.vue'),
   },
   directives: {
     GlTooltip,
@@ -300,12 +302,20 @@ export default {
             class="gl-pl-4"
           />
         </div>
-        <div v-if="upcomingDeployment" :class="$options.deploymentClasses">
+        <div
+          v-if="upcomingDeployment"
+          :class="$options.deploymentClasses"
+          data-testid="upcoming-deployment-content"
+        >
           <deployment
             :deployment="upcomingDeployment"
             :class="{ 'gl-ml-7': inFolder }"
             class="gl-pl-4"
-          />
+          >
+            <template #approval>
+              <environment-approval :environment="environment" @change="$emit('change')" />
+            </template>
+          </deployment>
         </div>
       </template>
       <div v-else :class="$options.deploymentClasses">

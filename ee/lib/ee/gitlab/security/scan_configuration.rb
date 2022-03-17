@@ -29,7 +29,7 @@ module EE
               dast: project_security_configuration_dast_path(project),
               dast_profiles: project_security_configuration_dast_scans_path(project),
               api_fuzzing: project_security_configuration_api_fuzzing_path(project),
-              corpus_management: (project_security_configuration_corpus_management_path(project) if ::Feature.enabled?(:corpus_management_ui, project, default_enabled: :yaml))
+              corpus_management: project_security_configuration_corpus_management_path(project)
             }
           end
         end

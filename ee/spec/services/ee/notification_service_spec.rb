@@ -1009,7 +1009,7 @@ RSpec.describe EE::NotificationService, :mailer do
     subject(:pipeline_finished) { NotificationService.new.pipeline_finished(pipeline) }
 
     before do
-      allow(::Gitlab).to receive(:dev_env_or_com?).and_return(true)
+      allow(::Gitlab).to receive(:com?).and_return(true)
       allow(user).to receive(:has_required_credit_card_to_run_pipelines?).and_return(has_required_credit_card_to_run_pipelines)
 
       project.add_maintainer(user)
@@ -1040,7 +1040,7 @@ RSpec.describe EE::NotificationService, :mailer do
 
       context 'when not in dev env or gitlab.com' do
         before do
-          allow(::Gitlab).to receive(:dev_env_or_com?).and_return(false)
+          allow(::Gitlab).to receive(:com?).and_return(false)
         end
 
         include_examples 'does not send account activation email'

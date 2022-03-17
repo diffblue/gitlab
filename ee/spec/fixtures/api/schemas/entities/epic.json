@@ -27,7 +27,9 @@
       "can_create_note": { "type": "boolean" }
     },
     "create_note_path": { "type": "string" },
-    "preview_note_path": { "type": "string" }
+    "preview_note_path": { "type": "string" },
+    "color": { "type": "string" },
+    "text_color": { "type": "string" }
   },
   "required": [
     "id",

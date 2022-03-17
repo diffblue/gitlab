@@ -279,17 +279,11 @@ export default {
           mutation: this.mutation,
           variables: this.variables,
         })
-        .then(({ data, errors: topLevelErrors = [] } = {}) => {
-          if (topLevelErrors.length > 0) {
-            this.errorMessage = topLevelErrors[0].message;
-            return null;
-          }
-
+        .then(({ data } = {}) => {
           const { iterationCadence, errors } = data?.result || {};
 
           if (errors?.length > 0) {
-            [this.errorMessage] = errors;
-            return null;
+            throw new Error(errors);
           }
 
           return getIdFromGraphQLId(iterationCadence.id);
@@ -391,6 +385,7 @@ export default {
           class="gl-form-input-md"
           :required="automatic"
           :disabled="loadingCadence || !automatic"
+          data-qa-selector="iteration_cadence_duration_field"
           @change="validate('durationInWeeks')"
         />
       </gl-form-group>
@@ -412,6 +407,7 @@ export default {
           :options="$options.availableFutureIterations"
           :required="automatic"
           class="gl-form-input-md"
+          data-qa-selector="iteration_cadence_future_iterations_field"
           @change="validate('iterationsInAdvance')"
         />
       </gl-form-group>

@@ -4,7 +4,9 @@ require 'spec_helper'
 
 RSpec.describe ContainerRepository, :saas do
   describe '.with_target_import_tier' do
-    let_it_be(:project) { create(:project) }
+    let_it_be(:root_group) { create(:group) }
+    let_it_be(:group) { create(:group, parent_id: root_group.id) }
+    let_it_be(:project) { create(:project, namespace: group) }
     let_it_be(:valid_container_repository) { create(:container_repository, project: project) }
 
     let_it_be(:gitlab_namespace) { create(:namespace, path: 'gitlab-org') }
@@ -14,7 +16,7 @@ RSpec.describe ContainerRepository, :saas do
     let_it_be(:ultimate_project) { create(:project) }
     let_it_be(:ultimate_container_repository) { create(:container_repository, project: ultimate_project) }
 
-    let(:subscription) { create(:gitlab_subscription, :premium, namespace: project.namespace) }
+    let(:subscription) { create(:gitlab_subscription, :premium, namespace: root_group) }
     let(:ultimate_subscription) { create(:gitlab_subscription, :ultimate, namespace: ultimate_project.namespace) }
 
     subject { described_class.with_target_import_tier }
@@ -42,7 +44,7 @@ RSpec.describe ContainerRepository, :saas do
     let_it_be(:ultimate_project) { create(:project) }
     let_it_be(:ultimate_container_repository) { create(:container_repository, project: ultimate_project, created_at: 2.days.ago) }
 
-    let_it_be(:subscription) { create(:gitlab_subscription, :premium, namespace: project.namespace) }
+    let_it_be(:subscription) { create(:gitlab_subscription, :premium, namespace: root_group) }
     let_it_be(:denied_subscription) { create(:gitlab_subscription, :premium, namespace: denied_project.namespace) }
     let_it_be(:ultimate_subscription) { create(:gitlab_subscription, :ultimate, namespace: ultimate_project.namespace) }
 

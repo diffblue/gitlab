@@ -141,6 +141,7 @@ export default {
         :options="stateOptionsWithDefault"
         value-field="id"
         text-field="name"
+        data-qa-selector="state"
         data-testid="state"
         :required="required"
         @change="selected"
