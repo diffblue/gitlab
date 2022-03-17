@@ -35,12 +35,26 @@ RSpec.describe Admin::DevOpsReportController do
       end
     end
 
-    context 'when browsing to specific tabs' do
+    context 'with devops adoption available' do
+      before do
+        stub_licensed_features(devops_adoption: true)
+      end
+
       ['', 'dev', 'sec', 'ops'].each do |tab|
         it_behaves_like 'tracks usage event', 'i_analytics_dev_ops_adoption', tab
       end
 
       it_behaves_like 'tracks usage event', 'i_analytics_dev_ops_score', 'devops-score'
+    end
+
+    context 'with devops adoption not available' do
+      before do
+        stub_licensed_features(devops_adoption: false)
+      end
+
+      ['', 'dev', 'sec', 'ops', 'devops-score'].each do |tab|
+        it_behaves_like 'tracks usage event', 'i_analytics_dev_ops_score', tab
+      end
     end
   end
 end
