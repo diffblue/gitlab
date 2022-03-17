@@ -54,7 +54,7 @@ module EE
     end
 
     override :project_issues_list_data
-    def project_issues_list_data(project, current_user, finder)
+    def project_issues_list_data(project, current_user)
       super.tap do |data|
         if project.feature_available?(:epics) && project.group
           data[:group_path] = project.group.full_path
