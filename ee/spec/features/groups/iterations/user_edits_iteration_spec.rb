@@ -46,22 +46,22 @@ RSpec.describe 'User edits iteration' do
         input
       end
 
-      let(:updated_start_date_with_cadences_input) do
+      let(:updated_start_date_with_cadences) do
         fill_in('Start date', with: new_start_date.strftime('%Y-%m-%d'))
         new_start_date.strftime('%b %-d, %Y')
       end
 
-      let(:updated_due_date_with_cadences_input) do
+      let(:updated_due_date_with_cadences) do
         fill_in('Due date', with: new_due_date.strftime('%Y-%m-%d'))
         new_due_date.strftime('%b %-d, %Y')
       end
 
-      let(:updated_start_date_without_cadences_input) do
+      let(:updated_start_date_without_cadences) do
         start_date_without_cadences_input.set(new_start_date)
         new_start_date.strftime('%b %-d, %Y')
       end
 
-      let(:updated_due_date_without_cadences_input) do
+      let(:updated_due_date_without_cadences) do
         # TODO: Reported issue with Capybara
         # Use fill_in instead, update datepicker to have labels
         due_date_without_cadences_input.set('')
@@ -77,8 +77,8 @@ RSpec.describe 'User edits iteration' do
       let(:edit_iteration_without_cadences_page) { edit_group_iteration_path(iteration.group, iteration.id) }
 
       where(:using_cadences, :start_date_input, :due_date_input, :updated_start_date, :updated_due_date, :iteration_page, :edit_iteration_page) do
-        true  | ref(:start_date_with_cadences_input)    | ref(:due_date_with_cadences_input)    | ref(:updated_start_date_with_cadences_input)    | ref(:updated_due_date_with_cadences_input)    | ref(:iteration_with_cadences_page)    | ref(:edit_iteration_with_cadences_page)
-        false | ref(:start_date_without_cadences_input) | ref(:due_date_without_cadences_input) | ref(:updated_start_date_without_cadences_input) | ref(:updated_due_date_without_cadences_input) | ref(:iteration_without_cadences_page) | ref(:edit_iteration_without_cadences_page)
+        true  | ref(:start_date_with_cadences_input)    | ref(:due_date_with_cadences_input)    | ref(:updated_start_date_with_cadences)    | ref(:updated_due_date_with_cadences)    | ref(:iteration_with_cadences_page)    | ref(:edit_iteration_with_cadences_page)
+        false | ref(:start_date_without_cadences_input) | ref(:due_date_without_cadences_input) | ref(:updated_start_date_without_cadences) | ref(:updated_due_date_without_cadences) | ref(:iteration_without_cadences_page) | ref(:edit_iteration_without_cadences_page)
       end
 
       with_them do
