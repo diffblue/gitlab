@@ -12,6 +12,7 @@ RSpec.describe 'EE > Projects > Licenses > Maintainer views policies', :js do
 
   before do
     stub_licensed_features(license_scanning: true)
+    stub_feature_flags(lc_remove_legacy_approval_status: false)
 
     sign_in(maintainer)
     visit(project_licenses_path(project))
