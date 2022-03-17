@@ -25,16 +25,26 @@ RSpec.describe ContainerRepository, :saas do
       stub_application_setting(container_registry_import_target_plan: subscription.hosted_plan.name)
     end
 
-    context 'limit_gitlab_org enabled' do
-      it { is_expected.to contain_exactly(gitlab_container_repository) }
-    end
-
-    context 'limit_gitlab_org disabled' do
+    context 'all_plans disabled' do
       before do
-        stub_feature_flags(container_registry_migration_limit_gitlab_org: false)
+        stub_feature_flags(container_registry_migration_phase2_all_plans: false)
       end
 
-      it { is_expected.to contain_exactly(valid_container_repository) }
+      context 'limit_gitlab_org enabled' do
+        it { is_expected.to contain_exactly(gitlab_container_repository) }
+      end
+
+      context 'limit_gitlab_org disabled' do
+        before do
+          stub_feature_flags(container_registry_migration_limit_gitlab_org: false)
+        end
+
+        it { is_expected.to contain_exactly(valid_container_repository) }
+      end
+    end
+
+    context 'all_plans and limit_gitlab_org enabled' do
+      it { is_expected.to contain_exactly(valid_container_repository, ultimate_container_repository, gitlab_container_repository) }
     end
   end
 
