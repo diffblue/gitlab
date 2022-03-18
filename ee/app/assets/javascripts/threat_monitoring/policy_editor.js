@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_utils';
 import PolicyEditorApp from './components/policy_editor/policy_editor.vue';
+import NewPolicyApp from './components/policy_editor/new_policy.vue';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from './constants';
 import createStore from './store';
 import { gqClient, isValidEnvironmentId } from './utils';
@@ -62,6 +63,12 @@ export default () => {
 
   const scanResultPolicyApprovers = scanResultApprovers ? JSON.parse(scanResultApprovers) : [];
 
+  let component = PolicyEditorApp;
+
+  if (gon.features?.containerSecurityPolicySelection) {
+    component = NewPolicyApp;
+  }
+
   return new Vue({
     el,
     apolloProvider,
@@ -79,7 +86,7 @@ export default () => {
     },
     store,
     render(createElement) {
-      return createElement(PolicyEditorApp, { props });
+      return createElement(component, { props });
     },
   });
 };
