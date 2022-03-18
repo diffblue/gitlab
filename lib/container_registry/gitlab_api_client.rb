@@ -53,8 +53,14 @@ module ContainerRegistry
     # https://gitlab.com/gitlab-org/container-registry/-/blob/master/docs-gitlab/api.md#get-repository-import-status
     def import_status(path)
       with_import_token_faraday do |faraday_client|
-        body_hash = response_body(faraday_client.get(import_url_for(path)))
-        body_hash['status'] || 'error'
+        response = faraday_client.get(import_url_for(path))
+
+        # Temporary solution for https://gitlab.com/gitlab-org/gitlab/-/issues/356085#solutions
+        # this will trigger a `retry_pre_import`
+        break 'pre_import_failed' unless response.success?
+
+        body_hash = response_body(response)
+        body_hash&.fetch('status') || 'error'
       end
     end
 
