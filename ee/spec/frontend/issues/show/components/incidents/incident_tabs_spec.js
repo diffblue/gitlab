@@ -29,7 +29,7 @@ describe('Incident Tabs component', () => {
             fullPath: '',
             iid: '',
             uploadMetricsFeatureAvailable: true,
-            glFeatures: { incidentTimelineEventTab: true, incidentTimelineEvents: true },
+            glFeatures: { incidentTimeline: true, incidentTimelineEvents: true },
           },
           data() {
             return { alert: mockAlert, ...data };
@@ -62,7 +62,7 @@ describe('Incident Tabs component', () => {
     });
 
     it('does not render timeline tab when feature flag is disabled', () => {
-      mountComponent({}, { provide: { glFeatures: { incidentTimelineEventTab: false } } });
+      mountComponent({}, { provide: { glFeatures: { incidentTimeline: false } } });
 
       expect(findTimelineTab().exists()).toBe(false);
     });
