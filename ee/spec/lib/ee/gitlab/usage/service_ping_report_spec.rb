@@ -59,7 +59,7 @@ RSpec.describe Gitlab::Usage::ServicePingReport, :use_clean_rails_memory_store_c
     end
 
     let(:stored_queries_hash) do
-      Gitlab::Json.parse(stored_queries_fixture).with_indifferent_access
+      deep_sort_hash(Gitlab::Json.parse(stored_queries_fixture).with_indifferent_access)
     end
 
     before do
@@ -73,7 +73,7 @@ RSpec.describe Gitlab::Usage::ServicePingReport, :use_clean_rails_memory_store_c
 
     it 'does not change SQL metric queries' do
       report = Timecop.freeze(2021, 1, 1) do
-        described_class.for(output: :metrics_queries).with_indifferent_access
+        deep_sort_hash(described_class.for(output: :metrics_queries).with_indifferent_access)
       end
 
       remove_ignored_metrics!(report)
@@ -92,6 +92,14 @@ RSpec.describe Gitlab::Usage::ServicePingReport, :use_clean_rails_memory_store_c
       ignored_metric_key_paths.each do |key_path|
         *keys, last_key = key_path.split('.')
         keys.inject(hash, :fetch)[last_key] = nil
+      end
+    end
+
+    def deep_sort_hash(object)
+      if object.is_a?(Hash)
+        object.map { |k, v| [k, deep_sort_hash(v)] }.sort.to_h
+      else
+        object
       end
     end
   end
