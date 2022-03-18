@@ -18,7 +18,7 @@ RSpec.describe Deployments::ApprovalService do
   before do
     stub_licensed_features(protected_environments: true)
     create(:protected_environment, :maintainers_can_deploy, name: environment.name, project: project, required_approval_count: required_approval_count)
-    project.add_maintainer(user)
+    project.add_maintainer(user) if user
   end
 
   shared_examples_for 'error' do |message:|

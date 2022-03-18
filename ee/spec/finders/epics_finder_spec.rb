@@ -52,7 +52,7 @@ RSpec.describe EpicsFinder do
 
       context 'with correct params' do
         before do
-          group.add_developer(search_user)
+          group.add_developer(search_user) if search_user
         end
 
         it 'returns all epics that belong to the given group' do
