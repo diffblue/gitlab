@@ -4,10 +4,6 @@ module Projects
   class LicensesController < Projects::ApplicationController
     include SecurityAndCompliancePermissions
 
-    before_action do
-      push_frontend_feature_flag(:sbom_survey, @user, default_enabled: :yaml)
-    end
-
     before_action :authorize_read_licenses!, only: [:index]
     before_action :authorize_admin_software_license_policy!, only: [:create, :update]
 
@@ -107,7 +103,6 @@ module Projects
         write_license_policies_endpoint: write_license_policies_endpoint,
         documentation_path: help_page_path('user/compliance/license_compliance/index'),
         empty_state_svg_path: helpers.image_path('illustrations/Dependency-list-empty-state.svg'),
-        sbom_survey_svg_path: helpers.image_path('illustrations/monitoring/tracing.svg'),
         software_licenses: SoftwareLicense.unclassified_licenses_for(project).pluck_names,
         project_id: @project.id,
         project_path: expose_path(api_v4_projects_path(id: @project.id)),

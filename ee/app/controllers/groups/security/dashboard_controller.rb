@@ -6,7 +6,6 @@ class Groups::Security::DashboardController < Groups::ApplicationController
 
   before_action do
     push_frontend_feature_flag(:vulnerability_management_survey, type: :ops, default_enabled: :yaml)
-    push_frontend_feature_flag(:sbom_survey, @user, default_enabled: :yaml)
   end
 
   def show

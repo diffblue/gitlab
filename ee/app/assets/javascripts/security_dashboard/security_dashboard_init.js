@@ -37,7 +37,6 @@ export default (el, dashboardType) => {
     securityConfigurationPath: el.dataset.securityConfigurationPath,
     surveyRequestSvgPath: el.dataset.surveyRequestSvgPath,
     securityDashboardHelpPath: el.dataset.securityDashboardHelpPath,
-    sbomSurveySvgPath: el.dataset.sbomSurveySvgPath,
   };
 
   let component;
