@@ -108,7 +108,7 @@ RSpec.describe API::StatusChecks do
     context 'when user has access' do
       before do
         stub_licensed_features(external_status_checks: true)
-        project.add_user(user, :maintainer)
+        project.add_user(user, :maintainer) if user
       end
 
       context 'when status_checks_add_status_field flag is disabled' do
