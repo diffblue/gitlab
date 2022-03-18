@@ -65,8 +65,6 @@ module SubscriptionsHelper
       id: namespace.id,
       account_id: account_id,
       name: namespace.name,
-      users: namespace.member_count,
-      guests: namespace.guest_count,
       full_path: namespace.full_path
     }
   end

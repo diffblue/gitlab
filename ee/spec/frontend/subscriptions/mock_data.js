@@ -33,8 +33,8 @@ export const mockStoragePlans = [
 ];
 
 export const mockNamespaces = `
-  [{"id":132,"accountId":"${accountId}","name":"Gitlab Org","users":3},
-  {"id":483,"accountId":null,"name":"Gnuwget","users":12}]
+  [{"id":132,"accountId":"${accountId}","name":"Gitlab Org"},
+  {"id":483,"accountId":null,"name":"Gnuwget"}]
 `;
 
 export const mockParsedNamespaces = JSON.parse(mockNamespaces).map((namespace) => ({
