@@ -5,10 +5,12 @@ module ContainerRegistry
     include Gitlab::Utils::StrongMemoize
 
     JSON_TYPE = 'application/json'
+    CANCEL_RESPONSE_STATUS_HEADER = 'status'
 
     IMPORT_RESPONSES = {
       200 => :already_imported,
       202 => :ok,
+      400 => :bad_request,
       401 => :unauthorized,
       404 => :not_found,
       409 => :already_being_imported,
@@ -48,6 +50,18 @@ module ContainerRegistry
     def import_repository(path)
       response = start_import_for(path, pre: false)
       IMPORT_RESPONSES.fetch(response.status, :error)
+    end
+
+    # https://gitlab.com/gitlab-org/container-registry/-/blob/master/docs-gitlab/api.md#import-repository
+    def cancel_repository_import(path)
+      response = with_import_token_faraday do |faraday_client|
+        faraday_client.delete(import_url_for(path))
+      end
+
+      status = IMPORT_RESPONSES.fetch(response.status, :error)
+      actual_state = response.body[CANCEL_RESPONSE_STATUS_HEADER]
+
+      { status: status, migration_state: actual_state }
     end
 
     # https://gitlab.com/gitlab-org/container-registry/-/blob/master/docs-gitlab/api.md#get-repository-import-status

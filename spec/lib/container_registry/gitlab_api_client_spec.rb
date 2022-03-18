@@ -62,6 +62,7 @@ RSpec.describe ContainerRegistry::GitlabApiClient do
     where(:status_code, :expected_result) do
       200 | :already_imported
       202 | :ok
+      400 | :bad_request
       401 | :unauthorized
       404 | :not_found
       409 | :already_being_imported
@@ -86,6 +87,7 @@ RSpec.describe ContainerRegistry::GitlabApiClient do
     where(:status_code, :expected_result) do
       200 | :already_imported
       202 | :ok
+      400 | :bad_request
       401 | :unauthorized
       404 | :not_found
       409 | :already_being_imported
@@ -101,6 +103,41 @@ RSpec.describe ContainerRegistry::GitlabApiClient do
       end
 
       it { is_expected.to eq(expected_result) }
+    end
+  end
+
+  describe '#cancel_repository_import' do
+    subject { client.cancel_repository_import(path) }
+
+    where(:status_code, :expected_result) do
+      200 | :already_imported
+      202 | :ok
+      400 | :bad_request
+      401 | :unauthorized
+      404 | :not_found
+      409 | :already_being_imported
+      418 | :error
+      424 | :pre_import_failed
+      425 | :already_being_imported
+      429 | :too_many_imports
+    end
+
+    with_them do
+      before do
+        stub_import_cancel(path, status_code)
+      end
+
+      it { is_expected.to eq({ status: expected_result, migration_state: nil }) }
+    end
+
+    context 'bad request' do
+      let(:status) { 'this_is_a_test' }
+
+      before do
+        stub_import_cancel(path, 400, status: status)
+      end
+
+      it { is_expected.to eq({ status: :bad_request, migration_state: status }) }
     end
   end
 
@@ -246,6 +283,22 @@ RSpec.describe ContainerRegistry::GitlabApiClient do
       .to_return(
         status: status_code,
         body: { status: status }.to_json,
+        headers: { content_type: 'application/json' }
+      )
+  end
+
+  def stub_import_cancel(path, http_status, status: nil)
+    body = {}
+
+    if http_status == 400
+      body = { status: status }
+    end
+
+    stub_request(:delete, "#{registry_api_url}/gitlab/v1/import/#{path}/")
+      .with(headers: { 'Accept' => described_class::JSON_TYPE, 'Authorization' => "bearer #{import_token}" })
+      .to_return(
+        status: http_status,
+        body: body.to_json,
         headers: { content_type: 'application/json' }
       )
   end
