@@ -181,13 +181,14 @@ describe('transformBoardConfig', () => {
       { id: 6, title: 'On hold', color: '#34ebec', type: 'GroupLabel', textColor: '#333333' },
     ],
     weight: 0,
+    iterationId: 'gid://gitlab/Iteration/1',
   };
 
   it('formats url parameters from boardConfig object', () => {
     const result = transformBoardConfig(boardConfig);
 
     expect(result).toBe(
-      'milestone_title=milestone&weight=0&assignee_username=username&label_name[]=Deliverable&label_name[]=On%20hold',
+      'milestone_title=milestone&iteration_id=1&weight=0&assignee_username=username&label_name[]=Deliverable&label_name[]=On%20hold',
     );
   });
 
@@ -195,6 +196,8 @@ describe('transformBoardConfig', () => {
     setWindowLocation('?label_name[]=Deliverable&label_name[]=On%20hold');
     const result = transformBoardConfig(boardConfig);
 
-    expect(result).toBe('milestone_title=milestone&weight=0&assignee_username=username');
+    expect(result).toBe(
+      'milestone_title=milestone&iteration_id=1&weight=0&assignee_username=username',
+    );
   });
 });

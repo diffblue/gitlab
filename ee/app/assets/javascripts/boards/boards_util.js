@@ -189,13 +189,18 @@ export function transformBoardConfig(boardConfig) {
     updateScopeObject('milestone_title', milestoneTitle);
   }
 
-  let { iterationTitle } = boardConfig;
-  if (boardConfig.iterationId === IterationIDs.NONE) {
-    iterationTitle = IterationFilterType.none;
+  const { iterationId } = boardConfig;
+  if (iterationId === IterationIDs.NONE) {
+    updateScopeObject('iteration_id', IterationFilterType.none);
+  } else if (iterationId === IterationIDs.CURRENT) {
+    updateScopeObject('iteration_id', IterationFilterType.current);
+  } else if (iterationId) {
+    updateScopeObject('iteration_id', getIdFromGraphQLId(iterationId));
   }
 
-  if (iterationTitle) {
-    updateScopeObject('iteration_id', iterationTitle);
+  const { iterationCadenceId } = boardConfig;
+  if (iterationCadenceId) {
+    updateScopeObject('iteration_cadence_id', getIdFromGraphQLId(iterationCadenceId));
   }
 
   let { weight } = boardConfig;
@@ -258,6 +263,9 @@ export const FiltersInfo = {
       const valList = val.split('/');
       return valList[valList.length - 1].toUpperCase();
     },
+  },
+  iterationCadenceId: {
+    negatedSupport: false,
   },
   weight: {
     negatedSupport: true,
