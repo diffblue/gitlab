@@ -278,7 +278,62 @@ RSpec.describe 'Scoped issue boards', :js do
         end
       end
 
-      context 'iteration' do
+      context 'iteration - iteration_cadences FF on' do
+        let_it_be(:cadence) { create(:iterations_cadence, group: group, active: true, duration_in_weeks: 1, title: 'one week iterations') }
+        let_it_be(:iteration) { create(:current_iteration, :skip_future_date_validation, iterations_cadence: cadence, title: 'one test', group: group, start_date: 1.day.ago, due_date: Date.today) }
+
+        before do
+          stub_feature_flags(iteration_cadences: true)
+
+          visit project_boards_path(project)
+          wait_for_requests
+        end
+
+        it 'sets board iteration' do
+          update_board_iteration(iteration.title)
+
+          expect(find('.gl-filtered-search-scrollable')).to have_content(cadence.title)
+          expect(page).to have_selector('.board-card', count: 0)
+        end
+
+        it 'sets board to any iteration' do
+          update_board_iteration('Any iteration')
+
+          expect(find('.gl-filtered-search-scrollable')).not_to have_content(iteration.title)
+
+          expect(page).to have_selector('.board', count: 2)
+          expect(all('.board').first).to have_selector('.board-card', count: 2)
+          expect(all('.board').last).to have_selector('.board-card', count: 1)
+        end
+
+        it 'sets board to current iteration' do
+          update_board_iteration('Current')
+
+          expect(find('.gl-filtered-search-scrollable')).not_to have_content(iteration.title)
+          expect(find('.gl-filtered-search-scrollable')).to have_content('Current')
+
+          expect(all('.board')[1]).to have_selector('.board-card', count: 0)
+        end
+
+        it 'does not display iteration in search hint' do
+          update_board_iteration(iteration.title)
+          filtered_search.click
+
+          page.within('.gl-filtered-search-suggestion-list') do
+            expect(page).to have_content(_('Label'))
+            expect(page).not_to have_content(_('Iteration'))
+          end
+        end
+      end
+
+      context 'iteration - iteration_cadences FF off' do
+        before do
+          stub_feature_flags(iteration_cadences: false)
+
+          visit project_boards_path(project)
+          wait_for_requests
+        end
+
         context 'group with iterations' do
           let_it_be(:cadence) { create(:iterations_cadence, group: group) }
           let_it_be(:iteration) { create(:current_iteration, :skip_future_date_validation, iterations_cadence: cadence, group: group, start_date: 1.day.ago, due_date: Date.today) }
@@ -296,10 +351,6 @@ RSpec.describe 'Scoped issue boards', :js do
           end
 
           context 'board scoped to current iteration' do
-            before do
-              stub_feature_flags(iteration_cadences: false)
-            end
-
             it 'adds current iteration to new issues' do
               update_board_scope('current_iteration', true)
 
@@ -581,6 +632,10 @@ RSpec.describe 'Scoped issue boards', :js do
 
   def update_board_weight(weight)
     update_board_scope('weight', weight.to_s)
+  end
+
+  def update_board_iteration(iteration_title)
+    update_board_scope('iteration', iteration_title)
   end
 
   def create_board_scope(filter, value)

@@ -31,7 +31,7 @@ import {
   mockIssue,
   mockIssues,
   mockEpic,
-  mockMilestones,
+  mockIterations,
   mockAssignees,
   mockSubGroups,
   mockGroup0,
@@ -1108,7 +1108,7 @@ describe('fetchIterations', () => {
     data: {
       group: {
         iterations: {
-          nodes: mockMilestones,
+          nodes: mockIterations,
         },
       },
     },
@@ -1156,7 +1156,7 @@ describe('fetchIterations', () => {
       await actions.fetchIterations(store);
 
       expect(store.state.iterationsLoading).toBe(false);
-      expect(store.state.iterations).toBe(mockMilestones);
+      expect(store.state.iterations).toBe(mockIterations);
     });
   });
 

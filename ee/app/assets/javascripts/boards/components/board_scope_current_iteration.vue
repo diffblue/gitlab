@@ -1,7 +1,7 @@
 <script>
 import { GlFormCheckbox } from '@gitlab/ui';
 import { __ } from '~/locale';
-import { IterationIDs } from '../constants';
+import { IterationIDs, CURRENT_ITERATION } from '../constants';
 
 export default {
   i18n: {
@@ -30,8 +30,8 @@ export default {
   methods: {
     handleToggle() {
       this.checked = !this.checked;
-      const iterationId = this.checked ? IterationIDs.CURRENT : null;
-      this.$emit('set-iteration', iterationId);
+      const iteration = this.checked ? CURRENT_ITERATION : { id: null };
+      this.$emit('set-iteration', iteration);
     },
   },
 };

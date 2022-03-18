@@ -22,5 +22,10 @@ fragment BoardScopeFragment on Board {
   iteration {
     ...Iteration
   }
+  iterationCadence {
+    id
+    title
+    durationInWeeks
+  }
   weight
 }

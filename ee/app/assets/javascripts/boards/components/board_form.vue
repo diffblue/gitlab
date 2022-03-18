@@ -27,6 +27,7 @@ export default {
           : null,
         milestoneId: this.board.milestone?.id || null,
         iterationId: this.board.iteration?.id || null,
+        iterationCadenceId: this.board.iterationCadenceId || null,
       };
     },
     boardScopeMutationVariables() {

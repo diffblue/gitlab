@@ -1,8 +1,8 @@
 import { GlModal } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import BoardForm from 'ee/boards/components/board_form.vue';
 import createEpicBoardMutation from 'ee/boards/graphql/epic_board_create.mutation.graphql';
 import destroyEpicBoardMutation from 'ee/boards/graphql/epic_board_destroy.mutation.graphql';
@@ -28,6 +28,8 @@ const currentBoard = {
   labels: [],
   milestone: {},
   assignee: {},
+  iteration: {},
+  iterationCadence: {},
   weight: null,
   hideBacklogList: false,
   hideClosedList: false,
@@ -51,8 +53,8 @@ describe('BoardForm', () => {
 
   const findModal = () => wrapper.findComponent(GlModal);
   const findModalActionPrimary = () => findModal().props('actionPrimary');
-  const findFormWrapper = () => wrapper.find('[data-testid="board-form-wrapper"]');
-  const findDeleteConfirmation = () => wrapper.find('[data-testid="delete-confirmation-message"]');
+  const findFormWrapper = () => wrapper.findByTestId('board-form-wrapper');
+  const findDeleteConfirmation = () => wrapper.findByTestId('delete-confirmation-message');
   const findInput = () => wrapper.find('#board-new-name');
 
   const createStore = ({ getters = {} } = {}) => {
@@ -67,11 +69,12 @@ describe('BoardForm', () => {
     });
   };
 
-  const createComponent = (props) => {
-    wrapper = shallowMount(BoardForm, {
+  const createComponent = ({ props, iterationCadences = false } = {}) => {
+    wrapper = shallowMountExtended(BoardForm, {
       propsData: { ...defaultProps, ...props },
       provide: {
         rootPath: 'root',
+        glFeatures: { iterationCadences },
       },
       mocks: {
         $apollo: {
@@ -97,7 +100,7 @@ describe('BoardForm', () => {
 
     describe('on non-scoped-board', () => {
       beforeEach(() => {
-        createComponent({ canAdminBoard: true, currentPage: formType.new });
+        createComponent({ props: { canAdminBoard: true, currentPage: formType.new } });
       });
 
       it('clears the form', () => {
@@ -140,7 +143,7 @@ describe('BoardForm', () => {
       });
 
       it('does not call API if board name is empty', async () => {
-        createComponent({ canAdminBoard: true, currentPage: formType.new });
+        createComponent({ props: { canAdminBoard: true, currentPage: formType.new } });
         findInput().trigger('keyup.enter', { metaKey: true });
 
         await waitForPromises();
@@ -149,7 +152,7 @@ describe('BoardForm', () => {
       });
 
       it('calls a correct GraphQL mutation and redirects to correct page from existing board', async () => {
-        createComponent({ canAdminBoard: true, currentPage: formType.new });
+        createComponent({ props: { canAdminBoard: true, currentPage: formType.new } });
         fillForm();
 
         await waitForPromises();
@@ -169,7 +172,7 @@ describe('BoardForm', () => {
 
       it('shows a GlAlert if GraphQL mutation fails', async () => {
         mutate = jest.fn().mockRejectedValue('Houston, we have a problem');
-        createComponent({ canAdminBoard: true, currentPage: formType.new });
+        createComponent({ props: { canAdminBoard: true, currentPage: formType.new } });
         jest.spyOn(wrapper.vm, 'setError').mockImplementation(() => {});
         fillForm();
 
@@ -202,21 +205,23 @@ describe('BoardForm', () => {
       });
 
       createComponent({
-        currentBoard: {
-          ...currentBoard,
-          assignee: {
-            id: 1,
+        props: {
+          currentBoard: {
+            ...currentBoard,
+            assignee: {
+              id: 1,
+            },
+            milestone: {
+              id: 'gid://gitlab/Milestone/2',
+            },
+            iteration: {
+              id: 'gid://gitlab/Iteration/3',
+            },
           },
-          milestone: {
-            id: 'gid://gitlab/Milestone/2',
-          },
-          iteration: {
-            id: 'gid://gitlab/Iteration/3',
-          },
+          canAdminBoard: true,
+          currentPage: formType.edit,
+          scopedIssueBoardFeatureEnabled: true,
         },
-        canAdminBoard: true,
-        currentPage: formType.edit,
-        scopedIssueBoardFeatureEnabled: true,
       });
 
       findInput().trigger('keyup.enter', { metaKey: true });
@@ -231,6 +236,53 @@ describe('BoardForm', () => {
             assigneeId: 'gid://gitlab/User/1',
             milestoneId: 'gid://gitlab/Milestone/2',
             iterationId: 'gid://gitlab/Iteration/3',
+          }),
+        },
+      });
+    });
+
+    it('should send iterationCadenceId when feature flag is on', async () => {
+      mutate = jest.fn().mockResolvedValue({
+        data: {
+          updateBoard: { board: { id: 'gid://gitlab/Board/321' } },
+        },
+      });
+
+      createComponent({
+        props: {
+          currentBoard: {
+            ...currentBoard,
+            assignee: {
+              id: 1,
+            },
+            milestone: {
+              id: 'gid://gitlab/Milestone/2',
+            },
+            iteration: {
+              id: 'gid://gitlab/Iteration/3',
+            },
+            iterationCadenceId: 'gid://gitlab/Iterations::Cadence/4',
+          },
+          canAdminBoard: true,
+          currentPage: formType.edit,
+          scopedIssueBoardFeatureEnabled: true,
+        },
+        iterationCadences: true,
+      });
+
+      findInput().trigger('keyup.enter', { metaKey: true });
+
+      await waitForPromises();
+
+      expect(mutate).toHaveBeenCalledWith({
+        mutation: updateBoardMutation,
+        variables: {
+          input: expect.objectContaining({
+            id: currentBoard.id,
+            assigneeId: 'gid://gitlab/User/1',
+            milestoneId: 'gid://gitlab/Milestone/2',
+            iterationId: 'gid://gitlab/Iteration/3',
+            iterationCadenceId: 'gid://gitlab/Iterations::Cadence/4',
           }),
         },
       });
@@ -251,9 +303,11 @@ describe('BoardForm', () => {
         },
       });
       createComponent({
-        canAdminBoard: true,
-        currentPage: formType.edit,
-        currentBoard: currentEpicBoard,
+        props: {
+          canAdminBoard: true,
+          currentPage: formType.edit,
+          currentBoard: currentEpicBoard,
+        },
       });
 
       findInput().trigger('keyup.enter', { metaKey: true });
@@ -276,9 +330,11 @@ describe('BoardForm', () => {
     it('shows a GlAlert if GraphQL mutation fails', async () => {
       mutate = jest.fn().mockRejectedValue('Houston, we have a problem');
       createComponent({
-        canAdminBoard: true,
-        currentPage: formType.edit,
-        currentBoard: currentEpicBoard,
+        props: {
+          canAdminBoard: true,
+          currentPage: formType.edit,
+          currentBoard: currentEpicBoard,
+        },
       });
       jest.spyOn(wrapper.vm, 'setError').mockImplementation(() => {});
       findInput().trigger('keyup.enter', { metaKey: true });
@@ -300,9 +356,11 @@ describe('BoardForm', () => {
 
     it('passes correct primary action text and variant', () => {
       createComponent({
-        canAdminBoard: true,
-        currentPage: formType.delete,
-        currentBoard: currentEpicBoard,
+        props: {
+          canAdminBoard: true,
+          currentPage: formType.delete,
+          currentBoard: currentEpicBoard,
+        },
       });
       expect(findModalActionPrimary().text).toBe('Delete');
       expect(findModalActionPrimary().attributes[0].variant).toBe('danger');
@@ -310,9 +368,11 @@ describe('BoardForm', () => {
 
     it('renders delete confirmation message', () => {
       createComponent({
-        canAdminBoard: true,
-        currentPage: formType.delete,
-        currentBoard: currentEpicBoard,
+        props: {
+          canAdminBoard: true,
+          currentPage: formType.delete,
+          currentBoard: currentEpicBoard,
+        },
       });
       expect(findDeleteConfirmation().exists()).toBe(true);
     });
@@ -320,9 +380,11 @@ describe('BoardForm', () => {
     it('calls a correct GraphQL mutation and redirects to correct page after deleting board', async () => {
       mutate = jest.fn().mockResolvedValue({});
       createComponent({
-        canAdminBoard: true,
-        currentPage: formType.delete,
-        currentBoard: currentEpicBoard,
+        props: {
+          canAdminBoard: true,
+          currentPage: formType.delete,
+          currentBoard: currentEpicBoard,
+        },
       });
       findModal().vm.$emit('primary');
 
@@ -342,9 +404,11 @@ describe('BoardForm', () => {
     it('shows a GlAlert if GraphQL mutation fails', async () => {
       mutate = jest.fn().mockRejectedValue('Houston, we have a problem');
       createComponent({
-        canAdminBoard: true,
-        currentPage: formType.delete,
-        currentBoard: currentEpicBoard,
+        props: {
+          canAdminBoard: true,
+          currentPage: formType.delete,
+          currentBoard: currentEpicBoard,
+        },
       });
       jest.spyOn(wrapper.vm, 'setError').mockImplementation(() => {});
       findModal().vm.$emit('primary');

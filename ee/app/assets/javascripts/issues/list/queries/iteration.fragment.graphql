@@ -6,5 +6,6 @@ fragment Iteration on Iteration {
   iterationCadence {
     id
     title
+    durationInWeeks
   }
 }

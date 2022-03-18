@@ -146,9 +146,12 @@ export const mockIterations = [
     iterationCadence: {
       id: 'gid://gitlab/Iterations::Cadence/1',
       title: 'GitLab.org Iterations',
+      durationInWeeks: 1,
+      __typename: 'IterationCadence',
     },
     startDate: '2021-10-05',
     dueDate: '2021-10-10',
+    __typename: 'Iteration',
   },
   {
     id: 'gid://gitlab/Iteration/2',
@@ -156,11 +159,26 @@ export const mockIterations = [
     iterationCadence: {
       id: 'gid://gitlab/Iterations::Cadence/2',
       title: 'GitLab.org Iterations: Volume II',
+      durationInWeeks: 2,
+      __typename: 'IterationCadence',
     },
     startDate: '2021-10-12',
     dueDate: '2021-10-17',
+    __typename: 'Iteration',
   },
 ];
+
+export const mockIterationsResponse = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/1',
+      iterations: {
+        nodes: mockIterations,
+      },
+      __typename: 'Group',
+    },
+  },
+};
 
 export const labels = [
   {
