@@ -64,15 +64,18 @@ RSpec.describe 'Value stream analytics charts', :js do
       filters_selector = '.js-tasks-by-type-chart-filters'
 
       before do
-        mr_issue = create(:labeled_issue, created_at: 5.days.ago, project: create(:project, group: group), labels: [group_label2])
-        create(:merge_request, iid: mr_issue.id, created_at: 3.days.ago, source_project: project, labels: [group_label1, group_label2])
+        group_label1 = create(:group_label, group: selected_group)
+        group_label2 = create(:group_label, group: selected_group)
+
+        mr_issue = create(:labeled_issue, created_at: 5.days.ago, project: create(:project, group: selected_group), labels: [group_label2])
+        create(:merge_request, iid: mr_issue.id, created_at: 3.days.ago, source_project: selected_project, labels: [group_label1, group_label2])
 
         3.times do |i|
-          create(:labeled_issue, created_at: i.days.ago, project: create(:project, group: group), labels: [group_label1])
-          create(:labeled_issue, created_at: i.days.ago, project: create(:project, group: group), labels: [group_label2])
+          create(:labeled_issue, created_at: i.days.ago, project: create(:project, group: selected_group), labels: [group_label1])
+          create(:labeled_issue, created_at: i.days.ago, project: create(:project, group: selected_group), labels: [group_label2])
         end
 
-        select_group(group)
+        select_group(selected_group)
       end
 
       it 'displays the chart' do
@@ -109,7 +112,7 @@ RSpec.describe 'Value stream analytics charts', :js do
 
     context 'no data available' do
       before do
-        select_group(group)
+        select_group(selected_group)
       end
 
       it 'shows the no data available message' do
@@ -120,7 +123,7 @@ RSpec.describe 'Value stream analytics charts', :js do
     end
   end
 
-  context 'Duration chart' do
+  describe 'Duration chart', :js do
     context 'use_vsa_aggregated_tables feature flag off' do
       before do
         stub_feature_flags(use_vsa_aggregated_tables: false)
@@ -142,12 +145,7 @@ RSpec.describe 'Value stream analytics charts', :js do
 
       context 'with a value stream' do
         before do
-          create(:cycle_analytics_group_value_stream, group: group, name: 'First value stream', stages: [
-            create(:cycle_analytics_group_stage, group: group, name: "Issue", relative_position: 1),
-            create(:cycle_analytics_group_stage, group: group, name: "Code", relative_position: 2)
-          ])
-
-          select_group(group)
+          select_group(group_with_value_stream)
         end
 
         it_behaves_like 'has the duration chart'
