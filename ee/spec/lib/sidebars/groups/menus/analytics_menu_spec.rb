@@ -57,14 +57,6 @@ RSpec.describe Sidebars::Groups::Menus::AnalyticsMenu do
         end
       end
 
-      describe 'when feature flag :group_ci_cd_analytics_page is disabled' do
-        specify do
-          stub_feature_flags(group_ci_cd_analytics_page: false)
-
-          is_expected.to be_nil
-        end
-      end
-
       describe 'when the user does not have access' do
         let(:user) { nil }
 

@@ -8,6 +8,5 @@ class Groups::Analytics::CiCdAnalyticsController < Groups::Analytics::Applicatio
   before_action -> { authorize_view_by_action!(:view_group_ci_cd_analytics) }
 
   def show
-    render_404 unless Feature.enabled?(:group_ci_cd_analytics_page, @group, default_enabled: true)
   end
 end
