@@ -16,7 +16,7 @@ module Vulnerabilities
     def execute
       raise Gitlab::Access::AccessDeniedError unless authorized?
 
-      @vulnerability.transaction do
+      update_vulnerability_with(state: Vulnerability.states[:dismissed], dismissed_by: @user, dismissed_at: Time.current) do
         if dismiss_findings
           result = dismiss_vulnerability_findings
 
@@ -25,8 +25,6 @@ module Vulnerabilities
             raise ActiveRecord::Rollback
           end
         end
-
-        update_with_note(@vulnerability, state: Vulnerability.states[:dismissed], dismissed_by: @user, dismissed_at: Time.current)
       end
 
       @vulnerability

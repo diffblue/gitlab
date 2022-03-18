@@ -9,10 +9,8 @@ module Vulnerabilities
     def execute
       raise Gitlab::Access::AccessDeniedError unless authorized?
 
-      @vulnerability.transaction do
+      update_vulnerability_with(state: Vulnerability.states[:detected], **REVERT_PARAMS) do
         DestroyDismissalFeedbackService.new(@user, @vulnerability).execute
-
-        update_with_note(@vulnerability, state: Vulnerability.states[:detected], **REVERT_PARAMS)
       end
 
       @vulnerability
