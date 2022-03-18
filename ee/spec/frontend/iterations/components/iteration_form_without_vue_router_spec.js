@@ -19,9 +19,14 @@ describe('Iteration Form', () => {
     id: `gid://gitlab/Iteration/${id}`,
     title: 'An iteration',
     description: 'The words',
-    startDate: '2020-06-28',
-    dueDate: '2020-07-05',
+    startDate: new Date('2020-06-28'),
+    dueDate: new Date('2020-07-05'),
   };
+
+  const title = 'Updated title';
+  const description = 'Updated description';
+  const startDate = '2020-05-06';
+  const dueDate = '2020-05-26';
 
   const createMutationSuccess = { data: { createIteration: { iteration, errors: [] } } };
   const createMutationFailure = {
@@ -63,6 +68,16 @@ describe('Iteration Form', () => {
   const clickSave = () => findSaveButton().vm.$emit('click');
   const clickCancel = () => findCancelButton().vm.$emit('click');
 
+  const inputFormData = () => {
+    findTitle().vm.$emit('input', title);
+    findDescription().setValue(description);
+    findStartDate().vm.$emit('input', startDate ? new Date(startDate) : null);
+    findDueDate().vm.$emit('input', dueDate ? new Date(dueDate) : null);
+
+    findTitle().trigger('change');
+    findStartDate().trigger('change');
+  };
+
   it('renders a form', () => {
     createComponent();
     expect(wrapper.findComponent(GlForm).exists()).toBe(true);
@@ -81,16 +96,7 @@ describe('Iteration Form', () => {
 
     describe('save', () => {
       it('triggers mutation with form data', () => {
-        const title = 'Iteration 5';
-        const description = 'The fifth iteration';
-        const startDate = '2020-05-05';
-        const dueDate = '2020-05-25';
-
-        findTitle().vm.$emit('input', title);
-        findDescription().setValue(description);
-        findStartDate().vm.$emit('input', startDate);
-        findDueDate().vm.$emit('input', dueDate);
-
+        inputFormData();
         clickSave();
 
         expect(wrapper.vm.$apollo.mutate).toHaveBeenCalledWith({
@@ -109,12 +115,26 @@ describe('Iteration Form', () => {
 
       it('redirects to Iteration page on success', async () => {
         createComponent();
-
+        inputFormData();
         clickSave();
 
         await nextTick();
         expect(findSaveButton().props('loading')).toBe(true);
         expect(visitUrl).toHaveBeenCalled();
+      });
+
+      it('validates required fields and sets isValid state to false', async () => {
+        createComponent();
+
+        clickSave();
+
+        await nextTick();
+
+        expect(findSaveButton().props('loading')).toBe(false);
+        expect(wrapper.vm.isValid).toBe(false);
+        expect(wrapper.vm.titleState).toBe(false);
+        expect(wrapper.vm.startDateState).toBe(false);
+        expect(visitUrl).not.toHaveBeenCalled();
       });
 
       it('loading=false on error', () => {
@@ -151,8 +171,9 @@ describe('Iteration Form', () => {
 
       expect(findTitle().attributes('value')).toBe(iteration.title);
       expect(findDescription().element.value).toBe(iteration.description);
-      expect(findStartDate().attributes('value')).toBe(iteration.startDate);
-      expect(findDueDate().attributes('value')).toBe(iteration.dueDate);
+
+      expect(new Date(findStartDate().attributes('value'))).toEqual(iteration.startDate);
+      expect(new Date(findDueDate().attributes('value'))).toEqual(iteration.dueDate);
     });
 
     it('shows update text on submit button', () => {
@@ -168,16 +189,7 @@ describe('Iteration Form', () => {
         props: propsWithIteration,
       });
 
-      const title = 'Updated title';
-      const description = 'Updated description';
-      const startDate = '2020-05-06';
-      const dueDate = '2020-05-26';
-
-      findTitle().vm.$emit('input', title);
-      findDescription().setValue(description);
-      findStartDate().vm.$emit('input', startDate);
-      findDueDate().vm.$emit('input', dueDate);
-
+      inputFormData();
       clickSave();
 
       expect(wrapper.vm.$apollo.mutate).toHaveBeenCalledWith({
@@ -218,6 +230,28 @@ describe('Iteration Form', () => {
 
       await nextTick();
       expect(wrapper.emitted('updated')).toBeUndefined();
+    });
+
+    it('validates required fields and sets isValid state to false', async () => {
+      createComponent({
+        props: propsWithIteration,
+      });
+
+      // remove input from edit page
+      findTitle().vm.$emit('input', '');
+      findStartDate().vm.$emit('input', null);
+      findTitle().trigger('change');
+      findStartDate().trigger('change');
+
+      clickSave();
+
+      await nextTick();
+
+      expect(findSaveButton().props('loading')).toBe(false);
+      expect(wrapper.vm.isValid).toBe(false);
+      expect(wrapper.vm.titleState).toBe(false);
+      expect(wrapper.vm.startDateState).toBe(false);
+      expect(visitUrl).not.toHaveBeenCalled();
     });
 
     it('emits cancel when cancel clicked', async () => {

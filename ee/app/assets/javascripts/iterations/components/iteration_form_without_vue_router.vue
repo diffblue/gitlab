@@ -1,10 +1,10 @@
 <script>
-import { GlButton, GlForm, GlFormInput } from '@gitlab/ui';
-import initDatePicker from '~/behaviors/date_picker';
+import { GlButton, GlForm, GlFormGroup, GlFormInput, GlDatepicker } from '@gitlab/ui';
 import createFlash from '~/flash';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { __ } from '~/locale';
 import MarkdownField from '~/vue_shared/components/markdown/field.vue';
+import { formatDate } from '~/lib/utils/datetime_utility';
 import createIteration from '../queries/create_iteration.mutation.graphql';
 import updateIteration from '../queries/update_iteration.mutation.graphql';
 
@@ -12,8 +12,10 @@ export default {
   components: {
     GlButton,
     GlForm,
+    GlFormGroup,
     GlFormInput,
     MarkdownField,
+    GlDatepicker,
   },
   props: {
     groupPath: {
@@ -47,8 +49,9 @@ export default {
       loading: false,
       title: this.iteration.title,
       description: this.iteration.description ?? '',
-      startDate: this.iteration.startDate,
-      dueDate: this.iteration.dueDate,
+      startDate: this.iteration.startDate ? new Date(this.iteration.startDate) : null,
+      dueDate: this.iteration.dueDate ? new Date(this.iteration.dueDate) : null,
+      showValidation: false,
     };
   },
   computed: {
@@ -58,18 +61,35 @@ export default {
           groupPath: this.groupPath,
           title: this.title,
           description: this.description,
-          startDate: this.startDate,
-          dueDate: this.dueDate,
+          startDate: this.formattedDate(this.startDate),
+          dueDate: this.formattedDate(this.dueDate),
         },
       };
     },
-  },
-  mounted() {
-    // TODO: utilize GlDatepicker instead of relying on this jQuery behavior
-    initDatePicker();
+    invalidFeedback() {
+      return __('This field is required.');
+    },
+    isValid() {
+      return this.titleState && this.startDateState;
+    },
+    titleState() {
+      return !this.showValidation || Boolean(this.title);
+    },
+    startDateState() {
+      return !this.showValidation || Boolean(this.startDate);
+    },
   },
   methods: {
+    formattedDate(date) {
+      return date ? formatDate(date, 'yyyy-mm-dd') : null;
+    },
     save() {
+      this.showValidation = true;
+
+      if (!this.isValid) {
+        return {};
+      }
+
       this.loading = true;
       return this.isEditing ? this.updateIteration() : this.createIteration();
     },
@@ -154,93 +174,89 @@ export default {
       </h3>
     </div>
     <hr class="gl-mt-0" />
-    <gl-form class="row common-note-form">
+    <gl-form class="row common-note-form" novalidate>
       <div class="col-md-6">
-        <div class="form-group row">
-          <div class="col-form-label col-sm-2">
-            <label for="iteration-title">{{ __('Title') }}</label>
-          </div>
-          <div class="col-sm-10">
-            <gl-form-input
-              id="iteration-title"
-              v-model="title"
-              autocomplete="off"
-              data-qa-selector="iteration_title_field"
-            />
-          </div>
-        </div>
+        <gl-form-group
+          :label="__('Title')"
+          class="gl-flex-grow-1"
+          label-for="iteration-title"
+          :state="titleState"
+          :invalid-feedback="invalidFeedback"
+        >
+          <gl-form-input
+            id="iteration-title"
+            v-model="title"
+            autocomplete="off"
+            data-qa-selector="iteration_title_field"
+            :state="titleState"
+            required
+          />
+        </gl-form-group>
 
-        <div class="form-group row">
-          <div class="col-form-label col-sm-2">
-            <label for="iteration-description">{{ __('Description') }}</label>
-          </div>
-          <div class="col-sm-10">
-            <markdown-field
-              :markdown-preview-path="previewMarkdownPath"
-              :can-attach-file="false"
-              :enable-autocomplete="true"
-              label="Description"
-              :textarea-value="description"
-              markdown-docs-path="/help/user/markdown"
-              :add-spacing-classes="false"
-              class="md-area"
-            >
-              <template #textarea>
-                <textarea
-                  id="iteration-description"
-                  v-model="description"
-                  class="note-textarea js-gfm-input js-autosize markdown-area"
-                  dir="auto"
-                  data-supports-quick-actions="false"
-                  :aria-label="__('Description')"
-                  data-qa-selector="iteration_description_field"
-                >
-                </textarea>
-              </template>
-            </markdown-field>
-          </div>
-        </div>
+        <gl-form-group :label="__('Description')" label-for="iteration-description">
+          <markdown-field
+            :markdown-preview-path="previewMarkdownPath"
+            :can-attach-file="false"
+            :enable-autocomplete="true"
+            label="__('Description')"
+            :textarea-value="description"
+            markdown-docs-path="/help/user/markdown"
+            :add-spacing-classes="false"
+            class="md-area"
+          >
+            <template #textarea>
+              <textarea
+                id="iteration-description"
+                v-model="description"
+                class="note-textarea js-gfm-input js-autosize markdown-area"
+                dir="auto"
+                data-supports-quick-actions="false"
+                :aria-label="__('Description')"
+                data-qa-selector="iteration_description_field"
+              >
+              </textarea>
+            </template>
+          </markdown-field>
+        </gl-form-group>
       </div>
 
       <div class="col-md-6">
-        <div class="form-group row">
-          <div class="col-form-label col-sm-2">
-            <label for="iteration-start-date">{{ __('Start date') }}</label>
-          </div>
-          <div class="col-sm-10">
-            <gl-form-input
+        <gl-form-group
+          :label="__('Start date')"
+          :state="startDateState"
+          :invalid-feedback="invalidFeedback"
+        >
+          <div class="gl-display-inline-block gl-mr-2">
+            <gl-datepicker
               id="iteration-start-date"
               v-model="startDate"
-              class="datepicker form-control"
-              :placeholder="__('Select start date')"
-              autocomplete="off"
-              data-qa-selector="iteration_start_date_field"
-              @change="updateStartDate"
+              :state="startDateState"
+              required
             />
-            <a class="inline float-right gl-mt-2 js-clear-start-date" href="#">{{
-              __('Clear start date')
-            }}</a>
           </div>
-        </div>
-        <div class="form-group row">
-          <div class="col-form-label col-sm-2">
-            <label for="iteration-due-date">{{ __('Due date') }}</label>
+          <gl-button
+            v-show="startDate"
+            variant="link"
+            class="gl-white-space-nowrap"
+            @click="updateStartDate(null)"
+          >
+            {{ __('Clear start date') }}
+          </gl-button>
+        </gl-form-group>
+
+        <gl-form-group :label="__('Due date')">
+          <div class="gl-display-inline-block gl-mr-2">
+            <gl-datepicker id="iteration-due-date" v-model="dueDate" />
           </div>
-          <div class="col-sm-10">
-            <gl-form-input
-              id="iteration-due-date"
-              v-model="dueDate"
-              class="datepicker form-control"
-              :placeholder="__('Select due date')"
-              autocomplete="off"
-              data-qa-selector="iteration_due_date_field"
-              @change="updateDueDate"
-            />
-            <a class="inline float-right gl-mt-2 js-clear-due-date" href="#">{{
-              __('Clear due date')
-            }}</a>
-          </div>
-        </div>
+          <gl-button
+            v-show="dueDate"
+            variant="link"
+            class="gl-white-space-nowrap"
+            @click="updateDueDate(null)"
+          >
+            {{ __('Clear due date') }}
+          </gl-button>
+        </gl-form-group>
       </div>
     </gl-form>
 
