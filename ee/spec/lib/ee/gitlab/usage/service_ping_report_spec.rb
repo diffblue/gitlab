@@ -78,7 +78,14 @@ RSpec.describe Gitlab::Usage::ServicePingReport, :use_clean_rails_memory_store_c
 
       remove_ignored_metrics!(report)
 
-      expect(report).to eq(stored_queries_hash)
+      message = <<~MSG
+        # This example failed because it detected changes to Service Ping SQL metrics queries.
+        #
+        # Try regenerating the queries list and review the changes:
+        #   RAILS_ENV=test bin/rake gitlab:usage_data:generate_sql_metrics_fixture
+      MSG
+
+      expect(report).to eq(stored_queries_hash), message
     end
 
     def remove_ignored_metrics!(hash)
