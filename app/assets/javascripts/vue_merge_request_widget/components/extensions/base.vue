@@ -214,7 +214,7 @@ export default {
       // To allow for text to be selected we check if the the user is clicking
       // or selecting, if they are selecting the time difference should be
       // more than 200ms
-      if (up - this.down < 200) {
+      if (up - this.down < 200 && !e?.target?.closest('.btn-icon')) {
         this.toggleCollapsed(e);
       }
     },
@@ -264,7 +264,7 @@ export default {
             category="tertiary"
             data-testid="toggle-button"
             size="small"
-            @click.self="toggleCollapsed"
+            @click="toggleCollapsed"
           />
         </div>
       </div>
