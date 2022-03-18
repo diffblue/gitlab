@@ -6,11 +6,16 @@ RSpec.describe 'Value stream analytics charts', :js do
 
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, name: 'CA-test-group') }
-  let_it_be(:group2) { create(:group, name: 'CA-bad-test-group') }
   let_it_be(:project) { create(:project, :repository, namespace: group, group: group, name: 'Cool fun project') }
-  let_it_be(:group_label1) { create(:group_label, group: group) }
-  let_it_be(:group_label2) { create(:group_label, group: group) }
-  let_it_be(:label) { create(:group_label, group: group2) }
+  let_it_be(:group_with_value_stream) { create(:group, name: 'CA-vsa-test-group') }
+  let_it_be(:vsa_group_project) { create(:project, :repository, namespace: group_with_value_stream, group: group_with_value_stream) }
+  let_it_be(:value_stream) { create(:cycle_analytics_group_value_stream, group: group_with_value_stream, name: 'First value stream') }
+  let_it_be(:vsa_stages) do
+    [
+      create(:cycle_analytics_group_stage, group: group_with_value_stream, name: "Issue", relative_position: 1, value_stream: value_stream),
+      create(:cycle_analytics_group_stage, group: group_with_value_stream, name: "Code", relative_position: 2, value_stream: value_stream)
+    ]
+  end
 
   empty_state_selector = '[data-testid="vsa-empty-state"]'
 
@@ -26,6 +31,7 @@ RSpec.describe 'Value stream analytics charts', :js do
 
   before_all do
     group.add_owner(user)
+    group_with_value_stream.add_owner(user)
   end
 
   before do
@@ -162,31 +168,31 @@ RSpec.describe 'Value stream analytics charts', :js do
       sign_in(user)
     end
 
-    context 'type_of_work_analytics enabled' do
-      context 'use_vsa_aggregated_tables feature flag off' do
-        before do
-          stub_feature_flags(use_vsa_aggregated_tables: false)
-        end
+    context 'use_vsa_aggregated_tables feature flag off' do
+      let(:selected_group) { group }
+      let(:selected_project) { project }
 
-        it_behaves_like 'has the tasks by type chart'
+      before do
+        stub_feature_flags(use_vsa_aggregated_tables: false)
       end
 
-      context 'use_vsa_aggregated_tables feature flag on' do
-        context 'with no value streams' do
-          before do
-            select_group(group, empty_state_selector)
-          end
+      it_behaves_like 'has the tasks by type chart'
+    end
 
-          it_behaves_like 'has the empty state'
+    context 'use_vsa_aggregated_tables feature flag on' do
+      context 'with no value streams' do
+        before do
+          select_group(group, empty_state_selector)
         end
 
-        context 'with a value stream' do
-          before do
-            create(:cycle_analytics_group_value_stream, group: group, name: 'First value stream')
-          end
+        it_behaves_like 'has the empty state'
+      end
 
-          it_behaves_like 'has the tasks by type chart'
-        end
+      context 'with a value stream' do
+        let(:selected_group) { group_with_value_stream }
+        let(:selected_project) { vsa_group_project }
+
+        it_behaves_like 'has the tasks by type chart'
       end
     end
   end
