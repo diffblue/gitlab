@@ -101,7 +101,7 @@ export const projectFilter = {
 
 export const clusterFilter = {
   name: s__('SecurityReports|Cluster'),
-  id: 'clusterAgentId',
+  id: 'cluster',
   options: [],
   allOption: { name: s__('ciReport|All clusters') },
   defaultOptions: [],
