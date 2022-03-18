@@ -2609,6 +2609,9 @@ msgstr ""
 msgid "AdminSettings|Auto DevOps domain"
 msgstr ""
 
+msgid "AdminSettings|CI/CD limits"
+msgstr ""
+
 msgid "AdminSettings|Configure Let's Encrypt"
 msgstr ""
 
@@ -2648,6 +2651,24 @@ msgstr ""
 msgid "AdminSettings|Maximum duration of a session for Git operations when 2FA is enabled."
 msgstr ""
 
+msgid "AdminSettings|Maximum number of DAG dependencies that a job can have"
+msgstr ""
+
+msgid "AdminSettings|Maximum number of jobs in a single pipeline"
+msgstr ""
+
+msgid "AdminSettings|Maximum number of pipeline schedules"
+msgstr ""
+
+msgid "AdminSettings|Maximum number of pipeline subscriptions to and from a project"
+msgstr ""
+
+msgid "AdminSettings|Maximum number of runners registered per group"
+msgstr ""
+
+msgid "AdminSettings|Maximum number of runners registered per project"
+msgstr ""
+
 msgid "AdminSettings|New CI/CD variables in projects and groups default to protected."
 msgstr ""
 
@@ -2663,6 +2684,9 @@ msgstr ""
 msgid "AdminSettings|Required pipeline configuration"
 msgstr ""
 
+msgid "AdminSettings|Save %{name} limits"
+msgstr ""
+
 msgid "AdminSettings|Select a CI/CD template"
 msgstr ""
 
@@ -2676,6 +2700,9 @@ msgid "AdminSettings|Session duration for Git operations when 2FA is enabled (mi
 msgstr ""
 
 msgid "AdminSettings|Set a CI/CD template as the required pipeline configuration for all projects in the instance. Project CI/CD configuration merges into the required pipeline configuration when the pipeline runs. %{link_start}What is a required pipeline configuration?%{link_end}"
+msgstr ""
+
+msgid "AdminSettings|Set limit to 0 to disable it."
 msgstr ""
 
 msgid "AdminSettings|Set the initial name and protections for the default branch of new repositories created in the instance."
@@ -2697,6 +2724,9 @@ msgid "AdminSettings|The projects in this group can be selected as templates for
 msgstr ""
 
 msgid "AdminSettings|The template for the required pipeline configuration can be one of the GitLab-provided templates, or a custom template added to an instance template repository. %{link_start}How do I create an instance template repository?%{link_end}"
+msgstr ""
+
+msgid "AdminSettings|Total number of jobs in currently active pipelines"
 msgstr ""
 
 msgid "AdminStatistics|Active Users"
