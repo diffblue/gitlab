@@ -6,7 +6,6 @@ import {
   GlDropdown,
   GlDropdownItem,
   GlFormCheckbox,
-  GlFormGroup,
   GlIcon,
   GlTooltipDirective,
 } from '@gitlab/ui';
@@ -22,7 +21,6 @@ export const i18n = {
     ),
   },
   issueTypeSelect: {
-    label: s__('JiraService|Jira issue type'),
     description: s__('JiraService|Define the type of Jira issue to create from a vulnerability.'),
     defaultText: s__('JiraService|Select issue type'),
   },
@@ -43,7 +41,6 @@ export default {
     GlDropdown,
     GlDropdownItem,
     GlFormCheckbox,
-    GlFormGroup,
     GlIcon,
   },
   directives: {
@@ -132,7 +129,7 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div class="gl-mt-6">
     <gl-form-checkbox
       v-model="isJiraVulnerabilitiesEnabled"
       data-testid="enable-jira-vulnerabilities"
@@ -143,19 +140,19 @@ export default {
         {{ $options.i18n.checkbox.description }}
       </template>
     </gl-form-checkbox>
+
     <template v-if="showFullFeature">
       <input
         name="service[vulnerabilities_enabled]"
         type="hidden"
         :value="isJiraVulnerabilitiesEnabled"
       />
-      <gl-form-group
+      <div
         v-if="isJiraVulnerabilitiesEnabled"
-        :label="$options.i18n.issueTypeSelect.label"
-        class="gl-mt-4 gl-pl-1 gl-ml-5"
+        class="gl-mt-3 gl-ml-6"
         data-testid="issue-type-section"
       >
-        <p>{{ $options.i18n.issueTypeSelect.description }}</p>
+        <p class="gl-mb-3">{{ $options.i18n.issueTypeSelect.description }}</p>
         <gl-alert
           v-if="shouldShowLoadingErrorAlert"
           class="gl-mb-5"
@@ -166,7 +163,7 @@ export default {
           {{ loadingJiraIssueTypesErrorMessage }}
         </gl-alert>
         <div class="row gl-display-flex gl-align-items-center">
-          <gl-button-group class="col-md-5 gl-mr-3">
+          <gl-button-group class="col-md-5">
             <input
               name="service[vulnerabilities_issuetype]"
               type="hidden"
@@ -203,7 +200,7 @@ export default {
             {{ projectKeyWarning }}
           </p>
         </div>
-      </gl-form-group>
+      </div>
     </template>
   </div>
 </template>

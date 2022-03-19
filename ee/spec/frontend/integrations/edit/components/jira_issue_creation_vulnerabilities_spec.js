@@ -71,10 +71,6 @@ describe('JiraIssuesFields', () => {
         await findEnableJiraVulnerabilities().setChecked();
       });
 
-      it('shows a label for the issue-type selector', () => {
-        expect(withinComponent().getByText(i18n.issueTypeSelect.label)).not.toBe(null);
-      });
-
       it('shows a reason why the issue type is needed', () => {
         expect(withinComponent().getByText(i18n.issueTypeSelect.description)).not.toBe(null);
       });

@@ -112,7 +112,37 @@ export default {
           {{ $options.i18n.enableCheckboxHelp }}
         </template>
       </gl-form-checkbox>
-      <template v-if="enableJiraIssues">
+
+      <div v-if="enableJiraIssues" class="gl-pl-6 gl-mt-3">
+        <gl-form-group
+          :label="$options.i18n.projectKeyLabel"
+          label-for="service_project_key"
+          :invalid-feedback="$options.i18n.requiredFieldFeedback"
+          :state="validProjectKey"
+          class="gl-max-w-26"
+          data-testid="project-key-form-group"
+        >
+          <gl-form-input
+            id="service_project_key"
+            v-model="projectKey"
+            name="service[project_key]"
+            data-qa-selector="service_jira_project_key_field"
+            :placeholder="$options.i18n.projectKeyPlaceholder"
+            :required="enableJiraIssues"
+            :state="validProjectKey"
+            :disabled="!enableJiraIssues"
+            :readonly="isInheriting"
+          />
+        </gl-form-group>
+
+        <p v-if="gitlabIssuesEnabled" data-testid="conflict-warning-text">
+          <gl-sprintf :message="$options.i18n.issueTrackerConflictWarning">
+            <template #link="{ content }">
+              <gl-link :href="editProjectPath" target="_blank">{{ content }}</gl-link>
+            </template>
+          </gl-sprintf>
+        </p>
+
         <jira-issue-creation-vulnerabilities
           :project-key="projectKey"
           :initial-is-enabled="initialEnableJiraVulnerabilities"
@@ -128,43 +158,14 @@ export default {
           show-ultimate-message
           :upgrade-plan-path="upgradePlanPath"
         />
-      </template>
+      </div>
     </template>
+
     <jira-upgrade-cta
       v-else
-      class="gl-mt-2"
       data-testid="premium-upgrade-cta"
       show-premium-message
       :upgrade-plan-path="upgradePlanPath"
     />
-
-    <template v-if="showJiraIssuesIntegration">
-      <gl-form-group
-        :label="$options.i18n.projectKeyLabel"
-        label-for="service_project_key"
-        :invalid-feedback="$options.i18n.requiredFieldFeedback"
-        :state="validProjectKey"
-        data-testid="project-key-form-group"
-      >
-        <gl-form-input
-          id="service_project_key"
-          v-model="projectKey"
-          name="service[project_key]"
-          data-qa-selector="service_jira_project_key_field"
-          :placeholder="$options.i18n.projectKeyPlaceholder"
-          :required="enableJiraIssues"
-          :state="validProjectKey"
-          :disabled="!enableJiraIssues"
-          :readonly="isInheriting"
-        />
-      </gl-form-group>
-      <p v-if="gitlabIssuesEnabled" data-testid="conflict-warning-text">
-        <gl-sprintf :message="$options.i18n.issueTrackerConflictWarning">
-          <template #link="{ content }">
-            <gl-link :href="editProjectPath" target="_blank">{{ content }}</gl-link>
-          </template>
-        </gl-sprintf>
-      </p>
-    </template>
   </div>
 </template>
