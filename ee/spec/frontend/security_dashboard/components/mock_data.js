@@ -63,7 +63,7 @@ export const generateVulnerabilities = () => [
     severity: 'critical',
     state: 'DISMISSED',
     reportType: 'SAST',
-    resolvedOnDefaultBranch: true,
+    resolvedOnDefaultBranch: false,
     location: {
       image:
         'registry.gitlab.com/groulot/container-scanning-test/main:5f21de6956aee99ddb68ae49498662d9872f50ff',
@@ -77,17 +77,39 @@ export const generateVulnerabilities = () => [
       vendor: 'GitLab',
     },
     issueLinks: {
-      nodes: [{ id: 'issue-1', issue: { id: 'issue-1', iid: 15 } }],
+      nodes: [
+        {
+          id: 'issue-1',
+          issue: {
+            id: 'issue-1',
+            iid: 15,
+            webUrl: 'url',
+            webPath: 'path',
+            title: 'title',
+            state: 'state',
+            resolvedOnDefaultBranch: true,
+          },
+        },
+      ],
     },
     externalIssueLinks: {
-      nodes: [{ id: 'issue-1', issue: { iid: 15, externalTracker: 'jira' } }],
+      nodes: [
+        {
+          id: 'issue-1',
+          issue: { iid: 15, externalTracker: 'jira', resolvedOnDefaultBranch: true },
+        },
+      ],
     },
+    vulnerabilityPath: 'path',
+    userNotesCount: 1,
     __typename: 'Vulnerability',
   },
   {
     id: 'id_1',
     detectedAt: '2020-07-22T19:31:24Z',
+    resolvedOnDefaultBranch: false,
     hasSolutions: false,
+    issueLinks: [],
     identifiers: [
       {
         externalType: 'gemnasium',
@@ -108,15 +130,16 @@ export const generateVulnerabilities = () => [
       id: 'project-2',
       nameWithNamespace: 'Administrator / Vulnerability reports',
     },
-    scanner: {
-      id: 'scanner-2',
-      vendor: 'GitLab',
-    },
+    scanner: { id: 'scanner-2', vendor: 'GitLab' },
+    vulnerabilityPath: '#',
+    userNotesCount: 0,
     __typename: 'Vulnerability',
   },
   {
     id: 'id_2',
     detectedAt: '2020-08-22T20:00:12Z',
+    resolvedOnDefaultBranch: false,
+    issueLinks: [],
     identifiers: [],
     title: 'Vulnerability 2',
     severity: 'high',
@@ -133,11 +156,18 @@ export const generateVulnerabilities = () => [
       id: 'scanner-3',
       vendor: 'My Custom Scanner',
     },
+    vulnerabilityPath: 'path',
+    userNotesCount: 2,
     __typename: 'Vulnerability',
   },
   {
     id: 'id_3',
     title: 'Vulnerability 3',
+    detectedAt: new Date(),
+    resolvedOnDefaultBranch: true,
+    issueLinks: [],
+    identifiers: [],
+    reportType: '',
     severity: 'high',
     state: 'DETECTED',
     location: {
@@ -147,7 +177,9 @@ export const generateVulnerabilities = () => [
       id: 'project-4',
       nameWithNamespace: 'Mixed Vulnerabilities / Rails App',
     },
-    scanner: {},
+    scanner: { id: 'scanner-3', vendor: '' },
+    vulnerabilityPath: 'path',
+    userNotesCount: 3,
     __typename: 'Vulnerability',
   },
   {
@@ -155,12 +187,19 @@ export const generateVulnerabilities = () => [
     title: 'Vulnerability 4',
     severity: 'critical',
     state: 'DISMISSED',
+    detectedAt: new Date(),
+    resolvedOnDefaultBranch: true,
+    issueLinks: [],
+    identifiers: [],
+    reportType: 'DAST',
     location: {},
     project: {
       id: 'project-5',
       nameWithNamespace: 'Administrator / Security reports',
     },
-    scanner: {},
+    scanner: { id: 'scanner-4', vendor: 'GitLab' },
+    vulnerabilityPath: 'path',
+    userNotesCount: 4,
     __typename: 'Vulnerability',
   },
   {
@@ -168,6 +207,11 @@ export const generateVulnerabilities = () => [
     title: 'Vulnerability 5',
     severity: 'high',
     state: 'DETECTED',
+    detectedAt: new Date(),
+    resolvedOnDefaultBranch: false,
+    issueLinks: [],
+    identifiers: [],
+    reportType: 'DEPENDENCY_SCANNING',
     location: {
       path: '/v1/trees',
     },
@@ -175,7 +219,9 @@ export const generateVulnerabilities = () => [
       id: 'project-6',
       nameWithNamespace: 'Administrator / Security reports',
     },
-    scanner: {},
+    scanner: { id: 'scanner-5', vendor: 'GitLab' },
+    vulnerabilityPath: 'path',
+    userNotesCount: 5,
     __typename: 'Vulnerability',
   },
 ];
