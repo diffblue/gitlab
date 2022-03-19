@@ -60,7 +60,7 @@ export default {
         list: [],
         pageInfo: {},
       },
-      showDrawer: false,
+      drawerId: null,
       drawerMergeRequest: {},
       drawerProject: {},
       sortBy,
@@ -108,6 +108,9 @@ export default {
       const { hasPreviousPage, hasNextPage } = this.violations.pageInfo || {};
       return hasPreviousPage || hasNextPage;
     },
+    showDrawer() {
+      return this.drawerId !== null;
+    },
   },
   methods: {
     handleSortChanged(sortState) {
@@ -115,24 +118,21 @@ export default {
       this.updateUrlQuery({ ...this.urlQuery, sort: this.sortParam });
     },
     toggleDrawer(rows) {
-      const { mergeRequest } = rows[0] || {};
+      const { id, mergeRequest } = rows[0] || {};
 
-      if (!mergeRequest || this.isCurrentDrawer(mergeRequest)) {
+      if (!mergeRequest || this.drawerId === id) {
         this.closeDrawer();
       } else {
-        this.openDrawer(mergeRequest);
+        this.openDrawer(id, mergeRequest);
       }
     },
-    isCurrentDrawer(mergeRequest) {
-      return this.showDrawer && mergeRequest.id === this.drawerMergeRequest.id;
-    },
-    openDrawer(mergeRequest) {
-      this.showDrawer = true;
+    openDrawer(id, mergeRequest) {
+      this.drawerId = id;
       this.drawerMergeRequest = mergeRequest;
       this.drawerProject = mergeRequest.project;
     },
     closeDrawer() {
-      this.showDrawer = false;
+      this.drawerId = null;
       // Refs are required by BTable to manipulate the selection
       // issue: https://gitlab.com/gitlab-org/gitlab-ui/-/issues/1531
       this.$refs.table.$children[0].clearSelected();
