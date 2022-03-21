@@ -7,9 +7,10 @@ RSpec.describe 'Updating an Iteration' do
 
   let_it_be(:current_user) { create(:user) }
   let_it_be(:group) { create(:group) }
-  let_it_be(:cadence) { create(:iterations_cadence, group: group) }
+  let_it_be(:cadence) { build(:iterations_cadence, group: group, automatic: false).tap { |cadence| cadence.save!(validate: false) } }
   let_it_be(:iteration) { create(:iteration, group: group, iterations_cadence: cadence) }
 
+  let(:subject_iteration) { iteration }
   let(:start_date) { 1.day.from_now.strftime('%F') }
   let(:end_date) { 5.days.from_now.strftime('%F') }
   let(:attributes) do
@@ -22,7 +23,7 @@ RSpec.describe 'Updating an Iteration' do
   end
 
   let(:mutation) do
-    params = { group_path: group.full_path, id: iteration.to_global_id.to_s }.merge(attributes)
+    params = { group_path: group.full_path, id: subject_iteration.to_global_id.to_s }.merge(attributes)
 
     graphql_mutation(:update_iteration, params)
   end
@@ -40,7 +41,7 @@ RSpec.describe 'Updating an Iteration' do
     it_behaves_like 'a mutation that returns a top-level access error'
 
     it 'does not update iteration' do
-      expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(iteration, :title)
+      expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(subject_iteration, :title)
     end
   end
 
@@ -77,10 +78,46 @@ RSpec.describe 'Updating an Iteration' do
         expect(iteration_hash['dueDate'].to_date).to eq(end_date.to_date)
 
         # Let's also check that the object was updated properly
-        iteration.reload
-        expect(iteration.description).to eq('some description')
-        expect(iteration.start_date).to eq(start_date.to_date)
-        expect(iteration.due_date).to eq(end_date.to_date)
+        subject_iteration.reload
+        expect(subject_iteration.description).to eq('some description')
+        expect(subject_iteration.start_date).to eq(start_date.to_date)
+        expect(subject_iteration.due_date).to eq(end_date.to_date)
+      end
+
+      context 'when updating attributes on an automatic cadence' do
+        let_it_be(:automatic_cadence) { create(:iterations_cadence, group: group) }
+        let_it_be(:legacy_iteration) { create(:iteration, group: group, iterations_cadence: automatic_cadence) }
+
+        let(:subject_iteration) { legacy_iteration }
+
+        context 'when updating deprecated attributes' do
+          using RSpec::Parameterized::TableSyntax
+
+          where(:argument, :argument_value) do
+            :title      | 'updated title'
+            :start_date | 1.week.ago.to_date.to_s
+            :due_date   | 1.week.from_now.to_date.to_s
+          end
+
+          with_them do
+            let(:attributes) { { argument => argument_value } }
+
+            it_behaves_like 'a mutation that returns top-level errors',
+              errors: ['Manual iteration updates are deprecated, only `description` updates will be allowed in the future']
+          end
+        end
+
+        context 'when updating description' do
+          let(:attributes) { { description: 'updated description' } }
+
+          it 'allows updating the description of an iteration' do
+            expect do
+              post_graphql_mutation(mutation, current_user: current_user)
+
+              subject_iteration.reload
+            end.to change(subject_iteration, :description).to('updated description')
+          end
+        end
       end
 
       context 'when updating title' do
@@ -104,7 +141,7 @@ RSpec.describe 'Updating an Iteration' do
               post_graphql_mutation(mutation, current_user: current_user)
 
               expect(mutation_response['iteration']['title']).to eq(expected_title)
-              expect(iteration.reload.title).to eq(expected_title)
+              expect(subject_iteration.reload.title).to eq(expected_title)
             end
           end
         end
@@ -136,8 +173,8 @@ RSpec.describe 'Updating an Iteration' do
           expect(iteration_hash['startDate'].to_date).to eq(start_date.to_date)
 
           # Let's also check that the object was updated properly
-          iteration.reload
-          expect(iteration.start_date).to eq(start_date.to_date)
+          subject_iteration.reload
+          expect(subject_iteration.start_date).to eq(start_date.to_date)
         end
 
         context 'when another iteration with given dates overlap' do
@@ -160,14 +197,14 @@ RSpec.describe 'Updating an Iteration' do
       end
 
       context 'when given a raw model id (backward compatibility)' do
-        let(:attributes) { { id: iteration.id, title: 'title' } }
+        let(:attributes) { { id: subject_iteration.id, title: 'title' } }
 
         it 'updates the iteration' do
           post_graphql_mutation(mutation, current_user: current_user)
 
           iteration_hash = mutation_response['iteration']
           expect(iteration_hash['title']).to eq('title')
-          expect(iteration.reload.title).to eq('title')
+          expect(subject_iteration.reload.title).to eq('title')
         end
       end
 
@@ -178,7 +215,7 @@ RSpec.describe 'Updating an Iteration' do
                         errors: ['The list of iteration attributes is empty']
 
         it 'does not update the iteration' do
-          expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(iteration, :title)
+          expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(subject_iteration, :title)
         end
       end
     end
