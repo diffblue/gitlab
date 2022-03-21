@@ -14,6 +14,12 @@ module Epics::RelatedEpicLinks
 
     private
 
+    def after_create_for(link)
+      if link.link_type == link.class::TYPE_RELATES_TO
+        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_related_added(author: current_user)
+      end
+    end
+
     def references(extractor)
       extractor.epics
     end
