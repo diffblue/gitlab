@@ -58,9 +58,7 @@ module QA
       context 'when upstream project new tag pipeline finishes' do
         it 'triggers pipeline in downstream project', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347998' do
           # Downstream project should have one pipeline at this time
-          unless downstream_project.pipelines.size == 1
-            raise "[ERROR] Downstream project should have 1 pipeline - pipelines count #{downstream_project.pipelines.size}"
-          end
+          Support::Waiter.wait_until { downstream_project.pipelines.size == 1 }
 
           Resource::Tag.fabricate_via_api! do |tag|
             tag.project = upstream_project
@@ -79,7 +77,7 @@ module QA
           Page::Project::Menu.perform(&:click_ci_cd_pipelines)
 
           # Downstream project must have 2 pipelines at this time
-          expect(downstream_project.pipelines.size).to eq(2), "There are currently #{downstream_project.pipelines.size} pipelines in downstream project."
+          expect { downstream_project.pipelines.size }.to eventually_eq(2), "There are currently #{downstream_project.pipelines.size} pipelines in downstream project."
 
           # expect new downstream pipeline to also succeed
           Page::Project::Pipeline::Index.perform do |index|
