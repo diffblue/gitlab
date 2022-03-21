@@ -19,7 +19,8 @@ module Types
       field :job_artifact_registries, ::Types::Geo::JobArtifactRegistryType.connection_type,
             null: true,
             resolver: ::Resolvers::Geo::JobArtifactRegistriesResolver,
-            description: 'Find Job Artifact registries on this Geo node'
+            description: 'Find Job Artifact registries on this Geo node',
+            feature_flag: :geo_job_artifact_replication
       field :lfs_object_registries, ::Types::Geo::LfsObjectRegistryType.connection_type,
             null: true,
             resolver: ::Resolvers::Geo::LfsObjectRegistriesResolver,
