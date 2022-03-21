@@ -7,6 +7,8 @@ import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { s__, __ } from '~/locale';
 import getCiMinutesUsageByNamespace from '../graphql/ci_minutes.query.graphql';
 
+const timeFormatter = (val) => val;
+
 export default {
   components: {
     GlIcon,
@@ -55,6 +57,9 @@ export default {
         },
         yAxis: {
           name: this.$options.i18n.yAxisLabel,
+          axisLabel: {
+            formatter: timeFormatter,
+          },
         },
       };
     },
@@ -64,7 +69,10 @@ export default {
         .sort((a, b) => {
           return new Date(a.monthIso8601) - new Date(b.monthIso8601);
         })
-        .map((cur) => [formatDate(cur.monthIso8601, 'mmm yyyy'), cur.sharedRunnersDuration]);
+        .map((cur) => [
+          formatDate(cur.monthIso8601, 'mmm yyyy'),
+          parseFloat((cur.sharedRunnersDuration / 60).toFixed(2)),
+        ]);
     },
     isDataEmpty() {
       return this.minutesUsageDataByMonth.length === 0;
