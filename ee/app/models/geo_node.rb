@@ -53,6 +53,7 @@ class GeoNode < ApplicationRecord
   scope :secondary_nodes, -> { where(primary: false) }
   scope :name_in, -> (names) { where(name: names) }
   scope :ordered, -> { order(:id) }
+  scope :enabled, -> { where(enabled: true) }
 
   attr_encrypted :secret_access_key,
                  key: Settings.attr_encrypted_db_key_base_32,
