@@ -72,6 +72,11 @@ module EE
         ldap_lock_bypassable?
       end
 
+      with_scope :subject
+      condition(:security_orchestration_policies_enabled) do
+        @subject.feature_available?(:security_orchestration_policies)
+      end
+
       condition(:security_dashboard_enabled) do
         @subject.feature_available?(:security_dashboard)
       end
@@ -304,6 +309,10 @@ module EE
         enable :create_wiki
         enable :admin_merge_request
         enable :read_group_audit_events
+      end
+
+      rule { security_orchestration_policies_enabled & can?(:developer_access) }.policy do
+        enable :security_orchestration_policies
       end
 
       rule { security_dashboard_enabled & developer }.policy do

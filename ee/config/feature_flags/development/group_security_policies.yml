@@ -1,0 +1,8 @@
+---
+name: group_security_policies
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/83262
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/356258
+milestone: '14.9'
+type: development
+group: group::container security
+default_enabled: false
