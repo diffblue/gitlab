@@ -29,6 +29,7 @@ export default () => {
     pipelineJobsPath,
     canAdminVulnerability,
     securityReportHelpPageLink,
+    vulnerabilityRetentionPeriodHelpPageLink,
     falsePositiveDocUrl,
     canViewFalsePositive,
   } = el.dataset;
@@ -63,6 +64,7 @@ export default () => {
         sourceBranch,
       },
       securityReportHelpPageLink,
+      vulnerabilityRetentionPeriodHelpPageLink,
       vulnerabilitiesEndpoint,
       loadingErrorIllustrations,
       falsePositiveDocUrl,
