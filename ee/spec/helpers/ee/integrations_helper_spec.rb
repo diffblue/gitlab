@@ -8,6 +8,7 @@ RSpec.describe EE::IntegrationsHelper do
   let(:controller_class) do
     helper_mod = described_class
 
+    # rubocop:disable Rails/ApplicationController
     Class.new(ActionController::Base) do
       include helper_mod
       include ActionView::Helpers::AssetUrlHelper
@@ -16,6 +17,7 @@ RSpec.describe EE::IntegrationsHelper do
         "http://some-path/project/1"
       end
     end
+    # rubocop:enable Rails/ApplicationController
   end
 
   let_it_be_with_refind(:project) { create(:project) }
