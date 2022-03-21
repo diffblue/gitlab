@@ -15,7 +15,7 @@ const DEFAULT_TH_CLASSES =
   'gl-bg-transparent! gl-border-b-solid! gl-border-b-gray-200! gl-border-b-1! gl-p-5!';
 
 const tableCell = (config) => ({
-  thClass: `${DEFAULT_TH_CLASSES}`,
+  thClass: DEFAULT_TH_CLASSES,
   tdClass: (value, key, item) => {
     return {
       // eslint-disable-next-line no-underscore-dangle
@@ -108,13 +108,18 @@ export default {
       }
     },
 
-    isHTTP(url) {
+    hasHttpProtocol(url) {
       try {
         const parsedUrl = new URL(url);
         return ['http:', 'https:'].includes(parsedUrl.protocol);
       } catch (e) {
         return false;
       }
+    },
+
+    setPageSize(size) {
+      this.paginationConfig.perPage = size;
+      this.paginationConfig.page = 1;
     },
   },
 
@@ -147,7 +152,11 @@ export default {
       >
         <template #cell(source)="{ item }">
           <template v-if="item.import_url">
-            <gl-link v-if="isHTTP(item.import_url)" :href="item.import_url" target="_blank">
+            <gl-link
+              v-if="hasHttpProtocol(item.import_url)"
+              :href="item.import_url"
+              target="_blank"
+            >
               {{ item.import_url }}
               <gl-icon name="external-link" class="gl-vertical-align-middle" />
             </gl-link>
@@ -183,7 +192,7 @@ export default {
         :page-info="pageInfo"
         class="gl-m-0 gl-mt-3"
         @set-page="paginationConfig.page = $event"
-        @set-page-size="paginationConfig.perPage = $event"
+        @set-page-size="setPageSize"
       />
     </template>
   </div>

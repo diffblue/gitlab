@@ -6,6 +6,7 @@ import ImportErrorDetails from '~/pages/import/history/components/import_error_d
 import ImportHistoryApp from '~/pages/import/history/components/import_history_app.vue';
 import PaginationBar from '~/vue_shared/components/pagination_bar/pagination_bar.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { stubComponent } from 'helpers/stub_component';
 
 describe('ImportHistoryApp', () => {
   const API_URL = '/api/v4/projects.json';
@@ -37,9 +38,9 @@ describe('ImportHistoryApp', () => {
       import_status: 'failed',
     },
     {
-      id: 2,
+      id: 3,
       name_with_namespace: 'Administrator / Dummy',
-      path_with_namespace: 'root/dummy',
+      path_with_namespace: 'root/dummy2',
       created_at: '2022-03-09T11:23:04.974Z',
       import_url: 'git://non-http.url',
       import_type: 'gi',
@@ -51,7 +52,10 @@ describe('ImportHistoryApp', () => {
 
   function createComponent({ shallow = true } = {}) {
     const mountFn = shallow ? shallowMount : mount;
-    wrapper = mountFn(ImportHistoryApp);
+    wrapper = mountFn(
+      ImportHistoryApp,
+      shallow ? { stubs: { GlTable: { ...stubComponent(GlTable), props: ['items'] } } } : {},
+    );
   }
 
   const originalApiVersion = gon.api_version;
@@ -94,8 +98,7 @@ describe('ImportHistoryApp', () => {
 
       const table = wrapper.find(GlTable);
       expect(table.exists()).toBe(true);
-      // can't use .props() or .attributes() here
-      expect(table.vm.$attrs.items).toHaveLength(DUMMY_RESPONSE.length);
+      expect(table.props().items).toStrictEqual(DUMMY_RESPONSE);
     });
 
     it('changes page when requested by pagination bar', async () => {
@@ -106,11 +109,25 @@ describe('ImportHistoryApp', () => {
       await axios.waitForAll();
       mock.resetHistory();
 
+      const FAKE_NEXT_PAGE_REPLY = [
+        {
+          id: 4,
+          path_with_namespace: 'root/some_other_project',
+          created_at: '2022-03-10T15:10:03.172Z',
+          import_url: null,
+          import_type: 'gitlab_project',
+          import_status: 'finished',
+        },
+      ];
+
+      mock.onGet(API_URL).reply(200, FAKE_NEXT_PAGE_REPLY, DEFAULT_HEADERS);
+
       wrapper.findComponent(PaginationBar).vm.$emit('set-page', NEW_PAGE);
       await axios.waitForAll();
 
       expect(mock.history.get.length).toBe(1);
       expect(mock.history.get[0].params).toStrictEqual(expect.objectContaining({ page: NEW_PAGE }));
+      expect(wrapper.find(GlTable).props().items).toStrictEqual(FAKE_NEXT_PAGE_REPLY);
     });
   });
 
@@ -128,6 +145,25 @@ describe('ImportHistoryApp', () => {
     expect(mock.history.get.length).toBe(1);
     expect(mock.history.get[0].params).toStrictEqual(
       expect.objectContaining({ per_page: NEW_PAGE_SIZE }),
+    );
+  });
+
+  it('resets page to 1 when page size is changed', async () => {
+    const NEW_PAGE_SIZE = 4;
+
+    mock.onGet(API_URL).reply(200, DUMMY_RESPONSE, DEFAULT_HEADERS);
+    createComponent();
+    await axios.waitForAll();
+    wrapper.findComponent(PaginationBar).vm.$emit('set-page', 2);
+    await axios.waitForAll();
+    mock.resetHistory();
+
+    wrapper.findComponent(PaginationBar).vm.$emit('set-page-size', NEW_PAGE_SIZE);
+    await axios.waitForAll();
+
+    expect(mock.history.get.length).toBe(1);
+    expect(mock.history.get[0].params).toStrictEqual(
+      expect.objectContaining({ per_page: NEW_PAGE_SIZE, page: 1 }),
     );
   });
 
