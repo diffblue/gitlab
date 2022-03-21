@@ -28,7 +28,7 @@ RSpec.describe Gitlab::Usage::ServicePingReport, :use_clean_rails_memory_store_c
   end
 
   # The fixture for this spec is generated automatically by
-  #   RAILS_ENV=test bin/rake gitlab:usage_data:generate_sql_metrics_fixture
+  #   bin/rake gitlab:usage_data:generate_sql_metrics_fixture
   #
   # Do not edit it manually!
   describe 'guard SQL queries against arbitrary changes' do
@@ -82,7 +82,7 @@ RSpec.describe Gitlab::Usage::ServicePingReport, :use_clean_rails_memory_store_c
         # This example failed because it detected changes to Service Ping SQL metrics queries.
         #
         # Try regenerating the queries list and review the changes:
-        #   RAILS_ENV=test bin/rake gitlab:usage_data:generate_sql_metrics_fixture
+        #   bin/rake gitlab:usage_data:generate_sql_metrics_fixture
       MSG
 
       expect(report).to eq(stored_queries_hash), message
