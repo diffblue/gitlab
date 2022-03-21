@@ -10,8 +10,8 @@ module Ci
         exceeded: 0
       }.freeze
 
-      def initialize(project, namespace, tracking_strategy: nil)
-        @context = Ci::Minutes::Context.new(project, namespace, tracking_strategy: tracking_strategy)
+      def initialize(project, namespace)
+        @context = Ci::Minutes::Context.new(project, namespace)
         @stage = calculate_notification_stage if eligible_for_notifications?
       end
 

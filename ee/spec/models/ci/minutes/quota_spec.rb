@@ -107,24 +107,6 @@ RSpec.describe Ci::Minutes::Quota do
     with_them do
       it { is_expected.to eq(expected_minutes) }
     end
-
-    context 'with tracking_strategy' do
-      where(:minutes_used, :legacy_minutes_used, :tracking_strategy, :expected_minutes) do
-        0   | 100 | nil     | 0
-        0   | 100 | :new    | 0
-        0   | 100 | :legacy | 100
-      end
-
-      with_them do
-        let(:quota) { described_class.new(namespace, tracking_strategy: tracking_strategy) }
-
-        before do
-          namespace.namespace_statistics.update!(shared_runners_seconds: legacy_minutes_used.minutes)
-        end
-
-        it { is_expected.to eq(expected_minutes) }
-      end
-    end
   end
 
   describe '#percent_total_minutes_remaining' do
@@ -232,8 +214,7 @@ RSpec.describe Ci::Minutes::Quota do
   end
 
   describe '#reset_date' do
-    let(:quota) { described_class.new(namespace, tracking_strategy: tracking_strategy) }
-    let(:tracking_strategy) { nil }
+    let(:quota) { described_class.new(namespace) }
 
     subject(:reset_date) { quota.reset_date }
 
@@ -247,22 +228,6 @@ RSpec.describe Ci::Minutes::Quota do
 
     it 'corresponds to the beginning of the current month' do
       expect(reset_date).to eq(Date.new(2021, 07, 1))
-    end
-
-    context 'when tracking_strategy: :new' do
-      let(:tracking_strategy) { :new }
-
-      it 'corresponds to the beginning of the current month' do
-        expect(reset_date).to eq(Date.new(2021, 07, 1))
-      end
-    end
-
-    context 'when tracking_strategy: :legacy' do
-      let(:tracking_strategy) { :legacy }
-
-      it 'corresponds to the current time' do
-        expect(reset_date).to eq(Date.new(2021, 07, 14))
-      end
     end
   end
 end

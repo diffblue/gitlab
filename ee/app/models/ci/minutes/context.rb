@@ -8,9 +8,8 @@ module Ci
 
       attr_reader :namespace
 
-      def initialize(project, namespace, tracking_strategy: nil)
+      def initialize(project, namespace)
         @namespace = project&.shared_runners_limit_namespace || namespace
-        @tracking_strategy = tracking_strategy
       end
 
       def percent_total_minutes_remaining
@@ -20,7 +19,7 @@ module Ci
       private
 
       def quota
-        @quota ||= ::Ci::Minutes::Quota.new(namespace, tracking_strategy: @tracking_strategy)
+        @quota ||= ::Ci::Minutes::Quota.new(namespace)
       end
     end
   end
