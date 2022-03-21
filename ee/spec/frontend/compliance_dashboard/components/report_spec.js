@@ -20,7 +20,11 @@ import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { stubComponent } from 'helpers/stub_component';
 import { sortObjectToString } from '~/lib/utils/table_utility';
 import { parseViolationsQueryFilter } from 'ee/compliance_dashboard/utils';
-import { DEFAULT_SORT, GRAPHQL_PAGE_SIZE } from 'ee/compliance_dashboard/constants';
+import {
+  DEFAULT_SORT,
+  GRAPHQL_PAGE_SIZE,
+  DEFAULT_PAGINATION_CURSORS,
+} from 'ee/compliance_dashboard/constants';
 import { createComplianceViolationsResponse } from '../mock_data';
 
 Vue.use(VueApollo);
@@ -158,9 +162,7 @@ describe('ComplianceReport component', () => {
         fullPath: groupPath,
         filters: parseViolationsQueryFilter(defaultFilterParams),
         sort: DEFAULT_SORT,
-        first: GRAPHQL_PAGE_SIZE,
-        after: null,
-        before: null,
+        ...DEFAULT_PAGINATION_CURSORS,
       });
     });
   });
@@ -182,9 +184,7 @@ describe('ComplianceReport component', () => {
         fullPath: groupPath,
         filters: parseViolationsQueryFilter(defaultFilterParams),
         sort,
-        first: GRAPHQL_PAGE_SIZE,
-        after: null,
-        before: null,
+        ...DEFAULT_PAGINATION_CURSORS,
       });
     });
   });
@@ -354,9 +354,7 @@ describe('ComplianceReport component', () => {
           fullPath: groupPath,
           filters: parseViolationsQueryFilter(query),
           sort: DEFAULT_SORT,
-          first: GRAPHQL_PAGE_SIZE,
-          after: null,
-          before: null,
+          ...DEFAULT_PAGINATION_CURSORS,
         });
       });
     });
@@ -384,9 +382,7 @@ describe('ComplianceReport component', () => {
           fullPath: groupPath,
           filters: parseViolationsQueryFilter(defaultFilterParams),
           sort: sortObjectToString(sortState),
-          first: GRAPHQL_PAGE_SIZE,
-          after: null,
-          before: null,
+          ...DEFAULT_PAGINATION_CURSORS,
         });
       });
     });
@@ -404,12 +400,12 @@ describe('ComplianceReport component', () => {
       });
 
       it.each`
-        event     | after    | before
-        ${'next'} | ${'foo'} | ${null}
-        ${'prev'} | ${null}  | ${'foo'}
+        event     | after    | before   | first                | last
+        ${'next'} | ${'foo'} | ${null}  | ${GRAPHQL_PAGE_SIZE} | ${undefined}
+        ${'prev'} | ${null}  | ${'foo'} | ${undefined}         | ${GRAPHQL_PAGE_SIZE}
       `(
         'fetches the $event page when the pagination emits "$event"',
-        async ({ event, after, before }) => {
+        async ({ event, after, before, first, last }) => {
           await findPagination().vm.$emit(event, after ?? before);
           await waitForPromises();
 
@@ -417,10 +413,11 @@ describe('ComplianceReport component', () => {
           expect(mockGraphQlSuccess).toHaveBeenNthCalledWith(2, {
             fullPath: groupPath,
             filters: parseViolationsQueryFilter(defaultFilterParams),
-            first: GRAPHQL_PAGE_SIZE,
             sort: DEFAULT_SORT,
             after,
             before,
+            first,
+            last,
           });
         },
       );
@@ -459,10 +456,8 @@ describe('ComplianceReport component', () => {
           expect(mockGraphQlSuccess).toHaveBeenNthCalledWith(3, {
             fullPath: groupPath,
             filters: parseViolationsQueryFilter(query),
-            first: GRAPHQL_PAGE_SIZE,
             sort: DEFAULT_SORT,
-            after: null,
-            before: null,
+            ...DEFAULT_PAGINATION_CURSORS,
           });
         });
       });
