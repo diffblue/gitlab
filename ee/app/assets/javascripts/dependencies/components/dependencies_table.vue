@@ -103,7 +103,6 @@ export default {
     :fields="$options.fields"
     :items="localDependencies"
     :busy="isLoading"
-    responsive
     data-qa-selector="dependencies_table_content"
     details-td-class="pt-0"
     stacked="md"
