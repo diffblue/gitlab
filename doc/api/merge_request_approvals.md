@@ -790,9 +790,9 @@ GET /projects/:id/merge_requests/:merge_request_iid/approval_rules/:approval_rul
 
 | Attribute           | Type    | Required | Description                                                                  |
 |---------------------|---------|----------|------------------------------------------------------------------------------|
-| `id`                | integer or string | yes      | The ID or [URL-encoded path of a project](index.md#namespaced-path-encoding) |
-| `merge_request_iid`  | integer | yes      | The IID of MR                                                                |
-| `approval_rule_id`   | integer | yes      | The ID of a approval rule                                                    |
+| `id`                | integer or string | yes      | The ID or [URL-encoded path of a project](index.md#namespaced-path-encoding). |
+| `merge_request_iid`  | integer | yes      | The IID of a merge request.                                                            |
+| `approval_rule_id`   | integer | yes      | The ID of an approval rule.                                                 |
 
 ```json
 {
@@ -957,13 +957,13 @@ These are system generated rules.
 
 | Attribute            | Type    | Required | Description                                    |
 |----------------------|---------|----------|------------------------------------------------|
-| `id`                 | integer or string | yes      | The ID or [URL-encoded path of a project](index.md#namespaced-path-encoding) |
-| `merge_request_iid`  | integer | yes      | The IID of MR                                  |
-| `approval_rule_id`   | integer | yes      | The ID of a approval rule                      |
-| `name`               | string  | yes      | The name of the approval rule                  |
-| `approvals_required` | integer | yes      | The number of required approvals for this rule |
-| `user_ids`           | Array   | no       | The ids of users as approvers                  |
-| `group_ids`          | Array   | no       | The ids of groups as approvers                 |
+| `id`                 | integer or string | yes      | The ID or [URL-encoded path of a project](index.md#namespaced-path-encoding). |
+| `merge_request_iid`  | integer | yes      | The IID of a merge request.                     |
+| `approval_rule_id`   | integer | yes      | The ID of an approval rule.                     |
+| `name`               | string  | yes      | The name of the approval rule.                  |
+| `approvals_required` | integer | yes      | The number of required approvals for this rule. |
+| `user_ids`           | Array   | no       | The IDs of users as approvers.                  |
+| `group_ids`          | Array   | no       | The IDs of groups as approvers.                 |
 
 ```json
 {
