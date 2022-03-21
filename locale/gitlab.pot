@@ -1811,6 +1811,9 @@ msgstr ""
 msgid "About this feature"
 msgstr ""
 
+msgid "About your company"
+msgstr ""
+
 msgid "Abuse Reports"
 msgstr ""
 
@@ -16780,6 +16783,9 @@ msgid "GitLab Support Bot"
 msgstr ""
 
 msgid "GitLab Team Member"
+msgstr ""
+
+msgid "GitLab Ultimate trial"
 msgstr ""
 
 msgid "GitLab User"
@@ -39438,6 +39444,9 @@ msgstr ""
 msgid "Try again?"
 msgstr ""
 
+msgid "Try all GitLab features for free for 30 days. No credit card required."
+msgstr ""
+
 msgid "Try all GitLab has to offer for 30 days."
 msgstr ""
 
@@ -41878,6 +41887,9 @@ msgid "Webhooks|Webhook was automatically disabled"
 msgstr ""
 
 msgid "Webhooks|Wiki page events"
+msgstr ""
+
+msgid "Website"
 msgstr ""
 
 msgid "Website:"

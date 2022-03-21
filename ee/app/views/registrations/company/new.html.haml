@@ -1,0 +1,11 @@
+- page_title _('Start your Free Ultimate Trial')
+
+.row
+  .col-md-6.m-sm-6
+    %h2.gl-pb-5.gl-my-0
+      = _("About your company")
+
+    #js-company-registration-form{ data: { trial: params[:trial] == 'true', create_lead_path: create_lead_trials_path } }
+
+  .col-md-4.gl-display-inline-flex.gl-vertical-align-middle
+    = image_tag 'illustrations/saas-trial-illustration.svg', alt: '', class: 'gl-display-none d-md-inline gl-w-full'
