@@ -184,6 +184,43 @@ RSpec.describe 'New project', :js do
       end
     end
 
+    context 'Template selector', :js do
+      let(:selected_template) { page.find('.project-fields-form .selected-template') }
+
+      choose_template_selector = '.choose-template'
+      template_option_selector = '.template-option'
+      template_name_selector = '.description strong'
+
+      before do
+        visit new_project_path
+        click_link 'Create from template'
+      end
+
+      it 'can select a template' do
+        first_template = first(template_option_selector)
+        first_template_name = first_template.find(template_name_selector).text
+        first_template.find(choose_template_selector).click
+
+        expect(selected_template).to have_text(first_template_name)
+
+        click_button "Change template"
+        find("#built-in").click
+
+        # Jumps down 2 templates, skipping the `preview` buttons
+        4.times do
+          page.send_keys :tab
+        end
+
+        # Ensure the template with focus is selected
+        focused_template = page.find(':focus').ancestor(template_option_selector)
+        focused_template_name = focused_template.find(template_name_selector).text
+        focused_template.find(choose_template_selector).send_keys :enter
+
+        expect(selected_template).not_to have_text(first_template_name)
+        expect(selected_template).to have_text(focused_template_name)
+      end
+    end
+
     context 'Namespace selector' do
       context 'with user namespace' do
         before do
