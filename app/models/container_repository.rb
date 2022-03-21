@@ -35,7 +35,7 @@ class ContainerRepository < ApplicationRecord
 
   enum status: { delete_scheduled: 0, delete_failed: 1 }
   enum expiration_policy_cleanup_status: { cleanup_unscheduled: 0, cleanup_scheduled: 1, cleanup_unfinished: 2, cleanup_ongoing: 3 }
-  enum migration_skipped_reason: { not_in_plan: 0, too_many_retries: 1, too_many_tags: 2, root_namespace_in_deny_list: 3, migration_canceled: 4 }
+  enum migration_skipped_reason: { not_in_plan: 0, too_many_retries: 1, too_many_tags: 2, root_namespace_in_deny_list: 3, migration_canceled: 4, not_found: 5 }
 
   delegate :client, :gitlab_api_client, to: :registry
 
@@ -310,9 +310,16 @@ class ContainerRepository < ApplicationRecord
     try_count = 0
     begin
       try_count += 1
-      return true if yield == :ok
 
-      abort_import
+      case yield
+      when :ok
+        return true
+      when :not_found
+        skip_import(reason: :not_found)
+      else
+        abort_import
+      end
+
       false
     rescue TooManyImportsError
       if try_count <= ::ContainerRegistry::Migration.start_max_retries

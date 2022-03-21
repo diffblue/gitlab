@@ -1119,6 +1119,17 @@ RSpec.describe ContainerRepository, :aggregate_failures do
       end
     end
 
+    context 'not found response' do
+      let(:response) { :not_found }
+
+      it 'aborts the migration' do
+        expect(subject).to eq(false)
+
+        expect(container_repository).to be_import_skipped
+        expect(container_repository.reload.migration_skipped_reason).to eq('not_found')
+      end
+    end
+
     context 'other response' do
       let(:response) { :error }
 
