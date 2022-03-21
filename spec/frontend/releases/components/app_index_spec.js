@@ -33,7 +33,7 @@ jest.mock('~/lib/utils/url_utility', () => ({
     .mockImplementation((parameterName) => mockQueryParams[parameterName]),
 }));
 
-describe('app_index_apollo_client.vue', () => {
+describe('app_index.vue', () => {
   const projectPath = 'project/path';
   const newReleasePath = 'path/to/new/release/page';
   const before = 'beforeCursor';
