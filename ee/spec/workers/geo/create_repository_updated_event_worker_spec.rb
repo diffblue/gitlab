@@ -11,16 +11,14 @@ RSpec.describe Geo::CreateRepositoryUpdatedEventWorker do
 
   let(:event) { Repositories::KeepAroundRefsCreatedEvent.new(data: { project_id: project.id }) }
 
-  subject { consume_event(event) }
-
-  def consume_event(event)
-    described_class.new.perform(event.class.name, event.data)
-  end
+  subject { consume_event(subscriber: described_class, event: event) }
 
   context 'on a Geo primary site' do
     before do
       stub_current_geo_node(primary_site)
     end
+
+    it_behaves_like 'subscribes to event'
 
     include_examples 'an idempotent worker' do
       let(:job_args) { [event.class.name, event.data] }
