@@ -6,6 +6,18 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 # Advanced Kubernetes resource management
 
+The GitLab agent for Kubernetes has annotations you can use to:
+
+- **Sort resources**: Apply or delete resources in a specific order.
+- **Use apply-time mutation**: Dynamically substitute fields from one resource configuration to another.
+
+The agent has [default ordering](https://github.com/kubernetes-sigs/cli-utils/blob/...),
+but with annotations, you can fine-tune the order and apply time-value injection.
+
+To provide this functionality, the GitLab agent for Kubernetes uses the `cli-utils` library,
+a Kubernetes SIG project.
+
+
 There are special situations where the out-of-the-box resource ordering or configuration options are not good enough for a specific use case. The GitOps engine behind the GitLab agent for Kubernetes provides annotations in order to achieve:
 
 - **Sorting**: adds optional resource sorting functionality to apply or delete objects in a particular order.
