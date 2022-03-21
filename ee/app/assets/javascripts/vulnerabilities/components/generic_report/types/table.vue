@@ -1,9 +1,9 @@
 <script>
-import { GlTable } from '@gitlab/ui';
+import { GlTableLite } from '@gitlab/ui';
 
 export default {
   components: {
-    GlTable,
+    GlTableLite,
     ReportItem: () => import('../report_item.vue'),
   },
   inheritAttrs: false,
@@ -20,7 +20,7 @@ export default {
 };
 </script>
 <template>
-  <gl-table
+  <gl-table-lite
     :fields="header"
     :items="rows"
     bordered
@@ -33,5 +33,5 @@ export default {
     <template #cell()="data">
       <report-item :item="data.value" />
     </template>
-  </gl-table>
+  </gl-table-lite>
 </template>
