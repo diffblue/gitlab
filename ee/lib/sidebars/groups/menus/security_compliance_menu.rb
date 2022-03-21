@@ -111,8 +111,7 @@ module Sidebars
         end
 
         def scan_policies_menu_item
-          unless Feature.enabled?(:group_security_policies, context.group, default_enabled: :yaml) &&
-            can?(context.current_user, :security_orchestration_policies, context.group)
+          unless group_level_security_policies_available?
             return ::Sidebars::NilMenuItem.new(item_id: :scan_policies)
           end
 
@@ -122,6 +121,11 @@ module Sidebars
             active_routes: { controller: ['groups/security/policies'] },
             item_id: :scan_policies
           )
+        end
+
+        def group_level_security_policies_available?
+          Feature.enabled?(:group_security_policies, context.group, default_enabled: :yaml) &&
+                    can?(context.current_user, :security_orchestration_policies, context.group)
         end
 
         def audit_events_menu_item
