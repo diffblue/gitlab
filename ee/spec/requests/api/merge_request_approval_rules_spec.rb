@@ -5,8 +5,8 @@ require 'spec_helper'
 RSpec.describe API::MergeRequestApprovalRules do
   let_it_be(:user) { create(:user) }
   let_it_be(:other_user) { create(:user) }
-  let_it_be(:project) { create(:project, :public, :repository, creator: user, namespace: user.namespace) }
 
+  let(:project) { create(:project, :public, :repository, creator: user, namespace: user.namespace) }
   let(:merge_request) { create(:merge_request, author: user, source_project: project, target_project: project) }
 
   shared_examples_for 'a protected API endpoint for merge request approval rule action' do
@@ -136,6 +136,92 @@ RSpec.describe API::MergeRequestApprovalRules do
 
         it 'includes source_rule' do
           expect(json_response.first['source_rule']['approvals_required']).to eq(source_rule.approvals_required)
+        end
+      end
+    end
+  end
+
+  describe 'GET /projects/:id/merge_requests/:merge_request_iid/approval_rules/:approval_rule_id' do
+    let(:current_user) { other_user }
+    let(:approver) { create(:user) }
+    let(:group) { create(:group) }
+    let(:source_rule) { nil }
+    let(:users) { [approver] }
+    let(:groups) { [group] }
+
+    let(:approval_rule) do
+      create(
+        :approval_merge_request_rule,
+        merge_request: merge_request,
+        approval_project_rule: source_rule,
+        approvals_required: 2,
+        users: users,
+        groups: groups
+      )
+    end
+
+    let(:url) { "/projects/#{project.id}/merge_requests/#{merge_request.iid}/approval_rules/#{approval_rule.id}" }
+
+    context 'user cannot read merge request' do
+      before do
+        project.project_feature.update!(merge_requests_access_level: ProjectFeature::PRIVATE)
+
+        get api(url, other_user)
+      end
+
+      it 'responds with 403' do
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+
+    context 'user can read merge request' do
+      before do
+        group.add_developer(approver)
+        merge_request.approvals.create!(user: approver)
+
+        get api(url, current_user)
+      end
+
+      it 'matches the response schema' do
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(response).to match_response_schema('public_api/v4/merge_request_approval_rule', dir: 'ee')
+
+        expect(json_response['name']).to eq(approval_rule.name)
+        expect(json_response['approvals_required']).to eq(approval_rule.approvals_required)
+        expect(json_response['rule_type']).to eq(approval_rule.rule_type)
+        expect(json_response['section']).to be_nil
+        expect(json_response['contains_hidden_groups']).to eq(false)
+        expect(json_response['source_rule']).to be_nil
+        expect(json_response['eligible_approvers']).to match_array([hash_including('id' => approver.id)])
+        expect(json_response['users']).to match_array([hash_including('id' => approver.id)])
+        expect(json_response['groups']).to match_array([hash_including('id' => group.id)])
+      end
+
+      context 'groups contain private groups' do
+        let(:group) { create(:group, :private) }
+
+        context 'current_user cannot see private group' do
+          it 'hides private group' do
+            expect(json_response['contains_hidden_groups']).to eq(true)
+            expect(json_response['groups']).to be_empty
+          end
+        end
+
+        context 'current_user can see private group' do
+          let(:current_user) { approver }
+
+          it 'shows private group' do
+            expect(json_response['contains_hidden_groups']).to eq(false)
+            expect(json_response['groups']).to match_array([hash_including('id' => group.id)])
+          end
+        end
+      end
+
+      context 'has existing merge request rule that overrides a project-level rule' do
+        let(:source_rule) { create(:approval_project_rule, project: project) }
+
+        it 'includes source_rule' do
+          expect(json_response['source_rule']['approvals_required']).to eq(source_rule.approvals_required)
         end
       end
     end
