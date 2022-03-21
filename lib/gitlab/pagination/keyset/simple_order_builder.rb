@@ -24,55 +24,65 @@ module Gitlab
         end
 
         def build
-          return [scope.reorder!(primary_key_order(primary_key_desc)), true] if order_values.empty?
-          return [scope.reorder!(keyset_order), true] if Gitlab::Pagination::Keyset::Order.keyset_aware?(scope)
+          order = if order_values.empty?
+                    primary_key_descending_order
+                  elsif Gitlab::Pagination::Keyset::Order.keyset_aware?(scope)
+                    Gitlab::Pagination::Keyset::Order.extract_keyset_order_object(scope)
+                  # Ordered by a primary key. Ex. 'ORDER BY id'.
+                  elsif ordered_by_primary_key?
+                    primary_key_order
+                  # Ordered by one non-primary table column. Ex. 'ORDER BY created_at'.
+                  elsif ordered_by_other_column?
+                    column_with_tie_breaker_order
+                  # Ordered by two table columns with the last column as a tie breaker. Ex. 'ORDER BY created, id ASC'.
+                  elsif ordered_by_other_column_with_tie_breaker?
+                    tie_breaker_attribute = order_values.second
 
-          simple_order ? [scope.reorder!(simple_order), true] : [scope, false] # [scope, success]
+                    tie_breaker_column_order = Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
+                      attribute_name: model_class.primary_key,
+                      order_expression: tie_breaker_attribute
+                    )
+
+                    column_with_tie_breaker_order(tie_breaker_column_order)
+                  end
+
+          order ? [scope.reorder!(order), true] : [scope, false] # [scope, success]
         end
 
         private
 
         attr_reader :scope, :order_values, :model_class, :arel_table, :primary_key
 
-        def keyset_order
-          Gitlab::Pagination::Keyset::Order.extract_keyset_order_object(scope)
+        def table_column?(name)
+          model_class.column_names.include?(name.to_s)
         end
 
-        def simple_order
-          return unless ordered_with_arel_attributes?
+        def primary_key?(attribute)
+          arel_table[primary_key].to_s == attribute.to_s
+        end
 
-          # Ordered by a primary key: 'ORDER BY id'.
-          if order_values.one? && primary_key?(order_values.first)
-            primary_key_order(order_values.first)
-          # Ordered by one non-primary table column: 'ORDER BY created_at'.
-          elsif order_values.one? && table_column?(order_values.first)
-            simple_double_column_order
-          # Ordered by two table columns with the last column as a tie breaker: 'ORDER BY lower(title), id'.
-          elsif order_values.size == 2 && table_column?(order_values.first) && primary_key?(order_values.second)
-            tie_breaker_value = order_values.second
+        def lower_named_function?(attribute)
+          attribute.is_a?(Arel::Nodes::NamedFunction) && attribute.name&.downcase == 'lower'
+        end
 
-            simple_double_column_order(tie_breaker_value)
+        def supported_column?(attribute)
+          if lower_named_function?(attribute)
+            attribute.expressions.one? && attribute.expressions.first.respond_to?(:name) && table_column?(attribute.expressions.first.name)
+          else
+            attribute.respond_to?(:name) && table_column?(attribute.name)
           end
         end
 
-        def ordered_with_arel_attributes?
-          arel_attributes = order_values.map { |o| o.try(:expr) }.compact
-
-          arel_attributes.size == order_values.size
-        end
-
-        def primary_key?(order_value)
-          arel_table[primary_key].to_s == order_value.expr.to_s
-        end
-
-        def table_column?(order_value)
-          return unless order_value.expr.try(:name)
-
-          model_class.column_names.include?(order_value.expr.name.to_s)
+        def column_name(order_value)
+          if lower_named_function?(order_value.expr)
+            order_value.expr.expressions.first.name
+          else
+            order_value.expr.name
+          end
         end
 
         def nullability(order_value)
-          nullable = model_class.columns.find { |column| column.name == order_value.expr.name }.null
+          nullable = model_class.columns.find { |column| column.name == column_name(order_value) }.null
 
           if nullable && order_value.is_a?(Arel::Nodes::Ascending)
             :nulls_last
@@ -83,34 +93,80 @@ module Gitlab
           end
         end
 
-        def primary_key_desc
-          arel_table[primary_key].desc
-        end
-
-        def primary_key_order(order_value)
-          Gitlab::Pagination::Keyset::Order.build([primary_key_column(order_value)])
-        end
-
-        def simple_double_column_order(tie_breaker_value = primary_key_desc)
+        def primary_key_descending_order
           Gitlab::Pagination::Keyset::Order.build([
-            regular_column(order_values.first),
-            primary_key_column(tie_breaker_value)
+            Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
+              attribute_name: model_class.primary_key,
+              order_expression: arel_table[primary_key].desc
+            )
           ])
         end
 
-        def primary_key_column(order_value)
-          Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
-            attribute_name: model_class.primary_key,
-            order_expression: order_value
-          )
+        def primary_key_order
+          Gitlab::Pagination::Keyset::Order.build([
+            Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
+              attribute_name: model_class.primary_key,
+              order_expression: order_values.first
+            )
+          ])
         end
 
-        def regular_column(order_value)
+        def column_with_tie_breaker_order(tie_breaker_column_order = default_tie_breaker_column_order)
+          Gitlab::Pagination::Keyset::Order.build([
+            column(order_values.first),
+            tie_breaker_column_order
+          ])
+        end
+
+        def column(order_value)
+          return lower_named_function_column(order_value) if lower_named_function?(order_value.expr)
+
           Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
             attribute_name: order_value.expr.name,
             order_expression: order_value,
             nullable: nullability(order_value),
             distinct: false
+          )
+        end
+
+        def lower_named_function_column(order_value)
+          Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
+            attribute_name: column_name(order_value),
+            order_expression: order_value,
+            column_expression: Arel::Nodes::NamedFunction.new("LOWER", [model_class.arel_table[column_name(order_value)]]),
+            nullable: nullability(order_value),
+            distinct: false
+          )
+        end
+
+        def ordered_by_primary_key?
+          return unless order_values.one?
+
+          attribute = order_values.first.try(:expr)
+          attribute && primary_key?(attribute)
+        end
+
+        def ordered_by_other_column?
+          return unless order_values.one?
+
+          attribute = order_values.first.try(:expr)
+          attribute && supported_column?(attribute)
+        end
+
+        def ordered_by_other_column_with_tie_breaker?
+          return unless order_values.size == 2
+
+          attribute = order_values.first.try(:expr)
+          return unless attribute && supported_column?(attribute)
+
+          tie_breaker_attribute = order_values.second.try(:expr)
+          tie_breaker_attribute && primary_key?(tie_breaker_attribute)
+        end
+
+        def default_tie_breaker_column_order
+          Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
+            attribute_name: model_class.primary_key,
+            order_expression: arel_table[primary_key].desc
           )
         end
       end

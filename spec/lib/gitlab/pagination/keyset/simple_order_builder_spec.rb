@@ -67,6 +67,22 @@ RSpec.describe Gitlab::Pagination::Keyset::SimpleOrderBuilder do
     end
   end
 
+  context 'when ordering by a column with the lower named function' do
+    let(:scope) { Project.where(id: [1, 2, 3]).order(Project.arel_table[:name].lower.desc) }
+
+    it 'sets the column definition for name' do
+      column_definition = order_object.column_definitions.first
+
+      expect(column_definition.attribute_name).to eq('name')
+      expect(column_definition.column_expression.expressions.first.name).to eq('name')
+      expect(column_definition.column_expression.name).to eq('LOWER')
+    end
+
+    it 'adds extra primary key order as tie-breaker' do
+      expect(sql_with_order).to end_with('ORDER BY LOWER("projects"."name") DESC, "projects"."id" DESC')
+    end
+  end
+
   context 'return :unable_to_order symbol when order cannot be built' do
     subject(:success) { described_class.build(scope).last }
 
