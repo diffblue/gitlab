@@ -140,6 +140,10 @@ module EE
         @subject.feature_available?(:evaluate_group_level_compliance_pipeline)
       end
 
+      condition(:security_orchestration_policies_enabled) do
+        @subject.feature_available?(:security_orchestration_policies)
+      end
+
       rule { public_group | logged_in_viewable }.policy do
         enable :read_wiki
         enable :download_wiki_code
@@ -396,6 +400,14 @@ module EE
       rule { can?(:owner_access) & group_level_compliance_pipeline_available }.enable :admin_compliance_pipeline_configuration
       rule { can?(:owner_access) & external_audit_events_available }.policy do
         enable :admin_external_audit_events
+      end
+
+      rule { security_orchestration_policies_enabled & can?(:developer_access) }.policy do
+        enable :security_orchestration_policies
+      end
+
+      rule { security_orchestration_policies_enabled & can?(:owner_access) }.policy do
+        enable :update_security_orchestration_policy_project
       end
     end
 

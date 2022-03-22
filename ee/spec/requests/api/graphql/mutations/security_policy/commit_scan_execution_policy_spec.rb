@@ -2,16 +2,19 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Create scan execution policy for a project' do
+RSpec.describe 'Create scan execution policy for a project/namespace' do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }
   let_it_be(:project) { create(:project, :repository, namespace: current_user.namespace) }
+  let_it_be(:namespace) { create(:group) }
+  let_it_be(:project_security_policy_management_project) { create(:project, :repository, namespace: current_user.namespace) }
+  let_it_be(:namespace_security_policy_management_project) { create(:project, :repository, namespace: namespace) }
   let_it_be(:policy_name) { 'Test Policy' }
   let_it_be(:policy_yaml) { build(:scan_execution_policy, name: policy_name).merge(type: 'scan_execution_policy').to_yaml }
 
   def mutation
-    variables = { project_path: project.full_path, name: policy_name, policy_yaml: policy_yaml, operation_mode: 'APPEND' }
+    variables = { full_path: container.full_path, name: policy_name, policy_yaml: policy_yaml, operation_mode: 'APPEND' }
 
     graphql_mutation(:scan_execution_policy_commit, variables) do
       <<-QL.strip_heredoc
@@ -26,13 +29,10 @@ RSpec.describe 'Create scan execution policy for a project' do
     graphql_mutation_response(:scan_execution_policy_commit)
   end
 
-  context 'when security_orchestration_policies_configuration already exists for project' do
-    let_it_be(:security_policy_management_project) { create(:project, :repository, namespace: current_user.namespace) }
-    let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project, security_policy_management_project: security_policy_management_project) }
-
+  shared_context 'commits scan execution policies' do
     before do
-      project.add_maintainer(current_user)
-      security_policy_management_project.add_developer(current_user)
+      container.add_maintainer(current_user)
+      container_security_policy_management_project.add_developer(current_user)
 
       stub_licensed_features(security_orchestration_policies: true)
     end
@@ -41,7 +41,7 @@ RSpec.describe 'Create scan execution policy for a project' do
       post_graphql_mutation(mutation, current_user: current_user)
 
       branch = mutation_response['branch']
-      commit = security_policy_management_project.repository.commits(branch, limit: 5).first
+      commit = container_security_policy_management_project.repository.commits(branch, limit: 5).first
       expect(response).to have_gitlab_http_status(:success)
       expect(branch).not_to be_nil
       expect(commit.message).to eq('Add a new policy to .gitlab/security-policies/policy.yml')
@@ -55,6 +55,42 @@ RSpec.describe 'Create scan execution policy for a project' do
 
         expect(mutation_response['errors']).to eq(['Invalid policy YAML', "property '/scan_execution_policy/0/rules/0/type' is not one of: [\"pipeline\", \"schedule\"]"])
       end
+    end
+  end
+
+  context 'for project' do
+    let(:container_security_policy_management_project) { project_security_policy_management_project }
+
+    let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project, security_policy_management_project: project_security_policy_management_project) }
+
+    let(:container) { project }
+
+    it_behaves_like 'commits scan execution policies'
+  end
+
+  context 'for namespace' do
+    let(:container_security_policy_management_project) { namespace_security_policy_management_project }
+
+    let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, :namespace, namespace: namespace, security_policy_management_project: namespace_security_policy_management_project) }
+
+    let(:container) { namespace }
+
+    context 'when feature is enabled' do
+      before do
+        stub_feature_flags(group_level_security_policies: namespace)
+      end
+
+      it_behaves_like 'commits scan execution policies'
+    end
+
+    context 'when feature is disabled' do
+      before do
+        stub_licensed_features(security_orchestration_policies: true)
+        stub_feature_flags(group_level_security_policies: false)
+      end
+
+      it_behaves_like 'a mutation that returns top-level errors',
+                  errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
     end
   end
 end
