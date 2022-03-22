@@ -5447,9 +5447,6 @@ msgstr ""
 msgid "Badges|Your badges"
 msgstr ""
 
-msgid "Balsamiq file could not be loaded."
-msgstr ""
-
 msgid "BambooService|Atlassian Bamboo"
 msgstr ""
 
