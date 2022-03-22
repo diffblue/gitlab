@@ -29,7 +29,9 @@ query pipelineFindings(
         state: $state
       ) {
         nodes {
-          uuid
+          # This query is used by vulnerability_list_graphql.vue, which expects an id property for
+          # the bulk select feature.
+          id: uuid
           name
           description
           falsePositive @include(if: $vetEnabled)
