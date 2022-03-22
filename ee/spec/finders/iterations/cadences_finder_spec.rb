@@ -14,7 +14,7 @@ RSpec.describe Iterations::CadencesFinder do
   let_it_be(:automatic_iterations_cadence) { create(:iterations_cadence, group: group, automatic: true, duration_in_weeks: 1, title: 'one week iterations') }
   let_it_be(:active_sub_group_iterations_cadence) { create(:iterations_cadence, group: sub_group, active: true, duration_in_weeks: 1, title: 'one week iterations') }
   let_it_be(:inactive_sub_group_iterations_cadence) { create(:iterations_cadence, group: sub_group, active: false, duration_in_weeks: 2, title: 'two weeks iterations') }
-  let_it_be(:non_automatic_sub_group_iterations_cadence) { create(:iterations_cadence, group: sub_group, automatic: false, duration_in_weeks: 1, title: 'one week iterations') }
+  let_it_be(:non_automatic_sub_group_iterations_cadence) { build(:iterations_cadence, group: sub_group, automatic: false, duration_in_weeks: 1, title: 'one week iterations').tap { |cadence| cadence.save!(validate: false) } }
   let_it_be(:current_group) { group }
 
   subject { described_class.new(user, current_group, params).execute }

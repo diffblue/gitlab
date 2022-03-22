@@ -147,8 +147,9 @@ RSpec.describe Iterations::CreateService do
       context 'when iteration_cadences FF is disabled' do
         let_it_be(:user) { create(:user) }
         let_it_be(:group) { create(:group) }
-        let_it_be(:cadences) { create_list(:iterations_cadence, 2, group: group) }
-        let_it_be(:other_iteration) { create(:iteration, iterations_cadence: cadences.second) }
+        let_it_be(:first_legacy_cadence) { build(:iterations_cadence, group: group, automatic: false).tap { |cadence| cadence.save!(validate: false) } }
+        let_it_be(:automatic_cadence) { create(:iterations_cadence, group: group) }
+        let_it_be(:other_iteration) { create(:iteration, iterations_cadence: automatic_cadence) }
         let_it_be(:parent, refind: true) { group }
 
         let(:params) { base_params }
@@ -163,12 +164,12 @@ RSpec.describe Iterations::CreateService do
           expect(response).to be_success
           expect(saved_iteration).to be_persisted
           expect(saved_iteration.title).to eq('v2.1.9')
-          expect(saved_iteration.iterations_cadence_id).to eq(ordered_cadences.first.id)
+          expect(saved_iteration.iterations_cadence_id).to eq(first_legacy_cadence.id)
         end
 
         it 'does not update the iterations from the non-default cadences' do
           expect(response).to be_success
-          expect(other_iteration.iterations_cadence_id).to eq(ordered_cadences.second.id)
+          expect(other_iteration.iterations_cadence_id).to eq(automatic_cadence.id)
         end
       end
     end

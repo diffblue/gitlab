@@ -20,7 +20,7 @@ RSpec.describe Iterations::RollOverIssuesWorker do
   describe '#perform' do
     context 'when iteration cadence is not automatic' do
       before do
-        cadence1.update!(automatic: false)
+        cadence1.update_columns(automatic: false)
       end
 
       it 'exits early' do

@@ -221,7 +221,8 @@ module EE
       (due_date - start_date + 1).to_i
     end
 
-    # TODO: this method should be removed as part of https://gitlab.com/gitlab-org/gitlab/-/issues/296099
+    # TODO: this method should be removed when manual iteration management is removed.
+    # See https://gitlab.com/gitlab-org/gitlab/-/issues/356069 the deprecation issue.
     def set_iterations_cadence
       return if iterations_cadence
       # For now we support only group iterations
@@ -307,19 +308,25 @@ module EE
       iterations_cadence.update_iteration_sequences
     end
 
-    # TODO: this method should be removed as part of https://gitlab.com/gitlab-org/gitlab/-/issues/296099
+    # TODO: this method should be removed when manual iteration management is removed.
+    # See https://gitlab.com/gitlab-org/gitlab/-/issues/356069 the deprecation issue.
     def find_or_create_default_cadence
+      default_cadence = ::Iterations::Cadence.order(id: :asc).find_by(group: group, automatic: false)
+      return default_cadence if default_cadence
+
       cadence_title = "#{group.name} Iterations"
       start_date = self.start_date || Date.today
 
-      ::Iterations::Cadence.create_with(
+      # We need to skip validation as manual cadence creation is deprecated and not allowed.
+      # A manual cadence is created here so the iterations feature is not affected during the deprecation period.
+      ::Iterations::Cadence.new(
+        group: group,
         title: cadence_title,
         start_date: start_date,
         automatic: false,
-        # set to 0, i.e. unspecified when creating default iterations as we do validate for presence.
-        iterations_in_advance: 0,
-        duration_in_weeks: 0
-      ).order(id: :asc).safe_find_or_create_by!(group: group)
+        iterations_in_advance: 2,
+        duration_in_weeks: 2
+      ).tap { |new_cadence| new_cadence.save!(validate: false) }
     end
 
     # TODO: remove this as part of https://gitlab.com/gitlab-org/gitlab/-/issues/296100

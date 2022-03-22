@@ -17,7 +17,6 @@ RSpec.describe 'Updating an iteration cadence' do
       start_date: start_date,
       duration_in_weeks: 1,
       iterations_in_advance: 1,
-      automatic: false,
       active: false,
       roll_over: true,
       description: description
@@ -80,7 +79,7 @@ RSpec.describe 'Updating an iteration cadence' do
         expect(iteration_cadence_hash['startDate'].to_date).to eq(start_date.to_date)
         expect(iteration_cadence_hash['durationInWeeks']).to eq(1)
         expect(iteration_cadence_hash['iterationsInAdvance']).to eq(1)
-        expect(iteration_cadence_hash['automatic']).to eq(false)
+        expect(iteration_cadence_hash['automatic']).to eq(true)
         expect(iteration_cadence_hash['active']).to eq(false)
         expect(iteration_cadence_hash['rollOver']).to eq(true)
         expect(iteration_cadence_hash['description']).to eq(description)
@@ -90,7 +89,7 @@ RSpec.describe 'Updating an iteration cadence' do
         expect(iteration_cadence.start_date).to eq(start_date.to_date)
         expect(iteration_cadence.duration_in_weeks).to eq(1)
         expect(iteration_cadence.iterations_in_advance).to eq(1)
-        expect(iteration_cadence.automatic).to eq(false)
+        expect(iteration_cadence.automatic).to eq(true)
         expect(iteration_cadence.active).to eq(false)
         expect(iteration_cadence.roll_over).to eq(true)
         expect(iteration_cadence.description).to eq(description)
