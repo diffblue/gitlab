@@ -6321,6 +6321,9 @@ msgstr ""
 msgid "BulkImport|%{feature} (require v%{version})"
 msgstr ""
 
+msgid "BulkImport|Destination"
+msgstr ""
+
 msgid "BulkImport|Existing groups"
 msgstr ""
 
@@ -6363,10 +6366,16 @@ msgstr ""
 msgid "BulkImport|New group"
 msgstr ""
 
+msgid "BulkImport|No additional information provided."
+msgstr ""
+
 msgid "BulkImport|No history is available"
 msgstr ""
 
 msgid "BulkImport|No parent"
+msgstr ""
+
+msgid "BulkImport|Project import history"
 msgstr ""
 
 msgid "BulkImport|Re-import creates a new group. It does not sync with the existing group."
@@ -6381,7 +6390,13 @@ msgstr ""
 msgid "BulkImport|Showing %{start}-%{end} of %{total} matching filter \"%{filter}\" from %{link}"
 msgstr ""
 
+msgid "BulkImport|Source"
+msgstr ""
+
 msgid "BulkImport|Source group"
+msgstr ""
+
+msgid "BulkImport|Template / File-based import / GitLab Migration"
 msgstr ""
 
 msgid "BulkImport|To new group"
@@ -6394,6 +6409,9 @@ msgid "BulkImport|You have no groups to import"
 msgstr ""
 
 msgid "BulkImport|Your imported groups will appear here."
+msgstr ""
+
+msgid "BulkImport|Your imported projects will appear here."
 msgstr ""
 
 msgid "BulkImport|expected an associated Group but has an associated Project"
