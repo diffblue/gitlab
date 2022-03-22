@@ -6,7 +6,7 @@ import VueRouter from 'vue-router';
 import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_item.vue';
 import ScannerFilter from 'ee/security_dashboard/components/shared/filters/scanner_filter.vue';
 import { DEFAULT_SCANNER, SCANNER_ID_PREFIX } from 'ee/security_dashboard/constants';
-import { vendorScannerFilterNoClusterImage } from 'ee/security_dashboard/helpers';
+import { vendorScannerFilter } from 'ee/security_dashboard/helpers';
 
 Vue.use(VueRouter);
 const router = new VueRouter();
@@ -41,7 +41,7 @@ describe('Scanner Filter component', () => {
   let filter;
 
   const createWrapper = ({ scanners = customScanners } = {}) => {
-    filter = cloneDeep(vendorScannerFilterNoClusterImage);
+    filter = cloneDeep(vendorScannerFilter);
 
     wrapper = shallowMount(ScannerFilter, {
       router,
@@ -124,7 +124,7 @@ describe('Scanner Filter component', () => {
 
     it('emits filter-changed event with expected data for selected options', async () => {
       const ids = ['GitLab.SAST', 'Custom.SAST', 'GitLab.API_FUZZING', 'GitLab.COVERAGE_FUZZING'];
-      router.replace({ query: { [vendorScannerFilterNoClusterImage.id]: ids } });
+      router.replace({ query: { [vendorScannerFilter.id]: ids } });
       const selectedScanners = customScanners.filter((x) =>
         ids.includes(`${x.vendor}.${x.report_type}`),
       );

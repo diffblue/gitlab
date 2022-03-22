@@ -1,8 +1,8 @@
 <script>
 import { GlFormGroup, GlFormInput, GlDropdown, GlTruncate, GlDropdownItem } from '@gitlab/ui';
-import { groupBy, isEqual, isNumber, omit } from 'lodash';
+import { groupBy, isEqual, isNumber } from 'lodash';
 import { mapState, mapActions } from 'vuex';
-import { REPORT_TYPES, SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
+import { REPORT_TYPES_DEFAULT, SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import { sprintf } from '~/locale';
 import {
@@ -20,8 +20,6 @@ import ApproversList from './approvers_list.vue';
 import ApproversSelect from './approvers_select.vue';
 
 const DEFAULT_NAME = 'Default';
-
-export const EXCLUDED_REPORT_TYPE = 'cluster_image_scanning';
 
 export const READONLY_NAMES = [LICENSE_CHECK_NAME, VULNERABILITY_CHECK_NAME, COVERAGE_CHECK_NAME];
 
@@ -75,7 +73,7 @@ export default {
       severityLevels: [],
       vulnerabilityStates: [],
       approvalVulnerabilityStatesKeys: Object.keys(APPROVAL_VULNERABILITY_STATES),
-      reportTypesKeys: Object.keys(this.$options.REPORT_TYPES),
+      reportTypesKeys: Object.keys(REPORT_TYPES_DEFAULT),
       severityLevelsKeys: Object.keys(SEVERITY_LEVELS),
       ...this.getInitialData(),
     };
@@ -265,10 +263,10 @@ export default {
         case 0:
           return APPROVAL_DIALOG_I18N.form.scannersSelectLabel;
         case 1:
-          return this.$options.REPORT_TYPES[this.scanners[0]];
+          return REPORT_TYPES_DEFAULT[this.scanners[0]];
         default:
           return sprintf(APPROVAL_DIALOG_I18N.form.multipleSelectedLabel, {
-            firstLabel: this.$options.REPORT_TYPES[this.scanners[0]],
+            firstLabel: REPORT_TYPES_DEFAULT[this.scanners[0]],
             numberOfAdditionalLabels: this.scanners.length - 1,
           });
       }
@@ -476,7 +474,7 @@ export default {
     },
   },
   APPROVAL_DIALOG_I18N,
-  REPORT_TYPES: omit(REPORT_TYPES, EXCLUDED_REPORT_TYPE),
+  REPORT_TYPES_DEFAULT,
   SEVERITY_LEVELS,
   APPROVAL_VULNERABILITY_STATES,
 };
@@ -519,7 +517,7 @@ export default {
           <gl-truncate :text="$options.APPROVAL_DIALOG_I18N.form.selectAllLabel" />
         </gl-dropdown-item>
         <gl-dropdown-item
-          v-for="(value, key) in $options.REPORT_TYPES"
+          v-for="(value, key) in $options.REPORT_TYPES_DEFAULT"
           :key="key"
           is-check-item
           :is-checked="isScannerSelected(key)"
