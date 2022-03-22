@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Create', quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/349898', type: :stale } do
+  RSpec.describe 'Create' do
     describe 'File Locking' do
       let(:user_one) { Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1) }
       let(:user_two) { Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_2, Runtime::Env.gitlab_qa_password_2) }
@@ -133,7 +133,7 @@ module QA
           end
         end
 
-        it 'creates a merge request and fails to merge', quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/issues/40125', type: :bug }, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348316' do
+        it 'creates a merge request and fails to merge', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348316' do
           push branch: 'test', as_user: user_one
 
           merge_request = Resource::MergeRequest.fabricate_via_api! do |merge_request|

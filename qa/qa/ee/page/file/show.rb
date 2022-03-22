@@ -11,6 +11,8 @@ module QA
             super
 
             base.class_eval do
+              include QA::Page::Component::ConfirmModal
+
               view 'ee/app/views/projects/blob/_owners.html.haml' do
                 element :file_owner_content
                 element :link_file_owner
@@ -30,31 +32,25 @@ module QA
           end
 
           def lock
-            accept_confirm do
-              click_element :lock_button
-            end
+            click_element(:lock_button)
+            click_confirmation_ok_button
 
-            begin
-              has_element? :lock_button, text: 'Unlock'
-            rescue StandardError
+            unless has_element?(:lock_button, text: 'Unlock')
               raise QA::Page::Base::ElementNotFound, %q(Button did not show expected state)
             end
           end
 
           def unlock
-            accept_confirm do
-              click_element :lock_button
-            end
+            click_element(:lock_button)
+            click_confirmation_ok_button
 
-            begin
-              has_element? :lock_button, text: 'Lock'
-            rescue StandardError
+            unless has_element?(:lock_button, text: 'Lock')
               raise QA::Page::Base::ElementNotFound, %q(Button did not show expected state)
             end
           end
 
           def has_lock_button_disabled?
-            has_element? :disabled_lock_button
+            has_element?(:disabled_lock_button)
           end
         end
       end
