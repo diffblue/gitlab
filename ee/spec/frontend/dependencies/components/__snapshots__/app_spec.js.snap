@@ -4,6 +4,7 @@ exports[`DependenciesApp component on creation given the dependency list job has
 Object {
   "compact": false,
   "description": null,
+  "invertInDarkMode": true,
   "primaryButtonLink": null,
   "primaryButtonText": null,
   "secondaryButtonLink": null,
@@ -18,6 +19,7 @@ exports[`DependenciesApp component on creation given there are no dependencies d
 Object {
   "compact": false,
   "description": null,
+  "invertInDarkMode": true,
   "primaryButtonLink": null,
   "primaryButtonText": null,
   "secondaryButtonLink": null,
