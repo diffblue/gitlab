@@ -185,4 +185,14 @@ RSpec.describe SystemNoteService do
       described_class.add_timeline_event(timeline_event)
     end
   end
+
+  describe '.delete_timeline_event' do
+    it 'calls IncidentsService' do
+      expect_next_instance_of(::SystemNotes::IncidentsService) do |service|
+        expect(service).to receive(:delete_timeline_event).with(author)
+      end
+
+      described_class.delete_timeline_event(noteable, author)
+    end
+  end
 end

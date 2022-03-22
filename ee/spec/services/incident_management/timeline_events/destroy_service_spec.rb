@@ -68,5 +68,25 @@ RSpec.describe IncidentManagement::TimelineEvents::DestroyService do
       expect(result).to be_a(::IncidentManagement::TimelineEvent)
       expect(result.id).to eq(timeline_event.id)
     end
+
+    context 'when incident_timeline feature flag is enabled' do
+      before do
+        stub_feature_flags(incident_timeline: project)
+      end
+
+      it 'creates a system note' do
+        expect { execute }.to change { incident.notes.reload.count }.by(1)
+      end
+    end
+
+    context 'when incident_timeline feature flag is disabled' do
+      before do
+        stub_feature_flags(incident_timeline: false)
+      end
+
+      it 'does not create a system note' do
+        expect { execute }.not_to change { incident.notes.reload.count }
+      end
+    end
   end
 end
