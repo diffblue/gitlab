@@ -534,3 +534,5 @@ class License < ApplicationRecord
     (expires_at || Time.current).end_of_day
   end
 end
+
+License.prepend_mod

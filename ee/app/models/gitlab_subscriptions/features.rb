@@ -299,3 +299,5 @@ module GitlabSubscriptions
     end
   end
 end
+
+GitlabSubscriptions::Features.prepend_mod
