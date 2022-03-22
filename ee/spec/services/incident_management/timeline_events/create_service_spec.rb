@@ -105,5 +105,25 @@ RSpec.describe IncidentManagement::TimelineEvents::CreateService do
     it 'successfully creates a database record', :aggregate_failures do
       expect { execute }.to change { ::IncidentManagement::TimelineEvent.count }.by(1)
     end
+
+    context 'when incident_timeline feature flag is enabled' do
+      before do
+        stub_feature_flags(incident_timeline: project)
+      end
+
+      it 'creates a system note' do
+        expect { execute }.to change { incident.notes.reload.count }.by(1)
+      end
+    end
+
+    context 'when incident_timeline feature flag is disabled' do
+      before do
+        stub_feature_flags(incident_timeline: false)
+      end
+
+      it 'does not create a system note' do
+        expect { execute }.not_to change { incident.notes.reload.count }
+      end
+    end
   end
 end

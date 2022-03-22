@@ -173,4 +173,16 @@ RSpec.describe SystemNoteService do
       described_class.start_escalation(noteable, policy, author)
     end
   end
+
+  describe '.add_timeline_event' do
+    let(:timeline_event) { instance_double('IncidentManagement::TimelineEvent', incident: noteable, project: project) }
+
+    it 'calls IncidentsService' do
+      expect_next_instance_of(::SystemNotes::IncidentsService) do |service|
+        expect(service).to receive(:add_timeline_event).with(timeline_event)
+      end
+
+      described_class.add_timeline_event(timeline_event)
+    end
+  end
 end
