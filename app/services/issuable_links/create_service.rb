@@ -2,8 +2,6 @@
 
 module IssuableLinks
   class CreateService < BaseService
-    include IncidentManagement::UsageData
-
     attr_reader :issuable, :current_user, :params
 
     def initialize(issuable, user, params)
@@ -142,6 +140,10 @@ module IssuableLinks
     end
 
     def set_link_type(_link)
+      # no-op
+    end
+
+    def track_event
       # no-op
     end
   end
