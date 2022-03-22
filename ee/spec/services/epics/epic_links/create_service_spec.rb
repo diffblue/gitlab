@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EpicLinks::CreateService do
+RSpec.describe Epics::EpicLinks::CreateService do
   include NestedEpicsHelper
 
   describe '#execute' do

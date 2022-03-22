@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module EpicLinks
+module Epics::EpicLinks
   class UpdateService < BaseService
     attr_reader :epic
     private :epic

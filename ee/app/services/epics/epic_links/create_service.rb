@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module EpicLinks
+module Epics::EpicLinks
   class CreateService < IssuableLinks::CreateService
     def execute
       unless can?(current_user, :admin_epic_link, issuable.group)

@@ -63,7 +63,7 @@ module API
 
         create_params = { target_issuable: child_epic }
 
-        result = ::EpicLinks::CreateService.new(epic, current_user, create_params).execute
+        result = ::Epics::EpicLinks::CreateService.new(epic, current_user, create_params).execute
 
         if result[:status] == :success
           present child_epic, with: EE::API::Entities::Epic
@@ -119,7 +119,7 @@ module API
 
         update_params = params.slice(:move_before_id, :move_after_id)
 
-        result = ::EpicLinks::UpdateService.new(child_epic, current_user, update_params).execute
+        result = ::Epics::EpicLinks::UpdateService.new(child_epic, current_user, update_params).execute
 
         if result[:status] == :success
           present child_epics, with: EE::API::Entities::Epic

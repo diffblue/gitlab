@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EpicLinks::DestroyService do
+RSpec.describe Epics::EpicLinks::DestroyService do
   describe '#execute' do
     let(:group) { create(:group) }
     let(:user) { create(:user) }

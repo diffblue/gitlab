@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module EpicLinks
+module Epics::EpicLinks
   class DestroyService < IssuableLinks::DestroyService
     attr_reader :child_epic, :parent_epic
     private :child_epic, :parent_epic

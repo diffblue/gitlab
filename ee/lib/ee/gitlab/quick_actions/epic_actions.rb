@@ -37,7 +37,7 @@ module EE
 
             @execution_message[:remove_child_epic] =
               if child_epic && quick_action_target.child?(child_epic.id)
-                EpicLinks::DestroyService.new(child_epic, current_user).execute
+                Epics::EpicLinks::DestroyService.new(child_epic, current_user).execute
 
                 _("Removed %{epic_ref} from child epics.") % { epic_ref: child_epic.to_reference(quick_action_target) }
               else
@@ -73,7 +73,7 @@ module EE
 
             @execution_message[:remove_parent_epic] =
               if parent_epic
-                EpicLinks::DestroyService.new(quick_action_target, current_user).execute
+                Epics::EpicLinks::DestroyService.new(quick_action_target, current_user).execute
 
                 _('Removed parent epic %{epic_ref}.') % { epic_ref: parent_epic.to_reference(quick_action_target) }
               else
