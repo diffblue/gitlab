@@ -43791,6 +43791,9 @@ msgstr ""
 msgid "ciReport|Manage licenses"
 msgstr ""
 
+msgid "ciReport|Manually Added"
+msgstr ""
+
 msgid "ciReport|New"
 msgstr ""
 

@@ -19,7 +19,7 @@ export const SEVERITY_LEVELS = {
   info: s__('severity|Info'),
 };
 
-export const REPORT_TYPES_NO_CLUSTER_IMAGE = {
+export const REPORT_TYPES_DEFAULT = {
   container_scanning: s__('ciReport|Container Scanning'),
   dast: s__('ciReport|DAST'),
   dependency_scanning: s__('ciReport|Dependency Scanning'),
@@ -29,10 +29,22 @@ export const REPORT_TYPES_NO_CLUSTER_IMAGE = {
   api_fuzzing: s__('ciReport|API Fuzzing'),
 };
 
-export const REPORT_TYPES = {
-  ...REPORT_TYPES_NO_CLUSTER_IMAGE,
+export const REPORT_TYPES_WITH_CLUSTER_IMAGE = {
+  ...REPORT_TYPES_DEFAULT,
   cluster_image_scanning: s__('ciReport|Cluster Image Scanning'),
 };
+
+export const REPORT_TYPES_WITH_MANUALLY_ADDED = {
+  ...REPORT_TYPES_DEFAULT,
+  generic: s__('ciReport|Manually Added'),
+};
+
+export const REPORT_TYPES_ALL = {
+  ...REPORT_TYPES_DEFAULT,
+  ...REPORT_TYPES_WITH_CLUSTER_IMAGE,
+  ...REPORT_TYPES_WITH_MANUALLY_ADDED,
+};
+
 export const DASHBOARD_TYPES = {
   PROJECT: 'project',
   PIPELINE: 'pipeline',

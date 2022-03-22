@@ -1,7 +1,8 @@
 import isPlainObject from 'lodash/isPlainObject';
 import {
-  REPORT_TYPES,
-  REPORT_TYPES_NO_CLUSTER_IMAGE,
+  REPORT_TYPES_WITH_MANUALLY_ADDED,
+  REPORT_TYPES_WITH_CLUSTER_IMAGE,
+  REPORT_TYPES_ALL,
   SEVERITY_LEVELS,
 } from 'ee/security_dashboard/store/constants';
 import convertReportType from 'ee/vue_shared/security_reports/store/utils/convert_report_type';
@@ -51,15 +52,15 @@ export const createScannerOption = (vendor, reportType) => {
 export const simpleScannerFilter = {
   name: toolName,
   id: 'reportType',
-  options: parseOptions(REPORT_TYPES),
+  options: parseOptions(REPORT_TYPES_WITH_MANUALLY_ADDED),
   allOption: { name: allToolsName },
   defaultOptions: [],
 };
 
-export const simpleScannerFilterNoClusterImage = {
+export const simpleScannerFilterPipeline = {
   name: toolName,
   id: 'reportType',
-  options: parseOptions(REPORT_TYPES_NO_CLUSTER_IMAGE),
+  options: parseOptions(REPORT_TYPES_WITH_CLUSTER_IMAGE),
   allOption: { name: allToolsName },
   defaultOptions: [],
 };
@@ -69,15 +70,7 @@ export const simpleScannerFilterNoClusterImage = {
 export const vendorScannerFilter = {
   name: toolName,
   id: 'scanner',
-  options: Object.keys(REPORT_TYPES).map((x) => createScannerOption(DEFAULT_SCANNER, x)),
-  allOption: { name: allToolsName },
-  defaultOptions: [],
-};
-
-export const vendorScannerFilterNoClusterImage = {
-  name: toolName,
-  id: 'scanner',
-  options: Object.keys(REPORT_TYPES_NO_CLUSTER_IMAGE).map((x) =>
+  options: Object.keys(REPORT_TYPES_WITH_MANUALLY_ADDED).map((x) =>
     createScannerOption(DEFAULT_SCANNER, x),
   ),
   allOption: { name: allToolsName },
@@ -146,7 +139,7 @@ export const getFormattedSummary = (rawSummary = {}) => {
   );
   // Replace keys with translations found in REPORT_TYPES if available
   const formattedEntries = withoutEmptyEntries.map(([scanType, scanSummary]) => {
-    const name = REPORT_TYPES[scanType];
+    const name = REPORT_TYPES_ALL[scanType];
     return name ? [name, scanSummary] : null;
   });
   // Filter out keys that could not be matched with any translation and are thus considered invalid
