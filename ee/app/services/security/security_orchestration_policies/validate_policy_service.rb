@@ -2,7 +2,9 @@
 
 module Security
   module SecurityOrchestrationPolicies
-    class ValidatePolicyService < ::BaseProjectService
+    class ValidatePolicyService < ::BaseContainerService
+      include ::Gitlab::Utils::StrongMemoize
+
       def execute
         return error(s_('SecurityOrchestration|Empty policy name')) if blank_name?
 
@@ -38,7 +40,8 @@ module Security
       end
 
       def missing_branch_for_rule?
-        return false if project.blank?
+        return false if container.blank?
+        return false unless project_container?
 
         missing_branch_names.present?
       end
@@ -60,7 +63,7 @@ module Security
 
       def branches_for_project
         strong_memoize(:branches_for_project) do
-          repository.branch_names
+          container.repository.branch_names
         end
       end
 
