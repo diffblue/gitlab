@@ -4,25 +4,18 @@ require 'spec_helper'
 
 RSpec.describe ContainerRepository, :saas do
   describe '.with_target_import_tier' do
-    let_it_be(:root_group) { create(:group) }
-    let_it_be(:group) { create(:group, parent_id: root_group.id) }
-    let_it_be(:project) { create(:project, namespace: group) }
-    let_it_be(:valid_container_repository) { create(:container_repository, project: project) }
+    let_it_be(:valid_container_repository) { create(:container_repository, migration_plan: 'free') }
 
     let_it_be(:gitlab_namespace) { create(:namespace, path: 'gitlab-org') }
     let_it_be(:gitlab_project) { create(:project, namespace: gitlab_namespace) }
     let_it_be(:gitlab_container_repository) { create(:container_repository, project: gitlab_project) }
 
-    let_it_be(:ultimate_project) { create(:project) }
-    let_it_be(:ultimate_container_repository) { create(:container_repository, project: ultimate_project) }
-
-    let(:subscription) { create(:gitlab_subscription, :premium, namespace: root_group) }
-    let(:ultimate_subscription) { create(:gitlab_subscription, :ultimate, namespace: ultimate_project.namespace) }
+    let_it_be(:ultimate_container_repository) { create(:container_repository, migration_plan: 'ultimate') }
 
     subject { described_class.with_target_import_tier }
 
     before do
-      stub_application_setting(container_registry_import_target_plan: subscription.hosted_plan.name)
+      stub_application_setting(container_registry_import_target_plan: valid_container_repository.migration_plan)
     end
 
     context 'all_plans disabled' do
@@ -39,7 +32,7 @@ RSpec.describe ContainerRepository, :saas do
           stub_feature_flags(container_registry_migration_limit_gitlab_org: false)
         end
 
-        it { is_expected.to contain_exactly(valid_container_repository) }
+        it { is_expected.to contain_exactly(valid_container_repository, gitlab_container_repository) }
       end
     end
 
@@ -51,17 +44,12 @@ RSpec.describe ContainerRepository, :saas do
   describe '.ready_for_import' do
     include_context 'importable repositories'
 
-    let_it_be(:ultimate_project) { create(:project) }
-    let_it_be(:ultimate_container_repository) { create(:container_repository, project: ultimate_project, created_at: 2.days.ago) }
-
-    let_it_be(:subscription) { create(:gitlab_subscription, :premium, namespace: root_group) }
-    let_it_be(:denied_subscription) { create(:gitlab_subscription, :premium, namespace: denied_project.namespace) }
-    let_it_be(:ultimate_subscription) { create(:gitlab_subscription, :ultimate, namespace: ultimate_project.namespace) }
+    let_it_be(:ultimate_container_repository) { create(:container_repository, migration_plan: 'ultimate', created_at: 2.days.ago) }
 
     subject { described_class.ready_for_import }
 
     before do
-      stub_application_setting(container_registry_import_target_plan: subscription.hosted_plan.name)
+      stub_application_setting(container_registry_import_target_plan: valid_container_repository.migration_plan)
     end
 
     it { is_expected.to contain_exactly(valid_container_repository, valid_container_repository2) }
