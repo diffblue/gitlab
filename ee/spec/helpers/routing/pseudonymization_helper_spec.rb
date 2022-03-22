@@ -61,5 +61,27 @@ RSpec.describe ::Routing::PseudonymizationHelper do
 
       it_behaves_like 'masked url'
     end
+
+    context 'when severity, sortBy, sortDesc is present' do
+      let(:masked_url) { "http://localhost/namespace#{group.id}/project#{project.id}/-/security/vulnerability_report?severity=high&sortBy=reportType&sortDesc=false&state=all" }
+      let(:request) do
+        double(:Request,
+               path_parameters: {
+                controller: 'projects/security/vulnerability_report',
+                action: 'index',
+                namespace_id: group.name,
+                project_id: project.name
+               },
+               protocol: 'http',
+               host: 'localhost',
+               query_string: 'severity=high&sortBy=reportType&sortDesc=false&state=all')
+      end
+
+      before do
+        allow(helper).to receive(:request).and_return(request)
+      end
+
+      it_behaves_like 'masked url'
+    end
   end
 end
