@@ -32910,6 +32910,9 @@ msgstr ""
 msgid "SecurityConfiguration|Immediately begin risk analysis and remediation with application security features. Start with SAST and Secret Detection, available to all plans. Upgrade to Ultimate to get all features, including:"
 msgstr ""
 
+msgid "SecurityConfiguration|Learn more about vulnerability training"
+msgstr ""
+
 msgid "SecurityConfiguration|Manage corpus"
 msgstr ""
 
