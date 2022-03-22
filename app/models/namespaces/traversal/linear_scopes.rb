@@ -25,6 +25,14 @@ module Namespaces
         def self_and_ancestors(include_self: true, upto: nil, hierarchy_order: nil)
           return super unless use_traversal_ids_for_ancestor_scopes?
 
+          if Feature.enabled?(:use_traversal_ids_for_ancestor_scopes_with_inner_join, default_enabled: :yaml)
+            self_and_ancestors_from_inner_join(include_self: include_self, upto: upto, hierarchy_order: hierarchy_order)
+          else
+            self_and_ancestors_from_ancestors_cte(include_self: include_self, upto: upto, hierarchy_order: hierarchy_order)
+          end
+        end
+
+        def self_and_ancestors_from_ancestors_cte(include_self: true, upto: nil, hierarchy_order: nil)
           ancestors_cte, base_cte = ancestor_ctes
           namespaces = Arel::Table.new(:namespaces)
 
@@ -41,6 +49,36 @@ module Namespaces
 
           if upto
             records = records.where.not(id: unscoped.where(id: upto).select('unnest(traversal_ids)'))
+          end
+
+          records
+        end
+
+        def self_and_ancestors_from_inner_join(include_self: true, upto: nil, hierarchy_order: nil)
+          base_scope = all.reselect('namespaces.traversal_ids')
+          base_cte = Gitlab::SQL::CTE.new(:base_ancestors_cte, base_scope)
+
+          unnest = if include_self
+                     base_cte.table[:traversal_ids]
+                   else
+                     base_cte_traversal_ids = 'base_ancestors_cte.traversal_ids'
+                     Arel.sql("#{base_cte_traversal_ids}[1:array_length(#{base_cte_traversal_ids},1)-1]")
+                   end
+
+          ancestor_subselect = "SELECT DISTINCT #{unnest_func(unnest).to_sql} FROM base_ancestors_cte"
+          ancestors_join = "INNER JOIN (#{ancestor_subselect}) AS ancestors(ancestor_id) ON namespaces.id = ancestors.ancestor_id"
+
+          namespaces = Arel::Table.new(:namespaces)
+
+          records = unscoped
+            .with(base_cte.to_arel)
+            .from(namespaces)
+            .joins(ancestors_join)
+            .order_by_depth(hierarchy_order)
+
+          if upto
+            upto_ancestor_ids = unscoped.where(id: upto).select(unnest_func(Arel.sql('traversal_ids')))
+            records = records.where.not(id: upto_ancestor_ids)
           end
 
           records
@@ -87,7 +125,7 @@ module Namespaces
           depth_order = hierarchy_order == :asc ? :desc : :asc
 
           all
-            .select(Arel.star, 'array_length(traversal_ids, 1) as depth')
+            .select(Namespace.default_select_columns, 'array_length(traversal_ids, 1) as depth')
             .order(depth: depth_order, id: :asc)
         end
 
@@ -167,6 +205,10 @@ module Namespaces
 
         def next_sibling_func(*args)
           Arel::Nodes::NamedFunction.new('next_traversal_ids_sibling', args)
+        end
+
+        def unnest_func(*args)
+          Arel::Nodes::NamedFunction.new('unnest', args)
         end
 
         def self_and_descendants_with_duplicates_with_array_operator(include_self: true)
