@@ -56,10 +56,6 @@ module EE
       grouped_options_for_select(grouped_options, selected, prompt: _('Please select a group'))
     end
 
-    def show_trial_errors?(namespace, service_result)
-      namespace&.invalid? || (service_result && !service_result[:success])
-    end
-
     def trial_errors(namespace, service_result)
       namespace&.errors&.full_messages&.to_sentence&.presence || service_result&.dig(:errors)&.presence
     end
