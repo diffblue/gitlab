@@ -118,7 +118,7 @@ describe('Scanner Filter component', () => {
       expectSelectedItems(selectedOptions);
 
       await clickAndCheck(filter.options); // First click selects all.
-      await clickAndCheck([filter.allOption]); // Second check unselects all.
+      await clickAndCheck([{ id: 'all' }]); // Second check unselects all.
       await clickAndCheck(filter.options); // Third click selects all again.
     });
 

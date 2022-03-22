@@ -4,7 +4,6 @@ import {
   REPORT_TYPES_NO_CLUSTER_IMAGE,
   SEVERITY_LEVELS,
 } from 'ee/security_dashboard/store/constants';
-import { BASE_FILTERS } from 'ee/security_dashboard/store/modules/filters/constants';
 import convertReportType from 'ee/vue_shared/security_reports/store/utils/convert_report_type';
 import { VULNERABILITY_STATES } from 'ee/vulnerabilities/constants';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
@@ -14,6 +13,8 @@ import { DEFAULT_SCANNER } from './constants';
 const parseOptions = (obj) =>
   Object.entries(obj).map(([id, name]) => ({ id: id.toUpperCase(), name }));
 
+const toolName = s__('SecurityReports|Tool');
+const allToolsName = s__('ciReport|All tools');
 const stateOptions = parseOptions(VULNERABILITY_STATES);
 const defaultStateOptions = stateOptions.filter((x) => ['DETECTED', 'CONFIRMED'].includes(x.id));
 
@@ -21,7 +22,7 @@ export const stateFilter = {
   name: s__('SecurityReports|Status'),
   id: 'state',
   options: stateOptions,
-  allOption: BASE_FILTERS.state,
+  allOption: { id: 'all', name: s__('VulnerabilityStatusTypes|All statuses') },
   defaultOptions: defaultStateOptions,
 };
 
@@ -29,7 +30,7 @@ export const severityFilter = {
   name: s__('SecurityReports|Severity'),
   id: 'severity',
   options: parseOptions(SEVERITY_LEVELS),
-  allOption: BASE_FILTERS.severity,
+  allOption: { name: s__('ciReport|All severities') },
   defaultOptions: [],
 };
 
@@ -48,38 +49,38 @@ export const createScannerOption = (vendor, reportType) => {
 // used by the scanner filter that shows a flat list of scan types (DAST, SAST, etc) with no vendor
 // grouping.
 export const simpleScannerFilter = {
-  name: s__('SecurityReports|Tool'),
+  name: toolName,
   id: 'reportType',
   options: parseOptions(REPORT_TYPES),
-  allOption: BASE_FILTERS.report_type,
+  allOption: { name: allToolsName },
   defaultOptions: [],
 };
 
 export const simpleScannerFilterNoClusterImage = {
-  name: s__('SecurityReports|Tool'),
+  name: toolName,
   id: 'reportType',
   options: parseOptions(REPORT_TYPES_NO_CLUSTER_IMAGE),
-  allOption: BASE_FILTERS.report_type,
+  allOption: { name: allToolsName },
   defaultOptions: [],
 };
 
 // This is used on the project-level report. It's used by the scanner filter that shows a list of
 // scan types (DAST, SAST, etc) that's grouped by vendor.
 export const vendorScannerFilter = {
-  name: s__('SecurityReports|Tool'),
+  name: toolName,
   id: 'scanner',
   options: Object.keys(REPORT_TYPES).map((x) => createScannerOption(DEFAULT_SCANNER, x)),
-  allOption: BASE_FILTERS.report_type,
+  allOption: { name: allToolsName },
   defaultOptions: [],
 };
 
 export const vendorScannerFilterNoClusterImage = {
-  name: s__('SecurityReports|Tool'),
+  name: toolName,
   id: 'scanner',
   options: Object.keys(REPORT_TYPES_NO_CLUSTER_IMAGE).map((x) =>
     createScannerOption(DEFAULT_SCANNER, x),
   ),
-  allOption: BASE_FILTERS.report_type,
+  allOption: { name: allToolsName },
   defaultOptions: [],
 };
 
@@ -93,7 +94,7 @@ export const activityFilter = {
   name: s__('Reports|Activity'),
   id: 'activity',
   options: Object.values(activityOptions),
-  allOption: BASE_FILTERS.activity,
+  allOption: { name: s__('SecurityReports|All activity') },
   defaultOptions: [],
 };
 
@@ -101,7 +102,7 @@ export const projectFilter = {
   name: s__('SecurityReports|Project'),
   id: 'projectId',
   options: [],
-  allOption: BASE_FILTERS.project_id,
+  allOption: { name: s__('ciReport|All projects') },
   defaultOptions: [],
 };
 
