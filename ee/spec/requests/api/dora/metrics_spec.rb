@@ -25,12 +25,14 @@ RSpec.describe API::Dora::Metrics do
              deployment_frequency: 1,
              lead_time_for_changes_in_seconds: 3,
              time_to_restore_service_in_seconds: 5,
+             incidents_count: 7,
              environment: production,
              date: '2021-01-01')
       create(:dora_daily_metrics,
              deployment_frequency: 2,
              lead_time_for_changes_in_seconds: 4,
              time_to_restore_service_in_seconds: 6,
+             incidents_count: 8,
              environment: production,
              date: '2021-01-02')
     end
@@ -43,6 +45,7 @@ RSpec.describe API::Dora::Metrics do
       :deployment_frequency    | 1  | 2
       :lead_time_for_changes   | 3  | 4
       :time_to_restore_service | 5  | 6
+      :change_failure_rate     | 7  | 4
     end
 
     with_them do
