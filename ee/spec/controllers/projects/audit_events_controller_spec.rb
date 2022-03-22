@@ -126,6 +126,12 @@ RSpec.describe Projects::AuditEventsController do
           end
         end
       end
+
+      context 'when date range is greater than limit' do
+        subject { get :index, params: { project_id: project.to_param, namespace_id: project.namespace.to_param, 'created_before': created_before, 'created_after': created_after } }
+
+        it_behaves_like 'a date range error is returned'
+      end
     end
 
     shared_examples 'pagination' do
