@@ -15,10 +15,10 @@ module Gitlab
       @block = block
     end
 
-    def method_missing(name, *args, **kwargs, &block)
+    def method_missing(...)
       __evaluate__
 
-      @result.__send__(name, *args, **kwargs, &block) # rubocop:disable GitlabSecurity/PublicSend
+      @result.__send__(...) # rubocop:disable GitlabSecurity/PublicSend
     end
 
     def respond_to_missing?(name, include_private = false)
