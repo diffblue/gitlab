@@ -9424,9 +9424,6 @@ msgstr ""
 msgid "Confirm new password"
 msgstr ""
 
-msgid "Confirm remove avatar"
-msgstr ""
-
 msgid "Confirm user"
 msgstr ""
 
@@ -30947,6 +30944,9 @@ msgstr ""
 msgid "Remove time estimate"
 msgstr ""
 
+msgid "Remove topic avatar"
+msgstr ""
+
 msgid "Remove user"
 msgstr ""
 
@@ -39154,6 +39154,9 @@ msgid "Topic %{topic_name} was successfully created."
 msgstr ""
 
 msgid "Topic avatar"
+msgstr ""
+
+msgid "Topic avatar for %{name} will be removed. This cannot be undone."
 msgstr ""
 
 msgid "Topic name"
