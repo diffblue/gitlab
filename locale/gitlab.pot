@@ -11226,7 +11226,7 @@ msgstr ""
 msgid "DAST Configuration"
 msgstr ""
 
-msgid "DAST Scans"
+msgid "DAST Profiles"
 msgstr ""
 
 msgid "DAST profile not found: %{name}"
@@ -11376,6 +11376,9 @@ msgstr ""
 msgid "DastProfiles|Could not update the site profile. Please try again."
 msgstr ""
 
+msgid "DastProfiles|DAST profile library"
+msgstr ""
+
 msgid "DastProfiles|Debug messages"
 msgstr ""
 
@@ -11428,9 +11431,6 @@ msgid "DastProfiles|Hide debug messages"
 msgstr ""
 
 msgid "DastProfiles|Include debug messages in the DAST console output."
-msgstr ""
-
-msgid "DastProfiles|Manage DAST scans"
 msgstr ""
 
 msgid "DastProfiles|Manage profiles"
@@ -33051,10 +33051,10 @@ msgstr ""
 msgid "SecurityConfiguration|Manage corpus files used as seed inputs with coverage-guided fuzzing."
 msgstr ""
 
-msgid "SecurityConfiguration|Manage profiles for use by DAST scans."
+msgid "SecurityConfiguration|Manage profiles"
 msgstr ""
 
-msgid "SecurityConfiguration|Manage scans"
+msgid "SecurityConfiguration|Manage profiles for use by DAST scans."
 msgstr ""
 
 msgid "SecurityConfiguration|More scan types, including Container Scanning, DAST, Dependency Scanning, Fuzzing, and Licence Compliance"
