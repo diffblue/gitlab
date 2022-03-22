@@ -14,9 +14,10 @@ module Security
     REQUIRE_APPROVAL = 'require_approval'
 
     included do
-      delegate :approval_rules, to: :project
+      delegate :approval_rules, to: :project, allow_nil: true
 
       def active_scan_result_policies
+        return [] if project.blank?
         return [] unless ::Feature.enabled?(:scan_result_policy, project, default_enabled: :yaml)
 
         scan_result_policies&.select { |config| config[:enabled] }&.first(LIMIT)
@@ -27,6 +28,8 @@ module Security
       end
 
       def uniq_scanners
+        return [] if project.blank?
+
         distinct_scanners = approval_rules.distinct_scanners
         return [] if distinct_scanners.none?
 

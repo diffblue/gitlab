@@ -1326,6 +1326,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: security_orchestration_policy_rule_schedule_namespace
+  :worker_name: Security::OrchestrationPolicyRuleScheduleNamespaceWorker
+  :feature_category: :security_orchestration
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: set_user_status_based_on_user_cap_setting
   :worker_name: SetUserStatusBasedOnUserCapSettingWorker
   :feature_category: :users

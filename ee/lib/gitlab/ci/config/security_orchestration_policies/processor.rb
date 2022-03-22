@@ -15,12 +15,13 @@ module Gitlab
 
           def perform
             return @config unless project&.feature_available?(:security_orchestration_policies)
-            return @config unless security_orchestration_policy_configuration&.policy_configuration_valid?
+            return @config if valid_security_orchestration_policy_configurations.blank?
             return @config unless extend_configuration?
 
             merged_config = @config
                               .deep_merge(on_demand_scans_template)
                               .deep_merge(pipeline_scan_template)
+
             observe_processing_duration(Time.current - @start)
 
             merged_config
@@ -30,17 +31,40 @@ module Gitlab
 
           attr_reader :project
 
-          delegate :security_orchestration_policy_configuration, to: :project, allow_nil: true
+          delegate :all_security_orchestration_policy_configurations, to: :project, allow_nil: true
+
+          def valid_security_orchestration_policy_configurations
+            @valid_security_orchestration_policy_configurations ||=
+              all_security_orchestration_policy_configurations&.select(&:policy_configuration_valid?)
+          end
 
           def on_demand_scans_template
             ::Security::SecurityOrchestrationPolicies::OnDemandScanPipelineConfigurationService
               .new(project)
-              .execute(security_orchestration_policy_configuration.on_demand_scan_actions(@ref))
+              .execute(on_demand_scan_actions)
           end
 
           def pipeline_scan_template
             ::Security::SecurityOrchestrationPolicies::ScanPipelineService
-              .new.execute(security_orchestration_policy_configuration.pipeline_scan_actions(@ref))
+              .new.execute(pipeline_scan_actions)
+          end
+
+          def on_demand_scan_actions
+            return [] if valid_security_orchestration_policy_configurations.blank?
+
+            valid_security_orchestration_policy_configurations
+              .flat_map { |security_orchestration_policy_configuration| security_orchestration_policy_configuration.on_demand_scan_actions(@ref) }
+              .compact
+              .uniq
+          end
+
+          def pipeline_scan_actions
+            return [] if valid_security_orchestration_policy_configurations.blank?
+
+            valid_security_orchestration_policy_configurations
+              .flat_map { |security_orchestration_policy_configuration| security_orchestration_policy_configuration.pipeline_scan_actions(@ref) }
+              .compact
+              .uniq
           end
 
           def observe_processing_duration(duration)

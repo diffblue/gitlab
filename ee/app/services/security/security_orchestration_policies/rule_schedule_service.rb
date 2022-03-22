@@ -4,9 +4,7 @@ module Security
   module SecurityOrchestrationPolicies
     class RuleScheduleService < BaseContainerService
       def execute(schedule)
-        schedule.schedule_next_run!
-
-        branches = schedule.applicable_branches
+        branches = schedule.applicable_branches(container)
         actions_for(schedule).each { |action| process_action(action, schedule, branches) }
       end
 

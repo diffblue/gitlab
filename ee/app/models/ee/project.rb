@@ -861,6 +861,16 @@ module EE
       approval_rules.vulnerability_reports.first
     end
 
+    def all_security_orchestration_policy_configurations
+      all_parent_groups = group&.self_and_ancestor_ids
+      return Array.wrap(security_orchestration_policy_configuration) if all_parent_groups.blank?
+
+      [
+        security_orchestration_policy_configuration,
+        *::Security::OrchestrationPolicyConfiguration.where(namespace_id: all_parent_groups)
+      ].compact
+    end
+
     private
 
     def ci_minutes_usage

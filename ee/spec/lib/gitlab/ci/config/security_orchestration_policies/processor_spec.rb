@@ -12,22 +12,37 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
   let(:ref) { 'refs/heads/master' }
   let(:source) { 'pipeline' }
 
-  let_it_be_with_refind(:project) { create(:project, :repository) }
-
-  let_it_be(:policies_repository) { create(:project, :repository) }
-  let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, project: project, security_policy_management_project: policies_repository) }
-  let_it_be(:policy) do
+  let_it_be(:namespace) { create(:group) }
+  let_it_be(:namespace_policies_repository) { create(:project, :repository) }
+  let_it_be(:namespace_security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, :namespace, namespace: namespace, security_policy_management_project: namespace_policies_repository) }
+  let_it_be(:namespace_policy) do
     build(:scan_execution_policy, actions: [
-    { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' },
-    { scan: 'secret_detection' }
+      { scan: 'sast' },
+      { scan: 'secret_detection' }
   ])
   end
 
+  let_it_be_with_refind(:project) { create(:project, :repository, group: namespace) }
+
+  let_it_be(:policies_repository) { create(:project, :repository, group: namespace) }
+  let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, project: project, security_policy_management_project: policies_repository) }
+  let_it_be(:policy) do
+    build(:scan_execution_policy, actions: [
+      { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' },
+      { scan: 'secret_detection' }
+    ])
+  end
+
   let_it_be(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy]) }
+  let_it_be(:namespace_policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [namespace_policy]) }
 
   before do
-    allow_next_instance_of(Repository) do |repository|
+    allow_next_instance_of(Repository, anything, anything, anything) do |repository|
       allow(repository).to receive(:blob_data_at).and_return(policy_yaml)
+    end
+
+    allow_next_instance_of(Repository, anything, namespace_policies_repository, anything) do |repository|
+      allow(repository).to receive(:blob_data_at).and_return(namespace_policy_yaml)
     end
   end
 
@@ -47,6 +62,11 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
 
   shared_examples 'when policy is invalid' do
     let_it_be(:policy_yaml) do
+      build(:orchestration_policy_yaml, scan_execution_policy:
+      [build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: 'production' }])])
+    end
+
+    let_it_be(:namespace_policy_yaml) do
       build(:orchestration_policy_yaml, scan_execution_policy:
       [build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: 'production' }])])
     end
@@ -156,6 +176,19 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
                   SECRET_DETECTION_EXCLUDED_PATHS: '',
                   SECRET_DETECTION_HISTORIC_SCAN: 'false'
                 })
+            }
+          end
+        end
+      end
+
+      context 'when scan type is sast is configured for namespace policy project' do
+        it_behaves_like 'with different scan type' do
+          let(:expected_configuration) do
+            {
+              'sast-1': hash_including(
+                inherit: { variables: false },
+                trigger: { include: [{ template: "Security/SAST.gitlab-ci.yml" }] }
+              )
             }
           end
         end

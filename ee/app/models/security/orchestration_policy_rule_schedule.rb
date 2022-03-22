@@ -20,9 +20,9 @@ module Security
 
     scope :runnable_schedules, -> { where("next_run_at < ?", Time.zone.now) }
     scope :with_owner, -> { includes(:owner) }
-    scope :with_configuration_and_project, -> do
+    scope :with_configuration_and_project_or_namespace, -> do
       includes(
-        security_orchestration_policy_configuration: [:project, :security_policy_management_project]
+        security_orchestration_policy_configuration: [:project, :namespace, :security_policy_management_project]
       )
     end
 
@@ -32,17 +32,15 @@ module Security
       end
     end
 
-    def applicable_branches
-      strong_memoize(:applicable_branches) do
-        configured_branches = policy&.dig(:rules, rule_index, :branches)
-        next [] if configured_branches.blank?
+    def applicable_branches(project = security_orchestration_policy_configuration.project)
+      configured_branches = policy&.dig(:rules, rule_index, :branches)
+      return [] if configured_branches.blank? || project.blank?
 
-        branch_names = security_orchestration_policy_configuration.project.repository.branches
+      branch_names = project.repository.branches
 
-        configured_branches
-          .flat_map { |pattern| RefMatcher.new(pattern).matching(branch_names).map(&:name) }
-          .uniq
-      end
+      configured_branches
+        .flat_map { |pattern| RefMatcher.new(pattern).matching(branch_names).map(&:name) }
+        .uniq
     end
 
     def applicable_clusters
