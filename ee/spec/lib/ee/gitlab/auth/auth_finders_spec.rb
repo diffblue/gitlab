@@ -105,17 +105,5 @@ RSpec.describe EE::Gitlab::Auth::AuthFinders do
         expect { subject }.to raise_error(::Gitlab::Auth::UnauthorizedError)
       end
     end
-
-    context 'when the geo_token_user_authentication feature flag is disabled' do
-      before do
-        stub_feature_flags(geo_token_user_authentication: false)
-      end
-
-      it 'returns immediately' do
-        expect(::Gitlab::Geo::JwtRequestDecoder).not_to receive(:geo_auth_attempt?)
-        expect(::Gitlab::Geo::JwtRequestDecoder).not_to receive(:new)
-        expect(subject).to be_nil
-      end
-    end
   end
 end
