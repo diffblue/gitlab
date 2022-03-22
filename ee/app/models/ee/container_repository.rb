@@ -26,6 +26,7 @@ module EE
         # self-managed instances are singlular plans, so they do not need
         # these filters
         return all unless ::Gitlab.com?
+        return all if ::ContainerRegistry::Migration.all_plans?
 
         if ::ContainerRegistry::Migration.limit_gitlab_org?
           joins(project: [:namespace]).where(namespaces: { path: GITLAB_ORG_NAMESPACE })
