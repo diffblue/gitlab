@@ -39249,6 +39249,9 @@ msgstr ""
 msgid "TransferGroup|Database is not supported."
 msgstr ""
 
+msgid "TransferGroup|Group contains contacts/organizations and you don't have enough permissions to move them to the new root group."
+msgstr ""
+
 msgid "TransferGroup|Group contains projects with NPM packages."
 msgstr ""
 
