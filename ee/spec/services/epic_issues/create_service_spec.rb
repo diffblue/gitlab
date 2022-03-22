@@ -37,8 +37,10 @@ RSpec.describe EpicIssues::CreateService do
         expect(created_link.relative_position).to be < existing_link.reload.relative_position
       end
 
-      it 'returns success status' do
-        expect(subject).to eq(status: :success)
+      it 'returns success status and created links', :aggregate_failures do
+        expect(subject.keys).to match_array([:status, :created_references])
+        expect(subject[:status]).to eq(:success)
+        expect(subject[:created_references].count).to eq(1)
       end
 
       describe 'async actions', :sidekiq_inline do
@@ -216,8 +218,10 @@ RSpec.describe EpicIssues::CreateService do
                 .to all(be < existing_link.reset.relative_position)
             end
 
-            it 'returns success status' do
-              expect(subject).to eq(status: :success)
+            it 'returns success status and created links', :aggregate_failures do
+              expect(subject.keys).to match_array([:status, :created_references])
+              expect(subject[:status]).to eq(:success)
+              expect(subject[:created_references].count).to eq(2)
             end
 
             it 'creates 2 system notes for each issue', :sidekiq_inline do
@@ -322,8 +326,10 @@ RSpec.describe EpicIssues::CreateService do
           expect { subject }.to change { EpicIssue.last.epic }.from(epic).to(another_epic)
         end
 
-        it 'returns success status' do
-          is_expected.to eq(status: :success)
+        it 'returns success status and created links', :aggregate_failures do
+          expect(subject.keys).to match_array([:status, :created_references])
+          expect(subject[:status]).to eq(:success)
+          expect(subject[:created_references].count).to eq(1)
         end
 
         it 'creates 3 system notes', :sidekiq_inline do

@@ -36,8 +36,10 @@ RSpec.describe EpicLinks::CreateService do
         expect(epic_to_add.reload.relative_position).to be < existing_child_epic.reload.relative_position
       end
 
-      it 'returns success status' do
-        expect(subject).to eq(status: :success)
+      it 'returns success status and created links', :aggregate_failures do
+        expect(subject.keys).to match_array([:status, :created_references])
+        expect(subject[:status]).to eq(:success)
+        expect(subject[:created_references]).to match_array([epic_to_add])
       end
     end
 
@@ -323,8 +325,10 @@ RSpec.describe EpicLinks::CreateService do
             expect { subject }.to change { Note.system.count }.from(0).to(4)
           end
 
-          it 'returns success status' do
-            expect(subject).to eq(status: :success)
+          it 'returns success status and created links', :aggregate_failures do
+            expect(subject.keys).to match_array([:status, :created_references])
+            expect(subject[:status]).to eq(:success)
+            expect(subject[:created_references]).to match_array([epic_to_add, another_epic])
           end
 
           it 'avoids un-necessary database queries' do
@@ -367,8 +371,10 @@ RSpec.describe EpicLinks::CreateService do
             expect { subject }.to change { Note.system.count }.from(0).to(2)
           end
 
-          it 'returns success status' do
-            expect(subject).to eq(status: :success)
+          it 'returns success status and created links', :aggregate_failures do
+            expect(subject.keys).to match_array([:status, :created_references])
+            expect(subject[:status]).to eq(:success)
+            expect(subject[:created_references]).to match_array([another_epic])
           end
         end
 

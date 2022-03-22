@@ -50,8 +50,10 @@ RSpec.describe IssueLinks::CreateService do
         end
       end
 
-      it 'returns success status' do
-        is_expected.to eq(status: :success)
+      it 'returns success status and created links', :aggregate_failures do
+        expect(subject.keys).to match_array([:status, :created_references])
+        expect(subject[:status]).to eq(:success)
+        expect(subject[:created_references]).not_to be_empty
       end
 
       it_behaves_like 'issuable link creation with blocking link_type' do
@@ -84,8 +86,8 @@ RSpec.describe IssueLinks::CreateService do
       end
 
       it 'sets the same type of relation for selected references' do
-        expect(subject).to eq(status: :success)
-
+        expect(subject[:status]).to eq(:success)
+        expect(subject[:created_references].count).to eq(3)
         expect(IssueLink.where(target: [issue_a, issue_b, issue_c]).pluck(:link_type))
           .to eq([IssueLink::TYPE_BLOCKS, IssueLink::TYPE_BLOCKS, IssueLink::TYPE_BLOCKS])
       end

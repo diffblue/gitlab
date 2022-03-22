@@ -14,10 +14,10 @@ module EE
         # see EpicLinks::EpicIssues#relate_issuables
         affected_epics = affected_epics(objects)
 
-        super
-
-        if !params[:skip_epic_dates_update] && affected_epics.present?
-          Epics::UpdateDatesService.new(affected_epics).execute
+        super.tap do
+          if !params[:skip_epic_dates_update] && affected_epics.present?
+            Epics::UpdateDatesService.new(affected_epics).execute
+          end
         end
       end
 
