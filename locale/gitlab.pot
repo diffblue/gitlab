@@ -21390,6 +21390,9 @@ msgstr ""
 msgid "Jobs|Create CI/CD configuration file"
 msgstr ""
 
+msgid "Jobs|Filter jobs"
+msgstr ""
+
 msgid "Jobs|Job is stuck. Check runners."
 msgstr ""
 
@@ -21397,6 +21400,12 @@ msgid "Jobs|Jobs are the building blocks of a GitLab CI/CD pipeline. Each job ha
 msgstr ""
 
 msgid "Jobs|No jobs to show"
+msgstr ""
+
+msgid "Jobs|Raw text search is not currently supported for the jobs filtered search feature. Please use the available search tokens."
+msgstr ""
+
+msgid "Jobs|Status"
 msgstr ""
 
 msgid "Jobs|Use jobs to automate your tasks"
@@ -21426,13 +21435,22 @@ msgstr ""
 msgid "Job|Cancel"
 msgstr ""
 
+msgid "Job|Canceled"
+msgstr ""
+
 msgid "Job|Complete Raw"
+msgstr ""
+
+msgid "Job|Created"
 msgstr ""
 
 msgid "Job|Download"
 msgstr ""
 
 msgid "Job|Erase job log and artifacts"
+msgstr ""
+
+msgid "Job|Failed"
 msgstr ""
 
 msgid "Job|Finished at"
@@ -21450,7 +21468,25 @@ msgstr ""
 msgid "Job|Keep"
 msgstr ""
 
+msgid "Job|Manual"
+msgstr ""
+
+msgid "Job|Passed"
+msgstr ""
+
+msgid "Job|Pending"
+msgstr ""
+
+msgid "Job|Preparing"
+msgstr ""
+
 msgid "Job|Retry"
+msgstr ""
+
+msgid "Job|Running"
+msgstr ""
+
+msgid "Job|Scheduled"
 msgstr ""
 
 msgid "Job|Scroll to bottom"
@@ -21460,6 +21496,9 @@ msgid "Job|Scroll to top"
 msgstr ""
 
 msgid "Job|Show complete raw"
+msgstr ""
+
+msgid "Job|Skipped"
 msgstr ""
 
 msgid "Job|Status"
@@ -21484,6 +21523,9 @@ msgid "Job|This job is stuck because you don't have any active runners online or
 msgstr ""
 
 msgid "Job|This job is stuck because you don't have any active runners that can run this job."
+msgstr ""
+
+msgid "Job|Waiting for resource"
 msgstr ""
 
 msgid "Job|allowed to fail"
