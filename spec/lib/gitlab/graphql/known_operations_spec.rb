@@ -19,6 +19,7 @@ RSpec.describe Gitlab::Graphql::KnownOperations do
 
   describe "#from_query" do
     where(:query_string, :expected) do
+      "query { helloWorld }"         | described_class::UNKNOWN
       "query fuzzyyy { helloWorld }" | described_class::UNKNOWN
       "query foo { helloWorld }"     | described_class::Operation.new("foo")
     end
