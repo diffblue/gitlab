@@ -6,6 +6,7 @@ class ProtectedEnvironment < ApplicationRecord
   belongs_to :project
   belongs_to :group, inverse_of: :protected_environments
   has_many :deploy_access_levels, inverse_of: :protected_environment
+  has_many :approval_rules, class_name: 'ProtectedEnvironments::ApprovalRule', inverse_of: :protected_environment
 
   accepts_nested_attributes_for :deploy_access_levels, allow_destroy: true
 
