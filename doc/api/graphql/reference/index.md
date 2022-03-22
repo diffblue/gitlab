@@ -3234,6 +3234,10 @@ Input type: `iterationCreateInput`
 
 ### `Mutation.iterationDelete`
 
+WARNING:
+**Deprecated** in 14.10.
+Manual iteration management is deprecated. Only automatic iteration cadences will be supported in the future.
+
 Input type: `IterationDeleteInput`
 
 #### Arguments

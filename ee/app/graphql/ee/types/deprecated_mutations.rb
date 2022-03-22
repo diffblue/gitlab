@@ -5,7 +5,11 @@ module EE
     module DeprecatedMutations
       extend ActiveSupport::Concern
 
+      ITERATION_DEPRECATION_MESSAGE = 'Manual iteration management is deprecated. Only automatic iteration cadences will be supported in the future'
+
       prepended do
+        mount_mutation ::Mutations::Iterations::Delete,
+          deprecated: { reason: ITERATION_DEPRECATION_MESSAGE, milestone: '14.10' }
         mount_aliased_mutation 'CreateIteration', ::Mutations::Iterations::Create,
           deprecated: { reason: 'Use iterationCreate', milestone: '14.0' }
       end
