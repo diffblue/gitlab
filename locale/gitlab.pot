@@ -14918,6 +14918,9 @@ msgstr ""
 msgid "Everything you need to create a GitLab Pages site using Jekyll"
 msgstr ""
 
+msgid "Everything you need to create a GitLab Pages site using Middleman"
+msgstr ""
+
 msgid "Everything you need to create a GitLab Pages site using plain HTML"
 msgstr ""
 
@@ -23915,9 +23918,6 @@ msgstr ""
 msgid "Mi"
 msgstr ""
 
-msgid "Middleman project with Static Site Editor support"
-msgstr ""
-
 msgid "Migrated %{success_count}/%{total_count} files."
 msgstr ""
 
@@ -29491,6 +29491,9 @@ msgstr ""
 msgid "ProjectTemplates|Pages/Jekyll"
 msgstr ""
 
+msgid "ProjectTemplates|Pages/Middleman"
+msgstr ""
+
 msgid "ProjectTemplates|Pages/Plain HTML"
 msgstr ""
 
@@ -29507,9 +29510,6 @@ msgid "ProjectTemplates|Serverless Framework/JS"
 msgstr ""
 
 msgid "ProjectTemplates|Spring"
-msgstr ""
-
-msgid "ProjectTemplates|Static Site Editor/Middleman"
 msgstr ""
 
 msgid "ProjectTemplates|Tencent Serverless Framework/NextjsSSR"
