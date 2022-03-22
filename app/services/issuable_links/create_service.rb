@@ -25,7 +25,7 @@ module IssuableLinks
       end
 
       @errors = []
-      create_links
+      references = create_links
 
       if @errors.present?
         return error(@errors.join('. '), 422)
@@ -33,7 +33,7 @@ module IssuableLinks
 
       track_event
 
-      success
+      success(created_references: references)
     end
 
     # rubocop: disable CodeReuse/ActiveRecord
@@ -66,7 +66,7 @@ module IssuableLinks
     end
 
     def link_issuables(target_issuables)
-      target_issuables.each do |referenced_object|
+      target_issuables.map do |referenced_object|
         link = relate_issuables(referenced_object)
 
         unless link.valid?
@@ -75,6 +75,8 @@ module IssuableLinks
             error: link.errors.messages.values.flatten.to_sentence
           }
         end
+
+        link
       end
     end
 
