@@ -46,7 +46,7 @@ export default {
           })
           .catch(() =>
             createFlash({
-              message: __('The content for this wiki page failed to render.'),
+              message: this.$options.i18n.renderingContentFailed,
             }),
           );
       } catch (e) {
@@ -61,6 +61,7 @@ export default {
       'The content for this wiki page failed to load. To fix this error, reload the page.',
     ),
     retryLoadingContent: __('Retry'),
+    renderingContentFailed: __('The content for this wiki page failed to render.'),
   },
 };
 </script>
