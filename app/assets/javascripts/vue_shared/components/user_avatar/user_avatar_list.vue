@@ -1,6 +1,6 @@
 <script>
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { GlButton } from '@gitlab/ui';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { sprintf, __ } from '~/locale';
 import UserAvatarLink from './user_avatar_link.vue';
 
