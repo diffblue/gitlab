@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Security::CreateOrchestrationPolicyWorker do
   describe '#perform' do
+    let_it_be(:namespace) { create(:namespace) }
     let_it_be(:configuration) { create(:security_orchestration_policy_configuration, configured_at: nil) }
     let_it_be(:schedule) { create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: configuration) }
 
@@ -89,6 +90,25 @@ RSpec.describe Security::CreateOrchestrationPolicyWorker do
 
         it 'deletes all approval_rules' do
           expect { worker.perform }.to change(configuration.approval_rules, :count).by(-1)
+        end
+      end
+
+      context 'with namespace associated with configuration' do
+        before do
+          configuration.update!(project: nil, namespace: namespace)
+        end
+
+        it 'executes process services for scan execution policies only' do
+          active_policies[:scan_execution_policy].each_with_index do |policy, policy_index|
+            expect_next_instance_of(Security::SecurityOrchestrationPolicies::ProcessRuleService,
+                                    policy_configuration: configuration, policy_index: policy_index, policy: policy) do |service|
+              expect(service).to receive(:execute)
+            end
+          end
+
+          expect(Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService).not_to receive(:new)
+
+          worker.perform
         end
       end
     end

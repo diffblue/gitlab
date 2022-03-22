@@ -126,7 +126,9 @@ RSpec.describe Security::OrchestrationPolicyRuleSchedule do
       }
     end
 
-    subject { rule_schedule.applicable_branches }
+    let(:requested_project) { rule_schedule.security_orchestration_policy_configuration.project }
+
+    subject { rule_schedule.applicable_branches(requested_project) }
 
     before do
       allow(rule_schedule).to receive(:policy).and_return(policy)
@@ -140,6 +142,13 @@ RSpec.describe Security::OrchestrationPolicyRuleSchedule do
 
     context 'when branches is empty' do
       let(:branches) { [] }
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'when provided project is not provided' do
+      let(:branches) { ['master'] }
+      let(:requested_project) { nil }
 
       it { is_expected.to be_empty }
     end

@@ -3320,4 +3320,42 @@ RSpec.describe Project do
 
     it { is_expected.not_to include(scan_finding_rule) }
   end
+
+  describe '#all_security_orchestration_policy_configurations' do
+    subject { project.all_security_orchestration_policy_configurations }
+
+    context 'when security orchestration policy is configured for project only' do
+      let!(:project_security_orchestration_policy_configuration) do
+        create(:security_orchestration_policy_configuration, project: project)
+      end
+
+      it { is_expected.to match_array([project_security_orchestration_policy_configuration]) }
+    end
+
+    context 'when security orchestration policy is configured for namespaces and project' do
+      let!(:parent_group) { create(:group) }
+      let!(:child_group) { create(:group, parent: parent_group) }
+      let!(:child_group_2) { create(:group, parent: child_group) }
+      let!(:project) { create(:project, group: child_group_2) }
+
+      let!(:parent_security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, :namespace, namespace: parent_group) }
+      let!(:child_security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, :namespace, namespace: child_group) }
+      let!(:child_security_orchestration_policy_configuration_2) { create(:security_orchestration_policy_configuration, :namespace, namespace: child_group_2) }
+
+      let!(:project_security_orchestration_policy_configuration) do
+        create(:security_orchestration_policy_configuration, project: project)
+      end
+
+      it 'returns security policy configurations for all parent groups and project' do
+        expect(subject).to match_array(
+          [
+            parent_security_orchestration_policy_configuration,
+            child_security_orchestration_policy_configuration,
+            child_security_orchestration_policy_configuration_2,
+            project_security_orchestration_policy_configuration
+          ]
+        )
+      end
+    end
+  end
 end

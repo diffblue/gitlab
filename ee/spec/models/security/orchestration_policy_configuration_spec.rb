@@ -461,6 +461,16 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
       expect(active_scan_result_policies.count).to be(5)
     end
 
+    context 'when policy configuration is configured for namespace' do
+      let(:security_orchestration_policy_configuration) do
+        create(:security_orchestration_policy_configuration, :namespace, security_policy_management_project: security_policy_management_project)
+      end
+
+      it 'returns empty array' do
+        expect(active_scan_result_policies).to match_array([])
+      end
+    end
+
     context 'when scan_result_policy feature flag is disabled' do
       before do
         stub_feature_flags(scan_result_policy: false)
@@ -488,16 +498,54 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     subject { security_orchestration_policy_configuration.uniq_scanners }
 
     context 'with approval rules' do
-      before do
-        create(:approval_project_rule, :scan_finding, scanners: %w(dast sast), project: project)
-        create(:approval_project_rule, :scan_finding, scanners: %w(dast container_scanning), project: project)
+      context 'when policy configuration is configured for project' do
+        before do
+          create(:approval_project_rule, :scan_finding, scanners: %w(dast sast), project: project)
+          create(:approval_project_rule, :scan_finding, scanners: %w(dast container_scanning), project: project)
+        end
+
+        it { is_expected.to contain_exactly('dast', 'sast', 'container_scanning') }
       end
 
-      it { is_expected.to contain_exactly('dast', 'sast', 'container_scanning') }
+      context 'when policy configuration is configured for namespace' do
+        let(:security_orchestration_policy_configuration) do
+          create(:security_orchestration_policy_configuration, :namespace, security_policy_management_project: security_policy_management_project)
+        end
+
+        it { is_expected.to be_empty }
+      end
     end
 
     context 'without approval rules' do
       it { is_expected.to be_empty }
+    end
+  end
+
+  describe '#project?' do
+    subject { security_orchestration_policy_configuration.project? }
+
+    context 'when project is assigned to policy configuration' do
+      it { is_expected.to eq true }
+    end
+
+    context 'when namespace is assigned to policy configuration' do
+      let(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, :namespace) }
+
+      it { is_expected.to eq false }
+    end
+  end
+
+  describe '#namespace?' do
+    subject { security_orchestration_policy_configuration.namespace? }
+
+    context 'when project is assigned to policy configuration' do
+      it { is_expected.to eq false }
+    end
+
+    context 'when namespace is assigned to policy configuration' do
+      let(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, :namespace) }
+
+      it { is_expected.to eq true }
     end
   end
 end

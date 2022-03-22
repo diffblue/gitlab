@@ -13,15 +13,27 @@ module Security
     feature_category :security_orchestration
 
     def perform
-      Security::OrchestrationPolicyRuleSchedule.with_configuration_and_project.with_owner.runnable_schedules.find_in_batches do |schedules|
+      Security::OrchestrationPolicyRuleSchedule.with_configuration_and_project_or_namespace.with_owner.runnable_schedules.find_in_batches do |schedules|
         schedules.each do |schedule|
           with_context(project: schedule.security_orchestration_policy_configuration.project, user: schedule.owner) do
-            Security::SecurityOrchestrationPolicies::RuleScheduleService
-              .new(container: schedule.security_orchestration_policy_configuration.project, current_user: schedule.owner)
-              .execute(schedule)
+            if schedule.security_orchestration_policy_configuration.project?
+              schedule_rules(schedule)
+            else
+              Security::OrchestrationPolicyRuleScheduleNamespaceWorker.perform_async(schedule.id)
+            end
           end
         end
       end
+    end
+
+    private
+
+    def schedule_rules(schedule)
+      schedule.schedule_next_run!
+
+      Security::SecurityOrchestrationPolicies::RuleScheduleService
+        .new(container: schedule.security_orchestration_policy_configuration.project, current_user: schedule.owner)
+        .execute(schedule)
     end
   end
 end

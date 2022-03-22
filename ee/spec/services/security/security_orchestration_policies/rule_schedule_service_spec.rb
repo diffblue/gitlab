@@ -16,10 +16,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService do
     subject(:service) { described_class.new(container: project, current_user: current_user) }
 
     shared_examples 'does not execute scan' do
-      it 'does not create scan pipeline but updates next_run_at' do
+      it 'does not create scan pipeline' do
         expect { service.execute(schedule) }.to change(Ci::Pipeline, :count).by(0)
-
-        expect(schedule.next_run_at).to be > Time.zone.now
       end
     end
 
@@ -151,10 +149,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService do
     end
 
     context 'when policy actions exists and there are multiple matching branches' do
-      it 'creates multiple scan pipelines and updates next_run_at' do
+      it 'creates multiple scan pipelines' do
         expect { service.execute(schedule) }.to change(Ci::Pipeline, :count).by(2)
-
-        expect(schedule.next_run_at).to be > Time.zone.now
       end
     end
 

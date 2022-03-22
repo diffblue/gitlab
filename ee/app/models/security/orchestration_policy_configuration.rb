@@ -81,6 +81,14 @@ module Security
       security_policy_management_project.default_branch_or_main
     end
 
+    def project?
+      !namespace?
+    end
+
+    def namespace?
+      namespace_id.present?
+    end
+
     private
 
     def policy_repo
