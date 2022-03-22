@@ -13,6 +13,8 @@ import { DEFAULT_VALUE_STREAM_ID, OVERVIEW_STAGE_CONFIG } from '../constants';
 
 export const hasNoAccessError = (state) => state.errorCode === httpStatus.FORBIDDEN;
 
+export const hasValueStreams = ({ valueStreams }) => Boolean(valueStreams?.length);
+
 export const currentValueStreamId = ({ selectedValueStream }) =>
   selectedValueStream?.id || DEFAULT_VALUE_STREAM_ID;
 

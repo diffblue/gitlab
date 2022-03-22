@@ -76,6 +76,7 @@ export default {
       :svg-path="emptyStateSvgPath"
       :title="title"
       :description="description"
+      data-testid="vsa-empty-state"
     >
       <template v-if="!hasDateRangeError" #actions>
         <gl-button

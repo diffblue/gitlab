@@ -16,14 +16,34 @@ RSpec.describe Groups::Analytics::CycleAnalytics::ValueStreamsController do
   end
 
   describe 'GET #index' do
-    it 'returns an in-memory default value stream' do
-      get :index, params: params
+    context 'when the use_vsa_aggregated_tables feature flag is off' do
+      before do
+        stub_feature_flags(use_vsa_aggregated_tables: false)
+      end
 
-      expect(response).to have_gitlab_http_status(:ok)
+      it 'returns an in-memory default value stream' do
+        get :index, params: params
 
-      expect(json_response.size).to eq(1)
-      expect(json_response.first['id']).to eq(Analytics::CycleAnalytics::Stages::BaseService::DEFAULT_VALUE_STREAM_NAME)
-      expect(json_response.first['name']).to eq(Analytics::CycleAnalytics::Stages::BaseService::DEFAULT_VALUE_STREAM_NAME)
+        expect(response).to have_gitlab_http_status(:ok)
+
+        expect(json_response.size).to eq(1)
+        expect(json_response.first['id']).to eq(Analytics::CycleAnalytics::Stages::BaseService::DEFAULT_VALUE_STREAM_NAME)
+        expect(json_response.first['name']).to eq(Analytics::CycleAnalytics::Stages::BaseService::DEFAULT_VALUE_STREAM_NAME)
+      end
+    end
+
+    context 'when the use_vsa_aggregated_tables feature flag is on' do
+      before do
+        stub_feature_flags(use_vsa_aggregated_tables: true)
+      end
+
+      it 'returns an empty array' do
+        get :index, params: params
+
+        expect(response).to have_gitlab_http_status(:ok)
+
+        expect(json_response.size).to eq(0)
+      end
     end
 
     context 'when persisted value streams present' do
