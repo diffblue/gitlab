@@ -52,10 +52,10 @@ describe('ImportHistoryApp', () => {
 
   function createComponent({ shallow = true } = {}) {
     const mountFn = shallow ? shallowMount : mount;
-    wrapper = mountFn(
-      ImportHistoryApp,
-      shallow ? { stubs: { GlTable: { ...stubComponent(GlTable), props: ['items'] } } } : {},
-    );
+    wrapper = mountFn(ImportHistoryApp, {
+      provide: { assets: { gitlabLogo: 'http://dummy.host' } },
+      stubs: shallow ? { GlTable: { ...stubComponent(GlTable), props: ['items'] } } : {},
+    });
   }
 
   const originalApiVersion = gon.api_version;

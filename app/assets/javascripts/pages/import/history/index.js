@@ -6,6 +6,12 @@ function mountImportHistoryApp(mountElement) {
 
   return new Vue({
     el: mountElement,
+    name: 'ImportHistoryRoot',
+    provide: {
+      assets: {
+        gitlabLogo: mountElement.dataset.logo,
+      },
+    },
     render(createElement) {
       return createElement(ImportHistoryApp);
     },

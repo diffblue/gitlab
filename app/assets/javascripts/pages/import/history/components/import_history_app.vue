@@ -39,6 +39,8 @@ export default {
     TimeAgo,
   },
 
+  inject: ['assets'],
+
   data() {
     return {
       loading: true,
@@ -122,8 +124,6 @@ export default {
       this.paginationConfig.page = 1;
     },
   },
-
-  gitlabLogo: window.gon.gitlab_logo,
 };
 </script>
 
@@ -133,7 +133,7 @@ export default {
       class="gl-border-solid gl-border-gray-200 gl-border-0 gl-border-b-1 gl-display-flex gl-align-items-center"
     >
       <h1 class="gl-my-0 gl-py-4 gl-font-size-h1">
-        <img :src="$options.gitlabLogo" class="gl-w-6 gl-h-6 gl-mb-2 gl-display-inline gl-mr-2" />
+        <img :src="assets.gitlabLogo" class="gl-w-6 gl-h-6 gl-mb-2 gl-display-inline gl-mr-2" />
         {{ s__('BulkImport|Project import history') }}
       </h1>
     </div>
