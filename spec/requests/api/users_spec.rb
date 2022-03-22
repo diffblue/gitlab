@@ -83,7 +83,7 @@ RSpec.describe API::Users do
 
     describe 'GET /users/' do
       context 'when unauthenticated' do
-        it "does not contain the note of users" do
+        it "does not contain certain fields" do
           get api("/users"), params: { username: user.username }
 
           expect(json_response.first).not_to have_key('note')
@@ -93,7 +93,7 @@ RSpec.describe API::Users do
 
       context 'when authenticated' do
         context 'as a regular user' do
-          it 'does not contain the note of users' do
+          it 'does not contain certain fields' do
             get api("/users", user), params: { username: user.username }
 
             expect(json_response.first).not_to have_key('note')
