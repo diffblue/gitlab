@@ -25953,10 +25953,10 @@ msgstr ""
 msgid "OnDemandScans|My daily scan"
 msgstr ""
 
-msgid "OnDemandScans|New DAST scan"
+msgid "OnDemandScans|New on-demand DAST scan"
 msgstr ""
 
-msgid "OnDemandScans|New on-demand DAST scan"
+msgid "OnDemandScans|New scan"
 msgstr ""
 
 msgid "OnDemandScans|No profile yet. In order to create a new scan, you need to have at least one completed scanner profile."
