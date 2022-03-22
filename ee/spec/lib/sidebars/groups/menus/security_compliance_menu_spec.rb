@@ -168,7 +168,7 @@ RSpec.describe Sidebars::Groups::Menus::SecurityComplianceMenu do
 
         context 'when group security policies feature is disabled' do
           before do
-            stub_feature_flags(group_security_policies: true)
+            stub_feature_flags(group_level_security_policies: true)
           end
 
           it_behaves_like 'menu access rights'
@@ -176,7 +176,7 @@ RSpec.describe Sidebars::Groups::Menus::SecurityComplianceMenu do
 
         context 'when group security policies feature is enabled' do
           before do
-            stub_feature_flags(group_security_policies: false)
+            stub_feature_flags(group_level_security_policies: false)
           end
 
           specify { is_expected.to be_nil }
@@ -190,7 +190,7 @@ RSpec.describe Sidebars::Groups::Menus::SecurityComplianceMenu do
 
         context 'when group security policies feature is disabled' do
           before do
-            stub_feature_flags(group_security_policies: true)
+            stub_feature_flags(group_level_security_policies: true)
           end
 
           specify { is_expected.to be_nil }
@@ -198,7 +198,7 @@ RSpec.describe Sidebars::Groups::Menus::SecurityComplianceMenu do
 
         context 'when group security policies feature is enabled' do
           before do
-            stub_feature_flags(group_security_policies: false)
+            stub_feature_flags(group_level_security_policies: false)
           end
 
           specify { is_expected.to be_nil }

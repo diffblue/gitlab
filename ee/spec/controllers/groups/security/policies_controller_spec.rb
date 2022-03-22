@@ -23,7 +23,7 @@ RSpec.describe Groups::Security::PoliciesController, type: :request do
 
     with_them do
       before do
-        stub_feature_flags(group_security_policies: feature_flag)
+        stub_feature_flags(group_level_security_policies: feature_flag)
       end
 
       specify do

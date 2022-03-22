@@ -6,7 +6,7 @@ module Groups
       before_action :authorize_group_security_policies!
 
       before_action do
-        push_frontend_feature_flag(:group_security_policies, group, default_enabled: :yaml)
+        push_frontend_feature_flag(:group_level_security_policies, group, default_enabled: :yaml)
       end
 
       feature_category :security_orchestration
@@ -18,7 +18,7 @@ module Groups
       private
 
       def authorize_group_security_policies!
-        render_404 unless Feature.enabled?(:group_security_policies, group, default_enabled: :yaml)
+        render_404 unless Feature.enabled?(:group_level_security_policies, group, default_enabled: :yaml)
       end
     end
   end
