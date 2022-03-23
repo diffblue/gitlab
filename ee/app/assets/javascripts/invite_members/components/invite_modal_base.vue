@@ -1,5 +1,6 @@
 <script>
 import { GlLink, GlButton } from '@gitlab/ui';
+import { partition, isString } from 'lodash';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import InviteModalBase from '~/invite_members/components/invite_modal_base.vue';
 import {
@@ -11,6 +12,8 @@ import {
   overageModalInfoText,
   overageModalInfoWarning,
 } from '../constants';
+import { checkOverage } from '../check_overage';
+import { fetchSubscription } from '../get_subscription_data';
 
 const OVERAGE_CONTENT_SLOT = 'overage-content';
 const EXTRA_SLOTS = [
@@ -40,16 +43,23 @@ export default {
       type: String,
       required: true,
     },
-    subscriptionSeats: {
-      type: Number,
+    rootGroupId: {
+      type: String,
       required: false,
-      default: 10, // TODO: pass data from backend https://gitlab.com/gitlab-org/gitlab/-/merge_requests/78287
+      default: '',
+    },
+    newUsersToInvite: {
+      type: Array,
+      required: false,
+      default: () => [],
     },
   },
   data() {
     return {
       hasOverage: false,
       totalUserCount: null,
+      subscriptionSeats: 0,
+      namespaceId: parseInt(this.rootGroupId, 10),
     };
   },
   computed: {
@@ -96,18 +106,37 @@ export default {
 
       return listeners;
     },
-    onReset(...args) {
+    onReset() {
       // don't reopen the overage modal
       this.hasOverage = false;
 
-      this.$emit('reset', ...args);
+      this.$emit('reset');
     },
-    onSubmit(...args) {
+    onSubmit(args) {
       if (this.enabledOverageCheck && !this.hasOverage) {
-        this.totalUserCount = 1;
-        this.hasOverage = true;
+        this.checkAndSubmit(args);
       } else {
-        this.$emit('submit', ...args);
+        this.$emit('submit', { accessLevel: args.accessLevel, expiresAt: args.expiresAt });
+      }
+    },
+    async checkAndSubmit(args) {
+      this.isLoading = true;
+      const [usersToInviteByEmail, usersToAddById] = this.partitionNewUsersToInvite();
+      const subscriptionData = await fetchSubscription(this.namespaceId);
+      this.subscriptionSeats = subscriptionData.subscriptionSeats;
+
+      const { hasOverage, usersOverage } = checkOverage(
+        subscriptionData,
+        usersToAddById,
+        usersToInviteByEmail,
+      );
+      this.isLoading = false;
+      this.hasOverage = hasOverage;
+
+      if (hasOverage) {
+        this.totalUserCount = usersOverage;
+      } else {
+        this.$emit('submit', { accessLevel: args.accessLevel, expiresAt: args.expiresAt });
       }
     },
     handleBack() {
@@ -115,6 +144,14 @@ export default {
     },
     passthroughSlotNames() {
       return Object.keys(this.$scopedSlots || {});
+    },
+    partitionNewUsersToInvite() {
+      const [usersToInviteByEmail, usersToAddById] = partition(
+        this.newUsersToInvite,
+        ({ id }) => isString(id) && id.includes('user-defined-token'),
+      );
+
+      return [usersToInviteByEmail.map(({ name }) => name), usersToAddById.map(({ id }) => id)];
     },
   },
   i18n: {
