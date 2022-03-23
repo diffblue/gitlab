@@ -27,3 +27,9 @@ export const MERGE_REQUEST_VIOLATION_MESSAGES = {
 };
 
 export const DEFAULT_SORT = 'SEVERITY_LEVEL_DESC';
+
+export const DEFAULT_PAGINATION_CURSORS = {
+  before: null,
+  after: null,
+  first: GRAPHQL_PAGE_SIZE,
+};

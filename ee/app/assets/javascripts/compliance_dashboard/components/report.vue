@@ -10,7 +10,7 @@ import { helpPagePath } from '~/helpers/help_page_helper';
 import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
 import getComplianceViolationsQuery from '../graphql/compliance_violations.query.graphql';
 import { mapViolations } from '../graphql/mappers';
-import { DEFAULT_SORT, GRAPHQL_PAGE_SIZE } from '../constants';
+import { DEFAULT_SORT, GRAPHQL_PAGE_SIZE, DEFAULT_PAGINATION_CURSORS } from '../constants';
 import { parseViolationsQueryFilter } from '../utils';
 import MergeCommitsExportButton from './merge_requests/merge_commits_export_button.vue';
 import MergeRequestDrawer from './drawer.vue';
@@ -67,8 +67,7 @@ export default {
       sortDesc,
       sortParam,
       paginationCursors: {
-        before: null,
-        after: null,
+        ...DEFAULT_PAGINATION_CURSORS,
       },
     };
   },
@@ -80,7 +79,6 @@ export default {
           fullPath: this.groupPath,
           filters: parseViolationsQueryFilter(this.urlQuery),
           sort: this.sortParam,
-          first: GRAPHQL_PAGE_SIZE,
           ...this.paginationCursors,
         };
       },
@@ -149,20 +147,21 @@ export default {
     },
     resetPagination() {
       this.paginationCursors = {
-        before: null,
-        after: null,
+        ...DEFAULT_PAGINATION_CURSORS,
       };
     },
     loadPrevPage(startCursor) {
       this.paginationCursors = {
         before: startCursor,
         after: null,
+        last: GRAPHQL_PAGE_SIZE,
       };
     },
     loadNextPage(endCursor) {
       this.paginationCursors = {
         before: null,
         after: endCursor,
+        first: GRAPHQL_PAGE_SIZE,
       };
     },
   },
