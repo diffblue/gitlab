@@ -44,7 +44,7 @@ export default {
   },
   data() {
     return {
-      isVisible: false,
+      arkoseLabsIframeShown: false,
       showArkoseNeededError: false,
       showArkoseFailure: false,
       username: '',
@@ -56,6 +56,9 @@ export default {
     };
   },
   computed: {
+    isVisible() {
+      return this.arkoseLabsIframeShown || this.showErrorContainer;
+    },
     showErrorContainer() {
       return this.showArkoseNeededError || this.showArkoseFailure;
     },
@@ -72,8 +75,8 @@ export default {
     this.username = this.getUsernameValue();
   },
   methods: {
-    show() {
-      this.isVisible = true;
+    onArkoseLabsIframeShown() {
+      this.arkoseLabsIframeShown = true;
     },
     hideErrors() {
       this.showArkoseNeededError = false;
@@ -109,11 +112,12 @@ export default {
 
           await this.initArkoseLabs();
         }
-      } catch {
-        // API call failed, do not initialize Arkose challenge.
-        // Button will be reset in `finally` block.
-        // TODO - what if initArkoseLabs failed?
-        // TODO - Do we get any error objects we should console log?
+      } catch (e) {
+        // If the requests fails with a 404 code, we can fail silently.
+        // We show a generic error message for any other failure.
+        if (e.response?.status !== 404) {
+          this.handleArkoseLabsFailure();
+        }
       } finally {
         this.isLoading = false;
       }
@@ -124,7 +128,7 @@ export default {
       enforcement.setConfig({
         mode: 'inline',
         selector: `.${this.arkoseContainerClass}`,
-        onShown: this.show,
+        onShown: this.onArkoseLabsIframeShown,
         onCompleted: this.passArkoseLabsChallenge,
         onError: this.handleArkoseLabsFailure,
       });
