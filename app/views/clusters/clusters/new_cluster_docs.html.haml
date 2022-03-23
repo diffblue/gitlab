@@ -6,8 +6,8 @@
 
 = render_gcp_signup_offer
 
-.row.gl-mt-3
-  .col-md-3
+.gl-md-display-flex.gl-mt-3
+  .gl-w-quarter.gl-xs-w-full.gl-flex-shrink-0.gl-md-mr-5
     = render 'sidebar', docs_mode: docs_mode
-  .col-md-9
+  .gl-w-full
     = render 'clusters/clusters/cloud_providers/cloud_provider_selector', docs_mode: docs_mode

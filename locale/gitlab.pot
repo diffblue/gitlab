@@ -8448,6 +8448,9 @@ msgstr ""
 msgid "ClusterIntegration|Learn more about %{help_link_start}zones%{help_link_end}."
 msgstr ""
 
+msgid "ClusterIntegration|Learn more about GitLab integrations with Kubernetes"
+msgstr ""
+
 msgid "ClusterIntegration|Learn more about Kubernetes."
 msgstr ""
 
@@ -8455,9 +8458,6 @@ msgid "ClusterIntegration|Learn more about group Kubernetes clusters"
 msgstr ""
 
 msgid "ClusterIntegration|Learn more about instance Kubernetes clusters"
-msgstr ""
-
-msgid "ClusterIntegration|Learn more about our integrations."
 msgstr ""
 
 msgid "ClusterIntegration|Loading IAM Roles"
