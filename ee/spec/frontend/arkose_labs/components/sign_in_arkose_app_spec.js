@@ -19,6 +19,8 @@ initArkoseLabsScript.mockImplementation(() => ({
   },
 }));
 
+const MOCK_USERNAME = 'cassiopeia';
+
 describe('SignInArkoseApp', () => {
   let wrapper;
   let axiosMock;
@@ -75,6 +77,9 @@ describe('SignInArkoseApp', () => {
   const expectHiddenArkoseLabsError = () => {
     expect(findArkoseLabsErrorMessage().exists()).toBe(false);
   };
+  const expectArkoseLabsInitError = () => {
+    expect(wrapper.text()).toContain(wrapper.vm.$options.MSG_ARKOSE_FAILURE_BODY);
+  };
 
   beforeEach(() => {
     axiosMock = new AxiosMockAdapter(axios);
@@ -85,14 +90,12 @@ describe('SignInArkoseApp', () => {
   });
 
   describe('when the username field is pre-filled', () => {
-    const username = 'invite-email-username';
-
     it("does not include ArkoseLabs' script initially", () => {
       expect(initArkoseLabsScript).not.toHaveBeenCalled();
     });
 
     it('puts the sign-in button in the loading state', async () => {
-      initArkoseLabs(username);
+      initArkoseLabs(MOCK_USERNAME);
       await nextTick();
       const signInButton = findSignInButton();
 
@@ -101,20 +104,20 @@ describe('SignInArkoseApp', () => {
     });
 
     it('triggers a request to the captcha_check API', async () => {
-      initArkoseLabs(username);
+      initArkoseLabs(MOCK_USERNAME);
 
       expect(axiosMock.history.get).toHaveLength(0);
 
       await waitForPromises();
 
       expect(axiosMock.history.get).toHaveLength(1);
-      expect(axiosMock.history.get[0].url).toMatch(`/users/${username}/captcha_check`);
+      expect(axiosMock.history.get[0].url).toMatch(`/users/${MOCK_USERNAME}/captcha_check`);
     });
 
     describe('if the challenge is not needed', () => {
       beforeEach(async () => {
         axiosMock.onGet().reply(200, { result: false });
-        initArkoseLabs(username);
+        initArkoseLabs(MOCK_USERNAME);
         await waitForPromises();
       });
 
@@ -122,10 +125,12 @@ describe('SignInArkoseApp', () => {
         const signInButton = findSignInButton();
 
         expect(signInButton.innerText).toMatchInterpolatedText('Sign in');
+        expect(signInButton.disabled).toBe(false);
       });
 
-      it('does not show ArkoseLabs error when submitting the form', () => {
+      it('does not show ArkoseLabs error when submitting the form', async () => {
         submitForm();
+        await nextTick();
 
         expect(findArkoseLabsErrorMessage().exists()).toBe(false);
       });
@@ -133,7 +138,7 @@ describe('SignInArkoseApp', () => {
       describe('if the challenge becomes needed', () => {
         beforeEach(async () => {
           axiosMock.onGet().reply(200, { result: true });
-          setUsername('bob');
+          setUsername(`malicious-${MOCK_USERNAME}`);
           await waitForPromises();
         });
 
@@ -144,7 +149,7 @@ describe('SignInArkoseApp', () => {
     describe('if the challenge is needed', () => {
       beforeEach(async () => {
         axiosMock.onGet().reply(200, { result: true });
-        initArkoseLabs(username);
+        initArkoseLabs(MOCK_USERNAME);
         await waitForPromises();
       });
 
@@ -155,6 +160,7 @@ describe('SignInArkoseApp', () => {
         await nextTick();
 
         expect(findArkoseLabsErrorMessage().exists()).toBe(true);
+        expect(wrapper.text()).toContain(wrapper.vm.$options.MSG_ARKOSE_NEEDED);
       });
 
       it('un-hides the challenge container once the iframe has been shown', async () => {
@@ -179,7 +185,7 @@ describe('SignInArkoseApp', () => {
 
         await nextTick();
 
-        expect(wrapper.text()).toContain(wrapper.vm.$options.MSG_ARKOSE_FAILURE_BODY);
+        expectArkoseLabsInitError();
       });
 
       describe('when ArkoseLabs calls `onCompleted` handler that has been configured', () => {
@@ -205,6 +211,19 @@ describe('SignInArkoseApp', () => {
           expect(findArkoseLabsVerificationTokenInput().element.value).toBe(response.token);
         });
       });
+    });
+  });
+
+  describe('when the REST endpoint fails', () => {
+    beforeEach(async () => {
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+      axiosMock.onGet().reply(500);
+      initArkoseLabs(MOCK_USERNAME);
+      await waitForPromises();
+    });
+
+    it('shows initialization error', () => {
+      expectArkoseLabsInitError();
     });
   });
 });
