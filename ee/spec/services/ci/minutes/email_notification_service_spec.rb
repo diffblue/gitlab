@@ -10,43 +10,27 @@ RSpec.describe Ci::Minutes::EmailNotificationService do
 
     subject { described_class.new(project).execute }
 
-    where(:ff_enabled, :monthly_minutes_limit, :minutes_used, :current_notification_level, :new_notification_level, :legacy_minutes_used, :legacy_current_notification_level, :legacy_new_notification_level, :result) do
+    where(:monthly_minutes_limit, :minutes_used, :current_notification_level, :new_notification_level, :legacy_minutes_used, :legacy_current_notification_level, :legacy_new_notification_level, :result) do
       # when legacy and new tracking usage matches
-      true  | 1000 | 500  | 100 | 100 | 500  | 100 | 100 | [false]
-      false | 1000 | 500  | 100 | 100 | 500  | 100 | 100 | [false]
-      true  | 1000 | 800  | 100 | 30  | 800  | 100 | 30  | [true, 30]
-      false | 1000 | 800  | 100 | 30  | 800  | 100 | 30  | [true, 30]
-      true  | 1000 | 800  | 30  | 30  | 800  | 30  | 30  | [false]
-      false | 1000 | 800  | 30  | 30  | 800  | 30  | 30  | [false]
-      true  | 1000 | 950  | 100 | 5   | 950  | 100 | 5   | [true, 5]
-      false | 1000 | 950  | 100 | 5   | 950  | 100 | 5   | [true, 5]
-      true  | 1000 | 950  | 30  | 5   | 950  | 30  | 5   | [true, 5]
-      false | 1000 | 950  | 30  | 5   | 950  | 30  | 5   | [true, 5]
-      true  | 1000 | 950  | 5   | 5   | 950  | 5   | 5   | [false]
-      false | 1000 | 950  | 5   | 5   | 950  | 5   | 5   | [false]
-      true  | 1000 | 1000 | 100 | 0   | 1000 | 100 | 0   | [true, 0]
-      false | 1000 | 1000 | 100 | 0   | 1000 | 100 | 0   | [true, 0]
-      true  | 1000 | 1000 | 30  | 0   | 1000 | 30  | 0   | [true, 0]
-      false | 1000 | 1000 | 30  | 0   | 1000 | 30  | 0   | [true, 0]
-      true  | 1000 | 1000 | 5   | 0   | 1000 | 5   | 0   | [true, 0]
-      false | 1000 | 1000 | 5   | 0   | 1000 | 5   | 0   | [true, 0]
-      true  | 1000 | 1001 | 5   | 0   | 1001 | 5   | 0   | [true, 0]
-      false | 1000 | 1001 | 5   | 0   | 1001 | 5   | 0   | [true, 0]
-      true  | 1000 | 1000 | 0   | 0   | 1000 | 0   | 0   | [false]
-      false | 1000 | 1000 | 0   | 0   | 1000 | 0   | 0   | [false]
-      true  | 0    | 1000 | 100 | 100 | 1000 | 100 | 100 | [false]
-      false | 0    | 1000 | 100 | 100 | 1000 | 100 | 100 | [false]
+      1000 | 500  | 100 | 100 | 500  | 100 | 100 | [false]
+      1000 | 800  | 100 | 30  | 800  | 100 | 30  | [true, 30]
+      1000 | 800  | 30  | 30  | 800  | 30  | 30  | [false]
+      1000 | 950  | 100 | 5   | 950  | 100 | 5   | [true, 5]
+      1000 | 950  | 30  | 5   | 950  | 30  | 5   | [true, 5]
+      1000 | 950  | 5   | 5   | 950  | 5   | 5   | [false]
+      1000 | 1000 | 100 | 0   | 1000 | 100 | 0   | [true, 0]
+      1000 | 1000 | 30  | 0   | 1000 | 30  | 0   | [true, 0]
+      1000 | 1000 | 5   | 0   | 1000 | 5   | 0   | [true, 0]
+      1000 | 1001 | 5   | 0   | 1001 | 5   | 0   | [true, 0]
+      1000 | 1000 | 0   | 0   | 1000 | 0   | 0   | [false]
+      0    | 1000 | 100 | 100 | 1000 | 100 | 100 | [false]
 
       # when legacy and new tracking usage doesn't match we send notifications
       # based on the feature flag.
-      true  | 1000 | 500  | 100 | 100 | 800  | 100 | 30  | [false]
-      false | 1000 | 500  | 100 | 100 | 800  | 100 | 30  | [true, 30]
-      true  | 1000 | 800  | 100 | 30  | 500  | 100 | 100 | [true, 30]
-      false | 1000 | 800  | 100 | 30  | 500  | 100 | 100 | [false]
-      true  | 1000 | 950  | 100 | 5   | 800  | 100 | 30  | [true, 5]
-      false | 1000 | 950  | 100 | 5   | 800  | 100 | 30  | [true, 30]
-      true  | 1000 | 950  | 100 | 5   | 1001 | 30  | 0   | [true, 5]
-      false | 1000 | 950  | 100 | 5   | 1001 | 30  | 0   | [true, 0]
+      1000 | 500  | 100 | 100 | 800  | 100 | 30  | [false]
+      1000 | 800  | 100 | 30  | 500  | 100 | 100 | [true, 30]
+      1000 | 950  | 100 | 5   | 800  | 100 | 30  | [true, 5]
+      1000 | 950  | 100 | 5   | 1001 | 30  | 0   | [true, 5]
     end
 
     with_them do
@@ -104,8 +88,6 @@ RSpec.describe Ci::Minutes::EmailNotificationService do
       end
 
       before do
-        stub_feature_flags(ci_use_new_monthly_minutes: ff_enabled)
-
         if namespace.namespace_statistics
           namespace.namespace_statistics.update!(shared_runners_seconds: legacy_minutes_used.minutes)
         else
@@ -249,14 +231,6 @@ RSpec.describe Ci::Minutes::EmailNotificationService do
           let(:recipients) { [user.email] }
 
           it_behaves_like 'matches the expectation'
-
-          context 'when feature flag ci_use_new_monthly_minutes is disabled' do
-            before do
-              stub_feature_flags(ci_use_new_monthly_minutes: false)
-            end
-
-            it_behaves_like 'matches the expectation'
-          end
         end
 
         context 'when on group' do
@@ -269,14 +243,6 @@ RSpec.describe Ci::Minutes::EmailNotificationService do
           end
 
           it_behaves_like 'matches the expectation'
-
-          context 'when feature flag ci_use_new_monthly_minutes is disabled' do
-            before do
-              stub_feature_flags(ci_use_new_monthly_minutes: false)
-            end
-
-            it_behaves_like 'matches the expectation'
-          end
         end
       end
     end

@@ -66,7 +66,7 @@
               = project_icon(project, alt: '', class: 'avatar project-avatar s20')
             %strong= link_to project.full_name, project
           %td
-            = project.ci_minutes_used(namespace)
+            = project.ci_minutes_used
       - if projects.blank?
         %tr
           %td{ colspan: 2 }

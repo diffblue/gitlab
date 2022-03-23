@@ -66,9 +66,7 @@ module Ci
       end
 
       def should_recalculate_purchased_minutes?
-        namespace.new_monthly_ci_minutes_enabled? &&
-          enabled? &&
-          any_purchased?
+        enabled? && any_purchased?
       end
     end
   end

@@ -1298,40 +1298,20 @@ RSpec.describe Project do
   end
 
   describe '#ci_minutes_used' do
-    subject { project.ci_minutes_used(project.namespace) }
+    subject { project.ci_minutes_used }
 
     context 'when CI minutes have not been used' do
       it { is_expected.to be_zero }
-
-      context 'when ci_use_new_monthly_minutes feature flag is disabled' do
-        before do
-          stub_feature_flags(ci_use_new_monthly_minutes: false)
-        end
-
-        it { is_expected.to be_zero }
-      end
     end
 
     context 'when CI minutes have been used' do
       let(:minutes_used) { 70.3 }
-      # this difference in minutes is purely to test that the value
-      # comes from the expected table
-      let(:legacy_minutes_used) { 60.3 }
 
       before do
-        create(:project_statistics, project: project, shared_runners_seconds: legacy_minutes_used.minutes)
         create(:ci_project_monthly_usage, project: project, amount_used: minutes_used )
       end
 
       it { is_expected.to eq(70) }
-
-      context 'when ci_use_new_monthly_minutes feature flag is disabled' do
-        before do
-          stub_feature_flags(ci_use_new_monthly_minutes: false)
-        end
-
-        it { is_expected.to eq(60) }
-      end
     end
   end
 

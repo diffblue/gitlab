@@ -36,12 +36,8 @@ module Ci
 
       private
 
-      # ensure that recalculation of extra shared runners minutes occurs in the same
-      # transaction as the reset of the namespace statistics. If the transaction fails
-      # none of the changes apply but the numbers still remain consistent with each other.
       def reset_ci_minutes!(namespaces)
         Namespace.transaction do
-          recalculate_extra_shared_runners_minutes_limits!(namespaces)
           reset_shared_runners_seconds!(namespaces)
           reset_ci_minutes_notifications!(namespaces)
         end
@@ -55,49 +51,6 @@ module Ci
           error_message: e.message,
           error_backtrace: ::Gitlab::BacktraceCleaner.clean_backtrace(e.backtrace)
         }
-      end
-
-      # This service is responsible for the logic that recalculates the extra shared runners
-      # minutes including how to deal with the cases where shared_runners_minutes_limit is `nil`.
-      # We prefer to keep the queries here rather than scatter them across classes.
-      # rubocop: disable CodeReuse/ActiveRecord
-      def recalculate_extra_shared_runners_minutes_limits!(namespaces)
-        return if Feature.enabled?(:ci_use_new_monthly_minutes, default_enabled: :yaml)
-        return if Feature.enabled?(:ci_skip_legacy_extra_minutes_recalculation, default_enabled: :yaml)
-
-        namespaces
-          .joins(:namespace_statistics)
-          .where(namespaces_arel[:extra_shared_runners_minutes_limit].gt(0))
-          .where(actual_shared_runners_minutes_limit.gt(0))
-          .where(namespaces_statistics_arel[:shared_runners_seconds].gt(actual_shared_runners_minutes_limit * 60))
-          .update_all("extra_shared_runners_minutes_limit = #{extra_minutes_left.to_sql} FROM namespace_statistics")
-      end
-      # rubocop: enable CodeReuse/ActiveRecord
-
-      def extra_minutes_left
-        shared_minutes_limit = actual_shared_runners_minutes_limit + namespaces_arel[:extra_shared_runners_minutes_limit]
-        used_minutes = arel_function("round", [namespaces_statistics_arel[:shared_runners_seconds] / Arel::Nodes::SqlLiteral.new('60.0')])
-
-        arel_function("greatest", [shared_minutes_limit - used_minutes, 0])
-      end
-
-      def actual_shared_runners_minutes_limit
-        namespaces_arel.coalesce(
-          namespaces_arel[:shared_runners_minutes_limit],
-          [::Gitlab::CurrentSettings.shared_runners_minutes.presence, 0].compact
-        )
-      end
-
-      def namespaces_arel
-        Namespace.arel_table
-      end
-
-      def namespaces_statistics_arel
-        NamespaceStatistics.arel_table
-      end
-
-      def arel_function(name, attrs)
-        Arel::Nodes::NamedFunction.new(name, attrs)
       end
 
       # rubocop: disable CodeReuse/ActiveRecord

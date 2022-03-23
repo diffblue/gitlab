@@ -97,10 +97,8 @@ module Ci
           when_new_strategy.call
         elsif @tracking_strategy == :legacy
           when_legacy_strategy.call
-        elsif namespace.new_monthly_ci_minutes_enabled?
-          when_new_strategy.call
         else
-          when_legacy_strategy.call
+          when_new_strategy.call
         end
       end
     end

@@ -44,7 +44,6 @@ RSpec.describe Ci::Minutes::BatchResetService do
 
       let(:ids_range) { (project_namespace.id..namespace_5.id) }
       let(:namespaces_exceeding_minutes) { [namespace_1, namespace_2, namespace_3] }
-      let(:namespaces_not_exceeding_minutes) { [namespace_4, namespace_5] }
 
       it 'resets minutes in batches for the given range and ignores project namespaces' do
         expect(service).to receive(:reset_ci_minutes!).with([namespace_1, namespace_2, namespace_3])
@@ -53,52 +52,10 @@ RSpec.describe Ci::Minutes::BatchResetService do
         subject
       end
 
-      context 'when feature flags ci_use_new_monthly_minutes and ci_skip_legacy_extra_minutes_recalculation are enabled' do
-        it 'resets CI minutes but does not recalculate purchased minutes for the namespace exceeding the monthly minutes' do
-          subject
-
-          namespaces_exceeding_minutes.each do |namespace|
-            namespace.reset
-
-            expect(namespace.extra_shared_runners_minutes_limit).to eq 50
-            expect(namespace.namespace_statistics.shared_runners_seconds).to eq 0
-            expect(namespace.namespace_statistics.shared_runners_seconds_last_reset).to be_present
-            expect(ProjectStatistics.find_by(namespace: namespace).shared_runners_seconds).to eq 0
-            expect(ProjectStatistics.find_by(namespace: namespace).shared_runners_seconds_last_reset).to be_present
-            expect(namespace.last_ci_minutes_notification_at).to be_nil
-            expect(namespace.last_ci_minutes_usage_notification_level).to be_nil
-          end
-        end
-      end
-
-      context 'when feature flag ci_use_new_monthly_minutes and ci_skip_legacy_extra_minutes_recalculation are disabled' do
-        before do
-          stub_feature_flags(
-            ci_use_new_monthly_minutes: false,
-            ci_skip_legacy_extra_minutes_recalculation: false)
-        end
-
-        it 'resets CI minutes and recalculates purchased minutes for the namespace exceeding the monthly minutes' do
-          subject
-
-          namespaces_exceeding_minutes.each do |namespace|
-            namespace.reset
-
-            expect(namespace.extra_shared_runners_minutes_limit).to eq 30
-            expect(namespace.namespace_statistics.shared_runners_seconds).to eq 0
-            expect(namespace.namespace_statistics.shared_runners_seconds_last_reset).to be_present
-            expect(ProjectStatistics.find_by(namespace: namespace).shared_runners_seconds).to eq 0
-            expect(ProjectStatistics.find_by(namespace: namespace).shared_runners_seconds_last_reset).to be_present
-            expect(namespace.last_ci_minutes_notification_at).to be_nil
-            expect(namespace.last_ci_minutes_usage_notification_level).to be_nil
-          end
-        end
-      end
-
-      it 'resets CI minutes but does not recalculate purchased minutes for the namespace not exceeding the monthly minutes' do
+      it 'resets CI minutes but does not recalculate purchased minutes for the namespace exceeding the monthly minutes' do
         subject
 
-        namespaces_not_exceeding_minutes.each do |namespace|
+        namespaces_exceeding_minutes.each do |namespace|
           namespace.reset
 
           expect(namespace.extra_shared_runners_minutes_limit).to eq 50
@@ -134,37 +91,6 @@ RSpec.describe Ci::Minutes::BatchResetService do
                 }
               )
             end
-        end
-      end
-    end
-
-    context 'when global shared_runners_minutes setting is nil and namespaces have no limits' do
-      using RSpec::Parameterized::TableSyntax
-
-      where(:global_limit, :namespace_limit) do
-        nil | 0
-        nil | nil
-        0   | 0
-        0   | nil
-      end
-
-      with_them do
-        let!(:namespace) { create_namespace_with_project(100.minutes, namespace_limit) }
-
-        let(:ids_range) { [namespace.id] }
-
-        before do
-          allow(::Gitlab::CurrentSettings).to receive(:shared_runners_minutes).and_return(global_limit)
-          stub_feature_flags(
-            ci_use_new_monthly_minutes: false,
-            ci_skip_legacy_extra_minutes_recalculation: false)
-        end
-
-        it 'does not recalculate purchased minutes for any namespaces' do
-          subject
-
-          namespace.reset
-          expect(namespace.extra_shared_runners_minutes_limit).to eq 50
         end
       end
     end

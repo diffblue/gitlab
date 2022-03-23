@@ -752,22 +752,6 @@ RSpec.describe Namespace do
     end
   end
 
-  describe '#new_monthly_ci_minutes_enabled?' do
-    subject { namespace.new_monthly_ci_minutes_enabled? }
-
-    context 'when feature flag ci_use_new_monthly_minutes is enabled' do
-      it { is_expected.to be_truthy }
-    end
-
-    context 'when feature flag ci_use_new_monthly_minutes is disabled' do
-      before do
-        stub_feature_flags(ci_use_new_monthly_minutes: false)
-      end
-
-      it { is_expected.to be_falsy }
-    end
-  end
-
   describe '#shared_runners_minutes_limit_enabled?' do
     subject { namespace.shared_runners_minutes_limit_enabled? }
 
