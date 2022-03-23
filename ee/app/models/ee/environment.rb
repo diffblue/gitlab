@@ -89,6 +89,20 @@ module EE
       associated_protected_environments.map(&:required_approval_count).max
     end
 
+    def has_approval_rules?
+      return false unless ::Feature.enabled?(:deployment_approval_rules, project, default_enabled: :yaml)
+
+      associated_approval_rules.any?
+    end
+
+    def find_approval_rule_for(user, represented_as: nil)
+      associated_approval_rules.find do |rule|
+        next if represented_as && rule.humanize.exclude?(represented_as)
+
+        rule.check_access(user)
+      end
+    end
+
     private
 
     def protected_environment_accesses(user)
@@ -104,6 +118,13 @@ module EE
     def associated_protected_environments
       strong_memoize(:associated_protected_environments) do
         ::ProtectedEnvironment.for_environment(self)
+      end
+    end
+
+    def associated_approval_rules
+      strong_memoize(:associated_approval_rules) do
+        ::ProtectedEnvironments::ApprovalRule
+          .where(protected_environment: associated_protected_environments)
       end
     end
   end

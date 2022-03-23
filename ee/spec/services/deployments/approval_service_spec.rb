@@ -14,10 +14,10 @@ RSpec.describe Deployments::ApprovalService do
   let(:required_approval_count) { 2 }
   let(:build) { create(:ci_build, :manual, project: project) }
   let(:deployment) { create(:deployment, :blocked, project: project, environment: environment, deployable: build) }
+  let!(:protected_environment) { create(:protected_environment, :maintainers_can_deploy, name: environment.name, project: project, required_approval_count: required_approval_count) }
 
   before do
     stub_licensed_features(protected_environments: true)
-    create(:protected_environment, :maintainers_can_deploy, name: environment.name, project: project, required_approval_count: required_approval_count)
     project.add_maintainer(user) if user
   end
 
@@ -61,12 +61,37 @@ RSpec.describe Deployments::ApprovalService do
     end
   end
 
+  shared_examples_for 'set approval rule' do
+    context 'with approval rule' do
+      let!(:approval_rule) { create(:protected_environment_approval_rule, :maintainer_access, protected_environment: protected_environment) }
+
+      it 'sets an rule to the deployment approval' do
+        expect(subject[:status]).to eq(:success)
+        expect(subject[:approval].approval_rule).to eq(approval_rule)
+        expect(::Deployments::Approval.last.approval_rule).to eq(approval_rule)
+      end
+
+      context 'when deployment_approval_rules feature flag is disabled' do
+        before do
+          stub_feature_flags(deployment_approval_rules: false)
+        end
+
+        it 'does not set an rule to the deployment approval' do
+          expect(subject[:status]).to eq(:success)
+          expect(subject[:approval].approval_rule).to be_nil
+          expect(::Deployments::Approval.last.approval_rule).to be_nil
+        end
+      end
+    end
+  end
+
   describe '#execute' do
     subject { service.execute(deployment, status) }
 
     context 'when status is approved' do
       include_examples 'approve'
       include_examples 'comment'
+      include_examples 'set approval rule'
     end
 
     context 'when status is rejected' do
@@ -74,6 +99,7 @@ RSpec.describe Deployments::ApprovalService do
 
       include_examples 'reject'
       include_examples 'comment'
+      include_examples 'set approval rule'
     end
 
     context 'when user already approved' do
@@ -180,6 +206,26 @@ RSpec.describe Deployments::ApprovalService do
         end
 
         include_examples 'error', message: "You don't have permission to review this deployment. Contact the project or group owner for help."
+      end
+
+      context 'with approval rule' do
+        let!(:approval_rule) { create(:protected_environment_approval_rule, :maintainer_access, protected_environment: protected_environment) }
+
+        context 'when the user does not have permission to read deployment' do
+          before do
+            project.add_guest(user)
+          end
+
+          include_examples 'error', message: "You don't have permission to review this deployment. Contact the project or group owner for help."
+        end
+
+        context 'when there are no rules for the user' do
+          before do
+            project.add_developer(user)
+          end
+
+          include_examples 'error', message: "You don't have permission to review this deployment. Contact the project or group owner for help."
+        end
       end
 
       context 'when user is nil' do

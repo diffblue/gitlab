@@ -25,16 +25,32 @@ class ProtectedEnvironment < ApplicationRecord
   end
 
   class << self
-    def deploy_access_levels_by_user(user)
-      ProtectedEnvironment::DeployAccessLevel
-        .where(protected_environment_id: select(:id))
-        .where(user: user)
+    def revoke_user(user)
+      transaction do
+        ProtectedEnvironment::DeployAccessLevel
+          .where(protected_environment_id: select(:id))
+          .where(user: user)
+          .delete_all
+
+        ProtectedEnvironments::ApprovalRule
+          .where(protected_environment_id: select(:id))
+          .where(user: user)
+          .delete_all
+      end
     end
 
-    def deploy_access_levels_by_group(group)
-      ProtectedEnvironment::DeployAccessLevel
-        .where(protected_environment_id: select(:id))
-        .where(group: group)
+    def revoke_group(group)
+      transaction do
+        ProtectedEnvironment::DeployAccessLevel
+          .where(protected_environment_id: select(:id))
+          .where(group: group)
+          .delete_all
+
+        ProtectedEnvironments::ApprovalRule
+          .where(protected_environment_id: select(:id))
+          .where(group: group)
+          .delete_all
+      end
     end
 
     def for_environment(environment)

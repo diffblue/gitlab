@@ -33,7 +33,7 @@ module EE
     def delete_protected_environment_acceses
       return unless user.present? && project.present?
 
-      project.protected_environments.deploy_access_levels_by_user(user).delete_all
+      project.protected_environments.revoke_user(user)
     end
 
     def gma_enforcement
