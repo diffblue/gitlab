@@ -116,7 +116,7 @@ export default {
         // If the requests fails with a 404 code, we can fail silently.
         // We show a generic error message for any other failure.
         if (e.response?.status !== 404) {
-          this.handleArkoseLabsFailure();
+          this.handleArkoseLabsFailure(e);
         }
       } finally {
         this.isLoading = false;
@@ -138,8 +138,9 @@ export default {
       this.arkoseToken = response.token;
       this.hideErrors();
     },
-    handleArkoseLabsFailure() {
-      // TODO - do we get an error object here we can console log?
+    handleArkoseLabsFailure(e) {
+      // eslint-disable-next-line no-console, @gitlab/require-i18n-strings
+      console.error('ArkoseLabs initialization error', e);
       this.showArkoseFailure = true;
     },
     updateSubmitButtonLoading(val) {
