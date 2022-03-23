@@ -21,17 +21,17 @@ RSpec.describe 'getting the compliance violations for a group' do
 
   let(:fields) do
     <<~GRAPHQL
-        nodes {
+      nodes {
+        id
+        severityLevel
+        reason
+        violatingUser {
           id
-          severityLevel
-          reason
-          violatingUser {
-            id
-          }
-          mergeRequest {
-            id
-          }
         }
+        mergeRequest {
+          id
+        }
+      }
     GRAPHQL
   end
 
@@ -117,23 +117,36 @@ RSpec.describe 'getting the compliance violations for a group' do
       end
     end
 
-    context 'sorting the results' do
-      where(:direction, :result) do
-        :SEVERITY_LEVEL_ASC | lazy { [violation_output, violation2_output] }
-        :SEVERITY_LEVEL_DESC | lazy { [violation2_output, violation_output] }
-        :VIOLATION_REASON_ASC | lazy { [violation_output, violation2_output] }
-        :VIOLATION_REASON_DESC | lazy { [violation2_output, violation_output] }
-        :MERGE_REQUEST_TITLE_ASC | lazy { [violation_output, violation2_output] }
-        :MERGE_REQUEST_TITLE_DESC | lazy { [violation2_output, violation_output] }
-        :MERGED_AT_ASC | lazy { [violation_output, violation2_output] }
-        :MERGED_AT_DESC | lazy { [violation2_output, violation_output] }
+    describe 'sorting and pagination' do
+      let_it_be(:data_path) { [:group, :merge_request_violations] }
+
+      let(:violation_ids_asc) { [violation_output['id'].to_i, violation2_output['id'].to_i] }
+      let(:violation_ids_desc) { [violation2_output['id'].to_i, violation_output['id'].to_i] }
+
+      def pagination_query(params)
+        graphql_query_for(
+          :group, { full_path: group.full_path }, query_nodes(:merge_request_violations, :id, include_pagination_info: true, args: params)
+        )
+      end
+
+      def pagination_results_data(data)
+        data.map { |merge_request_violations| merge_request_violations['id'].to_i }
+      end
+
+      where(:sort_param, :all_records) do
+        :SEVERITY_LEVEL_ASC       | ref(:violation_ids_asc)
+        :SEVERITY_LEVEL_DESC      | ref(:violation_ids_desc)
+        :VIOLATION_REASON_ASC     | ref(:violation_ids_asc)
+        :VIOLATION_REASON_DESC    | ref(:violation_ids_desc)
+        :MERGE_REQUEST_TITLE_ASC  | ref(:violation_ids_asc)
+        :MERGE_REQUEST_TITLE_DESC | ref(:violation_ids_desc)
+        :MERGED_AT_ASC            | ref(:violation_ids_asc)
+        :MERGED_AT_DESC           | ref(:violation_ids_desc)
       end
 
       with_them do
-        it 'finds all the compliance violations' do
-          post_graphql(query({ sort: direction }), current_user: current_user)
-
-          expect(compliance_violations).to match_array(result)
+        it_behaves_like 'sorted paginated query' do
+          let(:first_param) { 2 }
         end
       end
     end
