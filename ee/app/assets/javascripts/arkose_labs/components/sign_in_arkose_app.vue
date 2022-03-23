@@ -108,8 +108,6 @@ export default {
         } = await needsArkoseLabsChallenge(this.username);
 
         if (result) {
-          this.arkoseInitialized = true;
-
           await this.initArkoseLabs();
         }
       } catch (e) {
@@ -123,6 +121,8 @@ export default {
       }
     },
     async initArkoseLabs() {
+      this.arkoseInitialized = true;
+
       const enforcement = await initArkoseLabsScript({ publicKey: this.publicKey });
 
       enforcement.setConfig({
