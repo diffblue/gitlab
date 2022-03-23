@@ -4,7 +4,7 @@ import { s__ } from '~/locale';
 import { getParameterByName, removeParams, visitUrl } from '~/lib/utils/url_utility';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import PolicySelection from './policy_selection.vue';
-import PolicyEditor from './policy_editor.vue';
+import PolicyEditor from './policy_editor_v2.vue';
 
 export default {
   components: {
