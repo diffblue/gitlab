@@ -139,7 +139,7 @@ export default {
       this.hideErrors();
     },
     handleArkoseLabsFailure(e) {
-      // eslint-disable-next-line no-console, @gitlab/require-i18n-strings
+      // eslint-disable-next-line no-console
       console.error('ArkoseLabs initialization error', e);
       this.showArkoseFailure = true;
     },
