@@ -313,8 +313,9 @@ module WikiActions
 
   def load_content?
     return false if params[:action] == 'history'
+    return false if params[:action] == 'show' && Feature.enabled?(:wiki_async_load, container, default_enabled: :yaml)
 
-    !(params[:action] == 'show' && Feature.enabled?(:wiki_async_load, container, default_enabled: :yaml))
+    true
   end
 end
 
