@@ -40,6 +40,12 @@ RSpec.describe Ci::Build, :saas do
     end
   end
 
+  describe 'extra_accessors' do
+    it 'includes the cloneable extra accessors' do
+      expect(::Ci::Build.extra_accessors).to eq([:secrets])
+    end
+  end
+
   describe 'associations' do
     it { is_expected.to have_many(:security_scans).class_name('Security::Scan') }
     it { is_expected.to have_one(:dast_site_profiles_build).class_name('Dast::SiteProfilesBuild').with_foreign_key(:ci_build_id) }

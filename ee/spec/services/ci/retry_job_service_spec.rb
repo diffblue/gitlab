@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Ci::RetryBuildService do
+RSpec.describe Ci::RetryJobService do
   let_it_be(:user) { create(:user) }
 
   let(:pipeline) { create(:ci_pipeline, project: project) }
-  let(:build) { create(:ci_build, pipeline: pipeline) }
+  let(:build) { create(:ci_build, :success, pipeline: pipeline) }
 
   subject(:service) { described_class.new(project, user) }
 
@@ -15,14 +15,16 @@ RSpec.describe Ci::RetryBuildService do
     project.add_developer(user)
   end
 
-  it_behaves_like 'restricts access to protected environments'
+  it_behaves_like 'restricts access to protected environments' do
+    subject { service.execute(build)[:job] }
+  end
 
   describe '#clone!' do
     context 'when user has ability to execute build' do
       let_it_be(:namespace) { create(:namespace) }
       let_it_be(:project) { create(:project, namespace: namespace, creator: user) }
 
-      let(:new_build) { service.clone!(build)}
+      let(:new_build) { service.clone!(build) }
 
       context 'dast' do
         let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }
@@ -127,7 +129,7 @@ RSpec.describe Ci::RetryBuildService do
   end
 
   describe '#execute' do
-    let(:new_build) { service.execute(build) }
+    let(:new_build) { service.execute(build)[:job] }
 
     context 'when the CI quota is exceeded' do
       let_it_be(:namespace) { create(:namespace, :with_used_build_minutes_limit) }
