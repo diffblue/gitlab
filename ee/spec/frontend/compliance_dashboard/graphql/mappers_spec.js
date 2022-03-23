@@ -1,4 +1,5 @@
 import { mapViolations } from 'ee/compliance_dashboard/graphql/mappers';
+import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import { createComplianceViolation } from '../mock_data';
 
 describe('mapViolations', () => {
@@ -7,7 +8,7 @@ describe('mapViolations', () => {
 
     expect(mergeRequest).toMatchObject({
       reference: mergeRequest.ref,
-      mergedBy: mergeRequest.mergeUser,
+      mergedBy: convertObjectPropsToSnakeCase(mergeRequest.mergeUser),
     });
   });
 });
