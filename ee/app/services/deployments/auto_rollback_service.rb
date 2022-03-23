@@ -9,8 +9,13 @@ module Deployments
       deployment = find_rollback_target(environment)
       return error('Failed to find a rollback target.') unless deployment
 
-      new_deployment = rollback_to(deployment)
-      success(deployment: new_deployment)
+      response = rollback_to(deployment)
+
+      if response.success?
+        success(deployment: response[:job].deployment)
+      else
+        error(response.message)
+      end
     end
 
     private
@@ -48,7 +53,7 @@ module Deployments
     end
 
     def rollback_to(deployment)
-      Ci::Build.retry(deployment.deployable, deployment.deployed_by).deployment
+      Ci::RetryJobService.new(deployment.deployable.project, deployment.deployed_by).execute(deployment.deployable)
     end
   end
 end

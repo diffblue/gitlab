@@ -30,11 +30,23 @@ RSpec.describe Deployments::AutoRollbackService, :clean_gitlab_redis_rate_limiti
       commits.reverse_each { |commit| create_deployment(commit.id) }
     end
 
-    it 'successfully roll back a deployment' do
+    it 'successfully rolls back a deployment' do
       expect { subject }.to change { Deployment.count }.by(1)
 
       expect(subject[:status]).to eq(:success)
       expect(subject[:deployment].sha).to eq(commits[1].id)
+    end
+
+    context 'when RetryJobService fails to retry the deployable' do
+      before do
+        allow_next_instance_of(::Ci::RetryJobService) do |service|
+          allow(service).to receive(:execute).and_return(ServiceResponse.error(message: message))
+        end
+      end
+
+      it_behaves_like 'rollback failure' do
+        let(:message) { 'Job cannot be retried.' }
+      end
     end
 
     context 'when auto_rollback checkbox is disabled on the project' do

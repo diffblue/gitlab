@@ -6,7 +6,7 @@ RSpec.shared_examples 'restricts access to protected environments' do |developer
     let(:project) { create(:project, :repository) }
     let(:pipeline) { create(:ci_pipeline, project: project) }
     let(:environment) { create(:environment, project: project, name: 'production') }
-    let(:build) { create(:ci_build, :created, pipeline: pipeline, environment: environment.name, project: project) }
+    let(:build) { create(:ci_build, :success, pipeline: pipeline, environment: environment.name, project: project) }
     let(:protected_environment) { create(:protected_environment, name: environment.name, project: project) }
     let(:service) { described_class.new(project, user) }
 
@@ -19,8 +19,7 @@ RSpec.shared_examples 'restricts access to protected environments' do |developer
 
     context 'when user does not have access to the environment' do
       it 'raises Gitlab::Access::DeniedError' do
-        expect { service.execute(build) }
-          .to raise_error Gitlab::Access::AccessDeniedError
+        expect { subject }.to raise_error Gitlab::Access::AccessDeniedError
       end
     end
 
@@ -30,9 +29,7 @@ RSpec.shared_examples 'restricts access to protected environments' do |developer
       end
 
       it 'enqueues the build' do
-        build_enqueued = service.execute(build)
-
-        expect(build_enqueued).to be_pending
+        is_expected.to be_pending
       end
     end
   end

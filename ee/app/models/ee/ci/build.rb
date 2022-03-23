@@ -58,6 +58,19 @@ module EE
         end
       end
 
+      class_methods do
+        extend ::Gitlab::Utils::Override
+
+        override :clone_accessors
+        def clone_accessors
+          (super + extra_accessors).freeze
+        end
+
+        def extra_accessors
+          (super + %i[secrets]).freeze
+        end
+      end
+
       override :variables
       def variables
         strong_memoize(:variables) do

@@ -3,7 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Ci::PlayBuildService, '#execute' do
-  it_behaves_like 'restricts access to protected environments'
+  it_behaves_like 'restricts access to protected environments' do
+    subject { service.execute(build) }
+  end
 
   it_behaves_like 'prevents playing job when credit card is required' do
     let(:user) { create(:user, maintainer_projects: [project]) }

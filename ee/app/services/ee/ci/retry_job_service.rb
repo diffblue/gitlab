@@ -2,23 +2,9 @@
 
 module EE
   module Ci
-    module RetryBuildService
+    module RetryJobService
       extend ActiveSupport::Concern
       extend ::Gitlab::Utils::Override
-
-      class_methods do
-        extend ::Gitlab::Utils::Override
-
-        override :clone_accessors
-        def clone_accessors
-          (super + extra_accessors).freeze
-        end
-
-        override :extra_accessors
-        def extra_accessors
-          %i[secrets].freeze
-        end
-      end
 
       private
 
