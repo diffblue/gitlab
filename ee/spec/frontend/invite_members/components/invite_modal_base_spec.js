@@ -11,6 +11,15 @@ import {
   OVERAGE_MODAL_BACK_BUTTON,
 } from 'ee/invite_members/constants';
 import { propsData } from 'jest/invite_members/mock_data/modal_base';
+import { noFreePlacesSubscription as mockSubscription } from '../mock_data';
+
+jest.mock('ee/invite_members/check_overage', () => ({
+  checkOverage: jest.fn().mockImplementation(() => ({ hasOverage: true, usersOverage: 2 })),
+}));
+
+jest.mock('ee/invite_members/get_subscription_data', () => ({
+  fetchSubscription: jest.fn().mockImplementation(() => mockSubscription),
+}));
 
 describe('EEInviteModalBase', () => {
   let wrapper;
@@ -135,7 +144,7 @@ describe('EEInviteModalBase', () => {
 
     it('shows the info text', () => {
       expect(wrapper.findComponent(GlModal).text()).toContain(
-        'If you continue, the _name_ group will have 1 seat in use and will be billed for the overage.',
+        'Your subscription includes 1 seat. If you continue, the _name_ group will have 2 seats in use and will be billed for the overage.',
       );
     });
 
