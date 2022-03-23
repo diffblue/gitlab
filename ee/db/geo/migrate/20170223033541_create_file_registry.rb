@@ -13,7 +13,7 @@ class CreateFileRegistry < ActiveRecord::Migration[4.2]
     end
 
     add_index :file_registry, :file_type
-    add_index :file_registry, [:file_type, :file_id], { unique: true }
+    add_index :file_registry, [:file_type, :file_id], unique: true
   end
   # rubocop:enable Migration/PreventStrings
 end
