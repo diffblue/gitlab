@@ -14,6 +14,10 @@ RSpec.describe Projects::PipelinesController do
   end
 
   describe 'GET security' do
+    before do
+      stub_feature_flags(pipeline_tabs_vue: false)
+    end
+
     context 'with a sast artifact' do
       before do
         create(:ee_ci_build, :sast, pipeline: pipeline)
@@ -44,6 +48,10 @@ RSpec.describe Projects::PipelinesController do
     end
 
     context 'without sast artifact' do
+      before do
+        stub_feature_flags(pipeline_tabs_vue: false)
+      end
+
       context 'with feature enabled' do
         before do
           stub_licensed_features(sast: true)
@@ -69,6 +77,10 @@ RSpec.describe Projects::PipelinesController do
   end
 
   describe 'GET licenses' do
+    before do
+      stub_feature_flags(pipeline_tabs_vue: false)
+    end
+
     let(:licenses_with_html) {get :licenses, format: :html, params: { namespace_id: project.namespace, project_id: project, id: pipeline }}
     let(:licenses_with_json) {get :licenses, format: :json, params: { namespace_id: project.namespace, project_id: project, id: pipeline }}
     let!(:mit_license) { create(:software_license, :mit) }
