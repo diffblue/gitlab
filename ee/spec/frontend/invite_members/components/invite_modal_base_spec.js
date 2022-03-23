@@ -11,6 +11,7 @@ import {
   OVERAGE_MODAL_BACK_BUTTON,
 } from 'ee/invite_members/constants';
 import { propsData } from 'jest/invite_members/mock_data/modal_base';
+import { fetchUserIdsFromGroup } from 'ee/invite_members/utils';
 import { noFreePlacesSubscription as mockSubscription } from '../mock_data';
 
 jest.mock('ee/invite_members/check_overage', () => ({
@@ -19,6 +20,10 @@ jest.mock('ee/invite_members/check_overage', () => ({
 
 jest.mock('ee/invite_members/get_subscription_data', () => ({
   fetchSubscription: jest.fn().mockImplementation(() => mockSubscription),
+}));
+
+jest.mock('ee/invite_members/utils', () => ({
+  fetchUserIdsFromGroup: jest.fn().mockImplementation(() => [123, 256]),
 }));
 
 describe('EEInviteModalBase', () => {
@@ -116,6 +121,19 @@ describe('EEInviteModalBase', () => {
       it('emits submit', () => {
         expect(wrapper.emitted('submit')).toEqual([[{ accessLevel: 10, expiresAt: undefined }]]);
       });
+    });
+  });
+
+  describe('with overageMembersModal feature flag and a group to invite, and invite is clicked', () => {
+    beforeEach(async () => {
+      createComponent({ newGroupToInvite: 123 }, { glFeatures: { overageMembersModal: true } });
+      clickInviteButton();
+      await nextTick();
+    });
+
+    it('calls fetchUserIdsFromGroup and passes correct parameter', () => {
+      expect(fetchUserIdsFromGroup).toHaveBeenCalledTimes(1);
+      expect(fetchUserIdsFromGroup).toHaveBeenCalledWith(123);
     });
   });
 

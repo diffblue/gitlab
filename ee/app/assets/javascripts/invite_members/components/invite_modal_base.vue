@@ -14,6 +14,7 @@ import {
 } from '../constants';
 import { checkOverage } from '../check_overage';
 import { fetchSubscription } from '../get_subscription_data';
+import { fetchUserIdsFromGroup } from '../utils';
 
 const OVERAGE_CONTENT_SLOT = 'overage-content';
 const EXTRA_SLOTS = [
@@ -52,6 +53,11 @@ export default {
       type: Array,
       required: false,
       default: () => [],
+    },
+    newGroupToInvite: {
+      type: Number,
+      required: false,
+      default: null,
     },
   },
   data() {
@@ -120,10 +126,18 @@ export default {
       }
     },
     async checkAndSubmit(args) {
+      let usersToAddById = [];
+      let usersToInviteByEmail = [];
       this.isLoading = true;
-      const [usersToInviteByEmail, usersToAddById] = this.partitionNewUsersToInvite();
+
       const subscriptionData = await fetchSubscription(this.namespaceId);
       this.subscriptionSeats = subscriptionData.subscriptionSeats;
+
+      if (this.newGroupToInvite) {
+        usersToAddById = await fetchUserIdsFromGroup(this.newGroupToInvite);
+      } else {
+        [usersToInviteByEmail, usersToAddById] = this.partitionNewUsersToInvite();
+      }
 
       const { hasOverage, usersOverage } = checkOverage(
         subscriptionData,
