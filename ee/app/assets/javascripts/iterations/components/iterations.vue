@@ -1,6 +1,15 @@
 <script>
-import { GlAlert, GlButton, GlLoadingIcon, GlPagination, GlTab, GlTabs } from '@gitlab/ui';
-import { __ } from '~/locale';
+import emptyStateSvg from '@gitlab/svgs/dist/illustrations/issues.svg';
+import {
+  GlAlert,
+  GlButton,
+  GlLoadingIcon,
+  GlPagination,
+  GlTab,
+  GlTabs,
+  GlEmptyState,
+} from '@gitlab/ui';
+import { __, s__ } from '~/locale';
 import { Namespace } from '../constants';
 import IterationsQuery from '../queries/iterations.query.graphql';
 import IterationsList from './iterations_list.vue';
@@ -8,6 +17,14 @@ import IterationsList from './iterations_list.vue';
 const pageSize = 20;
 
 export default {
+  i18n: {
+    emptyStateDescription: s__(
+      'Iterations|Iterations are a way to track issues over a period of time, allowing teams to also track velocity and volatility metrics.',
+    ),
+    newIteration: s__('Iterations|New iteration'),
+    noIterationsFound: s__('Iterations|No iterations found'),
+  },
+  emptySvgPath: `data:image/svg+xml;utf8,${encodeURIComponent(emptyStateSvg)}`,
   components: {
     IterationsList,
     GlAlert,
@@ -16,6 +33,7 @@ export default {
     GlPagination,
     GlTab,
     GlTabs,
+    GlEmptyState,
   },
   props: {
     fullPath: {
@@ -113,6 +131,9 @@ export default {
     nextPage() {
       return Number(this.namespace.pageInfo.hasNextPage);
     },
+    showEmptyState() {
+      return this.iterations.length === 0 && !this.loading;
+    },
   },
   methods: {
     handlePageChange(page) {
@@ -151,6 +172,15 @@ export default {
           {{ error }}
         </gl-alert>
       </div>
+
+      <gl-empty-state
+        v-else-if="showEmptyState"
+        :svg-path="$options.emptySvgPath"
+        :title="$options.i18n.noIterationsFound"
+        :primary-button-text="$options.i18n.newIteration"
+        :primary-button-link="newIterationPath"
+        :description="$options.i18n.emptyStateDescription"
+      />
       <div v-else>
         <iterations-list :iterations="iterations" :namespace-type="namespaceType" />
         <gl-pagination

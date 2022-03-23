@@ -1,3 +1,4 @@
 - page_title _("Iterations")
+- iterations_path = @project&.group ? new_group_iteration_path(@project&.group) : ''
 
-.js-iterations-list{ data: { full_path: @project.full_path } }
+.js-iterations-list{ data: { full_path: @project.full_path, new_iteration_path: iterations_path } }

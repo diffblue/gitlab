@@ -48,7 +48,7 @@ export const iterationSelectTextMap = {
   iterationSelectFail: __('Failed to set iteration on this issue. Please try again.'),
   currentIterationFetchError: __('Failed to fetch the iteration for this issue. Please try again.'),
   iterationsFetchError: __('Failed to fetch the iterations for the group. Please try again.'),
-  noIterationsFound: __('No iterations found'),
+  noIterationsFound: s__('Iterations|No iterations found'),
 };
 
 export const noIteration = null;

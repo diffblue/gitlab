@@ -1,24 +1,34 @@
-import { GlAlert, GlLoadingIcon, GlPagination, GlTab, GlTabs } from '@gitlab/ui';
+import { GlAlert, GlEmptyState, GlLoadingIcon, GlPagination, GlTab, GlTabs } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
 import Iterations from 'ee/iterations/components/iterations.vue';
 import IterationsList from 'ee/iterations/components/iterations_list.vue';
 import { Namespace } from 'ee/iterations/constants';
+import query from 'ee/iterations/queries/iterations.query.graphql';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
+import { mockGroupIterations, mockGroupIterationsEmpty } from '../mock_data';
 
 describe('Iterations', () => {
   let wrapper;
+  let mockApollo;
   const defaultProps = {
     fullPath: 'gitlab-org',
   };
 
-  const mountComponent = ({ props = defaultProps, loading = false } = {}) => {
+  const mountComponent = ({
+    props = defaultProps,
+    queryResponse = mockGroupIterations,
+    queryHandler = jest.fn().mockResolvedValue(queryResponse),
+  } = {}) => {
+    Vue.use(VueApollo);
+
+    mockApollo = createMockApollo([[query, queryHandler]]);
+
     wrapper = shallowMount(Iterations, {
+      apolloProvider: mockApollo,
       propsData: props,
-      mocks: {
-        $apollo: {
-          queries: { namespace: { loading } },
-        },
-      },
       stubs: {
         GlLoadingIcon,
         GlTab,
@@ -29,22 +39,21 @@ describe('Iterations', () => {
 
   afterEach(() => {
     wrapper.destroy();
-    wrapper = null;
   });
 
   it('hides list while loading', () => {
-    mountComponent({
-      loading: true,
-    });
+    mountComponent();
 
     expect(wrapper.findComponent(GlLoadingIcon).exists()).toBeTruthy();
     expect(wrapper.findComponent(IterationsList).exists()).toBeFalsy();
   });
 
-  it('shows iterations list when not loading', () => {
+  it('shows iterations list after loading', async () => {
     mountComponent({
-      loading: false,
+      props: { ...defaultProps, newIterationPath: 'iterations' },
     });
+
+    await waitForPromises();
 
     expect(wrapper.findComponent(GlLoadingIcon).exists()).toBeFalsy();
     expect(wrapper.findComponent(IterationsList).exists()).toBeTruthy();
@@ -64,6 +73,26 @@ describe('Iterations', () => {
     expect(wrapper.vm.state).toEqual('all');
   });
 
+  describe('when loading is false and iterations are empty', () => {
+    beforeEach(async () => {
+      mountComponent({
+        props: {
+          ...defaultProps,
+          newIterationPath: 'iterations',
+        },
+        queryResponse: mockGroupIterationsEmpty,
+      });
+
+      await waitForPromises();
+    });
+
+    it('renders GlEmptyState with the correct props', () => {
+      expect(wrapper.findComponent(GlEmptyState).props()).toEqual(
+        expect.objectContaining({ primaryButtonLink: 'iterations' }),
+      );
+    });
+  });
+
   describe('pagination', () => {
     const findPagination = () => wrapper.findComponent(GlPagination);
     const setPage = async (page) => {
@@ -71,22 +100,12 @@ describe('Iterations', () => {
       await nextTick();
     };
 
-    beforeEach(() => {
+    beforeEach(async () => {
       mountComponent({
-        loading: false,
+        queryResponse: mockGroupIterations,
       });
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        namespace: {
-          pageInfo: {
-            hasNextPage: true,
-            hasPreviousPage: false,
-            startCursor: 'first-item',
-            endCursor: 'last-item',
-          },
-        },
-      });
+
+      await waitForPromises();
     });
 
     it('passes prev, next, and current page props', () => {
@@ -184,19 +203,22 @@ describe('Iterations', () => {
   });
 
   describe('error', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       mountComponent({
-        loading: false,
+        queryHandler: jest.fn().mockRejectedValue({
+          data: {
+            group: {
+              errors: ['oh no'],
+            },
+          },
+        }),
       });
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        error: 'Oh no!',
-      });
+
+      await waitForPromises();
     });
 
     it('tab shows error in alert', () => {
-      expect(wrapper.findComponent(GlAlert).text()).toContain('Oh no!');
+      expect(wrapper.findComponent(GlAlert).text()).toContain('Error loading iterations');
     });
   });
 });
