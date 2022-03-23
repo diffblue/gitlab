@@ -11226,10 +11226,10 @@ msgstr ""
 msgid "DAST Configuration"
 msgstr ""
 
-msgid "DAST Profiles"
+msgid "DAST profile not found: %{name}"
 msgstr ""
 
-msgid "DAST profile not found: %{name}"
+msgid "DAST profiles"
 msgstr ""
 
 msgid "DNS"

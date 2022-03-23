@@ -56,7 +56,7 @@ export const DAST_CONFIG_HELP_PATH = helpPagePath('user/application_security/das
   anchor: 'enable-dast',
 });
 
-export const DAST_PROFILES_NAME = __('DAST Profiles');
+export const DAST_PROFILES_NAME = __('DAST profiles');
 export const DAST_PROFILES_DESCRIPTION = s__(
   'SecurityConfiguration|Manage profiles for use by DAST scans.',
 );
