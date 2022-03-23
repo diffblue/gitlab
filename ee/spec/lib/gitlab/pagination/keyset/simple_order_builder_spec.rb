@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Pagination::Keyset::SimpleOrderBuilder do
   context 'when ordering by a CASE expression and id' do
-    let(:scope) { Vulnerability.order_report_type_asc }
+    let(:scope) { Vulnerability.order(Vulnerability.report_type_order.asc) }
 
     subject(:result) { described_class.build(scope) }
 
