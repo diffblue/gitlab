@@ -9,12 +9,12 @@ describe('ClustersActionsComponent', () => {
 
   const newClusterPath = 'path/to/add/cluster';
   const addClusterPath = 'path/to/connect/existing/cluster';
-  const createClusterPath = 'path/to/create/new/cluster';
+  const newClusterDocsPath = 'path/to/create/new/cluster';
 
   const defaultProvide = {
     newClusterPath,
     addClusterPath,
-    createClusterPath,
+    newClusterDocsPath,
     canAddCluster: true,
     displayClusterAgents: true,
     certificateBasedClustersEnabled: true,

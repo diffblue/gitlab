@@ -26,7 +26,7 @@ export default {
   inject: [
     'newClusterPath',
     'addClusterPath',
-    'createClusterPath',
+    'newClusterDocsPath',
     'canAddCluster',
     'displayClusterAgents',
     'certificateBasedClustersEnabled',
@@ -77,7 +77,7 @@ export default {
         >
           {{ $options.i18n.connectWithAgent }}
         </gl-dropdown-item>
-        <gl-dropdown-item :href="createClusterPath" data-testid="create-cluster-link" @click.stop>
+        <gl-dropdown-item :href="newClusterDocsPath" data-testid="create-cluster-link" @click.stop>
           {{ $options.i18n.createAndConnectCluster }}
         </gl-dropdown-item>
       </template>

@@ -49,10 +49,10 @@ RSpec.describe ProjectClusterablePresenter do
     it { is_expected.to eq(connect_project_clusters_path(project)) }
   end
 
-  describe '#create_path' do
-    subject { presenter.create_path }
+  describe '#new_cluster_docs_path' do
+    subject { presenter.new_cluster_docs_path }
 
-    it { is_expected.to eq(create_cluster_project_clusters_path(project)) }
+    it { is_expected.to eq(new_cluster_docs_project_clusters_path(project)) }
   end
 
   describe '#authorize_aws_role_path' do
