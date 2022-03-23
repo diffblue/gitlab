@@ -12,7 +12,18 @@ module GitlabSubscriptions
     worker_has_external_dependencies!
 
     def handle_event(event)
-      # no-op for now, to be implemented in https://gitlab.com/gitlab-org/gitlab/-/issues/348487
+      source = case event.data[:source_type]
+               when 'Group'
+                 Group.find_by_id(event.data[:source_id])
+               when 'Project'
+                 Project.find_by_id(event.data[:source_id])
+               else
+                 nil
+               end
+
+      return unless source&.root_ancestor.present?
+
+      GitlabSubscriptions::NotifySeatsExceededService.new(source.root_ancestor).execute
     end
   end
 end
