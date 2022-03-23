@@ -1,4 +1,4 @@
-import { GlTable } from '@gitlab/ui';
+import { GlTableLite } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import ReportItem from 'ee/vulnerabilities/components/generic_report/report_item.vue';
 import { REPORT_TYPES } from 'ee/vulnerabilities/components/generic_report/types/constants';
@@ -30,7 +30,7 @@ describe('ee/vulnerabilities/components/generic_report/types/table.vue', () => {
     );
   };
 
-  const findTable = () => wrapper.findComponent(GlTable);
+  const findTable = () => wrapper.findComponent(GlTableLite);
   const findTableHead = () => wrapper.find('thead');
   const findTableBody = () => wrapper.find('tbody');
 
