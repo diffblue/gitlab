@@ -9,6 +9,7 @@ module Routing
         sortBy
         sortDesc
         state
+        tab
       ].freeze
 
       def initialize(request_object, group, project)
