@@ -25,7 +25,7 @@ export const setupArkoseLabs = () => {
           usernameSelector: USERNAME_SELECTOR,
           submitSelector: SUBMIT_SELECTOR,
         },
-      })
-    }
+      });
+    },
   });
 };
