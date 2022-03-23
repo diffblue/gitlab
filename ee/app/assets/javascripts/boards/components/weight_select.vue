@@ -63,7 +63,7 @@ export default {
       } else if (weight === NO_WEIGHT) {
         return -2;
       }
-      return -1;
+      return null;
     },
     toggleEdit() {
       if (this.dropdownHidden) {
