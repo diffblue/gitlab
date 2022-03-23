@@ -1,4 +1,6 @@
 <script>
+import createFlash from '~/flash';
+import { s__ } from '~/locale';
 import getClusterAgentsQuery from 'ee/security_dashboard/graphql/queries/cluster_agents.query.graphql';
 import SimpleFilter from './simple_filter.vue';
 import FilterBody from './filter_body.vue';
@@ -9,6 +11,7 @@ export default {
   extends: SimpleFilter,
   apollo: {
     clusterAgents: {
+      loadingKey: 'isLoading',
       query: getClusterAgentsQuery,
       variables() {
         return {
@@ -16,26 +19,23 @@ export default {
         };
       },
       update: (data) => data.project?.clusterAgents?.nodes || [],
+      error() {
+        createFlash({
+          message: s__('SecurityOrchestration|Failed to load cluster agents.'),
+        });
+      },
     },
   },
   inject: ['projectFullPath'],
-  props: {
-    filter: {
-      type: Object,
-      required: true,
-    },
-  },
   data() {
     return {
+      isLoading: 0,
       clusterAgents: [],
     };
   },
   computed: {
     options() {
       return this.clusterAgents;
-    },
-    isLoading() {
-      return this.$apollo.queries.clusterAgents.loading;
     },
     filterObject() {
       // This is the object used to update the GraphQL query.
@@ -48,6 +48,11 @@ export default {
       return { clusterAgentId: gids };
     },
   },
+  watch: {
+    options() {
+      this.processQuerystringIds();
+    },
+  },
 };
 </script>
 
@@ -56,7 +61,7 @@ export default {
     :name="filter.name"
     :selected-options="selectedOptionsOrAll"
     :show-search-box="false"
-    :loading="isLoading"
+    :loading="Boolean(isLoading)"
   >
     <filter-item
       v-if="filter.allOption"
