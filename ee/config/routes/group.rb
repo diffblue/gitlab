@@ -170,6 +170,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
           put :revoke
         end
       end
+      resources :policies, only: [:index]
       resources :merge_commit_reports, only: [:index], constraints: { format: :csv }
     end
 

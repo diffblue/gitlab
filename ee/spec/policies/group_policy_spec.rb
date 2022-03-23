@@ -911,6 +911,32 @@ RSpec.describe GroupPolicy do
     end
   end
 
+  describe 'security orchestration policies' do
+    before do
+      stub_licensed_features(security_orchestration_policies: true)
+    end
+
+    context 'with developer or maintainer role' do
+      where(role: %w[maintainer developer])
+
+      with_them do
+        let(:current_user) { public_send(role) }
+
+        it { is_expected.to be_allowed(:security_orchestration_policies) }
+      end
+    end
+
+    context 'with owner role' do
+      where(role: %w[owner])
+
+      with_them do
+        let(:current_user) { public_send(role) }
+
+        it { is_expected.to be_allowed(:security_orchestration_policies) }
+      end
+    end
+  end
+
   describe 'admin_vulnerability' do
     before do
       stub_licensed_features(security_dashboard: true)

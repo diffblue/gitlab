@@ -768,7 +768,7 @@ RSpec.describe ProjectPolicy do
     end
   end
 
-  describe 'security complience policy' do
+  describe 'security orchestration policies' do
     before do
       stub_licensed_features(security_orchestration_policies: true)
     end
