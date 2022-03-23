@@ -15,5 +15,11 @@
             %tr
               %td{ style: "overflow:hidden;font-size:14px;line-height:1.4;display:grid;" }
                 - @notes.each do |note|
+                  -# Preload author, to prevent N+1 queries
+                  - note.author = @author
+                  -# Get preloaded note discussion
+                  - discussion = @discussions.try(:[], note.discussion_id) if note.part_of_discussion?
+                  -# Preload project for discussions first note
+                  - discussion.first_note.project = @project if discussion&.first_note
                   - target_url = project_merge_request_url(@project, @merge_request, anchor: "note_#{note.id}")
-                  = render 'note_email', note: note, diff_limit: 3, target_url: target_url, note_style: "border-bottom:1px solid #ededed;", skip_stylesheet_link: true
+                  = render 'note_email', note: note, diff_limit: 3, target_url: target_url, note_style: "border-bottom:1px solid #ededed;", skip_stylesheet_link: true, discussion: discussion

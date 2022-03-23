@@ -4,7 +4,7 @@
 - note_style = local_assigns.fetch(:note_style, "")
 - skip_stylesheet_link = local_assigns.fetch(:skip_stylesheet_link, false)
 
-- discussion = note.discussion if note.part_of_discussion?
+- discussion = local_assigns.fetch(:discussion){ note.discussion } if note.part_of_discussion?
 
 %p{ style: "color: #777777;" }
   = succeed ':' do
@@ -12,7 +12,7 @@
     - if discussion.nil?
       = link_to 'commented', target_url
     - else
-      - if note.start_of_discussion?
+      - if discussion.first_note == note
         started a new
       - else
         commented on a
