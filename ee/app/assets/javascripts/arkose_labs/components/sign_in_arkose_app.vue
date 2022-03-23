@@ -88,7 +88,8 @@ export default {
     onUsernameBlur() {
       this.username = this.getUsernameValue();
     },
-    onSubmit(e) {
+    async onSubmit(e) {
+      await this.checkIfNeedsChallenge();
       if (!this.arkoseInitialized || this.arkoseChallengePassed) {
         return;
       }
