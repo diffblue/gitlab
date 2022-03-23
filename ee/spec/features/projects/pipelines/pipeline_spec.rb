@@ -14,6 +14,10 @@ RSpec.describe 'Pipeline', :js do
   end
 
   describe 'GET /:project/-/pipelines/:id' do
+    before do
+      stub_feature_flags(pipeline_tabs_vue: false)
+    end
+
     let(:pipeline) { create(:ci_pipeline, :with_job, project: project, ref: 'master', sha: project.commit.id, user: user) }
 
     subject { visit project_pipeline_path(project, pipeline) }
@@ -133,6 +137,7 @@ RSpec.describe 'Pipeline', :js do
     let(:pipeline) { create(:ci_pipeline, project: project, ref: 'master', sha: project.commit.id) }
 
     before do
+      stub_feature_flags(pipeline_tabs_vue: false)
       stub_licensed_features(sast: true, security_dashboard: true)
       stub_feature_flags(pipeline_security_dashboard_graphql: false)
     end
@@ -170,6 +175,7 @@ RSpec.describe 'Pipeline', :js do
     let(:pipeline) { create(:ci_pipeline, project: project, ref: 'master', sha: project.commit.id) }
 
     before do
+      stub_feature_flags(pipeline_tabs_vue: false)
       stub_licensed_features(license_scanning: true)
     end
 
@@ -205,6 +211,10 @@ RSpec.describe 'Pipeline', :js do
   end
 
   describe 'GET /:project/-/pipelines/:id/codequality_report', :aggregate_failures do
+    before do
+      stub_feature_flags(pipeline_tabs_vue: false)
+    end
+
     shared_examples_for 'full codequality report' do
       context 'when licensed' do
         before do
