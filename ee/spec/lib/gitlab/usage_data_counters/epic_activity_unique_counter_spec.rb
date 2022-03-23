@@ -340,11 +340,23 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :clean_gitl
 
   context 'for related epic added' do
     def track_action(params)
-      described_class.track_epic_related_added(**params)
+      described_class.track_linked_epic_with_type_relates_to_added(**params)
     end
 
     it_behaves_like 'a daily tracked issuable event' do
       let(:action) { described_class::EPIC_RELATED_ADDED }
+    end
+
+    it_behaves_like 'does not track when feature flag is disabled', :track_epics_activity
+  end
+
+  context 'for related epic removed' do
+    def track_action(params)
+      described_class.track_linked_epic_with_type_relates_to_removed(**params)
+    end
+
+    it_behaves_like 'a daily tracked issuable event' do
+      let(:action) { described_class::EPIC_RELATED_REMOVED }
     end
 
     it_behaves_like 'does not track when feature flag is disabled', :track_epics_activity

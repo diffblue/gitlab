@@ -2,6 +2,8 @@
 
 module Epics::RelatedEpicLinks
   class CreateService < IssuableLinks::CreateService
+    include UsageDataHelper
+
     def linkable_issuables(epics)
       @linkable_issuables ||= begin
         epics.select { |epic| can?(current_user, :admin_epic, epic) }
@@ -15,9 +17,7 @@ module Epics::RelatedEpicLinks
     private
 
     def after_create_for(link)
-      if link.link_type == link.class::TYPE_RELATES_TO
-        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_related_added(author: current_user)
-      end
+      track_related_epics_event_for(link_type: params[:link_type], event_type: :added)
     end
 
     def references(extractor)
