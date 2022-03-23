@@ -10,6 +10,7 @@ export const mockIterationNode = {
   state: iterationStates.upcoming,
   title: 'top-level-iteration',
   webPath: '/groups/top-level-group/-/iterations/4',
+  scopedPath: '/groups/top-level-group/-/iterations/4',
   __typename: 'Iteration',
 };
 
@@ -29,6 +30,33 @@ export const mockGroupIterations = {
       id: 'gid://gitlab/Group/114',
       iterations: {
         nodes: [mockIterationNode],
+        pageInfo: {
+          hasNextPage: true,
+          hasPreviousPage: true,
+          startCursor: 'first-item',
+          endCursor: 'last-item',
+          __typename: 'PageInfo',
+        },
+        __typename: 'IterationConnection',
+      },
+      __typename: 'Group',
+    },
+  },
+};
+
+export const mockGroupIterationsEmpty = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/114',
+      iterations: {
+        nodes: [],
+        pageInfo: {
+          hasNextPage: false,
+          hasPreviousPage: false,
+          startCursor: '',
+          endCursor: '',
+          __typename: 'PageInfo',
+        },
         __typename: 'IterationConnection',
       },
       __typename: 'Group',

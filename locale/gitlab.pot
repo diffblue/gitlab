@@ -21000,6 +21000,9 @@ msgstr ""
 msgid "Iterations|Iteration scheduling will be handled automatically"
 msgstr ""
 
+msgid "Iterations|Iterations are a way to track issues over a period of time, allowing teams to also track velocity and volatility metrics."
+msgstr ""
+
 msgid "Iterations|Move incomplete issues to the next iteration"
 msgstr ""
 
@@ -21013,6 +21016,9 @@ msgid "Iterations|No closed iterations."
 msgstr ""
 
 msgid "Iterations|No iteration cadences to show."
+msgstr ""
+
+msgid "Iterations|No iterations found"
 msgstr ""
 
 msgid "Iterations|No iterations in cadence."
@@ -25149,9 +25155,6 @@ msgid "No issues found"
 msgstr ""
 
 msgid "No iteration"
-msgstr ""
-
-msgid "No iterations found"
 msgstr ""
 
 msgid "No iterations to show"

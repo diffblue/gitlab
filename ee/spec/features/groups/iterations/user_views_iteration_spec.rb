@@ -92,7 +92,7 @@ RSpec.describe 'User views iteration' do
 
         wait_for_requests
 
-        expect(page).to have_content('No iterations to show')
+        expect(page).to have_content('No iterations found')
         expect(page).not_to have_content(iteration.title)
       end
     end
