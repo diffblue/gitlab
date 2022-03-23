@@ -87,7 +87,7 @@ module Backup
       puts_time "Warning: Your gitlab.rb and gitlab-secrets.json files contain sensitive data \n" \
            "and are not included in this backup. You will need these files to restore a backup.\n" \
            "Please back them up manually.".color(:red)
-      puts_time "Backup task is done."
+      puts_time "Backup #{backup_id} is done."
     end
 
     def run_create_task(task_name)
@@ -437,11 +437,15 @@ module Backup
     end
 
     def tar_file
-      @tar_file ||= if ENV['BACKUP'].present?
-                      File.basename(ENV['BACKUP']) + FILE_NAME_SUFFIX
-                    else
-                      "#{backup_information[:backup_created_at].strftime('%s_%Y_%m_%d_')}#{backup_information[:gitlab_version]}#{FILE_NAME_SUFFIX}"
-                    end
+      @tar_file ||= "#{backup_id}#{FILE_NAME_SUFFIX}"
+    end
+
+    def backup_id
+      @backup_id ||= if ENV['BACKUP'].present?
+                       File.basename(ENV['BACKUP'])
+                     else
+                       "#{backup_information[:backup_created_at].strftime('%s_%Y_%m_%d_')}#{backup_information[:gitlab_version]}"
+                     end
     end
 
     def create_attributes
