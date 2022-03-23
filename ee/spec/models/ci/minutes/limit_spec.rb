@@ -94,25 +94,20 @@ RSpec.describe Ci::Minutes::Limit do
   describe '#recalculate_remaining_purchased_minutes!' do
     subject { limit.recalculate_remaining_purchased_minutes! }
 
-    where(:purchased_minutes, :namespace_monthly_limit, :previous_amount_used, :ff_enabled, :expected_purchased_limit) do
-      200 | 400 | 0   | true  | 200 # no minutes used
-      200 | 0   | 0   | true  | 200 # monthly limit disabled
-      0   | 0   | 0   | true  | 0   # monthly limit disabled and no purchased minutes
-      200 | 400 | nil | true  | 200 # no previous month usage
-      200 | 400 | 300 | true  | 200 # previous usage < monthly limit
-      200 | 400 | 500 | true  | 100 # previous usage > monthly limit => purchased minutes reduced
-      200 | 400 | 500 | false | 200 # same as above but FF disabled
-      0   | 400 | 500 | true  | 0   # no purchased minutes = nothing reduced
-      200 | 400 | 600 | true  | 0   # previous usage == total limit => purchased minutes reduced
-      200 | 400 | 600 | false | 200 # same as above but FF disabled
-      200 | 400 | 800 | true  | 0   # previous usage > total limit => purchased minutes reduced but not negative
-      200 | 400 | 800 | false | 200 # same as above but FF disabled
+    where(:purchased_minutes, :namespace_monthly_limit, :previous_amount_used, :expected_purchased_limit) do
+      200 | 400 | 0   | 200 # no minutes used
+      200 | 0   | 0   | 200 # monthly limit disabled
+      0   | 0   | 0   | 0   # monthly limit disabled and no purchased minutes
+      200 | 400 | nil | 200 # no previous month usage
+      200 | 400 | 300 | 200 # previous usage < monthly limit
+      200 | 400 | 500 | 100 # previous usage > monthly limit => purchased minutes reduced
+      0   | 400 | 500 | 0   # no purchased minutes = nothing reduced
+      200 | 400 | 600 | 0   # previous usage == total limit => purchased minutes reduced
+      200 | 400 | 800 | 0   # previous usage > total limit => purchased minutes reduced but not negative
     end
 
     with_them do
       before do
-        namespace.clear_memoization(:new_monthly_ci_minutes_enabled)
-
         if previous_amount_used
           create(:ci_namespace_monthly_usage,
             namespace: namespace,
@@ -124,8 +119,6 @@ RSpec.describe Ci::Minutes::Limit do
             date: Ci::Minutes::NamespaceMonthlyUsage.beginning_of_month(3.months.ago),
             amount_used: 5_000)
         end
-
-        stub_feature_flags(ci_use_new_monthly_minutes: ff_enabled)
       end
 
       it 'has the expected purchased minutes' do

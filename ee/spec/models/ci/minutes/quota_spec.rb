@@ -109,20 +109,16 @@ RSpec.describe Ci::Minutes::Quota do
     end
 
     context 'with tracking_strategy' do
-      where(:minutes_used, :legacy_minutes_used, :tracking_strategy, :ff_enabled, :expected_minutes) do
-        0   | 100 | nil     | true  | 0
-        0   | 100 | nil     | false | 100
-        0   | 100 | :new    | true  | 0
-        0   | 100 | :new    | false | 0
-        0   | 100 | :legacy | true  | 100
-        0   | 100 | :legacy | false | 100
+      where(:minutes_used, :legacy_minutes_used, :tracking_strategy, :expected_minutes) do
+        0   | 100 | nil     | 0
+        0   | 100 | :new    | 0
+        0   | 100 | :legacy | 100
       end
 
       with_them do
         let(:quota) { described_class.new(namespace, tracking_strategy: tracking_strategy) }
 
         before do
-          stub_feature_flags(ci_use_new_monthly_minutes: ff_enabled)
           namespace.namespace_statistics.update!(shared_runners_seconds: legacy_minutes_used.minutes)
         end
 
@@ -263,16 +259,6 @@ RSpec.describe Ci::Minutes::Quota do
 
     context 'when tracking_strategy: :legacy' do
       let(:tracking_strategy) { :legacy }
-
-      it 'corresponds to the current time' do
-        expect(reset_date).to eq(Date.new(2021, 07, 14))
-      end
-    end
-
-    context 'when feature flag ci_use_new_monthly_minutes is disabled' do
-      before do
-        stub_feature_flags(ci_use_new_monthly_minutes: false)
-      end
 
       it 'corresponds to the current time' do
         expect(reset_date).to eq(Date.new(2021, 07, 14))

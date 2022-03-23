@@ -366,12 +366,8 @@ module EE
       !disable_overriding_approvers_per_merge_request
     end
 
-    def ci_minutes_used(namespace_actor)
-      if namespace_actor.new_monthly_ci_minutes_enabled?
-        ci_minutes_usage.amount_used.to_i
-      else
-        shared_runners_seconds.to_i / 60
-      end
+    def ci_minutes_used
+      ci_minutes_usage.amount_used.to_i
     end
 
     def shared_runners_available?

@@ -31,17 +31,13 @@ module Ci
 
           namespace_usage.update!(notification_level: current_alert_percentage)
 
-          if namespace.new_monthly_ci_minutes_enabled?
-            CiMinutesUsageMailer.notify(namespace, recipients).deliver_later
-          end
+          CiMinutesUsageMailer.notify(namespace, recipients).deliver_later
         elsif notification.running_out?
           return if namespace_usage.usage_notified?(current_alert_percentage)
 
           namespace_usage.update!(notification_level: current_alert_percentage)
 
-          if namespace.new_monthly_ci_minutes_enabled?
-            CiMinutesUsageMailer.notify_limit(namespace, recipients, current_alert_percentage).deliver_later
-          end
+          CiMinutesUsageMailer.notify_limit(namespace, recipients, current_alert_percentage).deliver_later
         end
       end
 
@@ -50,10 +46,6 @@ module Ci
           return if namespace.last_ci_minutes_notification_at
 
           namespace.update_columns(last_ci_minutes_notification_at: Time.current)
-
-          unless namespace.new_monthly_ci_minutes_enabled?
-            CiMinutesUsageMailer.notify(namespace, recipients).deliver_later
-          end
         elsif legacy_notification.running_out?
           current_alert_percentage = legacy_notification.stage_percentage
 
@@ -61,10 +53,6 @@ module Ci
           return if namespace.last_ci_minutes_usage_notification_level == current_alert_percentage
 
           namespace.update_columns(last_ci_minutes_usage_notification_level: current_alert_percentage)
-
-          unless namespace.new_monthly_ci_minutes_enabled?
-            CiMinutesUsageMailer.notify_limit(namespace, recipients, current_alert_percentage).deliver_later
-          end
         end
       end
 
