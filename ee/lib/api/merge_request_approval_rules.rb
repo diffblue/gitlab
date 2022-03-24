@@ -8,7 +8,7 @@ module API
 
     helpers do
       def find_merge_request_approval_rule(merge_request, id)
-        merge_request.approval_rules.find_by_id!(id)
+        merge_request.approval_rules.find(id)
       end
     end
 

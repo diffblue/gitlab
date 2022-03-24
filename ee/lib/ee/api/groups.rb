@@ -133,11 +133,11 @@ module EE
             end
             get '/:audit_event_id' do
               level = ::Gitlab::Audit::Levels::Group.new(group: user_group)
-              # rubocop: disable CodeReuse/ActiveRecord
+              # rubocop: disable CodeReuse/ActiveRecord, Rails/FindById
               # This is not `find_by!` from ActiveRecord
               audit_event = AuditLogFinder.new(level: level, params: audit_log_finder_params)
                 .find_by!(id: params[:audit_event_id])
-              # rubocop: enable CodeReuse/ActiveRecord
+              # rubocop: enable CodeReuse/ActiveRecord, Rails/FindById
 
               present audit_event, with: EE::API::Entities::AuditEvent
             end
