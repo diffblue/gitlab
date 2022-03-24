@@ -1,4 +1,4 @@
-mutation setIssueIterationMutation($projectPath: ID!, $iid: String!, $iterationId: ID) {
+mutation setIssueIterationMutation($projectPath: ID!, $iid: String!, $iterationId: IterationID) {
   issueSetIteration(input: { projectPath: $projectPath, iid: $iid, iterationId: $iterationId }) {
     errors
     issue {

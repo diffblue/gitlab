@@ -1,4 +1,4 @@
-query BoardListEE($id: ID!, $filters: BoardIssueInput) {
+query BoardListEE($id: ListID!, $filters: BoardIssueInput) {
   boardList(id: $id, issueFilters: $filters) {
     id
     totalWeight
