@@ -4,7 +4,7 @@ module Mutations
   module FindsProjectOrGroupForSecurityPolicies
     private
 
-    def find_object(args)
+    def find_object(**args)
       full_path = args[:project_path].presence || args[:full_path]
 
       if full_path.blank?

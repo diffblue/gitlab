@@ -4332,7 +4332,7 @@ Input type: `ScanExecutionPolicyCommitInput`
 
 ### `Mutation.securityPolicyProjectAssign`
 
-Assigns the specified project(`security_policy_project_id`) as security policy project for the given project(`project_path`). If the project already has a security policy project, this reassigns the project's security policy project with the given `security_policy_project_id`.
+Assigns the specified project(`security_policy_project_id`) as security policy project for the given project(`full_path`). If the project already has a security policy project, this reassigns the project's security policy project with the given `security_policy_project_id`.
 
 Input type: `SecurityPolicyProjectAssignInput`
 
@@ -4341,7 +4341,8 @@ Input type: `SecurityPolicyProjectAssignInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationsecuritypolicyprojectassignclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationsecuritypolicyprojectassignprojectpath"></a>`projectPath` | [`ID!`](#id) | Full path of the project. |
+| <a id="mutationsecuritypolicyprojectassignfullpath"></a>`fullPath` | [`String`](#string) | Full path of the project. |
+| <a id="mutationsecuritypolicyprojectassignprojectpath"></a>`projectPath` **{warning-solid}** | [`ID`](#id) | **Deprecated:** Use `fullPath`. Deprecated in 14.10. |
 | <a id="mutationsecuritypolicyprojectassignsecuritypolicyprojectid"></a>`securityPolicyProjectId` | [`ProjectID!`](#projectid) | ID of the security policy project. |
 
 #### Fields
@@ -4353,7 +4354,7 @@ Input type: `SecurityPolicyProjectAssignInput`
 
 ### `Mutation.securityPolicyProjectCreate`
 
-Creates and assigns a security policy project for the given project(`project_path`).
+Creates and assigns a security policy project for the given project (`full_path`).
 
 Input type: `SecurityPolicyProjectCreateInput`
 
@@ -4362,7 +4363,8 @@ Input type: `SecurityPolicyProjectCreateInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationsecuritypolicyprojectcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationsecuritypolicyprojectcreateprojectpath"></a>`projectPath` | [`ID!`](#id) | Full path of the project. |
+| <a id="mutationsecuritypolicyprojectcreatefullpath"></a>`fullPath` | [`String`](#string) | Full path of the project. |
+| <a id="mutationsecuritypolicyprojectcreateprojectpath"></a>`projectPath` **{warning-solid}** | [`ID`](#id) | **Deprecated:** Use `fullPath`. Deprecated in 14.10. |
 
 #### Fields
 

@@ -7,35 +7,60 @@ RSpec.describe Mutations::SecurityPolicy::AssignSecurityPolicyProject do
 
   describe '#resolve' do
     let_it_be(:owner) { create(:user) }
-    let_it_be(:user) { create(:user) }
+    let_it_be(:maintainer) { create(:user) }
+    let_it_be(:namespace) { create(:group) }
     let_it_be(:project) { create(:project, namespace: owner.namespace) }
     let_it_be(:policy_project) { create(:project) }
     let_it_be(:policy_project_id) { GitlabSchema.id_from_object(policy_project) }
 
     let(:current_user) { owner }
 
-    subject { mutation.resolve(project_path: project.full_path, security_policy_project_id: policy_project_id) }
+    subject { mutation.resolve(full_path: container.full_path, security_policy_project_id: policy_project_id) }
 
-    context 'when permission is set for user' do
-      before do
-        stub_licensed_features(security_orchestration_policies: true)
-      end
+    shared_context 'assigns security policy project' do
+      context 'when licensed feature is available' do
+        before do
+          stub_licensed_features(security_orchestration_policies: true)
+        end
 
-      context 'when user is an owner of the project' do
-        it 'assigns the security policy project' do
-          result = subject
+        context 'when user is an owner of the container' do
+          before do
+            container.add_owner(owner)
+          end
 
-          expect(result[:errors]).to be_empty
-          expect(project.security_orchestration_policy_configuration).not_to be_nil
-          expect(project.security_orchestration_policy_configuration.security_policy_management_project).to eq(policy_project)
+          it 'assigns the security policy project' do
+            result = subject
+
+            expect(result[:errors]).to be_empty
+            expect(container.security_orchestration_policy_configuration).not_to be_nil
+            expect(container.security_orchestration_policy_configuration.security_policy_management_project).to eq(policy_project)
+          end
+        end
+
+        context 'when user is not an owner' do
+          let(:current_user) { maintainer }
+
+          before do
+            container.add_maintainer(maintainer)
+          end
+
+          it 'raises exception' do
+            expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+          end
         end
       end
 
-      context 'when user is not an owner' do
-        let(:current_user) { user }
+      context 'when policy_project_id is invalid' do
+        let_it_be(:policy_project_id) { 'invalid' }
 
+        it 'raises exception' do
+          expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+        end
+      end
+
+      context 'when feature is not licensed' do
         before do
-          project.add_maintainer(user)
+          stub_licensed_features(security_orchestration_policies: false)
         end
 
         it 'raises exception' do
@@ -44,21 +69,44 @@ RSpec.describe Mutations::SecurityPolicy::AssignSecurityPolicyProject do
       end
     end
 
-    context 'when policy_project_id is invalid' do
-      let_it_be(:policy_project_id) { 'invalid' }
+    context 'when both fullPath and projectPath are not provided' do
+      subject { mutation.resolve(security_policy_project_id: policy_project_id) }
+
+      before do
+        stub_licensed_features(security_orchestration_policies: true)
+      end
 
       it 'raises exception' do
-        expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+        expect { subject }.to raise_error(Gitlab::Graphql::Errors::ArgumentError)
       end
     end
 
-    context 'when feature is not licensed' do
-      before do
-        stub_licensed_features(security_orchestration_policies: false)
+    context 'for project' do
+      let(:container) { project }
+
+      it_behaves_like 'assigns security policy project'
+    end
+
+    context 'for namespace' do
+      let(:container) { namespace }
+
+      context 'when feature is enabled' do
+        before do
+          stub_feature_flags(group_level_security_policies: namespace)
+        end
+
+        it_behaves_like 'assigns security policy project'
       end
 
-      it 'raises exception' do
-        expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+      context 'when feature is disabled' do
+        before do
+          stub_licensed_features(security_orchestration_policies: true)
+          stub_feature_flags(group_level_security_policies: false)
+        end
+
+        it 'raises exception' do
+          expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+        end
       end
     end
   end

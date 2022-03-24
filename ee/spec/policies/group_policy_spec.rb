@@ -1934,4 +1934,62 @@ RSpec.describe GroupPolicy do
       expect_disallowed(*owner_permissions)
     end
   end
+
+  describe 'security complience policy' do
+    context 'when licensed feature is available' do
+      before do
+        stub_licensed_features(security_orchestration_policies: false)
+      end
+
+      context 'with developer or maintainer role' do
+        where(role: %w[maintainer developer])
+
+        with_them do
+          let(:current_user) { public_send(role) }
+
+          it { is_expected.to be_disallowed(:security_orchestration_policies) }
+          it { is_expected.to be_disallowed(:update_security_orchestration_policy_project) }
+        end
+      end
+
+      context 'with owner role' do
+        where(role: %w[owner])
+
+        with_them do
+          let(:current_user) { public_send(role) }
+
+          it { is_expected.to be_disallowed(:security_orchestration_policies) }
+          it { is_expected.to be_disallowed(:update_security_orchestration_policy_project) }
+        end
+      end
+    end
+
+    context 'when licensed feature is available' do
+      before do
+        stub_licensed_features(security_orchestration_policies: true)
+      end
+
+      context 'with developer or maintainer role' do
+        where(role: %w[maintainer developer])
+
+        with_them do
+          let(:current_user) { public_send(role) }
+
+          it { is_expected.to be_allowed(:security_orchestration_policies) }
+          it { is_expected.to be_disallowed(:update_security_orchestration_policy_project) }
+        end
+      end
+
+      context 'with owner role' do
+        where(role: %w[owner])
+
+        with_them do
+          let(:current_user) { public_send(role) }
+
+          it { is_expected.to be_allowed(:security_orchestration_policies) }
+          it { is_expected.to be_allowed(:update_security_orchestration_policy_project) }
+        end
+      end
+    end
+  end
 end
