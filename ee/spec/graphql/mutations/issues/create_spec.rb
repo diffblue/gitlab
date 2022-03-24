@@ -183,7 +183,7 @@ RSpec.describe Mutations::Issues::Create do
 
         context 'epics are unavailable' do
           it 'is unsuccessful' do
-            expect(resolved_mutation[:errors]).to contain_exactly("Couldn't find Epic")
+            expect(resolved_mutation[:errors]).to contain_exactly(/^Couldn't find Epic/)
           end
 
           it 'does not create an issue' do
