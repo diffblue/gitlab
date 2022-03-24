@@ -171,6 +171,10 @@ module EE
         enable :admin_protected_environment
       end
 
+      rule { auditor }.policy do
+        enable :view_productivity_analytics
+      end
+
       rule { owner | admin }.policy do
         enable :owner_access
       end

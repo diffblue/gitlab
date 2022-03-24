@@ -74,6 +74,16 @@ RSpec.describe Groups::Analytics::ProductivityAnalyticsController do
         let(:target_id) { 'g_analytics_productivity' }
       end
     end
+
+    context 'when user is an auditor' do
+      let(:current_user) { create(:user, :auditor) }
+
+      it 'allows access' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:success)
+      end
+    end
   end
 
   describe 'GET show.json' do
