@@ -1,0 +1,77 @@
+{
+  "session_details": {
+    "solved": false,
+    "session": "22612c147bb418c8.2570749403",
+    "session_created": "2021-08-29T23:13:03+00:00",
+    "check_answer": "2021-08-29T23:13:16+00:00",
+    "verified": "2021-08-30T00:19:32+00:00",
+    "attempted": true,
+    "security_level": 30,
+    "session_is_legit": false,
+    "previously_verified": true,
+    "session_timed_out": true,
+    "suppress_limited": false,
+    "theme_arg_invalid": false,
+    "suppressed": false,
+    "punishable_actioned": false,
+    "telltale_user": "eng-1362-game3-py-0.",
+    "failed_low_sec_validation": false,
+    "lowsec_error": null,
+    "lowsec_level_denied": null,
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36",
+    "ip_rep_list": null,
+    "game_number_limit_reached": false,
+    "user_language_shown": "en",
+    "telltale_list": [
+      "eng-1362",
+      "eng-1362-game3-py-0."
+    ],
+    "optional": null
+  },
+  "fingerprint": {
+    "browser_characteristics": {
+      "browser_name": "Chrome",
+      "browser_version": "92.0.4515.159",
+      "color_depth": 24,
+      "session_storage": false,
+      "indexed_database": false,
+      "canvas_fingerprint": 1652956012
+    },
+    "device_characteristics": {
+      "operating_system": null,
+      "operating_system_version": null,
+      "screen_resolution": [
+        1920,
+        1080
+      ],
+      "max_resolution_supported": [
+        1920,
+        1057
+      ],
+      "behavior": false,
+      "cpu_class": "unknown",
+      "platform": "MacIntel",
+      "touch_support": false,
+      "hardware_concurrency": 8
+    },
+    "user_preferences": {
+      "timezone_offset": -600
+    }
+  },
+  "ip_intelligence": {
+    "user_ip": "10.211.121.196",
+    "is_tor": false,
+    "is_vpn": true,
+    "is_proxy": true,
+    "is_bot": true,
+    "country": "AU",
+    "region": "New South Wales",
+    "city": "Sydney",
+    "isp": "Amazon.com",
+    "public_access_point": false,
+    "connection_type": "Data Center",
+    "latitude": "-38.85120035",
+    "longitude": "106.21220398",
+    "timezone": "Australia/Sydney"
+  }
+}

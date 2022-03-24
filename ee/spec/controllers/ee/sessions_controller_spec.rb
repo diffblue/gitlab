@@ -140,5 +140,40 @@ RSpec.describe SessionsController, :geo do
         expect(flash[:alert]).to include('You are not allowed to log in using password')
       end
     end
+
+    context 'with Arkose reCAPTCHA' do
+      before do
+        stub_feature_flags(arkose_labs_login_challenge: true)
+      end
+
+      let(:user) { create(:user) }
+      let(:session_token) { '22612c147bb418c8.2570749403' }
+      let(:user_params) { { login: user.username, password: user.password } }
+      let(:params) { { arkose_labs_token: session_token, user: user_params } }
+
+      context 'when the user was verified by Arkose' do
+        it 'successfully logs in a user when reCAPTCHA is solved' do
+          allow_next_instance_of(Arkose::UserVerificationService) do |instance|
+            allow(instance).to receive(:execute).and_return(true)
+          end
+          post(:create, params: params, session: {})
+
+          expect(subject.current_user).to eq user
+        end
+      end
+
+      context 'when the user was not verified by Arkose' do
+        it 'successfully logs in a user when reCAPTCHA is solved' do
+          allow_next_instance_of(Arkose::UserVerificationService) do |instance|
+            allow(instance).to receive(:execute).and_return(false)
+          end
+          post(:create, params: params, session: {})
+
+          expect(response).to render_template(:new)
+          expect(flash[:alert]).to include 'Login failed. Please retry from your primary device and network'
+          expect(subject.current_user).to be_nil
+        end
+      end
+    end
   end
 end

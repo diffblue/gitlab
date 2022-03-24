@@ -69,5 +69,35 @@ module EE
 
       super
     end
+
+    override :check_captcha
+    def check_captcha
+      if ::Feature.enabled?(:arkose_labs_login_challenge, default_enabled: :yaml)
+        check_arkose_captcha
+      else
+        super
+      end
+    end
+
+    def check_arkose_captcha
+      return unless user_params[:password].present?
+      return unless params[:arkose_labs_token].present?
+
+      user = ::User.find_by_username(user_params[:login])
+
+      return unless user.present?
+
+      if Arkose::UserVerificationService.new(session_token: params[:arkose_labs_token], userid: user.id).execute
+        increment_successful_login_captcha_counter
+      else
+        increment_failed_login_captcha_counter
+
+        self.resource = resource_class.new
+        flash[:alert] = 'Login failed. Please retry from your primary device and network'
+        flash.delete :recaptcha_error
+
+        respond_with_navigational(resource) { render :new }
+      end
+    end
   end
 end
