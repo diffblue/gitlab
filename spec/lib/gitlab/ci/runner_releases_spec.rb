@@ -9,7 +9,8 @@ RSpec.describe Gitlab::Ci::RunnerReleases do
     before do
       subject.reset!
 
-      allow(Gitlab::HTTP).to(receive(:try_get)) { mock_http_response(response) }.once
+      stub_application_setting(public_runner_releases_url: 'the release API URL')
+      allow(Gitlab::HTTP).to receive(:try_get).with('the release API URL').once { mock_http_response(response) }
     end
 
     def releases
@@ -39,7 +40,7 @@ RSpec.describe Gitlab::Ci::RunnerReleases do
           releases
 
           travel followup_request_interval do
-            expect(Gitlab::HTTP).to receive(:try_get) { mock_http_response(followup_response) }.once
+            expect(Gitlab::HTTP).to receive(:try_get).with('the release API URL').once { mock_http_response(followup_response) }
 
             expect(releases).to eq((expected_result || []) + [Gitlab::VersionInfo.new(14, 9, 2)])
           end

@@ -5,7 +5,6 @@ module Gitlab
     class RunnerReleases
       include Singleton
 
-      GITLAB_RUNNER_PUBLIC_REPO_RELEASES_URL = 'https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab-runner/releases'
       RELEASES_VALIDITY_PERIOD = 1.day
       RELEASES_VALIDITY_AFTER_ERROR_PERIOD = 5.seconds
 
@@ -18,7 +17,7 @@ module Gitlab
       def releases
         return @releases unless Time.current >= @expire_time
 
-        response = Gitlab::HTTP.try_get(GITLAB_RUNNER_PUBLIC_REPO_RELEASES_URL)
+        response = Gitlab::HTTP.try_get(::Gitlab::CurrentSettings.current_application_settings.public_runner_releases_url)
 
         @releases = response.success? ? extract_releases(response) : nil
         @expire_time = (@releases ? RELEASES_VALIDITY_PERIOD : RELEASES_VALIDITY_AFTER_ERROR_PERIOD).from_now
