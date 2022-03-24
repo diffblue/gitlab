@@ -26,10 +26,12 @@ export default class MergeRequestStore extends CEMergeRequestStore {
       data.create_vulnerability_feedback_dismissal_path;
     this.visualReviewAppAvailable = Boolean(data.visual_review_app_available);
     this.appUrl = gon && gon.gitlab_url;
+    this.licenseScanning = data.license_scanning;
 
     this.initBrowserPerformanceReport(data);
     this.initLoadPerformanceReport(data);
-    this.licenseScanning = data.license_scanning;
+    this.initLicenseComplianceReport(data);
+
     this.metricsReportsPath = data.metrics_reports_path;
 
     this.enabledReports = convertObjectPropsToCamelCase(data.enabled_reports);
@@ -116,6 +118,13 @@ export default class MergeRequestStore extends CEMergeRequestStore {
       improved: [],
       degraded: [],
       same: [],
+    };
+  }
+
+  initLicenseComplianceReport({ license_scanning_comparison_path, api_approvals_path }) {
+    this.licenseCompliance = {
+      license_scanning_comparison_path,
+      api_approvals_path,
     };
   }
 
