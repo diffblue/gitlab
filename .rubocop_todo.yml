@@ -125,11 +125,6 @@ Lint/StructNewOverride:
 Lint/UselessMethodDefinition:
   Enabled: false
 
-# Offense count: 14
-# Configuration parameters: IgnoredMethods.
-Metrics/PerceivedComplexity:
-  Max: 25
-
 # Offense count: 11
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: lowercase, uppercase
