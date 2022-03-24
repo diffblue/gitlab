@@ -1,0 +1,430 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`License Compliance extension expanded data with new licesnes displays allowed licenses 1`] = `
+<div
+  class="gl-py-3 gl-pl-7"
+  data-testid="extension-list-item"
+>
+  <div
+    class="gl-w-full"
+  >
+    <div
+      class="gl-w-full"
+    >
+      <div
+        class="gl-mb-2"
+      >
+        <strong>
+          Allowed
+        </strong>
+      </div>
+       
+      <div
+        class="gl-display-flex"
+      >
+        <!---->
+         
+        <div
+          class="gl-w-full"
+        >
+          <div
+            class="gl-flex-wrap gl-display-flex gl-w-full"
+          >
+            <div
+              class="gl-mr-4 gl-display-flex gl-align-items-center"
+            >
+              <p
+                class="gl-m-0"
+              >
+                Acceptable for use in this project
+              </p>
+            </div>
+             
+            <!---->
+             
+            <!---->
+             
+            <!---->
+             
+            <div
+              class="gl-ml-auto"
+            >
+              <!---->
+               
+              <!---->
+            </div>
+          </div>
+           
+          <!---->
+        </div>
+      </div>
+       
+      <ul
+        class="gl-m-0 gl-p-0 gl-list-style-none"
+      >
+        <li>
+          <div
+            class="gl-w-full gl-pl-6"
+            data-testid="child-content"
+          >
+            <!---->
+             
+            <div
+              class="gl-display-flex"
+            >
+              <div
+                class="gl-rounded-full gl-mr-3 gl-relative gl-p-2 gl-pl-0 gl-text-green-500"
+              >
+                <svg
+                  aria-label="Success "
+                  class="gl-display-block gl-icon s12"
+                  data-testid="status-success-icon"
+                  role="img"
+                >
+                  <use
+                    href="#status-success"
+                  />
+                </svg>
+              </div>
+               
+              <div
+                class="gl-w-full"
+              >
+                <div
+                  class="gl-flex-wrap gl-display-flex gl-w-full"
+                >
+                  <div
+                    class="gl-mr-4 gl-display-flex gl-align-items-center"
+                  >
+                    <p
+                      class="gl-m-0"
+                    />
+                  </div>
+                   
+                  <div>
+                    <a
+                      class="gl-link"
+                      href="https://opensource.org/licenses/ISC"
+                    >
+                      ISC License
+                    </a>
+                  </div>
+                   
+                  <div>
+                    <p
+                      class="gl-m-0"
+                    >
+                       
+                      Used by abbrev, anymatch
+                    </p>
+                  </div>
+                   
+                  <!---->
+                   
+                  <div
+                    class="gl-ml-auto"
+                  >
+                    <!---->
+                     
+                    <!---->
+                  </div>
+                </div>
+                 
+                <!---->
+              </div>
+            </div>
+             
+            <!---->
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`License Compliance extension expanded data with new licesnes displays denied licenses 1`] = `
+<div
+  class="gl-py-3 gl-pl-7 gl-border-b-solid gl-border-b-1 gl-border-gray-100"
+  data-testid="extension-list-item"
+>
+  <div
+    class="gl-w-full"
+  >
+    <div
+      class="gl-w-full"
+    >
+      <div
+        class="gl-mb-2"
+      >
+        <strong>
+          Denied
+        </strong>
+      </div>
+       
+      <div
+        class="gl-display-flex"
+      >
+        <!---->
+         
+        <div
+          class="gl-w-full"
+        >
+          <div
+            class="gl-flex-wrap gl-display-flex gl-w-full"
+          >
+            <div
+              class="gl-mr-4 gl-display-flex gl-align-items-center"
+            >
+              <p
+                class="gl-m-0"
+              >
+                Out-of-compliance with the project's policies and should be removed
+              </p>
+            </div>
+             
+            <!---->
+             
+            <!---->
+             
+            <!---->
+             
+            <div
+              class="gl-ml-auto"
+            >
+              <!---->
+               
+              <!---->
+            </div>
+          </div>
+           
+          <!---->
+        </div>
+      </div>
+       
+      <ul
+        class="gl-m-0 gl-p-0 gl-list-style-none"
+      >
+        <li>
+          <div
+            class="gl-w-full gl-pl-6"
+            data-testid="child-content"
+          >
+            <!---->
+             
+            <div
+              class="gl-display-flex"
+            >
+              <div
+                class="gl-rounded-full gl-mr-3 gl-relative gl-p-2 gl-pl-0 gl-text-red-500"
+              >
+                <svg
+                  aria-label="Failed "
+                  class="gl-display-block gl-icon s12"
+                  data-testid="status-failed-icon"
+                  role="img"
+                >
+                  <use
+                    href="#status-failed"
+                  />
+                </svg>
+              </div>
+               
+              <div
+                class="gl-w-full"
+              >
+                <div
+                  class="gl-flex-wrap gl-display-flex gl-w-full"
+                >
+                  <div
+                    class="gl-mr-4 gl-display-flex gl-align-items-center"
+                  >
+                    <p
+                      class="gl-m-0"
+                    />
+                  </div>
+                   
+                  <div>
+                    <a
+                      class="gl-link"
+                      href="https://opensource.org/licenses/Apache-2.0"
+                    >
+                      Apache License 2.0
+                    </a>
+                  </div>
+                   
+                  <div>
+                    <p
+                      class="gl-m-0"
+                    >
+                       
+                      Used by websocket-driver, websocket-extensions, xml-name-validator
+                    </p>
+                  </div>
+                   
+                  <!---->
+                   
+                  <div
+                    class="gl-ml-auto"
+                  >
+                    <!---->
+                     
+                    <!---->
+                  </div>
+                </div>
+                 
+                <!---->
+              </div>
+            </div>
+             
+            <!---->
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`License Compliance extension expanded data with new licesnes displays uncategorized licenses 1`] = `
+<div
+  class="gl-py-3 gl-pl-7 gl-border-b-solid gl-border-b-1 gl-border-gray-100"
+  data-testid="extension-list-item"
+>
+  <div
+    class="gl-w-full"
+  >
+    <div
+      class="gl-w-full"
+    >
+      <div
+        class="gl-mb-2"
+      >
+        <strong>
+          Uncategorized
+        </strong>
+      </div>
+       
+      <div
+        class="gl-display-flex"
+      >
+        <!---->
+         
+        <div
+          class="gl-w-full"
+        >
+          <div
+            class="gl-flex-wrap gl-display-flex gl-w-full"
+          >
+            <div
+              class="gl-mr-4 gl-display-flex gl-align-items-center"
+            >
+              <p
+                class="gl-m-0"
+              >
+                No policy matches this license
+              </p>
+            </div>
+             
+            <!---->
+             
+            <!---->
+             
+            <!---->
+             
+            <div
+              class="gl-ml-auto"
+            >
+              <!---->
+               
+              <!---->
+            </div>
+          </div>
+           
+          <!---->
+        </div>
+      </div>
+       
+      <ul
+        class="gl-m-0 gl-p-0 gl-list-style-none"
+      >
+        <li>
+          <div
+            class="gl-w-full gl-pl-6"
+            data-testid="child-content"
+          >
+            <!---->
+             
+            <div
+              class="gl-display-flex"
+            >
+              <div
+                class="gl-rounded-full gl-mr-3 gl-relative gl-p-2 gl-pl-0 gl-text-gray-500"
+              >
+                <svg
+                  aria-label="Notice "
+                  class="gl-display-block gl-icon s12"
+                  data-testid="status-alert-icon"
+                  role="img"
+                >
+                  <use
+                    href="#status-alert"
+                  />
+                </svg>
+              </div>
+               
+              <div
+                class="gl-w-full"
+              >
+                <div
+                  class="gl-flex-wrap gl-display-flex gl-w-full"
+                >
+                  <div
+                    class="gl-mr-4 gl-display-flex gl-align-items-center"
+                  >
+                    <p
+                      class="gl-m-0"
+                    />
+                  </div>
+                   
+                  <div>
+                    <a
+                      class="gl-link"
+                      href="http://opensource.linux-mirror.org/licenses/afl-2.1.txt"
+                    >
+                      Academic Free License v2.1
+                    </a>
+                  </div>
+                   
+                  <div>
+                    <p
+                      class="gl-m-0"
+                    >
+                       
+                      Used by json-schema
+                    </p>
+                  </div>
+                   
+                  <!---->
+                   
+                  <div
+                    class="gl-ml-auto"
+                  >
+                    <!---->
+                     
+                    <!---->
+                  </div>
+                </div>
+                 
+                <!---->
+              </div>
+            </div>
+             
+            <!---->
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+`;
