@@ -243,17 +243,21 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
         end
 
         context 'with created_before and created_after set' do
+          let(:created_after) { '2019-11-01' }
+          let(:created_before) { '2019-12-31' }
+
           date_range = '.js-daterange-picker'
 
           before do
-            visit "#{group_analytics_cycle_analytics_path(group)}?created_before=2019-12-31&created_after=2019-11-01"
+            visit "#{group_analytics_cycle_analytics_path(group)}?created_before=#{created_before}&created_after=#{created_after}"
           end
 
           it 'has the date range prepopulated' do
             element = page.find(date_range)
 
-            expect(element.find('.js-daterange-picker-from input').value).to eq '2019-11-01'
-            expect(element.find('.js-daterange-picker-to input').value).to eq '2019-12-31'
+            expect(element.find('.js-daterange-picker-from input').value).to eq created_after
+            expect(element.find('.js-daterange-picker-to input').value).to eq created_before
+
             expect(page.find('.js-tasks-by-type-chart')).to have_text(_("Showing data for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019") % { group_name: group.name })
           end
         end

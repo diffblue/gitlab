@@ -71,6 +71,22 @@ export const buildProjectFromDataset = (dataset) => {
 };
 
 /**
+ * Creates a new date object without time zone conversion.
+ *
+ * We use this method instead of `new Date(date)`.
+ * `new Date(date) will assume that the date string is UTC and it
+ * ant return different date depending on the user's time zone.
+ *
+ * @param {String} date - Date string.
+ * @returns {Date} - Date object.
+ */
+export const toLocalDate = (date) => {
+  const dateParts = date.split('-');
+
+  return new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+};
+
+/**
  * Creates an array of project objects from a json string. Returns null if no projects are present.
  *
  * @param {String} data - JSON encoded array of projects
@@ -117,8 +133,8 @@ export const buildCycleAnalyticsInitialData = ({
         }),
       )
     : null,
-  createdBefore: createdBefore ? new Date(createdBefore) : null,
-  createdAfter: createdAfter ? new Date(createdAfter) : null,
+  createdBefore: createdBefore ? toLocalDate(createdBefore) : null,
+  createdAfter: createdAfter ? toLocalDate(createdAfter) : null,
   selectedProjects: projects
     ? buildProjectsFromJSON(projects).map(convertObjectPropsToCamelCase)
     : null,
