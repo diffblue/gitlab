@@ -1,0 +1,6 @@
+---
+table_name: user_group_callouts
+classes:
+- Users::GroupCallout
+feature_categories: 
+description: 

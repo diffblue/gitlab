@@ -1,0 +1,6 @@
+---
+table_name: smartcard_identities
+classes:
+- SmartcardIdentity
+feature_categories: 
+description: 

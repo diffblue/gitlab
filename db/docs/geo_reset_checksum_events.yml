@@ -1,0 +1,6 @@
+---
+table_name: geo_reset_checksum_events
+classes:
+- Geo::ResetChecksumEvent
+feature_categories: 
+description: 

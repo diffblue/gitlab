@@ -1,0 +1,6 @@
+---
+table_name: redirect_routes
+classes:
+- RedirectRoute
+feature_categories: 
+description: 

@@ -1,0 +1,6 @@
+---
+table_name: oauth_openid_requests
+classes:
+- Doorkeeper::OpenidConnect::Request
+feature_categories: 
+description: 

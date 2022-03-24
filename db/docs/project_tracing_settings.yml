@@ -1,0 +1,6 @@
+---
+table_name: project_tracing_settings
+classes:
+- ProjectTracingSetting
+feature_categories: 
+description: 

@@ -1,0 +1,6 @@
+---
+table_name: board_group_recent_visits
+classes:
+- BoardGroupRecentVisit
+feature_categories: 
+description: 

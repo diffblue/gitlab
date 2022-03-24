@@ -1,0 +1,6 @@
+---
+table_name: ci_pipelines_config
+classes:
+- Ci::PipelineConfig
+feature_categories: 
+description: 

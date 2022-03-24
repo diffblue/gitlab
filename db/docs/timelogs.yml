@@ -1,0 +1,6 @@
+---
+table_name: timelogs
+classes:
+- Timelog
+feature_categories: 
+description: 

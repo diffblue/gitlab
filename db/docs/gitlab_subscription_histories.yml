@@ -1,0 +1,6 @@
+---
+table_name: gitlab_subscription_histories
+classes:
+- GitlabSubscriptionHistory
+feature_categories: 
+description: 

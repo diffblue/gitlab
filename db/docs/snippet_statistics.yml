@@ -1,0 +1,6 @@
+---
+table_name: snippet_statistics
+classes:
+- SnippetStatistics
+feature_categories: 
+description: 

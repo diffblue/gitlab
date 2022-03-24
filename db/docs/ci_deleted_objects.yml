@@ -1,0 +1,6 @@
+---
+table_name: ci_deleted_objects
+classes:
+- Ci::DeletedObject
+feature_categories: 
+description: 

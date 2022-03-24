@@ -1,0 +1,6 @@
+---
+table_name: clusters_applications_crossplane
+classes:
+- Clusters::Applications::Crossplane
+feature_categories: 
+description: 

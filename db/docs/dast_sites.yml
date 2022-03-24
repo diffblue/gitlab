@@ -1,0 +1,6 @@
+---
+table_name: dast_sites
+classes:
+- DastSite
+feature_categories: 
+description: 

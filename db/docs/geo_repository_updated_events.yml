@@ -1,0 +1,6 @@
+---
+table_name: geo_repository_updated_events
+classes:
+- Geo::RepositoryUpdatedEvent
+feature_categories: 
+description: 

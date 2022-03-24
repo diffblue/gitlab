@@ -1,0 +1,6 @@
+---
+table_name: ci_project_monthly_usages
+classes:
+- Ci::Minutes::ProjectMonthlyUsage
+feature_categories: 
+description: 

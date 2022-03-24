@@ -1,0 +1,6 @@
+---
+table_name: lfs_objects_projects
+classes:
+- LfsObjectsProject
+feature_categories: 
+description: 

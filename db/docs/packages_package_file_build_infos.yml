@@ -1,0 +1,6 @@
+---
+table_name: packages_package_file_build_infos
+classes:
+- Packages::PackageFileBuildInfo
+feature_categories: 
+description: 

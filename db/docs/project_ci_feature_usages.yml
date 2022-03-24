@@ -1,0 +1,6 @@
+---
+table_name: project_ci_feature_usages
+classes:
+- Projects::CiFeatureUsage
+feature_categories: 
+description: 

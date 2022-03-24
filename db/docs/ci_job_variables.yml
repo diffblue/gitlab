@@ -1,0 +1,6 @@
+---
+table_name: ci_job_variables
+classes:
+- Ci::JobVariable
+feature_categories: 
+description: 

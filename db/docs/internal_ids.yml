@@ -1,0 +1,6 @@
+---
+table_name: internal_ids
+classes:
+- InternalId
+feature_categories: 
+description: 

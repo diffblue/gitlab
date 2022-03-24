@@ -1,0 +1,6 @@
+---
+table_name: security_trainings
+classes:
+- Security::Training
+feature_categories: 
+description: 

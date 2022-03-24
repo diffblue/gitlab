@@ -1,0 +1,6 @@
+---
+table_name: prometheus_alert_events
+classes:
+- PrometheusAlertEvent
+feature_categories: 
+description: 

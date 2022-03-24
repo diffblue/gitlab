@@ -1,0 +1,6 @@
+---
+table_name: ci_job_token_project_scope_links
+classes:
+- Ci::JobToken::ProjectScopeLink
+feature_categories: 
+description: 

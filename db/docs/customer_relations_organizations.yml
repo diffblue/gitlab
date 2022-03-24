@@ -1,0 +1,6 @@
+---
+table_name: customer_relations_organizations
+classes:
+- CustomerRelations::Organization
+feature_categories: 
+description: 

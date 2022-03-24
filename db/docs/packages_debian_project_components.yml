@@ -1,0 +1,6 @@
+---
+table_name: packages_debian_project_components
+classes:
+- Packages::Debian::ProjectComponent
+feature_categories: 
+description: 

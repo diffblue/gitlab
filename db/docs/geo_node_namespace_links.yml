@@ -1,0 +1,6 @@
+---
+table_name: geo_node_namespace_links
+classes:
+- GeoNodeNamespaceLink
+feature_categories: 
+description: 

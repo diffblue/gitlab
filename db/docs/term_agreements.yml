@@ -1,0 +1,6 @@
+---
+table_name: term_agreements
+classes:
+- TermAgreement
+feature_categories: 
+description: 

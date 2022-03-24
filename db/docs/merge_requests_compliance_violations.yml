@@ -1,0 +1,6 @@
+---
+table_name: merge_requests_compliance_violations
+classes:
+- MergeRequests::ComplianceViolation
+feature_categories: 
+description: 

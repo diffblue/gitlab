@@ -1,0 +1,6 @@
+---
+table_name: packages_helm_file_metadata
+classes:
+- Packages::Helm::FileMetadatum
+feature_categories: 
+description: 

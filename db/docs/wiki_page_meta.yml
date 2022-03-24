@@ -1,0 +1,6 @@
+---
+table_name: wiki_page_meta
+classes:
+- WikiPage::Meta
+feature_categories: 
+description: 

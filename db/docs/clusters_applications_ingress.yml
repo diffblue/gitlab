@@ -1,0 +1,6 @@
+---
+table_name: clusters_applications_ingress
+classes:
+- Clusters::Applications::Ingress
+feature_categories: 
+description: 

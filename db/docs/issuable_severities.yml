@@ -1,0 +1,6 @@
+---
+table_name: issuable_severities
+classes:
+- IssuableSeverity
+feature_categories: 
+description: 

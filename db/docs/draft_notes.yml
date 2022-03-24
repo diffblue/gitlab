@@ -1,0 +1,6 @@
+---
+table_name: draft_notes
+classes:
+- DraftNote
+feature_categories: 
+description: 

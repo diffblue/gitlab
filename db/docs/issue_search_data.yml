@@ -1,0 +1,6 @@
+---
+table_name: issue_search_data
+classes:
+- Issues::SearchData
+feature_categories: 
+description: 

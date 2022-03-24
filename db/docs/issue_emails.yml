@@ -1,0 +1,6 @@
+---
+table_name: issue_emails
+classes:
+- Issue::Email
+feature_categories: 
+description: 

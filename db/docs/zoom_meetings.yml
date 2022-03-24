@@ -1,0 +1,6 @@
+---
+table_name: zoom_meetings
+classes:
+- ZoomMeeting
+feature_categories: 
+description: 

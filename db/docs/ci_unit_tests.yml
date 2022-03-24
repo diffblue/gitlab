@@ -1,0 +1,6 @@
+---
+table_name: ci_unit_tests
+classes:
+- Ci::UnitTest
+feature_categories: 
+description: 

@@ -1,0 +1,6 @@
+---
+table_name: namespace_limits
+classes:
+- NamespaceLimit
+feature_categories: 
+description: 

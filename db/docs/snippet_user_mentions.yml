@@ -1,0 +1,6 @@
+---
+table_name: snippet_user_mentions
+classes:
+- SnippetUserMention
+feature_categories: 
+description: 

@@ -1,0 +1,6 @@
+---
+table_name: ci_resources
+classes:
+- Ci::Resource
+feature_categories: 
+description: 

@@ -1,0 +1,6 @@
+---
+table_name: product_analytics_events_experimental
+classes:
+- ProductAnalyticsEvent
+feature_categories: 
+description: 

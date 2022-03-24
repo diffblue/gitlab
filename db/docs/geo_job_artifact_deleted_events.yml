@@ -1,0 +1,6 @@
+---
+table_name: geo_job_artifact_deleted_events
+classes:
+- Geo::JobArtifactDeletedEvent
+feature_categories: 
+description: 

@@ -1,0 +1,6 @@
+---
+table_name: namespace_admin_notes
+classes:
+- Namespace::AdminNote
+feature_categories: 
+description: 

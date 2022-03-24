@@ -1,0 +1,6 @@
+---
+table_name: design_user_mentions
+classes:
+- DesignUserMention
+feature_categories: 
+description: 

@@ -1,0 +1,6 @@
+---
+table_name: operations_strategies_user_lists
+classes:
+- Operations::FeatureFlags::StrategyUserList
+feature_categories: 
+description: 

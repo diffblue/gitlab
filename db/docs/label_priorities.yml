@@ -1,0 +1,6 @@
+---
+table_name: label_priorities
+classes:
+- LabelPriority
+feature_categories: 
+description: 

@@ -1,0 +1,6 @@
+---
+table_name: deployment_approvals
+classes:
+- Deployments::Approval
+feature_categories: 
+description: 

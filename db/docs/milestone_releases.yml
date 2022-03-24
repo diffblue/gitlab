@@ -1,0 +1,6 @@
+---
+table_name: milestone_releases
+classes:
+- MilestoneRelease
+feature_categories: 
+description: 

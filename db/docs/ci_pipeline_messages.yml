@@ -1,0 +1,6 @@
+---
+table_name: ci_pipeline_messages
+classes:
+- Ci::PipelineMessage
+feature_categories: 
+description: 

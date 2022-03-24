@@ -1,0 +1,6 @@
+---
+table_name: pool_repositories
+classes:
+- PoolRepository
+feature_categories: 
+description: 

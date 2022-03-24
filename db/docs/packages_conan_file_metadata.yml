@@ -1,0 +1,6 @@
+---
+table_name: packages_conan_file_metadata
+classes:
+- Packages::Conan::FileMetadatum
+feature_categories: 
+description: 

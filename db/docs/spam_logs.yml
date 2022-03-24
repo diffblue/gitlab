@@ -1,0 +1,7 @@
+---
+table_name: spam_logs
+classes:
+- SpamLog
+feature_categories:
+- not_owned
+description: 

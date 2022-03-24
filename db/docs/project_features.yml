@@ -1,0 +1,6 @@
+---
+table_name: project_features
+classes:
+- ProjectFeature
+feature_categories: 
+description: 

@@ -1,0 +1,13 @@
+---
+table_name: application_settings
+classes:
+- ApplicationSetting
+feature_categories:
+- continuous_integration
+- integrations
+- metrics
+- not_owned
+- pages
+- service_ping
+- source_code_management
+description: 

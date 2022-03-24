@@ -1,0 +1,6 @@
+---
+table_name: users_security_dashboard_projects
+classes:
+- UsersSecurityDashboardProject
+feature_categories: 
+description: 

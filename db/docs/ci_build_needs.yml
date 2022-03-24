@@ -1,0 +1,6 @@
+---
+table_name: ci_build_needs
+classes:
+- Ci::BuildNeed
+feature_categories: 
+description: 

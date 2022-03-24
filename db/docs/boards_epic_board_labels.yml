@@ -1,0 +1,6 @@
+---
+table_name: boards_epic_board_labels
+classes:
+- Boards::EpicBoardLabel
+feature_categories: 
+description: 

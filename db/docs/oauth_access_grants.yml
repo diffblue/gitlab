@@ -1,0 +1,7 @@
+---
+table_name: oauth_access_grants
+classes:
+- Doorkeeper::AccessGrant
+- OauthAccessGrant
+feature_categories: 
+description: 

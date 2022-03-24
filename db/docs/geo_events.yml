@@ -1,0 +1,6 @@
+---
+table_name: geo_events
+classes:
+- Geo::Event
+feature_categories: 
+description: 

@@ -1,0 +1,6 @@
+---
+table_name: description_versions
+classes:
+- DescriptionVersion
+feature_categories: 
+description: 

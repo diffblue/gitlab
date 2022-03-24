@@ -1,0 +1,6 @@
+---
+table_name: board_user_preferences
+classes:
+- BoardUserPreference
+feature_categories: 
+description: 

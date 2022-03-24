@@ -1,0 +1,6 @@
+---
+table_name: packages_composer_cache_files
+classes:
+- Packages::Composer::CacheFile
+feature_categories: 
+description: 

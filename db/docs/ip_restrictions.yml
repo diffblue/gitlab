@@ -1,0 +1,6 @@
+---
+table_name: ip_restrictions
+classes:
+- IpRestriction
+feature_categories: 
+description: 

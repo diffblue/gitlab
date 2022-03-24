@@ -1,0 +1,6 @@
+---
+table_name: clusters_applications_elastic_stacks
+classes:
+- Clusters::Applications::ElasticStack
+feature_categories: 
+description: 

@@ -1,0 +1,6 @@
+---
+table_name: raw_usage_data
+classes:
+- RawUsageData
+feature_categories: 
+description: 

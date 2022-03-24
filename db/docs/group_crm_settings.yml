@@ -1,0 +1,6 @@
+---
+table_name: group_crm_settings
+classes:
+- Group::CrmSettings
+feature_categories: 
+description: 

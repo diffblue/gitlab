@@ -1,0 +1,6 @@
+---
+table_name: group_custom_attributes
+classes:
+- GroupCustomAttribute
+feature_categories: 
+description: 

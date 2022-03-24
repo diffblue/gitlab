@@ -1,0 +1,6 @@
+---
+table_name: dast_site_tokens
+classes:
+- DastSiteToken
+feature_categories: 
+description: 

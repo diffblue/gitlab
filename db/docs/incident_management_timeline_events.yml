@@ -1,0 +1,6 @@
+---
+table_name: incident_management_timeline_events
+classes:
+- IncidentManagement::TimelineEvent
+feature_categories: 
+description: 

@@ -1,0 +1,6 @@
+---
+table_name: ci_freeze_periods
+classes:
+- Ci::FreezePeriod
+feature_categories: 
+description: 

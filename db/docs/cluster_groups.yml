@@ -1,0 +1,6 @@
+---
+table_name: cluster_groups
+classes:
+- Clusters::Group
+feature_categories: 
+description: 

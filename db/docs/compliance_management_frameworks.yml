@@ -1,0 +1,6 @@
+---
+table_name: compliance_management_frameworks
+classes:
+- ComplianceManagement::Framework
+feature_categories: 
+description: 

@@ -1,0 +1,6 @@
+---
+table_name: upload_states
+classes:
+- Geo::UploadState
+feature_categories: 
+description: 

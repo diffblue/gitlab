@@ -1,0 +1,6 @@
+---
+table_name: elastic_reindexing_subtasks
+classes:
+- Elastic::ReindexingSubtask
+feature_categories: 
+description: 

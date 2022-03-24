@@ -1,0 +1,6 @@
+---
+table_name: banned_users
+classes:
+- Users::BannedUser
+feature_categories: 
+description: 

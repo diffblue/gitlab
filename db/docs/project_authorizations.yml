@@ -1,0 +1,6 @@
+---
+table_name: project_authorizations
+classes:
+- ProjectAuthorization
+feature_categories: 
+description: 

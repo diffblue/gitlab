@@ -1,0 +1,6 @@
+---
+table_name: ci_pipeline_variables
+classes:
+- Ci::PipelineVariable
+feature_categories: 
+description: 

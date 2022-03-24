@@ -1,0 +1,6 @@
+---
+table_name: geo_event_log
+classes:
+- Geo::EventLog
+feature_categories: 
+description: 

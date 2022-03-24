@@ -1,0 +1,6 @@
+---
+table_name: incident_management_escalation_rules
+classes:
+- IncidentManagement::EscalationRule
+feature_categories: 
+description: 
