@@ -38,7 +38,7 @@ RSpec.describe GitlabSchema.types['SubscriptionFutureEntry'], :enable_admin_mode
 
       let_it_be(:subscription) do
         {
-          'type' => License::CLOUD_LICENSE_TYPE,
+          'type' => License::ONLINE_CLOUD_TYPE,
           'plan' => 'ultimate',
           'name' => 'User Example',
           'email' => 'user@example.com',
@@ -54,7 +54,7 @@ RSpec.describe GitlabSchema.types['SubscriptionFutureEntry'], :enable_admin_mode
       describe 'type' do
         let(:field_name) { :type }
 
-        it { is_expected.to eq(License::CLOUD_LICENSE_TYPE) }
+        it { is_expected.to eq(License::ONLINE_CLOUD_TYPE) }
       end
 
       describe 'plan' do

@@ -217,7 +217,7 @@ RSpec.describe 'Admin views Subscription', :js do
 
       it 'shows the appropriate license type' do
         page.within(find('[data-testid="subscription-cell-type"]', match: :first)) do
-          expect(page).to have_content('Cloud license')
+          expect(page).to have_content('Online license')
         end
       end
     end
