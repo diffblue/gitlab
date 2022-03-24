@@ -21328,9 +21328,6 @@ msgstr ""
 msgid "JiraService|Using Jira for issue tracking?"
 msgstr ""
 
-msgid "JiraService|View Jira issues in GitLab"
-msgstr ""
-
 msgid "JiraService|Warning: All GitLab users with access to this GitLab project can view all issues from the Jira project you select."
 msgstr ""
 
