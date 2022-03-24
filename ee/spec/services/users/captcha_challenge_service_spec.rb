@@ -1,0 +1,84 @@
+# frozen_string_literal: true
+
+require 'spec_helper'
+
+RSpec.describe Users::CaptchaChallengeService do
+  describe '#execute' do
+    let_it_be_with_reload(:user) { create(:user) }
+    let_it_be(:request_ip) { '127.0.0.1' }
+
+    let(:should_challenge?) { true }
+    let(:result) { { result: should_challenge? } }
+
+    subject { Users::CaptchaChallengeService.new(user, request_ip).execute }
+
+    context 'when feature flag arkose_labs_login_challenge is disabled' do
+      let(:should_challenge?) { false }
+
+      before do
+        stub_feature_flags(arkose_labs_login_challenge: false)
+      end
+
+      it { is_expected.to eq(result) }
+    end
+
+    context 'when feature flag arkose_labs_login_challenge is enabled' do
+      context 'when the user has never logged in previously' do
+        before do
+          user.last_sign_in_at = nil
+        end
+
+        it { is_expected.to eq(result) }
+      end
+
+      context 'when the user has not logged in successfully in more than 3 months' do
+        before do
+          user.last_sign_in_at = Date.today - 4.months
+        end
+
+        it { is_expected.to eq(result) }
+      end
+
+      context 'when the user has 3 failed login attempts' do
+        before do
+          user.last_sign_in_at = Date.today - 2.months
+          user.failed_attempts = 3
+        end
+
+        it { is_expected.to eq(result) }
+      end
+
+      context 'when the IP address on this login attempt is different than the last successful login' do
+        before do
+          user.last_sign_in_ip = '192.168.1.1'
+        end
+
+        it { is_expected.to eq(result) }
+      end
+
+      context 'when the user has logged in previously in less than 3 months' do
+        before do
+          user.last_sign_in_at = Date.today - 2.months
+        end
+
+        context 'when the IP address on this login attempt is the same than the last successful login' do
+          let(:should_challenge?) { false }
+
+          before do
+            user.last_sign_in_ip = request_ip
+          end
+
+          it { is_expected.to eq(result) }
+        end
+
+        context 'when The IP address on this login attempt is different than the last successful login' do
+          before do
+            user.last_sign_in_ip = '192.168.1.1'
+          end
+
+          it { is_expected.to eq(result) }
+        end
+      end
+    end
+  end
+end
