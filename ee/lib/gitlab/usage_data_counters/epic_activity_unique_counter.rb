@@ -35,6 +35,7 @@ module Gitlab
       EPIC_TASK_CHECKED = 'project_management_users_checking_epic_task'
       EPIC_TASK_UNCHECKED = 'project_management_users_unchecking_epic_task'
       EPIC_CROSS_REFERENCED = 'g_project_management_epic_cross_referenced'
+      EPIC_RELATED_ADDED = 'g_project_management_epic_related_added'
 
       class << self
         def track_epic_created_action(author:)
@@ -147,6 +148,10 @@ module Gitlab
 
         def track_epic_cross_referenced(author:)
           track_unique_action(EPIC_CROSS_REFERENCED, author)
+        end
+
+        def track_epic_related_added(author:)
+          track_unique_action(EPIC_RELATED_ADDED, author)
         end
 
         private
