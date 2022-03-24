@@ -9,7 +9,6 @@ body.gl-dark {
   --gray-900: #fafafa;
   --green-100: #0d532a;
   --green-700: #91d4a8;
-  --indigo-900-alpha-008: rgba(235, 235, 250, 0.08);
   --gl-text-color: #fafafa;
   --border-color: #4f4f4f;
   --black: #fff;
@@ -1073,7 +1072,7 @@ input {
   margin: 0 auto;
 }
 .nav-sidebar.sidebar-collapsed-desktop li.active:not(.fly-out-top-item) > a {
-  background-color: rgba(41, 41, 97, 0.08);
+  background-color: var(--nav-active-bg);
 }
 .nav-sidebar a {
   text-decoration: none;
@@ -1104,7 +1103,7 @@ input {
   font-weight: 600;
 }
 .nav-sidebar li.active:not(.fly-out-top-item) > a:not(.has-sub-items) {
-  background-color: rgba(41, 41, 97, 0.08);
+  background-color: var(--nav-active-bg);
 }
 .nav-sidebar ul {
   padding-left: 0;
@@ -1265,7 +1264,7 @@ input {
   .nav-sidebar:not(.sidebar-expanded-mobile)
     li.active:not(.fly-out-top-item)
     > a {
-    background-color: rgba(41, 41, 97, 0.08);
+    background-color: var(--nav-active-bg);
   }
   .nav-sidebar:not(.sidebar-expanded-mobile) .context-header {
     height: 60px;
@@ -1739,7 +1738,6 @@ body.gl-dark {
   --indigo-800: #d1d1f0;
   --indigo-900: #ebebfa;
   --indigo-950: #f7f7ff;
-  --indigo-900-alpha-008: rgba(235, 235, 250, 0.08);
   --purple-50: #232150;
   --purple-100: #2f2a6b;
   --purple-200: #453894;
@@ -1761,6 +1759,7 @@ body.gl-dark {
   --white: #333;
   --black: #fff;
   --svg-status-bg: #333;
+  --nav-active-bg: rgba(255, 255, 255, 0.08);
 }
 .nav-sidebar li a {
   color: var(--gray-600);
@@ -1769,7 +1768,7 @@ body.gl-dark {
   box-shadow: none;
 }
 .nav-sidebar li.active:not(.fly-out-top-item) > a:not(.has-sub-items) {
-  background-color: var(--indigo-900-alpha-008);
+  background-color: var(--nav-active-bg);
 }
 body.gl-dark {
   --gl-theme-accent: #868686;
@@ -1972,7 +1971,6 @@ body.gl-dark {
   --indigo-800: #d1d1f0;
   --indigo-900: #ebebfa;
   --indigo-950: #f7f7ff;
-  --indigo-900-alpha-008: rgba(235, 235, 250, 0.08);
   --purple-50: #232150;
   --purple-100: #2f2a6b;
   --purple-200: #453894;
@@ -1994,6 +1992,7 @@ body.gl-dark {
   --white: #333;
   --black: #fff;
   --svg-status-bg: #333;
+  --nav-active-bg: rgba(255, 255, 255, 0.08);
 }
 .tab-width-8 {
   -moz-tab-size: 8;
