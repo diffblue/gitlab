@@ -506,6 +506,10 @@ span.idiff {
   text-indent: -$grid-size * 2;
 }
 
+.blob-viewer .code-navigation-popover .code {
+  text-indent: $grid-size * 2;
+}
+
 .tree-item-link {
   &:not(.is-submodule) {
     span {

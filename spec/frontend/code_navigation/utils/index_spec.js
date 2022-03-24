@@ -45,6 +45,7 @@ describe('addInteractionClass', () => {
     ${0} | ${0} | ${0}
     ${0} | ${8} | ${2}
     ${1} | ${0} | ${0}
+    ${1} | ${0} | ${0}
   `(
     'it sets code navigation attributes for line $line and character $char',
     ({ line, char, index }) => {
@@ -55,4 +56,19 @@ describe('addInteractionClass', () => {
       );
     },
   );
+
+  it('wraps text nodes and spaces', () => {
+    setFixtures(
+      '<div data-path="index.js"><div class="blob-content"><div id="LC1" class="line"> Text </div></div></div>',
+    );
+
+    addInteractionClass('index.js', { start_line: 0, start_char: 0 }, true);
+
+    const spans = document.querySelectorAll(`#LC1 span`);
+
+    expect(spans.length).toBe(3);
+    expect(spans[0].textContent).toBe(' ');
+    expect(spans[1].textContent).toBe('Text');
+    expect(spans[2].textContent).toBe(' ');
+  });
 });
