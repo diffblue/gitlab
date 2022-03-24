@@ -18,6 +18,8 @@ module EE
         feature_category :license_compliance, [:licenses]
         feature_category :vulnerability_management, [:security]
         feature_category :code_quality, [:codequality_report]
+
+        urgency :low, [:codequality_report]
       end
 
       def security
