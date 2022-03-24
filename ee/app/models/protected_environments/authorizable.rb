@@ -25,7 +25,7 @@ module ProtectedEnvironments
       return false unless user
       return true if user.admin? # rubocop: disable Cop/UserAdmin
       return user.id == user_id if user_type?
-      return group.member?(user) if group_type?
+      return group.users.exists?(user.id) if group_type?
 
       protected_environment.container_access_level(user) >= access_level
     end
