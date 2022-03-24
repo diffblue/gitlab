@@ -17,7 +17,7 @@ RSpec.describe 'Every metric definition' do
   let(:usage_ping_key_paths) do
     parse_usage_ping_keys(usage_ping)
       .flatten
-      .reject { |v| v =~ Regexp.union(ignored_usage_ping_key_patterns) }
+      .grep_v(Regexp.union(ignored_usage_ping_key_patterns))
       .sort
   end
 
@@ -27,7 +27,6 @@ RSpec.describe 'Every metric definition' do
       mock_ci
       mock_monitoring
       user_auth_by_provider
-      templates_gitlab_slack_application_active
       p_ci_templates_5_min_production_app
       p_ci_templates_aws_cf_deploy_ec2
       p_ci_templates_auto_devops_build
