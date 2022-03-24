@@ -53,6 +53,7 @@ module EE
         mount ::API::Iterations
         mount ::API::GroupRepositoryStorageMoves
         mount ::API::Ci::Minutes
+        mount ::API::CaptchaCheck
 
         mount ::API::Internal::AppSec::Dast::SiteValidations
         mount ::API::Internal::UpcomingReconciliations
