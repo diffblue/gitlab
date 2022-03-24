@@ -32394,6 +32394,9 @@ msgstr ""
 msgid "Runners|Runner has never contacted this instance"
 msgstr ""
 
+msgid "Runners|Runner is locked and available for currently assigned projects only. Only administrators can change the assigned projects."
+msgstr ""
+
 msgid "Runners|Runner is offline; last contact was %{runner_contact} ago"
 msgstr ""
 
@@ -32484,7 +32487,7 @@ msgstr ""
 msgid "Runners|Use the runner for jobs without tags, in addition to tagged jobs."
 msgstr ""
 
-msgid "Runners|Use the runner for the currently assigned projects only."
+msgid "Runners|Use the runner for the currently assigned projects only. Only administrators can change the assigned projects."
 msgstr ""
 
 msgid "Runners|Use the runner on pipelines for protected branches only."
@@ -32509,9 +32512,6 @@ msgid "Runners|You are about to change this instance runner to a project runner.
 msgstr ""
 
 msgid "Runners|You can set up a specific runner to be used by multiple projects but you cannot make this a shared runner."
-msgstr ""
-
-msgid "Runners|You cannot assign to other projects"
 msgstr ""
 
 msgid "Runners|You have used %{quotaUsed} out of %{quotaLimit} of your shared Runners pipeline minutes."
