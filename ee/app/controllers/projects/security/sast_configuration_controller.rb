@@ -9,6 +9,7 @@ module Projects
       alias_method :vulnerable, :project
 
       feature_category :static_application_security_testing
+      urgency :low
 
       def show
       end
