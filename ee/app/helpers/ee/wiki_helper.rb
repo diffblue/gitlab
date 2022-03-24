@@ -13,5 +13,12 @@ module EE
         super
       end
     end
+
+    override :wiki_page_render_api_endpoint
+    def wiki_page_render_api_endpoint(page)
+      return super if page.wiki.is_a?(ProjectWiki)
+
+      api_v4_groups_wikis_path(wiki_page_render_api_endpoint_params(page))
+    end
   end
 end
