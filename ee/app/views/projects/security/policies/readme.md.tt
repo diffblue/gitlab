@@ -1,4 +1,4 @@
-# Security Policy Project for <%= @project.name %>
+# Security Policy Project for <%= @container.name %>
 
 This project is automatically generated to manage security policies for the project.
 
@@ -35,7 +35,7 @@ You can read more about the format and policies schema in the [documentation](ht
 
 ## Default branch protection settings
 
-This project is preconfigured with the default branch set as a protected branch, and only [project](<%= @project.web_url %>)
-maintainers/owners have permission to merge into that branch. This overrides any default branch protection both at the
+This project is preconfigured with the default branch set as a protected branch, and only maintainers/owners of
+[<%= @container.name %>](<%= @container.web_url %>) have permission to merge into that branch. This overrides any default branch protection both at the
 [group level](https://docs.gitlab.com/ee/user/group/index.html#change-the-default-branch-protection-of-a-group) and at the
 [instance level](https://docs.gitlab.com/ee/user/admin_area/settings/visibility_and_access_controls.html#default-branch-protection).

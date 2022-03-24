@@ -5,13 +5,14 @@ module EE
     module CreateService
       extend ::Gitlab::Utils::Override
 
-      attr_reader :security_policy_target_project_id
+      attr_reader :security_policy_target_project_id, :security_policy_target_namespace_id
 
       override :initialize
       def initialize(user, params)
         super
 
         @security_policy_target_project_id = @params.delete(:security_policy_target_project_id)
+        @security_policy_target_namespace_id = @params.delete(:security_policy_target_namespace_id)
       end
 
       override :execute
@@ -66,12 +67,19 @@ module EE
       end
 
       def create_security_policy_configuration_if_exists
-        return unless security_policy_target_project_id.present?
+        security_policy_target = find_security_policy_target
+        return if security_policy_target.blank?
 
-        if (security_policy_target_project = ::Project.find(security_policy_target_project_id))
-          ::Security::Orchestration::AssignService
-            .new(security_policy_target_project, current_user, policy_project_id: project.id)
+        ::Security::Orchestration::AssignService
+            .new(container: security_policy_target, current_user: current_user, params: { policy_project_id: project.id })
             .execute
+      end
+
+      def find_security_policy_target
+        if security_policy_target_project_id.present?
+          ::Project.find_by_id(security_policy_target_project_id)
+        elsif security_policy_target_namespace_id.present?
+          ::Namespace.find_by_id(security_policy_target_namespace_id)
         end
       end
 

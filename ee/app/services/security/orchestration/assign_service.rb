@@ -2,7 +2,7 @@
 
 module Security
   module Orchestration
-    class AssignService < ::BaseService
+    class AssignService < ::BaseContainerService
       def execute
         res = create_or_update_security_policy_configuration
 
@@ -11,7 +11,7 @@ module Security
       rescue ActiveRecord::RecordNotFound => _
         error(_('Policy project doesn\'t exist'))
       rescue ActiveRecord::RecordInvalid => _
-        error(_('Couldn\'t assign policy to project'))
+        error(_('Couldn\'t assign policy to project or group'))
       end
 
       private
@@ -24,18 +24,18 @@ module Security
         policy_project = Project.find(policy_project_id)
 
         if has_existing_policy?
-          project.security_orchestration_policy_configuration.update!(
+          container.security_orchestration_policy_configuration.update!(
             security_policy_management_project_id: policy_project.id
           )
         else
-          project.create_security_orchestration_policy_configuration! do |p|
+          container.create_security_orchestration_policy_configuration! do |p|
             p.security_policy_management_project_id = policy_project.id
           end
         end
       end
 
       def unassign_policy_project
-        project.security_orchestration_policy_configuration.delete
+        container.security_orchestration_policy_configuration.delete
       end
 
       def success
@@ -47,7 +47,7 @@ module Security
       end
 
       def has_existing_policy?
-        project.security_orchestration_policy_configuration.present?
+        container.security_orchestration_policy_configuration.present?
       end
 
       def policy_project_id

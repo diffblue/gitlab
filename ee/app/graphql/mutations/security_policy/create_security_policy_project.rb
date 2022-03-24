@@ -4,14 +4,19 @@ module Mutations
   module SecurityPolicy
     class CreateSecurityPolicyProject < BaseMutation
       graphql_name 'SecurityPolicyProjectCreate'
-      description 'Creates and assigns a security policy project for the given project(`project_path`)'
+      description 'Creates and assigns a security policy project for the given project (`full_path`)'
 
-      include FindsProject
+      include FindsProjectOrGroupForSecurityPolicies
 
       authorize :update_security_orchestration_policy_project
 
+      argument :full_path, GraphQL::Types::String,
+               required: false,
+               description: 'Full path of the project.'
+
       argument :project_path, GraphQL::Types::ID,
-               required: true,
+               required: false,
+               deprecated: { reason: 'Use `fullPath`', milestone: '14.10' },
                description: 'Full path of the project.'
 
       field :project, Types::ProjectType,
@@ -19,9 +24,9 @@ module Mutations
             description: 'Security Policy Project that was created.'
 
       def resolve(args)
-        project = authorized_find!(args[:project_path])
+        project_or_group = authorized_find!(**args)
 
-        result = create_project(project)
+        result = create_project(project_or_group)
         return { project: nil, errors: [result[:message]] } if result[:status] == :error
 
         {
@@ -32,9 +37,9 @@ module Mutations
 
       private
 
-      def create_project(project)
+      def create_project(project_or_group)
         ::Security::SecurityOrchestrationPolicies::ProjectCreateService
-          .new(project: project, current_user: current_user)
+          .new(container: project_or_group, current_user: current_user)
           .execute
       end
     end
