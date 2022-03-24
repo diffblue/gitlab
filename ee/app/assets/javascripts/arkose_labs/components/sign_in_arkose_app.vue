@@ -2,6 +2,7 @@
 import { uniqueId } from 'lodash';
 import { GlAlert } from '@gitlab/ui';
 import { needsArkoseLabsChallenge } from 'ee/rest_api';
+import { logError } from '~/lib/logger';
 import { loadingIconForLegacyJS } from '~/loading_icon_for_legacy_js';
 import { __ } from '~/locale';
 import DomElementListener from '~/vue_shared/components/dom_element_listener.vue';
@@ -144,8 +145,7 @@ export default {
       this.hideErrors();
     },
     handleArkoseLabsFailure(e) {
-      // eslint-disable-next-line no-console
-      console.error('ArkoseLabs initialization error', e);
+      logError('ArkoseLabs initialization error', e);
       this.showArkoseFailure = true;
     },
     updateSubmitButtonLoading(val) {

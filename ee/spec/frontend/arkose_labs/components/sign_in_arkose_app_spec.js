@@ -3,9 +3,11 @@ import AxiosMockAdapter from 'axios-mock-adapter';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import SignInArkoseApp from 'ee/arkose_labs/components/sign_in_arkose_app.vue';
 import axios from '~/lib/utils/axios_utils';
+import { logError } from '~/lib/logger';
 import waitForPromises from 'helpers/wait_for_promises';
 import { initArkoseLabsScript } from 'ee/arkose_labs/init_arkose_labs_script';
 
+jest.mock('~/lib/logger');
 // ArkoseLabs enforcement mocks
 jest.mock('ee/arkose_labs/init_arkose_labs_script');
 let onShown;
@@ -20,6 +22,7 @@ initArkoseLabsScript.mockImplementation(() => ({
 }));
 
 const MOCK_USERNAME = 'cassiopeia';
+const MOCK_PUBLIC_KEY = 'arkose-labs-public-api-key';
 
 describe('SignInArkoseApp', () => {
   let wrapper;
@@ -44,7 +47,7 @@ describe('SignInArkoseApp', () => {
     createForm(username);
     wrapper = mountExtended(SignInArkoseApp, {
       propsData: {
-        publicKey: 'arkose-labs-public-api-key',
+        publicKey: MOCK_PUBLIC_KEY,
         formSelector: makeTestIdSelector('sign-in-form'),
         usernameSelector: makeTestIdSelector('username-field'),
         submitSelector: makeTestIdSelector('sign-in-button'),
@@ -64,7 +67,7 @@ describe('SignInArkoseApp', () => {
   // Assertions
   const itInitializesArkoseLabs = () => {
     it("includes ArkoseLabs' script", () => {
-      expect(initArkoseLabsScript).toHaveBeenCalled();
+      expect(initArkoseLabsScript).toHaveBeenCalledWith({ publicKey: MOCK_PUBLIC_KEY });
     });
 
     it('creates a hidden input for the verification token', () => {
@@ -86,6 +89,7 @@ describe('SignInArkoseApp', () => {
   });
 
   afterEach(() => {
+    axiosMock.restore();
     wrapper?.destroy();
   });
 
@@ -173,15 +177,12 @@ describe('SignInArkoseApp', () => {
       });
 
       it('shows an error alert if the challenge fails to load', async () => {
-        jest.spyOn(console, 'error').mockImplementation(() => {});
-
         expect(wrapper.text()).not.toContain(wrapper.vm.$options.MSG_ARKOSE_FAILURE_BODY);
 
         const error = new Error();
         onError(error);
 
-        // eslint-disable-next-line no-console
-        expect(console.error).toHaveBeenCalledWith('ArkoseLabs initialization error', error);
+        expect(logError).toHaveBeenCalledWith('ArkoseLabs initialization error', error);
 
         await nextTick();
 
@@ -215,10 +216,6 @@ describe('SignInArkoseApp', () => {
   });
 
   describe('when the username check fails', () => {
-    beforeEach(async () => {
-      jest.spyOn(console, 'error').mockImplementation(() => {});
-    });
-
     it('with a 404, nothing happens', async () => {
       axiosMock.onGet().reply(404);
       initArkoseLabs(MOCK_USERNAME);
@@ -247,8 +244,7 @@ describe('SignInArkoseApp', () => {
       await waitForPromises();
 
       expectArkoseLabsInitError();
-      // eslint-disable-next-line no-console
-      expect(console.error).toHaveBeenCalledWith('ArkoseLabs initialization error', error);
+      expect(logError).toHaveBeenCalledWith('ArkoseLabs initialization error', error);
     });
   });
 });
