@@ -47,17 +47,7 @@ export default {
       required: false,
       default: null,
     },
-    gitlabIssuesEnabled: {
-      type: Boolean,
-      required: false,
-      default: true,
-    },
     upgradePlanPath: {
-      type: String,
-      required: false,
-      default: '',
-    },
-    editProjectPath: {
       type: String,
       required: false,
       default: '',
@@ -91,9 +81,6 @@ export default {
     projectKeyLabel: s__('JiraService|Jira project key'),
     projectKeyPlaceholder: s__('JiraService|For example, AB'),
     requiredFieldFeedback: __('This field is required.'),
-    issueTrackerConflictWarning: s__(
-      'JiraService|Displaying Jira issues while leaving GitLab issues also enabled might be confusing. Consider %{linkStart}disabling GitLab issues%{linkEnd} if they won’t otherwise be used.',
-    ),
   },
 };
 </script>
@@ -134,14 +121,6 @@ export default {
             :readonly="isInheriting"
           />
         </gl-form-group>
-
-        <p v-if="gitlabIssuesEnabled" data-testid="conflict-warning-text">
-          <gl-sprintf :message="$options.i18n.issueTrackerConflictWarning">
-            <template #link="{ content }">
-              <gl-link :href="editProjectPath" target="_blank">{{ content }}</gl-link>
-            </template>
-          </gl-sprintf>
-        </p>
 
         <jira-issue-creation-vulnerabilities
           :project-key="projectKey"
