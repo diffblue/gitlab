@@ -14,7 +14,8 @@ module Projects
       end
 
       feature_category :security_orchestration
-      urgency :medium
+      urgency :default, [:edit]
+      urgency :low, [:index, :new]
 
       def index
         render :index, locals: { project: project }
