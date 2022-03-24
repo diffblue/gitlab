@@ -8,6 +8,8 @@ import (
 )
 
 var (
+	JavaScriptTypeRegex = regexp.MustCompile(`^(text|application)\/javascript$`)
+
 	ImageTypeRegex   = regexp.MustCompile(`^image/*`)
 	SvgMimeTypeRegex = regexp.MustCompile(`^image/svg\+xml$`)
 
@@ -45,6 +47,14 @@ func safeContentType(data []byte) string {
 
 	// Override any existing Content-Type header from other ResponseWriters
 	contentType := http.DetectContentType(data)
+
+	// http.DetectContentType does not support JavaScript and would only
+	// return text/plain. But for cautionary measures, just in case they start supporting
+	// it down the road and start returning application/javascript, we want to handle it now
+	// to avoid regressions.
+	if isType(contentType, JavaScriptTypeRegex) {
+		return "text/plain; charset=utf-8"
+	}
 
 	// If the content is text type, we set to plain, because we don't
 	// want to render it inline if they're html or javascript
