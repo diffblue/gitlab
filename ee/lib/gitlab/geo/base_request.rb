@@ -29,14 +29,9 @@ module Gitlab
       private
 
       def geo_auth_token(message)
-        geo_node = requesting_node
-        raise GeoNodeNotFoundError unless geo_node
+        signed_data = Gitlab::Geo::SignedData.new(geo_node: requesting_node).sign_and_encode_data(message)
 
-        token = JSONWebToken::HMACToken.new(geo_node.secret_access_key)
-        token.expire_time = Time.now + expiration_time
-        token[:data] = message.to_json
-
-        "#{GITLAB_GEO_AUTH_TOKEN_TYPE} #{geo_node.access_key}:#{token.encoded}"
+        "#{GITLAB_GEO_AUTH_TOKEN_TYPE} #{signed_data}"
       end
 
       def requesting_node

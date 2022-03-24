@@ -65,7 +65,7 @@ RSpec.describe EE::Gitlab::Auth::AuthFinders do
 
       it 'does not authenticate with invalid decryption key error' do
         allow_next_instance_of(::Gitlab::Geo::JwtRequestDecoder) do |instance|
-          expect(instance).to receive(:decode_auth_header).and_raise(Gitlab::Geo::InvalidDecryptionKeyError)
+          expect(instance).to receive(:decode).and_raise(Gitlab::Geo::InvalidDecryptionKeyError)
         end
 
         expect { subject }.to raise_error(::Gitlab::Auth::UnauthorizedError)
