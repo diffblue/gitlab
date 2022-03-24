@@ -113,11 +113,13 @@ export default {
     <div v-if="!collapsed">
       <geo-node-replication-details-responsive
         class="gl-display-none gl-md-display-block"
+        :node-id="node.id"
         :replication-items="replicationItems"
         data-testid="geo-replication-details-desktop"
       />
       <geo-node-replication-details-responsive
         class="gl-md-display-none!"
+        :node-id="node.id"
         :replication-items="replicationItems"
         data-testid="geo-replication-details-mobile"
       >

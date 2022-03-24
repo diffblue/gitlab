@@ -10,6 +10,7 @@ describe('GeoNodeReplicationDetailsResponsive', () => {
 
   const defaultProps = {
     replicationItems: [],
+    nodeId: 0,
   };
 
   const createComponent = (props, slots) => {
@@ -92,7 +93,7 @@ describe('GeoNodeReplicationDetailsResponsive', () => {
         ${'with all data'}             | ${[{ dataTypeTitle: 'Test Title', component: 'Test Component', syncValues: { total: 100, success: 0 }, verificationValues: { total: 50, success: 50 } }]} | ${true}            | ${true}
       `('$description', ({ replicationItems, renderSyncProgress, renderVerifProgress }) => {
         beforeEach(() => {
-          createComponent({ replicationItems });
+          createComponent({ replicationItems, nodeId: 42 });
         });
 
         it('renders sync progress correctly', () => {
@@ -102,6 +103,14 @@ describe('GeoNodeReplicationDetailsResponsive', () => {
           expect(
             extendedWrapper(findFirstReplicationDetailsItemSyncStatus()).findByText('N/A').exists(),
           ).toBe(!renderSyncProgress);
+
+          if (renderSyncProgress) {
+            expect(
+              findFirstReplicationDetailsItemSyncStatus()
+                .findComponent(GeoNodeProgressBar)
+                .props('target'),
+            ).toBe('sync-progress-42-Test Component');
+          }
         });
 
         it('renders verification progress correctly', () => {
@@ -113,6 +122,14 @@ describe('GeoNodeReplicationDetailsResponsive', () => {
               .findByText('N/A')
               .exists(),
           ).toBe(!renderVerifProgress);
+
+          if (renderVerifProgress) {
+            expect(
+              findFirstReplicationDetailsItemVerifStatus()
+                .findComponent(GeoNodeProgressBar)
+                .props('target'),
+            ).toBe('verification-progress-42-Test Component');
+          }
         });
       });
     });

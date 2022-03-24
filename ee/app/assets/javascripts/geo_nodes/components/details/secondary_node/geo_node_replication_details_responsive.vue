@@ -29,6 +29,11 @@ export default {
     GeoNodeProgressBar,
   },
   props: {
+    nodeId: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
     replicationItems: {
       type: Array,
       required: false,
@@ -85,7 +90,7 @@ export default {
           <geo-node-progress-bar
             v-if="item.syncValues"
             :title="sprintf($options.i18n.progressBarSyncTitle, { component: item.component })"
-            :target="`sync-progress-${item.component}`"
+            :target="`sync-progress-${nodeId}-${item.component}`"
             :values="item.syncValues"
           />
           <span v-else class="gl-text-gray-400 gl-font-sm">{{ $options.i18n.nA }}</span>
@@ -94,7 +99,7 @@ export default {
           <geo-node-progress-bar
             v-if="item.verificationValues"
             :title="sprintf($options.i18n.progressBarVerifTitle, { component: item.component })"
-            :target="`verification-progress-${item.component}`"
+            :target="`verification-progress-${nodeId}-${item.component}`"
             :values="item.verificationValues"
             :success-label="$options.i18n.verified"
             :unavailable-label="$options.i18n.nothingToVerify"
