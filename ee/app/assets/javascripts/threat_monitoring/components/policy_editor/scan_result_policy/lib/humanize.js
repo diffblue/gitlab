@@ -87,6 +87,27 @@ const humanizeBranches = (branches) => {
 };
 
 /**
+ * Create a human-readable version of the scanners
+ * @param {Array} scanners
+ * @returns {String}
+ */
+const humanizeScanners = (scanners) => {
+  const hasEmptyScanners = scanners.length === 0;
+
+  if (hasEmptyScanners) {
+    return s__('SecurityOrchestration|All scanners find');
+  }
+
+  return sprintf(s__('SecurityOrchestration|%{scanners}'), {
+    scanners: humanizeItems({
+      items: scanners,
+      singular: s__('SecurityOrchestration|scanner finds'),
+      plural: s__('SecurityOrchestration|scanners find'),
+    }),
+  });
+};
+
+/**
  * Create a human-readable string, adding the necessary punctuation and conjunctions
  * @param {Object} action containing or not arrays of string and integers representing approvers
  * @returns {String}
@@ -168,14 +189,10 @@ export const humanizeAction = (action) => {
 const humanizeRule = (rule) => {
   return sprintf(
     s__(
-      'SecurityOrchestration|The %{scanners} %{severities} in an open merge request targeting %{branches}.',
+      'SecurityOrchestration|%{scanners} %{severities} in an open merge request targeting %{branches}.',
     ),
     {
-      scanners: humanizeItems({
-        items: convertScannersToTitleCase(rule.scanners),
-        singular: s__('SecurityOrchestration|scanner finds'),
-        plural: s__('SecurityOrchestration|scanners find'),
-      }),
+      scanners: humanizeScanners(convertScannersToTitleCase(rule.scanners)),
       severities: humanizeItems({
         items: rule.severity_levels,
         singular: s__('SecurityOrchestration|vulnerability'),

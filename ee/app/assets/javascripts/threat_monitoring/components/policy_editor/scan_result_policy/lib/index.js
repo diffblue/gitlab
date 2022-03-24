@@ -1,6 +1,6 @@
 export { fromYaml } from './from_yaml';
 export { toYaml } from './to_yaml';
-export { buildRule } from './rules';
+export { buildRule, invalidScanners } from './rules';
 export { approversOutOfSync } from './actions';
 export * from './humanize';
 

@@ -73,11 +73,11 @@ describe('ScanResultPolicyEditor', () => {
     nextTick();
   };
 
-  const factoryWithExistingPolicy = () => {
+  const factoryWithExistingPolicy = (policy = {}) => {
     return factory({
       propsData: {
         assignedPolicyProject,
-        existingPolicy: mockScanResultObject,
+        existingPolicy: { ...mockScanResultObject, ...policy },
         isEditing: true,
       },
     });
@@ -335,6 +335,16 @@ describe('ScanResultPolicyEditor', () => {
 
       expect(findAlert().exists()).toBe(true);
       expect(findAlert().isVisible()).toBe(true);
+    });
+
+    it('shows alert when policy scanners are invalid', async () => {
+      factoryWithExistingPolicy({ rules: [{ scanners: ['cluster_image_scanning'] }] });
+
+      expect(findAlert().exists()).toBe(false);
+
+      await findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_RULE);
+
+      expect(findAlert().exists()).toBe(true);
     });
   });
 });

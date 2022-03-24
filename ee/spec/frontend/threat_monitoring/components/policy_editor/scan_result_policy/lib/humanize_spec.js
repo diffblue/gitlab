@@ -59,9 +59,18 @@ const mockRules = [
   },
 ];
 
+const ALL_SCANNERS_RULE = {
+  type: 'scan_finding',
+  branches: ['master', 'main'],
+  scanners: [],
+  vulnerabilities_allowed: 2,
+  severity_levels: ['info', 'critical'],
+  vulnerability_states: ['resolved'],
+};
+
 const mockRulesHumanized = [
-  'The Sast scanner finds a critical vulnerability in an open merge request targeting the main branch.',
-  'The Dast or Sast scanners find info or critical vulnerabilities in an open merge request targeting the master or main branches.',
+  'Sast scanner finds a critical vulnerability in an open merge request targeting the main branch.',
+  'Dast or Sast scanners find info or critical vulnerabilities in an open merge request targeting the master or main branches.',
 ];
 
 const mockRulesEmptyBranch = {
@@ -88,7 +97,13 @@ describe('humanizeRules', () => {
 
   it('returns a single rule as a human-readable string for all branches', () => {
     expect(humanizeRules([mockRulesEmptyBranch])).toStrictEqual([
-      'The Sast scanner finds a critical vulnerability in an open merge request targeting all branches.',
+      'Sast scanner finds a critical vulnerability in an open merge request targeting all branches.',
+    ]);
+  });
+
+  it('returns a single rule as a human-readable string for all scanners', () => {
+    expect(humanizeRules([ALL_SCANNERS_RULE])).toStrictEqual([
+      'All scanners find info or critical vulnerabilities in an open merge request targeting the master or main branches.',
     ]);
   });
 });

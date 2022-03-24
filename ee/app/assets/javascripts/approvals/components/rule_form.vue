@@ -23,6 +23,8 @@ const DEFAULT_NAME = 'Default';
 
 export const READONLY_NAMES = [LICENSE_CHECK_NAME, VULNERABILITY_CHECK_NAME, COVERAGE_CHECK_NAME];
 
+const REPORT_TYPES_KEYS = Object.keys(REPORT_TYPES_DEFAULT);
+
 function mapServerResponseToValidationErrors(messages) {
   return Object.entries(messages).flatMap(([key, msgs]) => msgs.map((msg) => `${key} ${msg}`));
 }
@@ -73,7 +75,6 @@ export default {
       severityLevels: [],
       vulnerabilityStates: [],
       approvalVulnerabilityStatesKeys: Object.keys(APPROVAL_VULNERABILITY_STATES),
-      reportTypesKeys: Object.keys(REPORT_TYPES_DEFAULT),
       severityLevelsKeys: Object.keys(SEVERITY_LEVELS),
       ...this.getInitialData(),
     };
@@ -146,6 +147,7 @@ export default {
 
       return '';
     },
+    // A Vulnerability-Check approval rule requires at least one scanner.
     invalidScanners() {
       return this.scanners.length <= 0;
     },
@@ -242,7 +244,8 @@ export default {
         groupRecords: this.groups,
         removeHiddenGroups: this.removeHiddenGroups,
         protectedBranchIds: this.branches.map((x) => x.id),
-        scanners: this.scanners,
+        // No scanners specified in a vulnerability approval rule means all scanners will be used.
+        scanners: this.areAllScannersSelected ? [] : this.scanners,
         severityLevels: this.severityLevels,
         vulnerabilityStates: this.vulnerabilityStates,
       };
@@ -254,19 +257,19 @@ export default {
       return VULNERABILITY_CHECK_NAME === this.name;
     },
     areAllScannersSelected() {
-      return this.scanners.length === this.reportTypesKeys.length;
+      return this.scanners?.length === REPORT_TYPES_KEYS.length;
     },
     scannersText() {
       switch (this.scanners.length) {
-        case this.reportTypesKeys.length:
+        case REPORT_TYPES_KEYS.length:
           return APPROVAL_DIALOG_I18N.form.allScannersSelectedLabel;
         case 0:
           return APPROVAL_DIALOG_I18N.form.scannersSelectLabel;
         case 1:
-          return REPORT_TYPES_DEFAULT[this.scanners[0]];
+          return this.$options.REPORT_TYPES_DEFAULT[this.scanners[0]];
         default:
           return sprintf(APPROVAL_DIALOG_I18N.form.multipleSelectedLabel, {
-            firstLabel: REPORT_TYPES_DEFAULT[this.scanners[0]],
+            firstLabel: this.$options.REPORT_TYPES_DEFAULT[this.scanners[0]],
             numberOfAdditionalLabels: this.scanners.length - 1,
           });
       }
@@ -411,6 +414,10 @@ export default {
       const groups = this.initRule.groups.map((x) => ({ ...x, type: TYPE_GROUP }));
       const branches = this.initRule.protectedBranches || [];
 
+      const scanners =
+        this.initRule.scanners?.length === 0
+          ? [...REPORT_TYPES_KEYS]
+          : this.initRule.scanners || [];
       return {
         name: this.initRule.name || '',
         approvalsRequired: this.initRule.approvalsRequired || 0,
@@ -422,14 +429,14 @@ export default {
             containsHiddenGroups && !removeHiddenGroups ? [{ type: TYPE_HIDDEN_GROUPS }] : [],
           ),
         branches,
-        scanners: this.initRule.scanners || [],
+        scanners,
         vulnerabilitiesAllowed: this.initRule.vulnerabilitiesAllowed || 0,
         severityLevels: this.initRule.severityLevels || [],
         vulnerabilityStates: this.initRule.vulnerabilityStates || [],
       };
     },
     setAllSelectedScanners() {
-      this.scanners = this.areAllScannersSelected ? [] : this.reportTypesKeys;
+      this.scanners = this.areAllScannersSelected ? [] : [...REPORT_TYPES_KEYS];
     },
     isScannerSelected(scanner) {
       return this.scanners.includes(scanner);

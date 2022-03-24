@@ -22,7 +22,14 @@ import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
 import DimDisableContainer from '../dim_disable_container.vue';
 import PolicyActionBuilder from './policy_action_builder.vue';
 import PolicyRuleBuilder from './policy_rule_builder.vue';
-import { DEFAULT_SCAN_RESULT_POLICY, fromYaml, toYaml, buildRule, approversOutOfSync } from './lib';
+import {
+  DEFAULT_SCAN_RESULT_POLICY,
+  fromYaml,
+  toYaml,
+  buildRule,
+  approversOutOfSync,
+  invalidScanners,
+} from './lib';
 
 export default {
   SECURITY_POLICY_ACTIONS,
@@ -209,13 +216,19 @@ export default {
       if (mode === EDITOR_MODE_YAML && !this.hasParsingError) {
         this.yamlEditorValue = toYaml(this.policy);
       } else if (mode === EDITOR_MODE_RULE && !this.hasParsingError) {
-        if (approversOutOfSync(this.policy.actions[0], this.existingApprovers)) {
+        if (this.invalidForRuleMode()) {
           this.yamlEditorError = new Error();
         }
       }
     },
     updatePolicyApprovers(values) {
       this.existingApprovers = values;
+    },
+    invalidForRuleMode() {
+      return (
+        approversOutOfSync(this.policy.actions[0], this.existingApprovers) ||
+        invalidScanners(this.policy.rules)
+      );
     },
   },
 };

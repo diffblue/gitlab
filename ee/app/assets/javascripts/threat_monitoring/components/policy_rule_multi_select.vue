@@ -27,6 +27,11 @@ export default {
       required: false,
       default: () => [],
     },
+    includeSelectAll: {
+      type: Boolean,
+      required: false,
+      default: () => true,
+    },
   },
   data() {
     return {
@@ -99,6 +104,7 @@ export default {
 <template>
   <gl-dropdown :text="text">
     <gl-dropdown-item
+      v-if="includeSelectAll"
       :key="$options.ALL_KEY"
       is-check-item
       :is-checked="areAllSelected"

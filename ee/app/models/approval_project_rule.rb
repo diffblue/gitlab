@@ -34,7 +34,10 @@ class ApprovalProjectRule < ApplicationRecord
   validates :rule_type, uniqueness: { scope: :project_id, message: proc { _('any-approver for the project already exists') } }, if: :any_approver?
 
   validates :scanners, if: :scanners_changed?, inclusion: { in: SUPPORTED_SCANNERS }
-  default_value_for :scanners, allows_nil: false, value: SUPPORTED_SCANNERS
+
+  # No scanners specified in a vulnerability approval rule means all scanners will be used.
+  # Vulnerability-Check and scan result policy approval rules require at least one scanner.
+  default_value_for :scanners, allows_nil: false, value: []
 
   validates :vulnerabilities_allowed, numericality: { only_integer: true }
   default_value_for :vulnerabilities_allowed, allows_nil: false, value: 0
