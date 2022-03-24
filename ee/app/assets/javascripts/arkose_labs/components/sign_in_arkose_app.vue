@@ -112,9 +112,14 @@ export default {
           await this.initArkoseLabs();
         }
       } catch (e) {
-        // If the requests fails with a 404 code, we can fail silently.
-        // We show a generic error message for any other failure.
-        if (e.response?.status !== 404) {
+        if (e.response?.status === 404) {
+          // We ignore 404 errors as it just means the username does not exist.
+        } else if (e.response?.status) {
+          // If the request failed with any other error code, we initialize the challenge to make
+          // sure it isn't being bypassed by purposefully making the endpoint fail.
+          this.initArkoseLabs();
+        } else {
+          // For any other failure, we show the initialization error message.
           this.handleArkoseLabsFailure(e);
         }
       } finally {

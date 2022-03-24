@@ -214,16 +214,41 @@ describe('SignInArkoseApp', () => {
     });
   });
 
-  describe('when the REST endpoint fails', () => {
+  describe('when the username check fails', () => {
     beforeEach(async () => {
       jest.spyOn(console, 'error').mockImplementation(() => {});
+    });
+
+    it('with a 404, nothing happens', async () => {
+      axiosMock.onGet().reply(404);
+      initArkoseLabs(MOCK_USERNAME);
+      await waitForPromises();
+
+      expect(initArkoseLabsScript).not.toHaveBeenCalled();
+      expectHiddenArkoseLabsError();
+    });
+
+    it('with some other HTTP error, the challenge is initialized', async () => {
       axiosMock.onGet().reply(500);
       initArkoseLabs(MOCK_USERNAME);
       await waitForPromises();
+
+      expect(initArkoseLabsScript).toHaveBeenCalled();
+      expectHiddenArkoseLabsError();
     });
 
-    it('shows initialization error', () => {
+    it('due to the script inclusion, an error is shown', async () => {
+      const error = new Error();
+      initArkoseLabsScript.mockImplementation(() => {
+        throw new Error();
+      });
+      axiosMock.onGet().reply(200, { result: true });
+      initArkoseLabs(MOCK_USERNAME);
+      await waitForPromises();
+
       expectArkoseLabsInitError();
+      // eslint-disable-next-line no-console
+      expect(console.error).toHaveBeenCalledWith('ArkoseLabs initialization error', error);
     });
   });
 });
