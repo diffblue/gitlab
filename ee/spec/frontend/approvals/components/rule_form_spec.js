@@ -608,22 +608,6 @@ describe('EE Approvals RuleForm', () => {
     });
 
     describe(`with ${VULNERABILITY_CHECK_NAME}`, () => {
-      describe('and without any scanners selected', () => {
-        beforeEach(() => {
-          createComponent({
-            initRule: {
-              ...TEST_RULE_VULNERABILITY_CHECK,
-              scanners: [],
-            },
-          });
-          findForm().trigger('submit');
-        });
-
-        it('does not dispatch the action on submit', () => {
-          expect(actions.postRule).not.toHaveBeenCalled();
-        });
-      });
-
       describe('and with two scanners selected', () => {
         beforeEach(() => {
           createComponent({
@@ -648,6 +632,19 @@ describe('EE Approvals RuleForm', () => {
           });
           findAllScannersSelected().trigger('click');
           findForm().trigger('submit');
+        });
+
+        it('selects all scanners', () => {
+          const scannerDropdown = findScannersGroup().findComponent(GlDropdown);
+          expect(scannerDropdown.attributes().text).toBe('All scanners');
+        });
+
+        it('dispatches the action on submit with empty array', () => {
+          const expectedScanners = [];
+          expect(actions.postRule).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.objectContaining({ scanners: expectedScanners }),
+          );
         });
       });
 

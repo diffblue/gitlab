@@ -51,10 +51,12 @@ export default {
     },
     scannersToAdd: {
       get() {
-        return this.initRule.scanners;
+        return this.initRule.scanners.length === 0 ? this.reportTypesKeys : this.initRule.scanners;
       },
       set(values) {
-        this.triggerChanged({ scanners: values });
+        this.triggerChanged({
+          scanners: values.length === this.reportTypesKeys.length ? [] : values,
+        });
       },
     },
     vulnerabilityStates: {
@@ -107,6 +109,7 @@ export default {
             :item-type-name="$options.i18n.scanners"
             :items="$options.REPORT_TYPES_DEFAULT"
             data-testid="scanners-select"
+            :include-select-all="false"
           />
         </template>
 
