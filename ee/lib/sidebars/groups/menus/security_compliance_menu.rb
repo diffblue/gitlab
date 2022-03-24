@@ -125,7 +125,7 @@ module Sidebars
 
         def group_level_security_policies_available?
           Feature.enabled?(:group_level_security_policies, context.group, default_enabled: :yaml) &&
-                    can?(context.current_user, :security_orchestration_policies, context.group)
+                    can?(context.current_user, :read_security_orchestration_policies, context.group)
         end
 
         def audit_events_menu_item

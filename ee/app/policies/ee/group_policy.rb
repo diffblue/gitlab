@@ -311,7 +311,7 @@ module EE
       end
 
       rule { security_orchestration_policies_enabled & can?(:developer_access) }.policy do
-        enable :security_orchestration_policies
+        enable :read_security_orchestration_policies
       end
 
       rule { security_dashboard_enabled & developer }.policy do
