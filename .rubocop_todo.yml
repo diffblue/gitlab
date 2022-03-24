@@ -107,11 +107,6 @@ Lint/MixedRegexpCaptureTypes:
 Lint/RedundantCopDisableDirective:
   Enabled: false
 
-# Offense count: 1
-Lint/SelfAssignment:
-  Exclude:
-    - 'spec/lib/gitlab/search_context/builder_spec.rb'
-
 # Offense count: 3
 Lint/StructNewOverride:
   Exclude:
