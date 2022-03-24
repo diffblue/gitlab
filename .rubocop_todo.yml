@@ -551,15 +551,6 @@ Style/Lambda:
 Style/MissingRespondToMissing:
   Enabled: false
 
-# Offense count: 5
-Style/MixinUsage:
-  Exclude:
-    - 'spec/factories/ci/builds.rb'
-    - 'spec/factories/ci/job_artifacts.rb'
-    - 'spec/factories/lfs_objects.rb'
-    - 'spec/factories/notes.rb'
-    - 'spec/lib/gitlab/import_export/version_checker_spec.rb'
-
 # Offense count: 35
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, MinBodyLength.
