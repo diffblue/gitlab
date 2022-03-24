@@ -25,12 +25,21 @@ export default () => {
   });
 
   const {
-    dataset: { projectFullPath, canUploadCorpus, canReadCorpus, canDestroyCorpus },
+    dataset: {
+      emptyStateSvgPath,
+      projectFullPath,
+      canUploadCorpus,
+      canReadCorpus,
+      canDestroyCorpus,
+    },
   } = el;
 
-  const corpusHelpPath = helpPagePath('user/application_security/coverage_fuzzing/index');
+  const corpusHelpPath = helpPagePath('user/application_security/coverage_fuzzing/index', {
+    anchor: 'corpus-registry',
+  });
 
   const provide = {
+    emptyStateSvgPath,
     projectFullPath,
     corpusHelpPath,
     canUploadCorpus: parseBoolean(canUploadCorpus),

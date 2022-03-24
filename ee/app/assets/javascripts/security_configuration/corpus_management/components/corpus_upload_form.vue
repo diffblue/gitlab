@@ -59,7 +59,7 @@ export default {
       return !this.isUploaded && !this.isUploading;
     },
     isUploading() {
-      return this.states?.uploadState?.isUploading;
+      return this.states?.isUploading;
     },
     isUploaded() {
       return this.progress === 100;
@@ -74,16 +74,16 @@ export default {
       return !this.isUploaded;
     },
     progress() {
-      return this.states?.uploadState?.progress;
+      return this.states?.progress;
     },
     progressText() {
       return sprintf(__('Attaching File - %{progress}'), { progress: `${this.progress}%` });
     },
     nameError() {
-      return this.states?.uploadState?.errors.name;
+      return this.states?.errors.name;
     },
     fileError() {
-      return this.states?.uploadState?.errors.file;
+      return this.states?.errors.file;
     },
   },
   beforeDestroy() {
