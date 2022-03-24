@@ -84,6 +84,28 @@ module API
           render_api_error!(result[:message], result[:http_status])
         end
       end
+
+      desc 'Remove epics relation' do
+        success Entities::RelatedEpicLink
+      end
+      params do
+        requires :related_epic_link_id, type: Integer, desc: 'The ID of a related epic link'
+      end
+      delete ':id/epics/:epic_iid/related_epics/:related_epic_link_id' do
+        find_permissioned_epic!(params[:epic_iid])
+
+        epic_link = ::Epic::RelatedEpicLink.find(declared_params[:related_epic_link_id])
+
+        result = ::Epics::RelatedEpicLinks::DestroyService
+                   .new(epic_link, current_user)
+                   .execute
+
+        if result[:status] == :success
+          present epic_link, with: Entities::RelatedEpicLink
+        else
+          render_api_error!(result[:message], result[:http_status])
+        end
+      end
     end
   end
 end
