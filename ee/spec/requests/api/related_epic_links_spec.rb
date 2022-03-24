@@ -189,13 +189,97 @@ RSpec.describe API::RelatedEpicLinks do
 
           it_behaves_like 'not found resource', '404 Not found'
         end
+      end
+    end
+  end
 
-        def expect_link_response(link_type: 'relates_to')
-          expect(response).to have_gitlab_http_status(:created)
-          expect(response).to match_response_schema('public_api/v4/related_epic_link')
-          expect(json_response['link_type']).to eq(link_type)
+  describe 'DELETE /related_epics' do
+    let_it_be(:target_group) { create(:group, :private) }
+    let_it_be(:target_epic) { create(:epic, group: target_group) }
+    let_it_be_with_reload(:related_epic_link) { create(:related_epic_link, source: epic, target: target_epic) }
+
+    subject { perform_request(user) }
+
+    def perform_request(user = nil)
+      delete api("/groups/#{group.id}/epics/#{epic.iid}/related_epics/#{related_epic_link.id}", user)
+    end
+
+    shared_examples 'not found resource' do |message|
+      it 'returns 404' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:not_found)
+        expect(json_response['message']).to eq(message)
+      end
+    end
+
+    shared_examples 'forbidden resource' do |message|
+      it 'returns 403' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+
+    context 'when unauthenticated' do
+      it 'returns 401' do
+        perform_request
+
+        expect(response).to have_gitlab_http_status(:unauthorized)
+      end
+    end
+
+    context 'when user can not access source epic' do
+      before do
+        target_group.add_reporter(user)
+      end
+
+      it_behaves_like 'not found resource', '404 Group Not Found'
+    end
+
+    context 'when user can only read source epic' do
+      before do
+        group.add_guest(user)
+        target_group.add_reporter(user)
+      end
+
+      it_behaves_like 'forbidden resource'
+    end
+
+    context 'when user can manage source epic' do
+      before do
+        group.add_reporter(user)
+      end
+
+      it_behaves_like 'not found resource', 'No Related Epic Link found'
+
+      context 'when user is guest in target group' do
+        before do
+          target_group.add_guest(user)
+        end
+
+        it_behaves_like 'not found resource', 'No Related Epic Link found'
+      end
+
+      context 'when user can relate epics' do
+        before do
+          target_group.add_reporter(user)
+        end
+
+        it_behaves_like 'a not available endpoint'
+
+        it 'returns 200 status and contains the expected link response' do
+          subject
+
+          expect_link_response(status: :ok)
         end
       end
     end
+  end
+
+  def expect_link_response(link_type: 'relates_to', status: :created)
+    expect(response).to have_gitlab_http_status(status)
+    expect(response).to match_response_schema('public_api/v4/related_epic_link')
+    expect(json_response['link_type']).to eq(link_type)
   end
 end
