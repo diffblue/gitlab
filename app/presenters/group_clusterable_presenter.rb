@@ -31,7 +31,7 @@ class GroupClusterablePresenter < ClusterablePresenter
   end
 
   override :learn_more_link
-  def learn_more_link(docs_mode = false)
+  def learn_more_link
     ApplicationController.helpers.link_to(s_('ClusterIntegration|Learn more about group Kubernetes clusters'), help_page_path('user/group/clusters/index'), target: '_blank', rel: 'noopener noreferrer')
   end
 

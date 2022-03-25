@@ -98,18 +98,8 @@ RSpec.describe ProjectClusterablePresenter do
   end
 
   describe '#learn_more_link' do
-    subject { presenter.learn_more_link(docs_mode) }
+    subject { presenter.learn_more_link }
 
-    context 'feature flag is enabled' do
-      let(:docs_mode) { true }
-
-      it { is_expected.to include('help/user/infrastructure/iac/index#create-a-new-cluster-through-iac') }
-    end
-
-    context 'feature flag is disabled' do
-      let(:docs_mode) { false }
-
-      it { is_expected.to include('user/project/clusters/index') }
-    end
+    it { is_expected.to include('user/project/clusters/index') }
   end
 end

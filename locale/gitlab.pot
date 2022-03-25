@@ -7879,7 +7879,7 @@ msgstr ""
 msgid "ClusterAgents|Connect a cluster (agent)"
 msgstr ""
 
-msgid "ClusterAgents|Connect a cluster (certificate) (deprecated)"
+msgid "ClusterAgents|Connect a cluster (certificate - deprecated)"
 msgstr ""
 
 msgid "ClusterAgents|Connect a cluster (deprecated)"
@@ -7909,7 +7909,7 @@ msgstr ""
 msgid "ClusterAgents|Create a cluster"
 msgstr ""
 
-msgid "ClusterAgents|Create a cluster (certificate) (deprecated)"
+msgid "ClusterAgents|Create a cluster (certificate - deprecated)"
 msgstr ""
 
 msgid "ClusterAgents|Create a cluster (deprecated)"
@@ -8295,6 +8295,9 @@ msgstr ""
 msgid "ClusterIntegration|Create Kubernetes cluster"
 msgstr ""
 
+msgid "ClusterIntegration|Create a Kubernetes cluster"
+msgstr ""
+
 msgid "ClusterIntegration|Creating Kubernetes cluster"
 msgstr ""
 
@@ -8449,9 +8452,6 @@ msgid "ClusterIntegration|Learn more about %{help_link_start_machine_type}machin
 msgstr ""
 
 msgid "ClusterIntegration|Learn more about %{help_link_start}zones%{help_link_end}."
-msgstr ""
-
-msgid "ClusterIntegration|Learn more about GitLab integrations with Kubernetes"
 msgstr ""
 
 msgid "ClusterIntegration|Learn more about Kubernetes."
