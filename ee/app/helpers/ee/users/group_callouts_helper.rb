@@ -12,7 +12,7 @@ module EE
         return false if user_dismissed_for_group(PREVIEW_USER_OVER_LIMIT_FREE_PLAN_ALERT, namespace, 14.days.ago)
         return false unless Ability.allowed?(current_user, :owner_access, namespace)
 
-        namespace.preview_free_user_cap_over?
+        ::Namespaces::PreviewFreeUserCap.new(namespace).over_limit?
       end
     end
   end

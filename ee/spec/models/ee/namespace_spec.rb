@@ -967,97 +967,8 @@ RSpec.describe Namespace do
     end
   end
 
-  describe '#free_user_cap_reached?' do
-    subject(:free_user_cap_reached_for_group?) { group.free_user_cap_reached? }
-
-    it_behaves_like 'returning the right value for free_user_cap_reached?' do
-      let_it_be(:group) { create(:user).namespace }
-      let(:root_group) { group }
-    end
-  end
-
-  describe '#preview_free_user_cap_over?', :saas do
-    let_it_be(:namespace) { create(:group_with_plan, plan: :free_plan) }
-
-    let(:should_check_namespace_plan) { true }
-
-    before do
-      stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan)
-    end
-
-    subject(:preview_free_user_cap_over?) { namespace.preview_free_user_cap_over? }
-
-    context 'when :preview_free_user_cap is disabled' do
-      before do
-        stub_feature_flags(preview_free_user_cap: false)
-      end
-
-      it { is_expected.to be false }
-    end
-
-    context 'when :preview_free_user_cap is enabled' do
-      before do
-        stub_feature_flags(preview_free_user_cap: true)
-      end
-
-      it { is_expected.to be false }
-
-      context 'when the member counts should be compared for that root ancestor' do
-        before do
-          allow(namespace).to receive(:free_plan_members_count).and_return(free_plan_members_count)
-        end
-
-        context 'when under the number of free users limit' do
-          let(:free_plan_members_count) { 3 }
-
-          it { is_expected.to be false }
-        end
-
-        context 'when at the same number as the free users limit' do
-          let(:free_plan_members_count) { ::Plan::FREE_USER_LIMIT }
-
-          it { is_expected.to be false }
-        end
-
-        context 'when over the number of free users limit' do
-          let(:free_plan_members_count) { 6 }
-
-          it { is_expected.to be true }
-
-          context 'when the namespace is not a group' do
-            let_it_be(:namespace) do
-              namespace = create(:user).namespace
-              create(:gitlab_subscription, hosted_plan: create(:free_plan), namespace: namespace)
-              namespace
-            end
-
-            it { is_expected.to be true }
-          end
-
-          context 'when it is a non free plan' do
-            let_it_be(:namespace) { create(:group_with_plan, plan: :ultimate_plan) }
-
-            it { is_expected.to be false }
-          end
-
-          context 'when no plan exists' do
-            let_it_be(:namespace) { create(:group) }
-
-            it { is_expected.to be true }
-          end
-
-          context 'when should check namespace plan is false' do
-            let(:should_check_namespace_plan) { false }
-
-            it { is_expected.to be false }
-          end
-        end
-      end
-    end
-  end
-
   describe '#user_limit_reached?' do
-    where(:free_user_cap_reached) do
+    where(:reached_free_limit) do
       [
         true,
         false
@@ -1070,10 +981,11 @@ RSpec.describe Namespace do
 
     with_them do
       before do
-        allow(namespace).to receive(:free_user_cap_reached?).and_return(free_user_cap_reached)
+        free_user_cap = instance_double(Namespaces::FreeUserCap, reached_limit?: reached_free_limit)
+        allow(namespace).to receive(:free_user_cap).and_return(free_user_cap)
       end
 
-      it { is_expected.to eq(free_user_cap_reached) }
+      it { is_expected.to eq(reached_free_limit) }
     end
   end
 
@@ -1750,63 +1662,10 @@ RSpec.describe Namespace do
     end
   end
 
-  describe '#apply_free_user_cap?', :saas do
-    let_it_be(:namespace) { create(:group_with_plan, plan: :free_plan) }
-    let_it_be(:subgroup) {  create(:group, parent: namespace) }
-
-    subject(:apply_free_user_cap?) { namespace.apply_free_user_cap? }
-
-    context 'when not on Gitlab.com' do
-      before do
-        allow(::Gitlab).to receive(:com?).and_return(false)
-      end
-
-      it { is_expected.to be false }
-    end
-
-    context 'when :free_user_cap is disabled' do
-      before do
-        stub_feature_flags(free_user_cap: false)
-      end
-
-      it { is_expected.to be false }
-    end
-
-    context 'when :free_user_cap is enabled' do
-      before do
-        stub_feature_flags(free_user_cap: true)
-      end
-
-      it { is_expected.to be true }
-
-      context 'when the namespace is not a group' do
-        let_it_be(:namespace) do
-          namespace = create(:user).namespace
-          create(:gitlab_subscription, hosted_plan: create(:free_plan), namespace: namespace)
-          namespace
-        end
-
-        it { is_expected.to be true }
-      end
-
-      context 'when it is a non free plan' do
-        let_it_be(:namespace) { create(:group_with_plan, plan: :ultimate_plan) }
-
-        it { is_expected.to be false }
-      end
-
-      context 'when no plan exists' do
-        let_it_be(:namespace) { create(:group) }
-
-        it { is_expected.to be true }
-      end
-    end
-  end
-
   describe '#apply_user_cap?' do
     let(:namespace) { build(:namespace) }
 
-    where(:user_cap_available, :apply_free_user_cap, :result) do
+    where(:user_cap_available, :enforce_free_cap, :result) do
       false | false | false
       false | true  | true
       true  | false | true
@@ -1817,8 +1676,9 @@ RSpec.describe Namespace do
 
     with_them do
       before do
+        free_user_cap = instance_double(Namespaces::FreeUserCap, enforce_cap?: enforce_free_cap)
         allow(namespace).to receive(:user_cap_available?).and_return(user_cap_available)
-        allow(namespace).to receive(:apply_free_user_cap?).and_return(apply_free_user_cap)
+        allow(namespace).to receive(:free_user_cap).and_return(free_user_cap)
       end
 
       it { is_expected.to eq(result) }

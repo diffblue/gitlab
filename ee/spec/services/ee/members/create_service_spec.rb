@@ -129,7 +129,8 @@ RSpec.describe Members::CreateService do
     let_it_be(:over_limit_user) { project_users.last }
 
     before do
-      stub_const('::Plan::FREE_USER_LIMIT', 3)
+      stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 3)
+      stub_ee_application_setting(should_check_namespace_plan: true)
     end
 
     context 'with a group-less project' do

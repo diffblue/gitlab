@@ -3,8 +3,9 @@
 RSpec.shared_examples_for 'over the free user limit alert' do
   before do
     stub_ee_application_setting(should_check_namespace_plan: true)
+    stub_feature_flags(free_user_cap: false)
     stub_feature_flags(preview_free_user_cap: true)
-    stub_const('::Plan::FREE_USER_LIMIT', 1)
+    stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 1)
   end
 
   it 'shows free user limit warning and honors dismissal', :js do

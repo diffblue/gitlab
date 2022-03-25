@@ -16,7 +16,9 @@ RSpec.describe EE::Users::GroupCalloutsHelper do
     subject { helper.show_user_over_limit_free_plan_alert?(group) }
 
     before do
-      allow(group).to receive(:preview_free_user_cap_over?).and_return(preview_free_user_cap_over?)
+      allow_next_instance_of(::Namespaces::PreviewFreeUserCap) do |preview_free_user_cap|
+        allow(preview_free_user_cap).to receive(:over_limit?).and_return(preview_free_user_cap_over?)
+      end
     end
 
     context 'when it is a group namespace' do
