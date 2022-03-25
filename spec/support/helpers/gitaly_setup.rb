@@ -138,7 +138,13 @@ module GitalySetup
   end
 
   def start_praefect
-    start(:praefect)
+    if ENV['GITALY_PRAEFECT_WITH_DB']
+      LOGGER.debug 'Starting Praefect with database election strategy'
+      start(:praefect, File.join(tmp_tests_gitaly_dir, 'praefect-db.config.toml'))
+    else
+      LOGGER.debug 'Starting Praefect with in-memory election strategy'
+      start(:praefect)
+    end
   end
 
   def start(service, toml = nil)
@@ -277,7 +283,42 @@ module GitalySetup
         config_filename: "gitaly2.config.toml"
       }
     )
-    Gitlab::SetupHelper::Praefect.create_configuration(gitaly_dir, { 'praefect' => repos_path }, force: true)
+
+    # In CI we need to pre-generate both config files.
+    # For local testing we'll create the correct file on-demand.
+    if ENV['CI'] || ENV['GITALY_PRAEFECT_WITH_DB'].nil?
+      Gitlab::SetupHelper::Praefect.create_configuration(
+        gitaly_dir,
+        { 'praefect' => repos_path },
+        force: true
+      )
+    end
+
+    if ENV['CI'] || ENV['GITALY_PRAEFECT_WITH_DB']
+      Gitlab::SetupHelper::Praefect.create_configuration(
+        gitaly_dir,
+        { 'praefect' => repos_path },
+        force: true,
+        options: {
+          per_repository: true,
+          config_filename: 'praefect-db.config.toml',
+          pghost: ENV['CI'] ? 'postgres' : ENV.fetch('PGHOST'),
+          pgport: ENV['CI'] ? 5432 : ENV.fetch('PGPORT').to_i,
+          pguser: ENV['CI'] ? 'postgres' : ENV.fetch('USER')
+        }
+      )
+    end
+
+    # In CI no database is running when Gitaly is set up
+    # so scripts/gitaly-test-spawn will take care of it instead.
+    setup_praefect unless ENV['CI']
+  end
+
+  def setup_praefect
+    return unless ENV['GITALY_PRAEFECT_WITH_DB']
+
+    migrate_cmd = service_cmd(:praefect, File.join(tmp_tests_gitaly_dir, 'praefect-db.config.toml')) + ['sql-migrate']
+    system(env, *migrate_cmd, [:out, :err] => 'log/praefect-test.log')
   end
 
   def socket_path(service)
