@@ -1,0 +1,203 @@
+<script>
+import { uniqueId } from 'lodash';
+import { GlAlert } from '@gitlab/ui';
+import { needsArkoseLabsChallenge } from 'ee/rest_api';
+import { logError } from '~/lib/logger';
+import { loadingIconForLegacyJS } from '~/loading_icon_for_legacy_js';
+import { __ } from '~/locale';
+import DomElementListener from '~/vue_shared/components/dom_element_listener.vue';
+import { initArkoseLabsScript } from '../init_arkose_labs_script';
+
+const LOADING_ICON = loadingIconForLegacyJS({ classes: ['gl-mr-2'] });
+
+const MSG_ARKOSE_NEEDED = __('Complete verification to sign in.');
+const MSG_ARKOSE_FAILURE_TITLE = __('Unable to verify the user');
+const MSG_ARKOSE_FAILURE_BODY = __(
+  'An error occurred when loading the user verification challenge. Refresh to try again.',
+);
+
+const ARKOSE_CONTAINER_CLASS = 'js-arkose-labs-container-';
+
+const VERIFICATION_TOKEN_INPUT_NAME = 'arkose_labs_token';
+
+export default {
+  components: {
+    DomElementListener,
+    GlAlert,
+  },
+  props: {
+    publicKey: {
+      type: String,
+      required: true,
+    },
+    formSelector: {
+      type: String,
+      required: true,
+    },
+    usernameSelector: {
+      type: String,
+      required: true,
+    },
+    submitSelector: {
+      type: String,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      arkoseLabsIframeShown: false,
+      showArkoseNeededError: false,
+      showArkoseFailure: false,
+      username: '',
+      isLoading: false,
+      arkoseInitialized: false,
+      arkoseToken: '',
+      arkoseContainerClass: uniqueId(ARKOSE_CONTAINER_CLASS),
+      arkoseChallengePassed: false,
+    };
+  },
+  computed: {
+    isVisible() {
+      return this.arkoseLabsIframeShown || this.showErrorContainer;
+    },
+    showErrorContainer() {
+      return this.showArkoseNeededError || this.showArkoseFailure;
+    },
+  },
+  watch: {
+    username() {
+      this.checkIfNeedsChallenge();
+    },
+    isLoading(val) {
+      this.updateSubmitButtonLoading(val);
+    },
+  },
+  mounted() {
+    this.username = this.getUsernameValue();
+  },
+  methods: {
+    onArkoseLabsIframeShown() {
+      this.arkoseLabsIframeShown = true;
+    },
+    hideErrors() {
+      this.showArkoseNeededError = false;
+      this.showArkoseFailure = false;
+    },
+    getUsernameValue() {
+      return document.querySelector(this.usernameSelector)?.value || '';
+    },
+    onUsernameBlur() {
+      this.username = this.getUsernameValue();
+    },
+    onSubmit(e) {
+      if (!this.arkoseInitialized || this.arkoseChallengePassed) {
+        return;
+      }
+      e.preventDefault();
+      this.showArkoseNeededError = true;
+    },
+    async checkIfNeedsChallenge() {
+      if (!this.username || this.arkoseInitialized) {
+        return;
+      }
+
+      this.isLoading = true;
+
+      try {
+        const {
+          data: { result },
+        } = await needsArkoseLabsChallenge(this.username);
+
+        if (result) {
+          await this.initArkoseLabs();
+        }
+      } catch (e) {
+        if (e.response?.status === 404) {
+          // We ignore 404 errors as it just means the username does not exist.
+        } else if (e.response?.status) {
+          // If the request failed with any other error code, we initialize the challenge to make
+          // sure it isn't being bypassed by purposefully making the endpoint fail.
+          this.initArkoseLabs();
+        } else {
+          // For any other failure, we show the initialization error message.
+          this.handleArkoseLabsFailure(e);
+        }
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    async initArkoseLabs() {
+      this.arkoseInitialized = true;
+
+      const enforcement = await initArkoseLabsScript({ publicKey: this.publicKey });
+
+      enforcement.setConfig({
+        mode: 'inline',
+        selector: `.${this.arkoseContainerClass}`,
+        onShown: this.onArkoseLabsIframeShown,
+        onCompleted: this.passArkoseLabsChallenge,
+        onError: this.handleArkoseLabsFailure,
+      });
+    },
+    passArkoseLabsChallenge(response) {
+      this.arkoseChallengePassed = true;
+      this.arkoseToken = response.token;
+      this.hideErrors();
+    },
+    handleArkoseLabsFailure(e) {
+      logError('ArkoseLabs initialization error', e);
+      this.showArkoseFailure = true;
+    },
+    updateSubmitButtonLoading(val) {
+      const button = document.querySelector(this.submitSelector);
+
+      if (val) {
+        const label = __('Loading');
+        button.innerHTML = `
+          ${LOADING_ICON.outerHTML}
+          ${label}
+        `;
+        button.setAttribute('disabled', true);
+      } else {
+        button.innerText = __('Sign in');
+        button.removeAttribute('disabled');
+      }
+    },
+  },
+  MSG_ARKOSE_NEEDED,
+  MSG_ARKOSE_FAILURE_TITLE,
+  MSG_ARKOSE_FAILURE_BODY,
+  VERIFICATION_TOKEN_INPUT_NAME,
+};
+</script>
+
+<template>
+  <div v-show="isVisible">
+    <input
+      v-if="arkoseInitialized"
+      :name="$options.VERIFICATION_TOKEN_INPUT_NAME"
+      type="hidden"
+      :value="arkoseToken"
+    />
+    <dom-element-listener :selector="usernameSelector" @blur="onUsernameBlur" />
+    <dom-element-listener :selector="formSelector" @submit="onSubmit" />
+    <div
+      class="gl-display-flex gl-justify-content-center gl-mt-3 gl-mb-n3"
+      :class="arkoseContainerClass"
+      data-testid="arkose-labs-challenge"
+    ></div>
+    <div v-if="showErrorContainer" class="gl-mb-3" data-testid="arkose-labs-error-message">
+      <gl-alert
+        v-if="showArkoseFailure"
+        :title="$options.MSG_ARKOSE_FAILURE_TITLE"
+        variant="danger"
+        :dismissible="false"
+      >
+        {{ $options.MSG_ARKOSE_FAILURE_BODY }}
+      </gl-alert>
+      <span v-else-if="showArkoseNeededError" class="gl-text-red-500">
+        {{ $options.MSG_ARKOSE_NEEDED }}
+      </span>
+    </div>
+  </div>
+</template>
