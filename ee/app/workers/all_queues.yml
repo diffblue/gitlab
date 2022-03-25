@@ -14,7 +14,7 @@
   :tags: []
 - :name: cronjob:active_user_count_threshold
   :worker_name: ActiveUserCountThresholdWorker
-  :feature_category: :license
+  :feature_category: :provision
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown
@@ -419,7 +419,7 @@
   :tags: []
 - :name: cronjob:sync_seat_link
   :worker_name: SyncSeatLinkWorker
-  :feature_category: :license
+  :feature_category: :provision
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown
@@ -1229,7 +1229,7 @@
   :tags: []
 - :name: namespaces_sync_namespace_name
   :worker_name: Namespaces::SyncNamespaceNameWorker
-  :feature_category: :license
+  :feature_category: :provision
   :has_external_dependencies: true
   :urgency: :low
   :resource_boundary: :unknown
@@ -1355,7 +1355,7 @@
   :tags: []
 - :name: sync_seat_link_request
   :worker_name: SyncSeatLinkRequestWorker
-  :feature_category: :license
+  :feature_category: :provision
   :has_external_dependencies: true
   :urgency: :low
   :resource_boundary: :unknown
