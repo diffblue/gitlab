@@ -36,6 +36,10 @@ module EE
 
         urgency :high, [:delete_description_version]
         urgency :low, [:description_diff]
+        urgency :low, [
+          :sast_reports,
+          :secret_detection_reports
+        ]
       end
 
       def can_run_sast_experiments_on?(project)
