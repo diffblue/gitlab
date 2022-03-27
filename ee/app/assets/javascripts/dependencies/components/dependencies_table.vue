@@ -117,7 +117,7 @@ export default {
   >
     <template #head(location)="data">
       {{ data.label }}
-      <gl-icon id="location-info" name="information" class="gl-text-blue-600" />
+      <gl-icon id="location-info" name="information-o" class="gl-text-blue-600" />
       <gl-popover
         target="location-info"
         placement="top"
