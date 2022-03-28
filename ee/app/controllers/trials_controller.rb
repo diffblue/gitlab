@@ -36,7 +36,7 @@ class TrialsController < ApplicationController
 
     render(:new) && return unless @result[:success]
 
-    if params[:onboarding] == 'true'
+    if params[:onboarding] == 'true' || params[:trial] == 'true'
       redirect_to(new_users_sign_up_groups_project_path(url_params.merge(trial_onboarding_flow: true)))
     elsif @namespace = helpers.only_trialable_group_namespace
       params[:namespace_id] = @namespace.id
@@ -50,6 +50,7 @@ class TrialsController < ApplicationController
     result = GitlabSubscriptions::CreateHandRaiseLeadService.new.execute(hand_raise_lead_params)
 
     if result.success?
+      redirect_to new_users_sign_up_groups_project_path(skip_trial: true) if params.has_key?(:trial)
       head 200
     else
       render_403
