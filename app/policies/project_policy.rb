@@ -599,12 +599,13 @@ class ProjectPolicy < BasePolicy
     enable :read_cycle_analytics
     enable :read_pages_content
     enable :read_analytics
-    enable :read_ci_cd_analytics
     enable :read_insights
 
     # NOTE: may be overridden by IssuePolicy
     enable :read_issue
   end
+
+  rule { can?(:public_access) & public_builds }.enable :read_ci_cd_analytics
 
   rule { public_builds }.policy do
     enable :read_build

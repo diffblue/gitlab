@@ -1353,6 +1353,110 @@ RSpec.describe ProjectPolicy do
     end
   end
 
+  describe 'read_ci_cd_analytics' do
+    context 'public project' do
+      let(:project) { create(:project, :public, :analytics_enabled) }
+      let(:current_user) { create(:user) }
+
+      context 'when public pipelines are disabled for the project' do
+        before do
+          project.update!(public_builds: false)
+        end
+
+        context 'project member' do
+          %w(guest reporter developer maintainer).each do |role|
+            context role do
+              before do
+                project.add_user(current_user, role.to_sym)
+              end
+
+              if role == 'guest'
+                it { is_expected.to be_disallowed(:read_ci_cd_analytics) }
+              else
+                it { is_expected.to be_allowed(:read_ci_cd_analytics) }
+              end
+            end
+          end
+        end
+
+        context 'non member' do
+          let(:current_user) { non_member }
+
+          it { is_expected.to be_disallowed(:read_ci_cd_analytics) }
+        end
+
+        context 'anonymous' do
+          let(:current_user) { anonymous }
+
+          it { is_expected.to be_disallowed(:read_ci_cd_analytics) }
+        end
+      end
+
+      context 'when public pipelines are enabled for the project' do
+        before do
+          project.update!(public_builds: true)
+        end
+
+        context 'project member' do
+          %w(guest reporter developer maintainer).each do |role|
+            context role do
+              before do
+                project.add_user(current_user, role.to_sym)
+              end
+
+              it { is_expected.to be_allowed(:read_ci_cd_analytics) }
+            end
+          end
+        end
+
+        context 'non member' do
+          let(:current_user) { non_member }
+
+          it { is_expected.to be_allowed(:read_ci_cd_analytics) }
+        end
+
+        context 'anonymous' do
+          let(:current_user) { anonymous }
+
+          it { is_expected.to be_allowed(:read_ci_cd_analytics) }
+        end
+      end
+    end
+
+    context 'private project' do
+      let(:project) { create(:project, :private, :analytics_enabled) }
+      let(:current_user) { create(:user) }
+
+      context 'project member' do
+        %w(guest reporter developer maintainer).each do |role|
+          context role do
+            before do
+              project.add_user(current_user, role.to_sym)
+            end
+
+            if role == 'guest'
+              it { is_expected.to be_disallowed(:read_ci_cd_analytics) }
+            else
+              it { is_expected.to be_allowed(:read_ci_cd_analytics) }
+            end
+          end
+        end
+      end
+
+      context 'non member' do
+        let(:current_user) { non_member }
+
+        it { is_expected.to be_disallowed(:read_ci_cd_analytics) }
+      end
+
+      context 'anonymous' do
+        let(:current_user) { anonymous }
+
+        it { is_expected.to be_disallowed(:read_ci_cd_analytics) }
+      end
+    end
+  end
+
   it_behaves_like 'Self-managed Core resource access tokens'
 
   describe 'operations feature' do
