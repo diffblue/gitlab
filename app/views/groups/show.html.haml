@@ -37,8 +37,8 @@
     .scrolling-tabs-container.inner-page-scroll-tabs
       .fade-left= sprite_icon('chevron-lg-left', size: 12)
       .fade-right= sprite_icon('chevron-lg-right', size: 12)
-      // `item_active` is set to `false` as the active state is set by `app/assets/javascripts/pages/groups/shared/group_details.js`
-      // TODO: Replace this approach in https://gitlab.com/gitlab-org/gitlab/-/issues/23466
+      -# `item_active` is set to `false` as the active state is set by `app/assets/javascripts/pages/groups/shared/group_details.js`
+      -# TODO: Replace this approach in https://gitlab.com/gitlab-org/gitlab/-/issues/23466
       = gl_tabs_nav({ class: 'nav-links scrolling-tabs gl-display-flex gl-flex-grow-1 gl-flex-nowrap gl-border-0' }) do
         = gl_tab_link_to group_path, item_active: false, tab_class: 'js-subgroups_and_projects-tab', data: { target: 'div#subgroups_and_projects', action: 'subgroups_and_projects', toggle: 'tab' } do
           = _("Subgroups and projects")
