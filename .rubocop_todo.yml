@@ -603,13 +603,6 @@ Style/SingleArgumentDig:
 Style/SoleNestedConditional:
   Enabled: false
 
-# Offense count: 120
-# Cop supports --auto-correct.
-# Configuration parameters: .
-# SupportedStyles: use_perl_names, use_english_names
-Style/SpecialGlobalVars:
-  EnforcedStyle: use_perl_names
-
 # Offense count: 562
 # Cop supports --auto-correct.
 Style/StringConcatenation:
