@@ -197,7 +197,9 @@ RSpec.describe ProjectsHelper do
           project_full_path: project.full_path,
           no_vulnerabilities_svg_path: start_with('/assets/illustrations/issues-'),
           dashboard_documentation: '/help/user/application_security/security_dashboard/index',
-          security_configuration_path: end_with('/configuration')
+          security_configuration_path: end_with('/configuration'),
+          can_admin_vulnerability: 'true',
+          new_vulnerability_path: end_with('/security/vulnerabilities/new')
         }
       end
 
