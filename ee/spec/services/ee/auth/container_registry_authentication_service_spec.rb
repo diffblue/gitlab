@@ -75,17 +75,33 @@ RSpec.describe Auth::ContainerRegistryAuthenticationService do
         project.add_developer(current_user)
       end
 
+      shared_examples 'storage error' do
+        it 'returns an appropriate response' do
+          expect(subject[:errors].first).to include(
+            code: 'DENIED',
+            message: 'You are above your storage quota! Visit https://docs.gitlab.com/ee/user/usage_quotas.html to learn more.'
+          )
+        end
+      end
+
       context 'does not allow developer to push images' do
-        let(:current_params) do
-          { scopes: ["repository:#{project.full_path}:push"] }
+        context 'when only pushing an image' do
+          let(:current_params) do
+            { scopes: ["repository:#{project.full_path}:push"] }
+          end
+
+          it_behaves_like 'not a container repository factory' do
+            it_behaves_like 'storage error'
+          end
         end
 
-        it_behaves_like 'not a container repository factory' do
-          it 'returns an appropriate response' do
-            expect(subject[:errors].first).to include(
-              code: 'DENIED',
-              message: 'You are above your storage quota! Visit https://docs.gitlab.com/ee/user/usage_quotas.html to learn more.'
-            )
+        context 'when performing multiple actions including push' do
+          let(:current_params) do
+            { scopes: ["repository:#{project.full_path}:push,pull"] }
+          end
+
+          it_behaves_like 'not a container repository factory' do
+            it_behaves_like 'storage error'
           end
         end
       end
