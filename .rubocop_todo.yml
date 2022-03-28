@@ -157,25 +157,6 @@ Performance/CollectionLiteralInLoop:
 Performance/ConstantRegexp:
   Enabled: false
 
-# Offense count: 14
-# Cop supports --auto-correct.
-# Configuration parameters: SafeMultiline.
-Performance/DeletePrefix:
-  Exclude:
-    - 'app/helpers/submodule_helper.rb'
-    - 'app/workers/concerns/application_worker.rb'
-    - 'ee/lib/gitlab/geo/git_ssh_proxy.rb'
-    - 'lib/banzai/filter/repository_link_filter.rb'
-    - 'lib/gitlab/auth/ldap/dn.rb'
-    - 'lib/gitlab/gfm/uploads_rewriter.rb'
-    - 'lib/gitlab/git/ref.rb'
-    - 'lib/gitlab/project_template.rb'
-    - 'lib/gitlab/setup_helper.rb'
-    - 'lib/gitlab/time_tracking_formatter.rb'
-    - 'spec/controllers/projects/artifacts_controller_spec.rb'
-    - 'spec/lib/gitlab/gfm/uploads_rewriter_spec.rb'
-    - 'spec/support/helpers/test_env.rb'
-
 # Offense count: 121
 Performance/MethodObjectAsBlock:
   Enabled: false
