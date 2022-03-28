@@ -1731,6 +1731,7 @@ RSpec.describe GroupPolicy do
         :reporter         | true
         :guest            | false
         :non_group_member | false
+        :auditor          | true
       end
 
       before do
