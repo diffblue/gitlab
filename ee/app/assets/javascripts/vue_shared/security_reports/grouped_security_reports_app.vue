@@ -8,7 +8,8 @@ import {
   GlModalDirective,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
-import { s__, n__, __ } from '~/locale';
+import { spriteIcon } from '~/lib/utils/common_utils';
+import { s__, n__, __, sprintf } from '~/locale';
 import { componentNames } from 'ee/reports/components/issue_body';
 import { fetchPolicies } from '~/lib/graphql';
 import { mrStates } from '~/mr_popover/constants';
@@ -22,12 +23,18 @@ import SecuritySummary from '~/vue_shared/security_reports/components/security_s
 import {
   REPORT_TYPE_DAST,
   securityReportTypeEnumToReportType,
+  sastPopover,
+  containerScanningPopover,
+  dastPopover,
+  dependencyScanningPopover,
+  secretDetectionPopover,
+  coverageFuzzingPopover,
+  apiFuzzingPopover,
 } from 'ee/vue_shared/security_reports/constants';
 import DastModal from './components/dast_modal.vue';
 import IssueModal from './components/modal.vue';
 
 import securityReportSummaryQuery from './graphql/mr_security_report_summary.graphql';
-import securityReportsMixin from './mixins/security_report_mixin';
 import { vulnerabilityModalMixin } from './mixins/vulnerability_modal_mixin';
 import createStore from './store';
 import {
@@ -60,23 +67,7 @@ export default {
     'gl-modal': GlModalDirective,
     GlTooltip,
   },
-  mixins: [securityReportsMixin, vulnerabilityModalMixin()],
-  apollo: {
-    dastSummary: {
-      query: securityReportSummaryQuery,
-      fetchPolicy: fetchPolicies.NETWORK_ONLY,
-      variables() {
-        return {
-          fullPath: this.projectFullPath,
-          pipelineIid: this.pipelineIid,
-        };
-      },
-      update(data) {
-        const dast = data?.project?.pipeline?.securityReportSummary?.dast;
-        return dast && Object.keys(dast).length ? dast : null;
-      },
-    },
-  },
+  mixins: [vulnerabilityModalMixin()],
   props: {
     enabledReports: {
       type: Object,
@@ -250,7 +241,30 @@ export default {
       required: true,
     },
   },
+  apollo: {
+    dastSummary: {
+      query: securityReportSummaryQuery,
+      fetchPolicy: fetchPolicies.NETWORK_ONLY,
+      variables() {
+        return {
+          fullPath: this.projectFullPath,
+          pipelineIid: this.pipelineIid,
+        };
+      },
+      update(data) {
+        const dast = data?.project?.pipeline?.securityReportSummary?.dast;
+        return dast && Object.keys(dast).length ? dast : null;
+      },
+    },
+  },
   i18n: {
+    sastPopover,
+    containerScanningPopover,
+    dastPopover,
+    dependencyScanningPopover,
+    secretDetectionPopover,
+    coverageFuzzingPopover,
+    apiFuzzingPopover,
     scannedResources: s__('SecurityReports|scanned resources'),
     viewReport: s__('ciReport|View full report'),
     divergedFromTargetBranch: __(
@@ -494,6 +508,19 @@ export default {
         // Do nothing, we dispatch an error message in the action
       }
     },
+    getPopover(popoverContent, url) {
+      return {
+        title: popoverContent.title,
+        content: sprintf(
+          popoverContent.copy,
+          {
+            linkStartTag: `<a href="${url}" target="_blank" rel="noopener noreferrer">`,
+            linkEndTag: `${spriteIcon('external-link', 's16')}</a>`,
+          },
+          false,
+        ),
+      };
+    },
   },
   summarySlots: ['success', 'error', 'loading'],
   reportTypes: {
@@ -561,7 +588,7 @@ export default {
           <summary-row
             :nested-summary="true"
             :status-icon="sastStatusIcon"
-            :popover-options="sastPopover"
+            :popover-options="getPopover($options.i18n.sastPopover, sastHelpPath)"
             class="js-sast-widget"
             data-qa-selector="sast_scan_report"
           >
@@ -584,7 +611,9 @@ export default {
           <summary-row
             :nested-summary="true"
             :status-icon="dependencyScanningStatusIcon"
-            :popover-options="dependencyScanningPopover"
+            :popover-options="
+              getPopover($options.i18n.dependencyScanningPopover, dependencyScanningHelpPath)
+            "
             class="js-dependency-scanning-widget"
             data-qa-selector="dependency_scan_report"
           >
@@ -607,7 +636,9 @@ export default {
           <summary-row
             :nested-summary="true"
             :status-icon="containerScanningStatusIcon"
-            :popover-options="containerScanningPopover"
+            :popover-options="
+              getPopover($options.i18n.containerScanningPopover, containerScanningHelpPath)
+            "
             class="js-container-scanning"
             data-qa-selector="container_scan_report"
           >
@@ -630,7 +661,7 @@ export default {
           <summary-row
             :nested-summary="true"
             :status-icon="dastStatusIcon"
-            :popover-options="dastPopover"
+            :popover-options="getPopover($options.i18n.dastPopover, dastHelpPath)"
             class="js-dast-widget"
             data-qa-selector="dast_scan_report"
           >
@@ -676,7 +707,9 @@ export default {
           <summary-row
             :nested-summary="true"
             :status-icon="secretDetectionStatusIcon"
-            :popover-options="secretDetectionPopover"
+            :popover-options="
+              getPopover($options.i18n.secretDetectionPopover, secretDetectionHelpPath)
+            "
             class="js-secret-detection"
             data-testid="secret-detection-report"
           >
@@ -699,7 +732,9 @@ export default {
           <summary-row
             :nested-summary="true"
             :status-icon="coverageFuzzingStatusIcon"
-            :popover-options="coverageFuzzingPopover"
+            :popover-options="
+              getPopover($options.i18n.coverageFuzzingPopover, coverageFuzzingHelpPath)
+            "
             class="js-coverage-fuzzing-widget"
             data-qa-selector="coverage_fuzzing_report"
           >
@@ -728,7 +763,7 @@ export default {
           <summary-row
             :nested-summary="true"
             :status-icon="apiFuzzingStatusIcon"
-            :popover-options="apiFuzzingPopover"
+            :popover-options="getPopover($options.i18n.apiFuzzingPopover, apiFuzzingHelpPath)"
             class="js-api-fuzzing-widget"
             data-qa-selector="api_fuzzing_report"
           >
