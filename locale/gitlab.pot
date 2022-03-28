@@ -36358,6 +36358,11 @@ msgstr ""
 msgid "SuperSonics|To activate your subscription, connect to GitLab servers through the %{linkStart}Cloud Licensing%{linkEnd} service, a hassle-free way to manage your subscription."
 msgstr ""
 
+msgid "SuperSonics|User in subscription"
+msgid_plural "SuperSonics|Users in subscription"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "SuperSonics|Users in subscription"
 msgstr ""
 
