@@ -94,6 +94,7 @@ export const I18N_AGENT_TOKEN = {
   tokenSingleUseWarningTitle: s__(
     'ClusterAgents|You cannot see this token again after you close this window.',
   ),
+  tokenSubtitle: s__('ClusterAgents|The agent uses the token to connect with GitLab.'),
 
   basicInstallTitle: s__('ClusterAgents|Recommended installation method'),
   basicInstallBody: s__(

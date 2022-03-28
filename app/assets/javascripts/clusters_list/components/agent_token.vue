@@ -54,6 +54,10 @@ export default {
       </gl-form-input-group>
     </p>
 
+    <p>
+      {{ $options.i18n.tokenSubtitle }}
+    </p>
+
     <gl-alert :dismissible="false" variant="warning" class="gl-mb-5">
       {{ $options.i18n.tokenSingleUseWarningTitle }}
     </gl-alert>

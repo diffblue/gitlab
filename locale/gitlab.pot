@@ -7891,6 +7891,9 @@ msgstr ""
 msgid "ClusterAgents|Configuration"
 msgstr ""
 
+msgid "ClusterAgents|Connect a Kubernetes cluster"
+msgstr ""
+
 msgid "ClusterAgents|Connect a cluster"
 msgstr ""
 
@@ -7901,12 +7904,6 @@ msgid "ClusterAgents|Connect a cluster (certificate - deprecated)"
 msgstr ""
 
 msgid "ClusterAgents|Connect a cluster (deprecated)"
-msgstr ""
-
-msgid "ClusterAgents|Connect a cluster through an agent"
-msgstr ""
-
-msgid "ClusterAgents|Connect a Kubernetes cluster"
 msgstr ""
 
 msgid "ClusterAgents|Connect existing cluster"
@@ -8069,6 +8066,9 @@ msgid "ClusterAgents|The GitLab Agent provides an increased level of security wh
 msgstr ""
 
 msgid "ClusterAgents|The agent has not been connected in a long time. There might be a connectivity issue. Last contact was %{timeAgo}."
+msgstr ""
+
+msgid "ClusterAgents|The agent uses the token to connect with GitLab."
 msgstr ""
 
 msgid "ClusterAgents|The agent version do not match each other across your cluster's pods. This can happen when a new agent version was just deployed and Kubernetes is shutting down the old pods."
