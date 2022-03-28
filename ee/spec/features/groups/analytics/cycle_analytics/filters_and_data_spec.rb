@@ -20,8 +20,6 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
   path_nav_selector = '[data-testid="vsa-path-navigation"]'
   filter_bar_selector = '[data-testid="vsa-filter-bar"]'
   card_metric_selector = '[data-testid="vsa-metrics"] .gl-single-stat'
-  empty_state_selector = '[data-testid="vsa-empty-state"]'
-  empty_stage_state_selector = '.empty-state'
   new_issues_count = 3
 
   new_issues_count.times do |i|
@@ -59,9 +57,9 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
     sign_in(user)
   end
 
-  shared_examples 'empty value stream stage' do
+  shared_examples 'empty state' do
     it 'displays an empty state' do
-      element = page.find(empty_stage_state_selector)
+      element = page.find('.empty-state')
 
       expect(element).to have_content(_("We don't have enough data to show this stage."))
       expect(element.find('.svg-content img')['src']).to have_content('illustrations/analytics/cycle-analytics-empty-chart')
@@ -172,219 +170,176 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
     end
   end
 
-  context 'use_vsa_aggregated_tables feature flag off' do
+  context 'without valid query parameters set' do
+    context 'with created_after date > created_before date' do
+      before do
+        visit "#{group_analytics_cycle_analytics_path(group)}?created_after=2019-12-31&created_before=2019-11-01"
+      end
+
+      it_behaves_like 'no group available'
+    end
+
+    context 'with fake parameters' do
+      before do
+        visit "#{group_analytics_cycle_analytics_path(group)}?beans=not-cool"
+
+        select_stage("Issue")
+      end
+
+      it_behaves_like 'empty state'
+    end
+  end
+
+  context 'with valid query parameters set' do
+    projects_dropdown = '.js-projects-dropdown-filter'
+
+    context 'with project_ids set' do
+      before do
+        visit "#{group_analytics_cycle_analytics_path(group)}?project_ids[]=#{project.id}"
+      end
+
+      it 'has the projects dropdown prepopulated' do
+        element = page.find(projects_dropdown)
+
+        expect(element).to have_content project.name
+      end
+    end
+
+    context 'with created_before and created_after set' do
+      date_range = '.js-daterange-picker'
+
+      before do
+        visit "#{group_analytics_cycle_analytics_path(group)}?created_before=2019-12-31&created_after=2019-11-01"
+      end
+
+      it 'has the date range prepopulated' do
+        element = page.find(date_range)
+
+        expect(element.find('.js-daterange-picker-from input').value).to eq '2019-11-01'
+        expect(element.find('.js-daterange-picker-to input').value).to eq '2019-12-31'
+        expect(page.find('.js-tasks-by-type-chart')).to have_text(_("Showing data for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019") % { group_name: group.name })
+      end
+    end
+  end
+
+  context 'with a group' do
+    let(:selected_group) { group }
+
+    before do
+      select_group(group)
+    end
+
+    it_behaves_like 'group value stream analytics'
+
+    it_behaves_like 'has overview metrics'
+
+    it_behaves_like 'has default filters'
+  end
+
+  context 'with a sub group' do
+    let(:selected_group) { sub_group }
+
+    before do
+      select_group(sub_group)
+    end
+
+    it_behaves_like 'group value stream analytics'
+
+    it_behaves_like 'has overview metrics'
+
+    it_behaves_like 'has default filters'
+  end
+
+  context 'with lots of data', :js do
+    let_it_be(:issue) { create(:issue, project: project) }
+
+    around do |example|
+      freeze_time { example.run }
+    end
+
     before do
       stub_feature_flags(use_vsa_aggregated_tables: false)
+      issue.update!(created_at: 5.days.ago)
+      create_cycle(user, project, issue, mr, milestone, pipeline)
+      create(:labeled_issue, created_at: 5.days.ago, project: create(:project, group: group), labels: [group_label1])
+      create(:labeled_issue, created_at: 3.days.ago, project: create(:project, group: group), labels: [group_label2])
+
+      issue.metrics.update!(first_mentioned_in_commit_at: mr.created_at - 5.hours)
+      mr.metrics.update!(first_deployed_to_production_at: mr.created_at + 2.hours, merged_at: mr.created_at + 1.hour)
+
+      deploy_master(user, project, environment: 'staging')
+      deploy_master(user, project)
 
       select_group(group)
     end
 
-    it 'does not render the VSA empty state' do
-      expect(page).not_to have_selector(empty_state_selector)
-      expect(page).not_to have_text(s_('CycleAnalytics|Custom value streams to measure your DevSecOps lifecycle'))
+    stages_with_data = [
+      { title: 'Issue', description: 'Time before an issue gets scheduled', events_count: 1, time: '5d' },
+      { title: 'Code', description: 'Time until first merge request', events_count: 1, time: '5h' },
+      { title: 'Review', description: 'Time between merge request creation and merge/close', events_count: 1, time: '1h' },
+      { title: 'Staging', description: 'From merge request merge until deploy to production', events_count: 1, time: '1h' }
+    ]
+
+    stages_without_data = [
+      { title: 'Plan', description: 'Time before an issue starts implementation', events_count: 0, time: "-" },
+      { title: 'Test', description: 'Total test time for all commits/merges', events_count: 0, time: "-" }
+    ]
+
+    it 'each stage with events will display the stage events list when selected', :sidekiq_might_not_need_inline do
+      stages_without_data.each do |stage|
+        select_stage(stage[:title])
+        expect(page).not_to have_selector('[data-testid="vsa-stage-event"]')
+      end
+
+      stages_with_data.each do |stage|
+        select_stage(stage[:title])
+        expect(page).to have_selector('[data-testid="vsa-stage-table"]')
+        expect(page.all('[data-testid="vsa-stage-event"]').length).to eq(stage[:events_count])
+      end
     end
-  end
 
-  context 'use_vsa_aggregated_tables feature flag on' do
-    context 'without a value stream' do
-      before do
-        select_group(group, empty_state_selector)
-      end
+    it 'each stage will be selectable' do
+      [].concat(stages_without_data, stages_with_data).each do |stage|
+        select_stage(stage[:title])
 
-      it 'renders the empty value stream state' do
-        expect(page).to have_text(s_('CycleAnalytics|Custom value streams to measure your DevSecOps lifecycle'))
+        stage_name = page.find("#{path_nav_selector} .gl-path-active-item-indigo").text
+        expect(stage_name).to include(stage[:title])
+        expect(stage_name).to include(stage[:time])
+
+        expect(page).to have_selector('[data-testid="vsa-duration-chart"]')
       end
     end
 
-    context 'with a value stream' do
+    it 'will not display the stage table on the overview stage' do
+      expect(page).not_to have_selector('[data-testid="vsa-stage-table"]')
+
+      select_stage("Issue")
+      expect(page).to have_selector('[data-testid="vsa-stage-table"]')
+    end
+
+    it 'will have data available' do
+      duration_chart_content = page.find('[data-testid="vsa-duration-chart"]')
+      expect(duration_chart_content).not_to have_text(_("There is no data available. Please change your selection."))
+      expect(duration_chart_content).to have_text(s_('CycleAnalytics|Average time to completion'))
+
+      tasks_by_type_chart_content = page.find('.js-tasks-by-type-chart')
+      expect(tasks_by_type_chart_content).not_to have_text(_("There is no data available. Please change your selection."))
+    end
+
+    context 'with filters applied' do
       before do
-        value_stream = create(:cycle_analytics_group_value_stream, group: group, name: 'First value stream')
-        sub_value_stream = create(:cycle_analytics_group_value_stream, group: sub_group, name: 'First sub group value stream')
+        visit "#{group_analytics_cycle_analytics_path(group)}?created_before=2019-12-31&created_after=2019-11-01"
 
-        Gitlab::Analytics::CycleAnalytics::DefaultStages.all.map do |stage_params|
-          group.cycle_analytics_stages.create!(stage_params.merge(value_stream: value_stream))
-          sub_group.cycle_analytics_stages.create!(stage_params.merge(value_stream: sub_value_stream))
-        end
+        wait_for_stages_to_load
       end
 
-      context 'without valid query parameters set' do
-        context 'with created_after date > created_before date' do
-          before do
-            visit "#{group_analytics_cycle_analytics_path(group)}?created_after=2019-12-31&created_before=2019-11-01"
-          end
+      it 'will filter the data' do
+        duration_chart_content = page.find('[data-testid="vsa-duration-chart"]')
+        expect(duration_chart_content).not_to have_text(s_('CycleAnalytics|Average time to completion'))
+        expect(duration_chart_content).to have_text(s_("CycleAnalytics|There is no data for 'Total time' available. Adjust the current filters."))
 
-          it_behaves_like 'no group available'
-        end
-
-        context 'with fake parameters' do
-          before do
-            visit "#{group_analytics_cycle_analytics_path(group)}?beans=not-cool"
-
-            select_stage("Issue")
-          end
-
-          it_behaves_like 'empty value stream stage'
-        end
-      end
-
-      context 'with valid query parameters set' do
-        projects_dropdown = '.js-projects-dropdown-filter'
-
-        context 'with project_ids set' do
-          before do
-            visit "#{group_analytics_cycle_analytics_path(group)}?project_ids[]=#{project.id}"
-          end
-
-          it 'has the projects dropdown prepopulated' do
-            element = page.find(projects_dropdown)
-
-            expect(element).to have_content project.name
-          end
-        end
-
-        context 'with created_before and created_after set' do
-          let(:created_after) { '2019-11-01' }
-          let(:created_before) { '2019-12-31' }
-
-          date_range = '.js-daterange-picker'
-
-          before do
-            visit "#{group_analytics_cycle_analytics_path(group)}?created_before=#{created_before}&created_after=#{created_after}"
-          end
-
-          it 'has the date range prepopulated' do
-            element = page.find(date_range)
-
-            expect(element.find('.js-daterange-picker-from input').value).to eq created_after
-            expect(element.find('.js-daterange-picker-to input').value).to eq created_before
-
-            expect(page.find('.js-tasks-by-type-chart')).to have_text(_("Showing data for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019") % { group_name: group.name })
-          end
-        end
-      end
-
-      context 'with a group' do
-        let(:selected_group) { group }
-
-        before do
-          select_group(group)
-        end
-
-        it_behaves_like 'group value stream analytics'
-
-        it_behaves_like 'has overview metrics'
-
-        it_behaves_like 'has default filters'
-      end
-
-      context 'with a sub group' do
-        let(:selected_group) { sub_group }
-
-        before do
-          select_group(sub_group)
-        end
-
-        it_behaves_like 'group value stream analytics'
-
-        it_behaves_like 'has overview metrics'
-
-        it_behaves_like 'has default filters'
-      end
-
-      context 'with lots of data', :js do
-        let_it_be(:issue) { create(:issue, project: project) }
-
-        around do |example|
-          freeze_time { example.run }
-        end
-
-        before do
-          issue.update!(created_at: 5.days.ago)
-          create_cycle(user, project, issue, mr, milestone, pipeline)
-          create(:labeled_issue, created_at: 5.days.ago, project: create(:project, group: group), labels: [group_label1])
-          create(:labeled_issue, created_at: 3.days.ago, project: create(:project, group: group), labels: [group_label2])
-
-          issue.metrics.update!(first_mentioned_in_commit_at: mr.created_at - 5.hours)
-          mr.metrics.update!(first_deployed_to_production_at: mr.created_at + 2.hours, merged_at: mr.created_at + 1.hour)
-
-          deploy_master(user, project, environment: 'staging')
-          deploy_master(user, project)
-
-          aggregation = Analytics::CycleAnalytics::Aggregation.safe_create_for_group(group)
-          Analytics::CycleAnalytics::AggregatorService.new(aggregation: aggregation).execute
-
-          select_group(group)
-        end
-
-        stages_with_data = [
-          { title: 'Issue', description: 'Time before an issue gets scheduled', events_count: 1, time: '5d' },
-          { title: 'Code', description: 'Time until first merge request', events_count: 1, time: '5h' },
-          { title: 'Review', description: 'Time between merge request creation and merge/close', events_count: 1, time: '1h' },
-          { title: 'Staging', description: 'From merge request merge until deploy to production', events_count: 1, time: '1h' }
-        ]
-
-        stages_without_data = [
-          { title: 'Plan', description: 'Time before an issue starts implementation', events_count: 0, time: "-" },
-          { title: 'Test', description: 'Total test time for all commits/merges', events_count: 0, time: "-" }
-        ]
-
-        it 'each stage with events will display the stage events list when selected', :sidekiq_might_not_need_inline do
-          stages_without_data.each do |stage|
-            select_stage(stage[:title])
-            expect(page).not_to have_selector('[data-testid="vsa-stage-event"]')
-          end
-
-          stages_with_data.each do |stage|
-            select_stage(stage[:title])
-            expect(page).to have_selector('[data-testid="vsa-stage-table"]')
-            expect(page.all('[data-testid="vsa-stage-event"]').length).to eq(stage[:events_count])
-          end
-        end
-
-        it 'each stage will be selectable' do
-          [].concat(stages_without_data, stages_with_data).each do |stage|
-            select_stage(stage[:title])
-
-            stage_name = page.find("#{path_nav_selector} .gl-path-active-item-indigo").text
-            expect(stage_name).to include(stage[:title])
-            expect(stage_name).to include(stage[:time])
-
-            expect(page).to have_selector('[data-testid="vsa-duration-chart"]')
-          end
-        end
-
-        it 'will not display the stage table on the overview stage' do
-          expect(page).not_to have_selector('[data-testid="vsa-stage-table"]')
-
-          select_stage("Issue")
-          expect(page).to have_selector('[data-testid="vsa-stage-table"]')
-        end
-
-        it 'will have data available' do
-          duration_chart_content = page.find('[data-testid="vsa-duration-chart"]')
-          expect(duration_chart_content).not_to have_text(_("There is no data available. Please change your selection."))
-          expect(duration_chart_content).to have_text(s_('CycleAnalytics|Average time to completion'))
-
-          tasks_by_type_chart_content = page.find('.js-tasks-by-type-chart')
-          expect(tasks_by_type_chart_content).not_to have_text(_("There is no data available. Please change your selection."))
-        end
-
-        context 'with filters applied' do
-          before do
-            visit "#{group_analytics_cycle_analytics_path(group)}?created_before=2019-12-31&created_after=2019-11-01"
-
-            wait_for_stages_to_load
-          end
-
-          it 'will filter the data' do
-            duration_chart_content = page.find('[data-testid="vsa-duration-chart"]')
-            expect(duration_chart_content).not_to have_text(s_('CycleAnalytics|Average time to completion'))
-            expect(duration_chart_content).to have_text(s_("CycleAnalytics|There is no data for 'Total time' available. Adjust the current filters."))
-
-            tasks_by_type_chart_content = page.find('.js-tasks-by-type-chart')
-            expect(tasks_by_type_chart_content).to have_text(_("There is no data available. Please change your selection."))
-          end
-        end
+        tasks_by_type_chart_content = page.find('.js-tasks-by-type-chart')
+        expect(tasks_by_type_chart_content).to have_text(_("There is no data available. Please change your selection."))
       end
     end
   end
