@@ -9,7 +9,6 @@ import DurationChart from 'ee/analytics/cycle_analytics/components/duration_char
 import TypeOfWorkCharts from 'ee/analytics/cycle_analytics/components/type_of_work_charts.vue';
 import ValueStreamSelect from 'ee/analytics/cycle_analytics/components/value_stream_select.vue';
 import ValueStreamAggregationStatus from 'ee/analytics/cycle_analytics/components/value_stream_aggregation_status.vue';
-import ValueStreamEmptyState from 'ee/analytics/cycle_analytics/components/value_stream_empty_state.vue';
 import createStore from 'ee/analytics/cycle_analytics/store';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
@@ -196,12 +195,11 @@ describe('EE Value Stream Analytics component', () => {
     expect(wrapper.findComponent(ValueStreamSelect).exists()).toBe(flag);
   };
 
-  describe('with no value streams', () => {
+  describe('without a group', () => {
     beforeEach(async () => {
+      const { group, ...stateWithoutGroup } = initialCycleAnalyticsState;
       mock = new MockAdapter(axios);
-      wrapper = await createComponent({
-        initialState: { ...initialCycleAnalyticsState, valueStreams: [] },
-      });
+      wrapper = await createComponent({ initialState: stateWithoutGroup });
     });
 
     afterEach(() => {
@@ -211,10 +209,10 @@ describe('EE Value Stream Analytics component', () => {
     });
 
     it('displays an empty state', () => {
-      const emptyState = wrapper.findComponent(ValueStreamEmptyState);
+      const emptyState = wrapper.findComponent(GlEmptyState);
 
       expect(emptyState.exists()).toBe(true);
-      expect(emptyState.props('emptyStateSvgPath')).toBe(emptyStateSvgPath);
+      expect(emptyState.props('svgPath')).toBe(emptyStateSvgPath);
     });
 
     it('does not display the metrics cards', () => {

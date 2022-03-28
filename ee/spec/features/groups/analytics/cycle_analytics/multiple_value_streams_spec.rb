@@ -18,7 +18,7 @@ RSpec.describe 'Multiple value streams', :js do
 
   let(:extended_form_fields_selector) { '[data-testid="extended-form-fields"]' }
   let(:preset_selector) { '[data-testid="vsa-preset-selector"]' }
-  let(:empty_state_selector) { '[data-testid="vsa-empty-state"]' }
+  let!(:default_value_stream) { create(:cycle_analytics_group_value_stream, group: group, name: 'default') }
 
   3.times do |i|
     let_it_be("issue_#{i}".to_sym) { create(:issue, title: "New Issue #{i}", project: project, created_at: 2.days.ago) }
@@ -198,7 +198,7 @@ RSpec.describe 'Multiple value streams', :js do
     end
   end
 
-  shared_examples 'create group value streams' do
+  describe 'With a group' do
     name = 'group value stream'
 
     before do
@@ -210,7 +210,7 @@ RSpec.describe 'Multiple value streams', :js do
     it_behaves_like 'delete a value stream', name
   end
 
-  shared_examples 'create sub group value streams' do
+  describe 'With a sub group' do
     name = 'sub group value stream'
 
     before do
@@ -220,43 +220,5 @@ RSpec.describe 'Multiple value streams', :js do
     it_behaves_like 'create a value stream', name
     it_behaves_like 'update a value stream', name
     it_behaves_like 'delete a value stream', name
-  end
-
-  context 'use_vsa_aggregated_tables feature flag off' do
-    before do
-      stub_feature_flags(use_vsa_aggregated_tables: false)
-    end
-
-    it_behaves_like 'create group value streams'
-    it_behaves_like 'create sub group value streams'
-  end
-
-  context 'use_vsa_aggregated_tables feature flag on' do
-    context 'without a value stream' do
-      before do
-        select_group(group, empty_state_selector)
-      end
-
-      it 'renders the empty state' do
-        expect(page).to have_text(s_('CycleAnalytics|Custom value streams to measure your DevSecOps lifecycle'))
-      end
-
-      it 'can navigate to the create value stream form' do
-        page.find('[data-testid="create-value-stream-button"]').click
-
-        expect(page).to have_selector('[data-testid="value-stream-form-modal"]')
-      end
-    end
-
-    context 'with a value stream' do
-      before do
-        # ensure we have a value stream already available
-        create(:cycle_analytics_group_value_stream, group: group, name: 'default')
-        create(:cycle_analytics_group_value_stream, group: sub_group, name: 'default')
-      end
-
-      it_behaves_like 'create group value streams'
-      it_behaves_like 'create sub group value streams'
-    end
   end
 end
