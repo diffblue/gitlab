@@ -3,6 +3,7 @@
 module EE
   module IssuePresenter
     extend ActiveSupport::Concern
+    extend ::Gitlab::Utils::Override
 
     def sla_due_at
       return unless sla_available?
@@ -10,6 +11,7 @@ module EE
       issuable_sla&.due_at
     end
 
+    override :web_url
     def web_url
       return super unless issue.issue_type == 'test_case'
 
