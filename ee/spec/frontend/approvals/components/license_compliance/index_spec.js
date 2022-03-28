@@ -108,7 +108,7 @@ describe('EE Approvals LicenseCompliance', () => {
     });
 
     it('renders an information icon', () => {
-      expect(findInformationIcon().props('name')).toBe('information');
+      expect(findInformationIcon().props('name')).toBe('information-o');
     });
 
     it('opens the link to the documentation page in a new tab', () => {

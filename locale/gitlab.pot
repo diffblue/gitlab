@@ -22239,9 +22239,6 @@ msgstr ""
 msgid "LicenseCompliance|Learn more about %{linkStart}License Approvals%{linkEnd}"
 msgstr ""
 
-msgid "LicenseCompliance|License Approvals"
-msgstr ""
-
 msgid "LicenseCompliance|License Compliance detected %d license and policy violation for the source branch only"
 msgid_plural "LicenseCompliance|License Compliance detected %d licenses and policy violations for the source branch only"
 msgstr[0] ""
@@ -22308,6 +22305,9 @@ msgid "LicenseCompliance|This license already exists in this project."
 msgstr ""
 
 msgid "LicenseCompliance|Uncategorized"
+msgstr ""
+
+msgid "LicenseCompliance|Update approvals"
 msgstr ""
 
 msgid "LicenseCompliance|You are about to remove the license, %{name}, from this project."
