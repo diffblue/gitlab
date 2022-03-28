@@ -75,7 +75,7 @@ RSpec.describe 'User sees Security Configuration table', :js do
           expect(page).to have_text('DAST')
           expect(page).to have_text('Not enabled')
           expect(page).to have_link('Enable DAST')
-          expect(page).to have_link('Manage scans')
+          expect(page).to have_link('Manage profiles')
         end
       end
     end
@@ -92,7 +92,7 @@ RSpec.describe 'User sees Security Configuration table', :js do
           expect(page).to have_text('DAST')
           expect(page).to have_text('Enabled')
           expect(page).to have_link('Configure DAST')
-          expect(page).to have_link('Manage scans')
+          expect(page).to have_link('Manage profiles')
         end
       end
     end
