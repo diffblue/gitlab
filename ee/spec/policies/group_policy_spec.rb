@@ -922,7 +922,7 @@ RSpec.describe GroupPolicy do
       with_them do
         let(:current_user) { public_send(role) }
 
-        it { is_expected.to be_allowed(:security_orchestration_policies) }
+        it { is_expected.to be_allowed(:read_security_orchestration_policies) }
       end
     end
 
@@ -932,7 +932,7 @@ RSpec.describe GroupPolicy do
       with_them do
         let(:current_user) { public_send(role) }
 
-        it { is_expected.to be_allowed(:security_orchestration_policies) }
+        it { is_expected.to be_allowed(:read_security_orchestration_policies) }
       end
     end
   end
@@ -1947,7 +1947,7 @@ RSpec.describe GroupPolicy do
         with_them do
           let(:current_user) { public_send(role) }
 
-          it { is_expected.to be_disallowed(:security_orchestration_policies) }
+          it { is_expected.to be_disallowed(:read_security_orchestration_policies) }
           it { is_expected.to be_disallowed(:update_security_orchestration_policy_project) }
         end
       end
@@ -1958,7 +1958,7 @@ RSpec.describe GroupPolicy do
         with_them do
           let(:current_user) { public_send(role) }
 
-          it { is_expected.to be_disallowed(:security_orchestration_policies) }
+          it { is_expected.to be_disallowed(:read_security_orchestration_policies) }
           it { is_expected.to be_disallowed(:update_security_orchestration_policy_project) }
         end
       end
@@ -1975,7 +1975,7 @@ RSpec.describe GroupPolicy do
         with_them do
           let(:current_user) { public_send(role) }
 
-          it { is_expected.to be_allowed(:security_orchestration_policies) }
+          it { is_expected.to be_allowed(:read_security_orchestration_policies) }
           it { is_expected.to be_disallowed(:update_security_orchestration_policy_project) }
         end
       end
@@ -1986,7 +1986,7 @@ RSpec.describe GroupPolicy do
         with_them do
           let(:current_user) { public_send(role) }
 
-          it { is_expected.to be_allowed(:security_orchestration_policies) }
+          it { is_expected.to be_allowed(:read_security_orchestration_policies) }
           it { is_expected.to be_allowed(:update_security_orchestration_policy_project) }
         end
       end

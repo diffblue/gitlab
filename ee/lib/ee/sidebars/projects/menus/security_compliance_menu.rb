@@ -145,7 +145,7 @@ module EE
           end
 
           def scan_policies_menu_item
-            unless can?(context.current_user, :security_orchestration_policies, context.project)
+            unless can?(context.current_user, :read_security_orchestration_policies, context.project)
               return ::Sidebars::NilMenuItem.new(item_id: :scan_policies)
             end
 

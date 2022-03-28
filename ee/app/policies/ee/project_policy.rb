@@ -199,7 +199,7 @@ module EE
       rule { can?(:read_project) & iterations_available }.enable :read_iteration
 
       rule { security_orchestration_policies_enabled & can?(:developer_access) }.policy do
-        enable :security_orchestration_policies
+        enable :read_security_orchestration_policies
       end
 
       rule { security_orchestration_policies_enabled & can?(:owner_access) }.policy do
