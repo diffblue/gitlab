@@ -175,6 +175,7 @@ module EE
         enable :view_productivity_analytics
         enable :view_group_devops_adoption
         enable :read_group_repository_analytics
+        enable :read_group_contribution_analytics
       end
 
       rule { owner | admin }.policy do
