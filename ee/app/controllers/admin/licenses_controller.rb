@@ -8,7 +8,7 @@ class Admin::LicensesController < Admin::ApplicationController
 
   respond_to :html
 
-  feature_category :license
+  feature_category :provision
 
   def new
     @content_class = 'limit-container-width' unless fluid_layout

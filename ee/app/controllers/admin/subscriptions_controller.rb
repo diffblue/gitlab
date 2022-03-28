@@ -4,7 +4,7 @@
 class Admin::SubscriptionsController < Admin::ApplicationController
   respond_to :html
 
-  feature_category :license
+  feature_category :provision
 
   def show
     @content_class = 'limit-container-width'
