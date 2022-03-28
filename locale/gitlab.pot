@@ -10526,6 +10526,9 @@ msgstr ""
 msgid "Create new project"
 msgstr ""
 
+msgid "Create one"
+msgstr ""
+
 msgid "Create or import your first project"
 msgstr ""
 
@@ -13257,6 +13260,9 @@ msgid "Domain"
 msgstr ""
 
 msgid "Domain Name"
+msgstr ""
+
+msgid "Don't have a group?"
 msgstr ""
 
 msgid "Don't have an account yet?"
@@ -37967,6 +37973,9 @@ msgstr ""
 msgid "These will be sent to %{email} in an attachment once finished."
 msgstr ""
 
+msgid "Things to be aware of before transferring:"
+msgstr ""
+
 msgid "Third Party Advisory Link"
 msgstr ""
 
@@ -42135,6 +42144,9 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "When using the %{code_open}http://%{code_close} or %{code_open}https://%{code_close} protocols, please provide the exact URL to the repository. HTTP redirects will not be followed."
+msgstr ""
+
+msgid "When you transfer your project to a group, you can easily manage multiple projects, view usage quotas for storage, pipeline minutes, and users, and start a trial or upgrade to a paid tier."
 msgstr ""
 
 msgid "When:"
