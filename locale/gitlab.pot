@@ -2505,6 +2505,9 @@ msgstr ""
 msgid "AdminArea|Included Free in license"
 msgstr ""
 
+msgid "AdminArea|Instance OAuth applications"
+msgstr ""
+
 msgid "AdminArea|Latest groups"
 msgstr ""
 
@@ -2517,6 +2520,9 @@ msgstr ""
 msgid "AdminArea|Maintainer"
 msgstr ""
 
+msgid "AdminArea|Manage applications for your instance that can use GitLab as an %{docs_link_start}OAuth provider%{docs_link_end}."
+msgstr ""
+
 msgid "AdminArea|Minimal access"
 msgstr ""
 
@@ -2527,6 +2533,9 @@ msgid "AdminArea|New project"
 msgstr ""
 
 msgid "AdminArea|New user"
+msgstr ""
+
+msgid "AdminArea|No applications found"
 msgstr ""
 
 msgid "AdminArea|Owner"
@@ -36497,12 +36506,6 @@ msgid "System Hooks Help"
 msgstr ""
 
 msgid "System Info"
-msgstr ""
-
-msgid "System OAuth applications"
-msgstr ""
-
-msgid "System OAuth applications don't belong to any user and can only be managed by admins"
 msgstr ""
 
 msgid "System default (%{default})"
