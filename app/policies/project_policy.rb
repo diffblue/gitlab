@@ -497,7 +497,7 @@ class ProjectPolicy < BasePolicy
     prevent(*create_read_update_admin_destroy(:issue_board_list))
   end
 
-  rule { merge_requests_disabled | repository_disabled }.policy do
+  rule { merge_requests_disabled | repository_disabled | ~can?(:download_code) }.policy do
     prevent :create_merge_request_in
     prevent :create_merge_request_from
     prevent(*create_read_update_admin_destroy(:merge_request))

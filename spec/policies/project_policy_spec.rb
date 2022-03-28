@@ -81,25 +81,24 @@ RSpec.describe ProjectPolicy do
 
   context 'merge requests feature' do
     let(:current_user) { owner }
+    let(:mr_permissions) do
+      [:create_merge_request_from, :read_merge_request, :update_merge_request,
+       :admin_merge_request, :create_merge_request_in]
+    end
 
     it 'disallows all permissions when the feature is disabled' do
       project.project_feature.update!(merge_requests_access_level: ProjectFeature::DISABLED)
 
-      mr_permissions = [:create_merge_request_from, :read_merge_request,
-                        :update_merge_request, :admin_merge_request,
-                        :create_merge_request_in]
-
       expect_disallowed(*mr_permissions)
     end
-  end
 
-  context 'for a guest in a private project' do
-    let(:current_user) { guest }
-    let(:project) { private_project }
+    context 'for a guest in a private project' do
+      let(:current_user) { guest }
+      let(:project) { private_project }
 
-    it 'disallows the guest from reading the merge request and merge request iid' do
-      expect_disallowed(:read_merge_request)
-      expect_disallowed(:read_merge_request_iid)
+      it 'disallows the guest from all merge request permissions' do
+        expect_disallowed(*mr_permissions)
+      end
     end
   end
 
