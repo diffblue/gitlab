@@ -241,4 +241,47 @@ RSpec.describe EE::Ci::Runner do
       end
     end
   end
+
+  describe '#allowed_for_plans?', :saas do
+    let(:namespace) { create(:namespace_with_plan, plan: plan) }
+    let(:project) { create(:project, namespace: namespace) }
+    let(:pipeline) { create(:ci_pipeline, project: project) }
+    let(:build) { create(:ci_build, pipeline: pipeline) }
+
+    subject { create(:ci_runner, :instance, allowed_plans: allowed_plans).allowed_for_plans?(build) }
+
+    context 'when allowed plans are not defined' do
+      let(:allowed_plans) { [] }
+      let(:plan) { :premium_plan }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when allowed_plans are defined' do
+      let(:allowed_plans) { %w(silver premium) }
+
+      context 'when plans match allowed plans' do
+        let(:plan) { :premium_plan }
+
+        it { is_expected.to be_truthy }
+      end
+
+      context 'when plans do not match allowed plans' do
+        let(:plan) { :ultimate_plan }
+
+        it { is_expected.to be_falsey }
+      end
+    end
+
+    context 'when ci_runner_separation_by_plan feature flag is disabled' do
+      let(:allowed_plans) { %w(silver premium) }
+      let(:plan) { :ultimate_plan }
+
+      before do
+        stub_feature_flags(ci_runner_separation_by_plan: false)
+      end
+
+      it { is_expected.to be_truthy }
+    end
+  end
 end

@@ -7,7 +7,8 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
 
   let_it_be_with_refind(:shared_runner) { create(:ci_runner, :instance) }
 
-  let!(:project) { create(:project, shared_runners_enabled: true) }
+  let!(:namespace) { create(:namespace) }
+  let!(:project) { create(:project, shared_runners_enabled: true, namespace: namespace) }
   let!(:pipeline) { create(:ci_empty_pipeline, project: project) }
   let!(:pending_build) { create(:ci_build, :pending, :queued, pipeline: pipeline) }
 
@@ -360,6 +361,45 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
       end
 
       include_examples 'namespace minutes quota'
+    end
+  end
+
+  describe 'ensure plan limitation', :saas do
+    let(:allowed_plans) { [] }
+    let(:plan_check_runner) { create(:ci_runner, :instance, allowed_plans: allowed_plans) }
+
+    subject { described_class.new(plan_check_runner).execute.build }
+
+    context 'when namespace has no plan attached' do
+      context 'runner does not define allowed plans' do
+        it { is_expected.to be_kind_of(Ci::Build) }
+      end
+
+      context 'runner defines allowed plans' do
+        let(:allowed_plans) { ['free'] }
+
+        it { is_expected.to be_nil }
+      end
+    end
+
+    context 'when namespace has plan attached' do
+      let(:namespace) { create(:namespace_with_plan, plan: :premium_plan) }
+
+      context 'runner does not define allowed plans' do
+        it { is_expected.to be_kind_of(Ci::Build) }
+      end
+
+      context 'runner defines allowed plans' do
+        let(:allowed_plans) { ['premium'] }
+
+        it { is_expected.to be_kind_of(Ci::Build) }
+
+        context 'allowed plans do not match namespace plan' do
+          let(:allowed_plans) { ['ultimate'] }
+
+          it { is_expected.to be_nil }
+        end
+      end
     end
   end
 end
