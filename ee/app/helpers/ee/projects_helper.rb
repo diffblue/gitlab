@@ -181,7 +181,9 @@ module EE
           no_vulnerabilities_svg_path: image_path('illustrations/issues.svg'),
           dashboard_documentation: help_page_path('user/application_security/security_dashboard/index'),
           project_full_path: project.full_path,
-          security_configuration_path: project_security_configuration_path(@project)
+          security_configuration_path: project_security_configuration_path(@project),
+          can_admin_vulnerability: can?(current_user, :admin_vulnerability, project).to_s,
+          new_vulnerability_path: new_project_security_vulnerability_path(@project)
         }.merge!(security_dashboard_pipeline_data(project))
       else
         {
