@@ -1,17 +1,7 @@
 <script>
 import { GlCard, GlLink, GlSprintf } from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import {
-  billableUsersText,
-  billableUsersTitle,
-  maximumUsersText,
-  maximumUsersTitle,
-  usersInSubscriptionText,
-  usersInSubscriptionTitle,
-  usersInSubscriptionUnlimited,
-  usersOverSubscriptionText,
-  usersOverSubscriptionTitle,
-} from '../constants';
+import { s__, n__, __ } from '~/locale';
 
 export const billableUsersURL = helpPagePath('subscriptions/self_managed/index', {
   anchor: 'billable-users',
@@ -19,17 +9,27 @@ export const billableUsersURL = helpPagePath('subscriptions/self_managed/index',
 export const trueUpURL =
   'https://about.gitlab.com/pricing/licensing-faq/#what-does-users-over-license-mean';
 
+export const usersInSubscriptionUnlimited = __('Unlimited');
+
+export const i18n = Object.freeze({
+  billableUsersTitle: s__('SuperSonics|Billable users'),
+  maximumUsersTitle: s__('SuperSonics|Maximum users'),
+  usersOverSubscriptionTitle: s__('SuperSonics|Users over subscription'),
+  billableUsersText: s__(
+    'SuperSonics|This is the number of %{billableUsersLinkStart}billable users%{billableUsersLinkEnd} on your installation, and this is the minimum number you need to purchase when you renew your license.',
+  ),
+  maximumUsersText: s__(
+    'SuperSonics|This is the highest peak of users on your installation since the license started.',
+  ),
+  usersInSubscriptionText: s__(
+    `SuperSonics|Users with a Guest role or those who don't belong to a Project or Group will not use a seat from your license.`,
+  ),
+  usersOverSubscriptionText: s__(
+    `SuperSonics|You'll be charged for %{trueUpLinkStart}users over license%{trueUpLinkEnd} on a quarterly or annual basis, depending on the terms of your agreement.`,
+  ),
+});
+
 export default {
-  i18n: {
-    billableUsersTitle,
-    maximumUsersTitle,
-    usersInSubscriptionTitle,
-    usersOverSubscriptionTitle,
-    billableUsersText,
-    maximumUsersText,
-    usersInSubscriptionText,
-    usersOverSubscriptionText,
-  },
   links: {
     billableUsersURL,
     trueUpURL,
@@ -59,7 +59,22 @@ export default {
     usersOverSubscription() {
       return this.subscription.usersOverLicenseCount;
     },
+    isUsersInSubscripionVisible() {
+      return this.subscription.plan === 'ultimate';
+    },
+    usersInSubscriptionTitle() {
+      if (this.subscription.usersInLicenseCount) {
+        return n__(
+          'SuperSonics|User in subscription',
+          'SuperSonics|Users in subscription',
+          this.subscription.usersInLicenseCount,
+        );
+      }
+
+      return s__('SuperSonics|Users in subscription');
+    },
   },
+  i18n,
 };
 </script>
 
@@ -69,11 +84,9 @@ export default {
       <gl-card class="gl-h-full" data-testid="users-in-subscription">
         <header>
           <h2 data-qa-selector="users_in_subscription">{{ usersInSubscription }}</h2>
-          <h5 class="gl-font-weight-normal text-uppercase">
-            {{ $options.i18n.usersInSubscriptionTitle }}
-          </h5>
+          <h5 class="gl-font-weight-normal text-uppercase">{{ usersInSubscriptionTitle }}</h5>
         </header>
-        <p>
+        <p v-if="isUsersInSubscripionVisible" data-testid="users-in-subscription-desc">
           {{ $options.i18n.usersInSubscriptionText }}
         </p>
       </gl-card>
@@ -90,8 +103,8 @@ export default {
         <p>
           <gl-sprintf :message="$options.i18n.billableUsersText">
             <template #billableUsersLink="{ content }">
-              <gl-link :href="$options.links.billableUsersURL" target="_blank"
-                >{{ content }}
+              <gl-link :href="$options.links.billableUsersURL" target="_blank">
+                {{ content }}
               </gl-link>
             </template>
           </gl-sprintf>
@@ -107,9 +120,7 @@ export default {
             {{ $options.i18n.maximumUsersTitle }}
           </h5>
         </header>
-        <p>
-          {{ $options.i18n.maximumUsersText }}
-        </p>
+        <p>{{ $options.i18n.maximumUsersText }}</p>
       </gl-card>
     </div>
 

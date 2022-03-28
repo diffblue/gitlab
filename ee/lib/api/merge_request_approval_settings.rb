@@ -35,7 +35,7 @@ module API
       end
       segment ':id/merge_request_approval_setting' do
         desc 'Get project-level MR approval settings' do
-          success EE::API::Entities::MergeRequestApprovalSettings
+          success ::API::Entities::MergeRequestApprovalSetting
         end
         get '/', urgency: :medium do
           group = user_project.group.present? ? user_project.root_ancestor : nil
