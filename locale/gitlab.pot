@@ -19180,9 +19180,6 @@ msgstr ""
 msgid "InProductMarketing|GitHub Enterprise projects to GitLab"
 msgstr ""
 
-msgid "InProductMarketing|GitLab is better with teammates to help out!"
-msgstr ""
-
 msgid "InProductMarketing|GitLab is infrastructure agnostic (supporting GCP, AWS, Azure, OpenShift, VMWare, On Prem, Bare Metal, and more), offering a consistent workflow experience – irrespective of the environment."
 msgstr ""
 
@@ -19259,15 +19256,6 @@ msgid "InProductMarketing|Invite your team now"
 msgstr ""
 
 msgid "InProductMarketing|Invite your team today to build better code (and processes) together"
-msgstr ""
-
-msgid "InProductMarketing|Invite your teammates to GitLab"
-msgstr ""
-
-msgid "InProductMarketing|Invite your teammates to help"
-msgstr ""
-
-msgid "InProductMarketing|Invite your teammates today and build better code together. You can even assign tasks to new teammates such as setting up CI/CD, to help get projects up and running."
 msgstr ""
 
 msgid "InProductMarketing|It's all in the stats"
