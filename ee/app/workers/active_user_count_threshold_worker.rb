@@ -10,7 +10,7 @@ class ActiveUserCountThresholdWorker # rubocop:disable Scalability/IdempotentWor
   include CronjobQueue
   # rubocop:enable Scalability/CronWorkerContext
 
-  feature_category :license
+  feature_category :provision
 
   def perform
     License.with_valid_license do |license|

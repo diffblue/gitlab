@@ -15,6 +15,7 @@ import { METRICS_REQUESTS } from '../constants';
 import DurationChart from './duration_chart.vue';
 import TypeOfWorkCharts from './type_of_work_charts.vue';
 import ValueStreamAggregationStatus from './value_stream_aggregation_status.vue';
+import ValueStreamEmptyState from './value_stream_empty_state.vue';
 import ValueStreamSelect from './value_stream_select.vue';
 
 export default {
@@ -26,6 +27,7 @@ export default {
     StageTable,
     PathNavigation,
     ValueStreamAggregationStatus,
+    ValueStreamEmptyState,
     ValueStreamFilters,
     ValueStreamMetrics,
     ValueStreamSelect,
@@ -74,9 +76,10 @@ export default {
       'pathNavigationData',
       'isOverviewStageSelected',
       'selectedStageCount',
+      'hasValueStreams',
     ]),
     shouldRenderEmptyState() {
-      return !this.currentGroup && !this.isLoading;
+      return this.isLoadingValueStreams || !this.hasValueStreams;
     },
     shouldDisplayFilters() {
       return !this.errorCode && !this.hasNoAccessError;
@@ -198,24 +201,25 @@ export default {
 </script>
 <template>
   <div>
-    <div
-      class="gl-mb-3 gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-justify-content-space-between"
-    >
-      <h3>{{ __('Value Stream Analytics') }}</h3>
-      <div class="gl-display-flex gl-flex-direction-row gl-align-items-center gl-mt-0 gl-sm-mt-5">
-        <value-stream-aggregation-status v-if="isAggregationStatusAvailable" :data="aggregation" />
-        <value-stream-select v-if="shouldDisplayCreateMultipleValueStreams" />
-      </div>
-    </div>
-    <gl-empty-state
+    <value-stream-empty-state
       v-if="shouldRenderEmptyState"
-      :title="__('Value Stream Analytics can help you determine your team’s velocity')"
-      :description="
-        __('Filter parameters are not valid. Make sure that the end date is after the start date.')
-      "
-      :svg-path="emptyStateSvgPath"
+      :is-loading="isLoadingValueStreams"
+      :empty-state-svg-path="emptyStateSvgPath"
+      :has-date-range-error="!hasDateRangeSet"
     />
     <div v-else class="gl-max-w-full">
+      <div
+        class="gl-mb-3 gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-justify-content-space-between"
+      >
+        <h3>{{ __('Value Stream Analytics') }}</h3>
+        <div class="gl-display-flex gl-flex-direction-row gl-align-items-center gl-mt-0 gl-sm-mt-5">
+          <value-stream-aggregation-status
+            v-if="isAggregationStatusAvailable"
+            :data="aggregation"
+          />
+          <value-stream-select v-if="shouldDisplayCreateMultipleValueStreams" />
+        </div>
+      </div>
       <path-navigation
         v-if="selectedStageReady"
         data-testid="vsa-path-navigation"
