@@ -240,7 +240,6 @@ class ProjectPolicy < BasePolicy
 
   rule { can?(:guest_access) }.policy do
     enable :read_project
-    enable :create_merge_request_in
     enable :read_issue_board
     enable :read_issue_board_list
     enable :read_wiki
@@ -662,6 +661,10 @@ class ProjectPolicy < BasePolicy
 
   rule { can?(:developer_access) }.policy do
     enable :read_security_configuration
+  end
+
+  rule { can?(:guest_access) & can?(:read_commit_status) }.policy do
+    enable :create_merge_request_in
   end
 
   # Design abilities could also be prevented in the issue policy.

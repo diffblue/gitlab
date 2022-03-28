@@ -31,7 +31,7 @@ RSpec.shared_context 'ProjectPolicy context' do
       read_commit_status read_confidential_issues read_container_image
       read_deployment read_environment read_merge_request
       read_metrics_dashboard_annotation read_pipeline read_prometheus
-      read_sentry_issue update_issue
+      read_sentry_issue update_issue create_merge_request_in
     ]
   end
 
