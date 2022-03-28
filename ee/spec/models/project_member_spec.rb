@@ -167,4 +167,32 @@ RSpec.describe ProjectMember do
       end
     end
   end
+
+  describe 'post create hooks' do
+    context 'when a new personal project is created' do
+      it 'does not send notifications or create events for the creator of the project' do
+        expect(NotificationService).not_to receive(:new)
+        expect(EventCreateService).not_to receive(:new)
+
+        create(:project, namespace: create(:user).namespace)
+      end
+    end
+
+    context 'when a different user is added to a personal project as OWNER' do
+      let_it_be(:project) { create(:project, namespace: create(:user).namespace) }
+      let_it_be(:another_user) { create(:user) }
+
+      it 'sends notifications and creates events for the newly added OWNER' do
+        expect_next_instance_of(NotificationService) do |service|
+          expect(service).to receive(:new_project_member).with(project.member(another_user))
+        end
+
+        expect_next_instance_of(EventCreateService) do |service|
+          expect(service).to receive(:join_project).with(project, another_user)
+        end
+
+        project.add_owner(another_user)
+      end
+    end
+  end
 end
