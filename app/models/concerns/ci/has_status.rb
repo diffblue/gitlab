@@ -13,6 +13,7 @@ module Ci
     STARTED_STATUSES = %w[running success failed skipped manual scheduled].freeze
     ACTIVE_STATUSES = %w[waiting_for_resource preparing pending running].freeze
     COMPLETED_STATUSES = %w[success failed canceled skipped].freeze
+    STOPPED_STATUSES = COMPLETED_STATUSES + BLOCKED_STATUS
     ORDERED_STATUSES = %w[failed preparing pending running waiting_for_resource manual scheduled canceled success skipped created].freeze
     PASSED_WITH_WARNINGS_STATUSES = %w[failed canceled].to_set.freeze
     EXCLUDE_IGNORED_STATUSES = %w[manual failed canceled].to_set.freeze
@@ -46,6 +47,10 @@ module Ci
 
       def completed_statuses
         COMPLETED_STATUSES.map(&:to_sym)
+      end
+
+      def stopped_statuses
+        STOPPED_STATUSES.map(&:to_sym)
       end
     end
 
