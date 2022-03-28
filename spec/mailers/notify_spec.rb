@@ -2072,6 +2072,10 @@ RSpec.describe Notify do
           )
         end
       end
+
+      it 'includes only one link to the highlighted_diff_email' do
+          expect(subject.html_part.body.raw_source).to include('assets/mailers/highlighted_diff_email').once
+      end
     end
 
     it 'contains review author name' do
