@@ -28,7 +28,7 @@ module IssuableCollections
     unless pagination_disabled?
       set_pagination
 
-      return if redirect_out_of_range(@issuables, @total_pages)
+      return if html_request? && redirect_out_of_range(@issuables, @total_pages)
     end
 
     if params[:label_name].present? && @project

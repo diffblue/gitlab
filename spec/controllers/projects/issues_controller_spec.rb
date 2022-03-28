@@ -148,6 +148,13 @@ RSpec.describe Projects::IssuesController do
         allow(Kaminari.config).to receive(:default_per_page).and_return(1)
       end
 
+      it 'does not redirect on out of bounds when non-html' do
+        get :index, params: params.merge(page: last_page + 1), format: 'atom'
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(assigns(:issues).size).to eq(0)
+      end
+
       it 'does not use pagination if disabled' do
         allow(controller).to receive(:pagination_disabled?).and_return(true)
 
