@@ -54,7 +54,7 @@ export default {
           :href="documentationPath"
           :aria-label="s__('ThreatMonitoring|Threat Monitoring help page link')"
         >
-          <gl-icon name="question" />
+          <gl-icon name="question-o" />
         </gl-link>
         <gl-popover :target="() => $refs.helpLink">
           {{ $options.helpPopoverText }}
