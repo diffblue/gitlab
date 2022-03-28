@@ -29,7 +29,7 @@ class Groups::Analytics::ApplicationController < ApplicationController
   def load_project
     return unless @group && params['project_id']
 
-    @project = find_routable!(@group.projects, params['project_id'], request.fullpath)
+    @project = find_routable!(@group.all_projects, params['project_id'], request.fullpath)
   end
 
   private_class_method :increment_usage_counter
