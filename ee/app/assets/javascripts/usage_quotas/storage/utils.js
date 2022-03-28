@@ -1,5 +1,5 @@
 import { numberToHumanSize, bytesToKiB } from '~/lib/utils/number_utils';
-import { getFormatter, SUPPORTED_FORMATS } from '~/lib/utils/unit_format';
+import { kibibytes } from '~/lib/utils/unit_format';
 import { PROJECT_STORAGE_TYPES, STORAGE_USAGE_THRESHOLDS } from './constants';
 
 export function usageRatioToThresholdLevel(currentUsageRatio) {
@@ -22,9 +22,8 @@ export function usageRatioToThresholdLevel(currentUsageRatio) {
  * @param {Number} size size in bytes
  * @returns {String}
  */
-export const formatUsageSize = (size) => {
-  const formatDecimalBytes = getFormatter(SUPPORTED_FORMATS.kibibytes);
-  return formatDecimalBytes(bytesToKiB(size), 1);
+export const formatUsageSize = (sizeInBytes) => {
+  return kibibytes(bytesToKiB(sizeInBytes), 1);
 };
 
 /**
