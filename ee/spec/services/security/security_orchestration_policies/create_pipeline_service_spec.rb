@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService do
+  include AfterNextHelpers
+
   describe '#execute' do
     let_it_be_with_reload(:project) { create(:project, :repository) }
     let_it_be(:current_user) { project.first_owner }
@@ -146,6 +148,42 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService do
               subject
             end
           end
+        end
+      end
+
+      context "when project has a compliance framework" do
+        let(:compliance_group) { create(:group, :private, name: "compliance") }
+        let(:compliance_project) { create(:project, :repository, namespace: compliance_group, name: "hippa") }
+        let(:framework) { create(:compliance_framework, namespace_id: compliance_group.id, pipeline_configuration_full_path: ".compliance-gitlab-ci.yml@compliance/hippa") }
+        let!(:framework_project_setting) { create(:compliance_framework_project_setting, project: project, framework_id: framework.id) }
+        let!(:ref_sha) { compliance_project.commit('HEAD').sha }
+
+        let(:compliance_config) do
+          <<~EOY
+          ---
+          compliance_build:
+            stage: build
+            script:
+              - echo 'hello from compliance build'
+          compliance_test:
+            stage: test
+            script:
+              - echo 'hello from compliance test'
+          EOY
+        end
+
+        before do
+          project.update_attribute(:namespace_id, compliance_group.id)
+          compliance_project.add_maintainer(current_user)
+          stub_licensed_features(evaluate_group_level_compliance_pipeline: true)
+          allow_next(Repository).to receive(:blob_data_at).with(ref_sha, '.compliance-gitlab-ci.yml').and_return(compliance_config)
+        end
+
+        it 'does not include the compliance definition' do
+          subject
+
+          yaml = YAML.safe_load(pipeline.pipeline_config.content, [Symbol])
+          expect(yaml).not_to eq("include" => [{ "file" => ".compliance-gitlab-ci.yml", "project" => "compliance/hippa" }])
         end
       end
     end
