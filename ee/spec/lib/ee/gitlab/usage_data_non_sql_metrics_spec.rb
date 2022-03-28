@@ -11,7 +11,7 @@ RSpec.describe Gitlab::UsageDataNonSqlMetrics do
   end
 
   describe '.data' do
-    it 'does make instrumentations_class DB calls' do
+    it 'does make instrumentations_class DB calls', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/356772' do
       recorder = ActiveRecord::QueryRecorder.new do
         described_class.data
       end
