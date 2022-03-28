@@ -3,17 +3,8 @@ import { shallowMount } from '@vue/test-utils';
 import SubscriptionDetailsUserInfo, {
   billableUsersURL,
   trueUpURL,
+  i18n,
 } from 'ee/admin/subscriptions/show/components/subscription_details_user_info.vue';
-import {
-  billableUsersText,
-  billableUsersTitle,
-  maximumUsersText,
-  maximumUsersTitle,
-  usersInSubscriptionText,
-  usersInSubscriptionTitle,
-  usersOverSubscriptionText,
-  usersOverSubscriptionTitle,
-} from 'ee/admin/subscriptions/show/constants';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { license } from '../mock_data';
 
@@ -28,7 +19,7 @@ describe('Subscription Details User Info', () => {
     wrapper = extendedWrapper(
       shallowMount(SubscriptionDetailsUserInfo, {
         propsData: {
-          subscription: license.ULTIMATE,
+          subscription: { ...license.ULTIMATE, plan: 'premium' },
           ...props,
         },
         stubs: {
@@ -39,16 +30,21 @@ describe('Subscription Details User Info', () => {
     );
   };
 
+  const findUsersInSubscriptionCard = () =>
+    wrapper.findComponent('[data-testid="users-in-subscription"]');
+
+  const findUsersInSubscriptionDesc = () =>
+    findUsersInSubscriptionCard().findComponent('[data-testid="users-in-subscription-desc"]');
+
   afterEach(() => {
     wrapper.destroy();
   });
 
   describe.each`
-    testId                     | info    | title                         | text                         | link
-    ${'users-in-subscription'} | ${'10'} | ${usersInSubscriptionTitle}   | ${usersInSubscriptionText}   | ${false}
-    ${'billable-users'}        | ${'8'}  | ${billableUsersTitle}         | ${billableUsersText}         | ${billableUsersURL}
-    ${'maximum-users'}         | ${'8'}  | ${maximumUsersTitle}          | ${maximumUsersText}          | ${false}
-    ${'users-over-license'}    | ${'0'}  | ${usersOverSubscriptionTitle} | ${usersOverSubscriptionText} | ${trueUpURL}
+    testId                  | info   | title                              | text                              | link
+    ${'billable-users'}     | ${'8'} | ${i18n.billableUsersTitle}         | ${i18n.billableUsersText}         | ${billableUsersURL}
+    ${'maximum-users'}      | ${'8'} | ${i18n.maximumUsersTitle}          | ${i18n.maximumUsersText}          | ${false}
+    ${'users-over-license'} | ${'0'} | ${i18n.usersOverSubscriptionTitle} | ${i18n.usersOverSubscriptionText} | ${trueUpURL}
   `('with data for $card', ({ testId, info, title, text, link }) => {
     beforeEach(() => {
       createComponent();
@@ -56,20 +52,16 @@ describe('Subscription Details User Info', () => {
 
     const findUseCard = () => wrapper.findByTestId(testId);
 
-    it(`displays the info`, () => {
+    it('displays the info', () => {
       expect(findUseCard().find('h2').text()).toBe(info);
     });
 
-    it(`displays the title`, () => {
+    it('displays the title', () => {
       expect(findUseCard().find('h5').text()).toBe(title);
     });
 
     itif(link)(`displays the content with a link`, () => {
       expect(findUseCard().findComponent(GlSprintf).attributes('message')).toBe(text);
-    });
-
-    itif(!link)('displays a simple content', () => {
-      expect(findUseCard().find('p').text()).toBe(text);
     });
 
     itif(link)(`has a link`, () => {
@@ -85,17 +77,33 @@ describe('Subscription Details User Info', () => {
 
   describe('Users is subscription', () => {
     it('should display the value when present', () => {
-      const subscription = { ...license.ULTIMATE, usersInLicenseCount: 0 };
+      const subscription = { ...license.ULTIMATE, usersInLicenseCount: 0, plan: 'premium' };
       createComponent({ subscription });
 
       expect(findSubscriptionText()).toBe('0');
     });
 
     it('should display Unlimited when users in license is null', () => {
-      const subscription = { ...license.ULTIMATE, usersInLicenseCount: null };
+      const subscription = { ...license.ULTIMATE, usersInLicenseCount: null, plan: 'premium' };
       createComponent({ subscription });
 
       expect(findSubscriptionText()).toBe('Unlimited');
+    });
+
+    it('does not render card description', () => {
+      const subscription = { ...license.ULTIMATE, usersInLicenseCount: 0, plan: 'premium' };
+      createComponent({ subscription });
+
+      expect(findUsersInSubscriptionDesc().exists()).toBe(false);
+    });
+
+    describe('when subscription is ultimate', () => {
+      it('renders text in the card "Users in Subscription"', () => {
+        const subscription = { ...license.ULTIMATE };
+        createComponent({ subscription });
+
+        expect(findUsersInSubscriptionDesc().exists()).toBe(true);
+      });
     });
   });
 });
