@@ -1,3 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Project report not configured component matches snapshot 1`] = `"<gl-empty-state-stub title=\\"Monitor vulnerabilities in your project\\" svgpath=\\"/placeholder.svg\\" description=\\"Manage and track vulnerabilities identified in your project. Vulnerabilities are shown here when security testing is configured.\\" primarybuttonlink=\\"/configuration\\" primarybuttontext=\\"Configure security testing\\" secondarybuttonlink=\\"/help\\" secondarybuttontext=\\"Learn more\\" invertindarkmode=\\"true\\"></gl-empty-state-stub>"`;
+exports[`Project report not configured component when button is shown matches the snapshot 1`] = `
+"<div>
+  <div class=\\"gl-my-4 gl-text-right\\">
+    <gl-button-stub category=\\"primary\\" variant=\\"default\\" size=\\"medium\\" icon=\\"plus\\" buttontextclasses=\\"\\" href=\\"/vulnerability/new\\" class=\\"gl-ml-auto\\">
+      Submit vulnerability
+    </gl-button-stub>
+  </div>
+  <gl-empty-state-stub title=\\"Monitor vulnerabilities in your project\\" svgpath=\\"/placeholder.svg\\" description=\\"Manage and track vulnerabilities identified in your project. Vulnerabilities are shown here when security testing is configured.\\" primarybuttonlink=\\"/configuration\\" primarybuttontext=\\"Configure security testing\\" secondarybuttonlink=\\"/help\\" secondarybuttontext=\\"Learn more\\" invertindarkmode=\\"true\\"></gl-empty-state-stub>
+</div>"
+`;
