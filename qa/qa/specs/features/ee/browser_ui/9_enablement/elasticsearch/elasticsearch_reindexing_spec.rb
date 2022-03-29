@@ -45,7 +45,7 @@ module QA
         end
       end
 
-      it 'tests reindexing after webIDE', retry: 3, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347629' do
+      it 'tests reindexing after webIDE', quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/356978', type: :investigating }, retry: 3, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347629' do
         template = {
             file_name: 'LICENSE',
             name: 'Mozilla Public License 2.0',
