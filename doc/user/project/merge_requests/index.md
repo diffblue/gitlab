@@ -100,6 +100,8 @@ To request attention from another user:
 
    ![Attention request toggle](img/attention_request_sidebar_v14_10.png)
 
+Alternatively, you can use the `/attention @user` quick action to request user attention.
+
 ### Remove an attention request
 
 If your attention was requested as an assignee or reviewer, it's removed when you:
