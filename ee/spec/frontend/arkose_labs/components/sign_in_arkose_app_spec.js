@@ -12,11 +12,18 @@ jest.mock('~/lib/logger');
 jest.mock('ee/arkose_labs/init_arkose_labs_script');
 let onShown;
 let onCompleted;
+let onSuppress;
 let onError;
 initArkoseLabsScript.mockImplementation(() => ({
-  setConfig: ({ onShown: shownHandler, onCompleted: completedHandler, onError: errorHandler }) => {
+  setConfig: ({
+    onShown: shownHandler,
+    onCompleted: completedHandler,
+    onSuppress: suppressHandler,
+    onError: errorHandler,
+  }) => {
     onShown = shownHandler;
     onCompleted = completedHandler;
+    onSuppress = suppressHandler;
     onError = errorHandler;
   },
 }));
@@ -91,6 +98,7 @@ describe('SignInArkoseApp', () => {
   afterEach(() => {
     axiosMock.restore();
     wrapper?.destroy();
+    document.getElementsByTagName('html')[0].innerHTML = '';
   });
 
   describe('when the username field is pre-filled', () => {
@@ -134,7 +142,7 @@ describe('SignInArkoseApp', () => {
 
       it('does not show ArkoseLabs error when submitting the form', async () => {
         submitForm();
-        await nextTick();
+        await waitForPromises();
 
         expect(findArkoseLabsErrorMessage().exists()).toBe(false);
       });
@@ -147,6 +155,49 @@ describe('SignInArkoseApp', () => {
         });
 
         itInitializesArkoseLabs();
+      });
+    });
+
+    describe('when the form is submitted without the username field losing the focus', () => {
+      beforeEach(() => {
+        initArkoseLabs();
+        jest.spyOn(findSignInForm(), 'submit');
+        axiosMock.onGet().reply(200, { result: false });
+        findUsernameInput().value = `noblur-${MOCK_USERNAME}`;
+      });
+
+      it('triggers a username check', async () => {
+        expect(axiosMock.history.get).toHaveLength(0);
+
+        submitForm();
+        await waitForPromises();
+
+        expect(axiosMock.history.get).toHaveLength(1);
+      });
+
+      it("proceeds with the form's submission if the challenge still isn't needed", async () => {
+        submitForm();
+        await waitForPromises();
+
+        expect(findSignInForm().submit).toHaveBeenCalled();
+      });
+
+      describe('when the challenge becomes needed', () => {
+        beforeEach(() => {
+          axiosMock.onGet().reply(200, { result: true });
+          submitForm();
+          return waitForPromises();
+        });
+
+        it("blocks the form's submission if the challenge becomes needed", async () => {
+          expect(findSignInForm().submit).not.toHaveBeenCalled();
+        });
+
+        it("proceeds with the form's submission if the challenge is being suppressed", async () => {
+          onSuppress();
+
+          expect(findSignInForm().submit).toHaveBeenCalled();
+        });
       });
     });
 
@@ -187,6 +238,13 @@ describe('SignInArkoseApp', () => {
         await nextTick();
 
         expectArkoseLabsInitError();
+      });
+
+      it('does not submit the form when the challenge is being suppressed', () => {
+        jest.spyOn(findSignInForm(), 'submit');
+        onSuppress();
+
+        expect(findSignInForm().submit).not.toHaveBeenCalled();
       });
 
       describe('when ArkoseLabs calls `onCompleted` handler that has been configured', () => {
