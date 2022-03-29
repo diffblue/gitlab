@@ -25,7 +25,7 @@ RSpec.describe Backup::Repositories do
 
         subject.dump(destination, backup_id)
 
-        expect(strategy).to have_received(:start).with(:create, destination)
+        expect(strategy).to have_received(:start).with(:create, destination, backup_id: backup_id)
         expect(strategy).to have_received(:enqueue).with(project, Gitlab::GlRepository::PROJECT)
         expect(strategy).to have_received(:enqueue).with(project, Gitlab::GlRepository::WIKI)
         expect(strategy).to have_received(:enqueue).with(project, Gitlab::GlRepository::DESIGN)

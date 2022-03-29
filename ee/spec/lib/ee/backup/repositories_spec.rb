@@ -17,7 +17,7 @@ RSpec.describe Backup::Repositories do
     it 'calls enqueue for each repository type', :aggregate_failures do
       subject.dump(destination, backup_id)
 
-      expect(strategy).to have_received(:start).with(:create, destination)
+      expect(strategy).to have_received(:start).with(:create, destination, backup_id: backup_id)
       expect(strategy).to have_received(:enqueue).with(project, Gitlab::GlRepository::PROJECT)
       groups.each do |group|
         expect(strategy).to have_received(:enqueue).with(group, Gitlab::GlRepository::WIKI)

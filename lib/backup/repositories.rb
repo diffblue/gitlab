@@ -14,7 +14,7 @@ module Backup
 
     override :dump
     def dump(path, backup_id)
-      strategy.start(:create, path)
+      strategy.start(:create, path, backup_id: backup_id)
       enqueue_consecutive
 
     ensure
