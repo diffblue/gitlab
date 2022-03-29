@@ -261,6 +261,19 @@ RSpec.describe API::RelatedEpicLinks do
         it_behaves_like 'not found resource', 'No Related Epic Link found'
       end
 
+      context 'when related_epic_link_id belongs to a different epic' do
+        let_it_be(:other_epic) { create(:epic, group: target_group) }
+        let_it_be(:other_epic_link) { create(:related_epic_link, source: other_epic, target: target_epic) }
+
+        subject { delete api("/groups/#{group.id}/epics/#{epic.iid}/related_epics/#{other_epic_link.id}", user) }
+
+        before do
+          target_group.add_reporter(user)
+        end
+
+        it_behaves_like 'not found resource', '404 Not found'
+      end
+
       context 'when user can relate epics' do
         before do
           target_group.add_reporter(user)
