@@ -107,8 +107,9 @@ export default {
     <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center gl-mb-2">
       <label class="m-0">{{ $options.i18n.wipLimitText }}</label>
       <gl-button
-        class="js-edit-button gl-h-full gl-border-0 text-dark"
+        class="gl-h-full gl-border-0 text-dark"
         variant="link"
+        data-testid="edit-button"
         @click="showInput"
         >{{ $options.i18n.editLinkText }}</gl-button
       >
@@ -128,12 +129,13 @@ export default {
       @blur="offFocus"
     />
     <div v-else class="gl-display-flex gl-align-items-center">
-      <p class="js-wip-limit bold gl-m-0 text-secondary">{{ activeListWipLimit }}</p>
+      <p class="bold gl-m-0 text-secondary" data-testid="wip-limit">{{ activeListWipLimit }}</p>
       <template v-if="wipLimitIsSet">
         <span class="m-1">-</span>
         <gl-button
-          class="js-remove-limit gl-h-full gl-border-0 text-secondary"
+          class="gl-h-full gl-border-0 text-secondary"
           variant="link"
+          data-testid="remove-limit"
           @click="clearWipLimit"
           >{{ $options.i18n.removeLimitText }}</gl-button
         >

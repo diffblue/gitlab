@@ -112,7 +112,7 @@ RSpec.describe 'Scoped issue boards', :js do
           visit group_boards_path(group)
           wait_for_requests
 
-          expect(page).to have_css('.js-boards-selector')
+          expect(page).to have_selector('[data-testid="boards-selector"]')
           click_on_create_new_board
 
           click_button 'Expand'
@@ -572,7 +572,7 @@ RSpec.describe 'Scoped issue boards', :js do
     it "doesn't show the input when creating a board" do
       click_on_create_new_board
 
-      page.within '.js-board-config-modal' do
+      page.within '[data-testid="board-form-wrapper"]' do
         # To make sure the form is shown
         expect(page).to have_field('board-new-name')
 
@@ -681,7 +681,7 @@ RSpec.describe 'Scoped issue boards', :js do
   end
 
   def click_on_create_new_board
-    page.within '.js-boards-selector' do
+    page.within '[data-testid="boards-selector"]' do
       find('.dropdown-menu-toggle').click
       wait_for_requests
 

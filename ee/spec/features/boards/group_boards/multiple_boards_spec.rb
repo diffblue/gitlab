@@ -27,7 +27,7 @@ RSpec.describe 'Multiple Issue Boards', :js do
 
       click_button board.name
 
-      page.within('.js-boards-selector .dropdown-menu') do
+      page.within('[data-testid="boards-selector"] .dropdown-menu') do
         expect(page).not_to have_content('Create new board')
         expect(page).not_to have_content('Delete board')
       end

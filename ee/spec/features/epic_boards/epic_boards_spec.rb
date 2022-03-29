@@ -363,7 +363,7 @@ RSpec.describe 'epic boards', :js do
   end
 
   def click_on_create_new_board
-    page.within '.js-boards-selector' do
+    page.within '[data-testid="boards-selector"]' do
       find('.dropdown-menu-toggle').click
       wait_for_requests
 

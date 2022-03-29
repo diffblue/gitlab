@@ -11936,6 +11936,9 @@ msgstr ""
 msgid "Delete badge"
 msgstr ""
 
+msgid "Delete board"
+msgstr ""
+
 msgid "Delete column"
 msgstr ""
 

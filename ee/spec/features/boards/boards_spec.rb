@@ -147,7 +147,7 @@ RSpec.describe 'Project issue boards', :js do
         it 'displays issue and max issue size' do
           page.within(find(".board:nth-child(2)")) do
             expect(page.find('[data-testid="board-items-count"]')).to have_text(total_development_issues)
-            expect(page.find('.js-max-issue-size')).to have_text(max_issue_count)
+            expect(page.find('.max-issue-size')).to have_text(max_issue_count)
           end
         end
       end
@@ -207,11 +207,11 @@ RSpec.describe 'Project issue boards', :js do
           end
 
           it "sets max issue count to zero" do
-            page.find('.js-remove-limit').click
+            page.find('[data-testid="remove-limit"]').click
 
             wait_for_requests
 
-            expect(page.find('.js-wip-limit')).to have_text("None")
+            expect(page.find('[data-testid="wip-limit"]')).to have_text("None")
           end
         end
 
@@ -235,7 +235,7 @@ RSpec.describe 'Project issue boards', :js do
               click_button('List settings')
             end
 
-            expect(page.find('.js-wip-limit')).to have_text(max_issue_count)
+            expect(page.find('[data-testid="wip-limit"]')).to have_text(max_issue_count)
           end
         end
 
@@ -253,7 +253,7 @@ RSpec.describe 'Project issue boards', :js do
 
             wait_for_requests
 
-            expect(page.find('.js-wip-limit')).to have_text(max_issue_count)
+            expect(page.find('[data-testid="wip-limit"]')).to have_text(max_issue_count)
           end
 
           context "When user sets max issue count to 0" do
@@ -270,7 +270,7 @@ RSpec.describe 'Project issue boards', :js do
 
               wait_for_requests
 
-              expect(page.find('.js-wip-limit')).to have_text("None")
+              expect(page.find('[data-testid="wip-limit"]')).to have_text("None")
             end
           end
         end
@@ -285,7 +285,7 @@ RSpec.describe 'Project issue boards', :js do
 
             wait_for_requests
 
-            expect(page.find('.js-wip-limit')).to have_text(1)
+            expect(page.find('[data-testid="wip-limit"]')).to have_text(1)
           end
         end
       end

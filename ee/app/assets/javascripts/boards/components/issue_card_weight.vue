@@ -30,11 +30,7 @@ export default {
   >
     <gl-icon name="weight" class="board-card-info-icon gl-mr-2" />
     <span data-testid="board-card-weight" class="board-card-info-text"> {{ weight }} </span>
-    <gl-tooltip
-      :target="() => $refs.itemWeight"
-      placement="bottom"
-      container="body"
-      class="js-item-weight"
+    <gl-tooltip :target="() => $refs.itemWeight" placement="bottom" container="body"
       >{{ __('Weight') }}<br /><span class="text-tertiary">{{ weight }}</span>
     </gl-tooltip>
   </component>
