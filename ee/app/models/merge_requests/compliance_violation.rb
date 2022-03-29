@@ -18,8 +18,8 @@ module MergeRequests
     scope :by_approved_by_committer, -> { where(reason: ::Gitlab::ComplianceManagement::Violations::ApprovedByCommitter::REASON) }
     scope :by_group, -> (group) { join_projects.where(merge_requests: { projects: { namespace_id: group.self_and_descendants } }) }
     scope :by_projects, -> (project_ids) { join_merge_requests.where(merge_requests: { target_project_id: project_ids }) }
-    scope :merged_before, -> (date) { join_metrics.where('"merge_request_metrics"."merged_at" <= ?', date).references(:merge_request_metrics) }
-    scope :merged_after, -> (date) { join_metrics.where('"merge_request_metrics"."merged_at" >= ?', date).references(:merge_request_metrics) }
+    scope :merged_before, -> (date) { join_metrics.where('"merge_request_metrics"."merged_at" <= ?', date.end_of_day).references(:merge_request_metrics) }
+    scope :merged_after, -> (date) { join_metrics.where('"merge_request_metrics"."merged_at" >= ?', date.beginning_of_day).references(:merge_request_metrics) }
 
     scope :order_by_reason, -> (direction) { order(reason: direction, id: direction) }
     scope :order_by_severity_level, -> (direction) { order(severity_level: direction, id: direction) }
