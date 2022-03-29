@@ -8763,6 +8763,9 @@ msgstr ""
 msgid "ClusterIntegration|The URL used to access the Kubernetes API."
 msgstr ""
 
+msgid "ClusterIntegration|The certificate-based cluster connection method has been %{issue_link_start}deprecated%{issue_link_end}. We recommend using %{docs_link_start}the GitLab agent for Kubernetes%{docs_link_end} instead."
+msgstr ""
+
 msgid "ClusterIntegration|The certificate-based method to connect clusters to GitLab was %{linkStart}deprecated%{linkEnd} in GitLab 14.5."
 msgstr ""
 

@@ -1,0 +1,8 @@
+.gl-alert.gl-alert-warning.gl-mt-6{ role: 'alert' }
+  = sprite_icon('warning', css_class: "gl-alert-icon gl-alert-icon-no-title gl-icon")
+  .gl-alert-body
+    - link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe
+    - issue_link_start = link_start % { url: 'https://gitlab.com/gitlab-org/configure/general/-/issues/199' }
+    - docs_link_start = link_start % { url: help_page_path('user/clusters/agent/index.md') }
+    - link_end = '</a>'.html_safe
+    = s_('ClusterIntegration|The certificate-based cluster connection method has been %{issue_link_start}deprecated%{issue_link_end}. We recommend using %{docs_link_start}the GitLab agent for Kubernetes%{docs_link_end} instead.').html_safe % { docs_link_start: docs_link_start, docs_link_end: link_end, issue_link_start: issue_link_start, issue_link_end: link_end }
