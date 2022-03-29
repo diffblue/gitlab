@@ -18656,9 +18656,6 @@ msgstr ""
 msgid "INFO: Your SSH key is expiring soon. Please generate a new key."
 msgstr ""
 
-msgid "IP"
-msgstr ""
-
 msgid "IP Address"
 msgstr ""
 
