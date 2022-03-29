@@ -173,7 +173,7 @@ module Gitlab
       # https://git-scm.com/book/en/v2/Git-Internals-Transfer-Protocols
       #
       def remove_upload_pack_http_service_fragment_from(body)
-        body.gsub(/\A001e# service=git-upload-pack\n0000/, '')
+        body.delete_prefix("001e# service=git-upload-pack\n0000")
       end
 
       # See Uploading Data > HTTP(S) section at:
@@ -195,7 +195,7 @@ module Gitlab
       # https://git-scm.com/book/en/v2/Git-Internals-Transfer-Protocols
       #
       def remove_receive_pack_http_service_fragment_from(body)
-        body.gsub(/\A001f# service=git-receive-pack\n0000/, '')
+        body.delete_prefix("001f# service=git-receive-pack\n0000")
       end
 
       def ensure_secondary!
