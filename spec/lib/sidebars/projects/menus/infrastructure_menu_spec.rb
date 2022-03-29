@@ -119,33 +119,30 @@ RSpec.describe Sidebars::Projects::Menus::InfrastructureMenu do
         end
 
         it { is_expected.to be_nil }
-      end
 
-      context 'when feature flag is turned off but enabled for project' do
-        before do
-          stub_feature_flags(incubation_5mp_google_cloud: false)
-          stub_feature_flags(incubation_5mp_google_cloud: project)
+        context 'when feature flag is enabled for specific project' do
+          before do
+            stub_feature_flags(incubation_5mp_google_cloud: project)
+          end
+
+          it_behaves_like 'access rights checks'
         end
 
-        it_behaves_like 'access rights checks'
-      end
+        context 'when feature flag is enabled for specific group' do
+          before do
+            stub_feature_flags(incubation_5mp_google_cloud: project.group)
+          end
 
-      context 'when feature flag is turned off but enabled for group' do
-        before do
-          stub_feature_flags(incubation_5mp_google_cloud: false)
-          stub_feature_flags(incubation_5mp_google_cloud: project.group)
+          it_behaves_like 'access rights checks'
         end
 
-        it_behaves_like 'access rights checks'
-      end
+        context 'when feature flag is enabled for specific project' do
+          before do
+            stub_feature_flags(incubation_5mp_google_cloud: user)
+          end
 
-      context 'when feature flag is turned off but enabled for user' do
-        before do
-          stub_feature_flags(incubation_5mp_google_cloud: false)
-          stub_feature_flags(incubation_5mp_google_cloud: user)
+          it_behaves_like 'access rights checks'
         end
-
-        it_behaves_like 'access rights checks'
       end
     end
   end
