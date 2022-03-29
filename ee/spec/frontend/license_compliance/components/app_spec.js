@@ -83,6 +83,7 @@ const createComponent = ({ state, props, options }) => {
 };
 
 const findByTestId = (testId) => wrapper.find(`[data-testid="${testId}"]`);
+const findAllGlBadges = () => wrapper.findAllComponents(GlBadge);
 
 describe('Project Licenses', () => {
   afterEach(() => {
@@ -232,85 +233,75 @@ describe('Project Licenses', () => {
       },
     );
 
-    describe('when the tabs are rendered', () => {
-      const pageInfo = {
-        total: 1,
-      };
+    describe.each`
+      classification                             | warning
+      ${LICENSE_APPROVAL_CLASSIFICATION.DENIED}  | ${true}
+      ${LICENSE_APPROVAL_CLASSIFICATION.ALLOWED} | ${false}
+    `(
+      'when the tabs are rendered with a $classification vulnerability',
+      ({ classification, warning }) => {
+        const pageInfo = {
+          total: 1,
+        };
 
-      beforeEach(() => {
-        createComponent({
-          state: {
-            initialized: true,
-            isLoading: false,
-            licenses: [
-              {
-                name: 'MIT',
-                classification: LICENSE_APPROVAL_CLASSIFICATION.DENIED,
-                components: [],
+        beforeEach(() => {
+          createComponent({
+            state: {
+              initialized: true,
+              isLoading: false,
+              licenses: [
+                {
+                  name: 'MIT',
+                  classification,
+                  components: [],
+                },
+              ],
+              reportInfo: {
+                jobPath: '/',
+                generatedAt: '',
+                status: REPORT_STATUS.ok,
               },
-            ],
-            reportInfo: {
-              jobPath: '/',
-              generatedAt: '',
-              status: REPORT_STATUS.ok,
+              pageInfo,
             },
-            pageInfo,
-          },
-          options: {
-            mount: true,
-          },
+            options: {
+              mount: true,
+            },
+          });
         });
-      });
 
-      it.each`
-        givenActiveTab | expectedLocationHash
-        ${'policies'}  | ${'#policies'}
-        ${'licenses'}  | ${'#licenses'}
-      `(
-        'sets the location hash to "$expectedLocationHash" when the "$givenTab" tab is activate',
-        async ({ givenActiveTab, expectedLocationHash }) => {
-          findByTestId(`${givenActiveTab}TabTitle`).trigger('click');
+        it.each`
+          givenActiveTab | expectedLocationHash
+          ${'policies'}  | ${'#policies'}
+          ${'licenses'}  | ${'#licenses'}
+        `(
+          'sets the location hash to "$expectedLocationHash" when the "$givenTab" tab is activate',
+          async ({ givenActiveTab, expectedLocationHash }) => {
+            findByTestId(`${givenActiveTab}TabTitle`).trigger('click');
 
-          await nextTick();
-          expect(window.location.hash).toBe(expectedLocationHash);
-        },
-      );
-
-      it('it renders the correct count in "Detected in project" tab', () => {
-        expect(wrapper.findAllComponents(GlBadge).at(0).text()).toBe(pageInfo.total.toString());
-      });
-
-      it('it renders the correct count in "Policies" tab', () => {
-        expect(wrapper.findAllComponents(GlBadge).at(1).text()).toBe(
-          managedLicenses.length.toString(),
-        );
-      });
-
-      it('it renders the correct type of badge styling', () => {
-        const badges = [
-          wrapper.findAllComponents(GlBadge).at(0),
-          wrapper.findAllComponents(GlBadge).at(1),
-        ];
-        badges.forEach((badge) => expect(badge.classes()).toContain('gl-tab-counter-badge'));
-      });
-    });
-
-    describe('when there are policy violations', () => {
-      beforeEach(() => {
-        createComponent({
-          state: {
-            initialized: true,
-            licenses: [{ classification: LICENSE_APPROVAL_CLASSIFICATION.DENIED }],
+            await nextTick();
+            expect(window.location.hash).toBe(expectedLocationHash);
           },
-        });
-      });
-
-      it('renders a policy violations alert', () => {
-        expect(wrapper.findComponent(GlAlert).exists()).toBe(true);
-        expect(wrapper.findComponent(GlAlert).text()).toContain(
-          "Detected licenses that are out-of-compliance with the project's assigned policies",
         );
-      });
-    });
+
+        it('it renders the correct count in "Detected in project" tab', () => {
+          expect(findAllGlBadges().at(0).text()).toBe(pageInfo.total.toString());
+        });
+
+        it('it renders the correct count in "Policies" tab', () => {
+          expect(findAllGlBadges().at(1).text()).toBe(managedLicenses.length.toString());
+        });
+
+        it('it renders the correct type of badge styling', () => {
+          const badges = [findAllGlBadges().at(0), findAllGlBadges().at(1)];
+          badges.forEach((badge) => expect(badge.classes()).toContain('gl-tab-counter-badge'));
+        });
+
+        it(`it ${
+          warning ? 'does' : 'does not'
+        } render the Detected in Project tab with warning pill`, () => {
+          expect(findAllGlBadges().at(0).find('.badge-warning').exists()).toBe(warning);
+        });
+      },
+    );
   });
 });
