@@ -1,4 +1,4 @@
-import { isEqual, differenceWith } from 'lodash';
+import { isEqual } from 'lodash';
 
 export default {
   typePolicies: {
@@ -13,15 +13,28 @@ export default {
       merge(existing = {}, incoming, { args = {} }) {
         let nodes;
 
+        const areNodesEqual = isEqual(existing.nodes, incoming.nodes);
+        const statuses = Array.isArray(args.statuses) ? [...args.statuses] : args.statuses;
+        const { pageInfo } = incoming;
+
         if (Object.keys(existing).length !== 0 && isEqual(existing?.statuses, args?.statuses)) {
-          const diff = differenceWith(existing.nodes, incoming.nodes, isEqual);
-          if (existing.nodes.length === incoming.nodes.length) {
-            if (diff.length !== 0) {
-              nodes = [...existing.nodes, ...diff];
+          if (areNodesEqual) {
+            if (incoming.pageInfo.hasNextPage) {
+              nodes = [...existing.nodes, ...incoming.nodes];
             } else {
-              nodes = [...existing.nodes];
+              nodes = [...incoming.nodes];
             }
           } else {
+            if (!existing.pageInfo?.hasNextPage) {
+              nodes = [...incoming.nodes];
+
+              return {
+                nodes,
+                statuses,
+                pageInfo,
+              };
+            }
+
             nodes = [...existing.nodes, ...incoming.nodes];
           }
         } else {
@@ -30,8 +43,8 @@ export default {
 
         return {
           nodes,
-          statuses: Array.isArray(args.statuses) ? [...args.statuses] : args.statuses,
-          pageInfo: incoming.pageInfo,
+          statuses,
+          pageInfo,
         };
       },
     },

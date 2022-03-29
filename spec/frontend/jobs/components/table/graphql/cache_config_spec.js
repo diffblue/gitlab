@@ -34,9 +34,17 @@ describe('jobs/components/table/graphql/cache_config', () => {
     });
 
     it('should not add to existing cache if the incoming elements are the same', () => {
+      // simulate that this is the last page
+      const finalExistingCache = {
+        ...CIJobConnectionExistingCache,
+        pageInfo: {
+          hasNextPage: false,
+        },
+      };
+
       const res = cacheConfig.typePolicies.CiJobConnection.merge(
         CIJobConnectionExistingCache,
-        CIJobConnectionExistingCache,
+        finalExistingCache,
         {
           args: firstLoadArgs,
         },
