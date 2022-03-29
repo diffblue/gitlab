@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Every metric definition' do
   include UsageDataHelpers
 
-  let(:usage_ping) { Gitlab::Usage::ServicePingReport.for(output: :all_metrics_values) }
+  let(:usage_ping) { ServicePing::BuildPayloadService.new.execute }
   let(:ignored_usage_ping_key_patterns) do
     %w(
       license_add_ons
@@ -84,6 +84,38 @@ RSpec.describe 'Every metric definition' do
     msg = "see https://docs.gitlab.com/ee/development/service_ping/metrics_dictionary.html#metrics-added-dynamic-to-service-ping-payload"
     expect(metric_files_key_paths).to match_array(usage_ping_key_paths)
     expect(metric_files_key_paths).to match_array(usage_ping_key_paths), msg
+  end
+
+  describe 'metrics classes' do
+    let(:ignored_classes) do
+      [
+        Gitlab::Usage::Metrics::Instrumentations::BaseMetric,
+        Gitlab::Usage::Metrics::Instrumentations::GenericMetric,
+        Gitlab::Usage::Metrics::Instrumentations::DatabaseMetric,
+        Gitlab::Usage::Metrics::Instrumentations::RedisMetric,
+        Gitlab::Usage::Metrics::Instrumentations::RedisHLLMetric
+      ].freeze
+    end
+
+    def assert_uses_all_nested_classes(parent_module)
+      parent_module.constants(false).each do |const_name|
+        constant = parent_module.const_get(const_name, false)
+        next if ignored_classes.include?(constant)
+
+        if constant.is_a? Class
+          metric_class_instance = instance_double(constant)
+          expect(constant).to receive(:new).at_least(:once).and_return(metric_class_instance)
+          expect(metric_class_instance).to receive(:value).at_least(:once)
+        elsif constant.is_a? Module
+          assert_uses_all_nested_classes(constant)
+        end
+      end
+    end
+
+    it 'uses all metrics classes' do
+      assert_uses_all_nested_classes(Gitlab::Usage::Metrics::Instrumentations)
+      usage_ping
+    end
   end
 
   context 'with value json schema' do
