@@ -67,13 +67,7 @@ describe('AddScheduleModal', () => {
     localVue.use(VueApollo);
     updateScheduleHandler = updateHandler;
 
-    const requestHandlers = [
-      [
-        getOncallSchedulesWithRotationsQuery,
-        jest.fn().mockResolvedValue(getOncallSchedulesQueryResponse),
-      ],
-      [updateOncallScheduleMutation, updateScheduleHandler],
-    ];
+    const requestHandlers = [[updateOncallScheduleMutation, updateScheduleHandler]];
 
     fakeApollo = createMockApollo(requestHandlers);
 

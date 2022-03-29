@@ -40,6 +40,26 @@ export const getOncallSchedulesQueryResponse = {
             name: 'Test schedule from query',
             description: 'Description 1 lives here',
             timezone: 'America/Los_Angeles',
+            rotations: { nodes: [{ id: 'gid://gitlab/IncidentManagement::OncallRotation/2' }] },
+          },
+        ],
+      },
+    },
+  },
+};
+
+export const getOncallSchedulesQueryResponseWithRotations = {
+  data: {
+    project: {
+      id: 'project-1',
+      incidentManagementOncallSchedules: {
+        nodes: [
+          {
+            __typename: 'IncidentManagementOncallSchedule',
+            iid: '37',
+            name: 'Test schedule from query',
+            description: 'Description 1 lives here',
+            timezone: 'America/Los_Angeles',
             rotations: { nodes: mockRotations },
           },
         ],
@@ -110,7 +130,7 @@ export const updateScheduleResponseWithErrors = {
         name: 'Test schedule 2',
         description: 'Description 2 lives here',
         timezone: 'Pacific/Honolulu',
-        rotations: { nodes: [mockRotations] },
+        rotations: { nodes: [{ id: 'gid://gitlab/IncidentManagement::OncallRotation/2' }] },
       },
     },
   },

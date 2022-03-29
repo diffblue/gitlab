@@ -142,6 +142,7 @@ export const activateLicenseMutationResponse = {
     data: {
       gitlabSubscriptionActivate: {
         license: {
+          __typename: 'CurrentLicense',
           id: 'gid://gitlab/License/3',
           type: 'cloud',
           plan: 'ultimate',

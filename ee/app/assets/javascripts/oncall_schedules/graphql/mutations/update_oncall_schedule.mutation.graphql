@@ -20,6 +20,11 @@ mutation oncallScheduleUpdate(
       name
       description
       timezone
+      rotations {
+        nodes {
+          id
+        }
+      }
     }
   }
 }
