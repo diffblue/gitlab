@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 Gitlab::Seeder.quiet do
-  Group.all.each do |group|
+  Group.not_mass_generated.each do |group|
     5.times do
       epic_params = {
         title: FFaker::Lorem.sentence(6),

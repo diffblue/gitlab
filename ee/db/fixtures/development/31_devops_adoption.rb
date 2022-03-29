@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 Gitlab::Seeder.quiet do
-  groups = Group.take(5)
+  groups = Group.not_mass_generated.take(5)
 
   next if groups.empty?
 
