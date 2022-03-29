@@ -73,7 +73,7 @@ describe('BoardForm', () => {
     wrapper = shallowMountExtended(BoardForm, {
       propsData: { ...defaultProps, ...props },
       provide: {
-        rootPath: 'root',
+        boardBaseUrl: 'root',
         glFeatures: { iterationCadences },
       },
       mocks: {
