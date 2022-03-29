@@ -91,7 +91,8 @@ To view a list of merge requests that need your attention:
 1. On the top bar, select **Merge requests** (**{merge-request}**).
 1. Select **Attention requests**.
 
-To request attention from another user:
+To request attention from another user, use the `/attention @user`
+[quick action](../quick_actions.md) or:
 
 1. Go to the merge request.
 1. On the right sidebar, identify the user you want to request attention from.
@@ -99,8 +100,6 @@ To request attention from another user:
    of the icon changes:
 
    ![Attention request toggle](img/attention_request_sidebar_v14_10.png)
-
-Alternatively, you can use the `/attention @user` quick action to request user attention.
 
 ### Remove an attention request
 
