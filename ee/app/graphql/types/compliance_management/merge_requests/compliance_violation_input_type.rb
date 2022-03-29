@@ -13,11 +13,11 @@ module Types
 
         argument :merged_before, ::Types::DateType,
                  required: false,
-                 description: 'Merged date of merge requests merged before a compliance violation was created.'
+                 description: 'Merge requests merged before this date (inclusive).'
 
         argument :merged_after, ::Types::DateType,
                  required: false,
-                 description: 'Merged date of merge requests merged after a compliance violation was created.'
+                 description: 'Merge requests merged after this date (inclusive).'
       end
     end
   end

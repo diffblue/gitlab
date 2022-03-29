@@ -109,7 +109,7 @@ RSpec.describe MergeRequests::ComplianceViolation, type: :model do
     end
 
     it 'returns the correct collection of violations' do
-      expect(described_class.merged_before(1.day.ago)).to contain_exactly(violations[0])
+      expect(described_class.merged_before(2.days.ago)).to contain_exactly(violations[0])
     end
   end
 
@@ -127,7 +127,7 @@ RSpec.describe MergeRequests::ComplianceViolation, type: :model do
     end
 
     it 'returns the correct collection of violations' do
-      expect(described_class.merged_after(1.day.ago)).to contain_exactly(violations[0])
+      expect(described_class.merged_after(Date.current)).to contain_exactly(violations[0])
     end
   end
 
