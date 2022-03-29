@@ -78,7 +78,12 @@ export default {
         @click="toggle"
       />
       <template v-if="isCollapsed">
-        <user-avatar-list :items="suggestedApproversTrimmed" :breakpoint="0" empty-text="" />
+        <user-avatar-list
+          :items="suggestedApproversTrimmed"
+          :img-size="24"
+          :breakpoint="0"
+          empty-text=""
+        />
         <gl-button
           data-testid="approvers-expand-button"
           category="tertiary"
