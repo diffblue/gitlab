@@ -1,10 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 
 import LicenseManagementRow from 'ee/vue_shared/license_compliance/components/license_management_row.vue';
-import {
-  approvedLicense,
-  blacklistedLicense,
-} from 'ee_jest/vue_shared/license_compliance/mock_data';
+import { allowedLicense, deniedLicense } from 'ee_jest/vue_shared/license_compliance/mock_data';
 
 let wrapper;
 
@@ -15,7 +12,7 @@ describe('LicenseManagementRow', () => {
 
   describe('allowed license', () => {
     beforeEach(() => {
-      const props = { license: approvedLicense };
+      const props = { license: allowedLicense };
 
       wrapper = shallowMount(LicenseManagementRow, {
         propsData: {
@@ -35,7 +32,7 @@ describe('LicenseManagementRow', () => {
 
   describe('denied license', () => {
     beforeEach(() => {
-      const props = { license: blacklistedLicense };
+      const props = { license: deniedLicense };
 
       wrapper = shallowMount(LicenseManagementRow, {
         propsData: {

@@ -8,13 +8,13 @@ import AdminLicenseManagementRow from 'ee/vue_shared/license_compliance/componen
 import DeleteConfirmationModal from 'ee/vue_shared/license_compliance/components/delete_confirmation_modal.vue';
 import LicenseManagementRow from 'ee/vue_shared/license_compliance/components/license_management_row.vue';
 import LicenseManagement from 'ee/vue_shared/license_compliance/license_management.vue';
-import { approvedLicense, blacklistedLicense } from './mock_data';
+import { allowedLicense, deniedLicense } from './mock_data';
 
 Vue.use(Vuex);
 
 let wrapper;
 
-const managedLicenses = [approvedLicense, blacklistedLicense];
+const managedLicenses = [allowedLicense, deniedLicense];
 
 const PaginatedList = {
   props: ['list'],

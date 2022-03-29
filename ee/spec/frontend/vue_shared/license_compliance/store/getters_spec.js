@@ -1,5 +1,6 @@
 import * as getters from 'ee/vue_shared/license_compliance/store/getters';
 import createState from 'ee/vue_shared/license_compliance/store/state';
+import { LICENSE_APPROVAL_STATUS } from 'ee/vue_shared/license_compliance/constants';
 
 import { licenseReport as licenseReportMock } from '../mock_data';
 
@@ -220,11 +221,11 @@ describe('getters', () => {
         };
       });
 
-      describe('when blacklisted licenses exist on the HEAD', () => {
+      describe('when denied licenses exist on the HEAD', () => {
         describe('when a single license is detected', () => {
           it('should return "License Compliance detected 1 new license and policy violation; approval required"', () => {
             const mockGetters = {
-              reportContainsBlacklistedLicense: true,
+              reportContainsDeniedLicense: true,
               baseReportHasLicenses: true,
               licenseReportLength: 1,
             };
@@ -238,7 +239,7 @@ describe('getters', () => {
         describe('when multiple licenses are detected', () => {
           it('should return License Compliance detected 2 new licenses and policy violations; approval required', () => {
             const mockGetters = {
-              reportContainsBlacklistedLicense: true,
+              reportContainsDeniedLicense: true,
               baseReportHasLicenses: true,
               licenseReportLength: 2,
             };
@@ -250,11 +251,11 @@ describe('getters', () => {
         });
       });
 
-      describe('when blacklisted licenses are not detected on the HEAD', () => {
+      describe('when denied licenses are not detected on the HEAD', () => {
         describe('when a single license is detected', () => {
           it('should return "License Compliance detected 1 new license"', () => {
             const mockGetters = {
-              reportContainsBlacklistedLicense: false,
+              reportContainsDeniedLicense: false,
               baseReportHasLicenses: true,
               licenseReportLength: 1,
             };
@@ -268,7 +269,7 @@ describe('getters', () => {
         describe('when multiple licenses are detected', () => {
           it('should return "License Compliance detected 2 new licenses"', () => {
             const mockGetters = {
-              reportContainsBlacklistedLicense: false,
+              reportContainsDeniedLicense: false,
               baseReportHasLicenses: true,
               licenseReportLength: 2,
             };
@@ -288,11 +289,11 @@ describe('getters', () => {
         };
       });
 
-      describe('when blacklisted licenses exist on the HEAD', () => {
+      describe('when denied licenses exist on the HEAD', () => {
         describe('when a single license is detected', () => {
           it('should return "License Compliance detected 1 license and policy violation for the source branch only; approval required"', () => {
             const mockGetters = {
-              reportContainsBlacklistedLicense: true,
+              reportContainsDeniedLicense: true,
               baseReportHasLicenses: false,
               licenseReportLength: 1,
             };
@@ -306,7 +307,7 @@ describe('getters', () => {
         describe('when multiple licenses are detected', () => {
           it('should return "License Compliance detected 2 licenses and policy violations for the source branch only; approval required"', () => {
             const mockGetters = {
-              reportContainsBlacklistedLicense: true,
+              reportContainsDeniedLicense: true,
               baseReportHasLicenses: false,
               licenseReportLength: 2,
             };
@@ -318,11 +319,11 @@ describe('getters', () => {
         });
       });
 
-      describe('when blacklisted licenses are not detected on the HEAD', () => {
+      describe('when denied licenses are not detected on the HEAD', () => {
         describe('when a single license is detected', () => {
           it('should return "License Compliance detected 1 license for the source branch only"', () => {
             const mockGetters = {
-              reportContainsBlacklistedLicense: false,
+              reportContainsDeniedLicense: false,
               baseReportHasLicenses: false,
               licenseReportLength: 1,
             };
@@ -336,7 +337,7 @@ describe('getters', () => {
         describe('when multiple licenses are detected', () => {
           it('should return "License Compliance detected 2 licenses for the source branch only"', () => {
             const mockGetters = {
-              reportContainsBlacklistedLicense: false,
+              reportContainsDeniedLicense: false,
               baseReportHasLicenses: false,
               licenseReportLength: 2,
             };
@@ -358,11 +359,11 @@ describe('getters', () => {
         };
       });
 
-      describe('when blacklisted licenses exist on the HEAD', () => {
+      describe('when denied licenses exist on the HEAD', () => {
         describe('when a single license is detected', () => {
           it('should return "License Compliance detected 1 new license and policy violation"', () => {
             const mockGetters = {
-              reportContainsBlacklistedLicense: true,
+              reportContainsDeniedLicense: true,
               baseReportHasLicenses: true,
               licenseReportLength: 1,
             };
@@ -376,7 +377,7 @@ describe('getters', () => {
         describe('when multiple licenses are detected', () => {
           it('should return "License Compliance detected 2 new licenses and policy violations"', () => {
             const mockGetters = {
-              reportContainsBlacklistedLicense: true,
+              reportContainsDeniedLicense: true,
               baseReportHasLicenses: true,
               licenseReportLength: 2,
             };
@@ -388,11 +389,11 @@ describe('getters', () => {
         });
       });
 
-      describe('when blacklisted licenses are not detected on the HEAD', () => {
+      describe('when denied licenses are not detected on the HEAD', () => {
         describe('when a single license is detected', () => {
           it('should return "License Compliance detected 1 new license"', () => {
             const mockGetters = {
-              reportContainsBlacklistedLicense: false,
+              reportContainsDeniedLicense: false,
               baseReportHasLicenses: true,
               licenseReportLength: 1,
             };
@@ -406,7 +407,7 @@ describe('getters', () => {
         describe('when multiple licenses are detected', () => {
           it('should return "License Compliance detected 2 new licenses"', () => {
             const mockGetters = {
-              reportContainsBlacklistedLicense: false,
+              reportContainsDeniedLicense: false,
               baseReportHasLicenses: true,
               licenseReportLength: 2,
             };
@@ -426,11 +427,11 @@ describe('getters', () => {
         };
       });
 
-      describe('when blacklisted licenses exist on the HEAD', () => {
+      describe('when denied licenses exist on the HEAD', () => {
         describe('when a single license is detected', () => {
           it('should return "License Compliance detected 1 license and policy violation for the source branch only"', () => {
             const mockGetters = {
-              reportContainsBlacklistedLicense: true,
+              reportContainsDeniedLicense: true,
               baseReportHasLicenses: false,
               licenseReportLength: 1,
             };
@@ -444,7 +445,7 @@ describe('getters', () => {
         describe('when multiple licenses are detected', () => {
           it('should return "License Compliance detected 2 licenses and policy violations for the source branch only"', () => {
             const mockGetters = {
-              reportContainsBlacklistedLicense: true,
+              reportContainsDeniedLicense: true,
               baseReportHasLicenses: false,
               licenseReportLength: 2,
             };
@@ -456,11 +457,11 @@ describe('getters', () => {
         });
       });
 
-      describe('when blacklisted licenses are not detected on the HEAD', () => {
+      describe('when denied licenses are not detected on the HEAD', () => {
         describe('when a single license is detected', () => {
           it('should return "License Compliance detected 1 license for the source branch only"', () => {
             const mockGetters = {
-              reportContainsBlacklistedLicense: false,
+              reportContainsDeniedLicense: false,
               baseReportHasLicenses: false,
               licenseReportLength: 1,
             };
@@ -474,7 +475,7 @@ describe('getters', () => {
         describe('when multiple licenses are detected', () => {
           it('should return "License Compliance detected 2 licenses for the source branch only"', () => {
             const mockGetters = {
-              reportContainsBlacklistedLicense: false,
+              reportContainsDeniedLicense: false,
               baseReportHasLicenses: false,
               licenseReportLength: 2,
             };
@@ -488,24 +489,24 @@ describe('getters', () => {
     });
   });
 
-  describe('reportContainsBlacklistedLicense', () => {
-    it('should be false if the report does not contain blacklisted licenses', () => {
+  describe('reportContainsDeniedLicense', () => {
+    it('should be false if the report does not contain denied licenses', () => {
       const mockGetters = {
         licenseReport: [licenseReportMock[0], licenseReportMock[0]],
       };
 
-      expect(getters.reportContainsBlacklistedLicense(state, mockGetters)).toBe(false);
+      expect(getters.reportContainsDeniedLicense(state, mockGetters)).toBe(false);
     });
 
-    it('should be true if the report contains blacklisted licenses', () => {
+    it('should be true if the report contains denied licenses', () => {
       const mockGetters = {
         licenseReport: [
           licenseReportMock[0],
-          { ...licenseReportMock[0], approvalStatus: 'blacklisted' },
+          { ...licenseReportMock[0], approvalStatus: LICENSE_APPROVAL_STATUS.DENIED },
         ],
       };
 
-      expect(getters.reportContainsBlacklistedLicense(state, mockGetters)).toBe(true);
+      expect(getters.reportContainsDeniedLicense(state, mockGetters)).toBe(true);
     });
   });
 });

@@ -3,7 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import Component from 'ee/vue_shared/license_compliance/components/delete_confirmation_modal.vue';
-import { approvedLicense } from '../mock_data';
+import { allowedLicense } from '../mock_data';
 
 Vue.use(Vuex);
 
@@ -23,7 +23,7 @@ describe('DeleteConfirmationModal', () => {
         licenseManagement: {
           namespaced: true,
           state: {
-            currentLicenseInModal: approvedLicense,
+            currentLicenseInModal: allowedLicense,
             ...initialState,
           },
           actions,
@@ -72,7 +72,7 @@ describe('DeleteConfirmationModal', () => {
 
     it('should have the confirmation text', () => {
       expect(findModal().html()).toContain(
-        `You are about to remove the license, <strong>${approvedLicense.name}</strong>, from this project.`,
+        `You are about to remove the license, <strong>${allowedLicense.name}</strong>, from this project.`,
       );
     });
 
@@ -81,7 +81,7 @@ describe('DeleteConfirmationModal', () => {
       const nameEscaped = '&lt;a href="#"&gt;BAD&lt;/a&gt;';
 
       const currentLicenseInModal = {
-        ...approvedLicense,
+        ...allowedLicense,
         name,
       };
 
