@@ -24545,16 +24545,16 @@ msgstr ""
 msgid "MrDeploymentActions|Stop environment"
 msgstr ""
 
-msgid "MrList|Assigned to %{name}, go to their profile."
+msgid "MrList|Assigned to %{name}"
 msgstr ""
 
-msgid "MrList|Attention requested from assignee %{name}, go to their profile."
+msgid "MrList|Attention requested from assignee %{name}"
 msgstr ""
 
-msgid "MrList|Attention requested from reviewer %{name}, go to their profile."
+msgid "MrList|Attention requested from reviewer %{name}"
 msgstr ""
 
-msgid "MrList|Review requested from %{name}, go to their profile."
+msgid "MrList|Review requested from %{name}"
 msgstr ""
 
 msgid "Multi-project"
