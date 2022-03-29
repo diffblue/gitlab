@@ -79,6 +79,11 @@ module EE
       super
     end
 
+    override :arkose_labs_enabled?
+    def arkose_labs_enabled?
+      ::Feature.enabled?(:arkose_labs_login_challenge, default_enabled: :yaml) && request.headers[::SessionsController::CAPTCHA_HEADER]
+    end
+
     override :check_captcha
     def check_captcha
       if ::Feature.enabled?(:arkose_labs_login_challenge, default_enabled: :yaml)
