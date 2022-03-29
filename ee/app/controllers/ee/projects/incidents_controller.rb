@@ -7,6 +7,7 @@ module EE
     prepended do
       before_action do
         push_licensed_feature(:escalation_policies, project)
+        push_licensed_feature(:incident_timeline_events) if project.licensed_feature_available?(:incident_timeline_events)
       end
     end
   end
