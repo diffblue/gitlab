@@ -9,8 +9,8 @@ import ReportItem from '~/reports/components/report_item.vue';
 import ReportSection from '~/reports/components/report_section.vue';
 import { LOADING, ERROR, SUCCESS } from '~/reports/constants';
 import {
-  approvedLicense,
-  blacklistedLicense,
+  allowedLicense,
+  deniedLicense,
   licenseReport as licenseReportMock,
   generateReportGroup,
 } from './mock_data';
@@ -23,7 +23,7 @@ describe('License Report MR Widget', () => {
   let wrapper;
 
   const defaultState = {
-    managedLicenses: [approvedLicense, blacklistedLicense],
+    managedLicenses: [allowedLicense, deniedLicense],
     currentLicenseInModal: licenseReportMock[0],
     isLoadingManagedLicenses: true,
   };
@@ -38,7 +38,7 @@ describe('License Report MR Widget', () => {
     licenseSummaryText() {
       return 'FOO';
     },
-    reportContainsBlacklistedLicense() {
+    reportContainsDeniedLicense() {
       return false;
     },
     licenseReportGroups() {
@@ -414,16 +414,16 @@ describe('License Report MR Widget', () => {
     const findLicenseComplianceHelpLink = () =>
       wrapper.find('[data-testid="security-approval-help-link"]');
 
-    it('does not show a link to security approval help page if report does not contain blacklisted licenses', () => {
+    it('does not show a link to security approval help page if report does not contain denied licenses', () => {
       mountComponent();
 
       expect(findLicenseComplianceHelpLink().exists()).toBe(false);
     });
 
-    it('shows a link to security approval help page if report contains blacklisted licenses', () => {
+    it('shows a link to security approval help page if report contains denied licenses', () => {
       const getters = {
         ...defaultGetters,
-        reportContainsBlacklistedLicense() {
+        reportContainsDeniedLicense() {
           return true;
         },
       };

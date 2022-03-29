@@ -62,7 +62,7 @@ export const licenseSummaryText = (state, getters) => {
 
 export const summaryTextWithLicenseCheck = (_, getters) => {
   if (!getters.baseReportHasLicenses) {
-    return getters.reportContainsBlacklistedLicense
+    return getters.reportContainsDeniedLicense
       ? n__(
           'LicenseCompliance|License Compliance detected %d license and policy violation for the source branch only; approval required',
           'LicenseCompliance|License Compliance detected %d licenses and policy violations for the source branch only; approval required',
@@ -75,7 +75,7 @@ export const summaryTextWithLicenseCheck = (_, getters) => {
         );
   }
 
-  return getters.reportContainsBlacklistedLicense
+  return getters.reportContainsDeniedLicense
     ? n__(
         'LicenseCompliance|License Compliance detected %d new license and policy violation; approval required',
         'LicenseCompliance|License Compliance detected %d new licenses and policy violations; approval required',
@@ -90,7 +90,7 @@ export const summaryTextWithLicenseCheck = (_, getters) => {
 
 export const summaryTextWithoutLicenseCheck = (_, getters) => {
   if (!getters.baseReportHasLicenses) {
-    return getters.reportContainsBlacklistedLicense
+    return getters.reportContainsDeniedLicense
       ? n__(
           'LicenseCompliance|License Compliance detected %d license and policy violation for the source branch only',
           'LicenseCompliance|License Compliance detected %d licenses and policy violations for the source branch only',
@@ -103,7 +103,7 @@ export const summaryTextWithoutLicenseCheck = (_, getters) => {
         );
   }
 
-  return getters.reportContainsBlacklistedLicense
+  return getters.reportContainsDeniedLicense
     ? n__(
         'LicenseCompliance|License Compliance detected %d new license and policy violation',
         'LicenseCompliance|License Compliance detected %d new licenses and policy violations',
@@ -116,7 +116,7 @@ export const summaryTextWithoutLicenseCheck = (_, getters) => {
       );
 };
 
-export const reportContainsBlacklistedLicense = (_, getters) =>
+export const reportContainsDeniedLicense = (_, getters) =>
   (getters.licenseReport || []).some(
     (license) => license.approvalStatus === LICENSE_APPROVAL_STATUS.DENIED,
   );

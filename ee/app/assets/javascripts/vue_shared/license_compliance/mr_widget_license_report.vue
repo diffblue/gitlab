@@ -79,7 +79,7 @@ export default {
       'licenseReport',
       'isLoading',
       'licenseSummaryText',
-      'reportContainsBlacklistedLicense',
+      'reportContainsDeniedLicense',
       'licenseReportGroups',
     ]),
     hasLicenseReportIssues() {
@@ -177,7 +177,7 @@ export default {
         <div class="pr-3">
           {{ licenseSummaryText }}
           <gl-link
-            v-if="reportContainsBlacklistedLicense && licenseComplianceDocsPath"
+            v-if="reportContainsDeniedLicense && licenseComplianceDocsPath"
             :href="licenseComplianceDocsPath"
             data-testid="security-approval-help-link"
             target="_blank"

@@ -7,8 +7,8 @@ import { STATUS_FAILED, STATUS_NEUTRAL, STATUS_SUCCESS } from '~/reports/constan
  * even though we adopted 'allowed' & 'denied' in the UI
  */
 export const LICENSE_APPROVAL_STATUS = {
-  ALLOWED: 'approved',
-  DENIED: 'blacklisted',
+  ALLOWED: gon?.features?.lcRemoveLegacyApprovalStatus ? 'allowed' : 'approved',
+  DENIED: gon?.features?.lcRemoveLegacyApprovalStatus ? 'denied' : 'blacklisted',
 };
 
 /*

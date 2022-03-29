@@ -7,7 +7,7 @@ import createState from 'ee/vue_shared/license_compliance/store/state';
 import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
 import axios from '~/lib/utils/axios_utils';
-import { approvedLicense, blacklistedLicense } from '../mock_data';
+import { allowedLicense, deniedLicense } from '../mock_data';
 
 describe('License store actions', () => {
   const apiUrlManageLicenses = `${TEST_HOST}/licenses/management`;
@@ -29,9 +29,9 @@ describe('License store actions', () => {
       ...createState(),
       apiUrlManageLicenses,
       approvalsApiPath,
-      currentLicenseInModal: approvedLicense,
+      currentLicenseInModal: allowedLicense,
     };
-    licenseId = approvedLicense.id;
+    licenseId = allowedLicense.id;
     mockDispatch = jest.fn(() => Promise.resolve());
     mockCommit = jest.fn();
     store = {
@@ -79,9 +79,9 @@ describe('License store actions', () => {
     it('commits SET_LICENSE_IN_MODAL with license', (done) => {
       testAction(
         actions.setLicenseInModal,
-        approvedLicense,
+        allowedLicense,
         state,
-        [{ type: mutationTypes.SET_LICENSE_IN_MODAL, payload: approvedLicense }],
+        [{ type: mutationTypes.SET_LICENSE_IN_MODAL, payload: allowedLicense }],
         [],
       )
         .then(done)
@@ -283,10 +283,10 @@ describe('License store actions', () => {
         });
 
         return actions
-          .setLicenseApproval(store, { license: approvedLicense, newStatus })
+          .setLicenseApproval(store, { license: allowedLicense, newStatus })
           .then(() => {
-            expectDispatched('addPendingLicense', approvedLicense.id);
-            expectDispatched('receiveSetLicenseApproval', approvedLicense.id);
+            expectDispatched('addPendingLicense', allowedLicense.id);
+            expectDispatched('receiveSetLicenseApproval', allowedLicense.id);
           });
       });
 
@@ -297,11 +297,11 @@ describe('License store actions', () => {
         });
 
         return actions
-          .setLicenseApproval(store, { license: approvedLicense, newStatus })
+          .setLicenseApproval(store, { license: allowedLicense, newStatus })
           .then(() => {
-            expectDispatched('addPendingLicense', approvedLicense.id);
+            expectDispatched('addPendingLicense', allowedLicense.id);
             expectDispatched('receiveSetLicenseApprovalError');
-            expectDispatched('removePendingLicense', approvedLicense.id);
+            expectDispatched('removePendingLicense', allowedLicense.id);
           });
       });
     });
@@ -310,7 +310,7 @@ describe('License store actions', () => {
   describe('allowLicense', () => {
     const newStatus = LICENSE_APPROVAL_STATUS.ALLOWED;
 
-    it('dispatches setLicenseApproval for un-approved licenses', (done) => {
+    it('dispatches setLicenseApproval for un-allowed licenses', (done) => {
       const license = { name: 'FOO' };
 
       testAction(
@@ -324,8 +324,8 @@ describe('License store actions', () => {
         .catch(done.fail);
     });
 
-    it('dispatches setLicenseApproval for blacklisted licenses', (done) => {
-      const license = blacklistedLicense;
+    it('dispatches setLicenseApproval for denied licenses', (done) => {
+      const license = deniedLicense;
 
       testAction(
         actions.allowLicense,
@@ -338,15 +338,15 @@ describe('License store actions', () => {
         .catch(done.fail);
     });
 
-    it('does not dispatch setLicenseApproval for approved licenses', (done) => {
-      testAction(actions.allowLicense, approvedLicense, state, [], []).then(done).catch(done.fail);
+    it('does not dispatch setLicenseApproval for allowed licenses', (done) => {
+      testAction(actions.allowLicense, allowedLicense, state, [], []).then(done).catch(done.fail);
     });
   });
 
   describe('denyLicense', () => {
     const newStatus = LICENSE_APPROVAL_STATUS.DENIED;
 
-    it('dispatches setLicenseApproval for un-approved licenses', (done) => {
+    it('dispatches setLicenseApproval for un-allowed licenses', (done) => {
       const license = { name: 'FOO' };
 
       testAction(
@@ -360,8 +360,8 @@ describe('License store actions', () => {
         .catch(done.fail);
     });
 
-    it('dispatches setLicenseApproval for approved licenses', (done) => {
-      const license = approvedLicense;
+    it('dispatches setLicenseApproval for allowed licenses', (done) => {
+      const license = allowedLicense;
 
       testAction(
         actions.denyLicense,
@@ -374,10 +374,8 @@ describe('License store actions', () => {
         .catch(done.fail);
     });
 
-    it('does not dispatch setLicenseApproval for blacklisted licenses', (done) => {
-      testAction(actions.denyLicense, blacklistedLicense, state, [], [])
-        .then(done)
-        .catch(done.fail);
+    it('does not dispatch setLicenseApproval for denied licenses', (done) => {
+      testAction(actions.denyLicense, deniedLicense, state, [], []).then(done).catch(done.fail);
     });
   });
 
@@ -397,7 +395,7 @@ describe('License store actions', () => {
 
   describe('receiveManagedLicensesSuccess', () => {
     it('commits RECEIVE_MANAGED_LICENSES_SUCCESS', (done) => {
-      const payload = [approvedLicense];
+      const payload = [allowedLicense];
       testAction(
         actions.receiveManagedLicensesSuccess,
         payload,
@@ -658,7 +656,7 @@ describe('License store actions', () => {
         rawLicenseReport = [
           {
             name: 'MIT',
-            classification: { id: 2, approval_status: 'blacklisted', name: 'MIT' },
+            classification: { id: 2, approval_status: LICENSE_APPROVAL_STATUS.DENIED, name: 'MIT' },
             dependencies: [{ name: 'vue' }],
             count: 1,
             url: 'http://opensource.org/licenses/mit-license',
@@ -675,7 +673,7 @@ describe('License store actions', () => {
             {
               ...rawLicenseReport[0],
               id: 2,
-              approvalStatus: 'blacklisted',
+              approvalStatus: LICENSE_APPROVAL_STATUS.DENIED,
               packages: [{ name: 'vue' }],
               status: 'failed',
             },
@@ -720,7 +718,11 @@ describe('License store actions', () => {
           new_licenses: [
             {
               name: 'Apache 2.0',
-              classification: { id: 1, approval_status: 'approved', name: 'Apache 2.0' },
+              classification: {
+                id: 1,
+                approval_status: LICENSE_APPROVAL_STATUS.ALLOWED,
+                name: 'Apache 2.0',
+              },
               dependencies: [{ name: 'echarts' }],
               count: 1,
               url: 'http://www.apache.org/licenses/LICENSE-2.0.txt',
@@ -736,7 +738,11 @@ describe('License store actions', () => {
           existing_licenses: [
             {
               name: 'MIT',
-              classification: { id: 2, approval_status: 'blacklisted', name: 'MIT' },
+              classification: {
+                id: 2,
+                approval_status: LICENSE_APPROVAL_STATUS.DENIED,
+                name: 'MIT',
+              },
               dependencies: [{ name: 'vue' }],
               count: 1,
               url: 'http://opensource.org/licenses/mit-license',
@@ -754,7 +760,7 @@ describe('License store actions', () => {
             {
               ...rawLicenseReport.existing_licenses[0],
               id: 2,
-              approvalStatus: 'blacklisted',
+              approvalStatus: LICENSE_APPROVAL_STATUS.DENIED,
               packages: [{ name: 'vue' }],
               status: 'failed',
             },
@@ -763,7 +769,7 @@ describe('License store actions', () => {
             {
               ...rawLicenseReport.new_licenses[0],
               id: 1,
-              approvalStatus: 'approved',
+              approvalStatus: LICENSE_APPROVAL_STATUS.ALLOWED,
               packages: [{ name: 'echarts' }],
               status: 'success',
             },

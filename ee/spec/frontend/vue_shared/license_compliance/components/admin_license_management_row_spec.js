@@ -5,7 +5,7 @@ import AdminLicenseManagementRow from 'ee/vue_shared/license_compliance/componen
 import { LICENSE_APPROVAL_STATUS } from 'ee/vue_shared/license_compliance/constants';
 
 import { mountComponentWithStore } from 'helpers/vue_mount_component_helper';
-import { approvedLicense } from '../mock_data';
+import { allowedLicense } from '../mock_data';
 
 const visibleClass = 'visible';
 const invisibleClass = 'invisible';
@@ -19,7 +19,7 @@ describe('AdminLicenseManagementRow', () => {
   let store;
   let actions;
 
-  const createComponent = (props = { license: approvedLicense }) => {
+  const createComponent = (props = { license: allowedLicense }) => {
     vm = mountComponentWithStore(Component, { props, store });
   };
 
@@ -53,9 +53,9 @@ describe('AdminLicenseManagementRow', () => {
     vm.$destroy();
   });
 
-  describe('approved license', () => {
+  describe('allowed license', () => {
     beforeEach(async () => {
-      vm.license = { ...approvedLicense, approvalStatus: LICENSE_APPROVAL_STATUS.ALLOWED };
+      vm.license = { ...allowedLicense, approvalStatus: LICENSE_APPROVAL_STATUS.ALLOWED };
       await nextTick();
     });
 
@@ -64,12 +64,12 @@ describe('AdminLicenseManagementRow', () => {
         expect(vm.dropdownText).toBe('Allowed');
       });
 
-      it('isApproved returns `true`', () => {
-        expect(vm.approveIconClass).toBe(visibleClass);
+      it('isAllowed returns `true`', () => {
+        expect(vm.allowedIconClass).toBe(visibleClass);
       });
 
-      it('isBlacklisted returns `false`', () => {
-        expect(vm.blacklistIconClass).toBe(invisibleClass);
+      it('isDenied returns `false`', () => {
+        expect(vm.deniedIconClass).toBe(invisibleClass);
       });
     });
 
@@ -88,9 +88,9 @@ describe('AdminLicenseManagementRow', () => {
     });
   });
 
-  describe('blacklisted license', () => {
+  describe('denied license', () => {
     beforeEach(async () => {
-      vm.license = { ...approvedLicense, approvalStatus: LICENSE_APPROVAL_STATUS.DENIED };
+      vm.license = { ...allowedLicense, approvalStatus: LICENSE_APPROVAL_STATUS.DENIED };
       await nextTick();
     });
 
@@ -99,12 +99,12 @@ describe('AdminLicenseManagementRow', () => {
         expect(vm.dropdownText).toBe('Denied');
       });
 
-      it('isApproved returns `false`', () => {
-        expect(vm.approveIconClass).toBe(invisibleClass);
+      it('isAllowed returns `false`', () => {
+        expect(vm.allowedIconClass).toBe(invisibleClass);
       });
 
-      it('isBlacklisted returns `true`', () => {
-        expect(vm.blacklistIconClass).toBe(visibleClass);
+      it('isDenied returns `true`', () => {
+        expect(vm.deniedIconClass).toBe(visibleClass);
       });
     });
 
@@ -160,7 +160,7 @@ describe('AdminLicenseManagementRow', () => {
     it('renders license name', () => {
       const nameEl = vm.$el.querySelector('.js-license-name');
 
-      expect(nameEl.innerText.trim()).toBe(approvedLicense.name);
+      expect(nameEl.innerText.trim()).toBe(allowedLicense.name);
     });
 
     it('renders the removal button', () => {
@@ -199,7 +199,7 @@ describe('AdminLicenseManagementRow', () => {
     });
 
     it('shows a loading icon and disables both the dropdown and the remove button while loading', () => {
-      createComponent({ license: approvedLicense, loading: true });
+      createComponent({ license: allowedLicense, loading: true });
       expect(findLoadingIcon()).not.toBeNull();
       expect(findDropdownToggle().disabled).toBe(true);
       expect(findRemoveButton().disabled).toBe(true);
