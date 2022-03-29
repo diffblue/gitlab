@@ -13,7 +13,7 @@ module Backup
     end
 
     override :dump
-    def dump(path)
+    def dump(path, backup_id)
       strategy.start(:create, path)
       enqueue_consecutive
 
