@@ -57,6 +57,38 @@ RSpec.describe Gitlab::Ci::RunnerReleases do
       end
 
       it_behaves_like 'requests that follow cache status', 5.seconds
+
+      it 'performs exponential backoff on requests', :aggregate_failures do
+        start_time = Time.now.utc.change(usec: 0)
+
+        http_call_timestamp_offsets = []
+        allow(Gitlab::HTTP).to receive(:try_get).with('the release API URL') do
+          http_call_timestamp_offsets << Time.now.utc - start_time
+          mock_http_response(response)
+        end
+
+        # An initial HTTP request fails
+        travel_to(start_time)
+        subject.reset!
+        expect(releases).to be_nil
+
+        # Successive failed requests result in HTTP requests only after specific backoff periods
+        backoff_periods = [5, 10, 20, 40, 80, 160, 320, 640, 1280, 2560, 3600].map(&:seconds)
+        backoff_periods.each do |period|
+          travel(period - 1.second)
+          expect(releases).to be_nil
+
+          travel 1.second
+          expect(releases).to be_nil
+        end
+
+        expect(http_call_timestamp_offsets).to eq([0, 5, 15, 35, 75, 155, 315, 635, 1275, 2555, 5115, 8715])
+
+        # Finally a successful HTTP request results in releases being returned
+        allow(Gitlab::HTTP).to receive(:try_get).with('the release API URL').once { mock_http_response([{ 'name' => 'v14.9.1' }]) }
+        travel 1.hour
+        expect(releases).not_to be_nil
+      end
     end
 
     context 'when response is not nil' do

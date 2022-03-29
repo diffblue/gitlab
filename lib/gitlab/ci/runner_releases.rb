@@ -19,7 +19,7 @@ module Gitlab
       # Returns a sorted list of the publicly available GitLab Runner releases
       #
       def releases
-        return @releases unless Time.current >= @expire_time
+        return @releases unless Time.now.utc >= @expire_time
 
         response = Gitlab::HTTP.try_get(::Gitlab::CurrentSettings.current_application_settings.public_runner_releases_url)
 
@@ -30,7 +30,7 @@ module Gitlab
       end
 
       def reset!
-        @expire_time = Time.current
+        @expire_time = Time.now.utc
         @releases = nil
         @backoff_count = 0
       end
@@ -48,7 +48,7 @@ module Gitlab
       end
 
       def next_backoff
-        return MAX_BACKOFF if @backoff_count >= 8 # optimization to prevent expensive exponentiation and possible overflows
+        return MAX_BACKOFF if @backoff_count >= 11 # optimization to prevent expensive exponentiation and possible overflows
 
         backoff = (INITIAL_BACKOFF * (BACKOFF_GROWTH_FACTOR**@backoff_count))
           .clamp(INITIAL_BACKOFF, MAX_BACKOFF)
