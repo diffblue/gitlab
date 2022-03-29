@@ -114,7 +114,7 @@ module Projects
 
         next if old_tag_target == tag_target
 
-        if Feature.enabled?(:verify_protected_tags_for_pull_mirror, project, default_enabled: :yaml) && !can_create_tag?(tag)
+        unless can_create_tag?(tag)
           tags_to_remove << tag
           next
         end

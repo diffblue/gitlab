@@ -159,23 +159,6 @@ RSpec.describe Projects::UpdateMirrorService do
             expect(project.repository.tag_names).not_to include('protected-tag')
             expect(project.repository.tag_names).to include('new-tag')
           end
-
-          context 'when feature flag is disabled' do
-            before do
-              stub_feature_flags(verify_protected_tags_for_pull_mirror: false)
-            end
-
-            it 'creates the protected tag' do
-              stub_fetch_mirror(project)
-
-              expect(project.repository).to receive(:expire_tags_cache).and_call_original
-              expect(Git::TagPushService).to receive(:new).and_call_original.twice
-
-              expect(service.execute).to eq(status: :success)
-
-              expect(project.repository.tag_names).to include('new-tag', 'protected-tag')
-            end
-          end
         end
       end
     end
