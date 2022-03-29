@@ -151,8 +151,8 @@ RSpec.describe Projects::IssuesController do
       it 'does not redirect on out of bounds when non-html' do
         get :index, params: params.merge(page: last_page + 1), format: 'atom'
 
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(assigns(:issues).size).to eq(0)
+        expect(response).to have_gitlab_http_status(:redirect)
+        expect(response).to redirect_to(action: 'index', format: 'atom', page: last_page, state: 'opened')
       end
 
       it 'does not use pagination if disabled' do
