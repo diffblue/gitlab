@@ -446,7 +446,6 @@ export default {
           class="no-drag"
           :title="$options.i18n.listSettings"
           icon="settings"
-          data-testid="board-settings-button"
           @click="openSidebarSettings"
         />
         <gl-tooltip :target="() => $refs.settingsBtn">{{ $options.i18n.listSettings }}</gl-tooltip>

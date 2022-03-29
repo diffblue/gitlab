@@ -8,17 +8,6 @@ RSpec.describe BoardsHelper do
   let_it_be_with_refind(:project) { create(:project) }
   let_it_be(:project_board) { create(:board, project: project) }
 
-  describe '#board_list_data' do
-    let(:results) { helper.board_list_data }
-
-    it 'contains an endpoint to get users list' do
-      assign(:board, project_board)
-      assign(:project, project)
-
-      expect(results).to include(list_assignees_path: "/-/boards/#{project_board.id}/users.json")
-    end
-  end
-
   describe '#current_board_json' do
     let(:board_json) { helper.current_board_json }
     let(:label1) { create(:label, name: "feijoa") }

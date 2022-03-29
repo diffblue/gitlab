@@ -20,15 +20,13 @@ RSpec.describe 'Group Boards', :js do
 
     wait_for_requests
 
-    click_button _('Delete board')
+    click_button s_('IssueBoards|Delete board')
     find(:css, '.board-config-modal .js-modal-action-primary').click
 
     click_boards_dropdown
 
-    page.within('[data-testid="boards-selector"]') do
-      expect(page).not_to have_content(board_dev.name)
-      expect(page).to have_content(board_ux.name)
-    end
+    expect(page).not_to have_content(board_dev.name)
+    expect(page).to have_content(board_ux.name)
   end
 
   def click_boards_dropdown

@@ -377,7 +377,7 @@ RSpec.describe 'Issue Boards', :js do
   end
 
   context 'when opening sidebars' do
-    let(:settings_button) { find('[data-testid="board-settings-button"]') }
+    let(:settings_button) { find_button _('List settings') }
 
     it 'closes card sidebar when opening settings sidebar' do
       click_card(card1)

@@ -572,12 +572,10 @@ RSpec.describe 'Scoped issue boards', :js do
     it "doesn't show the input when creating a board" do
       click_on_create_new_board
 
-      page.within '[data-testid="board-form-wrapper"]' do
-        # To make sure the form is shown
-        expect(page).to have_field('board-new-name')
+      # To make sure the form is shown
+      expect(page).to have_field('board-new-name')
 
-        expect(page).not_to have_button('Expand')
-      end
+      expect(page).not_to have_button('Expand')
     end
 
     it "doesn't show the button to edit scope" do

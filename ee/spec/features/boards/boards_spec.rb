@@ -207,7 +207,7 @@ RSpec.describe 'Project issue boards', :js do
           end
 
           it "sets max issue count to zero" do
-            page.find('[data-testid="remove-limit"]').click
+            click_button _('Remove limit')
 
             wait_for_requests
 
