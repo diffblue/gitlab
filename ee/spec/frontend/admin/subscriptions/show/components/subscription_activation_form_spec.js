@@ -12,6 +12,7 @@ import {
   subscriptionActivationForm,
 } from 'ee/admin/subscriptions/show/constants';
 import activateSubscriptionMutation from 'ee/admin/subscriptions/show/graphql/mutations/activate_subscription.mutation.graphql';
+import { stripTypenames } from 'helpers/graphql_helpers';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { stubComponent } from 'helpers/stub_component';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -197,7 +198,11 @@ describe('SubscriptionActivationForm', () => {
 
       it('emits a successful event', () => {
         expect(wrapper.emitted(SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT)).toEqual([
-          [activateLicenseMutationResponse.SUCCESS.data.gitlabSubscriptionActivate.license],
+          [
+            stripTypenames(
+              activateLicenseMutationResponse.SUCCESS.data.gitlabSubscriptionActivate.license,
+            ),
+          ],
         ]);
       });
     });
