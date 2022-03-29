@@ -16,16 +16,7 @@ export default {
     author: __('Author'),
   },
   components: { BoardFilteredSearch },
-  props: {
-    fullPath: {
-      type: String,
-      required: true,
-    },
-    boardType: {
-      type: String,
-      required: true,
-    },
-  },
+  inject: ['fullPath', 'boardType'],
   computed: {
     tokens() {
       const { fetchLabels, fetchAuthors } = issueBoardFilter(
