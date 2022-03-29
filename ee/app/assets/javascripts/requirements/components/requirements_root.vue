@@ -21,11 +21,11 @@ import {
   TestReportStatusToValue,
   DEFAULT_PAGE_SIZE,
 } from '../constants';
-import createRequirement from '../queries/createRequirement.mutation.graphql';
-import exportRequirement from '../queries/exportRequirements.mutation.graphql';
-import projectRequirements from '../queries/projectRequirements.query.graphql';
-import projectRequirementsCount from '../queries/projectRequirementsCount.query.graphql';
-import updateRequirement from '../queries/updateRequirement.mutation.graphql';
+import createRequirement from '../queries/create_requirement.mutation.graphql';
+import exportRequirement from '../queries/export_requirements.mutation.graphql';
+import projectRequirements from '../queries/project_requirements.query.graphql';
+import projectRequirementsCount from '../queries/project_requirements_count.query.graphql';
+import updateRequirement from '../queries/update_requirement.mutation.graphql';
 import ExportRequirementsModal from './export_requirements_modal.vue';
 import ImportRequirementsModal from './import_requirements_modal.vue';
 import RequirementForm from './requirement_form.vue';
@@ -694,9 +694,8 @@ export default {
       :dismissible="true"
       class="gl-mt-3 gl-mb-4"
       @dismiss="alert = null"
+      >{{ alert.message }}</gl-alert
     >
-      {{ alert.message }}
-    </gl-alert>
 
     <requirements-tabs
       :filter-by="filterBy"

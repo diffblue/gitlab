@@ -12,12 +12,12 @@ import RequirementsRoot from 'ee/requirements/components/requirements_root.vue';
 import RequirementsTabs from 'ee/requirements/components/requirements_tabs.vue';
 
 import { TestReportStatus } from 'ee/requirements/constants';
-import createRequirement from 'ee/requirements/queries/createRequirement.mutation.graphql';
-import exportRequirement from 'ee/requirements/queries/exportRequirements.mutation.graphql';
+import createRequirement from 'ee/requirements/queries/create_requirement.mutation.graphql';
+import exportRequirement from 'ee/requirements/queries/export_requirements.mutation.graphql';
 
-import projectRequirements from 'ee/requirements/queries/projectRequirements.query.graphql';
-import projectRequirementsCount from 'ee/requirements/queries/projectRequirementsCount.query.graphql';
-import updateRequirement from 'ee/requirements/queries/updateRequirement.mutation.graphql';
+import projectRequirements from 'ee/requirements/queries/project_requirements.query.graphql';
+import projectRequirementsCount from 'ee/requirements/queries/project_requirements_count.query.graphql';
+import updateRequirement from 'ee/requirements/queries/update_requirement.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 
 import { TEST_HOST } from 'helpers/test_constants';

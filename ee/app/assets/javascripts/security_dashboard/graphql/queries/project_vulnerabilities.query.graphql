@@ -1,5 +1,5 @@
 #import "../fragments/vulnerability.fragment.graphql"
-#import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
+#import "~/graphql_shared/fragments/page_info.fragment.graphql"
 
 query projectVulnerabilities(
   $fullPath: ID!

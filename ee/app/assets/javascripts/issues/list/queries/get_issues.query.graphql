@@ -1,4 +1,4 @@
-#import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
+#import "~/graphql_shared/fragments/page_info.fragment.graphql"
 #import "~/issues/list/queries/issue.fragment.graphql"
 
 query getIssuesEE(

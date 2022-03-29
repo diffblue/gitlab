@@ -1,6 +1,6 @@
 #import "~/graphql_shared/fragments/author.fragment.graphql"
 #import "~/graphql_shared/fragments/label.fragment.graphql"
-#import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
+#import "~/graphql_shared/fragments/page_info.fragment.graphql"
 
 query projectIssues(
   $projectPath: ID!

@@ -1,5 +1,5 @@
-#import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
-#import "../fragments/uploadState.fragment.graphql"
+#import "~/graphql_shared/fragments/page_info.fragment.graphql"
+#import "../fragments/upload_state.fragment.graphql"
 
 query getCorpuses(
   $projectPath: ID!
