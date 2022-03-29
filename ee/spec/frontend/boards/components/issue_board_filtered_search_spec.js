@@ -12,10 +12,11 @@ describe('IssueBoardFilter', () => {
 
   const createComponent = () => {
     wrapper = shallowMount(IssueBoardFilteredSpec, {
-      propsData: { fullPath: 'gitlab-org', boardType: 'group' },
       provide: {
         isSignedIn: true,
         releasesFetchPath: '/releases',
+        fullPath: 'gitlab-org',
+        boardType: 'group',
         epicFeatureAvailable: true,
         iterationFeatureAvailable: true,
       },

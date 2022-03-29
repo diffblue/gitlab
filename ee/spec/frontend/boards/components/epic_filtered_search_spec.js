@@ -13,11 +13,7 @@ describe('EpicFilteredSearch', () => {
 
   const createComponent = ({ initialFilterParams = {} } = {}) => {
     wrapper = shallowMount(EpicFilteredSearch, {
-      provide: { initialFilterParams },
-      props: {
-        fullPath: '',
-        boardType: '',
-      },
+      provide: { initialFilterParams, fullPath: '', boardType: '' },
     });
   };
 

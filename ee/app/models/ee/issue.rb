@@ -220,7 +220,7 @@ module EE
       end
 
       def weight_options
-        [WEIGHT_NONE] + WEIGHT_RANGE.to_a
+        [WEIGHT_NONE, WEIGHT_ANY] + WEIGHT_RANGE.to_a
       end
     end
 
