@@ -47,10 +47,6 @@ module QA
         project.visit!
       end
 
-      after do
-        project.remove_via_api! if project
-      end
-
       describe 'enable dependency scanning from configuration' do
         it 'runs dependency scanning job when enabled from configuration', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347621' do
           Page::Project::Menu.perform(&:click_on_security_configuration_link)

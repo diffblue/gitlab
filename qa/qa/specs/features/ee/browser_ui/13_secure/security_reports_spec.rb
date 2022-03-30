@@ -24,10 +24,6 @@ module QA
         @project.visit!
       end
 
-      after(:context) do
-        @project&.remove_via_api! if @project
-      end
-
       it 'dependency list has empty state', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348004' do
         Page::Project::Menu.perform(&:click_on_dependency_list)
 
