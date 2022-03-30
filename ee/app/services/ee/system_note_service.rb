@@ -124,6 +124,10 @@ module EE
       incidents_service(timeline_event.incident).add_timeline_event(timeline_event)
     end
 
+    def delete_timeline_event(noteable, author)
+      incidents_service(noteable).delete_timeline_event(author)
+    end
+
     private
 
     def issuables_service(noteable, project, author)

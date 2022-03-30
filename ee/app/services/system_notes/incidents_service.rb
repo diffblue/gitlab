@@ -15,5 +15,11 @@ module SystemNotes
 
       create_note(NoteSummary.new(noteable, project, author, body, action: 'timeline_event'))
     end
+
+    def delete_timeline_event(author)
+      body = 'deleted an incident timeline event'
+
+      create_note(NoteSummary.new(noteable, project, author, body, action: 'timeline_event'))
+    end
   end
 end
