@@ -260,7 +260,7 @@ Because these Community Programs are free of cost, regular Priority Support is n
 
 As a community member, you can follow this diagram to find support:
 
-![Support diagram](img/support-diagram_c.png)
+![Support diagram](img/support_diagram_c.png)
 
 ## Contact Support
 
