@@ -7,7 +7,7 @@ module Ci
     end
 
     def serializer_class
-      LicenseScanningReportsComparerSerializer
+      ::LicenseCompliance::ComparerSerializer
     end
 
     def get_report(pipeline)
