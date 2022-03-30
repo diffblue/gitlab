@@ -28664,6 +28664,9 @@ msgstr ""
 msgid "Profiles|Enter your pronouns to let people know how to refer to you"
 msgstr ""
 
+msgid "Profiles|Example: MacBook key"
+msgstr ""
+
 msgid "Profiles|Expiration date"
 msgstr ""
 
@@ -28683,9 +28686,6 @@ msgid "Profiles|Full name"
 msgstr ""
 
 msgid "Profiles|GitLab is unable to verify your identity automatically. For security purposes, you must set a password by %{openingTag}resetting your password%{closingTag} to delete your account."
-msgstr ""
-
-msgid "Profiles|Give your individual key a title. This will be publicly visible."
 msgstr ""
 
 msgid "Profiles|If after setting a password, the option to delete your account is still not available, please email %{data_request} to begin the account deletion process."
@@ -28722,6 +28722,9 @@ msgid "Profiles|Key becomes invalid on this date. Maximum lifetime for SSH keys 
 msgstr ""
 
 msgid "Profiles|Key can still be used after expiration."
+msgstr ""
+
+msgid "Profiles|Key titles are publicly visible."
 msgstr ""
 
 msgid "Profiles|Key usable beyond expiration date."
@@ -28829,6 +28832,9 @@ msgstr ""
 msgid "Profiles|Time settings"
 msgstr ""
 
+msgid "Profiles|Title"
+msgstr ""
+
 msgid "Profiles|Two-Factor Authentication"
 msgstr ""
 
@@ -28908,9 +28914,6 @@ msgid "Profiles|Your name was automatically set based on your %{provider_label} 
 msgstr ""
 
 msgid "Profiles|Your status"
-msgstr ""
-
-msgid "Profiles|e.g. My MacBook key"
 msgstr ""
 
 msgid "Profiles|https://website.com"
