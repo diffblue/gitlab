@@ -9413,6 +9413,9 @@ msgstr ""
 msgid "Configure existing installation"
 msgstr ""
 
+msgid "Configure pipeline"
+msgstr ""
+
 msgid "Configure pipelines to deploy web apps, backend services, APIs and static resources to Google Cloud"
 msgstr ""
 
@@ -10509,9 +10512,6 @@ msgid "Create new"
 msgstr ""
 
 msgid "Create new %{name} by email"
-msgstr ""
-
-msgid "Create new CI/CD pipeline"
 msgstr ""
 
 msgid "Create new Value Stream"
