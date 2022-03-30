@@ -58,7 +58,7 @@ RSpec.describe Dora::DailyMetrics, type: :model do
   end
 
   describe '.refresh!' do
-    subject { described_class.refresh!(environment, date) }
+    subject { described_class.refresh!(environment, date.to_date) }
 
     around do |example|
       freeze_time { example.run }
@@ -67,7 +67,7 @@ RSpec.describe Dora::DailyMetrics, type: :model do
     let_it_be(:project) { create(:project, :repository) }
     let_it_be(:environment) { create(:environment, project: project) }
 
-    let(:date) { 1.day.ago.to_date }
+    let_it_be(:date) { 1.day.ago }
 
     context 'with finished deployments' do
       before do
@@ -152,16 +152,16 @@ RSpec.describe Dora::DailyMetrics, type: :model do
 
     context 'with closed issues' do
       before do
-        create(:issue, :incident, :closed, project: project, created_at: date - 7.days, closed_at: date)
-        create(:issue, :incident, :closed, project: project, created_at: date - 5.days, closed_at: date)
-        create(:issue, :incident, :closed, project: project, created_at: date - 3.days, closed_at: date)
-        create(:issue, :incident, :closed, project: project, created_at: date - 1.day, closed_at: date)
+        create(:incident, :closed, project: project, created_at: date - 7.days, closed_at: date)
+        create(:incident, :closed, project: project, created_at: date - 5.days, closed_at: date)
+        create(:incident, :closed, project: project, created_at: date - 3.days, closed_at: date)
+        create(:incident, :closed, project: project, created_at: date - 1.day, closed_at: date)
 
         # Issues which shouldn't be included in calculation
         create(:issue, :closed, project: project, created_at: date - 1.year, closed_at: date) # not an incident
-        create(:issue, :incident, project: project, created_at: date - 1.year) # not closed yet
-        create(:issue, :incident, :closed, created_at: date - 1.year, closed_at: date) # different project
-        create(:issue, :incident, :closed, project: project, created_at: date - 1.year, closed_at: date + 1.day) # different date
+        create(:incident, project: project, created_at: date - 1.year) # not closed yet
+        create(:incident, :closed, created_at: date - 1.year, closed_at: date) # different project
+        create(:incident, :closed, project: project, created_at: date - 1.year, closed_at: date + 1.day) # different date
       end
 
       context 'for production environment' do
@@ -185,11 +185,45 @@ RSpec.describe Dora::DailyMetrics, type: :model do
       end
     end
 
-    context 'when date is invalid type' do
-      let(:date) { '2021-02-03' }
+    context 'with incidents' do
+      before_all do
+        create(:incident, project: project, created_at: date.beginning_of_day)
+        create(:incident, project: project, created_at: date.beginning_of_day + 1.hour)
+        create(:incident, project: project, created_at: date.end_of_day)
 
+        # Issues which shouldn't be included in calculation
+        create(:issue, project: project, created_at: date) # not an incident
+        create(:incident, created_at: date) # different project
+        create(:incident, project: project, created_at: date - 1.year) # different date
+        create(:incident, project: project, created_at: date + 1.year) # different date
+      end
+
+      context 'for production environment' do
+        let_it_be(:environment) { create(:environment, :production, project: project) }
+
+        it 'inserts the daily metrics with incidents_count' do
+          subject
+
+          metrics = environment.dora_daily_metrics.find_by_date(date)
+          expect(metrics.incidents_count).to eq(3)
+        end
+      end
+
+      context 'for non-production environment' do
+        it 'does not calculate incidents_count daily metric' do
+          subject
+
+          metrics = environment.dora_daily_metrics.find_by_date(date)
+          expect(metrics.incidents_count).to be_nil
+        end
+      end
+    end
+
+    context 'when date is invalid type' do
       it 'raises an error' do
-        expect { subject }.to raise_error(ArgumentError)
+        expect do
+          described_class.refresh!(environment, '2021-02-03')
+        end.to raise_error(ArgumentError)
       end
     end
   end
@@ -240,6 +274,56 @@ RSpec.describe Dora::DailyMetrics, type: :model do
                              { 'date' => '2021-01-02', 'value' => 4 },
                              { 'date' => '2021-01-03', 'value' => 2 },
                              { 'date' => '2021-01-04', 'value' => nil }])
+        end
+      end
+
+      context 'when interval is unknown' do
+        let(:interval) { 'unknown' }
+
+        it { expect { subject }.to raise_error(ArgumentError, 'Unknown interval') }
+      end
+    end
+
+    context 'when metric is change_failure_rate' do
+      let_it_be(:environment) { create :environment }
+
+      before_all do
+        create(:dora_daily_metrics, environment: environment, deployment_frequency: 3, incidents_count: 1, date: '2021-01-01')
+        create(:dora_daily_metrics, environment: environment, deployment_frequency: 2, incidents_count: 0, date: '2021-01-02')
+        create(:dora_daily_metrics, environment: environment, deployment_frequency: 2, incidents_count: nil, date: '2021-01-03')
+        create(:dora_daily_metrics, environment: environment, deployment_frequency: 0, incidents_count: 2, date: '2021-01-04')
+        create(:dora_daily_metrics, environment: environment, deployment_frequency: nil, incidents_count: nil, date: '2021-01-05')
+        create(:dora_daily_metrics, environment: environment, deployment_frequency: 0, incidents_count: 0, date: '2021-01-06')
+      end
+
+      let(:metric) { described_class::METRIC_CHANGE_FAILURE_RATE }
+
+      context 'when interval is all' do
+        let(:interval) { described_class::INTERVAL_ALL }
+
+        it 'aggregates the rows' do
+          is_expected.to eq(3 / 7.0)
+        end
+      end
+
+      context 'when interval is monthly' do
+        let(:interval) { described_class::INTERVAL_MONTHLY }
+
+        it 'aggregates the rows' do
+          is_expected.to eq([{ 'date' => '2021-01-01', 'value' => 3 / 7.0 }])
+        end
+      end
+
+      context 'when interval is daily' do
+        let(:interval) { described_class::INTERVAL_DAILY }
+
+        it 'aggregates the rows' do
+          is_expected.to eq([{ 'date' => '2021-01-01', 'value' => 1 / 3.0 },
+                             { 'date' => '2021-01-02', 'value' => 0.0 },
+                             { 'date' => '2021-01-03', 'value' => nil },
+                             { 'date' => '2021-01-04', 'value' => 2.0 },
+                             { 'date' => '2021-01-05', 'value' => nil },
+                             { 'date' => '2021-01-06', 'value' => 0.0 }])
         end
       end
 

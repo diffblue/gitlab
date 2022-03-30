@@ -16,7 +16,8 @@ module Dora
     METRIC_DEPLOYMENT_FREQUENCY = 'deployment_frequency'
     METRIC_LEAD_TIME_FOR_CHANGES = 'lead_time_for_changes'
     METRIC_TIME_TO_RESTORE_SERVICE = 'time_to_restore_service'
-    AVAILABLE_METRICS = [METRIC_DEPLOYMENT_FREQUENCY, METRIC_LEAD_TIME_FOR_CHANGES, METRIC_TIME_TO_RESTORE_SERVICE].freeze
+    METRIC_CHANGE_FAILURE_RATE = 'change_failure_rate'
+    AVAILABLE_METRICS = [METRIC_DEPLOYMENT_FREQUENCY, METRIC_LEAD_TIME_FOR_CHANGES, METRIC_TIME_TO_RESTORE_SERVICE, METRIC_CHANGE_FAILURE_RATE].freeze
     AVAILABLE_INTERVALS = [INTERVAL_ALL, INTERVAL_MONTHLY, INTERVAL_DAILY].freeze
 
     scope :for_environments, -> (environments) do
@@ -34,6 +35,7 @@ module Dora
         deployment_frequency = deployment_frequency(environment, date)
         lead_time_for_changes = lead_time_for_changes(environment, date)
         time_to_restore_service = time_to_restore_service(environment, date)
+        incidents_count = incidents_count(environment, date)
 
         # This query is concurrent safe upsert with the unique index.
         connection.execute(<<~SQL)
@@ -42,20 +44,23 @@ module Dora
             date,
             deployment_frequency,
             lead_time_for_changes_in_seconds,
-            time_to_restore_service_in_seconds
+            time_to_restore_service_in_seconds,
+            incidents_count
           )
           VALUES (
             #{environment.id},
             #{connection.quote(date.to_s)},
             (#{deployment_frequency}),
             (#{lead_time_for_changes}),
-            (#{time_to_restore_service})
+            (#{time_to_restore_service}),
+            (#{incidents_count})
           )
           ON CONFLICT (environment_id, date)
           DO UPDATE SET
             deployment_frequency = (#{deployment_frequency}),
             lead_time_for_changes_in_seconds = (#{lead_time_for_changes}),
-            time_to_restore_service_in_seconds = (#{time_to_restore_service})
+            time_to_restore_service_in_seconds = (#{time_to_restore_service}),
+            incidents_count = (#{incidents_count})
         SQL
       end
 
@@ -92,6 +97,8 @@ module Dora
         when METRIC_TIME_TO_RESTORE_SERVICE
           # Median
           '(PERCENTILE_CONT(0.5) WITHIN GROUP(ORDER BY time_to_restore_service_in_seconds)) AS data'
+        when METRIC_CHANGE_FAILURE_RATE
+          'SUM(incidents_count)::float / GREATEST(SUM(deployment_frequency), 1) as data'
         else
           raise ArgumentError, 'Unknown metric'
         end
@@ -148,6 +155,15 @@ module Dora
             'PERCENTILE_CONT(0.5) WITHIN GROUP(ORDER BY EXTRACT(EPOCH FROM (issues.closed_at - issues.created_at)))'
           )
         ).where("closed_at >= ? AND closed_at <= ?", date.beginning_of_day, date.end_of_day)
+          .where(project_id: environment.project_id)
+          .to_sql
+      end
+
+      def incidents_count(environment, date)
+        return Arel.sql('NULL') unless environment.production?
+
+        Issue.incident.select(Issue.arel_table[:id].count)
+          .where(created_at: date.beginning_of_day..date.end_of_day)
           .where(project_id: environment.project_id)
           .to_sql
       end

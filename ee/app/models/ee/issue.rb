@@ -95,6 +95,16 @@ module EE
           end
         end
       end
+
+      after_commit on: :create do |issue|
+        next unless issue.incident?
+
+        related_production_env = issue.project.environments.production.first
+
+        next unless related_production_env
+
+        ::Dora::DailyMetrics::RefreshWorker.perform_async(related_production_env.id, issue.created_at.to_date.to_s)
+      end
     end
 
     class_methods do
