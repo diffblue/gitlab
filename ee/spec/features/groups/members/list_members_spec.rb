@@ -80,4 +80,18 @@ RSpec.describe 'Groups > Members > List members' do
       end
     end
   end
+
+  context 'when over free user limit', :saas do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:group) { create(:group_with_plan, plan: :free_plan) }
+
+    subject(:visit_page) { visit group_group_members_path(group) }
+
+    before do
+      group.add_owner(user)
+      sign_in(user)
+    end
+
+    it_behaves_like 'over the free user limit alert'
+  end
 end

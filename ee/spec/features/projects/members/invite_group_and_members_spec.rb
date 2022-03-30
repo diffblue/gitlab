@@ -3,7 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe 'Project > Members > Invite group and members' do
-  include Select2Helper
   include ActionView::Helpers::DateHelper
   include Spec::Support::Helpers::Features::MembersHelpers
 
@@ -183,5 +182,20 @@ RSpec.describe 'Project > Members > Invite group and members' do
         end
       end
     end
+  end
+
+  context 'when over free user limit', :saas do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:group) { create(:group_with_plan, plan: :free_plan) }
+    let_it_be(:project) { create(:project, group: group) }
+
+    subject(:visit_page) { visit project_project_members_path(project) }
+
+    before do
+      group.add_owner(user)
+      sign_in(user)
+    end
+
+    it_behaves_like 'over the free user limit alert'
   end
 end
