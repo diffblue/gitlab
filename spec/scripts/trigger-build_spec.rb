@@ -49,9 +49,9 @@ RSpec.describe Trigger do
       end
 
       describe "#base_variables" do
-        context 'when CI_COMMIT_TAG is true' do
+        context 'when CI_COMMIT_TAG is set' do
           before do
-            stub_env('CI_COMMIT_TAG', true)
+            stub_env('CI_COMMIT_TAG', 'v1.0')
           end
 
           it 'sets GITLAB_REF_SLUG to CI_COMMIT_REF_NAME' do
@@ -59,9 +59,9 @@ RSpec.describe Trigger do
           end
         end
 
-        context 'when CI_COMMIT_TAG is false' do
+        context 'when CI_COMMIT_TAG is nil' do
           before do
-            stub_env('CI_COMMIT_TAG', false)
+            stub_env('CI_COMMIT_TAG', nil)
           end
 
           it 'sets GITLAB_REF_SLUG to CI_COMMIT_REF_SLUG' do
@@ -261,6 +261,10 @@ RSpec.describe Trigger do
       end
 
       context 'when CI_MERGE_REQUEST_SOURCE_BRANCH_SHA is not set' do
+        before do
+          stub_env('CI_MERGE_REQUEST_SOURCE_BRANCH_SHA', nil)
+        end
+
         it 'sets GITLAB_VERSION & IMAGE_TAG to CI_COMMIT_SHA' do
           expect_run_trigger_with_params(
             'GITLAB_VERSION' => env['CI_COMMIT_SHA'],
@@ -478,6 +482,10 @@ RSpec.describe Trigger do
         end
 
         context 'when CI_MERGE_REQUEST_SOURCE_BRANCH_SHA is not set' do
+          before do
+            stub_env('CI_MERGE_REQUEST_SOURCE_BRANCH_SHA', nil)
+          end
+
           it 'sets GITLAB_VERSION to CI_COMMIT_SHA' do
             expect(subject.variables['GITLAB_VERSION']).to eq(env['CI_COMMIT_SHA'])
           end
@@ -485,31 +493,31 @@ RSpec.describe Trigger do
       end
 
       describe "GITLAB_TAG" do
-        context 'when CI_COMMIT_TAG is true' do
+        context 'when CI_COMMIT_TAG is set' do
           before do
-            stub_env('CI_COMMIT_TAG', true)
+            stub_env('CI_COMMIT_TAG', 'v1.0')
           end
 
           it 'sets GITLAB_TAG to true' do
-            expect(subject.variables['GITLAB_TAG']).to eq(true)
+            expect(subject.variables['GITLAB_TAG']).to eq('v1.0')
           end
         end
 
-        context 'when CI_COMMIT_TAG is false' do
+        context 'when CI_COMMIT_TAG is nil' do
           before do
-            stub_env('CI_COMMIT_TAG', false)
+            stub_env('CI_COMMIT_TAG', nil)
           end
 
           it 'sets GITLAB_TAG to false' do
-            expect(subject.variables['GITLAB_TAG']).to eq(false)
+            expect(subject.variables['GITLAB_TAG']).to eq(nil)
           end
         end
       end
 
       describe "GITLAB_ASSETS_TAG" do
-        context 'when CI_COMMIT_TAG is true' do
+        context 'when CI_COMMIT_TAG is set' do
           before do
-            stub_env('CI_COMMIT_TAG', true)
+            stub_env('CI_COMMIT_TAG', 'v1.0')
           end
 
           it 'sets GITLAB_ASSETS_TAG to CI_COMMIT_REF_NAME' do
@@ -517,9 +525,9 @@ RSpec.describe Trigger do
           end
         end
 
-        context 'when CI_COMMIT_TAG is false' do
+        context 'when CI_COMMIT_TAG is nil' do
           before do
-            stub_env('CI_COMMIT_TAG', false)
+            stub_env('CI_COMMIT_TAG', nil)
           end
 
           it 'sets GITLAB_ASSETS_TAG to CI_COMMIT_SHA' do
