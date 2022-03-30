@@ -6,7 +6,7 @@ import { nextTick } from 'vue';
 import ComplianceDashboard from 'ee/compliance_dashboard/components/dashboard.vue';
 import MergeRequestDrawer from 'ee/compliance_dashboard/components/drawer.vue';
 import MergeRequestGrid from 'ee/compliance_dashboard/components/merge_requests/grid.vue';
-import MergeCommitsExportButton from 'ee/compliance_dashboard/components/merge_requests/merge_commits_export_button.vue';
+import MergeCommitsExportButton from 'ee/compliance_dashboard/components/shared/merge_commits_export_button.vue';
 import { COMPLIANCE_TAB_COOKIE_KEY } from 'ee/compliance_dashboard/constants';
 import { mapDashboardToDrawerData } from 'ee/compliance_dashboard/utils';
 import { createMergeRequests } from '../mock_data';

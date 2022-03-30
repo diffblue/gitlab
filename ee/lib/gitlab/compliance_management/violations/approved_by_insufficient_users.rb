@@ -8,7 +8,7 @@ module Gitlab
         SEVERITY_LEVEL = :high
 
         # The minimum number of approvers is defined by GitLab in our public documentation.
-        # https://docs.gitlab.com/ee/user/compliance/compliance_dashboard/#approval-status-and-separation-of-duties
+        # https://docs.gitlab.com/ee/user/compliance/compliance_dashboard/#separation-of-duties
         MINIMUM_NUMBER_OF_APPROVERS = 2
 
         def initialize(merge_request)

@@ -6,7 +6,7 @@ import * as Sentry from '@sentry/browser';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import ComplianceReport from 'ee/compliance_dashboard/components/report.vue';
 import MergeRequestDrawer from 'ee/compliance_dashboard/components/drawer.vue';
-import MergeCommitsExportButton from 'ee/compliance_dashboard/components/merge_requests/merge_commits_export_button.vue';
+import MergeCommitsExportButton from 'ee/compliance_dashboard/components/shared/merge_commits_export_button.vue';
 import ViolationReason from 'ee/compliance_dashboard/components/violations/reason.vue';
 import ViolationFilter from 'ee/compliance_dashboard/components/violations/filter.vue';
 import getComplianceViolationsQuery from 'ee/compliance_dashboard/graphql/compliance_violations.query.graphql';
@@ -125,9 +125,7 @@ describe('ComplianceReport component', () => {
         'The compliance report shows the merge request violations merged in protected environments.',
       );
       expect(helpLink.text()).toBe('Learn more.');
-      expect(helpLink.attributes('href')).toBe(
-        '/help/user/compliance/compliance_report/index.md#approval-status-and-separation-of-duties',
-      );
+      expect(helpLink.attributes('href')).toBe('/help/user/compliance/compliance_report/index.md');
     });
 
     it('renders the merge commit export button', () => {

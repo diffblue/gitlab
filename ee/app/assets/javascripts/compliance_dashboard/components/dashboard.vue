@@ -8,7 +8,7 @@ import { mapDashboardToDrawerData } from '../utils';
 import MergeRequestDrawer from './drawer.vue';
 import EmptyState from './empty_state.vue';
 import MergeRequestsGrid from './merge_requests/grid.vue';
-import MergeCommitsExportButton from './merge_requests/merge_commits_export_button.vue';
+import MergeCommitsExportButton from './shared/merge_commits_export_button.vue';
 
 export default {
   name: 'ComplianceDashboard',

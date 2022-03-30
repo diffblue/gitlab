@@ -4,7 +4,7 @@ module Enums
   module MergeRequests
     module ComplianceViolation
       # Reasons are defined by GitLab in our public documentation.
-      # https://docs.gitlab.com/ee/user/compliance/compliance_dashboard/#approval-status-and-separation-of-duties
+      # https://docs.gitlab.com/ee/user/compliance/compliance_dashboard/#separation-of-duties
       def self.reasons
         {
           ::Gitlab::ComplianceManagement::Violations::ApprovedByMergeRequestAuthor::REASON => 0,
