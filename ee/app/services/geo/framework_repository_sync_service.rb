@@ -80,7 +80,7 @@ module Geo
       elsif repository.exists?
         fetch_geo_mirror
       else
-        if Feature.enabled?('geo_use_clone_on_first_sync', type: :ops)
+        if Feature.enabled?('geo_use_clone_on_first_sync', default_enabled: :yaml)
           clone_geo_mirror
 
           @new_repository = true
@@ -108,7 +108,7 @@ module Geo
 
       log_info("Attempting to fetch repository via git")
 
-      if Feature.enabled?('geo_use_clone_on_first_sync', type: :ops)
+      if Feature.enabled?('geo_use_clone_on_first_sync', default_enabled: :yaml)
         clone_geo_mirror(target_repository: temp_repo)
         temp_repo.create_repository unless temp_repo.exists?
       else
