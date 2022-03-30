@@ -9,7 +9,7 @@ RSpec.describe GitlabSchema.types['ProjectSecurityTraining'] do
 
   describe '#is_primary' do
     let(:training) { create(:security_training, :primary) }
-    let(:query) { double('query', schema: GitlabSchema, with_error_handling: true) }
+    let(:query) { GraphQL::Query.new(GitlabSchema) }
     let(:query_context) { GraphQL::Query::Context.new(query: query, values: {}, object: nil) }
     let(:type_instance) { described_class.authorized_new(training, query_context) }
 
