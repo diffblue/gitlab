@@ -131,7 +131,7 @@ export default {
   },
   i18n: {
     title: s__('OnDemandScans|On-demand scans'),
-    newScanButtonLabel: s__('OnDemandScans|New DAST scan'),
+    newScanButtonLabel: s__('OnDemandScans|New scan'),
     description: s__(
       'OnDemandScans|On-demand scans run outside of DevOps cycle and find vulnerabilities in your projects. %{learnMoreLinkStart}Learn more%{learnMoreLinkEnd}.',
     ),
