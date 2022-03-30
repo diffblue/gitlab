@@ -3,9 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Group information', :js, :aggregate_failures do
-  let(:user) { create(:user) }
-  let(:group) { create(:group) }
-  let(:empty_project) { create(:project, namespace: group) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:group) { create(:group) }
 
   subject(:visit_page) { visit group_path(group) }
 
@@ -49,7 +48,7 @@ RSpec.describe 'Group information', :js, :aggregate_failures do
     end
   end
 
-  describe 'qrtly reconciliation alert', :js do
+  describe 'qrtly reconciliation alert' do
     context 'on self-managed' do
       before do
         visit_page
@@ -81,5 +80,11 @@ RSpec.describe 'Group information', :js, :aggregate_failures do
         it_behaves_like 'a hidden qrtly reconciliation alert'
       end
     end
+  end
+
+  context 'when over free user limit', :saas do
+    let_it_be(:group) { create(:group_with_plan, plan: :free_plan) }
+
+    it_behaves_like 'over the free user limit alert'
   end
 end

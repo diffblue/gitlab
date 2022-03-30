@@ -15114,6 +15114,9 @@ msgstr ""
 msgid "Explore groups"
 msgstr ""
 
+msgid "Explore paid plans"
+msgstr ""
+
 msgid "Explore projects"
 msgstr ""
 
@@ -16217,6 +16220,9 @@ msgid "From %{code_open}%{source_title}%{code_close} into"
 msgstr ""
 
 msgid "From %{providerTitle}"
+msgstr ""
+
+msgid "From June 22, 2022 (GitLab 15.1), free personal namespaces and top-level groups will be limited to %{free_limit} members"
 msgstr ""
 
 msgid "From issue creation until deploy to production"
@@ -22785,6 +22791,9 @@ msgid "Manage group labels"
 msgstr ""
 
 msgid "Manage labels"
+msgstr ""
+
+msgid "Manage members"
 msgstr ""
 
 msgid "Manage milestones"
@@ -43126,6 +43135,9 @@ msgid "YouTube"
 msgstr ""
 
 msgid "YouTube URL or ID"
+msgstr ""
+
+msgid "Your %{doc_link_start}namespace%{doc_link_end}, %{strong_start}%{namespace_name}%{strong_end} has more than %{free_limit} members. From June 22, 2022, it will be limited to %{free_limit}, and the remaining members will get a %{link_start}status of Over limit%{link_end} and lose access to the namespace. You can go to the Usage Quotas page to manage which %{free_limit} members will remain in your namespace. To get more members, an owner can start a trial or upgrade to a paid tier."
 msgstr ""
 
 msgid "Your %{group} membership will now expire in %{days}."
