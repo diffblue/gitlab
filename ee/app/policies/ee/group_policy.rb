@@ -173,6 +173,7 @@ module EE
 
       rule { auditor }.policy do
         enable :view_productivity_analytics
+        enable :view_group_devops_adoption
       end
 
       rule { owner | admin }.policy do
