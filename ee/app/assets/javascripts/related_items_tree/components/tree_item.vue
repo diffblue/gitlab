@@ -97,7 +97,7 @@ export default {
       </gl-button>
       <gl-loading-icon v-if="childrenFetchInProgress" class="loading-icon" size="sm" />
       <tree-item-body
-        class="tree-item-row"
+        class="tree-item-row gl-mb-3"
         :parent-item="parentItem"
         :item="item"
         :class="{

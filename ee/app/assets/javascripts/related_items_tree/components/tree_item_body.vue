@@ -313,7 +313,7 @@ export default {
             <item-assignees
               v-if="hasAssignees"
               :assignees="item.assignees"
-              class="item-assignees gl-display-inline-flex gl-align-items-center gl-mr-5 mb-md-0 flex-xl-grow-0"
+              class="item-assignees gl-display-inline-flex gl-align-items-center gl-mr-5 gl-mb-3 flex-xl-grow-0"
             />
 
             <epic-health-status

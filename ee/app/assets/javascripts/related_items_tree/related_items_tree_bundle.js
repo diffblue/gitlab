@@ -32,6 +32,7 @@ export default () => {
     allowSubEpics,
   } = el.dataset;
   const initialData = JSON.parse(el.dataset.initial);
+  const roadmapAppData = JSON.parse(el.dataset.roadmapAppData);
 
   Vue.component('TreeRoot', TreeRoot);
   Vue.component('TreeItem', TreeItem);
@@ -41,6 +42,9 @@ export default () => {
     name: 'RelatedItemsTreeRoot',
     store: createStore(),
     components: { RelatedItemsTreeApp },
+    provide: {
+      roadmapAppData,
+    },
     created() {
       this.setInitialParentItem({
         fullPath,

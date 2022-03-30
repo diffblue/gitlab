@@ -60,3 +60,8 @@ export const issueHealthStatusCSSMapping = {
 };
 
 export const trackingAddedIssue = 'g_project_management_users_epic_issue_added_from_epic';
+
+export const ITEM_TABS = {
+  TREE: 'tree',
+  ROADMAP: 'roadmap',
+};

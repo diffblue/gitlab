@@ -7402,6 +7402,9 @@ msgstr ""
 msgid "Child epic doesn't exist."
 msgstr ""
 
+msgid "Child issues and epics"
+msgstr ""
+
 msgid "Chinese language support using"
 msgstr ""
 
@@ -14417,9 +14420,6 @@ msgid "Epics"
 msgstr ""
 
 msgid "Epics Roadmap"
-msgstr ""
-
-msgid "Epics and Issues"
 msgstr ""
 
 msgid "Epics let you manage your portfolio of projects more efficiently and with less effort"
@@ -32140,6 +32140,9 @@ msgid "Roadmap"
 msgstr ""
 
 msgid "Roadmap settings"
+msgstr ""
+
+msgid "Roadmap view"
 msgstr ""
 
 msgid "Role"
