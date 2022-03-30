@@ -183,7 +183,11 @@ const bindEvents = () => {
     $projectTemplateButtons.addClass('hidden');
     $projectFieldsForm.addClass('selected');
     $selectedIcon.empty();
-    const value = $(this).val();
+
+    const $selectedTemplate = $(this);
+    $selectedTemplate.prop('checked', true);
+
+    const value = $selectedTemplate.val();
 
     const selectedTemplate = DEFAULT_PROJECT_TEMPLATES[value];
     $selectedTemplateText.text(selectedTemplate.text);
@@ -218,9 +222,7 @@ const bindEvents = () => {
   });
 
   $newProjectForm.on('submit', () => {
-    if ($projectPath) {
-      $projectPath.val($projectPath.val().trim());
-    }
+    $projectPath.val($projectPath.val().trim());
   });
 
   const updateUrlPathWarningVisibility = async () => {
