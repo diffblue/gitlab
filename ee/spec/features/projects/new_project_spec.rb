@@ -80,6 +80,9 @@ RSpec.describe 'New project', :js do
 
           wait_for_requests
 
+          click_on 'Pick a group or namespace'
+          click_on user.username
+
           fill_in 'project_name', with: 'import-project-with-features1'
           fill_in 'project_path', with: 'import-project-with-features1'
           choose 'project_visibility_level_20'
@@ -103,6 +106,8 @@ RSpec.describe 'New project', :js do
           fill_in 'project_import_url', with: 'http://foo.git'
           fill_in 'project_name', with: 'CI CD Project1'
           fill_in 'project_path', with: 'ci-cd-project1'
+          click_on 'Pick a group or namespace'
+          click_on user.username
           choose 'project_visibility_level_20'
           click_button 'Create project'
 
