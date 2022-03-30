@@ -405,6 +405,7 @@ module EE
         prevent :admin_group_member
         prevent :create_deploy_token
         prevent :create_subgroup
+        prevent :create_package
       end
 
       rule { can?(:owner_access) & group_membership_export_available }.enable :export_group_memberships
