@@ -162,6 +162,7 @@ RSpec.describe Trigger do
     let(:env) do
       super().merge(
         'QA_IMAGE' => 'qa_image',
+        'OMNIBUS_GITLAB_PROJECT_ACCESS_TOKEN' => nil,
         'OMNIBUS_GITLAB_CACHE_UPDATE' => 'omnibus_gitlab_cache_update',
         'GITLAB_QA_OPTIONS' => 'gitlab_qa_options',
         'QA_TESTS' => 'qa_tests',
@@ -190,8 +191,7 @@ RSpec.describe Trigger do
 
       before do
         allow(subject).to receive(:puts)
-
-        expect(Gitlab).to receive(:client)
+        allow(Gitlab).to receive(:client)
           .with(
             endpoint: 'https://gitlab.com/api/v4',
             private_token: gitlab_client_private_token
