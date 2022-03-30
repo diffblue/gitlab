@@ -40,7 +40,7 @@ RSpec.describe RuboCop::Cop::Gitlab::AvoidFeatureCategoryNotOwned do
 
   context 'for grape endpoints' do
     before do
-      expect(subject).to receive(:in_api?).and_return(true)
+      allow(subject).to receive(:in_api?).and_return(true)
     end
 
     it_behaves_like 'defining feature category on a class'
