@@ -3,7 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import { ApolloMutation } from 'vue-apollo';
 import EpicForm from 'ee/epic/components/epic_form.vue';
-import createEpic from 'ee/epic/queries/createEpic.mutation.graphql';
+import createEpic from 'ee/epic/queries/create_epic.mutation.graphql';
 import { TEST_HOST } from 'helpers/test_constants';
 import Autosave from '~/autosave';
 import { visitUrl } from '~/lib/utils/url_utility';

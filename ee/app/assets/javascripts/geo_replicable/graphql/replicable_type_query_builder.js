@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client/core';
-import PageInfo from '~/graphql_shared/fragments/pageInfo.fragment.graphql';
+import PageInfo from '~/graphql_shared/fragments/page_info.fragment.graphql';
 
 export default (graphQlFieldName) => {
   return gql`

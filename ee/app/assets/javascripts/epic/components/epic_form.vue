@@ -17,7 +17,7 @@ import { s__ } from '~/locale';
 import MarkdownField from '~/vue_shared/components/markdown/field.vue';
 import LabelsSelectWidget from '~/vue_shared/components/sidebar/labels_select_widget/labels_select_root.vue';
 import { LabelType } from '~/vue_shared/components/sidebar/labels_select_widget/constants';
-import createEpic from '../queries/createEpic.mutation.graphql';
+import createEpic from '../queries/create_epic.mutation.graphql';
 
 export default {
   components: {
@@ -177,8 +177,7 @@ export default {
               data-supports-quick-actions="true"
               :placeholder="__('Write a comment or drag your files here…')"
               :aria-label="__('Description')"
-            >
-            </textarea>
+            ></textarea>
           </template>
         </markdown-field>
       </gl-form-group>
@@ -188,9 +187,8 @@ export default {
           v-model="confidential"
           data-qa-selector="confidential_epic_checkbox"
           data-testid="epic-confidentiality"
+          >{{ $options.i18n.confidentialityLabel }}</gl-form-checkbox
         >
-          {{ $options.i18n.confidentialityLabel }}
-        </gl-form-checkbox>
       </gl-form-group>
       <hr />
       <gl-form-group :label="__('Labels')">
@@ -208,9 +206,8 @@ export default {
           variant="embedded"
           data-qa-selector="labels_block"
           @updateSelectedLabels="handleUpdateSelectedLabels($event.labels)"
+          >{{ __('None') }}</labels-select-widget
         >
-          {{ __('None') }}
-        </labels-select-widget>
       </gl-form-group>
       <gl-form-group :label="__('Start date')" :description="$options.i18n.epicDatesHint">
         <div class="gl-display-inline-block gl-mr-2">
@@ -222,9 +219,8 @@ export default {
           class="gl-white-space-nowrap"
           data-testid="clear-start-date"
           @click="updateStartDate(null)"
+          >{{ __('Clear start date') }}</gl-button
         >
-          {{ __('Clear start date') }}
-        </gl-button>
       </gl-form-group>
       <gl-form-group
         class="gl-pb-4"
@@ -240,9 +236,8 @@ export default {
           class="gl-white-space-nowrap"
           data-testid="clear-due-date"
           @click="updateDueDate(null)"
+          >{{ __('Clear due date') }}</gl-button
         >
-          {{ __('Clear due date') }}
-        </gl-button>
       </gl-form-group>
 
       <div class="footer-block row-content-block gl-display-flex">
@@ -253,17 +248,15 @@ export default {
           :disabled="!title"
           data-testid="save-epic"
           data-qa-selector="create_epic_button"
+          >{{ __('Create epic') }}</gl-button
         >
-          {{ __('Create epic') }}
-        </gl-button>
         <gl-button
           type="button"
           class="gl-ml-auto"
           data-testid="cancel-epic"
           :href="groupEpicsPath"
+          >{{ __('Cancel') }}</gl-button
         >
-          {{ __('Cancel') }}
-        </gl-button>
       </div>
     </gl-form>
   </div>
