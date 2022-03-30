@@ -18,9 +18,6 @@ export default {
       required: true,
     },
   },
-  sast: {
-    REPORT_TYPE_SAST_IAC,
-  },
   computed: {
     available() {
       return this.feature.available;
@@ -65,6 +62,12 @@ export default {
       const { name, description, configurationText } = this.feature.secondary ?? {};
       return Boolean(name && description && configurationText);
     },
+    // This condition is a temporary hack to not display any wrong information
+    // until this BE Bug is fixed: https://gitlab.com/gitlab-org/gitlab/-/issues/350307.
+    // More Information: https://gitlab.com/gitlab-org/gitlab/-/issues/350307#note_825447417
+    isNotSastIACTemporaryHack() {
+      return this.feature.type !== REPORT_TYPE_SAST_IAC;
+    },
   },
   methods: {
     onError(message) {
@@ -88,13 +91,8 @@ export default {
     <div class="gl-display-flex gl-align-items-baseline">
       <h3 class="gl-font-lg gl-m-0 gl-mr-3">{{ feature.name }}</h3>
 
-      <!-- This condition is a temporary hack to not display any wrong information
-      until this BE Bug is fixed:  https://gitlab.com/gitlab-org/gitlab/-/issues/350307
-
-      More Information: https://gitlab.com/gitlab-org/gitlab/-/issues/350307#note_825447417
-      -->
       <div
-        v-if="feature.type !== $options.sast.REPORT_TYPE_SAST_IAC"
+        v-if="isNotSastIACTemporaryHack"
         :class="statusClasses"
         data-testid="feature-status"
         :data-qa-selector="`${feature.type}_status`"
@@ -119,12 +117,7 @@ export default {
       <gl-link :href="feature.helpPath">{{ $options.i18n.learnMore }}</gl-link>
     </p>
 
-    <!-- This condition is a temporary hack to not display any wrong information
-    until this BE Bug is fixed:  https://gitlab.com/gitlab-org/gitlab/-/issues/350307
-
-    More Information: https://gitlab.com/gitlab-org/gitlab/-/issues/350307#note_825447417
-     -->
-    <template v-if="available && feature.type !== $options.sast.REPORT_TYPE_SAST_IAC">
+    <template v-if="available && isNotSastIACTemporaryHack">
       <gl-button
         v-if="feature.configurationPath"
         :href="feature.configurationPath"
