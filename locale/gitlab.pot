@@ -13409,6 +13409,45 @@ msgstr ""
 msgid "Duration"
 msgstr ""
 
+msgid "Duration|%s days"
+msgstr ""
+
+msgid "Duration|%s hours"
+msgstr ""
+
+msgid "Duration|%s minutes"
+msgstr ""
+
+msgid "Duration|%s months"
+msgstr ""
+
+msgid "Duration|%s seconds"
+msgstr ""
+
+msgid "Duration|%s weeks"
+msgstr ""
+
+msgid "Duration|%s years"
+msgstr ""
+
+msgid "Duration|1 day"
+msgstr ""
+
+msgid "Duration|1 hour"
+msgstr ""
+
+msgid "Duration|1 minute"
+msgstr ""
+
+msgid "Duration|1 month"
+msgstr ""
+
+msgid "Duration|1 week"
+msgstr ""
+
+msgid "Duration|1 year"
+msgstr ""
+
 msgid "During this process, you’ll be asked for URLs from GitLab’s side. Use the URLs shown below."
 msgstr ""
 
