@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import Component, { i18n } from 'ee/vue_shared/security_reports/components/create_jira_issue.vue';
-import vulnerabilityExternalIssueLinkCreate from 'ee/vue_shared/security_reports/graphql/vulnerabilityExternalIssueLinkCreate.mutation.graphql';
+import vulnerabilityExternalIssueLinkCreate from 'ee/vue_shared/security_reports/graphql/vulnerability_external_issue_link_create.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { vulnerabilityExternalIssueLinkCreateMockFactory } from './apollo_mocks';

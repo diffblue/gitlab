@@ -1,7 +1,7 @@
 import MockAdapter from 'axios-mock-adapter';
 import { DATE_RANGES, PRESET_TYPES, MILESTONES_GROUP } from 'ee/roadmap/constants';
-import groupMilestones from 'ee/roadmap/queries/groupMilestones.query.graphql';
-import epicChildEpics from 'ee/roadmap/queries/epicChildEpics.query.graphql';
+import groupMilestones from 'ee/roadmap/queries/group_milestones.query.graphql';
+import epicChildEpics from 'ee/roadmap/queries/epic_child_epics.query.graphql';
 import * as actions from 'ee/roadmap/store/actions';
 import * as types from 'ee/roadmap/store/mutation_types';
 import defaultState from 'ee/roadmap/store/state';

@@ -8,8 +8,8 @@ import { __, s__, sprintf } from '~/locale';
 
 import { statusType, statusEvent, dateTypes } from '../constants';
 
-import epicSetSubscription from '../queries/epicSetSubscription.mutation.graphql';
-import updateEpic from '../queries/updateEpic.mutation.graphql';
+import epicSetSubscription from '../queries/epic_set_subscription.mutation.graphql';
+import updateEpic from '../queries/update_epic.mutation.graphql';
 import epicUtils from '../utils/epic_utils';
 
 import * as types from './mutation_types';
