@@ -289,11 +289,6 @@ Rails/HelperInstanceVariable:
 Rails/IndexWith:
   Enabled: false
 
-# Offense count: 1
-Rails/Inquiry:
-  Exclude:
-    - 'spec/helpers/labels_helper_spec.rb'
-
 # Offense count: 118
 # Configuration parameters: Include.
 # Include: app/models/**/*.rb
