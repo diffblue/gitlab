@@ -3,7 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe 'Project > Members > Invite group and members' do
-  include Select2Helper
   include ActionView::Helpers::DateHelper
   include Spec::Support::Helpers::Features::MembersHelpers
 

@@ -58,7 +58,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
 
         click_on 'Invite members'
 
-        page.within '[data-testid="invite-modal"]' do
+        page.within invite_modal_selector do
           add_user_to_input(user2.name)
           add_user_to_input(user3.name)
 
@@ -118,7 +118,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
 
     click_on 'Invite members'
 
-    page.within '[data-testid="invite-modal"]' do
+    page.within invite_modal_selector do
       add_user_to_input(name)
       choose_options(role, nil)
 
@@ -127,7 +127,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
   end
 
   def add_user_to_input(name)
-    find('[data-testid="members-token-select-input"]').set(name)
+    find(member_dropdown_selector).set(name)
 
     wait_for_requests
     click_button name
