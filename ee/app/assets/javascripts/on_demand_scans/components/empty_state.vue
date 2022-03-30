@@ -46,7 +46,7 @@ export default {
     },
   },
   i18n: {
-    primaryButtonText: s__('OnDemandScans|New DAST scan'),
+    primaryButtonText: s__('OnDemandScans|New scan'),
   },
 };
 </script>

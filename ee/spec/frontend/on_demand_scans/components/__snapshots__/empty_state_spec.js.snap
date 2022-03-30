@@ -60,7 +60,7 @@ exports[`EmptyState renders properly 1`] = `
           <span
             class="gl-button-text"
           >
-            New DAST scan
+            New scan
           </span>
         </a>
          
