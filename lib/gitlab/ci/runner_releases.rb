@@ -21,12 +21,7 @@ module Gitlab
       def releases
         return @releases unless Time.now.utc >= @expire_time
 
-        response = Gitlab::HTTP.try_get(::Gitlab::CurrentSettings.current_application_settings.public_runner_releases_url)
-
-        @releases = response.success? ? extract_releases(response) : nil
-        @expire_time = (@releases ? RELEASES_VALIDITY_PERIOD : next_backoff).from_now
-
-        @releases
+        @releases = fetch_new_releases
       end
 
       def reset!
@@ -38,6 +33,14 @@ module Gitlab
       public_class_method :instance
 
       private
+
+      def fetch_new_releases
+        response = Gitlab::HTTP.try_get(::Gitlab::CurrentSettings.current_application_settings.public_runner_releases_url)
+
+        releases = response.success? ? extract_releases(response) : nil
+      ensure
+        @expire_time = (releases ? RELEASES_VALIDITY_PERIOD : next_backoff).from_now
+      end
 
       def extract_releases(response)
         response.parsed_response.map { |release| parse_runner_release(release) }.sort!
