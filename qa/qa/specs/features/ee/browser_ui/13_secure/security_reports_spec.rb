@@ -161,7 +161,9 @@ module QA
           end
 
           EE::Page::Project::Secure::SecurityDashboard.perform do |security_dashboard|
-            security_dashboard.click_vulnerability(description: sast_scan_fp_example_vuln)
+            Support::Retrier.retry_on_exception(max_attempts: 2, reload_page: page, message: 'False positive vuln retry') do
+              security_dashboard.click_vulnerability(description: sast_scan_fp_example_vuln)
+            end
           end
 
           EE::Page::Project::Secure::VulnerabilityDetails.perform do |vulnerability_details|
