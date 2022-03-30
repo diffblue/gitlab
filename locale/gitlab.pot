@@ -42280,9 +42280,6 @@ msgstr ""
 msgid "WikiPage|An error occurred while trying to render the content editor. Please try again later."
 msgstr ""
 
-msgid "WikiPage|Are you sure you want to switch back to the classic editor?"
-msgstr ""
-
 msgid "WikiPage|Cancel"
 msgstr ""
 
@@ -42307,12 +42304,6 @@ msgstr ""
 msgid "WikiPage|Format"
 msgstr ""
 
-msgid "WikiPage|Get a richer editing experience"
-msgstr ""
-
-msgid "WikiPage|Keep editing"
-msgstr ""
-
 msgid "WikiPage|Learn more."
 msgstr ""
 
@@ -42323,18 +42314,6 @@ msgid "WikiPage|Retry"
 msgstr ""
 
 msgid "WikiPage|Save changes"
-msgstr ""
-
-msgid "WikiPage|Switch me back to the classic editor."
-msgstr ""
-
-msgid "WikiPage|Switch to classic editor"
-msgstr ""
-
-msgid "WikiPage|Switching to the classic editor will discard any changes you've made in the new editor."
-msgstr ""
-
-msgid "WikiPage|This editor is in beta and may not display the page's contents properly. Switching back to the classic editor will discard changes you've made in the new editor."
 msgstr ""
 
 msgid "WikiPage|Tip: You can move this page by adding the path to the beginning of the title."
@@ -42349,16 +42328,7 @@ msgstr ""
 msgid "WikiPage|To link to a (new) page, simply type %{linkExample}. More examples are in the %{linkStart}documentation%{linkEnd}."
 msgstr ""
 
-msgid "WikiPage|Try the new visual Markdown editor. Read the %{linkStart}documentation%{linkEnd} to learn what's currently supported."
-msgstr ""
-
-msgid "WikiPage|Try this later"
-msgstr ""
-
 msgid "WikiPage|Update %{pageTitle}"
-msgstr ""
-
-msgid "WikiPage|Use the new editor"
 msgstr ""
 
 msgid "WikiPage|Write your content or drag files here…"
