@@ -472,10 +472,16 @@ module EE
     def free_user_cap_reached?
       return false unless apply_free_user_cap?
 
+      free_plan_at_user_limit?
+    end
+
+    def preview_free_user_cap_over?
+      return false unless apply_preview_free_user_cap?
+
       members_count = root_ancestor.free_plan_members_count
       return false unless members_count
 
-      ::Plan::FREE_USER_LIMIT <= members_count
+      members_count > ::Plan::FREE_USER_LIMIT
     end
 
     def user_limit_reached?(use_cache: false)
@@ -489,6 +495,20 @@ module EE
     end
 
     private
+
+    def apply_preview_free_user_cap?
+      return false unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
+      return false unless ::Feature.enabled?(:preview_free_user_cap, root_ancestor, default_enabled: :yaml)
+
+      has_free_or_no_subscription?
+    end
+
+    def free_plan_at_user_limit?
+      members_count = root_ancestor.free_plan_members_count
+      return false unless members_count
+
+      ::Plan::FREE_USER_LIMIT <= members_count
+    end
 
     # Members belonging directly to Projects within user/project namespaces
     def billed_users
