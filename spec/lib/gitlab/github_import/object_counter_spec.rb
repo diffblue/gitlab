@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::GithubImport::ObjectCounter, :clean_gitlab_redis_cache do
-  let_it_be(:project) { create(:project, import_type: 'github') }
+  let_it_be(:project) { create(:project, :import_started, import_type: 'github') }
 
   it 'validates the operation being incremented' do
     expect { described_class.increment(project, :issue, :unknown) }

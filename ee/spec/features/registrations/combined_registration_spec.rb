@@ -8,8 +8,8 @@ RSpec.describe 'Combined registration flow', :js do
   let(:experiments) { {} }
 
   before do
-    # https://gitlab.com/gitlab-org/gitlab/-/issues/338737
-    stub_const('Gitlab::QueryLimiting::Transaction::THRESHOLD', 250)
+    # https://gitlab.com/gitlab-org/gitlab/-/issues/340302
+    stub_const('Gitlab::QueryLimiting::Transaction::THRESHOLD', 270)
     stub_experiments(experiments)
     allow(Gitlab).to receive(:com?).and_return(true)
     sign_in(user)

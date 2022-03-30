@@ -25,7 +25,7 @@ module Gitlab
           increment_project_counter(project, object_type, operation, integer)
           increment_global_counter(object_type, operation, integer)
 
-          expire_etag_cache(project.import_type)
+          project.import_state&.expire_etag_cache
         end
 
         def summary(project)
@@ -43,16 +43,6 @@ module Gitlab
         end
 
         private
-
-        def expire_etag_cache(import_type)
-          realtime_changes_path = Gitlab::Routing.url_helpers.polymorphic_path([:realtime_changes_import, import_type.to_sym], format: :json) rescue nil
-
-          if realtime_changes_path
-            Gitlab::EtagCaching::Store.new.tap do |store|
-              store.touch(realtime_changes_path)
-            end
-          end
-        end
 
         # Global counters are long lived, in Prometheus,
         # and it's used to report the health of the Github Importer
