@@ -14472,6 +14472,7 @@ CREATE TABLE dora_daily_metrics (
     deployment_frequency integer,
     lead_time_for_changes_in_seconds integer,
     time_to_restore_service_in_seconds integer,
+    incidents_count integer,
     CONSTRAINT dora_daily_metrics_deployment_frequency_positive CHECK ((deployment_frequency >= 0)),
     CONSTRAINT dora_daily_metrics_lead_time_for_changes_in_seconds_positive CHECK ((lead_time_for_changes_in_seconds >= 0))
 );
