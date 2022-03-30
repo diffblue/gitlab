@@ -32193,6 +32193,16 @@ msgstr ""
 msgid "Runners|%{percentage} spot."
 msgstr ""
 
+msgid "Runners|%{strongStart}%{count}%{strongEnd} runner selected"
+msgid_plural "Runners|%{strongStart}%{count}%{strongEnd} runners selected"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Runners|%{strongStart}%{count}%{strongEnd} runner will be permanently deleted and no longer available for projects or groups in the instance. Are you sure you want to continue?"
+msgid_plural "Runners|%{strongStart}%{count}%{strongEnd} runners will be permanently deleted and no longer available for projects or groups in the instance. Are you sure you want to continue?"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "Runners|A capacity of 1 enables warm HA through Auto Scaling group re-spawn. A capacity of 2 enables hot HA because the service is available even when a node is lost. A capacity of 3 or more enables hot HA and manual scaling of runner fleet."
 msgstr ""
 
@@ -32238,7 +32248,13 @@ msgstr ""
 msgid "Runners|Change to project runner"
 msgstr ""
 
+msgid "Runners|Checkbox"
+msgstr ""
+
 msgid "Runners|Choose your preferred GitLab Runner"
+msgstr ""
+
+msgid "Runners|Clear selection"
 msgstr ""
 
 msgid "Runners|Command to register runner"
@@ -32253,10 +32269,18 @@ msgstr ""
 msgid "Runners|Copy registration token"
 msgstr ""
 
+msgid "Runners|Delete %d runner"
+msgid_plural "Runners|Delete %d runners"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "Runners|Delete runner"
 msgstr ""
 
 msgid "Runners|Delete runner %{name}?"
+msgstr ""
+
+msgid "Runners|Delete selected"
 msgstr ""
 
 msgid "Runners|Deploy GitLab Runner in AWS"
@@ -32348,6 +32372,11 @@ msgstr ""
 
 msgid "Runners|Paused"
 msgstr ""
+
+msgid "Runners|Permanently delete %d runner"
+msgid_plural "Runners|Permanently delete %d runners"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Runners|Platform"
 msgstr ""
