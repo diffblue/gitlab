@@ -115,6 +115,46 @@ RSpec.describe ProjectImportState, type: :model do
   end
 
   describe 'import state transitions' do
+    context 'state transition: any => any' do
+      context 'when project import type has realtime changes endpoint' do
+        before do
+          import_state.project.import_type = 'github'
+        end
+
+        it 'expires revelant etag cache' do
+          described_class.state_machines[:status].states.each do |initial_state|
+            import_state.status = initial_state.name
+
+            import_state.status_transitions.each do |transition|
+              expect_next_instance_of(Gitlab::EtagCaching::Store) do |instance|
+                expect(instance).to receive(:touch).with(Gitlab::Routing.url_helpers.realtime_changes_import_github_path(format: :json))
+              end
+
+              transition.perform
+            end
+          end
+        end
+      end
+
+      context 'when project import type has no realtime changes endpoint' do
+        before do
+          import_state.project.import_type = 'jira'
+        end
+
+        it 'does not touch etag caches' do
+          described_class.state_machines[:status].states.each do |initial_state|
+            import_state.status = initial_state.name
+
+            import_state.status_transitions.each do |transition|
+              expect(Gitlab::EtagCaching::Store).not_to receive(:new)
+
+              transition.perform
+            end
+          end
+        end
+      end
+    end
+
     context 'state transition: [:started] => [:finished]' do
       let(:after_import_service) { spy(:after_import_service) }
       let(:housekeeping_service) { spy(:housekeeping_service) }

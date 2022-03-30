@@ -38,6 +38,16 @@ class ProjectImportState < ApplicationRecord
     state :finished
     state :failed
 
+    after_transition any => any do |state|
+      realtime_changes_path = Gitlab::Routing.url_helpers.polymorphic_path([:realtime_changes_import, state.project.import_type.to_sym], format: :json) rescue nil
+
+      if realtime_changes_path
+        Gitlab::EtagCaching::Store.new.tap do |store|
+          store.touch(realtime_changes_path)
+        end
+      end
+    end
+
     after_transition [:none, :finished, :failed] => :scheduled do |state, _|
       state.run_after_commit do
         job_id = project.add_import_job
