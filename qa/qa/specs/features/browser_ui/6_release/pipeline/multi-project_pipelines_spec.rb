@@ -48,7 +48,7 @@ module QA
           expect(show).to have_passed
           expect(show).not_to have_job(downstream_job_name)
 
-          show.expand_child_pipeline
+          show.expand_linked_pipeline
 
           expect(show).to have_job(downstream_job_name)
         end
