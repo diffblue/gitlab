@@ -288,10 +288,10 @@ RSpec.describe Dora::DailyMetrics, type: :model do
       let_it_be(:environment) { create :environment }
 
       before_all do
-        create(:dora_daily_metrics, environment: environment, deployment_frequency: 3, incidents_count: 1, date: '2021-01-01')
+        create(:dora_daily_metrics, environment: environment, deployment_frequency: 4, incidents_count: 3, date: '2021-01-01')
         create(:dora_daily_metrics, environment: environment, deployment_frequency: 2, incidents_count: 0, date: '2021-01-02')
         create(:dora_daily_metrics, environment: environment, deployment_frequency: 2, incidents_count: nil, date: '2021-01-03')
-        create(:dora_daily_metrics, environment: environment, deployment_frequency: 0, incidents_count: 2, date: '2021-01-04')
+        create(:dora_daily_metrics, environment: environment, deployment_frequency: 0, incidents_count: 1, date: '2021-01-04')
         create(:dora_daily_metrics, environment: environment, deployment_frequency: nil, incidents_count: nil, date: '2021-01-05')
         create(:dora_daily_metrics, environment: environment, deployment_frequency: 0, incidents_count: 0, date: '2021-01-06')
       end
@@ -302,7 +302,7 @@ RSpec.describe Dora::DailyMetrics, type: :model do
         let(:interval) { described_class::INTERVAL_ALL }
 
         it 'aggregates the rows' do
-          is_expected.to eq(3 / 7.0)
+          is_expected.to eq(0.5)
         end
       end
 
@@ -310,7 +310,7 @@ RSpec.describe Dora::DailyMetrics, type: :model do
         let(:interval) { described_class::INTERVAL_MONTHLY }
 
         it 'aggregates the rows' do
-          is_expected.to eq([{ 'date' => '2021-01-01', 'value' => 3 / 7.0 }])
+          is_expected.to eq([{ 'date' => '2021-01-01', 'value' => 0.5 }])
         end
       end
 
@@ -318,10 +318,10 @@ RSpec.describe Dora::DailyMetrics, type: :model do
         let(:interval) { described_class::INTERVAL_DAILY }
 
         it 'aggregates the rows' do
-          is_expected.to eq([{ 'date' => '2021-01-01', 'value' => 1 / 3.0 },
+          is_expected.to eq([{ 'date' => '2021-01-01', 'value' => 0.75 },
                              { 'date' => '2021-01-02', 'value' => 0.0 },
                              { 'date' => '2021-01-03', 'value' => nil },
-                             { 'date' => '2021-01-04', 'value' => 2.0 },
+                             { 'date' => '2021-01-04', 'value' => 1.0 },
                              { 'date' => '2021-01-05', 'value' => nil },
                              { 'date' => '2021-01-06', 'value' => 0.0 }])
         end
