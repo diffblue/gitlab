@@ -11,6 +11,10 @@ module Groups
 
       feature_category :security_orchestration
 
+      def edit
+        @policy_name = URI.decode_www_form_component(params[:id])
+      end
+
       def index
         render :index, locals: { group: group }
       end
