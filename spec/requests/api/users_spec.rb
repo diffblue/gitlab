@@ -1053,7 +1053,7 @@ RSpec.describe API::Users do
       post api('/users', admin),
         params: {
           email: 'invalid email',
-          password: Gitlab::Password.test_default,
+          password: 'password',
           name: 'test'
         }
       expect(response).to have_gitlab_http_status(:bad_request)
@@ -1119,7 +1119,7 @@ RSpec.describe API::Users do
         post api('/users', admin),
           params: {
             email: 'test@example.com',
-            password: Gitlab::Password.test_default,
+            password: 'password',
             username: 'test',
             name: 'foo'
           }
@@ -1131,7 +1131,7 @@ RSpec.describe API::Users do
             params: {
               name: 'foo',
               email: 'test@example.com',
-              password: Gitlab::Password.test_default,
+              password: 'password',
               username: 'foo'
             }
         end.to change { User.count }.by(0)
@@ -1145,7 +1145,7 @@ RSpec.describe API::Users do
             params: {
               name: 'foo',
               email: 'foo@example.com',
-              password: Gitlab::Password.test_default,
+              password: 'password',
               username: 'test'
             }
         end.to change { User.count }.by(0)
@@ -1159,7 +1159,7 @@ RSpec.describe API::Users do
             params: {
               name: 'foo',
               email: 'foo@example.com',
-              password: Gitlab::Password.test_default,
+              password: 'password',
               username: 'TEST'
             }
         end.to change { User.count }.by(0)
@@ -1504,8 +1504,8 @@ RSpec.describe API::Users do
 
     context "with existing user" do
       before do
-        post api("/users", admin), params: { email: 'test@example.com', password: Gitlab::Password.test_default, username: 'test', name: 'test' }
-        post api("/users", admin), params: { email: 'foo@bar.com', password: Gitlab::Password.test_default, username: 'john', name: 'john' }
+        post api("/users", admin), params: { email: 'test@example.com', password: 'password', username: 'test', name: 'test' }
+        post api("/users", admin), params: { email: 'foo@bar.com', password: 'password', username: 'john', name: 'john' }
         @user = User.all.last
       end
 

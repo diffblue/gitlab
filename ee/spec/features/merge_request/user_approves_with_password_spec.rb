@@ -16,7 +16,7 @@ RSpec.describe 'Merge request > User approves with password', :js do
   end
 
   it 'works, when user approves and enters correct password' do
-    approve_with_password Gitlab::Password.test_default
+    approve_with_password '12345678'
 
     page.within('.js-mr-approvals') do
       expect(page).not_to have_button('Approve')
@@ -25,7 +25,7 @@ RSpec.describe 'Merge request > User approves with password', :js do
   end
 
   it 'does not need password to unapprove' do
-    approve_with_password Gitlab::Password.test_default
+    approve_with_password '12345678'
     unapprove
 
     expect(page).to have_button('Approve')
