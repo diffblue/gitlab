@@ -4,7 +4,8 @@ require 'spec_helper'
 
 RSpec.describe API::CaptchaCheck do
   let_it_be(:username) { 'TestCaptcha' }
-  let_it_be_with_reload(:user) { create(:user, username: username) }
+  let_it_be(:email) { 'test_email@email.com' }
+  let_it_be_with_reload(:user) { create(:user, username: username, email: email) }
 
   describe 'GET users/:username/captcha_check' do
     context 'when the feature flag arkose_labs_login_challenge is disabled' do
@@ -38,6 +39,34 @@ RSpec.describe API::CaptchaCheck do
           get api("/users/#{username}/captcha_check")
 
           expect(response).to have_gitlab_http_status(:ok)
+        end
+      end
+
+      context 'when the email is valid' do
+        it 'returns status ok' do
+          get api("/users/#{email}/captcha_check")
+
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+      end
+
+      context 'when the email is unknown' do
+        let(:unknown_email) { 'unknown_email@email.com' }
+
+        it 'returns status not_found' do
+          get api("/users/#{unknown_email}/captcha_check")
+
+          expect(response).to have_gitlab_http_status(:not_found)
+        end
+      end
+
+      context 'when the email is invalid' do
+        let(:invalid_email) { 'invalid_email@' }
+
+        it 'returns status not_found' do
+          get api("/users/#{invalid_email}/captcha_check")
+
+          expect(response).to have_gitlab_http_status(:not_found)
         end
       end
 
