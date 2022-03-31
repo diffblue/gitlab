@@ -86,7 +86,9 @@ RSpec.describe Resolvers::TimeboxReportResolver do
         let(:current_user) { group_member }
 
         it 'raises a GraphQL exception' do
-          expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable, "The resource that you are attempting to access does not exist or you don't have permission to perform this action")
+          expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable, "The resource that you are attempting to access does not exist or you don't have permission to perform this action") do
+            subject
+          end
         end
       end
 
@@ -110,7 +112,9 @@ RSpec.describe Resolvers::TimeboxReportResolver do
 
         with_them do
           it 'raises a GraphQL exception' do
-            expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable, "The resource that you are attempting to access does not exist or you don't have permission to perform this action")
+            expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable, "The resource that you are attempting to access does not exist or you don't have permission to perform this action") do
+              subject
+            end
           end
         end
       end
