@@ -8,7 +8,7 @@ import {
   GlLoadingIcon,
   GlTable,
   GlLink,
-  GlSkeletonLoading,
+  GlDeprecatedSkeletonLoading as GlSkeletonLoading,
   GlSprintf,
   GlTooltipDirective,
 } from '@gitlab/ui';
