@@ -3,4 +3,5 @@ table_name: namespace_package_settings
 classes:
 - Namespace::PackageSetting
 feature_categories: 
+- package_registry
 description: 

@@ -3,4 +3,6 @@ table_name: resource_label_events
 classes:
 - ResourceLabelEvent
 feature_categories: 
+- projects
+- subgroups
 description: 

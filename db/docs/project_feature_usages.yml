@@ -3,4 +3,5 @@ table_name: project_feature_usages
 classes:
 - ProjectFeatureUsage
 feature_categories: 
+- product_analytics
 description: 

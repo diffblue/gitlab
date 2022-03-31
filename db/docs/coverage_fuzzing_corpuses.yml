@@ -3,4 +3,5 @@ table_name: coverage_fuzzing_corpuses
 classes:
 - AppSec::Fuzzing::Coverage::Corpus
 feature_categories: 
+- code_quality
 description: 

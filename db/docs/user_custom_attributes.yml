@@ -3,4 +3,5 @@ table_name: user_custom_attributes
 classes:
 - UserCustomAttribute
 feature_categories: 
+- users
 description: 

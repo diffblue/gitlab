@@ -3,4 +3,5 @@ table_name: programming_languages
 classes:
 - ProgrammingLanguage
 feature_categories: 
+- projects
 description: 

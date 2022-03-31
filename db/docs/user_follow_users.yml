@@ -3,4 +3,5 @@ table_name: user_follow_users
 classes:
 - Users::UserFollowUser
 feature_categories: 
+- users
 description: 

@@ -3,4 +3,5 @@ table_name: customer_relations_contacts
 classes:
 - CustomerRelations::Contact
 feature_categories: 
+- users
 description: 

@@ -2,4 +2,5 @@
 table_name: external_status_checks_protected_branches
 classes: []
 feature_categories: 
+- source_code_management
 description: 

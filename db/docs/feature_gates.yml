@@ -4,4 +4,5 @@ classes:
 - Feature::FlipperGate
 - Flipper::Adapters::ActiveRecord::Gate
 feature_categories: 
+- feature_flags
 description: 

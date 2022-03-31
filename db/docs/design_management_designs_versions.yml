@@ -3,4 +3,5 @@ table_name: design_management_designs_versions
 classes:
 - DesignManagement::Action
 feature_categories: 
+- design_management
 description: 

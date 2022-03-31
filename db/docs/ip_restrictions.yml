@@ -3,4 +3,5 @@ table_name: ip_restrictions
 classes:
 - IpRestriction
 feature_categories: 
+- authentication_and_authorization
 description: 

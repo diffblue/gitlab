@@ -3,4 +3,5 @@ table_name: cluster_groups
 classes:
 - Clusters::Group
 feature_categories: 
+- kubernetes_management
 description: 

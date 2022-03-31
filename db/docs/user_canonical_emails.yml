@@ -3,4 +3,5 @@ table_name: user_canonical_emails
 classes:
 - UserCanonicalEmail
 feature_categories: 
+- users
 description: 

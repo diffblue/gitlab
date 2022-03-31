@@ -3,4 +3,5 @@ table_name: issue_emails
 classes:
 - Issue::Email
 feature_categories: 
+- team_planning
 description: 

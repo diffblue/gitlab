@@ -3,4 +3,5 @@ table_name: group_deploy_keys_groups
 classes:
 - GroupDeployKeysGroup
 feature_categories: 
+- advanced_deployments
 description: 

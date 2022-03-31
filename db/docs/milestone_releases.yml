@@ -3,4 +3,5 @@ table_name: milestone_releases
 classes:
 - MilestoneRelease
 feature_categories: 
+- release_orchestration
 description: 

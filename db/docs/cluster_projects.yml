@@ -3,4 +3,5 @@ table_name: cluster_projects
 classes:
 - Clusters::Project
 feature_categories: 
+- kubernetes_management
 description: 

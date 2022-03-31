@@ -2,4 +2,5 @@
 table_name: ar_internal_metadata
 classes: []
 feature_categories: 
+- database
 description: 

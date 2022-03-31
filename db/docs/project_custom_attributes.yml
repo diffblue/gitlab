@@ -3,4 +3,5 @@ table_name: project_custom_attributes
 classes:
 - ProjectCustomAttribute
 feature_categories: 
+- projects
 description: 

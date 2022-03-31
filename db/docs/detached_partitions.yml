@@ -3,4 +3,5 @@ table_name: detached_partitions
 classes:
 - Postgresql::DetachedPartition
 feature_categories: 
+- database
 description: 

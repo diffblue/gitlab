@@ -3,4 +3,5 @@ table_name: serverless_domain_cluster
 classes:
 - Serverless::DomainCluster
 feature_categories: 
+- deployment_management
 description: 

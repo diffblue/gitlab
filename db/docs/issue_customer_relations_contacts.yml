@@ -2,5 +2,6 @@
 table_name: issue_customer_relations_contacts
 classes:
 - CustomerRelations::IssueContact
-feature_categories: 
+feature_categories:
+  - 
 description: 

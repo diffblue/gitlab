@@ -3,4 +3,5 @@ table_name: epic_metrics
 classes:
 - Epic::Metrics
 feature_categories: 
+- metrics
 description: 

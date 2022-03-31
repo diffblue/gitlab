@@ -3,4 +3,5 @@ table_name: required_code_owners_sections
 classes:
 - ProtectedBranch::RequiredCodeOwnersSection
 feature_categories: 
+- source_code_management
 description: 

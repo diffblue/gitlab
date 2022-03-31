@@ -3,4 +3,5 @@ table_name: system_note_metadata
 classes:
 - SystemNoteMetadata
 feature_categories: 
+- importers
 description: 

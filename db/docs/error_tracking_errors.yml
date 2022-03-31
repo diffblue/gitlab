@@ -3,4 +3,5 @@ table_name: error_tracking_errors
 classes:
 - ErrorTracking::Error
 feature_categories: 
+- error_tracking
 description: 

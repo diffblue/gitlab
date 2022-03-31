@@ -4,4 +4,5 @@ classes:
 - Feature::FlipperFeature
 - Flipper::Adapters::ActiveRecord::Feature
 feature_categories: 
+- feature_flags
 description: 

@@ -3,4 +3,5 @@ table_name: issue_assignees
 classes:
 - IssueAssignee
 feature_categories: 
+- team_planning
 description: 

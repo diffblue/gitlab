@@ -3,4 +3,5 @@ table_name: clusters_applications_runners
 classes:
 - Clusters::Applications::Runner
 feature_categories: 
+- kubernetes_management
 description: 

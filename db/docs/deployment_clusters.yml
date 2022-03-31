@@ -3,4 +3,5 @@ table_name: deployment_clusters
 classes:
 - DeploymentCluster
 feature_categories: 
+- deployment_management
 description: 

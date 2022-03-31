@@ -2,4 +2,5 @@
 table_name: content_blocked_states
 classes: []
 feature_categories: 
+- source_code_management
 description: 

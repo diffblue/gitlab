@@ -2,4 +2,5 @@
 table_name: issues_prometheus_alert_events
 classes: []
 feature_categories: 
+- incident_management
 description: 
