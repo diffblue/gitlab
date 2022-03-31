@@ -168,6 +168,36 @@ module BillingPlansHelper
     }
   end
 
+  def add_namespace_plan_to_group_instructions
+    link_end = '</a>'.html_safe
+
+    move_link_url = help_page_path 'user/project/settings/index',
+                                   anchor: "transferring-an-existing-project-into-another-namespace"
+
+    move_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: move_link_url }
+
+    if current_user.owned_or_maintainers_groups.any?
+      html_escape_once(
+        s_("BillingPlans|You'll have to %{move_link_start}move this project%{move_link_end} to one of your groups.")
+      ).html_safe % {
+        move_link_start: move_link_start,
+        move_link_end: link_end
+      }
+    else
+      create_group_link_url = new_group_path anchor: "create-group-pane"
+      create_group_link_start = '<a href="%{url}">'.html_safe % { url: create_group_link_url }
+
+      html_escape_once(
+        s_("BillingPlans|You don't have any groups. You'll need to %{create_group_link_start}create one%{create_group_link_end} and %{move_link_start}move this project to it%{move_link_end}.")
+      ).html_safe % {
+        create_group_link_start: create_group_link_start,
+        create_group_link_end: link_end,
+        move_link_start: move_link_start,
+        move_link_end: link_end
+      }
+    end
+  end
+
   private
 
   def add_seats_url(group)
