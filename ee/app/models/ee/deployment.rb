@@ -25,7 +25,7 @@ module EE
             ::Dora::DailyMetrics::RefreshWorker
               .perform_in(5.minutes,
                           deployment.environment_id,
-                          Time.current.to_date.to_s)
+                          deployment.finished_at.to_date.to_s)
           end
         end
       end

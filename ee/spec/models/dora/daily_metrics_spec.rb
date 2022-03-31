@@ -69,167 +69,56 @@ RSpec.describe Dora::DailyMetrics, type: :model do
 
     let_it_be(:date) { 1.day.ago }
 
-    context 'with finished deployments' do
-      before do
-        # Deployment finished before the date
-        previous_date = date - 1.day
-        create(:deployment, :success, environment: environment, finished_at: previous_date)
-        create(:deployment, :failed, environment: environment, finished_at: previous_date)
-
-        # Deployment finished on the date
-        create(:deployment, :success, environment: environment, finished_at: date)
-        create(:deployment, :failed, environment: environment, finished_at: date)
-
-        # Deployment finished after the date
-        next_date = date + 1.day
-        create(:deployment, :success, environment: environment, finished_at: next_date)
-        create(:deployment, :failed, environment: environment, finished_at: next_date)
+    before do
+      expect_next_instance_of(Dora::DeploymentFrequencyMetric) do |instance|
+        expect(instance).to receive(:data_queries).and_return(deployment_frequency: Arel.sql('1'))
       end
-
-      it 'inserts the daily metrics' do
-        expect { subject }.to change { Dora::DailyMetrics.count }.by(1)
-
-        metrics = environment.dora_daily_metrics.find_by_date(date)
-        expect(metrics.deployment_frequency).to eq(1)
-        expect(metrics.lead_time_for_changes_in_seconds).to be_nil
+      expect_next_instance_of(Dora::LeadTimeForChangesMetric) do |instance|
+        expect(instance).to receive(:data_queries).and_return(lead_time_for_changes_in_seconds: Arel.sql('2'))
       end
-
-      context 'when there is an existing daily metric' do
-        before do
-          create(:dora_daily_metrics, environment: environment, date: date, deployment_frequency: 0)
-        end
-
-        it 'updates the daily metrics' do
-          expect { subject }.not_to change { Dora::DailyMetrics.count }
-
-          metrics = environment.dora_daily_metrics.find_by_date(date)
-          expect(metrics.deployment_frequency).to eq(1)
-        end
+      expect_next_instance_of(Dora::TimeToRestoreServiceMetric) do |instance|
+        expect(instance).to receive(:data_queries).and_return(time_to_restore_service_in_seconds: Arel.sql('3'))
+      end
+      expect_next_instance_of(Dora::ChangeFailureRateMetric) do |instance|
+        expect(instance).to receive(:data_queries).and_return(deployment_frequency: Arel.sql('1'), incidents_count: Arel.sql('4'))
       end
     end
 
-    context 'with finished deployments and merged MRs' do
-      before do
-        merge_requests = []
+    it 'refreshes with whatever metrics return' do
+      subject
 
-        # Merged 1 day ago
-        merge_requests << create(:merge_request, :with_merged_metrics, project: project).tap do |merge_request|
-          merge_request.metrics.update!(merged_at: date - 1.day)
-        end
+      metric = described_class.for_environments(environment).first!
 
-        # Merged 2 days ago
-        merge_requests << create(:merge_request, :with_merged_metrics, project: project).tap do |merge_request|
-          merge_request.metrics.update!(merged_at: date - 2.days)
-        end
-
-        # Merged 3 days ago
-        merge_requests << create(:merge_request, :with_merged_metrics, project: project).tap do |merge_request|
-          merge_request.metrics.update!(merged_at: date - 3.days)
-        end
-
-        # Deployment finished on the date
-        create(:deployment, :success, environment: environment, finished_at: date, merge_requests: merge_requests)
-      end
-
-      it 'inserts the daily metrics' do
-        subject
-
-        metrics = environment.dora_daily_metrics.find_by_date(date)
-        expect(metrics.lead_time_for_changes_in_seconds).to eq(2.days.to_i) # median
-      end
-
-      context 'when there is an existing daily metric' do
-        let!(:dora_daily_metrics) { create(:dora_daily_metrics, environment: environment, date: date, lead_time_for_changes_in_seconds: nil) }
-
-        it 'updates the daily metrics' do
-          expect { subject }
-            .to change { dora_daily_metrics.reload.lead_time_for_changes_in_seconds }
-            .from(nil)
-            .to(2.days.to_i)
-        end
-      end
+      expect(metric).to have_attributes(deployment_frequency: 1,
+                                        lead_time_for_changes_in_seconds: 2,
+                                        time_to_restore_service_in_seconds: 3,
+                                        incidents_count: 4)
     end
 
-    context 'with closed issues' do
-      before do
-        create(:incident, :closed, project: project, created_at: date - 7.days, closed_at: date)
-        create(:incident, :closed, project: project, created_at: date - 5.days, closed_at: date)
-        create(:incident, :closed, project: project, created_at: date - 3.days, closed_at: date)
-        create(:incident, :closed, project: project, created_at: date - 1.day, closed_at: date)
+    it 'when there is an existing metric already overwrites data' do
+      create(:dora_daily_metrics,
+             date: date,
+             environment: environment,
+             deployment_frequency: 90,
+             lead_time_for_changes_in_seconds: 90,
+             time_to_restore_service_in_seconds: 90,
+             incidents_count: 90)
 
-        # Issues which shouldn't be included in calculation
-        create(:issue, :closed, project: project, created_at: date - 1.year, closed_at: date) # not an incident
-        create(:incident, project: project, created_at: date - 1.year) # not closed yet
-        create(:incident, :closed, created_at: date - 1.year, closed_at: date) # different project
-        create(:incident, :closed, project: project, created_at: date - 1.year, closed_at: date + 1.day) # different date
-      end
+      subject
 
-      context 'for production environment' do
-        let_it_be(:environment) { create(:environment, :production, project: project) }
+      metric = described_class.for_environments(environment).first!
 
-        it 'inserts the daily metrics with time_to_restore_service' do
-          subject
-
-          metrics = environment.dora_daily_metrics.find_by_date(date)
-          expect(metrics.time_to_restore_service_in_seconds).to eq(4.days.to_i) # median
-        end
-      end
-
-      context 'for non-production environment' do
-        it 'does not calculate time_to_restore_service daily metric' do
-          subject
-
-          metrics = environment.dora_daily_metrics.find_by_date(date)
-          expect(metrics.time_to_restore_service_in_seconds).to be_nil
-        end
-      end
-    end
-
-    context 'with incidents' do
-      before_all do
-        create(:incident, project: project, created_at: date.beginning_of_day)
-        create(:incident, project: project, created_at: date.beginning_of_day + 1.hour)
-        create(:incident, project: project, created_at: date.end_of_day)
-
-        # Issues which shouldn't be included in calculation
-        create(:issue, project: project, created_at: date) # not an incident
-        create(:incident, created_at: date) # different project
-        create(:incident, project: project, created_at: date - 1.year) # different date
-        create(:incident, project: project, created_at: date + 1.year) # different date
-      end
-
-      context 'for production environment' do
-        let_it_be(:environment) { create(:environment, :production, project: project) }
-
-        it 'inserts the daily metrics with incidents_count' do
-          subject
-
-          metrics = environment.dora_daily_metrics.find_by_date(date)
-          expect(metrics.incidents_count).to eq(3)
-        end
-      end
-
-      context 'for non-production environment' do
-        it 'does not calculate incidents_count daily metric' do
-          subject
-
-          metrics = environment.dora_daily_metrics.find_by_date(date)
-          expect(metrics.incidents_count).to be_nil
-        end
-      end
-    end
-
-    context 'when date is invalid type' do
-      it 'raises an error' do
-        expect do
-          described_class.refresh!(environment, '2021-02-03')
-        end.to raise_error(ArgumentError)
-      end
+      expect(metric).to have_attributes(deployment_frequency: 1,
+                                        lead_time_for_changes_in_seconds: 2,
+                                        time_to_restore_service_in_seconds: 3,
+                                        incidents_count: 4)
     end
   end
 
   describe '.aggregate_for!' do
     subject { described_class.aggregate_for!(metric, interval) }
+
+    let_it_be(:environment) { create :environment }
 
     around do |example|
       freeze_time do
@@ -239,22 +128,19 @@ RSpec.describe Dora::DailyMetrics, type: :model do
 
     context 'when metric is deployment frequency' do
       before_all do
-        create(:dora_daily_metrics, deployment_frequency: 3, date: '2021-01-01')
-        create(:dora_daily_metrics, deployment_frequency: 3, date: '2021-01-01')
-        create(:dora_daily_metrics, deployment_frequency: 2, date: '2021-01-02')
-        create(:dora_daily_metrics, deployment_frequency: 2, date: '2021-01-02')
-        create(:dora_daily_metrics, deployment_frequency: 1, date: '2021-01-03')
-        create(:dora_daily_metrics, deployment_frequency: 1, date: '2021-01-03')
-        create(:dora_daily_metrics, deployment_frequency: nil, date: '2021-01-04')
+        create(:dora_daily_metrics, environment: environment, deployment_frequency: 3, date: '2021-01-01')
+        create(:dora_daily_metrics, environment: environment, deployment_frequency: 2, date: '2021-01-02')
+        create(:dora_daily_metrics, environment: environment, deployment_frequency: 1, date: '2021-01-03')
+        create(:dora_daily_metrics, environment: environment, deployment_frequency: nil, date: '2021-01-04')
       end
 
-      let(:metric) { described_class::METRIC_DEPLOYMENT_FREQUENCY }
+      let(:metric) { 'deployment_frequency' }
 
       context 'when interval is all' do
         let(:interval) { described_class::INTERVAL_ALL }
 
         it 'aggregates the rows' do
-          is_expected.to eq(12)
+          is_expected.to eq(6)
         end
       end
 
@@ -262,7 +148,7 @@ RSpec.describe Dora::DailyMetrics, type: :model do
         let(:interval) { described_class::INTERVAL_MONTHLY }
 
         it 'aggregates the rows' do
-          is_expected.to eq([{ 'date' => '2021-01-01', 'value' => 12 }])
+          is_expected.to eq([{ 'date' => '2021-01-01', 'value' => 6 }])
         end
       end
 
@@ -270,9 +156,9 @@ RSpec.describe Dora::DailyMetrics, type: :model do
         let(:interval) { described_class::INTERVAL_DAILY }
 
         it 'aggregates the rows' do
-          is_expected.to eq([{ 'date' => '2021-01-01', 'value' => 6 },
-                             { 'date' => '2021-01-02', 'value' => 4 },
-                             { 'date' => '2021-01-03', 'value' => 2 },
+          is_expected.to eq([{ 'date' => '2021-01-01', 'value' => 3 },
+                             { 'date' => '2021-01-02', 'value' => 2 },
+                             { 'date' => '2021-01-03', 'value' => 1 },
                              { 'date' => '2021-01-04', 'value' => nil }])
         end
       end
@@ -285,8 +171,6 @@ RSpec.describe Dora::DailyMetrics, type: :model do
     end
 
     context 'when metric is change_failure_rate' do
-      let_it_be(:environment) { create :environment }
-
       before_all do
         create(:dora_daily_metrics, environment: environment, deployment_frequency: 4, incidents_count: 3, date: '2021-01-01')
         create(:dora_daily_metrics, environment: environment, deployment_frequency: 2, incidents_count: 0, date: '2021-01-02')
@@ -296,7 +180,7 @@ RSpec.describe Dora::DailyMetrics, type: :model do
         create(:dora_daily_metrics, environment: environment, deployment_frequency: 0, incidents_count: 0, date: '2021-01-06')
       end
 
-      let(:metric) { described_class::METRIC_CHANGE_FAILURE_RATE }
+      let(:metric) { 'change_failure_rate' }
 
       context 'when interval is all' do
         let(:interval) { described_class::INTERVAL_ALL }
@@ -340,20 +224,18 @@ RSpec.describe Dora::DailyMetrics, type: :model do
       before_all do
         column_name = :"#{metric}_in_seconds"
 
-        create(:dora_daily_metrics, column_name => 100, :date => '2021-01-01')
-        create(:dora_daily_metrics, column_name => 90, :date => '2021-01-01')
-        create(:dora_daily_metrics, column_name => 80, :date => '2021-01-02')
-        create(:dora_daily_metrics, column_name => 70, :date => '2021-01-02')
-        create(:dora_daily_metrics, column_name => 60, :date => '2021-01-03')
-        create(:dora_daily_metrics, column_name => 50, :date => '2021-01-03')
-        create(:dora_daily_metrics, column_name => nil, :date => '2021-01-04')
+        create(:dora_daily_metrics, environment: environment, column_name => 100, :date => '2021-01-01')
+        create(:dora_daily_metrics, environment: environment, column_name => 80, :date => '2021-01-02')
+        create(:dora_daily_metrics, environment: environment, column_name => 60, :date => '2021-01-03')
+        create(:dora_daily_metrics, environment: environment, column_name => 50, :date => '2021-01-04')
+        create(:dora_daily_metrics, environment: environment, column_name => nil, :date => '2021-01-05')
       end
 
       context 'when interval is all' do
         let(:interval) { described_class::INTERVAL_ALL }
 
         it 'calculates the median' do
-          is_expected.to eq(75)
+          is_expected.to eq(70)
         end
       end
 
@@ -361,7 +243,7 @@ RSpec.describe Dora::DailyMetrics, type: :model do
         let(:interval) { described_class::INTERVAL_MONTHLY }
 
         it 'calculates the median' do
-          is_expected.to eq([{ 'date' => '2021-01-01', 'value' => 75 }])
+          is_expected.to eq([{ 'date' => '2021-01-01', 'value' => 70 }])
         end
       end
 
@@ -369,10 +251,11 @@ RSpec.describe Dora::DailyMetrics, type: :model do
         let(:interval) { described_class::INTERVAL_DAILY }
 
         it 'calculates the median' do
-          is_expected.to eq([{ 'date' => '2021-01-01', 'value' => 95 },
-                             { 'date' => '2021-01-02', 'value' => 75 },
-                             { 'date' => '2021-01-03', 'value' => 55 },
-                             { 'date' => '2021-01-04', 'value' => nil }])
+          is_expected.to eq([{ 'date' => '2021-01-01', 'value' => 100 },
+                             { 'date' => '2021-01-02', 'value' => 80 },
+                             { 'date' => '2021-01-03', 'value' => 60 },
+                             { 'date' => '2021-01-04', 'value' => 50 },
+                             { 'date' => '2021-01-05', 'value' => nil }])
         end
       end
 
@@ -384,11 +267,11 @@ RSpec.describe Dora::DailyMetrics, type: :model do
     end
 
     context 'when metric is lead time for changes' do
-      include_examples 'median metric', described_class::METRIC_LEAD_TIME_FOR_CHANGES
+      include_examples 'median metric', 'lead_time_for_changes'
     end
 
     context 'when metric is time_to_restore_service' do
-      include_examples 'median metric', described_class::METRIC_TIME_TO_RESTORE_SERVICE
+      include_examples 'median metric', 'time_to_restore_service'
     end
 
     context 'when metric is unknown' do
