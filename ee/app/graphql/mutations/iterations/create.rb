@@ -5,6 +5,10 @@ module Mutations
     class Create < BaseMutation
       graphql_name 'iterationCreate'
 
+      CADENCE_ID_DEPRECATION_MESSAGE = '`iterationCadenceId` is deprecated and will be removed in the future.' \
+                                       ' This argument is ignored, because you can\'t create an iteration in a specific cadence.' \
+                                       ' In the future only automatic iteration cadences will be allowed'
+
       include Mutations::ResolvesResourceParent
 
       authorize :create_iteration
@@ -16,9 +20,10 @@ module Mutations
 
       argument :iterations_cadence_id,
                ::Types::GlobalIDType[::Iterations::Cadence],
-               loads: ::Types::Iterations::CadenceType,
                required: false,
-               description: 'Global ID of the iterations cadence to be assigned to newly created iteration.'
+               deprecated: { reason: CADENCE_ID_DEPRECATION_MESSAGE, milestone: '14.10' },
+               description: 'Global ID of the iteration cadence to be assigned to the new iteration.' \
+                            'Argument is ignored as it was only used behind the `iteration_cadences` feature flag.'
 
       argument :title,
                GraphQL::Types::String,
@@ -59,21 +64,17 @@ module Mutations
       private
 
       def validate_arguments!(parent, args)
+        # Ignoring argument as it's not necessary for the legacy iteration creation feature.
+        # Iteration will always be created in the first manual cadence for the group and create one
+        # if it doesn't exist yet.
+        args.delete(:iterations_cadence_id)
+
         if args.except(:group_path, :project_path).empty?
           raise Gitlab::Graphql::Errors::ArgumentError, 'The list of iteration attributes is empty'
         end
 
         if !parent.iteration_cadences_feature_flag_enabled? && args[:title].blank?
           raise Gitlab::Graphql::Errors::ArgumentError, "Title can't be blank"
-        end
-
-        # Currently there is a single iteration cadence per group, so if `iterations_cadence_id` argument is not provided
-        # we assign iteration to the only cadence in the group(see `Iteration#set_iterations_cadence`).
-        # Once we introduce cadence CRUD support we need to specify to which iteration cadence a given iteration
-        # belongs if there are more than once cadence in the group. Eventually `iterations_cadence_id` argument should
-        # become required and there should be no need for group_path argument for iteration.
-        if args[:iterations_cadence].blank? && parent.iterations_cadences.count > 1 && parent.iteration_cadences_feature_flag_enabled?
-          raise Gitlab::Graphql::Errors::ArgumentError, 'Please provide iterations_cadence_id argument to assign iteration to respective cadence'
         end
       end
     end
