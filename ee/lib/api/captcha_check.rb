@@ -24,7 +24,7 @@ module API
         if rate_limit_reached
           present({ result: true }, with: Entities::CaptchaCheck)
         else
-          user = User.find_by_username(params[:username])
+          user = ::User.by_login(params[:username])
           not_found! 'User' unless user
           present(::Users::CaptchaChallengeService.new(user, request.ip).execute, with: Entities::CaptchaCheck)
         end
