@@ -1,7 +1,7 @@
-import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import waitForPromises from 'helpers/wait_for_promises';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GitlabTeamMemberBadge from 'ee/vue_shared/components/user_avatar/badges/gitlab_team_member_badge.vue';
 import NoteHeader from '~/notes/components/note_header.vue';
 
@@ -20,7 +20,7 @@ describe('NoteHeader component', () => {
   };
 
   const createComponent = (props) => {
-    wrapper = shallowMount(NoteHeader, {
+    wrapper = shallowMountExtended(NoteHeader, {
       store: new Vuex.Store(),
       propsData: { ...props },
     });
@@ -47,4 +47,12 @@ describe('NoteHeader component', () => {
       expect(wrapper.findComponent(GitlabTeamMemberBadge).exists()).toBe(expected);
     },
   );
+
+  it('shows confidential indicator tooltip for group context when isConfidential is true for epics', () => {
+    createComponent({ isConfidential: true, noteableType: 'epic' });
+
+    expect(wrapper.findByTestId('confidentialIndicator').attributes('title')).toBe(
+      'This comment is confidential and only visible to group members',
+    );
+  });
 });

@@ -25661,6 +25661,9 @@ msgstr ""
 msgid "Notes|This comment has changed since you started editing, please review the %{open_link}updated comment%{close_link} to ensure information is not lost"
 msgstr ""
 
+msgid "Notes|This comment is confidential and only visible to group members"
+msgstr ""
+
 msgid "Notes|This comment is confidential and only visible to project members"
 msgstr ""
 
