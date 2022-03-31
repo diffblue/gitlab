@@ -205,7 +205,7 @@ RSpec.describe ProtectedEnvironment do
     end
   end
 
-  describe '.deploy_access_levels_by_user' do
+  describe '.revoke_user' do
     let(:user) { create(:user) }
     let(:project) { create(:project) }
     let(:environment) { create(:environment, project: project, name: 'production') }
@@ -217,9 +217,13 @@ RSpec.describe ProtectedEnvironment do
       create_deploy_access_level(protected_environment, group: create(:group))
     end
 
-    it 'returns matching deploy access levels for the given user' do
-      expect(described_class.deploy_access_levels_by_user(user))
-        .to contain_exactly(deploy_access_level_for_user)
+    it 'deletes matching deploy access levels for the given user' do
+      expect(protected_environment.deploy_access_levels).to include(deploy_access_level_for_user)
+
+      described_class.revoke_user(user)
+
+      protected_environment.reload
+      expect(protected_environment.deploy_access_levels).not_to include(deploy_access_level_for_user)
     end
 
     context 'when user is assigned to protected environment in the other project' do
@@ -227,28 +231,38 @@ RSpec.describe ProtectedEnvironment do
       let(:other_protected_environment) { create(:protected_environment, project: other_project, name: 'production') }
       let(:other_deploy_access_level_for_user) { create_deploy_access_level(other_protected_environment, user: user) }
 
-      it 'returns matching deploy access levels for the given user in the specific project' do
-        expect(project.protected_environments.deploy_access_levels_by_user(user))
-          .to contain_exactly(deploy_access_level_for_user)
-        expect(other_project.protected_environments.deploy_access_levels_by_user(user))
-          .to contain_exactly(other_deploy_access_level_for_user)
+      it 'deletes matching deploy access levels for the given user in the specific project' do
+        expect(protected_environment.deploy_access_levels).to include(deploy_access_level_for_user)
+        expect(other_protected_environment.deploy_access_levels).to include(other_deploy_access_level_for_user)
+
+        project.protected_environments.revoke_user(user)
+        other_project.protected_environments.revoke_user(user)
+
+        protected_environment.reload
+        other_protected_environment.reload
+        expect(protected_environment.deploy_access_levels).not_to include(deploy_access_level_for_user)
+        expect(other_protected_environment.deploy_access_levels).not_to include(other_deploy_access_level_for_user)
       end
     end
   end
 
-  describe '.deploy_access_levels_by_group' do
+  describe '.revoke_group' do
     let(:group) { create(:group) }
     let(:project) { create(:project) }
     let(:environment) { create(:environment, project: project, name: 'production') }
     let(:protected_environment) { create(:protected_environment, project: project, name: 'production') }
     let(:deploy_access_level_for_group) { create_deploy_access_level(protected_environment, group: group) }
 
-    it 'returns matching deploy access levels for the given group' do
+    it 'deletes matching deploy access levels for the given group' do
       _deploy_access_level_for_different_group = create_deploy_access_level(protected_environment, group: create(:group))
       _deploy_access_level_for_user = create_deploy_access_level(protected_environment, user: create(:user))
 
-      expect(described_class.deploy_access_levels_by_group(group))
-        .to contain_exactly(deploy_access_level_for_group)
+      expect(protected_environment.deploy_access_levels).to include(deploy_access_level_for_group)
+
+      described_class.revoke_group(group)
+
+      protected_environment.reload
+      expect(protected_environment.deploy_access_levels).not_to include(deploy_access_level_for_group)
     end
 
     context 'when user is assigned to protected environment in the other project' do
@@ -257,10 +271,16 @@ RSpec.describe ProtectedEnvironment do
       let(:other_deploy_access_level_for_group) { create_deploy_access_level(other_protected_environment, group: group) }
 
       it 'returns matching deploy access levels for the given group in the specific project' do
-        expect(project.protected_environments.deploy_access_levels_by_group(group))
-          .to contain_exactly(deploy_access_level_for_group)
-        expect(other_project.protected_environments.deploy_access_levels_by_group(group))
-          .to contain_exactly(other_deploy_access_level_for_group)
+        expect(protected_environment.deploy_access_levels).to include(deploy_access_level_for_group)
+        expect(other_protected_environment.deploy_access_levels).to include(other_deploy_access_level_for_group)
+
+        project.protected_environments.revoke_group(group)
+        other_project.protected_environments.revoke_group(group)
+
+        protected_environment.reload
+        other_protected_environment.reload
+        expect(protected_environment.deploy_access_levels).not_to include(deploy_access_level_for_group)
+        expect(other_protected_environment.deploy_access_levels).not_to include(other_deploy_access_level_for_group)
       end
     end
   end

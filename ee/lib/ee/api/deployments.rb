@@ -18,6 +18,7 @@ module EE
             requires :deployment_id, type: String, desc: 'The Deployment ID'
             requires :status, type: String, values: ::Deployments::Approval.statuses.keys
             optional :comment, type: String, desc: 'A comment to go with the approval'
+            optional :represented_as, type: String, desc: 'The name of the User/Group/Role to use for the approval, when the user belongs to multiple approval rules.'
           end
           post ':id/deployments/:deployment_id/approval' do
             deployment = user_project.deployments.find(params[:deployment_id])
