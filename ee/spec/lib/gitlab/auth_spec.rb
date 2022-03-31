@@ -12,7 +12,7 @@ RSpec.describe Gitlab::Auth do
   end
 
   let(:username) { 'John' } # username isn't lowercase, test this
-  let(:password) { Gitlab::Password.test_default }
+  let(:password) { 'my-secret' }
 
   context 'with kerberos' do
     before do
