@@ -1,13 +1,13 @@
 import { GlAvatar, GlAvatarLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import UserAvatar from 'ee/compliance_dashboard/components/shared/user_avatar.vue';
 import { DRAWER_AVATAR_SIZE } from 'ee/compliance_dashboard/constants';
-import { createUser } from '../../mock_data';
+import { mapViolations } from 'ee/compliance_dashboard/graphql/mappers';
+import { createComplianceViolation } from '../../mock_data';
 
 describe('UserAvatar component', () => {
   let wrapper;
-  const user = convertObjectPropsToCamelCase(createUser(1));
+  const { violatingUser: user } = mapViolations([createComplianceViolation()])[0];
 
   const findAvatar = () => wrapper.findComponent(GlAvatar);
   const findAvatarLink = () => wrapper.findComponent(GlAvatarLink);

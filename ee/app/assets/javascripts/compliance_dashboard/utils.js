@@ -1,24 +1,9 @@
-import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { convertToGraphQLIds } from '~/graphql_shared/utils';
 import { TYPE_PROJECT } from '~/graphql_shared/constants';
 import { formatDate, getDateInPast, pikadayToString } from '~/lib/utils/datetime_utility';
 import { ISO_SHORT_FORMAT } from '~/vue_shared/constants';
 import { queryToObject } from '~/lib/utils/url_utility';
 import { CURRENT_DATE } from '../audit_events/constants';
-
-export const mapDashboardToDrawerData = (mergeRequest) => ({
-  id: mergeRequest.id,
-  mergeRequest: {
-    ...convertObjectPropsToCamelCase(mergeRequest, { deep: true }),
-    webUrl: mergeRequest.path,
-  },
-  project: {
-    ...convertObjectPropsToCamelCase(mergeRequest.project, { deep: true }),
-    complianceFramework: convertObjectPropsToCamelCase(
-      mergeRequest.compliance_management_framework,
-    ),
-  },
-});
 
 export const convertProjectIdsToGraphQl = (projectIds) =>
   convertToGraphQLIds(
