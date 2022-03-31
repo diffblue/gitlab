@@ -862,6 +862,47 @@ RSpec.describe MergeRequest do
     end
   end
 
+  describe '#compare_license_scanning_reports_collapsed' do
+    subject(:report) { merge_request.compare_license_scanning_reports_collapsed(current_user) }
+
+    let(:current_user) { project.users.first }
+
+    let!(:base_pipeline) do
+      create(:ee_ci_pipeline,
+             :with_license_scanning_report,
+             project: project,
+             ref: merge_request.target_branch,
+             sha: merge_request.diff_base_sha)
+    end
+
+    let!(:head_pipeline) do
+      create(:ci_pipeline,
+             project: project,
+             ref: merge_request.source_branch,
+             sha: merge_request.diff_head_sha)
+    end
+
+    context 'when service can be executed' do
+      before do
+        merge_request.update!(head_pipeline_id: head_pipeline.id)
+
+        allow_next_found_instance_of(Ci::Pipeline) do |pipeline|
+          allow(pipeline).to receive(:license_scan_completed?).and_return(true)
+        end
+      end
+
+      it 'returns compared report' do
+        expect(report[:status]).to eq(:parsing)
+      end
+    end
+
+    context 'when head pipeline does not have license scanning reports' do
+      it 'returns status and error message' do
+        expect(subject[:status]).to eq(:error)
+      end
+    end
+  end
+
   describe '#compare_metrics_reports' do
     subject { merge_request.compare_metrics_reports }
 

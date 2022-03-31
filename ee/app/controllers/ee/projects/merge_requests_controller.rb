@@ -26,13 +26,13 @@ module EE
                                                         :sast_reports, :secret_detection_reports,
                                                         :dast_reports, :coverage_fuzzing_reports, :api_fuzzing_reports,
                                                         :metrics_reports]
-        before_action :authorize_read_licenses!, only: [:license_scanning_reports]
+        before_action :authorize_read_licenses!, only: [:license_scanning_reports, :license_scanning_reports_collapsed]
 
         feature_category :vulnerability_management, [:container_scanning_reports, :dependency_scanning_reports,
                                                      :sast_reports, :secret_detection_reports,
                                                      :dast_reports, :coverage_fuzzing_reports, :api_fuzzing_reports]
         feature_category :metrics, [:metrics_reports]
-        feature_category :license_compliance, [:license_scanning_reports]
+        feature_category :license_compliance, [:license_scanning_reports, :license_scanning_reports_collapsed]
         feature_category :code_review, [:delete_description_version, :description_diff]
 
         urgency :high, [:delete_description_version]
@@ -50,6 +50,10 @@ module EE
 
       def license_scanning_reports
         reports_response(merge_request.compare_license_scanning_reports(current_user))
+      end
+
+      def license_scanning_reports_collapsed
+        reports_response(merge_request.compare_license_scanning_reports_collapsed(current_user))
       end
 
       def container_scanning_reports
