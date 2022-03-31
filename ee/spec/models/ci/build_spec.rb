@@ -744,23 +744,55 @@ RSpec.describe Ci::Build, :saas do
       ci_build.yaml_variables = variables
     end
 
-    context 'when the yaml variables does not have the configuration' do
-      let(:variables) { [] }
+    context 'when enforce_security_report_validation is enabled' do
+      before do
+        stub_feature_flags(enforce_security_report_validation: true)
+      end
 
-      it { is_expected.to be_falsey }
+      context 'when the yaml variables does not have the configuration' do
+        let(:variables) { [] }
+
+        it { is_expected.to be_truthy }
+      end
+
+      context 'when the yaml variables has the configuration' do
+        context 'when the configuration is set as `false`' do
+          let(:variables) { [{ key: 'VALIDATE_SCHEMA', value: 'false' }] }
+
+          it { is_expected.to be_truthy }
+        end
+
+        context 'when the configuration is set as `true`' do
+          let(:variables) { [{ key: 'VALIDATE_SCHEMA', value: 'true' }] }
+
+          it { is_expected.to be_truthy }
+        end
+      end
     end
 
-    context 'when the yaml variables has the configuration' do
-      context 'when the configuration is set as `false`' do
-        let(:variables) { [{ key: 'VALIDATE_SCHEMA', value: 'false' }] }
+    context 'when enforce_security_report_validation is disabled' do
+      before do
+        stub_feature_flags(enforce_security_report_validation: false)
+      end
+
+      context 'when the yaml variables does not have the configuration' do
+        let(:variables) { [] }
 
         it { is_expected.to be_falsey }
       end
 
-      context 'when the configuration is set as `true`' do
-        let(:variables) { [{ key: 'VALIDATE_SCHEMA', value: 'true' }] }
+      context 'when the yaml variables has the configuration' do
+        context 'when the configuration is set as `false`' do
+          let(:variables) { [{ key: 'VALIDATE_SCHEMA', value: 'false' }] }
 
-        it { is_expected.to be_truthy }
+          it { is_expected.to be_falsey }
+        end
+
+        context 'when the configuration is set as `true`' do
+          let(:variables) { [{ key: 'VALIDATE_SCHEMA', value: 'true' }] }
+
+          it { is_expected.to be_truthy }
+        end
       end
     end
   end
