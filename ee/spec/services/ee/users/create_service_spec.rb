@@ -10,7 +10,7 @@ RSpec.describe Users::CreateService do
       name: 'John Doe',
       username: 'jduser',
       email: 'jd@example.com',
-      password: Gitlab::Password.test_default
+      password: 'mydummypass'
     }
   end
 
