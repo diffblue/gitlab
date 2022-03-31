@@ -65,6 +65,12 @@ RSpec.describe Groups::Analytics::RepositoryAnalyticsController do
       end
 
       it { is_expected.to have_gitlab_http_status(:forbidden) }
+
+      context 'when the user is an auditor' do
+        let(:current_user) { create(:user, :auditor) }
+
+        it { is_expected.to have_gitlab_http_status(:success) }
+      end
     end
   end
 end

@@ -309,6 +309,12 @@ RSpec.describe GroupPolicy do
 
       it { is_expected.to be_allowed(:read_group_repository_analytics) }
     end
+
+    context 'for auditor' do
+      let(:current_user) { auditor }
+
+      it { is_expected.to be_allowed(:read_group_repository_analytics) }
+    end
   end
 
   context 'when group repository analytics is not available' do
