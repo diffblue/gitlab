@@ -91,8 +91,8 @@ RSpec.describe Gitlab::Ci::Config::External::File::Base do
       end
 
       it 'is not a valid file' do
-        expect(subject).not_to be_valid
-        expect(subject.error_message).to eq('Included file `some/file/xxxxxxxxxxxxxxxx.yml` does not have valid YAML syntax!')
+        expect(valid?).to be_falsy
+        expect(file.error_message).to eq('Included file `some/file/xxxxxxxxxxxxxxxx.yml` does not have valid YAML syntax!')
       end
     end
   end

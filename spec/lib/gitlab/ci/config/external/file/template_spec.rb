@@ -62,7 +62,7 @@ RSpec.describe Gitlab::Ci::Config::External::File::Template do
       let(:context_params) { { project: project, sha: '12345', user: user, variables: variables } }
 
       it 'returns false' do
-        expect(template_file).not_to be_valid
+        expect(valid?).to be_falsy
         expect(template_file.error_message).to include('`xxxxxxxxxxxxxx.yml` is not a valid location!')
       end
     end
