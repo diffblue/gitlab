@@ -5,6 +5,7 @@ module Geo
     extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
     include ::Geo::VerificationState
+    include ::Geo::VerificationStateDefinition
 
     class_methods do
       extend ::Gitlab::Utils::Override

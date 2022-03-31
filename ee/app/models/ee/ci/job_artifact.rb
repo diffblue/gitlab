@@ -15,6 +15,8 @@ module EE
       include ::Geo::ReplicableModel
       include ::Geo::VerifiableModel
 
+      delegate(*::Geo::VerificationState::VERIFICATION_METHODS, to: :job_artifact_state)
+
       with_replicator ::Geo::JobArtifactReplicator
 
       has_one :job_artifact_state, autosave: false, inverse_of: :job_artifact, class_name: '::Geo::JobArtifactState'
@@ -82,15 +84,6 @@ module EE
       scope :available_verifiables, -> { joins(:job_artifact_state) }
 
       delegate :validate_schema?, to: :job
-
-      delegate :verification_retry_at, :verification_retry_at=,
-               :verified_at, :verified_at=,
-               :verification_checksum, :verification_checksum=,
-               :verification_failure, :verification_failure=,
-               :verification_retry_count, :verification_retry_count=,
-               :verification_state=, :verification_state,
-               :verification_started_at=, :verification_started_at,
-               to: :job_artifact_state
 
       after_save :save_verification_details
     end

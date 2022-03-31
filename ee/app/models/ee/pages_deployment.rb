@@ -8,20 +8,13 @@ module EE
       include ::Geo::ReplicableModel
       include ::Geo::VerifiableModel
 
+      delegate(*::Geo::VerificationState::VERIFICATION_METHODS, to: :pages_deployment_state)
+
       with_replicator ::Geo::PagesDeploymentReplicator
 
       has_one :pages_deployment_state, autosave: false, inverse_of: :pages_deployment, class_name: '::Geo::PagesDeploymentState'
 
       after_save :save_verification_details
-
-      delegate :verification_retry_at, :verification_retry_at=,
-         :verified_at, :verified_at=,
-         :verification_checksum, :verification_checksum=,
-         :verification_failure, :verification_failure=,
-         :verification_retry_count, :verification_retry_count=,
-         :verification_state=, :verification_state,
-         :verification_started_at=, :verification_started_at,
-         to: :pages_deployment_state
 
       scope :with_verification_state, ->(state) { joins(:pages_deployment_state).where(pages_deployment_states: { verification_state: verification_state_value(state) }) }
       scope :checksummed, -> { joins(:pages_deployment_state).where.not(pages_deployment_states: { verification_checksum: nil } ) }

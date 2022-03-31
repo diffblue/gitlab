@@ -85,6 +85,7 @@ module EE
       DummyModel.class_eval do
         include ::Geo::ReplicableModel
         include ::Geo::VerifiableModel
+        include ::Geo::VerificationStateDefinition
 
         with_replicator Geo::DummyReplicator
 
@@ -177,6 +178,8 @@ module EE
         include ::Geo::ReplicableModel
         include ::Geo::VerifiableModel
 
+        delegate(*::Geo::VerificationState::VERIFICATION_METHODS, to: :_test_dummy_model_state)
+
         with_replicator Geo::DummyReplicator
 
         has_one :_test_dummy_model_state,
@@ -185,15 +188,6 @@ module EE
           foreign_key: :_test_dummy_model_with_separate_state_id
 
         after_save :save_verification_details
-
-        delegate :verification_retry_at, :verification_retry_at=,
-                 :verified_at, :verified_at=,
-                 :verification_checksum, :verification_checksum=,
-                 :verification_failure, :verification_failure=,
-                 :verification_retry_count, :verification_retry_count=,
-                 :verification_state=, :verification_state,
-                 :verification_started_at=, :verification_started_at,
-          to: :_test_dummy_model_state, allow_nil: true
 
         scope :available_verifiables, -> { joins(:_test_dummy_model_state) }
 
@@ -222,6 +216,7 @@ module EE
 
       TestDummyModelState.class_eval do
         include EachBatch
+        include ::Geo::VerificationStateDefinition
 
         self.table_name = '_test_dummy_model_states'
         self.primary_key = '_test_dummy_model_with_separate_state_id'

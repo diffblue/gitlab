@@ -3,6 +3,7 @@
 module Geo
   class JobArtifactState < Ci::ApplicationRecord
     include EachBatch
+    include ::Geo::VerificationStateDefinition
 
     self.primary_key = :job_artifact_id
 
