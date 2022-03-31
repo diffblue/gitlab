@@ -32367,6 +32367,9 @@ msgstr ""
 msgid "Runners|Never contacted"
 msgstr ""
 
+msgid "Runners|Never contacted:"
+msgstr ""
+
 msgid "Runners|New group runners view"
 msgstr ""
 
@@ -32388,10 +32391,16 @@ msgstr ""
 msgid "Runners|Offline runners"
 msgstr ""
 
+msgid "Runners|Offline:"
+msgstr ""
+
 msgid "Runners|Online"
 msgstr ""
 
 msgid "Runners|Online runners"
+msgstr ""
+
+msgid "Runners|Online:"
 msgstr ""
 
 msgid "Runners|Pause from accepting jobs"
@@ -32462,7 +32471,16 @@ msgstr ""
 msgid "Runners|Runner cannot be deleted, please contact your administrator"
 msgstr ""
 
+msgid "Runners|Runner has contacted GitLab within the last %{elapsedTime}"
+msgstr ""
+
+msgid "Runners|Runner has never contacted GitLab (when you register a runner, use %{codeStart}gitlab-runner run%{codeEnd} to bring it online)"
+msgstr ""
+
 msgid "Runners|Runner has never contacted this instance"
+msgstr ""
+
+msgid "Runners|Runner has not contacted GitLab in more than %{elapsedTime}"
 msgstr ""
 
 msgid "Runners|Runner is locked and available for currently assigned projects only. Only administrators can change the assigned projects."
@@ -32490,6 +32508,9 @@ msgid "Runners|Runner is stale; last contact was %{timeAgo}"
 msgstr ""
 
 msgid "Runners|Runner registration"
+msgstr ""
+
+msgid "Runners|Runner statuses"
 msgstr ""
 
 msgid "Runners|Runner unassigned from project."
@@ -32522,6 +32543,9 @@ msgstr ""
 msgid "Runners|Stale runners"
 msgstr ""
 
+msgid "Runners|Stale:"
+msgstr ""
+
 msgid "Runners|Status"
 msgstr ""
 
@@ -32538,6 +32562,9 @@ msgid "Runners|The new view gives you more space and better visibility into your
 msgstr ""
 
 msgid "Runners|The runner will be permanently deleted and no longer available for projects or groups in the instance. Are you sure you want to continue?"
+msgstr ""
+
+msgid "Runners|This runner has not run any jobs."
 msgstr ""
 
 msgid "Runners|This runner is associated with specific projects."
@@ -32616,9 +32643,6 @@ msgid "Runners|specific"
 msgstr ""
 
 msgid "Runners|stale"
-msgstr ""
-
-msgid "Runner|This runner has not run any jobs."
 msgstr ""
 
 msgid "Running"
