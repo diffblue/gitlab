@@ -13,7 +13,6 @@ RSpec.describe IncidentManagement::IssuableEscalationStatuses::CreateService do
 
   before do
     stub_licensed_features(oncall_schedules: true, escalation_policies: true)
-    stub_feature_flags(incident_escalations: true)
   end
 
   shared_examples 'creates an escalation status for the incident with no policy set' do
@@ -52,9 +51,9 @@ RSpec.describe IncidentManagement::IssuableEscalationStatuses::CreateService do
         expect(status.status_name).to eq(alert.status_name)
       end
 
-      context 'when feature flag is disabled' do
+      context 'when escalation policy features are disabled' do
         before do
-          stub_feature_flags(incident_escalations: false)
+          stub_licensed_features(oncall_schedules: false, escalation_policies: false)
         end
 
         it_behaves_like 'creates an escalation status for the incident with no policy set'
