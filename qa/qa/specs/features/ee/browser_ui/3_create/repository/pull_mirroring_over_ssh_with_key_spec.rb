@@ -30,7 +30,7 @@ module QA
         quarantine: {
           only: { subdomain: :staging },
           type: :test_environment,
-          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/352706'
+          issue: 'https://gitlab.com/gitlab-com/gl-infra/production/-/issues/6621'
         } do
         # Configure the target project to pull from the source project
         # And get the public key to be used as a deploy key
