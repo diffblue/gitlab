@@ -1,3 +1,4 @@
+import { GlDropdownItem } from '@gitlab/ui';
 import { POLICY_TYPE_OPTIONS } from 'ee/threat_monitoring/components/constants';
 import PolicyTypeFilter from 'ee/threat_monitoring/components/policy_type_filter.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
@@ -28,6 +29,14 @@ describe('PolicyTypeFilter component', () => {
     createWrapper(value);
 
     expect(findToggle().text()).toBe(expectedToggleText);
+  });
+
+  it('displays the "All policies" option first', () => {
+    createWrapper();
+
+    expect(wrapper.findAllComponents(GlDropdownItem).at(0).text()).toBe(
+      POLICY_TYPE_OPTIONS.ALL.text,
+    );
   });
 
   it('emits an event when an option is selected', () => {
