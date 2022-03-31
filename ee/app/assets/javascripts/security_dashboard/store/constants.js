@@ -1,7 +1,5 @@
 import { s__ } from '~/locale';
 
-export const VULNERABILITIES_PER_PAGE = 20;
-
 export const DETECTION_METHODS = [
   s__('Vulnerability|GitLab Security Report'),
   s__('Vulnerability|External Security Report'),
