@@ -34,8 +34,7 @@ describe('RelatedItemsTree', () => {
       });
 
       it('renders html', () => {
-        expect(wrapper.find('#roadmap').exists()).toBe(true);
-        expect(wrapper.find('#js-roadmap').exists()).toBe(true);
+        expect(wrapper.element).toMatchSnapshot();
       });
 
       it('renders data-* attrs', () => {

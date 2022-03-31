@@ -1,8 +1,19 @@
 <script>
 import { mapState } from 'vuex';
+import { GlAlert } from '@gitlab/ui';
+import { __ } from '~/locale';
 
 export default {
+  components: {
+    GlAlert,
+  },
   inject: ['roadmapAppData'],
+  data() {
+    return {
+      loadingError: false,
+      roadmapLoaded: false,
+    };
+  },
   computed: {
     ...mapState(['allowSubEpics']),
     roadmapAttrs() {
@@ -22,11 +33,7 @@ export default {
   },
   mounted() {
     if (this.shouldLoadRoadmap) {
-      this.initRoadmap()
-        .then(() => {
-          this.roadmapLoaded = true;
-        })
-        .catch(() => {});
+      this.initRoadmap();
     }
   },
   methods: {
@@ -34,15 +41,22 @@ export default {
       return import('ee/roadmap/roadmap_bundle')
         .then((roadmapBundle) => {
           roadmapBundle.default();
+          this.roadmapLoaded = true;
         })
-        .catch(() => {});
+        .catch(() => {
+          this.loadingError = true;
+        });
     },
   },
+  loadingFailedText: __('Failed to load Roadmap'),
 };
 </script>
 
 <template>
   <div class="gl-px-3 gl-py-3 gl-bg-gray-10">
+    <gl-alert v-if="loadingError" variant="danger" :dismissible="false">
+      {{ $options.loadingFailedText }}
+    </gl-alert>
     <div id="roadmap" class="roadmap-app border gl-rounded-base gl-bg-white">
       <div id="js-roadmap" v-bind="roadmapAttrs"></div>
     </div>

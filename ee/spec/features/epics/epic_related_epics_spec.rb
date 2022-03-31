@@ -18,14 +18,10 @@ RSpec.describe 'Related Epics', :js do
     visit group_epic_path(group, epic1)
 
     wait_for_requests
-
-    find('.js-epic-tree-tab').click
-
-    wait_for_requests
   end
 
   def open_add_epic_form
-    page.within('.js-epic-container .card-title') do
+    page.within('.related-issues-block .card-title') do
       page.find('button').click
     end
   end
@@ -50,9 +46,7 @@ RSpec.describe 'Related Epics', :js do
 
   describe 'epic body section' do
     it 'user can view related epics section under epic description', :aggregate_failures do
-      page.within('.js-epic-container') do
-        expect(page).to have_selector('#related-issues')
-
+      page.within('#related-issues') do
         card_title = page.find('.card-title')
         expect(card_title).to have_content('Linked epics')
         expect(card_title).to have_link('', href: '/help/user/group/epics/linked_epics')

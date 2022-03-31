@@ -21,14 +21,6 @@ export default {
   computed: {
     ...mapState(['allowSubEpics']),
   },
-  methods: {
-    onTreeTabClick() {
-      this.$emit('tab-change', this.$options.ITEM_TABS.TREE);
-    },
-    onRoadmapTabClick() {
-      this.$emit('tab-change', this.$options.ITEM_TABS.ROADMAP);
-    },
-  },
 };
 </script>
 
@@ -40,7 +32,7 @@ export default {
           class="js-epic-tree-tab"
           data-testid="tree-view-button"
           :selected="activeTab === $options.ITEM_TABS.TREE"
-          @click="onTreeTabClick"
+          @click="() => $emit('tab-change', this.$options.ITEM_TABS.TREE)"
         >
           {{ __('Tree view') }}
         </gl-button>
@@ -49,7 +41,7 @@ export default {
           class="js-epic-roadmap-tab"
           data-testid="roadmap-view-button"
           :selected="activeTab === $options.ITEM_TABS.ROADMAP"
-          @click="onRoadmapTabClick"
+          @click="() => $emit('tab-change', this.$options.ITEM_TABS.ROADMAP)"
         >
           {{ __('Roadmap view') }}
         </gl-button>

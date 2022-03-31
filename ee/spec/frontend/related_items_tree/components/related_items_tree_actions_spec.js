@@ -37,13 +37,7 @@ describe('RelatedItemsTree', () => {
       });
 
       it('renders button group, tree view and roadmap view buttons', () => {
-        const buttonGroupEl = wrapper.findByTestId('buttons');
-        const treeViewEl = wrapper.findByTestId('tree-view-button');
-        const roadmapViewEl = wrapper.findByTestId('roadmap-view-button');
-
-        expect(buttonGroupEl.isVisible()).toBe(true);
-        expect(treeViewEl.isVisible()).toBe(true);
-        expect(roadmapViewEl.isVisible()).toBe(true);
+        expect(wrapper.element).toMatchSnapshot();
       });
 
       it('does not render roadmap view button when subEpics are not present', async () => {
