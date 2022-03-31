@@ -1,0 +1,30 @@
+#import "~/graphql_shared/fragments/label.fragment.graphql"
+
+subscription issuableLabelsUpdatedEE($issuableId: IssuableID!) {
+  issuableLabelsUpdated(issuableId: $issuableId) {
+    ... on Issue {
+      id
+      labels {
+        nodes {
+          ...Label
+        }
+      }
+    }
+    ... on MergeRequest {
+      id
+      labels {
+        nodes {
+          ...Label
+        }
+      }
+    }
+    ... on Epic {
+      id
+      labels {
+        nodes {
+          ...Label
+        }
+      }
+    }
+  }
+}

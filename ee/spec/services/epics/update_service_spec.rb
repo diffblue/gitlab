@@ -537,6 +537,16 @@ RSpec.describe Epics::UpdateService do
       let(:parent) { group }
     end
 
+    it_behaves_like 'broadcasting issuable labels updates' do
+      let(:label_a) { create(:group_label, group: group) }
+      let(:label_b) { create(:group_label, group: group) }
+      let(:issuable) { epic }
+
+      def update_issuable(update_params)
+        update_epic(update_params)
+      end
+    end
+
     context 'with quick actions in the description' do
       before do
         stub_licensed_features(epics: true, subepics: true)
