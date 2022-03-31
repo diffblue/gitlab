@@ -270,9 +270,6 @@ RSpec.describe Gitlab::Database do
       before do
         skip_if_multiple_databases_not_setup
 
-        # This is currently required as otherwise the `Ci::Build.connection` == `Project.connection`
-        # ENV due to lib/gitlab/database/load_balancing/setup.rb:93
-        stub_env('GITLAB_USE_MODEL_LOAD_BALANCING', '1')
         # FF due to lib/gitlab/database/load_balancing/configuration.rb:92
         # Requires usage of `:request_store`
         stub_feature_flags(force_no_sharing_primary_model: true)
