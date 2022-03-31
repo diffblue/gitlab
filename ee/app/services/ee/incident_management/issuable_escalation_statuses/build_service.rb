@@ -3,7 +3,7 @@
 module EE
   module IncidentManagement
     module IssuableEscalationStatuses
-      module CreateService
+      module BuildService
         extend ::Gitlab::Utils::Override
 
         override :alert_params

@@ -453,7 +453,6 @@ RSpec.describe Issues::UpdateService do
       let(:opts) { { escalation_status: { policy: policy } } }
       let(:escalation_update_class) { ::IncidentManagement::IssuableEscalationStatuses::AfterUpdateService }
 
-      let!(:escalation_status) { create(:incident_management_issuable_escalation_status, issue: issue) }
       let!(:policy) { create(:incident_management_escalation_policy, project: project) }
 
       before do
@@ -484,7 +483,7 @@ RSpec.describe Issues::UpdateService do
 
       shared_examples 'does not change the status record' do
         specify do
-          expect { update_issue(opts) }.not_to change { issue.escalation_status.reload }
+          expect { update_issue(opts) }.not_to change { issue.reload.escalation_status }
         end
 
         it 'does not trigger side-effects' do
@@ -495,52 +494,87 @@ RSpec.describe Issues::UpdateService do
         end
       end
 
-      context 'when issue is an incident' do
-        let(:issue) { create(:incident, project: project) }
+      context 'with an existing escalation status record' do
+        let!(:escalation_status) { create(:incident_management_issuable_escalation_status, issue: issue) }
 
-        context 'setting the escalation policy' do
+        context 'when issue is an incident' do
+          let(:issue) { create(:incident, project: project) }
+
+          context 'setting the escalation policy' do
+            include_examples 'updates the escalation status record' do
+              let(:expected_policy) { policy }
+              let(:expected_status) { :triggered }
+            end
+
+            context 'with the policy value defined but unchanged' do
+              let!(:escalation_status) { create(:incident_management_issuable_escalation_status, :paging, issue: issue, policy: policy) }
+
+              it_behaves_like 'does not change the status record'
+            end
+          end
+
+          context 'unsetting the escalation policy' do
+            let(:policy) { nil }
+
+            context 'when the policy is already set' do
+              let!(:escalation_status) { create(:incident_management_issuable_escalation_status, :paging, issue: issue) }
+              let(:expected_policy) { nil }
+
+              include_examples 'updates the escalation status record' do
+                let(:expected_policy) { nil }
+                let(:expected_status) { :triggered }
+              end
+
+              context 'in addition to other attributes' do
+                let(:opts) { { escalation_status: { policy: policy, status: 'acknowledged' } } }
+
+                include_examples 'updates the escalation status record' do
+                  let(:expected_policy) { nil }
+                  let(:expected_status) { :acknowledged }
+                end
+              end
+            end
+
+            context 'with the policy value defined but unchanged' do
+              it_behaves_like 'does not change the status record'
+            end
+          end
+        end
+
+        context 'when issue is not an incident' do
+          it_behaves_like 'does not change the status record'
+        end
+      end
+
+      context 'without an existing escalation status record' do
+        context 'when incident has an associated alert' do
+          let!(:alert) { create(:alert_management_alert, :acknowledged, :with_incident, project: project) }
+          let(:issue) { alert.issue }
+
+          context 'setting the status' do
+            let(:opts) { { escalation_status: { status: :resolved } } }
+
+            include_examples 'updates the escalation status record' do
+              let(:expected_policy) { policy }
+              let(:expected_status) { :resolved }
+            end
+          end
+
+          context 'unsetting the policy' do
+            let(:opts) { { escalation_status: { policy: nil } } }
+
+            it_behaves_like 'does not change the status record'
+          end
+        end
+
+        context 'when incident has no associated alert' do
+          let(:issue) { create(:incident, project: project) }
+
           include_examples 'updates the escalation status record' do
             let(:expected_policy) { policy }
             let(:expected_status) { :triggered }
           end
-
-          context 'with the policy value defined but unchanged' do
-            let!(:escalation_status) { create(:incident_management_issuable_escalation_status, :paging, issue: issue, policy: policy) }
-
-            it_behaves_like 'does not change the status record'
-          end
         end
-
-        context 'unsetting the escalation policy' do
-          let(:policy) { nil }
-
-          context 'when the policy is already set' do
-            let!(:escalation_status) { create(:incident_management_issuable_escalation_status, :paging, issue: issue) }
-            let(:expected_policy) { nil }
-
-            include_examples 'updates the escalation status record' do
-              let(:expected_policy) { nil }
-              let(:expected_status) { :triggered }
-            end
-
-            context 'in addition to other attributes' do
-              let(:opts) { { escalation_status: { policy: policy, status: 'acknowledged' } } }
-
-              include_examples 'updates the escalation status record' do
-                let(:expected_policy) { nil }
-                let(:expected_status) { :acknowledged }
-              end
-            end
-          end
-
-          context 'with the policy value defined but unchanged' do
-            it_behaves_like 'does not change the status record'
-          end
-        end
-      end
-
-      context 'when issue is not an incident' do
-        it_behaves_like 'does not change the status record'
       end
     end
 
