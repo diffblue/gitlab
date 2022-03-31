@@ -3,4 +3,5 @@ table_name: geo_repository_renamed_events
 classes:
 - Geo::RepositoryRenamedEvent
 feature_categories: 
+- geo_replication
 description: 

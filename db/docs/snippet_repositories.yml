@@ -3,5 +3,5 @@ table_name: snippet_repositories
 classes:
 - SnippetRepository
 feature_categories:
-- geo_replication
+- snippets
 description: 

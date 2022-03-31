@@ -3,4 +3,5 @@ table_name: web_hook_logs
 classes:
 - WebHookLog
 feature_categories: 
+- integrations
 description: 

@@ -3,4 +3,5 @@ table_name: atlassian_identities
 classes:
 - Atlassian::Identity
 feature_categories: 
+- importers
 description: 

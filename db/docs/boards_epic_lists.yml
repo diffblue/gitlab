@@ -3,4 +3,5 @@ table_name: boards_epic_lists
 classes:
 - Boards::EpicList
 feature_categories: 
+- portfolio_management
 description: 

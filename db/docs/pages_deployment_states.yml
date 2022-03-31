@@ -3,4 +3,5 @@ table_name: pages_deployment_states
 classes:
 - Geo::PagesDeploymentState
 feature_categories: 
+- pages
 description: 

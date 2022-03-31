@@ -4,6 +4,4 @@ classes:
 - Elastic::IndexSetting
 feature_categories:
 - global_search
-- license
-- source_code_management
 description: 

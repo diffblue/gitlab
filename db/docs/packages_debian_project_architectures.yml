@@ -3,4 +3,5 @@ table_name: packages_debian_project_architectures
 classes:
 - Packages::Debian::ProjectArchitecture
 feature_categories: 
+- package_registry
 description: 

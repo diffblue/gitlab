@@ -3,5 +3,5 @@ table_name: group_wiki_repositories
 classes:
 - GroupWikiRepository
 feature_categories:
-- geo_replication
+- wiki
 description: 

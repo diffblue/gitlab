@@ -3,4 +3,5 @@ table_name: operations_strategies
 classes:
 - Operations::FeatureFlags::Strategy
 feature_categories: 
+- feature_flags
 description: 

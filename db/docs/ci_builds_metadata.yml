@@ -3,4 +3,5 @@ table_name: ci_builds_metadata
 classes:
 - Ci::BuildMetadata
 feature_categories: 
+- continuous_integration
 description: 

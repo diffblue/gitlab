@@ -3,4 +3,5 @@ table_name: packages_conan_metadata
 classes:
 - Packages::Conan::Metadatum
 feature_categories: 
+- package_registry
 description: 

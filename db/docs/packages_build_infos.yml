@@ -3,4 +3,5 @@ table_name: packages_build_infos
 classes:
 - Packages::BuildInfo
 feature_categories: 
+- package_registry
 description: 

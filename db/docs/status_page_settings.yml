@@ -3,4 +3,5 @@ table_name: status_page_settings
 classes:
 - StatusPage::ProjectSetting
 feature_categories: 
+- incident_management
 description: 

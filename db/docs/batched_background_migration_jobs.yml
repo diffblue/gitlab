@@ -3,4 +3,5 @@ table_name: batched_background_migration_jobs
 classes:
 - Gitlab::Database::BackgroundMigration::BatchedJob
 feature_categories: 
+- database
 description: 

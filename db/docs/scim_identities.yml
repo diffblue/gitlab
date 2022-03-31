@@ -3,4 +3,5 @@ table_name: scim_identities
 classes:
 - ScimIdentity
 feature_categories: 
+- authentication_and_authorization
 description: 

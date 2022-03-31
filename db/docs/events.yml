@@ -4,7 +4,5 @@ classes:
 - Event
 - PushEvent
 feature_categories:
-- code_review
-- team_planning
-- users
+- value_stream_management
 description: 

@@ -3,4 +3,5 @@ table_name: slack_integrations
 classes:
 - SlackIntegration
 feature_categories: 
+- integrations
 description: 

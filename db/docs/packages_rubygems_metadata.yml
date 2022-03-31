@@ -3,4 +3,5 @@ table_name: packages_rubygems_metadata
 classes:
 - Packages::Rubygems::Metadatum
 feature_categories: 
+- package_registry
 description: 

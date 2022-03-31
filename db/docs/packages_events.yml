@@ -3,4 +3,5 @@ table_name: packages_events
 classes:
 - Packages::Event
 feature_categories: 
+- package_registry
 description: 

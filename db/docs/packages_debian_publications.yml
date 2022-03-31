@@ -3,4 +3,5 @@ table_name: packages_debian_publications
 classes:
 - Packages::Debian::Publication
 feature_categories: 
+- package_registry
 description: 

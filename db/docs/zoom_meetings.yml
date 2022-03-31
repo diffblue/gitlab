@@ -3,4 +3,5 @@ table_name: zoom_meetings
 classes:
 - ZoomMeeting
 feature_categories: 
+- incident_management
 description: 

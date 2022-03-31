@@ -3,4 +3,5 @@ table_name: packages_debian_project_distribution_keys
 classes:
 - Packages::Debian::ProjectDistributionKey
 feature_categories: 
+- package_registry
 description: 

@@ -3,5 +3,6 @@ table_name: x509_issuers
 classes:
 - X509Issuer
 feature_categories:
+feature_categories: 
 - source_code_management
 description: 

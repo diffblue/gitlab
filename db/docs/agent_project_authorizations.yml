@@ -3,4 +3,5 @@ table_name: agent_project_authorizations
 classes:
 - Clusters::Agents::ProjectAuthorization
 feature_categories: 
+- kubernetes_management
 description: 

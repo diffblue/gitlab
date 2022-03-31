@@ -3,4 +3,5 @@ table_name: incident_management_issuable_escalation_statuses
 classes:
 - IncidentManagement::IssuableEscalationStatus
 feature_categories: 
+- incident_management
 description: 

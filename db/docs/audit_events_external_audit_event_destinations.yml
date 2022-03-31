@@ -3,4 +3,5 @@ table_name: audit_events_external_audit_event_destinations
 classes:
 - AuditEvents::ExternalAuditEventDestination
 feature_categories: 
+- audit_events
 description: 

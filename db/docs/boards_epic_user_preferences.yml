@@ -3,4 +3,5 @@ table_name: boards_epic_user_preferences
 classes:
 - Boards::EpicUserPreference
 feature_categories: 
+- team_planning
 description: 

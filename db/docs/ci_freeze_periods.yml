@@ -3,4 +3,5 @@ table_name: ci_freeze_periods
 classes:
 - Ci::FreezePeriod
 feature_categories: 
+- continuous_integration
 description: 

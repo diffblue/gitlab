@@ -3,4 +3,5 @@ table_name: alert_management_alert_assignees
 classes:
 - AlertManagement::AlertAssignee
 feature_categories: 
+- incident_management
 description: 
