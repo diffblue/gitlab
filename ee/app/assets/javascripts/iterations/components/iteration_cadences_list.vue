@@ -1,7 +1,8 @@
 <script>
 import { GlAlert, GlButton, GlLoadingIcon, GlKeysetPagination, GlTab, GlTabs } from '@gitlab/ui';
 import produce from 'immer';
-import { __, s__ } from '~/locale';
+import { s__ } from '~/locale';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import { Namespace } from '../constants';
 import destroyIterationCadence from '../queries/destroy_cadence.mutation.graphql';
 import groupQuery from '../queries/group_iteration_cadences_list.query.graphql';
@@ -11,7 +12,19 @@ import IterationCadenceListItem from './iteration_cadence_list_item.vue';
 const pageSize = 20;
 
 export default {
-  tabTitles: [__('Open'), __('Done'), __('All')],
+  iterationCadencesHelpPagePath: helpPagePath('user/group/iterations/index.md', {
+    anchor: 'iteration-cadences',
+  }),
+  i18n: {
+    deprecationAlert: {
+      title: s__('Iterations|Some of your cadences need to be updated'),
+      message: s__(
+        'Iterations|Iterations can no longer be scheduled manually. Convert all cadences to automatic scheduling to keep your iterations working as expected.',
+      ),
+      primaryButtonText: s__('Iterations|Learn more about automatic scheduling'),
+    },
+    tabTitles: [s__('Iterations|Open'), s__('Iterations|Done'), s__('Iterations|All')],
+  },
   components: {
     IterationCadenceListItem,
     GlAlert,
@@ -77,7 +90,7 @@ export default {
       return vars;
     },
     cadences() {
-      return this.workspace?.iterationCadences?.nodes || [];
+      return this.groupDeprecatedItems(this.workspace?.iterationCadences?.nodes) || [];
     },
     pageInfo() {
       return this.workspace?.iterationCadences?.pageInfo || {};
@@ -96,6 +109,9 @@ export default {
           return 'all';
       }
     },
+    manualCadenceExists() {
+      return this.cadences.findIndex((c) => !c.automatic) > -1;
+    },
   },
   mounted() {
     if (this.$router.currentRoute.query.createdCadenceId) {
@@ -103,6 +119,9 @@ export default {
     }
   },
   methods: {
+    groupDeprecatedItems(cadences) {
+      return [...cadences.filter((c) => !c.automatic), ...cadences.filter((c) => c.automatic)];
+    },
     nextPage() {
       this.pagination = {
         afterCursor: this.pageInfo.endCursor,
@@ -156,7 +175,7 @@ export default {
 
 <template>
   <gl-tabs v-model="tabIndex" @activate-tab="handleTabChange">
-    <gl-tab v-for="tab in $options.tabTitles" :key="tab">
+    <gl-tab v-for="tab in $options.i18n.tabTitles" :key="tab">
       <template #title>
         {{ tab }}
       </template>
@@ -168,6 +187,16 @@ export default {
       <gl-loading-icon v-if="loading" class="gl-my-5" size="lg" />
 
       <template v-else>
+        <gl-alert
+          v-if="manualCadenceExists"
+          variant="danger"
+          :dismissible="false"
+          :title="$options.i18n.deprecationAlert.title"
+          :primary-button-text="$options.i18n.deprecationAlert.primaryButtonText"
+          :primary-button-link="$options.iterationCadencesHelpPagePath"
+        >
+          {{ $options.i18n.deprecationAlert.message }}
+        </gl-alert>
         <ul v-if="cadences.length" class="content-list">
           <iteration-cadence-list-item
             v-for="cadence in cadences"
