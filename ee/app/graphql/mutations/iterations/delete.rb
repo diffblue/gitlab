@@ -5,6 +5,10 @@ module Mutations
     class Delete < BaseMutation
       graphql_name 'IterationDelete'
 
+      AUTOMATIC_CADENCE_ERROR = 'Deleting iterations from automatic iteration cadences is not allowed.' \
+                                ' This mutation will be removed in 16.0 when manual iteration management' \
+                                ' is removed.'
+
       authorize :admin_iteration
 
       argument :id, ::Types::GlobalIDType[::Iteration], required: true,
@@ -15,6 +19,8 @@ module Mutations
       def resolve(id:)
         iteration = authorized_find!(id: id)
 
+        reject_if_automatic_cadence!(iteration)
+
         response = ::Iterations::DeleteService.new(iteration, current_user).execute
 
         {
@@ -24,6 +30,12 @@ module Mutations
       end
 
       private
+
+      def reject_if_automatic_cadence!(iteration)
+        return unless iteration.iterations_cadence.automatic?
+
+        raise Gitlab::Graphql::Errors::MutationError, AUTOMATIC_CADENCE_ERROR
+      end
 
       def find_object(id:)
         # TODO: Remove coercion when working on https://gitlab.com/gitlab-org/gitlab/-/issues/257883

@@ -10,7 +10,8 @@ RSpec.describe 'User views iteration' do
   let_it_be(:sub_project) { create(:project, group: sub_group) }
   let_it_be(:user) { create(:group_member, :maintainer, user: create(:user), group: group).user }
   let_it_be(:guest_user) { create(:group_member, :guest, user: create(:user), group: group).user }
-  let_it_be(:iteration) { create(:iteration, :skip_future_date_validation, iid: 1, id: 2, group: group, title: 'Correct Iteration', description: 'iteration description', start_date: now - 1.day, due_date: now) }
+  let_it_be(:manual_cadence) { build(:iterations_cadence, group: group, automatic: false).tap { |cadence| cadence.save!(validate: false) } }
+  let_it_be(:iteration) { create(:iteration, :skip_future_date_validation, iterations_cadence: manual_cadence, iid: 1, id: 2, group: group, title: 'Correct Iteration', description: 'iteration description', start_date: now - 1.day, due_date: now) }
   let_it_be(:other_iteration) { create(:iteration, :skip_future_date_validation, iid: 2, id: 1, group: group, title: 'Wrong Iteration', start_date: now - 4.days, due_date: now - 3.days) }
   let_it_be(:sub_group_iteration) { create(:iteration, id: 3, group: sub_group) }
   let_it_be(:label1) { create(:label, project: project) }
