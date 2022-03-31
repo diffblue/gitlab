@@ -63,7 +63,7 @@ RSpec.describe Ci::CreatePipelineService do
 
   context 'when user does not have access to compliance project' do
     it 'includes access denied error' do
-      expect(execute.payload.yaml_errors).to eq "Project `compliance/hippa` not found or access denied!"
+      expect(execute.payload.yaml_errors).to eq "Project `compliance/hippa` not found or access denied! Make sure any includes in the pipeline configuration are correctly defined."
     end
 
     it 'does not persist jobs' do
