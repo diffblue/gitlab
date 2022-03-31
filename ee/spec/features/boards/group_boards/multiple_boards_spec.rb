@@ -27,10 +27,8 @@ RSpec.describe 'Multiple Issue Boards', :js do
 
       click_button board.name
 
-      page.within('.js-boards-selector .dropdown-menu') do
-        expect(page).not_to have_content('Create new board')
-        expect(page).not_to have_content('Delete board')
-      end
+      expect(page).not_to have_content('Create new board')
+      expect(page).not_to have_content('Delete board')
     end
 
     it 'does not show license warning when there is one board created' do

@@ -4,12 +4,6 @@ module EE
   module BoardsHelper
     extend ::Gitlab::Utils::Override
 
-    override :board_list_data
-    def board_list_data
-      super.merge(list_milestone_path: board_milestones_path(board, :json),
-                  list_assignees_path: board_users_path(board, :json))
-    end
-
     # rubocop:disable Metrics/AbcSize
     override :board_data
     def board_data
@@ -27,10 +21,6 @@ module EE
         labels: board.labels.to_json(only: [:id, :title, :color, :text_color] ),
         board_weight: board.weight,
         show_promotion: show_feature_promotion,
-        can_update: can_update?.to_s,
-        can_admin_list: can_admin_list?.to_s,
-        can_admin_board: can_admin_board?.to_s,
-        disabled: board.disabled_for?(current_user).to_s,
         emails_disabled: current_board_parent.emails_disabled?.to_s,
         weights: ::Issue.weight_options
       }

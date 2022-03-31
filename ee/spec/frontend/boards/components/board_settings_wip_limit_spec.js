@@ -1,9 +1,9 @@
 import { GlFormInput } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import { noop } from 'lodash';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import BoardSettingsWipLimit from 'ee_component/boards/components/board_settings_wip_limit.vue';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { mockLabelList } from 'jest/boards/mock_data';
 
@@ -15,9 +15,9 @@ describe('BoardSettingsWipLimit', () => {
   const listId = mockLabelList.id;
   const currentWipLimit = 1; // Needs to be other than null to trigger requests
 
-  const clickEdit = () => wrapper.find('.js-edit-button').vm.$emit('click');
-  const findRemoveWipLimit = () => wrapper.find('.js-remove-limit');
-  const findWipLimit = () => wrapper.find('.js-wip-limit');
+  const clickEdit = () => wrapper.findByTestId('edit-button').vm.$emit('click');
+  const findRemoveWipLimit = () => wrapper.findByTestId('remove-limit');
+  const findWipLimit = () => wrapper.findByTestId('wip-limit');
   const findInput = () => wrapper.findComponent(GlFormInput);
 
   const createComponent = ({
@@ -33,7 +33,7 @@ describe('BoardSettingsWipLimit', () => {
       actions: storeActions,
     });
 
-    wrapper = shallowMount(BoardSettingsWipLimit, {
+    wrapper = shallowMountExtended(BoardSettingsWipLimit, {
       propsData: props,
       store,
       data() {
