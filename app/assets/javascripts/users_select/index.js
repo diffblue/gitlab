@@ -11,10 +11,10 @@ import {
 import initDeprecatedJQueryDropdown from '~/deprecated_jquery_dropdown';
 import { isUserBusy } from '~/set_status_modal/utils';
 import { fixTitle, dispose } from '~/tooltips';
-import axios from '../lib/utils/axios_utils';
-import { parseBoolean, spriteIcon } from '../lib/utils/common_utils';
-import { loadCSSFile } from '../lib/utils/css_utils';
-import { s__, __, sprintf } from '../locale';
+import axios from '~/lib/utils/axios_utils';
+import { parseBoolean, spriteIcon } from '~/lib/utils/common_utils';
+import { loadCSSFile } from '~/lib/utils/css_utils';
+import { s__, __, sprintf } from '~/locale';
 import { getAjaxUsersSelectOptions, getAjaxUsersSelectParams } from './utils';
 
 // TODO: remove eventHub hack after code splitting refactor
