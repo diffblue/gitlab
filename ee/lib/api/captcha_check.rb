@@ -17,7 +17,7 @@ module API
         not_found! 'User' unless Feature.enabled?(:arkose_labs_login_challenge, default_enabled: :yaml)
 
         rate_limit_reached = false
-        check_rate_limit!(:search_rate_limit_unauthenticated, scope: [request.ip]) do
+        check_rate_limit!(:search_rate_limit_unauthenticated, scope: [ip_address]) do
           rate_limit_reached = true
         end
 
@@ -26,7 +26,7 @@ module API
         else
           user = ::User.by_login(params[:username])
           not_found! 'User' unless user
-          present(::Users::CaptchaChallengeService.new(user, request.ip).execute, with: Entities::CaptchaCheck)
+          present(::Users::CaptchaChallengeService.new(user, ip_address).execute, with: Entities::CaptchaCheck)
         end
       end
     end
