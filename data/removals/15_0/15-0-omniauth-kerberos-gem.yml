@@ -1,0 +1,9 @@
+---
+removals:
+- feature_name: "Omniauth Kerberos Gem"
+  reporter: hsutor
+  date_of_removal: May 22, 2022
+  breaking_change: true
+  issue_url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/2908'
+  description: |
+    Omniauth-kerberos is no longer supported. This gem has not been maintained and has very little usage and therefore, we removed support for this authentication method and recommend using [spengo](https://en.wikipedia.org/wiki/SPNEGO) instead. You can follow the [upgrade instructions](https://docs.gitlab.com/ee/integration/kerberos.html#upgrading-from-password-based-to-ticket-based-kerberos-sign-ins) to upgrade from the deprecated integration to the new supported one. Note - We are not deprecating Kerberos SPNEGO integration, just the old password-based Kerberos.
