@@ -1,6 +1,7 @@
 <script>
 import {
   GlAlert,
+  GlBadge,
   GlButton,
   GlCollapse,
   GlDropdown,
@@ -12,7 +13,7 @@ import {
 } from '@gitlab/ui';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { fetchPolicies } from '~/lib/graphql';
-import { __, s__ } from '~/locale';
+import { __, s__, sprintf } from '~/locale';
 import { getIterationPeriod } from '../utils';
 import { Namespace } from '../constants';
 import groupQuery from '../queries/group_iterations_in_cadence.query.graphql';
@@ -27,7 +28,7 @@ const i18n = Object.freeze({
     closed: s__('Iterations|No closed iterations.'),
     all: s__('Iterations|No iterations in cadence.'),
   },
-  createIteration: s__('Iterations|Create iteration'),
+  addIteration: s__('Iterations|Add iteration'),
   error: __('Error loading iterations'),
 
   deleteCadence: s__('Iterations|Delete cadence'),
@@ -37,12 +38,14 @@ const i18n = Object.freeze({
   ),
   modalConfirm: s__('Iterations|Delete cadence'),
   modalCancel: __('Cancel'),
+  deprecationBadgeText: s__('Iterations|Requires update'),
 });
 
 export default {
   i18n,
   components: {
     GlAlert,
+    GlBadge,
     GlButton,
     GlCollapse,
     GlDropdown,
@@ -136,6 +139,9 @@ export default {
         state: this.iterationState,
       };
     },
+    deprecationNotice() {
+      return sprintf(i18n.deprecationNotice, { cadenceTitle: this.title });
+    },
     pageInfo() {
       return this.workspace.iterations?.pageInfo || {};
     },
@@ -163,6 +169,12 @@ export default {
           cadenceId: getIdFromGraphQLId(this.cadenceId),
         },
       };
+    },
+    showAddIteration() {
+      return !this.automatic && this.canCreateIteration;
+    },
+    showDurationBadget() {
+      return this.automatic && this.durationInWeeks;
     },
   },
   created() {
@@ -219,11 +231,18 @@ export default {
     focusMenu() {
       this.$refs.menu.$el.focus();
     },
+    toEditCadence() {
+      this.$router.push({
+        name: 'edit',
+        params: {
+          cadenceId: getIdFromGraphQLId(this.cadenceId),
+        },
+      });
+    },
     getIterationPeriod,
   },
 };
 </script>
-
 <template>
   <li class="gl-py-0!">
     <div class="gl-display-flex gl-align-items-center">
@@ -239,11 +258,22 @@ export default {
           :class="{ 'gl-rotate-90': expanded }"
         /><span class="gl-ml-2">{{ title }}</span>
       </gl-button>
-
-      <span v-if="durationInWeeks" class="gl-mr-5 gl-display-none gl-sm-display-inline-block">
+      <span
+        v-if="showDurationBadget"
+        class="gl-mr-5 gl-display-none gl-sm-display-inline-block"
+        data-testid="duration-badge"
+      >
         <gl-icon name="clock" class="gl-mr-3" />
         {{ n__('Every week', 'Every %d weeks', durationInWeeks) }}</span
       >
+      <gl-badge
+        v-if="!automatic"
+        variant="danger"
+        class="gl-mr-2 gl-display-none gl-sm-display-inline-block"
+      >
+        <gl-icon name="warning" />
+        {{ i18n.deprecationBadgeText }}
+      </gl-badge>
       <gl-dropdown
         v-if="canEditCadence"
         ref="menu"
@@ -255,11 +285,11 @@ export default {
         data-qa-selector="cadence_options_button"
       >
         <gl-dropdown-item
-          v-if="!automatic"
+          v-if="showAddIteration"
           :to="newIteration"
           data-qa-selector="new_iteration_button"
         >
-          {{ s__('Iterations|Add iteration') }}
+          {{ i18n.addIteration }}
         </gl-dropdown-item>
 
         <gl-dropdown-item :to="editCadence">
@@ -322,16 +352,6 @@ export default {
       </gl-infinite-scroll>
       <template v-else-if="!loading">
         <p class="gl-px-7">{{ i18n.noResults[iterationState] }}</p>
-        <gl-button
-          v-if="!automatic && canCreateIteration"
-          variant="confirm"
-          category="secondary"
-          class="gl-mb-5 gl-ml-7"
-          data-qa-selector="create_cadence_cta"
-          :to="newIteration"
-        >
-          {{ i18n.createIteration }}
-        </gl-button>
       </template>
     </gl-collapse>
   </li>

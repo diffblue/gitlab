@@ -96,7 +96,20 @@ export const manualIterationCadence = {
   __typename: 'IterationCadence',
   active: true,
   id: `gid://gitlab/Iterations::Cadence/72`,
-  title: 'A manual iteration cadence',
+  title: 'A manually-scheduled iteration cadence',
+  automatic: false,
+  rollOver: false,
+  durationInWeeks: 2,
+  description: null,
+  startDate: '2020-06-28',
+  iterationsInAdvance: 0,
+};
+
+export const automaticIterationCadence = {
+  __typename: 'IterationCadence',
+  active: true,
+  id: `gid://gitlab/Iterations::Cadence/72`,
+  title: 'An automatically-scheduled iteration cadence',
   automatic: true,
   rollOver: false,
   durationInWeeks: 3,
