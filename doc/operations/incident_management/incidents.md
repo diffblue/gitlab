@@ -200,10 +200,10 @@ field populated.
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/227836) in GitLab 13.5.
 
 To quickly see the latest updates on an incident, click
-**{comments}** **Turn timeline view on** in the comment bar to display comments
+**{comments}** **Turn recent updates view on** in the comment bar to display comments
 un-threaded and ordered chronologically, newest to oldest:
 
-![Timeline view toggle](img/timeline_view_toggle_v13_5.png)
+![Timeline view toggle](img/timeline_view_toggle_v14_10.png)
 
 ### Service Level Agreement countdown timer **(PREMIUM)**
 
