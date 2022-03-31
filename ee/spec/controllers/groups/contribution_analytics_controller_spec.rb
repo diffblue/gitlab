@@ -35,20 +35,29 @@ RSpec.describe Groups::ContributionAnalyticsController do
   end
 
   describe '#authorize_read_contribution_analytics!' do
-    before do
-      group.add_user(guest_user, GroupMember::GUEST)
-      sign_in(guest_user)
-    end
+    let(:request) { get :show, params: { group_id: group.path } }
 
-    context 'when user has access to the group' do
-      let(:request) { get :show, params: { group_id: group.path } }
+    context 'when feature is available to the group' do
+      before do
+        stub_licensed_features(contribution_analytics: true)
+      end
 
-      context 'when feature is available to the group' do
+      context 'when user is an auditor' do
+        let(:auditor) { create(:user, :auditor) }
+
+        it 'allows access' do
+          sign_in(auditor)
+
+          request
+
+          expect(response).to have_gitlab_http_status(:success)
+        end
+      end
+
+      context 'when user has access to the group' do
         before do
-          allow(License).to receive(:feature_available?).and_call_original
-          allow(License).to receive(:feature_available?)
-            .with(:contribution_analytics)
-            .and_return(true)
+          group.add_user(guest_user, GroupMember::GUEST)
+          sign_in(guest_user)
 
           allow(Ability).to receive(:allowed?).and_call_original
           allow(Ability).to receive(:allowed?)

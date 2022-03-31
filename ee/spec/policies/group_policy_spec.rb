@@ -182,6 +182,14 @@ RSpec.describe GroupPolicy do
 
         it { is_expected.not_to be_allowed(:read_group_contribution_analytics) }
       end
+
+      context 'when user has an auditor role' do
+        before do
+          allow(current_user).to receive(:auditor?).and_return(true)
+        end
+
+        it { is_expected.to be_allowed(:read_group_contribution_analytics) }
+      end
     end
   end
 
