@@ -1,9 +1,14 @@
 import { GlLoadingIcon, GlAlert } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Zuora from 'ee/billings/components/zuora.vue';
+import { mockTracking } from 'helpers/tracking_helper';
 
 describe('Zuora', () => {
   let wrapper;
+  let addEventListenerSpy;
+  let postMessageSpy;
+  let removeEventListenerSpy;
+  let trackingSpy;
 
   const createComponent = (data = {}) => {
     wrapper = shallowMount(Zuora, {
@@ -16,15 +21,12 @@ describe('Zuora', () => {
         return data;
       },
     });
+
+    trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
   };
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findAlert = () => wrapper.findComponent(GlAlert);
-
-  let addEventListenerSpy;
-  let postMessageSpy;
-  let removeEventListenerSpy;
-
   afterEach(() => {
     wrapper.destroy();
   });
@@ -56,6 +58,12 @@ describe('Zuora', () => {
         wrapper.vm.handleFrameMessages,
         true,
       );
+    });
+
+    it('tracks frame_loaded event', () => {
+      expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'iframe_loaded', {
+        category: 'Zuora_cc',
+      });
     });
   });
 
@@ -122,6 +130,10 @@ describe('Zuora', () => {
       it('emits the success event', () => {
         expect(wrapper.emitted('success')).toBeDefined();
       });
+
+      it('tracks success event', () => {
+        expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'success', { category: 'Zuora_cc' });
+      });
     });
 
     describe('when not from an allowed origin', () => {
@@ -151,6 +163,12 @@ describe('Zuora', () => {
       it('increases the iframe height', () => {
         expect(wrapper.vm.iframeHeight).toBe(315);
       });
+
+      it('tracks client side Zuora error', () => {
+        expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'client_error', {
+          category: 'Zuora_cc',
+        });
+      });
     });
 
     describe('when failure and code greater than 6', () => {
@@ -177,6 +195,10 @@ describe('Zuora', () => {
           wrapper.vm.handleFrameMessages,
           true,
         );
+      });
+
+      it('tracks Zuora error', () => {
+        expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'error', { category: 'Zuora_cc' });
       });
     });
   });

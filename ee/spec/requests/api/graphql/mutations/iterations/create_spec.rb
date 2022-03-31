@@ -34,6 +34,50 @@ RSpec.describe 'Creating an Iteration' do
     graphql_mutation_response(:create_iteration)
   end
 
+  shared_examples 'legacy iteration creation request' do
+    it 'creates a new iteration in the default manual cadence' do
+      post_graphql_mutation(mutation, current_user: current_user)
+
+      iteration_hash = mutation_response['iteration']
+      aggregate_failures do
+        expect(iteration_hash['title']).to eq('title')
+        expect(iteration_hash['iterationCadence']['id']).to eq(cadence.to_global_id.to_s)
+      end
+    end
+  end
+
+  shared_examples 'iteration create request' do
+    context 'when there are several iteration cadences in the group' do
+      let_it_be(:extra_cadence) { create(:iterations_cadence, group: group) }
+
+      context 'when iteration cadence id is not provided' do
+        it_behaves_like 'legacy iteration creation request'
+      end
+
+      context 'when iteration cadence id is provided' do
+        before do
+          attributes[:iterations_cadence_id] = extra_cadence.to_global_id.to_s
+        end
+
+        it_behaves_like 'legacy iteration creation request'
+      end
+    end
+
+    context 'when there is only one iteration cadence in the group' do
+      context 'when iteration cadence id is not provided' do
+        it_behaves_like 'legacy iteration creation request'
+      end
+
+      context 'when iteration cadence id is provided' do
+        before do
+          attributes[:iterations_cadence_id] = cadence.to_global_id.to_s
+        end
+
+        it_behaves_like 'legacy iteration creation request'
+      end
+    end
+  end
+
   context 'when the user does not have permission' do
     before do
       stub_licensed_features(iterations: true)
@@ -66,87 +110,20 @@ RSpec.describe 'Creating an Iteration' do
         stub_licensed_features(iterations: true)
       end
 
-      context 'when iteration cadence id is not provided' do
-        context 'and there is only one iteration cadence in the group' do
-          it 'creates the iteration for a group' do
-            post_graphql_mutation(mutation, current_user: current_user)
-
-            iteration_hash = mutation_response['iteration']
-            aggregate_failures do
-              expect(iteration_hash['title']).to eq('title')
-              expect(iteration_hash['description']).to eq('some description')
-              expect(iteration_hash['startDate']).to eq(start_date)
-              expect(iteration_hash['dueDate']).to eq(end_date)
-              expect(iteration_hash['iterationCadence']['id']).to eq(group.iterations_cadences.first.to_global_id.to_s)
-            end
-          end
+      context 'with iterations_cadences FF disabled' do
+        before do
+          stub_feature_flags(iteration_cadences: false)
         end
 
-        context 'and there are several iteration cadences in the group' do
-          let_it_be(:extra_cadence) { create(:iterations_cadence, group: group)}
-
-          it_behaves_like 'a mutation that returns top-level errors',
-            errors: ['Please provide iterations_cadence_id argument to assign iteration to respective cadence']
-
-          context 'when iteration_cadences FF is disabled' do
-            before do
-              stub_feature_flags(iteration_cadences: false)
-            end
-
-            it 'creates a new iteration in the default cadence' do
-              post_graphql_mutation(mutation, current_user: current_user)
-
-              iteration_hash = mutation_response['iteration']
-              aggregate_failures do
-                expect(iteration_hash['title']).to eq('title')
-                expect(iteration_hash['iterationCadence']['id']).to eq(group.iterations_cadences.first.to_global_id.to_s)
-              end
-            end
-          end
-        end
-      end
-
-      context 'when cadence provided' do
-        context 'with correct cadence' do
-          let_it_be(:extra_cadence) { create(:iterations_cadence, group: group)}
-
-          before do
-            attributes.merge!(iterations_cadence_id: extra_cadence.to_global_id.to_s)
-          end
-
-          it 'creates the iteration for the cadence' do
-            post_graphql_mutation(mutation, current_user: current_user)
-
-            iteration_hash = mutation_response['iteration']
-            aggregate_failures do
-              expect(iteration_hash['title']).to eq('title')
-              expect(iteration_hash['description']).to eq('some description')
-              expect(iteration_hash['startDate']).to eq(start_date)
-              expect(iteration_hash['dueDate']).to eq(end_date)
-              expect(iteration_hash['iterationCadence']['id']).to eq(extra_cadence.to_global_id.to_s)
-            end
-          end
-        end
-
-        context 'with non-existing cadence and a signle cadence in the group' do
-          let(:non_existing_cadence_id) { "gid://gitlab/Iterations::Cadence/#{non_existing_record_id}" }
-
-          before do
-            attributes.merge!(iterations_cadence_id: non_existing_cadence_id)
-          end
-
-          it_behaves_like 'a mutation that returns top-level errors' do
-            let(:match_errors) do
-              contain_exactly(include("No object found for `iterationsCadenceId: "))
-            end
-          end
-        end
+        it_behaves_like 'iteration create request'
       end
 
       context 'with iterations_cadences FF enabled' do
         before do
           stub_feature_flags(iteration_cadences: true)
         end
+
+        it_behaves_like 'iteration create request'
 
         context 'when title is not given' do
           let(:attributes) { { start_date: start_date, due_date: end_date } }
