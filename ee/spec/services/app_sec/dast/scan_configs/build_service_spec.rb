@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe AppSec::Dast::ScanConfigs::BuildService do
   let_it_be(:project) { create(:project, :repository) }
-  let_it_be_with_reload(:dast_site_profile) { create(:dast_site_profile, project: project, target_type: 'website') }
+  let_it_be_with_reload(:dast_site_profile) { create(:dast_site_profile, :with_dast_submit_field, project: project, target_type: 'website') }
   let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project, spider_timeout: 5, target_timeout: 20) }
   let_it_be(:dast_profile) { create(:dast_profile, project: project, dast_site_profile: dast_site_profile, dast_scanner_profile: dast_scanner_profile, branch_name: 'master') }
 
@@ -13,6 +13,7 @@ RSpec.describe AppSec::Dast::ScanConfigs::BuildService do
   let(:dast_auth_url) { dast_site_profile.auth_url }
   let(:dast_username) { dast_site_profile.auth_username }
   let(:dast_username_field) { dast_site_profile.auth_username_field }
+  let(:dast_submit_field) { dast_site_profile.auth_submit_field }
   let(:dast_password_field) { dast_site_profile.auth_password_field }
   let(:dast_spider_mins) { dast_scanner_profile.spider_timeout }
   let(:dast_target_availability_timeout) { dast_scanner_profile.target_timeout }

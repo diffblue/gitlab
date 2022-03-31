@@ -39,6 +39,11 @@ module Types
       field :password, GraphQL::Types::String,
             null: true,
             description: 'Redacted password to authenticate with on the target website.'
+
+      field :submit_field, GraphQL::Types::String,
+            null: true,
+            method: :auth_submit_field,
+            description: 'Name or ID of sign-in submit button at the sign-in HTML form.'
     end
   end
 end

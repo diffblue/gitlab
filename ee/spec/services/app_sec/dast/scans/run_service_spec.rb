@@ -7,7 +7,7 @@ RSpec.describe AppSec::Dast::Scans::RunService do
 
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :repository, creator: user) }
-  let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }
+  let_it_be(:dast_site_profile) { create(:dast_site_profile, :with_dast_submit_field, project: project) }
   let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project, spider_timeout: 42, target_timeout: 21) }
   let_it_be(:dast_profile) { create(:dast_profile, project: project, dast_site_profile: dast_site_profile, dast_scanner_profile: dast_scanner_profile) }
 
@@ -154,6 +154,11 @@ RSpec.describe AppSec::Dast::Scans::RunService do
           }, {
             key: 'DAST_USERNAME_FIELD',
             value: dast_site_profile.auth_username_field,
+            public: true,
+            masked: false
+          }, {
+            key: 'DAST_SUBMIT_FIELD',
+            value: dast_site_profile.auth_submit_field,
             public: true,
             masked: false
           }, {

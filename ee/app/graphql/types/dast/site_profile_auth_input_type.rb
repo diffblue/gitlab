@@ -30,6 +30,10 @@ module Types
       argument :password, GraphQL::Types::String,
                required: false,
                description: 'Password to authenticate with on the target website.'
+
+      argument :submit_field, GraphQL::Types::String,
+               required: false,
+               description: 'Name or ID of sign-in submit button at the sign-in HTML form.'
     end
   end
 end
