@@ -88,6 +88,7 @@ RSpec.describe Gitlab::Ci::Config::External::File::Local do
 
       it 'returns false and adds an error message about an empty file' do
         allow_any_instance_of(described_class).to receive(:fetch_local_content).and_return("")
+        local_file.validate!
         expect(local_file.errors).to include("Local file `/lib/gitlab/ci/templates/xxxxxx/existent-file.yml` is empty!")
       end
     end
