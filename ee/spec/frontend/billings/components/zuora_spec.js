@@ -147,10 +147,12 @@ describe('Zuora', () => {
     });
 
     describe('when failure and code less than 7', () => {
+      const msg = 'a propagated error';
+
       beforeEach(() => {
         wrapper.vm.handleFrameMessages({
           origin: 'https://gitlab.com',
-          data: { success: false, code: 6 },
+          data: { success: false, code: 6, msg },
         });
       });
 
@@ -166,6 +168,7 @@ describe('Zuora', () => {
 
       it('tracks client side Zuora error', () => {
         expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'client_error', {
+          property: msg,
           category: 'Zuora_cc',
         });
       });
@@ -198,7 +201,10 @@ describe('Zuora', () => {
       });
 
       it('tracks Zuora error', () => {
-        expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'error', { category: 'Zuora_cc' });
+        expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'error', {
+          property: 'error',
+          category: 'Zuora_cc',
+        });
       });
     });
   });

@@ -87,9 +87,9 @@ export default {
         // no need to reload the iframe and emit the failure event
         // Add a 15px height to the iframe to accomodate the error message
         this.iframeHeight += ZUORA_CLIENT_ERROR_HEIGHT;
-        this.track('client_error');
+        this.track('client_error', { property: event.data.msg });
       } else if (parseInt(event.data.code, 10) > 6) {
-        this.track('error');
+        this.track('error', { property: event.data.msg });
         this.error = event.data.msg;
         window.removeEventListener('message', this.handleFrameMessages, true);
         this.$refs.zuora.src = this.iframeSrc;
