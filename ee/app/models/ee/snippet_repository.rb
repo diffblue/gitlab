@@ -7,6 +7,7 @@ module EE
     prepended do
       include ::Geo::ReplicableModel
       include ::Geo::VerifiableModel
+      include ::Geo::VerificationStateDefinition
       include FromUnion
 
       with_replicator ::Geo::SnippetRepositoryReplicator

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class MergeRequestDiffDetail < ApplicationRecord
+  include ::Geo::VerificationStateDefinition
   include EachBatch
 
   self.primary_key = :merge_request_diff_id

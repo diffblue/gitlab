@@ -19,6 +19,19 @@ module Geo
     }.freeze
 
     VERIFICATION_TIMEOUT = 8.hours
+    VERIFICATION_METHODS = [:verification_retry_at, :verification_retry_at=,
+                            :verified_at, :verified_at=, :verification_failed?,
+                            :verification_checksum, :verification_checksum=,
+                            :verification_failure, :verification_failure=,
+                            :verification_retry_count, :verification_retry_count=,
+                            :verification_state=, :verification_state,
+                            :verification_started_at=, :verification_started_at,
+                            :verification_started!, :verification_pending!,
+                            :verification_succeeded!, :verification_failed!,
+                            :verification_started?, :verification_succeeded,
+                            :with_verification_state, :verification_started,
+                            :verification_succeeded?, :verification_failed,
+                            :verification_pending].freeze
 
     included do
       sha_attribute :verification_checksum
@@ -33,57 +46,6 @@ module Geo
       scope :verification_retry_due, -> { where(verification_arel_table[:verification_retry_at].eq(nil).or(verification_arel_table[:verification_retry_at].lt(Time.current))) }
       scope :needs_verification, -> { available_verifiables.merge(with_verification_state(:verification_pending).or(with_verification_state(:verification_failed).verification_retry_due)) }
       scope :needs_reverification, -> { verification_succeeded.where("verified_at < ?", ::Gitlab::Geo.current_node.minimum_reverification_interval.days.ago) }
-
-      state_machine :verification_state, initial: :verification_pending do
-        state :verification_pending, value: VERIFICATION_STATE_VALUES[:verification_pending]
-        state :verification_started, value: VERIFICATION_STATE_VALUES[:verification_started]
-        state :verification_succeeded, value: VERIFICATION_STATE_VALUES[:verification_succeeded] do
-          validates :verification_checksum, presence: true
-        end
-        state :verification_failed, value: VERIFICATION_STATE_VALUES[:verification_failed] do
-          validates :verification_failure, presence: true
-        end
-
-        before_transition any => :verification_started do |instance, _|
-          instance.verification_started_at = Time.current
-        end
-
-        before_transition [:verification_pending, :verification_started, :verification_succeeded] => :verification_pending do |instance, _|
-          instance.clear_verification_failure_fields!
-        end
-
-        before_transition verification_failed: :verification_pending do |instance, _|
-          # If transitioning from verification_failed, then don't clear
-          # verification_retry_count and verification_retry_at to ensure
-          # progressive backoff of syncs-due-to-verification-failures
-          instance.verification_failure = nil
-        end
-
-        before_transition any => :verification_failed do |instance, _|
-          instance.before_verification_failed
-        end
-
-        before_transition any => :verification_succeeded do |instance, _|
-          instance.verified_at = Time.current
-          instance.clear_verification_failure_fields!
-        end
-
-        event :verification_started do
-          transition [:verification_pending, :verification_started, :verification_succeeded, :verification_failed] => :verification_started
-        end
-
-        event :verification_succeeded do
-          transition verification_started: :verification_succeeded
-        end
-
-        event :verification_failed do
-          transition [:verification_pending, :verification_started, :verification_succeeded, :verification_failed] => :verification_failed
-        end
-
-        event :verification_pending do
-          transition [:verification_pending, :verification_started, :verification_succeeded, :verification_failed] => :verification_pending
-        end
-      end
 
       private_class_method :start_verification_batch
       private_class_method :start_verification_batch_query
@@ -273,21 +235,6 @@ module Geo
           WHERE #{self.verification_state_model_key} IN (#{relation.select(self.verification_state_model_key).to_sql})
         SQL
       end
-    end
-
-    # Overridden by Geo::VerifiableRegistry
-    def clear_verification_failure_fields!
-      self.verification_retry_count = 0
-      self.verification_retry_at = nil
-      self.verification_failure = nil
-    end
-
-    # Overridden by Geo::VerifiableRegistry
-    def before_verification_failed
-      self.verification_retry_count ||= 0
-      self.verification_retry_count += 1
-      self.verification_retry_at = self.next_retry_time(self.verification_retry_count)
-      self.verified_at = Time.current
     end
 
     # Provides a safe and easy way to manage the verification state for a

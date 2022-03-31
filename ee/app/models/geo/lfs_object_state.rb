@@ -2,6 +2,7 @@
 
 module Geo
   class LfsObjectState < ApplicationRecord
+    include ::Geo::VerificationStateDefinition
     include EachBatch
 
     self.primary_key = :lfs_object_id

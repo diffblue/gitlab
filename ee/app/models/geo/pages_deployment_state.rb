@@ -2,6 +2,7 @@
 
 module Geo
   class PagesDeploymentState < ApplicationRecord
+    include ::Geo::VerificationStateDefinition
     include EachBatch
 
     self.primary_key = :pages_deployment_id

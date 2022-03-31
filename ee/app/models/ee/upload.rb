@@ -13,6 +13,8 @@ module EE
       include ::Geo::ReplicableModel
       include ::Geo::VerifiableModel
 
+      delegate(*::Geo::VerificationState::VERIFICATION_METHODS, to: :upload_state)
+
       with_replicator ::Geo::UploadReplicator
 
       scope :for_model, ->(model) { where(model_id: model.id, model_type: model.class.name) }
@@ -27,15 +29,6 @@ module EE
               autosave: false,
               inverse_of: :upload,
               class_name: '::Geo::UploadState'
-
-      delegate :verification_retry_at, :verification_retry_at=,
-               :verified_at, :verified_at=,
-               :verification_checksum, :verification_checksum=,
-               :verification_failure, :verification_failure=,
-               :verification_retry_count, :verification_retry_count=,
-               :verification_state=, :verification_state,
-               :verification_started_at=, :verification_started_at,
-               to: :upload_state
 
       after_save :save_verification_details
 

@@ -9,6 +9,8 @@ module EE
       include ObjectStorable
       include ::Geo::VerifiableModel
 
+      delegate(*::Geo::VerificationState::VERIFICATION_METHODS, to: :merge_request_diff_detail)
+
       STORE_COLUMN = :external_diff_store
 
       with_replicator ::Geo::MergeRequestDiffReplicator
@@ -16,15 +18,6 @@ module EE
       has_one :merge_request_diff_detail, autosave: false, inverse_of: :merge_request_diff
 
       after_save :save_verification_details
-
-      delegate :verification_retry_at, :verification_retry_at=,
-               :verified_at, :verified_at=,
-               :verification_checksum, :verification_checksum=,
-               :verification_failure, :verification_failure=,
-               :verification_retry_count, :verification_retry_count=,
-               :verification_state=, :verification_state,
-               :verification_started_at=, :verification_started_at,
-        to: :merge_request_diff_detail, allow_nil: true
 
       scope :has_external_diffs, -> { with_files.where(stored_externally: true) }
       scope :project_id_in, ->(ids) { where(merge_request_id: ::MergeRequest.where(target_project_id: ids)) }
