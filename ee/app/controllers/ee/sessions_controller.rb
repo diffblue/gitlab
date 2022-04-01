@@ -24,7 +24,7 @@ module EE
         redirect_to oauth_geo_auth_url(host: current_node_uri.host, port: current_node_uri.port, state: state)
       else
         if ::Feature.enabled?(:arkose_labs_login_challenge)
-          @arkose_labs_public_key ||= Settings.arkose['public_key'] # rubocop:disable Gitlab/ModuleWithInstanceVariables
+          @arkose_labs_public_key ||= ENV['ARKOSE_LABS_PUBLIC_KEY'] # rubocop:disable Gitlab/ModuleWithInstanceVariables
         end
 
         super
@@ -77,11 +77,6 @@ module EE
       audit_event_service.for_failed_login.unauth_security_event
 
       super
-    end
-
-    override :arkose_labs_enabled?
-    def arkose_labs_enabled?
-      ::Feature.enabled?(:arkose_labs_login_challenge, default_enabled: :yaml) && request.headers[::SessionsController::CAPTCHA_HEADER]
     end
 
     override :check_captcha
