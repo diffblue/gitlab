@@ -46,8 +46,24 @@ RSpec.describe API::Analytics::GroupActivityAnalytics do
     context 'when `group_path` is not specified' do
       let(:params) { }
 
-      it 'is returns `bad_request`' do
+      it 'returns `bad_request`' do
         expect(response).to have_gitlab_http_status(:bad_request)
+      end
+    end
+
+    context 'when name is made of only digits' do
+      let_it_be(:group) { create(:group, :private, name: '756125') }
+
+      let_it_be(:reporter) do
+        create(:user).tap { |u| group.add_reporter(u) }
+      end
+
+      it 'is successful' do
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+
+      it 'is returns a count' do
+        expect(response.parsed_body).to eq({ "#{activity}_count" => count })
       end
     end
 
