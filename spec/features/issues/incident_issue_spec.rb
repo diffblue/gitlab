@@ -70,7 +70,7 @@ RSpec.describe 'Incident Detail', :js do
           expect(hidden_items.count).to eq(2)
 
           hidden_items.each do |hidden_item|
-            expect(hidden_item).not_to have_selector('.gl-display-none')
+            expect(hidden_item).to be_visible
           end
         end
       end
