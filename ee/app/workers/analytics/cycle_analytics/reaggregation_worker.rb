@@ -2,7 +2,7 @@
 
 module Analytics
   module CycleAnalytics
-    class ConsistencyWorker
+    class ReaggregationWorker
       include ApplicationWorker
 
       # rubocop:disable Scalability/CronWorkerContext
@@ -20,19 +20,18 @@ module Analytics
       delegate :monotonic_time, to: :'Gitlab::Metrics::System'
 
       def perform
-        return if Feature.disabled?(:vsa_consistency_worker, default_enabled: :yaml)
+        return if Feature.disabled?(:vsa_reaggregation_worker, default_enabled: :yaml)
 
         current_time = Time.current
         start_time = monotonic_time
         over_time = false
 
         loop do
-          batch = Analytics::CycleAnalytics::Aggregation.load_batch(current_time, :last_consistency_check_updated_at)
+          batch = Analytics::CycleAnalytics::Aggregation.load_batch(current_time, :last_full_run_at)
           break if batch.empty?
 
           batch.each do |aggregation|
-            run_consistency_check_services(aggregation.group)
-            aggregation.update!(last_consistency_check_updated_at: current_time)
+            Analytics::CycleAnalytics::AggregatorService.new(aggregation: aggregation, mode: :full).execute
 
             if monotonic_time - start_time >= MAX_RUNTIME
               over_time = true
@@ -42,13 +41,6 @@ module Analytics
 
           break if over_time
         end
-      end
-
-      private
-
-      def run_consistency_check_services(group)
-        Analytics::CycleAnalytics::ConsistencyCheckService.new(group: group, event_model: Analytics::CycleAnalytics::IssueStageEvent).execute
-        Analytics::CycleAnalytics::ConsistencyCheckService.new(group: group, event_model: Analytics::CycleAnalytics::MergeRequestStageEvent).execute
       end
     end
   end
