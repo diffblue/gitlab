@@ -14398,6 +14398,9 @@ msgstr ""
 msgid "Environment|Auto stop %{time}"
 msgstr ""
 
+msgid "Environment|Deployment tier"
+msgstr ""
+
 msgid "Epic"
 msgstr ""
 
