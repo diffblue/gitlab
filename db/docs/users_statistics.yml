@@ -3,5 +3,5 @@ table_name: users_statistics
 classes:
 - UsersStatistics
 feature_categories:
-- not_owned
+- product_analytics
 description: 

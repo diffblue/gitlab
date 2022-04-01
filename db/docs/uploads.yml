@@ -3,5 +3,5 @@ table_name: uploads
 classes:
 - Upload
 feature_categories:
-- not_owned
+- backup_restore
 description: 

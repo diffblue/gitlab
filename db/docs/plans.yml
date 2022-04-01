@@ -3,5 +3,5 @@ table_name: plans
 classes:
 - Plan
 feature_categories:
-- not_owned
+- purchase
 description: 

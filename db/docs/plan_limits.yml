@@ -3,5 +3,5 @@ table_name: plan_limits
 classes:
 - PlanLimits
 feature_categories:
-- not_owned
+- purchase
 description: 

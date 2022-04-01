@@ -3,5 +3,5 @@ table_name: licenses
 classes:
 - License
 feature_categories:
-- license
+- purchase
 description: 

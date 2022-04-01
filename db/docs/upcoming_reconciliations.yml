@@ -3,5 +3,5 @@ table_name: upcoming_reconciliations
 classes:
 - GitlabSubscriptions::UpcomingReconciliation
 feature_categories:
-- license
+- purchase
 description: 

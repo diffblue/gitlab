@@ -3,5 +3,5 @@ table_name: terraform_states
 classes:
 - Terraform::State
 feature_categories: 
-- package_registry
+- infrastructure_as_code
 description: 

@@ -3,5 +3,5 @@ table_name: token_with_ivs
 classes:
 - TokenWithIv
 feature_categories: 
-- maybe_not_used
+- authentication_and_authorization
 description: 
