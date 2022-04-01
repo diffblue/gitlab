@@ -222,6 +222,7 @@ Include in the MR description:
 
 - Check migrations
   - Review relational modeling and design choices
+    - Consider [access patterns and data layout](database/layout_and_access_patterns.md) if new tables or columns are added.
   - Review migrations follow [database migration style guide](migration_style_guide.md),
     for example
     - [Check ordering of columns](ordering_table_columns.md)
