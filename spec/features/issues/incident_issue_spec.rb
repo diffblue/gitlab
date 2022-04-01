@@ -69,9 +69,7 @@ RSpec.describe 'Incident Detail', :js do
           # Linked Issues/MRs and comment box
           expect(hidden_items.count).to eq(2)
 
-          hidden_items.each do |hidden_item|
-            expect(hidden_item).to be_visible
-          end
+          expect(hidden_items).to all(be_visible)
         end
       end
     end
