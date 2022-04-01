@@ -27,6 +27,11 @@ import PolicyEnvironments from '../policy_environments.vue';
 import PolicyTypeFilter from '../policy_type_filter.vue';
 import NoPoliciesEmptyState from './no_policies_empty_state.vue';
 
+const NAMESPACE_QUERY_DICT = {
+  [NAMESPACE_TYPES.PROJECT]: projectScanExecutionPoliciesQuery,
+  [NAMESPACE_TYPES.GROUP]: groupScanExecutionPoliciesQuery,
+};
+
 const createPolicyFetchError = ({ gqlError, networkError }) => {
   const error =
     gqlError?.message ||
@@ -98,12 +103,7 @@ export default {
     },
     scanExecutionPolicies: {
       query() {
-        switch (this.namespaceType) {
-          case NAMESPACE_TYPES.GROUP:
-            return groupScanExecutionPoliciesQuery;
-          default:
-            return projectScanExecutionPoliciesQuery;
-        }
+        return NAMESPACE_QUERY_DICT[this.namespaceType];
       },
       variables() {
         return {

@@ -272,7 +272,7 @@ describe('PoliciesList component', () => {
       await waitForPromises();
     });
 
-    it('fetches policies', () => {
+    it('does not fetch policies', () => {
       expect(requestHandlers.networkPolicies).not.toHaveBeenCalled();
       expect(requestHandlers.projectScanExecutionPolicies).not.toHaveBeenCalled();
       expect(requestHandlers.scanResultPolicies).not.toHaveBeenCalled();
