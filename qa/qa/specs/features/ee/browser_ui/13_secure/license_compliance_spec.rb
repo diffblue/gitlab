@@ -55,7 +55,7 @@ module QA
 
           Flow::Login.sign_in_unless_signed_in
           @project.visit!
-          Flow::Pipeline.wait_for_latest_pipeline(pipeline_condition: 'succeeded')
+          Flow::Pipeline.wait_for_latest_pipeline(status: 'passed')
           @project.visit!
           Page::Project::Menu.perform(&:click_on_license_compliance)
           EE::Page::Project::Secure::LicenseCompliance.perform do |license_compliance|

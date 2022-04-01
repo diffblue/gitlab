@@ -68,7 +68,7 @@ module QA
 
           edit_github_file
           imported_project.trigger_project_mirror
-          index.wait_until(reload: false) { index.has_pipeline? }
+          index.has_any_pipeline?
 
           expect(index).to have_content(commit_message), 'Expect new pipeline to have latest commit message from Github'
         end

@@ -52,7 +52,7 @@ module QA
             project_push.commit_message = 'Create Secure compatible application to serve premade reports'
           end.project.visit!
 
-          Flow::Pipeline.wait_for_latest_pipeline(pipeline_condition: 'succeeded')
+          Flow::Pipeline.wait_for_latest_pipeline(status: 'passed')
         end
 
         after(:context) do

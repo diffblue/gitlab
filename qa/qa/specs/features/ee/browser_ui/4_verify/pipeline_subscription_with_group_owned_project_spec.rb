@@ -81,7 +81,7 @@ module QA
 
           # expect new downstream pipeline to also succeed
           Page::Project::Pipeline::Index.perform do |index|
-            expect(index.wait_for_latest_pipeline_succeeded).to be_truthy, 'Downstream pipeline did not succeed as expected.'
+            expect(index.wait_for_latest_pipeline(status: 'passed')).to be_truthy, 'Downstream pipeline did not succeed as expected.'
           end
         end
       end

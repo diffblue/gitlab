@@ -91,11 +91,7 @@ module QA
           end
 
           Page::Project::Menu.perform(&:click_ci_cd_pipelines)
-
-          Page::Project::Pipeline::Index.perform do |index|
-            index.wait_for_latest_pipeline_completed
-          end
-
+          Page::Project::Pipeline::Index.perform(&:wait_for_latest_pipeline)
           cluster.add_sample_policy(project, policy_name: policy_name)
 
           Page::Project::Menu.perform(&:click_on_policies)
