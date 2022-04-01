@@ -43,7 +43,7 @@ RSpec.describe 'Profiles > Billing', :js do
         expect(page).not_to have_field(placeholder: SearchHelpers::INPUT_PLACEHOLDER)
       end
 
-      context "wtihout a group" do
+      context "without a group" do
         it 'displays help for moving groups' do
           visit profile_billings_path
 
