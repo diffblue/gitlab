@@ -58,11 +58,8 @@ export default {
     };
   },
   computed: {
-    isVisible() {
-      return this.arkoseLabsIframeShown || this.showErrorContainer;
-    },
     showErrorContainer() {
-      return this.showArkoseNeededError || this.showArkoseFailure;
+      return (this.arkoseLabsIframeShown && this.showArkoseNeededError) || this.showArkoseFailure;
     },
   },
   watch: {
@@ -91,6 +88,7 @@ export default {
       }
 
       e.preventDefault();
+      this.submitOnSuppress = true;
       if (!this.arkoseInitialized) {
         // If the challenge hasn't been initialized yet, we trigger a check now to make sure it
         // wasn't skipped by submitting the form without the username field ever losing the focus.
@@ -102,7 +100,6 @@ export default {
       }
     },
     async checkAndSubmit(form) {
-      this.submitOnSuppress = true;
       await this.checkIfNeedsChallenge();
       if (!this.arkoseInitialized) {
         // If the challenge still hasn't been initialized, the user definitely doesn't need one and
@@ -194,16 +191,17 @@ export default {
 </script>
 
 <template>
-  <div v-show="isVisible">
+  <div>
+    <dom-element-listener :selector="usernameSelector" @blur="checkIfNeedsChallenge" />
+    <dom-element-listener :selector="formSelector" @submit="onSubmit" />
     <input
       v-if="arkoseInitialized"
       :name="$options.VERIFICATION_TOKEN_INPUT_NAME"
       type="hidden"
       :value="arkoseToken"
     />
-    <dom-element-listener :selector="usernameSelector" @blur="checkIfNeedsChallenge" />
-    <dom-element-listener :selector="formSelector" @submit="onSubmit" />
     <div
+      v-show="arkoseLabsIframeShown"
       class="gl-display-flex gl-justify-content-center gl-mt-3 gl-mb-n3"
       :class="arkoseContainerClass"
       data-testid="arkose-labs-challenge"

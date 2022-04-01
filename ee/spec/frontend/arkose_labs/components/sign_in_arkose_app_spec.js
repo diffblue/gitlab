@@ -41,6 +41,7 @@ describe('SignInArkoseApp', () => {
   const findSignInForm = () => findByTestId('sign-in-form');
   const findUsernameInput = () => findByTestId('username-field');
   const findSignInButton = () => findByTestId('sign-in-button');
+  const findChallengeContainer = () => wrapper.findByTestId('arkose-labs-challenge');
   const findArkoseLabsErrorMessage = () => wrapper.findByTestId('arkose-labs-error-message');
   const findArkoseLabsVerificationTokenInput = () =>
     wrapper.find('input[name="arkose_labs_token"]');
@@ -211,6 +212,7 @@ describe('SignInArkoseApp', () => {
       itInitializesArkoseLabs();
 
       it('shows ArkoseLabs error when submitting the form', async () => {
+        onShown();
         submitForm();
         await nextTick();
 
@@ -219,12 +221,12 @@ describe('SignInArkoseApp', () => {
       });
 
       it('un-hides the challenge container once the iframe has been shown', async () => {
-        expect(wrapper.isVisible()).toBe(false);
+        expect(findChallengeContainer().isVisible()).toBe(false);
 
         onShown();
         await nextTick();
 
-        expect(wrapper.isVisible()).toBe(true);
+        expect(findChallengeContainer().isVisible()).toBe(true);
       });
 
       it('shows an error alert if the challenge fails to load', async () => {
