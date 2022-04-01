@@ -79,8 +79,6 @@ describe('Design note component', () => {
       note,
     });
 
-    expect(findUserAvatar().exists()).toBe(true);
-    expect(findUserAvatarLink().exists()).toBe(true);
     expect(findUserAvatar().props()).toMatchObject({
       src: note.author.avatarUrl,
       entityName: note.author.username,
