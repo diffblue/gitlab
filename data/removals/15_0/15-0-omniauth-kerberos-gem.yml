@@ -1,9 +1,16 @@
----
-removals:
-- feature_name: "Omniauth Kerberos Gem"
-  reporter: hsutor
-  date_of_removal: May 22, 2022
-  breaking_change: true
-  issue_url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/2908'
-  description: |
+- name: "Omniauth Kerberos Gem"  # the name of the feature being removed. Avoid the words `deprecation`, `deprecate`, `removal`, and `remove` in this field because these are implied.
+  announcement_milestone: "14.3"  # The milestone when this feature was deprecated.
+  announcement_date: "2021-09-22"  # The date of the milestone release when this feature was deprecated. This should almost always be the 22nd of a month (YYYY-MM-DD), unless you did an out of band blog post.
+  removal_milestone: "15.0"  # The milestone when this feature is being removed.
+  removal_date: "2022-05-22"  # This should almost always be the 22nd of a month (YYYY-MM-DD), the date of the milestone release when this feature will be removed.
+  breaking_change: true  # Change to true if this removal is a breaking change.
+  reporter: hsutor  # GitLab username of the person reporting the removal
+  body: |  # Do not modify this line, instead modify the lines below.
     Omniauth-kerberos is no longer supported. This gem has not been maintained and has very little usage and therefore, we removed support for this authentication method and recommend using [spengo](https://en.wikipedia.org/wiki/SPNEGO) instead. You can follow the [upgrade instructions](https://docs.gitlab.com/ee/integration/kerberos.html#upgrading-from-password-based-to-ticket-based-kerberos-sign-ins) to upgrade from the removed integration to the new supported one. Note - We are not removing Kerberos SPNEGO integration, just the old password-based Kerberos.
+# The following items are not published on the docs page, but may be used in the future.
+  stage:  # (optional - may be required in the future) String value of the stage that the feature was created in. e.g., Growth
+  tiers:  # (optional - may be required in the future) An array of tiers that the feature is available in currently.  e.g., [Free, Silver, Gold, Core, Premium, Ultimate]
+  issue_url:  # (optional) This is a link to the deprecation issue in GitLab
+  documentation_url:  # (optional) This is a link to the current documentation page
+  image_url:  # (optional) This is a link to a thumbnail image depicting the feature
+  video_url:  # (optional) Use the youtube thumbnail URL with the structure of https://img.youtube.com/vi/UNIQUEID/hqdefault.jpg
