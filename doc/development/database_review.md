@@ -250,6 +250,8 @@ Include in the MR description:
     it's suggested to treat background migrations as post migrations:
     place them in `db/post_migrate` instead of `db/migrate`. Keep in mind
     that post migrations are executed post-deployment in production.
+  - If a migration [has tracking enabled](background_migrations.md#background-jobs-tracking),
+    ensure `mark_all_as_succeeded` is called even if no work is done.
 - Check [timing guidelines for migrations](migration_style_guide.md#how-long-a-migration-should-take)
 - Check migrations are reversible and implement a `#down` method
 - Check new table migrations:
