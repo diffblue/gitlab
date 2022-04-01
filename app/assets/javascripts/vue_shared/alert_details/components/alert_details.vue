@@ -10,23 +10,27 @@ import {
   GlTab,
   GlButton,
   GlSafeHtmlDirective,
+  GlFormGroup,
+  GlFormInput,
+  GlModal,
 } from '@gitlab/ui';
+import { mapState, mapActions } from 'vuex';
 import * as Sentry from '@sentry/browser';
 import highlightCurrentUser from '~/behaviors/markdown/highlight_current_user';
 import { fetchPolicies } from '~/lib/graphql';
 import { toggleContainerClasses } from '~/lib/utils/dom_utils';
 import { visitUrl, joinPaths } from '~/lib/utils/url_utility';
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 import Tracking from '~/tracking';
 import initUserPopovers from '~/user_popovers';
 import AlertDetailsTable from '~/vue_shared/components/alert_details_table.vue';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
+import MetricImagesTab from '~/vue_shared/components/metric_images/metric_images_tab.vue';
 import { PAGE_CONFIG, SEVERITY_LEVELS } from '../constants';
 import createIssueMutation from '../graphql/mutations/alert_issue_create.mutation.graphql';
 import toggleSidebarStatusMutation from '../graphql/mutations/alert_sidebar_status.mutation.graphql';
 import alertQuery from '../graphql/queries/alert_sidebar_details.query.graphql';
 import sidebarStatusQuery from '../graphql/queries/alert_sidebar_status.query.graphql';
-import AlertMetrics from './alert_metrics.vue';
 import AlertSidebar from './alert_sidebar.vue';
 import AlertSummaryRow from './alert_summary_row.vue';
 import SystemNote from './system_notes/system_note.vue';
@@ -40,6 +44,15 @@ export default {
     ),
     reportedAt: s__('AlertManagement|Reported %{when}'),
     reportedAtWithTool: s__('AlertManagement|Reported %{when} by %{tool}'),
+    modalUpload: __('Upload'),
+    modalCancel: __('Cancel'),
+    modalTitle: s__('Incidents|Add image details'),
+    modalDescription: s__(
+      "Incidents|Add text or a link to display with your image. If you don't add either, the file name displays instead.",
+    ),
+    dropDescription: s__(
+      'Incidents|Drop or %{linkStart}upload%{linkEnd} a metric screenshot to attach it to the alert',
+    ),
   },
   directives: {
     SafeHtml: GlSafeHtmlDirective,
@@ -70,11 +83,14 @@ export default {
     GlSprintf,
     GlTab,
     GlTabs,
+    GlFormGroup,
+    GlFormInput,
     GlButton,
     TimeAgoTooltip,
     AlertSidebar,
     SystemNote,
-    AlertMetrics,
+    GlModal,
+    MetricImagesTab,
   },
   inject: {
     projectPath: {
@@ -97,6 +113,9 @@ export default {
     },
     trackAlertsDetailsViewsOptions: {
       default: null,
+    },
+    canUpdate: {
+      default: false,
     },
   },
   apollo: {
@@ -130,9 +149,25 @@ export default {
       createIncidentError: '',
       incidentCreationInProgress: false,
       sidebarErrorMessage: '',
+      currentFiles: [],
+      modalVisible: false,
+      modalUrl: '',
+      modalUrlText: '',
     };
   },
   computed: {
+    ...mapState(['metricImages', 'isLoadingMetricImages', 'isUploadingImage']),
+    actionPrimaryProps() {
+      return {
+        text: this.$options.i18n.modalUpload,
+        attributes: {
+          loading: this.isUploadingImage,
+          disabled: this.isUploadingImage,
+          category: 'primary',
+          variant: 'confirm',
+        },
+      };
+    },
     loading() {
       return this.$apollo.queries.alert.loading;
     },
@@ -179,6 +214,30 @@ export default {
     });
   },
   methods: {
+    clearInputs() {
+      this.modalVisible = false;
+      this.modalUrl = '';
+      this.modalUrlText = '';
+      this.currentFile = false;
+    },
+    openMetricDialog(files) {
+      this.modalVisible = true;
+      this.currentFiles = files;
+    },
+    async onUpload() {
+      try {
+        await this.uploadImage({
+          files: this.currentFiles,
+          url: this.modalUrl,
+          urlText: this.modalUrlText,
+        });
+        // Error case handled within action
+      } catch (error) {
+        throw Error(error);
+      } finally {
+        this.clearInputs();
+      }
+    },
     dismissError() {
       this.isErrorDismissed = true;
       this.sidebarErrorMessage = '';
@@ -372,13 +431,12 @@ export default {
           </alert-summary-row>
           <alert-details-table :alert="alert" :loading="loading" :statuses="statuses" />
         </gl-tab>
-        <gl-tab
+
+        <metric-images-tab
           v-if="!isThreatMonitoringPage"
-          :data-testid="$options.tabsConfig[1].id"
+          data-testid="$options.tabsConfig[1].id"
           :title="$options.tabsConfig[1].title"
-        >
-          <alert-metrics :dashboard-url="alert.metricsDashboardUrl" />
-        </gl-tab>
+        />
         <gl-tab :data-testid="$options.tabsConfig[2].id" :title="$options.tabsConfig[2].title">
           <div v-if="alert.notes.nodes.length > 0" class="issuable-discussion">
             <ul class="notes main-notes-list timeline">

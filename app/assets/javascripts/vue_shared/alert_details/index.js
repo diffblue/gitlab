@@ -3,6 +3,9 @@ import produce from 'immer';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
+import { parseBoolean } from '~/lib/utils/common_utils';
+import createStore from '~/vue_shared/components/metric_images/store';
+import service from './service.js';
 import AlertDetails from './components/alert_details.vue';
 import { PAGE_CONFIG } from './constants';
 import sidebarStatusQuery from './graphql/queries/alert_sidebar_status.query.graphql';
@@ -12,7 +15,8 @@ Vue.use(VueApollo);
 
 export default (selector) => {
   const domEl = document.querySelector(selector);
-  const { alertId, projectPath, projectIssuesPath, projectId, page } = domEl.dataset;
+  const { alertId, projectPath, projectIssuesPath, projectId, page, canUpdate } = domEl.dataset;
+  const iid = alertId;
   const router = createRouter();
 
   const resolvers = {
@@ -54,7 +58,9 @@ export default (selector) => {
     page,
     projectIssuesPath,
     projectId,
+    iid,
     statuses: PAGE_CONFIG[page].STATUSES,
+    canUpdate: parseBoolean(canUpdate),
   };
 
   if (page === PAGE_CONFIG.OPERATIONS.TITLE) {
@@ -67,6 +73,8 @@ export default (selector) => {
     provide.isThreatMonitoringPage = true;
   }
 
+  const store = createStore({}, service);
+
   // eslint-disable-next-line no-new
   new Vue({
     el: selector,
@@ -74,6 +82,7 @@ export default (selector) => {
     components: {
       AlertDetails,
     },
+    store,
     provide,
     apolloProvider,
     router,
