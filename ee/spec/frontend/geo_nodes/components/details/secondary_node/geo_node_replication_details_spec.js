@@ -191,17 +191,17 @@ describe('GeoNodeReplicationDetails', () => {
         });
 
         it('passes the correct props to the mobile replication details', () => {
-          expect(findGeoMobileReplicationDetails().props('replicationItems')).toStrictEqual(
-            expectedProps,
-          );
-          expect(findGeoMobileReplicationDetails().props('nodeId')).toBe(MOCK_NODES[1].id);
+          expect(findGeoMobileReplicationDetails().props()).toStrictEqual({
+            replicationItems: expectedProps,
+            nodeId: MOCK_NODES[1].id,
+          });
         });
 
         it('passes the correct props to the desktop replication details', () => {
-          expect(findGeoDesktopReplicationDetails().props('replicationItems')).toStrictEqual(
-            expectedProps,
-          );
-          expect(findGeoDesktopReplicationDetails().props('nodeId')).toBe(MOCK_NODES[1].id);
+          expect(findGeoDesktopReplicationDetails().props()).toStrictEqual({
+            replicationItems: expectedProps,
+            nodeId: MOCK_NODES[1].id,
+          });
         });
 
         it(`does ${hasNAVerificationHelpText ? '' : 'not '}show N/A verification help text`, () => {
