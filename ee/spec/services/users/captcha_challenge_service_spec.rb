@@ -23,6 +23,10 @@ RSpec.describe Users::CaptchaChallengeService do
     end
 
     context 'when feature flag arkose_labs_login_challenge is enabled' do
+      before do
+        stub_feature_flags(arkose_labs_login_challenge: true)
+      end
+
       context 'when the user has never logged in previously' do
         before do
           user.last_sign_in_at = nil
