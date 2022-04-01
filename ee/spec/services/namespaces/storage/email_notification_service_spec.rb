@@ -1,0 +1,218 @@
+# frozen_string_literal: true
+
+require 'spec_helper'
+
+RSpec.describe Namespaces::Storage::EmailNotificationService do
+  using RSpec::Parameterized::TableSyntax
+
+  describe 'execute' do
+    let(:mailer) { class_double(::Emails::NamespaceStorageUsageMailer) }
+    let(:service) { described_class.new(mailer) }
+
+    context 'in a saas environment', :saas do
+      let_it_be(:group, refind: true) { create(:group_with_plan, plan: :ultimate_plan) }
+      let_it_be(:owner) { create(:user) }
+
+      before_all do
+        create(:namespace_root_storage_statistics, namespace: group)
+        group.add_owner(owner)
+      end
+
+      where(:limit, :used, :last_notification_level, :expected_level) do
+        100 | 100 | :storage_remaining | :exceeded
+        100 | 200 | :storage_remaining | :exceeded
+        100 | 100 | :caution           | :exceeded
+        100 | 100 | :warning           | :exceeded
+        100 | 100 | :danger            | :exceeded
+      end
+
+      with_them do
+        it 'sends an out of storage notification when the namespace runs out of storage' do
+          set_storage_size_limit(group, megabytes: limit)
+          set_used_storage(group, megabytes: used)
+          set_notification_level(last_notification_level)
+
+          expect(mailer).to receive(:notify_out_of_storage).with(group, [owner.email])
+
+          service.execute(group)
+
+          expect(group.root_storage_statistics.reload.notification_level.to_sym).to eq(expected_level)
+        end
+      end
+
+      where(:limit, :used, :last_notification_level, :expected_percent_remaining, :expected_level) do
+        100  | 70  | :storage_remaining | 30 | :caution
+        100  | 85  | :storage_remaining | 15 | :warning
+        100  | 95  | :storage_remaining | 5  | :danger
+        100  | 77  | :storage_remaining | 23 | :caution
+        1000 | 971 | :storage_remaining | 2  | :danger
+        100  | 85  | :caution           | 15 | :warning
+        100  | 95  | :warning           | 5  | :danger
+        100  | 99  | :exceeded          | 1  | :danger
+        100  | 94  | :danger            | 6  | :warning
+        100  | 84  | :warning           | 16 | :caution
+      end
+
+      with_them do
+        it 'sends a storage limit notification when storage is running low' do
+          set_storage_size_limit(group, megabytes: limit)
+          set_used_storage(group, megabytes: used)
+          set_notification_level(last_notification_level)
+
+          expect(mailer).to receive(:notify_limit_warning).with(group, [owner.email], expected_percent_remaining)
+
+          service.execute(group)
+
+          expect(group.root_storage_statistics.reload.notification_level.to_sym).to eq(expected_level)
+        end
+      end
+
+      where(:limit, :used, :last_notification_level) do
+        100  | 5   | :storage_remaining
+        100  | 69  | :storage_remaining
+        100  | 69  | :caution
+        100  | 69  | :warning
+        100  | 69  | :danger
+        100  | 69  | :exceeded
+        1000 | 699 | :exceeded
+      end
+
+      with_them do
+        it 'does not send an email when there is sufficient storage remaining' do
+          set_storage_size_limit(group, megabytes: limit)
+          set_used_storage(group, megabytes: used)
+          set_notification_level(last_notification_level)
+
+          expect(mailer).not_to receive(:notify_out_of_storage)
+          expect(mailer).not_to receive(:notify_limit_warning)
+
+          service.execute(group)
+        end
+      end
+
+      it 'sends an email to all group owners' do
+        set_storage_size_limit(group, megabytes: 100)
+        set_used_storage(group, megabytes: 200)
+        owner2 = create(:user)
+        group.add_owner(owner2)
+        group.add_maintainer(create(:user))
+        group.add_developer(create(:user))
+        group.add_reporter(create(:user))
+        group.add_guest(create(:user))
+        owner_emails = [owner.email, owner2.email]
+
+        expect(mailer).to receive(:notify_out_of_storage).with(group, match_array(owner_emails))
+
+        service.execute(group)
+      end
+
+      it 'does not send an out of storage notification twice' do
+        set_storage_size_limit(group, megabytes: 100)
+        set_used_storage(group, megabytes: 200)
+        set_notification_level(:exceeded)
+
+        expect(mailer).not_to receive(:notify_out_of_storage)
+
+        service.execute(group)
+      end
+
+      where(:limit, :used, :last_notification_level) do
+        100  | 70  | :caution
+        100  | 85  | :warning
+        100  | 95  | :danger
+      end
+
+      with_them do
+        it 'does not send a storage limit notification for the same threshold twice' do
+          set_storage_size_limit(group, megabytes: limit)
+          set_used_storage(group, megabytes: used)
+          set_notification_level(last_notification_level)
+
+          expect(mailer).not_to receive(:notify_limit_warning)
+
+          service.execute(group)
+        end
+      end
+
+      it 'does nothing if there is no defined storage limit' do
+        set_used_storage(group, megabytes: 150)
+
+        expect(mailer).not_to receive(:notify_out_of_storage)
+        expect(mailer).not_to receive(:notify_limit_warning)
+
+        service.execute(group)
+
+        expect(group.root_storage_statistics.reload.notification_level).to eq('storage_remaining')
+      end
+
+      it 'does nothing if there is no root_storage_statistics' do
+        group.root_storage_statistics.destroy!
+        group.reload
+
+        expect(mailer).not_to receive(:notify_out_of_storage)
+        expect(mailer).not_to receive(:notify_limit_warning)
+
+        service.execute(group)
+
+        expect(group.reload.root_storage_statistics).to be_nil
+      end
+
+      context 'with a personal namespace' do
+        let_it_be(:namespace) { create(:namespace_with_plan, plan: :ultimate_plan) }
+
+        before_all do
+          create(:namespace_root_storage_statistics, namespace: namespace)
+        end
+
+        it 'sends a limit notification' do
+          set_storage_size_limit(namespace, megabytes: 1000)
+          set_used_storage(namespace, megabytes: 851)
+          owner = namespace.owner
+
+          expect(mailer).to receive(:notify_limit_warning).with(namespace, [owner.email], 14)
+
+          service.execute(namespace)
+        end
+
+        it 'sends an out of storage notification' do
+          set_storage_size_limit(namespace, megabytes: 100)
+          set_used_storage(namespace, megabytes: 550)
+          owner = namespace.owner
+
+          expect(mailer).to receive(:notify_out_of_storage).with(namespace, [owner.email])
+
+          service.execute(namespace)
+        end
+      end
+    end
+
+    context 'in a self-managed environment' do
+      it 'does nothing' do
+        group = create(:group)
+        create(:namespace_root_storage_statistics, namespace: group)
+        owner = create(:user)
+        group.add_owner(owner)
+        set_used_storage(group, megabytes: 87)
+
+        expect(mailer).not_to receive(:notify_out_of_storage)
+        expect(mailer).not_to receive(:notify_limit_warning)
+
+        service.execute(group)
+
+        expect(group.root_storage_statistics.reload.notification_level).to eq('storage_remaining')
+      end
+    end
+  end
+
+  def set_storage_size_limit(group, megabytes:)
+    group.gitlab_subscription.hosted_plan.actual_limits.update!(storage_size_limit: megabytes)
+  end
+
+  def set_used_storage(group, megabytes:)
+    group.root_storage_statistics.update!(storage_size: megabytes.megabytes)
+  end
+
+  def set_notification_level(level)
+    group.root_storage_statistics.update!(notification_level: level)
+  end
+end
