@@ -38,7 +38,7 @@ module QA
         end
 
         @project.visit!
-        Flow::Pipeline.wait_for_latest_pipeline(pipeline_condition: 'succeeded')
+        Flow::Pipeline.wait_for_latest_pipeline(status: 'passed')
 
         @merge_request = Resource::MergeRequest.fabricate_via_api! do |mr|
           mr.project = @project
@@ -96,7 +96,7 @@ module QA
         end
 
         @project.visit!
-        Flow::Pipeline.wait_for_latest_pipeline(pipeline_condition: 'succeeded')
+        Flow::Pipeline.wait_for_latest_pipeline(status: 'passed')
       end
 
       it 'manage licenses from the merge request', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348039' do
