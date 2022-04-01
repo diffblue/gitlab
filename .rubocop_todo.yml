@@ -452,13 +452,6 @@ Style/EmptyElse:
 Style/EmptyMethod:
   Enabled: false
 
-# Offense count: 2
-# Cop supports --auto-correct.
-Style/ExpandPathArguments:
-  Exclude:
-    - 'cable/config.ru'
-    - 'config.ru'
-
 # Offense count: 118
 # Cop supports --auto-correct.
 Style/ExplicitBlockArgument:
