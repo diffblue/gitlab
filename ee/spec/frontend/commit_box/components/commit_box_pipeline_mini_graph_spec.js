@@ -7,7 +7,7 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import createFlash from '~/flash';
 import CommitBoxPipelineMiniGraph from '~/projects/commit_box/info/components/commit_box_pipeline_mini_graph.vue';
-import { PIPELINE_STAGES_POLL_INTERVAL } from '~/projects/commit_box/info/constants';
+import { COMMIT_BOX_POLL_INTERVAL } from '~/projects/commit_box/info/constants';
 import getLinkedPipelinesQuery from '~/projects/commit_box/info/graphql/queries/get_linked_pipelines.query.graphql';
 import getPipelineStagesQuery from '~/projects/commit_box/info/graphql/queries/get_pipeline_stages.query.graphql';
 import * as graphQlUtils from '~/pipelines/components/graph/utils';
@@ -42,7 +42,7 @@ describe('Commit box pipeline mini graph', () => {
   const findDownstream = () => wrapper.findByTestId('commit-box-mini-graph-downstream');
 
   const advanceToNextFetch = () => {
-    jest.advanceTimersByTime(PIPELINE_STAGES_POLL_INTERVAL);
+    jest.advanceTimersByTime(COMMIT_BOX_POLL_INTERVAL);
   };
 
   const createMockApolloProvider = (handler = downstreamHandler) => {
@@ -161,7 +161,7 @@ describe('Commit box pipeline mini graph', () => {
 
       const expectedInterval = wrapper.vm.$apollo.queries.pipelineStages.options.pollInterval;
 
-      expect(expectedInterval).toBe(PIPELINE_STAGES_POLL_INTERVAL);
+      expect(expectedInterval).toBe(COMMIT_BOX_POLL_INTERVAL);
     });
 
     it('polls for stages', async () => {

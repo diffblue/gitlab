@@ -37990,6 +37990,9 @@ msgstr ""
 msgid "There was a problem fetching the keep latest artifacts setting."
 msgstr ""
 
+msgid "There was a problem fetching the latest pipeline status."
+msgstr ""
+
 msgid "There was a problem fetching the pipeline stages."
 msgstr ""
 
