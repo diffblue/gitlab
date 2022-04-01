@@ -47,16 +47,18 @@ RSpec.describe 'group epic roadmap', :js do
   end
 
   context 'when epics exist for the group' do
+    let(:end_of_quarter) { Date.today.end_of_quarter }
+
     available_tokens = %w[Author Label Milestone Epic My-Reaction]
     available_sort_options = ['Start date', 'Due date']
 
-    let!(:epic_with_bug) { create(:labeled_epic, group: group, start_date: 10.days.ago, end_date: 1.day.ago, labels: [bug_label]) }
-    let!(:epic_with_critical) { create(:labeled_epic, group: group, start_date: 20.days.ago, end_date: 2.days.ago, labels: [critical_label]) }
-    let!(:closed_epic) { create(:epic, :closed, group: group, start_date: 20.days.ago, end_date: 2.days.ago) }
-    let!(:milestone) { create(:milestone, :with_dates, group: group, start_date: 10.days.ago, due_date: 1.day.ago) }
-    let!(:milestone_subgroup) { create(:milestone, :with_dates, group: subgroup, start_date: 10.days.ago, due_date: 1.day.ago) }
-    let!(:milestone_project) { create(:milestone, :with_dates, project: project, start_date: 10.days.ago, due_date: 1.day.ago) }
-    let!(:milestone_project_2) { create(:milestone, :with_dates, project: project, start_date: 10.days.ago, due_date: 1.day.ago) }
+    let!(:epic_with_bug) { create(:labeled_epic, group: group, start_date: end_of_quarter - 10.days, end_date: end_of_quarter - 1.day, labels: [bug_label]) }
+    let!(:epic_with_critical) { create(:labeled_epic, group: group, start_date: end_of_quarter - 20.days, end_date: end_of_quarter - 2.days, labels: [critical_label]) }
+    let!(:closed_epic) { create(:epic, :closed, group: group, start_date: end_of_quarter - 20.days, end_date: end_of_quarter - 2.days) }
+    let!(:milestone) { create(:milestone, :with_dates, group: group, start_date: end_of_quarter - 10.days, due_date: end_of_quarter - 1.day) }
+    let!(:milestone_subgroup) { create(:milestone, :with_dates, group: subgroup, start_date: end_of_quarter - 10.days, due_date: end_of_quarter - 1.day) }
+    let!(:milestone_project) { create(:milestone, :with_dates, project: project, start_date: end_of_quarter - 10.days, due_date: end_of_quarter - 1.day) }
+    let!(:milestone_project_2) { create(:milestone, :with_dates, project: project, start_date: end_of_quarter - 10.days, due_date: end_of_quarter - 1.day) }
 
     before do
       visit group_roadmap_path(group)
@@ -287,13 +289,13 @@ RSpec.describe 'group epic roadmap', :js do
     end
 
     describe 'roadmap page with sort order applied' do
-      let!(:parent_epic1) { create(:epic, title: 'Parent Epic 1', group: group, start_date: 19.days.ago, end_date: 9.days.ago) }
-      let!(:child_epic1) { create(:epic, title: 'Child Epic 1', group: group, parent_id: parent_epic1.id, start_date: 18.days.ago, end_date: 4.days.ago) }
-      let!(:child_epic2) { create(:epic, title: 'Child Epic 2', group: group, parent_id: parent_epic1.id, start_date: 17.days.ago, end_date: 6.days.ago) }
+      let!(:parent_epic1) { create(:epic, title: 'Parent Epic 1', group: group, start_date: end_of_quarter - 19.days, end_date: end_of_quarter - 9.days) }
+      let!(:child_epic1) { create(:epic, title: 'Child Epic 1', group: group, parent_id: parent_epic1.id, start_date: end_of_quarter - 18.days, end_date: end_of_quarter - 4.days) }
+      let!(:child_epic2) { create(:epic, title: 'Child Epic 2', group: group, parent_id: parent_epic1.id, start_date: end_of_quarter - 17.days, end_date: end_of_quarter - 6.days) }
 
-      let!(:parent_epic2) { create(:epic, title: 'Parent Epic 2', group: group, start_date: 14.days.ago, end_date: 4.days.ago) }
-      let!(:child_epic3) { create(:epic, title: 'Child Epic 3', group: group, parent_id: parent_epic2.id, end_date: 4.days.ago) }
-      let!(:child_epic4) { create(:epic, title: 'Child Epic 4', group: group, parent_id: parent_epic2.id, end_date: 6.days.ago) }
+      let!(:parent_epic2) { create(:epic, title: 'Parent Epic 2', group: group, start_date: end_of_quarter - 14.days, end_date: end_of_quarter - 4.days) }
+      let!(:child_epic3) { create(:epic, title: 'Child Epic 3', group: group, parent_id: parent_epic2.id, end_date: end_of_quarter - 4.days) }
+      let!(:child_epic4) { create(:epic, title: 'Child Epic 4', group: group, parent_id: parent_epic2.id, end_date: end_of_quarter - 6.days) }
 
       before do
         visit group_roadmap_path(group)
