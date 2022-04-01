@@ -67,7 +67,7 @@ as shown in the following table:
 | View identified secrets in the pipelines' **Security** tab      | **{dotted-circle}** | **{check-circle}** |
 | [Manage vulnerabilities](../vulnerabilities/index.md)           | **{dotted-circle}** | **{check-circle}** |
 | [Access the Security Dashboard](../security_dashboard/index.md) | **{dotted-circle}** | **{check-circle}** |
-| [Customize Secret Detection rulesets](#customize-rulesets)      | **{dotted-circle}** | **{check-circle}** |
+| [Customize Secret Detection rulesets](#custom-rulesets)         | **{dotted-circle}** | **{check-circle}** |
 
 ## Configuration
 
