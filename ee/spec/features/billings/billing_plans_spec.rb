@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Billing plan pages', :feature, :js do
+RSpec.describe 'Billing plan pages', :feature, :saas, :js do
   include SubscriptionPortalHelpers
 
   let(:user) { create(:user, first_name: 'James', last_name: 'Bond', organization: 'ACME') }
@@ -23,8 +23,6 @@ RSpec.describe 'Billing plan pages', :feature, :js do
     stub_billing_plans(nil)
     stub_billing_plans(namespace.id, plan.name, plans_data.to_json)
     stub_eoa_eligibility_request(namespace.id)
-
-    allow(Gitlab).to receive(:com?) { true }
 
     sign_in(user)
   end
@@ -47,7 +45,7 @@ RSpec.describe 'Billing plan pages', :feature, :js do
 
   shared_examples 'does not display the billing plans' do
     it 'does not display the plans' do
-      expect(page).not_to have_css('.billing-plans')
+      expect(page).not_to have_selector("[data-testid='billing-plans']")
     end
   end
 
@@ -204,7 +202,7 @@ RSpec.describe 'Billing plan pages', :feature, :js do
     end
 
     it 'renders the plan card marked as Legacy' do
-      page.within('.billing-plans') do
+      page.within("[data-testid='billing-plans']") do
         panels = page.all('.card')
         expect(panels.length).to eq(plans_data.length)
 
@@ -410,7 +408,7 @@ RSpec.describe 'Billing plan pages', :feature, :js do
     let(:namespace) { create(:group) }
     let!(:group_member) { create(:group_member, :owner, group: namespace, user: user) }
 
-    context 'top-most group' do
+    context 'when a group is the top-level group' do
       let(:page_path) { group_billings_path(namespace) }
 
       context 'on ultimate' do
@@ -431,7 +429,7 @@ RSpec.describe 'Billing plan pages', :feature, :js do
         end
 
         it 'does not display the billing plans table' do
-          expect(page).not_to have_css('.billing-plans')
+          expect(page).not_to have_selector("[data-testid='billing-plans']")
         end
 
         it_behaves_like 'plan with subscription table'
@@ -455,7 +453,7 @@ RSpec.describe 'Billing plan pages', :feature, :js do
         end
 
         it 'does display the billing plans table' do
-          expect(page).to have_css('.billing-plans')
+          expect(page).to have_selector("[data-testid='billing-plans']")
         end
 
         it_behaves_like 'can contact sales'
@@ -484,12 +482,27 @@ RSpec.describe 'Billing plan pages', :feature, :js do
         end
 
         it 'displays the billing plans table' do
-          expect(page).to have_css('.billing-plans')
+          expect(page).to have_selector("[data-testid='billing-plans']")
         end
 
         it_behaves_like 'non-upgradable plan'
         it_behaves_like 'used seats rendering for non paid subscriptions'
         it_behaves_like 'plan with subscription table'
+      end
+    end
+
+    context 'when a group is the subgroup' do
+      let(:namespace) { create(:group_with_plan)}
+      let(:plan) { namespace.actual_plan }
+      let(:subgroup) { create(:group, parent: namespace)}
+
+      it 'shows the subgroup page context for billing', :aggregate_failures do
+        visit group_billings_path(subgroup)
+
+        expect(page).to have_text('is currently using the')
+        expect(page).to have_text('This group uses the plan associated with its parent group')
+        expect(page).to have_link('Manage plan')
+        expect(page).not_to have_selector("[data-testid='billing-plans']")
       end
     end
 
@@ -550,7 +563,7 @@ RSpec.describe 'Billing plan pages', :feature, :js do
     end
 
     it 'displays all plans' do
-      page.within('.billing-plans') do
+      page.within("[data-testid='billing-plans']") do
         panels = page.all('.card')
         expect(panels.length).to eq(plans_data.length)
         plans_data.each_with_index do |data, index|

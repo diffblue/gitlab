@@ -1,15 +1,6 @@
-- support_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: EE::CUSTOMER_SUPPORT_URL }
-- support_link_end   = '</a>'.html_safe
-
-= content_for :flash_message do
-  = render_if_exists 'shared/billings/eoa_bronze_plan_banner', namespace: namespace, eoa_bronze_plan_end_date: eoa_bronze_plan_end_date
-
-- if current_plan
-  = render 'shared/billings/billing_plan_header', namespace: namespace, plan: current_plan
-
 - if show_plans?(namespace)
   - plans = billing_available_plans(plans_data, current_plan)
-  .billing-plans.gl-mt-7{ data: { track_action: 'render', track_label: 'billing' } }
+  .billing-plans.gl-mt-7{ data: { track_action: 'render', track_label: 'billing', testid: 'billing-plans' } }
     - plans.each do |plan|
       - next if plan.hide_card
       - is_default_plan = current_plan.nil? && plan.default?
@@ -19,6 +10,9 @@
                                                plan_offer_type: upgrade_offer_type(namespace, plan)
 
 - if namespace.gitlab_subscription&.has_a_paid_hosted_plan?
+  - support_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: EE::CUSTOMER_SUPPORT_URL }
+  - support_link_end   = '</a>'.html_safe
+
   .center.gl-mb-7
     &= s_('BillingPlans|If you would like to downgrade your plan please contact %{support_link_start}Customer Support%{support_link_end}.').html_safe % { support_link_start: support_link_start, support_link_end: support_link_end }
 

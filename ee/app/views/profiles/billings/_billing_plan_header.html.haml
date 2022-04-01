@@ -1,0 +1,21 @@
+= render 'trials/banner', namespace: namespace
+
+.billing-plan-header.content-block.gl-text-center
+  .billing-plan-logo
+    .avatar-container.s96.home-panel-avatar.gl-mr-3.float-none.gl-mb-6.gl-mt-2{ class: 'gl-mx-auto!' }
+      = user_avatar_without_link(user: current_user, class: 'mb-3', size: 96)
+
+  %h4
+    = s_("BillingPlans|@%{user_name} you are currently using the %{plan_name}.").html_safe % { user_name: current_user.username, plan_name: current_plan.name }
+
+  - if namespace.free_personal?
+    - groups_link = link_to s_("BillingPlans|group"), dashboard_groups_path
+    %p= html_escape_once(s_("BillingPlans|Looking to purchase or manage a subscription for your group? Navigate to your %{groups_link} and go to %{strong_open}Settings &gt; Billing.%{strong_close}")).html_safe % { groups_link: groups_link.html_safe,
+        strong_open: '<strong>'.html_safe,
+        strong_close: '</strong>'.html_safe }
+    %p.gl-mt-1
+      = add_namespace_plan_to_group_instructions
+  - else
+    = render 'shared/billings/trial_status', namespace: namespace
+
+  = render 'shared/billings/trial_buttons', namespace: namespace, glm_content: 'user-billing'

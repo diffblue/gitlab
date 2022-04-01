@@ -1,12 +1,22 @@
 - page_title _("Billing")
-- current_plan = subscription_plan_info(@plans_data, @group.actual_plan_name)
 
-= render_if_exists 'shared/qrtly_reconciliation_alert', group: @group
+= render 'shared/qrtly_reconciliation_alert', group: @group
 
-- if @top_most_group # subgroup
-  - top_most_group_plan = subscription_plan_info(@plans_data, @top_most_group.actual_plan_name)
-  = render 'shared/billings/billing_plan_header', namespace: @group, plan: top_most_group_plan, parent_group: @top_most_group
+- if @top_level_group # we are in subgroup mode
+  - current_plan = subscription_plan_info(@plans_data, @top_level_group.actual_plan_name)
+  = render 'subgroup_billing_plan_header',
+    namespace: @group,
+    current_plan: current_plan,
+    top_level_group: @top_level_group
 - else
+  = content_for :flash_message do
+    = render 'shared/billings/eoa_bronze_plan_banner', namespace: @group, eoa_bronze_plan_end_date: eoa_bronze_plan_end_date
+
+  - current_plan = subscription_plan_info(@plans_data, @group.actual_plan_name)
+
+  - if current_plan
+    = render 'top_level_billing_plan_header', namespace: @group, current_plan: current_plan
+
   = render 'shared/billings/billing_plans', plans_data: @plans_data, namespace: @group, current_plan: current_plan
 
   - data_attributes = subscription_plan_data_attributes(@group, current_plan).merge(extend_reactivate_trial_button_data(@group))

@@ -14,8 +14,8 @@ class Groups::BillingsController < Groups::ApplicationController
 
   def index
     @hide_search_settings = true
-    @top_most_group = @group.root_ancestor if @group.has_parent?
-    relevant_group = (@top_most_group || @group)
+    @top_level_group = @group.root_ancestor if @group.has_parent?
+    relevant_group = (@top_level_group || @group)
     current_plan = relevant_group.plan_name_for_upgrading
     @plans_data = GitlabSubscriptions::FetchSubscriptionPlansService
       .new(plan: current_plan, namespace_id: relevant_group.id)
