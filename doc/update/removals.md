@@ -42,6 +42,21 @@ The Container Registry supports [authentication](https://gitlab.com/gitlab-org/c
 
 Since it isn't used in the context of GitLab (the product), `htpasswd` authentication will be deprecated in GitLab 14.9 and removed in GitLab 15.0.
 
+### `omniauth-kerberos` gem
+
+WARNING:
+This feature was changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+The `omniauth-kerberos` gem is no longer supported. This gem has not been maintained and has very little usage. Therefore, we
+removed support for this authentication method and recommend using [SPEGNO](https://en.wikipedia.org/wiki/SPNEGO) instead. You can
+follow the [upgrade instructions](https://docs.gitlab.com/ee/integration/kerberos.html#upgrading-from-password-based-to-ticket-based-kerberos-sign-ins)
+to upgrade from the removed integration to the new supported one.
+
+We are not removing Kerberos SPNEGO integration. We are removing the old password-based Kerberos.
+
 ## 14.9
 
 ### Integrated error tracking disabled by default
