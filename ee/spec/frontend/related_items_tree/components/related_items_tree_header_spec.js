@@ -6,7 +6,6 @@ import Vuex from 'vuex';
 import EpicHealthStatus from 'ee/related_items_tree/components/epic_health_status.vue';
 import EpicActionsSplitButton from 'ee/related_items_tree/components/epic_issue_actions_split_button.vue';
 import RelatedItemsTreeHeader from 'ee/related_items_tree/components/related_items_tree_header.vue';
-import ToggleLabels from 'ee/boards/components/toggle_labels.vue';
 import createDefaultStore from 'ee/related_items_tree/store';
 import * as epicUtils from 'ee/related_items_tree/utils/epic_utils';
 
@@ -59,12 +58,12 @@ describe('RelatedItemsTree', () => {
 
       it('returns string containing epic count based on available direct children within state', () => {
         expect(wrapper.findComponent(GlTooltip).text()).toContain(`Epics •
-        1 open, 1 closed`);
+            1 open, 1 closed`);
       });
 
       it('returns string containing issue count based on available direct children within state', () => {
         expect(wrapper.findComponent(GlTooltip).text()).toContain(`Issues •
-        2 open, 1 closed`);
+            2 open, 1 closed`);
       });
     });
 
@@ -75,16 +74,6 @@ describe('RelatedItemsTree', () => {
 
       it('total of openedIssues and closedIssues weight', () => {
         expect(wrapper.vm.totalWeight).toBe(15);
-      });
-    });
-
-    describe('toggleLabels', () => {
-      beforeEach(() => {
-        wrapper = createComponent();
-      });
-
-      it('toggle labels component is visible', () => {
-        expect(wrapper.findComponent(ToggleLabels).isVisible()).toBe(true);
       });
     });
 

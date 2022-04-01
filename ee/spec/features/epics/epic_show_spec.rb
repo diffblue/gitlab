@@ -38,7 +38,7 @@ RSpec.describe 'Epic show', :js do
     button_name = type == 'issue' ? 'Add an existing issue' : 'Add an existing epic'
     input_character = type == 'issue' ? '#' : '&'
 
-    page.within('.js-epic-tabs-content #tree') do
+    page.within('.related-items-tree-container') do
       find('.js-add-epics-issues-button .dropdown-toggle').click
       click_button button_name
       fill_in "Paste #{type} link", with: input_character
@@ -52,15 +52,15 @@ RSpec.describe 'Epic show', :js do
     end
 
     describe 'Epic metadata' do
-      it 'shows epic tabs `Epics and Issues` and `Roadmap`' do
-        expect(find('.js-epic-tree-tab')).to have_content('Epics and Issues')
-        expect(find('.js-epic-roadmap-tab')).to have_content('Roadmap')
+      it 'shows buttons `Tree view` and `Roadmap view`' do
+        expect(find('[data-testid="tree-view-button"]')).to have_content('Tree view')
+        expect(find('[data-testid="roadmap-view-button"]')).to have_content('Roadmap view')
       end
     end
 
     describe 'Epics and Issues tab' do
       it 'shows Related items tree with child epics' do
-        page.within('.js-epic-tabs-content #tree') do
+        page.within('.js-epic-container') do
           expect(page).to have_selector('.related-items-tree-container')
 
           page.within('.related-items-tree-container') do
@@ -92,12 +92,12 @@ RSpec.describe 'Epic show', :js do
 
     describe 'Roadmap tab' do
       before do
-        find('.js-epic-roadmap-tab').click
+        find('[data-testid="roadmap-view-button"]').click
         wait_for_requests
       end
 
       it 'shows Roadmap timeline with child epics', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/299298' do
-        page.within('.js-epic-tabs-content #roadmap') do
+        page.within('.related-items-tree-container #roadmap') do
           expect(page).to have_selector('.roadmap-container .js-roadmap-shell')
 
           page.within('.js-roadmap-shell .epics-list-section') do
@@ -121,14 +121,14 @@ RSpec.describe 'Epic show', :js do
       find('.js-epic-roadmap-tab').click
       wait_for_all_requests # Wait for Roadmap bundle load and then Epics fetch load
 
-      page.within('.js-epic-tabs-content') do
+      page.within('.related-items-tree-container') do
         expect(page).to have_selector('#roadmap.tab-pane', visible: true)
         expect(page).to have_selector('#tree.tab-pane', visible: false)
       end
 
       find('.js-epic-tree-tab').click
 
-      page.within('.js-epic-tabs-content') do
+      page.within('.related-items-tree-container') do
         expect(page).to have_selector('#tree.tab-pane', visible: true)
         expect(page).to have_selector('#roadmap.tab-pane', visible: false)
       end
@@ -137,23 +137,22 @@ RSpec.describe 'Epic show', :js do
 
   describe 'when the sub-epics feature is not available' do
     before do
+      stub_licensed_features(epics: true, subepics: false)
       visit group_epic_path(group, epic)
     end
 
     describe 'Epic metadata' do
       it 'shows epic tab `Issues`' do
-        expect(find('.js-epic-tree-tab')).to have_content('Issues')
+        page.within('.related-items-tree-container') do
+          expect(find('h3.card-title')).to have_content('Issues')
+        end
       end
     end
 
     describe 'Issues tab' do
       it 'shows Related items tree with child epics' do
-        page.within('.js-epic-tabs-content #tree') do
-          expect(page).to have_selector('.related-items-tree-container')
-
-          page.within('.related-items-tree-container') do
-            expect(page.find('.issue-count-badge', text: '1')).to be_present
-          end
+        page.within('.related-items-tree-container') do
+          expect(page.find('.issue-count-badge', text: '1')).to be_present
         end
       end
     end

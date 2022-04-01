@@ -10,8 +10,13 @@ import AddIssuableForm from '~/related_issues/components/add_issuable_form.vue';
 import SlotSwitch from '~/vue_shared/components/slot_switch.vue';
 import RelatedItemsTreeApp from 'ee/related_items_tree/components/related_items_tree_app.vue';
 import RelatedItemsTreeHeader from 'ee/related_items_tree/components/related_items_tree_header.vue';
+import RelatedItemsTreeActions from 'ee/related_items_tree/components/related_items_tree_actions.vue';
+import RelatedItemsTreeBody from 'ee/related_items_tree/components/related_items_tree_body.vue';
+import RelatedItemsRoadmapApp from 'ee/related_items_tree/components/related_items_roadmap_app.vue';
+
 import createDefaultStore from 'ee/related_items_tree/store';
 import axios from '~/lib/utils/axios_utils';
+import { ITEM_TABS } from 'ee/related_items_tree/constants';
 import { issuableTypesMap } from '~/related_issues/constants';
 
 import { mockInitialConfig, mockParentItem, mockEpics, mockIssues } from '../mock_data';
@@ -270,5 +275,38 @@ describe('RelatedItemsTreeApp', () => {
         });
       },
     );
+
+    it('switches tab to Roadmap', async () => {
+      wrapper.vm.$store.state.itemsFetchResultEmpty = false;
+
+      await nextTick();
+
+      wrapper.findComponent(RelatedItemsTreeActions).vm.$emit('tab-change', ITEM_TABS.ROADMAP);
+
+      await nextTick();
+
+      expect(wrapper.vm.activeTab).toBe(ITEM_TABS.ROADMAP);
+    });
+
+    it.each`
+      visibleApp        | activeTab
+      ${'Tree View'}    | ${ITEM_TABS.TREE}
+      ${'Roadmap View'} | ${ITEM_TABS.ROADMAP}
+    `('renders $visibleApp when activeTab is $activeTab', async ({ activeTab }) => {
+      wrapper.vm.$store.state.itemsFetchResultEmpty = false;
+
+      await nextTick();
+
+      wrapper.findComponent(RelatedItemsTreeActions).vm.$emit('tab-change', activeTab);
+
+      await nextTick();
+
+      const appMapping = {
+        [ITEM_TABS.TREE]: RelatedItemsTreeBody,
+        [ITEM_TABS.ROADMAP]: RelatedItemsRoadmapApp,
+      };
+
+      expect(wrapper.findComponent(appMapping[activeTab]).isVisible()).toBe(true);
+    });
   });
 });

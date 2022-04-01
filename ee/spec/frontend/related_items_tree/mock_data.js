@@ -465,3 +465,19 @@ export const mockMixedFrequentlyUsedProjects = [
     frequency: 3,
   },
 ];
+
+export const mockRoadmapAppData = {
+  epics_path: '/groups/group1/-/epics.json?parent_id=1',
+  group_id: '2',
+  iid: '1',
+  full_path: 'group1',
+  empty_state_illustration: '',
+  new_epic_path: '/groups/group1/-/epics/new',
+  list_epics_path: '/groups/group1/-/epics',
+  epics_docs_path: '/help/user/group/epics/index',
+  preset_type: 'MONTHS',
+  epics_state: 'all',
+  sorted_by: 'start_date_asc',
+  inner_height: '600',
+  child_epics: 'true',
+};
