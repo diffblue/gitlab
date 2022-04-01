@@ -12,11 +12,9 @@ describe('gfm', () => {
         },
       });
 
-      expect(result).toEqual(
-        expect.objectContaining({
-          type: 'root',
-        }),
-      );
+      expect(result).toMatchObject({
+        type: 'root',
+      });
     });
 
     it('transforms raw HTML into individual nodes in the AST', async () => {
@@ -29,13 +27,11 @@ describe('gfm', () => {
         },
       });
 
-      expect(result.children[0].children[0]).toEqual(
-        expect.objectContaining({
-          type: 'element',
-          tagName: 'strong',
-          properties: {},
-        }),
-      );
+      expect(result.children[0].children[0]).toMatchObject({
+        type: 'element',
+        tagName: 'strong',
+        properties: {},
+      });
     });
 
     it('returns the result of executing the renderer function', async () => {
