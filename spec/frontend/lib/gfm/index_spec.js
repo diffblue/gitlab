@@ -12,9 +12,7 @@ describe('gfm', () => {
         },
       });
 
-      expect(result).toMatchObject({
-        type: 'root',
-      });
+      expect(result.type).toBe('root');
     });
 
     it('transforms raw HTML into individual nodes in the AST', async () => {
