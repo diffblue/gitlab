@@ -99,7 +99,7 @@ describe('SignInArkoseApp', () => {
   afterEach(() => {
     axiosMock.restore();
     wrapper?.destroy();
-    document.getElementsByTagName('html')[0].innerHTML = '';
+    document.body.innerHTML = '';
   });
 
   describe('when the username field is pre-filled', () => {
