@@ -82,9 +82,9 @@ export default {
   fields: [
     { key: 'component', label: s__('Dependencies|Component'), tdClass: tdClass() },
     { key: 'packager', label: s__('Dependencies|Packager'), tdClass: tdClass() },
-    { key: 'location', label: s__('Dependencies|Location'), tdClass: tdClass(['gl-md-max-w-25']) },
+    { key: 'location', label: s__('Dependencies|Location'), tdClass: tdClass(['gl-md-max-w-26']) },
     { key: 'license', label: s__('Dependencies|License'), tdClass: tdClass() },
-    { key: 'isVulnerable', label: '', tdClass: tdClass(['text-right']) },
+    { key: 'isVulnerable', label: '', tdClass: tdClass(['gl-text-right']) },
   ],
   DEPENDENCIES_PER_PAGE: 20,
   DEPENDENCY_PATH_LINK:
