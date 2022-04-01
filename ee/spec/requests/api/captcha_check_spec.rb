@@ -21,6 +21,10 @@ RSpec.describe API::CaptchaCheck do
     end
 
     context 'when the feature flag arkose_labs_login_challenge is enabled' do
+      before do
+        stub_feature_flags(arkose_labs_login_challenge: true)
+      end
+
       context 'when the username is invalid' do
         let(:invalid_username) { 'invalidUsername' }
 
