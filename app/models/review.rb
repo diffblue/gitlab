@@ -14,6 +14,10 @@ class Review < ApplicationRecord
 
   participant :author
 
+  def discussion_ids
+    notes.pluck(:discussion_id)
+  end
+
   def all_references(current_user = nil, extractor: nil)
     ext = super
 

@@ -2182,7 +2182,6 @@ RSpec.describe Notify do
       let!(:notes) { create_list(:diff_note_on_merge_request, 3, review: review, project: project, author: review.author, noteable: merge_request) }
 
       it 'links to notes and discussions', :aggregate_failures do
-
         reply_note = create(:diff_note_on_merge_request, review: review, project: project, author: review.author, noteable: merge_request, in_reply_to: notes.first)
 
         review.notes.each do |note|

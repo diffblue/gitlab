@@ -22,20 +22,13 @@ module Emails
       review = Review.find_by_id(review_id)
 
       @notes = review.notes
-      discussion_ids = @notes.pluck(:discussion_id)
-      @discussions = discussions(discussion_ids)
+      @discussions = Discussion.build_discussions(review.discussion_ids, preload_note_diff_file: true)
       @author = review.author
       @author_name = review.author_name
       @project = review.project
       @merge_request = review.merge_request
       @target_url = project_merge_request_url(@project, @merge_request)
       @sent_notification = SentNotification.record(@merge_request, recipient_id, reply_key)
-    end
-
-    def discussions(discussion_ids)
-      notes = Note.where(discussion_id: discussion_ids).inc_note_diff_file.fresh
-      grouped_notes = notes.group_by { |n| n.discussion_id }
-      grouped_notes.transform_values { |notes| Discussion.build(notes) }
     end
   end
 end

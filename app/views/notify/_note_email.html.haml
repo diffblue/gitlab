@@ -4,7 +4,7 @@
 - note_style = local_assigns.fetch(:note_style, "")
 - skip_stylesheet_link = local_assigns.fetch(:skip_stylesheet_link, false)
 
-- discussion = local_assigns.fetch(:discussion){ note.discussion } if note.part_of_discussion?
+- discussion = local_assigns.fetch(:discussion) { note.discussion } if note.part_of_discussion?
 
 %p{ style: "color: #777777;" }
   = succeed ':' do
