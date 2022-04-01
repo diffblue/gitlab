@@ -114,4 +114,55 @@ RSpec.describe Event do
       end
     end
   end
+
+  describe '#set_last_repository_updated_at' do
+    let(:project) { create(:project) }
+    let(:project_repository_state) { create(:repository_state, project: project) }
+
+    context 'with the touch_project_repository_state_updated_at FF enabled' do
+      it 'always updates the project_repository_state record', :freeze_time do
+        last_known_timestamp = (Event::REPOSITORY_UPDATED_AT_INTERVAL - 1.minute).ago
+        project.update!(last_repository_updated_at: last_known_timestamp)
+        project_repository_state.update!(last_repository_updated_at: last_known_timestamp)
+
+        create_push_event(project, project.first_owner)
+
+        expect { project.reload }.not_to change { project.last_repository_updated_at }
+        expect do
+          project_repository_state.reload
+        end.to change { project_repository_state.last_repository_updated_at }.to(Time.current)
+      end
+    end
+
+    context 'with the touch_project_repository_state_updated_at FF disabled' do
+      before do
+        stub_feature_flags(touch_project_repository_state_updated_at: false)
+      end
+
+      it 'does not update the project_repository_state record', :freeze_time do
+        last_known_timestamp = (Event::REPOSITORY_UPDATED_AT_INTERVAL - 1.minute).ago
+        project.update!(last_repository_updated_at: last_known_timestamp)
+        project_repository_state.update!(last_repository_updated_at: last_known_timestamp)
+
+        create_push_event(project, project.first_owner)
+
+        expect { project.reload }.not_to change { project.last_repository_updated_at }
+        expect do
+          project_repository_state.reload
+        end.not_to change { project_repository_state.last_repository_updated_at }
+      end
+    end
+
+    def create_push_event(project, user)
+      event = create(:push_event, project: project, author: user)
+
+      create(:push_event_payload,
+            event: event,
+            commit_to: '1cf19a015df3523caf0a1f9d40c98a267d6a2fc2',
+            commit_count: 0,
+            ref: 'master')
+
+      event
+    end
+  end
 end
