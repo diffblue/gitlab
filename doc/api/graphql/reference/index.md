@@ -10100,6 +10100,7 @@ Dependency proxy manifest.
 | <a id="dependencyproxymanifestid"></a>`id` | [`DependencyProxyManifestID!`](#dependencyproxymanifestid) | ID of the manifest. |
 | <a id="dependencyproxymanifestimagename"></a>`imageName` | [`String!`](#string) | Name of the image. |
 | <a id="dependencyproxymanifestsize"></a>`size` | [`String!`](#string) | Size of the manifest file. |
+| <a id="dependencyproxymanifeststatus"></a>`status` | [`Int!`](#int) | Status of the manifest file. |
 | <a id="dependencyproxymanifestupdatedat"></a>`updatedAt` | [`Time!`](#time) | Date of most recent update. |
 
 ### `DependencyProxySetting`
