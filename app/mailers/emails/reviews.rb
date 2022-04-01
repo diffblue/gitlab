@@ -20,9 +20,9 @@ module Emails
 
     def setup_review_email(review_id, recipient_id)
       review = Review.find_by_id(review_id)
-
       @notes = review.notes
       @discussions = Discussion.build_discussions(review.discussion_ids, preload_note_diff_file: true)
+      @include_diff_discussion_stylesheet = @discussions.values.any?{ |discussion| discussion.diff_discussion? && discussion.on_text? }
       @author = review.author
       @author_name = review.author_name
       @project = review.project
