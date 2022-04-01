@@ -379,22 +379,6 @@ Rails/WhereExists:
 Style/AccessorGrouping:
   Enabled: false
 
-# Offense count: 11
-# Cop supports --auto-correct.
-Style/ArrayCoercion:
-  Exclude:
-    - 'app/controllers/admin/ci/variables_controller.rb'
-    - 'app/controllers/groups/variables_controller.rb'
-    - 'app/controllers/projects/variables_controller.rb'
-    - 'db/migrate/20190620105427_change_null_private_profile_to_false.rb'
-    - 'db/post_migrate/20190812070645_migrate_private_profile_nulls.rb'
-    - 'db/post_migrate/20200311130802_schedule_populate_user_highest_roles_table.rb'
-    - 'db/post_migrate/20200805152108_migrate_null_external_diff_store_to_local_value.rb'
-    - 'db/post_migrate/20200806173633_migrate_null_package_files_file_store_to_local_value.rb'
-    - 'ee/app/services/geo/repository_verification_secondary_service.rb'
-    - 'ee/lib/ee/banzai/pipeline/gfm_pipeline.rb'
-    - 'spec/support/helpers/lfs_http_helpers.rb'
-
 # Offense count: 188
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
