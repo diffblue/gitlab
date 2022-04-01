@@ -3,8 +3,7 @@ query clusterAgents($projectPath: ID!) {
     id
     clusterAgents {
       nodes {
-        gid: id
-        id: name
+        id
         name
       }
     }

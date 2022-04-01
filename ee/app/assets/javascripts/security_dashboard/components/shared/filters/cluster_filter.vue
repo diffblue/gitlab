@@ -18,7 +18,13 @@ export default {
           projectPath: this.projectFullPath,
         };
       },
-      update: (data) => data.project?.clusterAgents?.nodes || [],
+      update: (data) => {
+        const nodes = data.project?.clusterAgents?.nodes;
+        if (nodes?.length) {
+          return nodes.map((n) => ({ gid: n.id, id: n.name, name: n.name }));
+        }
+        return [];
+      },
       error() {
         createFlash({
           message: CLUSTER_FILTER_ERROR,
