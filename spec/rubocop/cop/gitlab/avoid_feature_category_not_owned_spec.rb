@@ -20,6 +20,13 @@ RSpec.describe RuboCop::Cop::Gitlab::AvoidFeatureCategoryNotOwned do
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Avoid adding new endpoints with `feature_category :not_owned`. See https://docs.gitlab.com/ee/development/feature_categorization
       SOURCE
     end
+
+    it 'flags a method call on a class with an array passed' do
+      expect_offense(<<~SOURCE)
+        worker.feature_category :not_owned, [:index, :edit]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Avoid adding new endpoints with `feature_category :not_owned`. See https://docs.gitlab.com/ee/development/feature_categorization
+      SOURCE
+    end
   end
 
   context 'in controllers' do

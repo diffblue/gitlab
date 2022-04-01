@@ -12,7 +12,7 @@ module RuboCop
         RESTRICT_ON_SEND = %i[feature_category get post put patch delete].freeze
 
         def_node_matcher :feature_category_not_owned?, <<~PATTERN
-          (send nil? :feature_category (sym :not_owned) ...)
+          (send _ :feature_category (sym :not_owned) ...)
         PATTERN
 
         def_node_matcher :feature_category_not_owned_api?, <<~PATTERN
