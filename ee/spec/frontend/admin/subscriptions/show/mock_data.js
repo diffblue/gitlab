@@ -57,7 +57,7 @@ export const subscriptionPastHistory = [
     name: 'Jane Doe',
     plan: 'premium',
     startsAt: '2020-03-16',
-    type: subscriptionTypes.LICENSE_FILE,
+    type: subscriptionTypes.LEGACY_LICENSE,
     usersInLicenseCount: '5',
   },
 ];
@@ -144,9 +144,9 @@ export const activateLicenseMutationResponse = {
         license: {
           __typename: 'CurrentLicense',
           id: 'gid://gitlab/License/3',
-          type: 'cloud',
+          type: 'online_cloud',
           plan: 'ultimate',
-          name: 'Cloud License',
+          name: 'Online license',
           email: 'user@example.com',
           company: 'Example Inc',
           startsAt: '2020-01-01',

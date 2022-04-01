@@ -65,7 +65,7 @@ describe('Subscription Details Card', () => {
         },
         {
           detail: 'type',
-          value: 'Cloud license',
+          value: 'Online license',
         },
         {
           detail: 'expiresAt',

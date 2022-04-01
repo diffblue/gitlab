@@ -1548,13 +1548,13 @@ RSpec.describe License do
     subject { license.license_type }
 
     context 'when the license is not a cloud license' do
-      it { is_expected.to eq(described_class::LICENSE_FILE_TYPE) }
+      it { is_expected.to eq(described_class::LEGACY_LICENSE_TYPE) }
     end
 
     context 'when the license is an online cloud license' do
       let(:gl_license) { build(:gitlab_license, cloud_licensing_enabled: true) }
 
-      it { is_expected.to eq(described_class::CLOUD_LICENSE_TYPE) }
+      it { is_expected.to eq(described_class::ONLINE_CLOUD_TYPE) }
     end
 
     context 'when the license is an offline cloud license' do
