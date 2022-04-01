@@ -1,7 +1,7 @@
 <script>
 import createFlash from '~/flash';
-import { s__ } from '~/locale';
 import getClusterAgentsQuery from 'ee/security_dashboard/graphql/queries/cluster_agents.query.graphql';
+import { CLUSTER_FILTER_ERROR } from './constants';
 import SimpleFilter from './simple_filter.vue';
 import FilterBody from './filter_body.vue';
 import FilterItem from './filter_item.vue';
@@ -21,7 +21,7 @@ export default {
       update: (data) => data.project?.clusterAgents?.nodes || [],
       error() {
         createFlash({
-          message: s__('SecurityOrchestration|Failed to load cluster agents.'),
+          message: CLUSTER_FILTER_ERROR,
         });
       },
     },
