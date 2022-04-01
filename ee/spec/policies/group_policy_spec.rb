@@ -335,6 +335,40 @@ RSpec.describe GroupPolicy do
     it { is_expected.not_to be_allowed(:read_group_repository_analytics) }
   end
 
+  context 'when group cycle analytics is available' do
+    before do
+      stub_licensed_features(cycle_analytics_for_groups: true)
+    end
+
+    context 'for guests' do
+      let(:current_user) { guest }
+
+      it { is_expected.not_to be_allowed(:read_group_cycle_analytics) }
+    end
+
+    context 'for reporter+' do
+      let(:current_user) { reporter }
+
+      it { is_expected.to be_allowed(:read_group_cycle_analytics) }
+    end
+
+    context 'for auditor' do
+      let(:current_user) { auditor }
+
+      it { is_expected.to be_allowed(:read_group_cycle_analytics) }
+    end
+  end
+
+  context 'when group cycle analytics is not available' do
+    let(:current_user) { maintainer }
+
+    before do
+      stub_licensed_features(cycle_analytics_for_groups: false)
+    end
+
+    it { is_expected.not_to be_allowed(:read_group_cycle_analytics) }
+  end
+
   context 'when group coverage reports is available' do
     before do
       stub_licensed_features(group_coverage_reports: true)
