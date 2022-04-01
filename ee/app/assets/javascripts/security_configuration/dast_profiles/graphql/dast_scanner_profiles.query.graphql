@@ -1,4 +1,5 @@
 #import "~/graphql_shared/fragments/page_info.fragment.graphql"
+#import "ee/security_configuration/dast_profiles/dast_scanner_profiles/graphql/dast_scanner_profile.fragment.graphql"
 
 query DastScannerProfiles(
   $fullPath: ID!
@@ -22,16 +23,7 @@ query DastScannerProfiles(
         ...PageInfo
       }
       nodes {
-        __typename
-        id
-        profileName
-        spiderTimeout
-        targetTimeout
-        scanType
-        useAjaxSpider
-        showDebugMessages
-        editPath
-        referencedInSecurityPolicies
+        ...DastScannerProfileFragment
       }
     }
   }

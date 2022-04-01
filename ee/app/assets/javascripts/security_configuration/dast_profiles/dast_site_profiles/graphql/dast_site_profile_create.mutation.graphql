@@ -1,6 +1,11 @@
+#import "./dast_site_profile.fragment.graphql"
+
 mutation dastSiteProfileCreate($input: DastSiteProfileCreateInput!) {
   dastSiteProfileCreate(input: $input) {
     id
     errors
+    dastSiteProfile {
+      ...DastSiteProfileFragment
+    }
   }
 }
