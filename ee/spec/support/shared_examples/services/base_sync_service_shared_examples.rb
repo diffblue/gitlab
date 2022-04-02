@@ -62,20 +62,19 @@ RSpec.shared_examples 'geo base sync fetch' do
 
   describe '#fetch_repository' do
     let(:fetch_repository) { subject.send(:fetch_repository) }
+    let(:temp_repo) { subject.send(:temp_repo) }
 
     before do
       allow(subject).to receive(:fetch_geo_mirror).and_return(true)
+      allow(subject).to receive(:clone_geo_mirror).and_return(true)
+      allow(subject).to receive(:clone_geo_mirror).with(target_repository: temp_repo) do
+        temp_repo.create_repository
+      end
       allow(repository).to receive(:update_root_ref)
     end
 
     it 'cleans up temporary repository' do
       is_expected.to receive(:clean_up_temporary_repository)
-
-      fetch_repository
-    end
-
-    it 'fetches repository from geo node' do
-      is_expected.to receive(:fetch_geo_mirror).with(subject.send(:repository))
 
       fetch_repository
     end
@@ -86,13 +85,21 @@ RSpec.shared_examples 'geo base sync fetch' do
       fetch_repository
     end
 
-    context 'repository does not exist' do
-      before do
-        allow_any_instance_of(Repository).to receive(:exists?) { false }
-      end
+    context 'with existing repository' do
+      it 'fetches repository from geo node' do
+        subject.send(:ensure_repository)
 
-      it 'ensures repository is created' do
-        is_expected.to receive(:ensure_repository)
+        is_expected.to receive(:fetch_geo_mirror)
+
+        fetch_repository
+      end
+    end
+
+    context 'with a never synced repository' do
+      it 'clones repository from geo node' do
+        allow(repository).to receive(:exists?) { false }
+
+        is_expected.to receive(:clone_geo_mirror)
 
         fetch_repository
       end
@@ -109,9 +116,11 @@ RSpec.shared_examples 'sync retries use the snapshot RPC' do
     end
 
     it 'does not attempt to snapshot for initial sync' do
+      allow(repository).to receive(:exists?) { false }
+
       expect(repository).not_to receive_create_from_snapshot
       expect(temp_repo).not_to receive_create_from_snapshot
-      expect(subject).to receive(:fetch_geo_mirror).with(repository)
+      expect(subject).to receive(:clone_geo_mirror)
 
       subject.execute
     end
@@ -121,7 +130,7 @@ RSpec.shared_examples 'sync retries use the snapshot RPC' do
 
       expect(repository).not_to receive_create_from_snapshot
       expect(temp_repo).not_to receive_create_from_snapshot
-      expect(subject).to receive(:fetch_geo_mirror).with(repository)
+      expect(subject).to receive(:fetch_geo_mirror)
 
       subject.execute
     end
@@ -132,16 +141,17 @@ RSpec.shared_examples 'sync retries use the snapshot RPC' do
       it 'attempts to snapshot' do
         expect(repository).not_to receive_create_from_snapshot
         expect(temp_repo).to receive_create_from_snapshot
-        expect(subject).not_to receive(:fetch_geo_mirror).with(temp_repo)
+        expect(subject).not_to receive(:fetch_geo_mirror)
+        expect(subject).not_to receive(:clone_geo_mirror)
         expect(subject).to receive(:set_temp_repository_as_main)
 
         subject.execute
       end
 
-      it 'attempts to fetch if snapshotting raises an exception' do
+      it 'attempts to clone if snapshotting raises an exception' do
         expect(repository).not_to receive_create_from_snapshot
         expect(temp_repo).to receive_create_from_snapshot.and_raise(ArgumentError)
-        expect(subject).to receive(:fetch_geo_mirror).with(temp_repo)
+        expect(subject).to receive(:clone_geo_mirror)
 
         subject.execute
       end
