@@ -1,5 +1,6 @@
 <script>
-import { GlFormGroup, GlFormSelect } from '@gitlab/ui';
+import { GlFormGroup, GlFormSelect, GlFormText, GlSprintf, GlLink } from '@gitlab/ui';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import { s__ } from '~/locale';
 import Tracking from '~/tracking';
 import {
@@ -7,6 +8,7 @@ import {
   DEPLOYMENT_TARGET_LABEL,
   DEPLOYMENT_TARGET_EVENT,
   NEW_PROJECT_FORM,
+  K8S_OPTION,
 } from '../constants';
 
 const trackingMixin = Tracking.mixin({ label: DEPLOYMENT_TARGET_LABEL });
@@ -15,12 +17,19 @@ export default {
   i18n: {
     deploymentTargetLabel: s__('Deployment Target|Project deployment target (optional)'),
     defaultOption: s__('Deployment Target|Select the deployment target'),
+    k8sEducationText: s__(
+      'Deployment Target|Learn more about the %{linkStart}GitLab - Kubernetes integrations%{linkEnd}.',
+    ),
   },
   deploymentTargets: DEPLOYMENT_TARGET_SELECTIONS,
   selectId: 'deployment-target-select',
+  helpPageUrl: helpPagePath('user/clusters/agent'),
   components: {
     GlFormGroup,
     GlFormSelect,
+    GlFormText,
+    GlSprintf,
+    GlLink,
   },
   mixins: [trackingMixin],
   data() {
@@ -28,6 +37,11 @@ export default {
       selectedTarget: null,
       formSubmitted: false,
     };
+  },
+  computed: {
+    isK8sOptionSelected() {
+      return this.selectedTarget === K8S_OPTION;
+    },
   },
   mounted() {
     const form = document.getElementById(NEW_PROJECT_FORM);
@@ -52,10 +66,19 @@ export default {
       :id="$options.selectId"
       v-model="selectedTarget"
       :options="$options.deploymentTargets"
+      class="input-lg"
     >
       <template #first>
         <option :value="null" disabled>{{ $options.i18n.defaultOption }}</option>
       </template>
     </gl-form-select>
+
+    <gl-form-text v-if="isK8sOptionSelected">
+      <gl-sprintf :message="$options.i18n.k8sEducationText">
+        <template #link="{ content }">
+          <gl-link :href="$options.helpPageUrl">{{ content }}</gl-link>
+        </template>
+      </gl-sprintf>
+    </gl-form-text>
   </gl-form-group>
 </template>

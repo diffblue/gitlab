@@ -1,7 +1,9 @@
 import { s__ } from '~/locale';
 
+export const K8S_OPTION = s__('DeploymentTarget|Kubernetes (GKE, EKS, OpenShift, and so on)');
+
 export const DEPLOYMENT_TARGET_SELECTIONS = [
-  s__('DeploymentTarget|Kubernetes (GKE, EKS, OpenShift, and so on)'),
+  K8S_OPTION,
   s__('DeploymentTarget|Managed container runtime (Fargate, Cloud Run, DigitalOcean App)'),
   s__('DeploymentTarget|Self-managed container runtime (Podman, Docker Swarm, Docker Compose)'),
   s__('DeploymentTarget|Heroku'),

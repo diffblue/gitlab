@@ -1,4 +1,4 @@
-import { GlFormGroup, GlFormSelect } from '@gitlab/ui';
+import { GlFormGroup, GlFormSelect, GlFormText } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { mockTracking } from 'helpers/tracking_helper';
 import DeploymentTargetSelect from '~/projects/new/components/deployment_target_select.vue';
@@ -15,6 +15,7 @@ describe('Deployment target select', () => {
 
   const findFormGroup = () => wrapper.findComponent(GlFormGroup);
   const findSelect = () => wrapper.findComponent(GlFormSelect);
+  const findText = () => wrapper.findComponent(GlFormText);
 
   const createdWrapper = () => {
     wrapper = shallowMount(DeploymentTargetSelect, {
@@ -78,5 +79,20 @@ describe('Deployment target select', () => {
         expect(trackingSpy).toHaveBeenCalledTimes(0);
       });
     }
+  });
+
+  describe.each`
+    selectedTarget                     | isTextShown
+    ${null}                            | ${false}
+    ${DEPLOYMENT_TARGET_SELECTIONS[0]} | ${true}
+    ${DEPLOYMENT_TARGET_SELECTIONS[1]} | ${false}
+  `('K8s education text', ({ selectedTarget, isTextShown }) => {
+    beforeEach(() => {
+      findSelect().vm.$emit('input', selectedTarget);
+    });
+
+    it(`is ${!isTextShown ? 'not ' : ''}shown when selected option is ${selectedTarget}`, () => {
+      expect(findText().exists()).toBe(isTextShown);
+    });
   });
 });
