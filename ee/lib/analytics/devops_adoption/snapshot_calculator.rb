@@ -72,10 +72,6 @@ module Analytics
         Deployment.success.for_project(snapshot_project_ids).updated_before(range_end).updated_after(range_start).exists?
       end
 
-      def security_scan_succeeded
-        false
-      end
-
       def total_projects_count
         snapshot_project_ids.count
       end

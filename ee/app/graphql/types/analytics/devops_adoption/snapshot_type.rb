@@ -34,9 +34,6 @@ module Types
               description: 'At least one runner was used.'
         field :sast_enabled_count, GraphQL::Types::Int, null: true,
               description: 'Total number of projects with enabled SAST.'
-        field :security_scan_succeeded, GraphQL::Types::Boolean, null: false,
-              description: 'At least one security scan succeeded.',
-              deprecated: { reason: 'Substituted with specific security metrics. Always false', milestone: '14.1' }
         field :start_time, Types::TimeType, null: false,
               description: 'Start time for the snapshot where the data points were collected.'
         field :total_projects_count, GraphQL::Types::Int, null: true,

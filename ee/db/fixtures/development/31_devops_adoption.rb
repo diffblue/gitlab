@@ -34,7 +34,6 @@ Gitlab::Seeder.quiet do
           runner_configured: booleans.sample,
           pipeline_succeeded: booleans.sample,
           deploy_succeeded: booleans.sample,
-          security_scan_succeeded: booleans.sample,
           code_owners_used_count: rand(10),
           sast_enabled_count: rand(10),
           dast_enabled_count: rand(10),

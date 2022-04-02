@@ -9,8 +9,7 @@ class Analytics::DevopsAdoption::Snapshot < ApplicationRecord
     :merge_request_approved,
     :runner_configured,
     :pipeline_succeeded,
-    :deploy_succeeded,
-    :security_scan_succeeded
+    :deploy_succeeded
   ].freeze
 
   NUMERIC_METRICS = [
@@ -36,6 +35,7 @@ class Analytics::DevopsAdoption::Snapshot < ApplicationRecord
   validates(*NUMERIC_METRICS, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true)
 
   ignore_column :segment_id, remove_with: '14.2', remove_after: '2021-07-22'
+  ignore_column :security_scan_succeeded, remove_with: '15.1', remove_after: '2022-05-18'
 
   scope :latest_for_namespace_ids, -> (ids) do
     finalized.for_month(1.month.before(Time.zone.now)).for_namespaces(ids)
