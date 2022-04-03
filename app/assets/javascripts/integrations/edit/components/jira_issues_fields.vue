@@ -1,5 +1,5 @@
 <script>
-import { GlFormGroup, GlFormCheckbox, GlFormInput, GlSprintf, GlLink } from '@gitlab/ui';
+import { GlFormGroup, GlFormCheckbox, GlFormInput } from '@gitlab/ui';
 import { mapGetters } from 'vuex';
 import { s__, __ } from '~/locale';
 import JiraUpgradeCta from './jira_upgrade_cta.vue';
@@ -10,8 +10,6 @@ export default {
     GlFormGroup,
     GlFormCheckbox,
     GlFormInput,
-    GlSprintf,
-    GlLink,
     JiraUpgradeCta,
     JiraIssueCreationVulnerabilities: () =>
       import('ee_component/integrations/edit/components/jira_issue_creation_vulnerabilities.vue'),
