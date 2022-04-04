@@ -23,6 +23,7 @@ export default (containerId = 'js-seat-usage-app') => {
   return new Vue({
     el,
     apolloProvider: {},
+    name: 'SeatsUsageApp',
     store: new Vuex.Store(
       initialStore({
         namespaceId,

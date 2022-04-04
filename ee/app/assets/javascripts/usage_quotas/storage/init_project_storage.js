@@ -22,6 +22,7 @@ export default (containerId = 'js-project-storage-count-app') => {
   return new Vue({
     el,
     apolloProvider,
+    name: 'ProjectStorageApp',
     provide: {
       projectPath,
       helpLinks,

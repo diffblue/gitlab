@@ -19,6 +19,7 @@ export default () => {
   return new Vue({
     el,
     apolloProvider,
+    name: 'GroupSharedRunnerApp',
     provide: {
       groupId: namespaceId,
     },
