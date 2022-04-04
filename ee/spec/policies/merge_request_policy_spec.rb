@@ -290,4 +290,31 @@ RSpec.describe MergeRequestPolicy do
       it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
     end
   end
+
+  describe 'create_merge_request_approval_rules' do
+    using RSpec::Parameterized::TableSyntax
+
+    let(:policy) { :create_merge_request_approval_rules }
+    let(:current_user) { owner }
+
+    subject { policy_for(current_user) }
+
+    where(:coverage_license_enabled, :report_approver_license_enabled, :allowed) do
+      false | false | false
+      true  | true  | true
+      false | true  | true
+      true  | false | true
+    end
+
+    with_them do
+      before do
+        stub_licensed_features(
+          coverage_check_approval_rule: coverage_license_enabled,
+          report_approver_rules: report_approver_license_enabled
+        )
+      end
+
+      it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
+    end
+  end
 end

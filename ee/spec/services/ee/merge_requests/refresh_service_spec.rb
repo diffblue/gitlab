@@ -251,7 +251,7 @@ RSpec.describe MergeRequests::RefreshService do
 
         it 'refreshes the report_approver rules for all relevant merge requests' do
           relevant_merge_requests.each do |merge_request|
-            expect_next_instance_of(::MergeRequests::SyncReportApproverApprovalRules, merge_request) do |service|
+            expect_next_instance_of(::MergeRequests::SyncReportApproverApprovalRules, merge_request, current_user) do |service|
               expect(service).to receive(:execute)
             end
           end
