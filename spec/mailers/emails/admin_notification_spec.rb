@@ -58,7 +58,7 @@ RSpec.describe Emails::AdminNotification do
     end
 
     it 'includes the email reason' do
-      is_expected.to have_body_text "You're receiving this email because of your account on localhost"
+      is_expected.to have_body_text %r{You're receiving this email because of your account on <a .*>localhost<\/a>}
     end
   end
 end
