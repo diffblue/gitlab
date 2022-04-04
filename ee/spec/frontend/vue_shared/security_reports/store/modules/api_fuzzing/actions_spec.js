@@ -25,8 +25,8 @@ describe('EE api fuzzing report actions', () => {
   });
 
   describe('updateVulnerability', () => {
-    it(`should commit ${types.UPDATE_VULNERABILITY} with the correct response`, (done) => {
-      testAction(
+    it(`should commit ${types.UPDATE_VULNERABILITY} with the correct response`, async () => {
+      await testAction(
         actions.updateVulnerability,
         issue,
         state,
@@ -37,14 +37,13 @@ describe('EE api fuzzing report actions', () => {
           },
         ],
         [],
-        done,
       );
     });
   });
 
   describe('setDiffEndpoint', () => {
-    it(`should commit ${types.SET_DIFF_ENDPOINT} with the correct path`, (done) => {
-      testAction(
+    it(`should commit ${types.SET_DIFF_ENDPOINT} with the correct path`, async () => {
+      await testAction(
         actions.setDiffEndpoint,
         diffEndpoint,
         state,
@@ -55,20 +54,19 @@ describe('EE api fuzzing report actions', () => {
           },
         ],
         [],
-        done,
       );
     });
   });
 
   describe('requestDiff', () => {
-    it(`should commit ${types.REQUEST_DIFF}`, (done) => {
-      testAction(actions.requestDiff, {}, state, [{ type: types.REQUEST_DIFF }], [], done);
+    it(`should commit ${types.REQUEST_DIFF}`, async () => {
+      await testAction(actions.requestDiff, {}, state, [{ type: types.REQUEST_DIFF }], []);
     });
   });
 
   describe('receiveDiffSuccess', () => {
-    it(`should commit ${types.RECEIVE_DIFF_SUCCESS} with the correct response`, (done) => {
-      testAction(
+    it(`should commit ${types.RECEIVE_DIFF_SUCCESS} with the correct response`, async () => {
+      await testAction(
         actions.receiveDiffSuccess,
         reports,
         state,
@@ -79,14 +77,13 @@ describe('EE api fuzzing report actions', () => {
           },
         ],
         [],
-        done,
       );
     });
   });
 
   describe('receiveDiffError', () => {
-    it(`should commit ${types.RECEIVE_DIFF_ERROR} with the correct response`, (done) => {
-      testAction(
+    it(`should commit ${types.RECEIVE_DIFF_ERROR} with the correct response`, async () => {
+      await testAction(
         actions.receiveDiffError,
         error,
         state,
@@ -97,7 +94,6 @@ describe('EE api fuzzing report actions', () => {
           },
         ],
         [],
-        done,
       );
     });
   });
@@ -124,9 +120,9 @@ describe('EE api fuzzing report actions', () => {
           .replyOnce(200, reports.enrichData);
       });
 
-      it('should dispatch the `receiveDiffSuccess` action', (done) => {
+      it('should dispatch the `receiveDiffSuccess` action', async () => {
         const { diff, enrichData } = reports;
-        testAction(
+        await testAction(
           actions.fetchDiff,
           {},
           { ...rootState, ...state },
@@ -141,7 +137,6 @@ describe('EE api fuzzing report actions', () => {
               },
             },
           ],
-          done,
         );
       });
     });
@@ -152,10 +147,10 @@ describe('EE api fuzzing report actions', () => {
         mock.onGet(diffEndpoint).replyOnce(200, reports.diff);
       });
 
-      it('should dispatch the `receiveDiffSuccess` action with empty enrich data', (done) => {
+      it('should dispatch the `receiveDiffSuccess` action with empty enrich data', async () => {
         const { diff } = reports;
         const enrichData = [];
-        testAction(
+        await testAction(
           actions.fetchDiff,
           {},
           { ...rootState, ...state },
@@ -170,7 +165,6 @@ describe('EE api fuzzing report actions', () => {
               },
             },
           ],
-          done,
         );
       });
     });
@@ -184,14 +178,13 @@ describe('EE api fuzzing report actions', () => {
           .replyOnce(404);
       });
 
-      it('should dispatch the `receiveError` action', (done) => {
-        testAction(
+      it('should dispatch the `receiveError` action', async () => {
+        await testAction(
           actions.fetchDiff,
           {},
           { ...rootState, ...state },
           [],
           [{ type: 'requestDiff' }, { type: 'receiveDiffError' }],
-          done,
         );
       });
     });
@@ -205,14 +198,13 @@ describe('EE api fuzzing report actions', () => {
           .replyOnce(200, reports.enrichData);
       });
 
-      it('should dispatch the `receiveDiffError` action', (done) => {
-        testAction(
+      it('should dispatch the `receiveDiffError` action', async () => {
+        await testAction(
           actions.fetchDiff,
           {},
           { ...rootState, ...state },
           [],
           [{ type: 'requestDiff' }, { type: 'receiveDiffError' }],
-          done,
         );
       });
     });

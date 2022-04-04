@@ -1648,15 +1648,12 @@ describe('RelatedItemTree', () => {
             requestSpy.mockReturnValue([500, '']);
           });
 
-          it('fails and shows flash message', (done) => {
-            return actions
-              .createNewIssue(context, payload)
-              .then(() => done.fail('expected action to throw error!'))
-              .catch(() => {
-                expect(requestSpy).toHaveBeenCalledWith(expectedRequest);
-                expect(context.dispatch).toHaveBeenCalledWith('receiveCreateIssueFailure');
-                done();
-              });
+          it('fails and shows flash message', async () => {
+            await expect(actions.createNewIssue(context, payload)).rejects.toEqual(
+              new Error('Request failed with status code 500'),
+            );
+            expect(requestSpy).toHaveBeenCalledWith(expectedRequest);
+            expect(context.dispatch).toHaveBeenCalledWith('receiveCreateIssueFailure');
           });
         });
       });

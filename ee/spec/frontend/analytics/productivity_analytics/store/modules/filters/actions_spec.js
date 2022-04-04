@@ -30,31 +30,26 @@ describe('Productivity analytics filter actions', () => {
   });
 
   describe('setInitialData', () => {
-    it('commits the SET_INITIAL_DATA mutation and fetches data by default', (done) => {
-      actions
-        .setInitialData(store, { data: initialData })
-        .then(() => {
-          expect(store.commit).toHaveBeenCalledWith(types.SET_INITIAL_DATA, initialData);
+    it('commits the SET_INITIAL_DATA mutation and fetches data by default', async () => {
+      await actions.setInitialData(store, { data: initialData });
+      expect(store.commit).toHaveBeenCalledWith(types.SET_INITIAL_DATA, initialData);
 
-          expect(store.dispatch.mock.calls[0]).toEqual([
-            'charts/fetchChartData',
-            chartKeys.main,
-            { root: true },
-          ]);
+      expect(store.dispatch.mock.calls[0]).toEqual([
+        'charts/fetchChartData',
+        chartKeys.main,
+        { root: true },
+      ]);
 
-          expect(store.dispatch.mock.calls[1]).toEqual([
-            'charts/fetchSecondaryChartData',
-            null,
-            { root: true },
-          ]);
+      expect(store.dispatch.mock.calls[1]).toEqual([
+        'charts/fetchSecondaryChartData',
+        null,
+        { root: true },
+      ]);
 
-          expect(store.dispatch.mock.calls[2]).toEqual(['table/setPage', 0, { root: true }]);
-        })
-        .then(done)
-        .catch(done.fail);
+      expect(store.dispatch.mock.calls[2]).toEqual(['table/setPage', 0, { root: true }]);
     });
 
-    it("commits the SET_INITIAL_DATA mutation and doesn't fetch data when skipFetch=true", (done) =>
+    it("commits the SET_INITIAL_DATA mutation and doesn't fetch data when skipFetch=true", async () =>
       testAction(
         actions.setInitialData,
         { skipFetch: true, data: initialData },
@@ -66,135 +61,114 @@ describe('Productivity analytics filter actions', () => {
           },
         ],
         [],
-        done,
       ));
   });
 
   describe('setGroupNamespace', () => {
-    it('commits the SET_GROUP_NAMESPACE mutation', (done) => {
-      actions
-        .setGroupNamespace(store, groupNamespace)
-        .then(() => {
-          expect(store.commit).toHaveBeenCalledWith(types.SET_GROUP_NAMESPACE, groupNamespace);
+    it('commits the SET_GROUP_NAMESPACE mutation', async () => {
+      await actions.setGroupNamespace(store, groupNamespace);
+      expect(store.commit).toHaveBeenCalledWith(types.SET_GROUP_NAMESPACE, groupNamespace);
 
-          expect(store.dispatch.mock.calls[0]).toEqual([
-            'charts/resetMainChartSelection',
-            true,
-            { root: true },
-          ]);
+      expect(store.dispatch.mock.calls[0]).toEqual([
+        'charts/resetMainChartSelection',
+        true,
+        { root: true },
+      ]);
 
-          expect(store.dispatch.mock.calls[1]).toEqual([
-            'charts/fetchChartData',
-            chartKeys.main,
-            { root: true },
-          ]);
+      expect(store.dispatch.mock.calls[1]).toEqual([
+        'charts/fetchChartData',
+        chartKeys.main,
+        { root: true },
+      ]);
 
-          expect(store.dispatch.mock.calls[2]).toEqual([
-            'charts/fetchSecondaryChartData',
-            null,
-            { root: true },
-          ]);
+      expect(store.dispatch.mock.calls[2]).toEqual([
+        'charts/fetchSecondaryChartData',
+        null,
+        { root: true },
+      ]);
 
-          expect(store.dispatch.mock.calls[3]).toEqual(['table/setPage', 0, { root: true }]);
-        })
-        .then(done)
-        .catch(done.fail);
+      expect(store.dispatch.mock.calls[3]).toEqual(['table/setPage', 0, { root: true }]);
     });
   });
 
   describe('setProjectPath', () => {
-    it('commits the SET_PROJECT_PATH mutation', (done) => {
-      actions
-        .setProjectPath(store, projectPath)
-        .then(() => {
-          expect(store.commit).toHaveBeenCalledWith(types.SET_PROJECT_PATH, projectPath);
+    it('commits the SET_PROJECT_PATH mutation', async () => {
+      await actions.setProjectPath(store, projectPath);
+      expect(store.commit).toHaveBeenCalledWith(types.SET_PROJECT_PATH, projectPath);
 
-          expect(store.dispatch.mock.calls[0]).toEqual([
-            'charts/resetMainChartSelection',
-            true,
-            { root: true },
-          ]);
+      expect(store.dispatch.mock.calls[0]).toEqual([
+        'charts/resetMainChartSelection',
+        true,
+        { root: true },
+      ]);
 
-          expect(store.dispatch.mock.calls[1]).toEqual([
-            'charts/fetchChartData',
-            chartKeys.main,
-            { root: true },
-          ]);
+      expect(store.dispatch.mock.calls[1]).toEqual([
+        'charts/fetchChartData',
+        chartKeys.main,
+        { root: true },
+      ]);
 
-          expect(store.dispatch.mock.calls[2]).toEqual([
-            'charts/fetchSecondaryChartData',
-            null,
-            { root: true },
-          ]);
+      expect(store.dispatch.mock.calls[2]).toEqual([
+        'charts/fetchSecondaryChartData',
+        null,
+        { root: true },
+      ]);
 
-          expect(store.dispatch.mock.calls[3]).toEqual(['table/setPage', 0, { root: true }]);
-        })
-        .then(done)
-        .catch(done.fail);
+      expect(store.dispatch.mock.calls[3]).toEqual(['table/setPage', 0, { root: true }]);
     });
   });
 
   describe('setFilters', () => {
-    it('commits the SET_FILTERS mutation', (done) => {
-      actions
-        .setFilters(store, { author_username: 'root' })
-        .then(() => {
-          expect(store.commit).toHaveBeenCalledWith(types.SET_FILTERS, { authorUsername: 'root' });
+    it('commits the SET_FILTERS mutation', async () => {
+      await actions.setFilters(store, { author_username: 'root' });
+      expect(store.commit).toHaveBeenCalledWith(types.SET_FILTERS, { authorUsername: 'root' });
 
-          expect(store.dispatch.mock.calls[0]).toEqual([
-            'charts/resetMainChartSelection',
-            true,
-            { root: true },
-          ]);
+      expect(store.dispatch.mock.calls[0]).toEqual([
+        'charts/resetMainChartSelection',
+        true,
+        { root: true },
+      ]);
 
-          expect(store.dispatch.mock.calls[1]).toEqual([
-            'charts/fetchChartData',
-            chartKeys.main,
-            { root: true },
-          ]);
+      expect(store.dispatch.mock.calls[1]).toEqual([
+        'charts/fetchChartData',
+        chartKeys.main,
+        { root: true },
+      ]);
 
-          expect(store.dispatch.mock.calls[2]).toEqual([
-            'charts/fetchSecondaryChartData',
-            null,
-            { root: true },
-          ]);
+      expect(store.dispatch.mock.calls[2]).toEqual([
+        'charts/fetchSecondaryChartData',
+        null,
+        { root: true },
+      ]);
 
-          expect(store.dispatch.mock.calls[3]).toEqual(['table/setPage', 0, { root: true }]);
-        })
-        .then(done)
-        .catch(done.fail);
+      expect(store.dispatch.mock.calls[3]).toEqual(['table/setPage', 0, { root: true }]);
     });
   });
 
   describe('setDateRange', () => {
-    it('commits the SET_DATE_RANGE mutation', (done) => {
-      actions
-        .setDateRange(store, { startDate, endDate })
-        .then(() => {
-          expect(store.commit).toHaveBeenCalledWith(types.SET_DATE_RANGE, { startDate, endDate });
+    it('commits the SET_DATE_RANGE mutation', async () => {
+      await actions.setDateRange(store, { startDate, endDate });
+      expect(store.commit).toHaveBeenCalledWith(types.SET_DATE_RANGE, { startDate, endDate });
 
-          expect(store.dispatch.mock.calls[0]).toEqual([
-            'charts/resetMainChartSelection',
-            true,
-            { root: true },
-          ]);
+      expect(store.dispatch.mock.calls[0]).toEqual([
+        'charts/resetMainChartSelection',
+        true,
+        { root: true },
+      ]);
 
-          expect(store.dispatch.mock.calls[1]).toEqual([
-            'charts/fetchChartData',
-            chartKeys.main,
-            { root: true },
-          ]);
+      expect(store.dispatch.mock.calls[1]).toEqual([
+        'charts/fetchChartData',
+        chartKeys.main,
+        { root: true },
+      ]);
 
-          expect(store.dispatch.mock.calls[2]).toEqual([
-            'charts/fetchSecondaryChartData',
-            null,
-            { root: true },
-          ]);
+      expect(store.dispatch.mock.calls[2]).toEqual([
+        'charts/fetchSecondaryChartData',
+        null,
+        { root: true },
+      ]);
 
-          expect(store.dispatch.mock.calls[3]).toEqual(['table/setPage', 0, { root: true }]);
-        })
-        .then(done)
-        .catch(done.fail);
+      expect(store.dispatch.mock.calls[3]).toEqual(['table/setPage', 0, { root: true }]);
     });
   });
 });

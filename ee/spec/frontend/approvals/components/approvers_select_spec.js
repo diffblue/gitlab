@@ -70,6 +70,7 @@ describe('Approvals ApproversSelect', () => {
 
     $input = $(wrapper.vm.$refs.input);
   };
+
   const search = (term = '') => {
     $input.select2('search', term);
     jest.runOnlyPendingTimers();
@@ -93,37 +94,30 @@ describe('Approvals ApproversSelect', () => {
     expect(select2Container()).not.toBe(null);
   });
 
-  it('queries and displays groups and users', async (done) => {
+  it('queries and displays groups and users', async () => {
     await factory();
 
     const expected = TEST_GROUPS.concat(TEST_USERS)
       .map(({ id, ...obj }) => obj)
       .map(({ username, ...obj }) => (!username ? obj : { ...obj, username: `@${username}` }));
 
-    waitForEvent($input, 'select2-loaded')
-      .then(() => {
-        const items = select2DropdownItems();
-
-        expect(items).toEqual(expected);
-      })
-      .then(done)
-      .catch(done.fail);
-
     search();
+
+    await waitForEvent($input, 'select2-loaded');
+    const items = select2DropdownItems();
+
+    expect(items).toEqual(expected);
   });
 
   describe('with search term', () => {
     const term = 'lorem';
 
-    beforeEach(async (done) => {
+    beforeEach(async () => {
       await factory();
 
-      waitForEvent($input, 'select2-loaded')
-        .then(jest.runOnlyPendingTimers)
-        .then(done)
-        .catch(done.fail);
-
       search(term);
+
+      await waitForEvent($input, 'select2-loaded');
     });
 
     it('fetches all available groups', () => {
@@ -151,13 +145,10 @@ describe('Approvals ApproversSelect', () => {
       });
     });
 
-    it('fetches all available groups including non-visible shared groups', async (done) => {
-      waitForEvent($input, 'select2-loaded')
-        .then(jest.runOnlyPendingTimers)
-        .then(done)
-        .catch(done.fail);
-
+    it('fetches all available groups including non-visible shared groups', async () => {
       search();
+
+      await waitForEvent($input, 'select2-loaded');
 
       expect(Api.projectGroups).toHaveBeenCalledWith(TEST_PROJECT_ID, {
         skip_groups: [],
@@ -172,7 +163,7 @@ describe('Approvals ApproversSelect', () => {
     const skipGroupIds = [7, 8];
     const skipUserIds = [9, 10];
 
-    beforeEach(async (done) => {
+    beforeEach(async () => {
       await factory({
         propsData: {
           skipGroupIds,
@@ -180,12 +171,10 @@ describe('Approvals ApproversSelect', () => {
         },
       });
 
-      waitForEvent($input, 'select2-loaded')
-        .then(jest.runOnlyPendingTimers)
-        .then(done)
-        .catch(done.fail);
-
       search();
+
+      await waitForEvent($input, 'select2-loaded');
+      jest.runOnlyPendingTimers();
     });
 
     it('skips groups and does not fetch all available', () => {
@@ -202,7 +191,7 @@ describe('Approvals ApproversSelect', () => {
     });
   });
 
-  it('emits input when data changes', async (done) => {
+  it('emits input when data changes', async () => {
     await factory();
 
     const expectedFinal = [
@@ -211,24 +200,14 @@ describe('Approvals ApproversSelect', () => {
     ];
     const expected = expectedFinal.map((x, idx) => [expectedFinal.slice(0, idx + 1)]);
 
-    waitForEvent($input, 'select2-loaded')
-      .then(() => {
-        const options = select2DropdownOptions();
-        $(options[TEST_GROUPS.length]).trigger('mouseup');
-        $(options[0]).trigger('mouseup');
-      })
-      .then(jest.runOnlyPendingTimers)
-      .then(done)
-      .catch(done.fail);
-
-    waitForEvent($input, 'change')
-      .then(jest.runOnlyPendingTimers)
-      .then(() => {
-        expect(wrapper.emitted().input).toEqual(expected);
-      })
-      .then(done)
-      .catch(done.fail);
-
     search();
+
+    await waitForPromises();
+    const options = select2DropdownOptions();
+    $(options[TEST_GROUPS.length]).trigger('mouseup');
+    $(options[0]).trigger('mouseup');
+
+    await waitForPromises();
+    expect(wrapper.emitted().input).toEqual(expected);
   });
 });

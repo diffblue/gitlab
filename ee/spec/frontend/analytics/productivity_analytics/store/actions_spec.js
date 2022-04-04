@@ -5,7 +5,7 @@ import testAction from 'helpers/vuex_action_helper';
 
 describe('Productivity analytics actions', () => {
   describe('setEndpoint', () => {
-    it('commits the SET_ENDPOINT mutation', (done) =>
+    it('commits the SET_ENDPOINT mutation', async () =>
       testAction(
         actions.setEndpoint,
         'endpoint.json',
@@ -17,7 +17,6 @@ describe('Productivity analytics actions', () => {
           },
         ],
         [],
-        done,
       ));
   });
 });
