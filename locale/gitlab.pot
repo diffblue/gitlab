@@ -39127,10 +39127,10 @@ msgstr ""
 msgid "Timeago|right now"
 msgstr ""
 
-msgid "Timeline|Turn timeline view off"
+msgid "Timeline|Turn recent updates view off"
 msgstr ""
 
-msgid "Timeline|Turn timeline view on"
+msgid "Timeline|Turn recent updates view on"
 msgstr ""
 
 msgid "Timeout"
