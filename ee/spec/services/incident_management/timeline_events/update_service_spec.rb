@@ -13,6 +13,7 @@ RSpec.describe IncidentManagement::TimelineEvents::UpdateService do
 
   before do
     stub_licensed_features(incident_timeline_events: true)
+    stub_feature_flags(incident_timeline: project)
   end
 
   describe '#execute' do
@@ -30,6 +31,17 @@ RSpec.describe IncidentManagement::TimelineEvents::UpdateService do
       end
     end
 
+    shared_examples 'passing the correct was_changed value' do |was_changed|
+      it 'passes the correct was_changed value into SysteNoteService.edit_timeline_event' do
+        expect(SystemNoteService)
+          .to receive(:edit_timeline_event)
+          .with(timeline_event, user, was_changed: was_changed)
+          .and_call_original
+
+        execute
+      end
+    end
+
     subject(:execute) { described_class.new(timeline_event, user, params).execute }
 
     context 'when user has permissions' do
@@ -44,10 +56,27 @@ RSpec.describe IncidentManagement::TimelineEvents::UpdateService do
           .and change { timeline_event.occurred_at }.to(params[:occurred_at])
       end
 
+      it 'creates a system note' do
+        expect { execute }.to change { incident.notes.reload.count }.by(1)
+      end
+
+      it_behaves_like 'passing the correct was_changed value', :occurred_at_and_note
+
+      context 'when incident_timeline feature flag is disabled' do
+        before do
+          stub_feature_flags(incident_timeline: false)
+        end
+
+        it 'does not add a system note' do
+          expect { execute }.not_to change { incident.notes }
+        end
+      end
+
       context 'when note is nil' do
         let(:params) { { occurred_at: occurred_at } }
 
         it_behaves_like 'successful response'
+        it_behaves_like 'passing the correct was_changed value', :occurred_at
 
         it 'does not update the note' do
           expect { execute }.not_to change { timeline_event.reload.note }
@@ -62,6 +91,7 @@ RSpec.describe IncidentManagement::TimelineEvents::UpdateService do
         let(:params) { { note: '', occurred_at: occurred_at } }
 
         it_behaves_like 'successful response'
+        it_behaves_like 'passing the correct was_changed value', :occurred_at
 
         it 'does not update the note' do
           expect { execute }.not_to change { timeline_event.reload.note }
@@ -76,6 +106,7 @@ RSpec.describe IncidentManagement::TimelineEvents::UpdateService do
         let(:params) { { note: 'Updated note' } }
 
         it_behaves_like 'successful response'
+        it_behaves_like 'passing the correct was_changed value', :note
 
         it 'updates the note' do
           expect { execute }.to change { timeline_event.note }.to(params[:note])
@@ -83,6 +114,26 @@ RSpec.describe IncidentManagement::TimelineEvents::UpdateService do
 
         it 'does not update occurred_at' do
           expect { execute }.not_to change { timeline_event.reload.occurred_at }
+        end
+      end
+
+      context 'when both occurred_at and note is nil' do
+        let(:params) { {} }
+
+        it_behaves_like 'successful response'
+
+        it 'does not update the note' do
+          expect { execute }.not_to change { timeline_event.note }
+        end
+
+        it 'does not update occurred_at' do
+          expect { execute }.not_to change { timeline_event.reload.occurred_at }
+        end
+
+        it 'does not call SysteNoteService.edit_timeline_event' do
+          expect(SystemNoteService).not_to receive(:edit_timeline_event)
+
+          execute
         end
       end
     end
