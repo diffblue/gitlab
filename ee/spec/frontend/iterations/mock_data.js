@@ -11,12 +11,21 @@ export const mockIterationNode = {
   title: 'top-level-iteration',
   webPath: '/groups/top-level-group/-/iterations/4',
   scopedPath: '/groups/top-level-group/-/iterations/4',
+  iterationCadence: {
+    __typename: 'IterationCadence',
+    id: 'gid://gitlab/Iterations::Cadence/72',
+    automatic: true,
+  },
   __typename: 'Iteration',
 };
 
-export const mockPastIterationNode = {
+export const mockManualIterationNode = {
   ...mockIterationNode,
-  state: iterationStates.closed,
+  iterationCadence: {
+    __typename: 'IterationCadence',
+    id: 'gid://gitlab/Iterations::Cadence/72',
+    automatic: false,
+  },
 };
 
 export const mockIterationNodeWithoutTitle = {
@@ -171,7 +180,18 @@ export const nonEmptyGroupIterationsSuccess = {
   },
 };
 
-export const readCadenceSuccess = {
+export const readAutomaticCadenceSuccess = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/114',
+      iterationCadences: {
+        nodes: [automaticIterationCadence],
+      },
+    },
+  },
+};
+
+export const readManualCadenceSuccess = {
   data: {
     group: {
       id: 'gid://gitlab/Group/114',

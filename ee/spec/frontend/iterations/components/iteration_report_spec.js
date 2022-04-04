@@ -17,7 +17,7 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { __ } from '~/locale';
 import {
   mockIterationNode,
-  mockPastIterationNode,
+  mockManualIterationNode,
   createMockGroupIterations,
   mockIterationNodeWithoutTitle,
   mockProjectIterations,
@@ -155,8 +155,16 @@ describe('Iterations report', () => {
   });
 
   describe('delete iteration', () => {
-    it('does not show delete option for past iterations', async () => {
-      mountComponent({ mockQueryResponse: createMockGroupIterations(mockPastIterationNode) });
+    it('does not show delete option when iteration belongs to automatic cadence', async () => {
+      mountComponent({ mockQueryResponse: createMockGroupIterations(mockIterationNode) });
+
+      await waitForPromises();
+
+      expect(findDeleteButton().exists()).toBe(false);
+    });
+
+    it('shows delete option when iteration belongs to automatic cadence', async () => {
+      mountComponent({ mockQueryResponse: createMockGroupIterations(mockManualIterationNode) });
 
       await waitForPromises();
 
