@@ -1466,6 +1466,7 @@ RSpec.describe API::Internal::Base do
       subject
 
       expect(json_response['success']).to be_falsey
+      expect(json_response['message']).to eq 'Feature is not available'
     end
   end
 
@@ -1486,6 +1487,7 @@ RSpec.describe API::Internal::Base do
       subject
 
       expect(json_response['success']).to be_falsey
+      expect(json_response['message']).to eq 'Feature is not available'
     end
   end
 
@@ -1506,6 +1508,7 @@ RSpec.describe API::Internal::Base do
       subject
 
       expect(json_response['success']).to be_falsey
+      expect(json_response['message']).to eq 'Feature is not available'
     end
   end
 

@@ -123,6 +123,11 @@ module API
           'Could not find a user for the given key' unless actor.user
         end
 
+        # TODO: backwards compatibility; remove after https://gitlab.com/gitlab-org/gitlab-shell/-/merge_requests/454 is merged
+        def two_factor_otp_check
+          { success: false, message: 'Feature is not available' }
+        end
+
         def two_factor_manual_otp_check
           { success: false, message: 'Feature is not available' }
         end
@@ -324,7 +329,7 @@ module API
           end
         end
 
-        # TODO: backwards compatibility; remove after https://gitlab.com/gitlab-org/gitlab-shell/-/merge_requests/454 is merged:w
+        # TODO: backwards compatibility; remove after https://gitlab.com/gitlab-org/gitlab-shell/-/merge_requests/454 is merged
         post '/two_factor_otp_check', feature_category: :authentication_and_authorization do
           status 200
 

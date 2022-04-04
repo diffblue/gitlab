@@ -19,7 +19,7 @@ module Users
       strategy.validate(otp_code)
     rescue StandardError => ex
       Gitlab::ErrorTracking.log_exception(ex)
-      error(message: ex.message)
+      error(ex.message)
     end
 
     private

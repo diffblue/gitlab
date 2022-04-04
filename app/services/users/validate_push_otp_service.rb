@@ -15,7 +15,7 @@ module Users
       strategy.validate
     rescue StandardError => ex
       Gitlab::ErrorTracking.log_exception(ex)
-      error(message: ex.message)
+      error(ex.message)
     end
 
     private
