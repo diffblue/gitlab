@@ -114,6 +114,10 @@ RSpec.describe Mutations::DastSiteProfiles::Create do
           expect(subject[:id]).to eq(dast_site_profile.to_global_id)
         end
 
+        it 'returns the complete dast_site_profile' do
+          expect(subject[:dast_site_profile]).to eq(dast_site_profile)
+        end
+
         it 'calls the dast_site_profile creation service' do
           service = double(::AppSec::Dast::SiteProfiles::CreateService)
           result = ServiceResponse.error(message: '')
