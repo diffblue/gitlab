@@ -54,17 +54,31 @@ RSpec.describe Epics::RelatedEpicLinks::CreateService do
     end
 
     context 'event tracking' do
-      context 'for relates_to link type' do
+      shared_examples 'a recorded event' do
         it 'records event for each link created' do
           params = {
-            link_type: IssuableLink::TYPE_RELATES_TO,
+            link_type: link_type,
             issuable_references: [issuable_a, issuable3].map { |epic| epic.to_reference(issuable.group, full: true) }
           }
 
-          expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_linked_epic_with_type_relates_to_added).with(author: user).twice
+          expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(tracking_method_name).with(author: user).twice
 
           described_class.new(issuable, user, params).execute
         end
+      end
+
+      context 'for relates_to link type' do
+        let(:link_type) { IssuableLink::TYPE_RELATES_TO }
+        let(:tracking_method_name) { :track_linked_epic_with_type_relates_to_added }
+
+        it_behaves_like 'a recorded event'
+      end
+
+      context 'for blocks link_type' do
+        let(:link_type) { IssuableLink::TYPE_BLOCKS }
+        let(:tracking_method_name) { :track_linked_epic_with_type_blocks_added }
+
+        it_behaves_like 'a recorded event'
       end
     end
   end

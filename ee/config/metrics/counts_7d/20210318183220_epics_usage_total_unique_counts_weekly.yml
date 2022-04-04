@@ -46,6 +46,7 @@ options:
     - g_project_management_users_epic_issue_added_from_epic
     - g_project_management_epic_related_added
     - g_project_management_epic_related_removed
+    - g_project_management_epic_blocking_added
 distribution:
 - ee
 tier:
