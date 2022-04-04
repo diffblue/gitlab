@@ -19,7 +19,7 @@
                 = s_('Promotions|Push Rules are defined per project so you can have different rules applied to different projects depends on your needs.')
           - unless @project.feature_available?(:repository_mirrors)
             %li
-              = link_to s_('Promotions|Repository Mirroring'), help_page_path('user/project/repository/repository_mirroring.md'), target: '_blank', rel: 'noopener noreferrer'
+              = link_to s_('Promotions|Repository Mirroring'), help_page_path('user/project/repository/mirror/index.md'), target: '_blank', rel: 'noopener noreferrer'
               %p
                 = s_('Promotions|Repository Mirroring is a way to mirror repositories from external sources. It can be used to mirror all branches, tags, and commits that you have in your repository.')
           - unless @project.feature_available?(:protected_refs_for_users)
