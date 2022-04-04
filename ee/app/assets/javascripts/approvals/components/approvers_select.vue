@@ -104,6 +104,11 @@ export default {
     },
   },
   mounted() {
+    const query = debounce(
+      ({ term, callback }) => this.fetchGroupsAndUsers(term).then(callback),
+      500,
+    );
+
     import(/* webpackChunkName: 'select2' */ 'select2/select2')
       .then(() => {
         // eslint-disable-next-line promise/no-nesting
@@ -117,10 +122,7 @@ export default {
                 closeOnSelect: false,
                 formatResult,
                 formatSelection,
-                query: debounce(({ term, callback }) => {
-                  // eslint-disable-next-line promise/no-nesting
-                  return this.fetchGroupsAndUsers(term).then(callback);
-                }, 250),
+                query,
                 id: ({ type, id }) => `${type}${id}`,
               })
               .on('change', (e) => this.onChange(e));
