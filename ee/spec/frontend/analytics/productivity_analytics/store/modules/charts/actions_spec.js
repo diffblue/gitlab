@@ -72,7 +72,7 @@ describe('Productivity analytics chart actions', () => {
             expect(axios.get).toHaveBeenCalledWith(mockedState.endpoint, { params: globalParams });
           });
 
-          it('dispatches success with received data', (done) =>
+          it('dispatches success with received data', async () =>
             testAction(
               actions.fetchChartData,
               chartKey,
@@ -85,7 +85,6 @@ describe('Productivity analytics chart actions', () => {
                   payload: expect.objectContaining({ chartKey, data: mockHistogramData }),
                 },
               ],
-              done,
             ));
         });
 
@@ -94,8 +93,8 @@ describe('Productivity analytics chart actions', () => {
             mock.onGet(mockedState.endpoint).replyOnce(200, mockScatterplotData);
           });
 
-          it('dispatches success with received data and transformedData', (done) => {
-            testAction(
+          it('dispatches success with received data and transformedData', async () => {
+            await testAction(
               actions.fetchChartData,
               chartKeys.scatterplot,
               mockedState,
@@ -111,7 +110,6 @@ describe('Productivity analytics chart actions', () => {
                   },
                 },
               ],
-              done,
             );
           });
         });
@@ -122,8 +120,8 @@ describe('Productivity analytics chart actions', () => {
           mock.onGet(mockedState.endpoint).replyOnce(500);
         });
 
-        it('dispatches error', (done) => {
-          testAction(
+        it('dispatches error', async () => {
+          await testAction(
             actions.fetchChartData,
             chartKey,
             mockedState,
@@ -141,7 +139,6 @@ describe('Productivity analytics chart actions', () => {
                 },
               },
             ],
-            done,
           );
         });
       });
@@ -149,14 +146,13 @@ describe('Productivity analytics chart actions', () => {
   });
 
   describe('requestChartData', () => {
-    it('should commit the request mutation', (done) => {
-      testAction(
+    it('should commit the request mutation', async () => {
+      await testAction(
         actions.requestChartData,
         chartKey,
         mockedContext.state,
         [{ type: types.REQUEST_CHART_DATA, payload: chartKey }],
         [],
-        done,
       );
     });
 
@@ -167,8 +163,8 @@ describe('Productivity analytics chart actions', () => {
         mockedState.charts[disabledChartKey].enabled = false;
       });
 
-      it('does not dispatch the requestChartData action', (done) => {
-        testAction(actions.fetchChartData, disabledChartKey, mockedState, [], [], done);
+      it('does not dispatch the requestChartData action', async () => {
+        await testAction(actions.fetchChartData, disabledChartKey, mockedState, [], []);
       });
 
       it('does not call the API', () => {
@@ -180,8 +176,8 @@ describe('Productivity analytics chart actions', () => {
   });
 
   describe('receiveChartDataSuccess', () => {
-    it('should commit received data', (done) => {
-      testAction(
+    it('should commit received data', async () => {
+      await testAction(
         actions.receiveChartDataSuccess,
         { chartKey, data: mockHistogramData },
         mockedContext.state,
@@ -192,15 +188,14 @@ describe('Productivity analytics chart actions', () => {
           },
         ],
         [],
-        done,
       );
     });
   });
 
   describe('receiveChartDataError', () => {
-    it('should commit error', (done) => {
+    it('should commit error', async () => {
       const error = { response: { status: 500 } };
-      testAction(
+      await testAction(
         actions.receiveChartDataError,
         { chartKey, error },
         mockedContext.state,
@@ -214,14 +209,13 @@ describe('Productivity analytics chart actions', () => {
           },
         ],
         [],
-        done,
       );
     });
   });
 
   describe('fetchSecondaryChartData', () => {
-    it('dispatches fetchChartData for all chart types except for the main chart', (done) => {
-      testAction(
+    it('dispatches fetchChartData for all chart types except for the main chart', async () => {
+      await testAction(
         actions.fetchSecondaryChartData,
         null,
         mockedContext.state,
@@ -231,7 +225,6 @@ describe('Productivity analytics chart actions', () => {
           { type: 'fetchChartData', payload: chartKeys.commitBasedHistogram },
           { type: 'fetchChartData', payload: chartKeys.scatterplot },
         ],
-        done,
       );
     });
   });
@@ -239,48 +232,45 @@ describe('Productivity analytics chart actions', () => {
   describe('setMetricType', () => {
     const metricType = 'time_to_merge';
 
-    it('should commit metricType', (done) => {
-      testAction(
+    it('should commit metricType', async () => {
+      await testAction(
         actions.setMetricType,
         { chartKey, metricType },
         mockedContext.state,
         [{ type: types.SET_METRIC_TYPE, payload: { chartKey, metricType } }],
         [{ type: 'fetchChartData', payload: chartKey }],
-        done,
       );
     });
   });
 
   describe('updateSelectedItems', () => {
-    it('should commit selected chart item and dispatch fetchSecondaryChartData and setPage', (done) => {
-      testAction(
+    it('should commit selected chart item and dispatch fetchSecondaryChartData and setPage', async () => {
+      await testAction(
         actions.updateSelectedItems,
         { chartKey, item: 5 },
         mockedContext.state,
         [{ type: types.UPDATE_SELECTED_CHART_ITEMS, payload: { chartKey, item: 5 } }],
         [{ type: 'fetchSecondaryChartData' }, { type: 'table/setPage', payload: 0 }],
-        done,
       );
     });
   });
 
   describe('resetMainChartSelection', () => {
     describe('when skipReload is false (by default)', () => {
-      it('should commit selected chart item and dispatch fetchSecondaryChartData and setPage', (done) => {
-        testAction(
+      it('should commit selected chart item and dispatch fetchSecondaryChartData and setPage', async () => {
+        await testAction(
           actions.resetMainChartSelection,
           null,
           mockedContext.state,
           [{ type: types.UPDATE_SELECTED_CHART_ITEMS, payload: { chartKey, item: null } }],
           [{ type: 'fetchSecondaryChartData' }, { type: 'table/setPage', payload: 0 }],
-          done,
         );
       });
     });
 
     describe('when skipReload is true', () => {
-      it('should commit selected chart and it should not dispatch any further actions', (done) => {
-        testAction(
+      it('should commit selected chart and it should not dispatch any further actions', async () => {
+        await testAction(
           actions.resetMainChartSelection,
           true,
           mockedContext.state,
@@ -291,15 +281,14 @@ describe('Productivity analytics chart actions', () => {
             },
           ],
           [],
-          done,
         );
       });
     });
   });
 
   describe('setChartEnabled', () => {
-    it('should commit enabled state', (done) => {
-      testAction(
+    it('should commit enabled state', async () => {
+      await testAction(
         actions.setChartEnabled,
         { chartKey: chartKeys.scatterplot, isEnabled: false },
         mockedContext.state,
@@ -310,7 +299,6 @@ describe('Productivity analytics chart actions', () => {
           },
         ],
         [],
-        done,
       );
     });
   });

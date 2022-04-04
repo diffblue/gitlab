@@ -1,3 +1,4 @@
 ---
 extends: ../../../spec/frontend/.eslintrc.yml
-
+rules:
+  jest/no-test-callback: error

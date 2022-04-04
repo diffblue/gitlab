@@ -22,27 +22,25 @@ describe('Epic Store Actions', () => {
   });
 
   describe('setEpicMeta', () => {
-    it('should set received Epic meta', (done) => {
-      testAction(
+    it('should set received Epic meta', async () => {
+      await testAction(
         actions.setEpicMeta,
         mockEpicMeta,
         {},
         [{ type: 'SET_EPIC_META', payload: mockEpicMeta }],
         [],
-        done,
       );
     });
   });
 
   describe('setEpicData', () => {
-    it('should set received Epic data', (done) => {
-      testAction(
+    it('should set received Epic data', async () => {
+      await testAction(
         actions.setEpicData,
         mockEpicData,
         {},
         [{ type: 'SET_EPIC_DATA', payload: mockEpicData }],
         [],
-        done,
       );
     });
   });
@@ -101,7 +99,7 @@ describe('Epic Store Actions', () => {
       mock.restore();
     });
 
-    it('dispatches setEpicData when request is successful', (done) => {
+    it('dispatches setEpicData when request is successful', async () => {
       mock.onPut(/(.*)/).replyOnce(200, {});
       jest.spyOn(epicUtils.gqClient, 'query').mockReturnValue(
         Promise.resolve({
@@ -109,7 +107,7 @@ describe('Epic Store Actions', () => {
         }),
       );
 
-      testAction(
+      await testAction(
         actions.fetchEpicDetails,
         payload,
         state,
@@ -120,15 +118,14 @@ describe('Epic Store Actions', () => {
             payload: { participants: formattedParticipants },
           },
         ],
-        done,
       );
     });
 
-    it('dispatches requestEpicParticipantsFailure when request fails', (done) => {
+    it('dispatches requestEpicParticipantsFailure when request fails', async () => {
       mock.onPut(/(.*)/).replyOnce(500, {});
       jest.spyOn(epicUtils.gqClient, 'query').mockReturnValue(Promise.resolve({}));
 
-      testAction(
+      await testAction(
         actions.fetchEpicDetails,
         payload,
         state,
@@ -138,14 +135,13 @@ describe('Epic Store Actions', () => {
             type: 'requestEpicParticipantsFailure',
           },
         ],
-        done,
       );
     });
   });
 
   describe('requestEpicParticipantsFailure', () => {
-    it('does not invoke any mutations or actions', (done) => {
-      testAction(actions.requestEpicParticipantsFailure, {}, state, [], [], done);
+    it('does not invoke any mutations or actions', async () => {
+      await testAction(actions.requestEpicParticipantsFailure, {}, state, [], []);
     });
 
     it('shows flash error', () => {
@@ -158,40 +154,37 @@ describe('Epic Store Actions', () => {
   });
 
   describe('requestEpicStatusChange', () => {
-    it('should set status change flag', (done) => {
-      testAction(
+    it('should set status change flag', async () => {
+      await testAction(
         actions.requestEpicStatusChange,
         {},
         state,
         [{ type: 'REQUEST_EPIC_STATUS_CHANGE' }],
         [],
-        done,
       );
     });
   });
 
   describe('requestEpicStatusChangeSuccess', () => {
-    it('should set epic state type', (done) => {
-      testAction(
+    it('should set epic state type', async () => {
+      await testAction(
         actions.requestEpicStatusChangeSuccess,
         { state: statusType.close },
         state,
         [{ type: 'REQUEST_EPIC_STATUS_CHANGE_SUCCESS', payload: { state: statusType.close } }],
         [],
-        done,
       );
     });
   });
 
   describe('requestEpicStatusChangeFailure', () => {
-    it('should set status change flag', (done) => {
-      testAction(
+    it('should set status change flag', async () => {
+      await testAction(
         actions.requestEpicStatusChangeFailure,
         {},
         state,
         [{ type: 'REQUEST_EPIC_STATUS_CHANGE_FAILURE' }],
         [],
-        done,
       );
     });
 
@@ -235,12 +228,12 @@ describe('Epic Store Actions', () => {
     });
 
     describe('success', () => {
-      it('dispatches requestEpicStatusChange and requestEpicStatusChangeSuccess when request is complete', (done) => {
+      it('dispatches requestEpicStatusChange and requestEpicStatusChangeSuccess when request is complete', async () => {
         mock.onPut(/(.*)/).replyOnce(200, {
           state: statusType.close,
         });
 
-        testAction(
+        await testAction(
           actions.toggleEpicStatus,
           null,
           state,
@@ -258,16 +251,15 @@ describe('Epic Store Actions', () => {
               payload: { isEpicOpen: true },
             },
           ],
-          done,
         );
       });
     });
 
     describe('failure', () => {
-      it('dispatches requestEpicStatusChange and requestEpicStatusChangeFailure when request fails', (done) => {
+      it('dispatches requestEpicStatusChange and requestEpicStatusChangeFailure when request fails', async () => {
         mock.onPut(/(.*)/).replyOnce(500, {});
 
-        testAction(
+        await testAction(
           actions.toggleEpicStatus,
           null,
           state,
@@ -284,23 +276,21 @@ describe('Epic Store Actions', () => {
               payload: { isEpicOpen: true },
             },
           ],
-          done,
         );
       });
     });
   });
 
   describe('toggleSidebarFlag', () => {
-    it('should call `TOGGLE_SIDEBAR` mutation with param `sidebarCollapsed`', (done) => {
+    it('should call `TOGGLE_SIDEBAR` mutation with param `sidebarCollapsed`', async () => {
       const sidebarCollapsed = true;
 
-      testAction(
+      await testAction(
         actions.toggleSidebarFlag,
         sidebarCollapsed,
         state,
         [{ type: 'TOGGLE_SIDEBAR', payload: sidebarCollapsed }],
         [],
-        done,
       );
     });
   });
@@ -329,10 +319,10 @@ describe('Epic Store Actions', () => {
   });
 
   describe('toggleSidebar', () => {
-    it('dispatches toggleContainerClassAndCookie and toggleSidebarFlag actions with opposite value of `isSidebarCollapsed` param', (done) => {
+    it('dispatches toggleContainerClassAndCookie and toggleSidebarFlag actions with opposite value of `isSidebarCollapsed` param', async () => {
       const sidebarCollapsed = true;
 
-      testAction(
+      await testAction(
         actions.toggleSidebar,
         { sidebarCollapsed },
         state,
@@ -347,46 +337,42 @@ describe('Epic Store Actions', () => {
             payload: !sidebarCollapsed,
           },
         ],
-        done,
       );
     });
   });
 
   describe('requestEpicTodoToggle', () => {
-    it('should set `state.epicTodoToggleInProgress` flag to `true`', (done) => {
-      testAction(
+    it('should set `state.epicTodoToggleInProgress` flag to `true`', async () => {
+      await testAction(
         actions.requestEpicTodoToggle,
         {},
         state,
         [{ type: 'REQUEST_EPIC_TODO_TOGGLE' }],
         [],
-        done,
       );
     });
   });
 
   describe('requestEpicTodoToggleSuccess', () => {
-    it('should set epic state type', (done) => {
-      testAction(
+    it('should set epic state type', async () => {
+      await testAction(
         actions.requestEpicTodoToggleSuccess,
         { todoDeletePath: '/foo/bar' },
         state,
         [{ type: 'REQUEST_EPIC_TODO_TOGGLE_SUCCESS', payload: { todoDeletePath: '/foo/bar' } }],
         [],
-        done,
       );
     });
   });
 
   describe('requestEpicTodoToggleFailure', () => {
-    it('Should set `state.epicTodoToggleInProgress` flag to `false`', (done) => {
-      testAction(
+    it('Should set `state.epicTodoToggleInProgress` flag to `false`', async () => {
+      await testAction(
         actions.requestEpicTodoToggleFailure,
         {},
         state,
         [{ type: 'REQUEST_EPIC_TODO_TOGGLE_FAILURE', payload: {} }],
         [],
-        done,
       );
     });
 
@@ -440,13 +426,13 @@ describe('Epic Store Actions', () => {
     });
 
     describe('when `state.togoExists` is false', () => {
-      it('dispatches requestEpicTodoToggle, triggerTodoToggleEvent and requestEpicTodoToggleSuccess when request is successful', (done) => {
+      it('dispatches requestEpicTodoToggle, triggerTodoToggleEvent and requestEpicTodoToggleSuccess when request is successful', async () => {
         mock.onPost(/(.*)/).replyOnce(200, {
           count: 5,
           delete_path: '/foo/bar',
         });
 
-        testAction(
+        await testAction(
           actions.toggleTodo,
           null,
           { todoExists: false },
@@ -464,14 +450,13 @@ describe('Epic Store Actions', () => {
               payload: { todoDeletePath: '/foo/bar' },
             },
           ],
-          done,
         );
       });
 
-      it('dispatches requestEpicTodoToggle and requestEpicTodoToggleFailure when request fails', (done) => {
+      it('dispatches requestEpicTodoToggle and requestEpicTodoToggleFailure when request fails', async () => {
         mock.onPost(/(.*)/).replyOnce(500, {});
 
-        testAction(
+        await testAction(
           actions.toggleTodo,
           null,
           { todoExists: false },
@@ -484,18 +469,17 @@ describe('Epic Store Actions', () => {
               type: 'requestEpicTodoToggleFailure',
             },
           ],
-          done,
         );
       });
     });
 
     describe('when `state.togoExists` is true', () => {
-      it('dispatches requestEpicTodoToggle, triggerTodoToggleEvent and requestEpicTodoToggleSuccess when request is successful', (done) => {
+      it('dispatches requestEpicTodoToggle, triggerTodoToggleEvent and requestEpicTodoToggleSuccess when request is successful', async () => {
         mock.onDelete(/(.*)/).replyOnce(200, {
           count: 5,
         });
 
-        testAction(
+        await testAction(
           actions.toggleTodo,
           null,
           { todoExists: true },
@@ -513,14 +497,13 @@ describe('Epic Store Actions', () => {
               payload: { todoDeletePath: undefined },
             },
           ],
-          done,
         );
       });
 
-      it('dispatches requestEpicTodoToggle and requestEpicTodoToggleFailure when request fails', (done) => {
+      it('dispatches requestEpicTodoToggle and requestEpicTodoToggleFailure when request fails', async () => {
         mock.onDelete(/(.*)/).replyOnce(500, {});
 
-        testAction(
+        await testAction(
           actions.toggleTodo,
           null,
           { todoExists: true },
@@ -533,114 +516,107 @@ describe('Epic Store Actions', () => {
               type: 'requestEpicTodoToggleFailure',
             },
           ],
-          done,
         );
       });
     });
   });
 
   describe('toggleStartDateType', () => {
-    it('should set `state.startDateIsFixed` flag to `true`', (done) => {
+    it('should set `state.startDateIsFixed` flag to `true`', async () => {
       const dateTypeIsFixed = true;
 
-      testAction(
+      await testAction(
         actions.toggleStartDateType,
         { dateTypeIsFixed },
         state,
         [{ type: 'TOGGLE_EPIC_START_DATE_TYPE', payload: { dateTypeIsFixed } }],
         [],
-        done,
       );
     });
   });
 
   describe('toggleDueDateType', () => {
-    it('should set `state.dueDateIsFixed` flag to `true`', (done) => {
+    it('should set `state.dueDateIsFixed` flag to `true`', async () => {
       const dateTypeIsFixed = true;
 
-      testAction(
+      await testAction(
         actions.toggleDueDateType,
         { dateTypeIsFixed },
         state,
         [{ type: 'TOGGLE_EPIC_DUE_DATE_TYPE', payload: { dateTypeIsFixed } }],
         [],
-        done,
       );
     });
   });
 
   describe('requestEpicDateSave', () => {
-    it('should set `state.epicStartDateSaveInProgress` flag to `true` when called with `dateType` as `start`', (done) => {
+    it('should set `state.epicStartDateSaveInProgress` flag to `true` when called with `dateType` as `start`', async () => {
       const dateType = dateTypes.start;
 
-      testAction(
+      await testAction(
         actions.requestEpicDateSave,
         { dateType },
         state,
         [{ type: 'REQUEST_EPIC_DATE_SAVE', payload: { dateType } }],
         [],
-        done,
       );
     });
 
-    it('should set `state.epicDueDateSaveInProgress` flag to `true` when called with `dateType` as `due`', (done) => {
+    it('should set `state.epicDueDateSaveInProgress` flag to `true` when called with `dateType` as `due`', async () => {
       const dateType = dateTypes.due;
 
-      testAction(
+      await testAction(
         actions.requestEpicDateSave,
         { dateType },
         state,
         [{ type: 'REQUEST_EPIC_DATE_SAVE', payload: { dateType } }],
         [],
-        done,
       );
     });
   });
 
   describe('requestEpicDateSaveSuccess', () => {
-    it('should set `state.epicStartDateSaveInProgress` flag to `false` and set values of `startDateIsFixed` & `startDate` with params `dateTypeIsFixed` & `newDate` when called with `dateType` as `start`', (done) => {
+    it('should set `state.epicStartDateSaveInProgress` flag to `false` and set values of `startDateIsFixed` & `startDate` with params `dateTypeIsFixed` & `newDate` when called with `dateType` as `start`', async () => {
       const data = {
         dateType: dateTypes.start,
         dateTypeIsFixed: true,
         mewDate: '2018-1-1',
       };
 
-      testAction(
+      await testAction(
         actions.requestEpicDateSaveSuccess,
         data,
         state,
         [{ type: 'REQUEST_EPIC_DATE_SAVE_SUCCESS', payload: { ...data } }],
         [],
-        done,
       );
     });
 
-    it('should set `state.epicDueDateSaveInProgress` flag to `false` and set values of `dueDateIsFixed` & `dueDate` with params `dateTypeIsFixed` & `newDate` when called with `dateType` as `due`', (done) => {
+    it('should set `state.epicDueDateSaveInProgress` flag to `false` and set values of `dueDateIsFixed` & `dueDate` with params `dateTypeIsFixed` & `newDate` when called with `dateType` as `due`', async () => {
       const data = {
         dateType: dateTypes.due,
         dateTypeIsFixed: true,
         mewDate: '2018-1-1',
       };
 
-      testAction(
+      await testAction(
         actions.requestEpicDateSaveSuccess,
         data,
         state,
         [{ type: 'REQUEST_EPIC_DATE_SAVE_SUCCESS', payload: { ...data } }],
         [],
-        done,
       );
     });
   });
 
   describe('requestEpicDateSaveFailure', () => {
-    it('should set `state.epicStartDateSaveInProgress` flag to `false` and set value of `startDateIsFixed` to that of param `dateTypeIsFixed` when called with `dateType` as `start`', (done) => {
+    it('should set `state.epicStartDateSaveInProgress` flag to `false` and set value of `startDateIsFixed` to that of param `dateTypeIsFixed` when called with `dateType` as `start`', async () => {
       const data = {
         dateType: dateTypes.start,
         dateTypeIsFixed: true,
       };
 
-      testAction(
+      await testAction(
         actions.requestEpicDateSaveFailure,
         data,
         state,
@@ -651,17 +627,16 @@ describe('Epic Store Actions', () => {
           },
         ],
         [],
-        done,
       );
     });
 
-    it('should set `state.epicDueDateSaveInProgress` flag to `false` and set value of `dueDateIsFixed` to that of param `dateTypeIsFixed` when called with `dateType` as `due`', (done) => {
+    it('should set `state.epicDueDateSaveInProgress` flag to `false` and set value of `dueDateIsFixed` to that of param `dateTypeIsFixed` when called with `dateType` as `due`', async () => {
       const data = {
         dateType: dateTypes.due,
         dateTypeIsFixed: true,
       };
 
-      testAction(
+      await testAction(
         actions.requestEpicDateSaveFailure,
         data,
         state,
@@ -672,7 +647,6 @@ describe('Epic Store Actions', () => {
           },
         ],
         [],
-        done,
       );
     });
 
@@ -727,7 +701,7 @@ describe('Epic Store Actions', () => {
       mock.restore();
     });
 
-    it('dispatches requestEpicDateSave and requestEpicDateSaveSuccess when request is successful', (done) => {
+    it('dispatches requestEpicDateSave and requestEpicDateSaveSuccess when request is successful', async () => {
       mock.onPut(/(.*)/).replyOnce(200, {});
       jest.spyOn(epicUtils.gqClient, 'mutate').mockReturnValue(
         Promise.resolve({
@@ -735,7 +709,7 @@ describe('Epic Store Actions', () => {
         }),
       );
 
-      testAction(
+      await testAction(
         actions.saveDate,
         { ...data },
         state,
@@ -750,11 +724,10 @@ describe('Epic Store Actions', () => {
             payload: { ...data },
           },
         ],
-        done,
       );
     });
 
-    it('dispatches requestEpicDateSave and requestEpicDateSaveFailure when request fails', (done) => {
+    it('dispatches requestEpicDateSave and requestEpicDateSaveFailure when request fails', async () => {
       mock.onPut(/(.*)/).replyOnce(500, {});
       jest.spyOn(epicUtils.gqClient, 'mutate').mockReturnValue(
         Promise.resolve({
@@ -767,7 +740,7 @@ describe('Epic Store Actions', () => {
         }),
       );
 
-      testAction(
+      await testAction(
         actions.saveDate,
         { ...data },
         state,
@@ -782,32 +755,30 @@ describe('Epic Store Actions', () => {
             payload: { dateType: data.dateType, dateTypeIsFixed: !data.dateTypeIsFixed },
           },
         ],
-        done,
       );
     });
   });
 
   describe('requestEpicLabelsSelect', () => {
-    it('should set `state.epicLabelsSelectInProgress` flag to `true`', (done) => {
-      testAction(
+    it('should set `state.epicLabelsSelectInProgress` flag to `true`', async () => {
+      await testAction(
         actions.requestEpicLabelsSelect,
         {},
         state,
         [{ type: 'REQUEST_EPIC_LABELS_SELECT' }],
         [],
-        done,
       );
     });
   });
 
   describe('receiveEpicLabelsSelectSuccess', () => {
-    it('should set provided labels param to `state.labels`', (done) => {
+    it('should set provided labels param to `state.labels`', async () => {
       const labels = [
         { id: 1, set: false },
         { id: 2, set: true },
       ];
 
-      testAction(
+      await testAction(
         actions.receiveEpicLabelsSelectSuccess,
         labels,
         state,
@@ -818,20 +789,18 @@ describe('Epic Store Actions', () => {
           },
         ],
         [],
-        done,
       );
     });
   });
 
   describe('receiveEpicLabelsSelectFailure', () => {
-    it('should set `state.epicLabelsSelectInProgress` flag to `false`', (done) => {
-      testAction(
+    it('should set `state.epicLabelsSelectInProgress` flag to `false`', async () => {
+      await testAction(
         actions.receiveEpicLabelsSelectFailure,
         {},
         state,
         [{ type: 'RECEIVE_EPIC_LABELS_SELECT_FAILURE' }],
         [],
-        done,
       );
     });
 
@@ -855,7 +824,7 @@ describe('Epic Store Actions', () => {
       { id: 2, set: true },
     ];
 
-    it('dispatches `requestEpicLabelsSelect` and `receiveEpicLabelsSelectSuccess` actions when request succeeds', (done) => {
+    it('dispatches `requestEpicLabelsSelect` and `receiveEpicLabelsSelectSuccess` actions when request succeeds', async () => {
       jest.spyOn(epicUtils.gqClient, 'mutate').mockReturnValue(
         Promise.resolve({
           data: {
@@ -866,7 +835,7 @@ describe('Epic Store Actions', () => {
         }),
       );
 
-      testAction(
+      await testAction(
         actions.updateEpicLabels,
         labels,
         state,
@@ -880,11 +849,10 @@ describe('Epic Store Actions', () => {
             payload: labels,
           },
         ],
-        done,
       );
     });
 
-    it('dispatches `requestEpicLabelsSelect` and `receiveEpicLabelsSelectFailure` actions when request fails', (done) => {
+    it('dispatches `requestEpicLabelsSelect` and `receiveEpicLabelsSelectFailure` actions when request fails', async () => {
       jest.spyOn(epicUtils.gqClient, 'mutate').mockReturnValue(
         Promise.resolve({
           data: {
@@ -895,7 +863,7 @@ describe('Epic Store Actions', () => {
         }),
       );
 
-      testAction(
+      await testAction(
         actions.updateEpicLabels,
         labels,
         state,
@@ -908,31 +876,29 @@ describe('Epic Store Actions', () => {
             type: 'receiveEpicLabelsSelectFailure',
           },
         ],
-        done,
       );
     });
   });
 
   describe('requestEpicSubscriptionToggle', () => {
-    it('should set `state.epicSubscriptionToggleInProgress` flag to `true`', (done) => {
-      testAction(
+    it('should set `state.epicSubscriptionToggleInProgress` flag to `true`', async () => {
+      await testAction(
         actions.requestEpicSubscriptionToggle,
         {},
         state,
         [{ type: 'REQUEST_EPIC_SUBSCRIPTION_TOGGLE' }],
         [],
-        done,
       );
     });
   });
 
   describe('requestEpicSubscriptionToggleSuccess', () => {
-    it('should set `state.requestEpicSubscriptionToggleSuccess` flag to `false` and passes opposite of the value of `subscribed` as param', (done) => {
+    it('should set `state.requestEpicSubscriptionToggleSuccess` flag to `false` and passes opposite of the value of `subscribed` as param', async () => {
       const stateSubscribed = {
         subscribed: false,
       };
 
-      testAction(
+      await testAction(
         actions.requestEpicSubscriptionToggleSuccess,
         { subscribed: !stateSubscribed.subscribed },
         stateSubscribed,
@@ -943,20 +909,18 @@ describe('Epic Store Actions', () => {
           },
         ],
         [],
-        done,
       );
     });
   });
 
   describe('requestEpicSubscriptionToggleFailure', () => {
-    it('should set `state.requestEpicSubscriptionToggleFailure` flag to `false`', (done) => {
-      testAction(
+    it('should set `state.requestEpicSubscriptionToggleFailure` flag to `false`', async () => {
+      await testAction(
         actions.requestEpicSubscriptionToggleFailure,
         {},
         state,
         [{ type: 'REQUEST_EPIC_SUBSCRIPTION_TOGGLE_FAILURE' }],
         [],
-        done,
       );
     });
 
@@ -1015,7 +979,7 @@ describe('Epic Store Actions', () => {
     });
 
     describe('success', () => {
-      it('dispatches requestEpicSubscriptionToggle and requestEpicSubscriptionToggleSuccess with param `subscribed` when request is complete', (done) => {
+      it('dispatches requestEpicSubscriptionToggle and requestEpicSubscriptionToggleSuccess with param `subscribed` when request is complete', async () => {
         mock.onPost(/(.*)/).replyOnce(200, {});
         jest.spyOn(epicUtils.gqClient, 'mutate').mockReturnValue(
           Promise.resolve({
@@ -1023,7 +987,7 @@ describe('Epic Store Actions', () => {
           }),
         );
 
-        testAction(
+        await testAction(
           actions.toggleEpicSubscription,
           { subscribed: !state.subscribed },
           state,
@@ -1037,27 +1001,23 @@ describe('Epic Store Actions', () => {
               payload: { subscribed: !state.subscribed },
             },
           ],
-          () => {
-            expect(epicUtils.gqClient.mutate).toHaveBeenCalledWith(
-              expect.objectContaining({
-                variables: expect.objectContaining({
-                  epicSetSubscriptionInput: {
-                    iid: `${state.epicIid}`,
-                    groupPath: state.fullPath,
-                    subscribedState: !state.subscribed,
-                  },
-                }),
-              }),
-            );
-
-            done();
-          },
+        );
+        expect(epicUtils.gqClient.mutate).toHaveBeenCalledWith(
+          expect.objectContaining({
+            variables: expect.objectContaining({
+              epicSetSubscriptionInput: {
+                iid: `${state.epicIid}`,
+                groupPath: state.fullPath,
+                subscribedState: !state.subscribed,
+              },
+            }),
+          }),
         );
       });
     });
 
     describe('failure', () => {
-      it('dispatches requestEpicSubscriptionToggle and requestEpicSubscriptionToggleFailure when request fails', (done) => {
+      it('dispatches requestEpicSubscriptionToggle and requestEpicSubscriptionToggleFailure when request fails', async () => {
         mock.onPost(/(.*)/).replyOnce(500, {});
         jest.spyOn(epicUtils.gqClient, 'mutate').mockReturnValue(
           Promise.resolve({
@@ -1070,7 +1030,7 @@ describe('Epic Store Actions', () => {
           }),
         );
 
-        testAction(
+        await testAction(
           actions.toggleEpicSubscription,
           { subscribed: !state.subscribed },
           state,
@@ -1083,68 +1043,63 @@ describe('Epic Store Actions', () => {
               type: 'requestEpicSubscriptionToggleFailure',
             },
           ],
-          done,
         );
       });
     });
   });
 
   describe('setEpicCreateTitle', () => {
-    it('should set `state.newEpicTitle` value to the value of `newEpicTitle` param', (done) => {
+    it('should set `state.newEpicTitle` value to the value of `newEpicTitle` param', async () => {
       const data = {
         newEpicTitle: 'foobar',
       };
 
-      testAction(
+      await testAction(
         actions.setEpicCreateTitle,
         data,
         { newEpicTitle: '' },
         [{ type: 'SET_EPIC_CREATE_TITLE', payload: { ...data } }],
         [],
-        done,
       );
     });
   });
 
   describe('setEpicCreateConfidential', () => {
-    it('should set `state.newEpicConfidential` value to the value of `newEpicConfidential` param', (done) => {
+    it('should set `state.newEpicConfidential` value to the value of `newEpicConfidential` param', async () => {
       const data = {
         newEpicConfidential: true,
       };
 
-      testAction(
+      await testAction(
         actions.setEpicCreateConfidential,
         data,
         { newEpicConfidential: true },
         [{ type: 'SET_EPIC_CREATE_CONFIDENTIAL', payload: { ...data } }],
         [],
-        done,
       );
     });
   });
 
   describe('requestEpicCreate', () => {
-    it('should set `state.epicCreateInProgress` flag to `true`', (done) => {
-      testAction(
+    it('should set `state.epicCreateInProgress` flag to `true`', async () => {
+      await testAction(
         actions.requestEpicCreate,
         {},
         { epicCreateInProgress: false },
         [{ type: 'REQUEST_EPIC_CREATE' }],
         [],
-        done,
       );
     });
   });
 
   describe('requestEpicCreateFailure', () => {
-    it('should set `state.epicCreateInProgress` flag to `false`', (done) => {
-      testAction(
+    it('should set `state.epicCreateInProgress` flag to `false`', async () => {
+      await testAction(
         actions.requestEpicCreateFailure,
         {},
         { epicCreateInProgress: true },
         [{ type: 'REQUEST_EPIC_CREATE_FAILURE' }],
         [],
-        done,
       );
     });
 
@@ -1173,10 +1128,10 @@ describe('Epic Store Actions', () => {
     });
 
     describe('success', () => {
-      it('dispatches requestEpicCreate when request is complete', (done) => {
+      it('dispatches requestEpicCreate when request is complete', async () => {
         mock.onPost(/(.*)/).replyOnce(200, {});
 
-        testAction(
+        await testAction(
           actions.createEpic,
           { ...stateCreateEpic },
           stateCreateEpic,
@@ -1189,16 +1144,15 @@ describe('Epic Store Actions', () => {
               type: 'requestEpicCreateSuccess',
             },
           ],
-          done,
         );
       });
     });
 
     describe('failure', () => {
-      it('dispatches requestEpicCreate and requestEpicCreateFailure when request fails', (done) => {
+      it('dispatches requestEpicCreate and requestEpicCreateFailure when request fails', async () => {
         mock.onPost(/(.*)/).replyOnce(500, {});
 
-        testAction(
+        await testAction(
           actions.createEpic,
           { ...stateCreateEpic },
           stateCreateEpic,
@@ -1211,22 +1165,20 @@ describe('Epic Store Actions', () => {
               type: 'requestEpicCreateFailure',
             },
           ],
-          done,
         );
       });
     });
   });
 
   describe('updateConfidentialityOnIssuable', () => {
-    it('should commit `SET_EPIC_CONFIDENTIAL` mutation with param `sidebarCollapsed', (done) => {
+    it('should commit `SET_EPIC_CONFIDENTIAL` mutation with param `sidebarCollapsed', async () => {
       const confidential = true;
-      testAction(
+      await testAction(
         actions.updateConfidentialityOnIssuable,
         confidential,
         state,
         [{ payload: true, type: 'SET_EPIC_CONFIDENTIAL' }],
         [],
-        done,
       );
     });
   });

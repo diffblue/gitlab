@@ -91,8 +91,8 @@ describe('Code review analytics mergeRequests actions', () => {
         mock.onGet(/api\/(.*)\/analytics\/code_review/).replyOnce(500);
       });
 
-      it('dispatches error', (done) => {
-        testAction(
+      it('dispatches error', async () => {
+        await testAction(
           actions.fetchMergeRequests,
           null,
           state,
@@ -104,11 +104,9 @@ describe('Code review analytics mergeRequests actions', () => {
             },
           ],
           [],
-          () => {
-            expect(createFlash).toHaveBeenCalled();
-            done();
-          },
         );
+
+        expect(createFlash).toHaveBeenCalled();
       });
     });
   });

@@ -46,7 +46,7 @@ describe('AddLicenseFormDropdown', () => {
     expect(vm.$el.value).toContain(value);
   });
 
-  it('shows all defined licenses', async (done) => {
+  it('shows all defined licenses', async () => {
     await createComponent();
 
     const element = $(vm.$el);
@@ -58,7 +58,6 @@ describe('AddLicenseFormDropdown', () => {
       options.each((index, optionEl) => {
         expect(KNOWN_LICENSES).toContain($(optionEl).text());
       });
-      done();
     });
 
     element.select2('open');

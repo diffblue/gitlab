@@ -23,7 +23,7 @@ describe('saml_members actions', () => {
   });
 
   describe('fetchPage', () => {
-    it('should commit RECEIVE_SAML_MEMBERS_SUCCESS mutation on correct data', (done) => {
+    it('should commit RECEIVE_SAML_MEMBERS_SUCCESS mutation on correct data', async () => {
       const members = [
         { id: 1, name: 'user 1', group_saml_identity: null },
         { id: 2, name: 'user 2', group_saml_identity: { extern_uid: 'a' } },
@@ -57,7 +57,7 @@ describe('saml_members actions', () => {
         previousPage: 1,
       };
 
-      testAction(
+      await testAction(
         fetchPage,
         undefined,
         state,
@@ -68,16 +68,14 @@ describe('saml_members actions', () => {
           },
         ],
         [],
-        done,
       );
     });
 
-    it('should show flash on wrong data', (done) => {
+    it('should show flash on wrong data', async () => {
       Api.groupMembers.mockReturnValue(Promise.reject(new Error()));
-      testAction(fetchPage, undefined, state, [], [], () => {
-        expect(createFlash).toHaveBeenCalledTimes(1);
-        done();
-      });
+      await testAction(fetchPage, undefined, state, [], []);
+
+      expect(createFlash).toHaveBeenCalledTimes(1);
     });
   });
 });

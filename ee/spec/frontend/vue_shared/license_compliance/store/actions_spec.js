@@ -46,74 +46,64 @@ describe('License store actions', () => {
   });
 
   describe('setAPISettings', () => {
-    it('commits SET_API_SETTINGS', (done) => {
+    it('commits SET_API_SETTINGS', async () => {
       const payload = { apiUrlManageLicenses };
-      testAction(
+      await testAction(
         actions.setAPISettings,
         payload,
         state,
         [{ type: mutationTypes.SET_API_SETTINGS, payload }],
         [],
-      )
-        .then(done)
-        .catch(done.fail);
+      );
     });
   });
 
   describe('setKnownLicenses', () => {
-    it('commits SET_KNOWN_LICENSES', (done) => {
+    it('commits SET_KNOWN_LICENSES', async () => {
       const payload = [{ name: 'BSD' }, { name: 'Apache' }];
-      testAction(
+      await testAction(
         actions.setKnownLicenses,
         payload,
         state,
         [{ type: mutationTypes.SET_KNOWN_LICENSES, payload }],
         [],
-      )
-        .then(done)
-        .catch(done.fail);
+      );
     });
   });
 
   describe('setLicenseInModal', () => {
-    it('commits SET_LICENSE_IN_MODAL with license', (done) => {
-      testAction(
+    it('commits SET_LICENSE_IN_MODAL with license', async () => {
+      await testAction(
         actions.setLicenseInModal,
         allowedLicense,
         state,
         [{ type: mutationTypes.SET_LICENSE_IN_MODAL, payload: allowedLicense }],
         [],
-      )
-        .then(done)
-        .catch(done.fail);
+      );
     });
   });
 
   describe('setIsAdmin', () => {
-    it('commits SET_IS_ADMIN', (done) => {
-      testAction(
+    it('commits SET_IS_ADMIN', async () => {
+      await testAction(
         actions.setIsAdmin,
         false,
         state,
         [{ type: mutationTypes.SET_IS_ADMIN, payload: false }],
         [],
-      )
-        .then(done)
-        .catch(done.fail);
+      );
     });
   });
 
   describe('resetLicenseInModal', () => {
-    it('commits RESET_LICENSE_IN_MODAL', (done) => {
-      testAction(
+    it('commits RESET_LICENSE_IN_MODAL', async () => {
+      await testAction(
         actions.resetLicenseInModal,
         null,
         state,
         [{ type: mutationTypes.RESET_LICENSE_IN_MODAL }],
         [],
-      )
-        .then(done)
-        .catch(done.fail);
+      );
     });
   });
 
@@ -129,16 +119,14 @@ describe('License store actions', () => {
   });
 
   describe('receiveDeleteLicenseError', () => {
-    it('commits RESET_LICENSE_IN_MODAL', (done) => {
-      testAction(
+    it('commits RESET_LICENSE_IN_MODAL', async () => {
+      await testAction(
         actions.receiveDeleteLicenseError,
         null,
         state,
         [{ type: mutationTypes.RESET_LICENSE_IN_MODAL }],
         [],
-      )
-        .then(done)
-        .catch(done.fail);
+      );
     });
   });
 
@@ -179,8 +167,8 @@ describe('License store actions', () => {
 
   describe('receiveSetLicenseApproval', () => {
     describe('given the licensesApiPath is provided', () => {
-      it('commits RESET_LICENSE_IN_MODAL and dispatches licenseList/fetchLicenses and fetchParsedLicenseReport', (done) => {
-        testAction(
+      it('commits RESET_LICENSE_IN_MODAL and dispatches licenseList/fetchLicenses and fetchParsedLicenseReport', async () => {
+        await testAction(
           actions.receiveSetLicenseApproval,
           null,
           { ...state, licensesApiPath },
@@ -189,9 +177,7 @@ describe('License store actions', () => {
             { type: `licenseList/fetchLicenses`, payload: null },
             { type: 'fetchParsedLicenseReport' },
           ],
-        )
-          .then(done)
-          .catch(done.fail);
+        );
       });
     });
 
@@ -208,16 +194,14 @@ describe('License store actions', () => {
   });
 
   describe('receiveSetLicenseApprovalError', () => {
-    it('commits RESET_LICENSE_IN_MODAL', (done) => {
-      testAction(
+    it('commits RESET_LICENSE_IN_MODAL', async () => {
+      await testAction(
         actions.receiveSetLicenseApprovalError,
         null,
         state,
         [{ type: mutationTypes.RESET_LICENSE_IN_MODAL }],
         [],
-      )
-        .then(done)
-        .catch(done.fail);
+      );
     });
   });
 
@@ -310,116 +294,102 @@ describe('License store actions', () => {
   describe('allowLicense', () => {
     const newStatus = LICENSE_APPROVAL_STATUS.ALLOWED;
 
-    it('dispatches setLicenseApproval for un-allowed licenses', (done) => {
+    it('dispatches setLicenseApproval for un-allowed licenses', async () => {
       const license = { name: 'FOO' };
 
-      testAction(
+      await testAction(
         actions.allowLicense,
         license,
         state,
         [],
         [{ type: 'setLicenseApproval', payload: { license, newStatus } }],
-      )
-        .then(done)
-        .catch(done.fail);
+      );
     });
 
-    it('dispatches setLicenseApproval for denied licenses', (done) => {
+    it('dispatches setLicenseApproval for denied licenses', async () => {
       const license = deniedLicense;
 
-      testAction(
+      await testAction(
         actions.allowLicense,
         license,
         state,
         [],
         [{ type: 'setLicenseApproval', payload: { license, newStatus } }],
-      )
-        .then(done)
-        .catch(done.fail);
+      );
     });
 
-    it('does not dispatch setLicenseApproval for allowed licenses', (done) => {
-      testAction(actions.allowLicense, allowedLicense, state, [], []).then(done).catch(done.fail);
+    it('does not dispatch setLicenseApproval for allowed licenses', async () => {
+      await testAction(actions.allowLicense, allowedLicense, state, [], []);
     });
   });
 
   describe('denyLicense', () => {
     const newStatus = LICENSE_APPROVAL_STATUS.DENIED;
 
-    it('dispatches setLicenseApproval for un-allowed licenses', (done) => {
+    it('dispatches setLicenseApproval for un-allowed licenses', async () => {
       const license = { name: 'FOO' };
 
-      testAction(
+      await testAction(
         actions.denyLicense,
         license,
         state,
         [],
         [{ type: 'setLicenseApproval', payload: { license, newStatus } }],
-      )
-        .then(done)
-        .catch(done.fail);
+      );
     });
 
-    it('dispatches setLicenseApproval for allowed licenses', (done) => {
+    it('dispatches setLicenseApproval for allowed licenses', async () => {
       const license = allowedLicense;
 
-      testAction(
+      await testAction(
         actions.denyLicense,
         license,
         state,
         [],
         [{ type: 'setLicenseApproval', payload: { license, newStatus } }],
-      )
-        .then(done)
-        .catch(done.fail);
+      );
     });
 
-    it('does not dispatch setLicenseApproval for denied licenses', (done) => {
-      testAction(actions.denyLicense, deniedLicense, state, [], []).then(done).catch(done.fail);
+    it('does not dispatch setLicenseApproval for denied licenses', async () => {
+      await testAction(actions.denyLicense, deniedLicense, state, [], []);
     });
   });
 
   describe('requestManagedLicenses', () => {
-    it('commits REQUEST_MANAGED_LICENSES', (done) => {
-      testAction(
+    it('commits REQUEST_MANAGED_LICENSES', async () => {
+      await testAction(
         actions.requestManagedLicenses,
         null,
         state,
         [{ type: mutationTypes.REQUEST_MANAGED_LICENSES }],
         [],
-      )
-        .then(done)
-        .catch(done.fail);
+      );
     });
   });
 
   describe('receiveManagedLicensesSuccess', () => {
-    it('commits RECEIVE_MANAGED_LICENSES_SUCCESS', (done) => {
+    it('commits RECEIVE_MANAGED_LICENSES_SUCCESS', async () => {
       const payload = [allowedLicense];
-      testAction(
+      await testAction(
         actions.receiveManagedLicensesSuccess,
         payload,
         state,
         [{ type: mutationTypes.RECEIVE_MANAGED_LICENSES_SUCCESS, payload }],
         [],
-      )
-        .then(done)
-        .catch(done.fail);
+      );
     });
   });
 
   describe('receiveManagedLicensesError', () => {
-    it('commits RECEIVE_MANAGED_LICENSES_ERROR', (done) => {
+    it('commits RECEIVE_MANAGED_LICENSES_ERROR', async () => {
       const error = new Error('Test');
-      testAction(
+      await testAction(
         actions.receiveManagedLicensesError,
         error,
         state,
         [{ type: mutationTypes.RECEIVE_MANAGED_LICENSES_ERROR }],
         [],
-      )
-        .then(done)
-        .catch(done.fail);
+      );
     });
   });
 
@@ -430,45 +400,41 @@ describe('License store actions', () => {
       endpointMock = axiosMock.onGet(apiUrlManageLicenses, { params: { per_page: 100 } });
     });
 
-    it('dispatches requestManagedLicenses and receiveManagedLicensesSuccess for successful response', (done) => {
+    it('dispatches requestManagedLicenses and receiveManagedLicensesSuccess for successful response', async () => {
       const payload = [{ name: 'foo', approval_status: LICENSE_APPROVAL_STATUS.DENIED }];
       endpointMock.replyOnce(() => [200, payload]);
 
-      testAction(
+      await testAction(
         actions.fetchManagedLicenses,
         null,
         state,
         [],
         [{ type: 'requestManagedLicenses' }, { type: 'receiveManagedLicensesSuccess', payload }],
-      )
-        .then(done)
-        .catch(done.fail);
+      );
     });
 
-    it('dispatches requestManagedLicenses and receiveManagedLicensesError for error response', (done) => {
+    it('dispatches requestManagedLicenses and receiveManagedLicensesError for error response', async () => {
       endpointMock.replyOnce(() => [500, '']);
 
-      testAction(
+      await testAction(
         actions.fetchManagedLicenses,
         null,
         state,
         [],
         [{ type: 'requestManagedLicenses' }, { type: 'receiveManagedLicensesError' }],
-      )
-        .then(done)
-        .catch(done.fail);
+      );
     });
   });
 
   describe('fetchLicenseCheckApprovalRule ', () => {
-    it('dispatches request/receive with detected approval rule', (done) => {
+    it('dispatches request/receive with detected approval rule', async () => {
       const APPROVAL_RULE_RESPONSE = {
         approval_rules_left: [{ name: LICENSE_CHECK_NAME }],
       };
 
       axiosMock.onGet(approvalsApiPath).replyOnce(200, APPROVAL_RULE_RESPONSE);
 
-      testAction(
+      await testAction(
         actions.fetchLicenseCheckApprovalRule,
         null,
         state,
@@ -480,18 +446,17 @@ describe('License store actions', () => {
             payload: { hasLicenseCheckApprovalRule: true },
           },
         ],
-        done,
       );
     });
 
-    it('dispatches request/receive without detected approval rule', (done) => {
+    it('dispatches request/receive without detected approval rule', async () => {
       const APPROVAL_RULE_RESPONSE = {
         approval_rules_left: [{ name: 'Another Approval Rule' }],
       };
 
       axiosMock.onGet(approvalsApiPath).replyOnce(200, APPROVAL_RULE_RESPONSE);
 
-      testAction(
+      await testAction(
         actions.fetchLicenseCheckApprovalRule,
         null,
         state,
@@ -503,15 +468,14 @@ describe('License store actions', () => {
             payload: { hasLicenseCheckApprovalRule: false },
           },
         ],
-        done,
       );
     });
 
-    it('dispatches request/receive error when no approvalsAPiPath is provided', (done) => {
+    it('dispatches request/receive error when no approvalsAPiPath is provided', async () => {
       const error = new Error('approvalsApiPath not provided');
       axiosMock.onGet(approvalsApiPath).replyOnce(500);
 
-      testAction(
+      await testAction(
         actions.fetchLicenseCheckApprovalRule,
         null,
         { ...state, approvalsApiPath: '' },
@@ -520,15 +484,14 @@ describe('License store actions', () => {
           { type: 'requestLicenseCheckApprovalRule' },
           { type: 'receiveLicenseCheckApprovalRuleError', payload: error },
         ],
-        done,
       );
     });
 
-    it('dispatches request/receive on error', (done) => {
+    it('dispatches request/receive on error', async () => {
       const error = new Error('Request failed with status code 500');
       axiosMock.onGet(approvalsApiPath).replyOnce(500);
 
-      testAction(
+      await testAction(
         actions.fetchLicenseCheckApprovalRule,
         null,
         state,
@@ -537,30 +500,27 @@ describe('License store actions', () => {
           { type: 'requestLicenseCheckApprovalRule' },
           { type: 'receiveLicenseCheckApprovalRuleError', payload: error },
         ],
-        done,
       );
     });
   });
 
   describe('requestLicenseCheckApprovalRule', () => {
-    it('commits REQUEST_LICENSE_CHECK_APPROVAL_RULE', (done) => {
-      testAction(
+    it('commits REQUEST_LICENSE_CHECK_APPROVAL_RULE', async () => {
+      await testAction(
         actions.requestLicenseCheckApprovalRule,
         null,
         state,
         [{ type: mutationTypes.REQUEST_LICENSE_CHECK_APPROVAL_RULE }],
         [],
-      )
-        .then(done)
-        .catch(done.fail);
+      );
     });
   });
 
   describe('receiveLicenseCheckApprovalRuleSuccess', () => {
-    it('commits REQUEST_LICENSE_CHECK_APPROVAL_RULE', (done) => {
+    it('commits REQUEST_LICENSE_CHECK_APPROVAL_RULE', async () => {
       const hasLicenseCheckApprovalRule = true;
 
-      testAction(
+      await testAction(
         actions.receiveLicenseCheckApprovalRuleSuccess,
         { hasLicenseCheckApprovalRule },
         state,
@@ -571,71 +531,61 @@ describe('License store actions', () => {
           },
         ],
         [],
-      )
-        .then(done)
-        .catch(done.fail);
+      );
     });
   });
 
   describe('receiveLicenseCheckApprovalRuleError', () => {
-    it('commits RECEIVE_LICENSE_CHECK_APPROVAL_RULE_ERROR', (done) => {
+    it('commits RECEIVE_LICENSE_CHECK_APPROVAL_RULE_ERROR', async () => {
       const error = new Error('Error');
 
-      testAction(
+      await testAction(
         actions.receiveLicenseCheckApprovalRuleError,
         error,
         state,
         [{ type: mutationTypes.RECEIVE_LICENSE_CHECK_APPROVAL_RULE_ERROR, payload: error }],
         [],
-      )
-        .then(done)
-        .catch(done.fail);
+      );
     });
   });
 
   describe('requestParsedLicenseReport', () => {
-    it(`should commit ${mutationTypes.REQUEST_PARSED_LICENSE_REPORT}`, (done) => {
-      testAction(
+    it(`should commit ${mutationTypes.REQUEST_PARSED_LICENSE_REPORT}`, async () => {
+      await testAction(
         actions.requestParsedLicenseReport,
         null,
         state,
         [{ type: mutationTypes.REQUEST_PARSED_LICENSE_REPORT }],
         [],
-      )
-        .then(done)
-        .catch(done.fail);
+      );
     });
   });
 
   describe('receiveParsedLicenseReportSuccess', () => {
-    it(`should commit ${mutationTypes.RECEIVE_PARSED_LICENSE_REPORT_SUCCESS} with the correct payload`, (done) => {
+    it(`should commit ${mutationTypes.RECEIVE_PARSED_LICENSE_REPORT_SUCCESS} with the correct payload`, async () => {
       const payload = { newLicenses: [{ name: 'foo' }] };
 
-      testAction(
+      await testAction(
         actions.receiveParsedLicenseReportSuccess,
         payload,
         state,
         [{ type: mutationTypes.RECEIVE_PARSED_LICENSE_REPORT_SUCCESS, payload }],
         [],
-      )
-        .then(done)
-        .catch(done.fail);
+      );
     });
   });
 
   describe('receiveParsedLicenseReportError', () => {
-    it(`should commit ${mutationTypes.RECEIVE_PARSED_LICENSE_REPORT_ERROR}`, (done) => {
+    it(`should commit ${mutationTypes.RECEIVE_PARSED_LICENSE_REPORT_ERROR}`, async () => {
       const payload = new Error('Test');
 
-      testAction(
+      await testAction(
         actions.receiveParsedLicenseReportError,
         payload,
         state,
         [{ type: mutationTypes.RECEIVE_PARSED_LICENSE_REPORT_ERROR, payload }],
         [],
-      )
-        .then(done)
-        .catch(done.fail);
+      );
     });
   });
 
@@ -664,7 +614,7 @@ describe('License store actions', () => {
         ];
       });
 
-      it('should fetch, parse, and dispatch the new licenses on a successful request', (done) => {
+      it('should fetch, parse, and dispatch the new licenses on a successful request', async () => {
         licensesApiMock.replyOnce(() => [200, rawLicenseReport]);
 
         const parsedLicenses = {
@@ -680,7 +630,7 @@ describe('License store actions', () => {
           ],
         };
 
-        testAction(
+        await testAction(
           actions.fetchParsedLicenseReport,
           null,
           state,
@@ -689,15 +639,13 @@ describe('License store actions', () => {
             { type: 'requestParsedLicenseReport' },
             { type: 'receiveParsedLicenseReportSuccess', payload: parsedLicenses },
           ],
-        )
-          .then(done)
-          .catch(done.fail);
+        );
       });
 
-      it('should send an error on an unsuccesful request', (done) => {
+      it('should send an error on an unsuccesful request', async () => {
         licensesApiMock.replyOnce(400);
 
-        testAction(
+        await testAction(
           actions.fetchParsedLicenseReport,
           null,
           state,
@@ -706,9 +654,7 @@ describe('License store actions', () => {
             { type: 'requestParsedLicenseReport' },
             { type: 'receiveParsedLicenseReportError', payload: expect.any(Error) },
           ],
-        )
-          .then(done)
-          .catch(done.fail);
+        );
       });
     });
 
@@ -752,7 +698,7 @@ describe('License store actions', () => {
         };
       });
 
-      it('should fetch, parse, and dispatch the new licenses on a successful request', (done) => {
+      it('should fetch, parse, and dispatch the new licenses on a successful request', async () => {
         licensesApiMock.replyOnce(() => [200, rawLicenseReport]);
 
         const parsedLicenses = {
@@ -783,7 +729,7 @@ describe('License store actions', () => {
           ],
         };
 
-        testAction(
+        await testAction(
           actions.fetchParsedLicenseReport,
           null,
           state,
@@ -792,9 +738,7 @@ describe('License store actions', () => {
             { type: 'requestParsedLicenseReport' },
             { type: 'receiveParsedLicenseReportSuccess', payload: parsedLicenses },
           ],
-        )
-          .then(done)
-          .catch(done.fail);
+        );
       });
     });
   });

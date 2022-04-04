@@ -17,16 +17,15 @@ jest.mock('~/flash');
 
 describe('EE DiffsStoreActions', () => {
   describe('setCodequalityEndpoint', () => {
-    it('should set given endpoint', (done) => {
+    it('should set given endpoint', async () => {
       const endpoint = '/codequality_mr_diff.json';
 
-      testAction(
+      await testAction(
         setCodequalityEndpoint,
         { endpoint },
         {},
         [{ type: types.SET_CODEQUALITY_ENDPOINT, payload: { endpoint } }],
         [],
-        done,
       );
     });
   });
@@ -44,20 +43,19 @@ describe('EE DiffsStoreActions', () => {
       clearCodequalityPoll();
     });
 
-    it('should commit SET_CODEQUALITY_DATA with received response and stop polling', (done) => {
+    it('should commit SET_CODEQUALITY_DATA with received response and stop polling', async () => {
       const data = {
         files: { 'app.js': [{ line: 1, description: 'Unexpected alert.', severity: 'minor' }] },
       };
 
       mock.onGet(endpointCodequality).reply(200, { data });
 
-      testAction(
+      await testAction(
         fetchCodequality,
         {},
         { endpointCodequality },
         [{ type: types.SET_CODEQUALITY_DATA, payload: { data } }],
         [{ type: 'stopCodequalityPolling' }],
-        done,
       );
     });
 
@@ -72,63 +70,57 @@ describe('EE DiffsStoreActions', () => {
         mock.onGet(endpointCodequality).reply(400);
       });
 
-      it('should not show a flash message', (done) => {
-        testAction(fetchCodequality, {}, { endpointCodequality }, [], [], () => {
-          expect(createFlash).not.toHaveBeenCalled();
-          done();
-        });
+      it('should not show a flash message', async () => {
+        await testAction(fetchCodequality, {}, { endpointCodequality }, [], []);
+
+        expect(createFlash).not.toHaveBeenCalled();
       });
 
-      it('should retry five times with a delay, then stop polling', (done) => {
-        testAction(fetchCodequality, {}, { endpointCodequality }, [], [], () => {
-          expect(pollDelayedRequest).toHaveBeenCalledTimes(1);
-          expect(pollStop).toHaveBeenCalledTimes(0);
+      it('should retry five times with a delay, then stop polling', async () => {
+        await testAction(fetchCodequality, {}, { endpointCodequality }, [], []);
 
-          jest.advanceTimersByTime(RETRY_DELAY);
+        expect(pollDelayedRequest).toHaveBeenCalledTimes(1);
+        expect(pollStop).toHaveBeenCalledTimes(0);
 
-          waitForPromises()
-            .then(() => {
-              expect(pollDelayedRequest).toHaveBeenCalledTimes(2);
+        jest.advanceTimersByTime(RETRY_DELAY);
 
-              jest.advanceTimersByTime(RETRY_DELAY);
-            })
-            .then(() => waitForPromises())
-            .then(() => jest.advanceTimersByTime(RETRY_DELAY))
-            .then(() => waitForPromises())
-            .then(() => jest.advanceTimersByTime(RETRY_DELAY))
-            .then(() => waitForPromises())
-            .then(() => {
-              expect(pollDelayedRequest).toHaveBeenCalledTimes(5);
+        return waitForPromises()
+          .then(() => {
+            expect(pollDelayedRequest).toHaveBeenCalledTimes(2);
 
-              jest.advanceTimersByTime(RETRY_DELAY);
-            })
-            .then(() => waitForPromises())
-            .then(() => {
-              expect(pollStop).toHaveBeenCalledTimes(1);
-            })
-            .then(done)
-            .catch(done.fail);
-        });
+            jest.advanceTimersByTime(RETRY_DELAY);
+          })
+          .then(() => waitForPromises())
+          .then(() => jest.advanceTimersByTime(RETRY_DELAY))
+          .then(() => waitForPromises())
+          .then(() => jest.advanceTimersByTime(RETRY_DELAY))
+          .then(() => waitForPromises())
+          .then(() => {
+            expect(pollDelayedRequest).toHaveBeenCalledTimes(5);
+
+            jest.advanceTimersByTime(RETRY_DELAY);
+          })
+          .then(() => waitForPromises())
+          .then(() => {
+            expect(pollStop).toHaveBeenCalledTimes(1);
+          });
       });
     });
 
-    it('with unexpected error should stop polling and show a flash message', (done) => {
+    it('with unexpected error should stop polling and show a flash message', async () => {
       mock.onGet(endpointCodequality).reply(500);
 
-      testAction(
+      await testAction(
         fetchCodequality,
         {},
         { endpointCodequality },
         [],
         [{ type: 'stopCodequalityPolling' }],
-        () => {
-          expect(createFlash).toHaveBeenCalledTimes(1);
-          expect(createFlash).toHaveBeenCalledWith({
-            message: 'An unexpected error occurred while loading the code quality diff.',
-          });
-          done();
-        },
       );
+      expect(createFlash).toHaveBeenCalledTimes(1);
+      expect(createFlash).toHaveBeenCalledWith({
+        message: 'An unexpected error occurred while loading the code quality diff.',
+      });
     });
   });
 });

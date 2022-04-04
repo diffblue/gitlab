@@ -82,7 +82,7 @@ describe('EE approvals license-compliance actions', () => {
   });
 
   describe('postRule', () => {
-    it('posts correct data and dispatches "fetchRules" when request is successful', () => {
+    it('posts correct data and dispatches "fetchRules" when request is successful', async () => {
       const rule = {
         name: 'Foo',
         approvalsRequired: 1,
@@ -91,7 +91,7 @@ describe('EE approvals license-compliance actions', () => {
       };
       axiosMock.onPost(mocks.state.rulesPath).replyOnce(200);
 
-      return testAction(
+      await testAction(
         actions.postRule,
         rule,
         state,
@@ -101,11 +101,9 @@ describe('EE approvals license-compliance actions', () => {
             type: 'fetchRules',
           },
         ],
-        () => {
-          expect(axiosMock.history.post[0].data).toBe(
-            '{"name":"Foo","approvals_required":1,"users":[8,9],"groups":[7]}',
-          );
-        },
+      );
+      expect(axiosMock.history.post[0].data).toBe(
+        '{"name":"Foo","approvals_required":1,"users":[8,9],"groups":[7]}',
       );
     });
 
@@ -122,7 +120,7 @@ describe('EE approvals license-compliance actions', () => {
     const id = 4;
     const putUrl = `${mocks.state.rulesPath}/${4}`;
 
-    it('puts correct data and dispatches "fetchRules" when request is successful', () => {
+    it('puts correct data and dispatches "fetchRules" when request is successful', async () => {
       const payload = {
         id,
         name: 'Foo',
@@ -132,7 +130,7 @@ describe('EE approvals license-compliance actions', () => {
       };
       axiosMock.onPut(putUrl).replyOnce(200);
 
-      return testAction(
+      await testAction(
         actions.putRule,
         payload,
         state,
@@ -142,11 +140,9 @@ describe('EE approvals license-compliance actions', () => {
             type: 'fetchRules',
           },
         ],
-        () => {
-          expect(axiosMock.history.put[0].data).toBe(
-            '{"name":"Foo","approvals_required":1,"users":[8,9],"groups":[7]}',
-          );
-        },
+      );
+      expect(axiosMock.history.put[0].data).toBe(
+        '{"name":"Foo","approvals_required":1,"users":[8,9],"groups":[7]}',
       );
     });
 
