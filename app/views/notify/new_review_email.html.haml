@@ -19,7 +19,7 @@
                   -# Preload author, to prevent N+1 queries
                   - note.author = @author
                   -# Get preloaded note discussion
-                  - discussion = @discussions.try(:[], note.discussion_id) if note.part_of_discussion?
+                  - discussion = @discussions[note.discussion_id] if note.part_of_discussion?
                   -# Preload project for discussions first note
                   - discussion.first_note.project = @project if discussion&.first_note
                   - target_url = project_merge_request_url(@project, @merge_request, anchor: "note_#{note.id}")
