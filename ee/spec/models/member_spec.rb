@@ -285,6 +285,11 @@ RSpec.describe Member, type: :model do
       group.add_developer(create(:user))
     end
 
+    before do
+      allow(group).to receive(:user_cap_available?).and_return(false)
+      stub_ee_application_setting(should_check_namespace_plan: true)
+    end
+
     context 'when the :free_user_cap feature flag is disabled' do
       before do
         stub_feature_flags(free_user_cap: false)
@@ -341,7 +346,7 @@ RSpec.describe Member, type: :model do
 
       context 'when the free user cap has been reached' do
         before do
-          stub_const('::Plan::FREE_USER_LIMIT', 1)
+          stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 1)
         end
 
         it 'sets the group member to awaiting' do
@@ -364,7 +369,7 @@ RSpec.describe Member, type: :model do
 
         context 'when multiple members are added' do
           before do
-            stub_const('::Plan::FREE_USER_LIMIT', 2)
+            stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 2)
           end
 
           it 'sets members to the correct status' do
@@ -418,7 +423,7 @@ RSpec.describe Member, type: :model do
           end
 
           before do
-            stub_const('::Plan::FREE_USER_LIMIT', 2)
+            stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 2)
           end
 
           it 'adds multiple members and correctly shows the state' do

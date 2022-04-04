@@ -1320,24 +1320,6 @@ RSpec.describe Group do
     end
   end
 
-  describe '#free_user_cap_reached?' do
-    subject(:free_user_cap_reached_for_group?) { group.free_user_cap_reached? }
-
-    context 'when this group has no root ancestor' do
-      it_behaves_like 'returning the right value for free_user_cap_reached?' do
-        let_it_be(:group) { create(:group) }
-        let(:root_group) { group }
-      end
-    end
-
-    context 'when this group has a root ancestor' do
-      it_behaves_like 'returning the right value for free_user_cap_reached?' do
-        let_it_be(:group) { create(:group) }
-        let_it_be(:root_group) { create(:group, children: [group]) }
-      end
-    end
-  end
-
   describe '#users_count' do
     subject { group.users_count }
 
@@ -2162,7 +2144,7 @@ RSpec.describe Group do
   end
 
   describe '#user_limit_reached?' do
-    where(:user_cap_reached, :free_user_cap_reached, :result) do
+    where(:user_cap_reached, :reached_free_limit, :result) do
       false | false | false
       false | true  | true
       true  | false | true
@@ -2174,7 +2156,8 @@ RSpec.describe Group do
     with_them do
       before do
         allow(group).to receive(:user_cap_reached?).and_return(user_cap_reached)
-        allow(group).to receive(:free_user_cap_reached?).and_return(free_user_cap_reached)
+        free_user_cap = instance_double(Namespaces::FreeUserCap, reached_limit?: reached_free_limit)
+        allow(group).to receive(:free_user_cap).and_return(free_user_cap)
       end
 
       it { is_expected.to eq(result) }

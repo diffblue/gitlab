@@ -9,16 +9,20 @@ RSpec.describe EE::InviteMembersHelper do
 
     let(:notification_attributes) do
       {
-        free_users_limit: 5,
-        members_count: 0,
-        new_trial_registration_path: '/-/trials/new',
-        purchase_path: "/groups/#{project.root_ancestor.path}/-/billings"
+        free_users_limit: ::Namespaces::FreeUserCap::FREE_USER_LIMIT,
+        members_count: project.root_ancestor.free_plan_members_count,
+        new_trial_registration_path: new_trial_path,
+        purchase_path: group_billings_path(project.root_ancestor)
       }
+    end
+
+    before do
+      stub_ee_application_setting(should_check_namespace_plan: true)
     end
 
     context 'when applying the free user cap is not valid' do
       let!(:group) do
-        build(:group, projects: [project], gitlab_subscription: build(:gitlab_subscription, :default))
+        create(:group_with_plan, projects: [project], plan: :default_plan)
       end
 
       it 'does not include users limit notification data' do
@@ -39,7 +43,7 @@ RSpec.describe EE::InviteMembersHelper do
 
       context 'when group namespace' do
         let!(:group) do
-          build(:group, projects: [project], gitlab_subscription: build(:gitlab_subscription, :free))
+          create(:group_with_plan, projects: [project], plan: :free_plan)
         end
 
         it 'includes users limit notification data' do
