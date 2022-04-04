@@ -102,6 +102,7 @@ export default {
         <gl-link
           v-once
           :href="author.webUrl"
+          class="js-user-link"
           data-testid="user-link"
           :data-user-id="authorId"
           :data-username="author.username"
