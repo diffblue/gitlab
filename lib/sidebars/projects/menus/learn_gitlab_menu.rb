@@ -45,7 +45,7 @@ module Sidebars
           }
         end
 
-        override :override
+        override :sprite_icon
         def sprite_icon
           'bulb'
         end
