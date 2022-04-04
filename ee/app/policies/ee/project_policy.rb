@@ -397,6 +397,7 @@ module EE
         readonly_features.each do |feature|
           prevent(*create_update_admin(feature))
         end
+        prevent :create_package
       end
 
       rule { auditor | can?(:developer_access) }.enable :add_project_to_instance_security_dashboard
