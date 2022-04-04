@@ -217,11 +217,6 @@ module Gitlab
 
     def self.db_config_for_connection(connection)
       return unless connection
-
-      if connection.is_a?(::Gitlab::Database::LoadBalancing::ConnectionProxy)
-        return connection.load_balancer.configuration.primary_db_config
-      end
-
       # During application init we might receive `NullPool`
       return unless connection.respond_to?(:pool) &&
         connection.pool.respond_to?(:db_config)

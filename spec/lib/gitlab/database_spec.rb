@@ -160,16 +160,6 @@ RSpec.describe Gitlab::Database do
       end
     end
 
-    context 'when the connection is LoadBalancing::ConnectionProxy' do
-      it 'returns primary_db_config' do
-        lb_config = ::Gitlab::Database::LoadBalancing::Configuration.new(ActiveRecord::Base)
-        lb = ::Gitlab::Database::LoadBalancing::LoadBalancer.new(lb_config)
-        proxy = ::Gitlab::Database::LoadBalancing::ConnectionProxy.new(lb)
-
-        expect(described_class.db_config_for_connection(proxy)).to eq(lb_config.primary_db_config)
-      end
-    end
-
     context 'when the pool is a NullPool' do
       it 'returns nil' do
         connection = double(:active_record_connection, pool: ActiveRecord::ConnectionAdapters::NullPool.new)
@@ -227,9 +217,6 @@ RSpec.describe Gitlab::Database do
     end
 
     it 'does return a valid schema depending on a base model used', :request_store do
-      # FF due to lib/gitlab/database/load_balancing/configuration.rb:92
-      stub_feature_flags(force_no_sharing_primary_model: true)
-
       expect(described_class.gitlab_schemas_for_connection(Project.connection)).to include(:gitlab_main, :gitlab_shared)
       expect(described_class.gitlab_schemas_for_connection(Ci::Build.connection)).to include(:gitlab_ci, :gitlab_shared)
     end
