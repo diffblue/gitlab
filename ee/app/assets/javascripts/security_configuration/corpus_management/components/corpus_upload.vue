@@ -19,7 +19,7 @@ export default {
   },
   computed: {
     formattedFileSize() {
-      return decimalBytes(this.totalSize);
+      return decimalBytes(this.totalSize, 0, { unitSeparator: ' ' });
     },
   },
 };

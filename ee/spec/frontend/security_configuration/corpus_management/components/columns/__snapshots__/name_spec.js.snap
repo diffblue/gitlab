@@ -12,7 +12,7 @@ exports[`Name component renders name with correct file size 1`] = `
     class="gl-text-gray-500"
     data-testid="file-size"
   >
-    (400MB)
+    (400 MB)
   </span>
 </div>
 `;
@@ -29,7 +29,7 @@ exports[`Name component renders the latest job 1`] = `
     class="gl-text-gray-500"
     data-testid="file-size"
   >
-    (400MB)
+    (400 MB)
   </span>
 </div>
 `;
@@ -46,7 +46,7 @@ exports[`Name component without job path renders a - string instead of a link 1`
     class="gl-text-gray-500"
     data-testid="file-size"
   >
-    (321MB)
+    (321 MB)
   </span>
 </div>
 `;
