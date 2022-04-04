@@ -131,7 +131,7 @@ module QA
         end
 
         def has_arkose_labs_token?
-          has_css?('[name="arkose_labs_token"][value]')
+          has_css?('[name="arkose_labs_token"][value]', visible: false)
         end
 
         def switch_to_sign_in_tab
@@ -181,7 +181,7 @@ module QA
 
           # Wait until the ArkoseLabs challenge has initialized
           Support::WaitForRequests.wait_for_requests
-          Support::Waiter.wait_until(max_duration: 3, reload_page: false, raise_on_failure: false) do
+          Support::Waiter.wait_until(max_duration: 5, reload_page: false, raise_on_failure: false) do
             has_arkose_labs_token?
           end
 
