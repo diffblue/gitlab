@@ -23,6 +23,7 @@ export default () => {
   return new Vue({
     el,
     apolloProvider,
+    name: 'NamespaceStorageApp',
     provide: {
       namespacePath,
       purchaseStorageUrl,
