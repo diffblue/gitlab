@@ -5,6 +5,7 @@ resource :subscriptions, only: [:new, :create] do
   get :buy_storage
   get :payment_form
   get :payment_method
+  post :validate_payment_method
 
   scope module: :subscriptions do
     resources :groups, only: [:edit, :update]

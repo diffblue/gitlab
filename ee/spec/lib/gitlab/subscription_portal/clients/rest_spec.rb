@@ -136,6 +136,19 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Rest do
     it_behaves_like 'when http call raises an exception'
   end
 
+  describe '#validate_payment_method' do
+    subject do
+      client.validate_payment_method('test_payment_method_id', {})
+    end
+
+    let(:http_method) { :post }
+
+    it_behaves_like 'when response is successful'
+    it_behaves_like 'when response code is 422'
+    it_behaves_like 'when response code is 500'
+    it_behaves_like 'when http call raises an exception'
+  end
+
   describe '#customers_oauth_app_uid' do
     subject do
       client.customers_oauth_app_uid
