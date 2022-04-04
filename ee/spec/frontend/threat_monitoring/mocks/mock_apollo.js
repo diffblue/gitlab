@@ -46,7 +46,7 @@ export const networkPolicies = (nodes) =>
     },
   });
 
-export const scanExecutionPolicies = (nodes) =>
+export const projectScanExecutionPolicies = (nodes) =>
   jest.fn().mockResolvedValue({
     data: {
       project: {

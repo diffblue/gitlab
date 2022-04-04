@@ -12,8 +12,7 @@ const apolloProvider = new VueApollo({
   defaultClient: createDefaultClient(),
 });
 
-export default () => {
-  const el = document.querySelector('#js-security-policies-list');
+export default (el, namespaceType) => {
   const {
     assignedPolicyProject,
     disableSecurityPolicyProject,
@@ -22,6 +21,7 @@ export default () => {
     emptyFilterSvgPath,
     emptyListSvgPath,
     documentationPath,
+    groupPath,
     newPolicyPath,
     projectPath,
   } = el.dataset;
@@ -52,6 +52,8 @@ export default () => {
       projectPath,
       emptyFilterSvgPath,
       emptyListSvgPath,
+      groupPath,
+      namespaceType,
     },
     render(createElement) {
       return createElement(SecurityPoliciesApp);

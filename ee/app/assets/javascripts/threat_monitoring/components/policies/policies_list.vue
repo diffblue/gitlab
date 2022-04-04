@@ -9,14 +9,15 @@ import {
   GlTooltipDirective,
 } from '@gitlab/ui';
 import { mapState, mapGetters } from 'vuex';
-import { PREDEFINED_NETWORK_POLICIES } from 'ee/threat_monitoring/constants';
+import { NAMESPACE_TYPES, PREDEFINED_NETWORK_POLICIES } from 'ee/threat_monitoring/constants';
 import createFlash from '~/flash';
 import { getTimeago } from '~/lib/utils/datetime_utility';
 import { setUrlFragment, mergeUrlParams } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import networkPoliciesQuery from '../../graphql/queries/network_policies.query.graphql';
-import scanExecutionPoliciesQuery from '../../graphql/queries/scan_execution_policies.query.graphql';
+import projectScanExecutionPoliciesQuery from '../../graphql/queries/project_scan_execution_policies.query.graphql';
+import groupScanExecutionPoliciesQuery from '../../graphql/queries/group_scan_execution_policies.query.graphql';
 import scanResultPoliciesQuery from '../../graphql/queries/scan_result_policies.query.graphql';
 import { getPolicyType } from '../../utils';
 import { POLICY_TYPE_COMPONENT_OPTIONS, POLICY_TYPE_OPTIONS } from '../constants';
@@ -25,6 +26,11 @@ import PolicyDrawer from '../policy_drawer/policy_drawer.vue';
 import PolicyEnvironments from '../policy_environments.vue';
 import PolicyTypeFilter from '../policy_type_filter.vue';
 import NoPoliciesEmptyState from './no_policies_empty_state.vue';
+
+const NAMESPACE_QUERY_DICT = {
+  [NAMESPACE_TYPES.PROJECT]: projectScanExecutionPoliciesQuery,
+  [NAMESPACE_TYPES.GROUP]: groupScanExecutionPoliciesQuery,
+};
 
 const createPolicyFetchError = ({ gqlError, networkError }) => {
   const error =
@@ -60,7 +66,7 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   mixins: [glFeatureFlagMixin()],
-  inject: ['documentationPath', 'projectPath', 'newPolicyPath'],
+  inject: ['documentationPath', 'groupPath', 'projectPath', 'namespaceType', 'newPolicyPath'],
   props: {
     shouldUpdatePolicyList: {
       type: Boolean,
@@ -88,14 +94,20 @@ export default {
       },
       error: createPolicyFetchError,
       skip() {
-        return !this.hasEnvironment || !this.shouldShowNetworkPolicies;
+        return (
+          !this.hasEnvironment ||
+          !this.shouldShowNetworkPolicies ||
+          this.namespaceType !== NAMESPACE_TYPES.PROJECT
+        );
       },
     },
     scanExecutionPolicies: {
-      query: scanExecutionPoliciesQuery,
+      query() {
+        return NAMESPACE_QUERY_DICT[this.namespaceType];
+      },
       variables() {
         return {
-          fullPath: this.projectPath,
+          fullPath: this.projectPath || this.groupPath,
         };
       },
       update(data) {
@@ -114,6 +126,9 @@ export default {
         return data?.project?.scanResultPolicies?.nodes ?? [];
       },
       error: createPolicyFetchError,
+      skip() {
+        return this.namespaceType !== NAMESPACE_TYPES.PROJECT;
+      },
     },
   },
   data() {

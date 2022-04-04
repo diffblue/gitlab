@@ -1,5 +1,5 @@
-query scanExecutionPolicies($fullPath: ID!) {
-  project(fullPath: $fullPath) {
+query groupScanExecutionPolicies($fullPath: ID!) {
+  group(fullPath: $fullPath) @client {
     id
     scanExecutionPolicies {
       nodes {
