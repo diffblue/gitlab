@@ -40,19 +40,8 @@ RSpec.describe "User registration", :js, :saas do
       headers: {}
     )
 
-    # TODO: should we setup and confirm the user via email to replicate a real flow?
     sign_in user
     visit users_sign_up_welcome_path
-  end
-
-  describe "when invited" do
-    # TODO: should this be tested better in relation to how it changes flows here?
-    it "should be tested"
-  end
-
-  describe "using the trial flow" do
-    # TODO: do we want to test this as part of this effort, or is it a separate lift?
-    it "should be tested"
   end
 
   describe "using the standard flow" do
@@ -106,8 +95,6 @@ RSpec.describe "User registration", :js, :saas do
           # We end up in the continuous onboarding flow here...
           expect(page).to have_content 'Get started with GitLab'
 
-          # TODO: do we need to test continuous onboarding better here?
-
           # So have to verify the newly created project by navigating to our projects...
           visit projects_path
 
@@ -120,9 +107,6 @@ RSpec.describe "User registration", :js, :saas do
           click_on 'Import'
           fill_in 'import_group_name', with: 'Test Group'
           click_on 'GitHub'
-
-          # TODO: can this be tested to completion? that seems hard -- what can we do here?
-          # TODO: does the user end up in the continuous onboarding flow here?!?
 
           expect(page).to have_content <<~MESSAGE.tr("\n", ' ')
             To connect GitHub repositories, you first need to authorize
@@ -190,7 +174,6 @@ RSpec.describe "User registration", :js, :saas do
               ).and_return(success: true)
             end
 
-            # TODO: can these inputs really all be blank?
             click_on 'Continue'
           end
 
@@ -215,14 +198,12 @@ RSpec.describe "User registration", :js, :saas do
 
             click_on 'Create project'
 
-            # TODO: do we end up in continuous onboarding?
             expect(page).to have_content 'Get started with GitLab'
           end
         end
 
         context "without a trial" do
           before do
-            # TODO: can these inputs really all be blank?
             click_on 'Continue'
           end
 

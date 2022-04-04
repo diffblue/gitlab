@@ -10,7 +10,7 @@ RSpec.describe 'Combined registration flow', :js do
   before do
     # https://gitlab.com/gitlab-org/gitlab/-/issues/340302
     stub_const('Gitlab::QueryLimiting::Transaction::THRESHOLD', 270)
-    stub_experiments(experiments)
+    stub_feature_flags(feature_flags)
     allow(Gitlab).to receive(:com?).and_return(true)
     sign_in(user)
     visit users_sign_up_welcome_path
@@ -27,7 +27,7 @@ RSpec.describe 'Combined registration flow', :js do
         combined_registration: true,
         about_your_company_registration_flow: false
       }
-   end
+    end
 
     it 'A user can create a group and project' do
       page.within '.js-group-path-display' do
