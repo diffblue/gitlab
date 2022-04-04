@@ -13,7 +13,7 @@ module Security
       def initialize(project, provider, identifier_external_id)
         @project = project
         @provider = provider
-        @identifier_external_id = identifier_external_id
+        @identifier_external_id = identifier_external_id.split('-').last
       end
 
       def execute
