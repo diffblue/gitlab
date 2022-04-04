@@ -1,14 +1,5 @@
 <script>
-import {
-  GlEmptyState,
-  GlLoadingIcon,
-  GlLink,
-  GlIcon,
-  GlTab,
-  GlTabs,
-  GlBadge,
-  GlAlert,
-} from '@gitlab/ui';
+import { GlEmptyState, GlLoadingIcon, GlLink, GlIcon, GlTab, GlTabs, GlBadge } from '@gitlab/ui';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import LicenseManagement from 'ee/vue_shared/license_compliance/license_management.vue';
 import { LICENSE_MANAGEMENT } from 'ee/vue_shared/license_compliance/store/constants';
@@ -30,7 +21,6 @@ export default {
     GlTab,
     GlTabs,
     GlBadge,
-    GlAlert,
     LicenseManagement,
   },
   mixins: [glFeatureFlagsMixin()],
@@ -47,6 +37,9 @@ export default {
     ...mapGetters(LICENSE_LIST, ['isJobSetUp', 'isJobFailed', 'hasPolicyViolations']),
     hasEmptyState() {
       return Boolean(!this.isJobSetUp || this.isJobFailed);
+    },
+    pillVariant() {
+      return this.hasPolicyViolations ? 'warning' : 'muted';
     },
     licenseCount() {
       return this.pageInfo.total;
@@ -103,14 +96,6 @@ export default {
   </gl-empty-state>
 
   <div v-else>
-    <gl-alert v-if="hasPolicyViolations" class="mt-3" variant="warning" :dismissible="false">
-      {{
-        s__(
-          "Licenses|Detected licenses that are out-of-compliance with the project's assigned policies",
-        )
-      }}
-    </gl-alert>
-
     <header class="my-3">
       <h2 class="h4 mb-1 gl-display-flex gl-align-items-center">
         {{ s__('Licenses|License Compliance') }}
@@ -131,7 +116,9 @@ export default {
       <gl-tab data-testid="licensesTab">
         <template #title>
           <span data-testid="licensesTabTitle">{{ s__('Licenses|Detected in Project') }}</span>
-          <gl-badge size="sm" class="gl-tab-counter-badge">{{ licenseCount }}</gl-badge>
+          <gl-badge size="sm" :variant="pillVariant" class="gl-tab-counter-badge">{{
+            licenseCount
+          }}</gl-badge>
         </template>
 
         <detected-licenses-table />
