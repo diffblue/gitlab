@@ -12,7 +12,7 @@ RSpec.describe 'Incident Detail', :js do
   context 'when user displays the incident' do
     before do
       stub_licensed_features(incident_timeline_events: true)
-      stub_feature_flags(incident_timeline_event_tab: true)
+      stub_feature_flags(incident_timeline: true)
       project.add_developer(user)
       sign_in(user)
     end
