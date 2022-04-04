@@ -357,7 +357,13 @@ export default {
     }) {
       if (shouldConfirm && isDirty) {
         const msg = __('Are you sure you want to cancel editing this comment?');
-        const confirmed = await confirmAction(msg);
+        const confirmed = await confirmAction(msg, {
+          primaryBtnText: __('Cancel Editing'),
+          primaryBtnVariant: 'danger',
+          secondaryBtnVariant: 'confirm',
+          secondaryBtnText: __('Continue Editing'),
+          hideCancel: true,
+        });
         if (!confirmed) return;
       }
       this.$refs.noteBody.resetAutoSave();
