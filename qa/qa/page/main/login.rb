@@ -179,10 +179,14 @@ module QA
           fill_element :login_field, user.username
           fill_element :password_field, user.password
 
-          # Wait until the ArkoseLabs challenge has initialized
-          Support::WaitForRequests.wait_for_requests
-          Support::Waiter.wait_until(max_duration: 5, reload_page: false, raise_on_failure: false) do
-            has_arkose_labs_token?
+          if Runtime::Env.running_on_dot_com?
+            # Arkose only appears in staging.gitlab.com, gitlab.com, etc...
+
+            # Wait until the ArkoseLabs challenge has initialized
+            Support::WaitForRequests.wait_for_requests
+            Support::Waiter.wait_until(max_duration: 5, reload_page: false, raise_on_failure: false) do
+              has_arkose_labs_token?
+            end
           end
 
           click_element :sign_in_button
