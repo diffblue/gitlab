@@ -21125,10 +21125,16 @@ msgstr ""
 msgid "Iterations|Cadence name"
 msgstr ""
 
+msgid "Iterations|Cancel"
+msgstr ""
+
 msgid "Iterations|Couldn't find iteration cadence"
 msgstr ""
 
 msgid "Iterations|Create cadence"
+msgstr ""
+
+msgid "Iterations|Create iteration"
 msgstr ""
 
 msgid "Iterations|Delete cadence"
@@ -21140,7 +21146,13 @@ msgstr ""
 msgid "Iterations|Delete iteration?"
 msgstr ""
 
+msgid "Iterations|Description"
+msgstr ""
+
 msgid "Iterations|Done"
+msgstr ""
+
+msgid "Iterations|Due date"
 msgstr ""
 
 msgid "Iterations|Duration"
@@ -40275,9 +40287,6 @@ msgid "Update failed"
 msgstr ""
 
 msgid "Update it"
-msgstr ""
-
-msgid "Update iteration"
 msgstr ""
 
 msgid "Update milestone"

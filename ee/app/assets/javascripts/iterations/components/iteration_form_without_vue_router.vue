@@ -268,7 +268,7 @@ export default {
         data-qa-selector="save_iteration_button"
         @click="save"
       >
-        {{ isEditing ? __('Update iteration') : __('Create iteration') }}
+        {{ isEditing ? __('Save changes') : __('Create iteration') }}
       </gl-button>
       <gl-button class="ml-auto" data-testid="cancel-iteration" @click="cancel">
         {{ __('Cancel') }}

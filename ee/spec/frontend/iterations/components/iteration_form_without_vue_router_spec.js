@@ -181,7 +181,7 @@ describe('Iteration Form', () => {
         props: propsWithIteration,
       });
 
-      expect(findSaveButton().text()).toBe('Update iteration');
+      expect(findSaveButton().text()).toBe('Save changes');
     });
 
     it('triggers mutation with form data', () => {
