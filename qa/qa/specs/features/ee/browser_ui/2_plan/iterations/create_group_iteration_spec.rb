@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  # TODO: Remove :requires_admin when the `Runtime::Feature.enable` method call is removed
-  RSpec.describe 'Plan', :requires_admin do
+  RSpec.describe 'Plan', feature_flag: { name: 'iteration_cadences', scope: :group } do
     describe 'Group Iterations' do
       include Support::Dates
 
