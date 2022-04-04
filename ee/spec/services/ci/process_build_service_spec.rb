@@ -61,11 +61,7 @@ RSpec.describe Ci::ProcessBuildService, '#execute' do
           expect(ci_build.pending?).to be_truthy
         end
 
-        context 'and environment needs approval' do
-          before do
-            protected_environment.update!(required_approval_count: 1)
-          end
-
+        shared_examples_for 'blocking deployment job' do
           it 'makes the build a manual action' do
             expect { subject }.to change { ci_build.status }.from('created').to('manual')
           end
@@ -97,6 +93,22 @@ RSpec.describe Ci::ProcessBuildService, '#execute' do
               include_examples 'blocked deployment'
             end
           end
+        end
+
+        context 'with unified access level' do
+          before do
+            protected_environment.update!(required_approval_count: 1)
+          end
+
+          it_behaves_like 'blocking deployment job'
+        end
+
+        context 'with multi access levels' do
+          let!(:approval_rule) do
+            create(:protected_environment_approval_rule, :maintainer_access, protected_environment: protected_environment)
+          end
+
+          it_behaves_like 'blocking deployment job'
         end
       end
     end

@@ -11,10 +11,18 @@ RSpec.describe Deployments::ApprovalService do
   let(:environment) { create(:environment, project: project) }
   let(:status) { 'approved' }
   let(:comment) { nil }
+  let(:ci_build) { create(:ci_build, :manual, project: project) }
+  let(:deployment) { create(:deployment, :blocked, project: project, environment: environment, deployable: ci_build) }
+  let!(:protected_environment) { create(:protected_environment, :maintainers_can_deploy, name: environment.name, project: project, **access_level_setting) }
+  let(:access_level_setting) { unified_access_level }
+
+  # Unified Access Level setting (MVC version)
+  let(:unified_access_level) { { required_approval_count: required_approval_count } }
   let(:required_approval_count) { 2 }
-  let(:build) { create(:ci_build, :manual, project: project) }
-  let(:deployment) { create(:deployment, :blocked, project: project, environment: environment, deployable: build) }
-  let!(:protected_environment) { create(:protected_environment, :maintainers_can_deploy, name: environment.name, project: project, required_approval_count: required_approval_count) }
+
+  # Multi Access Level setting (extended MVC)
+  let(:multi_access_level) { { approval_rules: approval_rules } }
+  let(:approval_rules) { [build(:protected_environment_approval_rule, :maintainer_access)] }
 
   before do
     stub_licensed_features(protected_environments: true)
@@ -63,7 +71,8 @@ RSpec.describe Deployments::ApprovalService do
 
   shared_examples_for 'set approval rule' do
     context 'with approval rule' do
-      let!(:approval_rule) { create(:protected_environment_approval_rule, :maintainer_access, protected_environment: protected_environment) }
+      let(:access_level_setting) { multi_access_level }
+      let(:approval_rule) { approval_rules.first.reload }
 
       it 'sets an rule to the deployment approval' do
         expect(subject[:status]).to eq(:success)
@@ -136,7 +145,7 @@ RSpec.describe Deployments::ApprovalService do
       end
     end
 
-    context 'processing the build' do
+    context 'processing the build with unified access level' do
       context 'when build is nil' do
         before do
           deployment.deployable = nil
@@ -179,6 +188,53 @@ RSpec.describe Deployments::ApprovalService do
       end
     end
 
+    context 'processing the build with multi access levels' do
+      context 'when build is nil' do
+        before do
+          deployment.deployable = nil
+        end
+
+        it 'does not raise an error' do
+          expect { subject }.not_to raise_error
+        end
+      end
+
+      context 'when deployment was rejected' do
+        let(:status) { 'rejected' }
+
+        it 'drops the build' do
+          subject
+
+          expect(deployment.deployable.status).to eq('failed')
+          expect(deployment.deployable.failure_reason).to eq('deployment_rejected')
+        end
+      end
+
+      context 'when no additional approvals are required' do
+        let(:access_level_setting) { multi_access_level }
+        let(:approval_rules) { [build(:protected_environment_approval_rule, :maintainer_access, required_approvals: 1)] }
+
+        it 'keeps the build manual' do
+          expect { subject }.not_to change { deployment.deployable.status }
+
+          expect(deployment.deployable).to be_manual
+        end
+
+        it 'unblocks the deployment' do
+          expect { subject }.to change { deployment.status }.from('blocked').to('created')
+        end
+      end
+
+      context 'when additional approvals are required' do
+        let(:access_level_setting) { multi_access_level }
+        let(:approval_rules) { [build(:protected_environment_approval_rule, :maintainer_access, required_approvals: 2)] }
+
+        it 'does not change the build' do
+          expect { subject }.not_to change { deployment.deployable.reload.status }
+        end
+      end
+    end
+
     context 'validations' do
       context 'when status is not recognized' do
         let(:status) { 'foo' }
@@ -187,7 +243,7 @@ RSpec.describe Deployments::ApprovalService do
       end
 
       context 'when environment is not protected' do
-        let(:deployment) { create(:deployment, project: project, deployable: build) }
+        let(:deployment) { create(:deployment, project: project, deployable: ci_build) }
 
         include_examples 'error', message: 'This environment is not protected.'
       end
@@ -235,7 +291,7 @@ RSpec.describe Deployments::ApprovalService do
       end
 
       context 'when deployment is not blocked' do
-        let(:deployment) { create(:deployment, project: project, environment: environment, deployable: build) }
+        let(:deployment) { create(:deployment, project: project, environment: environment, deployable: ci_build) }
 
         include_examples 'error', message: 'This deployment is not waiting for approvals.'
       end

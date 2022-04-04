@@ -80,7 +80,7 @@ module EE
     end
 
     def needs_approval?
-      required_approval_count > 0
+      has_approval_rules? || required_approval_count > 0
     end
 
     def required_approval_count
@@ -103,6 +103,13 @@ module EE
       end
     end
 
+    def associated_approval_rules
+      strong_memoize(:associated_approval_rules) do
+        ::ProtectedEnvironments::ApprovalRule
+          .where(protected_environment: associated_protected_environments)
+      end
+    end
+
     private
 
     def protected_environment_accesses(user)
@@ -118,13 +125,6 @@ module EE
     def associated_protected_environments
       strong_memoize(:associated_protected_environments) do
         ::ProtectedEnvironment.for_environment(self)
-      end
-    end
-
-    def associated_approval_rules
-      strong_memoize(:associated_approval_rules) do
-        ::ProtectedEnvironments::ApprovalRule
-          .where(protected_environment: associated_protected_environments)
       end
     end
   end

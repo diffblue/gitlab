@@ -36,5 +36,15 @@ module EE
 
       environment.required_approval_count - approvals.length
     end
+
+    def approval_summary
+      strong_memoize(:approval_summary) do
+        ::ProtectedEnvironments::ApprovalSummary.new(deployment: self)
+      end
+    end
+
+    def approved?
+      approval_summary.all_rules_approved?
+    end
   end
 end
