@@ -16,9 +16,9 @@ RSpec.describe 'devise/sessions/new' do
       allow(Gitlab).to receive(:com?).and_return(true)
     end
 
-    context 'when arkose_labs_enabled? is enabled' do
+    context 'when the :arkose_labs_login_challenge feature flag is enabled' do
       before do
-        stub_arkose_labs(enabled: true)
+        stub_feature_flags(arkose_labs_login_challenge: true)
 
         subject
       end
@@ -32,9 +32,9 @@ RSpec.describe 'devise/sessions/new' do
       end
     end
 
-    context 'when arkose_labs_enabled? is disabled' do
+    context 'when the :arkose_labs_login_challenge feature flag is disabled' do
       before do
-        stub_arkose_labs(enabled: false)
+        stub_feature_flags(arkose_labs_login_challenge: false)
 
         subject
       end
@@ -54,9 +54,5 @@ RSpec.describe 'devise/sessions/new' do
   def disable_captcha
     allow(view).to receive(:captcha_enabled?).and_return(false)
     allow(view).to receive(:captcha_on_login_required?).and_return(false)
-  end
-
-  def stub_arkose_labs(enabled:)
-    allow(view).to receive(:arkose_labs_enabled?).and_return(enabled)
   end
 end
