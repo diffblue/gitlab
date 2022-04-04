@@ -14,6 +14,10 @@ RSpec.describe Gitlab::Database::BackgroundMigration::BatchedMigrationRunner do
     end
   end
 
+  before do
+    allow(Gitlab::Database::BackgroundMigration::Adapt).to receive(:adapt!)
+  end
+
   describe '#run_migration_job' do
     shared_examples_for 'it has completed the migration' do
       it 'does not create and run a migration job' do
@@ -59,11 +63,11 @@ RSpec.describe Gitlab::Database::BackgroundMigration::BatchedMigrationRunner do
             sub_batch_size: migration.sub_batch_size)
         end
 
-        it 'optimizes the migration after executing the job' do
+        it 'runs the adapt framework after executing the job' do
           migration.update!(min_value: event1.id, max_value: event2.id)
 
           expect(migration_wrapper).to receive(:perform).ordered
-          expect(migration).to receive(:optimize!).ordered
+          expect(migration).to receive(:adapt!).ordered
 
           runner.run_migration_job(migration)
         end

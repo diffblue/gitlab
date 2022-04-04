@@ -199,8 +199,23 @@ module Gitlab
           BatchOptimizer.new(self).optimize!
         end
 
+        # Adapt migration parameters to prevailing system state
+        def adapt!
+          Adapt.adapt!(self)
+        end
+
+        def adapt_context
+          Adapt::Context.new([table_name])
+        end
+
         def hold!(until_time: 10.minutes.from_now)
           update!(on_hold_until: until_time)
+        end
+
+        def on_hold?
+          return false unless on_hold_until
+
+          on_hold_until > Time.zone.now
         end
 
         private
