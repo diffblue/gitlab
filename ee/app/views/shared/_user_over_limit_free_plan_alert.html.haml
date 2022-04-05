@@ -2,8 +2,7 @@
 
 - content_for :user_over_limit_free_plan_alert do
   .container-fluid.container-limited{ class: "gl-pb-2! gl-pt-6! #{@content_class}" }
-    = render 'shared/global_alert',
-      alert_class: 'js-user-over-limit-free-plan-alert',
+    = render Pajamas::AlertComponent.new(alert_class: 'js-user-over-limit-free-plan-alert',
       alert_data: { track_action: 'render',
                     track_label: 'user_limit_banner',
                     dismiss_endpoint: group_callouts_path,
@@ -13,7 +12,7 @@
       title: _('From June 22, 2022 (GitLab 15.1), free personal namespaces and top-level groups will be limited to %{free_limit} members') % { free_limit: ::Namespaces::FreeUserCap::FREE_USER_LIMIT },
       close_button_data: { track_action: 'dismiss_banner',
                            track_label: 'user_limit_banner',
-                           testid: 'user-over-limit-free-plan-dismiss' } do
+                           testid: 'user-over-limit-free-plan-dismiss' }) do
       .gl-alert-body
         = _('Your %{doc_link_start}namespace%{doc_link_end}, %{strong_start}%{namespace_name}%{strong_end} has more than %{free_limit} members. From June 22, 2022, it will be limited to %{free_limit}, and the remaining members will get a %{link_start}status of Over limit%{link_end} and lose access to the namespace. You can go to the Usage Quotas page to manage which %{free_limit} members will remain in your namespace. To get more members, an owner can start a trial or upgrade to a paid tier.').html_safe % { namespace_name: source.root_ancestor.name,
           free_limit: ::Namespaces::FreeUserCap::FREE_USER_LIMIT,

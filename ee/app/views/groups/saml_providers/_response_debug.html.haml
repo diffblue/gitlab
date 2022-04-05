@@ -1,7 +1,6 @@
 = bootstrap_form_for @saml_response_check.tap(&:valid?), url: '#', html: { class: 'gl-show-field-errors' } do |f|
   - if f.object.valid?
-    = render 'shared/global_alert',
-      variant: :success do
+    = render Pajamas::AlertComponent.new(variant: :success) do
       .gl-alert-body
         = s_('GroupSAML|Valid SAML Response')
   = f.errors_on :xml_response, hide_attribute_name: true

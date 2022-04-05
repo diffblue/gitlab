@@ -1,10 +1,8 @@
 - page_title _("Billing")
 
-= render 'shared/global_alert',
-  title: _('Subscription service outage'),
+= render Pajamas::AlertComponent.new(title: _('Subscription service outage'),
   variant: :danger,
-  is_contained: true,
   alert_class: 'gl-mb-5',
-  dismissible: false do
+  dismissible: false) do
   .gl-alert-body
     = html_escape(_("The GitLab subscription service (customers.gitlab.com) is currently experiencing an outage. You can monitor the status and get updates at %{linkStart}status.gitlab.com%{linkEnd}.")) % { linkStart: "<a href=\"#{::EE::GITLAB_COM_STATUS_URL}\">".html_safe, linkEnd: '</a>'.html_safe }
