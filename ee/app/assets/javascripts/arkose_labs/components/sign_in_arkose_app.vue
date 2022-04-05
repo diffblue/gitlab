@@ -51,29 +51,24 @@ export default {
       username: '',
       isLoading: false,
       arkoseInitialized: false,
+      submitOnSuppress: false,
       arkoseToken: '',
       arkoseContainerClass: uniqueId(ARKOSE_CONTAINER_CLASS),
       arkoseChallengePassed: false,
     };
   },
   computed: {
-    isVisible() {
-      return this.arkoseLabsIframeShown || this.showErrorContainer;
-    },
     showErrorContainer() {
-      return this.showArkoseNeededError || this.showArkoseFailure;
+      return (this.arkoseLabsIframeShown && this.showArkoseNeededError) || this.showArkoseFailure;
     },
   },
   watch: {
-    username() {
-      this.checkIfNeedsChallenge();
-    },
     isLoading(val) {
       this.updateSubmitButtonLoading(val);
     },
   },
   mounted() {
-    this.username = this.getUsernameValue();
+    this.checkIfNeedsChallenge();
   },
   methods: {
     onArkoseLabsIframeShown() {
@@ -86,28 +81,45 @@ export default {
     getUsernameValue() {
       return document.querySelector(this.usernameSelector)?.value || '';
     },
-    onUsernameBlur() {
-      this.username = this.getUsernameValue();
-    },
     onSubmit(e) {
-      if (!this.arkoseInitialized || this.arkoseChallengePassed) {
-        return;
-      }
-      e.preventDefault();
-      this.showArkoseNeededError = true;
-    },
-    async checkIfNeedsChallenge() {
-      if (!this.username || this.arkoseInitialized) {
+      if (this.arkoseChallengePassed) {
+        // If the challenge was solved already, proceed with the form's submission.
         return;
       }
 
+      e.preventDefault();
+      this.submitOnSuppress = true;
+      if (!this.arkoseInitialized) {
+        // If the challenge hasn't been initialized yet, we trigger a check now to make sure it
+        // wasn't skipped by submitting the form without the username field ever losing the focus.
+        this.checkAndSubmit(e.target);
+      } else {
+        // Otherwise, we show an error message as the form has been submitted without completing
+        // the challenge.
+        this.showArkoseNeededError = true;
+      }
+    },
+    async checkAndSubmit(form) {
+      await this.checkIfNeedsChallenge();
+      if (!this.arkoseInitialized) {
+        // If the challenge still hasn't been initialized, the user definitely doesn't need one and
+        // we can proceed with the form's submission.
+        form.submit();
+      }
+    },
+    async checkIfNeedsChallenge() {
+      const username = this.getUsernameValue();
+      if (!username || username === this.username || this.arkoseInitialized) {
+        return;
+      }
+
+      this.username = username;
       this.isLoading = true;
 
       try {
         const {
           data: { result },
         } = await needsArkoseLabsChallenge(this.username);
-
         if (result) {
           await this.initArkoseLabs();
         }
@@ -136,6 +148,7 @@ export default {
         selector: `.${this.arkoseContainerClass}`,
         onShown: this.onArkoseLabsIframeShown,
         onCompleted: this.passArkoseLabsChallenge,
+        onSuppress: this.onArkoseLabsSuppress,
         onError: this.handleArkoseLabsFailure,
       });
     },
@@ -143,6 +156,13 @@ export default {
       this.arkoseChallengePassed = true;
       this.arkoseToken = response.token;
       this.hideErrors();
+    },
+    onArkoseLabsSuppress() {
+      if (this.submitOnSuppress) {
+        // If the challenge was suppressed following the form's submission, we need to proceed with
+        // the submission.
+        document.querySelector(this.formSelector).submit();
+      }
     },
     handleArkoseLabsFailure(e) {
       logError('ArkoseLabs initialization error', e);
@@ -172,16 +192,17 @@ export default {
 </script>
 
 <template>
-  <div v-show="isVisible">
+  <div>
+    <dom-element-listener :selector="usernameSelector" @blur="checkIfNeedsChallenge" />
+    <dom-element-listener :selector="formSelector" @submit="onSubmit" />
     <input
       v-if="arkoseInitialized"
       :name="$options.VERIFICATION_TOKEN_INPUT_NAME"
       type="hidden"
       :value="arkoseToken"
     />
-    <dom-element-listener :selector="usernameSelector" @blur="onUsernameBlur" />
-    <dom-element-listener :selector="formSelector" @submit="onSubmit" />
     <div
+      v-show="arkoseLabsIframeShown"
       class="gl-display-flex gl-justify-content-center gl-mt-3 gl-mb-n3"
       :class="arkoseContainerClass"
       data-testid="arkose-labs-challenge"

@@ -4,6 +4,7 @@ module Arkose
     attr_reader :url, :session_token, :userid
 
     VERIFY_URL = 'http://verify-api.arkoselabs.com/api/v4/verify'
+    ALLOWLIST_TELLTALE = 'gitlab1-whitelist-qa-team'
 
     def initialize(session_token:, userid:)
       @session_token = session_token
@@ -16,7 +17,7 @@ module Arkose
 
       return false if invalid_token(response)
 
-      challenge_solved?(response) && low_risk?(response)
+      allowlisted?(response) || (challenge_solved?(response) && low_risk?(response))
     rescue StandardError => error
       payload = { session_token: session_token, log_data: userid }
       Gitlab::ExceptionLogFormatter.format!(error, payload)
@@ -56,6 +57,11 @@ module Arkose
     def low_risk?(response)
       risk_band = response.parsed_response&.dig('session_risk', 'risk_band')
       risk_band.present? ? risk_band != 'High' : true
+    end
+
+    def allowlisted?(response)
+      telltale_list = response.parsed_response&.dig('session_details', 'telltale_list') || []
+      telltale_list.include?(ALLOWLIST_TELLTALE)
     end
   end
 end
