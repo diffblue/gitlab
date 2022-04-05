@@ -10,6 +10,9 @@ module EE
 
       feature_category :users, [:available_group_templates, :available_project_templates, :pipelines_quota]
     end
+    feature_category :users, [:available_group_templates]
+
+    feature_category :source_code_management, [:available_project_templates]
 
     def available_project_templates
       load_custom_project_templates
