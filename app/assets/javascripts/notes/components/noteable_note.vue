@@ -358,10 +358,10 @@ export default {
       if (shouldConfirm && isDirty) {
         const msg = __('Are you sure you want to cancel editing this comment?');
         const confirmed = await confirmAction(msg, {
-          primaryBtnText: __('Cancel Editing'),
+          primaryBtnText: __('Cancel editing'),
           primaryBtnVariant: 'danger',
           secondaryBtnVariant: 'confirm',
-          secondaryBtnText: __('Continue Editing'),
+          secondaryBtnText: __('Continue editing'),
           hideCancel: true,
         });
         if (!confirmed) return;

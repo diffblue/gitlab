@@ -6789,10 +6789,10 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-msgid "Cancel Editing"
+msgid "Cancel and close"
 msgstr ""
 
-msgid "Cancel and close"
+msgid "Cancel editing"
 msgstr ""
 
 msgid "Cancel index deletion"
@@ -9989,7 +9989,7 @@ msgstr ""
 msgid "Continue"
 msgstr ""
 
-msgid "Continue Editing"
+msgid "Continue editing"
 msgstr ""
 
 msgid "Continue to the next step"

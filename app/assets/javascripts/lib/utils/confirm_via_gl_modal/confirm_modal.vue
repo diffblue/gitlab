@@ -66,7 +66,7 @@ export default {
         text: this.secondaryText,
         attributes: {
           variant: this.secondaryVariant,
-          category: 'secondary'
+          category: 'secondary',
         },
       };
     },
