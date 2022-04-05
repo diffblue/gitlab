@@ -76,12 +76,12 @@ export default {
         <gl-avatar-link
           v-gl-tooltip
           target="blank"
-          :href="avatar.web_url"
+          :href="avatar.webUrl"
           :title="avatar.name"
           class="gl-text-gray-900 author-link js-user-link"
         >
           <gl-avatar
-            :src="avatar.avatar_url"
+            :src="avatar.avatarUrl"
             :entity-id="avatar.id"
             :entity-name="avatar.name"
             :size="24"
@@ -94,13 +94,13 @@ export default {
       v-for="approver in approversToPresent"
       :key="approver.id"
       :title="approver.name"
-      :href="approver.web_url"
+      :href="approver.webUrl"
       :data-user-id="approver.id"
       :data-name="approver.name"
       class="gl-display-none gl-lg-display-inline-flex! gl-align-items-center gl-justify-content-end gl-ml-3 gl-text-gray-900 author-link js-user-link"
     >
       <gl-avatar
-        :src="approver.avatar_url"
+        :src="approver.avatarUrl"
         :entity-id="approver.id"
         :entity-name="approver.name"
         :size="16"

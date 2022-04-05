@@ -43,13 +43,13 @@ export default {
       <gl-avatar-link
         :key="mergeRequest.author.id"
         :title="mergeRequest.author.name"
-        :href="mergeRequest.author.web_url"
+        :href="mergeRequest.author.webUrl"
         :data-user-id="mergeRequest.author.id"
         :data-name="mergeRequest.author.name"
         class="gl-display-inline-flex gl-align-items-center gl-ml-3 gl-text-gray-900 author-link js-user-link"
       >
         <gl-avatar
-          :src="mergeRequest.author.avatar_url"
+          :src="mergeRequest.author.avatarUrl"
           :entity-id="mergeRequest.author.id"
           :entity-name="mergeRequest.author.name"
           :size="16"

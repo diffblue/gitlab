@@ -109,7 +109,7 @@ describe('MergeRequestDrawer component', () => {
     it('has the reference section', () => {
       expect(findReference().props()).toStrictEqual({
         path: data.mergeRequest.webUrl,
-        reference: data.mergeRequest.reference,
+        reference: data.mergeRequest.ref,
       });
     });
 
@@ -132,7 +132,7 @@ describe('MergeRequestDrawer component', () => {
 
     it('has the merged by section', () => {
       expect(findMergedBy().props()).toStrictEqual({
-        mergedBy: data.mergeRequest.mergedBy,
+        mergedBy: data.mergeRequest.mergeUser,
       });
     });
   });

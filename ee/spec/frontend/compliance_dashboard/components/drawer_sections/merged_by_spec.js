@@ -58,7 +58,7 @@ describe('MergedBy component', () => {
       expect(findAvatarLink().classes()).toContain('js-user-link');
       expect(findAvatarLink().attributes()).toMatchObject({
         title: mergedBy.name,
-        href: mergedBy.web_url,
+        href: mergedBy.webUrl,
         'data-name': mergedBy.name,
         'data-user-id': `${mergedBy.id}`,
       });
@@ -69,7 +69,7 @@ describe('MergedBy component', () => {
       });
       expect(findAvatarLabel().attributes()).toMatchObject({
         'entity-name': mergedBy.name,
-        src: mergedBy.avatar_url,
+        src: mergedBy.avatarUrl,
       });
     });
 

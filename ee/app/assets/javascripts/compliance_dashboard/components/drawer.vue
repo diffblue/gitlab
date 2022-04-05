@@ -63,7 +63,7 @@ export default {
         :name="project.name"
         :url="project.webUrl"
       />
-      <reference :path="mergeRequest.webUrl" :reference="mergeRequest.reference" />
+      <reference :path="mergeRequest.webUrl" :reference="mergeRequest.ref" />
       <branch-path
         v-if="hasBranchDetails"
         :source-branch="mergeRequest.sourceBranch"
@@ -76,7 +76,7 @@ export default {
         :approvers="mergeRequest.approvedByUsers"
         :commenters="mergeRequest.participants"
       />
-      <merged-by :merged-by="mergeRequest.mergedBy" />
+      <merged-by :merged-by="mergeRequest.mergeUser" />
     </template>
   </gl-drawer>
 </template>
