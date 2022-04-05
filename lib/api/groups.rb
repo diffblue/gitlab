@@ -298,7 +298,7 @@ module API
         use :with_custom_attributes
         use :optional_projects_params
       end
-      get ":id/projects", feature_category: :projects do
+      get ":id/projects", feature_category: :subgroups do
         finder_options = {
           only_owned: !params[:with_shared],
           include_subgroups: params[:include_subgroups],
@@ -332,7 +332,7 @@ module API
         use :pagination
         use :with_custom_attributes
       end
-      get ":id/projects/shared", feature_category: :projects do
+      get ":id/projects/shared", feature_category: :subgroups do
         projects = find_group_projects(params, { only_shared: true })
 
         present_projects(params, projects)
