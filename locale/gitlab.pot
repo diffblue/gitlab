@@ -25572,7 +25572,7 @@ msgstr ""
 msgid "No matching results..."
 msgstr ""
 
-msgid "No member provided"
+msgid "No member or user provided"
 msgstr ""
 
 msgid "No members found"
@@ -43261,6 +43261,9 @@ msgid "You can only %{action} files when you are on a branch"
 msgstr ""
 
 msgid "You can only add up to %{max_contacts} contacts at one time"
+msgstr ""
+
+msgid "You can only approve an indivdual user, member, or all members"
 msgstr ""
 
 msgid "You can only edit files when you are on a branch"
