@@ -78,6 +78,10 @@ RSpec.describe Mutations::DastScannerProfiles::Update do
           end
         end
 
+        it 'returns the complete dast_scanner_profile' do
+          expect(subject[:dast_scanner_profile]).to eq(dast_scanner_profile)
+        end
+
         context 'when dast scanner profile does not exist' do
           let(:scanner_profile_id) { Gitlab::GlobalId.build(nil, model_name: 'DastScannerProfile', id: 'does_not_exist') }
 

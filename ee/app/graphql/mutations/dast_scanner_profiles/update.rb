@@ -11,7 +11,12 @@ module Mutations
 
       field :id, ScannerProfileID,
             null: true,
-            description: 'ID of the scanner profile.'
+            description: 'ID of the scanner profile.',
+            deprecated: { reason: 'use `dastScannerProfile` field', milestone: '14.10' }
+
+      field :dast_scanner_profile, ::Types::DastScannerProfileType,
+            null: true,
+            description: 'Updated scanner profile.'
 
       argument :full_path, GraphQL::Types::ID,
                required: false,
@@ -58,7 +63,7 @@ module Mutations
         result = service.execute(**service_args, id: dast_scanner_profile.id)
 
         if result.success?
-          { id: result.payload.to_global_id, errors: [] }
+          { id: result.payload.to_global_id, dast_scanner_profile: result.payload, errors: [] }
         else
           { errors: result.errors }
         end
