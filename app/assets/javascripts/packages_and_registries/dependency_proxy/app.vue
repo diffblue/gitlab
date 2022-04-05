@@ -52,13 +52,20 @@ export default {
     blobCountAndSize: s__('DependencyProxy|Contains %{count} blobs of images (%{size})'),
     pageTitle: s__('DependencyProxy|Dependency Proxy'),
     noManifestTitle: s__('DependencyProxy|There are no images in the cache'),
-    clearCache: s__('DependencyProxy|Clear cache'),
-    cancel: __('Cancel'),
     deleteCacheAlertMessageSuccess: s__(
       'DependencyProxy|All items in the cache are scheduled for removal.',
     ),
   },
   confirmClearCacheModal: 'confirm-clear-cache-modal',
+  modalButtons: {
+    primary: {
+      text: s__('DependencyProxy|Clear cache'),
+      attributes: [{ variant: 'danger' }],
+    },
+    secondary: {
+      text: __('Cancel'),
+    },
+  },
   links: {
     DEPENDENCY_PROXY_DOCS_PATH,
   },
@@ -243,13 +250,8 @@ export default {
     <gl-modal
       :modal-id="$options.confirmClearCacheModal"
       :title="modalTitleWithCount"
-      :action-primary="{
-        text: $options.i18n.clearCache,
-        attributes: [{ variant: 'danger' }],
-      }"
-      :action-secondary="{
-        text: $options.i18n.cancel,
-      }"
+      :action-primary="$options.modalButtons.primary"
+      :action-secondary="$options.modalButtons.secondary"
       @primary="submit"
     >
       {{ modalConfirmationMessageWithCount }}
