@@ -41242,9 +41242,6 @@ msgstr ""
 msgid "ValueStreamAnalytics|Go to docs"
 msgstr ""
 
-msgid "ValueStreamAnalytics|Items in Value Stream Analytics are currently filtered by their creation time. There is an %{epic_link_start}epic%{epic_link_end} that will change the Value Stream Analytics date filter to use the end event time for the selected stage."
-msgstr ""
-
 msgid "ValueStreamAnalytics|Key metrics"
 msgstr ""
 
