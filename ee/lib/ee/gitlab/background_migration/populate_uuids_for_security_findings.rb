@@ -88,8 +88,14 @@ module EE
           end
         end
 
+        class Project < ActiveRecord::Base
+          self.table_name = :projects
+        end
+
         class Pipeline < ActiveRecord::Base
           self.table_name = :ci_pipelines
+
+          belongs_to :project, class_name: '::Gitlab::BackgroundMigration::PopulateUuidsForSecurityFindings::Project', foreign_key: :project_id
         end
 
         class Build < ActiveRecord::Base
