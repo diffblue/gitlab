@@ -23,7 +23,7 @@ class Groups::EpicsController < Groups::ApplicationController
   end
 
   feature_category :portfolio_management
-  urgency :medium, [:show, :new]
+  urgency :default, [:show, :new]
   urgency :low, [:discussions]
 
   def new

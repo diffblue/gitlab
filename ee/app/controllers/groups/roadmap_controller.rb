@@ -9,7 +9,7 @@ module Groups
     before_action :persist_roadmap_layout, only: [:show]
 
     feature_category :portfolio_management
-    urgency :medium, [:show]
+    urgency :default, [:show]
 
     # show roadmap for a group
     def show
