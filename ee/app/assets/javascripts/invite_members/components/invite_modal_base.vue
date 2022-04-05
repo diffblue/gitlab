@@ -1,5 +1,5 @@
 <script>
-import { GlLink, GlButton } from '@gitlab/ui';
+import { GlLink } from '@gitlab/ui';
 import { partition, isString } from 'lodash';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import InviteModalBase from '~/invite_members/components/invite_modal_base.vue';
@@ -30,7 +30,6 @@ const EXTRA_SLOTS = [
 export default {
   components: {
     GlLink,
-    GlButton,
     InviteModalBase,
   },
   mixins: [glFeatureFlagsMixin()],
@@ -59,6 +58,11 @@ export default {
       required: false,
       default: null,
     },
+    submitDisabled: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -80,6 +84,14 @@ export default {
     showOverageModal() {
       return this.hasOverage && this.enabledOverageCheck;
     },
+    submitDisabledEE() {
+      if (this.showOverageModal) {
+        return false;
+      }
+
+      // Use CE default
+      return this.submitDisabled;
+    },
     enabledOverageCheck() {
       return this.glFeatures.overageMembersModal;
     },
@@ -95,13 +107,16 @@ export default {
     modalTitleOverride() {
       return this.showOverageModal ? OVERAGE_MODAL_TITLE : this.modalTitle;
     },
-    submitButtonText() {
+    overageModalButtons() {
       if (this.showOverageModal) {
-        return OVERAGE_MODAL_CONTINUE_BUTTON;
+        return {
+          submit: OVERAGE_MODAL_CONTINUE_BUTTON,
+          cancel: OVERAGE_MODAL_BACK_BUTTON,
+        };
       }
 
       // Use CE default
-      return undefined;
+      return {};
     },
   },
   methods: {
@@ -153,9 +168,6 @@ export default {
         this.$emit('submit', { accessLevel: args.accessLevel, expiresAt: args.expiresAt });
       }
     },
-    handleBack() {
-      this.hasOverage = false;
-    },
     passthroughSlotNames() {
       return Object.keys(this.$scopedSlots || {});
     },
@@ -166,6 +178,11 @@ export default {
       );
 
       return [usersToInviteByEmail.map(({ name }) => name), usersToAddById.map(({ id }) => id)];
+    },
+    onCancel() {
+      if (this.showOverageModal) {
+        this.hasOverage = false;
+      }
     },
   },
   i18n: {
@@ -184,12 +201,16 @@ export default {
   <invite-modal-base
     v-bind="$attrs"
     :name="name"
-    :submit-button-text="submitButtonText"
+    :submit-button-text="overageModalButtons.submit"
+    :cancel-button-text="overageModalButtons.cancel"
     :modal-title="modalTitleOverride"
     :current-slot="currentSlot"
     :extra-slots="$options.EXTRA_SLOTS"
+    :submit-disabled="submitDisabledEE"
+    :prevent-cancel-default="showOverageModal"
     @reset="onReset"
     @submit="onSubmit"
+    @cancel="onCancel"
     v-on="getPassthroughListeners()"
   >
     <template #[$options.OVERAGE_CONTENT_SLOT]>
@@ -197,11 +218,6 @@ export default {
       <gl-link :href="$options.i18n.OVERAGE_MODAL_LINK" target="_blank">{{
         $options.i18n.OVERAGE_MODAL_LINK_TEXT
       }}</gl-link>
-    </template>
-    <template v-if="enabledOverageCheck && hasOverage" #cancel-button>
-      <gl-button data-testid="overage-back-button" @click="handleBack">
-        {{ $options.i18n.OVERAGE_MODAL_BACK_BUTTON }}
-      </gl-button>
     </template>
     <template v-for="(_, slot) of $scopedSlots" #[slot]="scope">
       <slot :name="slot" v-bind="scope"></slot>
