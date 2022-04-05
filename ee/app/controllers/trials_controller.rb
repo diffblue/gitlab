@@ -32,7 +32,7 @@ class TrialsController < ApplicationController
 
     render(:new) && return unless @result[:success]
 
-    if params[:onboarding]
+    if params[:onboarding] == 'true'
       redirect_to(new_users_sign_up_groups_project_path(url_params.merge(trial_onboarding_flow: true)))
     elsif @namespace = helpers.only_trialable_group_namespace
       params[:namespace_id] = @namespace.id
@@ -132,7 +132,7 @@ class TrialsController < ApplicationController
 
   def company_params
     params.permit(:company_name, :company_size, :first_name, :last_name, :phone_number,
-                  :country, :state, :glm_content, :glm_source).merge(extra_params)
+                  :country, :state, :website_url, :glm_content, :glm_source).merge(extra_params)
   end
 
   def extra_params
