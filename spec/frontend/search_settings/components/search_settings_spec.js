@@ -1,5 +1,6 @@
 import { GlSearchBoxByType } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { setHTMLFixture } from 'helpers/fixtures';
 import SearchSettings from '~/search_settings/components/search_settings.vue';
 import { HIGHLIGHT_CLASS, HIDE_CLASS } from '~/search_settings/constants';
 import { isExpanded, expandSection, closeSection } from '~/settings_panels';
@@ -56,7 +57,7 @@ describe('search_settings/components/search_settings.vue', () => {
   const clearSearch = () => search('');
 
   beforeEach(() => {
-    setFixtures(`
+    setHTMLFixture(`
     <div>
       <div class="js-search-app"></div>
       <div id="${ROOT_ID}">
