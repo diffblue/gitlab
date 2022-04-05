@@ -563,13 +563,29 @@ RSpec.describe API::Namespaces do
         do_get(owner)
 
         expect(json_response.keys).to match_array(%w[plan usage billing])
-        expect(json_response['plan'].keys).to match_array(%w[name code trial upgradable auto_renew])
+        expect(json_response['plan'].keys).to match_array(%w[name code trial upgradable exclude_guests auto_renew])
         expect(json_response['plan']['name']).to eq('Premium')
         expect(json_response['plan']['code']).to eq('premium')
         expect(json_response['plan']['trial']).to eq(false)
         expect(json_response['plan']['upgradable']).to eq(true)
+        expect(json_response['plan']['exclude_guests']).to eq(false)
         expect(json_response['usage'].keys).to match_array(%w[seats_in_subscription seats_in_use max_seats_used seats_owed])
         expect(json_response['billing'].keys).to match_array(%w[subscription_start_date subscription_end_date trial_ends_on])
+      end
+    end
+
+    context 'for groups inherits exclude_guests' do
+      let_it_be(:ultimate_namespace) { create(:group) }
+      let_it_be(:gitlab_subscription) { create(:gitlab_subscription, hosted_plan: ultimate_plan, namespace: ultimate_namespace) }
+
+      before do
+        ultimate_namespace.add_owner(owner)
+      end
+
+      it 'returns true for Ultimate-like plans' do
+        get api("/namespaces/#{ultimate_namespace.id}/gitlab_subscription", owner)
+
+        expect(json_response['plan']['exclude_guests']).to eq(true)
       end
     end
 

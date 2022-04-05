@@ -1752,6 +1752,14 @@ RSpec.describe Namespace do
     end
   end
 
+  describe '#exclude_guests?' do
+    let(:namespace) { build(:namespace) }
+
+    it 'returns false' do
+      expect(namespace.exclude_guests?).to eq(false)
+    end
+  end
+
   def create_project(repository_size:, lfs_objects_size:, repository_size_limit:)
     create(:project, namespace: namespace, repository_size_limit: repository_size_limit).tap do |project|
       create(:project_statistics, project: project, repository_size: repository_size, lfs_objects_size: lfs_objects_size)

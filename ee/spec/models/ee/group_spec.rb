@@ -1320,6 +1320,33 @@ RSpec.describe Group do
     end
   end
 
+  describe '#exclude_guests?', :saas do
+    using RSpec::Parameterized::TableSyntax
+
+    let_it_be(:group, refind: true) { create(:group) }
+
+    where(:actual_plan_name, :requested_plan_name, :result) do
+      :free           | nil        | false
+      :premium        | nil        | false
+      :ultimate       | nil        | true
+      :ultimate_trial | nil        | true
+      :gold           | nil        | true
+
+      :free           | 'premium'  | false
+      :free           | 'ultimate' | true
+      :premium        | 'ultimate' | true
+      :ultimate       | 'ultimate' | true
+    end
+
+    with_them do
+      let!(:subscription) { build(:gitlab_subscription, actual_plan_name, namespace: group) }
+
+      it 'returns the expected result' do
+        expect(group.exclude_guests?(requested_plan_name)).to eq(result)
+      end
+    end
+  end
+
   describe '#users_count' do
     subject { group.users_count }
 

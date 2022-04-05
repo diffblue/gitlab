@@ -472,6 +472,10 @@ module EE
       end
     end
 
+    def exclude_guests?
+      false
+    end
+
     private
 
     def free_user_cap

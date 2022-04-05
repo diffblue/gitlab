@@ -9,6 +9,8 @@ RSpec.describe GitlabSubscription, :saas do
     let_it_be(plan) { create(plan) } # rubocop:disable Rails/SaveBang
   end
 
+  it { is_expected.to delegate_method(:exclude_guests?).to(:namespace) }
+
   describe 'default values', :freeze_time do
     it 'defaults start_date to the current date' do
       expect(subject.start_date).to eq(Date.today)
