@@ -25683,6 +25683,9 @@ msgstr ""
 msgid "No triggers exist yet. Use the form above to create one."
 msgstr ""
 
+msgid "No user provided"
+msgstr ""
+
 msgid "No vulnerabilities present"
 msgstr ""
 
@@ -43351,6 +43354,9 @@ msgid "You do not have permission to run a pipeline on this branch."
 msgstr ""
 
 msgid "You do not have permission to run the Web Terminal. Please contact a project administrator."
+msgstr ""
+
+msgid "You do not have permission to set a member awaiting"
 msgstr ""
 
 msgid "You do not have permission to update the environment."
