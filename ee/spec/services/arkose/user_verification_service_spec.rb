@@ -36,6 +36,17 @@ RSpec.describe Arkose::UserVerificationService do
             allow(Gitlab::HTTP).to receive(:perform_request).and_return(response)
             expect(subject).to be_falsey
           end
+
+          context 'when the session is allowlisted' do
+            before do
+              arkose_ec_response['session_details']['telltale_list'].push(Arkose::UserVerificationService::ALLOWLIST_TELLTALE)
+            end
+
+            it 'returns true' do
+              allow(Gitlab::HTTP).to receive(:perform_request).and_return(response)
+              expect(subject).to be_truthy
+            end
+          end
         end
       end
     end
