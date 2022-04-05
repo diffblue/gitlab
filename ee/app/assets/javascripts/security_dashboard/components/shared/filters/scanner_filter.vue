@@ -9,6 +9,7 @@ import FilterItem from './filter_item.vue';
 import SimpleFilter from './simple_filter.vue';
 
 export default {
+  includeAllInUrl: false,
   components: {
     GlDropdownDivider,
     GlDropdownItem,

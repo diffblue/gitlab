@@ -7,6 +7,8 @@ import FilterBody from './filter_body.vue';
 import FilterItem from './filter_item.vue';
 
 export default {
+  includeAllInUrl: false,
+  urlField: 'name',
   components: { FilterBody, FilterItem },
   extends: SimpleFilter,
   apollo: {
@@ -18,13 +20,7 @@ export default {
           projectPath: this.projectFullPath,
         };
       },
-      update: (data) => {
-        const nodes = data.project?.clusterAgents?.nodes;
-        if (nodes?.length) {
-          return nodes.map((n) => ({ gid: n.id, id: n.name, name: n.name }));
-        }
-        return [];
-      },
+      update: (data) => data.project?.clusterAgents?.nodes || [],
       error() {
         createFlash({
           message: CLUSTER_FILTER_ERROR,
@@ -44,14 +40,8 @@ export default {
       return this.clusterAgents;
     },
     filterObject() {
-      // This is the object used to update the GraphQL query.
-      if (this.isNoOptionsSelected) {
-        return { clusterAgentId: [] };
-      }
-
-      const gids = this.selectedOptions.map((a) => a.gid);
-
-      return { clusterAgentId: gids };
+      // This is passed to the vulnerability list's GraphQL query as a variable.
+      return { clusterAgentId: this.selectedOptions.map((x) => x.id) };
     },
   },
   watch: {
@@ -80,7 +70,7 @@ export default {
       v-for="option in options"
       :key="option.id"
       :is-checked="isSelected(option)"
-      :text="option.id"
+      :text="option.name"
       :data-testid="`option:${option.id}`"
       @click="toggleOption(option)"
     />

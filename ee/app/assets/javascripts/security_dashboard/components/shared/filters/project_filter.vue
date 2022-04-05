@@ -27,6 +27,7 @@ const mapProjects = (projects = []) =>
 
 export default {
   name: 'ProjectFilter',
+  includeAllInUrl: false,
   components: {
     FilterBody,
     FilterItem,
