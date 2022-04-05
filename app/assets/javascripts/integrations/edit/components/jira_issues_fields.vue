@@ -115,7 +115,6 @@ export default {
             :placeholder="$options.i18n.projectKeyPlaceholder"
             :required="enableJiraIssues"
             :state="validProjectKey"
-            :disabled="!enableJiraIssues"
             :readonly="isInheriting"
           />
         </gl-form-group>
