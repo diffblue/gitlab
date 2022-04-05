@@ -94,9 +94,8 @@ module Vulnerabilities
     def initialize_scanner(scanner_hash)
       name = scanner_hash[:name]
 
-      Vulnerabilities::Scanner.find_or_initialize_by(name: name) do |s|
-        s.project = @project
-        s.external_id = scanner_hash[:id]
+      Vulnerabilities::Scanner.find_or_initialize_by(project: @project, external_id: scanner_hash[:id]) do |s|
+        s.name = name
         s.vendor = scanner_hash.dig(:vendor, :name)
       end
     end
