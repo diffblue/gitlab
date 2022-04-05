@@ -17,7 +17,7 @@ module Arkose
 
       return false if invalid_token(response)
 
-      challenge_solved?(response) && (low_risk?(response) || allowlisted?(response))
+      allowlisted?(response) || (challenge_solved?(response) && low_risk?(response))
     rescue StandardError => error
       payload = { session_token: session_token, log_data: userid }
       Gitlab::ExceptionLogFormatter.format!(error, payload)
