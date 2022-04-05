@@ -15,5 +15,21 @@ RSpec.describe Epics::RelatedEpicLinks::DestroyService do
     subject { described_class.new(issuable_link, user).execute }
 
     it_behaves_like 'a destroyable issuable link'
+
+    context 'event tracking' do
+      before do
+        issuable_link.source.resource_parent.add_reporter(user)
+        issuable_link.target.resource_parent.add_reporter(user)
+      end
+
+      context 'for relates_to link type' do
+        it 'records event for related epic link destroyed' do
+          expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter)
+            .to receive(:track_linked_epic_with_type_relates_to_removed).with(author: user).once
+
+          subject
+        end
+      end
+    end
   end
 end

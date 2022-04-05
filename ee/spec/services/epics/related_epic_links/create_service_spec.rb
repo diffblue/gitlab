@@ -54,14 +54,14 @@ RSpec.describe Epics::RelatedEpicLinks::CreateService do
     end
 
     context 'event tracking' do
-      context 'for related link type' do
+      context 'for relates_to link type' do
         it 'records event for each link created' do
           params = {
             link_type: IssuableLink::TYPE_RELATES_TO,
             issuable_references: [issuable_a, issuable3].map { |epic| epic.to_reference(issuable.group, full: true) }
           }
 
-          expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_related_added).with(author: user).twice
+          expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_linked_epic_with_type_relates_to_added).with(author: user).twice
 
           described_class.new(issuable, user, params).execute
         end
