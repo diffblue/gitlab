@@ -12,7 +12,7 @@ module Arkose
     end
 
     def execute
-      response = Gitlab::HTTP.perform_request(Net::HTTP::Post, VERIFY_URL, body: body).parsed_response
+      response = Gitlab::HTTP.perform_request(Net::HTTP::Post, arkose_verify_url, body: body).parsed_response
       logger.info(build_message(response))
 
       return false if invalid_token(response)
@@ -80,7 +80,7 @@ module Arkose
 
     def body
       {
-        private_key: Settings.arkose['private_key'],
+        private_key: arkose_private_api_key,
         session_token: session_token,
         log_data: user.id
       }
@@ -131,6 +131,14 @@ module Arkose
     def allowlisted?(response)
       telltale_list = response&.dig('session_details', 'telltale_list') || []
       telltale_list.include?(ALLOWLIST_TELLTALE)
+    end
+
+    def arkose_private_api_key
+      Gitlab::CurrentSettings.arkose_labs_private_api_key || ENV['ARKOSE_LABS_PRIVATE_KEY']
+    end
+
+    def arkose_verify_url
+      Gitlab::CurrentSettings.arkose_labs_verify_api_url || VERIFY_URL
     end
   end
 end

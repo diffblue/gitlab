@@ -6,8 +6,11 @@ RSpec.describe SessionsController, :geo do
   include DeviseHelpers
   include EE::GeoHelpers
 
+  let(:arkose_labs_public_api_key) { 'foo' }
+
   before do
     set_devise_mapping(context: @request)
+    stub_application_setting(arkose_labs_public_api_key: arkose_labs_public_api_key)
   end
 
   describe '#new' do
