@@ -10,7 +10,15 @@ RSpec.describe Jira::JqlBuilderService do
       let(:params) { {} }
 
       it 'builds jql with default ordering' do
-        expect(subject).to eq('project = PROJECT_KEY order by created DESC')
+        expect(subject).to eq('project = "PROJECT_KEY" order by created DESC')
+      end
+
+      context 'with special characters in project key' do
+        subject { described_class.new('PROJECT\\KEY"', params).execute }
+
+        it 'escapes quotes and backslashes' do
+          expect(subject).to eq(%q[project = "PROJECT\\\\KEY\"" order by created DESC])
+        end
       end
     end
 
@@ -18,14 +26,14 @@ RSpec.describe Jira::JqlBuilderService do
       let(:params) { { search: 'new issue' } }
 
       it 'builds jql' do
-        expect(subject).to eq("project = PROJECT_KEY AND (summary ~ \"new issue\" OR description ~ \"new issue\") order by created DESC")
+        expect(subject).to eq('project = "PROJECT_KEY" AND (summary ~ "new issue" OR description ~ "new issue") order by created DESC')
       end
 
       context 'search param with single qoutes' do
         let(:params) { { search: "new issue's" } }
 
         it 'builds jql' do
-          expect(subject).to eq("project = PROJECT_KEY AND (summary ~ \"new issue's\" OR description ~ \"new issue's\") order by created DESC")
+          expect(subject).to eq('project = "PROJECT_KEY" AND (summary ~ "new issue\'s" OR description ~ "new issue\'s") order by created DESC')
         end
       end
 
@@ -33,7 +41,7 @@ RSpec.describe Jira::JqlBuilderService do
         let(:params) { { search: '"one \"more iss\'ue"' } }
 
         it 'builds jql' do
-          expect(subject).to eq("project = PROJECT_KEY AND (summary ~ \"one more iss'ue\" OR description ~ \"one more iss'ue\") order by created DESC")
+          expect(subject).to eq(%q[project = "PROJECT_KEY" AND (summary ~ "one more iss'ue" OR description ~ "one more iss'ue") order by created DESC])
         end
       end
 
@@ -41,7 +49,7 @@ RSpec.describe Jira::JqlBuilderService do
         let(:params) { { search: 'issues' + Jira::JqlBuilderService::JQL_SPECIAL_CHARS.join(" AND ") } }
 
         it 'builds jql' do
-          expect(subject).to eq("project = PROJECT_KEY AND (summary ~ \"issues and and and and and and and and and and and and and and and and\" OR description ~ \"issues and and and and and and and and and and and and and and and and\") order by created DESC")
+          expect(subject).to eq('project = "PROJECT_KEY" AND (summary ~ "issues and and and and and and and and and and and and and and and and" OR description ~ "issues and and and and and and and and and and and and and and and and") order by created DESC')
         end
       end
     end
@@ -50,7 +58,7 @@ RSpec.describe Jira::JqlBuilderService do
       let(:params) { { labels: ['label1', 'label2', "\"'try\"some'more\"quote'here\""] } }
 
       it 'builds jql' do
-        expect(subject).to eq("project = PROJECT_KEY AND labels = \"label1\" AND labels = \"label2\" AND labels = \"\\\"'try\\\"some'more\\\"quote'here\\\"\" order by created DESC")
+        expect(subject).to eq(%q[project = "PROJECT_KEY" AND labels = "label1" AND labels = "label2" AND labels = "\\"'try\\"some'more\\"quote'here\\"" order by created DESC])
       end
     end
 
@@ -58,7 +66,7 @@ RSpec.describe Jira::JqlBuilderService do
       let(:params) { { status: "\"'try\"some'more\"quote'here\"" } }
 
       it 'builds jql' do
-        expect(subject).to eq("project = PROJECT_KEY AND status = \"\\\"'try\\\"some'more\\\"quote'here\\\"\" order by created DESC")
+        expect(subject).to eq(%q[project = "PROJECT_KEY" AND status = "\\"'try\\"some'more\\"quote'here\\"" order by created DESC])
       end
     end
 
@@ -66,7 +74,7 @@ RSpec.describe Jira::JqlBuilderService do
       let(:params) { { author_username: "\"'try\"some'more\"quote'here\"" } }
 
       it 'builds jql' do
-        expect(subject).to eq("project = PROJECT_KEY AND reporter = \"\\\"'try\\\"some'more\\\"quote'here\\\"\" order by created DESC")
+        expect(subject).to eq(%q[project = "PROJECT_KEY" AND reporter = "\\"'try\\"some'more\\"quote'here\\"" order by created DESC])
       end
     end
 
@@ -74,7 +82,7 @@ RSpec.describe Jira::JqlBuilderService do
       let(:params) { { assignee_username: "\"'try\"some'more\"quote'here\"" } }
 
       it 'builds jql' do
-        expect(subject).to eq("project = PROJECT_KEY AND assignee = \"\\\"'try\\\"some'more\\\"quote'here\\\"\" order by created DESC")
+        expect(subject).to eq(%q[project = "PROJECT_KEY" AND assignee = "\\"'try\\"some'more\\"quote'here\\"" order by created DESC])
       end
     end
 
@@ -82,7 +90,7 @@ RSpec.describe Jira::JqlBuilderService do
       let(:params) { { sort: 'updated', sort_direction: 'ASC' } }
 
       it 'builds jql' do
-        expect(subject).to eq('project = PROJECT_KEY order by updated ASC')
+        expect(subject).to eq('project = "PROJECT_KEY" order by updated ASC')
       end
     end
 
@@ -90,7 +98,7 @@ RSpec.describe Jira::JqlBuilderService do
       let(:params) { { state: 'opened' } }
 
       it 'builds jql' do
-        expect(subject).to eq('project = PROJECT_KEY AND statusCategory != Done order by created DESC')
+        expect(subject).to eq('project = "PROJECT_KEY" AND statusCategory != Done order by created DESC')
       end
     end
 
@@ -98,7 +106,7 @@ RSpec.describe Jira::JqlBuilderService do
       let(:params) { { state: 'closed' } }
 
       it 'builds jql' do
-        expect(subject).to eq('project = PROJECT_KEY AND statusCategory = Done order by created DESC')
+        expect(subject).to eq('project = "PROJECT_KEY" AND statusCategory = Done order by created DESC')
       end
     end
 
@@ -106,7 +114,7 @@ RSpec.describe Jira::JqlBuilderService do
       let(:params) { { state: 'all' } }
 
       it 'builds jql' do
-        expect(subject).to eq('project = PROJECT_KEY order by created DESC')
+        expect(subject).to eq('project = "PROJECT_KEY" order by created DESC')
       end
     end
 
@@ -114,7 +122,7 @@ RSpec.describe Jira::JqlBuilderService do
       let(:params) { { vulnerability_ids: %w[1 25] } }
 
       it 'builds jql' do
-        expect(subject).to eq('project = PROJECT_KEY AND (description ~ "/-/security/vulnerabilities/1" OR description ~ "/-/security/vulnerabilities/25") order by created DESC')
+        expect(subject).to eq('project = "PROJECT_KEY" AND (description ~ "/-/security/vulnerabilities/1" OR description ~ "/-/security/vulnerabilities/25") order by created DESC')
       end
     end
 
@@ -122,7 +130,7 @@ RSpec.describe Jira::JqlBuilderService do
       let(:params) { { issue_ids: %w[1 25] } }
 
       it 'builds jql' do
-        expect(subject).to eq('project = PROJECT_KEY AND (id = 1 OR id = 25) order by created DESC')
+        expect(subject).to eq('project = "PROJECT_KEY" AND (id = 1 OR id = 25) order by created DESC')
       end
     end
   end
