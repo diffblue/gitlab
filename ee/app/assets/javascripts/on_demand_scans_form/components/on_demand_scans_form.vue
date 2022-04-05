@@ -324,7 +324,6 @@ export default {
   <gl-form novalidate @submit.prevent="onSubmit()">
     <local-storage-sync
       v-if="!isEdit"
-      as-json
       :storage-key="storageKey"
       :clear="clearStorage"
       :value="formFieldValues"

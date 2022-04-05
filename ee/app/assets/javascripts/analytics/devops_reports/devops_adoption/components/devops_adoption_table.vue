@@ -140,8 +140,8 @@ export default {
 </script>
 <template>
   <div>
-    <local-storage-sync v-model="sortBy" :storage-key="$options.sortByStorageKey" as-json />
-    <local-storage-sync v-model="sortDesc" :storage-key="$options.sortDescStorageKey" as-json />
+    <local-storage-sync v-model="sortBy" :storage-key="$options.sortByStorageKey" />
+    <local-storage-sync v-model="sortDesc" :storage-key="$options.sortDescStorageKey" />
     <gl-table
       :fields="tableHeaderFields"
       :items="enabledNamespaces"

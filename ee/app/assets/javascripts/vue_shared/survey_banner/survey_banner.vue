@@ -83,7 +83,7 @@ export default {
 </script>
 
 <template>
-  <local-storage-sync v-model="surveyShowDate" :storage-key="storageKey">
+  <local-storage-sync v-model="surveyShowDate" :storage-key="storageKey" as-string>
     <gl-banner
       v-if="shouldShowSurvey"
       :title="title"
