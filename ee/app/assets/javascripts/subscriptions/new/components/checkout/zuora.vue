@@ -8,7 +8,7 @@ export default {
   components: {
     GlLoadingIcon,
   },
-  mixins: [Tracking.mixin()],
+  mixins: [Tracking.mixin({ category: 'Zuora_cc' })],
   props: {
     active: {
       type: Boolean,
@@ -60,11 +60,18 @@ export default {
         this.$emit('success');
       } else {
         this.$emit('error', response?.errorMessage);
+        this.track('error', {
+          label: 'payment_form_submitted',
+          property: response?.errorMessage,
+        });
       }
     },
     renderZuoraIframe() {
       const params = { ...this.paymentFormParams, ...ZUORA_IFRAME_OVERRIDE_PARAMS };
-      window.Z.runAfterRender(this.zuoraIframeRendered);
+      window.Z.runAfterRender(() => {
+        this.zuoraIframeRendered();
+        this.track('iframe_loaded');
+      });
       window.Z.render(params, {}, this.handleZuoraCallback);
     },
   },
