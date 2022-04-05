@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Secure', :runner do
+  RSpec.describe 'Secure', :runner, :requires_admin do
     describe 'License Compliance' do
       before(:all) do
         @project = Resource::Project.fabricate_via_api! do |project|
@@ -60,8 +60,12 @@ module QA
           Page::Project::Menu.perform(&:click_on_license_compliance)
           EE::Page::Project::Secure::LicenseCompliance.perform do |license_compliance|
             license_compliance.open_tab
-            license_compliance.approve_license(approved_license_name)
-            license_compliance.deny_license(denied_license_name)
+
+            selector = Runtime::Feature.enabled?(:lc_remove_legacy_approval_status) ? :allowed_license_radio : :approved_license_radio
+            license_compliance.approve_license(approved_license_name, selector)
+
+            selector = Runtime::Feature.enabled?(:lc_remove_legacy_approval_status) ? :denied_license_radio : :blacklisted_license_radio
+            license_compliance.deny_license(denied_license_name, selector)
           end
         end
 
