@@ -1,6 +1,6 @@
 <script>
 import { GlLink, GlTooltipDirective } from '@gitlab/ui';
-
+import { helpPagePath } from '~/helpers/help_page_helper';
 import { s__ } from '~/locale';
 import CiIcon from '~/vue_shared/components/ci_icon.vue';
 
@@ -40,13 +40,14 @@ export default {
     warning: s__('ApprovalStatusTooltip|At least one rule does not adhere to separation of duties'),
     failed: s__('ApprovalStatusTooltip|Fails to adhere to separation of duties'),
   },
+  docLink: helpPagePath('user/compliance/compliance_report/index', {
+    anchor: 'separation-of-duties',
+  }),
 };
 </script>
 
 <template>
-  <gl-link
-    href="https://docs.gitlab.com/ee/user/compliance/compliance_report/#approval-status-and-separation-of-duties"
-  >
+  <gl-link :href="$options.docLink">
     <ci-icon v-gl-tooltip.left="tooltip" class="gl-display-flex" :status="{ icon, group }" />
   </gl-link>
 </template>

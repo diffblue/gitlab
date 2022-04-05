@@ -6,7 +6,7 @@
     %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only= _('Merge request approvals')
     %button.gl-button.btn.btn-default.js-settings-toggle{ type: 'button' }= expanded ? _("Collapse") : _("Expand")
     %p
-      - duties_link_url = help_page_path('user/compliance/compliance_report/index', anchor: 'approval-status-and-separation-of-duties')
+      - duties_link_url = help_page_path('user/compliance/compliance_report/index', anchor: 'separation-of-duties')
       - link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: duties_link_url }
       = s_('MergeRequestApprovals|Define approval rules and settings to ensure %{link_start}separation of duties%{link_end} for new merge requests.').html_safe % { link_start: link_start, link_end: '</a>'.html_safe }
       = link_to _("Learn more."), help_page_path("user/project/merge_requests/approvals/index.md"), target: '_blank', rel: 'noopener noreferrer'

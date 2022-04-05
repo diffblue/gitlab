@@ -12,7 +12,7 @@ import getComplianceViolationsQuery from '../graphql/compliance_violations.query
 import { mapViolations } from '../graphql/mappers';
 import { DEFAULT_SORT, GRAPHQL_PAGE_SIZE, DEFAULT_PAGINATION_CURSORS } from '../constants';
 import { parseViolationsQueryFilter } from '../utils';
-import MergeCommitsExportButton from './merge_requests/merge_commits_export_button.vue';
+import MergeCommitsExportButton from './shared/merge_commits_export_button.vue';
 import MergeRequestDrawer from './drawer.vue';
 import ViolationReason from './violations/reason.vue';
 import ViolationFilter from './violations/filter.vue';
@@ -209,9 +209,7 @@ export default {
     next: __('Next'),
     viewDetailsBtn: __('View details'),
   },
-  documentationPath: helpPagePath('user/compliance/compliance_report/index.md', {
-    anchor: 'approval-status-and-separation-of-duties',
-  }),
+  documentationPath: helpPagePath('user/compliance/compliance_report/index.md'),
   DRAWER_Z_INDEX,
 };
 </script>

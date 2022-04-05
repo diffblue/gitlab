@@ -1,8 +1,0 @@
----
-name: compliance_violations_report
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/75015
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/346266
-milestone: '14.6'
-type: development
-group: group::compliance
-default_enabled: false
