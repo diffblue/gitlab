@@ -90,9 +90,9 @@ RSpec.describe Resolvers::IterationsResolver do
               { in: [:cadence_title] }
             ].each do |params|
               it "raises an error when 'title' is used with #{params}" do
-                expect do
+                expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ArgumentError, "'title' is deprecated in favor of 'search'. Please use 'search'.") do
                   resolve_group_iterations({ title: "foo", **params })
-                end.to raise_error(Gitlab::Graphql::Errors::ArgumentError, "'title' is deprecated in favor of 'search'. Please use 'search'.")
+                end
               end
             end
 

@@ -18,9 +18,9 @@ RSpec.describe Resolvers::Admin::CloudLicenses::SubscriptionFutureEntriesResolve
       it 'raises error' do
         unauthorized_user = create(:user)
 
-        expect do
+        expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
           resolve_entries(current_user: unauthorized_user)
-        end.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+        end
       end
     end
 

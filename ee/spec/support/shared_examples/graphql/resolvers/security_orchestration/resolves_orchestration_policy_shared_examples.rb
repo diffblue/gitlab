@@ -21,7 +21,9 @@ RSpec.shared_examples 'as an orchestration policy' do
       end
 
       it 'raises ResourceNotAvailable error' do
-        expect { resolve_scan_policies }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+        expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
+          resolve_scan_policies
+        end
       end
     end
 
@@ -38,7 +40,9 @@ RSpec.shared_examples 'as an orchestration policy' do
         let(:user) { create(:user) }
 
         it 'raises ResourceNotAvailable error' do
-          expect { resolve_scan_policies }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+          expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
+            resolve_scan_policies
+          end
         end
       end
     end
