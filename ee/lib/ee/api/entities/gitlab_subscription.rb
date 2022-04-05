@@ -10,6 +10,7 @@ module EE
           expose :trial
           expose :auto_renew
           expose :upgradable?, as: :upgradable
+          expose :exclude_guests?, as: :exclude_guests
         end
 
         expose :usage do

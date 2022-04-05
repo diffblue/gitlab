@@ -357,14 +357,17 @@ module EE
     # converting the array of user_ids to a Set which will have unique user_ids.
     override :billed_user_ids
     def billed_user_ids(requested_hosted_plan = nil)
-      exclude_guests = ([actual_plan_name, requested_hosted_plan] & [::Plan::GOLD, ::Plan::ULTIMATE, ::Plan::ULTIMATE_TRIAL]).any?
-
-      exclude_guests ? billed_user_ids_excluding_guests : billed_user_ids_including_guests
+      exclude_guests?(requested_hosted_plan) ? billed_user_ids_excluding_guests : billed_user_ids_including_guests
     end
 
     override :supports_events?
     def supports_events?
       feature_available?(:epics)
+    end
+
+    override :exclude_guests?
+    def exclude_guests?(requested_hosted_plan = nil)
+      ([actual_plan_name, requested_hosted_plan] & [::Plan::GOLD, ::Plan::ULTIMATE, ::Plan::ULTIMATE_TRIAL]).any?
     end
 
     def marked_for_deletion?

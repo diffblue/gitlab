@@ -23,6 +23,7 @@ class GitlabSubscription < ApplicationRecord
   validates :namespace_id, uniqueness: true, presence: true
 
   delegate :name, :title, to: :hosted_plan, prefix: :plan, allow_nil: true
+  delegate :exclude_guests?, to: :namespace
 
   scope :with_hosted_plan, -> (plan_name) do
     joins(:hosted_plan).where(trial: false, 'plans.name' => plan_name)
