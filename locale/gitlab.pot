@@ -43868,6 +43868,9 @@ msgstr ""
 msgid "can contain only lowercase letters, digits, and '_'."
 msgstr ""
 
+msgid "can not be changed for existing notes"
+msgstr ""
+
 msgid "can only be changed by a group admin."
 msgstr ""
 
