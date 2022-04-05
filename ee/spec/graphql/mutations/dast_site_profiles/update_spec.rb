@@ -99,6 +99,10 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
           expect(dast_site_profile.secret_variables.map(&:key)).to include(Dast::SiteProfileSecretVariable::PASSWORD)
         end
 
+        it 'returns the complete dast_site_profile' do
+          expect(subject[:dast_site_profile]).to eq(dast_site_profile)
+        end
+
         context 'when secret variables already exist' do
           let_it_be(:request_headers_variable) { create(:dast_site_profile_secret_variable, :request_headers, dast_site_profile: dast_site_profile) }
           let_it_be(:password_variable) { create(:dast_site_profile_secret_variable, :password, dast_site_profile: dast_site_profile) }
