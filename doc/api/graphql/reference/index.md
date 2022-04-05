@@ -13863,7 +13863,6 @@ Represents a package in the Package Registry. Note that this type is in beta and
 | <a id="packagetags"></a>`tags` | [`PackageTagConnection`](#packagetagconnection) | Package tags. (see [Connections](#connections)) |
 | <a id="packageupdatedat"></a>`updatedAt` | [`Time!`](#time) | Date of most recent update. |
 | <a id="packageversion"></a>`version` | [`String`](#string) | Version string. |
-| <a id="packageversions"></a>`versions` **{warning-solid}** | [`PackageConnection`](#packageconnection) | **Deprecated** in 13.11. This field is now only returned in the PackageDetailsType. |
 
 ### `PackageComposerJsonType`
 
