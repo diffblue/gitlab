@@ -216,24 +216,6 @@ RSpec.describe TrialsController, :saas do
         post_create_lead
       end
     end
-
-    context 'when posting new company information' do
-      where(trial: [true, false])
-
-      with_them do
-        let(:post_params) { { trial: trial } }
-        let(:post_service) { trial ? GitlabSubscriptions::CreateLeadService : GitlabSubscriptions::CreateHandRaiseLeadService }
-
-        it 'calls the correct service' do
-          expect_next_instance_of(post_service) do |service|
-            expect(service).to receive(:execute).and_return(ServiceResponse.success)
-          end
-
-          post :create_lead, params: post_params
-          expect(response).to have_gitlab_http_status(:ok)
-        end
-      end
-    end
   end
 
   describe '#create_hand_raise_lead' do

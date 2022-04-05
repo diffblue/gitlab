@@ -34,10 +34,10 @@ RSpec.describe 'Company Information', :js do
         "newsletter_segment" => user.email_opted_in,
         "website_url" => 'gitlab.com'
       }
+    end
 
-      lead_params = {
-        trial_user: ActionController::Parameters.new(trial_user_params).permit!
-      }
+    let(:params) { ActionController::Parameters.new(trial_user_params).permit! }
+    let(:trial_params) { { trial_user: params } }
 
       fill_in 'company_name', with: 'GitLab'
       select '1 - 99', from: 'company_size'
@@ -46,11 +46,25 @@ RSpec.describe 'Company Information', :js do
       fill_in 'website_url', with: 'gitlab.com'
       fill_in 'phone_number', with: '+1 23 456-78-90'
 
-      expect_next_instance_of(GitlabSubscriptions::CreateLeadService) do |service|
-        expect(service).to receive(:execute).with(lead_params).and_return({ success: true })
-      end
+    with_them do
+      it 'proceeds to next step' do
+        fill_in 'company_name', with: 'GitLab'
+        select '1 - 99', from: 'company_size'
+        select 'United States of America', from: 'country'
+        select 'California', from: 'state'
+        fill_in 'website_url', with: 'gitlab.com'
+        fill_in 'phone_number', with: '+1 23 456-78-90'
 
-      click_button 'Continue'
+        # defaults to trial off, click to turn on
+        click_button class: 'gl-toggle' if trial
+
+        expect_next_instance_of(post_service) do |service|
+          expect(service).to receive(:execute).with(post_params).and_return({ success: true })
+        end
+
+        click_button 'Continue'
+        expect(page).to have_current_path(new_users_sign_up_groups_project_path, ignore_query: true)
+      end
     end
   end
 end

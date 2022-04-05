@@ -27,7 +27,7 @@ module EE
 
     def create_company_form_data
       {
-        submit_path: create_lead_trials_path(glm_params),
+        submit_path: users_sign_up_company_path(glm_params),
         trial: params[:trial],
         first_name: current_user.first_name,
         last_name: current_user.last_name,
