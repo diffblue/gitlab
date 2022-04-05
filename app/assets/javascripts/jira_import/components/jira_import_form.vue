@@ -328,7 +328,7 @@ export default {
         </template>
       </gl-table-lite>
 
-      <gl-loading-icon v-if="isInitialLoadingState" size="sm" />
+      <gl-loading-icon v-if="isInitialLoadingState" size="md" />
 
       <gl-button
         v-if="hasMoreUsers"
@@ -343,7 +343,7 @@ export default {
         <gl-button
           type="submit"
           category="primary"
-          variant="success"
+          variant="confirm"
           class="js-no-auto-disable"
           :loading="isSubmitting"
           data-qa-selector="jira_issues_import_button"
