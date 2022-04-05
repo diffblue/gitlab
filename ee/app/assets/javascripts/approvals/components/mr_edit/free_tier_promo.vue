@@ -74,7 +74,6 @@ export default {
     <local-storage-sync
       v-model="userManuallyCollapsed"
       :storage-key="$options.MR_APPROVALS_PROMO_DISMISSED"
-      as-json
     />
     <template v-if="isReady">
       <p class="gl-mb-0 gl-text-gray-500">

@@ -1,7 +1,6 @@
 <script>
 import { GlToggle } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
-import { parseBoolean } from '~/lib/utils/common_utils';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 
 export default {
@@ -20,9 +19,6 @@ export default {
     onToggle(val) {
       this.setShowLabels(val);
     },
-    onStorageUpdate(val) {
-      this.setShowLabels(parseBoolean(val));
-    },
   },
 };
 </script>
@@ -30,9 +26,9 @@ export default {
 <template>
   <div class="board-labels-toggle-wrapper gl-display-flex gl-align-items-center gl-ml-3">
     <local-storage-sync
+      :value="isShowingLabels"
       storage-key="gl-show-board-labels"
-      :value="JSON.stringify(isShowingLabels)"
-      @input="onStorageUpdate"
+      @input="setShowLabels"
     />
     <gl-toggle
       :value="isShowingLabels"

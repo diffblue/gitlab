@@ -15,6 +15,7 @@ describe('Shared Survey Banner component', () => {
   let wrapper;
   const findGlBanner = () => wrapper.findComponent(GlBanner);
   const findAskLaterButton = () => wrapper.findByTestId('ask-later-button');
+  const findLocalStorageSync = () => wrapper.findComponent(LocalStorageSync);
 
   const getOffsetDateString = (days) => {
     const date = new Date();
@@ -60,6 +61,7 @@ describe('Shared Survey Banner component', () => {
 
     expect(findGlBanner().html()).toContain(description);
     expect(findAskLaterButton().exists()).toBe(true);
+    expect(findLocalStorageSync().props('asString')).toBe(true);
     expect(findGlBanner().props()).toMatchObject({
       title,
       buttonText,
