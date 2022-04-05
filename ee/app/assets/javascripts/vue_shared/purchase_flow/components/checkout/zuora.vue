@@ -13,11 +13,13 @@ import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/activate_next_step.mutation.graphql';
 import createFlash from '~/flash';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
+import Tracking from '~/tracking';
 
 export default {
   components: {
     GlLoadingIcon,
   },
+  mixins: [Tracking.mixin({ category: 'Zuora_cc' })],
   props: {
     active: {
       type: Boolean,
@@ -57,6 +59,7 @@ export default {
     zuoraIframeRendered() {
       this.isLoading = false;
       this.zuoraLoaded = true;
+      this.track('iframe_loaded');
     },
     fetchPaymentFormParams() {
       this.isLoading = true;
@@ -66,8 +69,12 @@ export default {
           this.paymentFormParams = data;
           this.renderZuoraIframe();
         })
-        .catch(() => {
+        .catch((error) => {
           createFlash({ message: ERROR_LOADING_PAYMENT_FORM });
+          this.track('error', {
+            label: 'payment_form_fetch_params',
+            property: error?.message,
+          });
         });
     },
     loadZuoraScript() {
@@ -82,7 +89,7 @@ export default {
         document.head.appendChild(this.zuoraScriptEl);
       }
     },
-    paymentFormSubmitted({ refId }) {
+    paymentFormSubmitted({ refId } = {}) {
       this.isLoading = true;
 
       return Api.fetchPaymentMethodDetails(refId)
@@ -98,10 +105,15 @@ export default {
         })
         .then((paymentMethod) => convertObjectPropsToCamelCase(paymentMethod))
         .then((paymentMethod) => this.updateState({ paymentMethod }))
+        .then(() => this.track('success'))
         .then(() => this.activateNextStep())
-        .catch((error) =>
-          createFlash({ message: GENERAL_ERROR_MESSAGE, error, captureError: true }),
-        )
+        .catch((error) => {
+          createFlash({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
+          this.track('error', {
+            label: 'payment_form_submitted',
+            property: error?.message,
+          });
+        })
         .finally(() => {
           this.isLoading = false;
         });

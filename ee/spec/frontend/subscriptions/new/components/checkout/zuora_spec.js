@@ -5,12 +5,14 @@ import Vuex from 'vuex';
 import Component from 'ee/subscriptions/new/components/checkout/zuora.vue';
 import { getStoreConfig } from 'ee/subscriptions/new/store';
 import * as types from 'ee/subscriptions/new/store/mutation_types';
+import { mockTracking } from 'helpers/tracking_helper';
 
 describe('Zuora', () => {
   Vue.use(Vuex);
 
   let store;
   let wrapper;
+  let trackingSpy;
 
   const actionMocks = {
     startLoadingZuoraScript: jest.fn(),
@@ -36,6 +38,8 @@ describe('Zuora', () => {
       },
       store,
     });
+
+    trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
   };
 
   const findLoading = () => wrapper.findComponent(GlLoadingIcon);
@@ -107,18 +111,22 @@ describe('Zuora', () => {
     });
   });
 
-  describe('renderZuoraIframe', () => {
-    it('is called when the paymentFormParams are updated', () => {
+  describe('when rendering', () => {
+    beforeEach(() => {
       createComponent();
-
-      expect(actionMocks.zuoraIframeRendered).not.toHaveBeenCalled();
-
       store.commit(types.UPDATE_PAYMENT_FORM_PARAMS, {});
+      return nextTick();
+    });
 
-      return nextTick().then(() => {
-        expect(actionMocks.zuoraIframeRendered).toHaveBeenCalled();
-        wrapper.vm.handleZuoraCallback();
-        expect(actionMocks.paymentFormSubmitted).toHaveBeenCalled();
+    it('renderZuoraIframe is called when the paymentFormParams are updated', () => {
+      expect(actionMocks.zuoraIframeRendered).toHaveBeenCalled();
+      wrapper.vm.handleZuoraCallback();
+      expect(actionMocks.paymentFormSubmitted).toHaveBeenCalled();
+    });
+
+    it('tracks frame_loaded event', () => {
+      expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'iframe_loaded', {
+        category: 'Zuora_cc',
       });
     });
   });
@@ -130,12 +138,25 @@ describe('Zuora', () => {
       expect(wrapper.emitted().success.length).toEqual(1);
     });
 
-    it('emits error with message', async () => {
-      createComponent();
-      wrapper.vm.handleZuoraCallback({ errorMessage: '1337' });
-      await nextTick();
-      expect(wrapper.emitted().error.length).toEqual(1);
-      expect(wrapper.emitted().error[0]).toEqual(['1337']);
+    describe('with an error response', () => {
+      beforeEach(() => {
+        createComponent();
+        wrapper.vm.handleZuoraCallback({ errorMessage: '1337' });
+        return nextTick();
+      });
+
+      it('emits error with message', async () => {
+        expect(wrapper.emitted().error.length).toEqual(1);
+        expect(wrapper.emitted().error[0]).toEqual(['1337']);
+      });
+
+      it('tracks Zuora error', () => {
+        expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'error', {
+          label: 'payment_form_submitted',
+          property: '1337',
+          category: 'Zuora_cc',
+        });
+      });
     });
   });
 });

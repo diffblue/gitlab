@@ -12,12 +12,14 @@ import { stateData as initialStateData } from 'ee_jest/subscriptions/mock_data';
 import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';
 import axios from '~/lib/utils/axios_utils';
 import flushPromises from 'helpers/flush_promises';
+import { mockTracking } from 'helpers/tracking_helper';
 
 Vue.use(VueApollo);
 
 describe('Zuora', () => {
   let axiosMock;
   let wrapper;
+  let trackingSpy;
 
   const createComponent = (props = {}, data = {}, apolloLocalState = {}) => {
     const apolloProvider = createMockApolloProvider(STEPS, STEPS[1], gitLabResolvers);
@@ -26,7 +28,8 @@ describe('Zuora', () => {
       data: merge({}, initialStateData, apolloLocalState),
     });
 
-    return shallowMount(Zuora, {
+    wrapper = shallowMount(Zuora, {
+      apolloProvider,
       propsData: {
         active: true,
         ...props,
@@ -35,6 +38,8 @@ describe('Zuora', () => {
         return { ...data };
       },
     });
+
+    trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
   };
 
   const findLoading = () => wrapper.findComponent(GlLoadingIcon);
@@ -50,6 +55,7 @@ describe('Zuora', () => {
 
     axiosMock = new AxiosMockAdapter(axios);
     axiosMock.onGet(`/-/subscriptions/payment_form`).reply(200, {});
+    axiosMock.onGet(`/-/subscriptions/payment_method`).reply(200, {});
   });
 
   afterEach(() => {
@@ -59,7 +65,7 @@ describe('Zuora', () => {
 
   describe('when active', () => {
     beforeEach(async () => {
-      wrapper = createComponent({}, { isLoading: false });
+      createComponent({}, { isLoading: false });
     });
 
     it('shows the loading icon', () => {
@@ -72,7 +78,7 @@ describe('Zuora', () => {
 
     describe('when toggling the loading indicator', () => {
       beforeEach(() => {
-        wrapper = createComponent({}, { isLoading: true });
+        createComponent({}, { isLoading: true });
         wrapper.vm.zuoraScriptEl.onload();
       });
 
@@ -88,7 +94,7 @@ describe('Zuora', () => {
 
   describe('when not active', () => {
     beforeEach(() => {
-      wrapper = createComponent({ active: false });
+      createComponent({ active: false });
     });
 
     it('the zuora_payment selector should not be visible', () => {
@@ -96,9 +102,90 @@ describe('Zuora', () => {
     });
   });
 
+  describe('when fetch payment params is successful', () => {
+    beforeEach(() => {
+      createComponent();
+      wrapper.vm.zuoraScriptEl.onload();
+      return flushPromises();
+    });
+
+    it('tracks frame_loaded event', () => {
+      expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'iframe_loaded', {
+        category: 'Zuora_cc',
+      });
+    });
+  });
+
+  describe('when fetch payment params is not successful', () => {
+    beforeEach(() => {
+      createComponent({}, { isLoading: false });
+      wrapper.vm.zuoraScriptEl.onload();
+      axiosMock.onGet(`/-/subscriptions/payment_form`).reply(401, {});
+      return flushPromises();
+    });
+
+    it('tracks the error event', () => {
+      expect(trackingSpy).toHaveBeenCalledTimes(1);
+      expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'error', {
+        label: 'payment_form_fetch_params',
+        property: 'Request failed with status code 401',
+        category: 'Zuora_cc',
+      });
+    });
+  });
+
+  describe('when fetch payment details is successful', () => {
+    beforeEach(() => {
+      window.Z = {
+        runAfterRender(fn) {
+          return Promise.resolve().then(fn);
+        },
+        render(params, object, fn) {
+          return Promise.resolve().then(fn);
+        },
+      };
+
+      createComponent({}, { isLoading: false });
+      wrapper.vm.zuoraScriptEl.onload();
+      return flushPromises();
+    });
+
+    it('tracks success event', () => {
+      expect(trackingSpy).toHaveBeenCalledTimes(2);
+      expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'success', { category: 'Zuora_cc' });
+    });
+  });
+
+  describe('when fetch payment details is not successful', () => {
+    beforeEach(() => {
+      window.Z = {
+        runAfterRender(fn) {
+          return Promise.resolve().then(fn);
+        },
+        render(params, object, fn) {
+          return Promise.resolve().then(fn);
+        },
+      };
+
+      createComponent({}, { isLoading: false });
+      wrapper.vm.zuoraScriptEl.onload();
+      axiosMock.onGet(`/-/subscriptions/payment_method`).reply(401, {});
+      return flushPromises();
+    });
+
+    it('tracks the error event', () => {
+      expect(trackingSpy).toHaveBeenCalledTimes(2);
+      expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'error', {
+        label: 'payment_form_submitted',
+        property: 'Request failed with status code 401',
+        category: 'Zuora_cc',
+      });
+    });
+  });
+
   describe.each(['', '111111'])('when rendering the iframe with account id: %s', (id) => {
     beforeEach(() => {
-      wrapper = createComponent({ accountId: id }, { isLoading: false });
+      createComponent({ accountId: id }, { isLoading: false });
       wrapper.vm.zuoraScriptEl.onload();
       return flushPromises();
     });
