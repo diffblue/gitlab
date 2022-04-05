@@ -12,7 +12,7 @@ import {
   GlLoadingIcon,
   GlSearchBoxByType,
   GlSprintf,
-  GlTable,
+  GlTableLite,
 } from '@gitlab/ui';
 import { debounce } from 'lodash';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
@@ -45,7 +45,7 @@ export default {
     GlLoadingIcon,
     GlSearchBoxByType,
     GlSprintf,
-    GlTable,
+    GlTableLite,
   },
   currentUsername: gon.current_username,
   dropdownLabel,
@@ -295,7 +295,7 @@ export default {
 
       <p>{{ $options.userMappingMessage }}</p>
 
-      <gl-table :fields="$options.tableConfig" :items="userMappings" fixed>
+      <gl-table-lite :fields="$options.tableConfig" :items="userMappings" fixed>
         <template #cell(arrow)>
           <gl-icon name="arrow-right" :aria-label="__('Will be mapped to')" />
         </template>
@@ -326,7 +326,7 @@ export default {
             </gl-dropdown-text>
           </gl-dropdown>
         </template>
-      </gl-table>
+      </gl-table-lite>
 
       <gl-loading-icon v-if="isInitialLoadingState" size="sm" />
 
