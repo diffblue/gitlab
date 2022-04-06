@@ -11,8 +11,8 @@ module API
     helpers ::API::Helpers::MembersHelpers
 
     {
-      group => :subgroups,
-      project => :projects
+      "group" => :subgroups,
+      "project" => :projects
     }.each do |source_type, feature_category|
       params do
         requires :id, type: String, desc: "The #{source_type} ID"
