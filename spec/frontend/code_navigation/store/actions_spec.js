@@ -10,14 +10,13 @@ describe('Code navigation actions', () => {
   const wrapTextNodes = true;
 
   describe('setInitialData', () => {
-    it('commits SET_INITIAL_DATA', (done) => {
-      testAction(
+    it('commits SET_INITIAL_DATA', () => {
+      return testAction(
         actions.setInitialData,
         { projectPath: 'test', wrapTextNodes },
         {},
         [{ type: 'SET_INITIAL_DATA', payload: { projectPath: 'test', wrapTextNodes } }],
         [],
-        done,
       );
     });
   });
@@ -59,8 +58,8 @@ describe('Code navigation actions', () => {
         ]);
       });
 
-      it('commits REQUEST_DATA_SUCCESS with normalized data', (done) => {
-        testAction(
+      it('commits REQUEST_DATA_SUCCESS with normalized data', () => {
+        return testAction(
           actions.fetchData,
           null,
           state,
@@ -82,12 +81,11 @@ describe('Code navigation actions', () => {
             },
           ],
           [],
-          done,
         );
       });
 
-      it('calls addInteractionClass with data', (done) => {
-        testAction(
+      it('calls addInteractionClass with data', () => {
+        return testAction(
           actions.fetchData,
           null,
           state,
@@ -120,9 +118,7 @@ describe('Code navigation actions', () => {
               },
               wrapTextNodes,
             });
-          })
-          .then(done)
-          .catch(done.fail);
+          });
       });
     });
 
@@ -131,14 +127,13 @@ describe('Code navigation actions', () => {
         mock.onGet(codeNavigationPath).replyOnce(500);
       });
 
-      it('dispatches requestDataError', (done) => {
-        testAction(
+      it('dispatches requestDataError', () => {
+        return testAction(
           actions.fetchData,
           null,
           state,
           [{ type: 'REQUEST_DATA' }],
           [{ type: 'requestDataError' }],
-          done,
         );
       });
     });
@@ -186,20 +181,20 @@ describe('Code navigation actions', () => {
       target = document.querySelector('.js-test');
     });
 
-    it('returns early when no data exists', (done) => {
-      testAction(actions.showDefinition, { target }, {}, [], [], done);
+    it('returns early when no data exists', () => {
+      return testAction(actions.showDefinition, { target }, {}, [], []);
     });
 
-    it('commits SET_CURRENT_DEFINITION when target is not code navitation element', (done) => {
-      testAction(actions.showDefinition, { target }, { data: {} }, [], [], done);
+    it('commits SET_CURRENT_DEFINITION when target is not code navitation element', () => {
+      return testAction(actions.showDefinition, { target }, { data: {} }, [], []);
     });
 
-    it('commits SET_CURRENT_DEFINITION with LSIF data', (done) => {
+    it('commits SET_CURRENT_DEFINITION with LSIF data', () => {
       target.classList.add('js-code-navigation');
       target.setAttribute('data-line-index', '0');
       target.setAttribute('data-char-index', '0');
 
-      testAction(
+      return testAction(
         actions.showDefinition,
         { target },
         { data: { 'index.js': { '0:0': { hover: 'test' } } } },
@@ -214,7 +209,6 @@ describe('Code navigation actions', () => {
           },
         ],
         [],
-        done,
       );
     });
 
