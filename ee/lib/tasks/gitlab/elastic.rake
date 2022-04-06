@@ -160,7 +160,15 @@ namespace :gitlab do
 
     desc "GitLab | Elasticsearch | Display which projects are not indexed"
     task projects_not_indexed: :environment do
-      not_indexed = Project.where.not(id: IndexStatus.select(:project_id).distinct)
+      not_indexed = []
+
+      Project.where.not(id: IndexStatus.select(:project_id).distinct).each_batch do |batch|
+        batch.each do |project|
+          next if !project.repository_exists? || project.empty_repo?
+
+          not_indexed << project
+        end
+      end
 
       if not_indexed.count == 0
         puts 'All projects are currently indexed'.color(:green)
@@ -271,9 +279,7 @@ namespace :gitlab do
               projects[1..500]
             end
 
-      arr.each do |p|
-        puts "Project '#{p.full_path}' (ID: #{p.id}) isn't indexed.".color(:red)
-      end
+      arr.each { |p| puts "Project '#{p.full_path}' (ID: #{p.id}) isn't indexed.".color(:red) }
 
       puts "#{arr.count} out of #{projects.count} non-indexed projects shown."
     end
