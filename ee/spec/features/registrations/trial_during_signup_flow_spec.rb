@@ -8,6 +8,7 @@ RSpec.describe 'User sees new onboarding flow', :js do
   let_it_be(:trial_fields) { ['Company name', 'Number of employees', 'Telephone number', 'Country'] }
 
   before do
+    stub_feature_flags(about_your_company_registration_flow: false)
     allow(Gitlab).to receive(:com?).and_return(true)
     sign_in(user)
     visit users_sign_up_welcome_path
