@@ -365,11 +365,6 @@ module EE
       InstanceSecurityDashboard.new(self)
     end
 
-    def owns_upgradeable_namespace?
-      !owns_paid_namespace?(plans: [::Plan::GOLD, ::Plan::ULTIMATE]) &&
-        owns_paid_namespace?(plans: [::Plan::BRONZE, ::Plan::SILVER, ::Plan::PREMIUM])
-    end
-
     # Returns the groups a user has access to, either through a membership or a project authorization
     override :authorized_groups
     def authorized_groups(with_minimal_access: true)
