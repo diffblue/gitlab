@@ -7,7 +7,7 @@ class Profiles::SlacksController < Profiles::ApplicationController
 
   layout 'application'
 
-  feature_category :users
+  feature_category :integrations
 
   def edit
     @projects = disabled_projects.inc_routes if current_user
