@@ -4,28 +4,28 @@ import * as types from '~/vuex_shared/modules/modal/mutation_types';
 
 describe('Vuex ModalModule actions', () => {
   describe('open', () => {
-    it('works', (done) => {
+    it('works', async () => {
       const data = { id: 7 };
 
-      testAction(actions.open, data, {}, [{ type: types.OPEN, payload: data }], [], done);
+      await testAction(actions.open, data, {}, [{ type: types.OPEN, payload: data }], []);
     });
   });
 
   describe('close', () => {
-    it('works', (done) => {
-      testAction(actions.close, null, {}, [{ type: types.CLOSE }], [], done);
+    it('works', async () => {
+      await testAction(actions.close, null, {}, [{ type: types.CLOSE }], []);
     });
   });
 
   describe('show', () => {
-    it('works', (done) => {
-      testAction(actions.show, null, {}, [{ type: types.SHOW }], [], done);
+    it('works', async () => {
+      await testAction(actions.show, null, {}, [{ type: types.SHOW }], []);
     });
   });
 
   describe('hide', () => {
-    it('works', (done) => {
-      testAction(actions.hide, null, {}, [{ type: types.HIDE }], [], done);
+    it('works', async () => {
+      await testAction(actions.hide, null, {}, [{ type: types.HIDE }], []);
     });
   });
 });

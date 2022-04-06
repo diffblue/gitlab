@@ -7,13 +7,22 @@ import { mockServerlessFunctions, mockMetrics } from '../mock_data';
 import { adjustMetricQuery } from '../utils';
 
 describe('ServerlessActions', () => {
+  let mock;
+
+  beforeEach(() => {
+    mock = new MockAdapter(axios);
+  });
+
+  afterEach(() => {
+    mock.restore();
+  });
+
   describe('fetchFunctions', () => {
-    it('should successfully fetch functions', (done) => {
+    it('should successfully fetch functions', async () => {
       const endpoint = '/functions';
-      const mock = new MockAdapter(axios);
       mock.onGet(endpoint).reply(statusCodes.OK, JSON.stringify(mockServerlessFunctions));
 
-      testAction(
+      await testAction(
         fetchFunctions,
         { functionsPath: endpoint },
         {},
@@ -22,68 +31,49 @@ describe('ServerlessActions', () => {
           { type: 'requestFunctionsLoading' },
           { type: 'receiveFunctionsSuccess', payload: mockServerlessFunctions },
         ],
-        () => {
-          mock.restore();
-          done();
-        },
       );
     });
 
-    it('should successfully retry', (done) => {
+    it('should successfully retry', async () => {
       const endpoint = '/functions';
-      const mock = new MockAdapter(axios);
       mock
         .onGet(endpoint)
         .reply(() => new Promise((resolve) => setTimeout(() => resolve(200), Infinity)));
 
-      testAction(
+      await testAction(
         fetchFunctions,
         { functionsPath: endpoint },
         {},
         [],
         [{ type: 'requestFunctionsLoading' }],
-        () => {
-          mock.restore();
-          done();
-        },
       );
     });
   });
 
   describe('fetchMetrics', () => {
-    it('should return no prometheus', (done) => {
+    it('should return no prometheus', async () => {
       const endpoint = '/metrics';
-      const mock = new MockAdapter(axios);
       mock.onGet(endpoint).reply(statusCodes.NO_CONTENT);
 
-      testAction(
+      await testAction(
         fetchMetrics,
         { metricsPath: endpoint, hasPrometheus: false },
         {},
         [],
         [{ type: 'receiveMetricsNoPrometheus' }],
-        () => {
-          mock.restore();
-          done();
-        },
       );
     });
 
-    it('should successfully fetch metrics', (done) => {
+    it('should successfully fetch metrics', async () => {
       const endpoint = '/metrics';
-      const mock = new MockAdapter(axios);
       mock.onGet(endpoint).reply(statusCodes.OK, JSON.stringify(mockMetrics));
 
-      testAction(
+      await testAction(
         fetchMetrics,
         { metricsPath: endpoint, hasPrometheus: true },
         {},
         [],
         [{ type: 'receiveMetricsSuccess', payload: adjustMetricQuery(mockMetrics) }],
-        () => {
-          mock.restore();
-          done();
-        },
       );
     });
   });
