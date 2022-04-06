@@ -22,6 +22,8 @@ module Gitlab
       end
 
       def dispatch_from_definition(definition, **event_data)
+        definition = definition.with_indifferent_access
+
         category ||= definition[:category]
         action ||= definition[:action]
 

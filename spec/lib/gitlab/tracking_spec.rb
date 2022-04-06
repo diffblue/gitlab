@@ -156,11 +156,15 @@ RSpec.describe Gitlab::Tracking do
     let_it_be(:definition_action) { 'definition_action' }
     let_it_be(:definition_category) { 'definition_category' }
     let_it_be(:label_description) { 'definition label description' }
-    let_it_be(:test_definition) {{ description: 'Test definition', category: definition_category, action: definition_action }}
+    let_it_be(:test_definition) {{ 'category': definition_category, 'action': definition_action }}
 
     before do
-      allow_any_instance_of(described_class).to receive(:event)
-      allow_any_instance_of(Gitlab::Tracking::Destinations::Snowplow).to receive(:event)
+      allow_next_instance_of(described_class) do |instance|
+        allow(instance).to receive(:event)
+      end
+      allow_next_instance_of(Gitlab::Tracking::Destinations::Snowplow) do |instance|
+        allow(instance).to receive(:event)
+      end
       allow(YAML).to receive(:load_file).with(Rails.root.join('config/events/filename.yml')).and_return(test_definition)
     end
 
