@@ -25,6 +25,13 @@ module EE
 
         before_action :redirect_if_test_case, only: [:show]
 
+        before_action do
+          push_force_frontend_feature_flag(
+            :iteration_cadences,
+            project&.group&.iteration_cadences_feature_flag_enabled?
+          )
+        end
+
         feature_category :team_planning, [:delete_description_version, :description_diff]
       end
 

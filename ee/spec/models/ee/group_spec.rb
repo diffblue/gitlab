@@ -2167,6 +2167,13 @@ RSpec.describe Group do
     end
   end
 
+  describe '#iteration_cadences_feature_flag_enabled?' do
+    it_behaves_like 'checks self and root ancestor feature flag' do
+      let(:feature_flag) { :iteration_cadences }
+      let(:feature_flag_method) { :iteration_cadences_feature_flag_enabled? }
+    end
+  end
+
   describe '#user_cap_reached?' do
     subject(:user_cap_reached_for_group?) { group.user_cap_reached? }
 
