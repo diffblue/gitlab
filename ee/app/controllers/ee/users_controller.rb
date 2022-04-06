@@ -8,11 +8,10 @@ module EE
     prepended do
       include GeoInstrumentation
 
-      feature_category :users, [:available_group_templates, :available_project_templates, :pipelines_quota]
-    end
-    feature_category :users, [:available_group_templates]
+      feature_category :users, [:available_group_templates, :pipelines_quota]
 
-    feature_category :source_code_management, [:available_project_templates]
+      feature_category :source_code_management, [:available_project_templates]
+    end
 
     def available_project_templates
       load_custom_project_templates
