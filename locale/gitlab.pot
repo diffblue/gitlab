@@ -22832,6 +22832,9 @@ msgstr ""
 msgid "Logs|To see the logs, deploy your code to an environment."
 msgstr ""
 
+msgid "Looks like you've reached your %{free_limit} member limit for %{strong_start}%{namespace_name}%{strong_end}"
+msgstr ""
+
 msgid "Low vulnerabilities present"
 msgstr ""
 
@@ -43023,6 +43026,9 @@ msgid "You can test your .gitlab-ci.yml in %{linkStart}CI Lint%{linkEnd}."
 msgstr ""
 
 msgid "You can view the source or %{linkStart}%{cloneIcon} clone the repository%{linkEnd}"
+msgstr ""
+
+msgid "You can't add any more, but you can manage your existing members, for example, by removing inactive members and replacing them with new members. To get more members an owner of this namespace can start a trial or upgrade to a paid tier."
 msgstr ""
 
 msgid "You cannot %{action} %{state} users."
