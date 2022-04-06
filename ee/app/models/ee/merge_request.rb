@@ -117,8 +117,8 @@ module EE
       super.concat(merge_request_approval_variables)
     end
 
-    override :mergeable?
-    def mergeable?(skip_ci_check: false, skip_discussions_check: false)
+    override :mergeable_state?
+    def mergeable_state?(skip_ci_check: false, skip_discussions_check: false)
       return false unless approved?
       return false if has_denied_policies?
       return false if merge_blocked_by_other_mrs?
