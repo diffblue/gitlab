@@ -38011,10 +38011,16 @@ msgstr ""
 msgid "There was a problem fetching the keep latest artifacts setting."
 msgstr ""
 
+msgid "There was a problem fetching the pipeline stages."
+msgstr ""
+
 msgid "There was a problem fetching the projects"
 msgstr ""
 
 msgid "There was a problem fetching users."
+msgstr ""
+
+msgid "There was a problem handling the pipeline data."
 msgstr ""
 
 msgid "There was a problem sending the confirmation email"
