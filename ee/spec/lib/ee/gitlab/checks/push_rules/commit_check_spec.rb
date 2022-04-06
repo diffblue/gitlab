@@ -191,7 +191,7 @@ RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck do
 
             expect { subject.validate! }
               .to raise_error(Gitlab::GitAccess::ForbiddenError,
-                              "You cannot push commits for '#{user_email}'. You can only push commits that were committed with one of your own verified emails.")
+                              "You cannot push commits for '#{user_email}'. You can only push commits if the committer email is one of your own verified emails.")
           end
         end
 
@@ -225,7 +225,7 @@ RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck do
 
             expect { subject.validate! }
               .to raise_error(Gitlab::GitAccess::ForbiddenError,
-                              "You cannot push commits for 'some@mail.com'. You can only push commits that were committed with one of your own verified emails.")
+                              "You cannot push commits for 'some@mail.com'. You can only push commits if the committer email is one of your own verified emails.")
           end
         end
       end

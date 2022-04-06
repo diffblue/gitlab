@@ -13,7 +13,7 @@ module PushRulesHelper
 
   def commit_committer_check_description(push_rule)
     message = s_("ProjectSettings|Users can only push commits to this repository "\
-                 "that were committed with one of their own verified emails.")
+                 "if the committer email is one of their own verified emails.")
 
     push_rule_update_description(message, push_rule, :commit_committer_check)
   end

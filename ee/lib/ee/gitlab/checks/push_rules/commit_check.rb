@@ -7,7 +7,7 @@ module EE
         class CommitCheck < ::Gitlab::Checks::BaseSingleChecker
           ERROR_MESSAGES = {
             committer_not_verified: "Committer email '%{committer_email}' is not verified.",
-            committer_not_allowed: "You cannot push commits for '%{committer_email}'. You can only push commits that were committed with one of your own verified emails."
+            committer_not_allowed: "You cannot push commits for '%{committer_email}'. You can only push commits if the committer email is one of your own verified emails."
           }.freeze
 
           LOG_MESSAGE = "Checking if commits follow defined push rules..."
