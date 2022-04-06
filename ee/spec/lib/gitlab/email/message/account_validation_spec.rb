@@ -9,7 +9,7 @@ RSpec.describe Gitlab::Email::Message::AccountValidation do
 
   subject(:message) { described_class.new(pipeline) }
 
-  it 'contains the correct message', :aggregate_failures do
+  it 'contains the correct message', :aggregate_failures, :saas do
     expect(message.subject_line).to eq 'Fix your pipelines by validating your account'
     expect(message.title).to eq "Looks like you’ll need to validate your account to use free CI/CD minutes"
     expect(message.body_line1).to eq "In order to use free CI/CD minutes on shared runners, you'll need to validate your account using one of our verification options. If you prefer not to, you can run pipelines by bringing your own runners and disabling shared runners for your project."
