@@ -9,6 +9,8 @@ module API
 
     helpers Helpers::GroupsHelpers
 
+    feature_category :subgroups, ['/groups/:id/custom_attributes', '/groups/:id/custom_attributes/:key']
+
     helpers do
       params :statistics_params do
         optional :statistics, type: Boolean, default: false, desc: 'Include project statistics'
