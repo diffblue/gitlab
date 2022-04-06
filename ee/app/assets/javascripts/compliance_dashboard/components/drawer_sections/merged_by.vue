@@ -34,8 +34,10 @@ export default {
 <template>
   <div>
     <drawer-section-header>{{ $options.i18n.header }}</drawer-section-header>
+    <!-- The key attribute is required so that the node updates when the user changes, which in turn updates the user popover event. -->
     <gl-avatar-link
       v-if="hasMergedBy"
+      :key="mergedBy.id"
       :title="mergedBy.name"
       :href="mergedBy.web_url"
       class="js-user-link"

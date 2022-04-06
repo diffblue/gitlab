@@ -55,8 +55,9 @@ RSpec.describe 'Compliance Dashboard', :js do
   end
 
   context 'when there are merge requests' do
-    let_it_be(:merge_request) { create(:merge_request, source_project: project, state: :merged, merge_commit_sha: 'b71a6483b96dc303b66fdcaa212d9db6b10591ce') }
-    let_it_be(:merge_request_2) { create(:merge_request, source_project: project_2, state: :merged, merge_commit_sha: '24327319d067f4101cd3edd36d023ab5e49a8579') }
+    let_it_be(:user_2) { create(:user) }
+    let_it_be(:merge_request) { create(:merge_request, source_project: project, state: :merged, author: user, merge_commit_sha: 'b71a6483b96dc303b66fdcaa212d9db6b10591ce') }
+    let_it_be(:merge_request_2) { create(:merge_request, source_project: project_2, state: :merged, author: user_2, merge_commit_sha: '24327319d067f4101cd3edd36d023ab5e49a8579') }
 
     context 'chain of custody report' do
       it_behaves_like 'exports a merge commit-specific CSV'
@@ -87,6 +88,24 @@ RSpec.describe 'Compliance Dashboard', :js do
         expect(first_row).to have_content(merge_request_2.title)
       end
 
+      it 'shows the correct user avatar popover content when the drawer is switched', :aggregate_failures do
+        first_row.click
+        drawer_user_avatar.hover
+
+        within '.popover' do
+          expect(page).to have_content(user.name)
+          expect(page).to have_content(user.username)
+        end
+
+        second_row.click
+        drawer_user_avatar.hover
+
+        within '.popover' do
+          expect(page).to have_content(user_2.name)
+          expect(page).to have_content(user_2.username)
+        end
+      end
+
       context 'violations filter' do
         it 'can filter by date range' do
           set_date_range(7.days.ago.to_date, 6.days.ago.to_date)
@@ -107,6 +126,16 @@ RSpec.describe 'Compliance Dashboard', :js do
 
   def first_row
     find('tbody tr', match: :first)
+  end
+
+  def second_row
+    all('tbody tr')[1]
+  end
+
+  def drawer_user_avatar
+    page.within('.gl-drawer') do
+      first('.js-user-link')
+    end
   end
 
   def set_date_range(start_date, end_date)
