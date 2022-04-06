@@ -240,10 +240,8 @@ describe('Iteration Form', () => {
 
       await waitForPromises();
 
-      // There is no good way to test these from the UI output
-      // as we can't reliably set arbitrary timezone.
-      expect(wrapper.vm.startDate.getTimezoneOffset()).toBe(0);
-      expect(wrapper.vm.dueDate.getTimezoneOffset()).toBe(0);
+      expect(findStartDate().props('value').getTimezoneOffset()).toBe(0);
+      expect(findDueDate().props('value').getTimezoneOffset()).toBe(0);
     });
 
     it('prefills form fields', async () => {
