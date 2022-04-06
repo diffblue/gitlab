@@ -21,5 +21,9 @@ FactoryBot.define do
     trait :with_dast_site_validation do
       dast_site { association :dast_site, :with_dast_site_validation, project: project }
     end
+
+    trait :with_dast_submit_field do
+      auth_submit_field { 'css:button[type="submit"]' }
+    end
   end
 end
