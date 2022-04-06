@@ -5,7 +5,7 @@ import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import createStore from '~/vue_shared/components/metric_images/store';
-import service from './service.js';
+import service from './service';
 import AlertDetails from './components/alert_details.vue';
 import { PAGE_CONFIG } from './constants';
 import sidebarStatusQuery from './graphql/queries/alert_sidebar_status.query.graphql';

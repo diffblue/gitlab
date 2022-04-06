@@ -10,9 +10,6 @@ import {
   GlTab,
   GlButton,
   GlSafeHtmlDirective,
-  GlFormGroup,
-  GlFormInput,
-  GlModal,
 } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
 import * as Sentry from '@sentry/browser';
@@ -44,15 +41,6 @@ export default {
     ),
     reportedAt: s__('AlertManagement|Reported %{when}'),
     reportedAtWithTool: s__('AlertManagement|Reported %{when} by %{tool}'),
-    modalUpload: __('Upload'),
-    modalCancel: __('Cancel'),
-    modalTitle: s__('Incidents|Add image details'),
-    modalDescription: s__(
-      "Incidents|Add text or a link to display with your image. If you don't add either, the file name displays instead.",
-    ),
-    dropDescription: s__(
-      'Incidents|Drop or %{linkStart}upload%{linkEnd} a metric screenshot to attach it to the alert',
-    ),
   },
   directives: {
     SafeHtml: GlSafeHtmlDirective,
@@ -83,13 +71,10 @@ export default {
     GlSprintf,
     GlTab,
     GlTabs,
-    GlFormGroup,
-    GlFormInput,
     GlButton,
     TimeAgoTooltip,
     AlertSidebar,
     SystemNote,
-    GlModal,
     MetricImagesTab,
   },
   inject: {
@@ -149,25 +134,9 @@ export default {
       createIncidentError: '',
       incidentCreationInProgress: false,
       sidebarErrorMessage: '',
-      currentFiles: [],
-      modalVisible: false,
-      modalUrl: '',
-      modalUrlText: '',
     };
   },
   computed: {
-    ...mapState(['metricImages', 'isLoadingMetricImages', 'isUploadingImage']),
-    actionPrimaryProps() {
-      return {
-        text: this.$options.i18n.modalUpload,
-        attributes: {
-          loading: this.isUploadingImage,
-          disabled: this.isUploadingImage,
-          category: 'primary',
-          variant: 'confirm',
-        },
-      };
-    },
     loading() {
       return this.$apollo.queries.alert.loading;
     },
@@ -214,30 +183,6 @@ export default {
     });
   },
   methods: {
-    clearInputs() {
-      this.modalVisible = false;
-      this.modalUrl = '';
-      this.modalUrlText = '';
-      this.currentFile = false;
-    },
-    openMetricDialog(files) {
-      this.modalVisible = true;
-      this.currentFiles = files;
-    },
-    async onUpload() {
-      try {
-        await this.uploadImage({
-          files: this.currentFiles,
-          url: this.modalUrl,
-          urlText: this.modalUrlText,
-        });
-        // Error case handled within action
-      } catch (error) {
-        throw Error(error);
-      } finally {
-        this.clearInputs();
-      }
-    },
     dismissError() {
       this.isErrorDismissed = true;
       this.sidebarErrorMessage = '';

@@ -12,6 +12,7 @@ import AlertSummaryRow from '~/vue_shared/alert_details/components/alert_summary
 import { PAGE_CONFIG, SEVERITY_LEVELS } from '~/vue_shared/alert_details/constants';
 import createIssueMutation from '~/vue_shared/alert_details/graphql/mutations/alert_issue_create.mutation.graphql';
 import AlertDetailsTable from '~/vue_shared/components/alert_details_table.vue';
+import MetricImagesTab from '~/vue_shared/components/metric_images/metric_images_tab.vue';
 import mockAlerts from './mocks/alerts.json';
 
 const mockAlert = mockAlerts[0];
@@ -25,6 +26,8 @@ describe('AlertDetails', () => {
   const projectPath = 'root/alerts';
   const projectIssuesPath = 'root/alerts/-/issues';
   const projectId = '1';
+  const iid = '1';
+  const canUpdate = true;
   const $router = { replace: jest.fn() };
 
   function mountComponent({
@@ -41,6 +44,8 @@ describe('AlertDetails', () => {
           projectPath,
           projectIssuesPath,
           projectId,
+          iid,
+          canUpdate,
           ...provide,
         },
         data() {
@@ -91,7 +96,7 @@ describe('AlertDetails', () => {
   const findEnvironmentName = () => wrapper.findByTestId('environmentName');
   const findEnvironmentPath = () => wrapper.findByTestId('environmentPath');
   const findDetailsTable = () => wrapper.findComponent(AlertDetailsTable);
-  const findMetricsTab = () => wrapper.findByTestId('metrics');
+  const findMetricsTab = () => wrapper.findByTestId('metrics-tab');
 
   describe('Alert details', () => {
     describe('when alert is null', () => {
