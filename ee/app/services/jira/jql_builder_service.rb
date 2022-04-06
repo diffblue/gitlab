@@ -55,7 +55,7 @@ module Jira
     end
 
     def by_project
-      "project = #{jira_project_key}"
+      %Q[project = "#{escape_quotes(jira_project_key)}"]
     end
 
     def by_labels
