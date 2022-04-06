@@ -245,8 +245,8 @@ class PagesDomain < ApplicationRecord
   def validate_pages_domain
     return unless domain
 
-    if domain.downcase.ends_with?(".#{Settings.pages.host.downcase}") || domain.casecmp(Settings.pages.host) == 0
-      self.errors.add(:domain, "#{Settings.pages.host} and its subdomains cannot be used as custom pages domains. Please compare our documentation at https://docs.gitlab.com/ee/administration/pages/#advanced-configuration against your configuration.")
+    if domain.downcase.ends_with?(".#{Settings.pages.host.downcase}")
+      self.errors.add(:domain, "Subdomains of the Pages root domain (#{Settings.pages.host}) are reserved and cannot be used as custom pages domains.")
     end
   end
 
