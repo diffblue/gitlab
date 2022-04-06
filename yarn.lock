@@ -1005,15 +1005,15 @@
     stylelint-declaration-strict-value "1.8.0"
     stylelint-scss "4.1.0"
 
-"@gitlab/svgs@2.6.0":
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/@gitlab/svgs/-/svgs-2.6.0.tgz#49f020b0a732f5df01138bd21b610a0a940badd6"
-  integrity sha512-jI8CHlrriePtUsognRkpZQWVsZe7ZjytmKakeYyU1aKvsnJ4fAeySlVkCAiqKbbZm3T/eeH/6b3jxHn24U0k0Q==
+"@gitlab/svgs@2.8.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@gitlab/svgs/-/svgs-2.8.0.tgz#b32f3672d9cffa2d59f5edb6828ae931a36d220f"
+  integrity sha512-N1D6q5xKze3HwPMjLnsXMZOPQGX4CT+jEQgZYkB8akVx/rqT/YSZ9pZaxWoRdq1Tiwi9B2ArctopRgNiN8fqdw==
 
-"@gitlab/ui@38.0.1":
-  version "38.0.1"
-  resolved "https://registry.yarnpkg.com/@gitlab/ui/-/ui-38.0.1.tgz#73767792f6e27791f84899dbe29b09547ecd8004"
-  integrity sha512-y83h2JsFypuvx1P3BFB7iEbusv/tc/jx3CkEEFY9N8/P25Fs3F3wcYChhlYZ2V1VX0wwEHzBV9cvPIGcmAGNMA==
+"@gitlab/ui@38.6.0":
+  version "38.6.0"
+  resolved "https://registry.yarnpkg.com/@gitlab/ui/-/ui-38.6.0.tgz#e7f3e61c2eb40aa216bcd5b880edee2ac0fab321"
+  integrity sha512-ItD+zFGShHvrQAg/jg4zwh+S+RhNMR8xdUJXlXSlMdiZEnex6KuV+pOq3Ts4bCFF7CC9VaQISiKVMHYbaSoejg==
   dependencies:
     "@babel/standalone" "^7.0.0"
     bootstrap-vue "2.20.1"
