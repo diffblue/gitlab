@@ -35,6 +35,12 @@ module EE
         .includes(:user)
         .order(:user_id, :invite_email)
       end
+
+      scope :awaiting_without_invites_and_requests, -> do
+        active
+          .awaiting
+          .non_invite
+      end
     end
 
     override :notification_service

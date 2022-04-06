@@ -382,6 +382,8 @@ RSpec.describe API::Members do
       end
     end
 
+    let_it_be(:awaiting_user) { create(:group_member, :awaiting, group: group, user: create(:user)).user }
+
     describe 'GET /groups/:id/billable_members' do
       let(:url) { "/groups/#{group.id}/billable_members" }
       let(:params) { {} }
@@ -460,6 +462,16 @@ RSpec.describe API::Members do
 
               expect_paginated_array_response(*[linked_group_user, nested_user].map(&:id))
             end
+          end
+        end
+
+        context 'with include_awaiting_members is true' do
+          let(:params) { { include_awaiting_members: true } }
+
+          it 'includes awaiting users' do
+            get_billable_members
+
+            expect_paginated_array_response(*[owner, maintainer, nested_user, awaiting_user, project_user, linked_group_user].map(&:id))
           end
         end
       end

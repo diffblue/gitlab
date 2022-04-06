@@ -117,6 +117,7 @@ module EE
             use :pagination
             optional :search, type: String, desc: 'The exact name of the subscribed member'
             optional :sort, type: String, desc: 'The sorting option', values: Helpers::MembersHelpers.member_sort_options
+            optional :include_awaiting_members, type: Grape::API::Boolean, desc: 'Determines if awaiting members are included', default: false
           end
           get ":id/billable_members" do
             group = find_group!(params[:id])
@@ -127,8 +128,9 @@ module EE
             sorting = params[:sort] || 'id_asc'
 
             result = BilledUsersFinder.new(group,
-                                             search_term: params[:search],
-                                             order_by: sorting).execute
+                                            search_term: params[:search],
+                                            order_by: sorting,
+                                            include_awaiting_members: params[:include_awaiting_members]).execute
 
             present paginate(result[:users]),
                     with: ::EE::API::Entities::BillableMember,
