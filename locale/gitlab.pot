@@ -969,9 +969,6 @@ msgstr[1] ""
 msgid "%{service_ping_link_start}What information is shared with GitLab Inc.?%{service_ping_link_end}"
 msgstr ""
 
-msgid "%{size} %{unit}"
-msgstr ""
-
 msgid "%{size} GiB"
 msgstr ""
 
@@ -40445,6 +40442,9 @@ msgstr ""
 msgid "UsageQuota|Buy additional minutes"
 msgstr ""
 
+msgid "UsageQuota|Buy storage"
+msgstr ""
+
 msgid "UsageQuota|CI minutes usage by month"
 msgstr ""
 
@@ -40475,10 +40475,10 @@ msgstr ""
 msgid "UsageQuota|LFS storage"
 msgstr ""
 
-msgid "UsageQuota|Learn more about excess storage usage"
+msgid "UsageQuota|Learn more about usage quotas."
 msgstr ""
 
-msgid "UsageQuota|Learn more about usage quotas"
+msgid "UsageQuota|Namespace storage used"
 msgstr ""
 
 msgid "UsageQuota|No CI minutes usage data available."
@@ -40499,7 +40499,10 @@ msgstr ""
 msgid "UsageQuota|Purchase more storage"
 msgstr ""
 
-msgid "UsageQuota|Purchased storage available"
+msgid "UsageQuota|Purchased storage"
+msgstr ""
+
+msgid "UsageQuota|Purchased storage used"
 msgstr ""
 
 msgid "UsageQuota|Repository"
@@ -40526,22 +40529,10 @@ msgstr ""
 msgid "UsageQuota|Storage used"
 msgstr ""
 
-msgid "UsageQuota|This is the total amount of storage used across your projects within this namespace."
-msgstr ""
-
-msgid "UsageQuota|This is the total amount of storage used by projects above the free %{actualRepositorySizeLimit} storage limit."
-msgstr ""
-
 msgid "UsageQuota|This namespace contains locked projects"
 msgstr ""
 
 msgid "UsageQuota|This namespace has no projects which use shared runners"
-msgstr ""
-
-msgid "UsageQuota|Total excess storage used"
-msgstr ""
-
-msgid "UsageQuota|Total namespace storage used"
 msgstr ""
 
 msgid "UsageQuota|Unlimited"

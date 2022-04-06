@@ -5,6 +5,7 @@ import {
   calculateUsedAndRemStorage,
   parseGetProjectStorageResults,
   descendingStorageUsageSort,
+  formatSizeAndSplit,
 } from 'ee/usage_quotas/storage/utils';
 import {
   projectData,
@@ -78,6 +79,11 @@ describe('formatUsageSize', () => {
   `('returns $expected from $input', ({ input, expected }) => {
     expect(formatUsageSize(input)).toBe(expected);
   });
+
+  it('render the output with unit separator when unitSeparator param is passed', () => {
+    expect(formatUsageSize(1000, '-')).toBe('1.0-KiB');
+    expect(formatUsageSize(1000, ' ')).toBe('1.0 KiB');
+  });
 });
 
 describe('calculateUsedAndRemStorage', () => {
@@ -130,5 +136,15 @@ describe('descendingStorageUsageSort', () => {
 
     const expectedSorted = [{ k: 3 }, { k: 2 }, { k: 1 }];
     expect(sorted).toEqual(expectedSorted);
+  });
+});
+
+describe('formatSizeAndSplit', () => {
+  it('returns null if passed parameter is null', () => {
+    expect(formatSizeAndSplit(null)).toBe(null);
+  });
+
+  it('returns formatted size as object { value, unit }', () => {
+    expect(formatSizeAndSplit(1000)).toEqual({ value: '1.0', unit: 'KiB' });
   });
 });
