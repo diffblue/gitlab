@@ -52,6 +52,10 @@ describe('RoadmapApp', () => {
   };
 
   const findSettingsSidebar = () => wrapper.findByTestId('roadmap-settings');
+  const findEpicsListEmpty = () => wrapper.findComponent(EpicsListEmpty);
+  const findGlLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findRoadmapFilters = () => wrapper.findComponent(RoadmapFilters);
+  const findRoadmapShell = () => wrapper.findComponent(RoadmapShell);
 
   beforeEach(() => {
     store = createStore();
@@ -87,15 +91,15 @@ describe('RoadmapApp', () => {
       });
 
       it(`loading icon is${showLoading ? '' : ' not'} shown`, () => {
-        expect(wrapper.find(GlLoadingIcon).exists()).toBe(showLoading);
+        expect(findGlLoadingIcon().exists()).toBe(showLoading);
       });
 
       it(`roadmap is${showRoadmapShell ? '' : ' not'} shown`, () => {
-        expect(wrapper.find(RoadmapShell).exists()).toBe(showRoadmapShell);
+        expect(findRoadmapShell().exists()).toBe(showRoadmapShell);
       });
 
       it(`empty state view is${showEpicsListEmpty ? '' : ' not'} shown`, () => {
-        expect(wrapper.find(EpicsListEmpty).exists()).toBe(showEpicsListEmpty);
+        expect(findEpicsListEmpty().exists()).toBe(showEpicsListEmpty);
       });
     },
   );
@@ -107,7 +111,7 @@ describe('RoadmapApp', () => {
     });
 
     it('shows epic-list-empty component', () => {
-      const epicsListEmpty = wrapper.findComponent(EpicsListEmpty);
+      const epicsListEmpty = findEpicsListEmpty();
       expect(epicsListEmpty.exists()).toBe(true);
       expect(epicsListEmpty.props()).toMatchObject({
         emptyStateIllustrationPath,
@@ -133,17 +137,17 @@ describe('RoadmapApp', () => {
 
       await nextTick();
 
-      expect(wrapper.findComponent(RoadmapFilters).exists()).toBe(false);
+      expect(findRoadmapFilters().exists()).toBe(false);
     });
 
     it('shows roadmap filters UI when epicIid is not present', () => {
       // By default, `epicIid` is not set on store.
-      expect(wrapper.findComponent(RoadmapFilters).exists()).toBe(true);
+      expect(findRoadmapFilters().exists()).toBe(true);
     });
 
     it('shows roadmap-shell component', () => {
-      const roadmapShell = wrapper.findComponent(RoadmapShell);
-      expect(wrapper.find(RoadmapShell).exists()).toBe(true);
+      const roadmapShell = findRoadmapShell();
+      expect(roadmapShell.exists()).toBe(true);
       expect(roadmapShell.props()).toMatchObject({
         currentGroupId,
         epics,
