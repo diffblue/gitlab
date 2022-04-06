@@ -5,7 +5,7 @@ export const cachedData = new Map();
 export const getCurrentHoverElement = () => cachedData.get('current');
 export const setCurrentHoverElement = (el) => cachedData.set('current', el);
 
-export const addInteractionClass = (path, d, wrapTextNodes) => {
+export const addInteractionClass = ({ path, d, wrapTextNodes }) => {
   const lineNumber = d.start_line + 1;
   const lines = document
     .querySelector(`[data-path="${path}"]`)

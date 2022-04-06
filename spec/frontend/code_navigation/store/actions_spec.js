@@ -111,15 +111,15 @@ describe('Code navigation actions', () => {
           [],
         )
           .then(() => {
-            expect(addInteractionClass).toHaveBeenCalledWith(
-              'index.js',
-              {
+            expect(addInteractionClass).toHaveBeenCalledWith({
+              path: 'index.js',
+              d: {
                 start_line: 0,
                 start_char: 0,
                 hover: { value: '123' },
               },
               wrapTextNodes,
-            );
+            });
           })
           .then(done)
           .catch(done.fail);
@@ -157,8 +157,12 @@ describe('Code navigation actions', () => {
 
       expect(addInteractionClass).toHaveBeenCalled();
       expect(addInteractionClass.mock.calls.length).toBe(2);
-      expect(addInteractionClass.mock.calls[0]).toEqual(['index.js', 'test', wrapTextNodes]);
-      expect(addInteractionClass.mock.calls[1]).toEqual(['index.js', 'console.log', wrapTextNodes]);
+      expect(addInteractionClass.mock.calls[0]).toEqual([
+        { path: 'index.js', d: 'test', wrapTextNodes },
+      ]);
+      expect(addInteractionClass.mock.calls[1]).toEqual([
+        { path: 'index.js', d: 'console.log', wrapTextNodes },
+      ]);
     });
 
     it('does not call addInteractionClass when no data exists', () => {
