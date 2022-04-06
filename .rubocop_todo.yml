@@ -343,13 +343,6 @@ Style/AccessorGrouping:
 Style/BarePercentLiterals:
   Enabled: false
 
-# Offense count: 6
-# Cop supports --auto-correct.
-Style/BisectedAttrAccessor:
-  Exclude:
-    - 'lib/system_check/base_check.rb'
-    - 'qa/qa/resource/api_fabricator.rb'
-
 # Offense count: 42
 # Cop supports --auto-correct.
 Style/CaseLikeIf:
