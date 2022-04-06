@@ -537,10 +537,13 @@ RSpec.describe Epics::UpdateService do
       let(:parent) { group }
     end
 
-    it_behaves_like 'broadcasting issuable labels updates' do
-      let(:label_a) { create(:group_label, group: group) }
-      let(:label_b) { create(:group_label, group: group) }
+    context 'labels are updated' do
+      let(:label_a) { create(:group_label, title: 'a', group: group) }
+      let(:label_b) { create(:group_label, title: 'b', group: group) }
       let(:issuable) { epic }
+
+      it_behaves_like 'keeps issuable labels sorted after update'
+      it_behaves_like 'broadcasting issuable labels updates'
 
       def update_issuable(update_params)
         update_epic(update_params)
