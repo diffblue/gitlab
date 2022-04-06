@@ -7621,6 +7621,11 @@ msgstr ""
 msgid "Clear"
 msgstr ""
 
+msgid "Clear %{count} image from cache?"
+msgid_plural "Clear %{count} images from cache?"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "Clear all repository checks"
 msgstr ""
 
@@ -12155,7 +12160,13 @@ msgstr ""
 msgid "Dependency list"
 msgstr ""
 
+msgid "DependencyProxy|All items in the cache are scheduled for removal."
+msgstr ""
+
 msgid "DependencyProxy|Cached %{time}"
+msgstr ""
+
+msgid "DependencyProxy|Clear cache"
 msgstr ""
 
 msgid "DependencyProxy|Clear the Dependency Proxy cache automatically"
@@ -42726,6 +42737,11 @@ msgstr ""
 
 msgid "You are about to add %{usersTag} people to the discussion. They will all receive a notification."
 msgstr ""
+
+msgid "You are about to clear %{count} image from the cache. Once you confirm, the next time a pipeline runs it must pull an image or tag from Docker Hub. Are you sure?"
+msgid_plural "You are about to clear %{count} images from the cache. Once you confirm, the next time a pipeline runs it must pull an image or tag from Docker Hub. Are you sure?"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "You are about to delete this forked project containing:"
 msgstr ""
