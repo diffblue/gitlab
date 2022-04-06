@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe "User registration", :js, :saas do
+  include AfterNextHelpers
+
   let_it_be(:user) { create(:user) }
 
   before do
@@ -155,24 +157,22 @@ RSpec.describe "User registration", :js, :saas do
           before do
             click_button class: 'gl-toggle'
 
-            expect_next_instance_of(GitlabSubscriptions::CreateLeadService) do |service|
-              expect(service).to receive(:execute).with(
-                trial_user: ActionController::Parameters.new(
-                  company_name: '',
-                  company_size: '',
-                  phone_number: '',
-                  country: '',
-                  website_url: '',
-                  work_email: user.email,
-                  uid: user.id,
-                  setup_for_company: true,
-                  skip_email_confirmation: true,
-                  gitlab_com_trial: true,
-                  provider: 'gitlab',
-                  newsletter_segment: true
-                ).permit!
-              ).and_return(success: true)
-            end
+            expect_next(GitlabSubscriptions::CreateLeadService).to receive(:execute).with(
+              trial_user: ActionController::Parameters.new(
+                company_name: '',
+                company_size: '',
+                phone_number: '',
+                country: '',
+                website_url: '',
+                work_email: user.email,
+                uid: user.id,
+                setup_for_company: true,
+                skip_email_confirmation: true,
+                gitlab_com_trial: true,
+                provider: 'gitlab',
+                newsletter_segment: true
+              ).permit!
+            ).and_return(success: true)
 
             click_on 'Continue'
           end
@@ -183,18 +183,16 @@ RSpec.describe "User registration", :js, :saas do
             fill_in 'group_name', with: 'Test Group'
             fill_in 'blank_project_name', with: 'Test Project'
 
-            expect_next_instance_of(GitlabSubscriptions::CreateLeadService) do |service|
-              expect(service).to receive(:execute).with(
-                uid: user.id,
-                trial_user:
-                  ActionController::Parameters.new(
-                    namespace_id: Namespace.maximum(:id).to_i + 1,
-                    trial_entity: 'company',
-                    gitlab_com_trial: true,
-                    sync_to_gl: true
-                  ).permit!
-              ).and_return(success: true)
-            end
+            expect_next(GitlabSubscriptions::CreateLeadService).to receive(:execute).with(
+              uid: user.id,
+              trial_user:
+                ActionController::Parameters.new(
+                  namespace_id: Namespace.maximum(:id).to_i + 1,
+                  trial_entity: 'company',
+                  gitlab_com_trial: true,
+                  sync_to_gl: true
+                ).permit!
+            ).and_return(success: true)
 
             click_on 'Create project'
 
