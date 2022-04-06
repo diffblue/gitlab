@@ -42655,6 +42655,9 @@ msgstr ""
 msgid "WorkItem|Type"
 msgstr ""
 
+msgid "WorkItem|Work Item"
+msgstr ""
+
 msgid "WorkItem|Work Items"
 msgstr ""
 
