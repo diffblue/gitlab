@@ -15,12 +15,9 @@ RSpec.describe Gitlab::BackgroundMigration::PopulateNamespaceStatistics do
   let(:repo_size) { 123456 }
   let(:expected_repo_size) { repo_size.megabytes }
   let(:ids) { namespaces.pluck(:id) }
-  let(:migration) { described_class.new }
   let(:statistics) { [] }
 
-  subject do
-    migration.perform(ids, statistics)
-  end
+  subject(:perform) { described_class.new.perform(ids, statistics) }
 
   before do
     allow_next(Repository).to receive(:size).and_return(repo_size)
@@ -28,7 +25,7 @@ RSpec.describe Gitlab::BackgroundMigration::PopulateNamespaceStatistics do
 
   context 'when group wikis are not enabled' do
     it 'does not update wiki stats' do
-      subject
+      perform
 
       expect(namespace_statistics.where(wiki_size: 0).count).to eq 2
     end
@@ -42,7 +39,7 @@ RSpec.describe Gitlab::BackgroundMigration::PopulateNamespaceStatistics do
     expect(Namespaces::ScheduleAggregationWorker).to receive(:perform_async).with(group1.id)
     expect(Namespaces::ScheduleAggregationWorker).to receive(:perform_async).with(group2.id)
 
-    subject
+    perform
 
     expect(namespace_statistics.count).to eq 2
 
@@ -58,7 +55,7 @@ RSpec.describe Gitlab::BackgroundMigration::PopulateNamespaceStatistics do
     it 'calls the statistics update service with just that stat' do
       expect(Groups::UpdateStatisticsService).to receive(:new).with(anything, statistics: [:wiki_size]).twice.and_call_original
 
-      subject
+      perform
     end
   end
 end
