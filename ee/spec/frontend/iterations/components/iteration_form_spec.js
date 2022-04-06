@@ -235,6 +235,17 @@ describe('Iteration Form', () => {
       expect(findPageTitle().text()).toBe('Edit iteration');
     });
 
+    it('parses dates without adding timezone offsets', async () => {
+      createComponent();
+
+      await waitForPromises();
+
+      // There is no good way to test these from the UI output
+      // as we can't reliably set arbitrary timezone.
+      expect(wrapper.vm.startDate.getTimezoneOffset()).toBe(0);
+      expect(wrapper.vm.dueDate.getTimezoneOffset()).toBe(0);
+    });
+
     it('prefills form fields', async () => {
       createComponent();
 

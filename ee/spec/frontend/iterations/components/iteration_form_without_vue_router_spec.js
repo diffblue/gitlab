@@ -8,6 +8,7 @@ import updateIteration from 'ee/iterations/queries/update_iteration.mutation.gra
 import { TEST_HOST } from 'helpers/test_constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import { visitUrl } from '~/lib/utils/url_utility';
+import { formatDate } from '~/lib/utils/datetime_utility';
 
 jest.mock('~/lib/utils/url_utility');
 
@@ -19,8 +20,8 @@ describe('Iteration Form', () => {
     id: `gid://gitlab/Iteration/${id}`,
     title: 'An iteration',
     description: 'The words',
-    startDate: new Date('2020-06-28'),
-    dueDate: new Date('2020-07-05'),
+    startDate: '2020-06-28',
+    dueDate: '2020-07-05',
   };
 
   const title = 'Updated title';
@@ -67,6 +68,8 @@ describe('Iteration Form', () => {
   const findCancelButton = () => wrapper.find('[data-testid="cancel-iteration"]');
   const clickSave = () => findSaveButton().vm.$emit('click');
   const clickCancel = () => findCancelButton().vm.$emit('click');
+
+  const toDateString = (date) => formatDate(date, 'yyyy-mm-dd');
 
   const inputFormData = () => {
     findTitle().vm.$emit('input', title);
@@ -164,6 +167,17 @@ describe('Iteration Form', () => {
       expect(findPageTitle().text()).toBe('Edit iteration');
     });
 
+    it('parses dates without adding timezone offsets', () => {
+      createComponent({
+        props: propsWithIteration,
+      });
+
+      // There is no good way to test these from the UI output
+      // as we can't reliably set arbitrary timezone.
+      expect(wrapper.vm.startDate.getTimezoneOffset()).toBe(0);
+      expect(wrapper.vm.dueDate.getTimezoneOffset()).toBe(0);
+    });
+
     it('prefills form fields', () => {
       createComponent({
         props: propsWithIteration,
@@ -172,8 +186,8 @@ describe('Iteration Form', () => {
       expect(findTitle().attributes('value')).toBe(iteration.title);
       expect(findDescription().element.value).toBe(iteration.description);
 
-      expect(new Date(findStartDate().attributes('value'))).toEqual(iteration.startDate);
-      expect(new Date(findDueDate().attributes('value'))).toEqual(iteration.dueDate);
+      expect(toDateString(findStartDate().attributes('value'))).toEqual(iteration.startDate);
+      expect(toDateString(findDueDate().attributes('value'))).toEqual(iteration.dueDate);
     });
 
     it('shows update text on submit button', () => {
