@@ -248,5 +248,30 @@ module EE
     def enabled_replicator_classes
       ::Gitlab::Geo.enabled_replicator_classes
     end
+
+    def geo_filter_nav_options(replicable_controller, replicable_name)
+      [
+        {
+          value: '',
+          text: sprintf(s_('Geo|All %{replicable_name}'), { replicable_name: replicable_name }),
+          href: url_for(controller: replicable_controller)
+        },
+        {
+          value: 'pending',
+          text: s_('Geo|In progress'),
+          href: url_for(controller: replicable_controller, sync_status: 'pending')
+        },
+        {
+          value: 'failed',
+          text: s_('Geo|Failed'),
+          href:  url_for(controller: replicable_controller, sync_status: 'failed')
+        },
+        {
+          value: 'synced',
+          text: s_('Geo|Synced'),
+          href: url_for(controller: replicable_controller, sync_status: 'synced')
+        }
+      ]
+    end
   end
 end

@@ -81,7 +81,7 @@ RSpec.describe 'admin Geo Projects', :js, :geo do
       visit(page_url)
       wait_for_requests
 
-      click_link_or_button('Filter by status')
+      click_link_or_button('All projects')
       click_link_or_button('In progress')
       wait_for_requests
     end
