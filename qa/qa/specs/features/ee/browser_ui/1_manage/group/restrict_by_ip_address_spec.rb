@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Manage' do
-    describe 'Group access', :requires_admin, :skip_live_env, except: { job: 'review-qa-*' } do
+    describe 'Group access', :requires_admin, :skip_live_env, :reliable do
       include Runtime::IPAddress
 
       before(:all) do
@@ -46,7 +46,7 @@ module QA
       context 'when restricted by another ip address' do
         let(:ip_address) { get_next_ip_address(fetch_current_ip_address) }
 
-        context 'via the UI' do
+        context 'with UI' do
           it 'denies access', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347923' do
             Flow::Login.sign_in(as: @user)
 
@@ -60,7 +60,7 @@ module QA
           end
         end
 
-        context 'via the API' do
+        context 'with API' do
           it 'denies access', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347922' do
             request = create_request("/groups/#{@sandbox_group.id}")
             response = get request.url
@@ -74,7 +74,7 @@ module QA
 
         # Note: If you run this test against GDK make sure you've enabled sshd
         # See: https://gitlab.com/gitlab-org/gitlab-qa/blob/master/docs/run_qa_against_gdk.md
-        context 'via the SSH' do
+        context 'with SSH', except: { job: 'review-qa-*' } do
           let(:key) do
             Resource::SSHKey.fabricate_via_api! do |ssh_key|
               ssh_key.api_client = @api_client
@@ -87,7 +87,9 @@ module QA
           end
 
           it 'denies access', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347921' do
-            expect { push_a_project_with_ssh_key(key) }.to raise_error(QA::Support::Run::CommandError, /fatal: Could not read from remote repository/)
+            expect { push_a_project_with_ssh_key(key) }.to raise_error(
+              QA::Support::Run::CommandError, /fatal: Could not read from remote repository/
+            )
           end
         end
       end
@@ -95,7 +97,7 @@ module QA
       context 'when restricted by user\'s ip address' do
         let(:ip_address) { fetch_current_ip_address }
 
-        context 'via the UI' do
+        context 'with UI' do
           it 'allows access', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347926' do
             Flow::Login.sign_in(as: @user)
 
@@ -107,7 +109,7 @@ module QA
           end
         end
 
-        context 'via the API' do
+        context 'with API' do
           it 'allows access', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347925' do
             request = create_request("/groups/#{@sandbox_group.id}")
             response = get request.url
@@ -121,7 +123,7 @@ module QA
 
         # Note: If you run this test against GDK make sure you've enabled sshd
         # See: https://gitlab.com/gitlab-org/gitlab-qa/blob/master/docs/run_qa_against_gdk.md
-        context 'via the SSH' do
+        context 'with SSH', except: { job: 'review-qa-*' } do
           let(:key) do
             Resource::SSHKey.fabricate_via_api! do |ssh_key|
               ssh_key.api_client = @api_client
