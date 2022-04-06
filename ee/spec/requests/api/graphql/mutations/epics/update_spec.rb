@@ -8,9 +8,9 @@ RSpec.describe Mutations::Epics::Update do
   let_it_be(:current_user) { create(:user) }
   let_it_be(:group) { create(:group) }
 
-  let(:label_1) { create(:group_label, group: group) }
-  let(:label_2) { create(:group_label, group: group) }
-  let(:label_3) { create(:group_label, group: group) }
+  let(:label_1) { create(:group_label, title: "a", group: group) }
+  let(:label_2) { create(:group_label, title: "b", group: group) }
+  let(:label_3) { create(:group_label, title: "c", group: group) }
   let(:epic) { create(:epic, group: group, title: 'original title', labels: [label_2]) }
 
   let(:attributes) do
@@ -25,9 +25,8 @@ RSpec.describe Mutations::Epics::Update do
     }
   end
 
+  let(:params) { { group_path: group.full_path, iid: epic.iid.to_s }.merge(attributes) }
   let(:mutation) do
-    params = { group_path: group.full_path, iid: epic.iid.to_s }.merge(attributes)
-
     graphql_mutation(:update_epic, params)
   end
 
@@ -106,11 +105,38 @@ RSpec.describe Mutations::Epics::Update do
 
       context 'when changing labels of the epic' do
         let(:attributes) { { add_label_ids: [label_1.id, label_3.id], remove_label_ids: label_2.id } }
+        let(:mutation) do
+          graphql_mutation(:update_epic, params) do
+            <<~QL
+                epic {
+                   labels {
+                     nodes {
+                       id
+                     }
+                   }
+                }
+                errors
+            QL
+          end
+        end
 
         it 'adds and removes labels correctly' do
           post_graphql_mutation(mutation, current_user: current_user)
 
           expect(epic.reload.labels).to match_array([label_1, label_3])
+        end
+
+        context 'when labels are added' do
+          let(:attributes) { { add_label_ids: [label_1.id, label_3.id] } }
+
+          it 'adds labels correctly and keeps the title ordering' do
+            post_graphql_mutation(mutation, current_user: current_user)
+
+            labels_ids = mutation_response['epic']['labels']['nodes'].map { |l| l['id'] }
+            expected_label_ids = [label_1, label_2, label_3].map { |l| l.to_global_id.to_s }
+
+            expect(labels_ids).to eq(expected_label_ids)
+          end
         end
       end
 
