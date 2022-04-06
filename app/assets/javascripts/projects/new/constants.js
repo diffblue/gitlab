@@ -20,3 +20,4 @@ export const DEPLOYMENT_TARGET_SELECTIONS = [
 export const NEW_PROJECT_FORM = 'new_project';
 export const DEPLOYMENT_TARGET_LABEL = 'new_project_deployment_target';
 export const DEPLOYMENT_TARGET_EVENT = 'select_deployment_target';
+export const VISIT_DOCS_EVENT = 'visit_docs';

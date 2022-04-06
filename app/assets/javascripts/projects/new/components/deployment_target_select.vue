@@ -7,6 +7,7 @@ import {
   DEPLOYMENT_TARGET_SELECTIONS,
   DEPLOYMENT_TARGET_LABEL,
   DEPLOYMENT_TARGET_EVENT,
+  VISIT_DOCS_EVENT,
   NEW_PROJECT_FORM,
   K8S_OPTION,
 } from '../constants';
@@ -22,8 +23,10 @@ export default {
     ),
   },
   deploymentTargets: DEPLOYMENT_TARGET_SELECTIONS,
+  VISIT_DOCS_EVENT,
+  DEPLOYMENT_TARGET_LABEL,
   selectId: 'deployment-target-select',
-  helpPageUrl: helpPagePath('user/clusters/agent'),
+  helpPageUrl: helpPagePath('user/clusters/agent/index'),
   components: {
     GlFormGroup,
     GlFormSelect,
@@ -76,7 +79,12 @@ export default {
     <gl-form-text v-if="isK8sOptionSelected">
       <gl-sprintf :message="$options.i18n.k8sEducationText">
         <template #link="{ content }">
-          <gl-link :href="$options.helpPageUrl">{{ content }}</gl-link>
+          <gl-link
+            :href="$options.helpPageUrl"
+            :data-track-action="$options.VISIT_DOCS_EVENT"
+            :data-track-label="$options.DEPLOYMENT_TARGET_LABEL"
+            >{{ content }}</gl-link
+          >
         </template>
       </gl-sprintf>
     </gl-form-text>

@@ -1,4 +1,4 @@
-import { GlFormGroup, GlFormSelect, GlFormText } from '@gitlab/ui';
+import { GlFormGroup, GlFormSelect, GlFormText, GlLink, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { mockTracking } from 'helpers/tracking_helper';
 import DeploymentTargetSelect from '~/projects/new/components/deployment_target_select.vue';
@@ -6,7 +6,9 @@ import {
   DEPLOYMENT_TARGET_SELECTIONS,
   DEPLOYMENT_TARGET_LABEL,
   DEPLOYMENT_TARGET_EVENT,
+  VISIT_DOCS_EVENT,
   NEW_PROJECT_FORM,
+  K8S_OPTION,
 } from '~/projects/new/constants';
 
 describe('Deployment target select', () => {
@@ -16,11 +18,14 @@ describe('Deployment target select', () => {
   const findFormGroup = () => wrapper.findComponent(GlFormGroup);
   const findSelect = () => wrapper.findComponent(GlFormSelect);
   const findText = () => wrapper.findComponent(GlFormText);
+  const findLink = () => wrapper.findComponent(GlLink);
 
   const createdWrapper = () => {
     wrapper = shallowMount(DeploymentTargetSelect, {
       stubs: {
         GlFormSelect,
+        GlFormText,
+        GlSprintf,
       },
     });
   };
@@ -93,6 +98,19 @@ describe('Deployment target select', () => {
 
     it(`is ${!isTextShown ? 'not ' : ''}shown when selected option is ${selectedTarget}`, () => {
       expect(findText().exists()).toBe(isTextShown);
+    });
+  });
+
+  describe('when user clicks on the docs link', () => {
+    beforeEach(async () => {
+      await findSelect().vm.$emit('input', K8S_OPTION);
+      findLink().trigger('click');
+    });
+
+    it('sends the snowplow tracking event', () => {
+      expect(trackingSpy).toHaveBeenCalledWith('_category_', VISIT_DOCS_EVENT, {
+        label: DEPLOYMENT_TARGET_LABEL,
+      });
     });
   });
 });
