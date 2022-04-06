@@ -16,7 +16,7 @@ module EE
           params do
             requires :user_id, type: Integer, desc: 'The user ID of the member'
           end
-          post ":id/members/:user_id/override" do
+          post ":id/members/:user_id/override", feature_category: :user_management do
             member = find_member(params)
 
             result = ::Members::UpdateService
@@ -38,7 +38,7 @@ module EE
           params do
             requires :user_id, type: Integer, desc: 'The user ID of the member'
           end
-          delete ":id/members/:user_id/override" do
+          delete ":id/members/:user_id/override", feature_category: :user_management do
             member = find_member(params)
 
             result = ::Members::UpdateService
@@ -58,7 +58,7 @@ module EE
           params do
             requires :member_id, type: Integer, desc: 'The ID of the member requiring approval'
           end
-          put ':id/members/:member_id/approve' do
+          put ':id/members/:member_id/approve', feature_category: :subgroups do
             group = find_group!(params[:id])
             member = ::Member.find_by_id(params[:member_id])
 
@@ -78,7 +78,7 @@ module EE
           end
 
           desc 'Approves all pending members'
-          post ':id/members/approve_all' do
+          post ':id/members/approve_all', feature_category: :subgroups do
             group = find_group!(params[:id])
 
             bad_request! unless group.root?
@@ -99,7 +99,7 @@ module EE
           params do
             use :pagination
           end
-          get ":id/pending_members" do
+          get ":id/pending_members", feature_category: :subgroups do
             group = find_group!(params[:id])
 
             bad_request! unless group.root?
@@ -119,7 +119,7 @@ module EE
             optional :sort, type: String, desc: 'The sorting option', values: Helpers::MembersHelpers.member_sort_options
             optional :include_awaiting_members, type: Grape::API::Boolean, desc: 'Determines if awaiting members are included', default: false
           end
-          get ":id/billable_members" do
+          get ":id/billable_members", feature_category: :subgroups do
             group = find_group!(params[:id])
 
             bad_request!(nil) if group.subgroup?
@@ -148,7 +148,7 @@ module EE
             requires :user_id, type: Integer, desc: 'The user ID of the member'
             use :pagination
           end
-          get ":id/billable_members/:user_id/memberships" do
+          get ":id/billable_members/:user_id/memberships", feature_category: :subgroups do
             group = find_group!(params[:id])
 
             bad_request! unless can?(current_user, :admin_group_member, group)
@@ -167,7 +167,7 @@ module EE
           params do
             requires :user_id, type: Integer, desc: 'The user ID of the member'
           end
-          delete ":id/billable_members/:user_id" do
+          delete ":id/billable_members/:user_id", feature_category: :subgroups do
             group = find_group!(params[:id])
 
             result = ::BillableMembers::DestroyService.new(group, user_id: params[:user_id], current_user: current_user).execute
