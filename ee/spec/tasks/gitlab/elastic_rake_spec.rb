@@ -348,4 +348,37 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic, :silence_stdout 
       end
     end
   end
+
+  describe 'projects_not_indexed' do
+    subject { run_rake_task('gitlab:elastic:projects_not_indexed') }
+
+    let_it_be(:project) { create(:project, :repository) }
+
+    context 'no projects are indexed' do
+      it 'displays non-indexed projects' do
+        expected = <<~END
+          Project '#{project.full_path}' (ID: #{project.id}) isn't indexed.
+          1 out of 1 non-indexed projects shown.
+        END
+
+        expect { subject }.to output(expected).to_stdout
+      end
+    end
+
+    context 'all projects are indexed' do
+      before do
+        IndexStatus.create!(project: project, indexed_at: Time.current, last_commit: 'foo')
+      end
+
+      it 'displays that all projects are indexed' do
+        expect { subject }.to output(/All projects are currently indexed/).to_stdout
+      end
+
+      it 'does not include projects without repositories' do
+        create(:project)
+
+        expect { subject }.to output(/All projects are currently indexed/).to_stdout
+      end
+    end
+  end
 end
