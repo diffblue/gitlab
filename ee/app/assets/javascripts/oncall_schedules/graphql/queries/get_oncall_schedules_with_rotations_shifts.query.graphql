@@ -6,8 +6,6 @@ query getShiftsForRotations($projectPath: ID!, $startsAt: Time!, $endsAt: Time!,
     incidentManagementOncallSchedules(iids: $iids) {
       nodes {
         rotations {
-          # We have an id in deeply nested fragment
-          # eslint-disable-next-line @graphql-eslint/require-id-when-available
           nodes {
             ...OnCallRotationWithShifts
           }
