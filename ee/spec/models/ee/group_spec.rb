@@ -1168,6 +1168,95 @@ RSpec.describe Group do
     end
   end
 
+  describe '#awaiting_user_ids' do
+    let_it_be(:group, refind: true) { create(:group) }
+    let_it_be(:awaiting_user) { create(:user) }
+    let_it_be(:project_bot) { create(:user, :project_bot) }
+    let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:shared_group, refind: true) { create(:group) }
+    let_it_be(:sub_group) { create(:group, parent: group) }
+
+    subject(:awaiting_user_ids) { group.awaiting_user_ids }
+
+    context 'when awaiting user is member of the group' do
+      before do
+        create(:group_member, :awaiting, user: awaiting_user, source: group)
+        create(:group_member, :awaiting, user: project_bot, source: group)
+      end
+
+      it { is_expected.to match_array([awaiting_user.id]) }
+    end
+
+    context 'when awaiting user is member of a sub-group within the group' do
+      before do
+        create(:group_member, :awaiting, user: awaiting_user, source: sub_group)
+      end
+
+      it { is_expected.to match_array([awaiting_user.id]) }
+    end
+
+    context 'when awaiting user is member of a project in the group' do
+      before do
+        create(:project_member, :awaiting, user: awaiting_user, source: project)
+        create(:project_member, :awaiting, user: project_bot, source: project)
+      end
+
+      it { is_expected.to match_array([awaiting_user.id]) }
+    end
+
+    context 'when other group with awaiting users is member of the group' do
+      let_it_be(:invited_group) { create(:group) }
+
+      before_all do
+        create(:group_member, :awaiting, user: awaiting_user, source: invited_group)
+        create(:group_member, :awaiting, user: project_bot, source: invited_group)
+
+        create(:project_group_link, project: project, group: invited_group)
+      end
+
+      it { is_expected.to match_array([awaiting_user.id]) }
+    end
+
+    context 'when other group with awaiting users is member of a project in the group' do
+      before_all do
+        create(:group_member, :awaiting, user: awaiting_user, source: shared_group)
+        create(:group_member, :awaiting, user: project_bot, source: shared_group)
+        create(:group_group_link, { shared_with_group: shared_group,
+                                    shared_group: group })
+      end
+
+      it { is_expected.to match_array([awaiting_user.id]) }
+    end
+
+    context 'when a user is member multiple times' do
+      before do
+        create(:group_member, :awaiting, :developer, user: awaiting_user, source: group)
+        create(:project_member, :awaiting, :maintainer, user: awaiting_user, source: project)
+        create(:group_member, :awaiting, user: awaiting_user, source: shared_group)
+        create(:group_group_link, { shared_with_group: shared_group,
+                                    shared_group: group })
+      end
+
+      it { is_expected.to match_array([awaiting_user.id]) }
+    end
+
+    context 'when there are multiple awaiting users' do
+      let_it_be(:shared_group_awaiting_user) { create(:user) }
+      let_it_be(:project_awaiting_user) { create(:user) }
+
+      before do
+        create(:group_member, :awaiting, user: awaiting_user, source: group)
+        create(:group_member, :awaiting, user: shared_group_awaiting_user, source: shared_group)
+        create(:project_member, :awaiting, user: project_awaiting_user, source: project)
+
+        create(:group_group_link, { shared_with_group: shared_group,
+                                    shared_group: group })
+      end
+
+      it { is_expected.to match_array([awaiting_user.id, shared_group_awaiting_user.id, project_awaiting_user.id]) }
+    end
+  end
+
   describe '#billable_members_count', :saas do
     let_it_be(:bronze_plan) { create(:bronze_plan) }
     let_it_be(:premium_plan) { create(:premium_plan) }
