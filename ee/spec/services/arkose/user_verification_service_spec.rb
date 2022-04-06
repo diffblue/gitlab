@@ -4,8 +4,9 @@ require 'spec_helper'
 
 RSpec.describe Arkose::UserVerificationService do
   let(:session_token) { '22612c147bb418c8.2570749403' }
-  let(:userid) { '1999' }
-  let(:service) { Arkose::UserVerificationService.new(session_token: session_token, userid: userid) }
+  let_it_be_with_reload(:user) { create(:user, id: '1999') }
+
+  let(:service) { Arkose::UserVerificationService.new(session_token: session_token, user: user) }
   let(:response) { instance_double(HTTParty::Response, success?: true, code: 200, parsed_response: arkose_ec_response) }
 
   subject { service.execute }
@@ -27,6 +28,17 @@ RSpec.describe Arkose::UserVerificationService do
         it 'returns true' do
           allow(Gitlab::HTTP).to receive(:perform_request).and_return(response)
           expect(subject).to be_truthy
+        end
+
+        it 'adds arkose data to custom attributes' do
+          allow(Gitlab::HTTP).to receive(:perform_request).and_return(response)
+          subject
+          expect(user.custom_attributes.count).to eq(4)
+
+          expect(user.custom_attributes.find_by(key: 'arkose_session').value).to eq('22612c147bb418c8.2570749403')
+          expect(user.custom_attributes.find_by(key: 'arkose_risk_band').value).to eq('Low')
+          expect(user.custom_attributes.find_by(key: 'arkose_global_score').value).to eq('0')
+          expect(user.custom_attributes.find_by(key: 'arkose_custom_score').value).to eq('0')
         end
 
         context 'when the risk score is high' do
