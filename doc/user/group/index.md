@@ -798,7 +798,7 @@ The group's new subgroups have push rules set for them based on either:
 > - [Enabled by default](https://gitlab.com/gitlab-org/gitlab/-/issues/285410) in GitLab 14.5.
 > - [Feature flag `group_merge_request_approval_settings_feature_flag`](https://gitlab.com/gitlab-org/gitlab/-/issues/343872) removed in GitLab 14.9.
 
-Group approval settings manage [project merge request approval settings](../project/merge_requests/approvals/settings/index.md)
+Group approval settings manage [project merge request approval settings](../project/merge_requests/approvals/settings.md)
 at the top-level group level. These settings [cascade to all projects](../project/merge_requests/approvals/settings.md#settings-cascading)
 that belong to the group.
 
