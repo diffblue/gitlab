@@ -248,7 +248,7 @@ describe('ComplianceReport component', () => {
     });
 
     it('renders the violation reason', () => {
-      const { violatingUser, reason } = violations[0];
+      const { violatingUser, reason } = mapViolations(violations)[0];
 
       expect(findViolationReason().props()).toMatchObject({
         reason,

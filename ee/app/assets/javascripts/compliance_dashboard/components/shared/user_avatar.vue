@@ -18,7 +18,9 @@ export default {
 </script>
 
 <template>
+  <!-- The key attribute is required so that the node updates when the user changes, which in turn updates the user popover event. -->
   <gl-avatar-link
+    :key="user.id"
     target="blank"
     :href="user.webUrl"
     :title="user.name"
