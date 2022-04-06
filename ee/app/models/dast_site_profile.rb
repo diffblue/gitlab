@@ -10,7 +10,7 @@ class DastSiteProfile < ApplicationRecord
 
   validates :excluded_urls, length: { maximum: 25 }
   validates :auth_url, addressable_url: true, length: { maximum: 1024 }, allow_nil: true
-  validates :auth_username_field, :auth_password_field, :auth_username, length: { maximum: 255 }
+  validates :auth_username_field, :auth_password_field, :auth_username, :auth_submit_field, length: { maximum: 255 }
   validates :name, length: { maximum: 255 }, uniqueness: { scope: :project_id }, presence: true
   validates :project_id, :dast_site_id, presence: true
 
@@ -59,6 +59,7 @@ class DastSiteProfile < ApplicationRecord
         variables.append(key: 'DAST_USERNAME', value: auth_username)
         variables.append(key: 'DAST_USERNAME_FIELD', value: auth_username_field)
         variables.append(key: 'DAST_PASSWORD_FIELD', value: auth_password_field)
+        variables.append(key: 'DAST_SUBMIT_FIELD', value: auth_submit_field)
       end
     end
 
