@@ -96,7 +96,7 @@ module EE
 
       return unless user.present?
 
-      if Arkose::UserVerificationService.new(session_token: params[:arkose_labs_token], userid: user.id).execute
+      if Arkose::UserVerificationService.new(session_token: params[:arkose_labs_token], user: user).execute
         increment_successful_login_captcha_counter
       else
         increment_failed_login_captcha_counter
