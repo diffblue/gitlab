@@ -81,7 +81,7 @@ module Gitlab
           track(values, event_name, context: context, time: time)
         end
 
-        # Count unique events for a givend time range.
+        # Count unique events for a given time range.
         #
         # event_names - The list of the events to count.
         # start_date  - The start date of the time range.
@@ -106,12 +106,12 @@ module Gitlab
           known_events.select { |event| event[:category] == category.to_s }.map { |event| event[:name] }
         end
 
-        # Recent 7 or 28 days unique events data for events definited in /lib/gitlab/usage_data_counters/known_events/
+        # Recent 7 or 28 days unique events data for events defined in /lib/gitlab/usage_data_counters/known_events/
         #
         #   - For metrics for which we store a key per day, we have the last 7 days or last 28 days of data.
-        #   - For metrics for which we store a key per week we have the last complete week or last 4 complete weeks
+        #   - For metrics for which we store a key per week, we have the last complete week or last 4 complete weeks
         #     daily or weekly information is in the file we have for events definition /lib/gitlab/usage_data_counters/known_events/
-        #   - Most of the metrics have weekly aggregation, we recommend this as it generates less keys in redis to store.
+        #   - Most of the metrics have weekly aggregation. We recommend this as it generates fewer keys in Redis to store.
         #   - The aggregation used doesn't affect data granulation.
         def unique_events_data
           categories.each_with_object({}) do |category, category_results|
