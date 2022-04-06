@@ -25,6 +25,27 @@ module Gitlab
             n_('day', 'days', value)
           end
 
+          def links
+            helpers = Gitlab::Routing.url_helpers
+
+            dashboard_link =
+              if @stage.parent.is_a?(::Group)
+                helpers.group_analytics_ci_cd_analytics_path(@stage.parent, tab: 'lead-time')
+              else
+                helpers.charts_project_pipelines_path(@stage.parent, chart: 'lead-time')
+              end
+
+            [
+              { "name" => _('Lead Time for Changes'),
+                "url" => dashboard_link,
+                "label" => s_('ValueStreamAnalytics|Dashboard') },
+              { "name" => _('Lead Time for Changes'),
+                "url" => helpers.help_page_path('user/analytics/index', anchor: 'definitions'),
+                "docs_link" => true,
+                "label" => s_('ValueStreamAnalytics|Go to docs') }
+            ]
+          end
+
           private
 
           attr_reader :stage, :current_user, :options, :from, :to
