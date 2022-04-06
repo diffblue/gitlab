@@ -22017,10 +22017,10 @@ msgstr ""
 msgid "Job|This job failed because the necessary resources were not successfully created."
 msgstr ""
 
-msgid "Job|This job is stuck because the project doesn't have any runners online assigned to it."
+msgid "Job|This job is stuck because of one of the following problems. There are no active runners online, no runners for the %{linkStart}protected branch%{linkEnd}, or no runners that match all of the job's tags:"
 msgstr ""
 
-msgid "Job|This job is stuck because you don't have any active runners online or available with any of these tags assigned to them:"
+msgid "Job|This job is stuck because the project doesn't have any runners online assigned to it."
 msgstr ""
 
 msgid "Job|This job is stuck because you don't have any active runners that can run this job."
