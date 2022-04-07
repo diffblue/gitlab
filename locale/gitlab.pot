@@ -36881,6 +36881,9 @@ msgstr ""
 msgid "TagsPage|Repository has no tags yet."
 msgstr ""
 
+msgid "TagsPage|Sorry, your filter produced no results."
+msgstr ""
+
 msgid "TagsPage|Tags"
 msgstr ""
 
