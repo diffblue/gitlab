@@ -3,22 +3,32 @@
 module QA
   module Resource
     class Job < Base
-      attr_writer :id, :project
+      attr_accessor :id, :project
 
-      def initialize(id, project)
-        @id = id
-        @project = project
-      end
+      attributes :id,
+                 :project
 
-      def fabricate!
+      def fabricate_via_api!
+        resource_web_url(api_get)
+      rescue ResourceNotFoundError
+        super
       end
 
       def artifacts
-        parse_body(api_get_from(api_get_path))
+        parse_body(api_get_from(api_get_path))[:artifacts]
       end
 
       def api_get_path
         "/projects/#{project.id}/jobs/#{id}"
+      end
+
+      def api_post_path
+      end
+
+      def api_post_body
+        {
+          artifacts: artifacts
+        }
       end
     end
   end
