@@ -8,7 +8,7 @@ import BoardListHeader from 'ee_else_ce/boards/components/board_list_header.vue'
 import { isListDraggable } from '~/boards/boards_util';
 import eventHub from '~/boards/eventhub';
 import { s__, n__, __ } from '~/locale';
-import defaultSortableConfig from '~/sortable/sortable_config';
+import { defaultSortableOptions } from '~/sortable/constants';
 import { calculateSwimlanesBufferSize } from '../boards_util';
 import { DRAGGABLE_TAG, EPIC_LANE_BASE_HEIGHT, DraggableItemTypes } from '../constants';
 import EpicLane from './epic_lane.vue';
@@ -83,7 +83,7 @@ export default {
     },
     treeRootOptions() {
       const options = {
-        ...defaultSortableConfig,
+        ...defaultSortableOptions,
         fallbackOnBody: false,
         group: 'board-swimlanes',
         tag: DRAGGABLE_TAG,
