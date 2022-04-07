@@ -2,7 +2,12 @@
 
 module Resolvers
   class SecurityTrainingUrlsResolver < BaseResolver
+    include Gitlab::Graphql::Authorize::AuthorizeResource
+
     type [::Types::Security::TrainingUrlType], null: true
+
+    authorize :access_security_and_compliance
+    authorizes_object!
 
     argument :identifier_external_ids,
          [GraphQL::Types::String],
