@@ -28,7 +28,7 @@ module Emails
 
       mail(
         bcc: recipients,
-        subject: s_("NamespaceStorage|Action required: Less than %{percentage_of_available_storage}%% of namespace storage remains for %{namespace_name}" %
+        subject: s_("NamespaceStorage|Action required: Approximately %{percentage_of_available_storage}%% of namespace storage remains for %{namespace_name}" %
                     { percentage_of_available_storage: percentage_of_available_storage, namespace_name: namespace.name })
       )
     end
