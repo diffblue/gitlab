@@ -462,6 +462,22 @@ RSpec.describe API::Files do
         expect(range['commit']['committer_email']).to eq('dmitriy.zaporozhets@gmail.com')
       end
 
+      context 'with a range parameter' do
+        let(:params) { super().merge(range_start: 2, range_end: 4) }
+
+        it 'returns file blame attributes as json for the range' do
+          get api(route(file_path) + '/blame', current_user), params: params
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response.size).to eq(2)
+
+          lines = json_response.map { |x| x['lines'] }
+
+          expect(lines.map(&:size)).to eq(expected_blame_range_sizes[1..2])
+          expect(lines.flatten).to eq(["require 'open3'", '', 'module Popen'])
+        end
+      end
+
       it 'returns blame file info for files with dots' do
         url = route('.gitignore') + '/blame'
 

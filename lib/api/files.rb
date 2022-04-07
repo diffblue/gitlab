@@ -110,13 +110,26 @@ module API
       params do
         requires :file_path, type: String, file_path: true, desc: 'The url encoded path to the file. Ex. lib%2Fclass%2Erb'
         requires :ref, type: String, desc: 'The name of branch, tag or commit', allow_blank: false
+        optional :range_start, type: Integer, desc: 'The first line of the range to blame'
+        optional :range_end, type: Integer, desc: 'The last line of the range to blame'
       end
       get ":id/repository/files/:file_path/blame", requirements: FILE_ENDPOINT_REQUIREMENTS do
+        range_start = declared_params[:range_start]
+        range_end = declared_params[:range_end]
+
+        render_api_error!('both range_start and range_end must be set') if
+          [range_start, range_end].compact.count == 1
+
+        render_api_error!('range must be positive integers only') unless
+          [range_start, range_end].compact.all?(&:positive?)
+
         assign_file_vars!
 
         set_http_headers(blob_data)
 
-        blame_ranges = Gitlab::Blame.new(@blob, @commit).groups(highlight: false)
+        range = range_start..range_end if range_start && range_end
+
+        blame_ranges = Gitlab::Blame.new(@blob, @commit, range: range).groups(highlight: false)
         present blame_ranges, with: Entities::BlameRange
       end
 
