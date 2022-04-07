@@ -32,10 +32,6 @@ Layout/SpaceInLambdaLiteral:
 Layout/SpaceInsideParens:
   Enabled: false
 
-# Offense count: 84
-Lint/ConstantDefinitionInBlock:
-  Enabled: false
-
 # Offense count: 2
 # Configuration parameters: AllowComments.
 Lint/EmptyFile:
