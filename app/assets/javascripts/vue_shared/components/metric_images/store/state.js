@@ -1,6 +1,6 @@
-export default ({ issueIid, projectId } = {}) => ({
+export default ({ modelIid, projectId } = {}) => ({
   // Initial state
-  issueIid,
+  modelIid,
   projectId,
 
   // View state

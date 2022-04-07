@@ -1,6 +1,6 @@
 import { cloneDeep } from 'lodash';
-import * as types from 'ee/issues/show/components/incidents/store/mutation_types';
-import mutations from 'ee/issues/show/components/incidents/store/mutations';
+import * as types from '~/vue_shared/components/metric_images/store/mutation_types';
+import mutations from '~/vue_shared/components/metric_images/store/mutations';
 import { initialData } from '../mock_data';
 
 const defaultState = {
@@ -140,7 +140,7 @@ describe('Metric images mutations', () => {
     });
 
     it('should unset the loading state', () => {
-      expect(state.issueIid).toBe(initialData.issueIid);
+      expect(state.modelIid).toBe(initialData.modelIid);
       expect(state.projectId).toBe(initialData.projectId);
     });
   });

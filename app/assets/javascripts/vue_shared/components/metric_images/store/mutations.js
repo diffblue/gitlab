@@ -32,8 +32,8 @@ export default {
     const metricIndex = state.metricImages.findIndex((image) => image.id === imageId);
     state.metricImages.splice(metricIndex, 1);
   },
-  [types.SET_INITIAL_DATA](state, { issueIid, projectId }) {
-    state.issueIid = issueIid;
+  [types.SET_INITIAL_DATA](state, { modelIid, projectId }) {
+    state.modelIid = modelIid;
     state.projectId = projectId;
   },
 };

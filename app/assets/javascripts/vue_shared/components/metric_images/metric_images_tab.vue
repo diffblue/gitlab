@@ -3,8 +3,7 @@ import { GlFormGroup, GlFormInput, GlLoadingIcon, GlModal, GlTab } from '@gitlab
 import { mapState, mapActions } from 'vuex';
 import { __, s__ } from '~/locale';
 import UploadDropzone from '~/vue_shared/components/upload_dropzone/upload_dropzone.vue';
-import MetricsImage from './metrics_image.vue';
-import createStore from './store';
+import MetricImagesTable from '~/vue_shared/components/metric_images/metric_images_table.vue';
 
 export default {
   components: {
@@ -13,7 +12,7 @@ export default {
     GlLoadingIcon,
     GlModal,
     GlTab,
-    MetricsImage,
+    MetricImagesTable,
     UploadDropzone,
   },
   inject: ['canUpdate', 'projectId', 'iid'],
@@ -25,7 +24,6 @@ export default {
       modalUrlText: '',
     };
   },
-  store: createStore(),
   computed: {
     ...mapState(['metricImages', 'isLoadingMetricImages', 'isUploadingImage']),
     actionPrimaryProps() {
@@ -41,11 +39,11 @@ export default {
     },
   },
   mounted() {
-    this.setInitialData({ issueIid: this.iid, projectId: this.projectId });
-    this.fetchMetricImages();
+    this.setInitialData({ modelIid: this.iid, projectId: this.projectId });
+    this.fetchImages();
   },
   methods: {
-    ...mapActions(['fetchMetricImages', 'uploadImage', 'setInitialData']),
+    ...mapActions(['fetchImages', 'uploadImage', 'setInitialData']),
     clearInputs() {
       this.modalVisible = false;
       this.modalUrl = '';
@@ -111,7 +109,7 @@ export default {
         <gl-form-input id="upload-url-input" v-model="modalUrl" />
       </gl-form-group>
     </gl-modal>
-    <metrics-image v-for="metric in metricImages" :key="metric.id" v-bind="metric" />
+    <metric-images-table v-for="metric in metricImages" :key="metric.id" v-bind="metric" />
     <upload-dropzone
       v-if="canUpdate"
       :drop-description-message="$options.i18n.dropDescription"

@@ -3,8 +3,8 @@ import { shallowMount, mount } from '@vue/test-utils';
 import Vue from 'vue';
 import merge from 'lodash/merge';
 import Vuex from 'vuex';
-import MetricsImage from 'ee/issues/show/components/incidents/metrics_image.vue';
-import createStore from 'ee/issues/show/components/incidents/store';
+import createStore from '~/vue_shared/components/metric_images/store';
+import MetricsImageTable from '~/vue_shared/components/metric_images/metric_images_table.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 
 const defaultProps = {
@@ -25,7 +25,7 @@ describe('Metrics upload item', () => {
     store = createStore();
 
     wrapper = mountMethod(
-      MetricsImage,
+      MetricsImageTable,
       merge(
         {
           store,

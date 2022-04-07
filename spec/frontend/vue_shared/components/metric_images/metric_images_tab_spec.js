@@ -3,31 +3,30 @@ import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import merge from 'lodash/merge';
 import Vuex from 'vuex';
-import MetricsImage from 'ee/issues/show/components/incidents/metrics_image.vue';
-import MetricsTab from 'ee/issues/show/components/incidents/metrics_tab.vue';
-import { getMetricImages } from 'ee/issues/show/components/incidents/service';
-import createStore from 'ee/issues/show/components/incidents/store';
+import MetricImagesTable from '~/vue_shared/components/metric_images/metric_images_table.vue';
+import MetricImagesTab from '~/vue_shared/components/metric_images/metric_images_tab.vue';
+import createStore from '~/vue_shared/components/metric_images/store';
 import waitForPromises from 'helpers/wait_for_promises';
 import UploadDropzone from '~/vue_shared/components/upload_dropzone/upload_dropzone.vue';
 import { fileList, initialData } from './mock_data';
 
-jest.mock('ee/issues/show/components/incidents/service', () => ({
+const service = {
   getMetricImages: jest.fn(),
-}));
+};
 
 const mockEvent = { preventDefault: jest.fn() };
 
 Vue.use(Vuex);
 
-describe('Metrics tab', () => {
+describe('Metric images tab', () => {
   let wrapper;
   let store;
 
   const mountComponent = (options = {}) => {
-    store = createStore();
+    store = createStore({}, service);
 
     wrapper = shallowMount(
-      MetricsTab,
+      MetricImagesTab,
       merge(
         {
           store,
@@ -54,7 +53,7 @@ describe('Metrics tab', () => {
   });
 
   const findUploadDropzone = () => wrapper.findComponent(UploadDropzone);
-  const findImages = () => wrapper.findAllComponents(MetricsImage);
+  const findImages = () => wrapper.findAllComponents(MetricImagesTable);
   const findModal = () => wrapper.findComponent(GlModal);
   const submitModal = () => findModal().vm.$emit('primary', mockEvent);
   const cancelModal = () => findModal().vm.$emit('hidden');
@@ -81,7 +80,7 @@ describe('Metrics tab', () => {
 
   describe('onLoad action', () => {
     it('should load images', async () => {
-      getMetricImages.mockImplementation(() => Promise.resolve(fileList));
+      service.getMetricImages.mockImplementation(() => Promise.resolve(fileList));
 
       mountComponent();
 
