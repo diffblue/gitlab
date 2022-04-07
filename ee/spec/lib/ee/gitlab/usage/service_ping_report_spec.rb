@@ -23,4 +23,24 @@ RSpec.describe Gitlab::Usage::ServicePingReport, :use_clean_rails_memory_store_c
       expect { described_class.for(output: :all_metrics_values) }.not_to raise_error
     end
   end
+
+  context 'for output: :metrics_queries' do
+    before do
+      stub_usage_data_connections
+      stub_object_store_settings
+      stub_prometheus_queries
+    end
+
+    it 'returns queries that do not change between calls' do
+      report = Timecop.freeze(2021, 1, 1) do
+        described_class.for(output: :metrics_queries)
+      end
+
+      other_report = Timecop.freeze(2021, 1, 1) do
+        described_class.for(output: :metrics_queries)
+      end
+
+      expect(report).to eq(other_report)
+    end
+  end
 end
