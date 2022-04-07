@@ -28,6 +28,7 @@ describe('Incident Tabs component', () => {
           provide: {
             fullPath: '',
             iid: '',
+            projectId: '',
             uploadMetricsFeatureAvailable: true,
             glFeatures: { incidentTimeline: true, incidentTimelineEvents: true },
           },

@@ -1,16 +1,13 @@
+import { fileList, fileListRaw } from 'jest/vue_shared/components/metric_images/mock_data';
 import Api from 'ee/api';
 import {
   getMetricImages,
   uploadMetricImage,
   updateMetricImage,
+  deleteMetricImage,
 } from 'ee/issues/show/components/incidents/service';
-import { fileList, fileListRaw } from './mock_data';
 
-jest.mock('ee/api', () => ({
-  fetchIssueMetricImages: jest.fn(),
-  uploadIssueMetricImage: jest.fn(),
-  updateIssueMetricImage: jest.fn(),
-}));
+jest.mock('ee/api');
 
 describe('Incidents service', () => {
   it('fetches metric images', async () => {
@@ -35,5 +32,13 @@ describe('Incidents service', () => {
 
     expect(Api.updateIssueMetricImage).toHaveBeenCalled();
     expect(result).toEqual(fileList[0]);
+  });
+
+  it('deletes a metric image', async () => {
+    Api.deleteMetricImage.mockResolvedValue({ data: '' });
+    const result = await deleteMetricImage();
+
+    expect(Api.deleteMetricImage).toHaveBeenCalled();
+    expect(result).toEqual({});
   });
 });

@@ -1,14 +1,14 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import * as actions from './actions';
+import actionsFactory from './actions';
 import mutations from './mutations';
 import createState from './state';
 
 Vue.use(Vuex);
 
-export default (initialState) =>
+export default (initialState, service) =>
   new Vuex.Store({
-    actions,
+    actions: actionsFactory(service),
     mutations,
     state: createState(initialState),
   });

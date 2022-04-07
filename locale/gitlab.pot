@@ -19913,18 +19913,6 @@ msgstr ""
 msgid "Incidents|Must start with http or https"
 msgstr ""
 
-msgid "Incidents|There was an issue deleting the image."
-msgstr ""
-
-msgid "Incidents|There was an issue loading metric images."
-msgstr ""
-
-msgid "Incidents|There was an issue updating your image."
-msgstr ""
-
-msgid "Incidents|There was an issue uploading your image."
-msgstr ""
-
 msgid "Incident|Add new timeline event"
 msgstr ""
 
@@ -23869,6 +23857,18 @@ msgid "MetricChart|There is no data available. Please change your selection."
 msgstr ""
 
 msgid "MetricChart|There is too much data to calculate. Please change your selection."
+msgstr ""
+
+msgid "MetricImages|There was an issue deleting the image."
+msgstr ""
+
+msgid "MetricImages|There was an issue loading metric images."
+msgstr ""
+
+msgid "MetricImages|There was an issue updating your image."
+msgstr ""
+
+msgid "MetricImages|There was an issue uploading your image."
 msgstr ""
 
 msgid "Metrics"

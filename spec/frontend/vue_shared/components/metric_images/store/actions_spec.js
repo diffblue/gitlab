@@ -1,26 +1,22 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {
-  getMetricImages,
-  uploadMetricImage,
-  updateMetricImage,
-  deleteMetricImage,
-} from 'ee/issues/show/components/incidents/service';
-import createStore from 'ee/issues/show/components/incidents/store';
-import * as actions from 'ee/issues/show/components/incidents/store/actions';
-import * as types from 'ee/issues/show/components/incidents/store/mutation_types';
+import actionsFactory from '~/vue_shared/components/metric_images/store/actions';
+import * as types from '~/vue_shared/components/metric_images/store/mutation_types';
+import createStore from '~/vue_shared/components/metric_images/store';
 import testAction from 'helpers/vuex_action_helper';
 import createFlash from '~/flash';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { fileList, initialData } from '../mock_data';
 
 jest.mock('~/flash');
-jest.mock('ee/issues/show/components/incidents/service', () => ({
+const service = {
   getMetricImages: jest.fn(),
   uploadMetricImage: jest.fn(),
   updateMetricImage: jest.fn(),
   deleteMetricImage: jest.fn(),
-}));
+};
+
+const actions = actionsFactory(service);
 
 const defaultState = {
   issueIid: 1,
@@ -44,9 +40,9 @@ describe('Metrics tab store actions', () => {
 
   describe('fetching metric images', () => {
     it('should call success action when fetching metric images', () => {
-      getMetricImages.mockImplementation(() => Promise.resolve(fileList));
+      service.getMetricImages.mockImplementation(() => Promise.resolve(fileList));
 
-      testAction(actions.fetchMetricImages, null, state, [
+      testAction(actions.fetchImages, null, state, [
         { type: types.REQUEST_METRIC_IMAGES },
         {
           type: types.RECEIVE_METRIC_IMAGES_SUCCESS,
@@ -56,10 +52,10 @@ describe('Metrics tab store actions', () => {
     });
 
     it('should call error action when fetching metric images with an error', async () => {
-      getMetricImages.mockImplementation(() => Promise.reject());
+      service.getMetricImages.mockImplementation(() => Promise.reject());
 
       await testAction(
-        actions.fetchMetricImages,
+        actions.fetchImages,
         null,
         state,
         [{ type: types.REQUEST_METRIC_IMAGES }, { type: types.RECEIVE_METRIC_IMAGES_ERROR }],
@@ -81,7 +77,7 @@ describe('Metrics tab store actions', () => {
     };
 
     it('should call success action when uploading an image', () => {
-      uploadMetricImage.mockImplementation(() => Promise.resolve(fileList[0]));
+      service.uploadMetricImage.mockImplementation(() => Promise.resolve(fileList[0]));
 
       testAction(actions.uploadImage, payload, state, [
         { type: types.REQUEST_METRIC_UPLOAD },
@@ -93,7 +89,7 @@ describe('Metrics tab store actions', () => {
     });
 
     it('should call error action when failing to upload an image', async () => {
-      uploadMetricImage.mockImplementation(() => Promise.reject());
+      service.uploadMetricImage.mockImplementation(() => Promise.reject());
 
       await testAction(
         actions.uploadImage,
@@ -113,7 +109,7 @@ describe('Metrics tab store actions', () => {
     };
 
     it('should call success action when updating an image', () => {
-      updateMetricImage.mockImplementation(() => Promise.resolve());
+      service.updateMetricImage.mockImplementation(() => Promise.resolve());
 
       testAction(actions.updateImage, payload, state, [
         { type: types.REQUEST_METRIC_UPLOAD },
@@ -124,7 +120,7 @@ describe('Metrics tab store actions', () => {
     });
 
     it('should call error action when failing to update an image', async () => {
-      updateMetricImage.mockImplementation(() => Promise.reject());
+      service.updateMetricImage.mockImplementation(() => Promise.reject());
 
       await testAction(
         actions.updateImage,
@@ -141,7 +137,7 @@ describe('Metrics tab store actions', () => {
     const payload = fileList[0].id;
 
     it('should call success action when deleting an image', () => {
-      deleteMetricImage.mockImplementation(() => Promise.resolve());
+      service.deleteMetricImage.mockImplementation(() => Promise.resolve());
 
       testAction(actions.deleteImage, payload, state, [
         {
