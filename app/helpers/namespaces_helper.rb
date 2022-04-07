@@ -88,6 +88,12 @@ module NamespacesHelper
     }.to_json
   end
 
+  def show_minute_limit_banner?(project)
+    return true if project.project_namespace.free_plan?
+
+    false
+  end
+
   private
 
   # Many importers create a temporary Group, so use the real
@@ -129,15 +135,6 @@ module NamespacesHelper
         name: n.name
       }
     end
-  end
-
-  def show_minute_limit_banner?(namespace)
-    true
-    #  return false unless ::Feature.enabled?(:show_minute_limit_banner)
-    # return false unless Date.current < eoa_bronze_plan_end_date
-    # return false unless namespace.free_plan?
-
-    # (namespace.group? && namespace.has_owner?(current_user.id)) || !namespace.group?
   end
 end
 

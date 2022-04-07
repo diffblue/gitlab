@@ -13612,6 +13612,9 @@ msgstr ""
 msgid "Editing"
 msgstr ""
 
+msgid "Effective June 1, 2022, all free tier public projects will be %{minutes_quota_link}. Existing free tier public open source projects will have to %{enrollment_link} before July 1, 2022 to continue to receive GitLab Ultimate benefits. Please visit the %{faq_link} for more information."
+msgstr ""
+
 msgid "Elapsed time"
 msgstr ""
 
@@ -16243,6 +16246,9 @@ msgid "Framework successfully deleted"
 msgstr ""
 
 msgid "Free Trial of GitLab.com Ultimate"
+msgstr ""
+
+msgid "Free tier projects CI minutes quota"
 msgstr ""
 
 msgid "Freeze end"
