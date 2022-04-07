@@ -22,7 +22,8 @@ module EE
         board_weight: board.weight,
         show_promotion: show_feature_promotion,
         emails_disabled: current_board_parent.emails_disabled?.to_s,
-        weights: ::Issue.weight_options
+        weights: ::Issue.weight_options,
+        can_create_epic: can_create_epic?
       }
 
       super.merge(data).merge(licensed_features).merge(group_level_features)
@@ -49,6 +50,10 @@ module EE
       }
     end
     # rubocop:enable Metrics/AbcSize
+
+    def can_create_epic?
+      return can?(current_user, :create_epic, current_board_namespace).to_s if board.is_a?(::Boards::EpicBoard)
+    end
 
     override :can_update?
     def can_update?
