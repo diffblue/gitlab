@@ -28,23 +28,27 @@ exports[`License Compliance extension expanded data with new licesnes displays a
           class="gl-w-full"
         >
           <div
-            class="gl-flex-wrap gl-display-flex gl-w-full"
+            class="gl-display-flex gl-flex-nowrap"
           >
             <div
-              class="gl-mr-4 gl-display-flex gl-align-items-center"
+              class="gl-flex-wrap gl-display-flex gl-w-full"
             >
-              <p
-                class="gl-m-0"
+              <div
+                class="gl-mr-4 gl-display-flex gl-align-items-center"
               >
-                Acceptable for use in this project
-              </p>
+                <p
+                  class="gl-m-0"
+                >
+                  Acceptable for use in this project
+                </p>
+              </div>
+               
+              <!---->
+               
+              <!---->
+               
+              <!---->
             </div>
-             
-            <!---->
-             
-            <!---->
-             
-            <!---->
              
             <div
               class="gl-ml-auto"
@@ -91,35 +95,39 @@ exports[`License Compliance extension expanded data with new licesnes displays a
                 class="gl-w-full"
               >
                 <div
-                  class="gl-flex-wrap gl-display-flex gl-w-full"
+                  class="gl-display-flex gl-flex-nowrap"
                 >
                   <div
-                    class="gl-mr-4 gl-display-flex gl-align-items-center"
+                    class="gl-flex-wrap gl-display-flex gl-w-full"
                   >
-                    <p
-                      class="gl-m-0"
-                    />
-                  </div>
-                   
-                  <div>
-                    <a
-                      class="gl-link"
-                      href="https://opensource.org/licenses/ISC"
+                    <div
+                      class="gl-mr-4 gl-display-flex gl-align-items-center"
                     >
-                      ISC License
-                    </a>
+                      <p
+                        class="gl-m-0"
+                      />
+                    </div>
+                     
+                    <div>
+                      <a
+                        class="gl-link"
+                        href="https://opensource.org/licenses/ISC"
+                      >
+                        ISC License
+                      </a>
+                    </div>
+                     
+                    <div>
+                      <p
+                        class="gl-m-0"
+                      >
+                         
+                        Used by abbrev, anymatch
+                      </p>
+                    </div>
+                     
+                    <!---->
                   </div>
-                   
-                  <div>
-                    <p
-                      class="gl-m-0"
-                    >
-                       
-                      Used by abbrev, anymatch
-                    </p>
-                  </div>
-                   
-                  <!---->
                    
                   <div
                     class="gl-ml-auto"
@@ -171,23 +179,27 @@ exports[`License Compliance extension expanded data with new licesnes displays d
           class="gl-w-full"
         >
           <div
-            class="gl-flex-wrap gl-display-flex gl-w-full"
+            class="gl-display-flex gl-flex-nowrap"
           >
             <div
-              class="gl-mr-4 gl-display-flex gl-align-items-center"
+              class="gl-flex-wrap gl-display-flex gl-w-full"
             >
-              <p
-                class="gl-m-0"
+              <div
+                class="gl-mr-4 gl-display-flex gl-align-items-center"
               >
-                Out-of-compliance with the project's policies and should be removed
-              </p>
+                <p
+                  class="gl-m-0"
+                >
+                  Out-of-compliance with the project's policies and should be removed
+                </p>
+              </div>
+               
+              <!---->
+               
+              <!---->
+               
+              <!---->
             </div>
-             
-            <!---->
-             
-            <!---->
-             
-            <!---->
              
             <div
               class="gl-ml-auto"
@@ -234,35 +246,39 @@ exports[`License Compliance extension expanded data with new licesnes displays d
                 class="gl-w-full"
               >
                 <div
-                  class="gl-flex-wrap gl-display-flex gl-w-full"
+                  class="gl-display-flex gl-flex-nowrap"
                 >
                   <div
-                    class="gl-mr-4 gl-display-flex gl-align-items-center"
+                    class="gl-flex-wrap gl-display-flex gl-w-full"
                   >
-                    <p
-                      class="gl-m-0"
-                    />
-                  </div>
-                   
-                  <div>
-                    <a
-                      class="gl-link"
-                      href="https://opensource.org/licenses/Apache-2.0"
+                    <div
+                      class="gl-mr-4 gl-display-flex gl-align-items-center"
                     >
-                      Apache License 2.0
-                    </a>
+                      <p
+                        class="gl-m-0"
+                      />
+                    </div>
+                     
+                    <div>
+                      <a
+                        class="gl-link"
+                        href="https://opensource.org/licenses/Apache-2.0"
+                      >
+                        Apache License 2.0
+                      </a>
+                    </div>
+                     
+                    <div>
+                      <p
+                        class="gl-m-0"
+                      >
+                         
+                        Used by websocket-driver, websocket-extensions, xml-name-validator
+                      </p>
+                    </div>
+                     
+                    <!---->
                   </div>
-                   
-                  <div>
-                    <p
-                      class="gl-m-0"
-                    >
-                       
-                      Used by websocket-driver, websocket-extensions, xml-name-validator
-                    </p>
-                  </div>
-                   
-                  <!---->
                    
                   <div
                     class="gl-ml-auto"
@@ -314,23 +330,27 @@ exports[`License Compliance extension expanded data with new licesnes displays u
           class="gl-w-full"
         >
           <div
-            class="gl-flex-wrap gl-display-flex gl-w-full"
+            class="gl-display-flex gl-flex-nowrap"
           >
             <div
-              class="gl-mr-4 gl-display-flex gl-align-items-center"
+              class="gl-flex-wrap gl-display-flex gl-w-full"
             >
-              <p
-                class="gl-m-0"
+              <div
+                class="gl-mr-4 gl-display-flex gl-align-items-center"
               >
-                No policy matches this license
-              </p>
+                <p
+                  class="gl-m-0"
+                >
+                  No policy matches this license
+                </p>
+              </div>
+               
+              <!---->
+               
+              <!---->
+               
+              <!---->
             </div>
-             
-            <!---->
-             
-            <!---->
-             
-            <!---->
              
             <div
               class="gl-ml-auto"
@@ -377,35 +397,39 @@ exports[`License Compliance extension expanded data with new licesnes displays u
                 class="gl-w-full"
               >
                 <div
-                  class="gl-flex-wrap gl-display-flex gl-w-full"
+                  class="gl-display-flex gl-flex-nowrap"
                 >
                   <div
-                    class="gl-mr-4 gl-display-flex gl-align-items-center"
+                    class="gl-flex-wrap gl-display-flex gl-w-full"
                   >
-                    <p
-                      class="gl-m-0"
-                    />
-                  </div>
-                   
-                  <div>
-                    <a
-                      class="gl-link"
-                      href="http://opensource.linux-mirror.org/licenses/afl-2.1.txt"
+                    <div
+                      class="gl-mr-4 gl-display-flex gl-align-items-center"
                     >
-                      Academic Free License v2.1
-                    </a>
+                      <p
+                        class="gl-m-0"
+                      />
+                    </div>
+                     
+                    <div>
+                      <a
+                        class="gl-link"
+                        href="http://opensource.linux-mirror.org/licenses/afl-2.1.txt"
+                      >
+                        Academic Free License v2.1
+                      </a>
+                    </div>
+                     
+                    <div>
+                      <p
+                        class="gl-m-0"
+                      >
+                         
+                        Used by json-schema
+                      </p>
+                    </div>
+                     
+                    <!---->
                   </div>
-                   
-                  <div>
-                    <p
-                      class="gl-m-0"
-                    >
-                       
-                      Used by json-schema
-                    </p>
-                  </div>
-                   
-                  <!---->
                    
                   <div
                     class="gl-ml-auto"
