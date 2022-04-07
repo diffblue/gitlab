@@ -25836,6 +25836,42 @@ msgstr ""
 msgid "Notify users by email when sign-in location is not recognized."
 msgstr ""
 
+msgid "Notify|%{author_link}'s issue %{issue_reference_link} is due soon."
+msgstr ""
+
+msgid "Notify|Author: %{author_name}"
+msgstr ""
+
+msgid "Notify|Issue was %{issue_status} by %{updated_by}"
+msgstr ""
+
+msgid "Notify|Issue was moved to another project."
+msgstr ""
+
+msgid "Notify|Merge request %{merge_request} can no longer be merged due to conflict."
+msgstr ""
+
+msgid "Notify|Merge request %{merge_request} was %{mr_status}"
+msgstr ""
+
+msgid "Notify|Merge request %{merge_request} was %{mr_status} by %{updated_by}"
+msgstr ""
+
+msgid "Notify|Merge request %{merge_request} was merged"
+msgstr ""
+
+msgid "Notify|Merge request URL: %{merge_request_url}"
+msgstr ""
+
+msgid "Notify|New issue: %{project_issue_url}"
+msgstr ""
+
+msgid "Notify|This issue is due on: %{issue_due_date}"
+msgstr ""
+
+msgid "Notify|You don't have access to the project."
+msgstr ""
+
 msgid "Nov"
 msgstr ""
 
