@@ -10,7 +10,7 @@ RSpec.describe Security::TrainingProviders::BaseUrlFinder do
 
   describe '#execute' do
     it 'raises an error if full_url is not implemented' do
-      expect { described_class.new(nil, nil, nil).execute }.to raise_error(
+      expect { described_class.new(identifier.project, provider, identifier.external_type).execute }.to raise_error(
         NotImplementedError,
         'full_url must be overwritten to return training url'
       )
