@@ -1,10 +1,10 @@
 export const createUser = (id) => ({
   id,
-  avatar_url: `https://${id}`,
+  avatarUrl: `https://${id}`,
   name: `User ${id}`,
   state: 'active',
   username: `user-${id}`,
-  web_url: `http://localhost:3000/user-${id}`,
+  webUrl: `http://localhost:3000/user-${id}`,
 });
 
 export const mergedAt = () => {
