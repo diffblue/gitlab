@@ -11,6 +11,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
 
   let(:ref) { 'refs/heads/master' }
   let(:source) { 'pipeline' }
+  let(:scan_policy_stage) { 'test' }
 
   let_it_be(:namespace) { create(:group) }
   let_it_be(:namespace_policies_repository) { create(:project, :repository) }
@@ -55,8 +56,44 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
   end
 
   shared_examples 'with different scan type' do
-    it 'extends config with additional jobs' do
-      expect(subject).to include(expected_configuration)
+    context 'when test stage is available' do
+      let(:config) { { stages: %w[build test release], image: 'image:1.0.0' } }
+
+      it 'does not include scan-policies stage' do
+        expect(subject[:stages]).to eq(%w[build test release dast])
+      end
+
+      it 'extends config with additional jobs' do
+        expect(subject).to include(expected_configuration)
+      end
+    end
+
+    context 'when test stage is not available' do
+      let(:scan_policy_stage) { 'scan-policies' }
+
+      context 'when build stage is available' do
+        let(:config) { { stages: %w[build not-test release], image: 'image:1.0.0' } }
+
+        it 'includes scan-policies stage after build stage' do
+          expect(subject[:stages]).to eq(%w[build scan-policies not-test release dast])
+        end
+
+        it 'extends config with additional jobs' do
+          expect(subject).to include(expected_configuration)
+        end
+      end
+
+      context 'when build stage is not available' do
+        let(:config) { { stages: %w[not-test release], image: 'image:1.0.0' } }
+
+        it 'includes scan-policies stage as a first stage' do
+          expect(subject[:stages]).to eq(%w[scan-policies not-test release dast])
+        end
+
+        it 'extends config with additional jobs' do
+          expect(subject).to include(expected_configuration)
+        end
+      end
     end
   end
 
@@ -160,7 +197,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
             {
               'secret-detection-0': hash_including(
                 rules: [{ if: '$SECRET_DETECTION_DISABLED', when: 'never' }, { if: '$CI_COMMIT_BRANCH' }],
-                stage: 'test',
+                stage: scan_policy_stage,
                 image: '$SECURE_ANALYZERS_PREFIX/secrets:$SECRETS_ANALYZER_VERSION$SECRET_DETECTION_IMAGE_SUFFIX',
                 services: [],
                 allow_failure: true,
