@@ -3,7 +3,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import ModalUpdate from 'ee/status_checks/components/modal_update.vue';
 import SharedModal from 'ee/status_checks/components/shared_modal.vue';
-import { TEST_PROTECTED_BRANCHES } from '../../vue_shared/components/branches_selector/mock_data';
+import { TEST_PROTECTED_BRANCHES } from 'ee_jest/vue_shared/components/branches_selector/mock_data';
 
 Vue.use(Vuex);
 
