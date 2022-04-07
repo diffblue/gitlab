@@ -1,4 +1,5 @@
 import { GlFormGroup, GlFormSelect, GlFormText, GlLink, GlSprintf } from '@gitlab/ui';
+import { nextTick } from 'vue';
 import { shallowMount } from '@vue/test-utils';
 import { mockTracking } from 'helpers/tracking_helper';
 import DeploymentTargetSelect from '~/projects/new/components/deployment_target_select.vue';
@@ -103,7 +104,9 @@ describe('Deployment target select', () => {
 
   describe('when user clicks on the docs link', () => {
     beforeEach(async () => {
-      await findSelect().vm.$emit('input', K8S_OPTION);
+      findSelect().vm.$emit('input', K8S_OPTION);
+      await nextTick();
+
       findLink().trigger('click');
     });
 
