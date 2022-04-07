@@ -349,15 +349,28 @@ RSpec.describe Environment, :use_clean_rails_memory_store_caching do
   end
 
   describe '.with_deployment' do
-    subject { described_class.with_deployment(sha) }
+    subject { described_class.with_deployment(sha, status: status) }
 
     let(:environment) { create(:environment, project: project) }
     let(:sha) { 'b83d6e391c22777fca1ed3012fce84f633d7fed0' }
+    let(:status) { nil }
 
     context 'when deployment has the specified sha' do
       let!(:deployment) { create(:deployment, environment: environment, sha: sha) }
 
       it { is_expected.to eq([environment]) }
+
+      context 'with success status filter' do
+        let(:status) { :success }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'with created status filter' do
+        let(:status) { :created }
+
+        it { is_expected.to contain_exactly(environment) }
+      end
     end
 
     context 'when deployment does not have the specified sha' do
