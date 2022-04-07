@@ -124,6 +124,7 @@ export default {
           :initial-is-enabled="initialEnableJiraVulnerabilities"
           :initial-issue-type-id="initialVulnerabilitiesIssuetype"
           :show-full-feature="showJiraVulnerabilitiesIntegration"
+          class="gl-mt-6"
           data-testid="jira-for-vulnerabilities"
           @request-jira-issue-types="$emit('request-jira-issue-types')"
         />

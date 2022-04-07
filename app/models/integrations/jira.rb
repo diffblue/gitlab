@@ -143,7 +143,7 @@ module Integrations
     end
 
     def help
-      jira_doc_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_url('integration/jira/index.html') }
+      jira_doc_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_path('integration/jira/index') }
       s_("JiraService|You must configure Jira before enabling this integration. %{jira_doc_link_start}Learn more.%{link_end}") % { jira_doc_link_start: jira_doc_link_start, link_end: '</a>'.html_safe }
     end
 
@@ -175,19 +175,10 @@ module Integrations
 
       # Jira issues is currently only configurable on the project level.
       if project_level?
-        jira_issues_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_url('integration/jira/issues.html') }
-        description = s_('JiraService|Work on Jira issues without leaving GitLab. Add a Jira menu to access a read-only list of your Jira issues. %{jira_issues_link_start}Learn more.%{link_end}') % { jira_issues_link_start: jira_issues_link_start, link_end: '</a>'.html_safe }
-
-        if project&.issues_enabled?
-          gitlab_issues_link_start = '<a href="%{url}">'.html_safe % { url: edit_project_path(project, anchor: 'js-shared-permissions') }
-          description += '<br><br>'.html_safe
-          description += s_("JiraService|Displaying Jira issues while leaving GitLab issues also enabled might be confusing. Consider %{gitlab_issues_link_start}disabling GitLab issues%{link_end} if they won't otherwise be used.") % { gitlab_issues_link_start: gitlab_issues_link_start, link_end: '</a>'.html_safe }
-        end
-
         sections.push({
           type: SECTION_TYPE_JIRA_ISSUES,
           title: _('Issues'),
-          description: description
+          description: jira_issues_section_description
         })
       end
 
@@ -616,6 +607,19 @@ module Integrations
       else
         data_fields.deployment_server!
       end
+    end
+
+    def jira_issues_section_description
+      jira_issues_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_path('integration/jira/issues') }
+      description = s_('JiraService|Work on Jira issues without leaving GitLab. Add a Jira menu to access a read-only list of your Jira issues. %{jira_issues_link_start}Learn more.%{link_end}') % { jira_issues_link_start: jira_issues_link_start, link_end: '</a>'.html_safe }
+
+      if project&.issues_enabled?
+        gitlab_issues_link_start = '<a href="%{url}">'.html_safe % { url: edit_project_path(project, anchor: 'js-shared-permissions') }
+        description += '<br><br>'.html_safe
+        description += s_("JiraService|Displaying Jira issues while leaving GitLab issues also enabled might be confusing. Consider %{gitlab_issues_link_start}disabling GitLab issues%{link_end} if they won't otherwise be used.") % { gitlab_issues_link_start: gitlab_issues_link_start, link_end: '</a>'.html_safe }
+      end
+
+      description
     end
   end
 end

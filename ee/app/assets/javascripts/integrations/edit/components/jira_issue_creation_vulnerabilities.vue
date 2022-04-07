@@ -129,7 +129,7 @@ export default {
 </script>
 
 <template>
-  <div class="gl-mt-6">
+  <div>
     <gl-form-checkbox
       v-model="isJiraVulnerabilitiesEnabled"
       data-testid="enable-jira-vulnerabilities"
