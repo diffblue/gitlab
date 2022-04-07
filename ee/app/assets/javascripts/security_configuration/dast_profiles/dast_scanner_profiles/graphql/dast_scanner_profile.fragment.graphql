@@ -1,0 +1,12 @@
+fragment DastScannerProfileFragment on DastScannerProfile {
+  __typename
+  id
+  profileName
+  spiderTimeout
+  targetTimeout
+  scanType
+  useAjaxSpider
+  showDebugMessages
+  editPath
+  referencedInSecurityPolicies
+}

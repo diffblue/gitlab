@@ -1,6 +1,11 @@
+#import "./dast_scanner_profile.fragment.graphql"
+
 mutation dastScannerProfileUpdate($input: DastScannerProfileUpdateInput!) {
   dastScannerProfileUpdate(input: $input) {
     id
     errors
+    dastScannerProfile {
+      ...DastScannerProfileFragment
+    }
   }
 }
