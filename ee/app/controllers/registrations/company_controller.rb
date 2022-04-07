@@ -25,9 +25,15 @@ module Registrations
 
     private
 
+    def authenticate_user!
+      return if current_user
+
+      redirect_to new_trial_registration_path, alert: I18n.t('devise.failure.unauthenticated')
+    end
+
     def company_params
-      params.permit(:first_name, :last_name, :company_name, :company_size, :phone_number, :country,
-                    :state, :website_url, :namespace_id, :glm_content, :glm_source)
+      params.permit(:first_name, :last_name, :company_name, :company_size, :phone_number,
+                    :country, :state, :website_url, :glm_content, :glm_source)
             .merge(extra_params)
     end
 
