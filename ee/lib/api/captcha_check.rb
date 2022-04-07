@@ -26,7 +26,7 @@ module API
         else
           user = ::User.by_login(params[:username])
           not_found! 'User' unless user
-          present(::Users::CaptchaChallengeService.new(user, ip_address).execute, with: Entities::CaptchaCheck)
+          present(::Users::CaptchaChallengeService.new(user).execute, with: Entities::CaptchaCheck)
         end
       end
     end
