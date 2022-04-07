@@ -21,9 +21,7 @@ module EE
           enable_jira_vulnerabilities: integration.jira_vulnerabilities_integration_enabled?.to_s,
           project_key: integration.project_key,
           vulnerabilities_issuetype: integration.vulnerabilities_issuetype,
-          gitlab_issues_enabled: @project&.issues_enabled?.to_s,
-          upgrade_plan_path: @project && ::Gitlab::CurrentSettings.should_check_namespace_plan? ? upgrade_plan_path(@project.group) : nil,
-          edit_project_path: @project ? edit_project_path(@project, anchor: 'js-shared-permissions') : nil
+          upgrade_plan_path: @project && ::Gitlab::CurrentSettings.should_check_namespace_plan? ? upgrade_plan_path(@project.group) : nil
         )
       end
 

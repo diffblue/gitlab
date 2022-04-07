@@ -31,9 +31,7 @@ RSpec.describe EE::IntegrationsHelper do
         enable_jira_vulnerabilities: 'false',
         project_key: 'FE',
         vulnerabilities_issuetype: '10001',
-        gitlab_issues_enabled: 'true',
-        upgrade_plan_path: nil,
-        edit_project_path: edit_project_path(project, anchor: 'js-shared-permissions')
+        upgrade_plan_path: nil
       }
     end
 
