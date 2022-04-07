@@ -235,6 +235,15 @@ describe('Iteration Form', () => {
       expect(findPageTitle().text()).toBe('Edit iteration');
     });
 
+    it('parses dates without adding timezone offsets', async () => {
+      createComponent();
+
+      await waitForPromises();
+
+      expect(findStartDate().props('value').getTimezoneOffset()).toBe(0);
+      expect(findDueDate().props('value').getTimezoneOffset()).toBe(0);
+    });
+
     it('prefills form fields', async () => {
       createComponent();
 
