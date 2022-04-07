@@ -7,7 +7,18 @@ RSpec.describe 'epics list', :js do
   let(:user) { create(:user) }
   let(:user_dev) { create(:user) }
   let!(:bug_label) { create(:group_label, group: group, title: 'Bug') }
+  let!(:docs_label) { create(:group_label, group: group, title: 'Documentation') }
+  let!(:enhancement_label) { create(:group_label, group: group, title: 'Enhancement') }
   let!(:critical_label) { create(:group_label, group: group, title: 'Critical') }
+
+  def select_token(token, operator, value)
+    find_field('Search').click
+    click_link token
+    first('a', text: operator).click
+    page.within('.gl-filtered-search-suggestion-list') do
+      click_link value
+    end
+  end
 
   before do
     stub_licensed_features(epics: true)
@@ -21,9 +32,9 @@ RSpec.describe 'epics list', :js do
     available_sort_options = ['Created date', 'Updated date', 'Start date', 'Due date', 'Title']
 
     describe 'within a group' do
-      let!(:epic1) { create(:epic, group: group, start_date: '2020-12-15', end_date: '2021-1-15') }
-      let!(:epic2) { create(:epic, group: group, start_date: '2020-12-15') }
-      let!(:epic3) { create(:epic, group: group, end_date: '2021-1-15') }
+      let!(:epic1) { create(:epic, group: group, start_date: '2020-12-15', end_date: '2021-1-15', labels: [docs_label]) }
+      let!(:epic2) { create(:epic, group: group, start_date: '2020-12-15', labels: [docs_label, enhancement_label]) }
+      let!(:epic3) { create(:epic, group: group, end_date: '2021-1-15', labels: [enhancement_label]) }
       let!(:award_emoji_star) { create(:award_emoji, name: 'star', user: user, awardable: epic1) }
       let!(:award_emoji_upvote) { create(:award_emoji, :upvote, user: user, awardable: epic1) }
       let!(:award_emoji_downvote) { create(:award_emoji, :downvote, user: user, awardable: epic2) }
@@ -78,6 +89,30 @@ RSpec.describe 'epics list', :js do
 
         it_behaves_like 'filtered search bar', available_tokens, available_sort_options
 
+        it 'filters epics list based on labels with "=" operator' do
+          select_token('Label', '=', docs_label.title)
+          find('.gl-search-box-by-click-search-button').click
+
+          wait_for_requests
+
+          page.within('.issuable-list-container') do
+            expect(page.find('.issuable-list')).to have_selector('li.issue', count: 2)
+          end
+        end
+
+        it 'filters epics list based on labels with "!=" operator', :aggregate_failures do
+          select_token('Label', '=', docs_label.title)
+          select_token('Label', '!=', enhancement_label.title)
+          find('.gl-search-box-by-click-search-button').click
+
+          wait_for_requests
+
+          page.within('.issuable-list-container .issuable-list') do
+            expect(page).to have_selector('li.issue', count: 1)
+            expect(page.find('li.issue .issuable-info')).not_to have_selector('.gl-label', text: enhancement_label.title)
+          end
+        end
+
         it 'shows bulk editing sidebar with actions and labels select dropdown', :aggregate_failures do
           click_button 'Edit epics'
 
@@ -100,8 +135,8 @@ RSpec.describe 'epics list', :js do
         end
 
         it 'applies label to multiple epics from bulk editing sidebar', :aggregate_failures do
-          # Vertify that no labels are applied already
-          expect(find('.issuable-list li.issue .issuable-info', match: :first)).not_to have_selector('.gl-label')
+          # Vertify that label `Bug` is not applied already
+          expect(find('.issuable-list li.issue .issuable-info', match: :first)).not_to have_selector('.gl-label', text: bug_label.title)
 
           # Bulk edit all epics to apply label
           page.within('.issuable-list-container') do
@@ -112,7 +147,7 @@ RSpec.describe 'epics list', :js do
             end
 
             page.within('aside.right-sidebar') do
-              click_button 'Label'
+              find('button.js-dropdown-button').click
 
               wait_for_requests
 

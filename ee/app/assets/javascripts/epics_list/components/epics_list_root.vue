@@ -12,6 +12,7 @@ import { IssuableListTabs, DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/
 import { parsePikadayDate, dateInWords } from '~/lib/utils/datetime_utility';
 import { s__, sprintf } from '~/locale';
 
+import { transformFetchEpicFilterParams } from '../../roadmap/utils/epic_utils';
 import { EpicsSortOptions } from '../constants';
 import groupEpics from '../queries/group_epics.query.graphql';
 
@@ -75,8 +76,10 @@ export default {
         }
 
         if (Object.keys(this.filterParams).length) {
+          const transformedFilterParams = transformFetchEpicFilterParams(this.filterParams);
+
           Object.assign(queryVariables, {
-            ...this.filterParams,
+            ...transformedFilterParams,
           });
         }
 

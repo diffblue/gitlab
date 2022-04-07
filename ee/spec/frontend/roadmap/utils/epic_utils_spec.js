@@ -61,3 +61,21 @@ describe('scrollToCurrentDay', () => {
     });
   });
 });
+
+describe('transformFetchEpicFilterParams', () => {
+  it('should return congregated `not[]` params in a single key', () => {
+    const filterParams = {
+      'not[authorUsername]': 'foo',
+      'not[myReactionEmoji]': ':emoji:',
+      authorUsername: 'baz',
+    };
+
+    expect(epicUtils.transformFetchEpicFilterParams(filterParams)).toEqual({
+      not: {
+        authorUsername: 'foo',
+        myReactionEmoji: ':emoji:',
+      },
+      authorUsername: 'baz',
+    });
+  });
+});

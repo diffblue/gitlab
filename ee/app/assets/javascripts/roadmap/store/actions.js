@@ -29,7 +29,7 @@ const fetchGroupEpics = (
     }),
   };
 
-  const transformedFilterParams = roadmapItemUtils.transformFetchEpicFilterParams(filterParams);
+  const transformedFilterParams = epicUtils.transformFetchEpicFilterParams(filterParams);
 
   // When epicIid is present,
   // Roadmap is being accessed from within an Epic,
