@@ -12,6 +12,7 @@ import fuzzaldrinPlus from 'fuzzaldrin-plus';
 import { mapState, mapActions } from 'vuex';
 
 import { __ } from '~/locale';
+import { AVATAR_SHAPE_OPTION_RECT } from '~/vue_shared/constants';
 import { SEARCH_DEBOUNCE } from '../constants';
 
 export default {
@@ -107,6 +108,7 @@ export default {
     },
   },
   debounce: SEARCH_DEBOUNCE,
+  AVATAR_SHAPE_OPTION_RECT,
 };
 </script>
 
@@ -153,7 +155,7 @@ export default {
             <gl-dropdown-item v-if="canShowParentGroup" class="w-100" @click="selectedGroup = null">
               <gl-avatar
                 :entity-name="parentItem.groupName"
-                shape="rect"
+                :shape="$options.AVATAR_SHAPE_OPTION_RECT"
                 :size="32"
                 class="d-inline-flex"
               />
@@ -172,7 +174,7 @@ export default {
               <gl-avatar
                 :src="group.avatar_url"
                 :entity-name="group.name"
-                shape="rect"
+                :shape="$options.AVATAR_SHAPE_OPTION_RECT"
                 :size="32"
                 class="d-inline-flex"
               />
