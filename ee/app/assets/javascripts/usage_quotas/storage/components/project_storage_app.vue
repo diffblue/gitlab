@@ -72,7 +72,7 @@ export default {
 };
 </script>
 <template>
-  <gl-loading-icon v-if="$apollo.queries.project.loading" class="gl-mt-5" size="md" />
+  <gl-loading-icon v-if="$apollo.queries.project.loading" class="gl-mt-5" size="lg" />
   <gl-alert v-else-if="error" variant="danger" @dismiss="clearError">
     {{ error }}
   </gl-alert>

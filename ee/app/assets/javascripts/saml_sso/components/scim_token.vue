@@ -139,7 +139,7 @@ export default {
       v-if="loading"
       class="gl-absolute gl-top-5 gl-left-0 gl-right-0 gl-display-flex gl-justify-content-center"
     >
-      <gl-loading-icon size="md" />
+      <gl-loading-icon size="lg" />
     </div>
     <div
       v-if="tokenHasNotBeenGenerated"

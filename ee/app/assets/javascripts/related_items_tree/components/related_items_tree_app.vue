@@ -177,7 +177,7 @@ export default {
 <template>
   <div class="related-items-tree-container gl-mt-5">
     <div v-if="itemsFetchInProgress" class="mt-2">
-      <gl-loading-icon size="md" />
+      <gl-loading-icon size="lg" />
     </div>
     <div
       v-else

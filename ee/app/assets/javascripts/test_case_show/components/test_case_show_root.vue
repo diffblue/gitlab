@@ -151,7 +151,7 @@ export default {
         )
       }}
     </gl-alert>
-    <gl-loading-icon v-if="testCaseLoading" size="md" class="gl-mt-3" />
+    <gl-loading-icon v-if="testCaseLoading" size="lg" class="gl-mt-3" />
     <issuable-show
       v-if="!testCaseLoading && !testCaseLoadFailed"
       :issuable="testCase"
