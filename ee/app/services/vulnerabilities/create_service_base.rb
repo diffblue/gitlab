@@ -71,12 +71,10 @@ module Vulnerabilities
         external_id = identifier[:external_id] || name
         fingerprint = Digest::SHA1.hexdigest("#{external_type}:#{external_id}")
         url = identifier[:url]
+        lookup_attrs = { name: name, project: @project, external_type: external_type, external_id: external_id }
 
-        Vulnerabilities::Identifier.find_or_initialize_by(name: name) do |i|
+        Vulnerabilities::Identifier.find_or_initialize_by(lookup_attrs) do |i|
           i.fingerprint = fingerprint
-          i.project = @project
-          i.external_type = external_type
-          i.external_id = external_id
           i.url = url
         end
       end
