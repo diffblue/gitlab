@@ -46,7 +46,13 @@ module Audit
     end
 
     def changed?(column)
-      model.previous_changes.has_key?(column)
+      return false unless model.previous_changes.has_key?(column)
+
+      from = model.previous_changes[column].first
+      to = model.previous_changes[column].second
+      return false if from.blank? && to.blank?
+
+      true
     end
 
     def changes(column)
