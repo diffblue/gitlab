@@ -379,7 +379,7 @@ export default {
 
         <metric-images-tab
           v-if="!isThreatMonitoringPage"
-          data-testid="$options.tabsConfig[1].id"
+          :data-testid="$options.tabsConfig[1].id"
           :title="$options.tabsConfig[1].title"
         />
         <gl-tab :data-testid="$options.tabsConfig[2].id" :title="$options.tabsConfig[2].title">

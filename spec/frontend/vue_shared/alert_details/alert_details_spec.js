@@ -96,7 +96,7 @@ describe('AlertDetails', () => {
   const findEnvironmentName = () => wrapper.findByTestId('environmentName');
   const findEnvironmentPath = () => wrapper.findByTestId('environmentPath');
   const findDetailsTable = () => wrapper.findComponent(AlertDetailsTable);
-  const findMetricsTab = () => wrapper.findByTestId('metrics-tab');
+  const findMetricsTab = () => wrapper.findByTestId('metrics');
 
   describe('Alert details', () => {
     describe('when alert is null', () => {
