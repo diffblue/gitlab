@@ -5,7 +5,7 @@ import { mapState, mapActions } from 'vuex';
 import BoardCard from '~/boards/components/board_card.vue';
 import BoardNewIssue from '~/boards/components/board_new_issue.vue';
 import eventHub from '~/boards/eventhub';
-import defaultSortableConfig from '~/sortable/sortable_config';
+import { defaultSortableOptions } from '~/sortable/constants';
 
 export default {
   components: {
@@ -57,7 +57,7 @@ export default {
     },
     treeRootOptions() {
       const options = {
-        ...defaultSortableConfig,
+        ...defaultSortableOptions,
         fallbackOnBody: false,
         group: 'board-epics-swimlanes',
         tag: 'ul',

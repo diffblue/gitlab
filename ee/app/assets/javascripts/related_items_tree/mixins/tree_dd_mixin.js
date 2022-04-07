@@ -1,6 +1,6 @@
 import Draggable from 'vuedraggable';
 
-import defaultSortableConfig from '~/sortable/sortable_config';
+import { defaultSortableOptions } from '~/sortable/constants';
 import { idProp, relativePositions, treeItemChevronBtnClassName } from '../constants';
 
 export default {
@@ -10,7 +10,7 @@ export default {
     },
     treeRootOptions() {
       const options = {
-        ...defaultSortableConfig,
+        ...defaultSortableOptions,
         fallbackOnBody: false,
         group: 'sortable-container',
         tag: 'ul',
