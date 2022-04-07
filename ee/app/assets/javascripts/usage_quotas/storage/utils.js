@@ -1,5 +1,5 @@
 import { numberToHumanSize, bytesToKiB } from '~/lib/utils/number_utils';
-import { gibibytes, kibibytes } from '~/lib/utils/unit_format';
+import { kibibytes } from '~/lib/utils/unit_format';
 import { PROJECT_STORAGE_TYPES, STORAGE_USAGE_THRESHOLDS } from './constants';
 
 export function usageRatioToThresholdLevel(currentUsageRatio) {
@@ -19,12 +19,11 @@ export function usageRatioToThresholdLevel(currentUsageRatio) {
  * converting bytesToKiB before passing it to
  * `getFormatter`
 
+ * @param {Number} size size in bytes
  * @returns {String}
- * @param sizeInBytes
- * @param {String} unitSeparator
  */
-export const formatUsageSize = (sizeInBytes, unitSeparator = '') => {
-  return kibibytes(bytesToKiB(sizeInBytes), 1, { unitSeparator });
+export const formatUsageSize = (sizeInBytes) => {
+  return kibibytes(bytesToKiB(sizeInBytes), 1);
 };
 
 /**
@@ -187,28 +186,4 @@ export const parseGetProjectStorageResults = (data, helpLinks) => {
  */
 export function descendingStorageUsageSort(storageUsageKey) {
   return (a, b) => b[storageUsageKey] - a[storageUsageKey];
-}
-
-/**
- * The formatUsageSize method returns
- * value along with the unit. However, the unit
- * and the value needs to be separated so that
- * they can have different styles. The method
- * splits the value into value and unit.
- *
- * @params {Number} size size in bytes
- * @returns {Object} value and unit of formatted size
- */
-export function formatSizeAndSplit(sizeInBytes) {
-  if (sizeInBytes === null) {
-    return null;
-  }
-  /**
-   * we're using a special separator to help us split the formatted value properly,
-   * the separator won't be shown in the output
-   */
-  const unitSeparator = '@';
-  const format = sizeInBytes === 0 ? gibibytes : kibibytes;
-  const [value, unit] = format(bytesToKiB(sizeInBytes), 1, { unitSeparator }).split(unitSeparator);
-  return { value, unit };
 }

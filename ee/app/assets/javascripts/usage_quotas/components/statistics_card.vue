@@ -55,6 +55,11 @@ export default {
       required: false,
       default: null,
     },
+    cssClass: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
 };
 </script>
@@ -63,6 +68,7 @@ export default {
   <div
     class="gl-bg-white gl-border-1 gl-border-gray-100 gl-border-solid gl-p-5 gl-rounded-base"
     data-testid="container"
+    :class="cssClass"
   >
     <div class="gl-display-flex gl-justify-content-space-between">
       <p
