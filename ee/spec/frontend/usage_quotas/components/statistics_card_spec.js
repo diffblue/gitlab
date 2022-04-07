@@ -30,6 +30,12 @@ describe('StatisticsCard', () => {
   const findHelpLink = () => wrapper.findComponent(GlLink);
   const findProgressBar = () => wrapper.findComponent(GlProgressBar);
 
+  it('passes cssClass to container div', () => {
+    const cssClass = 'awesome-css-class';
+    createComponent({ cssClass });
+    expect(wrapper.find('[data-testid="container"]').classes()).toContain(cssClass);
+  });
+
   describe('denominator block', () => {
     it('renders denominator block with all elements when all props are passed', () => {
       createComponent(defaultProps);
