@@ -13,6 +13,7 @@ import { debounce } from 'lodash';
 import { filterBySearchTerm } from '~/analytics/shared/utils';
 import Api from '~/api';
 import { s__, __ } from '~/locale';
+import { AVATAR_SHAPE_OPTION_RECT } from '~/vue_shared/constants';
 import { DATA_REFETCH_DELAY } from '../constants';
 
 export default {
@@ -112,6 +113,7 @@ export default {
         .join(' / ');
     },
   },
+  AVATAR_SHAPE_OPTION_RECT,
 };
 </script>
 
@@ -125,7 +127,7 @@ export default {
           :entity-id="selectedGroup.id"
           :entity-name="selectedGroup.name"
           :size="16"
-          shape="rect"
+          :shape="$options.AVATAR_SHAPE_OPTION_RECT"
           :alt="selectedGroup.name"
           class="gl-display-inline-flex gl-vertical-align-middle gl-mr-2"
         />
@@ -150,7 +152,7 @@ export default {
           :entity-id="group.id"
           :entity-name="group.name"
           :src="group.avatar_url"
-          shape="rect"
+          :shape="$options.AVATAR_SHAPE_OPTION_RECT"
         />
         <div
           v-safe-html="formatGroupPath(group.full_name)"

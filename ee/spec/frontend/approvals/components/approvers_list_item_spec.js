@@ -3,6 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import ApproversListItem from 'ee/approvals/components/approvers_list_item.vue';
 import HiddenGroupsItem from 'ee/approvals/components/hidden_groups_item.vue';
 import { TYPE_USER, TYPE_GROUP, TYPE_HIDDEN_GROUPS } from 'ee/approvals/constants';
+import { AVATAR_SHAPE_OPTION_CIRCLE, AVATAR_SHAPE_OPTION_RECT } from '~/vue_shared/constants';
 
 const TEST_USER = {
   id: 1,
@@ -45,7 +46,7 @@ describe('Approvals ApproversListItem', () => {
       expect(avatar.attributes()).toMatchObject({
         'entity-name': TEST_USER.name,
         src: TEST_USER.avatar_url,
-        shape: 'circle',
+        shape: AVATAR_SHAPE_OPTION_CIRCLE,
         alt: TEST_USER.name,
       });
       expect(avatar.props('label')).toBe(TEST_USER.name);
@@ -74,7 +75,7 @@ describe('Approvals ApproversListItem', () => {
       expect(avatar.attributes()).toMatchObject({
         'entity-name': TEST_GROUP.name,
         src: TEST_GROUP.avatar_url,
-        shape: 'rect',
+        shape: AVATAR_SHAPE_OPTION_RECT,
         alt: TEST_GROUP.name,
       });
       expect(avatar.props('label')).toBe(TEST_GROUP.full_path);
