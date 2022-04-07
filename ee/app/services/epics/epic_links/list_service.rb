@@ -9,7 +9,9 @@ module Epics::EpicLinks
     def child_issuables
       return [] unless issuable&.group&.feature_available?(:epics)
 
-      EpicsFinder.new(current_user, parent_id: issuable.id, group_id: issuable.group.id, sort: 'relative_position').execute
+      EpicsFinder.new(current_user, parent_id: issuable.id,
+                      group_id: issuable.group.id,
+                      sort: 'relative_position').execute
     end
 
     override :serializer

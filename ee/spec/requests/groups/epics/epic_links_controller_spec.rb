@@ -125,7 +125,9 @@ RSpec.describe Groups::Epics::EpicLinksController do
     let(:move_before_epic) { epic2 }
 
     subject do
-      put group_epic_link_path(group_id: group, epic_id: parent_epic.to_param, id: epic1.id, epic: { move_before_id: move_before_epic.id })
+      put group_epic_link_path(group_id: group, epic_id: parent_epic.to_param,
+                               id: epic1.id, epic: { move_before_id:
+                                                     move_before_epic.id })
     end
 
     it_behaves_like 'unlicensed subepics action'
