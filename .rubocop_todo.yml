@@ -25,15 +25,6 @@ Layout/MultilineOperationIndentation:
 Layout/SpaceInLambdaLiteral:
   Enabled: false
 
-# Offense count: 1209
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyleForEmptyBraces, SpaceBeforeBlockParameters.
-# SupportedStyles: space, no_space
-# SupportedStylesForEmptyBraces: space, no_space
-Layout/SpaceInsideBlockBraces:
-  Enabled: false
-  EnforcedStyle: space
-
 # Offense count: 585
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
