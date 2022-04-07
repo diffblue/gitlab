@@ -1512,17 +1512,8 @@ RSpec.describe GroupPolicy do
         enable_namespace_license_check!
       end
 
-      # We don't have feature toggles on groups yet, so we currently simulate
-      # this by stubbing the license check instead.
       def set_access_level(access_level)
-        case access_level
-        when ProjectFeature::ENABLED
-          stub_licensed_features(group_wikis: true)
-        when ProjectFeature::DISABLED
-          stub_licensed_features(group_wikis: false)
-        when ProjectFeature::PRIVATE
-          skip('Access level private is not supported yet for group wikis, see https://gitlab.com/gitlab-org/gitlab/-/issues/208412')
-        end
+        container.group_feature.update_attribute(:wiki_access_level, access_level)
       end
 
       context 'when the feature is not licensed on this group' do

@@ -357,7 +357,9 @@ module EE
       end
 
       desc "Group has wiki disabled"
-      condition(:wiki_disabled, score: 32) { !@subject.feature_available?(:group_wikis) }
+      condition(:wiki_disabled, score: 32) do
+        !@subject.licensed_feature_available?(:group_wikis) || !@subject.feature_available?(:wiki, @user)
+      end
 
       rule { wiki_disabled }.policy do
         prevent(*create_read_update_admin_destroy(:wiki))
