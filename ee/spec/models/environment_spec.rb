@@ -253,19 +253,40 @@ RSpec.describe Environment, :use_clean_rails_memory_store_caching do
     context 'when Protected Environments feature is available' do
       before do
         stub_licensed_features(protected_environments: true)
-        create(:protected_environment, name: environment.name, project: project, required_approval_count: required_approval_count)
       end
 
-      context 'with some approvals required' do
-        let(:required_approval_count) { 1 }
+      context 'with unified access level' do
+        before do
+          create(:protected_environment, name: environment.name, project: project, required_approval_count: required_approval_count)
+        end
 
-        it { is_expected.to be_truthy }
+        context 'with some approvals required' do
+          let(:required_approval_count) { 1 }
+
+          it { is_expected.to be_truthy }
+        end
+
+        context 'with no approvals required' do
+          let(:required_approval_count) { 0 }
+
+          it { is_expected.to be_falsey }
+        end
       end
 
-      context 'with no approvals required' do
-        let(:required_approval_count) { 0 }
+      context 'with multi access levels' do
+        let!(:protected_environment) { create(:protected_environment, name: environment.name, project: project) }
 
-        it { is_expected.to be_falsey }
+        context 'with some approvals required' do
+          let!(:approval_rule) do
+            create(:protected_environment_approval_rule, :maintainer_access, protected_environment: protected_environment)
+          end
+
+          it { is_expected.to be_truthy }
+        end
+
+        context 'with no approvals required' do
+          it { is_expected.to be_falsey }
+        end
       end
     end
 

@@ -43,6 +43,11 @@ module Deployments
 
       if approval.rejected?
         deployment.deployable.drop!(:deployment_rejected)
+      elsif environment.has_approval_rules?
+        # Approvers might not have sufficient permission to execute the deployment job,
+        # so we just unblock the deployment, which stays as manual job.
+        # Executors can later run the manual job at their ideal timing.
+        deployment.unblock! if deployment.approved?
       elsif deployment.pending_approval_count <= 0
         deployment.unblock!
         deployment.deployable.enqueue!
