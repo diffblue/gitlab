@@ -73,11 +73,6 @@ Lint/EmptyFile:
     - 'db/seeds.rb'
     - 'ee/db/geo/seeds.rb'
 
-# Offense count: 208
-# Configuration parameters: MaximumRangeSize.
-Lint/MissingCopEnableDirective:
-  Enabled: false
-
 # Offense count: 13
 Lint/MixedRegexpCaptureTypes:
   Exclude:
