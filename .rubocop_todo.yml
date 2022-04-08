@@ -89,13 +89,6 @@ Performance/MethodObjectAsBlock:
 RSpec/ContextWording:
   Enabled: false
 
-# Offense count: 4
-# Configuration parameters: CustomIncludeMethods.
-RSpec/EmptyExampleGroup:
-  Exclude:
-    - 'ee/spec/services/personal_access_tokens/revoke_invalid_tokens_spec.rb'
-    - 'spec/services/projects/prometheus/alerts/notify_service_spec.rb'
-
 # Offense count: 1428
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
