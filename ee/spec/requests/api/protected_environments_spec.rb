@@ -11,9 +11,14 @@ RSpec.describe API::ProtectedEnvironments do
   let(:user) { create(:user) }
   let(:protected_environment_name) { 'production' }
 
-  before do
-    create(:protected_environment, :maintainers_can_deploy, :project_level, project: project, name: protected_environment_name, required_approval_count: 1)
-    create(:protected_environment, :maintainers_can_deploy, :group_level, group: group, name: protected_environment_name, required_approval_count: 2)
+  let!(:project_protected_environment) do
+    create(:protected_environment, :maintainers_can_deploy, :project_level, project: project,
+           name: protected_environment_name, required_approval_count: 1)
+  end
+
+  let!(:group_protected_environment) do
+    create(:protected_environment, :maintainers_can_deploy, :group_level, group: group,
+           name: protected_environment_name, required_approval_count: 2)
   end
 
   shared_examples 'requests for non-maintainers' do
@@ -65,6 +70,24 @@ RSpec.describe API::ProtectedEnvironments do
         expect(json_response['name']).to eq(protected_environment_name)
         expect(json_response['deploy_access_levels'][0]['access_level']).to eq(::Gitlab::Access::MAINTAINER)
         expect(json_response['required_approval_count']).to eq(1)
+      end
+
+      context 'with multiple approval rules' do
+        before do
+          create(:protected_environment_approval_rule, :maintainer_access,
+            protected_environment: project_protected_environment, required_approvals: 3)
+        end
+
+        it 'returns the protected environment' do
+          request
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
+          expect(json_response['name']).to eq(protected_environment_name)
+          expect(json_response['deploy_access_levels'][0]['access_level']).to eq(::Gitlab::Access::MAINTAINER)
+          expect(json_response['approval_rules'][0]['access_level']).to eq(::Gitlab::Access::MAINTAINER)
+          expect(json_response['approval_rules'][0]['required_approvals']).to eq(3)
+        end
       end
 
       context 'when protected environment does not exist' do
@@ -127,6 +150,21 @@ RSpec.describe API::ProtectedEnvironments do
         post api_url, params: { name: 'production', deploy_access_levels: [{ user_id: deployer.id }] }
 
         expect(response).to have_gitlab_http_status(:conflict)
+      end
+
+      it 'protects the environment and require approvals' do
+        deployer = create(:user)
+        project.add_developer(deployer)
+
+        post api_url, params: { name: 'staging', deploy_access_levels: [{ user_id: deployer.id }],
+                                approval_rules: [{ access_level: Gitlab::Access::MAINTAINER }] }
+
+        expect(response).to have_gitlab_http_status(:created)
+        expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
+        expect(json_response['name']).to eq('staging')
+        expect(json_response['deploy_access_levels'].first['user_id']).to eq(deployer.id)
+        expect(json_response['approval_rules'].count).to eq(1)
+        expect(json_response['approval_rules'].first['access_level']).to eq(Gitlab::Access::MAINTAINER)
       end
 
       context 'without deploy_access_levels' do
@@ -212,6 +250,24 @@ RSpec.describe API::ProtectedEnvironments do
         expect(json_response['required_approval_count']).to eq(2)
       end
 
+      context 'with multiple approval rules' do
+        before do
+          create(:protected_environment_approval_rule, :maintainer_access,
+            protected_environment: group_protected_environment, required_approvals: 3)
+        end
+
+        it 'returns the protected environment' do
+          request
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
+          expect(json_response['name']).to eq(protected_environment_name)
+          expect(json_response['deploy_access_levels'][0]['access_level']).to eq(::Gitlab::Access::MAINTAINER)
+          expect(json_response['approval_rules'][0]['access_level']).to eq(::Gitlab::Access::MAINTAINER)
+          expect(json_response['approval_rules'][0]['required_approvals']).to eq(3)
+        end
+      end
+
       context 'when protected environment does not exist' do
         let(:requested_environment_name) { 'unknown' }
 
@@ -275,6 +331,21 @@ RSpec.describe API::ProtectedEnvironments do
         expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
         expect(json_response['name']).to eq('staging')
         expect(json_response['deploy_access_levels'].first['access_level']).to eq(Gitlab::Access::MAINTAINER)
+      end
+
+      it 'protects the environment and require approvals' do
+        deployer = create(:user)
+        project.add_developer(deployer)
+
+        post api_url, params: { name: 'staging', deploy_access_levels: [{ access_level: Gitlab::Access::MAINTAINER }],
+                                approval_rules: [{ access_level: Gitlab::Access::DEVELOPER }] }
+
+        expect(response).to have_gitlab_http_status(:created)
+        expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
+        expect(json_response['name']).to eq('staging')
+        expect(json_response['deploy_access_levels'].first['access_level']).to eq(Gitlab::Access::MAINTAINER)
+        expect(json_response['approval_rules'].count).to eq(1)
+        expect(json_response['approval_rules'].first['access_level']).to eq(Gitlab::Access::DEVELOPER)
       end
 
       it 'returns 409 error if environment is already protected' do

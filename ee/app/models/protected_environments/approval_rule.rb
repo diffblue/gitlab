@@ -11,5 +11,7 @@ module ProtectedEnvironments
     has_many :deployment_approvals, class_name: 'Deployments::Approval', inverse_of: :approval_rule
 
     validates :access_level, allow_blank: true, inclusion: { in: ALLOWED_ACCESS_LEVELS }
+    validates :required_approvals,
+              numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 5 }
   end
 end

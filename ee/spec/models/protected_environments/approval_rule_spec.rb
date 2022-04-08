@@ -8,4 +8,11 @@ RSpec.describe ProtectedEnvironments::ApprovalRule do
 
   it_behaves_like 'authorizable for protected environments',
     factory_name: :protected_environment_approval_rule
+
+  describe 'validation' do
+    it 'has a limit on required_approvals' do
+      is_expected.to validate_numericality_of(:required_approvals)
+        .only_integer.is_greater_than_or_equal_to(1).is_less_than_or_equal_to(5)
+    end
+  end
 end

@@ -81,6 +81,20 @@ RSpec.describe Ci::ProcessBuildService, '#execute' do
 
             include_examples 'blocked deployment'
 
+            it 'sets manual to build.when' do
+              expect { subject }.to change { ci_build.reload.when }.to('manual')
+            end
+
+            context 'when deployment_approval_rules feature flag is disabled' do
+              before do
+                stub_feature_flags(deployment_approval_rules: false)
+              end
+
+              it 'does not set ci_builds.when' do
+                expect { subject }.not_to change { ci_build.reload.when }
+              end
+            end
+
             context 'and the build is schedulable' do
               let(:ci_build) { create(:ci_build, :created, :schedulable, environment: environment.name, user: user, project: project) }
 
