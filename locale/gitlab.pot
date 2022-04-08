@@ -6798,6 +6798,9 @@ msgstr ""
 msgid "Cancel and close"
 msgstr ""
 
+msgid "Cancel editing"
+msgstr ""
+
 msgid "Cancel index deletion"
 msgstr ""
 
@@ -9977,6 +9980,9 @@ msgid "ContextCommits|Failed to delete context commits. Please try again."
 msgstr ""
 
 msgid "Continue"
+msgstr ""
+
+msgid "Continue editing"
 msgstr ""
 
 msgid "Continue to the next step"
