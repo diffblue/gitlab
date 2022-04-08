@@ -1271,11 +1271,12 @@ RSpec.describe ContainerRepository, :aggregate_failures do
       let_it_be(:import_done_repository) { create(:container_repository, :import_done, migration_pre_import_done_at: 3.days.ago, migration_import_done_at: 2.days.ago) }
       let_it_be(:import_aborted_repository) { create(:container_repository, :import_aborted, migration_pre_import_done_at: 5.days.ago, migration_aborted_at: 1.day.ago) }
       let_it_be(:pre_import_done_repository) { create(:container_repository, :pre_import_done, migration_pre_import_done_at: 1.hour.ago) }
+      let_it_be(:import_skipped_repository) { create(:container_repository, :import_skipped, migration_skipped_at: 90.minutes.ago) }
 
       subject { described_class.recently_done_migration_step }
 
       it 'returns completed imports by done_at date' do
-        expect(subject.to_a).to eq([pre_import_done_repository, import_aborted_repository, import_done_repository])
+        expect(subject.to_a).to eq([pre_import_done_repository, import_skipped_repository, import_aborted_repository, import_done_repository])
       end
     end
 
@@ -1296,13 +1297,15 @@ RSpec.describe ContainerRepository, :aggregate_failures do
     describe '#last_import_step_done_at' do
       let_it_be(:aborted_at) { Time.zone.now - 1.hour }
       let_it_be(:pre_import_done_at) { Time.zone.now - 2.hours }
+      let_it_be(:skipped_at) { Time.zone.now - 3.hours }
 
       subject { repository.last_import_step_done_at }
 
       before do
         repository.update_columns(
           migration_pre_import_done_at: pre_import_done_at,
-          migration_aborted_at: aborted_at
+          migration_aborted_at: aborted_at,
+          migration_skipped_at: skipped_at
         )
       end
 

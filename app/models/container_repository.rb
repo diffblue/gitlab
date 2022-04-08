@@ -58,8 +58,8 @@ class ContainerRepository < ApplicationRecord
   scope :import_in_process, -> { where(migration_state: %w[pre_importing pre_import_done importing]) }
 
   scope :recently_done_migration_step, -> do
-    where(migration_state: %w[import_done pre_import_done import_aborted])
-      .order(Arel.sql('GREATEST(migration_pre_import_done_at, migration_import_done_at, migration_aborted_at) DESC'))
+    where(migration_state: %w[import_done pre_import_done import_aborted import_skipped])
+      .order(Arel.sql('GREATEST(migration_pre_import_done_at, migration_import_done_at, migration_aborted_at, migration_skipped_at) DESC'))
   end
 
   scope :ready_for_import, -> do
@@ -160,7 +160,7 @@ class ContainerRepository < ApplicationRecord
       end
     end
 
-    before_transition %i[pre_importing import_aborted] => :pre_import_done do |container_repository|
+    before_transition any => :pre_import_done do |container_repository|
       container_repository.migration_pre_import_done_at = Time.zone.now
     end
 
@@ -359,7 +359,7 @@ class ContainerRepository < ApplicationRecord
   end
 
   def last_import_step_done_at
-    [migration_pre_import_done_at, migration_import_done_at, migration_aborted_at].compact.max
+    [migration_pre_import_done_at, migration_import_done_at, migration_aborted_at, migration_skipped_at].compact.max
   end
 
   def external_import_status
