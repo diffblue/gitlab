@@ -1,11 +1,10 @@
 - checked = local_assigns.fetch(:checked, nil)
 - check_box_options = {}
 - check_box_options[:checked] = checked unless checked.nil?
+- trigger_pipelines_for_mirror_updates_help_link = help_page_path('user/project/repository/mirror/pull.md', anchor: 'trigger-pipelines-for-mirror-updates')
+- trigger_pipelines_for_mirror_updates_help_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: trigger_pipelines_for_mirror_updates_help_link }
 
-.form-check.gl-mb-3
-  = f.check_box :mirror_trigger_builds, check_box_options.merge(class: "form-check-input")
-  = f.label :mirror_trigger_builds, _("Trigger pipelines for mirror updates"), class: "form-check-label"
-  .form-text.text-muted
-    = _('Trigger pipelines when branches or tags are updated in the upstream repository. Depending on the activity of the upstream repository, this may greatly increase the load on your CI runners. Only enable this if you know they can handle the load.')
-    %strong= _('CI will run using the credentials assigned above.')
-    = link_to _('Learn more.'), help_page_path('user/project/repository/mirror/pull.md', anchor: 'trigger-pipelines-for-mirror-updates'), target: '_blank', rel: 'noopener noreferrer'
+= f.gitlab_ui_checkbox_component :mirror_trigger_builds,
+  _("Trigger pipelines for mirror updates"),
+  help_text: _('Trigger pipelines when branches or tags are updated in the upstream repository. Depending on the activity of the upstream repository, this may greatly increase the load on your CI runners. Only enable this if you know they can handle the load. %{strong_start}CI will run using the credentials assigned above.%{strong_end} %{link_start}Learn more.%{link_end}').html_safe % { strong_start: '<strong>'.html_safe, strong_end: '</strong>'.html_safe, link_start: trigger_pipelines_for_mirror_updates_help_link_start, link_end: '</a>'.html_safe },
+  checkbox_options: check_box_options

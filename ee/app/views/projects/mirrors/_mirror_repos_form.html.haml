@@ -33,12 +33,12 @@
     .help-block
       = _('You will be the author of all events in the activity feed that are the result of an update, like new branches being created or new commits being pushed to existing branches.')
 
-  .form-check.gl-mb-3
-    = f.check_box :mirror_overwrites_diverged_branches, class: 'form-check-input', checked: false
-    = f.label :mirror_overwrites_diverged_branches, _('Overwrite diverged branches'), class: 'form-check-label'
-    .form-text.text-muted
-      = _("If disabled, a diverged local branch will not be automatically updated with commits from its remote counterpart, to prevent local data loss. If the default branch (%{default_branch}) has diverged and cannot be updated, mirroring will fail. Other diverged branches are silently ignored.") % { default_branch: @project.default_branch }
-      = link_to _('Learn more.'), help_page_path('user/project/repository/mirror/pull.md', anchor: 'overwrite-diverged-branches'), target: '_blank', rel: 'noopener noreferrer'
+  - overwrite_diverged_branches_help_link = help_page_path('user/project/repository/mirror/pull.md', anchor: 'overwrite-diverged-branches')
+  - overwrite_diverged_branches_help_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: overwrite_diverged_branches_help_link }
+  = f.gitlab_ui_checkbox_component :mirror_overwrites_diverged_branches,
+    _('Overwrite diverged branches'),
+    help_text: _("If disabled, a diverged local branch will not be automatically updated with commits from its remote counterpart, to prevent local data loss. If the default branch (%{default_branch}) has diverged and cannot be updated, mirroring will fail. Other diverged branches are silently ignored. %{link_start}Learn more.%{link_end}").html_safe % { default_branch: @project.default_branch, link_start: overwrite_diverged_branches_help_link_start, link_end: '</a>'.html_safe },
+    checkbox_options: { checked: false }
 
   - if @project.builds_enabled?
     = render 'shared/mirror_trigger_builds_setting', f: f, checked: false
