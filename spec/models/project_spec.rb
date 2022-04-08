@@ -8178,6 +8178,12 @@ RSpec.describe Project, factory_default: :keep do
     end
   end
 
+  describe '#inactive?' do
+    let_it_be(:project) { create(:project, name: 'test-project') }
+
+    it_behaves_like 'returns true if project is inactive'
+  end
+
   private
 
   def finish_job(export_job)
