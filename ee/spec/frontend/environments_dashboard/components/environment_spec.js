@@ -32,6 +32,7 @@ describe('Environment', () => {
         expect(wrapper.findComponent(EnvironmentHeader).props('environment')).toBe(environment);
       });
     });
+
     describe('alerts', () => {
       let alert;
 
@@ -45,6 +46,7 @@ describe('Environment', () => {
         expect(alert.props('lastAlert')).toBe(environment.last_alert);
       });
     });
+
     describe('commit', () => {
       let commit;
 

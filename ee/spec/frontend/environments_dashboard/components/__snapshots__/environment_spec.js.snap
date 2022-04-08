@@ -18,16 +18,19 @@ exports[`Environment matchs the snapshot 1`] = `
       <div
         class="col-1 align-self-center px-3"
       >
-        <user-avatar-link-stub
-          imgalt=""
-          imgcssclasses=""
-          imgsize="32"
-          imgsrc="https://secure.gravatar.com/avatar/e64c7d89f26bd1972efa854d13d7dd61?s=80&d=identicon"
-          linkhref="/root"
-          tooltipplacement="top"
-          tooltiptext="Administrator"
-          username=""
-        />
+        <gl-avatar-link-stub
+          href="/root"
+        >
+          <gl-avatar-stub
+            alt="avatar"
+            entityid="0"
+            entityname="root"
+            shape="circle"
+            size="32"
+            src="https://secure.gravatar.com/avatar/e64c7d89f26bd1972efa854d13d7dd61?s=80&d=identicon"
+            title="Administrator"
+          />
+        </gl-avatar-link-stub>
       </div>
        
       <div
