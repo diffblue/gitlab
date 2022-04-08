@@ -73,7 +73,7 @@ export default {
 </script>
 
 <template>
-  <gl-form :action="createLeadPath" method="post" novalidate>
+  <gl-form :action="createLeadPath" method="post">
     <input :value="$options.csrf.token" type="hidden" name="authenticity_token" />
     <div class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-mt-5">
       <gl-form-group

@@ -24,7 +24,7 @@ RSpec.describe 'Company Information', :js do
         "company_size" => '1 - 99'.delete(' '),
         "phone_number" => '+1 23 456-78-90',
         "country" => 'US',
-        "state" => '',
+        "state" => 'CA',
         "work_email" => user.email,
         "uid" => user.id,
         "setup_for_company" => user.setup_for_company,
@@ -42,6 +42,7 @@ RSpec.describe 'Company Information', :js do
       fill_in 'company_name', with: 'GitLab'
       select '1 - 99', from: 'company_size'
       select 'United States of America', from: 'country'
+      select 'California', from: 'state'
       fill_in 'website_url', with: 'gitlab.com'
       fill_in 'phone_number', with: '+1 23 456-78-90'
 
