@@ -13825,6 +13825,9 @@ msgstr ""
 msgid "Enable"
 msgstr ""
 
+msgid "Enable Akismet"
+msgstr ""
+
 msgid "Enable Amazon EKS integration"
 msgstr ""
 
@@ -18532,6 +18535,9 @@ msgstr ""
 msgid "Helps prevent bots from creating accounts."
 msgstr ""
 
+msgid "Helps prevent bots from creating accounts. %{link_start}How do I configure it?%{link_end}"
+msgstr ""
+
 msgid "Helps prevent bots from creating issues."
 msgstr ""
 
@@ -18690,9 +18696,6 @@ msgid "Housekeeping successfully started"
 msgstr ""
 
 msgid "How do I configure Akismet?"
-msgstr ""
-
-msgid "How do I configure it?"
 msgstr ""
 
 msgid "How do I configure runners?"
