@@ -23,4 +23,4 @@
                 = html_escape(s_('GroupSettings|Select a project with the %{code_start}.gitlab/insights.yml%{code_end} file')) % { code_start: '<code>'.html_safe, code_end: '</code>'.html_safe }
             = project_select_tag('group[insight_attributes][project_id]', class: 'project-item-select hidden-filter-value', toggle_class: 'js-project-search js-project-filter js-filter-submit', dropdown_class: 'dropdown-menu-selectable dropdown-menu-project js-filter-submit',
               placeholder: _('Search projects'), idAttribute: 'id', data: { order_by: 'last_activity_at', idattribute: 'id', simple_filter: true, allow_clear: true, include_projects_in_subgroups: true }, value: insight.project_id)
-      = form.submit _('Save changes'), class: "btn gl-button btn-success"
+      = form.submit _('Save changes'), class: "btn gl-button btn-confirm"
