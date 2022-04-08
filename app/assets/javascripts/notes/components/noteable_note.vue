@@ -360,7 +360,7 @@ export default {
         const confirmed = await confirmAction(msg, {
           primaryBtnText: __('Cancel editing'),
           primaryBtnVariant: 'danger',
-          secondaryBtnVariant: 'confirm',
+          secondaryBtnVariant: 'default',
           secondaryBtnText: __('Continue editing'),
           hideCancel: true,
         });
