@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.shared_examples 'search notes shared examples' do
+RSpec.shared_examples 'search confidential notes shared examples' do
   context 'notes confidentiality', :elastic, :sidekiq_inline do
     let_it_be(:user) { create(:user) }
 
@@ -42,7 +42,7 @@ RSpec.shared_examples 'search notes shared examples' do
       end
     end
 
-    # For now only issues can be confidential and have confidential notes,
+    # For now only issues and epics can be confidential and have confidential notes,
     # these specs are here to make sure not confidential notes on confidential issues
     # does not get leaked when mixed with other issuable notes.
     context 'with additional notes on a confidential issue' do

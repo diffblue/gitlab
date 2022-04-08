@@ -43950,6 +43950,12 @@ msgstr ""
 msgid "can not be changed for existing notes"
 msgstr ""
 
+msgid "can not be set for this resource"
+msgstr ""
+
+msgid "can not be set for this type of note"
+msgstr ""
+
 msgid "can only be changed by a group admin."
 msgstr ""
 
@@ -45431,6 +45437,9 @@ msgid "reply"
 msgid_plural "replies"
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "reply should have same confidentiality as top-level note"
+msgstr ""
 
 msgid "repositories"
 msgstr ""
