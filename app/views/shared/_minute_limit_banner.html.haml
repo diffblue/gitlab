@@ -1,4 +1,4 @@
-- if show_minute_limit_banner?(project)
+- if show_minute_limit_banner?(namespace)
   .container-fluid.container-limited.pt-3
     = render Pajamas::AlertComponent.new(title: s_("Free tier projects CI minutes quota"),
       alert_class: 'gl-mt-5 js-minute-limit-banner',

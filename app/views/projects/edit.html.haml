@@ -5,7 +5,7 @@
 - expanded = expanded_by_default?
 - reduce_visibility_form_id = 'reduce-visibility-form'
 
-= render_if_exists 'shared/minute_limit_banner', project: @project
+= render_if_exists 'shared/minute_limit_banner', namespace: @project
 
 %section.settings.general-settings.no-animate.expanded#js-general-settings
   .settings-header

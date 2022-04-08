@@ -88,8 +88,9 @@ module NamespacesHelper
     }.to_json
   end
 
-  def show_minute_limit_banner?(project)
-    return true if project.project_namespace.free_plan?
+  def show_minute_limit_banner?(namespace)
+    return false unless ::Feature.enabled?(:show_minute_limit_banner)
+    return true if namespace.root_ancestor.free_plan? && !minute_limit_banner_dismissed?
 
     false
   end
