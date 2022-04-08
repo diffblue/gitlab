@@ -17,7 +17,10 @@ module QA
         project.remove_via_api!
       end
 
-      context 'without k8s cluster' do
+      # TODO: Remove :requires_admin when the `Runtime::Feature.enable` method call is removed
+      context 'without k8s cluster', :requires_admin do
+        let!(:feature_enabled) { Runtime::Feature.enabled?(:container_security_policy_selection)}
+
         before do
           Flow::Login.sign_in
           project.visit!
@@ -40,13 +43,15 @@ module QA
 
           EE::Page::Project::Policies::PolicyEditor.perform do |policy_editor|
             aggregate_failures do
-              expect(policy_editor).to have_policy_type_form_select
+              # TODO: Remove the selector conditional when the `Runtime::Feature.enable` method call is removed
+              selector = feature_enabled ? :policy_selection_wizard : :policy_type_form_select
+              expect(policy_editor).to have_policy_selection(selector)
             end
           end
         end
       end
 
-      context 'with k8s cluster', :require_admin, :kubernetes, :orchestrated, :runner, quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/335202', type: :broken } do
+      context 'with k8s cluster', :requires_admin, :kubernetes, :orchestrated, :runner, quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/335202', type: :broken } do
         let(:policy_name) { 'l3-rule' }
         let!(:cluster) { Service::KubernetesCluster.new(provider_class: Service::ClusterProvider::K3sCilium).create! }
         let!(:runner) do
