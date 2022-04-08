@@ -50,7 +50,6 @@ module Users
       attention_requests_top_nav: 47,
       attention_requests_side_nav: 48, 
       minute_limit_banner: 49
-
     }
 
     validates :feature_name,
