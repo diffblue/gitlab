@@ -17,6 +17,7 @@ class ContainerRepository < ApplicationRecord
   SKIPPABLE_MIGRATION_STATES = (ABORTABLE_MIGRATION_STATES + %w[import_aborted]).freeze
 
   MIGRATION_PHASE_1_STARTED_AT = Date.new(2021, 11, 4).freeze
+  MIGRATION_PHASE_1_ENDED_AT = Date.new(2022, 01, 23).freeze
 
   TooManyImportsError = Class.new(StandardError)
 
@@ -215,6 +216,13 @@ class ContainerRepository < ApplicationRecord
       project: path.repository_project,
       name: path.repository_name
     ).exists?
+  end
+
+  def self.all_migrated?
+    # check that the set of non migrated repositories is empty
+    where(created_at: ...MIGRATION_PHASE_1_ENDED_AT)
+      .where.not(migration_state: 'import_done')
+      .empty?
   end
 
   def self.with_enabled_policy
@@ -456,7 +464,7 @@ class ContainerRepository < ApplicationRecord
       next if self.created_at.before?(MIGRATION_PHASE_1_STARTED_AT)
       next unless gitlab_api_client.supports_gitlab_api?
 
-      gitlab_api_client.repository_details(self.path, with_size: true)['size_bytes']
+      gitlab_api_client.repository_details(self.path, sizing: :self)['size_bytes']
     end
   end
 
