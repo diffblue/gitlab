@@ -177,35 +177,38 @@ func TestSetProperContentTypeAndDisposition(t *testing.T) {
 
 func TestFailOverrideContentType(t *testing.T) {
 	testCases := []struct {
-		contentTypeOverride string
-		contentType         string
-		body                string
+		desc                 string
+		overrideFromUpstream string
+		responseContentType  string
+		body                 string
 	}{
 		{
-			contentType:         "text/plain; charset=utf-8",
-			contentTypeOverride: "text/html; charset=utf-8",
-			body:                "<html><body>Hello world!</body></html>",
+			desc:                 "Force text/html into text/plain",
+			responseContentType:  "text/plain; charset=utf-8",
+			overrideFromUpstream: "text/html; charset=utf-8",
+			body:                 "<html><body>Hello world!</body></html>",
 		},
 		{
-			contentType:         "text/plain; charset=utf-8",
-			contentTypeOverride: "application/javascript; charset=utf-8",
-			body:                "alert(1);",
+			desc:                 "Force application/javascript into text/plain",
+			responseContentType:  "text/plain; charset=utf-8",
+			overrideFromUpstream: "application/javascript; charset=utf-8",
+			body:                 "alert(1);",
 		},
 	}
 
 	for _, tc := range testCases {
-		t.Run(tc.contentTypeOverride, func(t *testing.T) {
+		t.Run(tc.desc, func(t *testing.T) {
 			h := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 				// We are pretending to be upstream or an inner layer of the ResponseWriter chain
 				w.Header().Set(headers.GitlabWorkhorseDetectContentTypeHeader, "true")
-				w.Header().Set(headers.ContentTypeHeader, tc.contentTypeOverride)
+				w.Header().Set(headers.ContentTypeHeader, tc.overrideFromUpstream)
 				_, err := io.WriteString(w, tc.body)
 				require.NoError(t, err)
 			})
 
 			resp := makeRequest(t, h, tc.body, "")
 
-			require.Equal(t, tc.contentType, resp.Header.Get(headers.ContentTypeHeader))
+			require.Equal(t, tc.responseContentType, resp.Header.Get(headers.ContentTypeHeader))
 		})
 	}
 }
