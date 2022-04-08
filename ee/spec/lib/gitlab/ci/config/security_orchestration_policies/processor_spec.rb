@@ -7,7 +7,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
 
   subject { described_class.new(config, project, ref, source).perform }
 
-  let_it_be(:config) { { image: 'ruby:3.0.1' } }
+  let_it_be(:config) { { image: 'image:1.0.0' } }
 
   let(:ref) { 'refs/heads/master' }
   let(:source) { 'pipeline' }
@@ -123,7 +123,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
         it_behaves_like 'with different scan type' do
           let(:expected_configuration) do
             {
-              image: 'ruby:3.0.1',
+              image: 'image:1.0.0',
               'dast-on-demand-0': {
                 stage: 'dast',
                 image: {
