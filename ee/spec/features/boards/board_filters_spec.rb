@@ -54,9 +54,9 @@ RSpec.describe 'Issue board filters', :js do
     it 'loads all the iterations when opened and submit one as filter', :aggregate_failures do
       expect(find('.board:nth-child(1)')).to have_selector('.board-card', count: 2)
 
-      # 4 dropdown items must be shown
-      # None, Any, Current and iteration
-      expect_filtered_search_dropdown_results(filter_dropdown, 4)
+      # 6 dropdown items must be shown
+      # None, Any, Current, iteration, Any and Current within cadence
+      expect_filtered_search_dropdown_results(filter_dropdown, 6)
 
       click_on iteration.period
       filter_submit.click

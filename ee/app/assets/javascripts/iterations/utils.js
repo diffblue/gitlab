@@ -25,7 +25,7 @@ export function groupByIterationCadences(iterations) {
     if (!iteration.iterationCadence) {
       return;
     }
-    const { title } = iteration.iterationCadence;
+    const { title, id } = iteration.iterationCadence;
     const cadenceIteration = {
       id: iteration.id,
       title: iteration.title,
@@ -35,7 +35,7 @@ export function groupByIterationCadences(iterations) {
     if (cadence) {
       cadence.iterations.push(cadenceIteration);
     } else {
-      cadences.push({ title, iterations: [cadenceIteration] });
+      cadences.push({ title, iterations: [cadenceIteration], id });
     }
   });
   return cadences;

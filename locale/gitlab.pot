@@ -15460,6 +15460,9 @@ msgstr ""
 msgid "Failed to load groups, users and deploy keys."
 msgstr ""
 
+msgid "Failed to load iteration cadences."
+msgstr ""
+
 msgid "Failed to load iterations."
 msgstr ""
 
