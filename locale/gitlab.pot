@@ -6630,7 +6630,7 @@ msgstr ""
 msgid "CICD|Select projects that can be accessed by API requests authenticated with this project's CI_JOB_TOKEN CI/CD variable."
 msgstr ""
 
-msgid "CICD|The Auto DevOps pipeline runs by default in all projects with no CI/CD configuration file."
+msgid "CICD|The Auto DevOps pipeline runs by default in all projects with no CI/CD configuration file. %{link_start}What is Auto DevOps?%{link_end}"
 msgstr ""
 
 msgid "CICD|The Auto DevOps pipeline runs if no alternative CI configuration file is found."
@@ -42377,9 +42377,6 @@ msgid "What are project audit events?"
 msgstr ""
 
 msgid "What does this command do?"
-msgstr ""
-
-msgid "What is Auto DevOps?"
 msgstr ""
 
 msgid "What is Markdown?"
