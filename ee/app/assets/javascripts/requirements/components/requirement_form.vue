@@ -278,7 +278,7 @@ export default {
             "
             :loading="requirementRequestActive"
             data-testid="requirement-save"
-            variant="success"
+            variant="confirm"
             category="primary"
             class="gl-mr-auto js-requirement-save"
             @click="handleSave(issuableMeta)"
