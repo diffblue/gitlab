@@ -98,6 +98,32 @@ RSpec.describe 'DAST-API.latest.gitlab-ci.yml' do
             expect { pipeline }.to raise_error(Ci::CreatePipelineService::CreateError)
           end
         end
+
+        context 'when CI_GITLAB_FIPS_MODE=false' do
+          let(:build_dast_api) { pipeline.builds.find_by(name: 'dast_api') }
+          let(:build_variables) { build_dast_api.variables.pluck(:key, :value) }
+
+          before do
+            create(:ci_variable, project: project, key: 'CI_GITLAB_FIPS_MODE', value: 'false')
+          end
+
+          it 'sets DAST_API_VERSION_TAG to ""' do
+            expect(build_variables).to be_include(['DAST_API_VERSION_TAG', ''])
+          end
+        end
+
+        context 'when CI_GITLAB_FIPS_MODE=true' do
+          let(:build_dast_api) { pipeline.builds.find_by(name: 'dast_api') }
+          let(:build_variables) { build_dast_api.variables.pluck(:key, :value) }
+
+          before do
+            create(:ci_variable, project: project, key: 'CI_GITLAB_FIPS_MODE', value: 'true')
+          end
+
+          it 'sets DAST_API_VERSION_TAG to "-fips"' do
+            expect(build_variables).to be_include(['DAST_API_VERSION_TAG', '-fips'])
+          end
+        end
       end
     end
   end

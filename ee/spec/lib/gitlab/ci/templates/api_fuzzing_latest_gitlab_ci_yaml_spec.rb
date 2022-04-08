@@ -135,6 +135,34 @@ RSpec.describe 'API-Fuzzing.latest.gitlab-ci.yml' do
             expect { pipeline }.to raise_error(Ci::CreatePipelineService::CreateError)
           end
         end
+
+        context 'when CI_GITLAB_FIPS_MODE=false' do
+          let(:build_dast_api) { pipeline.builds.find_by(name: 'apifuzzer_fuzz') }
+          let(:build_variables) { build_dast_api.variables.pluck(:key, :value) }
+
+          before do
+            create(:ci_variable, project: project, key: 'CI_GITLAB_FIPS_MODE', value: 'false')
+            create(:ci_variable, project: project, key: 'FUZZAPI_HAR', value: 'testing.har')
+            create(:ci_variable, project: project, key: 'FUZZAPI_TARGET_URL', value: 'http://example.com')
+          end
+
+          it 'sets FUZZAPI_VERSION_TAG to ""' do
+            expect(build_variables).to be_include(['FUZZAPI_VERSION_TAG', ''])
+          end
+        end
+
+        context 'when CI_GITLAB_FIPS_MODE=true' do
+          let(:build_dast_api) { pipeline.builds.find_by(name: 'apifuzzer_fuzz') }
+          let(:build_variables) { build_dast_api.variables.pluck(:key, :value) }
+
+          before do
+            create(:ci_variable, project: project, key: 'CI_GITLAB_FIPS_MODE', value: 'true')
+          end
+
+          it 'sets FUZZAPI_VERSION_TAG to "-fips"' do
+            expect(build_variables).to be_include(['FUZZAPI_VERSION_TAG', '-fips'])
+          end
+        end
       end
     end
   end
