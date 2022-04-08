@@ -17,12 +17,13 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
   let(:mr) { create_merge_request_closing_issue(user, project, issue, commit_message: "References #{issue.to_reference}") }
   let(:pipeline) { create(:ci_empty_pipeline, status: 'created', project: project, ref: mr.source_branch, sha: mr.source_branch_sha, head_pipeline_of: mr) }
 
-  path_nav_selector = '[data-testid="vsa-path-navigation"]'
-  filter_bar_selector = '[data-testid="vsa-filter-bar"]'
-  card_metric_selector = '[data-testid="vsa-metrics"] .gl-single-stat'
-  new_issues_count = 3
+  let(:path_nav_selector) { '[data-testid="vsa-path-navigation"]' }
+  let(:filter_bar_selector) { '[data-testid="vsa-filter-bar"]' }
+  let(:card_metric_selector) { '[data-testid="vsa-metrics"] .gl-single-stat' }
 
-  new_issues_count.times do |i|
+  let(:empty_state_selector) { '[data-testid="vsa-empty-state"]' }
+
+  3.times do |i|
     let_it_be("issue_#{i}".to_sym) { create(:issue, title: "New Issue #{i}", project: sub_group_project, created_at: 2.days.ago) }
   end
 
@@ -58,6 +59,13 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
   end
 
   shared_examples 'empty state' do
+    it 'renders the empty state' do
+      expect(page).to have_selector(empty_state_selector)
+      expect(page).to have_text(s_('CycleAnalytics|Custom value streams to measure your DevSecOps lifecycle'))
+    end
+  end
+
+  shared_examples 'empty value stream stage' do
     it 'displays an empty state' do
       element = page.find('.empty-state')
 
@@ -95,8 +103,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
 
       issue_count = page.all(card_metric_selector)[3]
 
-      expect(issue_count).to have_content(n_('New Issue', 'New Issues', 3))
-      expect(issue_count).to have_content(new_issues_count)
+      expect(issue_count).to have_content(n_('New Issue', 'New Issues', 4))
     end
 
     it 'displays time metrics' do
@@ -129,10 +136,6 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
     end
 
     context 'navigation' do
-      before do
-        select_group(selected_group)
-      end
-
       it 'shows the path navigation' do
         expect(page).to have_selector(path_nav_selector)
       end
@@ -140,7 +143,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
       it 'each stage will have median values' do
         stage_medians = page.all('.gl-path-button span').collect(&:text)
 
-        expect(stage_medians).to eq(["-"] * 7)
+        expect(stage_medians).to match_array(["-"] * 4)
       end
 
       it 'displays the default list of stages' do
@@ -148,7 +151,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
 
         expect(path_nav).to have_content(_("Overview"))
 
-        %w[Issue Plan Code Test Review Staging].each do |item|
+        ['Issue', 'Code', 'Milestone Plan'].each do |item|
           string_id = "CycleAnalytics|#{item}"
           expect(path_nav).to have_content(s_(string_id))
         end
@@ -170,87 +173,156 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
     end
   end
 
-  context 'without valid query parameters set' do
-    context 'with created_after date > created_before date' do
-      before do
-        visit "#{group_analytics_cycle_analytics_path(group)}?created_after=2019-12-31&created_before=2019-11-01"
-      end
-
-      it_behaves_like 'no group available'
-    end
-
-    context 'with fake parameters' do
-      before do
-        visit "#{group_analytics_cycle_analytics_path(group)}?beans=not-cool"
-
-        select_stage("Issue")
-      end
-
-      it_behaves_like 'empty state'
-    end
-  end
-
-  context 'with valid query parameters set' do
-    projects_dropdown = '.js-projects-dropdown-filter'
-
-    context 'with project_ids set' do
-      before do
-        visit "#{group_analytics_cycle_analytics_path(group)}?project_ids[]=#{project.id}"
-      end
-
-      it 'has the projects dropdown prepopulated' do
-        element = page.find(projects_dropdown)
-
-        expect(element).to have_content project.name
-      end
-    end
-
-    context 'with created_before and created_after set' do
-      date_range = '.js-daterange-picker'
-
-      before do
-        visit "#{group_analytics_cycle_analytics_path(group)}?created_before=2019-12-31&created_after=2019-11-01"
-      end
-
-      it 'has the date range prepopulated' do
-        element = page.find(date_range)
-
-        expect(element.find('.js-daterange-picker-from input').value).to eq '2019-11-01'
-        expect(element.find('.js-daterange-picker-to input').value).to eq '2019-12-31'
-        expect(page.find('.js-tasks-by-type-chart')).to have_text(_("Showing data for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019") % { group_name: group.name })
-      end
-    end
-  end
-
-  context 'with a group' do
-    let(:selected_group) { group }
-
+  context 'with no value streams' do
     before do
-      select_group(group)
+      select_group(group, empty_state_selector)
     end
 
-    it_behaves_like 'group value stream analytics'
-
-    it_behaves_like 'has overview metrics'
-
-    it_behaves_like 'has default filters'
+    it_behaves_like 'empty state'
   end
 
-  context 'with a sub group' do
-    let(:selected_group) { sub_group }
-
-    before do
-      select_group(sub_group)
+  context 'with value streams' do
+    def vsa_stages(selected_group)
+      [
+        create(:cycle_analytics_group_stage, group: selected_group, name: "Issue", relative_position: 1, start_event_identifier: :issue_created, end_event_identifier: :issue_closed),
+        create(:cycle_analytics_group_stage, group: selected_group, name: "Code", relative_position: 2, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_merged),
+        create(:cycle_analytics_group_stage, group: selected_group, name: "Milestone Plan", relative_position: 3, start_event_identifier: :issue_first_associated_with_milestone, end_event_identifier: :issue_first_added_to_board)
+      ]
     end
 
-    it_behaves_like 'group value stream analytics'
+    let_it_be(:issue) { create(:issue, project: project) }
+    let_it_be(:value_stream) { create(:cycle_analytics_group_value_stream, group: group, name: 'First value stream', stages: vsa_stages(group)) }
+    let_it_be(:subgroup_value_stream) { create(:cycle_analytics_group_value_stream, group: sub_group, name: 'First subgroup value stream', stages: vsa_stages(sub_group)) }
 
-    it_behaves_like 'has overview metrics'
+    context 'without valid query parameters set' do
+      context 'with created_after date > created_before date' do
+        before do
+          visit "#{group_analytics_cycle_analytics_path(group)}?created_after=2019-12-31&created_before=2019-11-01"
+        end
 
-    it_behaves_like 'has default filters'
+        it_behaves_like 'no group available'
+      end
+
+      context 'with fake parameters' do
+        before do
+          visit "#{group_analytics_cycle_analytics_path(group)}?beans=not-cool"
+
+          select_value_stream('First value stream')
+          select_stage("Issue")
+        end
+
+        it_behaves_like 'empty value stream stage'
+      end
+    end
+
+    context 'with valid query parameters set' do
+      projects_dropdown = '.js-projects-dropdown-filter'
+
+      context 'with project_ids set' do
+        before do
+          visit "#{group_analytics_cycle_analytics_path(group)}?project_ids[]=#{project.id}"
+        end
+
+        it 'has the projects dropdown prepopulated' do
+          element = page.find(projects_dropdown)
+
+          expect(element).to have_content project.name
+        end
+      end
+
+      context 'with created_before and created_after set' do
+        before do
+          visit "#{group_analytics_cycle_analytics_path(group)}?created_before=2019-12-31&created_after=2019-11-01"
+        end
+
+        it 'has the date range prepopulated' do
+          date_range = '.js-daterange-picker'
+          element = page.find(date_range)
+
+          expect(element.find('.js-daterange-picker-from input').value).to eq '2019-11-01'
+          expect(element.find('.js-daterange-picker-to input').value).to eq '2019-12-31'
+          expect(page.find('.js-tasks-by-type-chart')).to have_text(_("Showing data for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019") % { group_name: group.name })
+        end
+      end
+    end
+
+    context 'with a group' do
+      let(:selected_group) { group }
+
+      before do
+        select_group(group)
+        select_value_stream('First value stream')
+      end
+
+      it_behaves_like 'group value stream analytics'
+
+      it_behaves_like 'has overview metrics'
+
+      it_behaves_like 'has default filters'
+    end
+
+    context 'with a sub group' do
+      let(:selected_group) { sub_group }
+
+      before do
+        select_group(sub_group)
+        select_value_stream('First subgroup value stream')
+      end
+
+      it_behaves_like 'group value stream analytics'
+
+      it_behaves_like 'has overview metrics'
+
+      it_behaves_like 'has default filters'
+    end
+
+    context 'with lots of data', :js do
+      around do |example|
+        freeze_time { example.run }
+      end
+
+      before do
+        issue.update!(created_at: 5.days.ago)
+        create_cycle(user, project, issue, mr, milestone, pipeline)
+        create(:labeled_issue, created_at: 5.days.ago, project: create(:project, group: group), labels: [group_label1])
+        create(:labeled_issue, created_at: 3.days.ago, project: create(:project, group: group), labels: [group_label2])
+
+        issue.metrics.update!(first_mentioned_in_commit_at: mr.created_at - 5.hours)
+        mr.metrics.update!(first_deployed_to_production_at: mr.created_at + 2.hours, merged_at: mr.created_at + 1.hour)
+
+        deploy_master(user, project, environment: 'staging')
+        deploy_master(user, project)
+
+        aggregation = Analytics::CycleAnalytics::Aggregation.safe_create_for_group(group)
+        Analytics::CycleAnalytics::AggregatorService.new(aggregation: aggregation).execute
+
+        select_group(group)
+        select_value_stream('First value stream')
+      end
+
+      stages_with_data = [
+        { title: 'Issue', description: 'Time before an issue gets scheduled', events_count: 1, time: '5d' },
+        { title: 'Code', description: 'Time until first merge request', events_count: 1, time: '1h' }
+      ]
+
+      stages_without_data = [{ title: 'Milestone', description: 'Time before an issue starts implementation', events_count: 0, time: "-" }]
+
+      it 'each stage with events will display the stage events list when selected', :sidekiq_might_not_need_inline do
+        stages_without_data.each do |stage|
+          select_stage(stage[:title])
+          expect(page).not_to have_selector('[data-testid="vsa-stage-event"]')
+        end
+
+        stages_with_data.each do |stage|
+          select_stage(stage[:title])
+          expect(page).to have_selector('[data-testid="vsa-stage-table"]')
+          expect(page.all('[data-testid="vsa-stage-event"]').length).to eq(stage[:events_count])
+        end
+      end
+    end
   end
 
-  context 'with lots of data', :js do
+  context 'with use_vs_aggregated_table disabled', :js do
     let_it_be(:issue) { create(:issue, project: project) }
 
     around do |example|

@@ -22,7 +22,7 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
       subject
 
       response_start_events = json_response['stages'].map { |s| s['start_event_identifier'] }
-      start_events = Gitlab::Analytics::CycleAnalytics::DefaultStages.all.map { |s| s['start_event_identifier'] }
+      start_events = stages.map { |s| s['start_event_identifier'] }
 
       expect(response_start_events).to eq(start_events)
     end
