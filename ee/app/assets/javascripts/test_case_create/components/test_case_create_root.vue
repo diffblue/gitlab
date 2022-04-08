@@ -78,7 +78,7 @@ export default {
         <gl-button
           data-testid="submit-test-case"
           category="primary"
-          variant="success"
+          variant="confirm"
           :loading="createTestCaseRequestActive"
           :disabled="!issuableMeta.issuableTitle.length"
           @click="handleTestCaseSubmitClick(issuableMeta)"

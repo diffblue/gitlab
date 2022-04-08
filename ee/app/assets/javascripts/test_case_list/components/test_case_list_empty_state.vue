@@ -58,7 +58,7 @@ export default {
         </gl-sprintf>
       </template>
       <template v-if="canCreateTestCase && showDescription" #actions>
-        <gl-button :href="testCaseNewPath" category="primary" variant="success">{{
+        <gl-button :href="testCaseNewPath" category="primary" variant="confirm">{{
           __('New test case')
         }}</gl-button>
       </template>

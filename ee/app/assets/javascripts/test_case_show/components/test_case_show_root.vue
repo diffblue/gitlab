@@ -208,7 +208,7 @@ export default {
         <gl-button
           data-testid="new-test-case"
           category="secondary"
-          variant="success"
+          variant="confirm"
           class="d-md-inline-block"
           :class="{ 'd-none': canEditTestCase, 'gl-flex-grow-1': !canEditTestCase }"
           :href="testCaseNewPath"
@@ -221,7 +221,7 @@ export default {
           :disable="testCaseSaveInProgress || !issuableMeta.issuableTitle.length"
           :loading="testCaseSaveInProgress"
           category="primary"
-          variant="success"
+          variant="confirm"
           class="float-left qa-save-button"
           @click.prevent="handleSaveTestCase(issuableMeta)"
           >{{ __('Save changes') }}</gl-button
