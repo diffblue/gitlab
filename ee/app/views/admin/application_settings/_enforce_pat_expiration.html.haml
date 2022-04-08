@@ -4,6 +4,4 @@
 
 .form-group
   .form-check
-    = form.check_box :enforce_pat_expiration, class: 'form-check-input'
-    = form.label :enforce_pat_expiration, class: 'form-check-label' do
-      = _('Enforce personal access token expiration')
+    = form.gitlab_ui_checkbox_component :enforce_pat_expiration, _('Enforce personal access token expiration')
