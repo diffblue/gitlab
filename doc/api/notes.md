@@ -519,11 +519,12 @@ POST /groups/:id/epics/:epic_id/notes
 
 Parameters:
 
-| Attribute | Type           | Required | Description |
-| --------- | -------------- | -------- | ----------- |
-| `id`      | integer or string | yes | The ID or [URL-encoded path of the group](index.md#namespaced-path-encoding) |
-| `epic_id` | integer | yes  | The ID of an epic |
-| `body`    | string  | yes  | The content of a note. Limited to 1,000,000 characters. |
+| Attribute      | Type           | Required | Description |
+| ---------      | -------------- | -------- | ----------- |
+| `body`         | string  | yes  | The content of a note. Limited to 1,000,000 characters. |
+| `epic_id`      | integer | yes  | The ID of an epic |
+| `id`           | integer or string | yes | The ID or [URL-encoded path of the group](index.md#namespaced-path-encoding) |
+| `confidential` | boolean        | no       | The confidential flag of a note. Default is `false`. |
 
 ```shell
 curl --request POST --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/api/v4/groups/5/epics/11/notes?body=note"
