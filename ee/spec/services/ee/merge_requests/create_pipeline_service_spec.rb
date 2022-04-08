@@ -40,7 +40,7 @@ RSpec.describe MergeRequests::CreatePipelineService, :clean_gitlab_redis_shared_
       source_project.add_developer(user)
       target_project.add_developer(user)
       source_project.merge_pipelines_enabled = merge_pipelines_enabled
-      stub_licensed_features(merge_pipelines: merge_pipelines_license)
+      stub_licensed_features(merge_pipelines: merge_pipelines_license, multiple_approval_rules: true)
       stub_ci_pipeline_yaml_file(ci_yaml)
     end
 
@@ -78,6 +78,21 @@ RSpec.describe MergeRequests::CreatePipelineService, :clean_gitlab_redis_shared_
       end
 
       it_behaves_like 'detached merge request pipeline'
+    end
+
+    context 'when merge request requires an approval' do
+      before do
+        create(:approval_merge_request_rule, merge_request: merge_request, users: [user], name: 'some-custom-rule',
+               approvals_required: 1)
+      end
+
+      it 'creates a merge request pipeline' do
+        subject
+
+        expect(merge_request.all_pipelines.count).to eq(1)
+        expect(merge_request.all_pipelines.last).to be_merged_result_pipeline
+        expect(merge_request.all_pipelines.last).not_to be_detached_merge_request_pipeline
+      end
     end
 
     context 'when project setting for merge request pipelines is disabled' do
