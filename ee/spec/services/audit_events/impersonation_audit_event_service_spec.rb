@@ -22,7 +22,8 @@ RSpec.describe AuditEvents::ImpersonationAuditEventService do
                                             entity_type: "User",
                                             action: :custom,
                                             ip_address: ip_address,
-                                            custom_message: message)
+                                            custom_message: message,
+                                            created_at: anything)
 
       expect { service.security_event }.to change(AuditEvent, :count).by(1)
       security_event = AuditEvent.last

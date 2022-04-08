@@ -65,7 +65,8 @@ RSpec.describe AuditEvents::ProtectedBranchAuditEventService, :request_store do
             target_id: protected_branch.id,
             target_type: 'ProtectedBranch',
             custom_message: action == :add ? /Added/ : /Unprotected/,
-            ip_address: ip_address
+            ip_address: ip_address,
+            created_at: anything
           )
         end
       end
