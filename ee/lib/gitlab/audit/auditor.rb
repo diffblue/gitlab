@@ -11,6 +11,7 @@ module Gitlab
       # @option context [User, Project, Group] :scope the scope which audit event belongs to
       # @option context [Object] :target the target object being audited
       # @option context [String] :message the message describing the action
+      # @option context [Time] :created_at the time that the event occurred (defaults to the current time)
       #
       # @example Using block (useful when events are emitted deep in the call stack)
       #   i.e. multiple audit events
@@ -56,6 +57,7 @@ module Gitlab
         @author = @context.fetch(:author)
         @scope = @context.fetch(:scope)
         @target = @context.fetch(:target)
+        @created_at = @context.fetch(:created_at, DateTime.current)
         @message = @context.fetch(:message, '')
       end
 
@@ -88,6 +90,7 @@ module Gitlab
           author: @author,
           scope: @scope,
           target: @target,
+          created_at: @created_at,
           message: message
         ).execute
       end
