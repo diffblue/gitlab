@@ -90,23 +90,40 @@ module EE
 
     def check_arkose_captcha
       return unless user_params[:password].present?
-      return unless params[:arkose_labs_token].present?
 
-      user = ::User.find_by_username(user_params[:login])
-
+      user = ::User.by_login(user_params[:login])
       return unless user.present?
 
+      if params[:arkose_labs_token].present?
+        verify_arkose_token(user)
+      else
+        verify_token_required(user)
+      end
+    end
+
+    def verify_arkose_token(user)
       if Arkose::UserVerificationService.new(session_token: params[:arkose_labs_token], user: user).execute
         increment_successful_login_captcha_counter
       else
-        increment_failed_login_captcha_counter
-
-        self.resource = resource_class.new
-        flash[:alert] = 'Login failed. Please retry from your primary device and network'
-        flash.delete :recaptcha_error
-
-        respond_with_navigational(resource) { render :new }
+        failed_login_captcha
       end
+    end
+
+    def verify_token_required(user)
+      should_challenge = ::Users::CaptchaChallengeService.new(user).execute
+      return unless should_challenge[:result]
+
+      failed_login_captcha
+    end
+
+    def failed_login_captcha
+      increment_failed_login_captcha_counter
+
+      self.resource = resource_class.new
+      flash[:alert] = 'Login failed. Please retry from your primary device and network.'
+      flash.delete :recaptcha_error
+
+      respond_with_navigational(resource) { render :new }
     end
   end
 end
