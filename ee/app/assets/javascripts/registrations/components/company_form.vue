@@ -56,6 +56,11 @@ export default {
         ...companySizes,
       ];
     },
+    descriptionText() {
+      return this.trial
+        ? this.$options.i18n.description.trial
+        : this.$options.i18n.description.registration;
+    },
   },
   i18n: {
     companyNameLabel: LEADS_COMPANY_NAME_LABEL,
@@ -67,7 +72,13 @@ export default {
     optional: __('(optional)'),
     websiteLabel: __('Website'),
     trialLabel: __('GitLab Ultimate trial'),
-    trialDescription: __('Try all GitLab features for free for 30 days. No credit card required.'),
+    trialToggleDescription: __(
+      'Try all GitLab features for free for 30 days. No credit card required.',
+    ),
+    description: {
+      trial: __('To activate your trial, we need additional details from you.'),
+      registration: __('To complete registration, we need additional details from you.'),
+    },
   },
 };
 </script>
@@ -75,6 +86,7 @@ export default {
 <template>
   <gl-form :action="createLeadPath" method="post">
     <input :value="$options.csrf.token" type="hidden" name="authenticity_token" />
+    <gl-form-text class="gl-font-base gl-text-gray-400 gl-pb-3">{{ descriptionText }}</gl-form-text>
     <div class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-mt-5">
       <gl-form-group
         :label="$options.i18n.companyNameLabel"
@@ -146,7 +158,7 @@ export default {
       :optional-text="$options.i18n.optional"
       optional
     >
-      <gl-form-text class="gl-pb-3">{{ $options.i18n.trialDescription }}</gl-form-text>
+      <gl-form-text class="gl-pb-3">{{ $options.i18n.trialToggleDescription }}</gl-form-text>
       <registration-trial-toggle :active="trial" data-testid="trial" />
     </gl-form-group>
     <gl-button type="submit" variant="confirm" class="gl-w-20">
