@@ -1324,16 +1324,16 @@ RSpec.describe ApplicationSetting do
   end
 
   context "inactive project deletion" do
-    it "validates that inactive_projects_send_warning_email_after is less than inactive_projects_delete_after" do
-      subject[:inactive_projects_delete_after] = 3
-      subject[:inactive_projects_send_warning_email_after] = 6
+    it "validates that inactive_projects_send_warning_email_after_months is less than inactive_projects_delete_after_months" do
+      subject[:inactive_projects_delete_after_months] = 3
+      subject[:inactive_projects_send_warning_email_after_months] = 6
 
       expect(subject).to be_invalid
     end
 
-    it { is_expected.to validate_numericality_of(:inactive_projects_send_warning_email_after).is_greater_than(0) }
+    it { is_expected.to validate_numericality_of(:inactive_projects_send_warning_email_after_months).is_greater_than(0) }
 
-    it { is_expected.to validate_numericality_of(:inactive_projects_delete_after).is_greater_than(0) }
+    it { is_expected.to validate_numericality_of(:inactive_projects_delete_after_months).is_greater_than(0) }
 
     it { is_expected.to validate_numericality_of(:inactive_projects_min_size_mb).is_greater_than_or_equal_to(0) }
   end

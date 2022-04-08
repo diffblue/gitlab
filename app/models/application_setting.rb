@@ -581,11 +581,11 @@ class ApplicationSetting < ApplicationRecord
   validates :inactive_projects_min_size_mb,
             numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
-  validates :inactive_projects_delete_after,
+  validates :inactive_projects_delete_after_months,
             numericality: { only_integer: true, greater_than: 0 }
 
-  validates :inactive_projects_send_warning_email_after,
-            numericality: { only_integer: true, greater_than: 0, less_than: :inactive_projects_delete_after }
+  validates :inactive_projects_send_warning_email_after_months,
+            numericality: { only_integer: true, greater_than: 0, less_than: :inactive_projects_delete_after_months }
 
   attr_encrypted :asset_proxy_secret_key,
                  mode: :per_attribute_iv,
