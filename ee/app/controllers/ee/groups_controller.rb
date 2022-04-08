@@ -17,6 +17,7 @@ module EE
 
       before_action do
         push_frontend_feature_flag(:saas_user_caps_auto_approve_pending_users_on_cap_increase, @group, default_enabled: :yaml)
+        push_force_frontend_feature_flag(:iteration_cadences, @group&.iteration_cadences_feature_flag_enabled?)
       end
 
       feature_category :subgroups, [:restore]

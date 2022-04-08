@@ -526,7 +526,7 @@ module EE
     end
 
     def iteration_cadences_feature_flag_enabled?
-      ::Feature.enabled?(:iteration_cadences, self, default_enabled: :yaml)
+      feature_flag_enabled_for_self_or_ancestor?(:iteration_cadences)
     end
 
     def user_cap_reached?(use_cache: false)
