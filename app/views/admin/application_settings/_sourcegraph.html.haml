@@ -23,7 +23,7 @@
         .form-group
           = f.gitlab_ui_checkbox_component :sourcegraph_enabled, s_('SourcegraphAdmin|Enable Sourcegraph')
         .form-group
-          = f.gitlab_ui_checkbox_component :sourcegraph_public_only,  s_('SourcegraphAdmin|Block on private and internal projects'), help_text:  s_('SourcegraphAdmin|Only public projects have code intelligence enabled and communicate with Sourcegraph.')
+          = f.gitlab_ui_checkbox_component :sourcegraph_public_only, s_('SourcegraphAdmin|Block on private and internal projects'), help_text: s_('SourcegraphAdmin|Only public projects have code intelligence enabled and communicate with Sourcegraph.')
         .form-group
           = f.label :sourcegraph_url, s_('SourcegraphAdmin|Sourcegraph URL'), class: 'label-bold'
           = f.text_field :sourcegraph_url, class: 'form-control gl-form-input', placeholder: s_('SourcegraphAdmin|https://sourcegraph.example.com')
