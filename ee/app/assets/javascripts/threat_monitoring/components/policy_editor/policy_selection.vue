@@ -74,7 +74,10 @@ export default {
 };
 </script>
 <template>
-  <div class="gl-display-grid gl-md-grid-template-columns-2 gl-gap-6">
+  <div
+    class="gl-display-grid gl-md-grid-template-columns-2 gl-gap-6"
+    data-qa-selector="policy_selection_wizard"
+  >
     <gl-card
       v-for="option in $options.policies"
       :key="option.title"

@@ -10,8 +10,13 @@ module QA
               element :policy_type_form_select
             end
 
-            def has_policy_type_form_select?
-              has_element?(:policy_type_form_select)
+            # Switch to just this when removing the :container_security_policy_selection feature flag
+            view 'ee/app/assets/javascripts/threat_monitoring/components/policy_editor/policy_selection.vue' do
+              element :policy_selection_wizard
+            end
+
+            def has_policy_selection?(selector)
+              has_element?(selector)
             end
           end
         end
