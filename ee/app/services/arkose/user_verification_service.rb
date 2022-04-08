@@ -13,7 +13,7 @@ module Arkose
 
     def execute
       response = Gitlab::HTTP.perform_request(Net::HTTP::Post, VERIFY_URL, body: body).parsed_response
-      logger.info(build_message("Arkose verify response: #{response}"))
+      logger.info(build_message(response))
 
       return false if invalid_token(response)
 
@@ -24,7 +24,7 @@ module Arkose
       payload = { session_token: session_token, log_data: user.id }
       Gitlab::ExceptionLogFormatter.format!(error, payload)
       Gitlab::ErrorTracking.track_exception(error)
-      logger.error(build_message("Error verifying user on Arkose: #{payload}"))
+      logger.error("Error verifying user on Arkose: #{payload}")
 
       true
     end
@@ -66,6 +66,18 @@ module Arkose
       response&.dig('session_details', 'session') || 'Unavailable'
     end
 
+    def risk_category(response)
+      response&.dig('session_risk', 'risk_category') || 'Unavailable'
+    end
+
+    def global_telltale_list(response)
+      response&.dig('session_risk', 'global', 'telltales') || 'Unavailable'
+    end
+
+    def custom_telltale_list(response)
+      response&.dig('session_risk', 'custom', 'telltales') || 'Unavailable'
+    end
+
     def body
       {
         private_key: Settings.arkose['private_key'],
@@ -78,8 +90,26 @@ module Arkose
       Gitlab::AppLogger
     end
 
-    def build_message(message)
-      Gitlab::ApplicationContext.current.merge(message: message)
+    def build_message(response)
+      Gitlab::ApplicationContext.current.symbolize_keys.merge(
+        {
+          message: 'Arkose verify response',
+          response: response,
+          username: user.username
+        }.merge(arkose_payload(response))
+      )
+    end
+
+    def arkose_payload(response)
+      {
+        'arkose.session_id': session_id(response),
+        'arkose.global_score': global_score(response),
+        'arkose.global_telltale_list': global_telltale_list(response),
+        'arkose.custom_score': custom_score(response),
+        'arkose.custom_telltale_list': custom_telltale_list(response),
+        'arkose.risk_band': risk_band(response),
+        'arkose.risk_category': risk_category(response)
+      }
     end
 
     def invalid_token(response)
@@ -92,7 +122,7 @@ module Arkose
     end
 
     def low_risk?(response)
-      risk_band = response&.dig('session_risk', 'risk_band')
+      risk_band = risk_band(response)
       risk_band.present? ? risk_band != 'High' : true
     end
 
