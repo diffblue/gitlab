@@ -1,6 +1,3 @@
 %li
-  = form.check_box :member_events, class: 'form-check-input'
-  = form.label :member_events, class: 'list-label form-check-label gl-ml-1' do
-    %strong= s_('Webhooks|Member events')
-  %p.text-muted.gl-ml-1
-    = s_('Webhooks|A group member is created, updated, or removed.')
+  = form.gitlab_ui_checkbox_component :member_events, s_('Webhooks|Member events'),
+      help_text: s_('Webhooks|A group member is created, updated, or removed.')
