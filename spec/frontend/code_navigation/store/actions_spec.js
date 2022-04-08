@@ -107,18 +107,17 @@ describe('Code navigation actions', () => {
             },
           ],
           [],
-        )
-          .then(() => {
-            expect(addInteractionClass).toHaveBeenCalledWith({
-              path: 'index.js',
-              d: {
-                start_line: 0,
-                start_char: 0,
-                hover: { value: '123' },
-              },
-              wrapTextNodes,
-            });
+        ).then(() => {
+          expect(addInteractionClass).toHaveBeenCalledWith({
+            path: 'index.js',
+            d: {
+              start_line: 0,
+              start_char: 0,
+              hover: { value: '123' },
+            },
+            wrapTextNodes,
           });
+        });
       });
     });
 

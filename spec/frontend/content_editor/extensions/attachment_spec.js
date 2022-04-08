@@ -206,9 +206,7 @@ describe('content_editor/extensions/attachment', () => {
           return new Promise((resolve) => {
             eventHub.$on('alert', ({ message, variant }) => {
               expect(variant).toBe(VARIANT_DANGER);
-              expect(message).toBe(
-                'An error occurred while uploading the file. Please try again.',
-              );
+              expect(message).toBe('An error occurred while uploading the file. Please try again.');
               resolve();
             });
           });
