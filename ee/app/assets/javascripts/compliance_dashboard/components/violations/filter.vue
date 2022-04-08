@@ -5,8 +5,8 @@ import ProjectsDropdownFilter from '~/analytics/shared/components/projects_dropd
 import { pikadayToString, parsePikadayDate } from '~/lib/utils/datetime_utility';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __ } from '~/locale';
+import { CURRENT_DATE } from 'ee/audit_events/constants';
 import getGroupProjects from '../../graphql/violation_group_projects.query.graphql';
-import { CURRENT_DATE } from '../../../audit_events/constants';
 import { convertProjectIdsToGraphQl } from '../../utils';
 
 export default {

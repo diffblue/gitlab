@@ -1,4 +1,4 @@
-import initPathLocks from '../../../path_locks';
+import initPathLocks from 'ee/path_locks';
 
 export default () => {
   const dataEl = document.getElementById('js-file-lock');
