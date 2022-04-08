@@ -73,6 +73,19 @@ describe('IterationToken', () => {
     expect(fetchIterationsSpy).toHaveBeenCalledWith(search);
   });
 
+  it('fetches iteration cadences when cadence is set', () => {
+    const search = 'Current&1';
+    const fetchIterationCadencesSpy = jest.fn().mockResolvedValue();
+
+    wrapper = createComponent({
+      config: { ...mockIterationToken, fetchIterationCadences: fetchIterationCadencesSpy },
+    });
+
+    wrapper.findComponent(GlFilteredSearchToken).vm.$emit('input', { data: search });
+
+    expect(fetchIterationCadencesSpy).toHaveBeenCalledWith('1');
+  });
+
   it('renders error message when request fails', async () => {
     const fetchIterationsSpy = jest.fn().mockRejectedValue();
 

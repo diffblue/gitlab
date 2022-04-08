@@ -180,6 +180,17 @@ export const mockIterationsResponse = {
   },
 };
 
+export const mockIterationCadences = [
+  {
+    id: 'gid://gitlab/Iterations::Cadence/11',
+    title: 'Cadence 1',
+  },
+  {
+    id: 'gid://gitlab/Iterations::Cadence/22',
+    title: 'Cadence 2',
+  },
+];
+
 export const labels = [
   {
     id: 'gid://gitlab/GroupLabel/5',
@@ -446,7 +457,13 @@ export const mockGroup2 = {
 
 export const mockSubGroups = [mockGroup0, mockGroup1, mockGroup2];
 
-export const mockTokens = (fetchLabels, fetchAuthors, fetchMilestones, fetchIterations) => [
+export const mockTokens = (
+  fetchLabels,
+  fetchAuthors,
+  fetchMilestones,
+  fetchIterations,
+  fetchIterationCadences,
+) => [
   {
     icon: 'user',
     title: __('Assignee'),
@@ -556,6 +573,7 @@ export const mockTokens = (fetchLabels, fetchAuthors, fetchMilestones, fetchIter
     ],
     unique: true,
     fetchIterations,
+    fetchIterationCadences,
     token: IterationToken,
   },
   {

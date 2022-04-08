@@ -119,6 +119,20 @@ export default {
     state.error = __('Failed to load iterations.');
   },
 
+  [mutationTypes.RECEIVE_CADENCES_REQUEST](state) {
+    state.iterationCadencesLoading = true;
+  },
+
+  [mutationTypes.RECEIVE_CADENCES_SUCCESS](state, cadences) {
+    state.iterationCadences = cadences;
+    state.iterationCadencesLoading = false;
+  },
+
+  [mutationTypes.RECEIVE_CADENCES_FAILURE](state) {
+    state.iterationCadencesLoading = false;
+    state.error = __('Failed to load iteration cadences.');
+  },
+
   [mutationTypes.REQUEST_MORE_EPICS]: (state) => {
     Vue.set(state, 'epicsSwimlanesFetchInProgress', {
       ...state.epicsSwimlanesFetchInProgress,

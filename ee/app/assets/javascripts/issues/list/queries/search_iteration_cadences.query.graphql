@@ -1,0 +1,25 @@
+query searchIterationCadences(
+  $fullPath: ID!
+  $title: String
+  $id: ID
+  $isProject: Boolean = false
+) {
+  group(fullPath: $fullPath) @skip(if: $isProject) {
+    id
+    iterationCadences(title: $title, id: $id, includeAncestorGroups: true) {
+      nodes {
+        id
+        title
+      }
+    }
+  }
+  project(fullPath: $fullPath) @include(if: $isProject) {
+    id
+    iterationCadences(title: $title, id: $id, includeAncestorGroups: true) {
+      nodes {
+        id
+        title
+      }
+    }
+  }
+}

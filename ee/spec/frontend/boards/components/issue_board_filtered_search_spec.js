@@ -54,6 +54,7 @@ describe('IssueBoardFilter', () => {
         fetchAuthorsSpy,
         wrapper.vm.fetchMilestones,
         wrapper.vm.fetchIterations,
+        wrapper.vm.fetchIterationCadences,
       );
 
       expect(wrapper.findComponent(BoardFilteredSearch).props('tokens')).toEqual(

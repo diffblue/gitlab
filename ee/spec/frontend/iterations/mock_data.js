@@ -224,6 +224,7 @@ export const mockIterationsWithCadences = [
     startDate: '2021-11-23T12:34:56',
     dueDate: '2021-11-30T12:34:56',
     iterationCadence: {
+      id: 1,
       title: 'cadence 1',
     },
   },
@@ -233,6 +234,7 @@ export const mockIterationsWithCadences = [
     startDate: '2021-11-23T12:34:56',
     dueDate: '2021-11-30T12:34:56',
     iterationCadence: {
+      id: 2,
       title: 'cadence 2',
     },
   },
@@ -242,6 +244,7 @@ export const mockIterationsWithCadences = [
     startDate: '2021-11-23T12:34:56',
     dueDate: '2021-11-30T12:34:56',
     iterationCadence: {
+      id: 2,
       title: 'cadence 2',
     },
   },
@@ -251,6 +254,7 @@ export const mockIterationsWithCadences = [
     startDate: '2021-11-23T12:34:56',
     dueDate: '2021-11-30T12:34:56',
     iterationCadence: {
+      id: 1,
       title: 'cadence 1',
     },
   },

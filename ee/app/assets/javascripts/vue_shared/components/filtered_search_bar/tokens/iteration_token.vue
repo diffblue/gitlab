@@ -2,12 +2,13 @@
 import { GlDropdownDivider, GlDropdownSectionHeader, GlFilteredSearchSuggestion } from '@gitlab/ui';
 import { groupByIterationCadences, getIterationPeriod } from 'ee/iterations/utils';
 import createFlash from '~/flash';
-import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { TYPE_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
+import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __ } from '~/locale';
+import { OPERATOR_IS } from '~/vue_shared/components/filtered_search_bar/constants';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
-import { DEFAULT_ITERATIONS } from '../constants';
+import { DEFAULT_CADENCES, DEFAULT_ITERATIONS } from '../constants';
 
 export default {
   components: {
@@ -17,7 +18,6 @@ export default {
     GlFilteredSearchSuggestion,
     IterationTitle,
   },
-  mixins: [glFeatureFlagMixin()],
   props: {
     active: {
       type: Boolean,
@@ -42,9 +42,23 @@ export default {
     defaultIterations() {
       return this.config.defaultIterations || DEFAULT_ITERATIONS;
     },
+    defaultCadenceOptions() {
+      return !this.config.hideDefaultCadenceOptions && this.value.operator === OPERATOR_IS
+        ? DEFAULT_CADENCES
+        : [];
+    },
   },
   methods: {
     getActiveIteration(iterations, data) {
+      if (data?.includes('&')) {
+        const iterationCadenceId = this.getIterationCadenceId(data);
+        const iteration = iterations.find(
+          (i) =>
+            i?.iterationCadence?.id ===
+            convertToGraphQLId(TYPE_ITERATIONS_CADENCE, iterationCadenceId),
+        );
+        return iteration?.iterationCadence;
+      }
       return iterations.find((iteration) => this.getId(iteration) === data);
     },
     groupIterationsByCadence(iterations) {
@@ -52,25 +66,55 @@ export default {
     },
     fetchIterations(searchTerm) {
       this.loading = true;
-      this.config
-        .fetchIterations(searchTerm)
-        .then((response) => {
-          this.iterations = Array.isArray(response) ? response : response.data;
-        })
-        .catch(() => {
-          createFlash({ message: __('There was a problem fetching iterations.') });
-        })
-        .finally(() => {
-          this.loading = false;
-        });
+      if (searchTerm?.includes('&')) {
+        this.config
+          .fetchIterationCadences(this.getIterationCadenceId(searchTerm))
+          .then((response) => {
+            this.iterations = [
+              {
+                iterationCadence: response[0],
+              },
+            ];
+          })
+          .catch((error) => {
+            createFlash({ message: this.$options.i18n.errorMessage, captureError: true, error });
+          })
+          .finally(() => {
+            this.loading = false;
+          });
+      } else {
+        this.config
+          .fetchIterations(searchTerm)
+          .then((response) => {
+            this.iterations = Array.isArray(response) ? response : response.data;
+          })
+          .catch(() => {
+            createFlash({ message: this.$options.i18n.errorMessage });
+          })
+          .finally(() => {
+            this.loading = false;
+          });
+      }
     },
-    getId(iteration) {
-      return getIdFromGraphQLId(iteration.id).toString();
+    getId(option) {
+      return getIdFromGraphQLId(option.id).toString();
     },
-    iterationTokenText(iteration) {
-      const cadenceTitle = iteration.iterationCadence.title;
-      return `${cadenceTitle} ${getIterationPeriod(iteration)}`;
+    getIterationCadenceId(input) {
+      return input.split('&')[1];
     },
+    getIterationOption(input) {
+      return input.split('&')[0];
+    },
+    iterationTokenText(iterationOrCadence, inputValue) {
+      if (iterationOrCadence?.id?.includes(TYPE_ITERATIONS_CADENCE)) {
+        return `${this.getIterationOption(inputValue)}::${iterationOrCadence.title}`;
+      }
+      const cadenceTitle = iterationOrCadence.iterationCadence.title;
+      return `${cadenceTitle} ${getIterationPeriod(iterationOrCadence)}`;
+    },
+  },
+  i18n: {
+    errorMessage: __('There was a problem fetching iterations.'),
   },
 };
 </script>
@@ -88,7 +132,7 @@ export default {
     v-on="$listeners"
   >
     <template #view="{ viewTokenProps: { inputValue, activeTokenValue } }">
-      {{ activeTokenValue ? iterationTokenText(activeTokenValue) : inputValue }}
+      {{ activeTokenValue ? iterationTokenText(activeTokenValue, inputValue) : inputValue }}
     </template>
     <template #suggestions-list="{ suggestions }">
       <template v-for="(cadence, index) in groupIterationsByCadence(suggestions)">
@@ -100,6 +144,13 @@ export default {
         >
           {{ cadence.title }}
         </gl-dropdown-section-header>
+        <gl-filtered-search-suggestion
+          v-for="option in defaultCadenceOptions"
+          :key="`${option.value}-${index}`"
+          :value="`${option.value}&${getId(cadence)}`"
+        >
+          {{ option.text }}
+        </gl-filtered-search-suggestion>
         <gl-filtered-search-suggestion
           v-for="iteration in cadence.iterations"
           :key="iteration.id"

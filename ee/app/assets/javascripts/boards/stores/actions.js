@@ -17,6 +17,7 @@ import { historyPushState, convertObjectPropsToCamelCase } from '~/lib/utils/com
 import { mergeUrlParams, removeParams, queryToObject } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 import searchIterationQuery from 'ee/issues/list/queries/search_iterations.query.graphql';
+import searchIterationCadencesQuery from 'ee/issues/list/queries/search_iteration_cadences.query.graphql';
 import {
   fullEpicBoardId,
   formatEpic,
@@ -189,6 +190,41 @@ export default {
       })
       .catch((e) => {
         commit(types.RECEIVE_ITERATIONS_FAILURE);
+        throw e;
+      });
+  },
+
+  fetchIterationCadences({ state, commit }, title) {
+    commit(types.RECEIVE_CADENCES_REQUEST);
+
+    const { fullPath, boardType } = state;
+
+    const id = Number(title);
+    let variables = { fullPath, title, isProject: boardType === BoardType.project };
+
+    if (!Number.isNaN(id) && title !== '') {
+      variables = { fullPath, id, isProject: boardType === BoardType.project };
+    }
+
+    return gqlClient
+      .query({
+        query: searchIterationCadencesQuery,
+        variables,
+      })
+      .then(({ data }) => {
+        const errors = data[boardType]?.errors;
+        const cadences = data[boardType]?.iterationCadences?.nodes;
+
+        if (errors?.[0]) {
+          throw new Error(errors[0]);
+        }
+
+        commit(types.RECEIVE_CADENCES_SUCCESS, cadences);
+
+        return cadences;
+      })
+      .catch((e) => {
+        commit(types.RECEIVE_CADENCES_FAILURE);
         throw e;
       });
   },

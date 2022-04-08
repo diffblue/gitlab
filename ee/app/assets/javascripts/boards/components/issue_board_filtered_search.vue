@@ -62,6 +62,7 @@ export default {
                 token: IterationToken,
                 unique: true,
                 fetchIterations: this.fetchIterations,
+                fetchIterationCadences: this.fetchIterationCadences,
               },
             ]
           : []),
@@ -78,7 +79,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['fetchIterations']),
+    ...mapActions(['fetchIterations', 'fetchIterationCadences']),
   },
 };
 </script>

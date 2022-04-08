@@ -10,6 +10,7 @@ import {
   IterationIDs,
 } from 'ee/boards/constants';
 import epicCreateMutation from 'ee/boards/graphql/epic_create.mutation.graphql';
+import searchIterationCadencesQuery from 'ee/issues/list/queries/search_iteration_cadences.query.graphql';
 import actions, { gqlClient } from 'ee/boards/stores/actions';
 import * as types from 'ee/boards/stores/mutation_types';
 import mutations from 'ee/boards/stores/mutations';
@@ -25,6 +26,7 @@ import * as typesCE from '~/boards/stores/mutation_types';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import * as commonUtils from '~/lib/utils/common_utils';
 import { mergeUrlParams, removeParams } from '~/lib/utils/url_utility';
+import { __ } from '~/locale';
 import {
   labels,
   mockLists,
@@ -35,6 +37,7 @@ import {
   mockAssignees,
   mockSubGroups,
   mockGroup0,
+  mockIterationCadences,
 } from '../mock_data';
 
 Vue.use(Vuex);
@@ -1159,6 +1162,106 @@ describe('fetchIterations', () => {
 
       expect(store.state.iterationsLoading).toBe(false);
       expect(store.state.error).toBe('Failed to load iterations.');
+    });
+  });
+});
+
+describe('fetchIterationCadences', () => {
+  const queryResponse = {
+    data: {
+      group: {
+        iterationCadences: {
+          nodes: mockIterationCadences,
+        },
+      },
+    },
+  };
+
+  const queryErrors = {
+    data: {
+      group: {
+        errors: ['You cannot view these iteration cadences'],
+        iterationCadences: {},
+      },
+    },
+  };
+
+  function createStore({
+    state = {
+      boardType: 'group',
+      fullPath: 'gitlab-org/gitlab',
+      iterationCadences: [],
+      iterationCadencesLoading: false,
+    },
+  } = {}) {
+    return new Vuex.Store({
+      state,
+      mutations,
+    });
+  }
+
+  it('sets iterationCadencesLoading to true', () => {
+    jest.spyOn(gqlClient, 'query').mockResolvedValue(queryResponse);
+
+    const store = createStore();
+
+    actions.fetchIterationCadences(store);
+
+    expect(store.state.iterationCadencesLoading).toBe(true);
+  });
+
+  describe('success', () => {
+    it('with search by title - sets state.iterationCadences from query result', async () => {
+      jest.spyOn(gqlClient, 'query').mockResolvedValue(queryResponse);
+
+      const store = createStore();
+
+      await actions.fetchIterationCadences(store, 'search');
+
+      expect(store.state.iterationCadencesLoading).toBe(false);
+      expect(store.state.iterationCadences).toBe(mockIterationCadences);
+
+      expect(gqlClient.query).toHaveBeenCalledWith({
+        query: searchIterationCadencesQuery,
+        variables: {
+          fullPath: 'gitlab-org/gitlab',
+          title: 'search',
+          isProject: false,
+        },
+      });
+    });
+
+    it('with search by id - sets state.iterationCadences from query result', async () => {
+      jest.spyOn(gqlClient, 'query').mockResolvedValue(queryResponse);
+
+      const store = createStore();
+
+      await actions.fetchIterationCadences(store, '11');
+
+      expect(store.state.iterationCadencesLoading).toBe(false);
+      expect(store.state.iterationCadences).toBe(mockIterationCadences);
+
+      expect(gqlClient.query).toHaveBeenCalledWith({
+        query: searchIterationCadencesQuery,
+        variables: {
+          fullPath: 'gitlab-org/gitlab',
+          id: 11,
+          isProject: false,
+        },
+      });
+    });
+  });
+
+  describe('failure', () => {
+    it('throws an error and displays an error message', async () => {
+      jest.spyOn(gqlClient, 'query').mockResolvedValue(queryErrors);
+
+      const store = createStore();
+
+      await expect(actions.fetchIterationCadences(store)).rejects.toThrow();
+
+      expect(store.state.iterationCadencesLoading).toBe(false);
+      expect(store.state.error).toBe(__('Failed to load iteration cadences.'));
     });
   });
 });
