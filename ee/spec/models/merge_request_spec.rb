@@ -1155,13 +1155,15 @@ RSpec.describe MergeRequest do
     end
   end
 
-  describe '#mergeable_state?' do
-    subject { merge_request.mergeable_state? }
+  describe '#mergeable?' do
+    subject { merge_request.mergeable? }
 
     context 'when using approvals' do
       let(:user) { create(:user) }
 
       before do
+        allow(merge_request).to receive(:mergeable_state?).and_return(true)
+
         merge_request.target_project.update!(approvals_before_merge: 1)
         project.add_developer(user)
       end
@@ -1209,26 +1211,6 @@ RSpec.describe MergeRequest do
           allow(merge_request).to receive(:has_denied_policies?).and_return(false)
         end
 
-        it 'is mergeable' do
-          is_expected.to be_truthy
-        end
-      end
-    end
-
-    context 'when blocking merge requests' do
-      before do
-        stub_licensed_features(blocking_merge_requests: true)
-      end
-
-      context 'when the merge request is blocked' do
-        let(:merge_request) { create(:merge_request, :blocked, source_project: project, target_project: project) }
-
-        it 'is not mergeable' do
-          is_expected.to be_falsey
-        end
-      end
-
-      context 'when merge request is not blocked' do
         it 'is mergeable' do
           is_expected.to be_truthy
         end

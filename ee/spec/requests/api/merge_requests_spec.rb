@@ -178,7 +178,8 @@ RSpec.describe API::MergeRequests do
 
       put api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/merge", user)
 
-      expect(response).to have_gitlab_http_status(:method_not_allowed)
+      expect(response).to have_gitlab_http_status(:not_acceptable)
+      expect(json_response['message']).to eq('Branch cannot be merged')
     end
 
     it 'returns 200 if merge request was approved' do
