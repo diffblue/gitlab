@@ -26,8 +26,6 @@ describe('AlertDetails', () => {
   const projectPath = 'root/alerts';
   const projectIssuesPath = 'root/alerts/-/issues';
   const projectId = '1';
-  const iid = '1';
-  const canUpdate = true;
   const $router = { replace: jest.fn() };
 
   function mountComponent({
@@ -44,8 +42,6 @@ describe('AlertDetails', () => {
           projectPath,
           projectIssuesPath,
           projectId,
-          iid,
-          canUpdate,
           ...provide,
         },
         data() {
@@ -74,6 +70,7 @@ describe('AlertDetails', () => {
         stubs: {
           ...stubs,
           AlertSummaryRow,
+          'metric-images-tab': true,
         },
       }),
     );
@@ -96,7 +93,7 @@ describe('AlertDetails', () => {
   const findEnvironmentName = () => wrapper.findByTestId('environmentName');
   const findEnvironmentPath = () => wrapper.findByTestId('environmentPath');
   const findDetailsTable = () => wrapper.findComponent(AlertDetailsTable);
-  const findMetricsTab = () => wrapper.findByTestId('metrics');
+  const findMetricsTab = () => wrapper.findComponent(MetricImagesTab);
 
   describe('Alert details', () => {
     describe('when alert is null', () => {
