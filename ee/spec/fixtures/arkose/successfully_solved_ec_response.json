@@ -75,6 +75,7 @@
     "timezone": "Australia/Sydney"
   },
   "session_risk": {
+    "risk_category": "NO-THREAT",
     "risk_band": "Low",
     "global": {
       "score": "0",

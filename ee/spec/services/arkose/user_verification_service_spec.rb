@@ -41,6 +41,26 @@ RSpec.describe Arkose::UserVerificationService do
           expect(user.custom_attributes.find_by(key: 'arkose_custom_score').value).to eq('0')
         end
 
+        it 'logs Arkose verify response' do
+          allow(Gitlab::HTTP).to receive(:perform_request).and_return(response)
+          allow(Gitlab::AppLogger).to receive(:info)
+          allow(Gitlab::ApplicationContext).to receive(:current).and_return({ 'correlation_id': 'be025cf83013ac4f52ffd2bf712b11a2' })
+
+          subject
+
+          expect(Gitlab::AppLogger).to have_received(:info).with(correlation_id: 'be025cf83013ac4f52ffd2bf712b11a2',
+                                                                 message: 'Arkose verify response',
+                                                                 response: arkose_ec_response,
+                                                                 username: user.username,
+                                                                 'arkose.session_id': '22612c147bb418c8.2570749403',
+                                                                 'arkose.global_score': '0',
+                                                                 'arkose.global_telltale_list': [],
+                                                                 'arkose.custom_score': '0',
+                                                                 'arkose.custom_telltale_list': [],
+                                                                 'arkose.risk_band': 'Low',
+                                                                 'arkose.risk_category': 'NO-THREAT')
+        end
+
         context 'when the risk score is high' do
           let(:arkose_ec_response) { Gitlab::Json.parse(File.read(Rails.root.join('ee/spec/fixtures/arkose/successfully_solved_ec_response_high_risk.json'))) }
 
