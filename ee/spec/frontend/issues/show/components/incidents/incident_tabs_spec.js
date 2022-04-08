@@ -51,6 +51,7 @@ describe('Incident Tabs component', () => {
   };
 
   const findTimelineTab = () => wrapper.find('[data-testid="timeline-events-tab"]');
+  const findMetricsTab = () => wrapper.find('[data-testid="metrics-tab"]');
 
   describe('incident timeline tab', () => {
     beforeEach(() => {
@@ -72,6 +73,20 @@ describe('Incident Tabs component', () => {
       mountComponent({}, { provide: { glFeatures: { incidentTimelineEvents: false } } });
 
       expect(findTimelineTab().exists()).toBe(false);
+    });
+  });
+
+  describe('upload metrics feature available', () => {
+    it('shows the metric tab when metrics are available', () => {
+      mountComponent({}, { provide: { uploadMetricsFeatureAvailable: true } });
+
+      expect(findMetricsTab().exists()).toBe(true);
+    });
+
+    it('hides the tab when metrics are not available', () => {
+      mountComponent({}, { provide: { uploadMetricsFeatureAvailable: false } });
+
+      expect(findMetricsTab().exists()).toBe(false);
     });
   });
 });
