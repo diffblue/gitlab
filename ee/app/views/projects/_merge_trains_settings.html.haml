@@ -1,11 +1,9 @@
 - return unless merge_trains_available?
+- merge_trains_help_link_url = help_page_path('ci/pipelines/merge_trains.md')
+- merge_trains_help_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: merge_trains_help_link_url }
 
-.form-check
-  .gl-pl-6
-    = form.check_box :merge_trains_enabled, class: 'form-check-input js-merge-options-merge-trains gl-pl-6', data: { qa_selector: 'merge_trains_checkbox' }
-    = form.label :merge_trains_enabled, class: 'form-check-label' do
-      = s_('ProjectSettings|Enable merge trains')
-      .text-secondary.mb-2
-        - merge_trains_help_link_url = help_page_path('ci/pipelines/merge_trains.md')
-        - merge_trains_help_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: merge_trains_help_link_url }
-        = s_('ProjectSettings|Merge requests approved for merge are queued, and pipelines validate the combined results of the source and target branches before merge. %{link_start}What are merge trains?%{link_end}').html_safe % { link_start: merge_trains_help_link_start, link_end: '</a>'.html_safe }
+.gl-pl-6
+  = form.gitlab_ui_checkbox_component :merge_trains_enabled,
+    s_('ProjectSettings|Enable merge trains'),
+    help_text: s_('ProjectSettings|Merge requests approved for merge are queued, and pipelines validate the combined results of the source and target branches before merge. %{link_start}What are merge trains?%{link_end}').html_safe % { link_start: merge_trains_help_link_start, link_end: '</a>'.html_safe },
+    checkbox_options: { class: 'js-merge-options-merge-trains', data: { qa_selector: 'merge_trains_checkbox' } }

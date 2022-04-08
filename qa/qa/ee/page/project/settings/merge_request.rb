@@ -33,7 +33,7 @@ module QA
             end
 
             def click_merge_trains_checkbox
-              check_element(:merge_trains_checkbox)
+              check_element(:merge_trains_checkbox, true)
             end
 
             def enable_merge_train
