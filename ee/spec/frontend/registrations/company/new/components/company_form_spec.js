@@ -1,5 +1,6 @@
-import { GlButton, GlForm } from '@gitlab/ui';
+import { GlButton, GlForm, GlFormText } from '@gitlab/ui';
 import { createLocalVue } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import RegistrationForm from 'ee/registrations/components/company_form.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { TRIAL_FORM_SUBMIT_TEXT } from 'ee/trials/constants';
@@ -22,6 +23,7 @@ describe('RegistrationForm', () => {
     });
   };
 
+  const findDescription = () => wrapper.findComponent(GlFormText);
   const findButton = () => wrapper.findComponent(GlButton);
   const findForm = () => wrapper.findComponent(GlForm);
   const findFormInput = (testId) => wrapper.findByTestId(testId);
@@ -35,6 +37,17 @@ describe('RegistrationForm', () => {
   });
 
   describe('rendering', () => {
+    it.each`
+      trialBool | descriptionText
+      ${true}   | ${'To activate your trial, we need additional details from you.'}
+      ${false}  | ${'To complete registration, we need additional details from you.'}
+    `('displays the correct page description text', async ({ trialBool, descriptionText }) => {
+      wrapper.setProps({ trial: trialBool });
+      await nextTick();
+
+      expect(findDescription().text()).toContain(descriptionText);
+    });
+
     it('has the "Continue" text on the submit button', () => {
       expect(findButton().text()).toBe(TRIAL_FORM_SUBMIT_TEXT);
     });
