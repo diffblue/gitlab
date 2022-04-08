@@ -5260,6 +5260,9 @@ msgstr ""
 msgid "Authentication Log"
 msgstr ""
 
+msgid "Authentication error: enable 2FA in your profile settings to continue using GitLab: %{mfa_help_page}"
+msgstr ""
+
 msgid "Authentication failed: %{error_message}"
 msgstr ""
 
