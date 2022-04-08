@@ -18,13 +18,6 @@ Gitlab/PolicyRuleBoolean:
 Layout/SpaceInLambdaLiteral:
   Enabled: false
 
-# Offense count: 585
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: space, no_space
-Layout/SpaceInsideParens:
-  Enabled: false
-
 # Offense count: 2
 # Configuration parameters: AllowComments.
 Lint/EmptyFile:
