@@ -652,7 +652,7 @@ RSpec.describe ContainerRepository, :aggregate_failures do
     context 'supports gitlab api on .com with a recent repository' do
       before do
         expect(repository.gitlab_api_client).to receive(:supports_gitlab_api?).and_return(true)
-        expect(repository.gitlab_api_client).to receive(:repository_details).with(repository.path, with_size: true).and_return(response)
+        expect(repository.gitlab_api_client).to receive(:repository_details).with(repository.path, sizing: :self).and_return(response)
       end
 
       context 'with a size_bytes field' do
@@ -1073,6 +1073,43 @@ RSpec.describe ContainerRepository, :aggregate_failures do
     it 'returns false for unknown container repository paths' do
       path = ContainerRegistry::Path.new('you/dont/know/me')
       expect(described_class.exists_by_path?(path)).to be_falsey
+    end
+  end
+
+  describe '.all_migrated?' do
+    let_it_be(:project) { create(:project) }
+
+    subject { project.container_repositories.all_migrated? }
+
+    context 'with no repositories' do
+      it { is_expected.to be_truthy }
+    end
+
+    context 'with only recent repositories' do
+      let_it_be(:container_repository1) { create(:container_repository, project: project) }
+      let_it_be_with_reload(:container_repository2) { create(:container_repository, project: project) }
+
+      it { is_expected.to be_truthy }
+
+      context 'with one old non migrated repository' do
+        before do
+          container_repository2.update!(created_at: described_class::MIGRATION_PHASE_1_ENDED_AT - 3.months)
+        end
+
+        it { is_expected.to be_falsey }
+      end
+
+      context 'with one old migrated repository' do
+        before do
+          container_repository2.update!(
+            created_at: described_class::MIGRATION_PHASE_1_ENDED_AT - 3.months,
+            migration_state: 'import_done',
+            migration_import_done_at: Time.zone.now
+          )
+        end
+
+        it { is_expected.to be_truthy }
+      end
     end
   end
 
