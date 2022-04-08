@@ -1,13 +1,11 @@
 import { nextTick } from 'vue';
+import { GlAlert, GlFormInput, GlFormRadioGroup, GlFormTextarea, GlModal } from '@gitlab/ui';
 import {
-  GlAlert,
-  GlButtonGroup,
-  GlFormInput,
-  GlFormRadioGroup,
-  GlFormTextarea,
-  GlModal,
-} from '@gitlab/ui';
-import { EDITOR_MODE_YAML } from 'ee/security_orchestration/components/policy_editor/constants';
+  EDITOR_MODE_YAML,
+  EDITOR_MODE_RULE,
+  EDITOR_MODES,
+} from 'ee/security_orchestration/components/policy_editor/constants';
+import SegmentedControlButtonGroup from '~/vue_shared/components/segmented_control_button_group.vue';
 import PolicyEditorLayout from 'ee/security_orchestration/components/policy_editor/policy_editor_layout.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
@@ -47,7 +45,7 @@ describe('PolicyEditorLayout component', () => {
   const findEnabledRadioGroup = () => wrapper.findComponent(GlFormRadioGroup);
   const findDeletePolicyButton = () => wrapper.findByTestId('delete-policy');
   const findDeletePolicyModal = () => wrapper.findComponent(GlModal);
-  const findEditorModeToggle = () => wrapper.findComponent(GlButtonGroup);
+  const findEditorModeToggle = () => wrapper.findComponent(SegmentedControlButtonGroup);
   const findYamlModeSection = () => wrapper.findByTestId('policy-yaml-editor');
   const findRuleModeSection = () => wrapper.findByTestId('rule-editor');
   const findRuleModePreviewSection = () => wrapper.findByTestId('rule-editor-preview');
@@ -62,12 +60,15 @@ describe('PolicyEditorLayout component', () => {
       factory();
     });
 
-    it.each`
-      component               | status                | findComponent             | state
-      ${'editor mode toggle'} | ${'does display'}     | ${findEditorModeToggle}   | ${true}
-      ${'delete button'}      | ${'does not display'} | ${findDeletePolicyButton} | ${false}
-    `('$status the $component', async ({ findComponent, state }) => {
-      expect(findComponent().exists()).toBe(state);
+    it('does not display delete button', () => {
+      expect(findDeletePolicyButton().exists()).toBe(false);
+    });
+
+    it('renders editor mode toggle options', () => {
+      expect(findEditorModeToggle().props()).toEqual({
+        value: EDITOR_MODE_RULE,
+        options: EDITOR_MODES,
+      });
     });
 
     it('disables the save button tooltip', async () => {
@@ -88,7 +89,7 @@ describe('PolicyEditorLayout component', () => {
     it('mode changes appropriately when new mode is selected', async () => {
       expect(findRuleModeSection().exists()).toBe(true);
       expect(findYamlModeSection().exists()).toBe(false);
-      wrapper.findByTestId('button-yaml').vm.$emit('click');
+      findEditorModeToggle().vm.$emit('input', EDITOR_MODE_YAML);
       await nextTick();
       expect(findRuleModeSection().exists()).toBe(false);
       expect(findYamlModeSection().exists()).toBe(true);
