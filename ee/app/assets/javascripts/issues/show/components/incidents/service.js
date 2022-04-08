@@ -7,23 +7,23 @@ function replaceModelIId(payload = {}) {
 }
 
 export const getMetricImages = async (payload) => {
-  payload = replaceModelIId(payload);
-  const response = await Api.fetchIssueMetricImages(payload);
+  const apiPayload = replaceModelIId(payload);
+  const response = await Api.fetchIssueMetricImages(apiPayload);
   return convertObjectPropsToCamelCase(response.data, { deep: true });
 };
 export const uploadMetricImage = async (payload) => {
-  payload = replaceModelIId(payload);
-  const response = await Api.uploadIssueMetricImage(payload);
+  const apiPayload = replaceModelIId(payload);
+  const response = await Api.uploadIssueMetricImage(apiPayload);
   return convertObjectPropsToCamelCase(response.data);
 };
 export const updateMetricImage = async (payload) => {
-  payload = replaceModelIId(payload);
-  const response = await Api.updateIssueMetricImage(payload);
+  const apiPayload = replaceModelIId(payload);
+  const response = await Api.updateIssueMetricImage(apiPayload);
   return convertObjectPropsToCamelCase(response.data);
 };
 export const deleteMetricImage = async (payload) => {
-  payload = replaceModelIId(payload);
-  const response = await Api.deleteMetricImage(payload);
+  const apiPayload = replaceModelIId(payload);
+  const response = await Api.deleteMetricImage(apiPayload);
   return convertObjectPropsToCamelCase(response.data);
 };
 
