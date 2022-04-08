@@ -61,7 +61,8 @@ module Users
         !user_dismissed?(SECURITY_NEWSLETTER_CALLOUT)
     end
 
-    def minute_limit_banner
+    def minute_limit_banner_dismissed?
+      user_dismissed?(MINUTE_LIMIT_BANNER)
     end
 
     private
