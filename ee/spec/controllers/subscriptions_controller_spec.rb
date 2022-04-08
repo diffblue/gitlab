@@ -246,6 +246,32 @@ RSpec.describe SubscriptionsController do
     end
   end
 
+  describe 'GET #validate_payment_method' do
+    let(:params) { { id: 'foo', gitlab_user_id: 'user-id' } }
+
+    subject do
+      post :validate_payment_method, params: params, as: :json
+    end
+
+    context 'with unauthorized user' do
+      it { is_expected.to have_gitlab_http_status(:unauthorized) }
+    end
+
+    context 'with authorized user' do
+      before do
+        sign_in(user)
+        expect(Gitlab::SubscriptionPortal::Client)
+          .to receive(:validate_payment_method)
+          .with(params[:id], { gitlab_user_id: params[:gitlab_user_id] })
+          .and_return({ success: true })
+      end
+
+      it { is_expected.to have_gitlab_http_status(:ok) }
+
+      it { is_expected.to be_successful }
+    end
+  end
+
   describe 'POST #create', :snowplow do
     subject do
       post :create,

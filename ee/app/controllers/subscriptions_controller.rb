@@ -84,6 +84,11 @@ class SubscriptionsController < ApplicationController
     render json: response[:data]
   end
 
+  def validate_payment_method
+    response = client.validate_payment_method(params[:id], validate_payment_method_params)
+    render json: response
+  end
+
   def create
     current_user.update(setup_for_company: true) if params[:setup_for_company]
     group = params[:selected_group] ? current_group : create_group
@@ -146,6 +151,10 @@ class SubscriptionsController < ApplicationController
 
   def subscription_params
     params.require(:subscription).permit(:plan_id, :is_addon, :payment_method_id, :quantity, :source).merge(params.permit(:active_subscription))
+  end
+
+  def validate_payment_method_params
+    { gitlab_user_id: params[:gitlab_user_id] }
   end
 
   def find_group(plan_id:)

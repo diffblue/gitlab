@@ -37,6 +37,10 @@ module Gitlab
             http_get("api/payment_methods/#{id}", admin_headers)
           end
 
+          def validate_payment_method(id, params)
+            http_post("api/payment_methods/#{id}/validate", admin_headers, params)
+          end
+
           def customers_oauth_app_uid
             http_get("api/v1/oauth_app_id", admin_headers)
           end
