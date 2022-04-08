@@ -5,9 +5,8 @@
 - form = local_assigns.fetch(:form)
 - push_rule = local_assigns.fetch(:push_rule)
 
-.form-check
-  = form.check_box :commit_committer_check, class: "form-check-input", disabled: !can_change_push_rule?(form.object, :commit_committer_check, context), data: { qa_selector: 'committer_restriction_checkbox' }
-  = form.label :commit_committer_check, class: "label-bold form-check-label" do
-    = s_("PushRule|Reject unverified users")
-  %p.text-muted
-    = commit_committer_check_description(push_rule)
+
+= form.gitlab_ui_checkbox_component :commit_committer_check,
+     s_("PushRule|Reject unverified users"),
+     checkbox_options: { data: { qa_selector: 'committer_restriction_checkbox' }, disabled: !can_change_push_rule?(form.object, :commit_committer_check, context) },
+     help_text: commit_committer_check_description(push_rule)

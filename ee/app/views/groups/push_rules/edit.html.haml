@@ -6,7 +6,7 @@
 
 %hr.clearfix
 
-= form_for @push_rule, url: group_push_rules_path(@group), as: :push_rule, method: :put do |f|
+= gitlab_ui_form_for @push_rule, url: group_push_rules_path(@group), as: :push_rule, method: :put do |f|
   - if @push_rule.errors.any?
     .gl-alert.gl-alert-danger
       - @push_rule.errors.full_messages.each do |msg|

@@ -1,4 +1,4 @@
-= form_for @push_rule, url: admin_push_rule_path(anchor: 'js-push-rule-settings'), method: :put, html: { class: 'fieldset-form' } do |f|
+= gitlab_ui_form_for @push_rule, url: admin_push_rule_path(anchor: 'js-push-rule-settings'), method: :put, html: { class: 'fieldset-form' } do |f|
   - if @push_rule.errors.any?
     .gl-alert.gl-alert-danger
       - @push_rule.errors.full_messages.each do |msg|
