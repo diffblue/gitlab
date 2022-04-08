@@ -2706,6 +2706,9 @@ msgstr ""
 msgid "AdminSettings|Preview payload"
 msgstr ""
 
+msgid "AdminSettings|Project export enabled"
+msgstr ""
+
 msgid "AdminSettings|Protect CI/CD variables by default"
 msgstr ""
 
@@ -13303,9 +13306,6 @@ msgstr ""
 msgid "Documents reindexed: %{processed_documents} (%{percentage}%%)"
 msgstr ""
 
-msgid "Does not apply to projects in personal namespaces, which are deleted immediately on request."
-msgstr ""
-
 msgid "Does not delete the source branch."
 msgstr ""
 
@@ -13912,7 +13912,7 @@ msgstr ""
 msgid "Enable container expiration caching."
 msgstr ""
 
-msgid "Enable delayed project deletion by default for newly-created groups."
+msgid "Enable delayed project deletion by default for newly-created groups. Does not apply to projects in personal namespaces, which are deleted immediately on request."
 msgstr ""
 
 msgid "Enable email notification"
@@ -29153,9 +29153,6 @@ msgid "Project export could not be deleted."
 msgstr ""
 
 msgid "Project export download requests"
-msgstr ""
-
-msgid "Project export enabled"
 msgstr ""
 
 msgid "Project export has been deleted."
