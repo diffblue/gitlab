@@ -59,12 +59,21 @@ class ProtectedEnvironment < ApplicationRecord
 
       key = "protected_environment:for_environment:#{environment.id}"
 
-      ::Gitlab::SafeRequestStore.fetch(key) do
-        from_union([
-          where(project: environment.project_id, name: environment.name),
-          where(group: environment.project.ancestors_upto_ids, name: environment.tier)
-        ])
-      end
+      ::Gitlab::SafeRequestStore.fetch(key) { for_environments([environment]) }
+    end
+
+    def for_environments(environments)
+      raise ArgumentError, 'Environments must be in the same project' if environments.map(&:project_id).uniq.size > 1
+
+      project_id = environments.first.project_id
+      group_ids = environments.first.project.ancestors_upto_ids
+      names = environments.map(&:name)
+      tiers = environments.map(&:tier)
+
+      from_union([
+        where(project: project_id, name: names),
+        where(group: group_ids, name: tiers)
+      ])
     end
   end
 
@@ -81,19 +90,19 @@ class ProtectedEnvironment < ApplicationRecord
     end
   end
 
-  private
-
-  def valid_tier_name
-    unless Environment.tiers[name]
-      errors.add(:name, "must be one of environment tiers: #{Environment.tiers.keys.join(', ')}.")
-    end
-  end
-
   def project_level?
     project_id.present?
   end
 
   def group_level?
     group_id.present?
+  end
+
+  private
+
+  def valid_tier_name
+    unless Environment.tiers[name]
+      errors.add(:name, "must be one of environment tiers: #{Environment.tiers.keys.join(', ')}.")
+    end
   end
 end

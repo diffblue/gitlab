@@ -16,19 +16,11 @@ module Preloaders
       def execute
         return if environments.empty?
 
-        project = environments.first.project
-        project_id = project.id
-        group_ids = project.ancestors_upto_ids
+        associated_protected_environments =
+          ProtectedEnvironment.for_environments(environments).preload(:deploy_access_levels)
 
-        names = environments.map(&:name)
-        tiers = environments.map(&:tier)
-
-        project_protected_environments = ProtectedEnvironment.preload(:deploy_access_levels)
-                                                             .where(project_id: project_id, name: names)
-                                                             .index_by(&:name)
-        group_protected_environments = ProtectedEnvironment.preload(:deploy_access_levels)
-                                                           .where(group_id: group_ids, name: tiers)
-                                                           .index_by(&:name)
+        project_protected_environments = associated_protected_environments.select(&:project_level?).index_by(&:name)
+        group_protected_environments = associated_protected_environments.select(&:group_level?).index_by(&:name)
 
         environments.each do |environment|
           protected_environments ||= []
