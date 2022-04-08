@@ -1,17 +1,19 @@
-import { GlSegmentedControl } from '@gitlab/ui';
+import { GlButton } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import VulnerabilitiesOverTimeChartButtons from 'ee/security_dashboard/components/shared/vulnerabilities_over_time_chart_buttons.vue';
-import { DAYS } from 'ee/security_dashboard/store/constants';
+
+const TEST_DAYS = [1, 30, 60, 90];
 
 describe('Vulnerability Chart Buttons', () => {
   let wrapper;
-  const days = Object.values(DAYS);
 
-  const findSegmentedControlButtons = () => wrapper.findComponent(GlSegmentedControl);
+  const findAllButtons = () => wrapper.findAllComponents(GlButton);
+  const findAllActiveButtons = () => findAllButtons().filter((button) => button.props('selected'));
+  const findButtonForDay = (day) => findAllButtons().at(TEST_DAYS.indexOf(day));
 
-  const createWrapper = (props = { activeDay: DAYS.thirty }) => {
+  const createWrapper = (props) => {
     wrapper = shallowMountExtended(VulnerabilitiesOverTimeChartButtons, {
-      propsData: { days, ...props },
+      propsData: { days: TEST_DAYS, activeDay: TEST_DAYS[0], ...props },
     });
   };
 
@@ -19,20 +21,18 @@ describe('Vulnerability Chart Buttons', () => {
     wrapper.destroy();
   });
 
-  it('should pass the correct options to the segmented control group', () => {
+  it.each(TEST_DAYS)('should display a button for "%s" days', (day) => {
+    const isMultipleDays = day > 1;
     createWrapper();
 
-    expect(findSegmentedControlButtons().props('options')).toStrictEqual([
-      { value: DAYS.thirty, text: '30 Days' },
-      { value: DAYS.sixty, text: '60 Days' },
-      { value: DAYS.ninety, text: '90 Days' },
-    ]);
+    expect(findButtonForDay(day).text()).toBe(`${day} ${isMultipleDays ? 'Days' : 'Day'}`);
   });
 
-  it.each(days)('should set "%s days" as selected', (activeDay) => {
+  it.each(TEST_DAYS)('should set "%s days" as selected', (activeDay) => {
     createWrapper({ activeDay });
 
-    expect(findSegmentedControlButtons().props('checked')).toBe(activeDay);
+    expect(findAllActiveButtons()).toHaveLength(1);
+    expect(findButtonForDay(activeDay).props('selected')).toBe(true);
   });
 
   it('should emit a "days-selected" event with the correct payload when the selection changes', () => {
@@ -40,8 +40,8 @@ describe('Vulnerability Chart Buttons', () => {
 
     expect(wrapper.emitted('days-selected')).toBeFalsy();
 
-    findSegmentedControlButtons().vm.$emit('input', DAYS.thirty);
+    findAllButtons().at(0).vm.$emit('click');
 
-    expect(wrapper.emitted('days-selected')).toEqual([[DAYS.thirty]]);
+    expect(wrapper.emitted('days-selected')).toEqual([[TEST_DAYS[0]]]);
   });
 });
