@@ -3651,7 +3651,7 @@ msgstr ""
 msgid "Allow access to the following IP addresses"
 msgstr ""
 
-msgid "Allow commits from members who can merge to the target branch."
+msgid "Allow commits from members who can merge to the target branch. %{link_start}About this feature.%{link_end}"
 msgstr ""
 
 msgid "Allow group owners to manage LDAP-related settings"
