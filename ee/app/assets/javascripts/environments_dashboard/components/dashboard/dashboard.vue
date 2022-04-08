@@ -164,7 +164,6 @@ export default {
       :title="$options.addProjectsModalHeader"
       :ok-title="$options.addProjectsModalSubmit"
       :ok-disabled="okDisabled"
-      ok-variant="success"
       @hidden="onModalHidden"
       @ok="onOk"
     >
@@ -199,7 +198,7 @@ export default {
       <h1 class="js-dashboard-title page-title text-nowrap flex-fill">
         {{ $options.dashboardHeader }}
       </h1>
-      <gl-button v-gl-modal="$options.modalId" class="js-add-projects-button" variant="success">
+      <gl-button v-gl-modal="$options.modalId" class="js-add-projects-button" variant="confirm">
         {{ $options.addProjectsButton }}
       </gl-button>
     </div>
@@ -251,7 +250,7 @@ export default {
           >.
         </template>
         <template #actions>
-          <gl-button v-gl-modal="$options.modalId" variant="success" class="js-add-projects-button">
+          <gl-button v-gl-modal="$options.modalId" variant="confirm" class="js-add-projects-button">
             {{ s__('ModalButton|Add projects') }}
           </gl-button>
         </template>
