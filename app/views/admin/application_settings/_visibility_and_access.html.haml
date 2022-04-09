@@ -17,18 +17,16 @@
       = render('shared/visibility_radios', model_method: :default_group_visibility, form: f, selected_level: @application_setting.default_group_visibility, form_model: Group.new)
     .form-group
       = f.label :restricted_visibility_levels, class: 'label-bold'
-      - checkbox_name = 'application_setting[restricted_visibility_levels][]'
-      = hidden_field_tag(checkbox_name)
-      - restricted_level_checkboxes('restricted-visibility-help', checkbox_name, class: 'form-check-input').each do |level|
-        .form-check
-          = level
+      = hidden_field_tag 'application_setting[restricted_visibility_levels][]'
+      - restricted_level_checkboxes(f).each do |level|
+        = level
       %span.form-text.text-muted#restricted-visibility-help
         = _('Selected levels cannot be used by non-admin users for groups, projects or snippets. If the public level is restricted, user profiles are only visible to logged in users.')
     .form-group
       = f.label :import_sources, class: 'label-bold'
       = hidden_field_tag 'application_setting[import_sources][]'
-      - import_sources_checkboxes('import-sources-help', class: 'form-check-input').each do |source|
-        .form-check= source
+      - import_sources_checkboxes(f).each do |source|
+        = source
       %span.form-text.text-muted#import-sources-help
         = _('Enabled sources for code import during project creation. OmniAuth must be configured for GitHub')
         = link_to sprite_icon('question-o'), help_page_path("integration/github")
