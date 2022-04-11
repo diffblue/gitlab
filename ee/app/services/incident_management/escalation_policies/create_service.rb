@@ -4,7 +4,7 @@ module IncidentManagement
   module EscalationPolicies
     class CreateService < EscalationPolicies::BaseService
       # @param [Project] project
-      # @param [User] user
+      # @param [User] current_user
       # @param [Hash] params
       # @option params [String] name
       # @option params [String] description
@@ -12,10 +12,8 @@ module IncidentManagement
       # @option params[:rules_attributes] [IncidentManagement::OncallSchedule] oncall_schedule
       # @option params[:rules_attributes] [Integer] elapsed_time_seconds
       # @option params[:rules_attributes] [String] status
-      def initialize(project, user, params)
-        @project = project
-        @user = user
-        @params = params
+      def initialize(project, current_user, params)
+        super(project: project, current_user: current_user, params: params)
       end
 
       def execute
@@ -31,10 +29,6 @@ module IncidentManagement
 
         success(escalation_policy)
       end
-
-      private
-
-      attr_reader :project, :user, :params
     end
   end
 end

@@ -2,11 +2,11 @@
 
 module IncidentManagement
   module EscalationPolicies
-    class BaseService
+    class BaseService < ::BaseProjectService
       MAX_RULE_COUNT = 10
 
       def allowed?
-        user&.can?(:admin_incident_management_escalation_policy, project)
+        current_user&.can?(:admin_incident_management_escalation_policy, project)
       end
 
       def too_many_rules?
