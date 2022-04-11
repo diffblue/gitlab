@@ -6,7 +6,7 @@ module IncidentManagement
       include Gitlab::Utils::StrongMemoize
 
       # @param escalation_policy [IncidentManagement::EscalationPolicy]
-      # @param user [User]
+      # @param current_user [User]
       # @param params [Hash]
       # @option params [String] name
       # @option params [String] description
@@ -16,11 +16,10 @@ module IncidentManagement
       # @option params[:rules_attributes] [IncidentManagement::OncallSchedule] oncall_schedule
       # @option params[:rules_attributes] [Integer] elapsed_time_seconds
       # @option params[:rules_attributes] [String, Integer, Symbol] status
-      def initialize(escalation_policy, user, params)
+      def initialize(escalation_policy, current_user, params)
+        super(project: escalation_policy.project, current_user: current_user, params: params)
+
         @escalation_policy = escalation_policy
-        @user = user
-        @params = params
-        @project = escalation_policy.project
       end
 
       def execute
@@ -41,7 +40,7 @@ module IncidentManagement
 
       private
 
-      attr_reader :escalation_policy, :user, :params, :project
+      attr_reader :escalation_policy
 
       def empty_rules?
         params[:rules_attributes] && params[:rules_attributes].empty?
