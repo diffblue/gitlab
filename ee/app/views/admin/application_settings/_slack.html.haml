@@ -10,17 +10,13 @@
     %p
       = _('Slack integration allows you to interact with GitLab via slash commands in a chat window.')
   .settings-content
-    = form_for @application_setting, url: general_admin_application_settings_path(anchor: 'js-slack-settings'), html: { class: 'fieldset-form' } do |f|
+    = gitlab_ui_form_for @application_setting, url: general_admin_application_settings_path(anchor: 'js-slack-settings'), html: { class: 'fieldset-form' } do |f|
       = form_errors(@application_setting) if expanded
 
       %fieldset
         .form-group
-          .form-check
-            = f.check_box :slack_app_enabled, class: 'form-check-input'
-            = f.label :slack_app_enabled, class: 'form-check-label' do
-              Enable Slack application
-            .form-text.text-muted
-              = _('This option is only available on GitLab.com')
+          = f.gitlab_ui_checkbox_component :slack_app_enabled, s_('ApplicationSettings|Enable Slack application'),
+            help_text: s_('ApplicationSettings|This option is only available on GitLab.com')
         .form-group
           = f.label :slack_app_id, 'APP_ID', class: 'label-bold'
           = f.text_field :slack_app_id, class: 'form-control gl-form-input'
