@@ -20,4 +20,6 @@ export const i18nStatusText = {
   dropdownInfo: s__(
     'IncidentManagement|Setting the status to Acknowledged or Resolved stops paging when escalation policies are selected for the incident.',
   ),
+  learnMoreShort: __('Learn More.'),
+  learnMoreFull: s__('IncidentManagement|Learn more about incident statuses'),
 };
