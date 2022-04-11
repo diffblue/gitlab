@@ -15131,6 +15131,9 @@ msgstr ""
 msgid "Expiration date:"
 msgstr ""
 
+msgid "Expire access tokens"
+msgstr ""
+
 msgid "Expired"
 msgstr ""
 
