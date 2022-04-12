@@ -296,7 +296,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :clean_gitl
     end
 
     it_behaves_like 'a daily tracked issuable event' do
-      let(:action) { described_class::ISSUE_EPIC_DESTROYED }
+      let(:action) { described_class::EPIC_DESTROYED }
     end
 
     it_behaves_like 'does not track when feature flag is disabled', :track_epics_activity
