@@ -90,6 +90,74 @@ RSpec.describe ::Gitlab::Security::ScanConfiguration do
     end
   end
 
+  describe '#meta_info_path' do
+    subject { scan.meta_info_path }
+
+    context 'when configuration in UI and security on demand is not available' do
+      before do
+        stub_licensed_features(security_on_demand_scans: false, security_configuration_in_ui: false)
+      end
+
+      context 'with a scanner with meta path' do
+        let(:type) { :dast }
+
+        it { is_expected.to be_nil }
+      end
+    end
+
+    context 'when configuration in UI and security on demand is available' do
+      before do
+        stub_licensed_features(security_on_demand_scans: true, security_configuration_in_ui: true)
+      end
+
+      context 'with a scanner without meta path' do
+        let(:type) { :other_scanner }
+
+        it { is_expected.to be_nil }
+      end
+
+      context 'with a scanner with meta path' do
+        let(:type) { :dast }
+        let(:meta_info_path) { "/#{project.namespace.path}/#{project.name}/-/on_demand_scans" }
+
+        it { is_expected.to eq(meta_info_path) }
+      end
+    end
+
+    context 'when configuration in UI is not available and security on demand is available' do
+      before do
+        stub_licensed_features(security_on_demand_scans: true, security_configuration_in_ui: false)
+      end
+
+      context 'with a scanner without meta path' do
+        let(:type) { :sast }
+
+        it { is_expected.to be_nil }
+      end
+
+      context 'with a scanner with meta path' do
+        let(:type) { :dast }
+
+        it { is_expected.to be_nil }
+      end
+    end
+
+    context 'when configuration in UI is available and security on demand is not available' do
+      before do
+        stub_licensed_features(security_on_demand_scans: false, security_configuration_in_ui: true)
+      end
+
+      where(:type, :meta_info_path) do
+        :sast | nil
+        :dast | nil
+      end
+
+      with_them do
+        it { is_expected.to eq(meta_info_path) }
+      end
+    end
+  end
+
   describe '#can_enable_by_merge_request?' do
     subject { scan.can_enable_by_merge_request? }
 
