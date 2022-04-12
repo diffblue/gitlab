@@ -9,6 +9,7 @@ RSpec.describe Mutations::Boards::Update do
   let_it_be(:board) { create(:board, project: project) }
   let_it_be(:milestone) { create(:milestone, project: project) }
   let_it_be(:iteration) { create(:iteration, group: group) }
+  let_it_be(:iteration_cadence) { iteration.iterations_cadence }
   let_it_be(:label1) { create(:label, project: project) }
   let_it_be(:label2) { create(:label, project: project) }
 
@@ -80,6 +81,25 @@ RSpec.describe Mutations::Boards::Update do
           subject
 
           expect(board.reload.iteration.id).to eq(Iteration::Predefined::Current.id)
+        end
+      end
+
+      # Needs be tested separately from updating iteration as that one will also update
+      # cadence_id to the iteration's cadence_id
+      context 'when updating only iteration_cadence' do
+        let(:mutation_params) do
+          {
+            id: board.to_global_id,
+            iteration_cadence_id: iteration_cadence.to_global_id
+          }
+        end
+
+        it 'updates iteration cadence' do
+          expect do
+            subject
+
+            board.reload
+          end.to change(board, :iteration_cadence).from(nil).to(iteration_cadence)
         end
       end
 
