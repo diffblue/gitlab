@@ -7348,6 +7348,9 @@ msgstr ""
 msgid "Checkout|Subtotal"
 msgstr ""
 
+msgid "Checkout|Success: subscription"
+msgstr ""
+
 msgid "Checkout|Tax"
 msgstr ""
 

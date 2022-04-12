@@ -3,17 +3,32 @@
 require 'spec_helper'
 
 RSpec.describe 'subscriptions/groups/edit' do
+  let(:group) { Group.new }
+  let(:user) { User.new }
+
   before do
-    assign(:group, Group.new)
+    assign(:group, group)
 
     allow(view).to receive(:params).and_return(quantity: quantity)
     allow(view).to receive(:plan_title).and_return('Bronze')
     allow(view).to receive(:group_path).and_return('')
     allow(view).to receive(:subscriptions_groups_path).and_return('')
-    allow(view).to receive(:current_user).and_return(User.new)
+    allow(view).to receive(:current_user).and_return(user)
   end
 
   let(:quantity) { '1' }
+
+  it 'tracks purchase banner', :snowplow do
+    render
+
+    expect_snowplow_event(
+      category: 'subscriptions:groups',
+      action: 'render',
+      label: 'purchase_confirmation_banner_displayed',
+      namespace: group,
+      user: user
+    )
+  end
 
   context 'a single user' do
     it 'displays the correct notification for 1 user' do

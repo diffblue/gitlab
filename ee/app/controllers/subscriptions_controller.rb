@@ -36,8 +36,10 @@ class SubscriptionsController < ApplicationController
 
   def new
     if current_user
+      @namespace = current_user.namespace
+
       experiment(:cart_abandonment_modal,
-        namespace: current_user.namespace,
+        namespace: @namespace,
         user: current_user,
         sticky_to: current_user
       ).run

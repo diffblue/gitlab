@@ -2,12 +2,24 @@ import Api from 'ee/api';
 import { PAYMENT_FORM_ID } from 'ee/subscriptions/constants';
 import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/activate_next_step.mutation.graphql';
+import Tracking from '~/tracking';
+import { addExperimentContext } from '~/tracking/utils';
 import createFlash from '~/flash';
 import { redirectTo } from '~/lib/utils/url_utility';
 import { sprintf, s__ } from '~/locale';
 import { trackCheckout, trackTransaction } from '~/google_tag_manager';
 import defaultClient from '../graphql';
 import * as types from './mutation_types';
+
+const trackConfirmOrder = (message) =>
+  Tracking.event(
+    'default',
+    'click_button',
+    addExperimentContext({
+      label: 'confirm_purchase',
+      property: message,
+    }),
+  );
 
 export const updateSelectedPlan = ({ commit, getters }, selectedPlan) => {
   commit(types.UPDATE_SELECTED_PLAN, selectedPlan);
@@ -202,15 +214,20 @@ export const confirmOrder = ({ getters, dispatch, commit }) => {
         };
 
         trackTransaction(transactionDetails);
+        trackConfirmOrder(s__('Checkout|Success: subscription'));
 
         dispatch('confirmOrderSuccess', {
           location: data.location,
         });
       } else {
+        trackConfirmOrder(data.errors);
         dispatch('confirmOrderError', JSON.stringify(data.errors));
       }
     })
-    .catch(() => dispatch('confirmOrderError'));
+    .catch((e) => {
+      trackConfirmOrder(e.message);
+      dispatch('confirmOrderError');
+    });
 };
 
 export const confirmOrderSuccess = (_, { location }) => {
