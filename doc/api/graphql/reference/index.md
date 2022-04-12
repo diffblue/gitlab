@@ -16063,6 +16063,7 @@ Represents a URL related to a security training.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="securitytrainingurlidentifier"></a>`identifier` | [`String`](#string) | Name of the vulnerability identifier. |
 | <a id="securitytrainingurlname"></a>`name` | [`String`](#string) | Name of the training provider. |
 | <a id="securitytrainingurlstatus"></a>`status` | [`TrainingUrlRequestStatus`](#trainingurlrequeststatus) | Status of the request to training provider. |
 | <a id="securitytrainingurlurl"></a>`url` | [`String`](#string) | URL of the link for security training content. |
