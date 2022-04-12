@@ -3,10 +3,9 @@
 
   %fieldset
     .form-group
-      .form-check
-        = f.gitlab_ui_checkbox_component :throttle_protected_paths_enabled,
-          s_('Enable rate limiting for POST requests to the specified paths'),
-          help_text: _('Helps reduce request volume for protected paths.')
+      = f.gitlab_ui_checkbox_component :throttle_protected_paths_enabled,
+      s_('Enable rate limiting for POST requests to the specified paths'),
+      help_text: _('Helps reduce request volume for protected paths.')
     .form-group
       = f.label :throttle_protected_paths_requests_per_period, 'Maximum requests per period per user', class: 'label-bold'
       = f.number_field :throttle_protected_paths_requests_per_period, class: 'form-control gl-form-input'
