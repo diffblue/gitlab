@@ -30,6 +30,7 @@ RSpec.describe 'Welcome screen', :js do
 
       page.select('Software Developer', from: 'user_role')
       choose 'user_setup_for_company_true'
+      choose 'Create a new project'
 
       click_button 'Continue'
 
@@ -54,6 +55,7 @@ RSpec.describe 'Welcome screen', :js do
 
         page.select('Software Developer', from: 'user_role')
         choose 'user_setup_for_company_true'
+        choose 'Create a new project'
 
         expect(page).not_to have_selector('input[name="user[email_opted_in]', visible: true)
 
@@ -67,6 +69,7 @@ RSpec.describe 'Welcome screen', :js do
 
         page.select('Software Developer', from: 'user_role')
         choose 'user_setup_for_company_false'
+        choose 'Create a new project'
 
         expect(page).to have_selector('input[name="user[email_opted_in]', visible: true)
 

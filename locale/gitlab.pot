@@ -21292,9 +21292,6 @@ msgstr ""
 msgid "Iteration|cannot be more than 500 years in the future"
 msgstr ""
 
-msgid "I’m joining my team who’s already on GitLab"
-msgstr ""
-
 msgid "Jaeger URL"
 msgstr ""
 

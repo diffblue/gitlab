@@ -18,6 +18,7 @@ RSpec.describe 'Combined registration flow', :js do
     expect(page).to have_content('Welcome to GitLab')
 
     choose 'My company or team'
+    choose 'Create a new project'
     click_on 'Continue'
   end
 
