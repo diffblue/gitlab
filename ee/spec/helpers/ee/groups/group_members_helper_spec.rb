@@ -28,7 +28,9 @@ RSpec.describe Groups::GroupMembersHelper do
         group,
         members: [],
         invited: [],
-        access_requests: []
+        access_requests: [],
+        include_relations: [:inherited, :direct],
+        search: nil
       )
     end
 
