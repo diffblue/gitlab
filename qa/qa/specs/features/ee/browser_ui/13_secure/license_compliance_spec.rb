@@ -52,7 +52,7 @@ module QA
                                        .join('../../../../../ee/fixtures/secure_premade_reports/gl-license-scanning-report.json')) }]
             project_push.commit_message = 'Create Secure compatible application to serve premade reports'
           end
-
+          remove_legacy_ff_enabled = Runtime::Feature.enabled?(:lc_remove_legacy_approval_status)
           Flow::Login.sign_in_unless_signed_in
           @project.visit!
           Flow::Pipeline.wait_for_latest_pipeline(status: 'passed')
@@ -60,11 +60,9 @@ module QA
           Page::Project::Menu.perform(&:click_on_license_compliance)
           EE::Page::Project::Secure::LicenseCompliance.perform do |license_compliance|
             license_compliance.open_tab
-
-            selector = Runtime::Feature.enabled?(:lc_remove_legacy_approval_status) ? :allowed_license_radio : :approved_license_radio
+            selector = remove_legacy_ff_enabled ? :allowed_license_radio : :approved_license_radio
             license_compliance.approve_license(approved_license_name, selector)
-
-            selector = Runtime::Feature.enabled?(:lc_remove_legacy_approval_status) ? :denied_license_radio : :blacklisted_license_radio
+            selector = remove_legacy_ff_enabled ? :denied_license_radio : :blacklisted_license_radio
             license_compliance.deny_license(denied_license_name, selector)
           end
         end
