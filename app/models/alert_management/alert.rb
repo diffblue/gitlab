@@ -142,6 +142,10 @@ module AlertManagement
       reference.to_i > 0 && reference.to_i <= Gitlab::Database::MAX_INT_VALUE
     end
 
+    def metric_images_available?
+      ::AlertManagement::MetricImage.available_for?(project)
+    end
+
     def prometheus?
       monitoring_tool == Gitlab::AlertManagement::Payload::MONITORING_TOOLS[:prometheus]
     end

@@ -10,7 +10,6 @@ module EE
 
         mount ::EE::API::GroupBoards
 
-        mount ::API::AlertManagementAlerts
         mount ::API::AuditEvents
         mount ::API::ProjectApprovalRules
         mount ::API::StatusChecks
