@@ -13,19 +13,37 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas do
   let_it_be(:group_to_add) { create(:group) }
 
   let(:premium_plan) { create(:premium_plan) }
+  let(:ultimate_plan) { create(:premium_plan) }
 
-  shared_examples "adding a group doesn't trigger an overage modal" do
+  shared_examples "doesn't trigger an overage modal when adding a group with a given role" do |role|
     it do
       group.add_owner(user)
       group_to_add.add_owner(user)
 
       visit group_group_members_path(group)
-      add_group(group_to_add.name, role: 'Reporter')
+      add_group(group_to_add.name, role)
 
       wait_for_requests
 
       expect(page).not_to have_button 'Continue'
 
+      page.refresh
+
+      click_groups_tab
+
+      page.within(first_row) do
+        expect(page).to have_content(group_to_add.name)
+        expect(page).to have_content(role)
+      end
+    end
+  end
+
+  shared_examples "triggers an overage modal when adding a group as Reporter" do
+    it do
+      add_group_with_one_extra_user
+      click_button 'Continue'
+
+      wait_for_requests
       page.refresh
 
       click_groups_tab
@@ -47,7 +65,7 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas do
       allow(group).to receive(:paid?).and_return(false)
     end
 
-    it_behaves_like "adding a group doesn't trigger an overage modal"
+    it_behaves_like "doesn't trigger an overage modal when adding a group with a given role", 'Reporter'
   end
 
   context 'for a premium group', :aggregate_failures do
@@ -55,22 +73,7 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas do
       create(:gitlab_subscription, namespace: group, hosted_plan: premium_plan, seats: 1, seats_in_use: 0)
     end
 
-    context 'when there is an not yet billed user in the additional group' do
-      it 'triggers overage modal' do
-        add_group_with_one_extra_user
-        click_button 'Continue'
-
-        wait_for_requests
-        page.refresh
-
-        click_groups_tab
-
-        page.within(first_row) do
-          expect(page).to have_content(group_to_add.name)
-          expect(page).to have_content('Reporter')
-        end
-      end
-    end
+    it_behaves_like "triggers an overage modal when adding a group as Reporter"
 
     context 'when overage modal is shown' do
       it 'goes back to the initial modal if not confirmed' do
@@ -86,7 +89,16 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas do
     end
   end
 
-  def add_group(name, role: 'Guest', expires_at: nil)
+  context 'for an ultimate group', :aggregate_failures do
+    before do
+      create(:gitlab_subscription, namespace: group, hosted_plan: ultimate_plan, seats: 1, seats_in_use: 0)
+    end
+
+    it_behaves_like "triggers an overage modal when adding a group as Reporter"
+    it_behaves_like "doesn't trigger an overage modal when adding a group with a given role", 'Guest'
+  end
+
+  def add_group(name, role, expires_at: nil)
     click_on 'Invite a group'
 
     click_on 'Select a group'
@@ -103,7 +115,7 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas do
     group_to_add.add_developer(user2)
 
     visit group_group_members_path(group)
-    add_group(group_to_add.name, role: 'Reporter')
+    add_group(group_to_add.name, 'Reporter')
 
     wait_for_requests
 

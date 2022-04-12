@@ -154,11 +154,13 @@ export default {
         [usersToInviteByEmail, usersToAddById] = this.partitionNewUsersToInvite();
       }
 
-      const { hasOverage, usersOverage } = checkOverage(
-        subscriptionData,
+      const isGuestRole = args.accessLevel === this.$attrs['access-levels'].Guest;
+
+      const { hasOverage, usersOverage } = checkOverage(subscriptionData, {
+        isGuestRole,
         usersToAddById,
         usersToInviteByEmail,
-      );
+      });
       this.isLoading = false;
       this.hasOverage = hasOverage;
 

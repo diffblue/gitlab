@@ -14,20 +14,32 @@ import { difference } from 'lodash';
  *    @param {Array} billedUserIds             Array of ids of already billed users
  *    @param {Array} billedUserEmails          Array of emails of already billed users
  *    @param {Boolean} isFreePlan
- *  @param {Array} usersToInviteByEmail        Array emails of users to be invited by email
- *  @param {Array} usersToAddById              Array ids of users to be invited by id
- *  @param {Number} groupIdToInvite             namespaceId of the added group
+ *    @param {Boolean} excludeGuests           Doesn't calculate guests as part of billed users
+ * @param {Object} invitedMembersData          Data of the invited members
+ *    @param {Boolean} isGuestRole             Is true if the chosen role is Guest
+ *    @param {Array} usersToInviteByEmail      Array emails of users to be invited by email
+ *    @param {Array} usersToAddById            Array ids of users to be invited by id
  *
  * @returns {Object}
  */
 
 export const checkOverage = (
-  { subscriptionSeats, maxSeatsUsed, seatsInUse, billedUserIds, billedUserEmails, isFreeGroup },
-  usersToAddById,
-  usersToInviteByEmail,
+  {
+    subscriptionSeats,
+    maxSeatsUsed,
+    seatsInUse,
+    billedUserIds,
+    billedUserEmails,
+    isFreeGroup,
+    excludeGuests,
+  },
+  { isGuestRole, usersToAddById, usersToInviteByEmail },
 ) => {
+  // overage is not calculate when adding guests to ultimate-like groups
+  const isExcludingGuests = isGuestRole && excludeGuests;
+
   // overage only possible on paid plans
-  if (isFreeGroup) {
+  if (isFreeGroup || isExcludingGuests) {
     return { usersOverage: null, hasOverage: false };
   }
 

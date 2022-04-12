@@ -39,6 +39,9 @@ describe('EEInviteModalBase', () => {
       provide: {
         ...glFeatures,
       },
+      attrs: {
+        'access-levels': propsData.accessLevels,
+      },
       stubs: {
         GlSprintf,
         InviteModalBase: CEInviteModalBase,
