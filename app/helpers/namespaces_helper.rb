@@ -89,9 +89,9 @@ module NamespacesHelper
   end
 
   def show_minute_limit_banner?(namespace)
-    return false unless ::Feature.enabled?(:show_minute_limit_banner)
+    return false unless Gitlab.com? && ::Feature.enabled?(:show_minute_limit_banner)
 
-    return true unless namespace.root_ancestor.free_plan? && !minute_limit_banner_dismissed?
+    return true if namespace.root_ancestor.free_plan? && !minute_limit_banner_dismissed?
 
     false
   end
