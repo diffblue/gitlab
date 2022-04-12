@@ -15,7 +15,7 @@ class UploadsController < ApplicationController
     "personal_snippet" => PersonalSnippet,
     "projects/topic"   => Projects::Topic,
     'alert_management_metric_image' => ::AlertManagement::MetricImage,
-    nil                => PersonalSnippet,
+    nil => PersonalSnippet
   }.freeze
 
   rescue_from UnknownUploadModelError, with: :render_404
