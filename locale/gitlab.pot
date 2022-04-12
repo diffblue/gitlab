@@ -23505,6 +23505,9 @@ msgstr ""
 msgid "Members|Expiration date updated successfully."
 msgstr ""
 
+msgid "Members|Filter groups"
+msgstr ""
+
 msgid "Members|Filter members"
 msgstr ""
 

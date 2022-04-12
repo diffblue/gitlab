@@ -16,7 +16,7 @@ module EE::Groups::GroupMembersHelper
   end
 
   override :group_members_app_data
-  def group_members_app_data(group, members:, invited:, access_requests:)
+  def group_members_app_data(group, members:, invited:, access_requests:, include_relations:, search:)
     super.merge!({
        can_export_members: can?(current_user, :export_group_memberships, group),
        export_csv_path: export_csv_group_group_members_path(group),
