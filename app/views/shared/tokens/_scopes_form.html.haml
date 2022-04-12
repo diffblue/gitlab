@@ -10,4 +10,5 @@
       help_text: help_text,
       checkbox_options: { checked: token.scopes.include?(scope), id: "#{prefix}_scopes_#{scope}", multiple: true, data: { qa_selector: "#{scope}_checkbox" } },
       checked_value: scope,
-      unchecked_value: nil
+      unchecked_value: nil,
+      label_options: { data: { qa_selector: "#{scope}_label" } }
