@@ -65,6 +65,10 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
             post :auto_fix, on: :collection
             resource :corpus_management, only: [:show], controller: :corpus_management
             resource :api_fuzzing, only: :show, controller: :api_fuzzing_configuration
+            resource :profile_library, only: [:show], controller: :dast_profiles do
+              resources :dast_site_profiles, only: [:new, :edit]
+              resources :dast_scanner_profiles, only: [:new, :edit]
+            end
             resource :dast_scans, only: [:show], controller: :dast_profiles do
               resources :dast_site_profiles, only: [:new, :edit]
               resources :dast_scanner_profiles, only: [:new, :edit]
