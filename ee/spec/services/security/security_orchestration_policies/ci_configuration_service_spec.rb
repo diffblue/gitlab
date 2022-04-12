@@ -89,7 +89,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
 
         it 'returns prepared CI configuration for Container Scanning' do
           expected_configuration = {
-            image: '$CS_ANALYZER_IMAGE',
+            image: '$CS_ANALYZER_IMAGE$CS_IMAGE_SUFFIX',
             stage: 'test',
             allow_failure: true,
             artifacts: {
