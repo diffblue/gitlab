@@ -137,6 +137,7 @@ RSpec.describe BoardsHelper do
         assign(:group, group)
 
         allow(helper).to receive(:can?).with(user, :create_non_backlog_issues, epic_board).and_return(false)
+        allow(helper).to receive(:can?).with(user, :create_epic, group).and_return(true)
         allow(helper).to receive(:can?).with(user, :admin_epic, epic_board).and_return(true)
         allow(helper).to receive(:can?).with(user, :admin_epic_board_list, group).and_return(true)
         allow(helper).to receive(:can?).with(user, :admin_epic_board, group).and_return(true)
@@ -144,6 +145,10 @@ RSpec.describe BoardsHelper do
         allow(helper).to receive(:can?).with(user, :admin_issue, group).and_return(false)
         allow(helper).to receive(:can?).with(user, :admin_issue_board_list, group).and_return(false)
         allow(helper).to receive(:can?).with(user, :admin_issue_board, group).and_return(false)
+      end
+
+      it 'returns the correct permission for creating an epic from board' do
+        expect(board_data[:can_create_epic]).to eq "true"
       end
 
       it 'returns the correct permission for updating the board' do

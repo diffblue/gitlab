@@ -72,6 +72,7 @@ function mountBoardApp(el) {
       canUpdate: parseBoolean(el.dataset.canUpdate),
       canAdminList: parseBoolean(el.dataset.canAdminList),
       canAdminBoard: parseBoolean(el.dataset.canAdminBoard),
+      canCreateEpic: parseBoolean(el.dataset.canCreateEpic),
       allowLabelCreate: parseBoolean(el.dataset.canUpdate),
       allowLabelEdit: parseBoolean(el.dataset.canUpdate),
       allowScopedLabels: parseBoolean(el.dataset.scopedLabels),
