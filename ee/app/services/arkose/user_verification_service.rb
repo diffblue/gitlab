@@ -122,6 +122,8 @@ module Arkose
     end
 
     def low_risk?(response)
+      return true unless Feature.enabled?(:arkose_labs_prevent_login, default_enabled: :yaml)
+
       risk_band = risk_band(response)
       risk_band.present? ? risk_band != 'High' : true
     end
