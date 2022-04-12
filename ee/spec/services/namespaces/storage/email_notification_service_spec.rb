@@ -40,17 +40,20 @@ RSpec.describe Namespaces::Storage::EmailNotificationService do
         end
       end
 
-      where(:limit, :used, :last_notification_level, :expected_percent_remaining, :expected_level) do
-        100  | 70  | :storage_remaining | 30 | :caution
-        100  | 85  | :storage_remaining | 15 | :warning
-        100  | 95  | :storage_remaining | 5  | :danger
-        100  | 77  | :storage_remaining | 23 | :caution
-        1000 | 971 | :storage_remaining | 2  | :danger
-        100  | 85  | :caution           | 15 | :warning
-        100  | 95  | :warning           | 5  | :danger
-        100  | 99  | :exceeded          | 1  | :danger
-        100  | 94  | :danger            | 6  | :warning
-        100  | 84  | :warning           | 16 | :caution
+      where(:limit, :used, :last_notification_level, :expected_percent, :expected_size, :expected_level) do
+        100  | 70   | :storage_remaining | 30 | 30.megabytes   | :caution
+        100  | 85   | :storage_remaining | 15 | 15.megabytes   | :warning
+        100  | 95   | :storage_remaining | 5  | 5.megabytes    | :danger
+        100  | 77   | :storage_remaining | 23 | 23.megabytes   | :caution
+        1000 | 971  | :storage_remaining | 2  | 29.megabytes   | :danger
+        100  | 85   | :caution           | 15 | 15.megabytes   | :warning
+        100  | 95   | :warning           | 5  | 5.megabytes    | :danger
+        100  | 99   | :exceeded          | 1  | 1.megabytes    | :danger
+        100  | 94   | :danger            | 6  | 6.megabytes    | :warning
+        100  | 84   | :warning           | 16 | 16.megabytes   | :caution
+        8192 | 6144 | :storage_remaining | 25 | 2.gigabytes    | :caution
+        5120 | 3840 | :storage_remaining | 25 | 1.25.gigabytes | :caution
+        5120 | 5118 | :warning           | 0  | 2.megabytes    | :danger
       end
 
       with_them do
@@ -59,7 +62,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService do
           set_used_storage(group, megabytes: used)
           set_notification_level(last_notification_level)
 
-          expect(mailer).to receive(:notify_limit_warning).with(group, [owner.email], expected_percent_remaining)
+          expect(mailer).to receive(:notify_limit_warning).with(group, [owner.email], expected_percent, expected_size)
 
           service.execute(group)
 
@@ -169,7 +172,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService do
           set_used_storage(namespace, megabytes: 851)
           owner = namespace.owner
 
-          expect(mailer).to receive(:notify_limit_warning).with(namespace, [owner.email], 14)
+          expect(mailer).to receive(:notify_limit_warning).with(namespace, [owner.email], 14, 149.megabytes)
 
           service.execute(namespace)
         end

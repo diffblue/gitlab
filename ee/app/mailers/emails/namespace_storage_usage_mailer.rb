@@ -20,11 +20,12 @@ module Emails
       )
     end
 
-    def notify_limit_warning(namespace, recipients, percentage_of_available_storage)
+    def notify_limit_warning(namespace, recipients, percentage_of_available_storage, size_of_available_storage)
       @namespace = namespace
       @usage_quotas_url = usage_quotas_url(namespace, anchor: 'storage-quota-tab')
       @buy_storage_url = buy_storage_url(namespace)
       @percentage_of_available_storage = percentage_of_available_storage
+      @size_of_available_storage = size_of_available_storage
 
       mail(
         bcc: recipients,

@@ -25,7 +25,7 @@ RSpec.describe Namespaces::RootStatisticsWorker, '#perform', :saas do
         set_storage_size_limit(group, megabytes: 10)
         project.statistics.update!(repository_size: 9.megabytes)
 
-        expect(mailer).to receive(:notify_limit_warning).with(group, [owner.email], 10)
+        expect(mailer).to receive(:notify_limit_warning).with(group, [owner.email], 10, 1.megabyte)
 
         worker.perform(group.id)
       end
