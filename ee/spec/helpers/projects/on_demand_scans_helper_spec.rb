@@ -55,10 +55,10 @@ RSpec.describe Projects::OnDemandScansHelper do
         'default-branch' => "default-branch",
         'project-path' => "foo/bar",
         'on-demand-scans-path' => "/#{project.full_path}/-/on_demand_scans#saved",
-        'scanner-profiles-library-path' => "/#{project.full_path}/-/security/configuration/dast_scans#scanner-profiles",
-        'site-profiles-library-path' => "/#{project.full_path}/-/security/configuration/dast_scans#site-profiles",
-        'new-scanner-profile-path' => "/#{project.full_path}/-/security/configuration/dast_scans/dast_scanner_profiles/new",
-        'new-site-profile-path' => "/#{project.full_path}/-/security/configuration/dast_scans/dast_site_profiles/new",
+        'scanner-profiles-library-path' => "/#{project.full_path}/-/security/configuration/profile_library#scanner-profiles",
+        'site-profiles-library-path' => "/#{project.full_path}/-/security/configuration/profile_library#site-profiles",
+        'new-scanner-profile-path' => "/#{project.full_path}/-/security/configuration/profile_library/dast_scanner_profiles/new",
+        'new-site-profile-path' => "/#{project.full_path}/-/security/configuration/profile_library/dast_site_profiles/new",
         'timezones' => timezones.to_json
       )
     end

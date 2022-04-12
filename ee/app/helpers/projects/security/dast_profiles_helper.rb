@@ -3,8 +3,8 @@
 module Projects::Security::DastProfilesHelper
   def dast_profiles_list_data(project)
     {
-      'new_dast_site_profile_path' => new_project_security_configuration_dast_scans_dast_site_profile_path(project),
-      'new_dast_scanner_profile_path' => new_project_security_configuration_dast_scans_dast_scanner_profile_path(project),
+      'new_dast_site_profile_path' => new_project_security_configuration_profile_library_dast_site_profile_path(project),
+      'new_dast_scanner_profile_path' => new_project_security_configuration_profile_library_dast_scanner_profile_path(project),
       'project_full_path' => project.path_with_namespace,
       'timezones' => timezone_data(format: :abbr).to_json
     }
@@ -12,7 +12,7 @@ module Projects::Security::DastProfilesHelper
 
   def dast_scanner_profile_form_data(project)
     dast_profile_forms_common_data(project).merge({
-      profiles_library_path: project_security_configuration_dast_scans_path(project, anchor: 'scanner-profiles')
+      profiles_library_path: project_security_configuration_profile_library_path(project, anchor: 'scanner-profiles')
     })
   end
 
@@ -33,7 +33,7 @@ module Projects::Security::DastProfilesHelper
 
   def dast_site_profile_form_data(project)
     dast_profile_forms_common_data(project).merge({
-      profiles_library_path: project_security_configuration_dast_scans_path(project, anchor: 'site-profiles')
+      profiles_library_path: project_security_configuration_profile_library_path(project, anchor: 'site-profiles')
     })
   end
 

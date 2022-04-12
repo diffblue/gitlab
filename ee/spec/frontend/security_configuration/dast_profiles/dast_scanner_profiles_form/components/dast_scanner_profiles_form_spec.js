@@ -14,7 +14,7 @@ import { TEST_HOST } from 'helpers/test_constants';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 const projectFullPath = 'group/project';
-const profilesLibraryPath = `${TEST_HOST}/${projectFullPath}/-/security/configuration/dast_scans`;
+const profilesLibraryPath = `${TEST_HOST}/${projectFullPath}/-/security/configuration/profile_library`;
 const onDemandScansPath = `${TEST_HOST}/${projectFullPath}/-/on_demand_scans`;
 const defaultProfile = scannerProfiles[0];
 

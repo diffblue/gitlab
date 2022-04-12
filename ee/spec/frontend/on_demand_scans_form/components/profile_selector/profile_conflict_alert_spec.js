@@ -11,7 +11,7 @@ describe('ProfileConflictAlert', () => {
         GlSprintf,
       },
       provide: {
-        siteProfilesLibraryPath: '/dast_scans#site-profiles',
+        siteProfilesLibraryPath: '/profile_library#site-profiles',
       },
     });
   };

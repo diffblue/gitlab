@@ -14,7 +14,7 @@ RSpec.describe Projects::Security::DastProfilesController, type: :request do
     end
 
     include_context '"Security & Compliance" permissions' do
-      let(:valid_request) { get project_security_configuration_dast_scans_path(project) }
+      let(:valid_request) { get project_security_configuration_profile_library_path(project) }
 
       before_request do
         project.add_developer(user)
@@ -28,7 +28,7 @@ RSpec.describe Projects::Security::DastProfilesController, type: :request do
         end
 
         it 'can access page' do
-          get project_security_configuration_dast_scans_path(project)
+          get project_security_configuration_profile_library_path(project)
 
           expect(response).to have_gitlab_http_status(:ok)
         end
@@ -40,7 +40,7 @@ RSpec.describe Projects::Security::DastProfilesController, type: :request do
         end
 
         it 'sees a 404 error' do
-          get project_security_configuration_dast_scans_path(project)
+          get project_security_configuration_profile_library_path(project)
 
           expect(response).to have_gitlab_http_status(:not_found)
         end
@@ -55,7 +55,7 @@ RSpec.describe Projects::Security::DastProfilesController, type: :request do
 
       context 'license doesnt\'t support the feature' do
         it 'sees a 404 error' do
-          get project_security_configuration_dast_scans_path(project)
+          get project_security_configuration_profile_library_path(project)
 
           expect(response).to have_gitlab_http_status(:not_found)
         end

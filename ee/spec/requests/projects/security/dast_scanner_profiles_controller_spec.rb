@@ -75,7 +75,7 @@ RSpec.describe Projects::Security::DastScannerProfilesController, type: :request
 
   describe 'GET #new' do
     it_behaves_like 'a GET request' do
-      let(:path) { new_project_security_configuration_dast_scans_dast_scanner_profile_path(project) }
+      let(:path) { new_project_security_configuration_profile_library_dast_scanner_profile_path(project) }
     end
   end
 
@@ -83,7 +83,7 @@ RSpec.describe Projects::Security::DastScannerProfilesController, type: :request
     include_context 'user authorized'
     include_context 'on-demand scans feature available'
 
-    let(:edit_path) { edit_project_security_configuration_dast_scans_dast_scanner_profile_path(project, dast_scanner_profile) }
+    let(:edit_path) { edit_project_security_configuration_profile_library_dast_scanner_profile_path(project, dast_scanner_profile) }
 
     it_behaves_like 'a GET request' do
       let(:path) { edit_path }

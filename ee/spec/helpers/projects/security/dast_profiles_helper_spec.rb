@@ -19,8 +19,8 @@ RSpec.describe Projects::Security::DastProfilesHelper do
     it 'returns proper data' do
       expect(helper.dast_profiles_list_data(project)).to eq(
         {
-          'new_dast_site_profile_path' => "/#{project.full_path}/-/security/configuration/dast_scans/dast_site_profiles/new",
-          'new_dast_scanner_profile_path' => "/#{project.full_path}/-/security/configuration/dast_scans/dast_scanner_profiles/new",
+          'new_dast_site_profile_path' => "/#{project.full_path}/-/security/configuration/profile_library/dast_site_profiles/new",
+          'new_dast_scanner_profile_path' => "/#{project.full_path}/-/security/configuration/profile_library/dast_scanner_profiles/new",
           'project_full_path' => "foo/bar",
           'timezones' => timezones.to_json
         }
@@ -53,7 +53,7 @@ RSpec.describe Projects::Security::DastProfilesHelper do
           project_full_path: "foo/bar",
           on_demand_scan_form_path: "/#{project.full_path}/-/on_demand_scans/new",
           dast_configuration_path: "/#{project.full_path}/-/security/configuration/dast",
-          profiles_library_path: "/#{project.full_path}/-/security/configuration/dast_scans#scanner-profiles"
+          profiles_library_path: "/#{project.full_path}/-/security/configuration/profile_library#scanner-profiles"
         }
       )
     end
@@ -76,7 +76,7 @@ RSpec.describe Projects::Security::DastProfilesHelper do
           project_full_path: "foo/bar",
           on_demand_scan_form_path: "/#{project.full_path}/-/on_demand_scans/new",
           dast_configuration_path: "/#{project.full_path}/-/security/configuration/dast",
-          profiles_library_path: "/#{project.full_path}/-/security/configuration/dast_scans#scanner-profiles",
+          profiles_library_path: "/#{project.full_path}/-/security/configuration/profile_library#scanner-profiles",
           scanner_profile: {
             id: scanner_profile.to_global_id.to_s,
             profile_name: scanner_profile.name,
@@ -107,7 +107,7 @@ RSpec.describe Projects::Security::DastProfilesHelper do
           project_full_path: "foo/bar",
           on_demand_scan_form_path: "/#{project.full_path}/-/on_demand_scans/new",
           dast_configuration_path: "/#{project.full_path}/-/security/configuration/dast",
-          profiles_library_path: "/#{project.full_path}/-/security/configuration/dast_scans#site-profiles"
+          profiles_library_path: "/#{project.full_path}/-/security/configuration/profile_library#site-profiles"
         }
       )
     end
@@ -130,7 +130,7 @@ RSpec.describe Projects::Security::DastProfilesHelper do
           project_full_path: "foo/bar",
           on_demand_scan_form_path: "/#{project.full_path}/-/on_demand_scans/new",
           dast_configuration_path: "/#{project.full_path}/-/security/configuration/dast",
-          profiles_library_path: "/#{project.full_path}/-/security/configuration/dast_scans#site-profiles",
+          profiles_library_path: "/#{project.full_path}/-/security/configuration/profile_library#site-profiles",
           site_profile: site_profile.to_json
         }
       )

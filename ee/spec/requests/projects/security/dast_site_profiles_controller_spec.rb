@@ -78,12 +78,12 @@ RSpec.describe Projects::Security::DastSiteProfilesController, type: :request do
 
   describe 'GET #new' do
     it_behaves_like 'a GET request' do
-      let(:path) { new_project_security_configuration_dast_scans_dast_site_profile_path(project) }
+      let(:path) { new_project_security_configuration_profile_library_dast_site_profile_path(project) }
     end
   end
 
   describe 'GET #edit' do
-    let(:edit_path) { edit_project_security_configuration_dast_scans_dast_site_profile_path(project, dast_site_profile) }
+    let(:edit_path) { edit_project_security_configuration_profile_library_dast_site_profile_path(project, dast_site_profile) }
 
     it_behaves_like 'a GET request' do
       let(:path) { edit_path }
