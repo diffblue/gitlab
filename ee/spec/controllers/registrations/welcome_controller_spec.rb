@@ -263,20 +263,6 @@ RSpec.describe Registrations::WelcomeController do
             let(:joining_project) { 'true' }
 
             it { is_expected.to redirect_to dashboard_projects_path }
-
-            it 'creates a "joining_project" experiment track event' do
-              expect(experiment(:bypass_registration)).to track(:joining_project, user: user).on_next_instance
-
-              subject
-            end
-          end
-
-          context 'when joining_project is "false"', :experiment do
-            it 'creates a "creating_project" experiment track event' do
-              expect(experiment(:bypass_registration)).to track(:creating_project, user: user).on_next_instance
-
-              subject
-            end
           end
 
           context 'when joining_project is "false"' do
