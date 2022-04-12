@@ -17,11 +17,24 @@ class UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker # rubocop:disable Scalab
 
     GitlabSubscription.with_a_paid_hosted_plan.preload_for_refresh_seat.find_in_batches(batch_size: 100) do |subscriptions|
       tuples = []
+      current_timestamp = Time.current
 
       subscriptions.each do |subscription|
         subscription.refresh_seat_attributes!
 
-        tuples << [subscription.id, subscription.max_seats_used, subscription.seats_in_use, subscription.seats_owed]
+        max_seat_used_changed_at = if subscription.max_seats_used_changed?
+                                     current_timestamp
+                                   else
+                                     subscription.max_seats_used_changed_at
+                                   end
+
+        tuples << [
+          subscription.id,
+          subscription.max_seats_used,
+          subscription.seats_in_use,
+          subscription.seats_owed,
+          max_seat_used_changed_at.present? ? "timestamp '#{max_seat_used_changed_at}'" : 'NULL'
+        ]
       rescue ActiveRecord::QueryCanceled => e
         track_error(e, subscription)
       end
@@ -31,8 +44,9 @@ class UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker # rubocop:disable Scalab
           UPDATE gitlab_subscriptions AS s
           SET max_seats_used = v.max_seats_used,
               seats_in_use = v.seats_in_use,
-              seats_owed = v.seats_owed
-          FROM (VALUES #{tuples.map { |tuple| "(#{tuple.join(', ')})" }.join(', ')}) AS v(id, max_seats_used, seats_in_use, seats_owed)
+              seats_owed = v.seats_owed,
+              max_seats_used_changed_at = v.max_seats_used_changed_at
+          FROM (VALUES #{tuples.map { |tuple| "(#{tuple.join(', ')})" }.join(', ')}) AS v(id, max_seats_used, seats_in_use, seats_owed, max_seats_used_changed_at)
           WHERE s.id = v.id
         EOF
       end
