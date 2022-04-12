@@ -6,7 +6,7 @@ import {
 } from '~/rest_api';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 
-function replaceModelIId(payload) {
+function replaceModelIId(payload = {}) {
   delete Object.assign(payload, { alertIid: payload.modelIid }).modelIid;
   return payload;
 }
