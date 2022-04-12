@@ -448,7 +448,6 @@ export default {
           icon="settings"
           @click="openSidebarSettings"
         />
-        <gl-tooltip :target="() => $refs.settingsBtn">{{ $options.i18n.listSettings }}</gl-tooltip>
       </gl-button-group>
     </h3>
   </header>
