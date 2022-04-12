@@ -12,6 +12,7 @@ module Gitlab
       secondary_nodes
       node_enabled
       oauth_application
+      proxy_extra_data
     ).freeze
 
     API_SCOPE = 'geo_api'
@@ -32,6 +33,14 @@ module Gitlab
       ::Geo::JobArtifactReplicator
     ].freeze
 
+    # We "regenerate" an 1hour valid JWT every 30 minutes, resulting in
+    # a token valid for at least 30 minutes at every given time, even if
+    # the internal API is not available to serve a new one for up to 30m.
+    # The primary shouldn't hard fail if this isn't valid, it just doesn't
+    # know the proxying node.
+    PROXY_JWT_VALIDITY_PERIOD = 1.hour
+    PROXY_JWT_CACHE_EXPIRY = 30.minutes
+
     def self.current_node
       self.cache_value(:current_node, as: GeoNode) { GeoNode.current_node }
     end
@@ -42,6 +51,24 @@ module Gitlab
 
     def self.secondary_nodes
       self.cache_value(:secondary_nodes, as: GeoNode) { GeoNode.secondary_nodes }
+    end
+
+    def self.proxy_extra_data
+      self.cache_value(:proxy_extra_data, l2_cache_expires_in: PROXY_JWT_CACHE_EXPIRY) { uncached_proxy_extra_data }
+    end
+
+    def self.uncached_proxy_extra_data
+      # Extra data that can be computed/sent for all proxied requests.
+      #
+      # We're currently only interested in the signing node which can
+      # be figured out from the signing key, so not sending any actual
+      # extra data.
+      data = {}
+
+      Gitlab::Geo::SignedData.new(geo_node: self.current_node, validity_period: PROXY_JWT_VALIDITY_PERIOD)
+        .sign_and_encode_data(data)
+    rescue GeoNodeNotFoundError, OpenSSL::Cipher::CipherError
+      nil
     end
 
     def self.connected?
@@ -122,10 +149,11 @@ module Gitlab
       SafeRequestStore[:geo_l2_cache] ||= Gitlab::JsonCache.new(namespace: :geo, cache_key_strategy: :version)
     end
 
-    def self.cache_value(raw_key, as: nil, &block)
-      # We need a short expire time as we can't manually expire on a secondary node
-      l1_cache.fetch(raw_key, as: as, expires_in: 1.minute) do
-        l2_cache.fetch(raw_key, as: as, expires_in: 2.minutes) { yield }
+    # Default to a short expire time as we can't manually expire on a secondary node
+    # so short-lived or data that can get frequently updated doesn't persist too much
+    def self.cache_value(raw_key, as: nil, l1_cache_expires_in: 1.minute, l2_cache_expires_in: 2.minutes, &block)
+      l1_cache.fetch(raw_key, as: as, expires_in: l1_cache_expires_in) do
+        l2_cache.fetch(raw_key, as: as, expires_in: l2_cache_expires_in) { yield }
       end
     end
 
