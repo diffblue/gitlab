@@ -272,29 +272,45 @@ RSpec.describe NamespacesHelper do
   describe '#show_minute_limit_banner?' do
     let(:project) { create(:project) }
 
-    context 'when show_minute_limit_banner feature flag enabled' do
+    context 'on dot com' do
       before do
-        stub_feature_flags(show_minute_limit_banner: true)
+        allow(Gitlab).to receive(:com?).and_return(true)
       end
 
-      context 'for a free project' do
+      context 'when show_minute_limit_banner feature flag enabled' do
         before do
-          allow(project.root_ancestor).to receive(:free_plan?).and_return(true)
+          stub_feature_flags(show_minute_limit_banner: true)
         end
 
-        context 'when user has not dismissed banner' do
+        context 'for a free project' do
           before do
-            allow(helper).to receive(:user_dismissed?).with(Users::CalloutsHelper::MINUTE_LIMIT_BANNER).and_return(false)
+            allow(project.root_ancestor).to receive(:free_plan?).and_return(true)
           end
 
-          it 'shows the banner' do
-            expect(helper.show_minute_limit_banner?(project)).to eq(true)
+          context 'when user has not dismissed banner' do
+            before do
+              allow(helper).to receive(:user_dismissed?).with(Users::CalloutsHelper::MINUTE_LIMIT_BANNER).and_return(false)
+            end
+
+            it 'shows the banner' do
+              expect(helper.show_minute_limit_banner?(project)).to eq(true)
+            end
+          end
+
+          context 'when user has dismissed banner' do
+            before do
+              allow(helper).to receive(:user_dismissed?).with(Users::CalloutsHelper::MINUTE_LIMIT_BANNER).and_return(true)
+            end
+
+            it 'does not show the banner' do
+              expect(helper.show_minute_limit_banner?(project)).to eq(false)
+            end
           end
         end
 
-        context 'when user has dismissed banner' do
+        context 'for a non-free project' do
           before do
-            allow(helper).to receive(:user_dismissed?).with(Users::CalloutsHelper::MINUTE_LIMIT_BANNER).and_return(true)
+            allow(project.root_ancestor).to receive(:free_plan?).and_return(false)
           end
 
           it 'does not show the banner' do
@@ -303,24 +319,32 @@ RSpec.describe NamespacesHelper do
         end
       end
 
-      context 'for a non-free project' do
+      context 'when show_minute_limit_banner feature flag is not enabled' do
         before do
-          allow(project.root_ancestor).to receive(:free_plan?).and_return(false)
+          stub_feature_flags(show_minute_limit_banner: false)
         end
 
-        it 'does not show the banner' do
-          expect(helper.show_minute_limit_banner?(project)).to eq(false)
+        context 'for a free project and user has not dismissed callout' do
+          before do
+            allow(project.root_ancestor).to receive(:free_plan?).and_return(true)
+            allow(helper).to receive(:user_dismissed?).with(Users::CalloutsHelper::MINUTE_LIMIT_BANNER).and_return(false)
+          end
+
+          it 'does not show banner' do
+            expect(helper.show_minute_limit_banner?(project)).to eq(false)
+          end
         end
       end
     end
 
-    context 'when show_minute_limit_banner feature flag is not enabled' do
+    context 'not dot com' do
       before do
-        stub_feature_flags(show_minute_limit_banner: false)
+        allow(Gitlab).to receive(:com?).and_return(false)
       end
 
-      context 'for a free project and user has not dismissed callout' do
+      context 'when feature flag is enabled for a free project and user has not dismissed callout' do
         before do
+          stub_feature_flags(show_minute_limit_banner: true)
           allow(project.root_ancestor).to receive(:free_plan?).and_return(true)
           allow(helper).to receive(:user_dismissed?).with(Users::CalloutsHelper::MINUTE_LIMIT_BANNER).and_return(false)
         end
