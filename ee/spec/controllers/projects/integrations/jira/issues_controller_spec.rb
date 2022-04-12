@@ -15,16 +15,36 @@ RSpec.describe Projects::Integrations::Jira::IssuesController do
   end
 
   describe 'GET #index' do
+    shared_examples 'an action that returns a 404' do
+      it 'returns 404' do
+        get :index, params: { namespace_id: project.namespace, project_id: project }
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
     context 'when jira_issues_integration licensed feature is not available' do
       before do
         stub_licensed_features(jira_issues_integration: false)
       end
 
-      it 'returns 404 status' do
-        get :index, params: { namespace_id: project.namespace, project_id: project }
+      it_behaves_like 'an action that returns a 404'
+    end
 
-        expect(response).to have_gitlab_http_status(:not_found)
+    context 'when jira integration is disabled' do
+      before do
+        jira.update!(active: false)
       end
+
+      it_behaves_like 'an action that returns a 404'
+    end
+
+    context 'when jira integration does not exist' do
+      before do
+        jira.destroy!
+      end
+
+      it_behaves_like 'an action that returns a 404'
     end
 
     it_behaves_like 'unauthorized when external service denies access' do

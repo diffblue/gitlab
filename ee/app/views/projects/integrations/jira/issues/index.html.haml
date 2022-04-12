@@ -6,5 +6,5 @@
   initial_state: params[:state],
   initial_sort_by: params[:sort],
   project_full_path: @project.full_path,
-  issue_create_url: @project.external_issue_tracker.new_issue_url,
+  issue_create_url: @jira_integration.new_issue_url,
   empty_state_path: image_path('illustrations/issues.svg') } }
