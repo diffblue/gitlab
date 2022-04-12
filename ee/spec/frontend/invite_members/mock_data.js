@@ -5,6 +5,7 @@ const generateSubscriptionData = ({
   seatsInUse = 0,
   billedUserIds = [],
   billedUserEmails = [],
+  excludeGuests = false,
 } = {}) => ({
   isFreeGroup,
   subscriptionSeats,
@@ -12,6 +13,17 @@ const generateSubscriptionData = ({
   seatsInUse,
   billedUserIds,
   billedUserEmails,
+  excludeGuests,
+});
+
+export const generateInvitedUsersData = ({
+  isGuestRole = false,
+  usersToInviteByEmail = [],
+  usersToAddById = [],
+} = {}) => ({
+  isGuestRole,
+  usersToInviteByEmail,
+  usersToAddById,
 });
 
 export const freePlanSubsciption = generateSubscriptionData({ isFreeGroup: true });
@@ -27,4 +39,11 @@ export const subscriptionWithOverage = generateSubscriptionData({
   seatsInUse: 1,
   billedUserIds: [1],
   billedUserEmails: ['test@example'],
+});
+export const allowGuestsSubscription = generateSubscriptionData({
+  maxSeatsUsed: 1,
+  seatsInUse: 1,
+  billedUserIds: [1],
+  billedUserEmails: ['test@example'],
+  excludeGuests: true,
 });

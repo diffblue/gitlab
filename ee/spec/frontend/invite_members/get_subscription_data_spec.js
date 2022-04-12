@@ -25,6 +25,7 @@ describe('fetchUserIdsFromGroup', () => {
       maxSeatsUsed: 104,
       seatsInUse: 98,
       subscriptionSeats: 100,
+      excludeGuests: true,
     });
   });
 
@@ -37,6 +38,7 @@ describe('fetchUserIdsFromGroup', () => {
       maxSeatsUsed: 5,
       seatsInUse: 0,
       subscriptionSeats: 0,
+      excludeGuests: false,
     });
   });
 });

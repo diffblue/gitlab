@@ -18,5 +18,6 @@ export const fetchSubscription = async (namespaceId) => {
     maxSeatsUsed: data.usage.max_seats_used,
     seatsInUse: data.usage.seats_in_use,
     isFreeGroup: isFreeGroup(data.plan),
+    excludeGuests: data.plan.exclude_guests || false,
   };
 };
