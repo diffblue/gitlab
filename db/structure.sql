@@ -21480,7 +21480,7 @@ CREATE TABLE users (
     role smallint,
     user_type smallint,
     static_object_token_encrypted text,
-    otp_secret_ttl timestamp with time zone,
+    otp_secret_expires_at timestamp with time zone,
     CONSTRAINT check_7bde697e8e CHECK ((char_length(static_object_token_encrypted) <= 255))
 );
 

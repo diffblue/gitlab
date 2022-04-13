@@ -38,7 +38,7 @@ class User < ApplicationRecord
   COUNT_CACHE_VALIDITY_PERIOD = 24.hours
 
   OTP_SECRET_LENGTH = 32
-  OTP_SECRET_TTL_LENGTH = 2.minutes
+  OTP_SECRET_TTL = 2.minutes
 
   MAX_USERNAME_LENGTH = 255
   MIN_USERNAME_LENGTH = 2
@@ -71,7 +71,6 @@ class User < ApplicationRecord
     mode:      :per_attribute_iv_and_salt,
     insecure_mode: true,
     algorithm: 'aes-256-cbc'
-  attr_accessor :otp_secret_ttl
 
   devise :two_factor_authenticatable,
          otp_secret_encryption_key: Gitlab::Application.secrets.otp_key_base
@@ -963,14 +962,14 @@ class User < ApplicationRecord
   end
 
   def otp_secret_expired?
-    return true unless otp_secret_ttl
+    return true unless otp_secret_expires_at
 
-    otp_secret_ttl < Time.current
+    otp_secret_expires_at < Time.current
   end
 
   def update_otp_secret!
     self.otp_secret = User.generate_otp_secret(OTP_SECRET_LENGTH)
-    self.otp_secret_ttl = Time.current + OTP_SECRET_TTL_LENGTH
+    self.otp_secret_expires_at = Time.current + OTP_SECRET_TTL
   end
 
   def namespace_move_dir_allowed
