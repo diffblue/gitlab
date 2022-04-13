@@ -34,6 +34,28 @@ RSpec.describe Gitlab::Diff::CustomDiff do
         expect(described_class.transformed_for_diff?(blob)).to be_falsey
       end
     end
+
+    context 'timeout' do
+      it 'utilizes timeout for web' do
+        expect(Timeout).to receive(:timeout).with(described_class::RENDERED_TIMEOUT_FOREGROUND).and_call_original
+
+        expect(described_class.preprocess_before_diff(ipynb_blob.path, nil, ipynb_blob)).not_to include('cells')
+      end
+
+      it 'falls back to nil on timeout' do
+        allow(Gitlab::ErrorTracking).to receive(:track_and_raise_for_dev_exception)
+        expect(Timeout).to receive(:timeout).and_raise(Timeout::Error)
+
+        expect(described_class.preprocess_before_diff(ipynb_blob.path, nil, ipynb_blob)).to be_nil
+      end
+
+      it 'utilizes longer timeout for sidekiq' do
+        allow(Gitlab::Runtime).to receive(:sidekiq?).and_return(true)
+        expect(Timeout).to receive(:timeout).with(described_class::RENDERED_TIMEOUT_BACKGROUND).and_call_original
+
+        described_class.preprocess_before_diff(ipynb_blob.path, nil, ipynb_blob)
+      end
+    end
   end
 
   describe '#transformed_blob_data' do
