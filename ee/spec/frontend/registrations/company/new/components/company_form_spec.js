@@ -73,10 +73,10 @@ describe('RegistrationForm', () => {
     });
 
     it.each`
-      testid          | value
-      ${'role'}       | ${'Software Engineer'}
-      ${'jtbd'}       | ${'Jobs to be done'}
-      ${'comment'}    | ${'A comment'}
+      testid       | value
+      ${'role'}    | ${'Software Engineer'}
+      ${'jtbd'}    | ${'Jobs to be done'}
+      ${'comment'} | ${'A comment'}
     `('has the hidden injected value for $testid', ({ testid, value }) => {
       expect(findFormInput(testid).attributes('value')).toBe(value);
     });
