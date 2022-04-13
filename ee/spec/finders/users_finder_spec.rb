@@ -13,13 +13,13 @@ RSpec.describe UsersFinder do
         it 'returns ldap users by default' do
           users = described_class.new(normal_user).execute
 
-          expect(users).to contain_exactly(normal_user, omniauth_user, external_user, ldap_user, internal_user, admin_user)
+          expect(users).to contain_exactly(normal_user, unconfirmed_user, omniauth_user, external_user, ldap_user, internal_user, admin_user)
         end
 
         it 'returns only non-ldap users with skip_ldap: true' do
           users = described_class.new(normal_user, skip_ldap: true).execute
 
-          expect(users).to contain_exactly(normal_user, omniauth_user, external_user, internal_user, admin_user)
+          expect(users).to contain_exactly(normal_user, unconfirmed_user, omniauth_user, external_user, internal_user, admin_user)
         end
       end
 
@@ -36,7 +36,7 @@ RSpec.describe UsersFinder do
         it 'returns all users by default' do
           users = described_class.new(normal_user).execute
 
-          expect(users).to contain_exactly(normal_user, omniauth_user, external_user, internal_user, admin_user, saml_user, non_saml_user)
+          expect(users).to contain_exactly(normal_user, unconfirmed_user, omniauth_user, external_user, internal_user, admin_user, saml_user, non_saml_user)
         end
 
         it 'returns only saml users from the provided saml_provider_id' do
