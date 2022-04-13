@@ -8,6 +8,7 @@ import {
   GlFormTextarea,
   GlAlert,
 } from '@gitlab/ui';
+import { mapActions, mapState } from 'vuex';
 import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import {
@@ -29,6 +30,7 @@ import {
   buildRule,
   approversOutOfSync,
   invalidScanners,
+  humanizeInvalidBranchesError,
 } from './lib';
 
 export default {
@@ -111,6 +113,7 @@ export default {
     };
   },
   computed: {
+    ...mapState('scanResultPolicies', ['invalidBranches']),
     originalName() {
       return this.existingPolicy?.name;
     },
@@ -129,7 +132,17 @@ export default {
       return this.policy.rules.length < 5;
     },
   },
+  watch: {
+    invalidBranches(branches) {
+      if (branches.length > 0) {
+        this.handleError(new Error(humanizeInvalidBranchesError([...branches])));
+      } else {
+        this.$emit('error', '');
+      }
+    },
+  },
   methods: {
+    ...mapActions('scanResultPolicies', ['fetchBranches']),
     updateAction(actionIndex, values) {
       this.policy.actions.splice(actionIndex, 1, values);
     },
@@ -218,6 +231,8 @@ export default {
       } else if (mode === EDITOR_MODE_RULE && !this.hasParsingError) {
         if (this.invalidForRuleMode()) {
           this.yamlEditorError = new Error();
+        } else {
+          this.fetchBranches({ branches: this.allBranches(), projectId: this.projectId });
         }
       }
     },
@@ -229,6 +244,9 @@ export default {
         approversOutOfSync(this.policy.actions[0], this.existingApprovers) ||
         invalidScanners(this.policy.rules)
       );
+    },
+    allBranches() {
+      return this.policy.rules.flatMap((rule) => rule.branches);
     },
   },
 };

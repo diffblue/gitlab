@@ -231,8 +231,7 @@ description: This policy enforces critical vulnerability CS approvals
 enabled: true
 rules:
   - type: scan_finding
-    branches:
-      - main
+    branches: []
     scanners:
       - container_scanning
     vulnerabilities_allowed: 1
@@ -255,7 +254,7 @@ export const mockScanResultObject = {
   rules: [
     {
       type: 'scan_finding',
-      branches: ['main'],
+      branches: [],
       scanners: ['container_scanning'],
       vulnerabilities_allowed: 1,
       severity_levels: ['critical'],
