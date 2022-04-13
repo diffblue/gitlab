@@ -29,12 +29,10 @@ module EE
       {
         submit_path: users_sign_up_company_path(glm_params),
         trial: params[:trial],
-        first_name: current_user.first_name,
-        last_name: current_user.last_name,
         role: params[:role],
         jtbd: params[:jtbd],
         comment: params[:comment]
-      }.merge(params.slice(:first_name, :last_name).to_unsafe_h.symbolize_keys)
+      }
     end
 
     def should_ask_company_question?

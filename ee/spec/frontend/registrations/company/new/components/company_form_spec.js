@@ -18,8 +18,6 @@ describe('RegistrationForm', () => {
       localVue,
       provide: {
         submitPath: SUBMIT_PATH,
-        firstName: 'Joe',
-        lastName: 'Doe',
         role: 'Software Engineer',
         jtbd: 'Jobs to be done',
         comment: 'A comment',
@@ -76,8 +74,6 @@ describe('RegistrationForm', () => {
 
     it.each`
       testid          | value
-      ${'first_name'} | ${'Joe'}
-      ${'last_name'}  | ${'Doe'}
       ${'role'}       | ${'Software Engineer'}
       ${'jtbd'}       | ${'Jobs to be done'}
       ${'comment'}    | ${'A comment'}

@@ -28,7 +28,7 @@ export default {
     CountryOrRegionSelector,
     RegistrationTrialToggle,
   },
-  inject: ['submitPath', 'firstName', 'lastName', 'role', 'jtbd', 'comment'],
+  inject: ['submitPath', 'role', 'jtbd', 'comment'],
   props: {
     trial: {
       type: Boolean,
@@ -84,8 +84,11 @@ export default {
 </script>
 
 <template>
-  <gl-form :action="createLeadPath" method="post">
+  <gl-form :action="submitPath" method="post">
     <input :value="$options.csrf.token" type="hidden" name="authenticity_token" />
+    <input :value="role" type="hidden" name="role" data-testid="role" />
+    <input :value="jtbd" type="hidden" name="jtbd" data-testid="jtbd" />
+    <input :value="comment" type="hidden" name="comment" data-testid="comment" />
     <gl-form-text class="gl-font-base gl-text-gray-400 gl-pb-3">{{ descriptionText }}</gl-form-text>
     <div class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-mt-5">
       <gl-form-group

@@ -49,67 +49,52 @@ RSpec.describe Registrations::CompanyController do
       it { is_expected.to render_template(:new) }
     end
   end
-
   describe '#create' do
     using RSpec::Parameterized::TableSyntax
+
+    let(:params) do
+      {
+        company_name: 'GitLab',
+        company_size: '1-99',
+        phone_number: '+1 23 456-78-90',
+        country: 'US',
+        state: 'CA',
+        website_url: 'gitlab.com'
+      }
+    end
+
     context 'on success' do
-      let(:params) do
-        {
-          company_name: 'GitLab',
-          company_size: '1-99',
-          phone_number: '+1 23 456-78-90',
-          country: 'US',
-          state: 'CA',
-          website_url: 'gitlab.com',
-          work_email: user.email,
-          uid: user.id,
-          provider: 'gitlab',
-          setup_for_company: user.setup_for_company,
-          skip_email_confirmation: true,
-          gitlab_com_trial: true,
-          newsletter_segment: user.email_opted_in
-        }
-      end
-
-      let(:hand_raise_params) { ActionController::Parameters.new(params).permit! }
-      let(:lead_params) { { trial_user: hand_raise_params } }
-
-      let(:trial_onboarding_flow) { new_users_sign_up_groups_project_path(trial_onboarding_flow: true) }
-      let(:skip_trial) { new_users_sign_up_groups_project_path(skip_trial: true) }
-
-      where(:trial, :expected_params, :post_service, :redirect_query) do
-        true  | ref(:lead_params)       | GitlabSubscriptions::CreateLeadService          | ref(:trial_onboarding_flow)
-        false | ref(:hand_raise_params) | GitlabSubscriptions::CreateHandRaiseLeadService | ref(:skip_trial)
+      where(:trial, :redirect_query) do
+        'true'  | { trial_onboarding_flow: true }
+        'false' | { skip_trial: true }
       end
 
       with_them do
-        it 'calls the correct service' do
-          expect_next_instance_of(post_service) do |service|
-            expect(service).to receive(:execute).with(expected_params).and_return({ success: true })
+        it 'creates trial or lead and redirects to the corect path' do
+          expect_next_instance_of(GitlabSubscriptions::CreateTrialOrLeadService) do |service|
+            expect(service).to receive(:execute).with({
+              user: user,
+              params: ActionController::Parameters.new(params.merge({ trial: trial })).permit!
+            }).and_return({ success: true })
           end
 
-          post_params = params.merge(trial: trial)
-
-          post :create, params: post_params
+          post :create, params: params.merge({ trial: trial })
           expect(response).to have_gitlab_http_status(:redirect)
-          expect(response).to redirect_to(redirect_query)
+          expect(response).to redirect_to(new_users_sign_up_groups_project_path(redirect_query))
         end
       end
     end
 
     context 'on failure' do
-      where(:trial, :post_service) do
-        true  | GitlabSubscriptions::CreateLeadService
-        false | GitlabSubscriptions::CreateHandRaiseLeadService
-      end
+      where(trial: %w[true false])
 
       with_them do
-        it 'calls the correct service' do
-          expect_next_instance_of(post_service) do |service|
+        it 'renders company page :new' do
+          expect_next_instance_of(GitlabSubscriptions::CreateTrialOrLeadService) do |service|
             expect(service).to receive(:execute).and_return(ServiceResponse.error(message: 'failed'))
           end
 
-          post :create, params: { trial: trial }
+          post :create, params: params.merge({ trial: trial })
           expect(response).to have_gitlab_http_status(:ok)
           expect(response).to render_template(:new)
         end

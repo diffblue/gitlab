@@ -61,43 +61,14 @@ RSpec.describe EE::TrialHelper do
       double('User', first_name: '_first_name_', last_name: '_last_name_')
     end
 
-    let(:extra_params) do
-      {
-        first_name: '_params_first_name_',
-        last_name: '_params_last_name_'
-      }
-    end
-
-    let(:params) do
-      ActionController::Parameters.new(extra_params.merge(glm_source: '_glm_source_', glm_content: '_glm_content_'))
-    end
-
     before do
-      allow(helper).to receive(:params).and_return(params)
       allow(helper).to receive(:current_user).and_return(user)
     end
 
     it 'provides expected form data' do
-      keys = extra_params.keys + [:submit_path, :trial, :role, :jtbd, :comment]
+      keys = [:submit_path, :trial, :role, :jtbd, :comment]
 
       expect(helper.create_company_form_data.keys.map(&:to_sym)).to match_array(keys)
-    end
-
-    it 'allows overriding data with params' do
-      expect(helper.create_company_form_data).to match(a_hash_including(extra_params))
-    end
-
-    context 'when params are empty' do
-      let(:extra_params) { {} }
-
-      it 'uses the values from current user' do
-        current_user_attributes = {
-          first_name: user.first_name,
-          last_name: user.last_name
-        }
-
-        expect(helper.create_company_form_data).to match(a_hash_including(current_user_attributes))
-      end
     end
   end
 
