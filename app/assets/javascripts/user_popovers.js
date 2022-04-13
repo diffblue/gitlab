@@ -110,6 +110,18 @@ export default function addPopovers(elements = document.querySelectorAll('.js-us
         },
       });
 
+      const { userId } = el.dataset;
+
+      renderedPopover.$on('follow', () => {
+        UsersCache.updateById(userId, { is_followed: true });
+        user.isFollowed = true;
+      });
+
+      renderedPopover.$on('unfollow', () => {
+        UsersCache.updateById(userId, { is_followed: false });
+        user.isFollowed = false;
+      });
+
       initializedPopovers.set(el, renderedPopover);
 
       renderedPopover.$mount();
