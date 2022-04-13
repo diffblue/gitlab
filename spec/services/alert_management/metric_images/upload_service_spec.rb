@@ -44,43 +44,35 @@ RSpec.describe AlertManagement::MetricImages::UploadService do
         project.add_developer(current_user)
       end
 
-      it_behaves_like 'no metric saved, an error given', 'You are not authorized to upload metric images'
+      it_behaves_like 'uploads the metric'
 
-      context 'with license' do
-        before do
-          stub_licensed_features(alert_metric_upload: true)
+      context 'no url given' do
+        let(:params) do
+          {
+            file: fixture_file_upload('spec/fixtures/rails_sample.jpg', 'image/jpg')
+          }
         end
 
         it_behaves_like 'uploads the metric'
+      end
 
-        context 'no url given' do
-          let(:params) do
-            {
-              file: fixture_file_upload('spec/fixtures/rails_sample.jpg', 'image/jpg')
-            }
-          end
-
-          it_behaves_like 'uploads the metric'
+      context 'record invalid' do
+        let(:params) do
+          {
+            file: fixture_file_upload('spec/fixtures/doc_sample.txt', 'text/plain'),
+            url: 'https://www.gitlab.com'
+          }
         end
 
-        context 'record invalid' do
-          let(:params) do
-            {
-              file: fixture_file_upload('spec/fixtures/doc_sample.txt', 'text/plain'),
-              url: 'https://www.gitlab.com'
-            }
-          end
+        it_behaves_like 'no metric saved, an error given', /File does not have a supported extension. Only png, jpg, jpeg, gif, bmp, tiff, ico, and webp are supported/ # rubocop: disable Layout/LineLength
+      end
 
-          it_behaves_like 'no metric saved, an error given', /File does not have a supported extension. Only png, jpg, jpeg, gif, bmp, tiff, ico, and webp are supported/
+      context 'user is guest' do
+        before_all do
+          project.add_guest(current_user)
         end
 
-        context 'user is guest' do
-          before_all do
-            project.add_guest(current_user)
-          end
-
-          it_behaves_like 'no metric saved, an error given', 'You are not authorized to upload metric images'
-        end
+        it_behaves_like 'no metric saved, an error given', 'You are not authorized to upload metric images'
       end
     end
   end

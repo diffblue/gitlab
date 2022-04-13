@@ -27,6 +27,7 @@ module AlertManagement
     has_many :notes, as: :noteable, inverse_of: :noteable, dependent: :delete_all # rubocop:disable Cop/ActiveRecordDependent
     has_many :ordered_notes, -> { fresh }, as: :noteable, class_name: 'Note'
     has_many :user_mentions, class_name: 'AlertManagement::AlertUserMention', foreign_key: :alert_management_alert_id
+    has_many :metric_images, class_name: '::AlertManagement::MetricImage'
 
     has_internal_id :iid, scope: :project
 

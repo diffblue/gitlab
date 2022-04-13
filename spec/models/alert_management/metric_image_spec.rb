@@ -19,6 +19,8 @@ RSpec.describe AlertManagement::MetricImage do
   describe '.available_for?' do
     subject { described_class.available_for?(issue.project) }
 
+    let_it_be_with_refind(:issue) { create(:issue) }
+
     it { is_expected.to eq(true) }
   end
 end
