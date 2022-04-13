@@ -13,7 +13,7 @@
   .settings-content
     %h5
       = s_('PushRules|Select push rules')
-    = form_for [@project, @push_rule] do |f|
+    = gitlab_ui_form_for [@project, @push_rule] do |f|
       = form_errors(@push_rule)
 
       = render "shared/push_rules/form", f: f, context: @project
