@@ -10,4 +10,8 @@ RSpec.describe WikiHelper do
       expect(helper.wiki_attachment_upload_url).to end_with("/api/v4/groups/#{@wiki.group.id}/wikis/attachments")
     end
   end
+
+  it_behaves_like 'wiki endpoint helpers' do
+    let_it_be(:page) { create(:wiki_page, wiki: create(:group_wiki)) }
+  end
 end
