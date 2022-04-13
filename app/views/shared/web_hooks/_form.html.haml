@@ -14,7 +14,7 @@
     = s_('Webhooks|Used to validate received payloads. Sent with the request in the %{code_start}X-Gitlab-Token HTTP%{code_end} header.').html_safe % { code_start: code_start, code_end: code_end }
 .form-group
   = form.label :url, s_('Webhooks|Trigger'), class: 'label-bold'
-  %ul.list-unstyled.gl-ml-6
+  %ul.list-unstyled
     %li
       = form.gitlab_ui_checkbox_component :push_events, s_('Webhooks|Push events')
       = form.text_field :push_events_branch_filter, class: 'form-control gl-form-input', placeholder: 'Branch name or wildcard pattern to trigger on (leave blank for all)'
@@ -73,5 +73,6 @@
           help_text: s_('Webhooks|A release is created or updated.')
 .form-group
   = form.label :enable_ssl_verification, s_('Webhooks|SSL verification'), class: 'label-bold checkbox'
-  .form-check
-    = form.gitlab_ui_checkbox_component :enable_ssl_verification, s_('Webhooks|Enable SSL verification')
+  %ul.list-unstyled
+    %li
+      = form.gitlab_ui_checkbox_component :enable_ssl_verification, s_('Webhooks|Enable SSL verification')
