@@ -117,6 +117,7 @@ When the snippet is committed to the `.gitlab-ci.yml` file, pipelines include an
 > - Support for OpenAPI Specification using YAML format was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/330583) in GitLab 14.0.
 > - Support for OpenAPI Specification v3.1 was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/327268) in GitLab 14.2.
 > - Support to generate media type `application/xml` was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/327268) in GitLab 14.8.
+> - Support to select media types was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/333304) in GitLab 14.10.
 
 The [OpenAPI Specification](https://www.openapis.org/) (formerly the Swagger Specification) is an API description format for REST APIs.
 This section shows you how to configure API fuzzing using an OpenAPI Specification to provide information about the target API to test.
@@ -129,6 +130,25 @@ the body generation is limited to these body types:
 - `multipart/form-data`
 - `application/json`
 - `application/xml`
+
+### OpenAPI and media types
+
+A media type (formerly known as MIME type) is an identifier for file formats and format contents transmitted. A OpenAPI document lets you specify that a given operation can accept different media types, hence a given request can send data using different file content. As for example, a `PUT /user` operation to update user data could accept data in either XML (media type `application/xml`) or JSON (media type `application/json`) format.
+OpenAPI 2.x lets you specify the accepted media types globally or per operation, and OpenAPI 3.x lets you specify the accepted media types per operation. API Fuzzing checks the listed media types and tries to produce sample data for each supported media type.
+
+- In [GitLab 14.10 and later](https://gitlab.com/gitlab-org/gitlab/-/issues/333304), the default behavior is to select one of the supported media types to use. The first supported media type is chosen from the list. This behavior is configurable.
+- In GitLab 14.9 and earlier, the default behavior is to perform testing using all supported media types. This means if two media types are listed (for example, `application/json` and `application/xml`), tests are performed using JSON, and then the same tests using XML.
+
+Testing the same operation (for example, `POST /user`) using different media types (for example, `application/json` and `application/xml`) is not always desirable. 
+For example, if the target application executes the same code regardless of the request content type, it will take longer to finish the test session, and it may report duplicate vulnerabilities related to the request body depending on the target app.
+
+The environment variable `FUZZAPI_OPENAPI_ALL_MEDIA_TYPES` lets you specify whether or not to use all supported media types instead of one when generating requests for a given operation. When the environmental variable `FUZZAPI_OPENAPI_ALL_MEDIA_TYPES` is set to any value, API Fuzzing will try to generate requests for all supported media types instead of one in a given operation. This will cause testing to take longer as testing is repeated for each provided media type.
+
+Alternatively, the variable `FUZZAPI_OPENAPI_MEDIA_TYPES` is used to provide a list of media types that will each be tested. Providing more than one media type causes testing to take longer, as testing is performed for each media type selected. When the environment variable `FUZZAPI_OPENAPI_MEDIA_TYPES` is set to a list of media types, only the listed media types are included when creating requests.
+
+Multiple media types in `FUZZAPI_OPENAPI_MEDIA_TYPES` must separated by a colon (`:`). For example, to limit request generation to the media types `application/x-www-form-urlencoded` and  `multipart/form-data`, set the environment variable `FUZZAPI_OPENAPI_MEDIA_TYPES` to `application/x-www-form-urlencoded:multipart/form-data`. Only supported media types in this list are included when creating requests, though unsupported media types are always skipped. A media type text may contain different sections. For example, `application/vnd.api+json; charset=UTF-8` is a compound of `type "/" [tree "."] subtype ["+" suffix]* [";" parameter]`. Parameters are not taken into account when filtering media types on request generation.
+
+The environment variables `FUZZAPI_OPENAPI_ALL_MEDIA_TYPES` and `FUZZAPI_OPENAPI_MEDIA_TYPES` allow you to decide how to handle media types. These settings are mutually exclusive. If both are enabled, API Fuzzing reports an error.
 
 #### Configure Web API fuzzing with an OpenAPI Specification
 
@@ -573,6 +593,8 @@ profile increases as the number of tests increases.
 |[`FUZZAPI_EXCLUDE_PATHS`](#exclude-paths)                    | Exclude API URL paths from testing. |
 |[`FUZZAPI_OPENAPI`](#openapi-specification)                  | OpenAPI Specification file or URL. |
 |[`FUZZAPI_OPENAPI_RELAXED_VALIDATION`](#openapi-specification) | Relax document validation. Default is disabled. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/345950) in GitLab 14.7. |
+|[`FUZZAPI_OPENAPI_ALL_MEDIA_TYPES`](#openapi-specification)  | Use all supported media types instead of one when generating requests. Causes test duration to be longer. Default is disabled. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/333304) in GitLab 14.10. |
+|[`FUZZAPI_OPENAPI_MEDIA_TYPES`](#openapi-specification)  | Colon (`:`) separated media types accepted for testing. Default is disabled. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/333304) in GitLab 14.10. |
 |[`FUZZAPI_HAR`](#http-archive-har)                           | HTTP Archive (HAR) file. |
 |[`FUZZAPI_POSTMAN_COLLECTION`](#postman-collection)          | Postman Collection file. |
 |[`FUZZAPI_POSTMAN_COLLECTION_VARIABLES`](#postman-variables) | Path to a JSON file to extract Postman variable values. |
@@ -1499,6 +1521,19 @@ API Security can still try to consume an OpenAPI document that does not fully co
      FUZZAPI_OPENAPI: test-api-specification.json
      FUZZAPI_OPENAPI_RELAXED_VALIDATION: On
 ```
+
+### No operation in the OpenAPI document is consuming any supported media type
+
+API Security uses the specified media types in the OpenAPI document to generate requests. If no request can be created due to the lack of supported media types, then an error will be thrown.
+
+**Error message**
+
+- In [GitLab 14.10 and later](https://gitlab.com/gitlab-org/gitlab/-/issues/333304), `Error, no operation in the OpenApi document is consuming any supported media type. Check 'OpenAPI Specification' to check the supported media types.`
+
+**Solution**
+
+1. Review the supported media types in the [OpenAPI Specification](#openapi-specification) section.
+1. Edit your OpenAPI document, allowing at least a given operation to accept any of the supported media types. Alternatively, a supported media type could be set in the OpenAPI document level and get applied to all operations. This step may require changes in your application to ensure the supported media type is accepted by the application.
 
 ## Get support or request an improvement
 
