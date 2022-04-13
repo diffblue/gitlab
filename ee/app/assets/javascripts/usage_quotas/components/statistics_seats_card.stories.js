@@ -16,10 +16,8 @@ const Template = (_, { argTypes }) => ({
 });
 export const Default = Template.bind({});
 
-/* eslint-disable @gitlab/require-i18n-strings */
 Default.args = {
   seatsUsed: 160,
   seatsOwed: 10,
   purchaseButtonLink: 'purchase.com/test',
-  purchaseButtonText: 'Add seats',
 };

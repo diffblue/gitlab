@@ -11,6 +11,8 @@ import {
 import { mount, shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
+import StatisticsCard from 'ee/usage_quotas/components/statistics_card.vue';
+import StatisticsSeatsCard from 'ee/usage_quotas/components/statistics_seats_card.vue';
 import SubscriptionSeats from 'ee/usage_quotas/seats/components/subscription_seats.vue';
 import { CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT } from 'ee/usage_quotas/seats/constants';
 import { mockDataSeats, mockTableItems } from 'ee_jest/usage_quotas/seats/mock_data';
@@ -21,6 +23,7 @@ Vue.use(Vuex);
 
 const actionSpies = {
   fetchBillableMembersList: jest.fn(),
+  fetchGitlabSubscription: jest.fn(),
   resetBillableMembers: jest.fn(),
   setBillableMemberToRemove: jest.fn(),
   setSearchQuery: jest.fn(),
@@ -70,10 +73,6 @@ describe('Subscription Seats', () => {
 
   const findTable = () => wrapper.findComponent(GlTable);
 
-  const findPageHeading = () => wrapper.find('[data-testid="heading-info"]');
-  const findPageHeadingText = () => findPageHeading().find('[data-testid="heading-info-text"]');
-  const findPageHeadingBadge = () => findPageHeading().findComponent(GlBadge);
-
   const findExportButton = () => wrapper.findByTestId('export-button');
 
   const findSearchBox = () => wrapper.findComponent(FilterSortContainerRoot);
@@ -81,6 +80,8 @@ describe('Subscription Seats', () => {
 
   const findAllRemoveUserItems = () => wrapper.findAllByTestId('remove-user');
   const findErrorModal = () => wrapper.findComponent(GlModal);
+  const findStatisticsCard = () => wrapper.findComponent(StatisticsCard);
+  const findStatisticsSeatsCard = () => wrapper.findComponent(StatisticsSeatsCard);
 
   const serializeUser = (rowWrapper) => {
     const avatarLink = rowWrapper.findComponent(GlAvatarLink);
@@ -140,13 +141,6 @@ describe('Subscription Seats', () => {
 
     afterEach(() => {
       wrapper.destroy();
-    });
-
-    describe('heading text', () => {
-      it('contains the group name and total seats number', () => {
-        expect(findPageHeadingText().text()).toMatch(providedFields.namespaceName);
-        expect(findPageHeadingBadge().text()).toMatch('300');
-      });
     });
 
     describe('export button', () => {
@@ -237,6 +231,52 @@ describe('Subscription Seats', () => {
             }
           });
         },
+      );
+    });
+  });
+
+  describe('statistics cards', () => {
+    beforeEach(() => {
+      wrapper = createComponent({
+        initialState: {
+          seatsInSubscription: 3,
+          seatsInUse: 2,
+          maxSeatsUsed: 3,
+          seatsOwed: 1,
+        },
+      });
+    });
+
+    it('calls the correct action on create', () => {
+      expect(actionSpies.fetchGitlabSubscription).toHaveBeenCalled();
+    });
+
+    it('renders <statistics-card> with the necessary props', () => {
+      const statisticsCard = findStatisticsCard();
+
+      expect(statisticsCard.exists()).toBe(true);
+      expect(statisticsCard.props()).toEqual(
+        expect.objectContaining({
+          description: 'Seats in use / Seats in subscription',
+          helpLink: '/help/subscription/gitlab_com/index#how-seat-usage-is-determined',
+          percentage: 67,
+          totalUnit: null,
+          totalValue: '3',
+          usageUnit: null,
+          usageValue: '2',
+        }),
+      );
+    });
+
+    it('renders <statistics-seats-card> with the necessary props', () => {
+      const statisticsSeatsCard = findStatisticsSeatsCard();
+
+      expect(statisticsSeatsCard.exists()).toBe(true);
+      expect(statisticsSeatsCard.props()).toEqual(
+        expect.objectContaining({
+          seatsOwed: 1,
+          seatsUsed: 3,
+        }),
       );
     });
   });

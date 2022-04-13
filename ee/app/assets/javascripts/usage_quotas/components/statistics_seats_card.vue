@@ -1,6 +1,6 @@
 <script>
 import { GlLink, GlIcon, GlButton } from '@gitlab/ui';
-import { __ } from '~/locale';
+import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 
 export default {
@@ -11,6 +11,7 @@ export default {
     seatsUsedHelpText: __('Learn more about max seats used'),
     seatsOwedText: __('Seats owed'),
     seatsOwedHelpText: __('Learn more about seats owed'),
+    addSeatsText: s__('Billing|Add seats'),
   },
   helpLinks: {
     seatsOwedLink: helpPagePath('subscriptions/gitlab_com/index', { anchor: 'seats-owed' }),
@@ -73,7 +74,9 @@ export default {
         class="gl-font-size-h-display gl-font-weight-bold gl-mb-3"
         data-testid="seats-used-block"
       >
-        {{ seatsUsed }}
+        <span class="gl-relative gl-top-1">
+          {{ seatsUsed }}
+        </span>
         <span class="gl-font-lg">
           {{ $options.i18n.seatsUsedText }}
         </span>
@@ -90,7 +93,9 @@ export default {
         class="gl-font-size-h-display gl-font-weight-bold gl-mb-0"
         data-testid="seats-owed-block"
       >
-        {{ seatsOwed }}
+        <span class="gl-relative gl-top-1">
+          {{ seatsOwed }}
+        </span>
         <span class="gl-font-lg">
           {{ $options.i18n.seatsOwedText }}
         </span>
@@ -104,14 +109,15 @@ export default {
       </p>
     </div>
     <gl-button
-      v-if="purchaseButtonLink && purchaseButtonText"
+      v-if="purchaseButtonLink"
       :href="purchaseButtonLink"
       category="primary"
+      target="_blank"
       variant="confirm"
       class="gl-ml-3 gl-align-self-start"
       data-testid="purchase-button"
     >
-      {{ purchaseButtonText }}
+      {{ $options.i18n.addSeatsText }}
     </gl-button>
   </div>
 </template>

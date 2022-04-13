@@ -1,7 +1,11 @@
 import * as types from 'ee/usage_quotas/seats/store/mutation_types';
 import mutations from 'ee/usage_quotas/seats/store/mutations';
 import createState from 'ee/usage_quotas/seats/store/state';
-import { mockDataSeats, mockMemberDetails } from 'ee_jest/usage_quotas/seats/mock_data';
+import {
+  mockDataSeats,
+  mockMemberDetails,
+  mockUserSubscription,
+} from 'ee_jest/usage_quotas/seats/mock_data';
 
 describe('EE seats module mutations', () => {
   let state;
@@ -16,11 +20,11 @@ describe('EE seats module mutations', () => {
     });
 
     it('sets isLoading to true', () => {
-      expect(state.isLoading).toBeTruthy();
+      expect(state.isLoading).toBe(true);
     });
 
     it('sets hasError to false', () => {
-      expect(state.hasError).toBeFalsy();
+      expect(state.hasError).toBe(false);
     });
   });
 
@@ -38,7 +42,7 @@ describe('EE seats module mutations', () => {
     });
 
     it('sets isLoading to false', () => {
-      expect(state.isLoading).toBeFalsy();
+      expect(state.isLoading).toBe(false);
     });
   });
 
@@ -48,11 +52,75 @@ describe('EE seats module mutations', () => {
     });
 
     it('sets isLoading to false', () => {
-      expect(state.isLoading).toBeFalsy();
+      expect(state.isLoading).toBe(false);
     });
 
     it('sets hasError to true', () => {
-      expect(state.hasError).toBeTruthy();
+      expect(state.hasError).toBe(true);
+    });
+  });
+
+  describe(types.REQUEST_GITLAB_SUBSCRIPTION, () => {
+    beforeEach(() => {
+      mutations[types.REQUEST_GITLAB_SUBSCRIPTION](state);
+    });
+
+    it('sets isLoading to true', () => {
+      expect(state.isLoading).toBe(true);
+    });
+
+    it('sets hasError to false', () => {
+      expect(state.hasError).toBe(false);
+    });
+  });
+
+  describe(types.RECEIVE_GITLAB_SUBSCRIPTION_SUCCESS, () => {
+    describe('when subscription data is passed', () => {
+      beforeEach(() => {
+        mutations[types.RECEIVE_GITLAB_SUBSCRIPTION_SUCCESS](state, mockUserSubscription);
+      });
+
+      it('sets state as expected', () => {
+        expect(state.seatsInSubscription).toBe(mockUserSubscription.usage.seats_in_subscription);
+        expect(state.seatsInUse).toBe(mockUserSubscription.usage.seats_in_use);
+        expect(state.maxSeatsUsed).toBe(mockUserSubscription.usage.max_seats_used);
+        expect(state.seatsOwed).toBe(mockUserSubscription.usage.seats_owed);
+      });
+
+      it('sets isLoading to false', () => {
+        expect(state.isLoading).toBe(false);
+      });
+    });
+
+    describe('when subscription data is not passed', () => {
+      beforeEach(() => {
+        mutations[types.RECEIVE_GITLAB_SUBSCRIPTION_SUCCESS](state, {});
+      });
+
+      it('sets state as expected', () => {
+        expect(state.seatsInSubscription).toBe(0);
+        expect(state.seatsInUse).toBe(0);
+        expect(state.maxSeatsUsed).toBe(0);
+        expect(state.seatsOwed).toBe(0);
+      });
+
+      it('sets isLoading to false', () => {
+        expect(state.isLoading).toBe(false);
+      });
+    });
+  });
+
+  describe(types.RECEIVE_GITLAB_SUBSCRIPTION_ERROR, () => {
+    beforeEach(() => {
+      mutations[types.RECEIVE_GITLAB_SUBSCRIPTION_ERROR](state);
+    });
+
+    it('sets isLoading to false', () => {
+      expect(state.isLoading).toBe(false);
+    });
+
+    it('sets hasError to true', () => {
+      expect(state.hasError).toBe(true);
     });
   });
 
@@ -85,11 +153,11 @@ describe('EE seats module mutations', () => {
       expect(state.page).toBeNull();
       expect(state.perPage).toBeNull();
 
-      expect(state.isLoading).toBeFalsy();
+      expect(state.isLoading).toBe(false);
     });
 
     it('sets isLoading to false', () => {
-      expect(state.isLoading).toBeFalsy();
+      expect(state.isLoading).toBe(false);
     });
   });
 

@@ -123,3 +123,24 @@ export const mockTableItems = [
     },
   },
 ];
+
+export const mockUserSubscription = {
+  plan: {
+    code: null,
+    name: null,
+    trial: false,
+    auto_renew: null,
+    upgradable: false,
+  },
+  usage: {
+    seats_in_subscription: 10,
+    seats_in_use: 5,
+    max_seats_used: 2,
+    seats_owed: 3,
+  },
+  billing: {
+    subscription_start_date: '2022-03-08',
+    subscription_end_date: null,
+    trial_ends_on: null,
+  },
+};
