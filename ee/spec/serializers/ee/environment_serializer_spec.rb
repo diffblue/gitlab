@@ -14,7 +14,7 @@ RSpec.describe EE::EnvironmentSerializer do
     stub_licensed_features(environment_alerts: true, protected_environments: true)
   end
 
-  it_behaves_like 'avoid N+1 on environments serialization', ee: true
+  it_behaves_like 'avoid N+1 on environments serialization'
 
   def create_environment_with_associations(project)
     create(:environment, project: project).tap do |environment|
