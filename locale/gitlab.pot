@@ -5779,6 +5779,9 @@ msgstr ""
 msgid "Billings|Reactivate trial"
 msgstr ""
 
+msgid "Billings|Seats in use / Seats in subscription"
+msgstr ""
+
 msgid "Billings|Shared runners cannot be enabled until a valid credit card is on file."
 msgstr ""
 
@@ -5806,22 +5809,28 @@ msgstr ""
 msgid "Billing|%{user} was successfully approved"
 msgstr ""
 
+msgid "Billing|Add seats"
+msgstr ""
+
 msgid "Billing|An email address is only visible for users with public emails."
 msgstr ""
 
 msgid "Billing|An error occurred while approving %{user}"
 msgstr ""
 
-msgid "Billing|An error occurred while getting a billable member details"
+msgid "Billing|An error occurred while getting a billable member details."
 msgstr ""
 
-msgid "Billing|An error occurred while loading billable members list"
+msgid "Billing|An error occurred while loading GitLab subscription details."
+msgstr ""
+
+msgid "Billing|An error occurred while loading billable members list."
 msgstr ""
 
 msgid "Billing|An error occurred while loading pending members list"
 msgstr ""
 
-msgid "Billing|An error occurred while removing a billable member"
+msgid "Billing|An error occurred while removing a billable member."
 msgstr ""
 
 msgid "Billing|Awaiting member signup"
@@ -5837,9 +5846,6 @@ msgid "Billing|Enter at least three characters to search."
 msgstr ""
 
 msgid "Billing|Export list"
-msgstr ""
-
-msgid "Billing|Group"
 msgstr ""
 
 msgid "Billing|Group invite"
@@ -5867,9 +5873,6 @@ msgid "Billing|Type %{username} to confirm"
 msgstr ""
 
 msgid "Billing|User was successfully removed"
-msgstr ""
-
-msgid "Billing|Users occupying seats in"
 msgstr ""
 
 msgid "Billing|View pending approvals"

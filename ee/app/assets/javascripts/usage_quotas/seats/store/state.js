@@ -4,6 +4,8 @@ export default ({
   seatUsageExportPath = null,
   pendingMembersPagePath = null,
   pendingMembersCount = 0,
+  addSeatsHref = '',
+  hasNoSubscription = null,
 } = {}) => ({
   isLoading: false,
   hasError: false,
@@ -20,4 +22,10 @@ export default ({
   userDetails: {},
   search: null,
   sort: 'last_activity_on_desc',
+  seatsInSubscription: null,
+  seatsInUse: null,
+  maxSeatsUsed: null,
+  seatsOwed: null,
+  hasNoSubscription,
+  addSeatsHref,
 });

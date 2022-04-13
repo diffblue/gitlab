@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import { parseBoolean } from '~/lib/utils/common_utils';
 import SubscriptionSeats from './components/subscription_seats.vue';
 import initialStore from './store';
 
@@ -18,6 +19,8 @@ export default (containerId = 'js-seat-usage-app') => {
     seatUsageExportPath,
     pendingMembersPagePath,
     pendingMembersCount,
+    addSeatsHref,
+    hasNoSubscription,
   } = el.dataset;
 
   return new Vue({
@@ -31,6 +34,8 @@ export default (containerId = 'js-seat-usage-app') => {
         seatUsageExportPath,
         pendingMembersPagePath,
         pendingMembersCount,
+        addSeatsHref,
+        hasNoSubscription: parseBoolean(hasNoSubscription),
       }),
     ),
     render(createElement) {

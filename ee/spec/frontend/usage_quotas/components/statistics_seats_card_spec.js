@@ -5,12 +5,10 @@ import StatisticsSeatsCard from 'ee/usage_quotas/components/statistics_seats_car
 describe('StatisticsSeatsCard', () => {
   let wrapper;
   const purchaseButtonLink = 'https://gitlab.com/purchase-more-seats';
-  const purchaseButtonText = 'Add seats';
   const defaultProps = {
     seatsUsed: 20,
     seatsOwed: 5,
     purchaseButtonLink,
-    purchaseButtonText,
   };
 
   const createComponent = (props = {}) => {
@@ -71,17 +69,11 @@ describe('StatisticsSeatsCard', () => {
 
       expect(purchaseButton.exists()).toBe(true);
       expect(purchaseButton.attributes('href')).toBe(purchaseButtonLink);
-      expect(purchaseButton.text()).toBe(purchaseButtonText);
+      expect(purchaseButton.attributes('target')).toBe('_blank');
     });
 
     it('does not render purchase button if purchase link is not passed', () => {
       createComponent({ purchaseButtonLink: null });
-
-      expect(findPurchaseButton().exists()).toBe(false);
-    });
-
-    it('does not render purchase button if purchase text is not passed', () => {
-      createComponent({ purchaseButtonText: null });
 
       expect(findPurchaseButton().exists()).toBe(false);
     });
