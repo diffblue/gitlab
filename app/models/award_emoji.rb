@@ -19,6 +19,8 @@ class AwardEmoji < ApplicationRecord
 
   participant :user
 
+  delegate :resource_parent, to: :awardable, allow_nil: true
+
   scope :downvotes, -> { named(DOWNVOTE_NAME) }
   scope :upvotes, -> { named(UPVOTE_NAME) }
   scope :named, -> (names) { where(name: names) }
@@ -63,7 +65,7 @@ class AwardEmoji < ApplicationRecord
   def url
     return if TanukiEmoji.find_by_alpha_code(name)
 
-    awardable.try(:namespace)&.custom_emoji&.by_name(name)&.first&.url
+    CustomEmoji.for_resource(resource_parent).by_name(name).select(:url).first&.url
   end
 
   def expire_cache

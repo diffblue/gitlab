@@ -59,17 +59,41 @@ RSpec.describe AwardEmoji do
       end
     end
 
-    it 'accepts custom emoji' do
-      user  = create(:user)
-      group = create(:group)
-      group.add_maintainer(user)
+    context 'custom emoji' do
+      let_it_be(:user) { create(:user) }
+      let_it_be(:group) { create(:group) }
+      let_it_be(:emoji) { create(:custom_emoji, name: 'partyparrot', namespace: group) }
 
-      project = create(:project, namespace: group)
-      issue = create(:issue, project: project)
-      emoji = create(:custom_emoji, name: 'partyparrot', namespace: group)
-      new_award = build(:award_emoji, user: user, awardable: issue, name: emoji.name)
+      before do
+        group.add_maintainer(user)
+      end
 
-      expect(new_award).to be_valid
+      %i[issue merge_request note_on_issue snippet].each do |awardable_type|
+        let_it_be(:project) { create(:project, namespace: group) }
+        let(:awardable) { create(awardable_type, project: project) }
+
+        it "is accepted on #{awardable_type}" do
+          new_award = build(:award_emoji, user: user, awardable: awardable, name: emoji.name)
+
+          expect(new_award).to be_valid
+        end
+      end
+
+      it 'is accepted on subgroup issue' do
+        subgroup = create(:group, parent: group)
+        project = create(:project, namespace: subgroup)
+        issue = create(:issue, project: project)
+        new_award = build(:award_emoji, user: user, awardable: issue, name: emoji.name)
+
+        expect(new_award).to be_valid
+      end
+
+      it 'is not supported on personal snippet (yet)' do
+        snippet = create(:personal_snippet)
+        new_award = build(:award_emoji, user: snippet.author, awardable: snippet, name: 'null')
+
+        expect(new_award).not_to be_valid
+      end
     end
   end
 
