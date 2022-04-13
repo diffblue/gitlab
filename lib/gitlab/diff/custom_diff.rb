@@ -21,7 +21,7 @@ module Gitlab
             end
           end
         rescue Timeout::Error => e
-          rendered_timeout.increment(source: Gitlab::Runtime.sidekiq? ? BACKGROUND_EXECUTION : FOREGROUND_EXECUTION)
+          rendered_timeout.increment(source: execution_source)
           log_event(LOG_IPYNBDIFF_TIMEOUT, e)
         rescue IpynbDiff::InvalidNotebookError, IpynbDiff::InvalidTokenError => e
           log_event(LOG_IPYNBDIFF_INVALID, e)
@@ -72,6 +72,10 @@ module Gitlab
 
         def timeout_time
           Gitlab::Runtime.sidekiq? ? RENDERED_TIMEOUT_BACKGROUND : RENDERED_TIMEOUT_FOREGROUND
+        end
+
+        def execution_source
+          Gitlab::Runtime.sidekiq? ? BACKGROUND_EXECUTION : FOREGROUND_EXECUTION
         end
 
         def log_event(message, error = nil)
