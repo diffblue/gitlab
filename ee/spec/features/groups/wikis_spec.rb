@@ -14,26 +14,14 @@ RSpec.describe 'Group wikis', :js do
     wiki.container.add_owner(user)
   end
 
-  shared_examples 'wiki feature tests' do
-    it_behaves_like 'User creates wiki page'
-    it_behaves_like 'User deletes wiki page'
-    it_behaves_like 'User previews wiki changes'
-    it_behaves_like 'User updates wiki page'
-    it_behaves_like 'User uses wiki shortcuts'
-    it_behaves_like 'User views AsciiDoc page with includes'
-    it_behaves_like 'User views a wiki page'
-    it_behaves_like 'User views wiki pages'
-    it_behaves_like 'User views wiki sidebar'
-    it_behaves_like 'User views Git access wiki page'
-  end
-
-  it_behaves_like 'wiki feature tests'
-
-  context 'when feature flag :wiki_async_load is disabled' do
-    before do
-      stub_feature_flags(wiki_async_load: false)
-    end
-
-    it_behaves_like 'wiki feature tests'
-  end
+  it_behaves_like 'User creates wiki page'
+  it_behaves_like 'User deletes wiki page'
+  it_behaves_like 'User previews wiki changes'
+  it_behaves_like 'User updates wiki page'
+  it_behaves_like 'User uses wiki shortcuts'
+  it_behaves_like 'User views AsciiDoc page with includes'
+  it_behaves_like 'User views a wiki page'
+  it_behaves_like 'User views wiki pages'
+  it_behaves_like 'User views wiki sidebar'
+  it_behaves_like 'User views Git access wiki page'
 end
