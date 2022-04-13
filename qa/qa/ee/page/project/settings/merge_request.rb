@@ -29,7 +29,7 @@ module QA
             end
 
             def click_pipelines_for_merged_results_checkbox
-              check_element(:merged_results_pipeline_checkbox)
+              check_element(:merged_results_pipeline_checkbox, true)
             end
 
             def click_merge_trains_checkbox
