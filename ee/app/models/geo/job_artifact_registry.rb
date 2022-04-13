@@ -36,12 +36,6 @@ class Geo::JobArtifactRegistry < Geo::BaseRegistry
     ::Geo::FileRegistryRemovalWorker
   end
 
-  # TODO Remove this when enabling geo_job_artifact_replication by default
-  override :registry_consistency_worker_enabled?
-  def self.registry_consistency_worker_enabled?
-    true
-  end
-
   def self.failed
     if ::Geo::JobArtifactReplicator.enabled?
       with_state(:failed)
