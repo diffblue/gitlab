@@ -56,7 +56,20 @@ export default {
     GlModal: GlModalDirective,
   },
   mixins: [Tracking.mixin()],
-  inject: ['user', 'small', 'ctaTracking'],
+  inject: {
+    user: {
+      default: {},
+    },
+    small: {
+      default: false,
+    },
+    ctaTracking: {
+      default: {
+        action: 'click_button',
+        label: PQL_BUTTON_TEXT,
+      },
+    },
+  },
   data() {
     return {
       isLoading: false,
