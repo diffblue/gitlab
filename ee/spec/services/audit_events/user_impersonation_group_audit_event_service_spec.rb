@@ -7,7 +7,7 @@ RSpec.describe AuditEvents::UserImpersonationGroupAuditEventService do
   let_it_be(:user) { create(:user) }
   let_it_be(:admin) { create(:admin) }
 
-  let(:service) { described_class.new(impersonator: admin, user: user, remote_ip: '111.112.11.2', action: :started) }
+  let(:service) { described_class.new(impersonator: admin, user: user, remote_ip: '111.112.11.2', action: :started, created_at: 3.weeks.ago) }
 
   before do
     stub_licensed_features(audit_events: true)
@@ -21,13 +21,17 @@ RSpec.describe AuditEvents::UserImpersonationGroupAuditEventService do
     end
 
     it 'creates audit events for both the instance and group level' do
-      expect { service.execute }.to change { AuditEvent.count }.by(2)
+      freeze_time do
+        expect { service.execute }.to change { AuditEvent.count }.by(2)
 
-      event = AuditEvent.first
-      expect(event.details[:custom_message]).to eq("Started Impersonation")
+        event = AuditEvent.first
+        expect(event.details[:custom_message]).to eq("Started Impersonation")
+        expect(event.created_at).to eq(3.weeks.ago)
 
-      group_audit_event = AuditEvent.last
-      expect(group_audit_event.details[:custom_message]).to eq("Instance administrator started impersonation of #{user.username}")
+        group_audit_event = AuditEvent.last
+        expect(group_audit_event.details[:custom_message]).to eq("Instance administrator started impersonation of #{user.username}")
+        expect(group_audit_event.created_at).to eq(3.weeks.ago)
+      end
     end
   end
 

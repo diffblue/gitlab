@@ -109,7 +109,7 @@ RSpec.describe Admin::UsersController do
     end
 
     it 'enqueues a new worker' do
-      expect(AuditEvents::UserImpersonationEventCreateWorker).to receive(:perform_async).with(admin.id, user.id, anything, 'started').once
+      expect(AuditEvents::UserImpersonationEventCreateWorker).to receive(:perform_async).with(admin.id, user.id, anything, 'started', DateTime.current).once
 
       post :impersonate, params: { id: user.username }
     end
