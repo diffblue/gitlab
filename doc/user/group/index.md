@@ -809,7 +809,7 @@ To view the merge request approval settings for a group:
 1. Select the settings you want.
 1. Select **Save changes**.
 
-Refer to the [epic](https://gitlab.com/groups/gitlab-org/-/epics/4367) for group-level settings for merge request approval rules.
+Support for group-level settings for merge request approval rules is tracked in this [epic](https://gitlab.com/groups/gitlab-org/-/epics/4367).
 
 ## Related topics
 
