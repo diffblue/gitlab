@@ -8,4 +8,9 @@
           - minutes_quota_link = external_link("included in the 400 minutes per month CI/CD minutes quota", "https://about.gitlab.com/blog/2021/11/11/public-project-minute-limits")
           - enrollment_link = external_link("enroll in GitLab's Open Source Program", "https://about.gitlab.com/blog/2022/02/04/ultimate-perks-for-open-source-projects")
           - faq_link = external_link("FAQ", "https://about.gitlab.com/pricing/faq-efficient-free-tier/#public-projects-on-gitlab-saas-free-tier")
-          = s_("1. Effective June 1, 2022, all free tier public projects will be %{minutes_quota_link}. <br> 2. Before July 1, 2022, all free tier public open source projects will need to %{enrollment_link} to continue to receive GitLab Ultimate benefits. <br><br>Please visit the %{faq_link} for more information.").html_safe % { minutes_quota_link: minutes_quota_link, enrollment_link: enrollment_link, faq_link: faq_link }
+          = s_("1. Effective June 1, 2022, all free tier public projects will be %{minutes_quota_link}.").html_safe % { minutes_quota_link: minutes_quota_link }
+          %br
+          = s_("2. Before July 1, 2022, all free tier public open source projects will need to %{enrollment_link} to continue to receive GitLab Ultimate benefits.").html_safe % { enrollment_link: enrollment_link }
+          %br
+          %br
+          = s_("Please visit the %{faq_link} for more information.").html_safe % { faq_link: faq_link }
