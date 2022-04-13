@@ -18,11 +18,11 @@ describe('ServerlessActions', () => {
   });
 
   describe('fetchFunctions', () => {
-    it('should successfully fetch functions', async () => {
+    it('should successfully fetch functions', () => {
       const endpoint = '/functions';
       mock.onGet(endpoint).reply(statusCodes.OK, JSON.stringify(mockServerlessFunctions));
 
-      await testAction(
+      return testAction(
         fetchFunctions,
         { functionsPath: endpoint },
         {},
@@ -34,13 +34,13 @@ describe('ServerlessActions', () => {
       );
     });
 
-    it('should successfully retry', async () => {
+    it('should successfully retry', () => {
       const endpoint = '/functions';
       mock
         .onGet(endpoint)
         .reply(() => new Promise((resolve) => setTimeout(() => resolve(200), Infinity)));
 
-      await testAction(
+      return testAction(
         fetchFunctions,
         { functionsPath: endpoint },
         {},
@@ -51,11 +51,11 @@ describe('ServerlessActions', () => {
   });
 
   describe('fetchMetrics', () => {
-    it('should return no prometheus', async () => {
+    it('should return no prometheus', () => {
       const endpoint = '/metrics';
       mock.onGet(endpoint).reply(statusCodes.NO_CONTENT);
 
-      await testAction(
+      return testAction(
         fetchMetrics,
         { metricsPath: endpoint, hasPrometheus: false },
         {},
@@ -64,11 +64,11 @@ describe('ServerlessActions', () => {
       );
     });
 
-    it('should successfully fetch metrics', async () => {
+    it('should successfully fetch metrics', () => {
       const endpoint = '/metrics';
       mock.onGet(endpoint).reply(statusCodes.OK, JSON.stringify(mockMetrics));
 
-      await testAction(
+      return testAction(
         fetchMetrics,
         { metricsPath: endpoint, hasPrometheus: true },
         {},
