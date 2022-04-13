@@ -373,4 +373,16 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :clean_gitl
 
     it_behaves_like 'does not track when feature flag is disabled', :track_epics_activity
   end
+
+  context 'for blocking epic removed' do
+    def track_action(params)
+      described_class.track_linked_epic_with_type_blocks_removed(**params)
+    end
+
+    it_behaves_like 'a daily tracked issuable event' do
+      let(:action) { described_class::EPIC_BLOCKING_REMOVED }
+    end
+
+    it_behaves_like 'does not track when feature flag is disabled', :track_epics_activity
+  end
 end

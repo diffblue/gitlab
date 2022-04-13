@@ -1,5 +1,16 @@
 # frozen_string_literal: true
 
+# Helper to simplify recording related epics unique events on services.
+# Used by RelatedEpicLinks::CreateService and RelatedEpicLinks::DestroyService
+#
+# Calls the following methods on Gitlab::UsageDataCounters::EpicActivityUniqueCounter:
+#
+# track_linked_epic_with_type_relates_to_added
+# track_linked_epic_with_type_relates_to_removed
+# track_linked_epic_with_type_blocks_added
+# track_linked_epic_with_type_blocks_removed
+# track_linked_epic_with_type_is_blocked_by_added
+# track_linked_epic_with_type_is_blocked_by_removed
 module Epics::RelatedEpicLinks::UsageDataHelper
   ALLOWED_LINK_TYPES =
     [
