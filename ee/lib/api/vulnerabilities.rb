@@ -12,7 +12,7 @@ module API
 
     helpers do
       def vulnerabilities_by(project)
-        if Feature.enabled?(:vulnerability_reads_table, project)
+        if Feature.enabled?(:vulnerability_reads_table, project, default_enabled: :yaml)
           Security::VulnerabilityReadsFinder.new(project).execute.as_vulnerabilities
         else
           Security::VulnerabilitiesFinder.new(project).execute
