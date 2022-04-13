@@ -12,7 +12,6 @@ RSpec.describe 'layouts/header/_current_user_dropdown' do
 
     before do
       allow(view).to receive(:current_user).and_return(user)
-      allow(view).to receive(:show_upgrade_link?).and_return(false)
       allow(view).to receive(:show_buy_pipeline_minutes?).and_return(need_minutes)
       allow(view).to receive(:show_pipeline_minutes_notification_dot?).and_return(show_notification_dot)
       allow(view).to receive(:show_buy_pipeline_with_subtext?).and_return(show_subtext)
@@ -62,34 +61,6 @@ RSpec.describe 'layouts/header/_current_user_dropdown' do
 
       it 'has no "Buy Pipeline minutes" link' do
         expect(subject).not_to have_link('Buy Pipeline minutes')
-      end
-    end
-  end
-
-  describe 'Upgrade link in user dropdown' do
-    let(:on_upgradeable_plan) { true }
-
-    before do
-      allow(view).to receive(:current_user).and_return(user)
-      allow(view).to receive(:show_buy_pipeline_minutes?).and_return(false)
-      allow(view).to receive(:show_upgrade_link?).and_return(on_upgradeable_plan)
-
-      render
-    end
-
-    subject { rendered }
-
-    context 'when user is on an upgradeable plan' do
-      it 'displays the Upgrade link' do
-        expect(subject).to have_link('Upgrade')
-      end
-    end
-
-    context 'when user is not on an upgradeable plan' do
-      let(:on_upgradeable_plan) { false }
-
-      it 'does not display the Upgrade link' do
-        expect(subject).not_to have_link('Upgrade')
       end
     end
   end

@@ -30,15 +30,6 @@ module EE
       end
     end
 
-    def show_upgrade_link?(user)
-      return unless user
-      return unless ::Gitlab.com?
-
-      Rails.cache.fetch(['users', user.id, 'show_upgrade_link?'], expires_in: 10.minutes) do
-        user.owns_upgradeable_namespace?
-      end
-    end
-
     private
 
     def trials_allowed?(user)
