@@ -19,7 +19,7 @@ RSpec.describe Admin::ImpersonationsController do
         end
 
         it 'enqueues a new worker' do
-          expect(AuditEvents::UserImpersonationEventCreateWorker).to receive(:perform_async).with(impersonator.id, user.id, anything, 'stopped').once
+          expect(AuditEvents::UserImpersonationEventCreateWorker).to receive(:perform_async).with(impersonator.id, user.id, anything, 'stopped', DateTime.current).once
 
           delete :destroy
         end
