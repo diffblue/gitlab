@@ -10,6 +10,7 @@ class GitlabSubscription < ApplicationRecord
 
   default_value_for(:start_date) { Date.today }
 
+  before_update :set_max_seats_used_changed_at
   before_update :log_previous_state_for_update
   before_update :reset_seats_for_new_term
 
@@ -185,6 +186,13 @@ class GitlabSubscription < ApplicationRecord
 
     self.max_seats_used = attributes['seats_in_use']
     self.seats_owed = calculate_seats_owed
+    self.max_seats_used_changed_at = nil
+  end
+
+  def set_max_seats_used_changed_at
+    return if new_term? || !max_seats_used_changed?
+
+    self.max_seats_used_changed_at = Time.current
   end
 
   def new_term?
