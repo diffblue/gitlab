@@ -28,23 +28,23 @@ module QA
             end
 
             def check_reject_unsigned_commits
-              check_element(:reject_unsigned_commits_checkbox)
+              check_element(:reject_unsigned_commits_checkbox, true)
             end
 
             def check_committer_restriction
-              check_element(:committer_restriction_checkbox)
+              check_element(:committer_restriction_checkbox, true)
             end
 
             def check_deny_delete_tag
-              check_element(:deny_delete_tag_checkbox)
+              check_element(:deny_delete_tag_checkbox, true)
             end
 
             def check_restrict_author
-              check_element(:restrict_author_checkbox)
+              check_element(:restrict_author_checkbox, true)
             end
 
             def check_prevent_secrets
-              check_element(:prevent_secrets_checkbox)
+              check_element(:prevent_secrets_checkbox, true)
             end
 
             def fill_commit_message_rule(message)
