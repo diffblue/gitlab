@@ -26,12 +26,6 @@ module Registrations
 
     private
 
-    def authenticate_user!
-      return if current_user
-
-      redirect_to new_trial_registration_path, alert: I18n.t('devise.failure.unauthenticated')
-    end
-
     def permitted_params
       params.permit(
         :company_name,

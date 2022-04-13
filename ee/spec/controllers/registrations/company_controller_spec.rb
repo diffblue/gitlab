@@ -16,7 +16,7 @@ RSpec.describe Registrations::CompanyController do
     context 'when not authenticated' do
       let(:logged_in) { false }
 
-      it { is_expected.to redirect_to(new_trial_registration_url) }
+      it { is_expected.to redirect_to(new_user_session_path) }
     end
 
     context 'when authenticated' do
