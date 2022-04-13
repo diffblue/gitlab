@@ -47,6 +47,15 @@ module Mutations
           args[:milestone_id] = args[:milestone_id].model_id
         end
 
+        if args[:iteration_cadence_id]
+          # TODO: remove this line when the compatibility layer is removed
+          # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
+          args[:iteration_cadence_id] = ::Types::GlobalIDType[::Iterations::Cadence].coerce_isolated_input(
+            args[:iteration_cadence_id]
+          )
+          args[:iteration_cadence_id] = args[:iteration_cadence_id].model_id
+        end
+
         args[:label_ids] &&= args[:label_ids].map do |label_id|
           ::GitlabSchema.parse_gid(label_id, expected_type: ::Label).model_id
         end
