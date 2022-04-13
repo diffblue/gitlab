@@ -64,7 +64,7 @@ module EE
     def show_minute_limit_banner?(namespace)
       return false unless ::Gitlab.com? && ::Feature.enabled?(:show_minute_limit_banner)
 
-      namespace.root_ancestor.free_plan? && !minute_limit_banner_dismissed? ? true : false
+      namespace.root_ancestor.free_plan? && !minute_limit_banner_dismissed?
     end
 
     private
