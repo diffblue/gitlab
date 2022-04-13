@@ -1467,6 +1467,9 @@ msgstr[1] ""
 msgid "1-9 contributions"
 msgstr ""
 
+msgid "1. Effective June 1, 2022, all free tier public projects will be %{minutes_quota_link}. <br> 2. Before July 1, 2022, all free tier public open source projects will need to %{enrollment_link} to continue to receive GitLab Ultimate benefits. <br><br>Please visit the %{faq_link} for more information."
+msgstr ""
+
 msgid "10-19 contributions"
 msgstr ""
 
@@ -7051,6 +7054,9 @@ msgid "Changes suppressed. Click to show."
 msgstr ""
 
 msgid "Changes the title to \"%{title_param}\"."
+msgstr ""
+
+msgid "Changes to free tier public projects"
 msgstr ""
 
 msgid "Changes to the title have not been saved"
@@ -13612,9 +13618,6 @@ msgstr ""
 msgid "Editing"
 msgstr ""
 
-msgid "Effective June 1, 2022, all free tier public projects will be %{minutes_quota_link}. Existing free tier public open source projects will have to %{enrollment_link} before July 1, 2022 to continue to receive GitLab Ultimate benefits. Please visit the %{faq_link} for more information."
-msgstr ""
-
 msgid "Elapsed time"
 msgstr ""
 
@@ -16246,9 +16249,6 @@ msgid "Framework successfully deleted"
 msgstr ""
 
 msgid "Free Trial of GitLab.com Ultimate"
-msgstr ""
-
-msgid "Free tier projects CI minutes quota"
 msgstr ""
 
 msgid "Freeze end"
