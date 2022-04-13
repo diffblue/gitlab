@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Create', :requires_admin do
+  RSpec.describe 'Create' do
     describe 'Setup an MR with codeowners file' do
       let(:project) do
         Resource::Project.fabricate_via_api! do |project|
@@ -39,12 +39,7 @@ module QA
       end
 
       before do
-        Runtime::Feature.enable(:gitaly_go_user_merge_branch)
         Flow::Login.sign_in
-      end
-
-      after do
-        Runtime::Feature.disable(:gitaly_go_user_merge_branch)
       end
 
       it 'creates a merge request with codeowners file and squashing commits enabled', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347672' do

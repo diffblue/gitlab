@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  # TODO: Remove :requires_admin when the `Runtime::Feature.enable` method call is removed
-  RSpec.describe 'Create', :requires_admin do
+  RSpec.describe 'Create', feature_flag: { name: 'refactor_blob_viewer', scope: :project } do
     describe 'Codeowners' do
       let(:files) do
         [

@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Secure', :runner, :requires_admin do
+  # Leaving :global scope out of feature_flag metadata
+  # This will allow test to still run in staging since we are only checking if the feature is enabled
+  RSpec.describe 'Secure', :runner, feature_flag: { name: 'lc_remove_legacy_approval_status' } do
     describe 'License merge request widget' do
       let(:approved_license_name) { "MIT License" }
       let(:denied_license_name) { "zlib License" }
