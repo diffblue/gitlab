@@ -3,18 +3,23 @@ module ProtectedEnvironments
   class BaseService < ::BaseContainerService
     include Gitlab::Utils::StrongMemoize
 
+    SANITIZABLE_KEYS = %i[deploy_access_levels_attributes approval_rules_attributes].freeze
+
     protected
 
     def sanitized_params
       params.dup.tap do |sanitized_params|
-        sanitized_params[:deploy_access_levels_attributes] =
-          filter_valid_deploy_access_level_attributes(sanitized_params[:deploy_access_levels_attributes])
+        SANITIZABLE_KEYS.each do |key|
+          next unless sanitized_params.has_key?(key)
+
+          sanitized_params[key] = filter_valid_authorizable_attributes(sanitized_params[key])
+        end
       end
     end
 
     private
 
-    def filter_valid_deploy_access_level_attributes(attributes)
+    def filter_valid_authorizable_attributes(attributes)
       return unless attributes
 
       attributes.select { |attribute| valid_attribute?(attribute) }
@@ -51,7 +56,7 @@ module ProtectedEnvironments
 
     def qualified_user_ids
       strong_memoize(:qualified_user_ids) do
-        user_ids = params[:deploy_access_levels_attributes].each.with_object([]) do |attribute, user_ids|
+        user_ids = all_sanitizable_params.each.with_object([]) do |attribute, user_ids|
           user_ids << attribute[:user_id] if attribute[:user_id].present?
           user_ids
         end
@@ -63,6 +68,10 @@ module ProtectedEnvironments
           container.members_with_parents.owners_and_maintainers
         end.pluck_user_ids.to_set
       end
+    end
+
+    def all_sanitizable_params
+      params.values_at(*SANITIZABLE_KEYS).flatten.compact
     end
   end
 end

@@ -8,6 +8,9 @@ module EE
       def process(build)
         if build.persisted_environment.try(:needs_approval?)
           build.run_after_commit { |build| build.deployment&.block! }
+          # To populate the deployment job as manually executable (i.e. `Ci::Build#playable?`),
+          # we have to set `manual` to `ci_builds.when` as well as `ci_builds.status`.
+          build.when = 'manual' if ::Feature.enabled?(:deployment_approval_rules, build.project, default_enabled: :yaml)
           return build.actionize!
         end
 

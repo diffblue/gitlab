@@ -9,6 +9,7 @@ class ProtectedEnvironment < ApplicationRecord
   has_many :approval_rules, class_name: 'ProtectedEnvironments::ApprovalRule', inverse_of: :protected_environment
 
   accepts_nested_attributes_for :deploy_access_levels, allow_destroy: true
+  accepts_nested_attributes_for :approval_rules, allow_destroy: true
 
   validates :deploy_access_levels, length: { minimum: 1 }
   validates :name, presence: true

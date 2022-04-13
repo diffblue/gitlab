@@ -26,6 +26,11 @@ RSpec.describe ProtectedEnvironments::BaseService, '#execute' do
               { group_id: group.id },
               { group_id: other_group.id },
               { group_id: child_group.id }
+            ],
+            approval_rules_attributes: [
+              { group_id: group.id },
+              { group_id: other_group.id },
+              { group_id: child_group.id }
             ]
           }
         end
@@ -33,6 +38,10 @@ RSpec.describe ProtectedEnvironments::BaseService, '#execute' do
         it 'filters out inappropriate group id' do
           is_expected.to eq(
             deploy_access_levels_attributes: [
+              { group_id: group.id },
+              { group_id: child_group.id }
+            ],
+            approval_rules_attributes: [
               { group_id: group.id },
               { group_id: child_group.id }
             ]
@@ -48,6 +57,10 @@ RSpec.describe ProtectedEnvironments::BaseService, '#execute' do
               deploy_access_levels_attributes: [
                 { group_id: group.id },
                 { group_id: linked_group.id }
+              ],
+              approval_rules_attributes: [
+                { group_id: group.id },
+                { group_id: linked_group.id }
               ]
             }
           end
@@ -57,7 +70,11 @@ RSpec.describe ProtectedEnvironments::BaseService, '#execute' do
               deploy_access_levels_attributes: [
                { group_id: group.id },
                { group_id: linked_group.id }
-              ]
+              ],
+              approval_rules_attributes: [
+                { group_id: group.id },
+                { group_id: linked_group.id }
+               ]
             )
           end
         end
@@ -66,6 +83,11 @@ RSpec.describe ProtectedEnvironments::BaseService, '#execute' do
           let(:params) do
             {
               deploy_access_levels_attributes: [
+                { group_id: group.id },
+                { group_id: other_group.id, '_destroy' => 1 },
+                { group_id: child_group.id }
+              ],
+              approval_rules_attributes: [
                 { group_id: group.id },
                 { group_id: other_group.id, '_destroy' => 1 },
                 { group_id: child_group.id }
@@ -79,6 +101,11 @@ RSpec.describe ProtectedEnvironments::BaseService, '#execute' do
                 { group_id: group.id },
                 { group_id: other_group.id, '_destroy' => 1 },
                 { group_id: child_group.id }
+              ],
+              approval_rules_attributes: [
+                { group_id: group.id },
+                { group_id: other_group.id, '_destroy' => 1 },
+                { group_id: child_group.id }
               ]
             )
           end
@@ -89,6 +116,12 @@ RSpec.describe ProtectedEnvironments::BaseService, '#execute' do
         let(:params) do
           {
             deploy_access_levels_attributes: [
+              { user_id: group_maintainer.id },
+              { user_id: group_developer.id },
+              { user_id: other_group_maintainer.id },
+              { user_id: child_group_maintainer.id }
+            ],
+            approval_rules_attributes: [
               { user_id: group_maintainer.id },
               { user_id: group_developer.id },
               { user_id: other_group_maintainer.id },
@@ -113,6 +146,9 @@ RSpec.describe ProtectedEnvironments::BaseService, '#execute' do
           is_expected.to eq(
             deploy_access_levels_attributes: [
               { user_id: group_maintainer.id }
+            ],
+            approval_rules_attributes: [
+              { user_id: group_maintainer.id }
             ]
           )
         end
@@ -121,6 +157,12 @@ RSpec.describe ProtectedEnvironments::BaseService, '#execute' do
           let(:params) do
             {
               deploy_access_levels_attributes: [
+                { user_id: group_maintainer.id },
+                { user_id: group_developer.id, '_destroy' => 1 },
+                { user_id: other_group_maintainer.id, '_destroy' => 1 },
+                { user_id: child_group_maintainer.id, '_destroy' => 1 }
+              ],
+              approval_rules_attributes: [
                 { user_id: group_maintainer.id },
                 { user_id: group_developer.id, '_destroy' => 1 },
                 { user_id: other_group_maintainer.id, '_destroy' => 1 },

@@ -8,6 +8,18 @@ module API
 
     feature_category :continuous_delivery
 
+    helpers do
+      params :protected_environment_approval_rules do
+        optional :approval_rules, as: :approval_rules_attributes, type: Array, desc: 'An array of users/groups allowed to approve/reject a deployment' do
+          optional :access_level, type: Integer, values: ::ProtectedEnvironments::ApprovalRule::ALLOWED_ACCESS_LEVELS
+          optional :user_id, type: Integer
+          optional :group_id, type: Integer
+          optional :required_approvals, type: Integer, default: 1, desc: 'The number of approvals required in this rule'
+          at_least_one_of :access_level, :user_id, :group_id
+        end
+      end
+    end
+
     params do
       requires :id, type: String, desc: 'The ID of a project'
     end
@@ -58,6 +70,8 @@ module API
           optional :user_id, type: Integer
           optional :group_id, type: Integer
         end
+
+        use :protected_environment_approval_rules
       end
       post ':id/protected_environments' do
         protected_environment = user_project.protected_environments.find_by_name(params[:name])
@@ -145,6 +159,8 @@ module API
           optional :user_id, type: Integer
           optional :group_id, type: Integer
         end
+
+        use :protected_environment_approval_rules
       end
       post ':id/protected_environments' do
         protected_environment = user_group.protected_environments.find_by_name(params[:name])
