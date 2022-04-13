@@ -88,12 +88,6 @@ module NamespacesHelper
     }.to_json
   end
 
-  def show_minute_limit_banner?(namespace)
-    return false unless Gitlab.com? && ::Feature.enabled?(:show_minute_limit_banner)
-
-    namespace.root_ancestor.free_plan? && !minute_limit_banner_dismissed? ? true : false
-  end
-
   private
 
   # Many importers create a temporary Group, so use the real
