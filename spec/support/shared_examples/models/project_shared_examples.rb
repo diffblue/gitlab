@@ -4,10 +4,10 @@ RSpec.shared_examples 'returns true if project is inactive' do
   using RSpec::Parameterized::TableSyntax
 
   where(:storage_size, :last_activity_at, :expected_result) do
-    104857  | 1.month.ago | false
-    104857  | 3.years.ago | false
-    8388600 | 1.month.ago | false
-    8388600 | 3.years.ago | true
+    1.megabyte  | 1.month.ago | false
+    1.megabyte  | 3.years.ago | false
+    8.megabytes | 1.month.ago | false
+    8.megabytes | 3.years.ago | true
   end
 
   with_them do
