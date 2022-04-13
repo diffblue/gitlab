@@ -1,6 +1,7 @@
 import {
   humanizeRules,
   humanizeAction,
+  humanizeInvalidBranchesError,
 } from 'ee/threat_monitoring/components/policy_editor/scan_result_policy/lib';
 
 import { NO_RULE_MESSAGE } from 'ee/threat_monitoring/components/policy_editor/constants';
@@ -137,5 +138,25 @@ describe('humanizeAction', () => {
     expect(humanizeAction(mockActions[4])).toEqual(
       'Require 2 approvals from o.leticia.conner or user with id 5 or members of the group security_group/all_members or members of the group with id 10 if any of the following occur:',
     );
+  });
+
+  describe('humanizeInvalidBranchesError', () => {
+    it('returns message without any branch name for an empty array', () => {
+      expect(humanizeInvalidBranchesError([])).toEqual(
+        'The following branches do not exist on this development project: . Please review all branches to ensure the values are accurate before updating this policy.',
+      );
+    });
+
+    it('returns message with a single branch name for an array with single element', () => {
+      expect(humanizeInvalidBranchesError(['main'])).toEqual(
+        'The following branches do not exist on this development project: main. Please review all branches to ensure the values are accurate before updating this policy.',
+      );
+    });
+
+    it('returns message with multiple branch names for array with multiple elements', () => {
+      expect(humanizeInvalidBranchesError(['main', 'protected', 'master'])).toEqual(
+        'The following branches do not exist on this development project: main, protected and master. Please review all branches to ensure the values are accurate before updating this policy.',
+      );
+    });
   });
 });

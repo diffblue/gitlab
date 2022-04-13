@@ -10,8 +10,7 @@ description: ''
 enabled: false
 rules:
   - type: scan_finding
-    branches:
-      - main
+    branches: []
     scanners:
       - container_scanning
     vulnerabilities_allowed: 0

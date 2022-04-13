@@ -4,6 +4,7 @@ import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import networkPolicies from './modules/network_policies';
 import threatMonitoring from './modules/threat_monitoring';
 import threatMonitoringStatistics from './modules/threat_monitoring_statistics';
+import scanResultPolicies from './modules/scan_result_policies';
 
 Vue.use(Vuex);
 
@@ -28,5 +29,6 @@ export default () =>
         };
       }),
       networkPolicies: networkPolicies(),
+      scanResultPolicies: scanResultPolicies(),
     },
   });

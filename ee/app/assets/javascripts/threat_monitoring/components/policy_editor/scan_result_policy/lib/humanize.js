@@ -1,5 +1,5 @@
 import { sprintf, s__, n__ } from '~/locale';
-import { NO_RULE_MESSAGE } from '../../constants';
+import { NO_RULE_MESSAGE, INVALID_BRANCHES } from '../../constants';
 import { convertScannersToTitleCase } from '../../utils';
 
 /**
@@ -53,9 +53,7 @@ const humanizeItems = ({
     finalSentence.push(items.join(','));
   } else {
     const lastItem = items.pop();
-    finalSentence.push(items.join(', '));
-    finalSentence.push(s__('SecurityOrchestration| or '));
-    finalSentence.push(lastItem);
+    finalSentence.push(items.join(', '), s__('SecurityOrchestration| or '), lastItem);
   }
 
   if (!hasTextBeforeItems && noun) {
@@ -214,4 +212,15 @@ export const humanizeRules = (rules) => {
     return [...acc, humanizeRule(curr)];
   }, []);
   return humanizedRules.length ? humanizedRules : [NO_RULE_MESSAGE];
+};
+
+export const humanizeInvalidBranchesError = (branches) => {
+  const sentence = [];
+  if (branches.length > 1) {
+    const lastBranch = branches.pop();
+    sentence.push(branches.join(', '), s__('SecurityOrchestration| and '), lastBranch);
+  } else {
+    sentence.push(branches.join());
+  }
+  return sprintf(INVALID_BRANCHES, { branches: sentence.join('') });
 };
