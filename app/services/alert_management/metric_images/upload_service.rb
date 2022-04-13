@@ -15,7 +15,12 @@ module AlertManagement
       end
 
       def execute
-        return ServiceResponse.error(message: _("You are not authorized to upload metric images"), http_status: :forbidden) unless can_upload_metrics?
+        unless can_upload_metrics?
+          return ServiceResponse.error(
+            message: _("You are not authorized to upload metric images"),
+            http_status: :forbidden
+          )
+        end
 
         metric = AlertManagement::MetricImage.new(
           alert: alert,

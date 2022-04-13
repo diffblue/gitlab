@@ -72,7 +72,6 @@ module GitlabSubscriptions
     PREMIUM_FEATURES = %i[
       adjourned_deletion_for_projects_and_groups
       admin_audit_log
-      alert_metric_upload
       auditor_user
       blocking_merge_requests
       board_assignee_lists

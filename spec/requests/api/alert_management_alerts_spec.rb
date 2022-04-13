@@ -18,7 +18,10 @@ RSpec.describe API::AlertManagementAlerts do
       project.add_developer(user)
     end
 
-    subject { post api("/projects/#{project.id}/alert_management_alerts/#{alert.iid}/metric_images/authorize", user), headers: workhorse_headers }
+    subject do
+      post api("/projects/#{project.id}/alert_management_alerts/#{alert.iid}/metric_images/authorize", user),
+        headers: workhorse_headers
+    end
 
     it 'authorizes uploading with workhorse header' do
       subject
@@ -104,9 +107,10 @@ RSpec.describe API::AlertManagementAlerts do
         expect(json_response['filename']).to eq(file_name)
         expect(json_response['url']).to eq(url)
         expect(json_response['url_text']).to eq(url_text)
-        expect(json_response['file_path']).to match(%r{/uploads/-/system/alert_management_metric_image/file/\d+/#{file_name}})
         expect(json_response['created_at']).not_to be_nil
         expect(json_response['id']).not_to be_nil
+        file_path_regex = %r{/uploads/-/system/alert_management_metric_image/file/\d+/#{file_name}}
+        expect(json_response['file_path']).to match(file_path_regex)
       end
     end
 
@@ -133,7 +137,6 @@ RSpec.describe API::AlertManagementAlerts do
           allow(uploader).to receive(:file_storage?).and_return(true)
         end
 
-        stub_licensed_features(alert_metric_upload: true)
         project.send("add_#{user_role}", user)
       end
 
@@ -142,7 +145,6 @@ RSpec.describe API::AlertManagementAlerts do
 
     context 'file size too large' do
       before do
-        stub_licensed_features(alert_metric_upload: true)
         allow_next_instance_of(UploadedFile) do |upload_file|
           allow(upload_file).to receive(:size).and_return(AlertManagement::MetricImage::MAX_FILE_SIZE + 1)
         end
@@ -161,7 +163,7 @@ RSpec.describe API::AlertManagementAlerts do
         project.add_developer(user)
 
         allow_next_instance_of(::AlertManagement::MetricImages::UploadService) do |service|
-          error = double(success?: false, message: 'some error', http_status: :bad_request)
+          error = instance_double(ServiceResponse, success?: false, message: 'some error', http_status: :bad_request)
           allow(service).to receive(:execute).and_return(error)
         end
       end
@@ -177,7 +179,6 @@ RSpec.describe API::AlertManagementAlerts do
     context 'object storage enabled' do
       before do
         # Object storage
-        stub_licensed_features(alert_metric_upload: true)
         stub_uploads_object_storage(MetricImageUploader)
 
         allow_next_instance_of(MetricImageUploader) do |uploader|
@@ -240,7 +241,6 @@ RSpec.describe API::AlertManagementAlerts do
 
     with_them do
       before do
-        stub_licensed_features(alert_metric_upload: true)
         project.send("add_#{user_role}", user) unless user_role == :not_member
         project.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE) unless public_project
       end
@@ -255,7 +255,10 @@ RSpec.describe API::AlertManagementAlerts do
     let!(:image) { create(:alert_metric_image, alert: alert) }
     let(:params) { { url: 'http://test.example.com', url_text: 'Example website 123' } }
 
-    subject { put api("/projects/#{project.id}/alert_management_alerts/#{alert.iid}/metric_images/#{image.id}", user), params: params }
+    subject do
+      put api("/projects/#{project.id}/alert_management_alerts/#{alert.iid}/metric_images/#{image.id}", user),
+        params: params
+    end
 
     shared_examples 'can_update_metric_image' do
       it 'can update the metric images' do
@@ -286,7 +289,6 @@ RSpec.describe API::AlertManagementAlerts do
 
     with_them do
       before do
-        stub_licensed_features(alert_metric_upload: true)
         project.send("add_#{user_role}", user) unless user_role == :not_member
         project.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE) unless public_project
       end
@@ -299,44 +301,27 @@ RSpec.describe API::AlertManagementAlerts do
         project.add_developer(user)
       end
 
-      context 'feature is enabled' do
-        before do
-          stub_licensed_features(alert_metric_upload: true)
-        end
-
-        context 'and metric image not found' do
-          subject { put api("/projects/#{project.id}/alert_management_alerts/#{alert.iid}/metric_images/#{non_existing_record_id}", user) }
-
-          it 'returns an error' do
-            subject
-
-            expect(response).to have_gitlab_http_status(:not_found)
-            expect(json_response['message']).to eq('Metric image not found')
-          end
-        end
-
-        context 'metric image cannot be updated' do
-          let(:params) { { url_text: 'something_long' * 100 } }
-
-          it 'returns an error' do
-            subject
-
-            expect(response).to have_gitlab_http_status(:unprocessable_entity)
-            expect(json_response['message']).to eq('Metric image could not be updated')
-          end
-        end
-      end
-
-      context 'feature not enabled' do
-        before do
-          stub_licensed_features(alert_metric_upload: false)
+      context 'and metric image not found' do
+        subject do
+          put api("/projects/#{project.id}/alert_management_alerts/#{alert.iid}/metric_images/#{non_existing_record_id}", user) # rubocop: disable Layout/LineLength
         end
 
         it 'returns an error' do
           subject
 
-          expect(response).to have_gitlab_http_status(:forbidden)
-          expect(json_response['message']).to eq('Feature not available')
+          expect(response).to have_gitlab_http_status(:not_found)
+          expect(json_response['message']).to eq('Metric image not found')
+        end
+      end
+
+      context 'metric image cannot be updated' do
+        let(:params) { { url_text: 'something_long' * 100 } }
+
+        it 'returns an error' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:unprocessable_entity)
+          expect(json_response['message']).to eq('Metric image could not be updated')
         end
       end
     end
@@ -347,7 +332,9 @@ RSpec.describe API::AlertManagementAlerts do
 
     let!(:image) { create(:alert_metric_image, alert: alert) }
 
-    subject { delete api("/projects/#{project.id}/alert_management_alerts/#{alert.iid}/metric_images/#{image.id}", user) }
+    subject do
+      delete api("/projects/#{project.id}/alert_management_alerts/#{alert.iid}/metric_images/#{image.id}", user)
+    end
 
     shared_examples 'can delete metric image successfully' do
       it 'can delete the metric images' do
@@ -377,7 +364,6 @@ RSpec.describe API::AlertManagementAlerts do
 
     with_them do
       before do
-        stub_licensed_features(alert_metric_upload: true)
         project.send("add_#{user_role}", user) unless user_role == :not_member
         project.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE) unless public_project
       end
@@ -387,12 +373,13 @@ RSpec.describe API::AlertManagementAlerts do
 
     context 'when user has access' do
       before do
-        stub_licensed_features(alert_metric_upload: true)
         project.add_developer(user)
       end
 
       context 'when metric image not found' do
-        subject { delete api("/projects/#{project.id}/alert_management_alerts/#{alert.iid}/metric_images/#{non_existing_record_id}", user) }
+        subject do
+          delete api("/projects/#{project.id}/alert_management_alerts/#{alert.iid}/metric_images/#{non_existing_record_id}", user) # rubocop: disable Layout/LineLength
+        end
 
         it 'returns an error' do
           subject
@@ -417,19 +404,6 @@ RSpec.describe API::AlertManagementAlerts do
 
           expect(response).to have_gitlab_http_status(:unprocessable_entity)
           expect(json_response['message']).to eq('Metric image could not be deleted')
-        end
-      end
-
-      context 'when feature not enabled' do
-        before do
-          stub_licensed_features(alert_metric_upload: false)
-        end
-
-        it 'returns an error' do
-          subject
-
-          expect(response).to have_gitlab_http_status(:forbidden)
-          expect(json_response['message']).to eq('Feature not available')
         end
       end
     end
