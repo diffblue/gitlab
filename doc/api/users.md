@@ -580,6 +580,13 @@ GET /user
   "twitter": "",
   "website_url": "",
   "organization": "",
+  "job_title": "",
+  "pronouns": "he/him",
+  "bot": false,
+  "work_information": null,
+  "followers": 0,
+  "following": 0,
+  "local_time": "3:38 PM",
   "last_sign_in_at": "2012-06-01T11:41:01Z",
   "confirmed_at": "2012-05-23T09:05:22Z",
   "theme_id": 1,
@@ -596,9 +603,16 @@ GET /user
   "can_create_project": true,
   "two_factor_enabled": true,
   "external": false,
-  "private_profile": false
+  "private_profile": false,
+  "commit_email": "admin@example.com",
+  "is_admin": true,
+  "note": null,
+  "namespace_id": 1,
+  "provisioned_by_group_id": null
 }
 ```
+Users on [GitLab Premium or higher](https://about.gitlab.com/pricing/) also see the `shared_runners_minutes_limit`, `extra_shared_runners_minutes_limit`, `is_auditor`, and `using_license_seat` parameters.
+
 
 ## List current user (for admins)
 
