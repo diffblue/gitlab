@@ -53,8 +53,9 @@ RSpec.describe Gitlab::Diff::CustomDiff do
         end
 
         it 'increments metrics' do
+          counter = Gitlab::Metrics.counter(:ipynb_semantic_diff_timeouts_total, 'desc')
+
           expect(Timeout).to receive(:timeout).and_raise(Timeout::Error)
-          counter = Gitlab::Metrics.counter(:rendered_timeout, 'desc')
           expect { subject }.to change { counter.get(source: described_class::FOREGROUND_EXECUTION) }.by(1)
         end
       end
@@ -71,8 +72,9 @@ RSpec.describe Gitlab::Diff::CustomDiff do
         end
 
         it 'increments metrics' do
+          counter = Gitlab::Metrics.counter(:ipynb_semantic_diff_timeouts_total, 'desc')
+
           expect(Timeout).to receive(:timeout).and_raise(Timeout::Error)
-          counter = Gitlab::Metrics.counter(:rendered_timeout, 'desc')
           expect { subject }.to change { counter.get(source: described_class::BACKGROUND_EXECUTION) }.by(1)
         end
       end

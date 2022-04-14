@@ -65,7 +65,7 @@ module Gitlab
 
         def rendered_timeout
           @rendered_timeout ||= Gitlab::Metrics.counter(
-            :rendered_timeout,
+            :ipynb_semantic_diff_timeouts_total,
             'Counts the times notebook rendering timed out'
           )
         end
@@ -80,7 +80,7 @@ module Gitlab
 
         def log_event(message, error = nil)
           Gitlab::AppLogger.info({ message: message })
-          Gitlab::ErrorTracking.log_exception(error) if error
+          Gitlab::ErrorTracking.track_exception(error) if error
           nil
         end
       end
