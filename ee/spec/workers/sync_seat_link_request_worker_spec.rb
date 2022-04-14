@@ -12,6 +12,7 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker do
 
     it 'makes an HTTP POST request with passed params' do
       stub_request(:post, seat_link_url).to_return(status: 200)
+      allow(Gitlab::CurrentSettings).to receive(:uuid).and_return('one-two-three')
 
       sync_seat_link
 
@@ -24,7 +25,7 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker do
           max_historical_user_count: 5,
           billable_users_count: 4,
           hostname: Gitlab.config.gitlab.host,
-          instance_id: Gitlab::CurrentSettings.uuid,
+          instance_id: 'one-two-three',
           license_md5: ::License.current.md5
         }.to_json
       )
@@ -171,19 +172,41 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker do
         )
       end
 
-      it 'persists future subscription information' do
-        expect { sync_seat_link }.to change { Gitlab::CurrentSettings.current_application_settings.future_subscriptions }.from([]).to(future_subscriptions)
-      end
-
-      context 'when future subscription is empty' do
-        let(:future_subscriptions) { [] }
-
-        before do
-          Gitlab::CurrentSettings.current_application_settings.update!(future_subscriptions: [{}])
+      context 'when future subscription information is present in the response' do
+        context 'and no future subscriptions are saved in the current settings' do
+          it 'persists future subscription information' do
+            expect { sync_seat_link }.to change { Gitlab::CurrentSettings.current_application_settings.future_subscriptions }.from([]).to(future_subscriptions)
+          end
         end
 
-        it 'does nothing' do
-          expect { sync_seat_link }.not_to change { Gitlab::CurrentSettings.current_application_settings.future_subscriptions }.from([{}])
+        context 'and future subscriptions are saved in the current settings' do
+          before do
+            Gitlab::CurrentSettings.current_application_settings.update!(future_subscriptions: [{}])
+          end
+
+          it 'replaces future subscription information' do
+            expect { sync_seat_link }.to change { Gitlab::CurrentSettings.current_application_settings.future_subscriptions }.from([{}]).to(future_subscriptions)
+          end
+        end
+      end
+
+      context 'when future subscription information is not present in the response' do
+        let(:future_subscriptions) { [] }
+
+        context 'and no future subscriptions are saved in the current settings' do
+          it 'does not change the settings' do
+            expect { sync_seat_link }.not_to change { Gitlab::CurrentSettings.current_application_settings.future_subscriptions }.from(future_subscriptions)
+          end
+        end
+
+        context 'and future subscription are saved in the current settings' do
+          before do
+            Gitlab::CurrentSettings.current_application_settings.update!(future_subscriptions: [{}])
+          end
+
+          it 'clears future subscription information' do
+            expect { sync_seat_link }.to change { Gitlab::CurrentSettings.current_application_settings.future_subscriptions }.from([{}]).to(future_subscriptions)
+          end
         end
       end
 
