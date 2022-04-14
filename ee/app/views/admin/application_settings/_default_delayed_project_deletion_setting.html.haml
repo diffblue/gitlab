@@ -4,4 +4,6 @@
 
 .form-group
   = f.label _('Default delayed project deletion'), class: 'label-bold'
-  = f.gitlab_ui_checkbox_component :delayed_project_deletion, _('Enable delayed project deletion by default for newly-created groups. Does not apply to projects in personal namespaces, which are deleted immediately on request.')
+  = f.gitlab_ui_checkbox_component :delayed_project_deletion,
+    _('Enable delayed project deletion by default for newly-created groups.'),
+    help_text: _('Does not apply to projects in personal namespaces, which are deleted immediately on request.')

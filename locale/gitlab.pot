@@ -13306,6 +13306,9 @@ msgstr ""
 msgid "Documents reindexed: %{processed_documents} (%{percentage}%%)"
 msgstr ""
 
+msgid "Does not apply to projects in personal namespaces, which are deleted immediately on request."
+msgstr ""
+
 msgid "Does not delete the source branch."
 msgstr ""
 
@@ -13912,7 +13915,7 @@ msgstr ""
 msgid "Enable container expiration caching."
 msgstr ""
 
-msgid "Enable delayed project deletion by default for newly-created groups. Does not apply to projects in personal namespaces, which are deleted immediately on request."
+msgid "Enable delayed project deletion by default for newly-created groups."
 msgstr ""
 
 msgid "Enable email notification"
