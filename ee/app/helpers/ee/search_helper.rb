@@ -154,7 +154,9 @@ module EE
           id: e.id,
           label: search_result_sanitize(e.title),
           url: epic_path(e),
-          avatar_url: e.group.avatar_url || ''
+          avatar_url: e.group.avatar_url || '',
+          group_id: e.group_id,
+          group_name: e.group&.name
         }
       end
     end
