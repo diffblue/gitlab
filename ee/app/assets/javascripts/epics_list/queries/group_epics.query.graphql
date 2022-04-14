@@ -10,6 +10,7 @@ query groupEpics(
   $milestoneTitle: String = ""
   $myReactionEmoji: String
   $confidential: Boolean
+  $not: NegatedEpicFilterInput
   $search: String = ""
   $sortBy: EpicSort
   $firstPageSize: Int
@@ -27,6 +28,7 @@ query groupEpics(
       milestoneTitle: $milestoneTitle
       myReactionEmoji: $myReactionEmoji
       confidential: $confidential
+      not: $not
       search: $search
       sort: $sortBy
       first: $firstPageSize

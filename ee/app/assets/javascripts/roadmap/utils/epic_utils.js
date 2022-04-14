@@ -17,3 +17,33 @@ export const scrollToCurrentDay = (parentEl) => {
     todayIndicatorEl.scrollIntoView({ block: 'nearest', inline: 'center' });
   }
 };
+
+/**
+ * Returns transformed `filterParams` by congregating all `not` params into a
+ * single object like { not: { labelName: [], ... }, authorUsername: '' }
+ *
+ * @param {Object} filterParams
+ */
+export const transformFetchEpicFilterParams = (filterParams) => {
+  if (!filterParams) {
+    return filterParams;
+  }
+
+  const newParams = {};
+
+  Object.keys(filterParams).forEach((param) => {
+    if (param.startsWith('not')) {
+      // Get the param name like `authorUsername` from `not[authorUsername]`
+      const key = param.match(/not\[(.+)\]/)[1];
+
+      if (key) {
+        newParams.not = newParams.not || {};
+        newParams.not[key] = filterParams[param];
+      }
+    } else {
+      newParams[param] = filterParams[param];
+    }
+  });
+
+  return newParams;
+};
