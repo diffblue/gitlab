@@ -1276,9 +1276,6 @@ msgid_plural "+%d more"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "+%{approvers} more approvers"
-msgstr ""
-
 msgid "+%{extra} more"
 msgstr ""
 
@@ -1594,9 +1591,6 @@ msgid "A management, operational, or technical control (that is, safeguard or co
 msgstr ""
 
 msgid "A member of the abuse team will review your report as soon as possible."
-msgstr ""
-
-msgid "A merge request hasn't yet been merged"
 msgstr ""
 
 msgid "A new Auto DevOps pipeline has been created, go to the Pipelines page for details"
@@ -4514,9 +4508,6 @@ msgstr ""
 msgid "Applying suggestions..."
 msgstr ""
 
-msgid "Approval Status"
-msgstr ""
-
 msgid "Approval rules"
 msgstr ""
 
@@ -4706,15 +4697,6 @@ msgid "ApprovalSettings|This setting is configured at the instance level and can
 msgstr ""
 
 msgid "ApprovalSettings|This setting is configured in %{groupName} and can only be changed in the group settings by an administrator or group owner."
-msgstr ""
-
-msgid "ApprovalStatusTooltip|Adheres to separation of duties"
-msgstr ""
-
-msgid "ApprovalStatusTooltip|At least one rule does not adhere to separation of duties"
-msgstr ""
-
-msgid "ApprovalStatusTooltip|Fails to adhere to separation of duties"
 msgstr ""
 
 msgid "Approvals are optional."
@@ -9257,9 +9239,6 @@ msgid "Compliance framework"
 msgstr ""
 
 msgid "Compliance report"
-msgstr ""
-
-msgid "ComplianceDashboard|created by:"
 msgstr ""
 
 msgid "ComplianceFrameworks|Add framework"
@@ -18548,9 +18527,6 @@ msgid "Helps reduce request volume (for example, from crawlers or abusive bots)"
 msgstr ""
 
 msgid "Helps reduce request volume for protected paths."
-msgstr ""
-
-msgid "Here you will find recent merge request activity"
 msgstr ""
 
 msgid "Hi %{username}!"
@@ -37528,9 +37504,6 @@ msgstr ""
 msgid "The comparison view may be inaccurate due to merge conflicts."
 msgstr ""
 
-msgid "The compliance report captures merged changes that violate compliance best practices."
-msgstr ""
-
 msgid "The compliance report shows the merge request violations merged in protected environments."
 msgstr ""
 
@@ -40472,9 +40445,6 @@ msgid "Updated %{updated_at} by %{updated_by}"
 msgstr ""
 
 msgid "Updated date"
-msgstr ""
-
-msgid "Updates"
 msgstr ""
 
 msgid "Updating"
@@ -43960,9 +43930,6 @@ msgid_plural "approvals"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "approved by: "
-msgstr ""
-
 msgid "archived"
 msgstr ""
 
@@ -44881,9 +44848,6 @@ msgid_plural "merge requests"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "merged %{timeAgo}"
-msgstr ""
-
 msgid "metric_id must be unique across a project"
 msgstr ""
 
@@ -45300,9 +45264,6 @@ msgid "never expires"
 msgstr ""
 
 msgid "new merge request"
-msgstr ""
-
-msgid "no approvers"
 msgstr ""
 
 msgid "no expiration"
