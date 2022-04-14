@@ -41,6 +41,10 @@ exports[`DastSiteProfileSummary renders properly profile 0 1`] = `
   />
    
   <summary-cell-stub
+    label="Submit button"
+  />
+   
+  <summary-cell-stub
     label="Excluded URLs"
     value="http://pending.test/sign-out,http://pending.test/hidden"
   />
@@ -94,6 +98,10 @@ exports[`DastSiteProfileSummary renders properly profile 1 1`] = `
   <summary-cell-stub
     label="Password form field"
     value="session[password]"
+  />
+   
+  <summary-cell-stub
+    label="Submit button"
   />
    
   <summary-cell-stub
@@ -153,6 +161,10 @@ exports[`DastSiteProfileSummary renders properly profile 2 1`] = `
   />
    
   <summary-cell-stub
+    label="Submit button"
+  />
+   
+  <summary-cell-stub
     label="Excluded URLs"
     value="http://passed.test/sign-out,http://passed.test/hidden"
   />
@@ -209,6 +221,10 @@ exports[`DastSiteProfileSummary renders properly profile 3 1`] = `
   />
    
   <summary-cell-stub
+    label="Submit button"
+  />
+   
+  <summary-cell-stub
     label="Excluded URLs"
     value="http://failed.test/sign-out,http://failed.test/hidden"
   />
@@ -262,6 +278,10 @@ exports[`DastSiteProfileSummary renders properly profile 4 1`] = `
   <summary-cell-stub
     label="Password form field"
     value="session[password]"
+  />
+   
+  <summary-cell-stub
+    label="Submit button"
   />
    
   <summary-cell-stub

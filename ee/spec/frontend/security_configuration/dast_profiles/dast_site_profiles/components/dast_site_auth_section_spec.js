@@ -81,6 +81,7 @@ describe('DastSiteAuthSection', () => {
       password: 'foo',
       usernameField: 'foo',
       passwordField: 'foo',
+      submitField: 'submit',
     };
 
     const inputFieldNames = Object.keys(inputFieldsWithValues);
@@ -98,6 +99,18 @@ describe('DastSiteAuthSection', () => {
 
         expect(getLatestInputEventPayload().fields[inputFieldName]).toBe(newValue);
       });
+    });
+
+    it('all inputs have correct required attribute set', async () => {
+      const { submitField, ...requiredFields } = inputFieldsWithValues;
+
+      Object.keys(requiredFields).forEach((key) => {
+        const input = findByNameAttribute(key);
+        expect(input.attributes('required')).toBe('required');
+      });
+
+      const optionalInput = findByNameAttribute('submitField');
+      expect(optionalInput.attributes('required')).toBe(undefined);
     });
 
     describe('validity', () => {
