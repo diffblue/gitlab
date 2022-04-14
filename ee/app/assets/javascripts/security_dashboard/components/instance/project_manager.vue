@@ -273,7 +273,7 @@ export default {
           <div class="mb-3">
             <gl-button
               :disabled="!canAddProjects"
-              variant="success"
+              variant="confirm"
               category="primary"
               @click="addProjects"
             >
