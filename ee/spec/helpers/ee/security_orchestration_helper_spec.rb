@@ -10,8 +10,8 @@ RSpec.describe EE::SecurityOrchestrationHelper do
     let(:owner) { namespace.first_owner }
     let(:base_data) do
       {
-        assigned_policy_project: "null",
-        disable_scan_policy_update: false,
+        assigned_policy_project: nil.to_json,
+        disable_scan_policy_update: false.to_s,
         create_agent_help_path: kind_of(String),
         policy: policy&.to_json,
         policy_editor_empty_state_svg_path: kind_of(String),
@@ -40,12 +40,7 @@ RSpec.describe EE::SecurityOrchestrationHelper do
       let(:policy_type) { 'scan_execution_policy' }
 
       let(:policy) do
-        Gitlab::Kubernetes::CiliumNetworkPolicy.new(
-          name: 'policy',
-          namespace: 'another',
-          selector: { matchLabels: { role: 'db' } },
-          ingress: [{ from: [{ namespaceSelector: { matchLabels: { group: 'mygroup' } } }] }]
-        )
+        build(:scan_execution_policy, name: 'Run DAST in every pipeline')
       end
 
       it { is_expected.to match(base_data) }

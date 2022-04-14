@@ -11,8 +11,8 @@ module EE
       return unless namespace
 
       {
-        assigned_policy_project: 'null',
-        disable_scan_policy_update: false,
+        assigned_policy_project: nil.to_json,
+        disable_scan_policy_update: false.to_s,
         create_agent_help_path: help_page_url('user/clusters/agent/install/index'),
         policy: policy&.to_json,
         policy_editor_empty_state_svg_path: image_path('illustrations/monitoring/unable_to_connect.svg'),
