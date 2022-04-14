@@ -172,7 +172,7 @@ RSpec.describe SessionsController, :geo do
           end
           post(:create, params: params, session: {})
 
-          expect(response).to render_template(:new)
+          expect(response).to redirect_to new_user_session_path
           expect(flash[:alert]).to include 'Login failed. Please retry from your primary device and network'
           expect(subject.current_user).to be_nil
         end
@@ -182,7 +182,7 @@ RSpec.describe SessionsController, :geo do
         it 'prevents the user from logging in' do
           post(:create, params: params.except!(:arkose_labs_token), session: {})
 
-          expect(response).to render_template(:new)
+          expect(response).to redirect_to new_user_session_path
           expect(flash[:alert]).to include 'Login failed. Please retry from your primary device and network'
           expect(subject.current_user).to be_nil
         end
