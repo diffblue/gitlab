@@ -77,6 +77,14 @@ RSpec.describe Gitlab::Diff::CustomDiff do
         end
       end
     end
+
+    context 'when invalid ipynb' do
+      it 'returns nil' do
+        expect(ipynb_blob).to receive(:data).and_return('invalid ipynb')
+
+        expect(described_class.preprocess_before_diff(ipynb_blob.path, nil, ipynb_blob)).to be_nil
+      end
+    end
   end
 
   describe '#transformed_blob_data' do
