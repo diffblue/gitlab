@@ -138,4 +138,58 @@ RSpec.describe Sidebars::Projects::Menus::IssuesMenu do
       end
     end
   end
+
+  describe 'Zentao issues' do
+    let(:project) { create(:project, has_external_issue_tracker: true) }
+    let(:context) { Sidebars::Projects::Context.new(current_user: user, container: project) }
+    let(:zentao_integration) { create(:zentao_integration, project: project) }
+
+    subject { described_class.new(context) }
+
+    context 'when Zentao integration is enabled' do
+      before do
+        stub_licensed_features(zentao_issues_integration: true)
+        zentao_integration.update!(active: true)
+      end
+
+      context 'when Issues feature is enabled' do
+        before do
+          allow(project).to receive(:issues_enabled?).and_return(true)
+        end
+
+        it 'includes Zentao issues menu items' do
+          expect(subject.show_zentao_menu_items?).to eq(true)
+          expect(subject.renderable_items.any? { |e| e.item_id == :zentao_issue_list}).to eq(true)
+        end
+      end
+
+      context 'when Issues feature is disabled' do
+        before do
+          allow(project).to receive(:issues_enabled?).and_return(false)
+        end
+
+        it 'includes Zentao issues menu items' do
+          expect(subject.show_zentao_menu_items?).to eq(true)
+          expect(subject.renderable_items.any? { |e| e.item_id == :zentao_issue_list}).to eq(true)
+        end
+      end
+    end
+
+    context 'when Zentao integration is disabled' do
+      before do
+        stub_licensed_features(zentao_issues_integration: false)
+      end
+
+      context 'when Issues feature is disabled' do
+        before do
+          allow(project).to receive(:issues_enabled?).and_return(false)
+        end
+
+        it 'does not include Zentao issues menu items' do
+          expect(subject.show_zentao_menu_items?).to eq(false)
+          expect(subject.renderable_items.any? { |e| e.item_id == :zentao_issue_list}).to eq(false)
+        end
+      end
+    end
+  end
 end

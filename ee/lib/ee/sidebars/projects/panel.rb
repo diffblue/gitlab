@@ -16,6 +16,10 @@ module EE
           if ::Sidebars::Projects::Menus::IssuesMenu.new(context).show_jira_menu_items?
             remove_menu(::Sidebars::Projects::Menus::ExternalIssueTrackerMenu)
           end
+
+          if ::Sidebars::Projects::Menus::IssuesMenu.new(context).show_zentao_menu_items?
+            remove_menu(::Sidebars::Projects::Menus::ZentaoMenu)
+          end
         end
       end
     end

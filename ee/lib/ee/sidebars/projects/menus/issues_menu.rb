@@ -9,18 +9,26 @@ module EE
 
           override :configure_menu_items
           def configure_menu_items
-            return false unless super || show_jira_menu_items?
+            return false unless super || show_jira_menu_items? \
+              || show_zentao_menu_items?
 
             add_item(iterations_menu_item)
             add_item(requirements_menu_item)
             add_item(jira_issue_list_menu_item)
             add_item(jira_external_link_menu_item)
+            add_item(zentao_issue_list_menu_item)
+            add_item(zentao_external_link_menu_item)
 
             true
           end
 
           def show_jira_menu_items?
             external_issue_tracker.is_a?(Integrations::Jira) && context.jira_issues_integration
+          end
+
+          def show_zentao_menu_items?
+            zentao_active? && \
+              ::Integrations::Zentao.issues_license_available?(context.project)
           end
 
           private
@@ -81,6 +89,41 @@ module EE
               link: external_issue_tracker.issue_tracker_path,
               active_routes: {},
               item_id: :jira_external_link,
+              sprite_icon: 'external-link',
+              container_html_options: {
+                target: '_blank',
+                rel: 'noopener noreferrer'
+              }
+            )
+          end
+
+          def zentao_active?
+            !!zentao_integration&.active?
+          end
+
+          def zentao_issue_list_menu_item
+            return ::Sidebars::NilMenuItem.new(item_id: :zentao_issue_list) unless show_zentao_menu_items?
+
+            ::Sidebars::MenuItem.new(
+              title: s_('ZentaoIntegration|ZenTao issues'),
+              link: project_integrations_zentao_issues_path(context.project),
+              active_routes: { controller: 'projects/integrations/zentao/issues' },
+              item_id: :zentao_issue_list
+            )
+          end
+
+          def zentao_integration
+            @zentao_integration ||= context.project.zentao_integration
+          end
+
+          def zentao_external_link_menu_item
+            return ::Sidebars::NilMenuItem.new(item_id: :zentao_external_link) unless show_zentao_menu_items?
+
+            ::Sidebars::MenuItem.new(
+              title: s_('ZentaoIntegration|Open ZenTao'),
+              link: zentao_integration.url,
+              active_routes: {},
+              item_id: :zentao_external_link,
               sprite_icon: 'external-link',
               container_html_options: {
                 target: '_blank',
