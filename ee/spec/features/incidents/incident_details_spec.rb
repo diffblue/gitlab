@@ -10,6 +10,7 @@ RSpec.describe 'Incident details', :js do
 
   let(:current_user) { reporter }
   let(:sidebar) { page.find('.right-sidebar') }
+  let(:escalation_status_container) { page.find('[data-testid="escalation_status_container"]') }
 
   before_all do
     project.add_reporter(reporter)
@@ -108,6 +109,29 @@ RSpec.describe 'Incident details', :js do
                 wait_for_requests
                 expect(edit_policy_widget).to have_content 'No escalation policy found'
               end
+
+              context 'with associated alert' do
+                let_it_be(:alert) { create(:alert_management_alert, issue: incident, project: project) }
+
+                # For incidents created prior to the status feature's availability
+                context 'without escalation status record' do
+                  before do
+                    incident.escalation_status.destroy!
+                  end
+
+                  it_behaves_like 'shows empty state for escalation policy'
+
+                  it 'retrieves the escalation policy when user sets the status' do
+                    visit_incident_with_expanded_sidebar
+
+                    click_edit_status
+                    escalation_status_container.first('[data-testid="status-dropdown-item"]').click
+                    wait_for_requests
+
+                    assert_expanded_policy_values(escalation_policy.name, href: true)
+                  end
+                end
+              end
             end
           end
 
@@ -201,13 +225,12 @@ RSpec.describe 'Incident details', :js do
       end
     end
 
-    context 'escalation policies lisenced feature unavailable' do
+    context 'escalation policies licensed feature unavailable' do
       it_behaves_like 'hides the escalation policy widget'
     end
   end
 
   context 'escalation status dropdown' do
-    let(:escalation_status_container) { page.find('[data-testid="escalation_status_container"]') }
     let(:current_user) { developer }
 
     before do
@@ -217,7 +240,7 @@ RSpec.describe 'Incident details', :js do
     it 'includes help info for escalations' do
       visit_incident_with_expanded_sidebar
 
-      escalation_status_container.find('[data-testid="edit-button"]').click
+      click_edit_status
       expect(escalation_status_container).to have_selector('#escalation-status-help')
     end
   end
@@ -241,6 +264,10 @@ RSpec.describe 'Incident details', :js do
 
   def collapse_sidebar
     sidebar.find('[data-testid="chevron-double-lg-right-icon"]').click
+  end
+
+  def click_edit_status
+    escalation_status_container.find('[data-testid="edit-button"]').click
   end
 
   def assert_collapsed_policy_values(collapsed_name, policy_name)
