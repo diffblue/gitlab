@@ -236,7 +236,6 @@ RSpec.describe DastSiteProfile, type: :model do
             { key: 'DAST_USERNAME', value: subject.auth_username, public: true, masked: false },
             { key: 'DAST_USERNAME_FIELD', value: subject.auth_username_field, public: true, masked: false },
             { key: 'DAST_PASSWORD_FIELD', value: subject.auth_password_field, public: true, masked: false }
-
           ]
 
           expect(collection.to_runner_variables).to eq(expected_variables)

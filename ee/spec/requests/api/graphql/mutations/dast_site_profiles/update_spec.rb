@@ -30,6 +30,7 @@ RSpec.describe 'Creating a DAST Site Profile' do
         url: "#{new_target_url}/login",
         username_field: 'session[username]',
         password_field: 'session[password]',
+        submit_field: 'css:button[type="submit"]',
         username: generate(:email),
         password: SecureRandom.hex
       }

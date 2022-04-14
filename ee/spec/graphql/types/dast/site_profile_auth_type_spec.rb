@@ -8,7 +8,7 @@ RSpec.describe GitlabSchema.types['DastSiteProfileAuth'] do
   let_it_be(:project) { create(:project) }
   let_it_be(:user) { create(:user, developer_projects: [project]) }
   let_it_be(:object, reload: true) { create(:dast_site_profile, project: project) }
-  let_it_be(:fields) { %i[enabled url usernameField passwordField username password] }
+  let_it_be(:fields) { %i[enabled url usernameField passwordField username password submitField] }
 
   before do
     stub_licensed_features(security_on_demand_scans: true)
@@ -40,6 +40,12 @@ RSpec.describe GitlabSchema.types['DastSiteProfileAuth'] do
   describe 'passwordField field' do
     it 'is auth_password_field' do
       expect(resolve_field(:password_field, object, current_user: user)).to eq(object.auth_password_field)
+    end
+  end
+
+  describe 'submitField field' do
+    it 'is auth_submit_field' do
+      expect(resolve_field(:submit_field, object, current_user: user)).to eq(object.auth_submit_field)
     end
   end
 

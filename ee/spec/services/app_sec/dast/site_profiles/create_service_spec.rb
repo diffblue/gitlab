@@ -20,6 +20,7 @@ RSpec.describe AppSec::Dast::SiteProfiles::CreateService do
       auth_url: "#{target_url}/login",
       auth_username_field: 'session[username]',
       auth_password_field: 'session[password]',
+      auth_submit_field: 'css:button[type="submit"]',
       auth_username: generate(:email),
       auth_password: SecureRandom.hex
     }
@@ -127,7 +128,7 @@ RSpec.describe AppSec::Dast::SiteProfiles::CreateService do
       end
 
       context 'when auth values are not supplied' do
-        let(:params) { default_params.except(:auth_enabled, :auth_url, :auth_username_field, :auth_password_field, :auth_password_field, :auth_username) }
+        let(:params) { default_params.except(:auth_enabled, :auth_url, :auth_username_field, :auth_submit_field, :auth_password_field, :auth_password_field, :auth_username) }
 
         it 'uses sensible defaults' do
           expect(payload).to have_attributes(
@@ -135,6 +136,7 @@ RSpec.describe AppSec::Dast::SiteProfiles::CreateService do
             auth_url: nil,
             auth_username_field: nil,
             auth_password_field: nil,
+            auth_submit_field: nil,
             auth_username: nil
           )
         end

@@ -44,7 +44,8 @@ module Mutations
           auth_username_field: auth_params[:username_field],
           auth_password_field: auth_params[:password_field],
           auth_username: auth_params[:username],
-          auth_password: auth_params[:password]
+          auth_password: auth_params[:password],
+          auth_submit_field: auth_params[:submit_field]
         }.compact
 
         if Feature.enabled?(:dast_api_scanner, project, default_enabled: :yaml)
