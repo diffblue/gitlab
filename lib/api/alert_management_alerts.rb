@@ -50,7 +50,10 @@ module API
           ).execute
 
           if upload.success?
-            present upload.payload[:metric], with: Entities::MetricImage, current_user: current_user, project: user_project
+            present upload.payload[:metric],
+              with: Entities::MetricImage,
+              current_user: current_user,
+              project: user_project
           else
             render_api_error!(upload.message, upload.http_status)
           end

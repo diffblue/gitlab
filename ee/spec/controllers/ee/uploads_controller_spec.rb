@@ -22,21 +22,5 @@ RSpec.describe UploadsController do
         expect(response).to have_gitlab_http_status(:ok)
       end
     end
-
-    context 'when viewing alert metric images' do
-      let(:alert) { create(:alert_management_alert, project: project) }
-      let(:metric_image) { create(:alert_metric_image, alert: alert) }
-
-      before do
-        project.add_developer(user)
-        sign_in(user)
-      end
-
-      it "responds with status 200" do
-        get :show, params: { model: "alert_management_metric_image", mounted_as: 'file', id: metric_image.id, filename: metric_image.filename }
-
-        expect(response).to have_gitlab_http_status(:ok)
-      end
-    end
   end
 end
