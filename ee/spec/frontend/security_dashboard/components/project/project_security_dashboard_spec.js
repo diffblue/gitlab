@@ -36,12 +36,7 @@ describe('Project Security Dashboard component', () => {
     return createMockApollo([...queries]);
   };
 
-  const createComponent = ({
-    query,
-    propsData,
-    chartWidth = 1024,
-    secureVulnerabilityTrainingEnabled = true,
-  }) => {
+  const createComponent = ({ query, propsData, chartWidth = 1024 }) => {
     const component = shallowMount(ProjectSecurityDashboard, {
       apolloProvider: createApolloProvider([
         projectsHistoryQuery,
@@ -54,9 +49,6 @@ describe('Project Security Dashboard component', () => {
       },
       provide: {
         projectFullPath: 'namespace/project',
-        glFeatures: {
-          secureVulnerabilityTraining: secureVulnerabilityTrainingEnabled,
-        },
       },
       stubs: {
         SecurityDashboardLayout,
@@ -179,20 +171,6 @@ describe('Project Security Dashboard component', () => {
 
     it('should display the loading icon', () => {
       expect(findLoadingIcon().exists()).toBe(true);
-    });
-  });
-
-  describe('with the "secureVulnerabilityTraining" feature flag disabled', () => {
-    it('does not contain a promotion for the security training feature', async () => {
-      wrapper = createComponent({
-        query: mockProjectSecurityChartsWithData(),
-        propsData: { hasVulnerabilities: true },
-        secureVulnerabilityTrainingEnabled: false,
-      });
-
-      await nextTick();
-
-      expect(findSecurityTrainingPromo().exists()).toBe(false);
     });
   });
 });
