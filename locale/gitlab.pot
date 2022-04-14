@@ -45317,6 +45317,12 @@ msgstr ""
 msgid "none"
 msgstr ""
 
+msgid "not authorized to create member"
+msgstr ""
+
+msgid "not authorized to update member"
+msgstr ""
+
 msgid "not found"
 msgstr ""
 
