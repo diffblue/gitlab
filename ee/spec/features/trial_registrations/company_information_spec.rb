@@ -19,6 +19,7 @@ RSpec.describe 'Company Information', :js do
 
   context 'send company information to create lead' do
     using RSpec::Parameterized::TableSyntax
+
     let(:params) do
       {
         company_name: 'GitLab',
@@ -27,16 +28,17 @@ RSpec.describe 'Company Information', :js do
         country: 'US',
         state: 'CA',
         website_url: 'gitlab.com',
-        role: '',
-        jtbd: '',
-        comment: ''
+        trial: 'false'
       }
     end
 
-    where(trial: %w[true false])
+    where(:service_response, :current_path) do
+      ServiceResponse.success                   | new_users_sign_up_groups_project_path
+      ServiceResponse.error(message: 'failed')  | users_sign_up_company_path
+    end
 
     with_them do
-      it 'proceeds to next step' do
+      it 'redirects to correct path' do
         fill_in 'company_name', with: 'GitLab'
         select '1 - 99', from: 'company_size'
         select 'United States of America', from: 'country'
@@ -44,18 +46,17 @@ RSpec.describe 'Company Information', :js do
         fill_in 'website_url', with: 'gitlab.com'
         fill_in 'phone_number', with: '+1 23 456-78-90'
 
-        # defaults to trial off, click to turn on
-        click_button class: 'gl-toggle' if Gitlab::Utils.to_boolean(trial)
-
-        expect_next_instance_of(GitlabSubscriptions::CreateTrialOrLeadService) do |service|
-          expect(service).to receive(:execute).with({
-            user: user,
-            params: ActionController::Parameters.new(params.merge({ trial: trial })).permit!
-          }).and_return({ success: true })
+        expect_next_instance_of(
+          GitlabSubscriptions::CreateTrialOrLeadService,
+          user: user,
+          params: ActionController::Parameters.new(params).permit!
+        ) do |service|
+          expect(service).to receive(:execute).and_return(service_response)
         end
 
         click_button 'Continue'
-        expect(page).to have_current_path(new_users_sign_up_groups_project_path, ignore_query: true)
+
+        expect(page).to have_current_path(current_path, ignore_query: true)
       end
     end
   end

@@ -57,18 +57,34 @@ RSpec.describe EE::TrialHelper do
   end
 
   describe '#create_company_form_data' do
-    let(:user) do
-      double('User', first_name: '_first_name_', last_name: '_last_name_')
+    let(:extra_params) do
+      {
+        role: '_params_role_',
+        jtbd: '_params_jtbd_',
+        comment: '_params_comment_'
+      }
+    end
+
+    let(:params) do
+      ActionController::Parameters.new(extra_params)
     end
 
     before do
-      allow(helper).to receive(:current_user).and_return(user)
+      allow(helper).to receive(:params).and_return(params)
     end
 
     it 'provides expected form data' do
-      keys = [:submit_path, :trial, :role, :jtbd, :comment]
+      keys = [:submit_path]
 
       expect(helper.create_company_form_data.keys.map(&:to_sym)).to match_array(keys)
+    end
+
+    it 'allows overriding data with params' do
+      submit_path = {
+        submit_path: '/users/sign_up/company?comment=_params_comment_&jtbd=_params_jtbd_&role=_params_role_'
+      }
+
+      expect(helper.create_company_form_data).to match(submit_path)
     end
   end
 

@@ -26,12 +26,9 @@ module EE
     end
 
     def create_company_form_data
+      submit_params = glm_params.merge(params.slice(:trial, :role, :jtbd, :comment).to_unsafe_h.symbolize_keys)
       {
-        submit_path: users_sign_up_company_path(glm_params),
-        trial: params[:trial],
-        role: params[:role],
-        jtbd: params[:jtbd],
-        comment: params[:comment]
+        submit_path: users_sign_up_company_path(submit_params)
       }
     end
 

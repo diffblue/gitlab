@@ -12,15 +12,13 @@ module Registrations
     end
 
     def create
-      result = GitlabSubscriptions::CreateTrialOrLeadService.new.execute(
-        user: current_user,
-        params: permitted_params
-      )
+      result = GitlabSubscriptions::CreateTrialOrLeadService.new(user: current_user, params: permitted_params).execute
 
-      if result[:success]
+      if result.success?
         redirect_to new_users_sign_up_groups_project_path(redirect_param)
       else
-        render :new
+        flash.now[:alert] = result[:message]
+        render :new, status: result.http_status
       end
     end
 

@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Registrations::CompanyController do
-  let_it_be(:user) { create(:user, email_opted_in: true, last_name: 'Doe') }
+  let_it_be(:user) { create(:user) }
 
   let(:logged_in) { true }
 
@@ -70,15 +70,17 @@ RSpec.describe Registrations::CompanyController do
       end
 
       with_them do
-        it 'creates trial or lead and redirects to the corect path' do
-          expect_next_instance_of(GitlabSubscriptions::CreateTrialOrLeadService) do |service|
-            expect(service).to receive(:execute).with({
-              user: user,
-              params: ActionController::Parameters.new(params.merge({ trial: trial })).permit!
-            }).and_return({ success: true })
+        it 'creates trial or lead and redirects to the correct path' do
+          expect_next_instance_of(
+            GitlabSubscriptions::CreateTrialOrLeadService,
+            user: user,
+            params: ActionController::Parameters.new(params.merge({ trial: trial })).permit!
+          ) do |service|
+            expect(service).to receive(:execute).and_return(ServiceResponse.success)
           end
 
           post :create, params: params.merge({ trial: trial })
+
           expect(response).to have_gitlab_http_status(:redirect)
           expect(response).to redirect_to(new_users_sign_up_groups_project_path(redirect_query))
         end
@@ -95,6 +97,7 @@ RSpec.describe Registrations::CompanyController do
           end
 
           post :create, params: params.merge({ trial: trial })
+
           expect(response).to have_gitlab_http_status(:ok)
           expect(response).to render_template(:new)
         end
