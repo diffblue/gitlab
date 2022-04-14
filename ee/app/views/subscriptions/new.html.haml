@@ -3,6 +3,7 @@
   = render "layouts/google_tag_manager_head"
   = render "layouts/one_trust"
 = render "layouts/google_tag_manager_body"
+= render "layouts/published_experiments"
 
 - Gitlab::Tracking.event(body_data_page, 'render',
                          label: 'saas_checkout',
