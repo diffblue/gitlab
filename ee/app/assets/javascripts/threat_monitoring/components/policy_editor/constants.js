@@ -25,6 +25,14 @@ export const DELETE_MODAL_CONFIG = {
 
 export const DEFAULT_MR_TITLE = s__('SecurityOrchestration|Update scan policies');
 
+export const POLICY_RUN_TIME_MESSAGE = s__(
+  'SecurityOrchestration|Allow up to 10 minutes for any policy changes to take effect.',
+);
+
+export const POLICY_RUN_TIME_TOOLTIP = s__(
+  'SecurityOrchestration|Policies created in this project are applied through a background job that runs once every 10 minutes.',
+);
+
 export const SECURITY_POLICY_ACTIONS = Object.freeze({
   APPEND: 'APPEND',
   REMOVE: 'REMOVE',

@@ -1,6 +1,10 @@
 import { nextTick } from 'vue';
-import { GlModal, GlButtonGroup } from '@gitlab/ui';
-import { EDITOR_MODE_YAML } from 'ee/threat_monitoring/components/policy_editor/constants';
+import { GlIcon, GlModal, GlButtonGroup } from '@gitlab/ui';
+import {
+  EDITOR_MODE_YAML,
+  POLICY_RUN_TIME_MESSAGE,
+  POLICY_RUN_TIME_TOOLTIP,
+} from 'ee/threat_monitoring/components/policy_editor/constants';
 import PolicyEditorLayout from 'ee/threat_monitoring/components/policy_editor/policy_editor_layout.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
@@ -29,6 +33,9 @@ describe('PolicyEditorLayout component', () => {
   const findDeletePolicyModal = () => wrapper.findComponent(GlModal);
   const findEditorModeToggle = () => wrapper.findComponent(GlButtonGroup);
   const findYamlModeSection = () => wrapper.findByTestId('policy-yaml-editor');
+  const findPolicyRunTimeInfo = () => wrapper.findByTestId('policy-run-time-info');
+  const findPolicyRunTimeTooltip = () =>
+    wrapper.findByTestId('policy-run-time-info').findComponent(GlIcon);
   const findRuleModeSection = () => wrapper.findByTestId('rule-editor');
   const findRuleModePreviewSection = () => wrapper.findByTestId('rule-editor-preview');
   const findSavePolicyButton = () => wrapper.findByTestId('save-policy');
@@ -80,6 +87,15 @@ describe('PolicyEditorLayout component', () => {
       expect(saveButton.exists()).toBe(true);
       expect(saveButton.attributes('disabled')).toBe(undefined);
       expect(saveButton.text()).toBe('Create policy');
+    });
+
+    it('does display policy runtime information', () => {
+      const policyRunTimeInfo = findPolicyRunTimeInfo();
+      const policyRunTimeTooltip = findPolicyRunTimeTooltip();
+      expect(policyRunTimeTooltip.exists()).toBe(true);
+      expect(glTooltipDirectiveMock.mock.calls[1][1].value).toBe(POLICY_RUN_TIME_TOOLTIP);
+      expect(policyRunTimeInfo.exists()).toBe(true);
+      expect(policyRunTimeInfo.text()).toBe(POLICY_RUN_TIME_MESSAGE);
     });
   });
 
