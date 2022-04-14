@@ -277,5 +277,17 @@ RSpec.describe AwardEmoji do
 
       expect(new_award.url).to eq(custom_emoji.url)
     end
+
+    context 'feature flag disabled' do
+      before do
+        stub_feature_flags(custom_emoji: false)
+      end
+
+      it 'does not query' do
+        new_award = build_award(custom_emoji.name)
+
+        expect(ActiveRecord::QueryRecorder.new { new_award.url }.count).to be_zero
+      end
+    end
   end
 end

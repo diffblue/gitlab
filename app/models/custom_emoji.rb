@@ -36,7 +36,7 @@ class CustomEmoji < ApplicationRecord
 
     namespace = resource.root_ancestor
 
-    return none if namespace.nil?
+    return none if namespace.nil? || Feature.disabled?(:custom_emoji, namespace)
 
     namespace.custom_emoji
   end
