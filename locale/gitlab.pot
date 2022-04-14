@@ -3660,6 +3660,12 @@ msgstr ""
 msgid "Allow \"%{group_name}\" to sign you in"
 msgstr ""
 
+msgid "Allow access only to members of this group"
+msgstr ""
+
+msgid "Allow access to everyone"
+msgstr ""
+
 msgid "Allow access to members of the following group"
 msgstr ""
 
@@ -13122,6 +13128,9 @@ msgid "Disable for this project"
 msgstr ""
 
 msgid "Disable group runners"
+msgstr ""
+
+msgid "Disable the group-level wiki"
 msgstr ""
 
 msgid "Disable two-factor authentication"

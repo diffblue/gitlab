@@ -126,5 +126,12 @@ module EE
 
       invite_members(group, invite_source: 'group-creation-page')
     end
+
+    override :group_feature_attributes
+    def group_feature_attributes
+      return super if ::Feature.disabled?(:group_wiki_settings_toggle, current_group, default_enabled: :yaml)
+
+      super + [:wiki_access_level]
+    end
   end
 end
