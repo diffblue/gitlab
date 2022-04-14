@@ -71,7 +71,7 @@ module Gitlab
 
           def unsubscribe
             self_managed_preferences_link = marketing_preference_link(track, series)
-            unsubscribe_html(self_managed_preferences_link)
+            unsubscribe_message(self_managed_preferences_link)
           end
 
           def progress(current: series + 1, total: total_series, track_name: track.to_s.humanize)

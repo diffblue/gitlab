@@ -70,7 +70,7 @@ module Gitlab
         end
 
         def unsubscribe
-          unsubscribe_html
+          unsubscribe_message
         end
       end
     end

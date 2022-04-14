@@ -31,7 +31,7 @@ module Gitlab
             s_('InProductMarketing|%{strong_start}GitLab Inc.%{strong_end} 268 Bush Street, #350, San Francisco, CA 94104, USA').html_safe % strong_options
           end
 
-          def unsubscribe_html(self_managed_preferences_link = nil)
+          def unsubscribe_message(self_managed_preferences_link = nil)
             parts = Gitlab.com? ? unsubscribe_com : unsubscribe_self_managed(self_managed_preferences_link)
 
             case format
