@@ -3164,65 +3164,50 @@ RSpec.describe Project do
   end
 
   describe '#force_cost_factor?' do
-    context 'on gitlab.com' do
-      context 'when public' do
-        context 'when ci_minutes_public_project_cost_factor is enabled' do
-          context 'when in a namespace created after 17 July, 2021' do
-            it 'returns true' do
-              stub_feature_flags(ci_minutes_public_project_cost_factor: true)
-              allow(::Gitlab).to receive(:com?).and_return(true)
-              namespace = build(:group, created_at: Date.new(2021, 7, 17))
-              project = build(:project, :public, namespace: namespace)
+    let(:created_at) { Date.new(2021, 7, 17) }
+    let(:namespace) { build(:group, created_at: created_at) }
+    let(:project) { build(:project, :public, namespace: namespace) }
 
-              expect(project.force_cost_factor?).to be_truthy
-            end
+    subject(:force_cost_factor) { project.force_cost_factor? }
+
+    context 'on gitlab.com', :saas do
+      context 'when public' do
+        context 'when in a namespace created after 17 July, 2021' do
+          it { is_expected.to be_truthy }
+        end
+
+        context 'when in a namespace created before 17 July, 2021' do
+          let(:created_at) { Date.new(2021, 7, 16) }
+
+          it { is_expected.to be_truthy }
+        end
+
+        context 'when feature flag ci_minutes_cost_factor_for_all_public_projects is disabled' do
+          before do
+            stub_feature_flags(ci_minutes_cost_factor_for_all_public_projects: false)
+          end
+
+          context 'when in a namespace created after 17 July, 2021' do
+            it { is_expected.to be_truthy }
           end
 
           context 'when in a namespace created before 17 July, 2021' do
-            it 'returns false' do
-              stub_feature_flags(ci_minutes_public_project_cost_factor: true)
-              allow(::Gitlab).to receive(:com?).and_return(true)
-              namespace = build(:group, created_at: Date.new(2021, 7, 16))
-              project = build(:project, :public, namespace: namespace)
+            let(:created_at) { Date.new(2021, 7, 16) }
 
-              expect(project.force_cost_factor?).to be_falsy
-            end
-          end
-        end
-
-        context 'when ci_minutes_public_project_cost_factor is disabled' do
-          it 'returns false' do
-            stub_feature_flags(ci_minutes_public_project_cost_factor: false)
-            allow(::Gitlab).to receive(:com?).and_return(true)
-            namespace = build(:group, created_at: Date.new(2021, 7, 16))
-            project = build(:project, :public, namespace: namespace)
-
-            expect(project.force_cost_factor?).to be_falsy
+            it { is_expected.to be_falsey }
           end
         end
       end
 
       context 'when not public' do
-        it 'returns false' do
-          stub_feature_flags(ci_minutes_public_project_cost_factor: true)
-          allow(::Gitlab).to receive(:com?).and_return(true)
-          namespace = build(:group, created_at: Date.new(2021, 7, 17))
-          project = build(:project, :private, namespace: namespace)
+        let(:project) { build(:project, :private, namespace: namespace) }
 
-          expect(project.force_cost_factor?).to be_falsy
-        end
+        it { is_expected.to be_falsey }
       end
     end
 
     context 'when not on gitlab.com' do
-      it 'returns false' do
-        stub_feature_flags(ci_minutes_public_project_cost_factor: true)
-        allow(::Gitlab).to receive(:com?).and_return(false)
-        namespace = build(:group, created_at: Date.new(2021, 7, 17))
-        project = build(:project, :public, namespace: namespace)
-
-        expect(project.force_cost_factor?).to be_falsy
-      end
+      it { is_expected.to be_falsey }
     end
   end
 
