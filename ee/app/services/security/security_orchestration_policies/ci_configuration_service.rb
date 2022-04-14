@@ -45,6 +45,23 @@ module Security
         ci_configuration[template.to_sym]
           .deep_merge(variables: ci_configuration[:variables].deep_merge(ci_variables).compact)
           .except(:rules)
+          .merge(fips_mode_default_rules(template))
+      end
+
+      def fips_mode_default_rules(template)
+        return {} if template != 'container_scanning'
+
+        {
+          rules: [
+            {
+              if: '$CI_GITLAB_FIPS_MODE == "true" && $CS_ANALYZER_IMAGE !~ /-(fips|ubi)\z/',
+              variables: { CS_IMAGE_SUFFIX: '-fips' }
+            },
+            {
+              when: 'always'
+            }
+          ]
+        }
       end
 
       def child_pipeline_configuration(template, ci_variables)

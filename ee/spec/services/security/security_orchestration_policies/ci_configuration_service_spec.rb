@@ -104,7 +104,16 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
             variables: {
               CS_ANALYZER_IMAGE: "#{Gitlab::Saas.registry_prefix}/security-products/container-scanning:4",
               GIT_STRATEGY: 'none'
-            }
+            },
+            rules: [
+              {
+                if: '$CI_GITLAB_FIPS_MODE == "true" && $CS_ANALYZER_IMAGE !~ /-(fips|ubi)\z/',
+                variables: { CS_IMAGE_SUFFIX: '-fips' }
+              },
+              {
+                when: 'always'
+              }
+            ]
           }
 
           expect(subject.deep_symbolize_keys).to eq(expected_configuration)
