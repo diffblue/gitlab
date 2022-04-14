@@ -25,6 +25,23 @@ RSpec.describe ContainerRepository, :saas do
 
       context 'limit_gitlab_org enabled' do
         it { is_expected.to contain_exactly(gitlab_container_repository) }
+
+        context 'with sub group named gitlab-org' do
+          let_it_be(:root) { create(:group, path: 'test-root') }
+          let_it_be(:subgroup) { create(:group, path: 'gitlab-org', parent: root) }
+          let_it_be(:subproject) { create(:project, namespace: subgroup) }
+          let_it_be(:subgroup_repository) { create(:container_repository, project: subproject) }
+
+          it { is_expected.to contain_exactly(gitlab_container_repository) }
+        end
+
+        context 'with no gitlab root namespace' do
+          before do
+            expect(::Namespace).to receive(:by_path).with('gitlab-org').and_return(nil)
+          end
+
+          it { is_expected.to be_empty }
+        end
       end
 
       context 'limit_gitlab_org disabled' do

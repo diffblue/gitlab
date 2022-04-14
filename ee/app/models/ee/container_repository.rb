@@ -29,7 +29,12 @@ module EE
         return all if ::ContainerRegistry::Migration.all_plans?
 
         if ::ContainerRegistry::Migration.limit_gitlab_org?
-          joins(project: [:namespace]).where(namespaces: { path: GITLAB_ORG_NAMESPACE })
+          gitlab_org_namespace = ::Namespace.top_most.by_path(GITLAB_ORG_NAMESPACE)
+          return none unless gitlab_org_namespace
+
+          project_scope = ::Project.for_group_and_its_subgroups(gitlab_org_namespace)
+                            .select(:id)
+          where(project_id: project_scope)
         else
           where(migration_plan: ::ContainerRegistry::Migration.target_plans)
         end
