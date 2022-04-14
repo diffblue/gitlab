@@ -48,7 +48,7 @@ RSpec.describe Packages::CleanupPackageFileWorker do
 
       context 'with an error during the destroy' do
         before do
-          expect(worker).to receive(:log_metadata).and_raise('Error!')
+          allow(worker).to receive(:log_metadata).and_raise('Error!')
         end
 
         it 'handles the error' do
@@ -76,7 +76,7 @@ RSpec.describe Packages::CleanupPackageFileWorker do
       end
     end
 
-    context 'removing the last package file' do
+    describe 'removing the last package file' do
       let_it_be(:package_file) { create(:package_file, :pending_destruction, package: package) }
 
       it 'deletes the package file and the package' do
