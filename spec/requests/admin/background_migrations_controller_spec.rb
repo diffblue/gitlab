@@ -29,6 +29,36 @@ RSpec.describe Admin::BackgroundMigrationsController, :enable_admin_mode do
     end
   end
 
+  describe 'GET #index' do
+    using RSpec::Parameterized::TableSyntax
+
+    let(:default_model) { ActiveRecord::Base }
+    let(:xpto_model) { Ci::ApplicationRecord }
+    let(:base_models) { { 'main' => default_model, 'xpto' => xpto_model } }
+
+    before do
+      allow(Gitlab::Database).to receive(:database_base_models).and_return(base_models)
+    end
+
+    where(:database_param, :expected_base_model) do
+      nil    | lazy { default_model }
+      'xpto' | lazy { xpto_model }
+    end
+
+    with_them do
+      it "uses the correct connection" do
+        expect(Gitlab::Database::SharedModel).to receive(:using_connection)
+                                                   .with(expected_base_model.connection).and_yield
+
+        if database_param.blank?
+          get admin_background_migrations_path
+        else
+          get admin_background_migrations_path, params: { database: database_param }
+        end
+      end
+    end
+  end
+
   describe 'POST #retry' do
     let(:migration) { create(:batched_background_migration, :failed) }
 

@@ -14,6 +14,7 @@ class Admin::BackgroundMigrationsController < Admin::ApplicationController
     @current_tab = @relations_by_tab.key?(params[:tab]) ? params[:tab] : 'queued'
     @migrations = @relations_by_tab[@current_tab].page(params[:page])
     @successful_rows_counts = batched_migration_class.successful_rows_counts(@migrations.map(&:id))
+    @selected_database = Gitlab::Database.db_config_names
   end
 
   def show
@@ -43,7 +44,15 @@ class Admin::BackgroundMigrationsController < Admin::ApplicationController
 
   private
 
+  def base_model
+    database = params[:database] || Gitlab::Database::MAIN_DATABASE_NAME
+
+    Gitlab::Database.database_base_models[database]
+  end
+
   def batched_migration_class
-    @batched_migration_class ||= Gitlab::Database::BackgroundMigration::BatchedMigration
+    @batched_migration_class ||= Gitlab::Database::SharedModel.using_connection(base_model.connection) do
+      Gitlab::Database::BackgroundMigration::BatchedMigration
+    end
   end
 end
