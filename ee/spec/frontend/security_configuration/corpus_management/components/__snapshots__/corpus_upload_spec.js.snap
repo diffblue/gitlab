@@ -12,7 +12,7 @@ exports[`Corpus Upload component renders total size 1`] = `
       class="gl-font-weight-bold"
       data-testid="total-size"
     >
-      400MB
+      400 MB
     </span>
   </div>
    

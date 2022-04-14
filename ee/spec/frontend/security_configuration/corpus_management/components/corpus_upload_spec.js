@@ -28,7 +28,9 @@ describe('Corpus Upload', () => {
       createComponent();
 
       expect(findGlSprintf().exists()).toBe(true);
-      expect(findTotalSizeText().text()).toContain(decimalBytes(defaultProps.totalSize));
+      expect(findTotalSizeText().text()).toContain(
+        decimalBytes(defaultProps.totalSize, 0, { unitSeparator: ' ' }),
+      );
       expect(wrapper.element).toMatchSnapshot();
     });
   });
