@@ -89,12 +89,18 @@ class Environment < ApplicationRecord
 
   scope :for_project, -> (project) { where(project_id: project) }
   scope :for_tier, -> (tier) { where(tier: tier).where.not(tier: nil) }
-  scope :with_deployment, -> (sha) { where('EXISTS (?)', Deployment.select(1).where('deployments.environment_id = environments.id').where(sha: sha)) }
   scope :unfoldered, -> { where(environment_type: nil) }
   scope :with_rank, -> do
     select('environments.*, rank() OVER (PARTITION BY project_id ORDER BY id DESC)')
   end
   scope :for_id, -> (id) { where(id: id) }
+
+  scope :with_deployment, -> (sha, status: nil) do
+    deployments = Deployment.select(1).where('deployments.environment_id = environments.id').where(sha: sha)
+    deployments = deployments.where(status: status) if status
+
+    where('EXISTS (?)', deployments)
+  end
 
   scope :stopped_review_apps, -> (before, limit) do
     stopped

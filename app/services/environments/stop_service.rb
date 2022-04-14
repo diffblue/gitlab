@@ -19,7 +19,9 @@ module Environments
     end
 
     def execute_for_merge_request(merge_request)
-      merge_request.environments_in_head_pipeline.each { |environment| execute(environment) }
+      merge_request.environments_in_head_pipeline(deployment_status: :success).each do |environment|
+        execute(environment)
+      end
     end
 
     private
