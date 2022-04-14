@@ -99,7 +99,6 @@ module QA
 
             form.add_name("#{SecureRandom.hex(8)}/#{template[:file_name]}")
             form.commit_changes
-            form.finished_loading?
 
             aggregate_failures "indications of file created" do
               expect(form).to have_content(template[:file_name])
