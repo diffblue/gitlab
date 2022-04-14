@@ -223,4 +223,35 @@ RSpec.describe AwardEmoji do
       end
     end
   end
+
+  describe '#url' do
+    let_it_be(:custom_emoji) { create(:custom_emoji) }
+    let_it_be(:project) { create(:project, namespace: custom_emoji.group) }
+    let_it_be(:issue) { create(:issue, project: project) }
+
+    def build_award(name)
+      build(:award_emoji, awardable: issue, name: name)
+    end
+
+    it 'is nil for built-in emoji' do
+      new_award = build_award('tada')
+
+      count = ActiveRecord::QueryRecorder.new do
+        expect(new_award.url).to be_nil
+      end.count
+      expect(count).to be_zero
+    end
+
+    it 'is nil for unrecognized emoji' do
+      new_award = build_award('null')
+
+      expect(new_award.url).to be_nil
+    end
+
+    it 'is set for custom emoji' do
+      new_award = build_award(custom_emoji.name)
+
+      expect(new_award.url).to eq(custom_emoji.url)
+    end
+  end
 end

@@ -61,6 +61,8 @@ class AwardEmoji < ApplicationRecord
   end
 
   def url
+    return if TanukiEmoji.find_by_alpha_code(name)
+
     awardable.try(:namespace)&.custom_emoji&.by_name(name)&.first&.url
   end
 
