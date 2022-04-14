@@ -2,8 +2,6 @@
 
 mutation boardListUpdateLimitMetrics($input: BoardListUpdateLimitMetricsInput!) {
   boardListUpdateLimitMetrics(input: $input) {
-    # We have an id in deeply nested fragment
-    # eslint-disable-next-line @graphql-eslint/require-id-when-available
     list {
       ...BoardListFragment
     }
