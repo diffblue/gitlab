@@ -246,7 +246,8 @@ class PagesDomain < ApplicationRecord
     return unless domain
 
     if domain.downcase.ends_with?(".#{Settings.pages.host.downcase}")
-      self.errors.add(:domain, "Subdomains of the Pages root domain (#{Settings.pages.host}) are reserved and cannot be used as custom pages domains.")
+      error_template = _("Subdomains of the Pages root domain %{root_domain} are reserved and cannot be used as custom pages domains.")
+      self.errors.add(:domain, error_template % { root_domain: Settings.pages.host })
     end
   end
 
