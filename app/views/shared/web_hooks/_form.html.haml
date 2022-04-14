@@ -17,7 +17,8 @@
   %ul.list-unstyled
     %li
       = form.gitlab_ui_checkbox_component :push_events, s_('Webhooks|Push events')
-      = form.text_field :push_events_branch_filter, style: 'margin-left: 1.5rem', class: 'form-control gl-form-input',
+      .gl-pl-6
+        = form.text_field :push_events_branch_filter, class: 'form-control gl-form-input',
           placeholder: 'Branch name or wildcard pattern to trigger on (leave blank for all)'
       %p.form-text.text-muted.custom-control
         = s_('Webhooks|Push to the repository.')
