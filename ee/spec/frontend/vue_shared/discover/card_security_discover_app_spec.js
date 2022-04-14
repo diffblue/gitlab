@@ -35,7 +35,6 @@ describe('Card security discover app', () => {
           lastName: 'Doe',
           companyName: 'ACME',
         },
-        ctaTracking: {},
       },
     });
   };
