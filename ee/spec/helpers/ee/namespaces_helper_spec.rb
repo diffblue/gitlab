@@ -229,7 +229,7 @@ RSpec.describe EE::NamespacesHelper do
     context 'on dot com' do
       using RSpec::Parameterized::TableSyntax
 
-      where(:feature_flag_enabled, :free_project, :user_dismissed_banner, :should_show_banner) do
+      where(:feature_flag_enabled, :free_plan, :user_dismissed_banner, :should_show_banner) do
         true  | true  | false | true
         true  | true  | true  | false
         true  | false | false | false
@@ -240,7 +240,7 @@ RSpec.describe EE::NamespacesHelper do
         before do
           allow(Gitlab).to receive(:com?).and_return(true)
           stub_feature_flags(show_minute_limit_banner: feature_flag_enabled)
-          allow(project.root_ancestor).to receive(:free_plan?).and_return(free_project)
+          allow(project.root_ancestor).to receive(:free_plan?).and_return(free_plan)
           allow(helper).to receive(:user_dismissed?).with('minute_limit_banner').and_return(user_dismissed_banner)
         end
 
