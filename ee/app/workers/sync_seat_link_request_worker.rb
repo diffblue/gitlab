@@ -84,9 +84,9 @@ class SyncSeatLinkRequestWorker
   end
 
   def save_future_subscriptions(response)
-    return if response['future_subscriptions'].blank?
+    future_subscriptions = response['future_subscriptions'].presence || []
 
-    Gitlab::CurrentSettings.current_application_settings.update!(future_subscriptions: response['future_subscriptions'])
+    Gitlab::CurrentSettings.current_application_settings.update!(future_subscriptions: future_subscriptions)
   rescue StandardError => err
     Gitlab::ErrorTracking.track_and_raise_for_dev_exception(err)
   end
