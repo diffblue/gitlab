@@ -5,7 +5,7 @@ import { NAME_TAKEN_SERVER_ERROR, URL_TAKEN_SERVER_ERROR } from 'ee/status_check
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import { stubComponent } from 'helpers/stub_component';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { TEST_PROTECTED_BRANCHES } from '../../vue_shared/components/branches_selector/mock_data';
+import { TEST_PROTECTED_BRANCHES } from 'ee_jest/vue_shared/components/branches_selector/mock_data';
 
 const projectId = '1';
 const statusCheck = {

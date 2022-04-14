@@ -4,7 +4,7 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { __, n__, sprintf } from '~/locale';
 import timeagoMixin from '~/vue_shared/mixins/timeago';
-import { statusType } from '../../epic/constants';
+import { statusType } from 'ee/epic/constants';
 import IssuesLaneList from './issues_lane_list.vue';
 
 export default {

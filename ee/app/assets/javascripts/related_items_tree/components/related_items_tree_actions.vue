@@ -2,8 +2,8 @@
 import { GlButtonGroup, GlButton } from '@gitlab/ui';
 import { mapState } from 'vuex';
 
+import ToggleLabels from 'ee/boards/components/toggle_labels.vue';
 import { ITEM_TABS } from '../constants';
-import ToggleLabels from '../../boards/components/toggle_labels.vue';
 
 export default {
   ITEM_TABS,

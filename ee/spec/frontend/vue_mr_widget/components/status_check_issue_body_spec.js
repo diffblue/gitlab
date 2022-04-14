@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import component from 'ee/vue_merge_request_widget/components/status_check_issue_body.vue';
 import SummaryRow from '~/reports/components/summary_row.vue';
-import { approvedChecks } from '../../reports/status_checks_report/mock_data';
+import { approvedChecks } from 'ee_jest/reports/status_checks_report/mock_data';
 
 describe('status check issue body', () => {
   let wrapper;
