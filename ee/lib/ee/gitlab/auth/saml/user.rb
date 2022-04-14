@@ -29,6 +29,14 @@ module EE
             user
           end
 
+          override :find_and_update!
+          def find_and_update!
+            save
+
+            update_group_membership
+            gl_user
+          end
+
           protected
 
           def block_user(user, reason)
@@ -52,6 +60,10 @@ module EE
 
           def auditor_groups_enabled?
             !saml_config.auditor_groups.blank?
+          end
+
+          def update_group_membership
+            ::Gitlab::Auth::Saml::MembershipUpdater.new(gl_user, auth_hash).execute
           end
         end
       end

@@ -532,7 +532,7 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
         usage_quotas: true,
         group_saml: true,
         group_webhooks: true,
-        group_saml_group_sync: true,
+        saml_group_sync: true,
         ldap_group_sync: true
       )
       stub_feature_flags(group_administration_nav_item: false)

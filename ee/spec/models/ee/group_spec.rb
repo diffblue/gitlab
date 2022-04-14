@@ -1653,6 +1653,14 @@ RSpec.describe Group do
 
       it { is_expected.to eq(false) }
     end
+
+    context 'when global SAML is enabled' do
+      before do
+        allow(Gitlab::Auth::OAuth::Provider).to receive(:providers).and_return([:saml])
+      end
+
+      it { is_expected.to eq(true) }
+    end
   end
 
   describe '#saml_group_sync_available?' do
@@ -1662,7 +1670,7 @@ RSpec.describe Group do
 
     context 'with group_saml_group_sync feature licensed' do
       before do
-        stub_licensed_features(group_saml_group_sync: true)
+        stub_licensed_features(saml_group_sync: true)
       end
 
       it { is_expected.to eq(false) }

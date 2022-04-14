@@ -15,6 +15,10 @@ module EE
             def required_groups
               Array(options[:required_groups])
             end
+
+            def group_sync_enabled?
+              enabled? && groups.present? && ::License.feature_available?(:saml_group_sync)
+            end
           end
         end
       end
