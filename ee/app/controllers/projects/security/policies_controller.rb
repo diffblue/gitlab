@@ -10,7 +10,7 @@ module Projects
 
       before_action do
         push_frontend_feature_flag(:scan_result_policy, project, default_enabled: :yaml)
-        push_frontend_feature_flag(:container_security_policy_selection, project)
+        push_frontend_feature_flag(:container_security_policy_selection, project, default_enabled: :yaml)
       end
 
       feature_category :security_orchestration
