@@ -74,7 +74,7 @@ export default {
   <div class="roadmap-app-container gl-h-full">
     <roadmap-filters v-if="showFilteredSearchbar && !epicIid" @toggleSettings="toggleSettings" />
     <div :class="{ 'overflow-reset': epicsFetchResultEmpty }" class="roadmap-container gl-relative">
-      <gl-loading-icon v-if="epicsFetchInProgress" class="gl-my-5" size="md" />
+      <gl-loading-icon v-if="epicsFetchInProgress" class="gl-my-5" size="lg" />
       <epics-list-empty
         v-else-if="epicsFetchResultEmpty"
         :preset-type="presetType"

@@ -279,7 +279,7 @@ export default {
         data-testid="subscription-loading-container"
         class="gl-display-flex gl-h-200! gl-justify-content-center gl-align-items-center gl-flex-direction-column"
       >
-        <gl-loading-icon v-if="true" size="md" />
+        <gl-loading-icon v-if="true" size="lg" />
         <span>{{ $options.i18n.loadingText }}</span>
       </div>
     </template>

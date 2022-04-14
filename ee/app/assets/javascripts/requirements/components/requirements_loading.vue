@@ -51,5 +51,5 @@ export default {
       <gl-skeleton-loading :lines="2" class="pt-2" />
     </li>
   </ul>
-  <gl-loading-icon v-else size="md" class="mt-3" />
+  <gl-loading-icon v-else size="lg" class="mt-3" />
 </template>
