@@ -48,6 +48,8 @@ RSpec.describe ProjectPolicy do
         read_threat_monitoring read_merge_train
         read_release
         read_project_audit_events
+        read_cluster
+        read_terraform_state
       ]
     end
 
@@ -69,7 +71,7 @@ RSpec.describe ProjectPolicy do
 
       context 'who is not a team member' do
         it do
-          is_expected.to be_disallowed(*developer_permissions)
+          is_expected.to be_disallowed(*(developer_permissions - auditor_permissions))
           is_expected.to be_disallowed(*maintainer_permissions)
           is_expected.to be_disallowed(*owner_permissions)
           is_expected.to be_disallowed(*(guest_permissions - auditor_permissions))
@@ -83,7 +85,7 @@ RSpec.describe ProjectPolicy do
         end
 
         it do
-          is_expected.to be_disallowed(*developer_permissions)
+          is_expected.to be_disallowed(*(developer_permissions - auditor_permissions))
           is_expected.to be_disallowed(*maintainer_permissions)
           is_expected.to be_disallowed(*owner_permissions)
           is_expected.to be_allowed(*(guest_permissions - auditor_permissions))
