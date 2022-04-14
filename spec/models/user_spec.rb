@@ -6748,9 +6748,9 @@ RSpec.describe User do
     let_it_be(:omniauth_user) { create(:omniauth_user, provider: 'twitter', extern_uid: '123456') }
     let_it_be(:internal_user) { User.alert_bot.tap { |u| u.confirm } }
 
-    it 'does not return blocked, banned or unconfirmed users' do
+    it 'does not return blocked or banned users' do
       expect(described_class.without_forbidden_states).to match_array([
-        normal_user, admin_user, external_user, omniauth_user, internal_user
+        normal_user, admin_user, external_user, unconfirmed_user, omniauth_user, internal_user
       ])
     end
   end
