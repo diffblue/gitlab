@@ -101,12 +101,12 @@ RSpec.describe Packages::CleanupPackageFileWorker do
   end
 
   describe '#remaining_work_count' do
-    before(:context) do
-      create_list(:package_file, 3, :pending_destruction, package: package)
+    before_all do
+      create_list(:package_file, 2, :pending_destruction, package: package)
     end
 
     subject { worker.remaining_work_count }
 
-    it { is_expected.to eq(3) }
+    it { is_expected.to eq(2) }
   end
 end
