@@ -16,7 +16,7 @@ module Projects
       super(project)
     end
 
-    private
+   # private
 
     def cache_key_name
       public_only? ? PUBLIC_COUNT_KEY : TOTAL_COUNT_KEY
