@@ -22,9 +22,9 @@ RSpec.describe BulkImports::Groups::Stage do
   end
 
   subject do
-    bulk_import = build(:bulk_import)
+    entity = build(:bulk_import_entity)
 
-    described_class.new(bulk_import)
+    described_class.new(entity)
   end
 
   describe '#each' do
