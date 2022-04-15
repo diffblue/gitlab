@@ -158,7 +158,7 @@ export default {
           query: readCadence,
           variables: {
             fullPath: this.fullPath,
-            id: this.cadenceId,
+            id: convertToGraphQLId(TYPE_ITERATIONS_CADENCE, this.cadenceId),
           },
         });
 
