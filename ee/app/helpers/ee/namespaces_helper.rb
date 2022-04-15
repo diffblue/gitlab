@@ -61,6 +61,12 @@ module EE
       buy_storage_subscriptions_url(selected_group: namespace.id)
     end
 
+    def show_minute_limit_banner?(namespace)
+      return false unless ::Gitlab.com? && ::Feature.enabled?(:show_minute_limit_banner, namespace.root_ancestor, default_enabled: :yaml) # rubocop:disable Layout/LineLength
+
+      namespace.root_ancestor.free_plan? && !minute_limit_banner_dismissed?
+    end
+
     private
 
     def use_customers_dot_for_addon_path?(namespace)

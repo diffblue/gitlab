@@ -222,4 +222,46 @@ RSpec.describe EE::NamespacesHelper do
       end
     end
   end
+
+  describe '#show_minute_limit_banner?' do
+    let(:project) { create(:project) }
+
+    context 'on dot com' do
+      using RSpec::Parameterized::TableSyntax
+
+      where(:feature_flag_enabled, :free_plan, :user_dismissed_banner, :should_show_banner) do
+        true  | true  | false | true
+        true  | true  | true  | false
+        true  | false | false | false
+        false | true  | false | false
+      end
+
+      with_them do
+        before do
+          allow(Gitlab).to receive(:com?).and_return(true)
+          stub_feature_flags(show_minute_limit_banner: feature_flag_enabled)
+          allow(project.root_ancestor).to receive(:free_plan?).and_return(free_plan)
+          allow(helper).to receive(:user_dismissed?).with('minute_limit_banner').and_return(user_dismissed_banner)
+        end
+
+        it 'shows the banner if required' do
+          expect(helper.show_minute_limit_banner?(project)).to eq(should_show_banner)
+        end
+      end
+    end
+
+    context 'not dot com' do
+      context 'when feature flag is enabled for a free project and user has not dismissed callout' do
+        before do
+          stub_feature_flags(show_minute_limit_banner: true)
+          allow(project.root_ancestor).to receive(:free_plan?).and_return(true)
+          allow(helper).to receive(:user_dismissed?).with('minute_limit_banner').and_return(false)
+        end
+
+        it 'does not show banner' do
+          expect(helper.show_minute_limit_banner?(project)).to eq(false)
+        end
+      end
+    end
+  end
 end
