@@ -2700,6 +2700,9 @@ msgstr ""
 msgid "AdminSettings|Preview payload"
 msgstr ""
 
+msgid "AdminSettings|Project export enabled"
+msgstr ""
+
 msgid "AdminSettings|Protect CI/CD variables by default"
 msgstr ""
 
@@ -29141,9 +29144,6 @@ msgid "Project export could not be deleted."
 msgstr ""
 
 msgid "Project export download requests"
-msgstr ""
-
-msgid "Project export enabled"
 msgstr ""
 
 msgid "Project export has been deleted."
