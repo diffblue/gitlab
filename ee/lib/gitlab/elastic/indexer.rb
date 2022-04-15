@@ -183,9 +183,18 @@ module Gitlab
       end
 
       def elasticsearch_config(target)
-        Gitlab::CurrentSettings.elasticsearch_config.merge(
+        config = Gitlab::CurrentSettings.elasticsearch_config.merge(
           index_name: target.index_name
-        ).to_json
+        )
+
+        # We need to pass a percent encoded URL string instead of a hash
+        # to the go indexer because it passes authentication credentials
+        # embedded in the url.
+        #
+        # See:
+        # https://gitlab.com/gitlab-org/gitlab-elasticsearch-indexer/blob/main/elastic/elastic.go#L22
+        config[:url] = config[:url].map { |u| ::Gitlab::Elastic::Helper.url_string(u) }
+        config.to_json
       end
 
       def gitaly_config
