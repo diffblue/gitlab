@@ -33,10 +33,16 @@
         %a.dropdown-item.open-with-link{ href: 'vscode://vscode.git/clone?url=' + CGI.escape(project.ssh_url_to_repo) }
           .gl-new-dropdown-item-text-wrapper
             = _('Visual Studio Code (SSH)')
+        %a.dropdown-item.open-with-link{ href: 'jetbrains://idea/checkout/git?idea.required.plugins.id=Git4Idea&checkout.repo=' + CGI.escape(project.ssh_url_to_repo) }
+          .gl-new-dropdown-item-text-wrapper
+            = _('JetBrains IDEA (SSH)')
       - if http_enabled?
         %a.dropdown-item.open-with-link{ href: 'vscode://vscode.git/clone?url=' + CGI.escape(project.http_url_to_repo) }
           .gl-new-dropdown-item-text-wrapper
             = _('Visual Studio Code (HTTPS)')
+        %a.dropdown-item.open-with-link{ href: 'jetbrains://idea/checkout/git?idea.required.plugins.id=Git4Idea&checkout.repo=' + CGI.escape(project.http_url_to_repo) }
+          .gl-new-dropdown-item-text-wrapper
+            = _('JetBrains IDEA (HTTPS)')
       - if show_xcode_link?(@project)
         %a.dropdown-item.open-with-link{ href: xcode_uri_to_repo(@project) }
           .gl-new-dropdown-item-text-wrapper
