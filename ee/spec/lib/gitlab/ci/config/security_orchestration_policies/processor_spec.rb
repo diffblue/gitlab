@@ -161,7 +161,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
               'secret-detection-0': hash_including(
                 rules: [{ if: '$SECRET_DETECTION_DISABLED', when: 'never' }, { if: '$CI_COMMIT_BRANCH' }],
                 stage: 'test',
-                image: '$SECURE_ANALYZERS_PREFIX/secrets:$SECRETS_ANALYZER_VERSION',
+                image: '$SECURE_ANALYZERS_PREFIX/secrets:$SECRETS_ANALYZER_VERSION$SECRET_DETECTION_IMAGE_SUFFIX',
                 services: [],
                 allow_failure: true,
                 artifacts: {
@@ -173,6 +173,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
                   GIT_DEPTH: '50',
                   SECURE_ANALYZERS_PREFIX: secure_analyzers_prefix,
                   SECRETS_ANALYZER_VERSION: '3',
+                  SECRET_DETECTION_IMAGE_SUFFIX: '',
                   SECRET_DETECTION_EXCLUDED_PATHS: '',
                   SECRET_DETECTION_HISTORIC_SCAN: 'false'
                 })
