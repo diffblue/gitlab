@@ -3,6 +3,7 @@ import { GlPath } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { getParameterByName, removeParams, visitUrl } from '~/lib/utils/url_utility';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
+import { NAMESPACE_TYPES } from '../../constants';
 import PolicySelection from './policy_selection.vue';
 import PolicyEditor from './policy_editor_v2.vue';
 
@@ -12,6 +13,7 @@ export default {
     PolicyEditor,
     PolicySelection,
   },
+  inject: ['namespaceType'],
   // TODO: move this `inject` instead of `props`. We're using it in multiple levels.
   props: {
     assignedPolicyProject: {
@@ -26,10 +28,16 @@ export default {
   },
   data() {
     return {
-      selectedPolicy: this.policyFromUrl(),
+      selectedPolicy:
+        this.namespaceType === NAMESPACE_TYPES.GROUP
+          ? POLICY_TYPE_COMPONENT_OPTIONS.scanExecution
+          : this.policyFromUrl(),
     };
   },
   computed: {
+    enableWizard() {
+      return this.namespaceType === NAMESPACE_TYPES.PROJECT && !this.existingPolicy;
+    },
     glPathItems() {
       const hasPolicy = Boolean(this.selectedPolicy);
 
@@ -105,7 +113,7 @@ export default {
   <div>
     <header class="gl-pb-5 gl-border-b-none">
       <h3>{{ title }}</h3>
-      <gl-path v-if="!existingPolicy" :items="glPathItems" @selected="handlePathSelection" />
+      <gl-path v-if="enableWizard" :items="glPathItems" @selected="handlePathSelection" />
     </header>
     <policy-selection v-if="!selectedPolicy" />
     <policy-editor
