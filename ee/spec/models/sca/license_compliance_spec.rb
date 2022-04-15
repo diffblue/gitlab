@@ -206,7 +206,23 @@ RSpec.describe SCA::LicenseCompliance do
       expect(actual).to eql(expected)
     end
 
-    context "when searching for policies for licenses that were detected in a scan report" do
+    it 'records an onboarding progress action for license scanning' do
+      expect(OnboardingProgress).to receive(:register).with(pipeline.project.root_namespace, :license_scanning_run).and_call_original
+
+      license_compliance.find_policies
+    end
+
+    context 'when pipeline is not present' do
+      let!(:pipeline) { nil }
+
+      it 'records an onboarding progress action for license scanning' do
+        expect(OnboardingProgress).not_to receive(:register).with(anything)
+
+        license_compliance.find_policies
+      end
+    end
+
+    context 'when searching for policies for licenses that were detected in a scan report' do
       let(:results) { license_compliance.find_policies(detected_only: true) }
 
       it 'only includes licenses that appear in the latest license scan report' do
