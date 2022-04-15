@@ -17,10 +17,7 @@ module QA
         project.remove_via_api!
       end
 
-      # TODO: Remove :requires_admin when the `Runtime::Feature.enable` method call is removed
-      context 'without k8s cluster', :requires_admin do
-        let!(:feature_enabled) { Runtime::Feature.enabled?(:container_security_policy_selection)}
-
+      context 'without k8s cluster' do
         before do
           Flow::Login.sign_in
           project.visit!
@@ -43,9 +40,7 @@ module QA
 
           EE::Page::Project::Policies::PolicyEditor.perform do |policy_editor|
             aggregate_failures do
-              # TODO: Remove the selector conditional when the `Runtime::Feature.enable` method call is removed
-              selector = feature_enabled ? :policy_selection_wizard : :policy_type_form_select
-              expect(policy_editor).to have_policy_selection(selector)
+              expect(policy_editor).to have_policy_selection(:policy_selection_wizard)
             end
           end
         end
