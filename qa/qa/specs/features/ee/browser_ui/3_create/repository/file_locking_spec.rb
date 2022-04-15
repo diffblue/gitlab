@@ -97,7 +97,7 @@ module QA
         expect_no_error_on_push as_user: user_two
       end
 
-      context 'when refactor_blob_viewer is enabled', :requires_admin do
+      context 'when refactor_blob_viewer is enabled', feature_flag: { name: 'refactor_blob_viewer', scope: :project } do
         before do
           Runtime::Feature.enable(:refactor_blob_viewer, project: project)
         end

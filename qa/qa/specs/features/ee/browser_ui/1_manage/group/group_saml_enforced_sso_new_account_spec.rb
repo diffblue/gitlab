@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Manage', :group_saml, :orchestrated, :requires_admin do
+  RSpec.describe 'Manage', :group_saml, :orchestrated, requires_admin: 'for various user admin functions',
+                 feature_flag: { name: 'group_administration_nav_item', scope: :global } do
     describe 'Group SAML SSO - Enforced SSO' do
       include Support::API
 

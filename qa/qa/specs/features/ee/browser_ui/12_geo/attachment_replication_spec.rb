@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  # TODO: Remove :requires_admin when the `Runtime::Feature.enable` method call is removed
-  RSpec.describe 'Geo', :orchestrated, :geo, :requires_admin do
+  RSpec.describe 'Geo', :orchestrated, :geo, feature_flag: { name: 'vue_issues_list', scope: :group } do
     describe 'GitLab Geo attachment replication' do
       let(:file_to_attach) { File.absolute_path(File.join('qa', 'fixtures', 'designs', 'banana_sample.gif')) }
 
