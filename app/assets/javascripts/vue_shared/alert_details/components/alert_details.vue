@@ -98,9 +98,6 @@ export default {
     trackAlertsDetailsViewsOptions: {
       default: null,
     },
-    canUpdate: {
-      default: false,
-    },
   },
   apollo: {
     alert: {
