@@ -21,6 +21,8 @@ module SCA
     end
 
     def find_policies(detected_only: false, classification: [], sort: { by: :name, direction: :asc })
+      record_onboarding_progress
+
       classifications = Array(classification || [])
       matching_policies = policies.reject do |policy|
         (detected_only && policy.dependencies.none?) ||
@@ -101,6 +103,12 @@ module SCA
       attribute = available_attributes[by] || available_attributes[:name]
       direction = SORT_DIRECTION[direction] || SORT_DIRECTION[:asc]
       direction.call(items.sort_by { |item| attribute.call(item) })
+    end
+
+    def record_onboarding_progress
+      return unless pipeline
+
+      OnboardingProgress.register(pipeline.project.root_namespace, :license_scanning_run)
     end
   end
 end
