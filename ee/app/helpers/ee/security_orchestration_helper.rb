@@ -27,6 +27,8 @@ module EE::SecurityOrchestrationHelper
     policy_data = {
       assigned_policy_project: assigned_policy_project(container).to_json,
       disable_scan_policy_update: disable_scan_policy_update.to_s,
+      namespace_id: container.id,
+      namespace_path: container.full_path,
       policy: policy&.to_json,
       policy_editor_empty_state_svg_path: image_path('illustrations/monitoring/unable_to_connect.svg'),
       policy_type: policy_type,
@@ -36,8 +38,6 @@ module EE::SecurityOrchestrationHelper
 
     if container.is_a?(::Project)
       policy_data.merge(
-        project_path: container.full_path,
-        project_id: container.id,
         default_environment_id: container.default_environment&.id || -1,
         create_agent_help_path: help_page_url('user/clusters/agent/install/index'),
         network_documentation_path: help_page_path('user/application_security/policies/index'),
@@ -46,10 +46,7 @@ module EE::SecurityOrchestrationHelper
         scan_result_approvers: approvers&.to_json
       )
     else
-      policy_data.merge(
-        namespace_path: container.full_path,
-        namespace_id: container.id
-      )
+      policy_data
     end
   end
 

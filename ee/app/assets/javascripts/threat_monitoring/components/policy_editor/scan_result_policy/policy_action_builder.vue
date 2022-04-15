@@ -17,7 +17,7 @@ export default {
   directives: {
     GlModalDirective,
   },
-  inject: ['projectId'],
+  inject: ['namespaceId'],
   props: {
     initAction: {
       type: Object,
@@ -117,7 +117,7 @@ export default {
           v-model="approversToAdd"
           :skip-user-ids="userIds"
           :skip-group-ids="groupIds"
-          :project-id="projectId"
+          :project-id="namespaceId"
         />
       </div>
       <div class="gl-bg-white gl-w-full gl-mt-3 gl-border gl-rounded-base gl-overflow-auto h-12em">

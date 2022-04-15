@@ -51,7 +51,7 @@ const createMergeRequest = async ({ projectPath, sourceBranch, targetBranch }) =
 const updatePolicy = async ({
   action = SECURITY_POLICY_ACTIONS.APPEND,
   name,
-  projectPath,
+  namespacePath,
   yamlEditorValue,
 }) => {
   const {
@@ -63,7 +63,7 @@ const updatePolicy = async ({
     variables: {
       mode: action,
       name,
-      projectPath,
+      fullPath: namespacePath,
       policyYaml: yamlEditorValue,
     },
   });
@@ -80,13 +80,13 @@ export const modifyPolicy = async ({
   action,
   assignedPolicyProject,
   name,
-  projectPath,
+  namespacePath,
   yamlEditorValue,
 }) => {
   const newPolicyCommitBranch = await updatePolicy({
     action,
     name,
-    projectPath,
+    namespacePath,
     yamlEditorValue,
   });
 
@@ -105,10 +105,10 @@ export const modifyPolicy = async ({
 
 /**
  * Creates a new security policy project and assigns it to the current project
- * @param {String} projectPath
+ * @param {String} fullPath
  * @returns {Object} contains the new security policy project and any errors
  */
-export const assignSecurityPolicyProject = async (projectPath) => {
+export const assignSecurityPolicyProject = async (fullPath) => {
   const {
     data: {
       securityPolicyProjectCreate: { project, errors },
@@ -116,7 +116,7 @@ export const assignSecurityPolicyProject = async (projectPath) => {
   } = await gqClient.mutate({
     mutation: createPolicyProject,
     variables: {
-      projectPath,
+      fullPath,
     },
   });
 
