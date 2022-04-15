@@ -25,7 +25,7 @@ module GemExtensions
             adapter = ::Gitlab::Elastic::Client.adapter
 
             if store.cached_client.nil? || config != store.cached_config || adapter != store.cached_adapter
-              store.cached_client = ::Gitlab::Elastic::Client.build(config)
+              store.cached_client = ::Gitlab::Elastic::Client.build(config.deep_dup)
               store.cached_config = config
               store.cached_adapter = adapter
             end

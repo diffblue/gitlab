@@ -334,54 +334,78 @@ RSpec.describe ApplicationSetting do
   end
 
   describe '#elasticsearch_url_with_credentials' do
-    it 'embeds credentials in the result' do
-      setting.elasticsearch_url = 'http://example.com,https://example.org:9200'
-      setting.elasticsearch_username = 'foo'
-      setting.elasticsearch_password = 'bar'
+    let(:elasticsearch_url) { "#{host1},#{host2}" }
+    let(:host1) { 'http://example.com' }
+    let(:host2) { 'https://example.org:9200' }
+    let(:elasticsearch_username) { 'elastic' }
+    let(:elasticsearch_password) { 'password' }
 
-      expect(setting.elasticsearch_url_with_credentials).to match_array([URI.parse('http://foo:bar@example.com'), URI.parse('https://foo:bar@example.org:9200')])
+    before do
+      setting.elasticsearch_url = elasticsearch_url
+      setting.elasticsearch_username = elasticsearch_username
+      setting.elasticsearch_password = elasticsearch_password
     end
 
-    it 'embeds username only' do
-      setting.elasticsearch_url = 'http://example.com,https://example.org:9200'
-      setting.elasticsearch_username = 'foo'
-      setting.elasticsearch_password = ''
+    context 'when credentials are embedded in url' do
+      let(:elasticsearch_url) { 'http://username:password@example.com,https://test:test@example.org:9200' }
 
-      expect(setting.elasticsearch_url_with_credentials).to match_array([URI.parse('http://foo:@example.com'), URI.parse('https://foo:@example.org:9200')])
+      it 'ignores them and uses elasticsearch_username and elasticsearch_password settings' do
+        expect(setting.elasticsearch_url_with_credentials).to match_array([
+          { scheme: 'http', user: elasticsearch_username, password: elasticsearch_password, host: 'example.com', path: '', port: 80 },
+          { scheme: 'https', user: elasticsearch_username, password: elasticsearch_password, host: 'example.org', path: '', port: 9200 }
+        ])
+      end
     end
 
-    it 'overrides existing embedded credentials' do
-      setting.elasticsearch_url = 'http://username:password@example.com,https://test:test@example.org:9200'
-      setting.elasticsearch_username = 'foo'
-      setting.elasticsearch_password = 'bar'
+    context 'when credential settings are blank' do
+      let(:elasticsearch_username) { nil }
+      let(:elasticsearch_password) { nil }
 
-      expect(setting.elasticsearch_url_with_credentials).to match_array([URI.parse('http://foo:bar@example.com'), URI.parse('https://foo:bar@example.org:9200')])
+      it 'does not return credential info' do
+        expect(setting.elasticsearch_url_with_credentials).to match_array([
+          { scheme: 'http', host: 'example.com', path: '', port: 80 },
+          { scheme: 'https', host: 'example.org', path: '', port: 9200 }
+        ])
+      end
+
+      context 'and url contains credentials' do
+        let(:elasticsearch_url) { 'http://username:password@example.com,https://test:test@example.org:9200' }
+
+        it 'returns credentials from url' do
+          expect(setting.elasticsearch_url_with_credentials).to match_array([
+            { scheme: 'http', user: 'username', password: 'password', host: 'example.com', path: '', port: 80 },
+            { scheme: 'https', user: 'test', password: 'test', host: 'example.org', path: '', port: 9200 }
+          ])
+        end
+      end
+
+      context 'and url contains credentials with special characters' do
+        let(:elasticsearch_url) { 'http://admin:p%40ssword@localhost:9200/' }
+
+        it 'returns decoded credentials from url' do
+          expect(setting.elasticsearch_url_with_credentials).to match_array([
+            { scheme: 'http', user: 'admin', password: 'p@ssword', host: 'localhost', path: '', port: 9200 }
+          ])
+        end
+      end
     end
 
-    it 'returns original url if credentials blank' do
-      setting.elasticsearch_url = 'http://username:password@example.com,https://test:test@example.org:9200'
-      setting.elasticsearch_username = ''
-      setting.elasticsearch_password = ''
+    context 'when credentials settings have special characters' do
+      let(:elasticsearch_username) { 'foo/admin' }
+      let(:elasticsearch_password) { 'b@r+baz!$' }
 
-      expect(setting.elasticsearch_url_with_credentials).to match_array([URI.parse('http://username:password@example.com'), URI.parse('https://test:test@example.org:9200')])
-    end
-
-    it 'encodes the credentials' do
-      setting.elasticsearch_url = 'http://username:password@example.com,https://test:test@example.org:9200'
-      setting.elasticsearch_username = 'foo/admin'
-      setting.elasticsearch_password = 'b@r'
-
-      expect(setting.elasticsearch_url_with_credentials).to match_array([
-        URI.parse('http://foo%2Fadmin:b%40r@example.com'),
-        URI.parse('https://foo%2Fadmin:b%40r@example.org:9200')
-      ])
+      it 'returns the correct values' do
+        expect(setting.elasticsearch_url_with_credentials).to match_array([
+          { scheme: 'http', user: elasticsearch_username, password: elasticsearch_password, host: 'example.com', path: '', port: 80 },
+          { scheme: 'https', user: elasticsearch_username, password: elasticsearch_password, host: 'example.org', path: '', port: 9200 }
+        ])
+      end
     end
   end
 
   describe '#elasticsearch_password' do
     it 'does not modify password if it is unchanged in the form' do
       setting.elasticsearch_password = 'foo'
-
       setting.elasticsearch_password = ApplicationSetting::MASK_PASSWORD
 
       expect(setting.elasticsearch_password).to eq('foo')
@@ -404,7 +428,7 @@ RSpec.describe ApplicationSetting do
       )
 
       expect(setting.elasticsearch_config).to eq(
-        url: [URI.parse('http://foo:bar@example.com:9200')],
+        url: [Gitlab::Elastic::Helper.connection_settings(uri: URI.parse('http://foo:bar@example.com:9200'))],
         aws: false,
         aws_region:     'test-region',
         aws_access_key: 'test-access-key',

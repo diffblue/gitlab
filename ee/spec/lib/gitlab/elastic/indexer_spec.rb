@@ -456,7 +456,9 @@ RSpec.describe Gitlab::Elastic::Indexer do
   def elasticsearch_config
     Gitlab::CurrentSettings.elasticsearch_config.merge(
       index_name: 'gitlab-test'
-    )
+    ).tap do |config|
+      config[:url] = config[:url].map { |u| ::Gitlab::Elastic::Helper.url_string(u) }
+    end
   end
 
   def envvars

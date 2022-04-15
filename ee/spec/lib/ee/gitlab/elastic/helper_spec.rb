@@ -45,6 +45,71 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
     end
   end
 
+  describe '.connection_settings' do
+    it 'returns a hash compatible with elasticsearcht-transport client settings' do
+      settings = described_class.connection_settings(uri: "http://localhost:9200")
+
+      expect(settings).to eq({
+        scheme:   "http",
+        host:     "localhost",
+        path:     "",
+        port:     9200
+      })
+    end
+
+    it 'works when given a URI' do
+      settings = described_class.connection_settings(uri: Addressable::URI.parse("http://localhost:9200"))
+
+      expect(settings).to eq({
+        scheme:   "http",
+        host:     "localhost",
+        path:     "",
+        port:     9200
+      })
+    end
+
+    it 'parses credentials out of the uri' do
+      settings = described_class.connection_settings(uri: "http://elastic:myp%40ssword@localhost:9200")
+
+      expect(settings).to eq({
+        scheme:   "http",
+        host:     "localhost",
+        user:     "elastic",
+        password: "myp@ssword",
+        path:     "",
+        port:     9200
+      })
+    end
+
+    it 'prioritizes creds in arguments over those in url' do
+      settings = described_class.connection_settings(uri: "http://elastic:password@localhost:9200", user: "myuser", password: "p@ssword")
+
+      expect(settings).to eq({
+        scheme:   "http",
+        host:     "localhost",
+        user:     "myuser",
+        password: "p@ssword",
+        path:     "",
+        port:     9200
+      })
+    end
+  end
+
+  describe '.`url_string`' do
+    it 'returns a percent encoded url string' do
+      settings = {
+        scheme:   "http",
+        host:     "localhost",
+        user:     "myuser",
+        password: "p@ssword",
+        path:     "/foo",
+        port:     9200
+      }
+
+      expect(described_class.url_string(settings)).to eq("http://myuser:p%40ssword@localhost:9200/foo")
+    end
+  end
+
   describe '#default_mappings' do
     it 'has only one type' do
       expect(helper.default_mappings.keys).to match_array %i(doc)
