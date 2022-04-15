@@ -1,4 +1,5 @@
 {
+  "ee/*": { "type": "ee" },
   "config/initializers/*.rb": {
     "alternate": "spec/initializers/{}_spec.rb",
     "type": "source"
@@ -7,8 +8,99 @@
     "alternate": "config/initializers/{}.rb",
     "type": "test"
   },
-  "app/*.rb": {
-    "alternate": "spec/{}_spec.rb",
+  "app/channels/*.rb": {
+    "alternate": "spec/app/channels/{}_spec.rb",
+    "related": "ee/app/channels/ee/{}.rb",
+    "type": "source"
+  },
+  "app/components/*.rb": {
+    "alternate": "spec/app/components/{}_spec.rb",
+    "related": "ee/app/components/ee/{}.rb",
+    "type": "source"
+  },
+  "app/controllers/*.rb": {
+    "alternate": "spec/app/controllers/{}_spec.rb",
+    "related": "ee/app/controllers/ee/{}.rb",
+    "type": "source"
+  },
+  "app/enums/*.rb": {
+    "alternate": "spec/app/enums/{}_spec.rb",
+    "related": "ee/app/enums/ee/{}.rb",
+    "type": "source"
+  },
+  "app/events/*.rb": {
+    "alternate": "spec/app/events/{}_spec.rb",
+    "related": "ee/app/events/ee/{}.rb",
+    "type": "source"
+  },
+  "app/experiments/*.rb": {
+    "alternate": "spec/app/experiments/{}_spec.rb",
+    "related": "ee/app/experiments/ee/{}.rb",
+    "type": "source"
+  },
+  "app/finders/*.rb": {
+    "alternate": "spec/app/finders/{}_spec.rb",
+    "related": "ee/app/finders/ee/{}.rb",
+    "type": "source"
+  },
+  "app/graphql/*.rb": {
+    "alternate": "spec/app/graphql/{}_spec.rb",
+    "related": "ee/app/graphql/ee/{}.rb",
+    "type": "source"
+  },
+  "app/helpers/*.rb": {
+    "alternate": "spec/app/helpers/{}_spec.rb",
+    "related": "ee/app/helpers/ee/{}.rb",
+    "type": "source"
+  },
+  "app/mailers/*.rb": {
+    "alternate": "spec/app/mailers/{}_spec.rb",
+    "related": "ee/app/mailers/ee/{}.rb",
+    "type": "source"
+  },
+  "app/models/*.rb": {
+    "alternate": "spec/app/models/{}_spec.rb",
+    "related": "ee/app/models/ee/{}.rb",
+    "type": "source"
+  },
+  "app/policies/*.rb": {
+    "alternate": "spec/app/policies/{}_spec.rb",
+    "related": "ee/app/policies/ee/{}.rb",
+    "type": "source"
+  },
+  "app/presenters/*.rb": {
+    "alternate": "spec/app/presenters/{}_spec.rb",
+    "related": "ee/app/presenters/ee/{}.rb",
+    "type": "source"
+  },
+  "app/serializers/*.rb": {
+    "alternate": "spec/app/serializers/{}_spec.rb",
+    "related": "ee/app/serializers/ee/{}.rb",
+    "type": "source"
+  },
+  "app/services/*.rb": {
+    "alternate": "spec/app/services/{}_spec.rb",
+    "related": "ee/app/services/ee/{}.rb",
+    "type": "source"
+  },
+  "app/uploaders/*.rb": {
+    "alternate": "spec/app/uploaders/{}_spec.rb",
+    "related": "ee/app/uploaders/ee/{}.rb",
+    "type": "source"
+  },
+  "app/validators/*.rb": {
+    "alternate": "spec/app/validators/{}_spec.rb",
+    "related": "ee/app/validators/ee/{}.rb",
+    "type": "source"
+  },
+  "app/views/*.rb": {
+    "alternate": "spec/app/views/{}_spec.rb",
+    "related": "ee/app/views/ee/{}.rb",
+    "type": "source"
+  },
+  "app/workers/*.rb": {
+    "alternate": "spec/app/workers/{}_spec.rb",
+    "related": "ee/app/workers/ee/{}.rb",
     "type": "source"
   },
   "spec/*_spec.rb": {
