@@ -30,19 +30,25 @@ RSpec.describe 'Multiple value streams', :js do
     sign_in(user)
   end
 
-  def select_value_stream(value_stream_name)
-    toggle_value_stream_dropdown
-
-    page.find('[data-testid="dropdown-value-streams"]').all('li button').find { |item| item.text == value_stream_name.to_s }.click
-    wait_for_requests
-  end
-
   def path_nav_elem
     page.find('[data-testid="vsa-path-navigation"]')
   end
 
   def click_action_button(action, index)
     page.find("[data-testid='stage-action-#{action}-#{index}']").click
+  end
+
+  def reload_value_stream
+    click_button 'Reload page'
+  end
+
+  def create_and_select_value_stream(name, with_aggregation = true)
+    create_custom_value_stream(name)
+
+    return unless with_aggregation
+
+    reload_value_stream
+    select_value_stream(name)
   end
 
   shared_examples 'create a value stream' do |custom_value_stream_name|
@@ -86,11 +92,11 @@ RSpec.describe 'Multiple value streams', :js do
     end
   end
 
-  shared_examples 'update a value stream' do |custom_value_stream_name|
+  shared_examples 'update a value stream' do |custom_value_stream_name, with_aggregation|
     before do
       select_group(group)
 
-      create_custom_value_stream(custom_value_stream_name)
+      create_and_select_value_stream(custom_value_stream_name, with_aggregation)
     end
 
     it 'can reorder stages' do
@@ -198,7 +204,7 @@ RSpec.describe 'Multiple value streams', :js do
     end
   end
 
-  shared_examples 'create group value streams' do
+  shared_examples 'create group value streams' do |with_aggregation|
     name = 'group value stream'
 
     before do
@@ -206,11 +212,11 @@ RSpec.describe 'Multiple value streams', :js do
     end
 
     it_behaves_like 'create a value stream', name
-    it_behaves_like 'update a value stream', name
+    it_behaves_like 'update a value stream', name, with_aggregation
     it_behaves_like 'delete a value stream', name
   end
 
-  shared_examples 'create sub group value streams' do
+  shared_examples 'create sub group value streams' do |with_aggregation|
     name = 'sub group value stream'
 
     before do
@@ -218,7 +224,7 @@ RSpec.describe 'Multiple value streams', :js do
     end
 
     it_behaves_like 'create a value stream', name
-    it_behaves_like 'update a value stream', name
+    it_behaves_like 'update a value stream', name, with_aggregation
     it_behaves_like 'delete a value stream', name
   end
 
@@ -227,8 +233,8 @@ RSpec.describe 'Multiple value streams', :js do
       stub_feature_flags(use_vsa_aggregated_tables: false)
     end
 
-    it_behaves_like 'create group value streams'
-    it_behaves_like 'create sub group value streams'
+    it_behaves_like 'create group value streams', false
+    it_behaves_like 'create sub group value streams', false
   end
 
   context 'use_vsa_aggregated_tables feature flag on' do
@@ -249,14 +255,39 @@ RSpec.describe 'Multiple value streams', :js do
     end
 
     context 'with a value stream' do
-      before do
-        # ensure we have a value stream already available
-        create(:cycle_analytics_group_value_stream, group: group, name: 'default')
-        create(:cycle_analytics_group_value_stream, group: sub_group, name: 'default')
+      context 'without an aggregation created' do
+        before do
+          create(:cycle_analytics_group_value_stream, group: group, name: 'default')
+          select_group(group)
+        end
+
+        it 'renders the aggregating status banner' do
+          expect(page).to have_text(s_('CycleAnalytics|Data is collecting and loading.'))
+        end
+
+        it 'displays the value stream once an aggregation is run' do
+          create_value_stream_group_aggregation(group)
+
+          reload_value_stream
+
+          expect(page).not_to have_button(_('Reload page'))
+          expect(page).to have_text('Last updated less than a minute ago')
+        end
       end
 
-      it_behaves_like 'create group value streams'
-      it_behaves_like 'create sub group value streams'
+      context 'with an aggregation created' do
+        before do
+          create_value_stream_group_aggregation(group)
+          create_value_stream_group_aggregation(sub_group)
+
+          # ensure we have a value stream already available
+          create(:cycle_analytics_group_value_stream, group: group, name: 'default')
+          create(:cycle_analytics_group_value_stream, group: sub_group, name: 'default')
+        end
+
+        it_behaves_like 'create group value streams', true
+        it_behaves_like 'create sub group value streams', true
+      end
     end
   end
 end

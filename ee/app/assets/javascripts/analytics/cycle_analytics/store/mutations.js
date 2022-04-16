@@ -140,10 +140,13 @@ export default {
     state.createValueStreamErrors = { ...rest, stages: prepareStageErrors(stages, stageErrors) };
     state.isCreatingValueStream = false;
   },
-  [types.RECEIVE_CREATE_VALUE_STREAM_SUCCESS](state, valueStream) {
+  [types.RECEIVE_CREATE_VALUE_STREAM_SUCCESS](state, valueStream = {}) {
     state.isCreatingValueStream = false;
     state.createValueStreamErrors = {};
     state.selectedValueStream = convertObjectPropsToCamelCase(valueStream, { deep: true });
+
+    const { stages = [] } = valueStream;
+    state.stages = transformRawStages(stages);
   },
   [types.REQUEST_UPDATE_VALUE_STREAM](state) {
     state.isEditingValueStream = true;
@@ -208,5 +211,8 @@ export default {
   },
   [types.RECEIVE_UPDATE_AGGREGATION_ERROR](state) {
     state.isUpdatingAggregation = false;
+  },
+  [types.SET_CREATING_AGGREGATION](state, value) {
+    state.isCreatingAggregation = value;
   },
 };

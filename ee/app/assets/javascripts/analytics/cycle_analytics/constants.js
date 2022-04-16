@@ -70,3 +70,13 @@ export const EMPTY_STATE_FILTER_ERROR_TITLE = __(
 export const EMPTY_STATE_FILTER_ERROR_DESCRIPTION = __(
   'Filter parameters are not valid. Make sure that the end date is after the start date.',
 );
+
+export const AGGREGATING_DATA_WARNING_TITLE = s__('CycleAnalytics|Data is collecting and loading.');
+export const AGGREGATING_DATA_WARNING_MESSAGE = s__(
+  "CycleAnalytics|'%{name}' is collecting the data. This can take a few minutes.",
+);
+export const AGGREGATING_DATA_WARNING_NEXT_UPDATE = s__(
+  'CycleAnalytics|If you have recently upgraded to GitLab Premium, it can take up to 30 minutes for data to collect and display.',
+);
+export const AGGREGATING_DATA_PRIMARY_ACTION_TEXT = __('Reload page');
+export const AGGREGATING_DATA_SECONDARY_ACTION_TEXT = __('Learn more');
