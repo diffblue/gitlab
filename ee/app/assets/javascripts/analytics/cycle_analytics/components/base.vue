@@ -15,6 +15,7 @@ import { METRICS_REQUESTS } from '../constants';
 import DurationChart from './duration_chart.vue';
 import TypeOfWorkCharts from './type_of_work_charts.vue';
 import ValueStreamAggregationStatus from './value_stream_aggregation_status.vue';
+import ValueStreamAggregatingWarning from './value_stream_aggregating_warning.vue';
 import ValueStreamEmptyState from './value_stream_empty_state.vue';
 import ValueStreamSelect from './value_stream_select.vue';
 
@@ -27,6 +28,7 @@ export default {
     StageTable,
     PathNavigation,
     ValueStreamAggregationStatus,
+    ValueStreamAggregatingWarning,
     ValueStreamEmptyState,
     ValueStreamFilters,
     ValueStreamMetrics,
@@ -66,6 +68,7 @@ export default {
       'pagination',
       'aggregation',
       'isUpdatingAggregation',
+      'isCreatingAggregation',
     ]),
     ...mapGetters([
       'hasNoAccessError',
@@ -78,8 +81,16 @@ export default {
       'selectedStageCount',
       'hasValueStreams',
     ]),
+    isWaitingForNextAggregation() {
+      return Boolean(
+        this.selectedValueStream && this.isAggregationEnabled && !this.aggregation.lastRunAt,
+      );
+    },
     shouldRenderEmptyState() {
-      return this.isLoadingValueStreams || !this.hasValueStreams;
+      return this.isLoadingValueStreams || (!this.isCreatingAggregation && !this.hasValueStreams);
+    },
+    shouldRenderAggregationWarning() {
+      return this.isCreatingAggregation || this.isWaitingForNextAggregation;
     },
     shouldDisplayFilters() {
       return !this.errorCode && !this.hasNoAccessError;
@@ -88,7 +99,9 @@ export default {
       return !this.hasNoAccessError && this.selectedStage;
     },
     shouldDisplayCreateMultipleValueStreams() {
-      return Boolean(!this.shouldRenderEmptyState && !this.isLoadingValueStreams);
+      return Boolean(
+        !this.shouldRenderEmptyState && !this.isLoadingValueStreams && !this.isCreatingAggregation,
+      );
     },
     hasDateRangeSet() {
       return this.createdAfter && this.createdBefore;
@@ -101,6 +114,9 @@ export default {
     },
     isAggregationStatusAvailable() {
       return this.isAggregationEnabled && this.aggregation.lastRunAt;
+    },
+    selectedValueStreamName() {
+      return this.selectedValueStream?.name;
     },
     query() {
       const { project_ids, created_after, created_before } = this.cycleAnalyticsRequestParams;
@@ -159,6 +175,9 @@ export default {
     },
     onHandleUpdatePagination(data) {
       this.updateStageTablePagination(data);
+    },
+    onHandleReloadPage() {
+      refreshCurrentPage();
     },
     onToggleAggregation(value) {
       this.updateAggregation(value)
@@ -229,55 +248,67 @@ export default {
         :selected-stage="selectedStage"
         @selected="onStageSelect"
       />
-      <value-stream-filters
-        :group-id="currentGroup.id"
-        :group-path="currentGroupPath"
-        :selected-projects="selectedProjects"
-        :start-date="createdAfter"
-        :end-date="createdBefore"
-        :can-toggle-aggregation="canToggleAggregation"
-        :is-aggregation-enabled="isAggregationEnabled"
-        :is-updating-aggregation-data="isLoading || isUpdatingAggregation"
-        @toggleAggregation="onToggleAggregation"
-        @selectProject="onProjectsSelect"
-        @setDateRange="onSetDateRange"
-      />
-      <gl-empty-state
-        v-if="hasNoAccessError"
-        class="js-empty-state gl-mt-2"
-        :title="__('You don’t have access to Value Stream Analytics for this group')"
-        :svg-path="noAccessSvgPath"
-        :description="
-          __(
-            'Only \'Reporter\' roles and above on tiers Premium and above can see Value Stream Analytics.',
-          )
-        "
+      <value-stream-aggregating-warning
+        v-if="shouldRenderAggregationWarning"
+        class="gl-my-6"
+        :value-stream-title="selectedValueStreamName"
+        @reload="onHandleReloadPage"
       />
       <template v-else>
-        <div :class="[isOverviewStageSelected ? 'gl-mt-2' : 'gl-mt-6']">
-          <value-stream-metrics
-            v-if="isOverviewStageSelected"
-            :request-path="currentGroupPath"
-            :request-params="cycleAnalyticsRequestParams"
-            :requests="$options.METRICS_REQUESTS"
-          />
-          <duration-chart class="gl-mt-3" :stages="activeStages" :selected-stage="selectedStage" />
-          <type-of-work-charts v-if="isOverviewStageSelected" />
-          <stage-table
-            v-if="!isOverviewStageSelected"
-            class="gl-mt-5"
-            :is-loading="isLoading || isLoadingStage"
-            :stage-events="selectedStageEvents"
-            :selected-stage="selectedStage"
-            :stage-count="selectedStageCount"
-            :empty-state-message="selectedStageError"
-            :no-data-svg-path="noDataSvgPath"
-            :pagination="pagination"
-            include-project-name
-            @handleUpdatePagination="onHandleUpdatePagination"
-          />
-        </div>
-        <url-sync v-if="selectedStageReady" :query="query" />
+        <value-stream-filters
+          :group-id="currentGroup.id"
+          :group-path="currentGroupPath"
+          :selected-projects="selectedProjects"
+          :start-date="createdAfter"
+          :end-date="createdBefore"
+          :can-toggle-aggregation="canToggleAggregation"
+          :is-aggregation-enabled="isAggregationEnabled"
+          :is-updating-aggregation-data="isLoading || isUpdatingAggregation"
+          @toggleAggregation="onToggleAggregation"
+          @selectProject="onProjectsSelect"
+          @setDateRange="onSetDateRange"
+        />
+        <gl-empty-state
+          v-if="hasNoAccessError"
+          class="js-empty-state gl-mt-2"
+          :title="__('You don’t have access to Value Stream Analytics for this group')"
+          :svg-path="noAccessSvgPath"
+          :description="
+            __(
+              'Only \'Reporter\' roles and above on tiers Premium and above can see Value Stream Analytics.',
+            )
+          "
+        />
+        <template v-else>
+          <div :class="[isOverviewStageSelected ? 'gl-mt-2' : 'gl-mt-6']">
+            <value-stream-metrics
+              v-if="isOverviewStageSelected"
+              :request-path="currentGroupPath"
+              :request-params="cycleAnalyticsRequestParams"
+              :requests="$options.METRICS_REQUESTS"
+            />
+            <duration-chart
+              class="gl-mt-3"
+              :stages="activeStages"
+              :selected-stage="selectedStage"
+            />
+            <type-of-work-charts v-if="isOverviewStageSelected" />
+            <stage-table
+              v-if="!isOverviewStageSelected"
+              class="gl-mt-5"
+              :is-loading="isLoading || isLoadingStage"
+              :stage-events="selectedStageEvents"
+              :selected-stage="selectedStage"
+              :stage-count="selectedStageCount"
+              :empty-state-message="selectedStageError"
+              :no-data-svg-path="noDataSvgPath"
+              :pagination="pagination"
+              include-project-name
+              @handleUpdatePagination="onHandleUpdatePagination"
+            />
+          </div>
+          <url-sync v-if="selectedStageReady" :query="query" />
+        </template>
       </template>
     </div>
   </div>

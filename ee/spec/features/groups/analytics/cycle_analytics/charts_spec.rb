@@ -44,8 +44,7 @@ RSpec.describe 'Value stream analytics charts', :js do
 
   context 'Duration chart' do
     before do
-      select_group(group)
-      select_value_stream(custom_value_stream_name)
+      select_group_and_custom_value_stream(group, custom_value_stream_name)
     end
 
     it 'displays data for all stages on the overview' do
@@ -87,8 +86,7 @@ RSpec.describe 'Value stream analytics charts', :js do
             create(:labeled_issue, created_at: i.days.ago, project: create(:project, group: group), labels: [group_label2])
           end
 
-          select_group(group)
-          select_value_stream(custom_value_stream_name)
+          select_group_and_custom_value_stream(group, custom_value_stream_name)
         end
 
         it 'displays the chart' do
@@ -125,7 +123,7 @@ RSpec.describe 'Value stream analytics charts', :js do
 
       context 'no data available' do
         before do
-          select_group(group)
+          select_group_and_custom_value_stream(group, custom_value_stream_name)
         end
 
         it 'shows the no data available message' do

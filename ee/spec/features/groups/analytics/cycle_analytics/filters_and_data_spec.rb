@@ -12,6 +12,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
   let_it_be(:sub_group_project) { create(:project, :repository, namespace: group, group: sub_group, name: 'Cool sub group project') }
   let_it_be(:group_label1) { create(:group_label, group: group) }
   let_it_be(:group_label2) { create(:group_label, group: group) }
+  let_it_be(:custom_value_stream_name) { "First custom value stream" }
 
   let(:milestone) { create(:milestone, project: project) }
   let(:mr) { create_merge_request_closing_issue(user, project, issue, commit_message: "References #{issue.to_reference}") }
@@ -191,10 +192,15 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
     end
 
     let_it_be(:issue) { create(:issue, project: project) }
-    let_it_be(:value_stream) { create(:cycle_analytics_group_value_stream, group: group, name: 'First value stream', stages: vsa_stages(group)) }
+    let_it_be(:value_stream) { create(:cycle_analytics_group_value_stream, group: group, name: custom_value_stream_name, stages: vsa_stages(group)) }
+
     let_it_be(:subgroup_value_stream) { create(:cycle_analytics_group_value_stream, group: sub_group, name: 'First subgroup value stream', stages: vsa_stages(sub_group)) }
 
     context 'without valid query parameters set' do
+      before do
+        create_value_stream_group_aggregation(group)
+      end
+
       context 'with created_after date > created_before date' do
         before do
           visit "#{group_analytics_cycle_analytics_path(group)}?created_after=2019-12-31&created_before=2019-11-01"
@@ -207,7 +213,8 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
         before do
           visit "#{group_analytics_cycle_analytics_path(group)}?beans=not-cool"
 
-          select_value_stream('First value stream')
+          select_value_stream(custom_value_stream_name)
+
           select_stage("Issue")
         end
 
@@ -217,6 +224,10 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
 
     context 'with valid query parameters set' do
       projects_dropdown = '.js-projects-dropdown-filter'
+
+      before do
+        create_value_stream_group_aggregation(group)
+      end
 
       context 'with project_ids set' do
         before do
@@ -250,8 +261,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
       let(:selected_group) { group }
 
       before do
-        select_group(group)
-        select_value_stream('First value stream')
+        select_group_and_custom_value_stream(group, custom_value_stream_name)
       end
 
       it_behaves_like 'group value stream analytics'
@@ -265,8 +275,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
       let(:selected_group) { sub_group }
 
       before do
-        select_group(sub_group)
-        select_value_stream('First subgroup value stream')
+        select_group_and_custom_value_stream(sub_group, 'First subgroup value stream')
       end
 
       it_behaves_like 'group value stream analytics'
@@ -293,11 +302,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
         deploy_master(user, project, environment: 'staging')
         deploy_master(user, project)
 
-        aggregation = Analytics::CycleAnalytics::Aggregation.safe_create_for_group(group)
-        Analytics::CycleAnalytics::AggregatorService.new(aggregation: aggregation).execute
-
-        select_group(group)
-        select_value_stream('First value stream')
+        select_group_and_custom_value_stream(group, custom_value_stream_name)
       end
 
       stages_with_data = [
