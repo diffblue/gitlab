@@ -41704,6 +41704,12 @@ msgstr ""
 msgid "Visual Studio Code (SSH)"
 msgstr ""
 
+msgid "JetBrains IDEA (HTTPS)"
+msgstr ""
+
+msgid "JetBrains IDEA (SSH)"
+msgstr ""
+
 msgid "Vulnerabilities"
 msgstr ""
 
