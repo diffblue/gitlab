@@ -21313,6 +21313,12 @@ msgstr ""
 msgid "Japanese language support using"
 msgstr ""
 
+msgid "JetBrains IDEA (HTTPS)"
+msgstr ""
+
+msgid "JetBrains IDEA (SSH)"
+msgstr ""
+
 msgid "Jira display name"
 msgstr ""
 
@@ -41702,12 +41708,6 @@ msgid "Visual Studio Code (HTTPS)"
 msgstr ""
 
 msgid "Visual Studio Code (SSH)"
-msgstr ""
-
-msgid "JetBrains IDEA (HTTPS)"
-msgstr ""
-
-msgid "JetBrains IDEA (SSH)"
 msgstr ""
 
 msgid "Vulnerabilities"
