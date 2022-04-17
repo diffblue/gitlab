@@ -20434,6 +20434,12 @@ msgstr ""
 msgid "Integrations|can't exceed %{recipients_limit}"
 msgstr ""
 
+msgid "IntelliJ IDEA (HTTPS)"
+msgstr ""
+
+msgid "IntelliJ IDEA (SSH)"
+msgstr ""
+
 msgid "Interactive mode"
 msgstr ""
 
@@ -21311,12 +21317,6 @@ msgid "January"
 msgstr ""
 
 msgid "Japanese language support using"
-msgstr ""
-
-msgid "JetBrains IDEA (HTTPS)"
-msgstr ""
-
-msgid "JetBrains IDEA (SSH)"
 msgstr ""
 
 msgid "Jira display name"
