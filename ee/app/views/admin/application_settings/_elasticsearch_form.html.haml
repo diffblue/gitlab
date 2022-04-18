@@ -13,7 +13,7 @@
       = _('Configure settings for Advanced Search with Elasticsearch.')
 
   .settings-content
-    = form_for @application_setting, url: advanced_search_admin_application_settings_path(anchor: 'js-elasticsearch-settings'), html: { class: 'fieldset-form' } do |f|
+    = gitlab_ui_form_for @application_setting, url: advanced_search_admin_application_settings_path(anchor: 'js-elasticsearch-settings'), html: { class: 'fieldset-form' } do |f|
       = form_errors(@application_setting)
 
       %fieldset
@@ -32,40 +32,21 @@
                   = link_to _('Retry migration'), admin_elasticsearch_retry_migration_path(version: migration.version), class: 'btn gl-alert-action btn-warning gl-button', disabled: @last_elasticsearch_reindexing_task&.in_progress?, data: { confirm: _('Are you sure you want to retry this migration?') }, method: :post
 
             .form-group
-              .form-check
-                = f.check_box :elasticsearch_indexing, class: 'form-check-input', data: { qa_selector: 'indexing_checkbox' }
-                = f.label :elasticsearch_indexing, class: 'form-check-label' do
-                  = _('Elasticsearch indexing')
-                - unless Gitlab::CurrentSettings.elasticsearch_indexing?
-                  .form-text.gl-text-gray-600.gl-mt-0
-                    = _('If there isn\'t any existing index, GitLab creates one.')
-                - if Gitlab::CurrentSettings.elasticsearch_indexing?
-                  .form-text
-                    = link_to _('Index all projects'), admin_elasticsearch_enqueue_index_path,
-                        class: ['gl-button', 'btn', 'btn-confirm'], method: :post
-
-            .gl-card-body
-              .form-group
-                .form-check
-                - first_pending_migration = Elastic::DataMigrationService.pending_migrations.first if elasticsearch_available
-                - pending_migration_running_and_pauses_indexing = first_pending_migration&.running? && first_pending_migration&.pause_indexing?
-                - disable_checkbox = !Gitlab::CurrentSettings.elasticsearch_indexing? || pending_migration_running_and_pauses_indexing || @last_elasticsearch_reindexing_task&.in_progress?
-                = f.check_box :elasticsearch_pause_indexing, class: 'form-check-input', data: { qa_selector: 'pause_checkbox' }, disabled: disable_checkbox
-                = f.label :elasticsearch_pause_indexing, class: 'form-check-label' do
-                  = _('Pause Elasticsearch indexing')
-                .form-text.gl-text-gray-600.gl-mt-0
-                  = _('When paused, GitLab still tracks the changes. This is useful for cluster/index migrations.')
-                - if pending_migration_running_and_pauses_indexing
-                  .form-text.text-warning
-                    = _('There are Advanced Search migrations pending that require indexing to pause. Indexing must remain paused until GitLab completes the migrations.')
+              - unless Gitlab::CurrentSettings.elasticsearch_indexing?
+                = f.gitlab_ui_checkbox_component :elasticsearch_indexing, s_('AdminSettings|Elasticsearch indexing'), checkbox_options: { data: { qa_selector: 'indexing_checkbox' } }, help_text: s_('AdminSettings|If there isn\'t any existing index, GitLab creates one.')
+              - if Gitlab::CurrentSettings.elasticsearch_indexing?
+                = f.gitlab_ui_checkbox_component :elasticsearch_indexing, s_('AdminSettings|Elasticsearch indexing'), checkbox_options: { data: { qa_selector: 'indexing_checkbox' } }
+                = link_to _('Index all projects'), admin_elasticsearch_enqueue_index_path,
+                      class: ['gl-button', 'btn', 'btn-confirm'], method: :post
 
             .form-group
-              .form-check
-                = f.check_box :elasticsearch_search, class: 'form-check-input', data: { qa_selector: 'search_checkbox' }
-                = f.label :elasticsearch_search, class: 'form-check-label' do
-                  Search with Elasticsearch enabled
-                .form-text.gl-text-gray-600.gl-mt-0
-                  = _('Disable Elasticsearch until indexing completes.')
+              - first_pending_migration = Elastic::DataMigrationService.pending_migrations.first if elasticsearch_available
+              - pending_migration_running_and_pauses_indexing = first_pending_migration&.running? && first_pending_migration&.pause_indexing?
+              - disable_checkbox = !Gitlab::CurrentSettings.elasticsearch_indexing? || pending_migration_running_and_pauses_indexing || @last_elasticsearch_reindexing_task&.in_progress?
+              = f.gitlab_ui_checkbox_component :elasticsearch_pause_indexing, s_('AdminSettings|Pause Elasticsearch indexing'), checkbox_options: { data: { qa_selector: 'pause_checkbox' }, disabled: disable_checkbox }, help_text: pending_migration_running_and_pauses_indexing ? s_('AdminSettings|There are Advanced Search migrations pending that require indexing to pause. Indexing must remain paused until GitLab completes the migrations.') : s_('AdminSettings|When paused, GitLab still tracks the changes. This is useful for cluster/index migrations.')
+
+            .form-group
+              = f.gitlab_ui_checkbox_component :elasticsearch_search, s_('AdminSettings|Search with Elasticsearch enabled'), checkbox_options: { data: { qa_selector: 'search_checkbox' } }, help_text: s_('AdminSettings|Disable Elasticsearch until indexing completes.')
 
             .form-group
               = f.label :elasticsearch_url, 'URL', class: 'label-bold'
@@ -146,10 +127,7 @@
           .gl-card-body
             %h4= _('Elasticsearch indexing restrictions')
             .form-group
-              .form-check
-                = f.check_box :elasticsearch_limit_indexing, class: 'form-check-input js-limit-checkbox'
-                = f.label :elasticsearch_limit_indexing, class: 'form-check-label' do
-                  = _('Limit the number of namespaces and projects that can be indexed.')
+              = f.gitlab_ui_checkbox_component :elasticsearch_limit_indexing, s_('AdminSettings|Limit the number of namespaces and projects that can be indexed.'), checkbox_options: { class: 'js-limit-checkbox' }
 
             .form-group.js-limit-namespaces{ class: ('hidden' unless @application_setting.elasticsearch_limit_indexing) }
               = f.label :elasticsearch_namespace_ids, _('Namespaces to index'), class: 'label-bold'
@@ -173,42 +151,24 @@
               %a{ href: 'https://www.elastic.co/guide/en/elasticsearch/plugins/current/analysis-smartcn.html' }
                 = _('smartcn custom analyzer')
             .form-group
-              .form-check
-                = f.check_box :elasticsearch_analyzers_smartcn_enabled, class: 'form-check-input'
-                = f.label :elasticsearch_analyzers_smartcn_enabled, class: 'form-check-label' do
-                  = _('Enable smartcn custom analyzer: Indexing')
+              = f.gitlab_ui_checkbox_component :elasticsearch_analyzers_smartcn_enabled, s_('AdminSettings|Enable smartcn custom analyzer: Indexing')
             .form-group
-              .form-check
-                = f.check_box :elasticsearch_analyzers_smartcn_search, class: 'form-check-input', disabled: !Gitlab::CurrentSettings.elasticsearch_analyzers_smartcn_enabled?
-                = f.label :elasticsearch_analyzers_smartcn_search, class: 'form-check-label' do
-                  = _('Enable smartcn custom analyzer: Search')
-                .form-text.gl-text-gray-600
-                  = _('Only enable search after installing the plugin, enabling indexing, and recreating the index.')
+              = f.gitlab_ui_checkbox_component :elasticsearch_analyzers_smartcn_search, s_('AdminSettings|Enable smartcn custom analyzer: Search'), checkbox_options: { disabled: !Gitlab::CurrentSettings.elasticsearch_analyzers_smartcn_enabled? }, help_text: _('AdminSettings|Only enable search after installing the plugin, enabling indexing, and recreating the index.')
+
             %h5
               = _('Japanese language support using')
               %a{ href: 'https://www.elastic.co/guide/en/elasticsearch/plugins/current/analysis-kuromoji.html' }
                 = _('kuromoji custom analyzer')
             .form-group
-              .form-check
-                = f.check_box :elasticsearch_analyzers_kuromoji_enabled, class: 'form-check-input'
-                = f.label :elasticsearch_analyzers_kuromoji_enabled, class: 'form-check-label' do
-                  = _('Enable kuromoji custom analyzer: Indexing')
+              = f.gitlab_ui_checkbox_component :elasticsearch_analyzers_kuromoji_enabled, s_('AdminSettings|Enable kuromoji custom analyzer: Indexing')
             .form-group
-              .form-check
-                = f.check_box :elasticsearch_analyzers_kuromoji_search, class: 'form-check-input', disabled: !Gitlab::CurrentSettings.elasticsearch_analyzers_kuromoji_enabled?
-                = f.label :elasticsearch_analyzers_kuromoji_search, class: 'form-check-label' do
-                  = _('Enable kuromoji custom analyzer: Search')
-                .form-text.gl-text-gray-600
-                  = _('Only enable search after installing the plugin, enabling indexing, and recreating the index.')
+              = f.gitlab_ui_checkbox_component :elasticsearch_analyzers_kuromoji_search, s_('AdminSettings|Enable kuromoji custom analyzer: Search'), checkbox_options: { disabled: !Gitlab::CurrentSettings.elasticsearch_analyzers_kuromoji_enabled? }, help_text: s_('AdminSettings|Only enable search after installing the plugin, enabling indexing, and recreating the index.')
 
         .gl-card.gl-bg-gray-10.gl-mb-6
           .gl-card-body
             %h4= _('Elasticsearch AWS IAM credentials')
             .form-group
-              .form-check
-                = f.check_box :elasticsearch_aws, class: 'form-check-input'
-                = f.label :elasticsearch_aws, class: 'form-check-label' do
-                  Use AWS hosted Elasticsearch with IAM credentials
+              = f.gitlab_ui_checkbox_component :elasticsearch_aws, s_('AdminSettings|Use AWS hosted Elasticsearch with IAM credentials')
             .form-group
               = f.label :elasticsearch_aws_region, 'AWS region', class: 'label-bold'
               = f.text_field :elasticsearch_aws_region, value: @application_setting.elasticsearch_aws_region, class: 'form-control gl-form-input'
@@ -240,7 +200,7 @@
       = _('Trigger cluster reindexing. Only use this with an index that was created in GitLab 13.0 or later.')
 
   .settings-content
-    = form_for @elasticsearch_reindexing_task, url: admin_elasticsearch_trigger_reindexing_path, method: :post, html: { class: 'fieldset-form' } do |f|
+    = gitlab_ui_form_for @elasticsearch_reindexing_task, url: admin_elasticsearch_trigger_reindexing_path, method: :post, html: { class: 'fieldset-form' } do |f|
       %fieldset
         .form-group
           = f.label :slice_multiplier, _('Slice multiplier'), class: 'label-bold'

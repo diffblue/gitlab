@@ -16,7 +16,7 @@ module QA
               end
 
               def check_indexing
-                check_element(:indexing_checkbox)
+                check_element(:indexing_checkbox, true)
               end
 
               def has_no_indexing_checkbox_element?
@@ -24,7 +24,7 @@ module QA
               end
 
               def check_search
-                check_element(:search_checkbox)
+                check_element(:search_checkbox, true)
               end
 
               def enter_link(link)
