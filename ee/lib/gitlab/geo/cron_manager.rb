@@ -3,18 +3,22 @@
 module Gitlab
   module Geo
     class CronManager
-      COMMON_JOBS = %w[
+      COMMON_GEO_JOBS = %w[
         geo_metrics_update_worker
         geo_verification_cron_worker
+      ].freeze
+
+      # These jobs run on everything, whether Geo is enabled or not
+      COMMON_GEO_AND_NON_GEO_JOBS = %w[
         repository_check_worker
       ].freeze
 
-      PRIMARY_JOBS = %w[
+      PRIMARY_GEO_JOBS = %w[
         geo_prune_event_log_worker
         geo_repository_verification_primary_batch_worker
       ].freeze
 
-      SECONDARY_JOBS = %w[
+      SECONDARY_GEO_JOBS = %w[
         geo_file_download_dispatch_worker
         geo_registry_sync_worker
         geo_repository_sync_worker
@@ -25,7 +29,7 @@ module Gitlab
         geo_sync_timeout_cron_worker
       ].freeze
 
-      GEO_JOBS = (COMMON_JOBS + PRIMARY_JOBS + SECONDARY_JOBS).freeze
+      GEO_JOBS = (COMMON_GEO_JOBS + PRIMARY_GEO_JOBS + SECONDARY_GEO_JOBS).freeze
 
       CONFIG_WATCHER = 'geo_sidekiq_cron_config_worker'
       CONFIG_WATCHER_CLASS = 'Geo::SidekiqCronConfigWorker'
@@ -38,8 +42,8 @@ module Gitlab
         elsif Geo.secondary?
           configure_secondary
         else
-          enable!(all_jobs(except: GEO_JOBS))
           disable!(jobs(GEO_JOBS))
+          enable!(all_jobs(except: GEO_JOBS))
         end
       end
 
@@ -56,12 +60,12 @@ module Gitlab
       private
 
       def configure_primary
-        disable!(jobs(SECONDARY_JOBS))
-        enable!(all_jobs(except: SECONDARY_JOBS))
+        disable!(jobs(SECONDARY_GEO_JOBS))
+        enable!(all_jobs(except: SECONDARY_GEO_JOBS))
       end
 
       def configure_secondary
-        names = [CONFIG_WATCHER, COMMON_JOBS, SECONDARY_JOBS].flatten
+        names = [CONFIG_WATCHER, COMMON_GEO_JOBS, SECONDARY_GEO_JOBS, COMMON_GEO_AND_NON_GEO_JOBS].flatten
 
         disable!(all_jobs(except: names))
         enable!(jobs(names))
