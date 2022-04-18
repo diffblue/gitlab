@@ -3357,14 +3357,14 @@ RSpec.describe Project do
 
       context 'when project belongs to free namespace' do
         let_it_be(:no_plan_group) { create(:group_with_plan, plan: nil) }
-        let_it_be(:project) { create(:project, namespace: no_plan_group) }
+        let_it_be_with_reload(:project) { create(:project, namespace: no_plan_group) }
 
         it_behaves_like 'returns true if project is inactive'
       end
     end
 
     context 'when not Gitlab.com' do
-      let_it_be(:project) { create(:project, name: 'test-project') }
+      let_it_be_with_reload(:project) { create(:project, name: 'test-project') }
 
       it_behaves_like 'returns true if project is inactive'
     end
