@@ -1,9 +1,6 @@
-import { GlButton } from '@gitlab/ui';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { parseBoolean } from '~/lib/utils/common_utils';
-import { escapeFileUrl } from '~/lib/utils/url_utility';
-import { __ } from '~/locale';
 import initWebIdeLink from '~/pages/projects/shared/web_ide_link';
 import PerformancePlugin from '~/performance/vue_performance_plugin';
 import createStore from '~/code_navigation/store';
@@ -148,31 +145,6 @@ export default function setupVueRepositoryList() {
       },
     });
   }
-
-  const treeHistoryLinkEl = document.getElementById('js-tree-history-link');
-  const { historyLink } = treeHistoryLinkEl.dataset;
-
-  // eslint-disable-next-line no-new
-  new Vue({
-    el: treeHistoryLinkEl,
-    router,
-    render(h) {
-      return h(
-        GlButton,
-        {
-          attrs: {
-            href: `${historyLink}/${
-              this.$route.params.path ? escapeFileUrl(this.$route.params.path) : ''
-            }`,
-            // Ideally passing this class to `props` should work
-            // But it doesn't work here. :(
-            class: 'btn btn-default btn-md gl-button',
-          },
-        },
-        [__('History')],
-      );
-    },
-  });
 
   initWebIdeLink({ el: document.getElementById('js-tree-web-ide-link'), router });
 
