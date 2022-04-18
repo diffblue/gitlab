@@ -148,7 +148,6 @@ export default {
         selector: `.${this.arkoseContainerClass}`,
         onShown: this.onArkoseLabsIframeShown,
         onCompleted: this.passArkoseLabsChallenge,
-        onSuppress: this.onArkoseLabsSuppress,
         onError: this.handleArkoseLabsFailure,
       });
     },
@@ -156,12 +155,13 @@ export default {
       this.arkoseChallengePassed = true;
       this.arkoseToken = response.token;
       this.hideErrors();
-    },
-    onArkoseLabsSuppress() {
-      if (this.submitOnSuppress) {
+
+      if (this.submitOnSuppress && response.suppressed) {
         // If the challenge was suppressed following the form's submission, we need to proceed with
         // the submission.
-        document.querySelector(this.formSelector).submit();
+        this.$nextTick(() => {
+          document.querySelector(this.formSelector).submit();
+        });
       }
     },
     handleArkoseLabsFailure(e) {
