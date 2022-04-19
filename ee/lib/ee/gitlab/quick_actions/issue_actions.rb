@@ -75,7 +75,7 @@ module EE
           execution_message do |iteration|
             _("Set the iteration to %{iteration_reference}.") % { iteration_reference: iteration.to_reference } if iteration
           end
-          params '*iteration:"iteration name"'
+          params '*iteration:"iteration name" | *iteration:<ID>'
           types Issue
           condition do
             quick_action_target.supports_iterations? &&
