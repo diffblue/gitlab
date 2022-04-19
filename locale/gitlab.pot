@@ -20605,9 +20605,6 @@ msgstr ""
 msgid "Invite a group"
 msgstr ""
 
-msgid "Invite email has already been taken"
-msgstr ""
-
 msgid "Invite members"
 msgstr ""
 
