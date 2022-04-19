@@ -17,10 +17,26 @@ RSpec.describe Search::GlobalService do
     let(:service) { described_class.new(user, params) }
   end
 
-  context 'merge_requests search' do
-    let(:results) { described_class.new(nil, search: '*').execute.objects('merge_requests') }
+  context 'has_parent usage', :elastic do
+    shared_examples 'search does not use has_parent' do |scope|
+      let(:results) { described_class.new(nil, search: '*').execute.objects(scope) }
+      let(:es_host) { Gitlab::CurrentSettings.elasticsearch_url[0] }
+      let(:search_url) { Addressable::Template.new("#{es_host}/{index}/doc/_search{?params*}") }
 
-    it_behaves_like 'search query applies joins based on migrations shared examples', :add_new_data_to_merge_requests_documents
+      it 'does not use joins to apply permissions' do
+        request = a_request(:get, search_url).with do |req|
+          expect(req.body).not_to include("has_parent")
+        end
+
+        results
+
+        expect(request).to have_been_made
+      end
+    end
+
+    it_behaves_like 'search does not use has_parent', 'merge_requests'
+    it_behaves_like 'search does not use has_parent', 'issues'
+    it_behaves_like 'search does not use has_parent', 'notes'
   end
 
   context 'when projects search has an empty search term', :elastic do
@@ -65,28 +81,6 @@ RSpec.describe Search::GlobalService do
 
       with_them do
         it_behaves_like 'search respects visibility'
-      end
-
-      # Since newly created indices automatically have all migrations as
-      # finished we need a test to verify the old style searches work for
-      # instances which haven't finished the migration yet
-      context 'when add_new_data_to_merge_requests_documents migration is not finished' do
-        before do
-          set_elasticsearch_migration_to :add_new_data_to_merge_requests_documents, including: false
-        end
-
-        # merge_request cannot be defined prior to the migration mocks because it
-        # will cause the incorrect value to be passed to `use_separate_indices` when creating
-        # the proxy
-        let!(:merge_request) { create(:merge_request, target_project: project, source_project: project) }
-
-        where(:project_level, :feature_access_level, :membership, :admin_mode, :expected_count) do
-          permission_table_for_reporter_feature_access
-        end
-
-        with_them do
-          it_behaves_like 'search respects visibility'
-        end
       end
     end
 

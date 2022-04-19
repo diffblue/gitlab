@@ -132,12 +132,6 @@ module EE
           sortable: false,
           sortParam: 'relevant'
         }
-
-        unless Elastic::DataMigrationService.migration_has_finished?(:add_upvotes_to_issues)
-          original_options.delete_if do |option|
-            option[:title] == _('Popularity')
-          end
-        end
       end
 
       options + original_options

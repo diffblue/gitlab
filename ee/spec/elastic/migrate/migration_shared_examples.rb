@@ -193,3 +193,28 @@ RSpec.shared_examples 'migration adds mapping' do
     end
   end
 end
+
+RSpec.shared_examples 'a deprecated Advanced Search migration' do |version|
+  subject { described_class.new(version) }
+
+  describe '#migrate' do
+    it 'logs a message and halts the migration' do
+      expect(subject).to receive(:log).with(/has been deleted in the last major version upgrade/)
+      expect(subject).to receive(:fail_migration_halt_error!).and_return(true)
+
+      subject.migrate
+    end
+  end
+
+  describe '#completed?' do
+    it 'returns false' do
+      expect(subject.completed?).to be false
+    end
+  end
+
+  describe '#obsolete?' do
+    it 'returns true' do
+      expect(subject.obsolete?).to be true
+    end
+  end
+end

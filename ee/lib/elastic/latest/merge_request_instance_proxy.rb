@@ -34,11 +34,7 @@ module Elastic
       end
 
       def generic_attributes
-        if Elastic::DataMigrationService.migration_has_finished?(:migrate_merge_requests_to_separate_index)
-          super.except('join_field')
-        else
-          super
-        end
+        super.except('join_field')
       end
     end
   end
