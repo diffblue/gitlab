@@ -6,9 +6,9 @@ module IncidentManagement
       # @param oncall_schedule [IncidentManagement::OncallRotation]
       # @param user [User]
       def initialize(oncall_rotation, user)
+        super(project: oncall_rotation.project, current_user: user)
+
         @oncall_rotation = oncall_rotation
-        @user = user
-        @project = oncall_rotation.project
       end
 
       def execute
@@ -24,7 +24,7 @@ module IncidentManagement
 
       private
 
-      attr_reader :oncall_rotation, :user, :project
+      attr_reader :oncall_rotation
 
       def error_no_permissions
         error(_('You have insufficient permissions to remove an on-call rotation from this project'))

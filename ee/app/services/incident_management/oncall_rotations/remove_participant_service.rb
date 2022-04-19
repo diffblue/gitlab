@@ -8,6 +8,8 @@ module IncidentManagement
       # @param user_to_remove [User]
       # @param async_email [Boolean]
       def initialize(oncall_rotation, user_to_remove, async_email = true)
+        super(project: oncall_rotation.project)
+
         @oncall_rotation = oncall_rotation
         @user_to_remove = user_to_remove
         @async_email = async_email
