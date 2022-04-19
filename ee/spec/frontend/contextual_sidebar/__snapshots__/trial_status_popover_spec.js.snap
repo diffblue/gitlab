@@ -21,13 +21,13 @@ exports[`TrialStatusPopover component group_contact_sales experiment candidate m
     >
       <div
         class="js-hand-raise-lead-button"
+        data-button-attributes="{\\"size\\":\\"small\\",\\"variant\\":\\"confirm\\",\\"class\\":\\"gl-mb-3 gl-w-full\\",\\"buttonTextClasses\\":\\"gl-font-sm\\",\\"href\\":\\"#\\"}"
         data-company-name="companyName"
         data-first-name="firstName"
         data-glm-content="glmContent"
         data-last-name="lastName"
         data-namespace-id="namespaceId"
         data-user-name="userName"
-        small=""
       />
     </div>
      

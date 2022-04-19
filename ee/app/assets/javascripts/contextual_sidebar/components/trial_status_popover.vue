@@ -44,6 +44,13 @@ export default {
     };
   },
   i18n,
+  handRaiseLeadAttributes: {
+    size: 'small',
+    variant: 'confirm',
+    class: 'gl-mb-3 gl-w-full',
+    buttonTextClasses: 'gl-font-sm',
+    href: '#',
+  },
   computed: {
     formattedTrialEndDate() {
       return formatDate(this.trialEndDate, trialEndDateFormatString);
@@ -127,13 +134,13 @@ export default {
           <div data-testid="contact-sales-btn" @click="trackPageAction('contactSalesBtnClick')">
             <div
               class="js-hand-raise-lead-button"
+              :data-button-attributes="JSON.stringify($options.handRaiseLeadAttributes)"
               :data-namespace-id="user.namespaceId"
               :data-user-name="user.userName"
               :data-first-name="user.firstName"
               :data-last-name="user.lastName"
               :data-company-name="user.companyName"
               :data-glm-content="user.glmContent"
-              small
             ></div>
           </div>
         </template>
