@@ -93,6 +93,34 @@ RSpec.describe Namespaces::Storage::EmailNotificationService do
         end
       end
 
+      where(:limit, :used, :last_notification_level) do
+        0    | 0   | :storage_remaining
+        0    | 150 | :storage_remaining
+        0    | 0   | :caution
+        0    | 100 | :caution
+        0    | 0   | :warning
+        0    | 50  | :warning
+        0    | 0   | :danger
+        0    | 50  | :danger
+        0    | 0   | :exceeded
+        0    | 1   | :exceeded
+      end
+
+      with_them do
+        it 'does not send an email when there is no storage limit' do
+          set_storage_size_limit(group, megabytes: limit)
+          set_used_storage(group, megabytes: used)
+          set_notification_level(last_notification_level)
+
+          expect(mailer).not_to receive(:notify_out_of_storage)
+          expect(mailer).not_to receive(:notify_limit_warning)
+
+          service.execute(group)
+
+          expect(group.root_storage_statistics.reload.notification_level.to_sym).to eq(:storage_remaining)
+        end
+      end
+
       it 'sends an email to all group owners' do
         set_storage_size_limit(group, megabytes: 100)
         set_used_storage(group, megabytes: 200)
@@ -135,17 +163,6 @@ RSpec.describe Namespaces::Storage::EmailNotificationService do
 
           service.execute(group)
         end
-      end
-
-      it 'does nothing if there is no defined storage limit' do
-        set_used_storage(group, megabytes: 150)
-
-        expect(mailer).not_to receive(:notify_out_of_storage)
-        expect(mailer).not_to receive(:notify_limit_warning)
-
-        service.execute(group)
-
-        expect(group.root_storage_statistics.reload.notification_level).to eq('storage_remaining')
       end
 
       it 'does nothing if there is no root_storage_statistics' do
