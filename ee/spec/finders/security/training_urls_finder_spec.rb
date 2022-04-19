@@ -49,7 +49,9 @@ RSpec.describe Security::TrainingUrlsFinder do
         end
 
         it 'returns training urls list with status completed' do
-          is_expected.to match_array([{ name: 'Kontra', url: 'http://test.host/test', status: 'completed' }])
+          is_expected.to match_array(
+            [{ name: 'Kontra', url: 'http://test.host/test', status: 'completed', identifier: identifier.external_id }]
+          )
         end
       end
 

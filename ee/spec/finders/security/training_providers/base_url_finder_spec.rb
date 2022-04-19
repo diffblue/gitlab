@@ -40,7 +40,7 @@ RSpec.describe Security::TrainingProviders::BaseUrlFinder do
       end
 
       it 'returns a url with status completed' do
-        expect(described_class.new(identifier.project, provider, identifier.external_id).execute).to eq({ name: provider.name, url: dummy_url, status: 'completed' })
+        expect(described_class.new(identifier.project, provider, identifier.external_id).execute).to eq({ name: provider.name, url: dummy_url, status: 'completed', identifier: identifier.external_id })
       end
     end
 

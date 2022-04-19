@@ -14,13 +14,14 @@ module Security
         @project = project
         @provider = provider
         @identifier_external_id = identifier_external_id.split('-').last
+        @identifier = identifier_external_id # we need this to hold the pre-parsed data
       end
 
       def execute
         if response_url.nil?
           { name: provider.name, url: response_url, status: "pending" }
-        else
-          { name: provider.name, url: response_url[:url], status: "completed" } if response_url[:url]
+        elsif response_url[:url]
+          { name: provider.name, url: response_url[:url], status: "completed", identifier: @identifier }
         end
       end
 
