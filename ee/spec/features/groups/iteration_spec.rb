@@ -22,6 +22,8 @@ RSpec.describe 'Group iterations' do
 
   context 'create an iteration', :js do
     before do
+      stub_feature_flags(iteration_cadences: false)
+
       visit new_group_iteration_path(group)
     end
 

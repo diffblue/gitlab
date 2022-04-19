@@ -12,6 +12,10 @@ RSpec.describe 'Iterations list', :js do
   let_it_be(:upcoming_iteration) { create(:iteration, group: group, start_date: now + 1.day, due_date: now + 2.days) }
   let_it_be(:closed_iteration) { create(:closed_iteration, :skip_future_date_validation, group: group, start_date: now - 3.days, due_date: now - 2.days) }
 
+  before do
+    stub_feature_flags(iteration_cadences: false)
+  end
+
   context 'as guest' do
     before do
       visit project_iterations_path(project)

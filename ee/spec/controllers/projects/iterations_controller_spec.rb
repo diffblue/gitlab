@@ -57,6 +57,18 @@ RSpec.describe Projects::IterationsController do
 
         it_behaves_like 'returning response status', :success
       end
+
+      context 'when iteration cadences is enabled' do
+        before do
+          stub_feature_flags(iteration_cadences: true)
+        end
+
+        it 'redirects to the project iteration cadence index path' do
+          subject
+
+          expect(response).to redirect_to(project_iteration_cadences_path(project))
+        end
+      end
     end
   end
 
@@ -93,6 +105,37 @@ RSpec.describe Projects::IterationsController do
         end
 
         it_behaves_like 'returning response status', :success
+      end
+
+      context 'when iteration cadences is enabled' do
+        before do
+          stub_feature_flags(iteration_cadences: true)
+        end
+
+        context 'when current user cannot view the requested iteration' do
+          let_it_be(:other_iteration) do
+            other_cadence = create(:iterations_cadence, group: create(:group))
+            create(:iteration, iterations_cadence: other_cadence)
+          end
+
+          let(:requested_iteration) { other_iteration }
+
+          it_behaves_like 'returning response status', :not_found
+        end
+
+        context 'when current user can view the requested iteration' do
+          it 'redirects to the project iteration cadence iteration show path' do
+            subject
+
+            expect(response).to redirect_to(
+              project_iteration_cadence_iteration_path(
+                project,
+                iteration_cadence_id: requested_iteration.iterations_cadence_id,
+                id: requested_iteration.id
+              )
+            )
+          end
+        end
       end
     end
   end

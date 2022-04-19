@@ -154,6 +154,10 @@ RSpec.describe 'User edits iteration' do
         let(:start_date_input) { start_date_field.set(new_start_date) }
         let(:due_date_input) { due_date_field.set(new_due_date) }
 
+        before do
+          stub_feature_flags(iteration_cadences: false)
+        end
+
         it_behaves_like 'manually managed iteration'
       end
     end

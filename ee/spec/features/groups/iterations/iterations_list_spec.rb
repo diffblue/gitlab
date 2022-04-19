@@ -14,6 +14,10 @@ RSpec.describe 'Iterations list', :js do
   let_it_be(:subgroup_closed_iteration) { create(:iteration, :skip_future_date_validation, group: subgroup, start_date: now - 5.days, due_date: now - 4.days) }
 
   context 'as guest' do
+    before do
+      stub_feature_flags(iteration_cadences: false)
+    end
+
     context 'when in group' do
       before do
         visit group_iterations_path(group)
@@ -104,6 +108,7 @@ RSpec.describe 'Iterations list', :js do
   context 'as user' do
     before do
       stub_licensed_features(iterations: true)
+      stub_feature_flags(iteration_cadences: false)
       group.add_developer(user)
       sign_in(user)
       visit group_iterations_path(group)

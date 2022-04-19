@@ -5,18 +5,44 @@ class Groups::IterationsController < Groups::ApplicationController
   before_action :authorize_show_iteration!, only: [:index, :show]
   before_action :authorize_create_iteration!, only: [:new, :edit]
   before_action :set_noteable_type, only: [:show, :new, :edit]
+  before_action :set_iteration!, only: [:show, :edit], if: -> { group.iteration_cadences_feature_flag_enabled? }
 
   feature_category :team_planning
 
-  def index; end
+  def index
+    redirect_to group_iteration_cadences_path(group) if group.iteration_cadences_feature_flag_enabled?
+  end
 
-  def show; end
+  def show
+    if group.iteration_cadences_feature_flag_enabled?
+      redirect_to group_iteration_cadence_iteration_path(iteration_cadence_id: cadence_id, id: params[:id])
+    end
+  end
 
-  def new; end
+  def new
+    redirect_to group_iteration_cadences_path(group) if group.iteration_cadences_feature_flag_enabled?
+  end
 
-  def edit; end
+  def edit
+    if group.iteration_cadences_feature_flag_enabled?
+      redirect_to edit_group_iteration_cadence_iteration_path(iteration_cadence_id: cadence_id, id: params[:id])
+    end
+  end
 
   private
+
+  def set_iteration!
+    @iteration ||= IterationsFinder
+      .new(current_user, id: params[:id], parent: group, include_ancestors: true)
+      .execute
+      .first
+
+    render_404 if @iteration.nil?
+  end
+
+  def cadence_id
+    @iteration.iterations_cadence.id
+  end
 
   def set_noteable_type
     @noteable_type = Iteration
