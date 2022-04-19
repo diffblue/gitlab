@@ -12,7 +12,7 @@ RSpec.describe Registrations::CompanyController do
     allow(::Gitlab).to receive(:com?).and_return(true)
   end
 
-  shared_examples 'an authenticated endpoint' do
+  shared_examples 'user authentication' do
     context 'when not authenticated' do
       let(:logged_in) { false }
 
@@ -41,7 +41,7 @@ RSpec.describe Registrations::CompanyController do
   describe '#new' do
     subject { get :new }
 
-    it_behaves_like 'an authenticated endpoint'
+    it_behaves_like 'user authentication'
     it_behaves_like 'a dot-com only feature'
 
     context 'on render' do
@@ -49,6 +49,7 @@ RSpec.describe Registrations::CompanyController do
       it { is_expected.to render_template(:new) }
     end
   end
+
   describe '#create' do
     using RSpec::Parameterized::TableSyntax
 
