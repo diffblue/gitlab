@@ -12,6 +12,6 @@ RSpec.describe 'ArkoseLabs content security policy' do
   it 'has proper Content Security Policy headers' do
     visit root_path
 
-    expect(response_headers['Content-Security-Policy']).to include('https://client-api.arkoselabs.com')
+    expect(response_headers['Content-Security-Policy']).to include('https://*.arkoselabs.com')
   end
 end
