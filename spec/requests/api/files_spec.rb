@@ -463,7 +463,7 @@ RSpec.describe API::Files do
       end
 
       context 'with a range parameter' do
-        let(:params) { super().merge(range_start: 2, range_end: 4) }
+        let(:params) { super().merge(range: { start: 2, end: 4 }) }
 
         it 'returns file blame attributes as json for the range' do
           get api(route(file_path) + '/blame', current_user), params: params
@@ -475,6 +475,50 @@ RSpec.describe API::Files do
 
           expect(lines.map(&:size)).to eq(expected_blame_range_sizes[1..2])
           expect(lines.flatten).to eq(["require 'open3'", '', 'module Popen'])
+        end
+
+        context 'when start > end' do
+          let(:params) { super().merge(range: { start: 4, end: 2 }) }
+
+          it 'returns 400 error' do
+            get api(route(file_path) + '/blame', current_user), params: params
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(json_response['message']).to eq('range[start] must be less than or equal to range[end]')
+          end
+        end
+
+        context 'when range is incomplete' do
+          let(:params) { super().merge(range: { start: 1 }) }
+
+          it 'returns 400 error' do
+            get api(route(file_path) + '/blame', current_user), params: params
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(json_response['error']).to eq('range[end] is missing, range[end] is empty')
+          end
+        end
+
+        context 'when range contains negative integers' do
+          let(:params) { super().merge(range: { start: -2, end: -5 }) }
+
+          it 'returns 400 error' do
+            get api(route(file_path) + '/blame', current_user), params: params
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(json_response['error']).to eq('range[start] does not have a valid value, range[end] does not have a valid value')
+          end
+        end
+
+        context 'when range is missing' do
+          let(:params) { super().merge(range: { start: '', end: '' }) }
+
+          it 'returns 400 error' do
+            get api(route(file_path) + '/blame', current_user), params: params
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(json_response['error']).to eq('range[start] is empty, range[end] is empty')
+          end
         end
       end
 
