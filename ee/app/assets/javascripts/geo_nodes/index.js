@@ -23,11 +23,13 @@ export const initGeoNodes = () => {
   return new Vue({
     el,
     store: createStore({ primaryVersion, primaryRevision, replicableTypes, searchFilter }),
+    provide: {
+      geoNodesEmptyStateSvg,
+    },
     render(createElement) {
       return createElement(GeoNodesApp, {
         props: {
           newNodeUrl,
-          geoNodesEmptyStateSvg,
         },
       });
     },

@@ -277,3 +277,16 @@ export const MOCK_FILTER_NODES = [
     healthStatus: null,
   },
 ];
+
+export const MOCK_NOT_CONFIGURED_EMPTY_STATE = {
+  title: 'Discover GitLab Geo',
+  description:
+    'Make everyone on your team more productive regardless of their location. GitLab Geo creates read-only mirrors of your GitLab instance so you can reduce the time it takes to clone and fetch large repos.',
+  showLearnMoreButton: true,
+};
+
+export const MOCK_NO_RESULTS_EMPTY_STATE = {
+  title: 'No Geo site found',
+  description: 'Edit your search and try again.',
+  showLearnMoreButton: false,
+};
