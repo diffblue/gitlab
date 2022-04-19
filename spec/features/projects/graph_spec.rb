@@ -63,6 +63,29 @@ RSpec.describe 'Project Graph', :js do
     end
   end
 
+  context 'charts graph ref switcher' do
+    def switch_ref_to(ref_name)
+      first('.js-project-refs-dropdown').click
+
+      page.within '.project-refs-form' do
+        click_link ref_name
+      end
+    end
+
+    before do
+      visit charts_project_graph_path(project, 'master')
+    end
+
+    it 'switches ref to branch' do
+      switch_ref_to('feature')
+
+      expect(page).to have_selector '.dropdown-menu-toggle', text: 'feature'
+      page.within '.tree-ref-header' do
+        expect(page).to have_content 'feature'
+      end
+    end
+  end
+
   context 'when CI enabled' do
     before do
       project.enable_ci
