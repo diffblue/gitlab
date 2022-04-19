@@ -1,7 +1,12 @@
 import Api from 'ee/api';
 import createFlash from '~/flash';
-import { __ } from '~/locale';
+import { s__ } from '~/locale';
 import * as types from './mutation_types';
+
+const i18n = {
+  errorFetchingSettings: s__('Geo|There was an error fetching the Geo Settings'),
+  errorUpdatingSettings: s__('Geo|There was an error updating the Geo Settings'),
+};
 
 export const fetchGeoSettings = ({ commit }) => {
   commit(types.REQUEST_GEO_SETTINGS);
@@ -14,7 +19,7 @@ export const fetchGeoSettings = ({ commit }) => {
     })
     .catch(() => {
       createFlash({
-        message: __('There was an error fetching the Geo Settings'),
+        message: i18n.errorFetchingSettings,
       });
       commit(types.RECEIVE_GEO_SETTINGS_ERROR);
     });
@@ -34,7 +39,7 @@ export const updateGeoSettings = ({ commit, state }) => {
     })
     .catch(() => {
       createFlash({
-        message: __('There was an error updating the Geo Settings'),
+        message: i18n.errorUpdatingSettings,
       });
       commit(types.RECEIVE_UPDATE_GEO_SETTINGS_ERROR);
     });
