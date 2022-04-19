@@ -10969,6 +10969,9 @@ msgstr ""
 msgid "CurrentUser|Start an Ultimate trial"
 msgstr ""
 
+msgid "Custom (%{language})"
+msgstr ""
+
 msgid "Custom Attributes"
 msgstr ""
 
@@ -11963,6 +11966,9 @@ msgid "Delete artifacts"
 msgstr ""
 
 msgid "Delete badge"
+msgstr ""
+
+msgid "Delete code block"
 msgstr ""
 
 msgid "Delete column"
