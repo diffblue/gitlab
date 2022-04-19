@@ -47,12 +47,9 @@ export default {
         </gl-button>
       </gl-button-group>
     </div>
-    <div class="ml-auto gl-display-none gl-sm-display-flex">
-      <!-- empty -->
-    </div>
     <div
       v-if="activeTab === $options.ITEM_TABS.TREE"
-      class="gl-sm-display-inline-flex gl-display-flex gl-mt-3 gl-sm-mt-0"
+      class="gl-sm-display-inline-flex gl-display-flex gl-mt-3 gl-sm-mt-0 gl-sm-ml-auto"
     >
       <toggle-labels class="gl-sm-ml-3! gl-ml-0!" />
     </div>
