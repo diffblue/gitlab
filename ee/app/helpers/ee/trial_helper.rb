@@ -25,6 +25,13 @@ module EE
       }.merge(params.slice(:first_name, :last_name, :company_name, :company_size, :phone_number, :country, :state).to_unsafe_h.symbolize_keys)
     end
 
+    def create_company_form_data
+      submit_params = glm_params.merge(params.slice(:trial, :role, :jtbd, :comment).to_unsafe_h.symbolize_keys)
+      {
+        submit_path: users_sign_up_company_path(submit_params)
+      }
+    end
+
     def should_ask_company_question?
       TRIAL_ONBOARDING_SOURCE_URLS.exclude?(glm_params[:glm_source])
     end

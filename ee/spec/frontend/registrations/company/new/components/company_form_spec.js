@@ -17,7 +17,7 @@ describe('RegistrationForm', () => {
     return mountFunction(RegistrationForm, {
       localVue,
       provide: {
-        createLeadPath: SUBMIT_PATH,
+        submitPath: SUBMIT_PATH,
       },
       propsData: { trial: true },
     });

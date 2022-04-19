@@ -56,6 +56,38 @@ RSpec.describe EE::TrialHelper do
     end
   end
 
+  describe '#create_company_form_data' do
+    let(:extra_params) do
+      {
+        role: '_params_role_',
+        jtbd: '_params_jtbd_',
+        comment: '_params_comment_'
+      }
+    end
+
+    let(:params) do
+      ActionController::Parameters.new(extra_params)
+    end
+
+    before do
+      allow(helper).to receive(:params).and_return(params)
+    end
+
+    it 'provides expected form data' do
+      keys = [:submit_path]
+
+      expect(helper.create_company_form_data.keys.map(&:to_sym)).to match_array(keys)
+    end
+
+    it 'allows overriding data with params' do
+      submit_path = {
+        submit_path: '/users/sign_up/company?comment=_params_comment_&jtbd=_params_jtbd_&role=_params_role_'
+      }
+
+      expect(helper.create_company_form_data).to match(submit_path)
+    end
+  end
+
   describe '#should_ask_company_question?' do
     before do
       allow(helper).to receive(:glm_params).and_return(glm_source ? { glm_source: glm_source } : {})
