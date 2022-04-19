@@ -65,7 +65,7 @@ module Geo
       # query.
       #
       def verification_pending_batch(batch_size:)
-        relation = verification_pending.order(Gitlab::Database.nulls_first_order(:verified_at)).limit(batch_size)
+        relation = verification_pending.order(verification_arel_table[:verified_at].asc.nulls_first).limit(batch_size)
 
         start_verification_batch(relation)
       end
@@ -76,7 +76,7 @@ module Geo
       # query.
       #
       def verification_failed_batch(batch_size:)
-        relation = verification_failed.verification_retry_due.order(Gitlab::Database.nulls_first_order(:verification_retry_at)).limit(batch_size)
+        relation = verification_failed.verification_retry_due.order(verification_arel_table[:verification_retry_at].asc.nulls_first).limit(batch_size)
 
         start_verification_batch(relation)
       end

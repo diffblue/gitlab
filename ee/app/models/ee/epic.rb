@@ -139,7 +139,7 @@ module EE
       end
 
       scope :order_relative_position_on_board, ->(board_id) do
-        reorder(::Gitlab::Database.nulls_last_order('boards_epic_board_positions.relative_position', 'ASC'), 'epics.id DESC')
+        reorder(::Boards::EpicBoardPosition.arel_table[:relative_position].asc.nulls_last, 'epics.id DESC')
       end
 
       scope :without_board_position, ->(board_id) do
@@ -359,14 +359,15 @@ module EE
       end
 
       def keyset_pagination_for(column_name:, direction: 'ASC')
-        reverse_direction = direction == 'ASC' ? 'DESC' : 'ASC'
+        column_expression = ::Epic.arel_table[column_name]
+        column_expression_with_direction = direction == 'ASC' ? column_expression.asc : column_expression.desc
 
         ::Gitlab::Pagination::Keyset::Order.build([
           ::Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
             attribute_name: column_name.to_s,
-            column_expression: ::Epic.arel_table[column_name],
-            order_expression: ::Gitlab::Database.nulls_last_order(column_name, direction),
-            reversed_order_expression: ::Gitlab::Database.nulls_last_order(column_name, reverse_direction),
+            column_expression: column_expression,
+            order_expression: column_expression_with_direction.nulls_last,
+            reversed_order_expression: column_expression_with_direction.reverse.nulls_last,
             order_direction: direction,
             distinct: false,
             nullable: :nulls_last

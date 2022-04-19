@@ -168,7 +168,7 @@ module Geo
     end
 
     def last_repository_updated_at_asc
-      Gitlab::Database.nulls_last_order('projects.last_repository_updated_at', 'ASC')
+      Project.arel_table[:last_repository_updated_at].asc.nulls_last
     end
 
     # rubocop: disable CodeReuse/ActiveRecord

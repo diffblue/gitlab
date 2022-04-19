@@ -43,7 +43,7 @@ class Geo::ContainerRepositoryRegistry < Geo::BaseRegistry
     include Delay
 
     def find_registries_needs_sync_again(batch_size:, except_ids: [])
-      super.order(Gitlab::Database.nulls_first_order(:last_synced_at))
+      super.order(arel_table[:last_synced_at].asc.nulls_first)
     end
 
     def delete_for_model_ids(container_repository_ids)
