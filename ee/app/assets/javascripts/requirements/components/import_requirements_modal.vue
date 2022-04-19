@@ -54,7 +54,6 @@ export default {
     modal-id="import-requirements"
     :title="__('Import requirements')"
     :ok-title="__('Import requirements')"
-    ok-variant="success"
     :ok-disabled="importDisabled"
     ok-only
     @ok="handleImport"
