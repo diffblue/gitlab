@@ -114,14 +114,6 @@ RSpec.describe Analytics::DevopsAdoption::SnapshotCalculator do
     end
   end
 
-  describe 'security_scan_succeeded' do
-    subject { data[:security_scan_succeeded] }
-
-    it 'is always false' do
-      is_expected.to eq false
-    end
-  end
-
   describe 'total_projects_count' do
     subject { data[:total_projects_count] }
 
