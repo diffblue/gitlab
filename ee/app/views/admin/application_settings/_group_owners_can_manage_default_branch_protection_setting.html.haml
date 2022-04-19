@@ -2,9 +2,7 @@
 
 - f = local_assigns.fetch(:form)
 
-.form-group.form-check
-  = f.check_box :group_owners_can_manage_default_branch_protection, class: 'form-check-input'
-  = f.label :group_owners_can_manage_default_branch_protection, class: 'form-check-label' do
-    = _('Allow owners to manage default branch protection per group.')
-    .form-text.text-muted
-      = s_("AdminSettings|Affects all new and existing groups.")
+.form-group
+  = f.gitlab_ui_checkbox_component :group_owners_can_manage_default_branch_protection,
+    _('Allow owners to manage default branch protection per group.'),
+    help_text: s_('AdminSettings|Affects all new and existing groups.')
