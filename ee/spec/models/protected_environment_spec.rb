@@ -179,6 +179,38 @@ RSpec.describe ProtectedEnvironment do
     end
   end
 
+  describe '#project_level?' do
+    subject { protected_environment.project_level? }
+
+    context 'for a project-level protected environment' do
+      let(:protected_environment) { create(:protected_environment, :project_level) }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'for a group-level protected environment' do
+      let(:protected_environment) { create(:protected_environment, :group_level) }
+
+      it { is_expected.to be_falsey }
+    end
+  end
+
+  describe '#group_level?' do
+    subject { protected_environment.group_level? }
+
+    context 'for a group-level protected environment' do
+      let(:protected_environment) { create(:protected_environment, :group_level) }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'for a project-level protected environment' do
+      let(:protected_environment) { create(:protected_environment, :project_level) }
+
+      it { is_expected.to be_falsey }
+    end
+  end
+
   describe '.sorted_by_name' do
     subject(:protected_environments) { described_class.sorted_by_name }
 
@@ -294,25 +326,13 @@ RSpec.describe ProtectedEnvironment do
 
     subject { described_class.for_environment(environment) }
 
-    it { is_expected.to eq([protected_environment]) }
+    it { is_expected.to match_array([protected_environment]) }
 
     it 'caches result', :request_store do
       described_class.for_environment(environment).to_a
 
       expect { described_class.for_environment(environment).to_a }
         .not_to exceed_query_limit(0)
-    end
-
-    context 'when environment is a different name' do
-      let!(:environment) { create(:environment, name: 'staging', project: project) }
-
-      it { is_expected.to be_empty }
-    end
-
-    context 'when environment exists in a different project' do
-      let!(:environment) { create(:environment, name: 'production', project: create(:project)) }
-
-      it { is_expected.to be_empty }
     end
 
     context 'when environment does not exist' do
@@ -323,11 +343,46 @@ RSpec.describe ProtectedEnvironment do
       end
     end
 
+    it 'calls .for_environments with the environment' do
+      expect(described_class).to receive(:for_environments).with([environment]).and_call_original
+
+      described_class.for_environment(environment)
+    end
+  end
+
+  describe '.for_environments' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project, reload: true) { create(:project, group: group) }
+
+    let!(:environments) { [create(:environment, name: 'production', project: project)] }
+    let!(:protected_environment) { create(:protected_environment, name: 'production', project: project) }
+
+    subject { described_class.for_environments(environments) }
+
+    it { is_expected.to match_array([protected_environment]) }
+
+    it 'raises an error if environments belong to more than one project' do
+      expect { described_class.for_environments([create(:environment), create(:environment)]) }
+        .to raise_error(ArgumentError, 'Environments must be in the same project')
+    end
+
+    context 'when environment is a different name' do
+      let!(:environments) { [create(:environment, name: 'staging', project: project)] }
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'when environment exists in a different project' do
+      let!(:environments) { [create(:environment, name: 'production', project: create(:project))] }
+
+      it { is_expected.to be_empty }
+    end
+
     context 'with group-level protected environment' do
       let!(:group_protected_environment) { create(:protected_environment, :production, :group_level, group: group) }
 
       context 'with project-level production environment' do
-        let!(:environment) { create(:environment, :production, project: project) }
+        let!(:environments) { [create(:environment, :production, project: project)] }
 
         it 'has multiple protections' do
           is_expected.to contain_exactly(protected_environment, group_protected_environment)
@@ -337,18 +392,38 @@ RSpec.describe ProtectedEnvironment do
           let!(:protected_environment) { }
 
           it 'has only group-level protection' do
-            is_expected.to eq([group_protected_environment])
+            is_expected.to match_array([group_protected_environment])
           end
         end
       end
 
       context 'with staging environment' do
-        let(:environment) { create(:environment, :staging, project: project) }
+        let(:environments) { [create(:environment, :staging, project: project)] }
 
         it 'does not have any protections' do
           is_expected.to be_empty
         end
       end
+    end
+
+    context 'with multiple environments' do
+      let!(:protected_environment) {}
+      let!(:environments) do
+        [
+          create(:environment, name: 'production', project: project),
+          create(:environment, name: 'canary', project: project),
+          create(:environment, name: 'dev', project: project)
+        ]
+      end
+
+      let!(:protected_environments) do
+        [
+          create(:protected_environment, name: 'production', project: project),
+          create(:protected_environment, name: 'canary', project: project)
+        ]
+      end
+
+      it { is_expected.to match_array(protected_environments) }
     end
   end
 
