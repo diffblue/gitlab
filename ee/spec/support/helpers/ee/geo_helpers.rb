@@ -25,6 +25,16 @@ module EE
       allow(::Gitlab::Geo).to receive(:secondary?).and_return(true)
     end
 
+    def stub_proxied_request
+      allow(::Gitlab::Geo).to receive(:proxied_request?).and_return(true)
+    end
+
+    def stub_proxied_site(node)
+      stub_proxied_request
+
+      allow(::Gitlab::Geo).to receive(:proxied_site).and_return(node)
+    end
+
     def create_project_on_shard(shard_name)
       project = create(:project)
 

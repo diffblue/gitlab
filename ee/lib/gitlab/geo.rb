@@ -16,6 +16,8 @@ module Gitlab
     ).freeze
 
     API_SCOPE = 'geo_api'
+    GEO_PROXIED_HEADER = 'HTTP_GITLAB_WORKHORSE_GEO_PROXY'
+    GEO_PROXIED_EXTRA_DATA_HEADER = 'HTTP_GITLAB_WORKHORSE_GEO_PROXY_EXTRA_DATA'
 
     # TODO: Avoid having to maintain a list. Discussions related to possible
     # solutions can be found at
@@ -119,7 +121,17 @@ module Gitlab
     end
 
     def self.proxied_request?(env)
-      env['HTTP_GITLAB_WORKHORSE_GEO_PROXY'] == '1'
+      env[GEO_PROXIED_HEADER] == '1'
+    end
+
+    def self.proxied_site(env)
+      return unless ::Gitlab::Geo.primary?
+      return unless proxied_request?(env) && env[GEO_PROXIED_EXTRA_DATA_HEADER].present?
+
+      signed_data = Gitlab::Geo::SignedData.new
+      signed_data.decode_data(env[GEO_PROXIED_EXTRA_DATA_HEADER])
+
+      signed_data.geo_node
     end
 
     def self.license_allows?

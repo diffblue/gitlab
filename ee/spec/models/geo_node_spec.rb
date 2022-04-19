@@ -547,6 +547,21 @@ RSpec.describe GeoNode, :request_store, :geo, type: :model do
     end
   end
 
+  describe '#omniauth_host_url' do
+    it 'returns a string' do
+      expect(new_node.omniauth_host_url).to be_a String
+    end
+
+    it 'is the URL without the trailing slash' do
+      expect("#{new_node.omniauth_host_url}/").to eq(new_node.url)
+    end
+
+    it 'includes schema home port and relative_url without a terminating /' do
+      expected_url = 'https://localhost:3000/gitlab'
+      expect(new_node.omniauth_host_url).to eq(expected_url)
+    end
+  end
+
   describe '#geo_retrieve_url' do
     let(:retrieve_url) { "https://localhost:3000/gitlab/api/#{api_version}/geo/retrieve/package_file/1" }
 
