@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe 'devise/sessions/new' do
   before do
     view.instance_variable_set(:@arkose_labs_public_key, "arkose-api-key")
+    view.instance_variable_set(:@arkose_labs_domain, "gitlab-api.arkoselab.com")
   end
 
   describe 'ArkoseLabs challenge' do
@@ -29,6 +30,10 @@ RSpec.describe 'devise/sessions/new' do
 
       it 'passes the API key to the challenge container' do
         expect(rendered).to have_selector('.js-arkose-labs-challenge[data-api-key="arkose-api-key"]')
+      end
+
+      it 'passes the ArkoseLabs domain to the challenge container' do
+        expect(rendered).to have_selector('.js-arkose-labs-challenge[data-domain="gitlab-api.arkoselab.com"]')
       end
     end
 

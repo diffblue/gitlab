@@ -4,12 +4,13 @@ jest.mock('lodash/uniqueId', () => (x) => `${x}7`);
 
 const EXPECTED_CALLBACK_NAME = '_initArkoseLabsScript_callback_7';
 const TEST_PUBLIC_KEY = 'arkose-labs-public-api-key';
+const TEST_DOMAIN = 'client-api.arkoselabs.com';
 
 describe('initArkoseLabsScript', () => {
   let subject;
 
   const initSubject = () => {
-    subject = initArkoseLabsScript({ publicKey: TEST_PUBLIC_KEY });
+    subject = initArkoseLabsScript({ publicKey: TEST_PUBLIC_KEY, domain: TEST_DOMAIN });
   };
 
   const findScriptTags = () => document.querySelectorAll('script');
@@ -34,7 +35,7 @@ describe('initArkoseLabsScript', () => {
 
     expect(scriptTag.getAttribute('type')).toBe('text/javascript');
     expect(scriptTag.getAttribute('src')).toBe(
-      `https://client-api.arkoselabs.com/v2/${TEST_PUBLIC_KEY}/api.js`,
+      `https://${TEST_DOMAIN}/v2/${TEST_PUBLIC_KEY}/api.js`,
     );
     expect(scriptTag.getAttribute('data-callback')).toBe(EXPECTED_CALLBACK_NAME);
   });

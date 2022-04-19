@@ -5,6 +5,8 @@ module EE
     extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
 
+    ARKOSE_LABS_NAMESPACE = 'client'
+
     prepended do
       include ArkoseLabsCSP
 
@@ -25,6 +27,7 @@ module EE
       else
         if ::Feature.enabled?(:arkose_labs_login_challenge)
           @arkose_labs_public_key ||= arkose_public_api_key # rubocop:disable Gitlab/ModuleWithInstanceVariables
+          @arkose_labs_domain ||= arkose_labs_domain # rubocop:disable Gitlab/ModuleWithInstanceVariables
         end
 
         super
@@ -128,6 +131,11 @@ module EE
 
     def arkose_public_api_key
       ::Gitlab::CurrentSettings.arkose_labs_public_api_key || ENV['ARKOSE_LABS_PUBLIC_KEY']
+    end
+
+    def arkose_labs_domain
+      namespace = ::Gitlab::CurrentSettings.arkose_labs_namespace || ARKOSE_LABS_NAMESPACE
+      "#{namespace}-api.arkoselabs.com"
     end
   end
 end
