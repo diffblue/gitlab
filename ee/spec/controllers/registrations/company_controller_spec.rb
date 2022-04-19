@@ -101,6 +101,7 @@ RSpec.describe Registrations::CompanyController do
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(response).to render_template(:new)
+          expect(flash[:alert]).to eq('failed')
         end
       end
     end

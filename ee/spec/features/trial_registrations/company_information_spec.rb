@@ -32,9 +32,9 @@ RSpec.describe 'Company Information', :js do
       }
     end
 
-    where(:service_response, :current_path) do
-      ServiceResponse.success                   | new_users_sign_up_groups_project_path
-      ServiceResponse.error(message: 'failed')  | users_sign_up_company_path
+    where(:service_response, :current_path, :page_content) do
+      ServiceResponse.success                   | new_users_sign_up_groups_project_path | 'Create or import your first project'
+      ServiceResponse.error(message: 'failed')  | users_sign_up_company_path            | 'failed'
     end
 
     with_them do
@@ -57,6 +57,7 @@ RSpec.describe 'Company Information', :js do
         click_button 'Continue'
 
         expect(page).to have_current_path(current_path, ignore_query: true)
+        expect(page).to have_content(page_content)
       end
     end
   end
