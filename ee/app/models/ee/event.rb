@@ -13,6 +13,8 @@ module EE
       scope :epics, -> { where(target_type: 'Epic') }
     end
 
+    EPIC_ACTIONS = [:created, :closed, :reopened].freeze
+
     override :capabilities
     def capabilities
       super.merge(read_epic: %i[epic? epic_note?])
