@@ -67,6 +67,16 @@ module EE
       namespace.root_ancestor.free_plan? && !minute_limit_banner_dismissed?
     end
 
+    override :pipeline_usage_quota_app_data
+    def pipeline_usage_quota_app_data(namespace)
+      return super unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
+
+      super.merge(
+        buy_additional_minutes_path: buy_additional_minutes_path(namespace),
+        buy_additional_minutes_target: buy_addon_target_attr(namespace)
+      )
+    end
+
     private
 
     def use_customers_dot_for_addon_path?(namespace)
