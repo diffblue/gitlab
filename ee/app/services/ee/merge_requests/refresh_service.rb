@@ -32,7 +32,7 @@ module EE
       def update_approvers_for_source_branch_merge_requests
         merge_requests_for_source_branch.each do |merge_request|
           ::MergeRequests::SyncCodeOwnerApprovalRules.new(merge_request).execute if project.feature_available?(:code_owners)
-          ::MergeRequests::SyncReportApproverApprovalRules.new(merge_request).execute if project.feature_available?(:report_approver_rules)
+          ::MergeRequests::SyncReportApproverApprovalRules.new(merge_request, current_user).execute
         end
       end
 

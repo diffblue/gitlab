@@ -26,6 +26,11 @@ module EE
         protected_branch.present? && group_access?(protected_branch)
       end
 
+      condition(:approval_rules_licence_enabled) do
+        @subject.target_project.licensed_feature_available?(:coverage_check_approval_rule) ||
+        @subject.target_project.licensed_feature_available?(:report_approver_rules)
+      end
+
       def group_access?(protected_branch)
         protected_branch.approval_project_rules.for_groups(@user.group_members.reporters.select(:source_id)).exists?
       end
@@ -48,6 +53,8 @@ module EE
         prevent :create_note
         prevent :resolve_note
       end
+
+      rule { approval_rules_licence_enabled }.enable :create_merge_request_approval_rules
     end
   end
 end
