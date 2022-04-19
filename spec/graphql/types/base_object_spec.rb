@@ -442,11 +442,10 @@ RSpec.describe Types::BaseObject do
         expect(described_class.authorize).to be_nil
         expect(read_only_type.authorize).to match_array [:read_only]
         expect(inherited_read_only_type.authorize).to match_array [:read_only]
+      end
 
-        read_only_type.authorize(:write_only)
-
-        expect(read_only_type.authorize).to match_array [:write_only]
-        expect(inherited_read_only_type.authorize).to match_array [:write_only]
+      it 'can not redefine the authorize value' do
+        expect { read_only_type.authorize(:write_only) }.to raise_error('Cannot redefine authorize')
       end
     end
   end

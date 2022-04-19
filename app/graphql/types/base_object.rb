@@ -10,7 +10,9 @@ module Types
     edge_type_class Types::BaseEdge
 
     def self.authorize(*args)
-      @authorize_args = args if args.any?
+      raise 'Cannot redefine authorize' if @authorize_args && args.any?
+
+      @authorize_args = args.freeze if args.any?
       @authorize_args || (superclass.respond_to?(:authorize) ? superclass.authorize : nil)
     end
 
