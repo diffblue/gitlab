@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-class BackfillIntegrationsEnableSslVerification < Gitlab::Database::Migration[1.0]
+class BackfillIntegrationsEnableSslVerification < Gitlab::Database::Migration[2.0]
   disable_ddl_transaction!
+  restrict_gitlab_migration gitlab_schema: :gitlab_main
 
   MIGRATION = 'BackfillIntegrationsEnableSslVerification'
   INTERVAL = 5.minutes

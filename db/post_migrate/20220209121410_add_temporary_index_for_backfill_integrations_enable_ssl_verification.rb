@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-class AddTemporaryIndexForBackfillIntegrationsEnableSslVerification < Gitlab::Database::Migration[1.0]
+class AddTemporaryIndexForBackfillIntegrationsEnableSslVerification < Gitlab::Database::Migration[2.0]
+  disable_ddl_transaction!
+
   INDEX_NAME = 'tmp_index_integrations_on_id_where_type_droneci_or_teamcity'
   INDEX_CONDITION = "type IN ('DroneCiService', 'TeamcityService') AND properties IS NOT NULL"
-
-  disable_ddl_transaction!
 
   def up
     # this index is used in 20220209121435_backfill_integrations_enable_ssl_verification

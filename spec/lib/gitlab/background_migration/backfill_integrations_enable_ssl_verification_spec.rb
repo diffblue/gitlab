@@ -4,26 +4,37 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::BackgroundMigration::BackfillIntegrationsEnableSslVerification, schema: 20220209121435 do
   let(:migration) { described_class.new }
-  let(:integrations) { table(:integrations) }
+  let(:integrations) { described_class::Integration }
 
   before do
-    integrations.create!(id: 1, type: 'BambooService') # unaffected integration
-    integrations.create!(id: 2, type: 'DroneCiService') # no properties
-    integrations.create!(id: 3, type: 'DroneCiService', properties: {}.to_json) # no URL
-    integrations.create!(id: 4, type: 'DroneCiService', properties: { 'drone_url' => '' }.to_json) # blank URL
-    integrations.create!(id: 5, type: 'DroneCiService', properties: { 'drone_url' => 'https://example.com:foo' }.to_json) # invalid URL
-    integrations.create!(id: 6, type: 'DroneCiService', properties: { 'drone_url' => 'https://example.com' }.to_json) # unknown URL
-    integrations.create!(id: 7, type: 'DroneCiService', properties: { 'drone_url' => 'http://cloud.drone.io' }.to_json) # no HTTPS
-    integrations.create!(id: 8, type: 'DroneCiService', properties: { 'drone_url' => 'https://cloud.drone.io' }.to_json) # known URL
-    integrations.create!(id: 9, type: 'TeamcityService', properties: { 'teamcity_url' => 'https://example.com' }.to_json) # unknown URL
-    integrations.create!(id: 10, type: 'TeamcityService', properties: { 'teamcity_url' => 'https://foo.bar.teamcity.com' }.to_json) # unknown URL
-    integrations.create!(id: 11, type: 'TeamcityService', properties: { 'teamcity_url' => 'https://teamcity.com' }.to_json) # unknown URL
-    integrations.create!(id: 12, type: 'TeamcityService', properties: { 'teamcity_url' => 'https://customer.teamcity.com' }.to_json) # known URL
+    integrations.create!(
+      id: 1, type: 'BambooService') # unaffected integration
+    integrations.create!(
+      id: 2, type: 'DroneCiService') # no properties
+    integrations.create!(
+      id: 3, type: 'DroneCiService', properties: {}) # no URL
+    integrations.create!(
+      id: 4, type: 'DroneCiService', properties: { 'drone_url' => '' }) # blank URL
+    integrations.create!(
+      id: 5, type: 'DroneCiService', properties: { 'drone_url' => 'https://example.com:foo' }) # invalid URL
+    integrations.create!(
+      id: 6, type: 'DroneCiService', properties: { 'drone_url' => 'https://example.com' }) # unknown URL
+    integrations.create!(
+      id: 7, type: 'DroneCiService', properties: { 'drone_url' => 'http://cloud.drone.io' }) # no HTTPS
+    integrations.create!(
+      id: 8, type: 'DroneCiService', properties: { 'drone_url' => 'https://cloud.drone.io' }) # known URL
+    integrations.create!(
+      id: 9, type: 'TeamcityService', properties: { 'teamcity_url' => 'https://example.com' }) # unknown URL
+    integrations.create!(
+      id: 10, type: 'TeamcityService', properties: { 'teamcity_url' => 'https://foo.bar.teamcity.com' }) # unknown URL
+    integrations.create!(
+      id: 11, type: 'TeamcityService', properties: { 'teamcity_url' => 'https://teamcity.com' }) # unknown URL
+    integrations.create!(
+      id: 12, type: 'TeamcityService', properties: { 'teamcity_url' => 'https://customer.teamcity.com' }) # known URL
   end
 
   def properties(id)
-    properties = integrations.find(id).properties
-    Gitlab::Json.parse(properties) if properties
+    integrations.find(id).properties
   end
 
   it 'enables SSL verification for known-good hostnames', :aggregate_failures do
