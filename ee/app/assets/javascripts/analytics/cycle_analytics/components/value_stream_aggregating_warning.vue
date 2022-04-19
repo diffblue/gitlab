@@ -32,7 +32,7 @@ export default {
     primaryText: AGGREGATING_DATA_PRIMARY_ACTION_TEXT,
     secondaryText: AGGREGATING_DATA_SECONDARY_ACTION_TEXT,
   },
-  docsPath: helpPagePath('user/group/value_stream_analytics', {
+  docsPath: helpPagePath('user/group/value_stream_analytics/index', {
     anchor: 'create-a-value-stream',
   }),
 };
