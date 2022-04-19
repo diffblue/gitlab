@@ -4,9 +4,34 @@ require 'spec_helper'
 
 RSpec.describe 'New project', :js do
   let(:user) { create(:admin) }
+  let(:premium_plan) { create(:license, plan: License::PREMIUM_PLAN) }
 
   before do
     sign_in(user)
+  end
+
+  context 'with premium license' do
+    before do
+      allow(License).to receive(:current).and_return(premium_plan)
+    end
+
+    it 'creates a new project in personal namespace' do
+      visit(new_project_path)
+
+      click_link 'Create blank project'
+      fill_in(:project_name, with: 'Project with premium license')
+
+      click_on 'Pick a group or namespace'
+      click_on user.username
+
+      page.within('#content-body') do
+        click_button('Create project')
+      end
+
+      project = Project.last
+
+      expect(page).to have_current_path(project_path(project))
+    end
   end
 
   context 'repository mirrors' do
