@@ -264,4 +264,34 @@ RSpec.describe EE::NamespacesHelper do
       end
     end
   end
+
+  describe '#pipeline_usage_quota_app_data' do
+    context 'Gitlab SaaS', :saas do
+      before do
+        stub_ee_application_setting(should_check_namespace_plan: true)
+      end
+
+      it 'returns a hash with buy_additional_minutes data' do
+        expect(helper.pipeline_usage_quota_app_data(user_group)).to eql({
+          namespace_actual_plan_name: user_group.actual_plan_name,
+          namespace_path: user_group.full_path,
+          namespace_id: user_group.id,
+          page_size: Kaminari.config.default_per_page,
+          buy_additional_minutes_path: EE::SUBSCRIPTIONS_MORE_MINUTES_URL,
+          buy_additional_minutes_target: '_blank'
+        })
+      end
+    end
+
+    context 'Gitlab Self-Managed' do
+      it 'returns a hash without buy_additional_minutes data' do
+        expect(helper.pipeline_usage_quota_app_data(user_group)).to eql({
+          namespace_actual_plan_name: user_group.actual_plan_name,
+          namespace_path: user_group.full_path,
+          namespace_id: user_group.id,
+          page_size: Kaminari.config.default_per_page
+        })
+      end
+    end
+  end
 end
