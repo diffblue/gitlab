@@ -37288,9 +37288,6 @@ msgstr ""
 msgid "Test case"
 msgstr ""
 
-msgid "Test coverage parsing"
-msgstr ""
-
 msgid "Test coverage value for this pipeline was calculated by the coverage value of %d job."
 msgid_plural "Test coverage value for this pipeline was calculated by averaging the resulting coverage values of %d jobs."
 msgstr[0] ""
@@ -37846,9 +37843,6 @@ msgid "The project was successfully forked."
 msgstr ""
 
 msgid "The project was successfully imported."
-msgstr ""
-
-msgid "The regular expression used to find test coverage output in the job log. For example, use %{regex} for Simplecov (Ruby). Leave blank to disable."
 msgstr ""
 
 msgid "The related CI build failed."
