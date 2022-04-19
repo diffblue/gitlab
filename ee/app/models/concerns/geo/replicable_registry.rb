@@ -59,7 +59,7 @@ module Geo::ReplicableRegistry
     attr_accessor :custom_max_retry_wait_time
 
     scope :failed, -> { with_state(:failed) }
-    scope :needs_sync_again, -> { failed.retry_due.order(Gitlab::Database.nulls_first_order(:retry_at)) }
+    scope :needs_sync_again, -> { failed.retry_due.order(arel_table[:retry_at].asc.nulls_first) }
     scope :never_attempted_sync, -> { pending.where(last_synced_at: nil) }
     scope :ordered, -> { order(:id) }
     scope :pending, -> { with_state(:pending) }

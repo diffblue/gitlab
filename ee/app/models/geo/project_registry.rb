@@ -45,7 +45,7 @@ class Geo::ProjectRegistry < Geo::BaseRegistry
   end
 
   def self.find_registries_needs_sync_again(batch_size:, except_ids: [])
-    super.order(Gitlab::Database.nulls_first_order(:last_repository_synced_at))
+    super.order(arel_table[:last_repository_synced_at].asc.nulls_first)
   end
 
   def self.delete_worker_class

@@ -59,8 +59,7 @@ module EE
       accepts_nested_attributes_for :approval_rules, allow_destroy: true
 
       scope :order_review_time_desc, -> do
-        joins(:metrics)
-          .reorder(::Gitlab::Database.nulls_last_order(::MergeRequest::Metrics.review_time_field))
+        joins(:metrics).reorder(::MergeRequest::Metrics.review_time_field.asc.nulls_last)
       end
 
       scope :with_code_review_api_entity_associations, -> do
