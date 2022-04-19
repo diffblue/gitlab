@@ -168,7 +168,7 @@ export default {
       variables() {
         return {
           fullPath: this.fullPath,
-          cadenceId: convertToGraphQLId(TYPE_ITERATIONS_CADENCE, this.cadenceId),
+          id: convertToGraphQLId(TYPE_ITERATIONS_CADENCE, this.cadenceId),
         };
       },
       result({ data: { group, errors }, error }) {

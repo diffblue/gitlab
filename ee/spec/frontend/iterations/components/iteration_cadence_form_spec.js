@@ -244,6 +244,13 @@ describe('Iteration cadence form', () => {
       expect(wrapper.text()).toContain(wrapper.vm.i18n.edit.save);
     });
 
+    it('triggers read query with correct variables', () => {
+      expect(resolverMock).toHaveBeenCalledWith({
+        fullPath: groupPath,
+        id: automaticIterationCadence.id,
+      });
+    });
+
     it('disables fields while loading', async () => {
       createComponent({ query, resolverMock });
 
