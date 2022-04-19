@@ -867,6 +867,11 @@ module EE
       ].compact
     end
 
+    override :inactive?
+    def inactive?
+      ::Gitlab.com? && root_namespace.paid? ? false : super
+    end
+
     private
 
     def ci_minutes_usage
