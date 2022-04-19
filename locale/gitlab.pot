@@ -9148,9 +9148,6 @@ msgstr ""
 msgid "Committed by"
 msgstr ""
 
-msgid "Commit…"
-msgstr ""
-
 msgid "Community forum"
 msgstr ""
 
@@ -10481,6 +10478,9 @@ msgid "Create branch"
 msgstr ""
 
 msgid "Create commit"
+msgstr ""
+
+msgid "Create commit..."
 msgstr ""
 
 msgid "Create common files more quickly, and standardize their format."
