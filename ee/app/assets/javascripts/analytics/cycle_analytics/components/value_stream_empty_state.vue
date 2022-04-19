@@ -60,7 +60,7 @@ export default {
     EMPTY_STATE_FILTER_ERROR_TITLE,
     EMPTY_STATE_FILTER_ERROR_DESCRIPTION,
   },
-  docsPath: helpPagePath('user/group/value_stream_analytics', {
+  docsPath: helpPagePath('user/group/value_stream_analytics/index', {
     anchor: 'custom-value-streams',
   }),
 };
