@@ -17,43 +17,6 @@ RSpec.describe Projects::BlobController do
       expect(flash[:alert]).to eq(nil)
       expect(response).to be_redirect
     end
-
-    context 'when push_rules_supersede_code_owners is false' do
-      let(:error_msg) do
-        "Pushes to protected branches that contain changes to files that match " \
-          "patterns defined in `CODEOWNERS` are disabled for this project. " \
-          "Please submit these changes via a merge request.  The following " \
-          "pattern(s) from `CODEOWNERS` were matched: - docs/ "
-      end
-
-      before do
-        allow(::ProtectedBranch).to receive(:branch_requires_code_owner_approval?)
-          .and_return(true)
-
-        expect_next_instance_of(Repository) do |repo|
-          allow(repo).to receive(:code_owners_blob)
-            .with(ref: "master")
-            .and_return(
-              fake_blob(
-                path: "CODEOWNERS",
-                data: "*.rb @#{user.username}\ndocs/ @#{user.username}"
-              )
-            )
-        end
-
-        stub_licensed_features(code_owner_approval_required: true)
-        stub_feature_flags(push_rules_supersede_code_owners: false)
-      end
-
-      it "renders to the edit page with an error msg" do
-        default_params[:file_path] = "docs/EXAMPLE_FILE"
-
-        subject
-
-        expect(flash[:alert]).to eq(error_msg)
-        expect(response).to render_template(expected_view)
-      end
-    end
   end
 
   describe 'POST create' do
