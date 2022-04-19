@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
 import apolloProvider from 'ee/subscriptions/buy_addons_shared/graphql';
+import { PQL_BUTTON_TEXT } from './constants';
 
 export const initHandRaiseLeadButton = (el) => {
   const {
@@ -15,13 +16,16 @@ export const initHandRaiseLeadButton = (el) => {
     trackProperty,
     trackValue,
     trackExperiment,
+    buttonAttributes,
+    buttonText,
   } = el.dataset;
 
   return new Vue({
     el,
     apolloProvider,
     provide: {
-      small: Boolean(el.hasAttribute('small')),
+      buttonAttributes: buttonAttributes && JSON.parse(buttonAttributes),
+      buttonText: buttonText || PQL_BUTTON_TEXT,
       user: {
         namespaceId,
         userName,
