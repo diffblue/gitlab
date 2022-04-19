@@ -1,10 +1,15 @@
 <script>
 import { GlIcon, GlButton, GlDropdown } from '@gitlab/ui';
-import { __, n__ } from '~/locale';
+import { s__, n__ } from '~/locale';
 import { SELECTIVE_SYNC_SHARDS } from '../constants';
 
 export default {
   name: 'GeoNodeFormShards',
+  i18n: {
+    noSelectedDropdownTitle: s__('Geo|Select shards to replicate'),
+    withSelectedDropdownTitle: (len) => n__('Geo|%d shard selected', '%d shards selected', len),
+    nothingFound: s__('Geo|Nothing found…'),
+  },
   components: {
     GlIcon,
     GlButton,
@@ -23,10 +28,10 @@ export default {
   computed: {
     dropdownTitle() {
       if (this.selectedShards.length === 0) {
-        return __('Select shards to replicate');
+        return this.$options.i18n.noSelectedDropdownTitle;
       }
 
-      return n__('%d shard selected', '%d shards selected', this.selectedShards.length);
+      return this.$options.i18n.withSelectedDropdownTitle(this.selectedShards.length);
     },
     noSyncShards() {
       return this.syncShardsOptions.length === 0;
@@ -64,6 +69,6 @@ export default {
         <span class="gl-white-space-normal">{{ shard.label }}</span>
       </gl-button>
     </li>
-    <div v-if="noSyncShards" class="gl-text-gray-500 gl-p-3">{{ __('Nothing found…') }}</div>
+    <div v-if="noSyncShards" class="gl-text-gray-500 gl-p-3">{{ $options.i18n.nothingFound }}</div>
   </gl-dropdown>
 </template>

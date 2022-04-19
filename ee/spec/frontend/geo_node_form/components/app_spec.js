@@ -33,10 +33,10 @@ describe('GeoNodeFormApp', () => {
     });
 
     describe.each`
-      formType                     | node                  | title              | pillTitle      | variant
-      ${'create a secondary node'} | ${null}               | ${'Add New Site'}  | ${'Secondary'} | ${'muted'}
-      ${'update a secondary node'} | ${{ primary: false }} | ${'Edit Geo Site'} | ${'Secondary'} | ${'muted'}
-      ${'update a primary node'}   | ${{ primary: true }}  | ${'Edit Geo Site'} | ${'Primary'}   | ${'info'}
+      formType                     | node                  | title                              | pillTitle                        | variant
+      ${'create a secondary node'} | ${null}               | ${GeoNodeFormApp.i18n.addGeoSite}  | ${GeoNodeFormApp.i18n.secondary} | ${'muted'}
+      ${'update a secondary node'} | ${{ primary: false }} | ${GeoNodeFormApp.i18n.editGeoSite} | ${GeoNodeFormApp.i18n.secondary} | ${'muted'}
+      ${'update a primary node'}   | ${{ primary: true }}  | ${GeoNodeFormApp.i18n.editGeoSite} | ${GeoNodeFormApp.i18n.primary}   | ${'info'}
     `(`form header`, ({ formType, node, title, pillTitle, variant }) => {
       describe(`when node form is to ${formType}`, () => {
         beforeEach(() => {

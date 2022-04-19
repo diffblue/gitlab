@@ -1,11 +1,16 @@
 <script>
 import { GlIcon, GlSearchBoxByType, GlDropdown } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
-import { __, n__ } from '~/locale';
+import { s__, n__ } from '~/locale';
 import { SELECTIVE_SYNC_NAMESPACES } from '../constants';
 
 export default {
   name: 'GeoNodeFormNamespaces',
+  i18n: {
+    noSelectedDropdownTitle: s__('Geo|Select groups to replicate'),
+    withSelectedDropdownTitle: (len) => n__('Geo|%d group selected', '%d groups selected', len),
+    nothingFound: s__('Geo|Nothing found…'),
+  },
   components: {
     GlIcon,
     GlSearchBoxByType,
@@ -21,9 +26,10 @@ export default {
     ...mapState(['synchronizationNamespaces']),
     dropdownTitle() {
       if (this.selectedNamespaces.length === 0) {
-        return __('Select groups to replicate');
+        return this.$options.i18n.noSelectedDropdownTitle;
       }
-      return n__('%d group selected', '%d groups selected', this.selectedNamespaces.length);
+
+      return this.$options.i18n.withSelectedDropdownTitle(this.selectedNamespaces.length);
     },
     noSyncNamespaces() {
       return this.synchronizationNamespaces.length === 0;
@@ -62,6 +68,8 @@ export default {
       />
       <span class="gl-ml-2">{{ namespace.name }}</span>
     </button>
-    <div v-if="noSyncNamespaces" class="gl-text-gray-500 gl-p-3">{{ __('Nothing found…') }}</div>
+    <div v-if="noSyncNamespaces" class="gl-text-gray-500 gl-p-3">
+      {{ $options.i18n.nothingFound }}
+    </div>
   </gl-dropdown>
 </template>

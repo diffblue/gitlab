@@ -1,7 +1,7 @@
 <script>
 import { GlFormGroup, GlFormInput, GlSprintf, GlLink } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
-import { s__ } from '~/locale';
+import { s__, __ } from '~/locale';
 import {
   VALIDATION_FIELD_KEYS,
   NODE_NAME_MORE_INFO,
@@ -11,6 +11,23 @@ import { validateName, validateUrl } from '../validations';
 
 export default {
   name: 'GeoNodeFormCore',
+  i18n: {
+    nameFieldLabel: __('Name'),
+    nameFieldDescription: s__(
+      'Geo|Must match with the %{codeStart}geo_node_name%{codeEnd} in %{codeStart}/etc/gitlab/gitlab.rb%{codeEnd}. %{linkStart}Learn more%{linkEnd}',
+    ),
+    urlFieldLabel: __('URL'),
+    urlFieldDescription: s__(
+      'Geo|Must match with the %{codeStart}external_url%{codeEnd} in %{codeStart}/etc/gitlab/gitlab.rb%{codeEnd}.',
+    ),
+    internalUrlFieldLabel: s__('Geo|Internal URL (optional)'),
+    primarySiteInternalUrlFieldDescription: s__(
+      'Geo|The URL of the primary site that is used internally by the secondary sites. %{linkStart}Learn more.%{linkEnd}',
+    ),
+    secondarySiteInternalUrlFieldDescription: s__(
+      'Geo|The URL of the secondary site that is used internally by the primary site. %{linkStart}Learn more.%{linkEnd}',
+    ),
+  },
   components: {
     GlFormGroup,
     GlFormInput,
@@ -27,12 +44,8 @@ export default {
     ...mapState(['formErrors']),
     internalUrlDescription() {
       return this.nodeData.primary
-        ? s__(
-            'AdminGeo|The URL of the primary site that is used internally by the secondary sites.',
-          )
-        : s__(
-            'AdminGeo|The URL of the secondary site that is used internally by the primary site.',
-          );
+        ? this.$options.i18n.primarySiteInternalUrlFieldDescription
+        : this.$options.i18n.secondarySiteInternalUrlFieldDescription;
     },
   },
   methods: {
@@ -52,19 +65,13 @@ export default {
 <template>
   <section>
     <gl-form-group
-      :label="__('Name')"
+      :label="$options.i18n.nameFieldLabel"
       label-for="node-name-field"
       :state="Boolean(formErrors.name)"
       :invalid-feedback="formErrors.name"
     >
       <template #description>
-        <gl-sprintf
-          :message="
-            __(
-              'Must match with the %{codeStart}geo_node_name%{codeEnd} in %{codeStart}/etc/gitlab/gitlab.rb%{codeEnd}. %{linkStart}Learn more%{linkEnd}',
-            )
-          "
-        >
+        <gl-sprintf :message="$options.i18n.nameFieldDescription">
           <template #code="{ content }">
             <code>{{ content }}</code>
           </template>
@@ -99,19 +106,13 @@ export default {
     <section class="form-row">
       <gl-form-group
         class="col-12 col-sm-6"
-        :label="__('URL')"
+        :label="$options.i18n.urlFieldLabel"
         label-for="node-url-field"
         :state="Boolean(formErrors.url)"
         :invalid-feedback="formErrors.url"
       >
         <template #description>
-          <gl-sprintf
-            :message="
-              __(
-                'Must match with the %{codeStart}external_url%{codeEnd} in %{codeStart}/etc/gitlab/gitlab.rb%{codeEnd}.',
-              )
-            "
-          >
+          <gl-sprintf :message="$options.i18n.urlFieldDescription">
             <template #code="{ content }">
               <code>{{ content }}</code>
             </template>
@@ -137,13 +138,11 @@ export default {
       </gl-form-group>
       <gl-form-group
         class="col-12 col-sm-6"
-        :label="__('Internal URL (optional)')"
+        :label="$options.i18n.internalUrlFieldLabel"
         label-for="node-internal-url-field"
       >
         <template #description>
-          <gl-sprintf
-            :message="`${internalUrlDescription} ${__('%{linkStart}Learn more.%{linkEnd}')}`"
-          >
+          <gl-sprintf :message="internalUrlDescription">
             <template #link="{ content }">
               <gl-link
                 :href="$options.NODE_INTERNAL_URL_MORE_INFO"

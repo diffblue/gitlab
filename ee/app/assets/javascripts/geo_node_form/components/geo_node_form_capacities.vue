@@ -1,12 +1,28 @@
 <script>
 import { GlFormGroup, GlFormInput, GlLink } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
-import { __ } from '~/locale';
+import { s__, __ } from '~/locale';
 import { VALIDATION_FIELD_KEYS, REVERIFICATION_MORE_INFO, BACKFILL_MORE_INFO } from '../constants';
 import { validateCapacity } from '../validations';
 
 export default {
   name: 'GeoNodeFormCapacities',
+  i18n: {
+    repositoryCapacityFieldLabel: s__('Geo|Repository synchronization concurrency limit'),
+    fileCapacityFieldLabel: s__('Geo|File synchronization concurrency limit'),
+    containerRepositoryCapacityFieldLabel: s__(
+      'Geo|Container repositories synchronization concurrency limit',
+    ),
+    verificationCapacityFieldLabel: s__('Geo|Verification concurrency limit'),
+    reverificationIntervalFieldLabel: s__('Geo|Re-verification interval'),
+    reverificationIntervalFieldDescription: s__('Geo|Minimum interval in days'),
+    primarySiteSectionDescription: s__('Geo|Set verification limit and frequency.'),
+    secondarySiteSectionDescription: s__(
+      'Geo|Limit the number of concurrent operations this secondary site can run in the background.',
+    ),
+    tuningSettings: s__('Geo|Tuning settings'),
+    learnMore: __('Learn more'),
+  },
   components: {
     GlFormGroup,
     GlFormInput,
@@ -23,31 +39,31 @@ export default {
       formGroups: [
         {
           id: 'node-repository-capacity-field',
-          label: __('Repository synchronization concurrency limit'),
+          label: this.$options.i18n.repositoryCapacityFieldLabel,
           key: VALIDATION_FIELD_KEYS.REPOS_MAX_CAPACITY,
           conditional: 'secondary',
         },
         {
           id: 'node-file-capacity-field',
-          label: __('File synchronization concurrency limit'),
+          label: this.$options.i18n.fileCapacityFieldLabel,
           key: VALIDATION_FIELD_KEYS.FILES_MAX_CAPACITY,
           conditional: 'secondary',
         },
         {
           id: 'node-container-repository-capacity-field',
-          label: __('Container repositories synchronization concurrency limit'),
+          label: this.$options.i18n.containerRepositoryCapacityFieldLabel,
           key: VALIDATION_FIELD_KEYS.CONTAINER_REPOSITORIES_MAX_CAPACITY,
           conditional: 'secondary',
         },
         {
           id: 'node-verification-capacity-field',
-          label: __('Verification concurrency limit'),
+          label: this.$options.i18n.verificationCapacityFieldLabel,
           key: VALIDATION_FIELD_KEYS.VERIFICATION_MAX_CAPACITY,
         },
         {
           id: 'node-reverification-interval-field',
-          label: __('Re-verification interval'),
-          description: __('Minimum interval in days'),
+          label: this.$options.i18n.reverificationIntervalFieldLabel,
+          description: this.$options.i18n.reverificationIntervalFieldDescription,
           key: VALIDATION_FIELD_KEYS.MINIMUM_REVERIFICATION_INTERVAL,
           conditional: 'primary',
         },
@@ -68,10 +84,8 @@ export default {
     },
     sectionDescription() {
       return this.nodeData.primary
-        ? __('Set verification limit and frequency.')
-        : __(
-            'Limit the number of concurrent operations this secondary site can run in the background.',
-          );
+        ? this.$options.i18n.primarySiteSectionDescription
+        : this.$options.i18n.secondarySiteSectionDescription;
     },
     sectionLink() {
       return this.nodeData.primary ? REVERIFICATION_MORE_INFO : BACKFILL_MORE_INFO;
@@ -91,10 +105,10 @@ export default {
 
 <template>
   <div>
-    <h2 class="gl-font-size-h2 gl-my-5">{{ __('Tuning settings') }}</h2>
+    <h2 class="gl-font-size-h2 gl-my-5">{{ $options.i18n.tuningSettings }}</h2>
     <p class="gl-mb-5">
       {{ sectionDescription }}
-      <gl-link :href="sectionLink" target="_blank">{{ __('Learn more') }}</gl-link>
+      <gl-link :href="sectionLink" target="_blank">{{ $options.i18n.learnMore }}</gl-link>
     </p>
     <gl-form-group
       v-for="formGroup in visibleFormGroups"
