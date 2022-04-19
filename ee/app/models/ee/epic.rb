@@ -570,7 +570,7 @@ module EE
       end
     end
 
-    def related_epics(current_user, preload: nil)
+    def unauthorized_related_epics
       select_for_related_epics =
         ::Epic.select(['epics.*', 'related_epic_links.id AS related_epic_link_id',
                        'related_epic_links.link_type as related_epic_link_type_value',
@@ -586,10 +586,12 @@ module EE
         .joins("INNER JOIN related_epic_links ON related_epic_links.source_id = epics.id")
         .where(related_epic_links: { target_id: id })
 
-      related_epics = ::Epic.from_union([target_epics, source_epics])
-        .preload(preload)
+      ::Epic.from_union([target_epics, source_epics])
         .reorder('related_epic_link_id')
+    end
 
+    def related_epics(current_user, preload: nil)
+      related_epics = unauthorized_related_epics.preload(preload)
       related_epics = yield related_epics if block_given?
 
       self.class.epics_readable_by_user(related_epics, current_user)
