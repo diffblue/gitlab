@@ -80,6 +80,13 @@ RSpec.describe Epics::RelatedEpicLinks::CreateService do
 
         it_behaves_like 'a recorded event'
       end
+
+      context 'for is_blocked_by link_type' do
+        let(:link_type) { IssuableLink::TYPE_IS_BLOCKED_BY }
+        let(:tracking_method_name) { :track_linked_epic_with_type_is_blocked_by_added }
+
+        it_behaves_like 'a recorded event'
+      end
     end
   end
 end
