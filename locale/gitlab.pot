@@ -10086,9 +10086,6 @@ msgstr ""
 msgid "Copy ID"
 msgstr ""
 
-msgid "Copy IP Address"
-msgstr ""
-
 msgid "Copy KRB5 clone URL"
 msgstr ""
 
@@ -32717,6 +32714,9 @@ msgid "Runners|Runners"
 msgstr ""
 
 msgid "Runners|Runs untagged jobs"
+msgstr ""
+
+msgid "Runners|Select projects to assign to this runner"
 msgstr ""
 
 msgid "Runners|Select your preferred option here. In the next step, you can choose the capacity for your runner in the AWS CloudFormation console."
