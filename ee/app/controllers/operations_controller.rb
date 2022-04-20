@@ -5,6 +5,7 @@ class OperationsController < ApplicationController
   before_action :authorize_read_operations_dashboard!
 
   feature_category :release_orchestration
+  urgency :low
 
   POLLING_INTERVAL = 120_000
 
