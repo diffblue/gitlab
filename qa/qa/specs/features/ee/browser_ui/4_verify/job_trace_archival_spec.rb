@@ -53,14 +53,14 @@ module QA
          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/357771'
       ) do
         commit.project.visit!
-        Flow::Pipeline.visit_latest_pipeline(wait: 300)
+        Flow::Pipeline.visit_latest_pipeline
 
         Page::Project::Pipeline::Show.perform do |pipeline|
           pipeline.click_job("#{pipeline_job_name}")
         end
 
         Page::Project::Job::Show.perform do |job|
-          Support::Waiter.wait_until(max_duration: 120) { job.successful? }
+          Support::Waiter.wait_until { job.successful? }
         end
 
         job = Resource::Job.fabricate_via_api! do |job|
@@ -68,7 +68,7 @@ module QA
           job.project = project
         end
 
-        Support::Waiter.wait_until(max_duration: 600) do
+        Support::Waiter.wait_until(max_duration: 120) do
           job.artifacts.any?
         end
 
