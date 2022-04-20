@@ -104,7 +104,7 @@ Geo secondary sites have a [Geo tracking database](https://gitlab.com/gitlab-org
 - [ ] Run Geo tracking database migrations:
 
   ```shell
-  bin/rake geo:db:migrate
+  bin/rake db:migrate:geo
   ```
 
 - [ ] Be sure to commit the relevant changes in `ee/db/geo/structure.sql`

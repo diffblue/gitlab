@@ -109,7 +109,7 @@ RSpec.describe Gitlab::Geo::HealthCheck, :geo do
               message = subject.perform_checks
 
               expect(message).to include('Geo database version (20170101) does not match latest migration (20170201)')
-              expect(message).to include('gitlab-rake geo:db:migrate')
+              expect(message).to include('gitlab-rake db:migrate:geo')
             end
 
             it 'finally returns an empty string when everything is healthy' do
