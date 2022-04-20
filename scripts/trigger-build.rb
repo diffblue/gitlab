@@ -102,7 +102,7 @@ module Trigger
     end
 
     # Can be overridden
-    def main_ref
+    def primary_ref
       'main'
     end
 
@@ -134,7 +134,7 @@ module Trigger
       if trigger_stable_branch_if_detected? && stable_branch?
         ENV['CI_MERGE_REQUEST_TARGET_BRANCH_NAME'].delete_suffix('-ee')
       else
-        main_ref
+        primary_ref
       end
     end
 
@@ -176,7 +176,7 @@ module Trigger
       'OMNIBUS_BRANCH'
     end
 
-    def main_ref
+    def primary_ref
       'master'
     end
 
@@ -222,7 +222,7 @@ module Trigger
       'CNG_BRANCH'
     end
 
-    def main_ref
+    def primary_ref
       'master'
     end
 
@@ -421,7 +421,7 @@ module Trigger
       'GITLABCOM_DATABASE_TESTING_TRIGGER_REF'
     end
 
-    def main_ref
+    def primary_ref
       'master'
     end
   end
