@@ -15,7 +15,7 @@ module API
 
       helpers do
         def group
-          @group ||= find_group!(params[:group_path])
+          @group ||= find_group_by_full_path!(params[:group_path])
         end
 
         def calculator
