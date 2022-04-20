@@ -10,7 +10,7 @@ module Users
     def execute
       return { result: false } unless Feature.enabled?(:arkose_labs_login_challenge, default_enabled: :yaml)
 
-      if never_logged_before? || too_many_login_failures || not_logged_in_past_months
+      if !user || never_logged_before? || too_many_login_failures || not_logged_in_past_months
         return { result: true }
       end
 

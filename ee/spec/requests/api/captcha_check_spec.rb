@@ -31,7 +31,8 @@ RSpec.describe API::CaptchaCheck do
         it 'does return not found status' do
           get api("/users/#{invalid_username}/captcha_check")
 
-          expect(response).to have_gitlab_http_status(:not_found)
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response['result']).to be_truthy
         end
       end
 
@@ -60,7 +61,8 @@ RSpec.describe API::CaptchaCheck do
         it 'returns status not_found' do
           get api("/users/#{unknown_email}/captcha_check")
 
-          expect(response).to have_gitlab_http_status(:not_found)
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response['result']).to be_truthy
         end
       end
 
@@ -70,7 +72,8 @@ RSpec.describe API::CaptchaCheck do
         it 'returns status not_found' do
           get api("/users/#{invalid_email}/captcha_check")
 
-          expect(response).to have_gitlab_http_status(:not_found)
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response['result']).to be_truthy
         end
       end
 
