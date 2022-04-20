@@ -2166,6 +2166,9 @@ msgstr ""
 msgid "Add approvers"
 msgstr ""
 
+msgid "Add attention request"
+msgstr ""
+
 msgid "Add bold text"
 msgstr ""
 
@@ -31896,9 +31899,6 @@ msgstr ""
 msgid "Request a new one"
 msgstr ""
 
-msgid "Request attention"
-msgstr ""
-
 msgid "Request attention from %{users_sentence}."
 msgstr ""
 
@@ -31906,9 +31906,6 @@ msgid "Request attention from assignee or reviewer"
 msgstr ""
 
 msgid "Request attention from assignee(s) or reviewer(s)"
-msgstr ""
-
-msgid "Request attention to review"
 msgstr ""
 
 msgid "Request details"
