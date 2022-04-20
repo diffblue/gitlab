@@ -96,6 +96,8 @@ RSpec.describe Projects::Security::DastSiteProfilesController, type: :request do
       end
 
       context 'record exists' do
+        let(:dast_site_profile) { create(:dast_site_profile, :with_dast_submit_field, project: project) }
+
         before do
           create(:dast_site_profile_secret_variable, :password, dast_site_profile: dast_site_profile)
           create(:dast_site_profile_secret_variable, :request_headers, dast_site_profile: dast_site_profile)
