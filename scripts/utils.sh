@@ -16,7 +16,7 @@ function retry() {
 function test_url() {
   local url="${1}"
 
-  curl -f --output /dev/null "${url}"
+  curl --fail --output /dev/null "${url}"
 }
 
 function bundle_install_script() {
