@@ -15,6 +15,7 @@ RSpec.describe LearnGitlabHelper do
     end
 
     OnboardingProgress.onboard(namespace)
+    sign_in(user)
   end
 
   describe '#learn_gitlab_data' do
@@ -49,18 +50,88 @@ RSpec.describe LearnGitlabHelper do
             stub_application_setting(check_namespace_plan: true)
           end
 
-          it 'provides URLs to start a trial for the appropariate actions' do
-            expect(onboarding_actions_data).to include(
-              trial_started: a_hash_including(
-                url: new_trial_path(glm_source: 'gitlab.com', glm_content: 'onboarding-start-trial')
-              ),
-              code_owners_enabled: a_hash_including(
-                url: new_trial_path(glm_source: 'gitlab.com', glm_content: 'onboarding-code-owners')
-              ),
-              required_mr_approvals_enabled: a_hash_including(
-                url: new_trial_path(glm_source: 'gitlab.com', glm_content: 'onboarding-require-merge-approvals')
+          context 'when namespace has free or no subscription' do
+            before do
+              allow(namespace).to receive(:has_free_or_no_subscription?).and_return(true)
+            end
+
+            it 'provides URLs to start a trial to namespace admins' do
+              allow(helper).to receive(:can?).with(user, :admin_namespace, namespace).and_return(true)
+              expect(onboarding_actions_data).to include(
+                trial_started: a_hash_including(
+                  url: new_trial_path(glm_source: 'gitlab.com', glm_content: 'onboarding-start-trial'),
+                  enabled: true
+                ),
+                code_owners_enabled: a_hash_including(
+                  url: new_trial_path(glm_source: 'gitlab.com', glm_content: 'onboarding-code-owners'),
+                  enabled: true
+                ),
+                required_mr_approvals_enabled: a_hash_including(
+                  url: new_trial_path(glm_source: 'gitlab.com', glm_content: 'onboarding-require-merge-approvals'),
+                  enabled: true
+                )
               )
-            )
+            end
+
+            it 'provides URLs to Gitlab docs to namespace non-admins' do
+              allow(helper).to receive(:can?).with(user, :admin_namespace, namespace).and_return(false)
+              expect(onboarding_actions_data).to include(
+                trial_started: a_hash_including(
+                  url: project_project_members_path(project),
+                  enabled: false
+                ),
+                code_owners_enabled: a_hash_including(
+                  url: help_page_path('user/project/code_owners', anchor: 'set-up-code-owners'),
+                  enabled: true
+                ),
+                required_mr_approvals_enabled: a_hash_including(
+                  url: help_page_path('ci/pipelines/settings', anchor: 'coverage-check-approval-rule'),
+                  enabled: true
+                )
+              )
+            end
+          end
+
+          context 'when namespace has paid subscription' do
+            before do
+              allow(namespace).to receive(:has_free_or_no_subscription?).and_return(false)
+            end
+
+            it 'provides URLs to Gitlab docs to namespace admins' do
+              allow(helper).to receive(:can?).with(user, :admin_namespace, namespace).and_return(true)
+              expect(onboarding_actions_data).to include(
+                trial_started: a_hash_including(
+                  url: project_project_members_path(project),
+                  enabled: false
+                ),
+                code_owners_enabled: a_hash_including(
+                  url: help_page_path('user/project/code_owners', anchor: 'set-up-code-owners'),
+                  enabled: true
+                ),
+                required_mr_approvals_enabled: a_hash_including(
+                  url: help_page_path('ci/pipelines/settings', anchor: 'coverage-check-approval-rule'),
+                  enabled: true
+                )
+              )
+            end
+
+            it 'provides URLs to Gitlab docs to namespace non-admins' do
+              allow(helper).to receive(:can?).with(user, :admin_namespace, namespace).and_return(false)
+              expect(onboarding_actions_data).to include(
+                trial_started: a_hash_including(
+                  url: project_project_members_path(project),
+                  enabled: false
+                ),
+                code_owners_enabled: a_hash_including(
+                  url: help_page_path('user/project/code_owners', anchor: 'set-up-code-owners'),
+                  enabled: true
+                ),
+                required_mr_approvals_enabled: a_hash_including(
+                  url: help_page_path('ci/pipelines/settings', anchor: 'coverage-check-approval-rule'),
+                  enabled: true
+                )
+              )
+            end
           end
         end
       end

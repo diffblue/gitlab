@@ -22446,6 +22446,9 @@ msgstr ""
 msgid "LearnGitLab|Your team is growing! You've successfully invited new team members to the %{projectName} project."
 msgstr ""
 
+msgid "LearnGitlab|Contact your administrator to start a free Ultimate trial."
+msgstr ""
+
 msgid "LearnGitlab|Creating your onboarding experience..."
 msgstr ""
 
@@ -22453,6 +22456,9 @@ msgid "LearnGitlab|Ok, let's go"
 msgstr ""
 
 msgid "LearnGitlab|Trial only"
+msgstr ""
+
+msgid "LearnGitlab|View administrator list"
 msgstr ""
 
 msgid "Leave"
