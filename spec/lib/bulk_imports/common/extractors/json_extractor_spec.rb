@@ -3,15 +3,15 @@
 require 'spec_helper'
 require 'zlib'
 
-RSpec.describe BulkImports::Common::Extractors::NdjsonExtractor do
+RSpec.describe BulkImports::Common::Extractors::JsonExtractor do
+  subject { described_class.new(relation: 'self') }
+
   let_it_be(:tmpdir) { Dir.mktmpdir }
   let_it_be(:import) { create(:bulk_import) }
   let_it_be(:config) { create(:bulk_import_configuration, bulk_import: import) }
   let_it_be(:entity) { create(:bulk_import_entity, bulk_import: import) }
   let_it_be(:tracker) { create(:bulk_import_tracker, entity: entity) }
   let_it_be(:context) { BulkImports::Pipeline::Context.new(tracker) }
-
-  subject { described_class.new(relation: 'labels') }
 
   before do
     allow(FileUtils).to receive(:remove_entry).with(any_args).and_call_original
@@ -25,19 +25,16 @@ RSpec.describe BulkImports::Common::Extractors::NdjsonExtractor do
 
   describe '#extract' do
     before do
-      Zlib::GzipWriter.open(File.join(tmpdir, 'labels.ndjson.gz')) do |gz|
-        gz.write [
-          '{"title": "Title 1","description": "Description 1","type":"GroupLabel"}',
-          '{"title": "Title 2","description": "Description 2","type":"GroupLabel"}'
-        ].join("\n")
+      Zlib::GzipWriter.open(File.join(tmpdir, 'self.json.gz')) do |gz|
+        gz.write '{"name": "Name","description": "Description","avatar":{"url":null}}'
       end
 
       expect(BulkImports::FileDownloadService).to receive(:new)
         .with(
           configuration: context.configuration,
-          relative_url: entity.relation_download_url_path('labels'),
+          relative_url: entity.relation_download_url_path('self'),
           tmpdir: tmpdir,
-          filename: 'labels.ndjson.gz')
+          filename: 'self.json.gz')
         .and_return(instance_double(BulkImports::FileDownloadService, execute: nil))
     end
 
@@ -45,9 +42,8 @@ RSpec.describe BulkImports::Common::Extractors::NdjsonExtractor do
       extracted_data = subject.extract(context)
 
       expect(extracted_data).to be_instance_of(BulkImports::Pipeline::ExtractedData)
-      expect(extracted_data.data.to_a).to contain_exactly(
-        [{ "title" => "Title 1", "description" => "Description 1", "type" => "GroupLabel" }, 0],
-        [{ "title" => "Title 2", "description" => "Description 2", "type" => "GroupLabel" }, 1]
+      expect(extracted_data.data).to contain_exactly(
+        { 'name' => 'Name', 'description' => 'Description', 'avatar' => { 'url' => nil } }
       )
     end
   end

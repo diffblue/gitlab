@@ -11,6 +11,10 @@ module BulkImports
             pipeline: BulkImports::Groups::Pipelines::GroupPipeline,
             stage: 0
           },
+          group_attributes: {
+            pipeline: BulkImports::Groups::Pipelines::GroupAttributesPipeline,
+            stage: 1
+          },
           subgroups: {
             pipeline: BulkImports::Groups::Pipelines::SubgroupEntitiesPipeline,
             stage: 1
