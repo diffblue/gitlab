@@ -1,4 +1,4 @@
-import Cookies from 'js-cookie';
+import Cookies from '~/lib/utils/cookies';
 import initBroadcastNotifications from '~/broadcast_notification';
 
 describe('broadcast message on dismiss', () => {

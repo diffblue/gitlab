@@ -1,6 +1,6 @@
 import { GlBreakpointInstance as bp } from '@gitlab/ui/dist/utils';
-import Cookies from 'js-cookie';
 import { nextTick } from 'vue';
+import Cookies from '~/lib/utils/cookies';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 import IssuableSidebarRoot from '~/vue_shared/issuable/sidebar/components/issuable_sidebar_root.vue';

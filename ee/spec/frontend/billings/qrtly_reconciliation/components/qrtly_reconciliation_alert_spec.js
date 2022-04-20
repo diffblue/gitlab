@@ -1,10 +1,10 @@
 import { GlAlert, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Cookie from 'js-cookie';
+import Cookie from '~/lib/utils/cookies';
 import QrtlyReconciliationAlert from 'ee/billings/qrtly_reconciliation/components/qrtly_reconciliation_alert.vue';
 import { i18n } from 'ee/billings/qrtly_reconciliation/constants';
 
-jest.mock('js-cookie', () => ({
+jest.mock('~/lib/utils/cookies', () => ({
   set: jest.fn(),
 }));
 

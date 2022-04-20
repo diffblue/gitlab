@@ -1,6 +1,6 @@
 <script>
 import { GlAlert, GlSprintf } from '@gitlab/ui';
-import Cookie from 'js-cookie';
+import Cookie from '~/lib/utils/cookies';
 import { i18n } from 'ee/billings/qrtly_reconciliation/constants';
 import { formatDate, getDayDifference } from '~/lib/utils/datetime_utility';
 import { sprintf } from '~/locale';
