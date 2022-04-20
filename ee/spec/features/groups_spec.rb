@@ -14,13 +14,23 @@ RSpec.describe 'Group' do
 
     let(:path) { edit_group_path(group, anchor: 'js-permissions-settings') }
     let(:group_wiki_toggle) { true }
+    let(:group_wiki_licensed_feature) { true }
 
     before do
+      stub_licensed_features(group_wikis: group_wiki_licensed_feature)
       stub_feature_flags(group_wiki_settings_toggle: group_wiki_toggle)
 
       sign_in(user)
 
       visit path
+    end
+
+    context 'when licensed feature group wikis is not enabled' do
+      let(:group_wiki_licensed_feature) { false }
+
+      it 'does not show the wiki settings menu' do
+        expect(page).not_to have_content('Disable the group-level wiki')
+      end
     end
 
     context 'wiki_access_level setting' do
