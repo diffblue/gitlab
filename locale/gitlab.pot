@@ -33467,9 +33467,6 @@ msgstr ""
 msgid "SecurityOrchestration|All policies"
 msgstr ""
 
-msgid "SecurityOrchestration|All scanners find"
-msgstr ""
-
 msgid "SecurityOrchestration|Allow all inbound traffic to all pods from all pods on ports 443/TCP."
 msgstr ""
 
@@ -33479,7 +33476,19 @@ msgstr ""
 msgid "SecurityOrchestration|An error occurred unassigning your security policy project"
 msgstr ""
 
+msgid "SecurityOrchestration|An error occurred while fetching the scan result policies."
+msgstr ""
+
+msgid "SecurityOrchestration|Any scanner finds"
+msgstr ""
+
 msgid "SecurityOrchestration|Choose a project"
+msgstr ""
+
+msgid "SecurityOrchestration|Create more robust vulnerability rules and apply them to all your projects."
+msgstr ""
+
+msgid "SecurityOrchestration|Create security policy"
 msgstr ""
 
 msgid "SecurityOrchestration|Description"
@@ -33635,6 +33644,9 @@ msgstr ""
 msgid "SecurityOrchestration|Scan to be performed on every pipeline on the %{branches}"
 msgstr ""
 
+msgid "SecurityOrchestration|Security Approvals"
+msgstr ""
+
 msgid "SecurityOrchestration|Security policy project was linked successfully"
 msgstr ""
 
@@ -33696,6 +33708,9 @@ msgid "SecurityOrchestration|Use network policies to create firewall rules for n
 msgstr ""
 
 msgid "SecurityOrchestration|View policy project"
+msgstr ""
+
+msgid "SecurityOrchestration|You don't have any security policies yet"
 msgstr ""
 
 msgid "SecurityOrchestration|a"
