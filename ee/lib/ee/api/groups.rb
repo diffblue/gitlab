@@ -115,7 +115,7 @@ module EE
 
               use :pagination
             end
-            get '/', feature_category: :audit_events do
+            get '/', feature_category: :audit_events, urgency: :low do
               level = ::Gitlab::Audit::Levels::Group.new(group: user_group)
               audit_events = AuditLogFinder.new(
                 level: level,
