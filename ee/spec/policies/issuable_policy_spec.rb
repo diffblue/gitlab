@@ -6,7 +6,6 @@ RSpec.describe IssuablePolicy, models: true do
   let_it_be(:non_member) { create(:user) }
   let_it_be(:guest) { create(:user) }
   let_it_be(:reporter) { create(:user) }
-  let_it_be(:developer) { create(:user) }
 
   let(:guest_issue) { create(:issue, project: project, author: guest) }
   let(:reporter_issue) { create(:issue, project: project, author: reporter) }
@@ -14,9 +13,6 @@ RSpec.describe IssuablePolicy, models: true do
   before do
     project.add_guest(guest)
     project.add_reporter(reporter)
-    project.add_developer(developer)
-
-    allow(::Gitlab::IncidentManagement).to receive(:timeline_events_available?).with(project).and_return(true)
   end
 
   def permissions(user, issue)
@@ -44,34 +40,6 @@ RSpec.describe IssuablePolicy, models: true do
         expect(permissions(reporter, issue)).to be_allowed(:read_issuable_metric_image, :upload_issuable_metric_image, :update_issuable_metric_image, :destroy_issuable_metric_image)
         expect(permissions(reporter, reporter_issue)).to be_allowed(:read_issuable_metric_image, :upload_issuable_metric_image, :update_issuable_metric_image, :destroy_issuable_metric_image)
       end
-
-      context 'Timeline events' do
-        it 'allows non-members to read time line events' do
-          expect(permissions(guest, issue)).to be_allowed(:read_incident_management_timeline_event)
-        end
-
-        it 'disallows reporters from managing timeline events' do
-          expect(permissions(reporter, issue)).to be_disallowed(:admin_incident_management_timeline_event)
-        end
-
-        it 'allows developers to manage timeline events' do
-          expect(permissions(developer, issue)).to be_allowed(:admin_incident_management_timeline_event)
-        end
-
-        context 'when timeline events are not available' do
-          before do
-            allow(::Gitlab::IncidentManagement).to receive(:timeline_events_available?).with(project).and_return(false)
-          end
-
-          it 'disallows guests from reading timeline events' do
-            expect(permissions(guest, issue)).to be_disallowed(:read_incident_management_timeline_event)
-          end
-
-          it 'disallows developers from managing timeline events' do
-            expect(permissions(developer, issue)).to be_disallowed(:admin_incident_management_timeline_event)
-          end
-        end
-      end
     end
 
     context 'in a private project' do
@@ -92,38 +60,6 @@ RSpec.describe IssuablePolicy, models: true do
       it 'allows reporters to create and delete metric images' do
         expect(permissions(reporter, issue)).to be_allowed(:read_issuable_metric_image, :upload_issuable_metric_image, :update_issuable_metric_image, :destroy_issuable_metric_image)
         expect(permissions(reporter, reporter_issue)).to be_allowed(:read_issuable_metric_image, :upload_issuable_metric_image, :update_issuable_metric_image, :destroy_issuable_metric_image)
-      end
-
-      context 'Timeline events' do
-        it 'disallows non-members from reading timeline events' do
-          expect(permissions(non_member, issue)).to be_disallowed(:read_incident_management_timeline_event)
-        end
-
-        it 'allows guests to read time line events' do
-          expect(permissions(guest, issue)).to be_allowed(:read_incident_management_timeline_event)
-        end
-
-        it 'disallows reporters from managing timeline events' do
-          expect(permissions(reporter, issue)).to be_disallowed(:admin_incident_management_timeline_event)
-        end
-
-        it 'allows developers to manage timeline events' do
-          expect(permissions(developer, issue)).to be_allowed(:admin_incident_management_timeline_event)
-        end
-
-        context 'when timeline events are not available' do
-          before do
-            allow(::Gitlab::IncidentManagement).to receive(:timeline_events_available?).with(project).and_return(false)
-          end
-
-          it 'disallows guests from reading timeline events' do
-            expect(permissions(guest, issue)).to be_disallowed(:read_incident_management_timeline_event)
-          end
-
-          it 'disallows developers from managing timeline events' do
-            expect(permissions(developer, issue)).to be_disallowed(:admin_incident_management_timeline_event)
-          end
-        end
       end
     end
   end

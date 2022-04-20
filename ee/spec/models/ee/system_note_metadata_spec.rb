@@ -5,7 +5,6 @@ require 'spec_helper'
 RSpec.describe EE::SystemNoteMetadata do
   %i[
     vulnerability_confirmed vulnerability_dismissed vulnerability_resolved vulnerability_detected
-    timeline_event
   ].each do |action|
     context 'when action type is valid' do
       subject do

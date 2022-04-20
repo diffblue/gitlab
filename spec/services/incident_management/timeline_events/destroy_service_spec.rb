@@ -13,10 +13,6 @@ RSpec.describe IncidentManagement::TimelineEvents::DestroyService do
   let(:params) { {} }
   let(:service) { described_class.new(timeline_event, current_user) }
 
-  before do
-    stub_licensed_features(incident_timeline_events: true)
-  end
-
   before_all do
     project.add_developer(user_with_permissions)
     project.add_reporter(user_without_permissions)
@@ -40,14 +36,6 @@ RSpec.describe IncidentManagement::TimelineEvents::DestroyService do
 
     context 'when user does not have permissions to remove timeline events' do
       let(:current_user) { user_without_permissions }
-
-      it_behaves_like 'error response', 'You have insufficient permissions to manage timeline events for this incident'
-    end
-
-    context 'when feature is not available' do
-      before do
-        stub_licensed_features(incident_timeline_events: false)
-      end
 
       it_behaves_like 'error response', 'You have insufficient permissions to manage timeline events for this incident'
     end

@@ -13,9 +13,9 @@ module Banzai
             *super,
             *Banzai::Pipeline::GfmPipeline.reference_filters,
             Filter::EmojiFilter,
+            Filter::SanitizationFilter,
             Filter::ExternalLinkFilter,
-            Filter::ImageLinkFilter,
-            Filter::SanitizationFilter
+            Filter::ImageLinkFilter
           ]
         end
 
