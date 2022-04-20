@@ -849,16 +849,16 @@ RSpec.describe Epic do
     using RSpec::Parameterized::TableSyntax
 
     where(:epic_color, :expected_text_color) do
-      ::EE::Epic::DEFAULT_COLOR | '#FFFFFF'
-      '#FFFFFF' | '#333333'
-      '#000000' | '#FFFFFF'
+      ::EE::Epic::DEFAULT_COLOR | ::Gitlab::Color.of('#FFFFFF')
+      ::Gitlab::Color.of('#FFFFFF') | ::Gitlab::Color.of('#333333')
+      ::Gitlab::Color.of('#000000') | ::Gitlab::Color.of('#FFFFFF')
     end
 
     with_them do
       it 'returns correct text color' do
         epic = build(:epic, color: epic_color)
 
-        expect(epic.text_color).to eq(expected_text_color)
+        expect(epic.text_color).to be_color(expected_text_color)
       end
     end
   end
