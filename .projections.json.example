@@ -84,6 +84,10 @@
     "related": "ee/app/workers/ee/{}.rb",
     "type": "source"
   },
+  "app/*.rb": {
+    "alternate": "spec/{}_spec.rb",
+    "type": "source"
+  },
   "spec/*_spec.rb": {
     "alternate": "app/{}.rb",
     "type": "test"
