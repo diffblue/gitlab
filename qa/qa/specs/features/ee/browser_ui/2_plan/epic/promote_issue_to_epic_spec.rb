@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  # TODO: Remove :requires_admin when the `Runtime::Feature.enable` method call is removed
-  RSpec.describe 'Plan', :reliable, :requires_admin do
+  RSpec.describe 'Plan', :reliable do
     describe 'promote issue to epic' do
       let(:project) do
         Resource::Project.fabricate_via_api! do |project|
