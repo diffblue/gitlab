@@ -12,24 +12,19 @@ jest.mock('~/lib/logger');
 jest.mock('ee/arkose_labs/init_arkose_labs_script');
 let onShown;
 let onCompleted;
-let onSuppress;
 let onError;
 initArkoseLabsScript.mockImplementation(() => ({
-  setConfig: ({
-    onShown: shownHandler,
-    onCompleted: completedHandler,
-    onSuppress: suppressHandler,
-    onError: errorHandler,
-  }) => {
+  setConfig: ({ onShown: shownHandler, onCompleted: completedHandler, onError: errorHandler }) => {
     onShown = shownHandler;
     onCompleted = completedHandler;
-    onSuppress = suppressHandler;
     onError = errorHandler;
   },
 }));
 
 const MOCK_USERNAME = 'cassiopeia';
 const MOCK_PUBLIC_KEY = 'arkose-labs-public-api-key';
+const MOCK_ARKOSE_RESPONSE = { completed: true, token: 'verification-token', suppressed: false };
+const MOCK_ARKOSE_RESPONSE_SUPPRESSED = { ...MOCK_ARKOSE_RESPONSE, suppressed: true };
 
 describe('SignInArkoseApp', () => {
   let wrapper;
@@ -67,6 +62,10 @@ describe('SignInArkoseApp', () => {
     input.focus();
     input.value = username;
     input.blur();
+  };
+  const onSuppress = () => {
+    onCompleted(MOCK_ARKOSE_RESPONSE_SUPPRESSED);
+    return nextTick();
   };
   const submitForm = () => {
     findSignInForm().dispatchEvent(new Event('submit'));
@@ -190,12 +189,12 @@ describe('SignInArkoseApp', () => {
           return waitForPromises();
         });
 
-        it("blocks the form's submission if the challenge becomes needed", async () => {
+        it("blocks the form's submission if the challenge becomes needed", () => {
           expect(findSignInForm().submit).not.toHaveBeenCalled();
         });
 
         it("proceeds with the form's submission if the challenge is being suppressed", async () => {
-          onSuppress();
+          await onSuppress();
 
           expect(findSignInForm().submit).toHaveBeenCalled();
         });
@@ -242,20 +241,18 @@ describe('SignInArkoseApp', () => {
         expectArkoseLabsInitError();
       });
 
-      it('does not submit the form when the challenge is being suppressed', () => {
+      it('does not submit the form even if the challenge is being suppressed', async () => {
         jest.spyOn(findSignInForm(), 'submit');
-        onSuppress();
+        await onSuppress();
 
         expect(findSignInForm().submit).not.toHaveBeenCalled();
       });
 
       describe('when ArkoseLabs calls `onCompleted` handler that has been configured', () => {
-        const response = { token: 'verification-token' };
-
         beforeEach(() => {
           submitForm();
 
-          onCompleted(response);
+          onCompleted(MOCK_ARKOSE_RESPONSE);
         });
 
         it('removes ArkoseLabs error', () => {
@@ -269,7 +266,9 @@ describe('SignInArkoseApp', () => {
         });
 
         it("sets the verification token input's value", () => {
-          expect(findArkoseLabsVerificationTokenInput().element.value).toBe(response.token);
+          expect(findArkoseLabsVerificationTokenInput().element.value).toBe(
+            MOCK_ARKOSE_RESPONSE.token,
+          );
         });
       });
     });
