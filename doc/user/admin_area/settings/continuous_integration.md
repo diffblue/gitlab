@@ -226,7 +226,7 @@ To enable or disable the banner:
 
 ## Required pipeline configuration **(ULTIMATE SELF)**
 
-> - [Moved](https://gitlab.com/gitlab-org/gitlab/-/issues/352316) to [GitLab Ultimate](https://about.gitlab.com/pricing/) in 15.0.
+> [Moved](https://gitlab.com/gitlab-org/gitlab/-/issues/352316) from GitLab Premium to GitLab Ultimate in 15.0.
 
 NOTE:
 An alternative [compliance solution](../../project/settings/index.md#compliance-pipeline-configuration)
