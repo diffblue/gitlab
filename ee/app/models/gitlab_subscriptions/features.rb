@@ -140,7 +140,6 @@ module GitlabSubscriptions
       project_aliases
       protected_environments
       reject_unsigned_commits
-      required_ci_templates
       scoped_labels
       smartcard_auth
       swimlanes
@@ -196,6 +195,7 @@ module GitlabSubscriptions
       related_epics
       release_evidence_test_artifacts
       report_approver_rules
+      required_ci_templates
       requirements
       sast
       sast_iac
