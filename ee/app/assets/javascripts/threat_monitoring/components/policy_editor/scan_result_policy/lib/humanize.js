@@ -93,7 +93,7 @@ const humanizeScanners = (scanners) => {
   const hasEmptyScanners = scanners.length === 0;
 
   if (hasEmptyScanners) {
-    return s__('SecurityOrchestration|All scanners find');
+    return s__('SecurityOrchestration|Any scanner finds');
   }
 
   return sprintf(s__('SecurityOrchestration|%{scanners}'), {

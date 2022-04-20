@@ -246,6 +246,28 @@ actions:
       - the.one
 `;
 
+export const mockScanResultManifestSecond = `type: scan_result_policy
+name: low vulnerability SAST approvals
+description: This policy enforces low vulnerability SAST approvals
+enabled: true
+rules:
+  - type: scan_finding
+    branches:
+      - main
+    scanners:
+      - sast
+    vulnerabilities_allowed: 1
+    severity_levels:
+      - low
+    vulnerability_states:
+      - newly_detected
+actions:
+  - type: require_approval
+    approvals_required: 1
+    user_approvers:
+      - the.one
+`;
+
 export const mockScanResultObject = {
   type: 'scan_result_policy',
   name: 'critical vulnerability CS approvals',
@@ -275,6 +297,14 @@ export const mockScanResultPolicy = {
   name: 'critical vulnerability CS approvals',
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
   yaml: mockScanResultManifest,
+  enabled: true,
+};
+
+export const mockScanResultPolicySecond = {
+  __typename: 'ScanResultPolicy',
+  name: 'low vulnerability sast approvals second',
+  updatedAt: new Date('2021-06-07T00:00:00.000Z'),
+  yaml: mockScanResultManifestSecond,
   enabled: true,
 };
 

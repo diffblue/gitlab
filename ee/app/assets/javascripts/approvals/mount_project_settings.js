@@ -6,6 +6,7 @@ import { mergeRequestApprovalSettingsMappers } from './mappers';
 import createStore from './stores';
 import approvalSettingsModule from './stores/modules/approval_settings';
 import projectSettingsModule from './stores/modules/project_settings';
+import securityOrchestrationModule from './stores/modules/security_orchestration';
 
 export default function mountProjectSettingsApprovals(el) {
   if (!el) {
@@ -16,6 +17,9 @@ export default function mountProjectSettingsApprovals(el) {
     vulnerabilityCheckHelpPagePath,
     licenseCheckHelpPagePath,
     coverageCheckHelpPagePath,
+    fullPath,
+    securityPoliciesPath,
+    newPolicyPath,
   } = el.dataset;
 
   const modules = {
@@ -23,6 +27,8 @@ export default function mountProjectSettingsApprovals(el) {
   };
 
   modules.approvalSettings = approvalSettingsModule(mergeRequestApprovalSettingsMappers);
+
+  modules.securityOrchestrationModule = securityOrchestrationModule();
 
   const store = createStore(modules, {
     ...el.dataset,
@@ -42,6 +48,9 @@ export default function mountProjectSettingsApprovals(el) {
       vulnerabilityCheckHelpPagePath,
       licenseCheckHelpPagePath,
       coverageCheckHelpPagePath,
+      fullPath,
+      securityPoliciesPath,
+      newPolicyPath,
     },
     render(h) {
       return h(ProjectSettingsApp);
