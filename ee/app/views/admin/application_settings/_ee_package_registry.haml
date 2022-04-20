@@ -1,18 +1,15 @@
 .settings-content
-  = form_for @application_setting, url: ci_cd_admin_application_settings_path(anchor: 'js-package-settings'), html: { class: 'fieldset-form' } do |f|
+  = gitlab_ui_form_for @application_setting, url: ci_cd_admin_application_settings_path(anchor: 'js-package-settings'), html: { class: 'fieldset-form' } do |f|
     = form_errors(@application_setting)
 
     %fieldset
       .form-group
-        .form-check
-          = f.check_box :npm_package_requests_forwarding, class: 'form-check-input'
-          = f.label :npm_package_requests_forwarding, class: 'form-check-label' do
-            = _('Forward %{package_type} package requests to the %{registry_type} Registry if the packages are not found in the GitLab Package Registry') % { package_type: 'npm', registry_type: 'npm' }
+        = f.gitlab_ui_checkbox_component :npm_package_requests_forwarding,
+           _('Forward %{package_type} package requests to the %{registry_type} Registry if the packages are not found in the GitLab Package Registry') % { package_type: 'npm', registry_type: 'npm' }
 
       .form-group
-        .form-check
-          = f.check_box :pypi_package_requests_forwarding, class: 'form-check-input'
-          = f.label :pypi_package_requests_forwarding, class: 'form-check-label' do
-            = _('Forward %{package_type} package requests to the %{registry_type} Registry if the packages are not found in the GitLab Package Registry') % { package_type: 'PyPI', registry_type: 'PyPI' }
+        = f.gitlab_ui_checkbox_component :pypi_package_requests_forwarding,
+          _('Forward %{package_type} package requests to the %{registry_type} Registry if the packages are not found in the GitLab Package Registry') % { package_type: 'PyPI', registry_type: 'PyPI' }
 
     = f.submit _('Save changes'), class: 'btn gl-button btn-confirm'
+
