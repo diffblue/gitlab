@@ -28,7 +28,7 @@ module Projects
 
       @project = Project.new(params)
 
-      validate_import!
+      validate_import_source_enabled!
 
       @project.visibility_level = @project.group.visibility_level unless @project.visibility_level_allowed_by_group?
 
@@ -250,10 +250,12 @@ module Projects
 
     private
 
-    def validate_import!
+    def validate_import_source_enabled!
+      return unless @params[:import_type]
+
       return if INTERNAL_IMPORT_SOURCES.include?(@params[:import_type])
 
-      if @params[:import_type] && !::Gitlab::CurrentSettings.import_sources&.include?(@params[:import_type])
+      unless ::Gitlab::CurrentSettings.import_sources&.include?(@params[:import_type])
         raise ImportSourceDisabledError, "#{@params[:import_type]} import source is disabled"
       end
     end
