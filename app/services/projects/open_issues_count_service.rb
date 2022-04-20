@@ -16,8 +16,6 @@ module Projects
       super(project)
     end
 
-   # private
-
     def cache_key_name
       public_only? ? PUBLIC_COUNT_KEY : TOTAL_COUNT_KEY
     end
@@ -46,20 +44,16 @@ module Projects
 
     # rubocop: disable CodeReuse/ActiveRecord
     def refresh_cache(&block)
-      if block_given?
-        super(&block)
-      else
-        count_grouped_by_confidential = self.class.query(@project, public_only: false).group(:confidential).count
-        public_count = count_grouped_by_confidential[false] || 0
-        total_count = public_count + (count_grouped_by_confidential[true] || 0)
+      count_grouped_by_confidential = self.class.query(@project, public_only: false).group(:confidential).count
+      public_count = count_grouped_by_confidential[false] || 0
+      total_count = public_count + (count_grouped_by_confidential[true] || 0)
 
-        update_cache_for_key(public_count_cache_key) do
-          public_count
-        end
+      update_cache_for_key(public_count_cache_key) do
+        public_count
+      end
 
-        update_cache_for_key(total_count_cache_key) do
-          total_count
-        end
+      update_cache_for_key(total_count_cache_key) do
+        total_count
       end
     end
 
