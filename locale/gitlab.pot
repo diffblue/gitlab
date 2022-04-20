@@ -10474,6 +10474,9 @@ msgstr ""
 msgid "Create confidential merge request and branch"
 msgstr ""
 
+msgid "Create custom type"
+msgstr ""
+
 msgid "Create directory"
 msgstr ""
 
@@ -22270,6 +22273,9 @@ msgid "Labels|Promoting %{labelTitle} will make it available for all projects in
 msgstr ""
 
 msgid "Language"
+msgstr ""
+
+msgid "Language type"
 msgstr ""
 
 msgid "Large File Storage"
