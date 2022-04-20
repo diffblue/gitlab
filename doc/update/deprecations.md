@@ -44,6 +44,18 @@ Most of the deprecations are **planned for removal in 15.0**, and many of them a
 
 ## 14.10
 
+### Dependency Scanning default Java version changed to 17
+
+WARNING:
+This feature will be changed or removed in 15.0
+as a [breaking change](https://docs.gitlab.com/ee/development/contributing/#breaking-changes).
+Before updating GitLab, review the details carefully to determine if you need to make any
+changes to your code, settings, or workflow.
+
+In GitLab 15.0, for Dependency Scanning, the default version of Java will be updated to 17. This is the same as [the most up-to-date Long Term Support (LTS) version](https://en.wikipedia.org/wiki/Java_version_history). GitLab still [supports the same versions as it does today (8, 11, 13, 14, 15, 16, 17)](https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#configuring-specific-analyzers-used-by-dependency-scanning). Only the enabled default is changing. To change the default, set the `DS_Java_Version` variable.
+
+**Planned removal milestone: 15.0 (2021-05-22)**
+
 ### Manual iteration management
 
 WARNING:
