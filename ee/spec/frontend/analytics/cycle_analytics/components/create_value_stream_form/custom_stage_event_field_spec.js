@@ -79,10 +79,10 @@ describe('CustomStageEventField', () => {
       expect(wrapper.emitted('update-identifier')[0]).toEqual([firstEvent.value]);
     });
 
-    it('sets disables the dropdown when the disabled prop is set', async () => {
+    it('sets disables the dropdown when the disabled prop is set', () => {
       expect(findEventDropdown().attributes('disabled')).toBeUndefined();
 
-      wrapper = await createComponent({ disabled: true });
+      wrapper = createComponent({ disabled: true });
 
       expect(findEventDropdown().attributes('disabled')).toBe('true');
     });

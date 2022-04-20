@@ -51,10 +51,10 @@ describe('ValueStreamAggregatingWarning', () => {
       expect(content).toContain(nextUpdateMsg);
     });
 
-    it('emits the `reload` action when the primary button is clicked', async () => {
+    it('emits the `reload` action when the primary button is clicked', () => {
       expect(wrapper.emitted('reload')).toBeUndefined();
 
-      await findAlert().vm.$emit('primaryAction');
+      findAlert().vm.$emit('primaryAction');
 
       expect(wrapper.emitted('reload')).toHaveLength(1);
     });

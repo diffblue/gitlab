@@ -1,6 +1,6 @@
 import { GlModal, GlFormInput } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import {
   i18n,
@@ -183,18 +183,18 @@ describe('ValueStreamFormContent', () => {
         expect(findBtn('actionSecondary')).toMatchObject({ text: 'Add another stage' });
       });
 
-      it('adds a blank custom stage when clicked', async () => {
+      it('adds a blank custom stage when clicked', () => {
         expect(wrapper.vm.stages).toHaveLength(defaultStageConfig.length);
 
-        await clickAddStage();
+        clickAddStage();
 
         expect(wrapper.vm.stages.length).toBe(defaultStageConfig.length + 1);
       });
 
-      it('validates existing fields when clicked', async () => {
+      it('validates existing fields when clicked', () => {
         expect(wrapper.vm.nameError).toHaveLength(0);
 
-        await clickAddStage();
+        clickAddStage();
 
         expect(wrapper.vm.nameError).toEqual(['Name is required']);
       });
@@ -222,7 +222,7 @@ describe('ValueStreamFormContent', () => {
         expectFieldError('default-stage-name-0', initialFormStageErrors.stages[0].name[0]);
       });
 
-      it('renders errors for a custom stage field', async () => {
+      it('renders errors for a custom stage field', () => {
         wrapper = createComponent({
           props: {
             ...commonExtendedData.props,
@@ -274,7 +274,8 @@ describe('ValueStreamFormContent', () => {
         it('will clear the form fields', async () => {
           expect(wrapper.vm.stages).toHaveLength(stageCount);
 
-          await clickAddStage();
+          clickAddStage();
+          await nextTick();
 
           expect(wrapper.vm.stages).toHaveLength(stageCount + 1);
 
@@ -306,14 +307,15 @@ describe('ValueStreamFormContent', () => {
         });
 
         it('when `Restore stage` is clicked, the stage is restored', async () => {
-          await clickRestoreStageAtIndex(1);
+          clickRestoreStageAtIndex(1);
+          await nextTick();
 
           expect(findHiddenStages().length).toBe(hiddenStages.length - 1);
           expect(wrapper.vm.stages.length).toBe(stageCount + 1);
         });
 
-        it('when a stage is restored it has a transition key', async () => {
-          await clickRestoreStageAtIndex(1);
+        it('when a stage is restored it has a transition key', () => {
+          clickRestoreStageAtIndex(1);
 
           expect(wrapper.vm.stages[stageCount].transitionKey).toContain(
             `stage-${hiddenStages[1].name}-`,
@@ -339,22 +341,22 @@ describe('ValueStreamFormContent', () => {
           expect(findBtn('actionSecondary')).toMatchObject({ text: i18n.BTN_ADD_ANOTHER_STAGE });
         });
 
-        it('adds a blank custom stage when clicked', async () => {
+        it('adds a blank custom stage when clicked', () => {
           expect(wrapper.vm.stages.length).toBe(stageCount);
 
-          await clickAddStage();
+          clickAddStage();
 
           expect(wrapper.vm.stages.length).toBe(stageCount + 1);
         });
 
-        it('validates existing fields when clicked', async () => {
+        it('validates existing fields when clicked', () => {
           expect(wrapper.vm.nameError).toEqual([]);
 
           wrapper
             .findByTestId('create-value-stream-name')
             .findComponent(GlFormInput)
             .vm.$emit('input', '');
-          await clickAddStage();
+          clickAddStage();
 
           expect(wrapper.vm.nameError).toEqual(['Name is required']);
         });
