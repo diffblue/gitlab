@@ -157,7 +157,9 @@ describe('GeoNodeFormNamespaces', () => {
           });
 
           it('returns `Select groups to replicate`', () => {
-            expect(wrapper.vm.dropdownTitle).toBe('Select groups to replicate');
+            expect(wrapper.vm.dropdownTitle).toBe(
+              GeoNodeFormNamespaces.i18n.noSelectedDropdownTitle,
+            );
           });
         });
 

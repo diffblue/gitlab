@@ -1,10 +1,16 @@
 <script>
 import { GlBadge } from '@gitlab/ui';
-import { __ } from '~/locale';
+import { s__ } from '~/locale';
 import GeoNodeForm from './geo_node_form.vue';
 
 export default {
   name: 'GeoNodeFormApp',
+  i18n: {
+    editGeoSite: s__('Geo|Edit Geo Site'),
+    addGeoSite: s__('Geo|Add New Site'),
+    primary: s__('Geo|Primary'),
+    secondary: s__('Geo|Secondary'),
+  },
   components: {
     GeoNodeForm,
     GlBadge,
@@ -29,12 +35,12 @@ export default {
       return this.node && this.node.primary;
     },
     pageTitle() {
-      return this.node ? __('Edit Geo Site') : __('Add New Site');
+      return this.node ? this.$options.i18n.editGeoSite : this.$options.i18n.addGeoSite;
     },
     pillDetails() {
       return {
         variant: this.isNodePrimary ? 'info' : 'muted',
-        label: this.isNodePrimary ? __('Primary') : __('Secondary'),
+        label: this.isNodePrimary ? this.$options.i18n.primary : this.$options.i18n.secondary,
       };
     },
   },

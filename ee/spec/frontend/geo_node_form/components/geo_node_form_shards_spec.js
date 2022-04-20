@@ -130,7 +130,7 @@ describe('GeoNodeFormShards', () => {
           });
 
           it('returns `Select shards to replicate`', () => {
-            expect(wrapper.vm.dropdownTitle).toBe('Select shards to replicate');
+            expect(wrapper.vm.dropdownTitle).toBe(GeoNodeFormShards.i18n.noSelectedDropdownTitle);
           });
         });
 
