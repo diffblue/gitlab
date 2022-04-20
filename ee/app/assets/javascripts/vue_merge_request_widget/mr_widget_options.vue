@@ -488,7 +488,7 @@ export default {
       />
 
       <grouped-test-reports-app
-        v-if="mr.testResultsPath"
+        v-if="shouldRenderTestReport && !shouldRenderRefactoredTestReport"
         class="js-reports-container"
         :endpoint="mr.testResultsPath"
         :head-blob-path="mr.headBlobPath"
