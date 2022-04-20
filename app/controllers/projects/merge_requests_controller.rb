@@ -88,6 +88,9 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
     :codequality_mr_diff_reports,
     :codequality_reports
   ]
+  urgency :low, [
+    :terraform_reports
+  ]
 
   def index
     @merge_requests = @issuables

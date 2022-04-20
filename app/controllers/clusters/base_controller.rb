@@ -9,6 +9,7 @@ class Clusters::BaseController < ApplicationController
   helper_method :clusterable
 
   feature_category :kubernetes_management
+  urgency :low
 
   private
 

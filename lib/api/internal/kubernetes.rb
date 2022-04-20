@@ -5,6 +5,7 @@ module API
   module Internal
     class Kubernetes < ::API::Base
       feature_category :kubernetes_management
+      urgency :low
 
       before do
         check_feature_enabled
