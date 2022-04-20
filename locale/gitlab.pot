@@ -31659,6 +31659,9 @@ msgstr ""
 msgid "Reports|Filename"
 msgstr ""
 
+msgid "Reports|Fixed"
+msgstr ""
+
 msgid "Reports|Full report"
 msgstr ""
 
@@ -31687,6 +31690,9 @@ msgid "Reports|Metrics reports failed to load results"
 msgstr ""
 
 msgid "Reports|Metrics reports: %{strong_start}%{numberOfChanges}%{strong_end} %{changes}"
+msgstr ""
+
+msgid "Reports|New"
 msgstr ""
 
 msgid "Reports|Scanner"
