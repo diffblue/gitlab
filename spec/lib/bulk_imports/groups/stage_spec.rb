@@ -12,6 +12,7 @@ RSpec.describe BulkImports::Groups::Stage do
     [
       [0, BulkImports::Groups::Pipelines::GroupPipeline],
       [1, BulkImports::Groups::Pipelines::SubgroupEntitiesPipeline],
+      [1, BulkImports::Groups::Pipelines::NamespaceSettingsPipeline],
       [1, BulkImports::Common::Pipelines::MembersPipeline],
       [1, BulkImports::Common::Pipelines::LabelsPipeline],
       [1, BulkImports::Common::Pipelines::MilestonesPipeline],

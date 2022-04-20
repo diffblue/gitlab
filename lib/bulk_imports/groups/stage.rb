@@ -15,6 +15,10 @@ module BulkImports
             pipeline: BulkImports::Groups::Pipelines::SubgroupEntitiesPipeline,
             stage: 1
           },
+          namespace_settings: {
+            pipeline: BulkImports::Groups::Pipelines::NamespaceSettingsPipeline,
+            stage: 1
+          },
           members: {
             pipeline: BulkImports::Common::Pipelines::MembersPipeline,
             stage: 1
