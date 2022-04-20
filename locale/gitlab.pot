@@ -15884,6 +15884,9 @@ msgstr ""
 msgid "File Hooks (%{count})"
 msgstr ""
 
+msgid "File Tree"
+msgstr ""
+
 msgid "File added"
 msgstr ""
 
@@ -27533,6 +27536,12 @@ msgid "PipelineCharts|There was an error parsing the data for the charts."
 msgstr ""
 
 msgid "PipelineCharts|Total:"
+msgstr ""
+
+msgid "PipelineEditorFileTree|Configuration files added with the include keyword"
+msgstr ""
+
+msgid "PipelineEditorFileTree|When you use the include keyword to add pipeline configuration from files in the project, those files will be listed here."
 msgstr ""
 
 msgid "PipelineEditorTutorial|Browse %{linkStart}CI/CD examples and templates%{linkEnd}"

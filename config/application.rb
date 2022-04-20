@@ -287,6 +287,7 @@ module Gitlab
     config.assets.precompile << "page_bundles/pipeline.css"
     config.assets.precompile << "page_bundles/pipeline_schedules.css"
     config.assets.precompile << "page_bundles/pipelines.css"
+    config.assets.precompile << "page_bundles/pipeline_editor.css"
     config.assets.precompile << "page_bundles/productivity_analytics.css"
     config.assets.precompile << "page_bundles/profile_two_factor_auth.css"
     config.assets.precompile << "page_bundles/project.css"
