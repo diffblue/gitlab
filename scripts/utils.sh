@@ -15,16 +15,8 @@ function retry() {
 
 function test_url() {
   local url="${1}"
-  local curl_output="${2}"
-  local status
 
-  status=$(curl -s -o "${curl_output}" -L -w ''%{http_code}'' "${url}")
-
-  if [[ $status == "200" ]]; then
-    return 0
-  fi
-
-  return 1
+  curl -f --output /dev/null "${url}"
 }
 
 function bundle_install_script() {
