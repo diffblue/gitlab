@@ -155,7 +155,7 @@ export default {
       >{{ project.name }}</gl-dropdown-item
     >
     <gl-intersection-observer v-if="projectsPageInfo.hasNextPage" @appear="loadMoreProjects">
-      <gl-loading-icon v-if="$apollo.queries.groupProjects.loading" size="md" />
+      <gl-loading-icon v-if="$apollo.queries.groupProjects.loading" size="lg" />
     </gl-intersection-observer>
   </gl-dropdown>
 </template>

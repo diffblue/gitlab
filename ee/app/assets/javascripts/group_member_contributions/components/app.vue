@@ -45,7 +45,7 @@ export default {
     <gl-loading-icon
       v-if="isLoading"
       :label="__('Loading contribution stats for group members')"
-      size="md"
+      size="lg"
       class="loading-animation prepend-top-20 append-bottom-20"
     />
     <table v-else class="table gl-sortable">

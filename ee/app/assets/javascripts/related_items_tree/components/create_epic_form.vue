@@ -148,7 +148,7 @@ export default {
           <gl-loading-icon
             v-show="descendantGroupsFetchInProgress"
             class="projects-fetch-loading align-items-center p-2"
-            size="md"
+            size="lg"
           />
 
           <template v-if="canRenderSearchResults">
