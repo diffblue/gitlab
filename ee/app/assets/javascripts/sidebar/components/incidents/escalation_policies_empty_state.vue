@@ -28,7 +28,9 @@ export default {
 <template>
   <div data-testid="escalation-policy-edit">
     <div class="hide-collapsed sidebar-help-wrap">
-      <div class="gl-line-height-2 gl-text-gray-900 gl-display-flex gl-align-items-center gl-mb-2">
+      <div
+        class="gl-line-height-2 gl-text-gray-900 gl-display-flex gl-align-items-center gl-mb-2 gl-font-weight-bold"
+      >
         <span>{{ $options.i18n.title }}</span>
         <gl-button
           :data-testid="showHelp ? 'close-help-button' : 'help-button'"

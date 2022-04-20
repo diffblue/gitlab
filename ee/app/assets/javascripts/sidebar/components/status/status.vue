@@ -154,7 +154,7 @@ export default {
 
     <div class="hide-collapsed">
       <div
-        class="gl-display-flex gl-justify-content-space-between gl-align-items-center gl-line-height-20 gl-mb-2 gl-text-gray-900"
+        class="gl-display-flex gl-justify-content-space-between gl-align-items-center gl-line-height-20 gl-mb-2 gl-text-gray-900 gl-font-weight-bold"
       >
         <span data-testid="statusTitle">{{ s__('Sidebar|Health status') }}</span>
         <span
