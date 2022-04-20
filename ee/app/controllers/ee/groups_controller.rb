@@ -129,6 +129,7 @@ module EE
 
     override :group_feature_attributes
     def group_feature_attributes
+      return super unless current_group&.licensed_feature_available?(:group_wikis)
       return super if ::Feature.disabled?(:group_wiki_settings_toggle, current_group, default_enabled: :yaml)
 
       super + [:wiki_access_level]
