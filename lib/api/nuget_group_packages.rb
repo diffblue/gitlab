@@ -14,6 +14,7 @@ module API
     include ::API::Helpers::Authentication
 
     feature_category :package_registry
+    urgency :low
 
     default_format :json
 

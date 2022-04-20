@@ -10,6 +10,7 @@ module API
     include ::Gitlab::Utils::StrongMemoize
 
     feature_category :package_registry
+    urgency :low
 
     content_type :json, 'application/json'
     default_format :json

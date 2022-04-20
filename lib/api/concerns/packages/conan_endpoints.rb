@@ -33,6 +33,7 @@ module API
 
         included do
           feature_category :package_registry
+          urgency :low
 
           helpers ::API::Helpers::PackagesManagerClientsHelpers
           helpers ::API::Helpers::Packages::Conan::ApiHelpers
