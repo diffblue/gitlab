@@ -120,7 +120,6 @@ module Iterations
         return if existing_iterations_in_advance.empty?
 
         prev_iteration = nil
-        duration_before = existing_iterations_in_advance.last.due_date - existing_iterations_in_advance.first.start_date
 
         existing_iterations_in_advance.each do |iteration|
           if iteration.duration_in_days != cadence.duration_in_days
@@ -131,12 +130,10 @@ module Iterations
           prev_iteration = iteration
         end
 
-        duration_after = existing_iterations_in_advance.last.due_date - existing_iterations_in_advance.first.start_date
-
-        if duration_before > duration_after
-          existing_iterations_in_advance.each { |it| it.save! }
-        else
-          existing_iterations_in_advance.reverse_each { |it| it.save! }
+        cadence.transaction do
+          existing_iterations_in_advance.each do |it|
+            it.update_columns({ start_date: it.start_date, due_date: it.due_date })
+          end
         end
       end
 
