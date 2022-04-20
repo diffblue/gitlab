@@ -1,4 +1,5 @@
 import { __, s__ } from '~/locale';
+import vulnerabilityStateMutations from 'ee/security_dashboard/graphql/mutate_vulnerability_state';
 import {
   FEEDBACK_TYPE_ISSUE,
   FEEDBACK_TYPE_MERGE_REQUEST,
@@ -21,6 +22,7 @@ export const VULNERABILITY_STATE_OBJECTS = {
     dropdownText: s__('VulnerabilityManagement|Needs triage'),
     dropdownDescription: s__('VulnerabilityManagement|Requires assessment'),
     description: s__('VulnerabilityManagement|An unverified non-confirmed finding'),
+    mutation: vulnerabilityStateMutations.revert,
   },
   dismissed: {
     action: 'dismiss',
@@ -28,6 +30,7 @@ export const VULNERABILITY_STATE_OBJECTS = {
     buttonText: VULNERABILITY_STATES.dismissed,
     dropdownText: __('Dismiss'),
     dropdownDescription: falsePositiveMessage,
+    mutation: vulnerabilityStateMutations.dismiss,
     payload: {
       comment: falsePositiveMessage,
     },
@@ -39,6 +42,7 @@ export const VULNERABILITY_STATE_OBJECTS = {
     dropdownText: __('Confirm'),
     dropdownDescription: s__('VulnerabilityManagement|A true-positive and will fix'),
     description: s__('VulnerabilityManagement|A verified true-positive vulnerability'),
+    mutation: vulnerabilityStateMutations.confirm,
   },
   resolved: {
     action: 'resolve',
@@ -47,6 +51,7 @@ export const VULNERABILITY_STATE_OBJECTS = {
     dropdownText: __('Resolve'),
     dropdownDescription: s__('VulnerabilityManagement|Verified as fixed or mitigated'),
     description: s__('VulnerabilityManagement|A removed or remediated vulnerability'),
+    mutation: vulnerabilityStateMutations.resolve,
   },
 };
 
