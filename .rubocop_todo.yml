@@ -92,10 +92,6 @@ RSpec/PredicateMatcher:
 RSpec/RepeatedExampleGroupBody:
   Enabled: false
 
-# Offense count: 225
-RSpec/RepeatedExampleGroupDescription:
-  Enabled: false
-
 # Offense count: 667
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
