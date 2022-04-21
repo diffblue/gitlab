@@ -182,7 +182,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
     it_behaves_like 'empty state'
   end
 
-  context 'with value streams' do
+  context 'with value streams', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/360168' do
     def vsa_stages(selected_group)
       [
         create(:cycle_analytics_group_stage, group: selected_group, name: "Issue", relative_position: 1, start_event_identifier: :issue_created, end_event_identifier: :issue_closed),
