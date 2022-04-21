@@ -2,8 +2,6 @@
 #import "~/graphql_shared/fragments/label.fragment.graphql"
 #import "~/graphql_shared/fragments/iteration.fragment.graphql"
 
-# This fragment is used as ee-else-ce
-# eslint-disable-next-line @graphql-eslint/unique-fragment-name
 fragment BoardScopeFragment on Board {
   id
   name
@@ -22,7 +20,7 @@ fragment BoardScopeFragment on Board {
     }
   }
   iteration {
-    ...IterationShared
+    ...Iteration
   }
   iterationCadence {
     id
