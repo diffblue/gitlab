@@ -13,16 +13,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 
 	"gitlab.com/gitlab-org/gitaly/v14/client"
 	"gitlab.com/gitlab-org/gitaly/v14/proto/go/gitalypb"
 
 	"gitlab.com/gitlab-org/gitlab/workhorse/internal/api"
 	"gitlab.com/gitlab-org/gitlab/workhorse/internal/gitaly"
+	"gitlab.com/gitlab-org/gitlab/workhorse/internal/testhelper"
 )
 
 var (
@@ -68,7 +67,7 @@ func TestUploadPackTimesOut(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest("GET", "/", body)
-	a := &api.Response{GitalyServer: gitaly.Server{Address: addr, Sidechannel: true}}
+	a := &api.Response{GitalyServer: gitaly.Server{Address: addr}}
 
 	err := handleUploadPack(NewHttpResponseWriter(w), r, a)
 	require.True(t, errors.Is(err, context.DeadlineExceeded))
@@ -84,7 +83,7 @@ func startSmartHTTPServer(t testing.TB, s gitalypb.SmartHTTPServiceServer) strin
 	ln, err := net.Listen("unix", socket)
 	require.NoError(t, err)
 
-	srv := grpc.NewServer(client.SidechannelServer(logrus.NewEntry(logrus.StandardLogger()), insecure.NewCredentials()))
+	srv := grpc.NewServer(testhelper.WithSidechannel())
 	gitalypb.RegisterSmartHTTPServiceServer(srv, s)
 	go func() {
 		require.NoError(t, srv.Serve(ln))
