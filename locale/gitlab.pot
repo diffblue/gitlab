@@ -2634,6 +2634,18 @@ msgstr ""
 msgid "AdminSettings|Configure Let's Encrypt"
 msgstr ""
 
+msgid "AdminSettings|Configure when inactive projects should be automatically deleted. %{linkStart}What are inactive projects?%{linkEnd}"
+msgstr ""
+
+msgid "AdminSettings|Delete inactive projects"
+msgstr ""
+
+msgid "AdminSettings|Delete inactive projects that exceed"
+msgstr ""
+
+msgid "AdminSettings|Delete project after"
+msgstr ""
+
 msgid "AdminSettings|Disable Elasticsearch until indexing completes."
 msgstr ""
 
@@ -2700,6 +2712,9 @@ msgstr ""
 msgid "AdminSettings|Import sources"
 msgstr ""
 
+msgid "AdminSettings|Inactive project deletion"
+msgstr ""
+
 msgid "AdminSettings|Keep the latest artifacts for all jobs in the latest successful pipelines"
 msgstr ""
 
@@ -2736,6 +2751,9 @@ msgstr ""
 msgid "AdminSettings|Maximum number of runners registered per project"
 msgstr ""
 
+msgid "AdminSettings|Minimum size must be at least 0."
+msgstr ""
+
 msgid "AdminSettings|New CI/CD variables in projects and groups default to protected."
 msgstr ""
 
@@ -2766,6 +2784,9 @@ msgstr ""
 msgid "AdminSettings|Required pipeline configuration"
 msgstr ""
 
+msgid "AdminSettings|Requires %{linkStart}email notifications%{linkEnd}"
+msgstr ""
+
 msgid "AdminSettings|Restrict group access by IP address. %{link_start}Learn more%{link_end}."
 msgstr ""
 
@@ -2784,6 +2805,12 @@ msgstr ""
 msgid "AdminSettings|Select to disable public access for Pages sites, which requires users to sign in for access to the Pages sites in your instance. %{link_start}Learn more.%{link_end}"
 msgstr ""
 
+msgid "AdminSettings|Send email to maintainers after project is inactive for"
+msgstr ""
+
+msgid "AdminSettings|Send warning email"
+msgstr ""
+
 msgid "AdminSettings|Service ping is disabled in your configuration file, and cannot be enabled through this form. For more information, see the documentation on %{link_start}deactivating service ping%{link_end}."
 msgstr ""
 
@@ -2800,6 +2827,9 @@ msgid "AdminSettings|Set the initial name and protections for the default branch
 msgstr ""
 
 msgid "AdminSettings|Set the maximum size of GitLab Pages per project (0 for unlimited). %{link_start}Learn more.%{link_end}"
+msgstr ""
+
+msgid "AdminSettings|Setting must be greater than 0."
 msgstr ""
 
 msgid "AdminSettings|Size and domain settings for Pages static sites."
@@ -2835,7 +2865,13 @@ msgstr ""
 msgid "AdminSettings|When paused, GitLab still tracks the changes. This is useful for cluster/index migrations."
 msgstr ""
 
+msgid "AdminSettings|When to delete inactive projects"
+msgstr ""
+
 msgid "AdminSettings|You can enable Registration Features because Service Ping is enabled. To continue using Registration Features in the future, you will also need to register with GitLab via a new cloud licensing service."
+msgstr ""
+
+msgid "AdminSettings|You can't delete projects before the warning email is sent."
 msgstr ""
 
 msgid "AdminStatistics|Active Users"
@@ -45123,6 +45159,9 @@ msgid "metric_id must be unique across a project"
 msgstr ""
 
 msgid "missing"
+msgstr ""
+
+msgid "months"
 msgstr ""
 
 msgid "most recent deployment"
