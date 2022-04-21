@@ -36,11 +36,11 @@ RSpec.describe 'gitlab:license namespace rake tasks', :silence_stdout do
         end
 
         context 'and contains a valid license' do
-          let(:license_file_contents) { 'valid contents' }
+          let(:license) { build(:gitlab_license) }
+          let(:license_file_contents) { license.export }
 
           it 'succeeds in adding the license' do
             expect_file_read(license_path, content: license_file_contents)
-            expect(License).to receive(:create).with(data: license_file_contents).and_return(true)
 
             expect { subject }.not_to raise_error
           end
@@ -51,7 +51,17 @@ RSpec.describe 'gitlab:license namespace rake tasks', :silence_stdout do
 
           it 'fails to add the license' do
             expect_file_read(license_path, content: license_file_contents)
-            expect(License).to receive(:create).with(data: license_file_contents).and_return(false)
+
+            expect { subject }.to raise_error(RuntimeError, "License Invalid")
+          end
+        end
+
+        context 'but contains an expired license' do
+          let(:license) { build(:gitlab_license, expires_at: Date.current - 1.month) }
+          let(:license_file_contents) { license.export }
+
+          it 'fails to add the license' do
+            expect_file_read(license_path, content: license_file_contents)
 
             expect { subject }.to raise_error(RuntimeError, "License Invalid")
           end
@@ -60,7 +70,8 @@ RSpec.describe 'gitlab:license namespace rake tasks', :silence_stdout do
     end
 
     context 'when GITLAB_LICENSE_FILE env variable is not set' do
-      let(:license_file_contents) { 'valid contents' }
+      let(:license) { build(:gitlab_license) }
+      let(:license_file_contents) { license.export }
 
       context 'when default valid license file does exist' do
         before do
@@ -69,7 +80,6 @@ RSpec.describe 'gitlab:license namespace rake tasks', :silence_stdout do
 
         it 'succeeds in adding the license' do
           expect_file_read(default_license_path, content: license_file_contents)
-          expect(License).to receive(:create).with(data: license_file_contents).and_return(true)
 
           expect { subject }.not_to raise_error
         end
