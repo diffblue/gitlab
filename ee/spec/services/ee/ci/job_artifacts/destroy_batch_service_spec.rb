@@ -10,10 +10,14 @@ RSpec.describe Ci::JobArtifacts::DestroyBatchService do
 
     let(:service) { described_class.new(Ci::JobArtifact.all, pick_up_at: Time.current) }
 
-    let_it_be(:artifact) { create(:ci_job_artifact) }
+    let_it_be(:artifact) { create(:ci_job_artifact, :zip) }
     let_it_be(:security_scan) { create(:security_scan, build: artifact.job) }
     let_it_be(:security_finding) { create(:security_finding, scan: security_scan) }
     let_it_be(:event_data) { { job_ids: [artifact.job_id] } }
+
+    before do
+      stub_feature_flags(geo_job_artifact_replication: false)
+    end
 
     it 'destroys all expired artifacts', :sidekiq_inline do
       expect { subject }.to change { Ci::JobArtifact.count }.by(-1)
@@ -34,7 +38,21 @@ RSpec.describe Ci::JobArtifacts::DestroyBatchService do
       end
 
       it 'creates a JobArtifactDeletedEvent' do
-        expect { subject }.to change { Geo::JobArtifactDeletedEvent.count }.by(1)
+        expect { subject }.to change { Geo::JobArtifactDeletedEvent.count }.by(2)
+      end
+
+      context 'with geo_job_artifact_replication flag enabled' do
+        before do
+          stub_feature_flags(geo_job_artifact_replication: true)
+        end
+
+        it 'does not create a JobArtifactDeletedEvent' do
+          expect { subject }.to change { Geo::JobArtifactDeletedEvent.count }.by(0)
+        end
+
+        it 'creates an Geo::EventLog', :sidekiq_inline do
+          expect { subject }.to change { ::Geo::Event.count }.by(2)
+        end
       end
 
       context 'JobArtifact batch destroy fails' do
