@@ -17,7 +17,6 @@ RSpec.describe Namespaces::FreeUserCap, :saas do
     subject(:reached_limit?) { described_class.new(namespace).reached_limit? }
 
     before do
-      stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan)
       allow(namespace).to receive(:free_plan_members_count).and_return(free_plan_members_count)
     end
 
@@ -82,8 +81,6 @@ RSpec.describe Namespaces::FreeUserCap, :saas do
     end
   end
 
-  describe '#over_limit?'
-
   describe '#enforce_cap?' do
     subject(:enforce_cap?) { described_class.new(namespace).enforce_cap? }
 
@@ -121,6 +118,26 @@ RSpec.describe Namespaces::FreeUserCap, :saas do
 
         it { is_expected.to be false }
       end
+    end
+  end
+
+  describe '#feature_enabled?' do
+    subject(:feature_enabled?) { described_class.new(namespace).feature_enabled? }
+
+    context 'when :free_user_cap is disabled' do
+      before do
+        stub_feature_flags(free_user_cap: false)
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context 'when :free_user_cap is enabled' do
+      before do
+        stub_feature_flags(free_user_cap: true)
+      end
+
+      it { is_expected.to be true }
     end
   end
 end

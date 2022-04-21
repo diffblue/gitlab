@@ -328,8 +328,8 @@ RSpec.describe Member, type: :model do
 
         context 'when user is added to a group-less project' do
           let(:project) do
-            project = create(:project)
-            namespace = project.namespace
+            namespace = create(:namespace, :with_namespace_settings)
+            project = create(:project, namespace: namespace)
             create(:gitlab_subscription, hosted_plan: create(:free_plan), namespace: namespace)
             project
           end
@@ -416,8 +416,8 @@ RSpec.describe Member, type: :model do
 
         context 'when user is added to a group-less project' do
           let(:project) do
-            project = create(:project)
-            namespace = project.namespace
+            namespace = create(:namespace, :with_namespace_settings)
+            project = create(:project, namespace: namespace)
             create(:gitlab_subscription, hosted_plan: create(:free_plan), namespace: namespace)
             project
           end

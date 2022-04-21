@@ -7,7 +7,7 @@ RSpec.describe Dashboard::Projects::ListService do
 
   let(:user) { create(:user) }
   let(:project) { create(:project, namespace: namespace, visibility_level: Gitlab::VisibilityLevel::PRIVATE) }
-  let(:namespace) { create(:namespace, visibility_level: Gitlab::VisibilityLevel::PUBLIC) }
+  let(:namespace) { create(:namespace, :with_namespace_settings, visibility_level: Gitlab::VisibilityLevel::PUBLIC) }
   let(:service) { described_class.new(user, feature: :operations_dashboard) }
 
   describe '#execute' do

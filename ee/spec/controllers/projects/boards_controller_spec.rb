@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Projects::BoardsController do
-  let(:project) { create(:project) }
+  let(:project) { create(:project, namespace: create(:namespace, :with_namespace_settings)) }
   let(:user)    { create(:user) }
 
   before do
