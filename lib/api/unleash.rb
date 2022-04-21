@@ -5,7 +5,7 @@ module API
     include PaginationParams
 
     feature_category :feature_flags
-    urgency :low
+    urgency :low, ['features', 'client/register', 'client/metrics']
 
     namespace :feature_flags do
       resource :unleash, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
