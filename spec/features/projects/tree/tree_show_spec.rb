@@ -154,22 +154,16 @@ RSpec.describe 'Projects tree', :js do
   end
 
   context 'ref switcher' do
-    def switch_ref_to(ref_name)
+    it 'switches ref to branch' do
+      ref_name = 'feature'
+      visit project_tree_path(project, 'master')
       first('.js-project-refs-dropdown').click
 
       page.within '.project-refs-form' do
         click_link ref_name
       end
-    end
 
-    before do
-      visit project_tree_path(project, 'master')
-    end
-
-    it 'switches ref to branch' do
-      switch_ref_to('feature')
-
-      expect(page).to have_selector '.dropdown-menu-toggle', text: 'feature'
+      expect(page).to have_selector '.dropdown-menu-toggle', text: ref_name
     end
   end
 end
