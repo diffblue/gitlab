@@ -6354,6 +6354,9 @@ msgstr ""
 msgid "BulkImport|Destination"
 msgstr ""
 
+msgid "BulkImport|Destination group"
+msgstr ""
+
 msgid "BulkImport|Existing groups"
 msgstr ""
 
@@ -6391,9 +6394,6 @@ msgid "BulkImport|Name already exists."
 msgstr ""
 
 msgid "BulkImport|Name already used as a target for another group."
-msgstr ""
-
-msgid "BulkImport|New group"
 msgstr ""
 
 msgid "BulkImport|No additional information provided."
