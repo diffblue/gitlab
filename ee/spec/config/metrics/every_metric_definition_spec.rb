@@ -104,6 +104,7 @@ RSpec.describe 'Every metric definition' do
         if constant.is_a? Class
           metric_class_instance = instance_double(constant)
           expect(constant).to receive(:new).at_least(:once).and_return(metric_class_instance)
+          allow(metric_class_instance).to receive(:available?).and_return(true)
           expect(metric_class_instance).to receive(:value).at_least(:once)
         elsif constant.is_a? Module
           assert_uses_all_nested_classes(constant)
