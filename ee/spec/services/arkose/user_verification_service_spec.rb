@@ -9,12 +9,11 @@ RSpec.describe Arkose::UserVerificationService do
   let(:service) { Arkose::UserVerificationService.new(session_token: session_token, user: user) }
   let(:response) { instance_double(HTTParty::Response, success?: true, code: 200, parsed_response: arkose_ec_response) }
   let(:arkose_labs_private_api_key) { 'foo' }
-  let(:arkose_labs_verify_api_url) { 'https://bar' }
 
   subject { service.execute }
 
   describe '#execute' do
-    shared_examples_for 'interacting with Arkose verify API' do
+    shared_examples_for 'interacting with Arkose verify API' do |verify_api_url|
       context 'when the user did not solve the challenge' do
         let(:arkose_ec_response) { Gitlab::Json.parse(File.read(Rails.root.join('ee/spec/fixtures/arkose/failed_ec_response.json'))) }
 
@@ -28,6 +27,18 @@ RSpec.describe Arkose::UserVerificationService do
         context 'when the user solved the challenge' do
           context 'when the risk score is not high' do
             let(:arkose_ec_response) { Gitlab::Json.parse(File.read(Rails.root.join('ee/spec/fixtures/arkose/successfully_solved_ec_response.json'))) }
+
+            it 'makes a request to the Verify API' do
+              stub_request(:post, verify_api_url)
+                .with(
+                  body: /.*/,
+                  headers: {
+                    'Accept' => '*/*'
+                  }
+                ).to_return(status: 200, body: "", headers: {})
+              subject
+              expect(WebMock).to have_requested(:post, verify_api_url)
+            end
 
             it 'returns true' do
               allow(Gitlab::HTTP).to receive(:perform_request).and_return(response)
@@ -119,19 +130,18 @@ RSpec.describe Arkose::UserVerificationService do
     context 'when Arkose is configured using application settings' do
       before do
         stub_application_setting(arkose_labs_private_api_key: arkose_labs_private_api_key)
-        stub_application_setting(arkose_labs_verify_api_url: arkose_labs_verify_api_url)
+        stub_application_setting(arkose_labs_namespace: "gitlab")
       end
 
-      it_behaves_like 'interacting with Arkose verify API'
+      it_behaves_like 'interacting with Arkose verify API', "http://gitlab-verify.arkoselabs.com/api/v4/verify"
     end
 
     context 'when Arkose application settings are not present, fallback to environment variables' do
       before do
         stub_env('ARKOSE_LABS_PRIVATE_KEY': arkose_labs_private_api_key)
-        stub_env('ARKOSE_LABS_VERIFY_URL': arkose_labs_verify_api_url)
       end
 
-      it_behaves_like 'interacting with Arkose verify API'
+      it_behaves_like 'interacting with Arkose verify API', "http://verify-api.arkoselabs.com/api/v4/verify"
     end
 
     context 'when feature arkose_labs_prevent_login is disabled' do
