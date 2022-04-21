@@ -3,6 +3,7 @@ import {
   getShortShaFromFile,
   stats,
   isNotDiffable,
+  match,
 } from '~/diffs/utils/diff_file';
 import { diffViewerModes } from '~/ide/constants';
 import mockDiffFile from '../mock_data/diff_file';
@@ -260,6 +261,64 @@ describe('diff_file utilities', () => {
       ${{ viewer: null }}
     `('reports `false` when the file is `$file`', ({ file }) => {
       expect(isNotDiffable(file)).toBe(false);
+    });
+  });
+
+  describe('match', () => {
+    const authorityFileId = '68296a4f-f1c7-445a-bd0e-6e3b02c4eec0';
+    let authorityFile;
+
+    beforeAll(() => {
+      const files = getDiffFiles();
+
+      authorityFile = prepareRawDiffFile({
+        file: files[0],
+        allFiles: files,
+      });
+
+      Object.freeze(authorityFile);
+    });
+
+    describe('universal mode', () => {
+      const mode = 'universal';
+
+      it("fails to match if files or ids aren't present", () => {
+        expect(match({ fileA: authorityFile, fileB: undefined, mode })).toBe(false);
+        expect(match({ fileA: authorityFile, fileB: null, mode })).toBe(false);
+        expect(match({ fileA: authorityFile, fileB: { file_identifier_hash: 'ABC1' }, mode })).toBe(
+          false,
+        );
+      });
+
+      it("fails to match if the ids aren't the same", () => {
+        expect(match({ fileA: authorityFile, fileB: { id: 'foo' }, mode })).toBe(false);
+      });
+
+      it('matches if the ids are the same', () => {
+        expect(match({ fileA: authorityFile, fileB: { id: authorityFileId }, mode })).toBe(true);
+      });
+    });
+
+    describe('mr mode', () => {
+      const mode = 'mr';
+
+      it("fails to match if files or file identifier hashes aren't present", () => {
+        expect(match({ fileA: authorityFile, fileB: undefined, mode })).toBe(false);
+        expect(match({ fileA: authorityFile, fileB: null, mode })).toBe(false);
+        expect(match({ fileA: authorityFile, fileB: { id: authorityFileId }, mode })).toBe(false);
+      });
+
+      it("fails to match if the file identifier hashes aren't the same", () => {
+        expect(match({ fileA: authorityFile, fileB: { file_identifier_hash: 'ABC2' }, mode })).toBe(
+          false,
+        );
+      });
+
+      it('matches if the file identifier hashes are the same', () => {
+        expect(match({ fileA: authorityFile, fileB: { file_identifier_hash: 'ABC1' }, mode })).toBe(
+          true,
+        );
+      });
     });
   });
 });
