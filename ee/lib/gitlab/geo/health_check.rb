@@ -11,7 +11,7 @@ module Gitlab
         return 'An existing tracking database cannot be reused.' if reusing_existing_tracking_database?
         return 'Geo node has a database that is writable which is an indication it is not configured for replication with the primary node.' unless ApplicationRecord.database.db_read_only?
         return 'Geo node does not appear to be replicating the database from the primary node.' if replication_enabled? && !replication_working?
-        return "Geo database version (#{database_version}) does not match latest migration (#{migration_version}).\nYou may have to run `gitlab-rake geo:db:migrate` as root on the secondary." unless database_migration_version_match?
+        return "Geo database version (#{database_version}) does not match latest migration (#{migration_version}).\nYou may have to run `gitlab-rake db:migrate:geo` as root on the secondary." unless database_migration_version_match?
 
         ''
       rescue StandardError => e
