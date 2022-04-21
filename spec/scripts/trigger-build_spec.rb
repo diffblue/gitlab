@@ -111,7 +111,7 @@ RSpec.describe Trigger do
 
         context 'with post_comment: true' do
           before do
-            stub_env('CI_MERGE_REQUEST_TARGET_BRANCH_NAME', "#{ref}-ee")
+            stub_env('CI_COMMIT_REF_NAME', "#{ref}-ee")
           end
 
           it 'posts a comment' do
@@ -127,7 +127,7 @@ RSpec.describe Trigger do
           let(:paginated_resources) { Struct.new(:auto_paginate).new([downstream_job]) }
 
           before do
-            stub_env('CI_MERGE_REQUEST_TARGET_BRANCH_NAME', "#{ref}-ee")
+            stub_env('CI_COMMIT_REF_NAME', "#{ref}-ee")
           end
 
           it 'fetches the downstream job' do
@@ -373,6 +373,30 @@ RSpec.describe Trigger do
       end
     end
 
+    describe '.access_token' do
+      context 'when OMNIBUS_GITLAB_PROJECT_ACCESS_TOKEN is set' do
+        let(:omnibus_gitlab_project_access_token) { 'omnibus_gitlab_project_access_token' }
+
+        before do
+          stub_env('OMNIBUS_GITLAB_PROJECT_ACCESS_TOKEN', omnibus_gitlab_project_access_token)
+        end
+
+        it 'returns the omnibus-specific access token' do
+          expect(described_class.access_token).to eq(omnibus_gitlab_project_access_token)
+        end
+      end
+
+      context 'when OMNIBUS_GITLAB_PROJECT_ACCESS_TOKEN is not set' do
+        before do
+          stub_env('OMNIBUS_GITLAB_PROJECT_ACCESS_TOKEN', nil)
+        end
+
+        it 'returns the default access token' do
+          expect(described_class.access_token).to eq(Trigger::Base.access_token)
+        end
+      end
+    end
+
     describe '#invoke!' do
       let(:downstream_project_path) { 'gitlab-org/build/omnibus-gitlab-mirror' }
       let(:ref) { 'master' }
@@ -386,22 +410,6 @@ RSpec.describe Trigger do
           'QA_TESTS' => 'qa_tests',
           'ALLURE_JOB_NAME' => 'allure_job_name'
         )
-      end
-
-      describe '.access_token' do
-        context 'when OMNIBUS_GITLAB_PROJECT_ACCESS_TOKEN is set' do
-          let(:gitlab_client_private_token) { 'omnibus_gitlab_project_access_token' }
-
-          before do
-            stub_env('OMNIBUS_GITLAB_PROJECT_ACCESS_TOKEN', gitlab_client_private_token)
-          end
-
-          it 'initializes the API client with the correct token' do
-            expect_run_trigger_with_params
-
-            subject.invoke!
-          end
-        end
       end
 
       describe '#downstream_project_path' do
@@ -436,11 +444,11 @@ RSpec.describe Trigger do
         end
       end
 
-      context 'when CI_MERGE_REQUEST_TARGET_BRANCH_NAME is a stable branch' do
+      context 'when CI_COMMIT_REF_NAME is a stable branch' do
         let(:ref) { '14-10-stable' }
 
         before do
-          stub_env('CI_MERGE_REQUEST_TARGET_BRANCH_NAME', "#{ref}-ee")
+          stub_env('CI_COMMIT_REF_NAME', "#{ref}-ee")
         end
 
         it 'triggers the pipeline on the correct ref' do
@@ -481,14 +489,14 @@ RSpec.describe Trigger do
           end
         end
 
-        context 'when CI_MERGE_REQUEST_TARGET_BRANCH_NAME is a stable branch' do
+        context 'when CI_COMMIT_REF_NAME is a stable branch' do
           let(:ref) { '14-10-stable' }
 
           before do
-            stub_env('CI_MERGE_REQUEST_TARGET_BRANCH_NAME', "#{ref}-ee")
+            stub_env('CI_COMMIT_REF_NAME', "#{ref}-ee")
           end
 
-          it 'sets TRIGGER_BRANCH to 14-10-stable' do
+          it 'sets TRIGGER_BRANCH to the corresponding stable branch' do
             expect(subject.variables['TRIGGER_BRANCH']).to eq(ref)
           end
         end
@@ -500,7 +508,7 @@ RSpec.describe Trigger do
             stub_env('CI_MERGE_REQUEST_SOURCE_BRANCH_SHA', 'ci_merge_request_source_branch_sha')
           end
 
-          it 'sets GITLAB_VERSION to ci_merge_request_source_branch_sha' do
+          it 'sets GITLAB_VERSION to CI_MERGE_REQUEST_SOURCE_BRANCH_SHA' do
             expect(subject.variables['GITLAB_VERSION']).to eq('ci_merge_request_source_branch_sha')
           end
         end
@@ -577,7 +585,7 @@ RSpec.describe Trigger do
             allow(Trigger).to receive(:ee?).and_return(true)
           end
 
-          it 'sets ee to true' do
+          it 'sets CE_PIPELINE to nil' do
             expect(subject.variables['CE_PIPELINE']).to eq(nil)
           end
         end
@@ -587,7 +595,7 @@ RSpec.describe Trigger do
             allow(Trigger).to receive(:ee?).and_return(false)
           end
 
-          it 'sets ee to false' do
+          it 'sets CE_PIPELINE to true' do
             expect(subject.variables['CE_PIPELINE']).to eq('true')
           end
         end
@@ -599,7 +607,7 @@ RSpec.describe Trigger do
             allow(Trigger).to receive(:ee?).and_return(true)
           end
 
-          it 'sets ee to true' do
+          it 'sets EE_PIPELINE to true' do
             expect(subject.variables['EE_PIPELINE']).to eq('true')
           end
         end
@@ -609,7 +617,7 @@ RSpec.describe Trigger do
             allow(Trigger).to receive(:ee?).and_return(false)
           end
 
-          it 'sets ee to false' do
+          it 'sets EE_PIPELINE to nil' do
             expect(subject.variables['EE_PIPELINE']).to eq(nil)
           end
         end
@@ -674,7 +682,7 @@ RSpec.describe Trigger do
         end
 
         context 'when CI_PROJECT_PATH is gitlab-org/gitlab-runner' do
-          it 'sets CI_PROJECT_PATH to CI_COMMIT_REF_NAME' do
+          it 'sets BRANCH_RUNNER to CI_COMMIT_REF_NAME' do
             expect(subject.variables['BRANCH_RUNNER']).to eq(env['CI_COMMIT_REF_NAME'])
           end
         end
@@ -727,42 +735,41 @@ RSpec.describe Trigger do
       end
     end
 
+    describe '.access_token' do
+      context 'when DOCS_PROJECT_API_TOKEN is set' do
+        let(:docs_project_api_token) { 'docs_project_api_token' }
+
+        before do
+          stub_env('DOCS_PROJECT_API_TOKEN', docs_project_api_token)
+        end
+
+        it 'returns the docs-specific access token' do
+          expect(described_class.access_token).to eq(docs_project_api_token)
+        end
+      end
+
+      context 'when DOCS_PROJECT_API_TOKEN is not set' do
+        before do
+          stub_env('DOCS_PROJECT_API_TOKEN', nil)
+        end
+
+        it 'returns the default access token' do
+          expect(described_class.access_token).to eq(Trigger::Base.access_token)
+        end
+      end
+    end
+
     describe '#invoke!' do
       let(:downstream_project_path) { 'gitlab-org/gitlab-docs' }
-      let(:trigger_token) { 'gitlabcom_database_testing_access_token' }
-      let(:gitlab_client_private_token) { 'docs_project_api_token' }
+      let(:trigger_token) { 'docs_trigger_token' }
       let(:ref) { 'main' }
 
       let(:env) do
         super().merge(
           'CI_PROJECT_PATH' => 'gitlab-org/gitlab-foss',
-          'DOCS_PROJECT_API_TOKEN' => gitlab_client_private_token,
+          'DOCS_PROJECT_API_TOKEN' => nil,
           'DOCS_TRIGGER_TOKEN' => trigger_token
         )
-      end
-
-      describe '.access_token' do
-        context 'when DOCS_PROJECT_API_TOKEN is set' do
-          it 'initializes the API client with the correct token' do
-            expect_run_trigger_with_params
-
-            subject.invoke!
-          end
-        end
-
-        context 'when DOCS_PROJECT_API_TOKEN is not set' do
-          let(:gitlab_client_private_token) { env['GITLAB_BOT_MULTI_PROJECT_PIPELINE_POLLING_TOKEN'] }
-
-          before do
-            stub_env('DOCS_PROJECT_API_TOKEN', nil)
-          end
-
-          it 'initializes the API client with the correct token' do
-            expect_run_trigger_with_params
-
-            subject.invoke!
-          end
-        end
       end
 
       describe '#downstream_project_path' do

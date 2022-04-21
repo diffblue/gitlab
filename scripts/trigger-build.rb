@@ -83,7 +83,7 @@ module Trigger
     # Override to trigger and work with pipeline on different GitLab instance
     # type: :downstream -> downstream build and pipeline status
     # type: :upstream -> this project, e.g. for posting comments
-    def gitlab_client(type)
+    def gitlab_client(_type)
       # By default, always use the same client
       @gitlab_client ||= Gitlab.client(
         endpoint: 'https://gitlab.com/api/v4',
@@ -127,19 +127,19 @@ module Trigger
     end
 
     def stable_branch?
-      ENV['CI_MERGE_REQUEST_TARGET_BRANCH_NAME'] =~ /^[\d-]+-stable(-ee)?$/
+      ENV['CI_COMMIT_REF_NAME'] =~ /^[\d-]+-stable(-ee)?$/
     end
 
-    def default_ref
+    def fallback_ref
       if trigger_stable_branch_if_detected? && stable_branch?
-        ENV['CI_MERGE_REQUEST_TARGET_BRANCH_NAME'].delete_suffix('-ee')
+        ENV['CI_COMMIT_REF_NAME'].delete_suffix('-ee')
       else
         primary_ref
       end
     end
 
     def ref
-      ENV.fetch(ref_param_name, default_ref)
+      ENV.fetch(ref_param_name, fallback_ref)
     end
 
     def base_variables
