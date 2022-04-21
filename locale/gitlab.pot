@@ -39042,25 +39042,10 @@ msgstr ""
 msgid "ThreatMonitoring|All Environments"
 msgstr ""
 
-msgid "ThreatMonitoring|Anomalous Requests"
-msgstr ""
-
-msgid "ThreatMonitoring|Container Network Policies are not installed or have been disabled. To view this data, ensure your Network Policies are installed and enabled for your cluster."
-msgstr ""
-
-msgid "ThreatMonitoring|Container Network Policy"
-msgstr ""
-
-msgid "ThreatMonitoring|Container NetworkPolicies not detected"
-msgstr ""
-
 msgid "ThreatMonitoring|Date and time"
 msgstr ""
 
 msgid "ThreatMonitoring|Dismissed"
-msgstr ""
-
-msgid "ThreatMonitoring|Dropped Packets"
 msgstr ""
 
 msgid "ThreatMonitoring|Environment"
@@ -39090,31 +39075,13 @@ msgstr ""
 msgid "ThreatMonitoring|No alerts to display."
 msgstr ""
 
-msgid "ThreatMonitoring|No environments detected"
-msgstr ""
-
-msgid "ThreatMonitoring|Operations Per Second"
-msgstr ""
-
-msgid "ThreatMonitoring|Packet Activity"
-msgstr ""
-
-msgid "ThreatMonitoring|Requests"
-msgstr ""
-
 msgid "ThreatMonitoring|Resolved"
-msgstr ""
-
-msgid "ThreatMonitoring|Show last"
 msgstr ""
 
 msgid "ThreatMonitoring|Something went wrong, unable to fetch environments"
 msgstr ""
 
 msgid "ThreatMonitoring|Something went wrong, unable to fetch statistics"
-msgstr ""
-
-msgid "ThreatMonitoring|Statistics"
 msgstr ""
 
 msgid "ThreatMonitoring|Status"
@@ -39130,18 +39097,6 @@ msgid "ThreatMonitoring|Threat Monitoring"
 msgstr ""
 
 msgid "ThreatMonitoring|Threat Monitoring help page link"
-msgstr ""
-
-msgid "ThreatMonitoring|Time"
-msgstr ""
-
-msgid "ThreatMonitoring|To view this data, ensure you have configured an environment for this project and that at least one threat monitoring feature is enabled. %{linkStart}More information%{linkEnd}"
-msgstr ""
-
-msgid "ThreatMonitoring|Total Packets"
-msgstr ""
-
-msgid "ThreatMonitoring|Total Requests"
 msgstr ""
 
 msgid "ThreatMonitoring|Unreviewed"

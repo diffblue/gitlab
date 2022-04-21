@@ -28,10 +28,7 @@ const apolloProvider = new VueApollo({
 export default () => {
   const el = document.querySelector('#js-threat-monitoring-app');
   const {
-    networkPolicyStatisticsEndpoint,
     environmentsEndpoint,
-    emptyStateSvgPath,
-    networkPolicyNoDataSvgPath,
     newPolicyPath,
     documentationPath,
     defaultEnvironmentId,
@@ -46,7 +43,6 @@ export default () => {
   const hasEnvironment = isValidEnvironmentId(environmentId);
 
   const store = createStore();
-  store.dispatch('threatMonitoring/setStatisticsEndpoint', networkPolicyStatisticsEndpoint);
   store.dispatch('threatMonitoring/setEnvironmentEndpoint', environmentsEndpoint);
   store.dispatch('threatMonitoring/setHasEnvironment', hasEnvironment);
   if (hasEnvironment) {
@@ -58,14 +54,12 @@ export default () => {
     el,
     provide: {
       documentationPath,
-      emptyStateSvgPath,
       projectPath,
     },
     store,
     render(createElement) {
       return createElement(ThreatMonitoringApp, {
         props: {
-          networkPolicyNoDataSvgPath,
           newPolicyPath,
         },
       });
