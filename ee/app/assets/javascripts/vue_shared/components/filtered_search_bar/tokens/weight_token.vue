@@ -54,6 +54,7 @@ export default {
     :default-suggestions="defaultWeights"
     :suggestions="weights"
     :get-active-token-value="getActiveWeight"
+    v-bind="$attrs"
     @fetch-suggestions="updateWeights"
     v-on="$listeners"
   >
