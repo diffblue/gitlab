@@ -1,4 +1,4 @@
-fragment SearchEpicNode on Epic {
+fragment EpicNode on Epic {
   id
   iid
   group {
