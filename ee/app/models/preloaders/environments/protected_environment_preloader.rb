@@ -17,7 +17,7 @@ module Preloaders
         return if environments.empty?
 
         associated_protected_environments =
-          ProtectedEnvironment.for_environments(environments).preload(:deploy_access_levels)
+          ProtectedEnvironment.for_environments(environments).preload(:deploy_access_levels, :project)
 
         project_protected_environments = associated_protected_environments.select(&:project_level?).index_by(&:name)
         group_protected_environments = associated_protected_environments.select(&:group_level?).index_by(&:name)
