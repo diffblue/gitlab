@@ -10,7 +10,7 @@ query searchEpics($fullPath: ID!, $search: String, $state: EpicState) {
       includeDescendantGroups: false
     ) {
       nodes {
-        ...EpicNode
+        ...SearchEpicNode
       }
     }
   }

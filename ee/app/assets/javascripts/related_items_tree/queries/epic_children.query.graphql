@@ -1,4 +1,4 @@
-fragment PageInfo on PageInfo {
+fragment EpicsPageInfo on PageInfo {
   hasNextPage
   hasPreviousPage
   startCursor
@@ -35,7 +35,7 @@ fragment RelatedTreeBaseEpic on Epic {
   }
 }
 
-fragment EpicNode on Epic {
+fragment LocalEpicNode on Epic {
   ...RelatedTreeBaseEpic
   state
   reference(full: true)
@@ -82,14 +82,16 @@ query childItems(
         __typename
         edges {
           __typename
+          # id is defined in RelatedTreeBaseEpic nested fragment
+          # eslint-disable-next-line @graphql-eslint/require-id-when-available
           node {
             __typename
-            ...EpicNode
+            ...LocalEpicNode
           }
         }
         pageInfo {
           __typename
-          ...PageInfo
+          ...EpicsPageInfo
         }
       }
       issues(first: $pageSize, after: $issueEndCursor) {
@@ -150,7 +152,7 @@ query childItems(
         }
         pageInfo {
           __typename
-          ...PageInfo
+          ...EpicsPageInfo
         }
       }
     }
