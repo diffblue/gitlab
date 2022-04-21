@@ -5551,6 +5551,15 @@ msgstr ""
 msgid "Background color"
 msgstr ""
 
+msgid "BackgroundMigrations|Background Migrations"
+msgstr ""
+
+msgid "BackgroundMigrations|Background migrations are used to perform data migrations whenever a migration exceeds the time limits in our guidelines. %{linkStart}Learn more%{linkEnd}"
+msgstr ""
+
+msgid "BackgroundMigrations|Database"
+msgstr ""
+
 msgid "Badges"
 msgstr ""
 
