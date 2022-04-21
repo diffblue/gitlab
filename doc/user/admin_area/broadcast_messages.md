@@ -20,7 +20,7 @@ Broadcast messages can be managed using the [broadcast messages API](../../api/b
 
 Banners are shown on the top of a page and in Git remote responses.
 
-![Broadcast Message Banner](img/broadcast_messages_banner_v12_10.png)
+![Broadcast Message Banner](img/broadcast_messages_banner_v15_0.png)
 
 ```shell
 $ git push
