@@ -465,6 +465,10 @@ class ContainerRepository < ApplicationRecord
     update!(expiration_policy_started_at: Time.zone.now)
   end
 
+  def reset_last_cleanup_deleted_tags_count!
+    update!(last_cleanup_deleted_tags_count: nil)
+  end
+
   def size
     strong_memoize(:size) do
       next unless Gitlab.com?
