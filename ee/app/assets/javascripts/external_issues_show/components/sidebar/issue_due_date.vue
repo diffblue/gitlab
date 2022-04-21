@@ -66,7 +66,7 @@ export default {
     </div>
 
     <div class="hide-collapsed">
-      <div class="gl-line-height-20 gl-mb-2 gl-text-gray-900">
+      <div class="gl-line-height-20 gl-mb-2 gl-text-gray-900 gl-font-weight-bold">
         {{ $options.i18n.dueDateTitle }}
       </div>
       <div class="gl-line-height-14" data-testid="due-date-value">
